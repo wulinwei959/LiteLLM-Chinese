@@ -474,6 +474,19 @@
       "never": "Never",
       "unknown": "Unknown",
       "unlimited": "Unlimited"
+    },
+    "autoRoutersPanel": {
+      "title": "Auto routers",
+      "description": "Auto routers sit above your deployments and pick a model per request. They are called like any other model, so clients keep using a single model name.",
+      "addRouter": "Add Auto Router",
+      "deleteConfirmTitle": "Delete Auto Router",
+      "deleteConfirmMessage": "Are you sure you want to delete \"{name}\"? Any client still calling this model name will start failing.",
+      "resourceInformationTitle": "Auto router",
+      "resourceInformation": {
+        "name": "Name",
+        "type": "Type",
+        "id": "ID"
+      }
     }
   }
 }

@@ -2,6 +2,7 @@
 
 import { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 import { DataTable } from "@/components/shared/DataTable";
 import { AutoRouterIcon } from "@/components/shared/table_cells";
@@ -25,16 +26,18 @@ const DEFAULT_SORTING: SortingState = [
 ];
 
 function EmptyState({ canModify }: { canModify: boolean }) {
+  const t = useTranslations("models.autoRouters");
+
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <AutoRouterIcon size={20} className="text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No auto routers yet</div>
+      <div className="text-sm font-medium text-foreground">{t("emptyState.title")}</div>
       <div className="text-sm text-muted-foreground">
         {canModify
-          ? "Create an auto router to pick the right model per request instead of pinning one."
-          : "An auto router picks the right model per request instead of pinning one."}
+          ? t("emptyState.descriptionCanModify")
+          : t("emptyState.descriptionNoModify")}
       </div>
     </div>
   );
@@ -47,6 +50,8 @@ export function AutoRoutersTable({
   onRouterClick,
   onDeleteClick,
 }: AutoRoutersTableProps) {
+  const t = useTranslations("models.autoRouters");
+
   const columns = useMemo(
     () => getAutoRoutersTableColumns({ canModify, onRouterClick, onDeleteClick }),
     [canModify, onRouterClick, onDeleteClick],
@@ -62,7 +67,7 @@ export function AutoRoutersTable({
       paginationMode="client"
       pageSizeOptions={PAGE_SIZE_OPTIONS}
       isLoading={isLoading}
-      loadingMessage="Loading auto routers…"
+      loadingMessage={t("loading")}
       noDataMessage={<EmptyState canModify={canModify} />}
       size="compact"
     />

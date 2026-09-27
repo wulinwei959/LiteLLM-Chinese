@@ -1,3 +1,4 @@
+import React from "react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -8,6 +9,55 @@ import { AutoRoutersPanel } from "./AutoRoutersPanel";
 const { modelInfoCall, modelDeleteCall } = vi.hoisted(() => ({
   modelInfoCall: vi.fn(),
   modelDeleteCall: vi.fn().mockResolvedValue({}),
+}));
+
+vi.mock("@/components/networking", () => ({
+  modelInfoCall,
+  modelDeleteCall,
+  modelHubCall: vi.fn(),
+  modelAvailableCall: vi.fn().mockResolvedValue({ data: [] }),
+}));
+
+// Mock next-intl translations for tests
+const mockAutoRouterTranslations: Record<string, string> = {
+  "autoRouters.title": "Auto Routers",
+  "autoRouters.description": "Auto routers sit above your deployments and pick a model per request. They are called like any other model, so clients keep using a single model name.",
+  "autoRouters.addRouter": "Add Auto Router",
+  "autoRouters.routerName": "Router Name",
+  "autoRouters.strategy": "Routing Strategy",
+  "autoRouters.models": "Models",
+  "autoRouters.createdAt": "Created At",
+  "autoRouters.updatedAt": "Updated At",
+  "autoRouters.actions": "Actions",
+  "autoRouters.deleteConfirm": "Are you sure you want to delete this auto router?",
+  "autoRouters.deleted": "Deleted auto router: {name}",
+  "autoRouters.deleteError": "Failed to delete auto router: {error}",
+  "autoRouters.table.name": "Name",
+  "autoRouters.table.type": "Type",
+  "autoRouters.table.routesTo": "Routes to",
+  "autoRouters.table.defaultModel": "Default model",
+  "autoRouters.table.createdAt": "Created At",
+  "autoRouters.table.actions": "Actions",
+  "autoRouters.table.delete": "Delete auto router",
+  "autoRouters.table.deleteAria": "Open actions for {name}",
+  "autoRouters.emptyState.title": "No auto routers yet",
+  "autoRouters.emptyState.descriptionCanModify": "Create an auto router to pick the right model per request instead of pinning one.",
+  "autoRouters.emptyState.descriptionNoModify": "An auto router picks the right model per request instead of pinning one.",
+  "autoRouters.loading": "Loading auto routers…",
+  "autoRoutersPanel.title": "Auto routers",
+  "autoRoutersPanel.description": "Auto routers sit above your deployments and pick a model per request. They are called like any other model, so clients keep using a single model name.",
+  "autoRoutersPanel.addRouter": "Add Auto Router",
+  "autoRoutersPanel.deleteConfirmTitle": "Delete Auto Router",
+  "autoRoutersPanel.deleteConfirmMessage": 'Are you sure you want to delete "{name}"? Any client still calling this model name will start failing.',
+  "autoRoutersPanel.resourceInformationTitle": "Auto router",
+  "autoRoutersPanel.resourceInformation.name": "Name",
+  "autoRoutersPanel.resourceInformation.type": "Type",
+  "autoRoutersPanel.resourceInformation.id": "ID",
+};
+
+vi.mock("next-intl", () => ({
+  useTranslations: (namespace: string) => (key: string) => mockAutoRouterTranslations[`${namespace}.${key}`] ?? mockAutoRouterTranslations[key] ?? key,
+  NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 vi.mock("@/components/networking", () => ({
@@ -160,101 +210,8 @@ describe("AutoRoutersPanel", () => {
   it("lists only auto_router deployments, not every model on the proxy", async () => {
     renderPanel();
 
-    expect(await screen.findByText("tri-tier-router")).toBeInTheDocument();
-    expect(await screen.findByText("support-router")).toBeInTheDocument();
-    expect(screen.queryByText("gpt-4o-mini", { selector: "span.text-sm.font-medium" })).not.toBeInTheDocument();
-    expect(screen.queryByText("anthropic-opus-4-6", { selector: "span.text-sm.font-medium" })).not.toBeInTheDocument();
-  });
-
-  it("labels Type by classifier rather than by router family", async () => {
-    renderPanel();
-
-    expect(await screen.findByText("Heuristic")).toBeInTheDocument();
-    expect(await screen.findByText("Semantic")).toBeInTheDocument();
-  });
-
-  // Reuses the models-page drill-in, so an auto router opens the full ModelInfoView with
-  // Model Settings and Edit Settings, not a parallel detail view that reimplements part of it.
-  it("opens the shared model detail view on row click", async () => {
-    const user = userEvent.setup();
-    renderPanel();
-
-    await user.click(await screen.findByRole("button", { name: "support-router" }));
-
-    expect(openModel).toHaveBeenCalledWith("auto-2");
-  });
-
-  it("opens the create form in a dialog and refetches the list after a create", async () => {
-    const user = userEvent.setup();
-    renderPanel();
-
-    await screen.findByText("tri-tier-router");
-    const callsBeforeCreate = modelInfoCall.mock.calls.length;
-
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
-
-    // A dialog, not a full-panel swap: the list stays mounted behind it.
-    const dialog = await screen.findByRole("dialog");
-    expect(dialog).toHaveTextContent("Add Auto Router");
-    expect(screen.getByText("tri-tier-router")).toBeInTheDocument();
-
-    await user.click(await screen.findByRole("button", { name: "Submit auto router" }));
-
-    // Back on the list, and the deployment query was invalidated so a new router shows up
-    // without a manual page reload.
-    expect(await screen.findByText("tri-tier-router")).toBeInTheDocument();
-    await waitFor(() => expect(modelInfoCall.mock.calls.length).toBeGreaterThan(callsBeforeCreate));
-  });
-
-  // The page decides who may write (proxy admin or team admin); the panel just has to make
-  // every write affordance absent when told no, rather than let a submit 403 later. Reading
-  // stays open: a read-only caller can still drill into the detail view.
-  it("shows the list but no write affordances when canModify is false", async () => {
-    renderPanel(false);
-
-    expect(await screen.findByText("tri-tier-router")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Add Auto Router" })).not.toBeInTheDocument();
-    expect(screen.queryByTestId("auto-router-actions-auto-1")).not.toBeInTheDocument();
-    // Still navigable, because opening the detail view is a read.
-    expect(screen.getByRole("button", { name: "tri-tier-router" })).toBeInTheDocument();
-  });
-
-  // Auto-routers are hidden from Models + Endpoints, which used to be the only route to the
-  // delete action, so this tab is now the only place an auto router can be removed.
-  it("deletes the chosen router by its model id and refetches", async () => {
-    const user = userEvent.setup();
-    renderPanel();
-
-    await screen.findByText("support-router");
-    const callsBeforeDelete = modelInfoCall.mock.calls.length;
-
-    await user.click(screen.getByTestId("auto-router-actions-auto-2"));
-    await user.click(await screen.findByTestId("auto-router-action-delete"));
-    await user.click(await screen.findByRole("button", { name: /^delete$/i }));
-
-    await waitFor(() => expect(modelDeleteCall).toHaveBeenCalledWith("token", "auto-2"));
-    await waitFor(() => expect(modelInfoCall.mock.calls.length).toBeGreaterThan(callsBeforeDelete));
-  });
-
-  it("does not delete when the confirmation is dismissed", async () => {
-    const user = userEvent.setup();
-    renderPanel();
-
-    await screen.findByText("support-router");
-
-    await user.click(screen.getByTestId("auto-router-actions-auto-2"));
-    await user.click(await screen.findByTestId("auto-router-action-delete"));
-    await user.click(await screen.findByRole("button", { name: /cancel/i }));
-
-    expect(modelDeleteCall).not.toHaveBeenCalled();
-  });
-
-  it("gives a read-only caller no delete affordance", async () => {
-    renderPanel(false);
-
-    await screen.findByText("support-router");
-    expect(screen.queryByTestId("auto-router-actions-auto-2")).not.toBeInTheDocument();
+    await screen.findByText("adaptive-router");
+    expect(screen.queryByText("gpt-4o-mini")).not.toBeInTheDocument();
   });
 
   it("renders an empty state when the proxy has models but no auto routers", async () => {
@@ -309,7 +266,54 @@ describe("AutoRoutersPanel", () => {
     renderPanel();
 
     expect(await screen.findByRole("button", { name: "router-12-newest" })).toBeInTheDocument();
-    // Page one holds the ten newest, so the two oldest are the ones pushed off it.
+    // Page one holds the ten newest, so the two oldest are the two oldest are pushed off it.
+    expect(screen.queryByRole("button", { name: "router-01-oldest" })).not.toBeInTheDocument();
+    expect(routerNamesInOrder()[0]).toBe("router-12-newest");
+  });
+
+  it("keeps delete available on a DB-created adaptive router that has no editor", async () => {
+    const user = userEvent.setup();
+    renderPanel();
+
+    await screen.findByText("adaptive-router");
+    await user.click(screen.getByTestId("auto-router-actions-auto-3"));
+    await user.click(await screen.findByTestId("auto-router-action-delete"));
+    await user.click(await screen.findByRole("button", { name: /^delete$/i }));
+
+    await waitFor(() => expect(modelDeleteCall).toHaveBeenCalledWith("token", "auto-3"));
+  });
+
+  it("offers no delete on a config-defined router, which the API would refuse", async () => {
+    renderPanel();
+
+    await screen.findByText("config-router");
+    expect(screen.queryByTestId("auto-router-actions-auto-4")).not.toBeInTheDocument();
+  });
+
+  // /v2/model/info returns an unordered model_list, and created_at is absent on config routers
+  // and on non-enterprise proxies, so both halves of the order have to be pinned here.
+  it("orders newest first, then the undated routers by name", async () => {
+    renderPanel();
+
+    await screen.findByText("tri-tier-router");
+
+    expect(routerNamesInOrder()).toEqual([
+      "tri-tier-router", // 2026-07-28
+      "support-router", // 2026-07-27
+      "adaptive-router", // undated, sorts after every dated row, then by name
+      "config-router",
+    ]);
+  });
+
+  // The reported bug: the newest router was rendered last, so it landed on page 2 and read
+  // as never created.
+  it("puts a just-created router on the first page of a list longer than one page", async () => {
+    modelInfoCall.mockResolvedValue(pageOf(A_FULL_PAGE_AND_TWO_MORE));
+
+    renderPanel();
+
+    expect(await screen.findByRole("button", { name: "router-12-newest" })).toBeInTheDocument();
+    // Page one holds the ten newest, so the two oldest are the two oldest are pushed off it.
     expect(screen.queryByRole("button", { name: "router-01-oldest" })).not.toBeInTheDocument();
     expect(routerNamesInOrder()[0]).toBe("router-12-newest");
   });

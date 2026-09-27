@@ -406,7 +406,9 @@
       "actions": "操作",
       "deleteConfirm": "确定要删除此自动路由器吗？",
       "deleted": "已删除自动路由器: {name}",
-      "deleteError": "删除自动路由器失败: {error}"
+      "deleteError": "删除自动路由器失败: {error}",
+      "table": {},
+      "emptyState": {}
     },
     "modelTable": {
       "modelName": "模型名称",
@@ -474,6 +476,19 @@
       "never": "从不",
       "unknown": "未知",
       "unlimited": "无限制"
+    },
+    "autoRoutersPanel": {
+      "title": "自动路由器",
+      "description": "自动路由器位于您的部署之上，并为每个请求选择一个模型。它们像其他模型一样被调用，因此客户端可以继续使用单一模型名称。",
+      "addRouter": "添加自动路由器",
+      "deleteConfirmTitle": "删除自动路由器",
+      "deleteConfirmMessage": "确定要删除 \"{name}\" 吗？仍在调用此模型名称的客户端将开始失败。",
+      "resourceInformationTitle": "自动路由器",
+      "resourceInformation": {
+        "name": "名称",
+        "type": "类型",
+        "id": "ID"
+      }
     }
   }
 }

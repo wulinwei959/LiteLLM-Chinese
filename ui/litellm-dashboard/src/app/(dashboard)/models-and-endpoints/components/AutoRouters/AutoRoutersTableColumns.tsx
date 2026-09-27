@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MoreHorizontal, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { DateCell, IdentityCell } from "@/components/shared/table_cells";
@@ -71,10 +72,12 @@ function AutoRouterRowActions({
   row: AutoRouterRow;
   onDeleteClick: (row: AutoRouterRow) => void;
 }) {
+  const t = useTranslations("models.autoRouters");
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label={`Open actions for ${row.name}`}
+        aria-label={t("table.deleteAria", { name: row.name })}
         data-testid={`auto-router-actions-${row.id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -87,7 +90,7 @@ function AutoRouterRowActions({
           onClick={() => onDeleteClick(row)}
         >
           <Trash2 />
-          Delete auto router
+          {t("table.delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -104,71 +107,75 @@ export const getAutoRoutersTableColumns = ({
   canModify,
   onRouterClick,
   onDeleteClick,
-}: AutoRoutersTableColumnsDeps): ColumnDef<AutoRouterRow>[] => [
-  {
-    id: "name",
-    accessorKey: "name",
-    meta: { title: "Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Name" />,
-    size: 260,
-    enableSorting: true,
-    cell: ({ row }) => <IdentityCell title={row.original.name || "-"} onClick={() => onRouterClick(row.original)} />,
-  },
-  {
-    id: "kind",
-    accessorKey: "kind",
-    meta: { title: "Type" },
-    header: "Type",
-    size: 180,
-    enableSorting: false,
-    cell: ({ row }) => <TypeCell row={row.original} />,
-  },
-  {
-    id: "targets",
-    meta: { title: "Routes to" },
-    header: "Routes to",
-    size: 320,
-    enableSorting: false,
-    cell: ({ row }) => <TargetsCell targets={row.original.targets} />,
-  },
-  {
-    id: "defaultModel",
-    accessorKey: "defaultModel",
-    meta: { title: "Default model" },
-    header: "Default model",
-    size: 200,
-    enableSorting: false,
-    cell: ({ row }) =>
-      row.original.defaultModel ? (
-        <Badge variant="secondary" className="max-w-full truncate font-normal" title={row.original.defaultModel}>
-          {row.original.defaultModel}
-        </Badge>
-      ) : (
-        <span className="text-sm text-muted-foreground">-</span>
-      ),
-  },
-  {
-    id: "createdAt",
-    accessorKey: "createdAt",
-    meta: { title: "Created" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Created" />,
-    size: 150,
-    enableSorting: true,
-    sortingFn: "datetime",
-    sortUndefined: "last",
-    cell: ({ row }) => <DateCell value={row.original.createdAt} precision="date" />,
-  },
-  ...(canModify
-    ? [
-        {
-          id: "actions",
-          meta: { title: "" },
-          header: "",
-          size: 60,
-          enableSorting: false,
-          cell: ({ row }) =>
-            row.original.canDelete ? <AutoRouterRowActions row={row.original} onDeleteClick={onDeleteClick} /> : null,
-        } satisfies ColumnDef<AutoRouterRow>,
-      ]
-    : []),
-];
+}: AutoRoutersTableColumnsDeps): ColumnDef<AutoRouterRow>[] => {
+  const t = useTranslations("models.autoRouters");
+
+  return [
+    {
+      id: "name",
+      accessorKey: "name",
+      meta: { title: t("table.name") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("table.name")} />,
+      size: 260,
+      enableSorting: true,
+      cell: ({ row }) => <IdentityCell title={row.original.name || "-"} onClick={() => onRouterClick(row.original)} />,
+    },
+    {
+      id: "kind",
+      accessorKey: "kind",
+      meta: { title: t("table.type") },
+      header: t("table.type"),
+      size: 180,
+      enableSorting: false,
+      cell: ({ row }) => <TypeCell row={row.original} />,
+    },
+    {
+      id: "targets",
+      meta: { title: t("table.routesTo") },
+      header: t("table.routesTo"),
+      size: 320,
+      enableSorting: false,
+      cell: ({ row }) => <TargetsCell targets={row.original.targets} />,
+    },
+    {
+      id: "defaultModel",
+      accessorKey: "defaultModel",
+      meta: { title: t("table.defaultModel") },
+      header: t("table.defaultModel"),
+      size: 200,
+      enableSorting: false,
+      cell: ({ row }) =>
+        row.original.defaultModel ? (
+          <Badge variant="secondary" className="max-w-full truncate font-normal" title={row.original.defaultModel}>
+            {row.original.defaultModel}
+          </Badge>
+        ) : (
+          <span className="text-sm text-muted-foreground">-</span>
+        ),
+    },
+    {
+      id: "createdAt",
+      accessorKey: "createdAt",
+      meta: { title: t("table.createdAt") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("table.createdAt")} />,
+      size: 150,
+      enableSorting: true,
+      sortingFn: "datetime",
+      sortUndefined: "last",
+      cell: ({ row }) => <DateCell value={row.original.createdAt} precision="date" />,
+    },
+    ...(canModify
+      ? [
+          {
+            id: "actions",
+            meta: { title: "" },
+            header: "",
+            size: 60,
+            enableSorting: false,
+            cell: ({ row }) =>
+              row.original.canDelete ? <AutoRouterRowActions row={row.original} onDeleteClick={onDeleteClick} /> : null,
+          } satisfies ColumnDef<AutoRouterRow>,
+        ]
+      : []),
+  ];
+};
