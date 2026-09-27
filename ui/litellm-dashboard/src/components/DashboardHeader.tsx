@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { ToolbarSeparator } from "@/components/shared/ToolbarSeparator";
 import { getBreadcrumb } from "@/components/leftnav";
+import { useTranslations } from "next-intl";
 import { BlogDropdown } from "@/components/Navbar/BlogDropdown/BlogDropdown";
 import { DocsLink } from "@/components/Navbar/DocsLink/DocsLink";
 import { CommunityEngagementButtons } from "@/components/Navbar/CommunityEngagementButtons/CommunityEngagementButtons";
@@ -25,7 +26,8 @@ import { usePathname } from "next/navigation";
 // Top bar for the dashboard shell. Sits only over the content column (the brand
 // lives in the sidebar header); mirrors the design's breadcrumb-left / tools-right layout.
 export function DashboardHeader() {
-  const { title } = getBreadcrumb(usePathname());
+  const navT = useTranslations('nav');
+  const { title } = getBreadcrumb(usePathname(), navT);
   const { isControlPlane, selectedWorker } = useWorker();
   const showWorkerSwitch = isControlPlane && selectedWorker !== null;
   const hideCommunityLinks = useDisableShowPrompts();

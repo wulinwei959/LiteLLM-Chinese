@@ -595,31 +595,81 @@ describe("Sidebar (leftnav)", () => {
   });
 });
 
+const mockNavT = (key: string) => {
+  const translations: Record<string, string> = {
+    aiGateway: "AI Gateway",
+    observability: "Observability",
+    accessControl: "Access Control",
+    developerTools: "Developer Tools",
+    settings: "Settings",
+    virtualKeys: "Virtual Keys",
+    playground: "Playground",
+    modelsAndEndpoints: "Models + Endpoints",
+    agentic: "Agentic",
+    agents: "Agents",
+    workflowRuns: "Workflow Runs",
+    memory: "Memory",
+    mcpServers: "MCP Servers",
+    skills: "Skills",
+    guardrails: "Guardrails",
+    policies: "Policies",
+    tools: "Tools",
+    searchTools: "Search Tools",
+    vectorStores: "Vector Stores",
+    toolPolicies: "Tool Policies",
+    usage: "Usage",
+    costOptimization: "Cost Optimization",
+    logs: "Logs",
+    guardrailsMonitor: "Guardrails Monitor",
+    teams: "Teams",
+    projects: "Projects",
+    internalUsers: "Internal Users",
+    organizations: "Organizations",
+    accessGroups: "Access Groups",
+    budgets: "Budgets",
+    apiReference: "API Reference",
+    aiHub: "AI Hub",
+    learningResources: "Learning Resources",
+    responseCache: "Response Cache",
+    experimental: "Experimental",
+    prompts: "Prompts",
+    apiPlayground: "API Playground",
+    tagManagement: "Tag Management",
+    oldUsage: "Old Usage",
+    routerSettings: "Router Settings",
+    loggingAndAlerts: "Logging & Alerts",
+    adminSettings: "Admin Settings",
+    costTracking: "Cost Tracking",
+    uiTheme: "UI Theme",
+  };
+  return translations[key] ?? key;
+};
+
 describe("getBreadcrumb", () => {
   it("resolves a top-level route to its section + title", () => {
-    expect(getBreadcrumb("/ui/api-keys")).toEqual({ section: "AI Gateway", title: "Virtual Keys" });
-    expect(getBreadcrumb("/ui/logs")).toEqual({ section: "Observability", title: "Logs" });
+    expect(getBreadcrumb("/ui/api-keys", mockNavT)).toEqual({ section: "AI Gateway", title: "Virtual Keys" });
+    expect(getBreadcrumb("/ui/logs", mockNavT)).toEqual({ section: "Observability", title: "Logs" });
   });
 
   it("resolves routes whose segment differs from the sidebar page id", () => {
-    expect(getBreadcrumb("/ui/models-and-endpoints")).toEqual({ section: "AI Gateway", title: "Models + Endpoints" });
-    expect(getBreadcrumb("/ui/usage")).toEqual({ section: "Observability", title: "Usage" });
-    expect(getBreadcrumb("/ui/old-usage")).toEqual({ section: "Developer Tools", title: "Old Usage" });
+    expect(getBreadcrumb("/ui/models-and-endpoints", mockNavT)).toEqual({ section: "AI Gateway", title: "Models + Endpoints" });
+    expect(getBreadcrumb("/ui/usage", mockNavT)).toEqual({ section: "Observability", title: "Usage" });
+    expect(getBreadcrumb("/ui/old-usage", mockNavT)).toEqual({ section: "Developer Tools", title: "Old Usage" });
   });
 
   it("titles the dashboard root as Virtual Keys", () => {
-    expect(getBreadcrumb("/ui/")).toEqual({ section: "AI Gateway", title: "Virtual Keys" });
+    expect(getBreadcrumb("/ui/", mockNavT)).toEqual({ section: "AI Gateway", title: "Virtual Keys" });
   });
 
   it("resolves a nested child route to its parent section", () => {
-    expect(getBreadcrumb("/ui/search-tools/")).toEqual({ section: "AI Gateway", title: "Search Tools" });
+    expect(getBreadcrumb("/ui/search-tools/", mockNavT)).toEqual({ section: "AI Gateway", title: "Search Tools" });
   });
 
   it("resolves router-settings under the Settings section", () => {
-    expect(getBreadcrumb("/ui/router-settings")).toEqual({ section: "Settings", title: "Router Settings" });
+    expect(getBreadcrumb("/ui/router-settings", mockNavT)).toEqual({ section: "Settings", title: "Router Settings" });
   });
 
   it("falls back to a prettified title with no section for unknown routes", () => {
-    expect(getBreadcrumb("/ui/some-unknown-page")).toEqual({ section: null, title: "Some Unknown Page" });
+    expect(getBreadcrumb("/ui/some-unknown-page", mockNavT)).toEqual({ section: null, title: "Some Unknown Page" });
   });
 });

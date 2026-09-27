@@ -14,7 +14,7 @@ const staticImageData: Plugin = {
 
 const sharedViteConfig = {
   plugins: [staticImageData],
-  resolve: { alias: { "@": resolve(__dirname, "src") } },
+  resolve: { alias: { "@": resolve(__dirname, "src"), "@tests": resolve(__dirname, "tests") } },
   define: { "import.meta.vitest": "undefined" },
   esbuild: { jsx: "automatic", jsxImportSource: "react" } as const,
 };
