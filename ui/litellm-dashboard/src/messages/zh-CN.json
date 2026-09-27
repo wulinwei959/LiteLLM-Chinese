@@ -209,5 +209,167 @@
   "breadcrumb": {
     "unknownPage": "未知页面"
   },
-  "ssoEnabledNotice": "单点登录 (SSO) 已启用。LiteLLM 加载此页面时不再自动重定向到 SSO 登录流程。如需重新启用自动重定向到 SSO，请在环境配置中设置 AUTO_REDIRECT_UI_LOGIN_TO_SSO=true。"
+  "ssoEnabledNotice": "单点登录 (SSO) 已启用。LiteLLM 加载此页面时不再自动重定向到 SSO 登录流程。如需重新启用自动重定向到 SSO，请在环境配置中设置 AUTO_REDIRECT_UI_LOGIN_TO_SSO=true。",
+  "virtualKeys": {
+    "title": "虚拟密钥",
+    "searchPlaceholder": "搜索密钥...",
+    "filter": {
+      "team": "团队",
+      "organization": "组织",
+      "userId": "用户 ID",
+      "keyId": "密钥 ID",
+      "status": "状态",
+      "allStatuses": "所有状态"
+    },
+    "status": {
+      "active": "活跃",
+      "expired": "已过期",
+      "revoked": "已撤销（已阻止）",
+      "deleted": "已删除"
+    },
+    "columns": {
+      "keyId": "密钥 ID",
+      "keyAlias": "密钥别名",
+      "team": "团队",
+      "organization": "组织",
+      "user": "用户",
+      "status": "状态",
+      "spend": "花费",
+      "budget": "预算",
+      "rpm": "RPM",
+      "tpm": "TPM",
+      "createdAt": "创建时间",
+      "lastUsed": "最后使用",
+      "actions": "操作"
+    },
+    "actions": {
+      "copy": "复制",
+      "edit": "编辑",
+      "delete": "删除",
+      "regenerate": "重新生成",
+      "viewDetails": "查看详情"
+    },
+    "createKey": "创建密钥",
+    "createKeyDescription": "生成新的虚拟密钥用于 API 访问",
+    "keyCreated": "密钥创建成功",
+    "keyDeleted": "密钥删除成功",
+    "keyRegenerated": "密钥重新生成成功",
+    "confirmDelete": "确定要删除此密钥吗？此操作无法撤销。",
+    "noKeysFound": "未找到虚拟密钥",
+    "loading": "正在加载虚拟密钥..."
+  },
+  "models": {
+    "title": "模型管理",
+    "subtitleAdmin": "为代理添加和管理模型",
+    "subtitleUser": "查看您的模型并为允许的团队管理路由器。",
+    "tabs": {
+      "allModels": "所有模型",
+      "yourModels": "您的模型",
+      "addModel": "添加模型",
+      "autoRouters": "自动路由器",
+      "llmCredentials": "LLM 凭据",
+      "passThrough": "直通端点",
+      "health": "健康状态",
+      "retrySettings": "模型重试设置",
+      "modelGroupAlias": "模型组别名",
+      "accessGroupBudgets": "模型访问组预算",
+      "priceData": "价格数据重载"
+    },
+    "tabsBeta": {
+      "autoRouters": "自动路由器 (Beta)",
+      "accessGroupBudgets": "模型访问组预算 (Beta)"
+    },
+    "actions": {
+      "addModel": "添加模型",
+      "refresh": "刷新",
+      "lastRefreshed": "最后刷新: {time}"
+    },
+    "table": {
+      "modelName": "模型名称",
+      "provider": "提供商",
+      "modelId": "模型 ID",
+      "status": "状态",
+      "cost": "成本",
+      "rpm": "RPM",
+      "tpm": "TPM",
+      "actions": "操作"
+    },
+    "emptyState": {
+      "noModels": "未找到模型",
+      "noModelsDesc": "添加您的第一个模型以开始使用"
+    },
+    "addModel": {
+      "title": "添加模型",
+      "modelName": "模型名称",
+      "modelNamePlaceholder": "输入模型名称（如 gpt-4, claude-3）",
+      "provider": "提供商",
+      "providerPlaceholder": "选择提供商",
+      "apiKey": "API 密钥",
+      "apiKeyPlaceholder": "输入 API 密钥或使用 os.environ/...",
+      "apiBase": "API 基础 URL",
+      "apiBasePlaceholder": "可选：自定义 API 基础 URL",
+      "modelId": "模型 ID",
+      "modelIdPlaceholder": "从模型名称自动生成",
+      "description": "描述",
+      "descriptionPlaceholder": "可选描述",
+      "submit": "添加模型",
+      "cancel": "取消",
+      "success": "模型添加成功",
+      "error": "添加模型失败"
+    },
+    "health": {
+      "title": "健康状态",
+      "healthy": "健康",
+      "unhealthy": "不健康",
+      "checking": "检查中...",
+      "lastCheck": "最后检查"
+    },
+    "retrySettings": {
+      "title": "模型重试设置",
+      "maxRetries": "最大重试次数",
+      "retryOnStatus": "重试状态码",
+      "backoffStrategy": "退避策略"
+    },
+    "credentials": {
+      "title": "LLM 凭据",
+      "addCredential": "添加凭据",
+      "provider": "提供商",
+      "credentialName": "凭据名称",
+      "apiKey": "API 密钥",
+      "testConnection": "测试连接"
+    },
+    "passThrough": {
+      "title": "直通端点",
+      "addEndpoint": "添加端点",
+      "path": "路径",
+      "target": "目标 URL",
+      "headers": "请求头"
+    },
+    "modelGroupAlias": {
+      "title": "模型组别名",
+      "addAlias": "添加别名",
+      "alias": "别名",
+      "targetModel": "目标模型"
+    },
+    "accessGroupBudgets": {
+      "title": "模型访问组预算",
+      "addBudget": "添加预算",
+      "group": "组",
+      "budget": "预算",
+      "period": "周期"
+    },
+    "priceData": {
+      "title": "价格数据重载",
+      "reload": "重载价格数据",
+      "lastReload": "上次重载"
+    },
+    "autoRouters": {
+      "title": "自动路由器",
+      "createRouter": "创建路由器",
+      "routerName": "路由器名称",
+      "strategy": "路由策略",
+      "models": "模型"
+    },
+    "lastRefreshed": "最后刷新: {time}"
+  }
 }
