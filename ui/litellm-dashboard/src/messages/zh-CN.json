@@ -292,7 +292,16 @@
       "cost": "成本",
       "rpm": "RPM",
       "tpm": "TPM",
-      "actions": "操作"
+      "actions": "操作",
+      "modelGroup": "模型组",
+      "accessGroup": "访问组",
+      "createdBy": "创建者",
+      "updatedAt": "更新时间",
+      "inputCost": "输入成本",
+      "outputCost": "输出成本",
+      "teamId": "团队 ID",
+      "accessGroups": "访问组",
+      "litellmModelName": "LiteLLM 模型名称"
     },
     "emptyState": {
       "noModels": "未找到模型",
@@ -365,11 +374,84 @@
     },
     "autoRouters": {
       "title": "自动路由器",
-      "createRouter": "创建路由器",
+      "description": "自动路由器位于您的部署之上，并为每个请求选择一个模型。它们像其他模型一样被调用，因此客户端可以继续使用单一模型名称。",
+      "addRouter": "添加自动路由器",
       "routerName": "路由器名称",
       "strategy": "路由策略",
-      "models": "模型"
+      "models": "模型",
+      "createdAt": "创建时间",
+      "updatedAt": "更新时间",
+      "actions": "操作",
+      "deleteConfirm": "确定要删除此自动路由器吗？",
+      "deleted": "已删除自动路由器: {name}",
+      "deleteError": "删除自动路由器失败: {error}"
     },
-    "lastRefreshed": "最后刷新: {time}"
+    "modelTable": {
+      "modelName": "模型名称",
+      "litellmModelName": "LiteLLM 模型名称",
+      "provider": "提供商",
+      "modelId": "模型 ID",
+      "litellmModelNameLabel": "LiteLLM 模型名称",
+      "credentials": "凭据",
+      "createdBy": "创建者",
+      "updatedAt": "更新时间",
+      "costs": "成本",
+      "teamId": "团队 ID",
+      "accessGroups": "访问组",
+      "status": "状态",
+      "createdAt": "创建时间",
+      "inputCost": "输入成本",
+      "outputCost": "输出成本",
+      "publicModelName": "公共模型名称",
+      "providerTooltip": "提供商",
+      "editTooltip": "编辑模型",
+      "deleteTooltip": "删除模型",
+      "pauseTooltip": "暂停模型",
+      "resumeTooltip": "恢复模型",
+      "publicModelNameLabel": "公共模型名称",
+      "litellmModelNameTooltip": "LiteLLM 模型名称",
+      "editModel": "编辑模型",
+      "deleteModel": "删除模型",
+      "pauseModel": "暂停模型",
+      "resumeModel": "恢复模型",
+      "wildcardModels": "通配符模型 (*)",
+      "allModels": "所有模型",
+      "modelAccessGroup": "模型访问组",
+      "searchPlaceholder": "搜索模型名称...",
+      "loading": "正在加载模型...",
+      "teamLabel": "团队",
+      "viewLabel": "视图",
+      "viewModes": {
+        "currentTeam": "当前团队模型",
+        "all": "所有可用模型"
+      },
+      "filterLabels": {
+        "publicModelName": "公共模型名称",
+        "accessGroup": "模型访问组"
+      },
+      "emptyState": {
+        "title": "未找到模型",
+        "description": "没有模型匹配您的搜索或筛选条件。尝试重置它们。"
+      },
+      "lastRefreshed": "最后刷新: {time}",
+      "refreshAriaLabel": "刷新模型"
+    },
+    "addAutoRouter": {
+      "title": "添加自动路由器",
+      "routerName": "路由器名称",
+      "routerNamePlaceholder": "输入路由器名称",
+      "strategy": "路由策略",
+      "models": "模型",
+      "modelsPlaceholder": "选择模型...",
+      "create": "创建",
+      "cancel": "取消",
+      "success": "自动路由器创建成功",
+      "error": "创建自动路由器失败"
+    },
+    "common": {
+      "never": "从不",
+      "unknown": "未知",
+      "unlimited": "无限制"
+    }
   }
 }

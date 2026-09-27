@@ -292,7 +292,16 @@
       "cost": "Cost",
       "rpm": "RPM",
       "tpm": "TPM",
-      "actions": "Actions"
+      "actions": "Actions",
+      "modelGroup": "Model Group",
+      "accessGroup": "Access Group",
+      "createdBy": "Created By",
+      "updatedAt": "Updated At",
+      "inputCost": "Input Cost",
+      "outputCost": "Output Cost",
+      "teamId": "Team ID",
+      "accessGroups": "Access Groups",
+      "litellmModelName": "LiteLLM Model Name"
     },
     "emptyState": {
       "noModels": "No models found",
@@ -364,12 +373,85 @@
       "lastReload": "Last Reload"
     },
     "autoRouters": {
-      "title": "Auto Routers",
-      "createRouter": "Create Router",
+      "title": "Auto routers",
+      "description": "Auto routers sit above your deployments and pick a model per request. They are called like any other model, so clients keep using a single model name.",
+      "addRouter": "Add Auto Router",
       "routerName": "Router Name",
       "strategy": "Routing Strategy",
-      "models": "Models"
+      "models": "Models",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "actions": "Actions",
+      "deleteConfirm": "Are you sure you want to delete this auto router?",
+      "deleted": "Deleted auto router: {name}",
+      "deleteError": "Failed to delete auto router: {error}"
     },
-    "lastRefreshed": "Last Refreshed: {time}"
+    "modelTable": {
+      "modelName": "Model Name",
+      "litellmModelName": "LiteLLM Model Name",
+      "provider": "Provider",
+      "modelId": "Model ID",
+      "litellmModelNameLabel": "LiteLLM Model Name",
+      "credentials": "Credentials",
+      "createdBy": "Created By",
+      "updatedAt": "Updated At",
+      "costs": "Costs",
+      "teamId": "Team ID",
+      "accessGroups": "Access Groups",
+      "status": "Status",
+      "createdAt": "Created At",
+      "inputCost": "Input Cost",
+      "outputCost": "Output Cost",
+      "publicModelName": "Public Model Name",
+      "litellmModelNameTooltip": "LiteLLM Model Name",
+      "providerTooltip": "Provider",
+      "editTooltip": "Edit model",
+      "deleteTooltip": "Delete model",
+      "pauseTooltip": "Pause model",
+      "resumeTooltip": "Resume model",
+      "publicModelNameLabel": "Public Model Name",
+      "editModel": "Edit model",
+      "deleteModel": "Delete model",
+      "pauseModel": "Pause model",
+      "resumeModel": "Resume model",
+      "wildcardModels": "Wildcard Models (*)",
+      "allModels": "All Models",
+      "modelAccessGroup": "Model Access Group",
+      "searchPlaceholder": "Search model names...",
+      "loading": "Loading models...",
+      "teamLabel": "Team",
+      "viewLabel": "View",
+      "viewModes": {
+        "currentTeam": "Current Team Models",
+        "all": "All Available Models"
+      },
+      "filterLabels": {
+        "publicModelName": "Public Model Name",
+        "accessGroup": "Model Access Group"
+      },
+      "emptyState": {
+        "title": "No models found",
+        "description": "No models match your search or filters. Try resetting them."
+      },
+      "lastRefreshed": "Last Refreshed: {time}",
+      "refreshAriaLabel": "Refresh models"
+    },
+    "addAutoRouter": {
+      "title": "Add Auto Router",
+      "routerName": "Router Name",
+      "routerNamePlaceholder": "Enter router name",
+      "strategy": "Routing Strategy",
+      "models": "Models",
+      "modelsPlaceholder": "Select models...",
+      "create": "Create",
+      "cancel": "Cancel",
+      "success": "Auto router created successfully",
+      "error": "Failed to create auto router"
+    },
+    "common": {
+      "never": "Never",
+      "unknown": "Unknown",
+      "unlimited": "Unlimited"
+    }
   }
 }
