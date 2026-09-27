@@ -21,6 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import CopyButton from "@/components/shared/CopyButton";
+import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
 import { cn } from "@/lib/cva.config";
 import React, { useEffect, useState } from "react";
 
@@ -215,6 +216,9 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
           />
         </div>
       )}
+      <div className="flex w-full items-center justify-between gap-2 pt-1">
+        <LanguageSwitcher />
+      </div>
     </div>
   );
 

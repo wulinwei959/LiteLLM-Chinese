@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NuqsTestingAdapter, OnUrlUpdateFunction } from "nuqs/adapters/testing";
 import { expect } from "vitest";
 
+import { LocaleProvider } from "@/contexts/LocaleContext";
+
 // Create a client for testing
 export const testQueryClient = new QueryClient({
   defaultOptions: {
@@ -31,7 +33,9 @@ export const renderWithProviders = (ui: React.ReactElement, options?: RenderOpti
   const { searchParams, onUrlUpdate, ...renderOptions } = options ?? {};
   const Providers: React.FC<PropsWithChildren> = ({ children }) => (
     <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={onUrlUpdate} hasMemory>
-      <QueryClientProvider client={testQueryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={testQueryClient}>
+        <LocaleProvider>{children}</LocaleProvider>
+      </QueryClientProvider>
     </NuqsTestingAdapter>
   );
   return render(ui, { wrapper: Providers, ...renderOptions });

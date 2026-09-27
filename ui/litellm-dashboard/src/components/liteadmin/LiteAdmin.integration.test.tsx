@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { setGlobalLitellmHeaderName, switchToWorkerUrl } from "@/components/networking";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "@/lib/toast";
@@ -88,12 +89,14 @@ function renderWidget(Menu?: ComponentType<{ onLogout: () => void }>) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
   const tree = () => (
     <QueryClientProvider client={client}>
-      <Toaster />
-      <AuthProvider>
-        <SessionReady />
-        {Menu && <Menu onLogout={() => undefined} />}
-        <LiteAdmin />
-      </AuthProvider>
+      <LocaleProvider>
+        <Toaster />
+        <AuthProvider>
+          <SessionReady />
+          {Menu && <Menu onLogout={() => undefined} />}
+          <LiteAdmin />
+        </AuthProvider>
+      </LocaleProvider>
     </QueryClientProvider>
   );
   const view = render(tree());

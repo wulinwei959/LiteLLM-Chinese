@@ -6,6 +6,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "next-themes";
 
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -28,12 +29,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <NuqsAdapter>
-            <ReactQueryProvider>
-              <AuthProvider>{children}</AuthProvider>
-              <Toaster />
-            </ReactQueryProvider>
-          </NuqsAdapter>
+          <LocaleProvider>
+            <NuqsAdapter>
+              <ReactQueryProvider>
+                <AuthProvider>{children}</AuthProvider>
+                <Toaster />
+              </ReactQueryProvider>
+            </NuqsAdapter>
+          </LocaleProvider>
         </ThemeProvider>
       </body>
     </html>
