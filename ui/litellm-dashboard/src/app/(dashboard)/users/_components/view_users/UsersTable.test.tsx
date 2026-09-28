@@ -2,12 +2,63 @@
 import type { PaginationState, RowSelectionState, SortingState } from "@tanstack/react-table";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { describe, expect, it, vi, type Mock } from "vitest";
 
 import { UserInfo } from "@/components/networking";
 
 import { UsersTable } from "./UsersTable";
+
+const mockTranslations: Record<string, string> = {
+  "users.userID": "User ID",
+  "users.email": "Email",
+  "users.status": "Status",
+  "users.globalProxyRole": "Global Proxy Role",
+  "users.userAlias": "User Alias",
+  "users.spendUSD": "Spend (USD)",
+  "users.budgetUSD": "Budget (USD)",
+  "users.unlimited": "Unlimited",
+  "users.ssoUserID": "SSO ID",
+  "users.aboutSSOID": "About SSO ID",
+  "users.virtualKeys": "Virtual Keys",
+  "users.key": "Key",
+  "users.keys": "Keys",
+  "users.noKeys": "No Keys",
+  "users.createdAt": "Created At",
+  "users.updatedAt": "Updated At",
+  "users.actions": "Actions",
+  "users.statusActive": "Active",
+  "users.statusInactive": "Inactive",
+  "users.noUsers": "No users found",
+  "users.emptyStateDescription": "Try adjusting your search or filters.",
+  "users.loading": "Loading users...",
+  "users.searchPlaceholder": "Search by email or ID...",
+  "users.filters": "Filters",
+  "users.filtersDescription": "Narrow down your users",
+  "users.filterLabels.userID": "User ID",
+  "users.filterLabels.ssoUserID": "SSO ID",
+  "users.filterLabels.role": "Role",
+  "users.filterLabels.team": "Team",
+  "users.placeholder.userID": "Enter user ID...",
+  "users.placeholder.ssoUserID": "Enter SSO ID...",
+  "users.placeholder.role": "Select a role...",
+  "users.placeholder.team": "Select a team...",
+  "users.noRolesFound": "No roles found",
+  "users.noTeamsFound": "No teams found",
+  "users.openUserActions": "Open user actions",
+  "users.editUser": "Edit User",
+  "users.resetPassword": "Reset Password",
+  "users.copyUserID": "Copy User ID",
+  "users.deleteUser": "Delete User",
+};
+
+vi.mock("next-intl", () => ({
+  useTranslations:
+    (namespace: string) =>
+    (key: string): string =>
+      mockTranslations[`${namespace}.${key}`] ?? mockTranslations[key] ?? key,
+  NextIntlClientProvider: ({ children }: { children: ReactNode }) => children,
+}));
 
 const possibleUIRoles = {
   proxy_admin: { ui_label: "Admin" },
