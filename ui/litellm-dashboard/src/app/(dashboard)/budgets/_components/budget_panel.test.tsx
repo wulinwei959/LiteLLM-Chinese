@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/lib/http/client";
 
 import BudgetPanel from "./budget_panel";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 
 const { getMock, budgetDeleteMock } = vi.hoisted(() => ({
   getMock: vi.fn(),
@@ -67,7 +68,7 @@ const paths = (): string[] => getMock.mock.calls.map((call) => String(call[0]));
 
 const renderPanel = () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
-  return render(
+  return renderWithProviders(
     <QueryClientProvider client={client}>
       <BudgetPanel accessToken="sk-test" />
     </QueryClientProvider>,

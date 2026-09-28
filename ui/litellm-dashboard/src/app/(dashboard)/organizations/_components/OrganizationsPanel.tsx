@@ -101,18 +101,16 @@ const OrganizationsPanel: React.FC<OrganizationsPanelProps> = ({ userRole, acces
     return (
       <div className="mx-4 mt-4">
         <p className="text-sm text-muted-foreground">
-          {t.rich("enterpriseFeature", {
-            link: (chunks) => (
-              <a
-                href="https://www.litellm.ai/#pricing"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline-offset-4 hover:underline"
-              >
-                {chunks}
-              </a>
-            ),
-          })}
+          {t("enterpriseFeature")} &nbsp;
+          <a
+            href="https://www.litellm.ai/#pricing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline-offset-4 hover:underline"
+          >
+            here
+          </a>
+          .
         </p>
       </div>
     );

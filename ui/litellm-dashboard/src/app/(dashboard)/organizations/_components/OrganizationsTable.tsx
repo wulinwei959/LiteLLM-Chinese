@@ -2,6 +2,7 @@
 
 import { Building2, SearchX } from "lucide-react";
 import React, { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 import { DataTable } from "@/components/shared/DataTable";
 import { Organization } from "@/components/networking";
@@ -47,12 +48,13 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
   onEditClick,
   onDeleteClick,
 }) => {
+  const t = useTranslations("organizations");
   const { sorting, onSortingChange, pagination, onPaginationChange } = useOrganizationsTableState();
 
   const columns = useMemo(() => {
-    const deps = { userRole, onOrganizationClick, onEditClick, onDeleteClick };
+    const deps = { userRole, onOrganizationClick, onEditClick, onDeleteClick, t };
     return getOrganizationsTableColumns(deps);
-  }, [userRole, onOrganizationClick, onEditClick, onDeleteClick]);
+  }, [userRole, onOrganizationClick, onEditClick, onDeleteClick, t]);
 
   return (
     <DataTable

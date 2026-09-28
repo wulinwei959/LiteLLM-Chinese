@@ -71,7 +71,7 @@ describe("OrganizationsTable", () => {
     for (const header of [
       "Organization ID",
       "Organization Name",
-      "Created",
+      "Created At",
       "Spend (USD)",
       "Budget (USD)",
       "Models",

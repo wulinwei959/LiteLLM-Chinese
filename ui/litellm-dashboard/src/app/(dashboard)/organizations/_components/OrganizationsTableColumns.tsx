@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { DateCell, IdentityCell, ModelsCell, MoneyCell } from "@/components/shared/table_cells";
@@ -25,11 +26,12 @@ const getOrganizationBudget = (organization: Organization): OrganizationBudget =
   (organization.litellm_budget_table ?? {}) as OrganizationBudget;
 
 function OrganizationLimitsCell({ organization }: { organization: Organization }) {
+  const t = useTranslations("organizations");
   const { tpm_limit, rpm_limit } = getOrganizationBudget(organization);
   return (
     <div className="flex flex-col text-xs text-muted-foreground">
-      <span>TPM: {tpm_limit ?? "Unlimited"}</span>
-      <span>RPM: {rpm_limit ?? "Unlimited"}</span>
+      <span>{t("tpm")}: {tpm_limit ?? t("unlimited")}</span>
+      <span>{t("rpm")}: {rpm_limit ?? t("unlimited")}</span>
     </div>
   );
 }
@@ -41,10 +43,11 @@ interface OrganizationRowActionsProps {
 }
 
 function OrganizationRowActions({ organization, onEditClick, onDeleteClick }: OrganizationRowActionsProps) {
+  const t = useTranslations("organizations");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open organization actions"
+        aria-label={t("openOrganizationActions")}
         data-testid={`organization-actions-${organization.organization_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -56,7 +59,7 @@ function OrganizationRowActions({ organization, onEditClick, onDeleteClick }: Or
           onClick={() => onEditClick(organization.organization_id)}
         >
           <Pencil />
-          Edit
+          {t("edit")}
         </DropdownMenuItem>
         <DropdownMenuItem
           variant="destructive"
@@ -64,7 +67,7 @@ function OrganizationRowActions({ organization, onEditClick, onDeleteClick }: Or
           onClick={() => onDeleteClick(organization.organization_id)}
         >
           <Trash2 />
-          Delete
+          {t("delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -76,6 +79,7 @@ export interface OrganizationsTableColumnsDeps {
   onOrganizationClick: (organizationId: string) => void;
   onEditClick: (organizationId: string) => void;
   onDeleteClick: (organizationId: string) => void;
+  t: ReturnType<typeof useTranslations>;
 }
 
 export const getOrganizationsTableColumns = ({
@@ -83,12 +87,14 @@ export const getOrganizationsTableColumns = ({
   onOrganizationClick,
   onEditClick,
   onDeleteClick,
-}: OrganizationsTableColumnsDeps): ColumnDef<Organization>[] => [
+  t,
+}: OrganizationsTableColumnsDeps): ColumnDef<Organization>[] => {
+  return [
   {
     id: "organization_id",
     accessorKey: "organization_id",
-    meta: { title: "Organization ID" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Organization ID" />,
+    meta: { title: t("organizationID") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("organizationID")} />,
     size: 220,
     enableSorting: true,
     cell: ({ row }) => (
@@ -103,8 +109,8 @@ export const getOrganizationsTableColumns = ({
   {
     id: "organization_alias",
     accessorKey: "organization_alias",
-    meta: { title: "Organization Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Organization Name" />,
+    meta: { title: t("organizationAlias") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("organizationAlias")} />,
     size: 200,
     enableSorting: true,
     cell: ({ row }) => {
@@ -120,8 +126,8 @@ export const getOrganizationsTableColumns = ({
     id: "created_at",
     accessorKey: "created_at",
     sortingFn: "datetime",
-    meta: { title: "Created" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Created" />,
+    meta: { title: t("createdAt") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("createdAt")} />,
     size: 130,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.created_at} precision="date" />,
@@ -129,50 +135,50 @@ export const getOrganizationsTableColumns = ({
   {
     id: "spend",
     accessorKey: "spend",
-    meta: { title: "Spend (USD)" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Spend (USD)" />,
+    meta: { title: t("spend") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("spend")} />,
     size: 120,
     enableSorting: true,
     cell: ({ row }) => <MoneyCell value={row.original.spend} decimals={4} />,
   },
   {
     id: "max_budget",
-    meta: { title: "Budget (USD)" },
-    header: "Budget (USD)",
+    meta: { title: t("budget") },
+    header: t("budget"),
     size: 120,
     enableSorting: false,
     cell: ({ row }) => (
-      <MoneyCell value={getOrganizationBudget(row.original).max_budget} decimals={2} emptyText="Unlimited" showZero />
+      <MoneyCell value={getOrganizationBudget(row.original).max_budget} decimals={2} emptyText={t("unlimited")} showZero />
     ),
   },
   {
     id: "models",
-    meta: { title: "Models", skeleton: "chips" },
-    header: "Models",
+    meta: { title: t("models"), skeleton: "chips" },
+    header: t("models"),
     size: 260,
     enableSorting: false,
     cell: ({ row }) => <ModelsCell models={row.original.models} />,
   },
   {
     id: "limits",
-    meta: { title: "TPM / RPM Limits" },
-    header: "TPM / RPM Limits",
+    meta: { title: t("rateLimits") },
+    header: t("rateLimits"),
     size: 150,
     enableSorting: false,
     cell: ({ row }) => <OrganizationLimitsCell organization={row.original} />,
   },
   {
     id: "members",
-    meta: { title: "Members" },
-    header: "Members",
+    meta: { title: t("members") },
+    header: t("members"),
     size: 100,
     enableSorting: false,
-    cell: ({ row }) => <span className="text-sm">{row.original.members?.length ?? 0} Members</span>,
+    cell: ({ row }) => <span className="text-sm">{row.original.members?.length ?? 0} {t("members")}</span>,
   },
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
@@ -183,4 +189,5 @@ export const getOrganizationsTableColumns = ({
         </div>
       ) : null,
   },
-];
+  ];
+};

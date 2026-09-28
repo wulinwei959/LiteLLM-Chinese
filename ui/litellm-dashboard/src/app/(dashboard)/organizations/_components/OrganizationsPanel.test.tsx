@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type OrganizationsTableComponent from "./OrganizationsTable";
 import type OrganizationInfoViewComponent from "@/components/organization/organization_view";
 import type { OrganizationListFilters } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 
 const useOrganizationsSpy = vi.hoisted(() => vi.fn<(filters?: OrganizationListFilters) => void>());
 vi.mock("@/app/(dashboard)/hooks/organizations/useOrganizations", async (importOriginal) => {
@@ -79,7 +80,7 @@ const renderPanel = ({ premiumUser = true, searchParams = "" }: RenderPanelOptio
       </QueryClientProvider>
     </NuqsTestingAdapter>
   );
-  const { rerender } = render(tree(searchParams));
+  const { rerender } = renderWithProviders(tree(searchParams));
   return {
     navigate: (nextSearchParams: string) => {
       rerender(tree(url.current));
@@ -106,13 +107,13 @@ describe("OrganizationsPanel", () => {
     renderPanel({ premiumUser: false });
 
     expect(screen.getByText(/LiteLLM Enterprise feature/i)).toBeInTheDocument();
-    expect(screen.queryByText("+ Create New Organization")).not.toBeInTheDocument();
+    expect(screen.queryByText("+ Create Organization")).not.toBeInTheDocument();
   });
 
   it("shows the create button for a premium admin", () => {
     renderPanel();
 
-    expect(screen.getByText("+ Create New Organization")).toBeInTheDocument();
+    expect(screen.getByText("+ Create Organization")).toBeInTheDocument();
   });
 
   it("resolves the loading skeleton to false when the query is disabled (no token)", () => {

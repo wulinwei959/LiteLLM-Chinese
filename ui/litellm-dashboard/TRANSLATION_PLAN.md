@@ -57,8 +57,9 @@
 批次按用户影响排序，核心管理功能优先。括号内是该批次的未翻译文件数。
 
 ### 批次 11：组织与预算（P0）
-`organizations`（4）：`OrganizationsTable.tsx`、`OrganizationsTableColumns.tsx`、`OrganizationFilters.tsx`、`page.tsx`
-`budgets`（5）：`BudgetTable.tsx`、`BudgetTableColumns.tsx`、`budget_modal.tsx`、`edit_budget_modal.tsx`、`page.tsx`
+### 批次 11：组织与预算（P0，已完成）
+`organizations`：`OrganizationsPanel.tsx`、`OrganizationsTableColumns.tsx`、`OrganizationFilters.tsx`、`page.tsx`、`OrganizationsTable.tsx`、`OrganizationInfoView.tsx`、`OrgCreateDialog.tsx`。
+`budgets`：`budget_panel.tsx`、`BudgetTableColumns.tsx`、`BudgetTable.tsx`、`edit_budget_modal.tsx`、`budget_modal.tsx`、`page.tsx`。
 
 ### 批次 12：项目与访问组（P0）
 `projects`（11）：`ProjectsPage.tsx`、`ProjectDetailsPage.tsx`、`ProjectKeys*`、`ProjectModals/*`、`ProjectsTable*`
