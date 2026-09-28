@@ -1590,5 +1590,27 @@
     "failure": "Failure",
     "details": "Details",
     "close": "Close"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Manage projects within your teams",
+    "createProject": "Create Project",
+    "searchPlaceholder": "Search projects by name, ID, description, or team...",
+    "loading": "Loading projects…",
+    "noProjects": "No projects yet",
+    "noMatchingProjects": "No matching projects",
+    "emptyStateDescription": "Create a project to organize keys within your teams.",
+    "searchEmptyDescription": "Try a different search term.",
+    "id": "ID",
+    "name": "Name",
+    "team": "Team",
+    "models": "Models",
+    "status": "Status",
+    "createdAt": "Created",
+    "updatedAt": "Updated",
+    "statusActive": "Active",
+    "statusBlocked": "Blocked",
+    "noModels": "No models",
+    "clearSearch": "Clear search"
   }
 }

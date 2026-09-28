@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { LayersIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -13,10 +14,12 @@ function ProjectTeamCell({
   project,
   teamAliasMap,
   isTeamsLoading,
+  t,
 }: {
   project: ProjectResponse;
   teamAliasMap: Map<string, string>;
   isTeamsLoading: boolean;
+  t: ReturnType<typeof useTranslations>;
 }) {
   if (!project.team_id) return <span className="text-sm">—</span>;
   const alias = teamAliasMap.get(project.team_id);
@@ -35,11 +38,11 @@ function ProjectTeamCell({
   );
 }
 
-function ProjectModelsCell({ project }: { project: ProjectResponse }) {
+function ProjectModelsCell({ project, t }: { project: ProjectResponse; t: ReturnType<typeof useTranslations> }) {
   const models = project.models ?? [];
   return (
     <CellTooltip
-      content={models.length > 0 ? models.join(", ") : "No models"}
+      content={models.length > 0 ? models.join(", ") : t("noModels")}
       trigger={
         <Badge variant="outline" className="cursor-default gap-1.5 font-normal">
           <LayersIcon className="size-3.5" />
@@ -54,18 +57,20 @@ interface ProjectsTableColumnsDeps {
   onProjectClick: (projectId: string) => void;
   teamAliasMap: Map<string, string>;
   isTeamsLoading: boolean;
+  t: ReturnType<typeof useTranslations>;
 }
 
 export const getProjectsTableColumns = ({
   onProjectClick,
   teamAliasMap,
   isTeamsLoading,
+  t,
 }: ProjectsTableColumnsDeps): ColumnDef<ProjectResponse>[] => [
   {
     id: "project_id",
     accessorKey: "project_id",
     meta: { title: "ID" },
-    header: "ID",
+    header: t("id"),
     size: 190,
     enableSorting: false,
     cell: ({ row }) => (
@@ -79,8 +84,8 @@ export const getProjectsTableColumns = ({
   {
     id: "project_alias",
     accessorFn: (row) => row.project_alias ?? "",
-    meta: { title: "Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Name" />,
+    meta: { title: t("name") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("name")} />,
     size: 200,
     enableSorting: true,
     cell: ({ row }) => (
@@ -92,33 +97,33 @@ export const getProjectsTableColumns = ({
   {
     id: "team",
     accessorFn: (row) => teamAliasMap.get(row.team_id ?? "") ?? "",
-    meta: { title: "Team" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Team" />,
+    meta: { title: t("team") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("team")} />,
     size: 180,
     enableSorting: true,
     cell: ({ row }) => (
-      <ProjectTeamCell project={row.original} teamAliasMap={teamAliasMap} isTeamsLoading={isTeamsLoading} />
+      <ProjectTeamCell project={row.original} teamAliasMap={teamAliasMap} isTeamsLoading={isTeamsLoading} t={t} />
     ),
   },
   {
     id: "models",
-    meta: { title: "Models", skeleton: "badge" },
-    header: "Models",
+    meta: { title: t("models"), skeleton: "badge" },
+    header: t("models"),
     size: 110,
     enableSorting: false,
-    cell: ({ row }) => <ProjectModelsCell project={row.original} />,
+    cell: ({ row }) => <ProjectModelsCell project={row.original} t={t} />,
   },
   {
     id: "status",
     accessorKey: "blocked",
-    meta: { title: "Status", skeleton: "badge" },
-    header: "Status",
+    meta: { title: t("status"), skeleton: "badge" },
+    header: t("status"),
     size: 110,
     enableSorting: false,
     cell: ({ row }) => (
       <StatusBadge
         tone={row.original.blocked ? "error" : "success"}
-        label={row.original.blocked ? "Blocked" : "Active"}
+        label={row.original.blocked ? t("statusBlocked") : t("statusActive")}
       />
     ),
   },
@@ -126,8 +131,8 @@ export const getProjectsTableColumns = ({
     id: "created_at",
     accessorKey: "created_at",
     sortingFn: "datetime",
-    meta: { title: "Created" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Created" />,
+    meta: { title: t("createdAt") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("createdAt")} />,
     size: 140,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.created_at} precision="date" />,
@@ -135,8 +140,8 @@ export const getProjectsTableColumns = ({
   {
     id: "updated_at",
     accessorKey: "updated_at",
-    meta: { title: "Updated" },
-    header: "Updated",
+    meta: { title: t("updatedAt") },
+    header: t("updatedAt"),
     size: 140,
     enableSorting: false,
     cell: ({ row }) => <DateCell value={row.original.updated_at} precision="date" />,
