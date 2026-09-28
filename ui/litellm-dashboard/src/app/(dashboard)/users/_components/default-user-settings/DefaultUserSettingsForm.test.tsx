@@ -35,6 +35,56 @@ vi.mock("@/components/ModelSelect/ModelSelect", async (importOriginal) => {
   };
 });
 
+const mockTranslations: Record<string, string> = {
+  "users.filterLabels.team": "Team",
+  "users.searchTeamPlaceholder": "Search a team",
+  "users.noTeamsFound": "No teams found",
+  "users.defaultTeams": "Default Teams",
+  "users.defaultTeamsDescription": "New users are added to these teams. Only teams that already exist can be selected.",
+  "users.defaultTeamNumber": "Team {number}",
+  "users.removeTeam": "Remove",
+  "users.defaultTeamMaxBudgetLabel": "Max Budget in Team (USD)",
+  "users.optional": "Optional",
+  "users.defaultTeamRole": "Team Role",
+  "users.addTeam": "Add Team",
+  "users.budgetDurationNoReset": "No reset",
+  "users.budgetDurationHourly": "hourly",
+  "users.budgetDurationDaily": "daily",
+  "users.budgetDurationWeekly": "weekly",
+  "users.budgetDurationMonthly": "monthly",
+  "users.teamRoleUser": "User",
+  "users.teamRoleAdmin": "Admin",
+  "users.defaultRole": "Default Role",
+  "users.defaultRoleDescription": "Role assigned to new users",
+  "users.notSet": "Not set",
+  "users.defaultMaxBudget": "Max Budget (USD)",
+  "users.defaultMaxBudgetDescription": "Default maximum budget for new users",
+  "users.resetBudget": "Reset Budget",
+  "users.resetBudgetDescription": "How often the default budget resets",
+  "users.defaultModels": "Default Models",
+  "users.defaultModelsDescription": "Models new users can access",
+  "users.none": "None",
+  "users.defaultTeamBudget": "${budget} max budget",
+  "users.cancel": "Cancel",
+  "users.saving": "Saving...",
+  "users.saveChanges": "Save Changes",
+  "users.updateSuccess": "Default user settings updated successfully",
+  "users.updateFailed": "Failed to update default user settings",
+  "users.defaultUserSettings": "Default User Settings",
+  "users.defaultUserSettingsDescription":
+    "Applied to every new internal user created through SSO or the user management APIs.",
+  "users.defaultUserSettingsLoadFailed": "Could not load the default user settings.",
+  "users.editSettings": "Edit Settings",
+};
+
+vi.mock("next-intl", () => ({
+  useTranslations:
+    (namespace: string) =>
+    (key: string): string =>
+      mockTranslations[`${namespace}.${key}`] ?? mockTranslations[key] ?? key,
+  NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 import { toast } from "@/lib/toast";
 
 import { DefaultUserSettingsForm } from "./DefaultUserSettingsForm";

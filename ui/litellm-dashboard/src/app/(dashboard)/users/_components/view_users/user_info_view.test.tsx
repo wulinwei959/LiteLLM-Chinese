@@ -4,6 +4,98 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import UserInfoView from "./user_info_view";
 import { extractMcpEntitlement } from "@/components/mcp_server_management/mcpEntitlement";
 
+const mockTranslations: Record<string, string> = {
+  accessTokenNotFound: "Access token not found",
+  actions: "Actions",
+  deleteConfirmMessage: "Are you sure you want to delete this user? This action cannot be undone.",
+  deleteConfirmTitle: "Delete User?",
+  deletedSuccessfully: "User deleted successfully",
+  deleteFailed: "Failed to delete user",
+  deleteUser: "Delete User",
+  email: "Email",
+  failedGenerateResetLink: "Failed to generate password reset link",
+  generatingResetLink: "Generating password reset link...",
+  globalProxyRole: "Global Proxy Role",
+  infoAddTeam: "Add Team",
+  infoAdding: "Adding...",
+  infoAddToTeam: "Add to Team",
+  infoAddUserToTeam: "Add User to Team",
+  infoAllProxyModels: "All proxy models",
+  infoAutoRouterUnavailableNoId: "Auto-router usage is unavailable because this user has no ID.",
+  infoBackToUsers: "Back to Users",
+  infoBudgetReset: "Budget Reset",
+  infoCreated: "Created",
+  infoEditSettings: "Edit Settings",
+  infoFailedAddUserToTeam: "Failed to add user to team",
+  infoFailedFetchUserData: "Failed to fetch user data",
+  infoFailedRemoveUserFromTeam: "Failed to remove user from team",
+  infoFailedUpdateUser: "Failed to update user",
+  infoLastUpdated: "Last Updated",
+  infoLoadingUserData: "Loading user data...",
+  infoMaxBudget: "Max Budget",
+  infoMcpPermissions: "MCP Permissions",
+  infoMemberRole: "Member Role",
+  infoMemberRoleAdminHint: "Can create team keys, add members, and manage settings",
+  infoMemberRoleUserHint: "Can view team info, but not manage it",
+  infoMetadata: "Metadata",
+  infoMoreTeams: "+{count} more",
+  infoNoTeams: "No teams",
+  infoNotSet: "Not Set",
+  infoPersonalModels: "Personal Models",
+  infoRemoveFromTeamAria: "Remove from {team}",
+  infoRemoveFromTeamTitle: "Remove from Team",
+  infoRemoveTeamAlert: "Removing this user from the team will also delete any keys the user created for this team.",
+  infoRemoveTeamConfirmMessage:
+    "Are you sure you want to remove this user from the team? This action cannot be undone.",
+  infoSavingsScopeNote: "Savings for this user across API keys and JWT-authenticated requests.",
+  infoSavingsUnavailableNoId: "Savings are unavailable because this user has no ID.",
+  infoSelectTeam: "Select a team",
+  infoShowLess: "Show Less",
+  infoSpendOf: "of {amount}",
+  infoTabAutoRouterUsage: "Auto-router usage",
+  infoTabDetails: "Details",
+  infoTabOverview: "Overview",
+  infoTabSavings: "Savings",
+  infoTeam: "Team",
+  infoTeamMembership: "Team Membership",
+  infoTeamName: "Team Name",
+  infoTeams: "Teams",
+  infoUnknown: "Unknown",
+  infoUserAddedToTeam: "User added to team successfully",
+  infoUserFallback: "User",
+  infoUserNotFound: "User not found",
+  infoUserRemovedFromTeam: "User removed from team successfully",
+  infoUserSettings: "User Settings",
+  infoUserUpdated: "User updated successfully",
+  noTeamsFound: "No teams found",
+  resetPassword: "Reset Password",
+  saveChanges: "Save Changes",
+  spend: "Spend",
+  totalSpendUSD: "Total Spend (USD)",
+  unlimited: "Unlimited",
+  userAlias: "User Alias",
+  userID: "User ID",
+  userInformation: "User Information",
+};
+
+vi.mock("next-intl", () => {
+  const translators = new Map<string, (key: string, values?: Record<string, unknown>) => string>();
+  return {
+    useTranslations: (namespace: string) => {
+      const existing = translators.get(namespace);
+      if (existing) return existing;
+      const translator = (key: string, values?: Record<string, unknown>): string => {
+        const template = mockTranslations[`${namespace}.${key}`] ?? mockTranslations[key] ?? key;
+        if (!values) return template;
+        return template.replace(/\{(\w+)\}/g, (match, name: string) => (name in values ? String(values[name]) : match));
+      };
+      translators.set(namespace, translator);
+      return translator;
+    },
+    NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
+  };
+});
+
 const mockTeamMemberAddCall = vi.fn();
 const mockTeamMemberDeleteCall = vi.fn();
 const mockTeamListCall = vi.fn();
