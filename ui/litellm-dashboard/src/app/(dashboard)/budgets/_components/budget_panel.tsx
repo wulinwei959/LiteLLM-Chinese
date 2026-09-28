@@ -7,6 +7,7 @@ import { Plus, Wallet } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useTranslations } from "next-intl";
 
 import { useSyntaxTheme } from "@/hooks/useSyntaxTheme";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -27,6 +28,7 @@ interface BudgetSettingsPageProps {
 }
 
 const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
+  const t = useTranslations("budgets");
   const syntaxTheme = useSyntaxTheme(prism);
   const [isCreateModelVisible, setIsCreateModelVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
@@ -63,10 +65,10 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
     }
     try {
       await deleteBudget.mutateAsync(selectedBudget.budget_id);
-      toast.success("Budget deleted.");
+      toast.success(t("deletedSuccessfully"));
     } catch (error) {
       console.error("Error deleting budget:", error);
-      toast.fromError("Failed to delete budget");
+      toast.fromError(t("deleteFailed"));
     } finally {
       setIsDeleteModalVisible(false);
       setSelectedBudget(null);
@@ -82,13 +84,13 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
       <Tabs defaultValue="budgets" className="min-h-0 flex-1 gap-6">
         <PageHeader
           icon={<Wallet />}
-          title="Budgets"
-          subtitle="Spend, TPM and RPM limits you can assign to customers."
+          title={t("title")}
+          subtitle={t("subtitle")}
           primaryAction={
             canModify ? (
               <Button onClick={() => setIsCreateModelVisible(true)}>
                 <Plus className="size-4" />
-                Create Budget
+                {t("createBudget")}
               </Button>
             ) : undefined
           }
@@ -99,10 +101,10 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
             >
               {leadingControls}
               <TabsTrigger value="budgets" className="flex-none px-0 py-[7px] data-active:font-semibold">
-                Budgets
+                {t("tabs.budgets")}
               </TabsTrigger>
               <TabsTrigger value="examples" className="flex-none px-0 py-[7px] data-active:font-semibold">
-                Examples
+                {t("tabs.examples")}
               </TabsTrigger>
             </TabsList>
           )}
@@ -125,15 +127,15 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
             />
             <DeleteResourceModal
               isOpen={isDeleteModalVisible}
-              title="Delete Budget?"
-              message="Are you sure you want to delete this budget? This action cannot be undone."
-              resourceInformationTitle="Budget Information"
+              title={t("deleteConfirmTitle")}
+              message={t("deleteConfirmMessage")}
+              resourceInformationTitle={t("budgetID")}
               resourceInformation={[
-                { label: "Budget ID", value: selectedBudget?.budget_id, code: true },
-                { label: "Max Budget", value: selectedBudget?.max_budget },
-                { label: "TPM", value: selectedBudget?.tpm_limit },
-                { label: "RPM", value: selectedBudget?.rpm_limit },
-                { label: "TPD (batch)", value: selectedBudget?.tpd_limit },
+                { label: t("budgetID"), value: selectedBudget?.budget_id, code: true },
+                { label: t("maxBudget"), value: selectedBudget?.max_budget },
+                { label: t("tpm"), value: selectedBudget?.tpm_limit },
+                { label: t("rpm"), value: selectedBudget?.rpm_limit },
+                { label: t("tpdBatch"), value: selectedBudget?.tpd_limit },
               ]}
               onCancel={handleDeleteCancel}
               onOk={handleDeleteConfirm}
@@ -143,33 +145,49 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
         </TabsContent>
         <TabsContent value="examples" className="min-h-0 flex-1 overflow-y-auto" keepMounted>
           <div className="pt-6">
-            <p className="text-base text-muted-foreground">How to use budget id</p>
+            <p className="text-base text-muted-foreground">{t("howToUse")}</p>
             <Tabs defaultValue="assign-budget">
               <TabsList variant="line" className="h-auto w-full justify-start rounded-none border-b p-0">
                 <TabsTrigger value="assign-budget" className="flex-none rounded-none px-4 py-2">
-                  Assign Budget to Customer
-                </TabsTrigger>
-                <TabsTrigger value="curl" className="flex-none rounded-none px-4 py-2">
-                  Test it (Curl)
-                </TabsTrigger>
-                <TabsTrigger value="openai-sdk" className="flex-none rounded-none px-4 py-2">
-                  Test it (OpenAI SDK)
+                  {t("assignBudget")}
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="assign-budget" keepMounted>
-                <SyntaxHighlighter language="bash" style={syntaxTheme}>
+              <TabsContent value="assign-budget">
+                <SyntaxHighlighter
+                  language="bash"
+                  style={syntaxTheme}
+                  className="rounded-lg border border-border bg-muted/50 text-sm"
+                >
                   {CREATE_END_USER_CURL_COMMAND}
                 </SyntaxHighlighter>
-              </TabsContent>
-              <TabsContent value="curl" keepMounted>
-                <SyntaxHighlighter language="bash" style={syntaxTheme}>
-                  {CHAT_COMPLETIONS_CURL_COMMAND}
-                </SyntaxHighlighter>
-              </TabsContent>
-              <TabsContent value="openai-sdk" keepMounted>
-                <SyntaxHighlighter language="python" style={syntaxTheme}>
-                  {OPENAI_SDK_PYTHON_CODE}
-                </SyntaxHighlighter>
+                <Tabs defaultValue="openai-sdk">
+                  <TabsList variant="line" className="h-auto w-full justify-start rounded-none border-b p-0">
+                    <TabsTrigger value="openai-sdk" className="flex-none rounded-none px-4 py-2">
+                      OpenAI SDK
+                    </TabsTrigger>
+                    <TabsTrigger value="curl" className="flex-none rounded-none px-4 py-2">
+                      curl
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="openai-sdk">
+                    <SyntaxHighlighter
+                      language="python"
+                      style={syntaxTheme}
+                      className="rounded-lg border border-border bg-muted/50 text-sm"
+                    >
+                      {OPENAI_SDK_PYTHON_CODE}
+                    </SyntaxHighlighter>
+                  </TabsContent>
+                  <TabsContent value="curl">
+                    <SyntaxHighlighter
+                      language="bash"
+                      style={syntaxTheme}
+                      className="rounded-lg border border-border bg-muted/50 text-sm"
+                    >
+                      {CHAT_COMPLETIONS_CURL_COMMAND}
+                    </SyntaxHighlighter>
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
             </Tabs>
           </div>
