@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, UserPlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { IdentityCell, ModelsCell } from "@/components/shared/table_cells";
@@ -23,10 +24,11 @@ export interface AvailableTeam {
 }
 
 function AvailableTeamRowActions({ team, onJoinTeam }: { team: AvailableTeam; onJoinTeam: (teamId: string) => void }) {
+  const t = useTranslations("teams");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open team actions"
+        aria-label={t("availableOpenActions")}
         data-testid={`available-team-actions-${team.team_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -35,7 +37,7 @@ function AvailableTeamRowActions({ team, onJoinTeam }: { team: AvailableTeam; on
       <DropdownMenuContent align="end" className="w-44">
         <DropdownMenuItem data-testid="available-team-action-join" onClick={() => onJoinTeam(team.team_id)}>
           <UserPlus />
-          Join team
+          {t("availableJoin")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -44,16 +46,18 @@ function AvailableTeamRowActions({ team, onJoinTeam }: { team: AvailableTeam; on
 
 interface AvailableTeamsTableColumnsDeps {
   onJoinTeam: (teamId: string) => void;
+  t: ReturnType<typeof useTranslations>;
 }
 
 export const getAvailableTeamsTableColumns = ({
   onJoinTeam,
+  t,
 }: AvailableTeamsTableColumnsDeps): ColumnDef<AvailableTeam>[] => [
   {
     id: "team_alias",
     accessorKey: "team_alias",
-    meta: { title: "Team Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Team Name" />,
+    meta: { title: t("availableTeamName") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("availableTeamName")} />,
     size: 220,
     enableSorting: true,
     cell: ({ row }) => (
@@ -63,15 +67,15 @@ export const getAvailableTeamsTableColumns = ({
   {
     id: "description",
     accessorKey: "description",
-    meta: { title: "Description" },
-    header: "Description",
+    meta: { title: t("availableDescription") },
+    header: t("availableDescription"),
     size: 280,
     enableSorting: false,
     cell: ({ row }) => {
       const description = row.original.description;
       return (
         <span className="block max-w-72 truncate text-sm text-muted-foreground" title={description || undefined}>
-          {description || "No description available"}
+          {description || t("availableNoDescription")}
         </span>
       );
     },
@@ -79,18 +83,20 @@ export const getAvailableTeamsTableColumns = ({
   {
     id: "members",
     accessorFn: (team) => team.members_with_roles.length,
-    meta: { title: "Members" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Members" />,
+    meta: { title: t("members") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("members")} />,
     size: 120,
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="text-sm text-muted-foreground">{row.original.members_with_roles.length} members</span>
+      <span className="text-sm text-muted-foreground">
+        {t("availableMembersCount", { count: row.original.members_with_roles.length })}
+      </span>
     ),
   },
   {
     id: "models",
-    meta: { title: "Models" },
-    header: "Models",
+    meta: { title: t("models") },
+    header: t("models"),
     size: 260,
     enableSorting: false,
     cell: ({ row }) => <ModelsCell models={row.original.models} />,
@@ -98,7 +104,7 @@ export const getAvailableTeamsTableColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("availableActions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,

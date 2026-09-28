@@ -48,16 +48,13 @@
 | 7 | 护栏与策略面板 | `GuardrailsPanel.tsx`、`policies/index.tsx` |
 | 8 | 用量与日志页 | `UsagePageView.tsx`、`view_logs/index.tsx` |
 | 9 | 内部用户表格 | `UsersTable.tsx`、`UsersTableColumns.tsx`、`UsersTable.test.tsx` |
-| 10 | 内部用户页收尾（团队部分待做） | `view_users.tsx`、`BulkEditUsers.tsx`、`user_edit_view.tsx`、`DefaultUserSettingsForm.tsx`、`user_info_view.tsx` |
+| 10 | 内部用户页收尾与团队管理 | `view_users.tsx`、`BulkEditUsers.tsx`、`user_edit_view.tsx`、`DefaultUserSettingsForm.tsx`、`user_info_view.tsx`、`components/Teams.tsx`、`components/team/*`、`TeamSSOSettings.tsx`、`MSTeamsSettings.tsx` |
 
 批次 3 到 8 存在“只翻译外壳、未翻译子组件”的欠账，因此下面把对应页面族重新列出收尾。
 
 ## 待办批次
 
 批次按用户影响排序，核心管理功能优先。括号内是该批次的未翻译文件数。
-
-### 批次 10：用户与团队核心管理（P0，进行中）
-`users` 部分已完成（余下 `_components/index.tsx`、`page.tsx` 无文案）。`teams` 部分待做：入口 `src/app/(dashboard)/teams/page.tsx` 只是转发，真正内容在 `src/components/Teams.tsx` 及 `src/components/team/*`，需要大幅扩展 `teams` 命名空间并处理相关测试。
 
 ### 批次 11：组织与预算（P0）
 `organizations`（4）：`OrganizationsTable.tsx`、`OrganizationsTableColumns.tsx`、`OrganizationFilters.tsx`、`page.tsx`

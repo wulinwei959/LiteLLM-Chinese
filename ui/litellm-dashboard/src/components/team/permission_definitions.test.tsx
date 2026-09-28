@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { getMethodForEndpoint, getPermissionInfo, PERMISSION_DESCRIPTIONS } from "./permission_definitions";
+import { getMethodForEndpoint, getPermissionInfo } from "./permission_definitions";
+
+type Translator = Parameters<typeof getPermissionInfo>[1];
+
+const t = ((key: string, values?: Record<string, unknown>) =>
+  values === undefined ? key : `${key}:${JSON.stringify(values)}`) as unknown as Translator;
 
 describe("permission_definitions", () => {
   describe("getMethodForEndpoint", () => {
@@ -23,75 +28,52 @@ describe("permission_definitions", () => {
   });
 
   describe("getPermissionInfo", () => {
-    it("should return correct info for exact match permission", () => {
-      const result = getPermissionInfo("/key/generate");
-      expect(result.method).toBe("POST");
-      expect(result.endpoint).toBe("/key/generate");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/key/generate"]);
-      expect(result.route).toBe("/key/generate");
+    it("resolves an exact endpoint to its description key and method", () => {
+      const expected = {
+        method: "POST",
+        endpoint: "/key/generate",
+        description: "perm.keyGenerate",
+        route: "/key/generate",
+      };
+
+      expect(getPermissionInfo("/key/generate", t)).toStrictEqual(expected);
     });
 
-    it("should return GET method for info endpoint", () => {
-      const result = getPermissionInfo("/key/info");
-      expect(result.method).toBe("GET");
-      expect(result.endpoint).toBe("/key/info");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/key/info"]);
+    it("resolves GET endpoints to their description keys", () => {
+      expect(getPermissionInfo("/key/info", t).description).toBe("perm.keyInfo");
+      expect(getPermissionInfo("/key/list", t).description).toBe("perm.keyList");
+      const expected = {
+        method: "GET",
+        endpoint: "/team/daily/activity",
+        description: "perm.teamDailyActivity",
+        route: "/team/daily/activity",
+      };
+
+      expect(getPermissionInfo("/team/daily/activity", t)).toStrictEqual(expected);
+      expect(getPermissionInfo("/spend/logs", t).description).toBe("perm.spendLogs");
     });
 
-    it("should return GET method for list endpoint", () => {
-      const result = getPermissionInfo("/key/list");
-      expect(result.method).toBe("GET");
-      expect(result.endpoint).toBe("/key/list");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/key/list"]);
+    it("resolves a hyphenated service account endpoint to its description key", () => {
+      expect(getPermissionInfo("/key/service-account/generate", t).description).toBe("perm.keyServiceAccountGenerate");
     });
 
-    it("should find partial match for permission with pattern", () => {
-      const result = getPermissionInfo("/key/service-account/generate");
-      expect(result.method).toBe("POST");
-      expect(result.endpoint).toBe("/key/service-account/generate");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/key/service-account/generate"]);
+    it("resolves both regenerate endpoint shapes to the same description key", () => {
+      expect(getPermissionInfo("/key/regenerate", t).description).toBe(
+        getPermissionInfo("/key/{key_id}/regenerate", t).description,
+      );
     });
 
-    it("should return correct info for team daily activity permission", () => {
-      const result = getPermissionInfo("/team/daily/activity");
-      expect(result.method).toBe("GET");
-      expect(result.endpoint).toBe("/team/daily/activity");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/team/daily/activity"]);
-      expect(result.route).toBe("/team/daily/activity");
+    it("falls back to a partial endpoint match when there is no exact key", () => {
+      expect(getPermissionInfo("/key/info/detail", t).description).toBe("perm.keyInfo");
     });
 
-    it("should return fallback description for unknown permission", () => {
-      const result = getPermissionInfo("/unknown/endpoint");
+    it("falls back to the access description with the raw endpoint for an unknown permission", () => {
+      const result = getPermissionInfo("/unknown/endpoint", t);
+
       expect(result.method).toBe("POST");
       expect(result.endpoint).toBe("/unknown/endpoint");
-      expect(result.description).toBe("Access /unknown/endpoint");
+      expect(result.description).toBe('perm.accessEndpoint:{"endpoint":"/unknown/endpoint"}');
       expect(result.route).toBe("/unknown/endpoint");
-    });
-  });
-
-  describe("PERMISSION_DESCRIPTIONS", () => {
-    it("should include team daily activity permission", () => {
-      expect(PERMISSION_DESCRIPTIONS["/team/daily/activity"]).toBeDefined();
-      expect(PERMISSION_DESCRIPTIONS["/team/daily/activity"]).toContain("team usage");
-    });
-
-    it("should include spend logs permission", () => {
-      expect(PERMISSION_DESCRIPTIONS["/spend/logs"]).toBeDefined();
-      expect(PERMISSION_DESCRIPTIONS["/spend/logs"]).toContain("spend logs");
-    });
-  });
-
-  describe("spend/logs permission", () => {
-    it("should return GET method for /spend/logs", () => {
-      expect(getMethodForEndpoint("/spend/logs")).toBe("GET");
-    });
-
-    it("should return correct info for /spend/logs permission", () => {
-      const result = getPermissionInfo("/spend/logs");
-      expect(result.method).toBe("GET");
-      expect(result.endpoint).toBe("/spend/logs");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/spend/logs"]);
-      expect(result.route).toBe("/spend/logs");
     });
   });
 });

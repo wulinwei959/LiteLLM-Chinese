@@ -18,6 +18,136 @@ import {
 import Teams from "./Teams";
 import { chooseSelectOption } from "../../tests/test-utils";
 
+const mockTranslations: Record<string, string> = {
+  "teams.title": "Teams",
+  "teams.createTeam": "Create Team",
+  "teams.deletedSuccessfully": "Team deleted successfully",
+  "teams.deleteConfirmTitle": "Delete Team?",
+  "teams.members": "Members",
+  "teams.models": "Models",
+  "teams.keys": "Keys",
+  "teams.listSubtitle": "Manage teams, members, and their access to models and budgets",
+  "teams.listTeamNameRequired": "Please input a team name",
+  "teams.listOrganizationNoLongerAvailable": "You can no longer create teams in this organization",
+  "teams.listBudgetDurationDefault": "Default: {label} ({duration})",
+  "teams.listBudgetDurationNotAvailable": "n/a",
+  "teams.listDeleteError": "Error deleting the team: {error}",
+  "teams.listCreatingTeam": "Creating Team",
+  "teams.listTeamCreated": "Team created",
+  "teams.listCreateError": "Error creating the team: {error}",
+  "teams.listYourTeams": "Your Teams",
+  "teams.listAvailableTeams": "Available Teams",
+  "teams.listDefaultTeamSettings": "Default Team Settings",
+  "teams.listDeleteKeysWarning":
+    "Warning: This team has {count} keys associated with it. Deleting the team will also delete all associated keys, along with any models created for this team. This action is irreversible.",
+  "teams.listDeleteConfirmMessage":
+    "Are you sure you want to delete this team, all its keys, and any models created for it? This action cannot be undone.",
+  "teams.listTeamInformation": "Team Information",
+  "teams.listTeamId": "Team ID",
+  "teams.listTeamName": "Team Name",
+  "teams.listOrganization": "Organization",
+  "teams.listOrganizationHint": "Organizations can have multiple teams. Learn more about the user management hierarchy",
+  "teams.listOrganizationSingleDescription": "You can only create teams within this organization",
+  "teams.listRequired": "required",
+  "teams.listNoOrganizationsAvailable": "No organizations available",
+  "teams.listSearchOrganization": "Search or select an Organization",
+  "teams.listSelectOrganizationNotice":
+    "Please select an organization to create a team for. You can only create teams within organizations where you are an admin.",
+  "teams.listModelsHint":
+    "These are the models that your selected team has access to. Leave empty to grant no models directly, e.g. when the team gets its models from access groups",
+  "teams.listMaxBudgetUsd": "Max Budget (USD)",
+  "teams.listResetBudget": "Reset Budget",
+  "teams.listModelMaxBudgetHint":
+    "Cap this team's spend on individual models, each with its own reset window. Every key on the team shares the cap unless the key sets its own budget for that model.",
+  "teams.listTpmLimit": "Tokens per minute Limit (TPM)",
+  "teams.listRpmLimit": "Requests per minute Limit (RPM)",
+  "teams.listTpdLimit": "Tokens per day Limit (TPD)",
+  "teams.listTpdLimitHint":
+    "Daily token budget for batch submissions (/v1/batches). When set, batch input files are charged against this 24h window instead of the team's TPM/RPM limits. Online requests keep using TPM/RPM.",
+  "teams.listMetadata": "Metadata",
+  "teams.listMetadataDescription": "Values are saved as text. Enter JSON for typed values, e.g. 3, true, or {example}.",
+  "teams.listAdditionalSettings": "Additional Settings",
+  "teams.listTeamIdDescription":
+    "ID of the team you want to create. If not provided, it will be generated automatically.",
+  "teams.listTeamMemberBudget": "Team Member Budget (USD)",
+  "teams.listTeamMemberBudgetHint": "This is the individual budget for a user in the team.",
+  "teams.listTeamMemberKeyDuration": "Team Member Key Duration (eg: 1d, 1mo)",
+  "teams.listTeamMemberKeyDurationHint":
+    "Set a limit to the duration of a team member's key. Format: 30s (seconds), 30m (minutes), 30h (hours), 30d (days), 1mo (month)",
+  "teams.listTeamMemberKeyDurationPlaceholder": "e.g., 30d",
+  "teams.listTeamMemberRpmLimit": "Team Member RPM Limit",
+  "teams.listTeamMemberRpmLimitHint": "The RPM (Requests Per Minute) limit for individual team members",
+  "teams.listTeamMemberTpmLimit": "Team Member TPM Limit",
+  "teams.listTeamMemberTpmLimitHint": "The TPM (Tokens Per Minute) limit for individual team members",
+  "teams.listSecretManagerSettings": "Secret Manager Settings",
+  "teams.listSecretManagerDescription": "Enter secret manager configuration as a JSON object.",
+  "teams.listSecretManagerPremiumDescription": "Premium feature - Upgrade to manage secret manager settings.",
+  "teams.listGuardrails": "Guardrails",
+  "teams.listGuardrailsHint": "Setup your first guardrail",
+  "teams.listGuardrailsDescription": "Select existing guardrails or enter new ones",
+  "teams.listGuardrailsPlaceholder": "Select or enter guardrails",
+  "teams.listDisableGlobalGuardrails": "Disable Global Guardrails",
+  "teams.listDisableGlobalGuardrailsHint":
+    "When enabled, this team will bypass any guardrails configured to run on every request (global guardrails)",
+  "teams.listDisableGlobalGuardrailsDescription": "Bypass global guardrails for this team",
+  "teams.listDisableGlobalGuardrailsPremiumDescription":
+    "Premium feature - Upgrade to disable global guardrails by team",
+  "teams.listPolicies": "Policies",
+  "teams.listPoliciesHint": "Apply policies to this team to control guardrails and other settings",
+  "teams.listPoliciesDescription": "Select existing policies or enter new ones",
+  "teams.listPoliciesPlaceholder": "Select or enter policies",
+  "teams.listAccessGroups": "Access Groups",
+  "teams.listAccessGroupsHint":
+    "Assign access groups to this team. Access groups control which models, MCP servers, and agents this team can use",
+  "teams.listAccessGroupsDescription": "Select access groups to assign to this team",
+  "teams.listAccessGroupsPlaceholder": "Select access groups (optional)",
+  "teams.listAllowedVectorStores": "Allowed Vector Stores",
+  "teams.listAllowedVectorStoresHint":
+    "Select which vector stores this team can access by default. Leave empty for access to all vector stores",
+  "teams.listAllowedVectorStoresDescription":
+    "Select vector stores this team can access. Leave empty for access to all vector stores",
+  "teams.listAllowedVectorStoresPlaceholder": "Select vector stores (optional)",
+  "teams.listAllowedPassThroughRoutes": "Allowed Pass Through Routes",
+  "teams.listAllowedPassThroughRoutesPremiumHint": "Premium feature - Upgrade to set allowed pass through routes",
+  "teams.listAllowedPassThroughRoutesAdminHint": "Only proxy admins can set allowed pass through routes",
+  "teams.listAllowedPassThroughRoutesPlaceholder": "Select pass through routes (optional)",
+  "teams.listMcpSettings": "MCP Settings",
+  "teams.listAllowedMcpServers": "Allowed MCP Servers",
+  "teams.listAllowedMcpServersHint": "Select which MCP servers or access groups this team can access",
+  "teams.listAllowedMcpServersDescription": "Select MCP servers or access groups this team can access",
+  "teams.listAllowedMcpServersPlaceholder": "Select MCP servers or access groups (optional)",
+  "teams.listAgentSettings": "Agent Settings",
+  "teams.listAllowedAgents": "Allowed Agents",
+  "teams.listAllowedAgentsHint": "Select which agents or access groups this team can access",
+  "teams.listAllowedAgentsDescription": "Select agents or access groups this team can access",
+  "teams.listAllowedAgentsPlaceholder": "Select agents or access groups (optional)",
+  "teams.listSearchToolSettings": "Search Tool Settings",
+  "teams.listAllowedSearchTools": "Allowed Search Tools",
+  "teams.listAllowedSearchToolsHint":
+    "Select which search tools this team can access. Leave empty to allow all search tools.",
+  "teams.listAllowedSearchToolsDescription": "Restrict which configured search tools keys on this team may call.",
+  "teams.listAllowedSearchToolsPlaceholder": "Select search tools (optional, empty = all allowed)",
+  "teams.listSkillSettings": "Skill Settings",
+  "teams.listAllowedSkills": "Allowed Skills",
+  "teams.listAllowedSkillsHint":
+    "Enabled skills are visible to every team. Grant disabled (private) Claude Code plugins to this team here.",
+  "teams.listAllowedSkillsDescription": "Private skills keys on this team may see in the Claude Code marketplace.",
+  "teams.listAllowedSkillsPlaceholder": "Select skills (optional)",
+  "teams.listLoggingSettings": "Logging Settings",
+  "teams.listRouterSettings": "Router Settings",
+  "teams.listModelAliases": "Model Aliases",
+  "teams.listModelAliasesDescription":
+    "Create custom aliases for models that can be used by team members in API calls. This allows you to create shortcuts for specific models.",
+};
+
+const mockInterpolate = (template: string, values?: Record<string, unknown>) =>
+  values ? template.replace(/\{(\w+)\}/g, (_match, name: string) => String(values[name] ?? `{${name}}`)) : template;
+
+vi.mock("next-intl", () => ({
+  useTranslations: (namespace: string) => (key: string, values?: Record<string, unknown>) =>
+    mockInterpolate(mockTranslations[`${namespace}.${key}`] ?? mockTranslations[key] ?? key, values),
+}));
+
 vi.mock("./mcp_server_management/MCPServerSelector", () => ({
   default: ({
     onChange,

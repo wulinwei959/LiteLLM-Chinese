@@ -2727,6 +2727,15 @@ describe("TeamInfo MCP permission retention", () => {
     errorToast.mockRestore();
   };
 
+  const mcpReasonTranslations: Record<string, string> = {
+    infoMcpAccessGroupsCouldNotBeReloaded: "the team's access groups could not be reloaded",
+    infoMcpAccessGroupsCouldNotBeLoaded: "the team's access groups could not be loaded",
+  };
+
+  const mcpReasonTranslator = ((key: string) => mcpReasonTranslations[key] ?? key) as unknown as Parameters<
+    typeof grantedMcpServerIds
+  >[1];
+
   const resolveGrants = (overrides: Partial<McpGrantInput>) => {
     const input: McpGrantInput = {
       effectiveServers: [effective("server-1", "direct")],
@@ -2736,7 +2745,7 @@ describe("TeamInfo MCP permission retention", () => {
       loadTeamGroups: vi.fn(),
       ...overrides,
     };
-    return grantedMcpServerIds(input);
+    return grantedMcpServerIds(input, mcpReasonTranslator);
   };
 
   it("retains permissions for directly and indirectly granted servers", async () => {

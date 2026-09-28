@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { RotateCw, Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { toast } from "@/lib/toast";
 import { getPermissionInfo } from "./permission_definitions";
@@ -15,6 +16,7 @@ interface MemberPermissionsProps {
 }
 
 const MemberPermissions: React.FC<MemberPermissionsProps> = ({ teamId, accessToken, canEditTeam }) => {
+  const t = useTranslations("teams");
   const [permissions, setPermissions] = useState<string[]>([]);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +34,7 @@ const MemberPermissions: React.FC<MemberPermissionsProps> = ({ teamId, accessTok
       setSelectedPermissions(teamPermissions);
       setHasChanges(false);
     } catch (error) {
-      toast.fromError("Failed to load permissions");
+      toast.fromError(t("perm.loadFailed"));
       console.error("Error fetching permissions:", error);
     } finally {
       setLoading(false);
@@ -56,10 +58,10 @@ const MemberPermissions: React.FC<MemberPermissionsProps> = ({ teamId, accessTok
       if (!accessToken) return;
       setSaving(true);
       await teamPermissionsUpdateCall(accessToken, teamId, selectedPermissions);
-      toast.success("Permissions updated successfully");
+      toast.success(t("perm.updateSuccess"));
       setHasChanges(false);
     } catch (error) {
-      toast.fromError("Failed to update permissions");
+      toast.fromError(t("perm.updateFailed"));
       console.error("Error updating permissions:", error);
     } finally {
       setSaving(false);
@@ -71,7 +73,7 @@ const MemberPermissions: React.FC<MemberPermissionsProps> = ({ teamId, accessTok
   };
 
   if (loading) {
-    return <div className="p-6 text-center">Loading permissions...</div>;
+    return <div className="p-6 text-center">{t("perm.loading")}</div>;
   }
 
   const hasPermissions = permissions.length > 0;
@@ -79,41 +81,39 @@ const MemberPermissions: React.FC<MemberPermissionsProps> = ({ teamId, accessTok
   return (
     <Card className="block bg-card shadow-md rounded-md p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 mb-6">
-        <h3 className="text-lg font-medium text-foreground mb-2 sm:mb-0">Member Permissions</h3>
+        <h3 className="text-lg font-medium text-foreground mb-2 sm:mb-0">{t("perm.title")}</h3>
         {canEditTeam && hasChanges && (
           <div className="flex gap-3">
             <Button variant="outline" onClick={handleReset}>
               <RotateCw className="size-3.5" />
-              Reset
+              {t("perm.reset")}
             </Button>
             <Button onClick={handleSave} disabled={saving}>
               <Save className="size-3.5" />
-              Save Changes
+              {t("perm.saveChanges")}
             </Button>
           </div>
         )}
       </div>
 
-      <p className="mb-6 text-sm text-muted-foreground">
-        Control what team members can do when they are not team admins.
-      </p>
+      <p className="mb-6 text-sm text-muted-foreground">{t("perm.description")}</p>
 
       {hasPermissions ? (
         <div className="overflow-x-auto">
           <Table className="min-w-full">
             <TableHeader>
               <TableRow>
-                <TableHead>Method</TableHead>
-                <TableHead>Endpoint</TableHead>
-                <TableHead>Description</TableHead>
+                <TableHead>{t("perm.method")}</TableHead>
+                <TableHead>{t("perm.endpoint")}</TableHead>
+                <TableHead>{t("perm.descriptionColumn")}</TableHead>
                 <TableHead className="sticky right-0 bg-card shadow-[-4px_0_4px_-4px_rgba(0,0,0,0.1)] text-center">
-                  Allow Access
+                  {t("perm.allowAccess")}
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {permissions.map((permission) => {
-                const permInfo = getPermissionInfo(permission);
+                const permInfo = getPermissionInfo(permission, t);
                 return (
                   <TableRow key={permission} className="hover:bg-accent transition-colors">
                     <TableCell>
@@ -145,7 +145,7 @@ const MemberPermissions: React.FC<MemberPermissionsProps> = ({ teamId, accessTok
         </div>
       ) : (
         <div className="py-12">
-          <p className="text-center text-sm text-muted-foreground">No permissions available</p>
+          <p className="text-center text-sm text-muted-foreground">{t("perm.noPermissions")}</p>
         </div>
       )}
     </Card>

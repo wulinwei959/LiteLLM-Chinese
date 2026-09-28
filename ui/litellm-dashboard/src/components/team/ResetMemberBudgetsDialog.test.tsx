@@ -4,6 +4,31 @@ import { describe, expect, it, vi } from "vitest";
 import ResetMemberBudgetsDialog from "./ResetMemberBudgetsDialog";
 import type { MemberBudgetResetState } from "./useMemberBudgetReset";
 
+const mockTranslations: Record<string, string> = {
+  "teams.resetMemberTitle": "Reset member budgets?",
+  "teams.resetMemberPromptOne":
+    "{count} member has a custom budget, so the new team default of ${budget} will not apply to that member. Reset it to the default, or keep the custom budget?",
+  "teams.resetMemberPromptOther":
+    "{count} members have a custom budget, so the new team default of ${budget} will not apply to them. Reset them to the default, or keep the custom budgets?",
+  "teams.resetMemberCancel": "Cancel",
+  "teams.resetMemberRetry": "Retry reset",
+  "teams.resetMemberKeepOne": "Keep custom budget",
+  "teams.resetMemberKeepOther": "Keep custom budgets",
+  "teams.resetMemberResetOne": "Reset to ${budget}",
+  "teams.resetMemberResetOther": "Reset all to ${budget}",
+};
+
+vi.mock("next-intl", () => ({
+  useTranslations: (namespace: string) => (key: string, values?: Record<string, unknown>) => {
+    const template = mockTranslations[`${namespace}.${key}`] ?? mockTranslations[key] ?? key;
+    return Object.entries(values ?? {}).reduce(
+      (text, [name, value]) => text.replaceAll(`{${name}}`, String(value)),
+      template,
+    );
+  },
+  NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 const pendingFor = (memberCount: number, newBudget = 10) => ({
   teamId: "team-123",
   updateData: {},

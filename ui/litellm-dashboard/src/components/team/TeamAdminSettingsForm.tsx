@@ -1,6 +1,7 @@
 "use client";
 
 import { Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useWatch } from "react-hook-form";
 import { z } from "zod/v4";
 
@@ -45,6 +46,7 @@ export default function TeamAdminSettingsForm({
   onCancel,
   onSave,
 }: TeamAdminSettingsFormProps) {
+  const t = useTranslations("teams");
   const form = useZodForm(teamAdminSettingsSchema, { defaultValues: initialValues });
   const draft = useWatch({ control: form.control });
   const hasChanges = Object.keys(teamAdminSettingsChanges(draft, initialValues, editableFields)).length > 0;
@@ -53,9 +55,7 @@ export default function TeamAdminSettingsForm({
   return (
     <form onSubmit={(event) => void submit(event)}>
       <FieldGroup>
-        <p className="text-sm text-muted-foreground">
-          A proxy admin chose which settings team admins can change. Ask a proxy admin to change anything else.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("settingsAdminOnlyNotice")}</p>
         {TEAM_ADMIN_SETTINGS_FIELDS.filter((name) => editableFields.has(name)).map((name) => (
           <FormField key={name} control={form.control} name={name} label={teamAdminFieldLabel(name)}>
             {({ ref, value, ...field }) => (
@@ -67,11 +67,11 @@ export default function TeamAdminSettingsForm({
 
       <div className="mt-6 flex items-center justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
-          Cancel
+          {t("settingsCancel")}
         </Button>
         <Button type="submit" disabled={isSaving || !hasChanges}>
           {isSaving ? <UiLoadingSpinner className="size-4" /> : <Save className="size-4" />}
-          Save Changes
+          {t("settingsSaveChanges")}
         </Button>
       </div>
     </form>
