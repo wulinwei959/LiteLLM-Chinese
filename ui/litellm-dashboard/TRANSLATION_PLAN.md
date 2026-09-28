@@ -114,7 +114,7 @@
 4. 对改动或新增的测试，参照 `VirtualKeysTable.test.tsx` 的写法 mock `next-intl`，用 `mockTranslations` 映射键到英文断言文本。
 5. 验证：`npx vitest run <改动测试> src/lib/i18n/messagesParity.test.ts`、对改动文件跑 `npx eslint`、`npx tsc --noEmit` 确认无新错误、`npm run build` 通过。
 6. 删除任何临时脚本（`write-*.js`、`check-*.js` 等），不要留在仓库里。
-7. 提交并推送，提交信息用 conventional commits，例如 `feat(ui): translate MCP servers page to zh-CN`。
+7. 提交并推送。提交信息用 conventional commits 类型前缀加中文正文，例如 `feat(ui): 翻译 MCP 服务器页面为简体中文`。提交标题、提交正文与 PR 说明一律用简体中文书写，类型前缀（`feat`、`fix`、`chore`、`docs`）保留英文。
 
 ## 验证清单
 
@@ -127,6 +127,7 @@
 
 ## 约定
 
+- 提交标题、提交正文与 PR 说明一律用简体中文书写，类型前缀（`feat`、`fix`、`chore`、`docs`）保留英文
 - 英语为默认并进行原文断言，中文键值随批补齐
 - 不翻译非面向用户的文件（hooks、utils、types、纯逻辑封装）
 - 组件测试默认在无 `NextIntlClientProvider` 环境下运行，必须 mock `next-intl`，否则 `useTranslations` 会报错
