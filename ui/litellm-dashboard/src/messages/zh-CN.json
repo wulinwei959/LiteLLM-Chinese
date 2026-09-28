@@ -350,10 +350,28 @@
     },
     "health": {
       "title": "健康状态",
+      "description": "监控模型部署的健康状况",
+      "runCheck": "运行检查",
+      "checking": "检查中...",
       "healthy": "健康",
       "unhealthy": "不健康",
-      "checking": "检查中...",
-      "lastCheck": "最后检查"
+      "loading": "正在加载健康状态...",
+      "noData": "暂无健康检查数据",
+      "lastCheck": "最后检查",
+      "lastSuccess": "最后成功",
+      "none": "无",
+      "checkFailed": "健康检查失败",
+      "errorDetails": "错误详情",
+      "successDetails": "成功详情",
+      "modelName": "模型",
+      "status": "状态",
+      "actions": "操作",
+      "checkAll": "全部检查",
+      "checkingAll": "正在检查所有模型...",
+      "checkComplete": "健康检查完成",
+      "someUnhealthy": "部分模型不健康",
+      "allHealthy": "所有模型健康",
+      "unknown": "未知"
     },
     "retrySettings": {
       "scopeLabel": "重试策略范围:",
@@ -371,18 +389,37 @@
     },
     "credentials": {
       "title": "LLM 凭据",
+      "description": "为不同 AI 提供商配置的凭据。添加和管理您的 API 凭据。",
       "addCredential": "添加凭据",
-      "provider": "提供商",
+      "updateCredential": "更新凭据",
+      "deleteCredential": "删除凭据",
+      "updatedSuccessfully": "凭据更新成功",
+      "updateFailed": "更新凭据失败",
+      "createdSuccessfully": "凭据添加成功",
+      "createFailed": "添加凭据失败",
+      "deletedSuccessfully": "凭据删除成功",
+      "deleteFailed": "删除凭据失败",
+      "deleteConfirmTitle": "删除凭据？",
+      "deleteConfirmMessage": "确定要删除此凭据吗？此操作无法撤销，可能会破坏现有集成。",
+      "resourceInformationTitle": "凭据信息",
       "credentialName": "凭据名称",
-      "apiKey": "API 密钥",
-      "testConnection": "测试连接"
+      "provider": "提供商",
+      "noCredentials": "未找到凭据",
+      "loading": "正在加载凭据..."
     },
     "passThrough": {
       "title": "直通端点",
+      "description": "配置和管理您的直通端点",
       "addEndpoint": "添加端点",
       "path": "路径",
       "target": "目标 URL",
-      "headers": "请求头"
+      "loading": "正在加载直通端点...",
+      "noEndpoints": "未配置直通端点",
+      "notFound": "未找到端点",
+      "deleteConfirmTitle": "删除直通端点",
+      "deleteConfirmMessage": "确定要删除此直通端点吗？此操作无法撤销。",
+      "deletedSuccessfully": "端点删除成功。",
+      "deleteFailed": "删除端点失败"
     },
     "modelGroupAlias": {
       "title": "模型组别名",
@@ -408,9 +445,9 @@
       }
     },
     "priceData": {
-      "title": "价格数据重载",
-      "reload": "重载价格数据",
-      "lastReload": "上次重载"
+      "title": "价格数据管理",
+      "description": "管理模型定价数据并配置自动重载计划",
+      "reloadButton": "重载价格数据"
     },
     "autoRouters": {
       "title": "自动路由器",
