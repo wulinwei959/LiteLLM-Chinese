@@ -1,6 +1,8 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { renderWithProviders } from "../../../../tests/test-utils";
 import TransformRequestPanel from "./TransformRequestPanel";
 import { transformRequestCall } from "@/components/networking";
 import { toast } from "@/lib/toast";
@@ -30,7 +32,7 @@ describe("TransformRequestPanel", () => {
   });
 
   it("renders both panels, the prefilled request and the placeholder curl", () => {
-    render(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
+    renderWithProviders(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
 
     expect(screen.getByText("Original Request")).toBeInTheDocument();
     expect(screen.getByText("Transformed Request")).toBeInTheDocument();
@@ -53,7 +55,7 @@ describe("TransformRequestPanel", () => {
       raw_request_headers: { "x-api-key": "redacted" },
     });
 
-    render(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
+    renderWithProviders(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
 
     const textarea = getRequestTextarea();
     await user.clear(textarea);
@@ -83,7 +85,7 @@ describe("TransformRequestPanel", () => {
       raw_request_headers: {},
     });
 
-    render(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
+    renderWithProviders(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
 
     getRequestTextarea().focus();
     await user.keyboard("{Meta>}{Enter}{/Meta}");
@@ -94,7 +96,7 @@ describe("TransformRequestPanel", () => {
   it("rejects invalid JSON without calling the backend", async () => {
     const user = userEvent.setup();
 
-    render(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
+    renderWithProviders(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
 
     const textarea = getRequestTextarea();
     await user.clear(textarea);
@@ -108,7 +110,7 @@ describe("TransformRequestPanel", () => {
   it("does not call the backend when there is no access token", async () => {
     const user = userEvent.setup();
 
-    render(<TransformRequestPanel accessToken={null} />);
+    renderWithProviders(<TransformRequestPanel accessToken={null} />);
 
     await user.click(getTransformButton());
 
@@ -121,7 +123,7 @@ describe("TransformRequestPanel", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     transformRequestCallMock.mockRejectedValue(new Error("boom"));
 
-    render(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
+    renderWithProviders(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
 
     await user.click(getTransformButton());
 
@@ -138,7 +140,7 @@ describe("TransformRequestPanel", () => {
       raw_request_headers: {},
     });
 
-    render(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
+    renderWithProviders(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
 
     await user.click(getTransformButton());
     await screen.findByText(/api\.anthropic\.com\/v1\/messages/);

@@ -1,7 +1,8 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { renderWithProviders } from "../../../../tests/test-utils";
 import { toast } from "@/lib/toast";
 
 import UIThemeSettings from "./UIThemeSettings";
@@ -51,7 +52,7 @@ describe("UIThemeSettings", () => {
   });
 
   it("should render nothing without an access token", () => {
-    const { container } = render(<UIThemeSettings userID="user-1" userRole="Admin" accessToken={null} />);
+    const { container } = renderWithProviders(<UIThemeSettings userID="user-1" userRole="Admin" accessToken={null} />);
 
     expect(container).toBeEmptyDOMElement();
     expect(fetchMock).not.toHaveBeenCalled();
@@ -62,7 +63,7 @@ describe("UIThemeSettings", () => {
       okResponse({ logo_url: "https://cdn.example.com/logo.svg", favicon_url: "https://cdn.example.com/fav.ico" }),
     );
 
-    render(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="sk-test" />);
+    renderWithProviders(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="sk-test" />);
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText(LOGO_PLACEHOLDER)).toHaveValue("https://cdn.example.com/logo.svg");
@@ -74,7 +75,7 @@ describe("UIThemeSettings", () => {
 
   it("should save the entered urls and report success", async () => {
     const user = userEvent.setup();
-    render(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="sk-test" />);
+    renderWithProviders(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="sk-test" />);
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
 
@@ -95,7 +96,7 @@ describe("UIThemeSettings", () => {
     const user = userEvent.setup();
     fetchMock.mockImplementation(() => okResponse({ logo_url_dark: "https://cdn.example.com/logo-dark.svg" }));
 
-    render(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="sk-test" />);
+    renderWithProviders(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="sk-test" />);
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText(LOGO_DARK_PLACEHOLDER)).toHaveValue("https://cdn.example.com/logo-dark.svg");
@@ -113,7 +114,7 @@ describe("UIThemeSettings", () => {
 
   it("should surface a backend failure when saving fails", async () => {
     const user = userEvent.setup();
-    render(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="sk-test" />);
+    renderWithProviders(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="sk-test" />);
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
     fetchMock.mockImplementation(() => Promise.resolve({ ok: false } as Response));
@@ -130,7 +131,7 @@ describe("UIThemeSettings", () => {
       okResponse({ logo_url: "https://cdn.example.com/logo.svg", favicon_url: "https://cdn.example.com/fav.ico" }),
     );
 
-    render(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="sk-test" />);
+    renderWithProviders(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="sk-test" />);
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText(LOGO_PLACEHOLDER)).toHaveValue("https://cdn.example.com/logo.svg");

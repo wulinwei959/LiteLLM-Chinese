@@ -1,5 +1,7 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { renderWithProviders } from "../../../../tests/test-utils";
 import ChangePasswordForm from "./ChangePasswordForm";
 
 const mockChangePasswordCall = vi.fn();
@@ -43,7 +45,7 @@ describe("ChangePasswordForm", () => {
 
   it("sends the current and new password to the change endpoint and resets on success", async () => {
     mockChangePasswordCall.mockResolvedValue({ user_id: "user-123", message: "Password updated successfully." });
-    render(<ChangePasswordForm />);
+    renderWithProviders(<ChangePasswordForm />);
 
     fillForm({ current: "OldP@ssw0rd-2026", next: "NewP@ssw0rd-2026", confirm: "NewP@ssw0rd-2026" });
     submit();
@@ -54,7 +56,7 @@ describe("ChangePasswordForm", () => {
   });
 
   it("blocks submission when the confirmation does not match", async () => {
-    render(<ChangePasswordForm />);
+    renderWithProviders(<ChangePasswordForm />);
 
     fillForm({ current: "OldP@ssw0rd-2026", next: "NewP@ssw0rd-2026", confirm: "Different-2026" });
     submit();
@@ -65,7 +67,7 @@ describe("ChangePasswordForm", () => {
 
   it("shows the proxy's rejection message unwrapped", async () => {
     mockChangePasswordCall.mockRejectedValue(new Error("{'error': 'Current password is incorrect.'}"));
-    render(<ChangePasswordForm />);
+    renderWithProviders(<ChangePasswordForm />);
 
     fillForm({ current: "wrong-password", next: "NewP@ssw0rd-2026", confirm: "NewP@ssw0rd-2026" });
     submit();
@@ -77,13 +79,13 @@ describe("ChangePasswordForm", () => {
   describe("forced password reset", () => {
     it("shows the forced-reset warning only when the session is flagged", () => {
       mockPasswordResetRequired = true;
-      render(<ChangePasswordForm />);
+      renderWithProviders(<ChangePasswordForm />);
 
       expect(screen.getByText(/must be changed before you can use the dashboard/)).toBeInTheDocument();
     });
 
     it("hides the forced-reset warning for a normal session", () => {
-      render(<ChangePasswordForm />);
+      renderWithProviders(<ChangePasswordForm />);
 
       expect(screen.queryByText(/must be changed before you can use the dashboard/)).not.toBeInTheDocument();
     });
@@ -96,7 +98,7 @@ describe("ChangePasswordForm", () => {
       Object.defineProperty(window, "location", { configurable: true, value: { replace: replaceMock } });
 
       try {
-        render(<ChangePasswordForm />);
+        renderWithProviders(<ChangePasswordForm />);
         fillForm({ current: "OldP@ssw0rd-2026", next: "NewP@ssw0rd-2026", confirm: "NewP@ssw0rd-2026" });
         submit();
 

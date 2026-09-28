@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { CircleAlert } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { z } from "zod/v4";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { Alert, AlertTitle } from "@/components/shared/Alert";
@@ -32,6 +33,7 @@ const changePasswordSchema = z
 type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
 
 export function ChangePasswordForm() {
+  const t = useTranslations("changePassword");
   const { accessToken, passwordResetRequired } = useAuthorized();
   const form = useZodForm(changePasswordSchema, {
     defaultValues: { currentPassword: "", newPassword: "", confirmNewPassword: "" },
@@ -49,12 +51,12 @@ export function ChangePasswordForm() {
         // The session key was minted restricted; only a fresh login lifts it.
         // Revoke it server-side too (best-effort) so it doesn't sit valid
         // until the expiry reaper gets to it.
-        toast.success("Password updated. Please log in with your new password.");
+        toast.success(t("passwordUpdatedRelogin"));
         await revokeSessionAndClearClientState(accessToken);
         window.location.replace(getLoginUrl(getProxyBaseUrl()));
         return;
       }
-      toast.success("Password updated");
+      toast.success(t("passwordUpdated"));
       form.reset();
     } catch (error) {
       setSubmitError(extractProxyErrorMessage(error));
@@ -67,34 +69,27 @@ export function ChangePasswordForm() {
     <div className="mx-auto mt-10 w-full max-w-md">
       <Card>
         <CardContent>
-          <h3 className="text-2xl font-semibold text-foreground">Change Password</h3>
-          <p className="text-sm text-muted-foreground">
-            Enter your current password and choose a new one. The new password must meet this proxy&apos;s password
-            policy.
-          </p>
+          <h3 className="text-2xl font-semibold text-foreground">{t("changePasswordTitle")}</h3>
+          <p className="text-sm text-muted-foreground">{t("changePasswordSubtitle")}</p>
 
           {passwordResetRequired && (
             <Alert variant="warning" className="mt-4">
               <CircleAlert />
-              <AlertTitle>
-                Your password must be changed before you can use the dashboard: it was either found in a known data
-                breach or set by an administrator as a temporary password. After updating it, you will be signed out to
-                log in again.
-              </AlertTitle>
+              <AlertTitle>{t("passwordResetRequired")}</AlertTitle>
             </Alert>
           )}
 
           <form className="mb-2 mt-8" onSubmit={form.handleSubmit(handleSubmit)}>
             <FieldGroup>
-              <FormField control={form.control} name="currentPassword" label="Current Password">
+              <FormField control={form.control} name="currentPassword" label={t("currentPassword")}>
                 {({ ref, ...field }) => <PasswordInput {...field} ref={ref} autoComplete="current-password" />}
               </FormField>
 
-              <FormField control={form.control} name="newPassword" label="New Password">
+              <FormField control={form.control} name="newPassword" label={t("newPassword")}>
                 {({ ref, ...field }) => <PasswordInput {...field} ref={ref} autoComplete="new-password" />}
               </FormField>
 
-              <FormField control={form.control} name="confirmNewPassword" label="Confirm New Password">
+              <FormField control={form.control} name="confirmNewPassword" label={t("confirmNewPassword")}>
                 {({ ref, ...field }) => <PasswordInput {...field} ref={ref} autoComplete="new-password" />}
               </FormField>
             </FieldGroup>
@@ -109,7 +104,7 @@ export function ChangePasswordForm() {
             <div className="mt-8">
               <Button type="submit" disabled={isPending}>
                 {isPending && <UiLoadingSpinner className="size-4" role="img" aria-label="loading" />}
-                Change Password
+                {t("changePasswordTitle")}
               </Button>
             </div>
           </form>

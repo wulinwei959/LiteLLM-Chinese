@@ -10,11 +10,11 @@
 
 翻译基于 `next-intl`。语言资源放在 `src/messages/en.json` 与 `src/messages/zh-CN.json`，两侧键树必须完全一致，由 `src/lib/i18n/messagesParity.test.ts` 强制校验。组件通过 `useTranslations("<namespace>")` 取词。语言状态与切换在 `src/contexts/LocaleContext.tsx`，切换器是 `src/components/shared/LanguageSwitcher.tsx`，入口在 `UserDropdown` 与 `SidebarAccountMenu`。
 
-命名空间按功能域划分，当前已有：`common`、`nav`、`viewSwitcher`、`login`、`onboarding`、`breadcrumb`、`ssoEnabledNotice`、`virtualKeys`、`models`、`teams`、`users`、`organizations`、`budgets`、`guardrails`、`policies`、`adminPanel`、`usage`、`logs`、`projects`、`access-groups`。
+命名空间按功能域划分，当前已有：`common`、`nav`、`viewSwitcher`、`login`、`onboarding`、`breadcrumb`、`ssoEnabledNotice`、`virtualKeys`、`models`、`teams`、`users`、`organizations`、`budgets`、`guardrails`、`policies`、`adminPanel`、`usage`、`logs`、`projects`、`access-groups`、`uiTheme`、`routerSettings`、`changePassword`、`transformRequest`。
 
 ## 进度概览
 
-翻译覆盖以“是否引入 `next-intl`”粗略统计。`src` 下共 860 个非测试 `.tsx`，其中 68 个已引入 `next-intl`。这个数字偏低，是因为早期批次多只翻译了每个页面的外层 Panel，未覆盖其子组件。下表列出各路由的未翻译文件数（仅统计该路由目录下的 `.tsx`）。
+翻译覆盖以“是否引入 `next-intl`”粗略统计。`src` 下共 860 个非测试 `.tsx`，其中 73 个已引入 `next-intl`。这个数字偏低，是因为早期批次多只翻译了每个页面的外层 Panel，未覆盖其子组件。下表列出各路由的未翻译文件数（仅统计该路由目录下的 `.tsx`）。
 
 | 路由 | 未翻译/总数 | 路由 | 未翻译/总数 |
 | --- | --- | --- | --- |
@@ -29,8 +29,9 @@
 | models-and-endpoints | 13/21 | tag-management | 6/6 |
 | usage | 12/13 | budgets | 5/6 |
 | skills | 5/5 | organizations | 4/5 |
-| admin-panel | 2/2 | api-keys、change-password、old-usage、router-settings、transform-request、ui-theme、workflows | 各 2/2 |
-| api-reference | 3/3 | teams、logs、logging-and-alerts、model-hub-table、tool-policies | 各 1/1 |
+| admin-panel | 1/2 | api-keys、old-usage、workflows | 各 2/2 |
+| api-reference | 3/3 | teams、logs、model-hub-table、tool-policies | 各 1/1 |
+| change-password、router-settings、transform-request、ui-theme、logging-and-alerts | 各 1/2 | | |
 
 此外 `src/components` 下仍有大量共享与页面组件未翻译，是真正的长尾，见“批次 24”。
 
@@ -51,6 +52,7 @@
 | 10 | 内部用户页收尾与团队管理 | `view_users.tsx`、`BulkEditUsers.tsx`、`user_edit_view.tsx`、`DefaultUserSettingsForm.tsx`、`user_info_view.tsx`、`components/Teams.tsx`、`components/team/*`、`TeamSSOSettings.tsx`、`MSTeamsSettings.tsx` |
 | 11 | 组织与预算 | `OrganizationsPanel.tsx`、`BudgetTableColumns.tsx`、`edit_budget_modal.tsx` |
 | 12 | 项目与访问组 | `ProjectsPage.tsx`、`ProjectDetailsPage.tsx`、`ProjectModals/*`、`AccessGroupsPage.tsx`、`AccessGroupsTableColumns.tsx`、`AccessGroupCreateDialog.tsx` |
+| 13 | 管理面板与系统设置 | `AdminPanel.tsx`、`UIThemeSettings.tsx`、`general_settings.tsx`、`ChangePasswordForm.tsx`、`TransformRequestPanel.tsx` |
 
 批次 3 到 8 存在“只翻译外壳、未翻译子组件”的欠账，因此下面把对应页面族重新列出收尾。
 
@@ -68,9 +70,16 @@
 
 `AccessGroupCreateDialog.test.tsx` 原本用普通 `render` 加自建 `QueryClientProvider`，缺少 `NextIntlClientProvider` 导致 `useTranslations` 抛错，改为 `renderWithProviders`。
 
-### 批次 13：管理面板与系统设置（P0）
-`admin-panel/AdminPanel.tsx` 内的 SSO、Logging、UI Settings 子表单，新增 `adminPanel` 子键。
-`ui-theme`（2）、`router-settings`（2）、`logging-and-alerts`（1）、`change-password`（2）、`transform-request`（2）。
+### 批次 13：管理面板与系统设置（P0，已完成）
+`admin-panel/_components/AdminPanel.tsx`：九个标签页、允许 IP 弹窗、SSO 废弃提示、界面访问控制。扩展 `adminPanel`。
+`ui-theme/UIThemeSettings.tsx`：新增 `uiTheme`。
+`router-settings/_components/general_settings.tsx`：标签页、通用设置表格、提示词缓存面板。新增 `routerSettings`。
+`change-password/ChangePasswordForm.tsx`：新增 `changePassword`。
+`transform-request/TransformRequestPanel.tsx`：新增 `transformRequest`。
+
+`logging-and-alerts/page.tsx` 只是转发到共享的 `components/settings`，留到批次 24。
+
+`AdminPanel.test.tsx`、`UIThemeSettings.test.tsx`、`TransformRequestPanel.test.tsx`、`ChangePasswordForm.integration.test.tsx` 原本都用普通 `render`，改为 `renderWithProviders`。注意 `tests/test-utils` 的相对层级：文件在 `src/app/(dashboard)/<route>/` 下用 4 级 `../`，在 `.../<route>/_components/` 下用 5 级。
 
 ### 批次 14：MCP 服务器（43）
 `mcp-servers/_components/*`，含创建、导入、网关会话、工具集、权限、OAuth 等。新增 `mcpServers` 命名空间。
