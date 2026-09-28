@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import useCan from "@/app/(dashboard)/hooks/useCan";
 import DeletedKeysPage from "../DeletedKeysPage/DeletedKeysPage";
 import DeletedTeamsPage from "../DeletedTeamsPage/DeletedTeamsPage";
@@ -17,21 +18,9 @@ interface SpendLogsTableProps {
 
 type LogsTabId = "request logs" | "audit logs" | "deleted keys" | "deleted teams";
 
-interface LogsTab {
-  id: LogsTabId;
-  label: string;
-}
-
-const REQUEST_LOGS_TAB: LogsTab = { id: "request logs", label: "Request Logs" };
-const AUDIT_LOGS_TAB: LogsTab = { id: "audit logs", label: "Audit Logs" };
-const DELETED_KEYS_TAB: LogsTab = { id: "deleted keys", label: "Deleted Keys" };
-const DELETED_TEAMS_TAB: LogsTab = { id: "deleted teams", label: "Deleted Teams" };
-
-const tabContentClassName = (tabId: LogsTabId): string =>
-  tabId === REQUEST_LOGS_TAB.id ? "flex min-h-0 flex-1 flex-col" : "min-h-0 flex-1 overflow-y-auto";
-
 export default function SpendLogsTable({ accessToken, token, userRole, userID, premiumUser }: SpendLogsTableProps) {
-  const [activeTab, setActiveTab] = useState<LogsTabId>(REQUEST_LOGS_TAB.id);
+  const t = useTranslations("logs.tabs");
+  const [activeTab, setActiveTab] = useState<LogsTabId>("request logs");
   const canViewAuditLogs = useCan("viewAuditLogs");
   const canViewDeletedTeams = useCan("viewDeletedTeams");
 
@@ -43,12 +32,15 @@ export default function SpendLogsTable({ accessToken, token, userRole, userID, p
     );
   }
 
-  const tabs: LogsTab[] = [
-    REQUEST_LOGS_TAB,
-    ...(canViewAuditLogs ? [AUDIT_LOGS_TAB] : []),
-    DELETED_KEYS_TAB,
-    ...(canViewDeletedTeams ? [DELETED_TEAMS_TAB] : []),
+  const tabs: Array<{ id: LogsTabId; label: string }> = [
+    { id: "request logs", label: t("requestLogs") },
+    ...(canViewAuditLogs ? [{ id: "audit logs" as LogsTabId, label: t("auditLogs") }] : []),
+    { id: "deleted keys", label: t("deletedKeys") },
+    ...(canViewDeletedTeams ? [{ id: "deleted teams" as LogsTabId, label: t("deletedTeams") }] : []),
   ];
+
+  const tabContentClassName = (tabId: LogsTabId): string =>
+    tabId === "request logs" ? "flex min-h-0 flex-1 flex-col" : "min-h-0 flex-1 overflow-y-auto";
 
   const renderPanel = (tabId: LogsTabId) => {
     switch (tabId) {

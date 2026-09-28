@@ -9,6 +9,7 @@
 import { ChevronDown, ChevronRight, Download, Info, Sparkles, X } from "lucide-react";
 import type { DateRangePickerValue } from "@/components/shared/date_picker_types";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { BarChart } from "@/components/shared/charts";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/shared/Alert";
@@ -74,6 +75,7 @@ interface UsagePageProps {
 }
 
 const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
+  const usageT = useTranslations("usage");
   const { accessToken, userRole, userId: userID, premiumUser } = useAuthorized();
   // Aggregated endpoint: try first, fall back to paginated if unavailable
   const [aggregatedData, setAggregatedData] = useState<FetchedForRange<{
@@ -488,19 +490,19 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                 <div className="flex justify-between items-center">
                   <TabsList className="mt-1">
                     <TabsTrigger value="cost" className="flex-none px-3">
-                      Cost
+                      {usageT("tabs.cost")}
                     </TabsTrigger>
                     <TabsTrigger value="models" className="flex-none px-3">
-                      Model Activity
+                      {usageT("tabs.models")}
                     </TabsTrigger>
                     <TabsTrigger value="keys" className="flex-none px-3">
-                      Key Activity
+                      {usageT("tabs.keys")}
                     </TabsTrigger>
                     <TabsTrigger value="mcp" className="flex-none px-3">
-                      MCP Server Activity
+                      {usageT("tabs.mcp")}
                     </TabsTrigger>
                     <TabsTrigger value="endpoints" className="flex-none px-3">
-                      Endpoint Activity
+                      {usageT("tabs.endpoints")}
                     </TabsTrigger>
                   </TabsList>
                   <div className="flex items-center gap-2">
@@ -557,11 +559,11 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                     <div className="col-span-2">
                       <ShadcnCard>
                         <CardContent>
-                          <h3 className="text-lg font-medium text-foreground">Usage Metrics</h3>
+                          <h3 className="text-lg font-medium text-foreground">{usageT("metrics")}</h3>
                           <div className="grid grid-cols-5 gap-4 mt-4">
                             <ShadcnCard>
                               <CardContent>
-                                <h3 className="text-lg font-medium text-foreground">Total Requests</h3>
+                                <h3 className="text-lg font-medium text-foreground">{usageT("totalRequests")}</h3>
                                 <p className="text-2xl font-bold mt-2">
                                   {(gatewayActivity
                                     ? gatewayActivity.total_successful_requests + gatewayActivity.total_failed_requests
@@ -643,7 +645,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                             >
                               <CardContent>
                                 <div className="flex items-center gap-2">
-                                  <h3 className="text-lg font-medium text-foreground">Total Tokens</h3>
+                                  <h3 className="text-lg font-medium text-foreground">{usageT("totalTokens")}</h3>
                                   {showTokenBreakdown ? (
                                     <ChevronDown className="size-3 text-muted-foreground" />
                                   ) : (
@@ -700,7 +702,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                     <div className="col-span-2">
                       <ShadcnCard>
                         <CardHeader>
-                          <CardTitle className="text-base font-semibold">Daily Spend</CardTitle>
+                          <CardTitle className="text-base font-semibold">{usageT("dailySpend")}</CardTitle>
                         </CardHeader>
                         <CardContent>
                           {loading ? (
@@ -1030,7 +1032,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
         }}
         dateRange={dateValue}
         selectedFilters={[]}
-        customTitle="Export Usage Data"
+        customTitle={usageT("exportData")}
       />
 
       {/* AI Chat Panel */}

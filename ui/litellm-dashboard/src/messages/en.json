@@ -710,5 +710,56 @@
     "ipDeletedSuccessfully": "IP address deleted successfully",
     "ssoNotConfigured": "SSO is not configured",
     "ssoConfigured": "SSO is configured"
+  },
+  "usage": {
+    "title": "Usage",
+    "tabs": {
+      "cost": "Cost",
+      "models": "Model Activity",
+      "keys": "Key Activity",
+      "mcp": "MCP Server Activity",
+      "endpoints": "Endpoint Activity"
+    },
+    "metrics": "Usage Metrics",
+    "totalRequests": "Total Requests",
+    "totalTokens": "Total Tokens",
+    "dailySpend": "Daily Spend",
+    "spend": "Spend",
+    "topModels": "Top Models",
+    "topKeys": "Top Keys",
+    "viewAll": "View All",
+    "exportData": "Export Usage Data",
+    "dateRange": "Date Range",
+    "last7Days": "Last 7 days",
+    "last30Days": "Last 30 days",
+    "custom": "Custom",
+    "noData": "No usage data available",
+    "loading": "Loading usage data..."
+  },
+  "logs": {
+    "title": "Logs",
+    "tabs": {
+      "requestLogs": "Request Logs",
+      "auditLogs": "Audit Logs",
+      "deletedKeys": "Deleted Keys",
+      "deletedTeams": "Deleted Teams"
+    },
+    "loading": "Loading",
+    "noLogs": "No logs found",
+    "requestDetails": "Request Details",
+    "responseDetails": "Response Details",
+    "requestTime": "Request Time",
+    "model": "Model",
+    "tokens": "Tokens",
+    "cost": "Cost",
+    "status": "Status",
+    "searchPlaceholder": "Search logs...",
+    "filterByStatus": "Filter by Status",
+    "filterByModel": "Filter by Model",
+    "allStatuses": "All Statuses",
+    "success": "Success",
+    "failure": "Failure",
+    "details": "Details",
+    "close": "Close"
   }
 }

@@ -712,5 +712,56 @@
     "ipDeletedSuccessfully": "IP 地址删除成功",
     "ssoNotConfigured": "未配置 SSO",
     "ssoConfigured": "已配置 SSO"
+  },
+  "usage": {
+    "title": "用量",
+    "tabs": {
+      "cost": "成本",
+      "models": "模型活动",
+      "keys": "密钥活动",
+      "mcp": "MCP 服务器活动",
+      "endpoints": "端点活动"
+    },
+    "metrics": "用量指标",
+    "totalRequests": "总请求数",
+    "totalTokens": "总令牌数",
+    "dailySpend": "每日花费",
+    "spend": "花费",
+    "topModels": "热门模型",
+    "topKeys": "热门密钥",
+    "viewAll": "查看全部",
+    "exportData": "导出用量数据",
+    "dateRange": "日期范围",
+    "last7Days": "最近 7 天",
+    "last30Days": "最近 30 天",
+    "custom": "自定义",
+    "noData": "暂无用量数据",
+    "loading": "正在加载用量数据..."
+  },
+  "logs": {
+    "title": "日志",
+    "tabs": {
+      "requestLogs": "请求日志",
+      "auditLogs": "审计日志",
+      "deletedKeys": "已删除密钥",
+      "deletedTeams": "已删除团队"
+    },
+    "loading": "加载中",
+    "noLogs": "未找到日志",
+    "requestDetails": "请求详情",
+    "responseDetails": "响应详情",
+    "requestTime": "请求时间",
+    "model": "模型",
+    "tokens": "令牌",
+    "cost": "成本",
+    "status": "状态",
+    "searchPlaceholder": "搜索日志...",
+    "filterByStatus": "按状态筛选",
+    "filterByModel": "按模型筛选",
+    "allStatuses": "所有状态",
+    "success": "成功",
+    "failure": "失败",
+    "details": "详情",
+    "close": "关闭"
   }
 }
