@@ -1,0 +1,181 @@
+const fs = require('fs');
+
+const en = JSON.parse(fs.readFileSync('src/messages/en.json', 'utf8'));
+const zh = JSON.parse(fs.readFileSync('src/messages/zh-CN.json', 'utf8'));
+
+// Add guardrails namespace
+en.guardrails = {
+  title: 'Guardrails',
+  tabs: {
+    garden: 'Guardrail Garden',
+    guardrails: 'Guardrails',
+    playground: 'Test Playground',
+    submitted: 'Submitted Guardrails',
+  },
+  addNew: 'Add New Guardrail',
+  addProvider: 'Add Provider Guardrail',
+  createCustomCode: 'Create Custom Code Guardrail',
+  loading: 'Loading guardrails...',
+  noGuardrails: 'No guardrails found',
+  deletedSuccessfully: 'Guardrail "{name}" deleted successfully',
+  deleteFailed: 'Failed to delete guardrail',
+  deleteConfirmTitle: 'Delete Guardrail',
+  deleteConfirmMessage: 'Are you sure you want to delete guardrail: {name}? This action cannot be undone.',
+  resourceInformationTitle: 'Guardrail Information',
+  name: 'Name',
+  id: 'ID',
+  provider: 'Provider',
+  mode: 'Mode',
+  defaultOn: 'Default On',
+  yes: 'Yes',
+  no: 'No',
+};
+
+zh.guardrails = {
+  title: '护栏',
+  tabs: {
+    garden: '护栏花园',
+    guardrails: '护栏',
+    playground: '测试演练场',
+    submitted: '已提交的护栏',
+  },
+  addNew: '添加新护栏',
+  addProvider: '添加提供商护栏',
+  createCustomCode: '创建自定义代码护栏',
+  loading: '正在加载护栏...',
+  noGuardrails: '未找到护栏',
+  deletedSuccessfully: '护栏 "{name}" 删除成功',
+  deleteFailed: '删除护栏失败',
+  deleteConfirmTitle: '删除护栏',
+  deleteConfirmMessage: '确定要删除护栏: {name} 吗？此操作无法撤销。',
+  resourceInformationTitle: '护栏信息',
+  name: '名称',
+  id: 'ID',
+  provider: '提供商',
+  mode: '模式',
+  defaultOn: '默认启用',
+  yes: '是',
+  no: '否',
+};
+
+// Add policies namespace
+en.policies = {
+  title: 'Policies',
+  aboutTitle: 'About Policies',
+  aboutDescription: 'Use policies to group guardrails and control which ones run for specific teams, keys, or models.',
+  whyUsePolicies: 'Why use policies?',
+  reason1: 'Enable/disable specific guardrails for teams, keys, or models',
+  reason2: 'Group guardrails into a single policy',
+  reason3: 'Inherit from existing policies and override what you need',
+  learnMore: 'Learn more in the documentation',
+  tabs: {
+    templates: 'Templates',
+    policies: 'Policies',
+    attachments: 'Attachments',
+    simulator: 'Simulator',
+  },
+  addPolicy: 'Add Policy',
+  addAttachment: 'Add Attachment',
+  loading: 'Loading policies...',
+  noPolicies: 'No policies found',
+  fetchPoliciesFailed: 'Failed to fetch policies',
+  fetchAttachmentsFailed: 'Failed to fetch attachments',
+  deletedSuccessfully: 'Policy deleted successfully',
+  deleteFailed: 'Failed to delete policy',
+  deleteConfirmTitle: 'Delete Policy',
+  deleteConfirmMessage: 'Are you sure you want to delete this policy? This action cannot be undone.',
+  policyName: 'Policy Name',
+  policyId: 'Policy ID',
+  description: 'Description',
+  created_at: 'Created At',
+  updated_at: 'Updated At',
+  actions: 'Actions',
+};
+
+zh.policies = {
+  title: '策略',
+  aboutTitle: '关于策略',
+  aboutDescription: '使用策略将护栏分组，并控制哪些护栏针对特定团队、密钥或模型运行。',
+  whyUsePolicies: '为什么使用策略？',
+  reason1: '为团队、密钥或模型启用/禁用特定护栏',
+  reason2: '将护栏分组到单个策略中',
+  reason3: '从现有策略继承并覆盖您需要的部分',
+  learnMore: '在文档中了解更多',
+  tabs: {
+    templates: '模板',
+    policies: '策略',
+    attachments: '附件',
+    simulator: '模拟器',
+  },
+  addPolicy: '添加策略',
+  addAttachment: '添加附件',
+  loading: '正在加载策略...',
+  noPolicies: '未找到策略',
+  fetchPoliciesFailed: '获取策略失败',
+  fetchAttachmentsFailed: '获取附件失败',
+  deletedSuccessfully: '策略删除成功',
+  deleteFailed: '删除策略失败',
+  deleteConfirmTitle: '删除策略',
+  deleteConfirmMessage: '确定要删除此策略吗？此操作无法撤销。',
+  policyName: '策略名称',
+  policyId: '策略 ID',
+  description: '描述',
+  created_at: '创建时间',
+  updated_at: '更新时间',
+  actions: '操作',
+};
+
+// Add adminPanel namespace
+en.adminPanel = {
+  title: 'Admin Settings',
+  tabs: {
+    general: 'General',
+    allowedIPs: 'Allowed IPs',
+    budget: 'Budget',
+    logging: 'Logging',
+    sso: 'SSO',
+    ui: 'UI',
+    security: 'Security',
+  },
+  allowedIPsTitle: 'Allowed IP Addresses',
+  allowedIPsDescription: 'Restrict access to the proxy to specific IP addresses',
+  allIPsAllowed: 'All IP Addresses Allowed',
+  addIP: 'Add IP Address',
+  enterIP: 'Enter IP address',
+  ipRequired: 'Please enter an IP address',
+  deleteIP: 'Delete IP Address',
+  deleteIPConfirm: 'Are you sure you want to delete this IP address?',
+  ipAddedSuccessfully: 'IP address added successfully',
+  ipDeletedSuccessfully: 'IP address deleted successfully',
+  ssoNotConfigured: 'SSO is not configured',
+  ssoConfigured: 'SSO is configured',
+};
+
+zh.adminPanel = {
+  title: '管理员设置',
+  tabs: {
+    general: '通用',
+    allowedIPs: '允许的 IP',
+    budget: '预算',
+    logging: '日志',
+    sso: 'SSO',
+    ui: '界面',
+    security: '安全',
+  },
+  allowedIPsTitle: '允许的 IP 地址',
+  allowedIPsDescription: '限制对代理的访问仅限特定 IP 地址',
+  allIPsAllowed: '允许所有 IP 地址',
+  addIP: '添加 IP 地址',
+  enterIP: '请输入 IP 地址',
+  ipRequired: '请输入 IP 地址',
+  deleteIP: '删除 IP 地址',
+  deleteIPConfirm: '确定要删除此 IP 地址吗？',
+  ipAddedSuccessfully: 'IP 地址添加成功',
+  ipDeletedSuccessfully: 'IP 地址删除成功',
+  ssoNotConfigured: '未配置 SSO',
+  ssoConfigured: '已配置 SSO',
+};
+
+fs.writeFileSync('src/messages/en.json', JSON.stringify(en, null, 2) + '\n');
+fs.writeFileSync('src/messages/zh-CN.json', JSON.stringify(zh, null, 2) + '\n');
+console.log('Both files updated with guardrails, policies, adminPanel namespaces');

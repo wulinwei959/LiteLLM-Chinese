@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle, AlertAction } from "@/components/shared/Alert";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -59,16 +60,19 @@ const DismissibleAlert: React.FC<DismissibleAlertProps> = ({ title, icon, childr
   );
 };
 
-const AboutPoliciesAlert = () => (
-  <DismissibleAlert title="About Policies" icon={<Info />}>
+const AboutPoliciesAlert = () => {
+  const t = useTranslations("policies");
+
+  return (
+  <DismissibleAlert title={t("aboutTitle")} icon={<Info />}>
     <p className="mb-3">
-      Use policies to group guardrails and control which ones run for specific teams, keys, or models.
+      {t("aboutDescription")}
     </p>
-    <p className="mb-2 font-semibold">Why use policies?</p>
+    <p className="mb-2 font-semibold">{t("whyUsePolicies")}</p>
     <ul className="mb-3 ml-2 list-inside list-disc space-y-1">
-      <li>Enable/disable specific guardrails for teams, keys, or models</li>
-      <li>Group guardrails into a single policy</li>
-      <li>Inherit from existing policies and override what you need</li>
+      <li>{t("reason1")}</li>
+      <li>{t("reason2")}</li>
+      <li>{t("reason3")}</li>
     </ul>
     <a
       href="https://docs.litellm.ai/docs/proxy/guardrails/guardrail_policies"
@@ -76,10 +80,11 @@ const AboutPoliciesAlert = () => (
       rel="noopener noreferrer"
       className="mt-1 inline-block text-primary underline underline-offset-4"
     >
-      Learn more in the documentation -&gt;
+      {t("learnMore")}
     </a>
   </DismissibleAlert>
-);
+  );
+};
 
 interface PoliciesPanelProps {
   accessToken: string | null;
