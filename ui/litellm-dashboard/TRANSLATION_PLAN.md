@@ -10,19 +10,19 @@
 
 翻译基于 `next-intl`。语言资源放在 `src/messages/en.json` 与 `src/messages/zh-CN.json`，两侧键树必须完全一致，由 `src/lib/i18n/messagesParity.test.ts` 强制校验。组件通过 `useTranslations("<namespace>")` 取词。语言状态与切换在 `src/contexts/LocaleContext.tsx`，切换器是 `src/components/shared/LanguageSwitcher.tsx`，入口在 `UserDropdown` 与 `SidebarAccountMenu`。
 
-命名空间按功能域划分，当前已有：`common`、`nav`、`viewSwitcher`、`login`、`onboarding`、`breadcrumb`、`ssoEnabledNotice`、`virtualKeys`、`models`、`teams`、`users`、`organizations`、`budgets`、`guardrails`、`policies`、`adminPanel`、`usage`、`logs`。
+命名空间按功能域划分，当前已有：`common`、`nav`、`viewSwitcher`、`login`、`onboarding`、`breadcrumb`、`ssoEnabledNotice`、`virtualKeys`、`models`、`teams`、`users`、`organizations`、`budgets`、`guardrails`、`policies`、`adminPanel`、`usage`、`logs`、`projects`、`access-groups`。
 
 ## 进度概览
 
-翻译覆盖以“是否引入 `next-intl`”粗略统计。`src` 下共 861 个非测试 `.tsx`，其中 25 个已引入 `next-intl`。这个数字偏低，是因为早期批次多只翻译了每个页面的外层 Panel，未覆盖其子组件。下表列出各路由的未翻译文件数（仅统计该路由目录下的 `.tsx`）。
+翻译覆盖以“是否引入 `next-intl`”粗略统计。`src` 下共 860 个非测试 `.tsx`，其中 68 个已引入 `next-intl`。这个数字偏低，是因为早期批次多只翻译了每个页面的外层 Panel，未覆盖其子组件。下表列出各路由的未翻译文件数（仅统计该路由目录下的 `.tsx`）。
 
 | 路由 | 未翻译/总数 | 路由 | 未翻译/总数 |
 | --- | --- | --- | --- |
 | mcp-servers | 43/43 | cost-optimization | 11/11 |
-| playground | 37/37 | projects | 11/11 |
+| playground | 37/37 | projects | 1/11 |
 | guardrails | 34/35 | cost-tracking | 10/10 |
 | prompts | 27/27 | search-tools | 10/10 |
-| policies | 17/18 | access-groups | 8/8 |
+| policies | 17/18 | access-groups | 1/8 |
 | agents | 15/15 | guardrails-monitor | 7/7 |
 | vector-stores | 15/15 | users | 2/9 |
 | caching | 13/13 | memory | 6/6 |
@@ -49,6 +49,8 @@
 | 8 | 用量与日志页 | `UsagePageView.tsx`、`view_logs/index.tsx` |
 | 9 | 内部用户表格 | `UsersTable.tsx`、`UsersTableColumns.tsx`、`UsersTable.test.tsx` |
 | 10 | 内部用户页收尾与团队管理 | `view_users.tsx`、`BulkEditUsers.tsx`、`user_edit_view.tsx`、`DefaultUserSettingsForm.tsx`、`user_info_view.tsx`、`components/Teams.tsx`、`components/team/*`、`TeamSSOSettings.tsx`、`MSTeamsSettings.tsx` |
+| 11 | 组织与预算 | `OrganizationsPanel.tsx`、`BudgetTableColumns.tsx`、`edit_budget_modal.tsx` |
+| 12 | 项目与访问组 | `ProjectsPage.tsx`、`ProjectDetailsPage.tsx`、`ProjectModals/*`、`AccessGroupsPage.tsx`、`AccessGroupsTableColumns.tsx`、`AccessGroupCreateDialog.tsx` |
 
 批次 3 到 8 存在“只翻译外壳、未翻译子组件”的欠账，因此下面把对应页面族重新列出收尾。
 
@@ -56,14 +58,15 @@
 
 批次按用户影响排序，核心管理功能优先。括号内是该批次的未翻译文件数。
 
-### 批次 11：组织与预算（P0）
 ### 批次 11：组织与预算（P0，已完成）
 `organizations`：`OrganizationsPanel.tsx`、`OrganizationsTableColumns.tsx`、`OrganizationFilters.tsx`、`page.tsx`、`OrganizationsTable.tsx`、`OrganizationInfoView.tsx`、`OrgCreateDialog.tsx`。
 `budgets`：`budget_panel.tsx`、`BudgetTableColumns.tsx`、`BudgetTable.tsx`、`edit_budget_modal.tsx`、`budget_modal.tsx`、`page.tsx`。
 
-### 批次 12：项目与访问组（P0）
+### 批次 12：项目与访问组（P0，已完成）
 `projects`（11）：`ProjectsPage.tsx`、`ProjectDetailsPage.tsx`、`ProjectKeys*`、`ProjectModals/*`、`ProjectsTable*`
 `access-groups`（8）：`AccessGroupsPage.tsx`、`AccessGroupsDetailsPage.tsx`、`AccessGroupsTable*`、`AccessGroupCreateDialog.tsx`、`AccessGroupEditModal.tsx`、`AccessGroupBaseForm.tsx`
+
+`AccessGroupCreateDialog.test.tsx` 原本用普通 `render` 加自建 `QueryClientProvider`，缺少 `NextIntlClientProvider` 导致 `useTranslations` 抛错，改为 `renderWithProviders`。
 
 ### 批次 13：管理面板与系统设置（P0）
 `admin-panel/AdminPanel.tsx` 内的 SSO、Logging、UI Settings 子表单，新增 `adminPanel` 子键。
@@ -108,7 +111,8 @@
 1. 先通读该页面的组件树，列出所有面向用户的字符串，再设计最小键集。
 2. 在 `en.json` 与 `zh-CN.json` 同时加键，保持键树一致，避免同名键既是字符串又是对象（例如 `status` 与 `status.active` 冲突）。加完立即跑 `messagesParity.test.ts`。
 3. 改组件：英语原文不变，只把字面量换成 `t("...")`。`useTranslations` 只能放在 React 组件或自定义 Hook 里；对非组件的列工厂函数，把 `t` 作为参数传入，不要在工厂里直接调用 Hook。
-4. 对改动或新增的测试，参照 `VirtualKeysTable.test.tsx` 的写法 mock `next-intl`，用 `mockTranslations` 映射键到英文断言文本。
+   - 只替换**传给组件的字符串**，绝不替换组件本身。列定义里 `header: ({ column }) => <DataTableSortHeader column={column} title="Name" />` 应改成 `title={t("name")}`；写成 `header: t("name")` 会把 `DataTableSortHeader` 整个丢掉，表头不再可点击排序，且测试只在断言排序时才暴露。
+4. 对改动或新增的测试，优先改用 `tests/test-utils.tsx` 的 `renderWithProviders`，它已经包好 `LocaleProvider`。只有当测试需要自定义包裹层且不便改造时，才参照 `VirtualKeysTable.test.tsx` mock `next-intl`。纯 `render` 的测试在组件引入 `useTranslations` 后会抛 “context from `NextIntlClientProvider` was not found”。
 5. 验证：`npx vitest run <改动测试> src/lib/i18n/messagesParity.test.ts`、对改动文件跑 `npx eslint`、`npx tsc --noEmit` 确认无新错误、`npm run build` 通过。
 6. 删除任何临时脚本（`write-*.js`、`check-*.js` 等），不要留在仓库里。
 7. 提交并推送。提交信息用 conventional commits 类型前缀加中文正文，例如 `feat(ui): 翻译 MCP 服务器页面为简体中文`。提交标题、提交正文与 PR 说明一律用简体中文书写，类型前缀（`feat`、`fix`、`chore`、`docs`）保留英文。

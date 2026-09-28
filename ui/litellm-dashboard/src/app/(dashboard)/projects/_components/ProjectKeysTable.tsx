@@ -3,6 +3,7 @@
 import { OnChangeFn, PaginationState } from "@tanstack/react-table";
 import { KeyRound } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 import { KeyResponse } from "@/components/key_team_helpers/key_list";
 import { DataTable } from "@/components/shared/DataTable";
@@ -19,14 +20,14 @@ interface ProjectKeysTableProps {
   onPaginationChange: OnChangeFn<PaginationState>;
 }
 
-function EmptyState() {
+function EmptyState({ t }: { t: ReturnType<typeof useTranslations> }) {
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <KeyRound className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No keys found</div>
-      <div className="text-sm text-muted-foreground">Keys created in this project will show up here.</div>
+      <div className="text-sm font-medium text-foreground">{t("noKeysFound")}</div>
+      <div className="text-sm text-muted-foreground">{t("keysCreatedHere")}</div>
     </div>
   );
 }
@@ -39,7 +40,8 @@ export function ProjectKeysTable({
   pagination,
   onPaginationChange,
 }: ProjectKeysTableProps) {
-  const columns = useMemo(() => getProjectKeysTableColumns(), []);
+  const t = useTranslations("projects");
+  const columns = useMemo(() => getProjectKeysTableColumns(t), [t]);
 
   return (
     <DataTable
@@ -53,8 +55,8 @@ export function ProjectKeysTable({
       pageSizeOptions={PROJECT_KEYS_PAGE_SIZE_OPTIONS}
       isLoading={isLoading}
       isError={isError}
-      loadingMessage="Loading keys…"
-      noDataMessage={<EmptyState />}
+      loadingMessage={t("loadingKeys")}
+      noDataMessage={<EmptyState t={t} />}
       size="compact"
     />
   );
