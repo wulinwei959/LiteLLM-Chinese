@@ -136,7 +136,6 @@
 
 ## 待清理与技术债
 
-- `ui/litellm-dashboard/check-addmodel-keys.js` 与 `write-addmodel-zh.js` 是早期批次误提交的临时脚本，应删除
 - `ui/litellm-dashboard/tsconfig.tsbuildinfo` 是构建产物，不应随翻译提交
 - 目前所有批次直接提交到 `main`。若后续要开 PR，按仓库约定从默认分支切出 `litellm_` 前缀分支
 - 早期批次只翻译了页面外壳，本计划用批次 10 到 19 补齐这些页面的子组件
