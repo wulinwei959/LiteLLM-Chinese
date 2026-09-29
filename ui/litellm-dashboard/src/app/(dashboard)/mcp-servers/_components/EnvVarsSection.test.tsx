@@ -1,6 +1,8 @@
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -33,7 +35,7 @@ const renderSection = (defaultValues: MountedFormValues) => {
       </FormProvider>
     );
   };
-  render(<Harness />);
+  renderWithProviders(<Harness />);
   return onFinish;
 };
 

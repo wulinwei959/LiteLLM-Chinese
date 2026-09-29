@@ -91,7 +91,9 @@
 
 - **14a 列表页与卡片（已完成）**：`mcp_servers.tsx`（页头、标签页、筛选、搜索、排序、删除弹窗、空状态）、`MCPServerCard.tsx`（卡片菜单、健康度标签、OAuth 提示、按用户凭据与 BYOK 行）。新增 `mcpServers` 命名空间。
 - **14b 详情页（已完成）**：`mcp_server_view.tsx`、`mcp_connection_status.tsx`、`mcp_server_cost_config.tsx`、`mcp_server_cost_display.tsx`、`MCPServerUserCredentialsPanel.tsx`，另加共享的 `utils.tsx`（见下）。新增 103 个 key，`mcpServers` 命名空间共 161 个。
-- **14c 创建与编辑表单**：`CreateMCPServer.tsx`、`mcp_server_edit.tsx`、`mcpFormStore`、各 `*FormFields`（OAuth、IdJag、AwsSigV4、TokenExchange、EnvVars 等）、`OpenAPI*`、`StdioConfiguration`、`MCPLogoSelector`、`ImportMCPServers`。
+- **14c-1 表单字段组件（已完成）**：`AwsSigV4Fields`、`IdJagFormFields`、`TokenExchangeFormFields`、`OpenApiByokFields`、`UpstreamTokenHeaderField`、`DcrBridgeToggle`、`StdioConfiguration`、`TruePassthroughWarning`、`PassthroughAuthorizeSection`、`OpenAPIFormSection`、`OpenAPIQuickPicker`、`TokenEndpointAuthMethodField`、`MCPLogoSelector`、`EnvVarsSection`。新增 136 个 key，`mcpServers` 命名空间共 297 个。
+- **14c-2 其余表单与弹窗**：`EnvVarsSection` 配套的 `UserEnvVarsModal`、`ImportMCPServers`、`ToolArgumentsForm`、`OAuthFormFields`。
+- **14c-3 创建与编辑表单主体**：`CreateMCPServer.tsx`（44KB）、`mcp_server_edit.tsx`（58KB）、`McpFormTestHarness`。
 - **14d 工具与权限**：`mcp_tools.tsx`、`mcp_tool_configuration.tsx`、`MCPToolsetsTab.tsx`、`MCPToolsetTableColumns.tsx`、`ToolArgumentsForm.tsx`、`ToolTestPanel.tsx`、`MCPPermissionManagement.tsx`、`MCPGatewaySessionsTab.tsx`、`MCPSubmissionsTab.tsx`、`MCPNetworkSettings.tsx`、`mcp_connect.tsx`、`mcp_discovery.tsx`。
 
 `mcp_servers.tsx` 里 `SORT_OPTIONS` 原本是带 `label` 的字面量数组，翻译时改为 `SORT_KEYS`（只存 key）加 `SORT_LABEL_KEYS`（key 到 i18n key 的映射），下拉项和 `items` prop 都从 `SORT_KEYS` 派生。
@@ -187,6 +189,25 @@ git diff -U0 610473c HEAD -- <相对仓库根的路径>
 
 2026-09-29 修掉的：`common` 60 个、`models` 32 个、`virtualKeys` 9 个，来自批次 2 与批次 3。同时发现 `AddModelForm.tsx` 写的是 `useTranslations("models.addModel")`，这个命名空间不存在，导致该文件 37 处文案全部解析失败。
 
+### 消息里的尖括号要加引号
+
+ICU 把 `<...>` 当成富文本标签。RFC 举例里出现 `api://<app-id>/.default` 这种写法时，普通 `t()` 会抛 `INVALID_MESSAGE: UNCLOSED_TAG`，整条消息渲染不出来，界面上一片空白，而且只在真正打开那个表单时才发现。
+
+按 ICU 规范用单引号把尖括号括起来就按字面量渲染，界面上看到的英文不变：
+
+```
+Microsoft Entra OBO requires a scope, e.g. api://'<app-id>'/.default
+```
+
+写转义脚本时踩了两次坑：
+
+- 已经在引号里的尖括号不要动。`'Authorization: Bearer <token>'` 对 ICU 本来就是字面量，再加一层引号会变成 `'<token>''`，反而坏掉
+- 闭合标签要一起判断。`<strong>` 在富名单里，`</strong>` 的 body 是 `/strong`，不先剥掉斜杠就会把闭合标签也加上引号，消息从"能渲染"变成"渲染出字面量标签"
+
+`messagesParity.test.ts` 里有两条守卫盯这件事：未加引号且不属于富文本标签的尖括号，以及开了标签没闭合。两条都验证过能抓到实际的 bug。
+
+`t.rich` 的 handler 是按标签名取的，所以 `<strong>{name}</strong>` 不需要额外的 `{strong}` 占位符，守卫不要去要求它。
+
 ### 大小写不同的两个字符串也要分开
 
 `mcp_connection_status.tsx` 里状态行写 `Connection failed`，告警标题写 `Connection Failed`。看着是同一个词的不同大小写，其实测试各断言一次。合成一个 key 就会漏掉其中一个。批次 14b 因为这个红了一个用例。
@@ -277,6 +298,8 @@ const columns = useMemo(() => getModelsTableColumns({ ...deps, t }), [t, ...]);
 - 脚本打印"写入成功"就当成功，其实 JSON 被覆盖后要重新读回来核对。这次连着两次被同一个假成功骗到
 - 翻译时顺手把英文润色（`Source` 改 `Status`、省略号改三个点、`Model Access Group` 改成 `Access Groups`），比缺 key 更隐蔽，因为界面看着完全正常
 - 批量改测试文件的 PowerShell 脚本里，用 `$Matches[1]` 从 `import { describe, it, expect } from "vitest"` 抓取名字，`describe, ` 被正则的 `describe, ` 前缀吃掉了，四个文件的 `describe` 导入全丢。改完必须 `rg` 确认 import 行还在，`vitest` 测试运行时不报这个错，只有 `tsc` 会报
+- `git checkout HEAD -- src/messages/en.json` 是整文件回退，会把本批刚加的键一起退掉。回退后要重新落盘，别以为只是"撤销一次误操作"
+- PowerShell 里 `node -e "...\"...\""` 会把双引号吃掉报 `Expression expected`。含引号的脚本一律写成 `.cjs` 文件再 `node` 执行
 
 ## 验证清单
 

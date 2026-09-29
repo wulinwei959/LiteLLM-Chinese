@@ -1,6 +1,8 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, act, fireEvent } from "@testing-library/react";
+import { screen, waitFor, act, fireEvent } from "@testing-library/react";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 
 import { selectOption } from "./testUtils";
@@ -302,7 +304,7 @@ const CASES: readonly Case[] = [
 
 const saveAndCapture = async (server: MCPServer): Promise<Record<string, unknown>> => {
   vi.mocked(networking.updateMCPServer).mockResolvedValue(server as never);
-  render(
+  renderWithProviders(
     <MCPServerEdit
       mcpServer={server}
       accessToken="access-token"
@@ -385,7 +387,7 @@ describe("MCPServerEdit live tool preview", () => {
   });
 
   const renderEditor = (server: MCPServer = BASE) =>
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={server}
         accessToken="access-token"

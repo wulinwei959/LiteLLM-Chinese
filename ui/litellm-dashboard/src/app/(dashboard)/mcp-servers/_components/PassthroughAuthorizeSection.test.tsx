@@ -1,6 +1,8 @@
 import React from "react";
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import PassthroughAuthorizeSection from "./PassthroughAuthorizeSection";
 import { McpFormHarness } from "./McpFormTestHarness";
 
@@ -10,7 +12,7 @@ const noopFlow = { startOAuthFlow: () => {}, status: "idle", error: null, tokenR
 
 describe("PassthroughAuthorizeSection credential-class-aware copy", () => {
   it("shows keep-existing copy when the credential class is unchanged (true_passthrough <-> oauth_delegate)", () => {
-    render(
+    renderWithProviders(
       <WithForm>
         <PassthroughAuthorizeSection
           authType="oauth_delegate"
@@ -25,7 +27,7 @@ describe("PassthroughAuthorizeSection credential-class-aware copy", () => {
   });
 
   it("shows the discard warning copy when switching from a different class (oauth2 -> true_passthrough)", () => {
-    render(
+    renderWithProviders(
       <WithForm>
         <PassthroughAuthorizeSection
           authType="true_passthrough"
@@ -41,7 +43,7 @@ describe("PassthroughAuthorizeSection credential-class-aware copy", () => {
   });
 
   it("shows the keep+warn banner when the upstream may no longer match", () => {
-    render(
+    renderWithProviders(
       <WithForm>
         <PassthroughAuthorizeSection authType="true_passthrough" oauthFlow={noopFlow} appMayNotMatchUpstream />
       </WithForm>,

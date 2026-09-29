@@ -1,6 +1,8 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, act, fireEvent } from "@testing-library/react";
+import { screen, waitFor, act, fireEvent } from "@testing-library/react";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import OAuthFormFields from "./OAuthFormFields";
 import { McpFormHarness as WithForm } from "./McpFormTestHarness";
 
@@ -18,7 +20,7 @@ describe("OAuthFormFields", () => {
   // configured through the API.
   describe("resource indicator field", () => {
     it("renders in interactive mode", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -27,7 +29,7 @@ describe("OAuthFormFields", () => {
     });
 
     it("renders in M2M mode", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={true} />
         </WithForm>,
@@ -38,7 +40,7 @@ describe("OAuthFormFields", () => {
     it("keeps one placeholder when editing, since the stored value is returned and shown", () => {
       // Non-secret admin config is no longer redacted out of responses, so the field mounts with its
       // real value and an emptied field clears it. There is no keep-existing state left to signal.
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={false} isEditing={true} />
         </WithForm>,
@@ -48,7 +50,7 @@ describe("OAuthFormFields", () => {
 
     it("submits its value under credentials.upstream_resource", async () => {
       const onFinish = vi.fn();
-      render(
+      renderWithProviders(
         <WithForm onFinish={onFinish}>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -72,7 +74,7 @@ describe("OAuthFormFields", () => {
 
   describe("interactive mode (isM2M=false)", () => {
     it("renders Token Validation Rules field", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -81,7 +83,7 @@ describe("OAuthFormFields", () => {
     });
 
     it("renders Token Storage TTL field", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -90,7 +92,7 @@ describe("OAuthFormFields", () => {
     });
 
     it("renders standard interactive fields alongside the new fields", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -104,7 +106,7 @@ describe("OAuthFormFields", () => {
 
   describe("M2M mode (isM2M=true)", () => {
     it("does NOT render Token Validation Rules field", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={true} />
         </WithForm>,
@@ -113,7 +115,7 @@ describe("OAuthFormFields", () => {
     });
 
     it("does NOT render Token Storage TTL field", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={true} />
         </WithForm>,
@@ -122,7 +124,7 @@ describe("OAuthFormFields", () => {
     });
 
     it("still renders M2M-specific fields", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={true} />
         </WithForm>,
@@ -134,7 +136,7 @@ describe("OAuthFormFields", () => {
 
   describe("token endpoint auth method selector", () => {
     it("renders directly below the Token URL field in interactive mode", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -145,7 +147,7 @@ describe("OAuthFormFields", () => {
     });
 
     it("renders directly below the Token URL field in M2M mode", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={true} />
         </WithForm>,
@@ -156,7 +158,7 @@ describe("OAuthFormFields", () => {
     });
 
     it("offers client_secret_basic and client_secret_post options", async () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -177,7 +179,7 @@ describe("OAuthFormFields", () => {
   describe("token_validation_json validation", () => {
     it("accepts empty value without error", async () => {
       const onFinish = vi.fn();
-      render(
+      renderWithProviders(
         <WithForm onFinish={onFinish}>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -195,7 +197,7 @@ describe("OAuthFormFields", () => {
     });
 
     it("accepts a valid JSON object without error", async () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -217,7 +219,7 @@ describe("OAuthFormFields", () => {
     });
 
     it("shows 'Must be valid JSON' error for malformed JSON", async () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -239,7 +241,7 @@ describe("OAuthFormFields", () => {
     });
 
     it("shows error for a plain string value (not a JSON object)", async () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -265,7 +267,7 @@ describe("OAuthFormFields", () => {
 
     it("whitespace-only value is treated as empty and passes validation", async () => {
       const onFinish = vi.fn();
-      render(
+      renderWithProviders(
         <WithForm onFinish={onFinish}>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -289,7 +291,7 @@ describe("OAuthFormFields", () => {
 
   describe("token header field", () => {
     it("renders on the M2M flow", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={true} />
         </WithForm>,
@@ -298,7 +300,7 @@ describe("OAuthFormFields", () => {
     });
 
     it("renders on the interactive flow", () => {
-      render(
+      renderWithProviders(
         <WithForm>
           <OAuthFormFields isM2M={false} />
         </WithForm>,
@@ -308,7 +310,7 @@ describe("OAuthFormFields", () => {
 
     it("submits its value under credentials.upstream_token_header", async () => {
       const onFinish = vi.fn();
-      render(
+      renderWithProviders(
         <WithForm onFinish={onFinish}>
           <OAuthFormFields isM2M={true} />
         </WithForm>,

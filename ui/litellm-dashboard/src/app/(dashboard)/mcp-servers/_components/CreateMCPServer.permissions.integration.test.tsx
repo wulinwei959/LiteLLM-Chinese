@@ -1,4 +1,6 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "@/components/networking";
@@ -111,7 +113,7 @@ describe("CreateMCPServer permission toggles reaching the payload", () => {
   });
 
   it("sends the panel's untouched defaults rather than dropping the keys the panel owns", async () => {
-    render(<CreateMCPServer {...defaultProps} />);
+    renderWithProviders(<CreateMCPServer {...defaultProps} />);
     await fillMinimalHttpServer("Perm_Server");
 
     const payload = await submitAndReadPayload();
@@ -121,7 +123,7 @@ describe("CreateMCPServer permission toggles reaching the payload", () => {
   });
 
   it("sends allow_all_keys true once the operator turns the public-to-all-keys switch on", async () => {
-    render(<CreateMCPServer {...defaultProps} />);
+    renderWithProviders(<CreateMCPServer {...defaultProps} />);
     await fillMinimalHttpServer("Perm_Server");
 
     const allowAllKeys = await switchFor("Allow All LiteLLM Keys");
@@ -135,7 +137,7 @@ describe("CreateMCPServer permission toggles reaching the payload", () => {
   });
 
   it("sends available_on_public_internet false when the operator restricts the server to the internal network", async () => {
-    render(<CreateMCPServer {...defaultProps} />);
+    renderWithProviders(<CreateMCPServer {...defaultProps} />);
     await fillMinimalHttpServer("Perm_Server");
 
     const internalOnly = await switchFor("Internal network only");
@@ -152,7 +154,7 @@ describe("CreateMCPServer permission toggles reaching the payload", () => {
   });
 
   it("omits delegate_auth_to_upstream's true value on a none-auth server, whose gate never mounts that switch", async () => {
-    render(<CreateMCPServer {...defaultProps} />);
+    renderWithProviders(<CreateMCPServer {...defaultProps} />);
     await fillMinimalHttpServer("Perm_Server");
 
     expect(screen.getByText("Allow All LiteLLM Keys")).toBeInTheDocument();

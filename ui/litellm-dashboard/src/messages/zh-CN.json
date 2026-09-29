@@ -2170,6 +2170,172 @@
       "hubPublishedDescription": "由于此服务器已在 MCP Hub 中发布，允许来自公网和内网 IP 的请求。认证与访问权限仍然生效",
       "internalDescription": "仅允许来自内网/私有 IP 段的请求。认证与访问权限仍然生效",
       "unknownDescription": "代理未返回足够的网络与发布设置，无法确定允许的客户端 IP"
+    },
+    "awsSigv4": {
+      "intro": "适用于托管在 AWS Bedrock AgentCore 上的 MCP 服务器。",
+      "viewDocs": "查看文档",
+      "region": "AWS 区域",
+      "regionTooltip": "用于 SigV4 签名的 AWS 区域（例如 us-east-1）",
+      "regionRequired": "SigV4 认证必须填写 AWS 区域",
+      "serviceName": "AWS 服务名称",
+      "serviceNameTooltip": "用于 SigV4 签名的 AWS 服务名称。默认为 'bedrock-agentcore'。",
+      "accessKeyId": "AWS Access Key ID",
+      "accessKeyIdTooltip": "可选。若不提供，则回退到 boto3 凭证链（IAM 角色、环境变量等）。",
+      "accessKeyIdPaired": "填写 Secret Access Key 时必须同时填写 Access Key ID",
+      "accessKeyIdPlaceholder": "AKIA...（可选，留空则使用 IAM 角色）",
+      "secretAccessKey": "AWS Secret Access Key",
+      "secretAccessKeyTooltip": "可选。若填写了 AWS Access Key ID，则此项必填。",
+      "secretAccessKeyPaired": "填写 Access Key ID 时必须同时填写 Secret Access Key",
+      "secretAccessKeyPlaceholder": "输入 secret key（可选，留空则使用 IAM 角色）",
+      "sessionToken": "AWS 会话令牌",
+      "sessionTokenTooltip": "可选。仅在使用临时 STS 凭证时需要。",
+      "sessionTokenPlaceholder": "输入会话令牌（可选）",
+      "roleArn": "AWS 角色 ARN",
+      "roleArnTooltip": "可选。签名之前通过 STS 扮演的 IAM 角色 ARN。若设置，LiteLLM 会调用 sts:AssumeRole 获取临时凭证。除非同时提供了显式密钥，否则以环境凭证（IAM 角色、环境变量）作为源身份。",
+      "roleArnPlaceholder": "arn:aws:iam::123456789012:role/MyRole（可选）",
+      "sessionName": "AWS 会话名称",
+      "sessionNameTooltip": "可选。AssumeRole 调用的会话名称，会出现在 CloudTrail 日志中。留空则自动生成。",
+      "sessionNamePlaceholder": "litellm-prod（可选，留空则自动生成）"
+    },
+    "form": {
+      "keepExistingSuffix": "（留空则保留原值）"
+    },
+    "idJag": {
+      "orgTokenEndpoint": "组织令牌端点（第一段）",
+      "orgTokenEndpointTooltip": "你的 IdP 组织授权服务器的令牌端点。LiteLLM 在这里把用户的身份断言换成 ID-JAG 断言（RFC 8693，requested_token_type=urn:ietf:params:oauth:token-type:id-jag）。",
+      "orgTokenEndpointRequired": "ID-JAG 必须填写组织令牌端点",
+      "resourceTokenEndpoint": "资源令牌端点（第二段）",
+      "resourceTokenEndpointTooltip": "上游资源授权服务器的令牌端点。LiteLLM 以 RFC 7523 jwt-bearer 授权的形式把 ID-JAG 断言发到这里，换取 MCP 服务器接受的访问令牌。",
+      "resourceTokenEndpointRequired": "ID-JAG 必须填写资源令牌端点",
+      "clientId": "客户端 ID",
+      "clientIdTooltip": "LiteLLM 在两段流程中用于认证的 OAuth2 客户端 ID。",
+      "clientIdRequired": "ID-JAG 必须填写客户端 ID",
+      "clientIdPlaceholder": "输入 OAuth 客户端 ID",
+      "clientSecret": "客户端密钥",
+      "clientSecretTooltip": "以 client_secret_post 的方式让 LiteLLM 作为 OAuth 客户端完成认证。若改用私钥则留空；私钥的优先级高于此密钥。",
+      "secretOrPrivateKey": "请提供客户端密钥或客户端私钥其中之一",
+      "clientSecretPlaceholder": "输入 OAuth 客户端密钥",
+      "clientPrivateKey": "客户端私钥（PEM）",
+      "clientPrivateKeyTooltip": "用于签署 RFC 7523 private_key_jwt 客户端断言的 PEM 私钥。Okta Cross App Access 通常需要此字段。设置后优先级高于客户端密钥。",
+      "privateKeyId": "私钥 ID（可选）",
+      "privateKeyIdTooltip": "在客户端断言 JWT 头部中声明的 kid，便于 IdP 选中正确的已注册密钥。",
+      "assertionSigningAlg": "客户端断言签名算法（可选）",
+      "assertionSigningAlgTooltip": "用于签署客户端断言 JWT 的算法。默认为 RS256。",
+      "audience": "受众（可选）",
+      "audienceTooltip": "第一段发送的 RFC 8693 audience，用于标识该 ID-JAG 断言所面向的上游。",
+      "resourceIndicator": "资源指示符（可选）",
+      "resourceIndicatorTooltip": "第一段发送的 RFC 8707 资源指示符。与 Audience 不同，后者是 RFC 8693 参数。",
+      "subjectTokenType": "主体令牌类型（可选）",
+      "subjectTokenTypeTooltip": "第一段交换的身份断言的类型。默认为 urn:ietf:params:oauth:token-type:id_token。",
+      "scopes": "作用域（可选）",
+      "scopesTooltip": "在交换的第一段请求的作用域。",
+      "addScopes": "添加作用域"
+    },
+    "tokenExchange": {
+      "profile": "配置文件",
+      "profileTooltip": "令牌交换的传输方言。RFC 8693 是标准的令牌交换授权类型。Microsoft Entra OBO 使用 Entra 的代表方（On-Behalf-Of）方言（RFC 7523 jwt-bearer 授权，requested_token_use=on_behalf_of），并在形如 api://'<app-id>'/.default 的作用域中携带目标资源。",
+      "profileRfc8693": "RFC 8693（标准）",
+      "profileEntraObo": "Microsoft Entra OBO",
+      "endpoint": "令牌交换端点（可选）",
+      "endpointTooltip": "RFC 8693 令牌端点。代理在这里把用户传入的令牌换成带作用域的令牌，用于调用上游 MCP 服务器。留空则自动从上游的受保护资源元数据中发现（先 RFC 9728，再 RFC 8414）。",
+      "clientIdTooltip": "用于向令牌交换端点认证的 OAuth2 客户端 ID。",
+      "clientIdRequired": "令牌交换必须填写客户端 ID",
+      "clientSecretTooltip": "用于向令牌交换端点认证的 OAuth2 客户端密钥。",
+      "clientSecretRequired": "令牌交换必须填写客户端密钥",
+      "audienceTooltip": "交换所得令牌的目标受众（RFC 8693 audience）。用于标识该令牌所对应的上游 MCP 服务器。",
+      "subjectTokenTypeTooltip": "用户传入令牌的类型（RFC 8693 subject_token_type）。默认为 urn:ietf:params:oauth:token-type:access_token。",
+      "scopesRequired": "作用域",
+      "scopesRequiredTooltip": "Microsoft Entra OBO 在作用域中携带目标资源，因此至少需要一个作用域（例如 api://'<app-id>'/.default）。",
+      "scopesOptionalTooltip": "令牌交换期间请求的可选作用域。",
+      "entraScopeRequired": "Microsoft Entra OBO 需要一个作用域，例如 api://'<app-id>'/.default"
+    },
+    "byok": {
+      "label": "BYOK（自带密钥）",
+      "labelTooltip": "启用后，每位用户为自己的此服务提供 API 密钥。密钥按用户保存，互不共享。",
+      "userKeysSentAs": "用户密钥将以如下形式发送：",
+      "setAuthTypeFirst": "请在下方设置{strong}认证方式</strong>，以指明用户密钥的发送形式（例如 Bearer Token、API Key 请求头）。",
+      "accessDescription": "权限说明",
+      "accessDescriptionTooltip": "在连接弹窗中展示给用户的权限清单（例如“创建和管理 Jira 问题”）",
+      "accessDescriptionPlaceholder": "添加权限说明条目（每条之后按回车）",
+      "apiKeyHelpUrl": "API 密钥帮助链接",
+      "apiKeyHelpUrlTooltip": "可选链接，展示给用户以帮助其找到自己的 API 密钥"
+    },
+    "upstreamTokenHeader": {
+      "label": "令牌请求头（可选）",
+      "labelTooltip": "LiteLLM 为此服务器解析出的令牌应放在哪个上游请求头中。留空则按 'Authorization: Bearer <token>' 发送，这是默认值，也是多数服务器的预期。当上游期望放在别处时才指定请求头名称，例如某个 API 网关在 'esb-oauth' 上终止自己的凭证，而来自静态请求头的另一个 Authorization 直传到其后的服务器。"
+    },
+    "dcrBridge": {
+      "label": "网关托管登录（DCR 桥接）",
+      "labelTooltip": "让 Claude Desktop 这类只支持 OAuth 的客户端可以通过网关注册并登录。关闭则改为转发上游服务器自己的 OAuth 元数据（适用于已在上游 IdP 预注册的客户端）。"
+    },
+    "stdio": {
+      "label": "Stdio 配置（JSON）",
+      "labelTooltip": "以 JSON 格式粘贴你的 stdio MCP 服务器配置。可以使用 config.yaml 中完整的 mcpServers 结构，也可以只填内部的服务器配置。",
+      "required": "请输入 stdio 配置",
+      "invalidJson": "请输入合法的 JSON"
+    },
+    "truePassthrough": {
+      "title": "完全直通会为此服务器关闭 LiteLLM 认证",
+      "body": "任何能访问到网关的人都可以在不使用 LiteLLM 密钥的情况下调用此服务器。调用方的 Authorization 请求头会原样转发给上游，按密钥与按团队限速及花费统计都不再生效，上游需完全负责调用方认证。如果调用方仍需向 LiteLLM 认证，请改用 OAuth 委派。"
+    },
+    "passthrough": {
+      "button": {
+        "authorizing": "正在等待授权...",
+        "exchanging": "正在交换授权码...",
+        "idle": "授权并获取工具（仅浏览器）"
+      },
+      "intro": "此认证方式下由调用方自带上游令牌，LiteLLM 不存储任何令牌。要预览工具并配置工具白名单，请在此处对上游授权：令牌只存在于当前浏览器会话，绝不会保存到 LiteLLM。下方配置的 OAuth 应用则会随服务器保存，因此从工具页授权的内部用户会走该应用。",
+      "upstreamChangedWarning": "你修改了上游 URL 或端点；此处填写的 OAuth 应用是为上一个上游注册的，可能已失效。请更新客户端 ID，或清空以使用动态客户端注册。",
+      "clientIdLabel": "OAuth 客户端 ID（可选）",
+      "clientIdPlaceholderKeep": "留空则保留当前已保存的应用（若有）",
+      "clientIdPlaceholderDcr": "留空则使用动态客户端注册",
+      "clientIdHelpKeep": "填写此项可让所有人通过指定应用授权；对于不支持动态客户端注册的上游是必需的（例如预注册的 Slack 应用）。",
+      "clientIdHelpSwitch": "切换认证方式会丢弃之前保存的应用；请在此填写客户端 ID，或留空以使用动态客户端注册。",
+      "clientSecretLabel": "OAuth 客户端密钥（可选）",
+      "clientSecretPlaceholderKeep": "留空则保留当前已保存的密钥（若有）",
+      "clientSecretPlaceholderPublic": "公开客户端或 PKCE 请留空",
+      "removeStoredApp": "保存时移除已保存的 OAuth 应用（该服务器将回到动态客户端注册）",
+      "tokenHeld": "令牌已保留在当前浏览器会话中。现在可以预览并配置工具；该令牌未保存到 LiteLLM。"
+    },
+    "openapi": {
+      "specUrl": "OpenAPI 规范 URL",
+      "specUrlTooltip": "OpenAPI 规范（JSON 或 YAML）的 URL。MCP 工具会根据规范中定义的 API 端点自动生成。",
+      "specUrlRequired": "请输入 OpenAPI 规范 URL",
+      "popularApis": "常用 API",
+      "pickerHint": "选择一个 API 可预填规范 URL 与 OAuth 2.0 设置，也可在下方自行填写规范 URL。"
+    },
+    "tokenEndpointAuth": {
+      "label": "令牌端点认证方式（可选）",
+      "labelTooltip": "代理向上游 OAuth 令牌端点认证的方式。Client Secret Basic 把客户端凭证放在 HTTP Basic 的 Authorization 请求头中；留空则使用默认的 Client Secret Post，即放在请求体中。",
+      "placeholderKeep": "留空则保留原值（默认 Client Secret Post）",
+      "placeholderDefault": "默认（Client Secret Post）",
+      "clientSecretBasic": "Client Secret Basic",
+      "clientSecretPost": "Client Secret Post"
+    },
+    "logo": {
+      "label": "Logo",
+      "labelTooltip": "关于此 Logo",
+      "labelBody": "选择一个常用 Logo，或粘贴任意图片的 URL。该 Logo 会显示在管理页和对话页上。",
+      "selected": "已选择",
+      "customPlaceholder": "或粘贴自定义 Logo URL..."
+    },
+    "envVars": {
+      "heading": "变量",
+      "tooltipIntro": "定义变量后，即可在静态请求头或认证中使用",
+      "tooltipInstance": "由管理员定义，对所有用户生效。",
+      "tooltipUser": "每位用户通过 MCP Gateway 面板自行填写（例如个人凭证）。",
+      "referenceHint": "在静态请求头或认证中这样引用：",
+      "forExample": "例如：",
+      "columnName": "变量名",
+      "columnValue": "值 / 说明",
+      "columnScope": "范围",
+      "scopeInstance": "实例级",
+      "scopeUser": "用户级",
+      "nameRequired": "变量名必填",
+      "namePattern": "可使用字母、数字和下划线，不能以数字开头。",
+      "addVariable": "添加变量",
+      "hintTooltip": "用户级变量没有共享值。这段文字只是提示，在每位用户填写自己的值时展示给他们。",
+      "hintLabel": "提示"
     }
   }
 }

@@ -2169,6 +2169,172 @@
       "hubPublishedDescription": "Allows requests from public and internal IPs because this server is published in MCP Hub. Authentication and access permissions still apply",
       "internalDescription": "Allows requests only from internal/private IP ranges. Authentication and access permissions still apply",
       "unknownDescription": "The proxy did not report enough network and publication settings to determine allowed client IPs"
+    },
+    "awsSigv4": {
+      "intro": "For MCP servers hosted on AWS Bedrock AgentCore. ",
+      "viewDocs": "View docs →",
+      "region": "AWS Region",
+      "regionTooltip": "AWS region for SigV4 signing (e.g., us-east-1)",
+      "regionRequired": "AWS region is required for SigV4 auth",
+      "serviceName": "AWS Service Name",
+      "serviceNameTooltip": "AWS service name for SigV4 signing. Defaults to 'bedrock-agentcore'.",
+      "accessKeyId": "AWS Access Key ID",
+      "accessKeyIdTooltip": "Optional. If not provided, falls back to the boto3 credential chain (IAM role, env vars, etc.).",
+      "accessKeyIdPaired": "Access Key ID is required when Secret Access Key is provided",
+      "accessKeyIdPlaceholder": "AKIA... (optional — uses IAM role if blank)",
+      "secretAccessKey": "AWS Secret Access Key",
+      "secretAccessKeyTooltip": "Optional. Required if AWS Access Key ID is provided.",
+      "secretAccessKeyPaired": "Secret Access Key is required when Access Key ID is provided",
+      "secretAccessKeyPlaceholder": "Enter secret key (optional — uses IAM role if blank)",
+      "sessionToken": "AWS Session Token",
+      "sessionTokenTooltip": "Optional. Only needed for temporary STS credentials.",
+      "sessionTokenPlaceholder": "Enter session token (optional)",
+      "roleArn": "AWS Role ARN",
+      "roleArnTooltip": "Optional. IAM role ARN to assume via STS before signing. If set, LiteLLM calls sts:AssumeRole to get temporary credentials. Uses ambient credentials (IAM role, env vars) as the source identity unless explicit keys are also provided.",
+      "roleArnPlaceholder": "arn:aws:iam::123456789012:role/MyRole (optional)",
+      "sessionName": "AWS Session Name",
+      "sessionNameTooltip": "Optional. Session name for the AssumeRole call — appears in CloudTrail logs. Auto-generated if omitted.",
+      "sessionNamePlaceholder": "litellm-prod (optional, auto-generated if blank)"
+    },
+    "form": {
+      "keepExistingSuffix": " (leave blank to keep existing)"
+    },
+    "idJag": {
+      "orgTokenEndpoint": "Org Token Endpoint (leg 1)",
+      "orgTokenEndpointTooltip": "Your IdP org authorization server's token endpoint. LiteLLM exchanges the user's identity assertion here for an ID-JAG assertion (RFC 8693 with requested_token_type=urn:ietf:params:oauth:token-type:id-jag).",
+      "orgTokenEndpointRequired": "The org token endpoint is required for ID-JAG",
+      "resourceTokenEndpoint": "Resource Token Endpoint (leg 2)",
+      "resourceTokenEndpointTooltip": "The upstream resource authorization server's token endpoint. LiteLLM posts the ID-JAG assertion here as an RFC 7523 jwt-bearer grant to get the access token the MCP server accepts.",
+      "resourceTokenEndpointRequired": "The resource token endpoint is required for ID-JAG",
+      "clientId": "Client ID",
+      "clientIdTooltip": "OAuth2 client ID LiteLLM authenticates as on both legs.",
+      "clientIdRequired": "Client ID is required for ID-JAG",
+      "clientIdPlaceholder": "Enter OAuth client ID",
+      "clientSecret": "Client Secret",
+      "clientSecretTooltip": "Authenticates LiteLLM as the OAuth client via client_secret_post. Leave blank when using a private key instead; a private key takes precedence over this secret.",
+      "secretOrPrivateKey": "Provide either a client secret or a client private key",
+      "clientSecretPlaceholder": "Enter OAuth client secret",
+      "clientPrivateKey": "Client Private Key (PEM)",
+      "clientPrivateKeyTooltip": "PEM private key signing the RFC 7523 private_key_jwt client assertion. Okta Cross App Access normally requires this. When set it takes precedence over the client secret.",
+      "privateKeyId": "Private Key ID (optional)",
+      "privateKeyIdTooltip": "The kid advertised in the client assertion JWT header, so the IdP can select the right registered key.",
+      "assertionSigningAlg": "Client Assertion Signing Algorithm (optional)",
+      "assertionSigningAlgTooltip": "Algorithm signing the client assertion JWT. Defaults to RS256.",
+      "audience": "Audience (optional)",
+      "audienceTooltip": "RFC 8693 audience sent on leg 1, identifying the upstream the ID-JAG assertion is minted for.",
+      "resourceIndicator": "Resource Indicator (optional)",
+      "resourceIndicatorTooltip": "RFC 8707 resource indicator sent on leg 1. Separate from Audience, which is the RFC 8693 parameter.",
+      "subjectTokenType": "Subject Token Type (optional)",
+      "subjectTokenTypeTooltip": "Type of the identity assertion exchanged on leg 1. Defaults to urn:ietf:params:oauth:token-type:id_token.",
+      "scopes": "Scopes (optional)",
+      "scopesTooltip": "Scopes requested on leg 1 of the exchange.",
+      "addScopes": "Add scopes"
+    },
+    "tokenExchange": {
+      "profile": "Profile",
+      "profileTooltip": "Token-exchange wire dialect. RFC 8693 is the standard token-exchange grant. Microsoft Entra OBO uses Entra's On-Behalf-Of dialect (the RFC 7523 jwt-bearer grant with requested_token_use=on_behalf_of) and carries the target resource in a scope like api://''<app-id>''/.default.",
+      "profileRfc8693": "RFC 8693 (standard)",
+      "profileEntraObo": "Microsoft Entra OBO",
+      "endpoint": "Token Exchange Endpoint (optional)",
+      "endpointTooltip": "RFC 8693 token endpoint. The proxy exchanges the user's incoming token here for a scoped token used to call the upstream MCP server. Leave blank to auto-discover it from the upstream's protected-resource metadata (RFC 9728 then RFC 8414).",
+      "clientIdTooltip": "OAuth2 client ID used to authenticate to the token exchange endpoint.",
+      "clientIdRequired": "Client ID is required for token exchange",
+      "clientSecretTooltip": "OAuth2 client secret used to authenticate to the token exchange endpoint.",
+      "clientSecretRequired": "Client Secret is required for token exchange",
+      "audienceTooltip": "Target audience for the exchanged token (RFC 8693 audience). Identifies the upstream MCP server the token is for.",
+      "subjectTokenTypeTooltip": "Type of the user's incoming token (RFC 8693 subject_token_type). Defaults to urn:ietf:params:oauth:token-type:access_token.",
+      "scopesRequired": "Scopes",
+      "scopesRequiredTooltip": "Microsoft Entra OBO carries the target resource in the scope, so at least one is required (e.g. api://'<app-id>'/.default).",
+      "scopesOptionalTooltip": "Optional scopes to request during the token exchange.",
+      "entraScopeRequired": "Microsoft Entra OBO requires a scope, e.g. api://'<app-id>'/.default"
+    },
+    "byok": {
+      "label": "BYOK (Bring Your Own Key)",
+      "labelTooltip": "When enabled, each user provides their own API key for this service. Keys are stored per-user and never shared.",
+      "userKeysSentAs": "User keys will be sent as:",
+      "setAuthTypeFirst": "Set the {strong}Authentication Type</strong> below to specify how user keys are sent (e.g., Bearer Token, API Key header).",
+      "accessDescription": "Access Description",
+      "accessDescriptionTooltip": "List of permissions shown to users in the connection modal (e.g. 'Create and manage Jira issues')",
+      "accessDescriptionPlaceholder": "Add access description items (press Enter after each)",
+      "apiKeyHelpUrl": "API Key Help URL",
+      "apiKeyHelpUrlTooltip": "Optional link shown to users to help them find their API key"
+    },
+    "upstreamTokenHeader": {
+      "label": "Token Header (optional)",
+      "labelTooltip": "Which upstream header carries the token LiteLLM resolves for this server. Leave blank to send it as 'Authorization: Bearer <token>', which is the default and what most servers expect. Set a header name when the upstream expects it elsewhere, for example an API gateway that terminates its own credential on 'esb-oauth' while a separate Authorization from Static Headers passes through to the server behind it."
+    },
+    "dcrBridge": {
+      "label": "Gateway-hosted sign-in (DCR bridge)",
+      "labelTooltip": "Lets OAuth-only clients like Claude Desktop register and sign in through the gateway. Turn off to relay the upstream server's own OAuth metadata instead (for clients pre-registered with the upstream IdP)."
+    },
+    "stdio": {
+      "label": "Stdio Configuration (JSON)",
+      "labelTooltip": "Paste your stdio MCP server configuration in JSON format. You can use the full mcpServers structure from config.yaml or just the inner server configuration.",
+      "required": "Please enter stdio configuration",
+      "invalidJson": "Please enter valid JSON"
+    },
+    "truePassthrough": {
+      "title": "True Passthrough disables LiteLLM authentication for this server",
+      "body": "Anyone who can reach the gateway can call this server without a LiteLLM key. The caller's Authorization header is forwarded to the upstream verbatim, per-key and per-team rate limits and spend tracking do not apply, and the upstream is fully responsible for authenticating callers. Choose OAuth Delegate instead if callers should still authenticate to LiteLLM."
+    },
+    "passthrough": {
+      "button": {
+        "authorizing": "Waiting for authorization...",
+        "exchanging": "Exchanging authorization code...",
+        "idle": "Authorize & Fetch Tools (browser-only)"
+      },
+      "intro": "Callers bring their own upstream token for this auth type, so LiteLLM never stores tokens. To preview tools and configure the tool allowlist, authorize against the upstream here: the token stays in this browser session only and is never saved to LiteLLM. An OAuth app configured below IS saved with the server, so internal users who authorize from the Tools page go through it.",
+      "upstreamChangedWarning": "You changed the upstream URL or endpoints; the OAuth app entered here was registered for the previous upstream and may not be valid. Update the client ID, or clear it to use dynamic client registration.",
+      "clientIdLabel": "OAuth Client ID (optional)",
+      "clientIdPlaceholderKeep": "Leave blank to keep the currently saved app (if any)",
+      "clientIdPlaceholderDcr": "Leave blank to use dynamic client registration",
+      "clientIdHelpKeep": "Set this to make everyone authorize through a specific app; required for upstreams without dynamic client registration (e.g. a pre-registered Slack app).",
+      "clientIdHelpSwitch": "Switching the auth type discards the previously saved app; enter a client ID here or leave blank to use dynamic client registration.",
+      "clientSecretLabel": "OAuth Client Secret (optional)",
+      "clientSecretPlaceholderKeep": "Leave blank to keep the currently saved secret (if any)",
+      "clientSecretPlaceholderPublic": "Leave blank for public clients / PKCE",
+      "removeStoredApp": "Remove the saved OAuth app on save (the server goes back to dynamic client registration)",
+      "tokenHeld": "Token held for this browser session. Tools can now be previewed and configured; the token was not saved to LiteLLM."
+    },
+    "openapi": {
+      "specUrl": "OpenAPI Spec URL",
+      "specUrlTooltip": "URL to an OpenAPI specification (JSON or YAML). MCP tools will be automatically generated from the API endpoints defined in the spec.",
+      "specUrlRequired": "Please enter an OpenAPI spec URL",
+      "popularApis": "Popular APIs",
+      "pickerHint": "Select an API to pre-fill the spec URL and OAuth 2.0 settings, or enter your own spec URL below."
+    },
+    "tokenEndpointAuth": {
+      "label": "Token Endpoint Auth Method (optional)",
+      "labelTooltip": "How the proxy authenticates to the upstream OAuth token endpoint. Client Secret Basic sends the client credentials in an HTTP Basic Authorization header; leave blank to use the default, Client Secret Post, which sends them in the request body.",
+      "placeholderKeep": "Leave blank to keep existing (default Client Secret Post)",
+      "placeholderDefault": "Default (Client Secret Post)",
+      "clientSecretBasic": "Client Secret Basic",
+      "clientSecretPost": "Client Secret Post"
+    },
+    "logo": {
+      "label": "Logo",
+      "labelTooltip": "About the logo",
+      "labelBody": "Select a well-known logo or paste a URL to any image. The logo is shown on the admin and chat pages.",
+      "selected": "Selected",
+      "customPlaceholder": "Or paste a custom logo URL..."
+    },
+    "envVars": {
+      "heading": "Variables",
+      "tooltipIntro": "Define variables you can interpolate in Static Headers or Authentication using",
+      "tooltipInstance": "admin-defined value used for every user.",
+      "tooltipUser": "each user supplies their own value (e.g. personal credentials) via the MCP Gateway dashboard.",
+      "referenceHint": "Reference these in Static Headers or Authentication as",
+      "forExample": "For example:",
+      "columnName": "Variable Name",
+      "columnValue": "Value / Description",
+      "columnScope": "Scope",
+      "scopeInstance": "Instance",
+      "scopeUser": "Per-user",
+      "nameRequired": "Variable name is required",
+      "namePattern": "Use letters, digits, underscores; cannot start with a digit.",
+      "addVariable": "Add Variable",
+      "hintTooltip": "Per-user variables have no shared value. This text is only a hint shown to each user when they fill in their own value.",
+      "hintLabel": "Hint"
     }
   }
 }

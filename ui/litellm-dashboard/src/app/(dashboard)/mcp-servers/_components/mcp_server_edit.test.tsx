@@ -1,7 +1,9 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
+import { screen, waitFor, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import MCPServerEdit, { EDIT_OAUTH_UI_STATE_KEY } from "./mcp_server_edit";
 import { setSecureItem } from "@/utils/secureStorage";
 import * as networking from "@/components/networking";
@@ -132,7 +134,7 @@ describe("MCPServerEdit (stdio)", () => {
   });
 
   it("should render without crashing", () => {
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           server_id: "server-1",
@@ -181,7 +183,7 @@ describe("MCPServerEdit (stdio)", () => {
       updated_by: "user-1",
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           server_id: "server-1",
@@ -254,7 +256,7 @@ describe("MCPServerEdit (delegate auth)", () => {
       delegate_auth_to_upstream: false,
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -288,7 +290,7 @@ describe("MCPServerEdit (delegate auth)", () => {
       oauth_passthrough: false,
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -324,7 +326,7 @@ describe("MCPServerEdit (true passthrough warning)", () => {
   });
 
   const renderWithAuthType = (authType: string) =>
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -360,7 +362,7 @@ describe("MCPServerEdit (true passthrough warning)", () => {
     // Stored server is oauth2; the admin switches the dropdown to true_passthrough before saving.
     // The temp OAuth-relay payload must reflect the selection so the exchange is treated as
     // browser-held (no DB persistence), matching onTokenReceived and the create form.
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, auth_type: "oauth2" }}
         accessToken="access-token"
@@ -391,7 +393,7 @@ describe("MCPServerEdit (OAuth authorize temp payload)", () => {
     // admin-configured OAuth endpoints on it, discovery falls back to (and fails against) the
     // plain server url, and Authorize & Fetch Token 400s with "authorization url is not
     // configured" even though the saved server (and the visible form) has all four fields filled in.
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -430,7 +432,7 @@ describe("MCPServerEdit (auth type switch)", () => {
       auth_type: "oauth2_token_exchange",
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -466,7 +468,7 @@ describe("MCPServerEdit (auth type switch)", () => {
   it("keeps oauth2 endpoint overrides when the auth type is unchanged", async () => {
     vi.mocked(networking.updateMCPServer).mockResolvedValue({ ...interactiveOAuthServer });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -500,7 +502,7 @@ describe("MCPServerEdit OAuth token invalidation", () => {
   });
 
   const renderOAuthEdit = () =>
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer }}
         accessToken="access-token"
@@ -578,7 +580,7 @@ describe("MCPServerEdit OAuth token invalidation", () => {
   it("previews an OpenAPI server's staged token against its spec_path", async () => {
     mockOauth.tokenResponse = { access_token: "staged-obo-tok" };
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -653,7 +655,7 @@ describe("MCPServerEdit (tool allowlist)", () => {
   });
 
   it("treats legacy empty allowed_tools as unrestricted", () => {
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -671,7 +673,7 @@ describe("MCPServerEdit (tool allowlist)", () => {
   });
 
   it("honors enforced empty allowed_tools", () => {
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -695,7 +697,7 @@ describe("MCPServerEdit (tool allowlist)", () => {
       mcp_info: { server_name: "OAuthServer", tool_allowlist_enforced: true },
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -734,7 +736,7 @@ describe("MCPServerEdit (tool allowlist)", () => {
       tool_name_to_description: { read_user: "Reads users" },
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -769,7 +771,7 @@ describe("MCPServerEdit (tool allowlist)", () => {
   });
 
   it("blocks save and does not call the API when a tool display name contains a space", async () => {
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -802,7 +804,7 @@ describe("MCPServerEdit (interactive OAuth)", () => {
   });
 
   it("renders Token Validation Rules and Token Storage TTL fields for interactive OAuth server", async () => {
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={interactiveOAuthServer}
         accessToken={null}
@@ -824,7 +826,7 @@ describe("MCPServerEdit (interactive OAuth)", () => {
   it("pre-populates token_validation_json from existing server token_validation", async () => {
     const tokenValidation = { organization: "my-org", "team.id": "123" };
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, token_validation: tokenValidation }}
         accessToken={null}
@@ -849,7 +851,7 @@ describe("MCPServerEdit (interactive OAuth)", () => {
       token_validation: { organization: "my-org" },
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={interactiveOAuthServer}
         accessToken="access-token"
@@ -885,7 +887,7 @@ describe("MCPServerEdit (interactive OAuth)", () => {
   it("includes credentials.token_endpoint_auth_method in update payload when client_secret_basic is selected", async () => {
     vi.mocked(networking.updateMCPServer).mockResolvedValue(interactiveOAuthServer);
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={interactiveOAuthServer}
         accessToken="access-token"
@@ -917,7 +919,7 @@ describe("MCPServerEdit (interactive OAuth)", () => {
   it("omits token_endpoint_auth_method from the update payload when the selector is left blank", async () => {
     vi.mocked(networking.updateMCPServer).mockResolvedValue(interactiveOAuthServer);
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={interactiveOAuthServer}
         accessToken="access-token"
@@ -947,7 +949,7 @@ describe("MCPServerEdit (interactive OAuth)", () => {
   it("does not include token_validation in payload when field is empty and server had none", async () => {
     vi.mocked(networking.updateMCPServer).mockResolvedValue(interactiveOAuthServer);
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={interactiveOAuthServer}
         accessToken="access-token"
@@ -981,7 +983,7 @@ describe("MCPServerEdit (interactive OAuth)", () => {
       token_validation: null,
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, token_validation: { organization: "old-org" } }}
         accessToken="access-token"
@@ -1017,7 +1019,7 @@ describe("MCPServerEdit (interactive OAuth)", () => {
   });
 
   it("shows inline validation error and does not submit on invalid JSON in token_validation_json", async () => {
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={interactiveOAuthServer}
         accessToken="access-token"
@@ -1055,7 +1057,7 @@ describe("MCPServerEdit (interactive OAuth)", () => {
       token_storage_ttl_seconds: 7200,
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, token_storage_ttl_seconds: 7200 }}
         accessToken="access-token"
@@ -1097,7 +1099,7 @@ describe("MCPServerEdit (resource indicator)", () => {
   });
 
   async function renderAndSave() {
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={serverWithResource}
         accessToken="access-token"
@@ -1152,7 +1154,7 @@ describe("MCPServerEdit (tool list fetch)", () => {
       error: null,
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={interactiveOAuthServer}
         accessToken="access-token"
@@ -1182,7 +1184,7 @@ describe("MCPServerEdit (tool list fetch)", () => {
     mockIsTokenValid.mockReturnValue(true);
     mockGetToken.mockReturnValue({ access_token: "browser-token" });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, delegate_auth_to_upstream: true }}
         accessToken="access-token"
@@ -1208,7 +1210,7 @@ describe("MCPServerEdit (tool list fetch)", () => {
     mockIsTokenValid.mockReturnValue(true);
     mockGetToken.mockReturnValue({ access_token: "browser-token" });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, auth_type: "oauth_delegate" }}
         accessToken="access-token"
@@ -1233,7 +1235,7 @@ describe("MCPServerEdit (tool list fetch)", () => {
   it("prompts for the browser-only authorize when a true_passthrough server has no token", async () => {
     mockIsTokenValid.mockReturnValue(false);
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, auth_type: "true_passthrough" }}
         accessToken="access-token"
@@ -1271,7 +1273,7 @@ describe("MCPServerEdit (tool list fetch)", () => {
       availableAccessGroups: [],
     };
 
-    const { rerender } = render(<MCPServerEdit {...props} />);
+    const { rerender } = renderWithProviders(<MCPServerEdit {...props} />);
 
     await waitFor(() => {
       expect(screen.getByTestId("mcp-tool-config")).toHaveAttribute(
@@ -1298,7 +1300,7 @@ describe("MCPServerEdit (tool list fetch)", () => {
   it("prompts to authenticate and does not fetch when a passthrough server has no session token", async () => {
     mockIsTokenValid.mockReturnValue(false);
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, delegate_auth_to_upstream: true }}
         accessToken="access-token"
@@ -1334,7 +1336,7 @@ describe("MCPServerEdit (form resync)", () => {
     };
 
     // Mount before the server is loaded (mirrors landing on the page mid OAuth return).
-    const { rerender } = render(<MCPServerEdit mcpServer={{ server_id: "" } as any} {...props} />);
+    const { rerender } = renderWithProviders(<MCPServerEdit mcpServer={{ server_id: "" } as any} {...props} />);
     expect(screen.queryByDisplayValue("https://example.com/mcp")).not.toBeInTheDocument();
 
     // Server data arrives; the form must repopulate rather than staying blank.
@@ -1362,7 +1364,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
     };
     vi.mocked(networking.updateMCPServer).mockResolvedValue({ ...interactiveOAuthServer });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={interactiveOAuthServer}
         accessToken="access-token"
@@ -1403,7 +1405,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
     vi.mocked(networking.storeMCPOAuthUserCredential).mockRejectedValueOnce(new Error("write failed"));
     const onSuccess = vi.fn();
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={interactiveOAuthServer}
         accessToken="access-token"
@@ -1438,7 +1440,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
         auth_type: authType,
       });
 
-      render(
+      renderWithProviders(
         <MCPServerEdit
           mcpServer={{ ...interactiveOAuthServer, auth_type: authType }}
           accessToken="access-token"
@@ -1476,7 +1478,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
         auth_type: authType,
       });
 
-      render(
+      renderWithProviders(
         <MCPServerEdit
           mcpServer={{ ...interactiveOAuthServer, auth_type: authType }}
           accessToken="access-token"
@@ -1523,7 +1525,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
         auth_type: authType,
       });
 
-      render(
+      renderWithProviders(
         <MCPServerEdit
           mcpServer={{ ...interactiveOAuthServer, auth_type: authType }}
           accessToken="access-token"
@@ -1578,7 +1580,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
       auth_type: "true_passthrough",
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, auth_type: "true_passthrough" }}
         accessToken="access-token"
@@ -1609,7 +1611,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
   });
 
   it("warns that the saved app may not match after a URL change on a client-forwarded server", async () => {
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -1649,7 +1651,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
       }),
     );
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -1676,7 +1678,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
       auth_type: "true_passthrough",
     });
 
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, server_id: "server-A", auth_type: "true_passthrough" }}
         accessToken="access-token"
@@ -1722,7 +1724,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
     vi.mocked(networking.listMCPTools).mockResolvedValue({ tools: [], error: null });
     mockIsTokenValid.mockReturnValue(false);
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, auth_type: "api_key" }}
         accessToken="access-token"
@@ -1752,7 +1754,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
       delegate_auth_to_upstream: true,
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, delegate_auth_to_upstream: true }}
         accessToken="access-token"
@@ -1781,7 +1783,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
     mockOauth.tokenResponse = null;
     vi.mocked(networking.updateMCPServer).mockResolvedValue({ ...interactiveOAuthServer });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={interactiveOAuthServer}
         accessToken="access-token"
@@ -1812,7 +1814,7 @@ describe("MCPServerEdit oauth2_flow selector", () => {
   async function saveAndGetPayload(server: Record<string, unknown>) {
     vi.mocked(networking.updateMCPServer).mockResolvedValue({ ...interactiveOAuthServer });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, ...server }}
         accessToken="access-token"
@@ -1862,7 +1864,7 @@ describe("MCPServerEdit oauth2_flow selector", () => {
   it("persists client_credentials when the admin selects M2M on a legacy null-flow row", async () => {
     vi.mocked(networking.updateMCPServer).mockResolvedValue({ ...interactiveOAuthServer });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -1894,7 +1896,7 @@ describe("MCPServerEdit oauth2_flow selector", () => {
   it("persists authorization_code when the admin selects Interactive on a legacy null-flow row", async () => {
     vi.mocked(networking.updateMCPServer).mockResolvedValue({ ...interactiveOAuthServer });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{
           ...interactiveOAuthServer,
@@ -1930,7 +1932,7 @@ describe("MCPServerEdit OAuth flow prefill display", () => {
   });
 
   function renderEdit(server: Record<string, unknown>) {
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, ...server }}
         accessToken="access-token"
@@ -2031,7 +2033,7 @@ describe("MCPServerEdit (max concurrent requests)", () => {
       max_concurrent_requests: 2,
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={limitedServer}
         accessToken="access-token"
@@ -2065,7 +2067,7 @@ describe("MCPServerEdit (max concurrent requests)", () => {
       max_concurrent_requests: null,
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={limitedServer}
         accessToken="access-token"
@@ -2103,7 +2105,7 @@ describe("MCPServerEdit (dcr_bridge toggle)", () => {
   const getDcrToggle = () => screen.queryByRole("switch", { name: /Gateway-hosted sign-in \(DCR bridge\)/ });
 
   function renderEdit(server: Record<string, unknown>) {
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={{ ...interactiveOAuthServer, ...server }}
         accessToken="access-token"
@@ -2276,7 +2278,7 @@ describe("MCPServerEdit (tab mount contract)", () => {
       max_concurrent_requests: 2,
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={plainServer}
         accessToken="access-token"

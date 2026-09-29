@@ -1,5 +1,7 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "@/components/networking";
 import { setToken } from "@/utils/mcpTokenStore";
@@ -115,7 +117,7 @@ describe("CreateMCPServer", () => {
   });
 
   it("should render the modal with title when visible", () => {
-    render(<CreateMCPServer {...defaultProps} />);
+    renderWithProviders(<CreateMCPServer {...defaultProps} />);
 
     expect(screen.getByText("Add New MCP Server")).toBeInTheDocument();
   });
@@ -124,7 +126,7 @@ describe("CreateMCPServer", () => {
   // The assertion this replaced only checked that the admin title was absent, which passed for the
   // wrong reason and left the whole non-admin submission path uncovered.
   it("routes a non-admin submission to the review endpoint instead of creating the server", async () => {
-    render(<CreateMCPServer {...defaultProps} userRole="Internal User" />);
+    renderWithProviders(<CreateMCPServer {...defaultProps} userRole="Internal User" />);
 
     expect(screen.getByText("Submit MCP Server for Review")).toBeInTheDocument();
     expect(screen.queryByText("Add New MCP Server")).not.toBeInTheDocument();
@@ -165,7 +167,7 @@ describe("CreateMCPServer", () => {
   });
 
   it("should show transport type options", async () => {
-    render(<CreateMCPServer {...defaultProps} />);
+    renderWithProviders(<CreateMCPServer {...defaultProps} />);
 
     await selectOption("Transport Type", "Streamable HTTP");
 
@@ -177,7 +179,7 @@ describe("CreateMCPServer", () => {
 
   describe("when HTTP transport is selected", () => {
     async function selectHttpTransport() {
-      render(<CreateMCPServer {...defaultProps} />);
+      renderWithProviders(<CreateMCPServer {...defaultProps} />);
       await selectOption("Transport Type", "Streamable HTTP");
 
       // Wait for URL field to appear (confirms transport was set)
@@ -688,7 +690,7 @@ describe("CreateMCPServer", () => {
     });
 
     it("clears the DCR ref and the upstream warning when the modal closes so nothing leaks to the next session", async () => {
-      const { rerender } = render(<CreateMCPServer {...defaultProps} />);
+      const { rerender } = renderWithProviders(<CreateMCPServer {...defaultProps} />);
       await selectOption("Transport Type", "Streamable HTTP");
       expect(await screen.findByPlaceholderText("https://your-mcp-server.com")).toBeInTheDocument();
       const user = userEvent.setup({ delay: null });
@@ -1338,7 +1340,7 @@ describe("CreateMCPServer", () => {
   describe("when OAuth interactive auth is selected", () => {
     /** Select HTTP transport + OAuth auth, then wait for the OAuth form to appear. */
     async function setupOAuthInteractive() {
-      render(<CreateMCPServer {...defaultProps} />);
+      renderWithProviders(<CreateMCPServer {...defaultProps} />);
       await selectOption("Transport Type", "Streamable HTTP");
 
       await waitFor(() => {
@@ -1544,7 +1546,7 @@ describe("CreateMCPServer", () => {
     });
 
     it("invalidates the DCR client and OAuth flow when the OpenAPI spec URL changes after Authorize & Fetch", async () => {
-      render(<CreateMCPServer {...defaultProps} />);
+      renderWithProviders(<CreateMCPServer {...defaultProps} />);
       await selectOption("Transport Type", "OpenAPI Spec");
       await waitFor(() => {
         expect(screen.getByPlaceholderText("https://petstore3.swagger.io/api/v3/openapi.json")).toBeInTheDocument();
@@ -1600,7 +1602,7 @@ describe("CreateMCPServer", () => {
     });
 
     it("invalidates the DCR client and OAuth flow when the transport changes after Authorize & Fetch", async () => {
-      render(<CreateMCPServer {...defaultProps} />);
+      renderWithProviders(<CreateMCPServer {...defaultProps} />);
       await selectOption("Transport Type", "OpenAPI Spec");
       await waitFor(() => {
         expect(screen.getByPlaceholderText("https://petstore3.swagger.io/api/v3/openapi.json")).toBeInTheDocument();
@@ -1788,7 +1790,7 @@ describe("CreateMCPServer", () => {
 
   describe("when modal is cancelled", () => {
     it("should call setModalVisible(false) when cancel is clicked", async () => {
-      render(<CreateMCPServer {...defaultProps} />);
+      renderWithProviders(<CreateMCPServer {...defaultProps} />);
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
       await act(async () => {
@@ -1802,7 +1804,7 @@ describe("CreateMCPServer", () => {
       const usedToken = (token: string) =>
         vi.mocked(networking.testMCPToolsListRequest).mock.calls.some((call) => call[2] === token);
 
-      const { rerender } = render(<CreateMCPServer {...defaultProps} />);
+      const { rerender } = renderWithProviders(<CreateMCPServer {...defaultProps} />);
 
       await selectOption("Transport Type", "Streamable HTTP");
       await waitFor(() => {
@@ -1856,7 +1858,7 @@ describe("CreateMCPServer", () => {
       });
       const toolCount = () => screen.getByTestId("mcp-connection-status").getAttribute("data-tool-count");
 
-      const { rerender } = render(<CreateMCPServer {...defaultProps} />);
+      const { rerender } = renderWithProviders(<CreateMCPServer {...defaultProps} />);
 
       await selectOption("Transport Type", "Streamable HTTP");
       await waitFor(() => {
@@ -1901,7 +1903,7 @@ describe("CreateMCPServer", () => {
       // the hook's reset version and the fetched token is silently discarded, so
       // the user sees no Connection Status / Tool Configuration and must authorize
       // again after saving.
-      const { rerender } = render(<CreateMCPServer {...defaultProps} isModalVisible={false} />);
+      const { rerender } = renderWithProviders(<CreateMCPServer {...defaultProps} isModalVisible={false} />);
       expect(oauthHook.reset).not.toHaveBeenCalled();
 
       // A real open -> closed transition must still reset (the #30000 leak fix).
@@ -1913,7 +1915,7 @@ describe("CreateMCPServer", () => {
 
   describe("when stdio transport is selected", () => {
     it("should not show auth type or URL fields", async () => {
-      render(<CreateMCPServer {...defaultProps} />);
+      renderWithProviders(<CreateMCPServer {...defaultProps} />);
 
       await selectOption("Transport Type", "Standard Input/Output");
 
@@ -1936,7 +1938,7 @@ describe("CreateMCPServer", () => {
         url: "https://github-mcp.example.com",
       };
 
-      render(<CreateMCPServer {...defaultProps} prefillData={prefillData} />);
+      renderWithProviders(<CreateMCPServer {...defaultProps} prefillData={prefillData} />);
 
       await waitFor(() => {
         // Server name should be sanitized (hyphens replaced with underscores)
@@ -1949,7 +1951,7 @@ describe("CreateMCPServer", () => {
   describe("with back to discovery button", () => {
     it("should show back button and call onBackToDiscovery when clicked", async () => {
       const onBackToDiscovery = vi.fn();
-      render(<CreateMCPServer {...defaultProps} onBackToDiscovery={onBackToDiscovery} />);
+      renderWithProviders(<CreateMCPServer {...defaultProps} onBackToDiscovery={onBackToDiscovery} />);
 
       // The back arrow button should be visible
       const backButton = screen.getByText("←");
@@ -1983,7 +1985,7 @@ describe("CreateMCPServer oauth2_flow persistence", () => {
   };
 
   async function setupHttpServerForm() {
-    render(<CreateMCPServer {...defaultProps} />);
+    renderWithProviders(<CreateMCPServer {...defaultProps} />);
     await selectOption("Transport Type", "Streamable HTTP");
     await waitFor(() => {
       expect(screen.getByPlaceholderText("https://your-mcp-server.com")).toBeInTheDocument();
@@ -2077,7 +2079,7 @@ describe("CreateMCPServer dcr_bridge toggle", () => {
   const getDcrToggle = () => screen.queryByRole("switch", { name: /Gateway-hosted sign-in \(DCR bridge\)/ });
 
   async function setupHttpServerForm() {
-    render(<CreateMCPServer {...defaultProps} />);
+    renderWithProviders(<CreateMCPServer {...defaultProps} />);
     await selectOption("Transport Type", "Streamable HTTP");
     await waitFor(() => {
       expect(screen.getByPlaceholderText("https://your-mcp-server.com")).toBeInTheDocument();
