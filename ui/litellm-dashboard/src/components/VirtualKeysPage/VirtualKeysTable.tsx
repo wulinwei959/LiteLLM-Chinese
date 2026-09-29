@@ -38,11 +38,11 @@ const FILTER_COLUMNS = ["team_id", "org_id", "user_id", "key_hash", "status"] as
 type FilterColumn = (typeof FILTER_COLUMNS)[number];
 
 const FILTER_LABEL_KEYS: Record<FilterColumn, string> = {
-  team_id: "filter.team",
-  org_id: "filter.organization",
-  user_id: "filter.userId",
-  key_hash: "filter.keyId",
-  status: "filter.status",
+  team_id: "filterLabels.team",
+  org_id: "filterLabels.organization",
+  user_id: "filterLabels.userId",
+  key_hash: "filterLabels.keyId",
+  status: "filterLabels.status",
 };
 
 const KEY_STATUS_VALUES = ["active", "expired", "blocked", "deleted"] as const;
@@ -57,7 +57,7 @@ const KEY_STATUS_LABEL_KEYS: Record<KeyStatusFilter, string> = {
 };
 
 const STATUS_FILTER_ITEM_KEYS = [
-  { value: ALL_STATUSES, labelKey: "filter.allStatuses" },
+  { value: ALL_STATUSES, labelKey: "filterLabels.allStatuses" },
   ...KEY_STATUS_VALUES.map((value) => ({ value, labelKey: KEY_STATUS_LABEL_KEYS[value] })),
 ];
 
@@ -251,12 +251,7 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
-      <PageHeader
-        icon={<KeyRound />}
-        title={t("title")}
-        subtitle={t("description")}
-        primaryAction={headerActions}
-      />
+      <PageHeader icon={<KeyRound />} title={t("title")} subtitle={t("description")} primaryAction={headerActions} />
       <DataTable
         data={keyList}
         columns={columns}
@@ -303,7 +298,7 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
             >
               {({ get, set }) => (
                 <>
-                  <DataTableFilterField label={t("filter.team")}>
+                  <DataTableFilterField label={t("filterLabels.team")}>
                     <SearchSelect
                       options={teamOptions}
                       value={(get("team_id") as string) || undefined}
@@ -312,7 +307,7 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
                       emptyText={t("empty.team")}
                     />
                   </DataTableFilterField>
-                  <DataTableFilterField label={t("filter.organization")}>
+                  <DataTableFilterField label={t("filterLabels.organization")}>
                     <SearchSelect
                       options={orgOptions}
                       value={(get("org_id") as string) || undefined}
@@ -321,28 +316,28 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
                       emptyText={t("empty.organization")}
                     />
                   </DataTableFilterField>
-                  <DataTableFilterField label={t("filter.userId")}>
+                  <DataTableFilterField label={t("filterLabels.userId")}>
                     <Input
                       value={(get("user_id") as string) ?? ""}
                       onChange={(event) => set("user_id", event.target.value)}
                       placeholder={t("placeholder.userId")}
                     />
                   </DataTableFilterField>
-                  <DataTableFilterField label={t("filter.keyId")}>
+                  <DataTableFilterField label={t("filterLabels.keyId")}>
                     <Input
                       value={(get("key_hash") as string) ?? ""}
                       onChange={(event) => set("key_hash", event.target.value)}
                       placeholder={t("placeholder.keyId")}
                     />
                   </DataTableFilterField>
-                  <DataTableFilterField label={t("filter.status")}>
+                  <DataTableFilterField label={t("filterLabels.status")}>
                     <Select
                       items={statusFilterItems}
                       value={(get("status") as string) || ALL_STATUSES}
                       onValueChange={(value) => set("status", value === ALL_STATUSES ? undefined : value)}
                     >
-                      <SelectTrigger className="w-full" aria-label={t("filter.status")}>
-                        <SelectValue placeholder={t("filter.allStatuses")} />
+                      <SelectTrigger className="w-full" aria-label={t("filterLabels.status")}>
+                        <SelectValue placeholder={t("filterLabels.allStatuses")} />
                       </SelectTrigger>
                       <SelectContent>
                         {statusFilterItems.map((item) => (

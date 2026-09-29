@@ -109,7 +109,65 @@
     "forbidden": "Access denied",
     "notFound": "Not found",
     "serverError": "Server error. Please try again later.",
-    "networkError": "Network error. Please check your connection."
+    "networkError": "Network error. Please check your connection.",
+    "addModel": {
+      "additionalInfo": "Additional Model Info Settings",
+      "credentialsDesc": "Either select existing credentials OR enter new provider credentials below",
+      "existingCredentials": "Existing Credentials",
+      "getHelpGithub": "Get help on our github",
+      "modelAccessGroup": "Model Access Group",
+      "modelAccessGroupHint": "Use model access groups to give users access to select models, and add new ones to the group over time.",
+      "needHelp": "Need Help?",
+      "optional": "Optional",
+      "selectCredentials": "Select or search for existing credentials",
+      "selectTeam": "Select Team",
+      "submit": "Add Model",
+      "teamByok": "Team-BYOK Model",
+      "teamByokHint": "Only use this model + credential combination for this team. Useful when teams want to onboard their own OpenAI keys.",
+      "teamByokHint2": "Only keys for this team will be able to call this model.",
+      "teamByokPremium": "This is an enterprise-only feature. Upgrade to premium to restrict model+credential combinations to a specific team.",
+      "teamRequired": "Please select a team to continue",
+      "testConnect": "Test Connect"
+    },
+    "common": {
+      "learnMore": "Learn more",
+      "more": "more",
+      "or": "OR",
+      "required": "Required",
+      "reset": "Reset Filters",
+      "unknown": "Unknown"
+    },
+    "connectionTest": {
+      "title": "Connection Test Results"
+    },
+    "deleteConfirmMessage": "Are you sure you want to delete this pass-through endpoint? This action cannot be undone.",
+    "deleteConfirmTitle": "Delete Pass-Through Endpoint",
+    "deleteFailed": "Error deleting the endpoint",
+    "deletedSuccessfully": "Endpoint deleted successfully.",
+    "errorLoadingProviders": "Failed to load providers",
+    "filterLabels": {
+      "allStatuses": "All statuses",
+      "keyId": "Key ID",
+      "organization": "Organization",
+      "status": "Status",
+      "team": "Team",
+      "userId": "User ID"
+    },
+    "healthCheckEndpoint": "LiteLLM endpoint to use when health checking this model",
+    "loadingProviders": "Loading providers...",
+    "mode": "Mode",
+    "noKeysFound": "No keys found",
+    "noProvidersFound": "No providers found",
+    "provider": "Provider",
+    "providerHint": "E.g. OpenAI, Azure OpenAI, Anthropic, Bedrock, etc.",
+    "searchPlaceholder": "Search by key alias or ID…",
+    "selectProvider": "Select a provider",
+    "selectTeam": "Select Team",
+    "selectTeamHint": "Select the team for which you want to add this model",
+    "teamRequired": "Please select a team.",
+    "teamSelectionRequired": "Team Selection Required",
+    "teamSelectionRequiredDesc": "As a team admin, you need to select your team first before adding models.",
+    "title": "Add Model"
   },
   "nav": {
     "aiGateway": "AI Gateway",
@@ -256,7 +314,20 @@
     "keyRegenerated": "Key regenerated successfully",
     "confirmDelete": "Are you sure you want to delete this key? This action cannot be undone.",
     "noKeysFound": "No virtual keys found",
-    "loading": "Loading virtual keys..."
+    "loading": "Loading virtual keys...",
+    "description": "Every key that authenticates requests to the gateway.",
+    "empty": {
+      "organization": "No organizations found",
+      "team": "No teams found"
+    },
+    "filters": "Filters",
+    "filtersDescription": "Narrow down virtual keys",
+    "placeholder": {
+      "keyId": "Enter Key ID…",
+      "organization": "Select an organization…",
+      "team": "Select a team…",
+      "userId": "Enter User ID…"
+    }
   },
   "models": {
     "title": "Model Management",
@@ -303,7 +374,18 @@
       "accessGroups": "Access Groups",
       "litellmModelName": "LiteLLM Model Name",
       "costIn": "IN",
-      "costOut": "OUT"
+      "costOut": "OUT",
+      "costTooltip": "Cost per 1M tokens",
+      "costTooltipPerSecond": "Cost per 1M tokens; /s is cost per second of output",
+      "credentialTypes": "Credential types",
+      "credentials": "Credentials",
+      "credentialsTooltip": "About credential types",
+      "delete": "Delete model",
+      "manual": "Manual",
+      "manualDesc": "Credentials added directly during model creation or defined in the config file.",
+      "reusable": "Reusable",
+      "reusableDesc": "Credentials saved in LiteLLM that can be added to models repeatedly.",
+      "settings": "Model Settings"
     },
     "emptyState": {
       "noModels": "No models found",
@@ -513,7 +595,29 @@
         "description": "No models match your search or filters. Try resetting them."
       },
       "lastRefreshed": "Last Refreshed: {time}",
-      "refreshAriaLabel": "Refresh models"
+      "refreshAriaLabel": "Refresh models",
+      "allAccessGroups": "All Model Access Groups",
+      "configModel": "Defined in config",
+      "copied": "LiteLLM model name copied",
+      "copyTooltip": "Copy LiteLLM model name",
+      "deleteTooltipConfig": "Config model cannot be deleted on the dashboard. Please delete it from the config file.",
+      "empty": {
+        "accessGroups": "No model access groups found",
+        "models": "No models found"
+      },
+      "filters": "Filters",
+      "filtersDescription": "Narrow down models + endpoints",
+      "modelInformation": "Model Information",
+      "pauseAria": "Pause model",
+      "pauseTooltipAdmin": "Only proxy admins can pause or resume a model.",
+      "pauseTooltipConfig": "Config models cannot be paused from the dashboard. Pause is DB-backed.",
+      "placeholder": {
+        "accessGroup": "Filter by Model Access Group",
+        "publicModelName": "Filter by Public Model Name"
+      },
+      "resumeAria": "Resume model",
+      "unknownProvider": "Unknown provider",
+      "dbModel": "DB Model"
     },
     "addAutoRouter": {
       "title": "Add Auto Router",
@@ -530,7 +634,9 @@
     "common": {
       "never": "Never",
       "unknown": "Unknown",
-      "unlimited": "Unlimited"
+      "unlimited": "Unlimited",
+      "more": "more",
+      "reset": "Reset Filters"
     },
     "autoRoutersPanel": {
       "title": "Auto routers",

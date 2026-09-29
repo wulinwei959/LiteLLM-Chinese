@@ -76,7 +76,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
   teams,
   credentials,
 }) => {
-  const t = useTranslations("models.addModel");
+  const t = useTranslations("common");
   const commonT = useTranslations("common");
 
   const [testMode, setTestMode] = useState<string>("chat");
@@ -208,9 +208,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                         <Alert variant="info" className="mb-4">
                           <Info />
                           <AlertTitle>{t("teamSelectionRequired")}</AlertTitle>
-                          <AlertDescription>
-                            {t("teamSelectionRequiredDesc")}
-                          </AlertDescription>
+                          <AlertDescription>{t("teamSelectionRequiredDesc")}</AlertDescription>
                         </Alert>
                       )}
                     </>
@@ -290,9 +288,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
 
                       {/* Credentials */}
                       <div className="mb-4">
-                        <span className="text-sm text-muted-foreground">
-                          {t("addModel.credentialsDesc")}
-                        </span>
+                        <span className="text-sm text-muted-foreground">{t("addModel.credentialsDesc")}</span>
                       </div>
 
                       <MountedFormField
@@ -331,20 +327,8 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {/* Team-only Model Switch - Only show for proxy admins, not team admins */}
                       {(isAdmin || !isTeamAdmin) && (
                         <Field className="mb-4">
-                          <FieldLabel>
-                            {labelWithHint(
-                              t("addModel.teamByok"),
-                              t("addModel.teamByokHint"),
-                            )}
-                          </FieldLabel>
-                          <SimpleTooltip
-                            content={
-                              !premiumUser
-                                ? t("addModel.teamByokPremium")
-                                : ""
-                            }
-                            side="top"
-                          >
+                          <FieldLabel>{labelWithHint(t("addModel.teamByok"), t("addModel.teamByokHint"))}</FieldLabel>
+                          <SimpleTooltip content={!premiumUser ? t("addModel.teamByokPremium") : ""} side="top">
                             <span className="inline-flex">
                               <Switch
                                 checked={isTeamOnly}
@@ -365,10 +349,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {/* Conditional Team Selection */}
                       {isTeamOnly && !requiresTeamScope && (
                         <MountedFormField
-                          label={labelWithHint(
-                            t("addModel.selectTeam"),
-                            t("addModel.teamByokHint2"),
-                          )}
+                          label={labelWithHint(t("addModel.selectTeam"), t("addModel.teamByokHint2"))}
                           name="team_id"
                           className="mb-4"
                           required={isTeamOnly && !isAdmin}
@@ -390,10 +371,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {isAdmin && (
                         <>
                           <MountedFormField
-                            label={labelWithHint(
-                              t("addModel.modelAccessGroup"),
-                              t("addModel.modelAccessGroupHint"),
-                            )}
+                            label={labelWithHint(t("addModel.modelAccessGroup"), t("addModel.modelAccessGroupHint"))}
                             name="model_access_group"
                             className="mb-4"
                           >

@@ -109,7 +109,65 @@
     "forbidden": "访问被拒绝",
     "notFound": "未找到",
     "serverError": "服务器错误，请稍后重试。",
-    "networkError": "网络错误，请检查您的连接。"
+    "networkError": "网络错误，请检查您的连接。",
+    "addModel": {
+      "additionalInfo": "附加模型信息设置",
+      "credentialsDesc": "选择已有凭据,或在下方输入新的提供商凭据",
+      "existingCredentials": "已有凭据",
+      "getHelpGithub": "在我们的 GitHub 上获取帮助",
+      "modelAccessGroup": "模型访问组",
+      "modelAccessGroupHint": "用模型访问组授予用户选择模型的权限,并可随时往组里添加新模型。",
+      "needHelp": "需要帮助?",
+      "optional": "可选",
+      "selectCredentials": "选择或搜索已有凭据",
+      "selectTeam": "选择团队",
+      "submit": "添加模型",
+      "teamByok": "团队自带密钥模型",
+      "teamByokHint": "该模型与凭据组合仅供此团队使用。适合希望接入自有 OpenAI 密钥的团队。",
+      "teamByokHint2": "只有此团队的密钥才能调用该模型。",
+      "teamByokPremium": "此功能仅企业版可用。升级到高级版后,可将模型与凭据组合限定给特定团队。",
+      "teamRequired": "请选择团队以继续",
+      "testConnect": "测试连接"
+    },
+    "common": {
+      "learnMore": "了解更多",
+      "more": "更多",
+      "or": "或",
+      "required": "必填",
+      "reset": "重置筛选",
+      "unknown": "未知"
+    },
+    "connectionTest": {
+      "title": "连接测试结果"
+    },
+    "deleteConfirmMessage": "确定要删除此透传端点吗?此操作无法撤销。",
+    "deleteConfirmTitle": "删除透传端点",
+    "deleteFailed": "删除端点时出错",
+    "deletedSuccessfully": "端点删除成功。",
+    "errorLoadingProviders": "加载提供商失败",
+    "filterLabels": {
+      "allStatuses": "全部状态",
+      "keyId": "密钥 ID",
+      "organization": "组织",
+      "status": "状态",
+      "team": "团队",
+      "userId": "用户 ID"
+    },
+    "healthCheckEndpoint": "健康检查此模型时使用的 LiteLLM 端点",
+    "loadingProviders": "正在加载提供商...",
+    "mode": "模式",
+    "noKeysFound": "未找到密钥",
+    "noProvidersFound": "未找到提供商",
+    "provider": "提供商",
+    "providerHint": "例如 OpenAI、Azure OpenAI、Anthropic、Bedrock 等。",
+    "searchPlaceholder": "按密钥别名或 ID 搜索...",
+    "selectProvider": "选择提供商",
+    "selectTeam": "选择团队",
+    "selectTeamHint": "选择要添加此模型的团队",
+    "teamRequired": "请选择团队。",
+    "teamSelectionRequired": "需要先选择团队",
+    "teamSelectionRequiredDesc": "作为团队管理员,添加模型前需要先选择你的团队。",
+    "title": "添加模型"
   },
   "nav": {
     "aiGateway": "AI 网关",
@@ -256,7 +314,20 @@
     "keyRegenerated": "密钥重新生成成功",
     "confirmDelete": "确定要删除此密钥吗？此操作无法撤销。",
     "noKeysFound": "未找到虚拟密钥",
-    "loading": "正在加载虚拟密钥..."
+    "loading": "正在加载虚拟密钥...",
+    "description": "用于向网关发起请求认证的所有密钥。",
+    "empty": {
+      "organization": "未找到组织",
+      "team": "未找到团队"
+    },
+    "filters": "筛选",
+    "filtersDescription": "缩小虚拟密钥的范围",
+    "placeholder": {
+      "keyId": "输入密钥 ID...",
+      "organization": "选择组织...",
+      "team": "选择团队...",
+      "userId": "输入用户 ID..."
+    }
   },
   "models": {
     "title": "模型管理",
@@ -303,7 +374,18 @@
       "accessGroups": "访问组",
       "litellmModelName": "LiteLLM 模型名称",
       "costIn": "输入",
-      "costOut": "输出"
+      "costOut": "输出",
+      "costTooltip": "每 100 万 Token 的成本",
+      "costTooltipPerSecond": "每 100 万 Token 的成本;/s 表示每秒输出的成本",
+      "credentialTypes": "凭据类型",
+      "credentials": "凭据",
+      "credentialsTooltip": "关于凭据类型",
+      "delete": "删除模型",
+      "manual": "手动输入",
+      "manualDesc": "在创建模型时直接添加,或在配置文件中定义的凭据。",
+      "reusable": "可复用",
+      "reusableDesc": "保存在 LiteLLM 中、可重复添加到多个模型的凭据。",
+      "settings": "模型设置"
     },
     "emptyState": {
       "noModels": "未找到模型",
@@ -515,7 +597,29 @@
         "description": "没有模型匹配您的搜索或筛选条件。尝试重置它们。"
       },
       "lastRefreshed": "最后刷新: {time}",
-      "refreshAriaLabel": "刷新模型"
+      "refreshAriaLabel": "刷新模型",
+      "allAccessGroups": "全部模型访问组",
+      "configModel": "在配置文件中定义",
+      "copied": "已复制 LiteLLM 模型名称",
+      "copyTooltip": "复制 LiteLLM 模型名称",
+      "deleteTooltipConfig": "配置中的模型无法在管理面板删除,请从配置文件删除。",
+      "empty": {
+        "accessGroups": "未找到模型访问组",
+        "models": "未找到模型"
+      },
+      "filters": "筛选",
+      "filtersDescription": "缩小模型与端点的范围",
+      "modelInformation": "模型信息",
+      "pauseAria": "暂停模型",
+      "pauseTooltipAdmin": "只有代理管理员可以暂停或恢复模型。",
+      "pauseTooltipConfig": "配置中的模型无法在管理面板暂停,暂停状态保存在数据库中。",
+      "placeholder": {
+        "accessGroup": "按模型访问组筛选",
+        "publicModelName": "按公开模型名称筛选"
+      },
+      "resumeAria": "恢复模型",
+      "unknownProvider": "未知提供商",
+      "dbModel": "数据库模型"
     },
     "addAutoRouter": {
       "title": "添加自动路由器",
@@ -532,7 +636,9 @@
     "common": {
       "never": "从不",
       "unknown": "未知",
-      "unlimited": "无限制"
+      "unlimited": "无限制",
+      "more": "更多",
+      "reset": "重置筛选"
     },
     "autoRoutersPanel": {
       "title": "自动路由器",

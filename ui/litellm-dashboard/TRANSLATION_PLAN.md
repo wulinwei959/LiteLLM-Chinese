@@ -152,13 +152,25 @@ const buildXSchema = (t: ReturnType<typeof useTranslations>) =>
 
 比"文案没翻译"更严重。next-intl 解析不到会抛 `MISSING_MESSAGE`，界面上直接报错而不是显示英文。
 
-写一个一次性脚本扫描：遍历 `src` 下所有含 `useTranslations` 的文件，收集作用域内的命名空间，再把每个 `t("...")` 引用（含 `t("ns.key")` 显式命名空间的）在 `en.json` 里解析一遍，解析不到的就是缺失。
+现在有守卫测试 `src/lib/i18n/missingKeys.test.ts`，与 `messagesParity.test.ts` 一起跑。parity 只比对 en 与 zh 的键树，管不到"代码引用的 key 是否存在"这个方向，所以需要单独一条。
 
-注意 `useTranslations("models")` 作用域内的调用写作 `t("modelTable.x")`，不带 `models.` 前缀。只匹配 `t("ns.key")` 会漏掉大部分。
+手工扫描的做法：遍历 `src` 下所有含 `useTranslations` 的文件，收集作用域内的命名空间，再把每个 `t("...")` 在 `en.json` 里解析一遍。
 
-2026-09-29 扫描结果：**100 个缺失**，`common` 60、`models` 31、`virtualKeys` 9。集中在 `AddModelForm.tsx`(36)、`VirtualKeysTable.tsx`、`ModelsTableColumns.tsx`(24)、`AllModelsTable.tsx`(9)、`PassThroughSettings.tsx`(5)，来自批次 2 与批次 3。
+三个坑，都踩过：
 
-补这些 key 时英文原文要从 i18n 之前的快照取，不要凭上下文猜（测试可能断言了原文）：`git show '610473c:ui/litellm-dashboard/src/app/(dashboard)/...'`。
+- `useTranslations("models")` 作用域内的调用写作 `t("modelTable.x")`，不带 `models.` 前缀。只匹配 `t("ns.key")` 会漏掉大部分
+- 一个文件可能同时引入多个命名空间，裸 `t("x")` 只要在**任意一个**作用域里能解析就不算缺失
+- `t` 通过 props 传进来的文件无法静态判定作用域，守卫会跳过
+
+补 key 时英文原文要从 i18n 之前的快照取，不要凭上下文猜（测试可能断言了原文）：
+
+```
+git diff -U0 610473c HEAD -- <相对仓库根的路径>
+```
+
+`git diff` 天然给出前后行配对，比按行号对齐可靠。`git show` 的路径要加 `ui/litellm-dashboard/` 前缀，而 `git diff` 的 pathspec 是相对当前目录的，两者不一样。Windows 上用 `execFileSync` 传参数数组，cmd 不认单引号，路径里的 `(dashboard)` 会被吃掉。
+
+2026-09-29 修掉的：`common` 60 个、`models` 32 个、`virtualKeys` 9 个，来自批次 2 与批次 3。同时发现 `AddModelForm.tsx` 写的是 `useTranslations("models.addModel")`，这个命名空间不存在，导致该文件 37 处文案全部解析失败。
 
 ## 收尾时容易搞错的两处
 
