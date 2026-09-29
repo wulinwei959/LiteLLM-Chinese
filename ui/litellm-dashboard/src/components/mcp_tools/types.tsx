@@ -46,18 +46,22 @@ export const AUTH_TYPE = {
   OAUTH_DELEGATE: "oauth_delegate",
 };
 
-export const AUTH_TYPE_ITEMS = [
-  { value: AUTH_TYPE.NONE, label: "None" },
-  { value: AUTH_TYPE.API_KEY, label: "API Key" },
-  { value: AUTH_TYPE.BEARER_TOKEN, label: "Bearer Token" },
-  { value: AUTH_TYPE.TOKEN, label: "Token" },
-  { value: AUTH_TYPE.BASIC, label: "Basic Auth" },
-  { value: AUTH_TYPE.OAUTH2, label: "OAuth" },
-  { value: AUTH_TYPE.OAUTH2_TOKEN_EXCHANGE, label: "OAuth Token Exchange (OBO)" },
-  { value: AUTH_TYPE.OAUTH2_ID_JAG, label: "ID-JAG (Okta Cross App Access)" },
-  { value: AUTH_TYPE.AWS_SIGV4, label: "AWS SigV4 (Bedrock AgentCore MCPs)" },
-  { value: AUTH_TYPE.TRUE_PASSTHROUGH, label: "True Passthrough (no LiteLLM auth)" },
-  { value: AUTH_TYPE.OAUTH_DELEGATE, label: "OAuth Delegate (client-supplied upstream token)" },
+// label holds a message key rather than display copy, so the create and edit forms
+// can render it in the active locale. Resolve with t(item.labelKey).
+export type AuthTypeItem = { value: string; labelKey: string };
+
+export const AUTH_TYPE_ITEMS: readonly AuthTypeItem[] = [
+  { value: AUTH_TYPE.NONE, labelKey: "authType.none" },
+  { value: AUTH_TYPE.API_KEY, labelKey: "authType.apiKey" },
+  { value: AUTH_TYPE.BEARER_TOKEN, labelKey: "authType.bearerToken" },
+  { value: AUTH_TYPE.TOKEN, labelKey: "authType.token" },
+  { value: AUTH_TYPE.BASIC, labelKey: "authType.basicAuth" },
+  { value: AUTH_TYPE.OAUTH2, labelKey: "authType.oauth" },
+  { value: AUTH_TYPE.OAUTH2_TOKEN_EXCHANGE, labelKey: "authType.tokenExchange" },
+  { value: AUTH_TYPE.OAUTH2_ID_JAG, labelKey: "authType.idJag" },
+  { value: AUTH_TYPE.AWS_SIGV4, labelKey: "authType.awsSigV4" },
+  { value: AUTH_TYPE.TRUE_PASSTHROUGH, labelKey: "authType.truePassthrough" },
+  { value: AUTH_TYPE.OAUTH_DELEGATE, labelKey: "authType.oauthDelegate" },
 ];
 
 // The two client-forwarded token modes: the caller supplies the upstream Authorization (forwarded
@@ -264,11 +268,13 @@ export const TRANSPORT = {
   OPENAPI: "openapi",
 };
 
-export const TRANSPORT_ITEMS = [
-  { value: TRANSPORT.HTTP, label: "Streamable HTTP (Recommended)" },
-  { value: TRANSPORT.SSE, label: "Server-Sent Events (SSE)" },
-  { value: TRANSPORT.STDIO, label: "Standard Input/Output (stdio)" },
-  { value: TRANSPORT.OPENAPI, label: "OpenAPI Spec" },
+export type TransportItem = { value: string; labelKey: string };
+
+export const TRANSPORT_ITEMS: readonly TransportItem[] = [
+  { value: TRANSPORT.HTTP, labelKey: "transport.streamableHttp" },
+  { value: TRANSPORT.SSE, labelKey: "transport.sse" },
+  { value: TRANSPORT.STDIO, labelKey: "transport.stdio" },
+  { value: TRANSPORT.OPENAPI, labelKey: "transport.openapi" },
 ];
 
 export const handleTransport = (transport?: string | null, specPath?: string | null): string => {

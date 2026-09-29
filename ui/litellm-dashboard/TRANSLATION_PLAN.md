@@ -54,6 +54,9 @@
 | 12   | 项目与访问组                       | `ProjectsPage.tsx`、`ProjectDetailsPage.tsx`、`ProjectModals/*`、`AccessGroupsPage.tsx`、`AccessGroupsTableColumns.tsx`、`AccessGroupCreateDialog.tsx`                                                      |
 | 13   | 管理面板与系统设置                 | `AdminPanel.tsx`、`UIThemeSettings.tsx`、`general_settings.tsx`、`ChangePasswordForm.tsx`、`TransformRequestPanel.tsx`                                                                                      |
 | 14a  | MCP 服务器列表页与卡片             | `mcp_servers.tsx`、`MCPServerCard.tsx`                                                                                                                                                                      |
+| 14b  | MCP 服务器详情页                   | `mcp_server_view.tsx`、`mcp_connection_status.tsx`、`mcp_server_cost_config.tsx`、`mcp_server_cost_display.tsx`、`MCPServerUserCredentialsPanel.tsx`、`utils.tsx`                                           |
+| 14c  | MCP 创建与编辑表单                 | 29 个组件，拆成 14c-1 字段组件、14c-2 弹窗与剩余表单、14c-3 表单主体                                                                                                                                        |
+| 14d  | MCP 工具与权限                     | `mcp_tools.tsx`、`mcp_tool_configuration.tsx`、`MCPToolsetsTab.tsx`、`ToolTestPanel.tsx`、`MCPPermissionManagement.tsx`、`MCPNetworkSettings.tsx`、`mcp_connect.tsx`、`mcp_discovery.tsx` 等                |
 
 批次 3 到 8 存在“只翻译外壳、未翻译子组件”的欠账，因此下面把对应页面族重新列出收尾。
 
@@ -93,7 +96,7 @@
 - **14b 详情页（已完成）**：`mcp_server_view.tsx`、`mcp_connection_status.tsx`、`mcp_server_cost_config.tsx`、`mcp_server_cost_display.tsx`、`MCPServerUserCredentialsPanel.tsx`，另加共享的 `utils.tsx`（见下）。新增 103 个 key，`mcpServers` 命名空间共 161 个。
 - **14c-1 表单字段组件（已完成）**：`AwsSigV4Fields`、`IdJagFormFields`、`TokenExchangeFormFields`、`OpenApiByokFields`、`UpstreamTokenHeaderField`、`DcrBridgeToggle`、`StdioConfiguration`、`TruePassthroughWarning`、`PassthroughAuthorizeSection`、`OpenAPIFormSection`、`OpenAPIQuickPicker`、`TokenEndpointAuthMethodField`、`MCPLogoSelector`、`EnvVarsSection`。新增 136 个 key，`mcpServers` 命名空间共 297 个。
 - **14c-2 其余表单与弹窗（已完成）**：`UserEnvVarsModal`、`ImportMCPServers`、`ToolArgumentsForm`、`OAuthFormFields`。新增 88 个 key，`mcpServers` 命名空间共 385 个。
-- **14c-3 创建与编辑表单主体**：`CreateMCPServer.tsx`（44KB）、`mcp_server_edit.tsx`（58KB）、`McpFormTestHarness`。
+- **14c-3 创建与编辑表单主体（已完成）**：`CreateMCPServer.tsx`（44KB）、`mcp_server_edit.tsx`（58KB）、共享的 `types.tsx` 选项标签。新增 96 个 key，`mcpServers` 命名空间共 481 个。
 - **14d 工具与权限**：`mcp_tools.tsx`、`mcp_tool_configuration.tsx`、`MCPToolsetsTab.tsx`、`MCPToolsetTableColumns.tsx`、`ToolArgumentsForm.tsx`、`ToolTestPanel.tsx`、`MCPPermissionManagement.tsx`、`MCPGatewaySessionsTab.tsx`、`MCPSubmissionsTab.tsx`、`MCPNetworkSettings.tsx`、`mcp_connect.tsx`、`mcp_discovery.tsx`。
 
 `mcp_servers.tsx` 里 `SORT_OPTIONS` 原本是带 `label` 的字面量数组，翻译时改为 `SORT_KEYS`（只存 key）加 `SORT_LABEL_KEYS`（key 到 i18n key 的映射），下拉项和 `items` prop 都从 `SORT_KEYS` 派生。
@@ -188,6 +191,32 @@ git diff -U0 610473c HEAD -- <相对仓库根的路径>
 `git diff` 天然给出前后行配对，比按行号对齐可靠。`git show` 的路径要加 `ui/litellm-dashboard/` 前缀，而 `git diff` 的 pathspec 是相对当前目录的，两者不一样。Windows 上用 `execFileSync` 传参数数组，cmd 不认单引号，路径里的 `(dashboard)` 会被吃掉。
 
 2026-09-29 修掉的：`common` 60 个、`models` 32 个、`virtualKeys` 9 个，来自批次 2 与批次 3。同时发现 `AddModelForm.tsx` 写的是 `useTranslations("models.addModel")`，这个命名空间不存在，导致该文件 37 处文案全部解析失败。
+
+### 共享模块里的选项标签改成键名
+
+`types.tsx` 的 `AUTH_TYPE_ITEMS` 和 `TRANSPORT_ITEMS` 带英文 `label`，被创建和编辑两个表单引用。把标签换成 `labelKey`，由组件调 `t(item.labelKey)` 渲染：
+
+```ts
+export type AuthTypeItem = { value: string; labelKey: string };
+export const AUTH_TYPE_ITEMS: readonly AuthTypeItem[] = [
+  { value: AUTH_TYPE.NONE, labelKey: "authType.none" },
+  ...
+];
+```
+
+`readonly` 是必要的：两个组件各自 `map` 出带本地化标签的新数组，共享常量不能被就地改写。
+
+### 可选后缀不要用 select
+
+`"Failed to update MCP Server" + (reason ? ": " + reason : "")` 这种条件拼接，不能写成 `{reason, select, none {} other {: {reason}}}`。ICU 的 `select` 按值匹配，而 `""` 也是一个值，会走 `other` 分支渲染出多余的冒号。
+
+正确做法是把分隔符和值一起作为后缀传进去：
+
+```
+Failed to update MCP Server{suffix}
+```
+
+调用处 `t("edit.updateFailedToast", { suffix: reason ? \`: ${reason}\` : "" })`。
 
 ### 消息里的花括号也要加引号
 
