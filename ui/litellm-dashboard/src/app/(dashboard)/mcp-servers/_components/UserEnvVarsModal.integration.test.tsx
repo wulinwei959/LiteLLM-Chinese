@@ -1,5 +1,7 @@
 import React from "react";
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
+
+import { renderWithProviders, testQueryClient } from "../../../../../tests/test-utils";
 import userEvent, { PointerEventsCheckLevel } from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -24,7 +26,7 @@ const statusWith = (required: MCPUserEnvVarsStatus["required"]): MCPUserEnvVarsS
 
 const renderModal = (status: MCPUserEnvVarsStatus, onSaved = vi.fn(), onClose = vi.fn()) => {
   vi.mocked(networking.getMCPUserEnvVars).mockResolvedValue(status);
-  const view = render(
+  const view = renderWithProviders(
     <QueryClientProvider client={createQueryClient()}>
       <UserEnvVarsModal server={server} open accessToken="sk-test" onClose={onClose} onSaved={onSaved} />
     </QueryClientProvider>,
@@ -50,6 +52,9 @@ const fieldAfterOpen = async (label: RegExp): Promise<HTMLElement> => {
 
 describe("UserEnvVarsModal", () => {
   beforeEach(() => {
+    // testQueryClient is a module singleton with staleTime Infinity, so without this
+    // a test overriding getMCPUserEnvVars would render the previous test's cache.
+    testQueryClient.clear();
     vi.clearAllMocks();
   });
 

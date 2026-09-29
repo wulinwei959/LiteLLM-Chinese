@@ -92,7 +92,7 @@
 - **14a 列表页与卡片（已完成）**：`mcp_servers.tsx`（页头、标签页、筛选、搜索、排序、删除弹窗、空状态）、`MCPServerCard.tsx`（卡片菜单、健康度标签、OAuth 提示、按用户凭据与 BYOK 行）。新增 `mcpServers` 命名空间。
 - **14b 详情页（已完成）**：`mcp_server_view.tsx`、`mcp_connection_status.tsx`、`mcp_server_cost_config.tsx`、`mcp_server_cost_display.tsx`、`MCPServerUserCredentialsPanel.tsx`，另加共享的 `utils.tsx`（见下）。新增 103 个 key，`mcpServers` 命名空间共 161 个。
 - **14c-1 表单字段组件（已完成）**：`AwsSigV4Fields`、`IdJagFormFields`、`TokenExchangeFormFields`、`OpenApiByokFields`、`UpstreamTokenHeaderField`、`DcrBridgeToggle`、`StdioConfiguration`、`TruePassthroughWarning`、`PassthroughAuthorizeSection`、`OpenAPIFormSection`、`OpenAPIQuickPicker`、`TokenEndpointAuthMethodField`、`MCPLogoSelector`、`EnvVarsSection`。新增 136 个 key，`mcpServers` 命名空间共 297 个。
-- **14c-2 其余表单与弹窗**：`EnvVarsSection` 配套的 `UserEnvVarsModal`、`ImportMCPServers`、`ToolArgumentsForm`、`OAuthFormFields`。
+- **14c-2 其余表单与弹窗（已完成）**：`UserEnvVarsModal`、`ImportMCPServers`、`ToolArgumentsForm`、`OAuthFormFields`。新增 88 个 key，`mcpServers` 命名空间共 385 个。
 - **14c-3 创建与编辑表单主体**：`CreateMCPServer.tsx`（44KB）、`mcp_server_edit.tsx`（58KB）、`McpFormTestHarness`。
 - **14d 工具与权限**：`mcp_tools.tsx`、`mcp_tool_configuration.tsx`、`MCPToolsetsTab.tsx`、`MCPToolsetTableColumns.tsx`、`ToolArgumentsForm.tsx`、`ToolTestPanel.tsx`、`MCPPermissionManagement.tsx`、`MCPGatewaySessionsTab.tsx`、`MCPSubmissionsTab.tsx`、`MCPNetworkSettings.tsx`、`mcp_connect.tsx`、`mcp_discovery.tsx`。
 
@@ -188,6 +188,30 @@ git diff -U0 610473c HEAD -- <相对仓库根的路径>
 `git diff` 天然给出前后行配对，比按行号对齐可靠。`git show` 的路径要加 `ui/litellm-dashboard/` 前缀，而 `git diff` 的 pathspec 是相对当前目录的，两者不一样。Windows 上用 `execFileSync` 传参数数组，cmd 不认单引号，路径里的 `(dashboard)` 会被吃掉。
 
 2026-09-29 修掉的：`common` 60 个、`models` 32 个、`virtualKeys` 9 个，来自批次 2 与批次 3。同时发现 `AddModelForm.tsx` 写的是 `useTranslations("models.addModel")`，这个命名空间不存在，导致该文件 37 处文案全部解析失败。
+
+### 消息里的花括号也要加引号
+
+尖括号的问题在花括号上同样存在。ICU 把 `{...}` 当参数，tooltip 里内嵌一段 JSON 示例（`{"organization": "my-org"}`）就会抛 `INVALID_MESSAGE: MALFORMED_ARGUMENT`，整条消息渲染不出来。`OAuthFormFields` 的令牌校验规则提示就踩了这个。
+
+```
+(e.g. '{'"organization": "my-org", "team.id": "123"'}')
+```
+
+加引号只保护花括号本身，里面的双引号不用动。解析后与原文逐字一致。
+
+守卫里判断花括号是否合法，要放行四种形式：裸标识符 `{name}`、`t.rich` 的闭合标签 `{/link}`、复数/选择参数体（名字后面带逗号）、复数体内的数字占位符 `{#}`。少放行一种就会误报，批次 14c-2 为此改了三轮。
+
+### 单复数交给 ICU，不要拆两个 key
+
+`Imported ${n} MCP server${n === 1 ? "" : "s"}` 这种拼接，翻译时拆成 `countToast` 与 `countToastPlural` 两个 key 是错的。英文有单复数，中文没有，用三元选 key 会让中文那边永远只能选到一个分支。
+
+正确写法是 ICU 的 `plural`：
+
+```
+Imported {count, plural, one {#} MCP server} other {#} MCP servers}
+```
+
+中文那条只留 `{count}`，next-intl 自动走 `other` 分支。
 
 ### 消息里的尖括号要加引号
 

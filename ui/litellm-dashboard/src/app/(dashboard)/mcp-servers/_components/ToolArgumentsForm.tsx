@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { useForm, type Control } from "react-hook-form";
 import { CircleHelp } from "lucide-react";
 
@@ -33,15 +34,20 @@ const argumentLabel = (field: ToolArgumentField): React.ReactNode => (
   </span>
 );
 
-const BOOLEAN_ITEMS = [
-  { value: true, label: "True" },
-  { value: false, label: "False" },
-];
+const booleanTitleFor = (value: unknown, t: ReturnType<typeof useTranslations>): string | undefined => {
+  switch (value) {
+    case true:
+      return t("toolArgs.true");
+    case false:
+      return t("toolArgs.false");
+    default:
+      return undefined;
+  }
+};
 
-const booleanTitle = (value: unknown): string | undefined => {
-  if (value === true) return "True";
-  if (value === false) return "False";
-  return undefined;
+const callButtonLabelFor = (isLoading: boolean, hasRun: boolean, t: ReturnType<typeof useTranslations>): string => {
+  if (isLoading) return t("toolArgs.calling");
+  return hasRun ? t("toolArgs.callAgain") : t("toolArgs.call");
 };
 
 const JsonArgumentControl: React.FC<{
@@ -49,8 +55,11 @@ const JsonArgumentControl: React.FC<{
   prop: InputSchemaProperty;
   control: FormFieldControlProps<ToolArgumentsFormValues, `args.${number}`>;
 }> = ({ field, prop, control }) => {
+  const t = useTranslations("mcpServers");
   const isObject = prop.type === "object";
-  const fallbackPlaceholder = isObject ? `Enter JSON object for ${field.key}` : `Enter JSON array for ${field.key}`;
+  const fallbackPlaceholder = isObject
+    ? t("toolArgs.jsonObjectPlaceholder", { key: field.key })
+    : t("toolArgs.jsonArrayPlaceholder", { key: field.key });
   return (
     <div className="space-y-2">
       <Textarea
@@ -63,7 +72,7 @@ const JsonArgumentControl: React.FC<{
         className="rounded-lg font-mono"
       />
       <p className="text-xs text-muted-foreground">
-        {isObject ? "Provide a valid JSON object." : "Provide a valid JSON array."}
+        {isObject ? t("toolArgs.jsonObjectHint") : t("toolArgs.jsonArrayHint")}
       </p>
     </div>
   );
@@ -73,6 +82,7 @@ const ToolArgumentControl: React.FC<{
   field: ToolArgumentField;
   control: FormFieldControlProps<ToolArgumentsFormValues, `args.${number}`>;
 }> = ({ field, control }) => {
+  const t = useTranslations("mcpServers");
   const prop = resolveSchemaProperty(field.prop);
 
   if (prop.type === "string" && prop.enum) {
@@ -84,11 +94,11 @@ const ToolArgumentControl: React.FC<{
         className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-colors focus:border-ring focus:ring-3 focus:ring-ring/50 focus:outline-hidden"
       >
         <option value={-1} disabled={field.required}>
-          Select {field.key}
+          {t("toolArgs.selectKey", { key: field.key })}
         </option>
         {prop.enum.map((option, index) => (
           <option key={option} value={index}>
-            {option === "" ? "Empty string" : option}
+            {option === "" ? t("toolArgs.emptyString") : option}
           </option>
         ))}
       </select>
@@ -102,31 +112,32 @@ const ToolArgumentControl: React.FC<{
         type="number"
         step={prop.type === "integer" ? 1 : "any"}
         value={(control.value as number | string) ?? ""}
-        placeholder={prop.description || `Enter ${field.key}`}
+        placeholder={prop.description || t("toolArgs.enterKey", { key: field.key })}
         className="rounded-lg"
       />
     );
   }
 
   if (prop.type === "boolean") {
+    const emptyOption = { value: null, label: t("toolArgs.selectKey", { key: field.key }) };
+    const booleanItems = [
+      { value: true, label: t("toolArgs.true") },
+      { value: false, label: t("toolArgs.false") },
+    ];
+    const booleanTitle = booleanTitleFor(control.value, t);
     return (
       <Select
-        items={field.required ? BOOLEAN_ITEMS : [{ value: null, label: `Select ${field.key}` }, ...BOOLEAN_ITEMS]}
+        items={field.required ? booleanItems : [emptyOption, ...booleanItems]}
         value={control.value ?? null}
         onValueChange={control.onChange}
       >
-        <SelectTrigger
-          id={control.id}
-          aria-invalid={control["aria-invalid"]}
-          title={booleanTitle(control.value)}
-          className="w-full"
-        >
-          <SelectValue placeholder={`Select ${field.key}`} />
+        <SelectTrigger id={control.id} aria-invalid={control["aria-invalid"]} title={booleanTitle} className="w-full">
+          <SelectValue placeholder={emptyOption.label} />
         </SelectTrigger>
         <SelectContent>
-          {!field.required && <SelectItem value={null}>Select {field.key}</SelectItem>}
-          <SelectItem value={true}>True</SelectItem>
-          <SelectItem value={false}>False</SelectItem>
+          {!field.required && <SelectItem value={null}>{emptyOption.label}</SelectItem>}
+          <SelectItem value={true}>{t("toolArgs.true")}</SelectItem>
+          <SelectItem value={false}>{t("toolArgs.false")}</SelectItem>
         </SelectContent>
       </Select>
     );
@@ -140,7 +151,7 @@ const ToolArgumentControl: React.FC<{
     <Input
       {...control}
       value={(control.value as string) ?? ""}
-      placeholder={prop.description || `Enter ${field.key}`}
+      placeholder={prop.description || t("toolArgs.enterKey", { key: field.key })}
       className="rounded-lg"
     />
   );
@@ -151,6 +162,7 @@ const ToolArgumentFields: React.FC<{
   control: Control<ToolArgumentsFormValues>;
   singleInputFallback: boolean;
 }> = ({ fields, control, singleInputFallback }) => {
+  const t = useTranslations("mcpServers");
   if (singleInputFallback) {
     return (
       <FieldGroup>
@@ -159,7 +171,7 @@ const ToolArgumentFields: React.FC<{
           name="args.0"
           label={
             <span>
-              Input <span className="text-destructive">*</span>
+              {t("toolArgs.inputLabel")} <span className="text-destructive">*</span>
             </span>
           }
         >
@@ -167,7 +179,7 @@ const ToolArgumentFields: React.FC<{
             <Input
               {...field}
               value={(field.value as string) ?? ""}
-              placeholder="Enter input for this tool"
+              placeholder={t("toolArgs.singleInputPlaceholder")}
               className="rounded-lg"
             />
           )}
@@ -180,8 +192,8 @@ const ToolArgumentFields: React.FC<{
     return (
       <div className="rounded-lg border border-border bg-muted py-6 text-center">
         <div className="mx-auto max-w-sm">
-          <h4 className="mb-1 text-sm font-medium text-foreground">No Parameters Required</h4>
-          <p className="text-xs text-muted-foreground">This tool can be called without any input parameters.</p>
+          <h4 className="mb-1 text-sm font-medium text-foreground">{t("toolArgs.noParamsTitle")}</h4>
+          <p className="text-xs text-muted-foreground">{t("toolArgs.noParamsBody")}</p>
         </div>
       </div>
     );
@@ -203,11 +215,6 @@ const ToolArgumentFields: React.FC<{
   );
 };
 
-const callButtonLabel = (isLoading: boolean, hasRun: boolean): string => {
-  if (isLoading) return "Calling Tool...";
-  return hasRun ? "Call Again" : "Call Tool";
-};
-
 export const ToolArgumentsForm: React.FC<{
   fields: readonly ToolArgumentField[];
   singleInputFallback: boolean;
@@ -215,12 +222,14 @@ export const ToolArgumentsForm: React.FC<{
   hasRun: boolean;
   onRun: (args: Record<string, unknown>) => void;
 }> = ({ fields, singleInputFallback, isLoading, hasRun, onRun }) => {
+  const t = useTranslations("mcpServers");
   const form = useForm<ToolArgumentsFormValues>({
     defaultValues: { args: initialArgumentValues(fields) },
     resolver: toolArgumentsResolver(fields),
   });
 
   const submit = form.handleSubmit((values) => onRun(buildToolCallArguments(fields, values.args)));
+  const callButtonLabel = callButtonLabelFor(isLoading, hasRun, t);
 
   return (
     <TooltipProvider>
@@ -236,7 +245,7 @@ export const ToolArgumentsForm: React.FC<{
             className="w-full"
           >
             {isLoading && <UiLoadingSpinner className="size-4" />}
-            {callButtonLabel(isLoading, hasRun)}
+            {callButtonLabel}
           </Button>
         </div>
       </form>

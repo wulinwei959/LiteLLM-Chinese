@@ -71,4 +71,23 @@ describe("message syntax", () => {
 
     expect([...new Set(unpaired)]).toEqual([]);
   });
+
+  it("should quote every brace that is not a placeholder", () => {
+    // ICU reads {...} as an argument, so a JSON example embedded in a tooltip
+    // makes t() throw INVALID_MESSAGE: MALFORMED_ARGUMENT. Legitimate forms are a
+    // bare identifier, a t.rich close tag {/tag}, a plural/select body carrying a
+    // comma, and the {#} number placeholder inside a plural body.
+    const isLegitimate = (body: string) =>
+      body === "#" || /^[a-zA-Z][a-zA-Z0-9_]*$/.test(body) || /^\/[a-zA-Z][a-zA-Z0-9_]*$/.test(body) || /,/.test(body);
+
+    const offenders = pairs
+      .filter(([, value]) => typeof value === "string")
+      .flatMap(([path, value]) =>
+        [...unquoted(value).matchAll(/\{([^}]*)\}/g)]
+          .filter((match) => !isLegitimate(match[1].trim()))
+          .map((match) => `${path}: {${match[1]}}`),
+      );
+
+    expect([...new Set(offenders)]).toEqual([]);
+  });
 });
