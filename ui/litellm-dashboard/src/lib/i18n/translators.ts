@@ -84,3 +84,13 @@ function useVirtualKeysTranslator() {
   return useTranslations("virtualKeys");
 }
 export type VirtualKeysTranslator = ReturnType<typeof useVirtualKeysTranslator>;
+
+function useGuardrailsTranslator() {
+  return useTranslations("guardrails");
+}
+export type GuardrailsTranslator = ReturnType<typeof useGuardrailsTranslator>;
+
+function usePoliciesTranslator() {
+  return useTranslations("policies");
+}
+export type PoliciesTranslator = ReturnType<typeof usePoliciesTranslator>;

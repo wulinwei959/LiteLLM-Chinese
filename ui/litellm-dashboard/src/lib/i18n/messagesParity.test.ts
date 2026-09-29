@@ -27,8 +27,45 @@ function collectKeyPaths(node: unknown, prefix: string): string[] {
  * are not arguments and are skipped; `#` inside a plural arm refers to the
  * enclosing number and is always legitimate.
  */
+/**
+ * The message with ICU-quoted spans removed. ICU only treats an apostrophe as
+ * opening a quoted span when the next character is a syntax character
+ * (`{`, `}`, `#`, `|`, `<`, or another apostrophe); a possessive like
+ * "caller's" stays literal. `''` is an escaped apostrophe.
+ */
+function stripIcuQuotes(value: string): string {
+  const SYNTAX = new Set(["{", "}", "#", "|", "<", "'"]);
+  let out = "";
+  let i = 0;
+  while (i < value.length) {
+    if (value[i] === "'" && SYNTAX.has(value[i + 1] ?? "")) {
+      if (value[i + 1] === "'") {
+        out += "'";
+        i += 2;
+        continue;
+      }
+      let j = i + 1;
+      while (j < value.length) {
+        if (value[j] === "'") {
+          if (value[j + 1] === "'") {
+            j += 2;
+            continue;
+          }
+          break;
+        }
+        j++;
+      }
+      i = Math.min(j + 1, value.length);
+      continue;
+    }
+    out += value[i];
+    i++;
+  }
+  return out;
+}
+
 function collectArgumentNames(value: string): string[] {
-  const unquoted = value.replace(/'[^']*'/g, "");
+  const unquoted = stripIcuQuotes(value);
   const names: string[] = [];
   let depth = 0;
   let headStart = -1;
@@ -120,8 +157,8 @@ describe("message syntax", () => {
   const RICH_TAGS = new Set(["strong", "b", "i", "em", "link", "code", "br"]);
   const pairs = [...collectEntries(en, ""), ...collectEntries(zhCN, "")];
 
-  /** Drops every apostrophe-quoted span, which ICU already treats as literal. */
-  const unquoted = (value: string) => value.replace(/'[^']*'/g, "");
+  /** Drops ICU-quoted spans; a possessive like "caller's" stays literal. */
+  const unquoted = (value: string) => stripIcuQuotes(value);
 
   it("should only leave angle brackets that belong to a rich-text tag", () => {
     const offenders = pairs

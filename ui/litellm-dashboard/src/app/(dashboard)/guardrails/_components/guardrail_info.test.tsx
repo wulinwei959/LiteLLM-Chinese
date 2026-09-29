@@ -1,5 +1,7 @@
 import * as networking from "@/components/networking";
-import { fireEvent, render, waitFor, within, screen } from "@testing-library/react";
+import { fireEvent, waitFor, within, screen } from "@testing-library/react";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import GuardrailInfoView from "./guardrail_info";
@@ -65,7 +67,7 @@ describe("Guardrail Info", () => {
 
     vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
 
-    render(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
+    renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
     // Wait for the loading to complete and data to be rendered
     await waitFor(() => {
@@ -103,7 +105,7 @@ describe("Guardrail Info", () => {
 
     vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
 
-    render(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
+    renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
     expect(await screen.findAllByText("pre_call, post_call (tag-based)")).not.toHaveLength(0);
   });
@@ -131,7 +133,7 @@ describe("Guardrail Info", () => {
 
     vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
 
-    render(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
+    renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
     const logo = await screen.findByAltText("Presidio PII logo");
     expect(logo).toHaveAttribute("src", expect.stringContaining("microsoft_azure.svg"));
@@ -161,7 +163,7 @@ describe("Guardrail Info", () => {
 
     vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
 
-    const { container } = render(
+    const { container } = renderWithProviders(
       <GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />,
     );
 
@@ -212,7 +214,7 @@ describe("Guardrail Info", () => {
 
     vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
 
-    render(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
+    renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
     await waitFor(() => {
       expect(screen.getByText("PII Entity Configuration")).toBeInTheDocument();
@@ -245,7 +247,7 @@ describe("Guardrail Info", () => {
     vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
     vi.mocked(networking.updateGuardrailCall).mockResolvedValue({ status: "success" });
 
-    render(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
+    renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
     await waitFor(() => {
       expect(screen.getByText("Settings")).toBeInTheDocument();
@@ -331,7 +333,7 @@ describe("Guardrail Info", () => {
     });
     vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
 
-    render(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
+    renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
     expect(await screen.findByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("tab", { name: "Settings" })).toHaveAttribute("aria-selected", "false");
@@ -355,7 +357,7 @@ describe("Guardrail Info when the guardrail cannot be loaded", () => {
     vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
     const onClose = vi.fn();
 
-    render(<GuardrailInfoView guardrailId="stale-id" onClose={onClose} accessToken="123" isAdmin={true} />);
+    renderWithProviders(<GuardrailInfoView guardrailId="stale-id" onClose={onClose} accessToken="123" isAdmin={true} />);
 
     expect(await screen.findByText("Guardrail not found")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /back to guardrails/i }));
