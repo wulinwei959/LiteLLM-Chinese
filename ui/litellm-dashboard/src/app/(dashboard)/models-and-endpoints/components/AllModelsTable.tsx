@@ -79,9 +79,7 @@ function EmptyState({ t }: { t: ReturnType<typeof useTranslations> }) {
         <Search className="size-5 text-muted-foreground" />
       </div>
       <div className="text-base font-semibold text-foreground">{t("modelTable.emptyState.title")}</div>
-      <div className="max-w-80 text-sm text-muted-foreground">
-        {t("modelTable.emptyState.description")}
-      </div>
+      <div className="max-w-80 text-sm text-muted-foreground">{t("modelTable.emptyState.description")}</div>
     </div>
   );
 }
@@ -133,9 +131,20 @@ export function AllModelsTable({
       onDeleteClick,
       onTogglePauseClick,
       pausingModelId,
+      t,
     };
     return getModelsTableColumns(columnDeps);
-  }, [userRole, userID, isViewOnly, onModelIdClick, onTeamIdClick, onDeleteClick, onTogglePauseClick, pausingModelId]);
+  }, [
+    userRole,
+    userID,
+    isViewOnly,
+    onModelIdClick,
+    onTeamIdClick,
+    onDeleteClick,
+    onTogglePauseClick,
+    pausingModelId,
+    t,
+  ]);
 
   const modelGroupOptions = useMemo(
     () => [
@@ -151,7 +160,7 @@ export function AllModelsTable({
       { label: t("modelTable.allAccessGroups"), value: ALL_MODEL_GROUPS_VALUE },
       ...availableModelAccessGroups.map((accessGroup) => ({ label: accessGroup, value: accessGroup })),
     ],
-    [availableModelAccessGroups],
+    [availableModelAccessGroups, t],
   );
 
   const formatFilterValue = (columnId: string, value: unknown): string => {
@@ -245,7 +254,12 @@ export function AllModelsTable({
             </Select>
 
             <Select value={viewMode} onValueChange={(value) => onViewModeChange(value as ModelViewMode)}>
-              <SelectTrigger size="sm" aria-label={t("modelTable.viewLabel")} data-testid="models-view-select" className="gap-2">
+              <SelectTrigger
+                size="sm"
+                aria-label={t("modelTable.viewLabel")}
+                data-testid="models-view-select"
+                className="gap-2"
+              >
                 <span className="text-muted-foreground">{t("modelTable.viewLabel")}</span>
                 <span className="truncate">{viewModeLabels[viewMode]}</span>
               </SelectTrigger>

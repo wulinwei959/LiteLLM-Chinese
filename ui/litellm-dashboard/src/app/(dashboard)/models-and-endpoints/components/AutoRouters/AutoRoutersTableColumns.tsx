@@ -101,15 +101,15 @@ interface AutoRoutersTableColumnsDeps {
   canModify: boolean;
   onRouterClick: (row: AutoRouterRow) => void;
   onDeleteClick: (row: AutoRouterRow) => void;
+  t: ReturnType<typeof useTranslations>;
 }
 
 export const getAutoRoutersTableColumns = ({
   canModify,
   onRouterClick,
   onDeleteClick,
+  t,
 }: AutoRoutersTableColumnsDeps): ColumnDef<AutoRouterRow>[] => {
-  const t = useTranslations("models.autoRouters");
-
   return [
     {
       id: "name",

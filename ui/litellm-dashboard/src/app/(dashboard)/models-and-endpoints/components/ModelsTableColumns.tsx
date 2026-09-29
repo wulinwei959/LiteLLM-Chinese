@@ -377,6 +377,7 @@ interface ModelsTableColumnDeps {
   onDeleteClick?: (modelId: string) => void;
   onTogglePauseClick?: (modelId: string, blocked: boolean) => void | Promise<void>;
   pausingModelId?: string | null;
+  t: ReturnType<typeof useTranslations>;
 }
 
 export const getModelsTableColumns = ({
@@ -388,9 +389,8 @@ export const getModelsTableColumns = ({
   onDeleteClick,
   onTogglePauseClick,
   pausingModelId,
+  t,
 }: ModelsTableColumnDeps): ColumnDef<ModelData>[] => {
-  const t = useTranslations("models");
-
   return [
     {
       id: MODEL_ID_COLUMN_ID,
@@ -479,8 +479,8 @@ export const getModelsTableColumns = ({
     {
       id: ACCESS_GROUPS_COLUMN_ID,
       accessorFn: (row) => row.model_info.access_groups ?? [],
-      meta: { title: t("modelTable.accessGroups"), skeleton: "chips" },
-      header: t("modelTable.accessGroups"),
+      meta: { title: t("modelTable.modelAccessGroup"), skeleton: "chips" },
+      header: t("modelTable.modelAccessGroup"),
       enableSorting: false,
       size: 200,
       minSize: 120,
@@ -498,7 +498,7 @@ export const getModelsTableColumns = ({
         row.original.model_info.db_model ? (
           <StatusBadge tone="info" label={t("modelTable.dbModel")} />
         ) : (
-          <StatusBadge tone="neutral" label={t("modelTable.configModel")} />
+          <StatusBadge tone="neutral" label={t("modelTable.configBadge")} />
         ),
     },
     {

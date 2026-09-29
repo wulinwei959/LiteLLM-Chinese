@@ -1,6 +1,8 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 
 import { ModelData } from "@/components/model_dashboard/types";
 
@@ -78,7 +80,7 @@ const row = (modelId: string): HTMLElement => {
 describe("AllModelsTable", () => {
   it("renders the nine design columns and hides Source behind the Columns menu", async () => {
     const user = userEvent.setup();
-    render(<AllModelsTable {...baseProps} />);
+    renderWithProviders(<AllModelsTable {...baseProps} />);
 
     for (const header of [
       "Model ID",
@@ -109,7 +111,7 @@ describe("AllModelsTable", () => {
   it("opens the model detail from the model ID cell", async () => {
     const user = userEvent.setup();
     const onModelIdClick = vi.fn();
-    render(<AllModelsTable {...baseProps} onModelIdClick={onModelIdClick} />);
+    renderWithProviders(<AllModelsTable {...baseProps} onModelIdClick={onModelIdClick} />);
 
     await user.click(screen.getByTestId("model-id-model-1"));
 
@@ -119,7 +121,7 @@ describe("AllModelsTable", () => {
   it("opens the team detail from the team ID cell", async () => {
     const user = userEvent.setup();
     const onTeamIdClick = vi.fn();
-    render(<AllModelsTable {...baseProps} onTeamIdClick={onTeamIdClick} />);
+    renderWithProviders(<AllModelsTable {...baseProps} onTeamIdClick={onTeamIdClick} />);
 
     await user.click(screen.getByTestId("model-team-id-model-1"));
 
@@ -127,7 +129,7 @@ describe("AllModelsTable", () => {
   });
 
   it("shows a dash when the model has no team", () => {
-    render(
+    renderWithProviders(
       <AllModelsTable {...baseProps} data={[makeModel({ model_info: { team_id: "" } as ModelData["model_info"] })]} />,
     );
 
@@ -136,7 +138,7 @@ describe("AllModelsTable", () => {
   });
 
   it("renders the model name over the litellm model name", () => {
-    render(<AllModelsTable {...baseProps} />);
+    renderWithProviders(<AllModelsTable {...baseProps} />);
 
     const cell = screen.getByTestId("model-information-model-1");
     expect(within(cell).getByText("gpt-4-public")).toBeInTheDocument();
@@ -144,7 +146,7 @@ describe("AllModelsTable", () => {
   });
 
   it("renders a reusable credential by name and falls back to Manual", () => {
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <AllModelsTable
         {...baseProps}
         data={[makeModel({ litellm_params: { model: "openai/gpt-4", litellm_credential_name: "openai-prod" } })]}
@@ -158,7 +160,7 @@ describe("AllModelsTable", () => {
   });
 
   it("shows 'Defined in config' for a config model and the creator for a DB model", () => {
-    const { rerender } = render(<AllModelsTable {...baseProps} />);
+    const { rerender } = renderWithProviders(<AllModelsTable {...baseProps} />);
     expect(screen.getByText("alice")).toBeInTheDocument();
 
     rerender(
@@ -171,7 +173,7 @@ describe("AllModelsTable", () => {
   });
 
   it("renders input and output costs and a dash when both are missing", () => {
-    const { rerender } = render(<AllModelsTable {...baseProps} />);
+    const { rerender } = renderWithProviders(<AllModelsTable {...baseProps} />);
     expect(screen.getByText("$30")).toBeInTheDocument();
     expect(screen.getByText("$60")).toBeInTheDocument();
 
@@ -180,7 +182,7 @@ describe("AllModelsTable", () => {
   });
 
   it("renders the per-second rate instead of $0.00 token costs for a video model priced per second", () => {
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <AllModelsTable
         {...baseProps}
         data={[
@@ -213,7 +215,7 @@ describe("AllModelsTable", () => {
   });
 
   it("collapses extra access groups behind a +N more badge", () => {
-    render(
+    renderWithProviders(
       <AllModelsTable
         {...baseProps}
         data={[
@@ -229,7 +231,7 @@ describe("AllModelsTable", () => {
   });
 
   it("renders the toolbar divider centered rather than stretched to the top of the row", () => {
-    const { container } = render(<AllModelsTable {...baseProps} />);
+    const { container } = renderWithProviders(<AllModelsTable {...baseProps} />);
 
     const separators = container.querySelectorAll('[data-slot="separator"][data-orientation="vertical"]');
     expect(separators).toHaveLength(1);
@@ -239,7 +241,7 @@ describe("AllModelsTable", () => {
 
   describe("pause / resume", () => {
     it("renders the toggle on for an active DB model and off for a blocked one", () => {
-      const { rerender } = render(<AllModelsTable {...baseProps} />);
+      const { rerender } = renderWithProviders(<AllModelsTable {...baseProps} />);
       expect(screen.getByTestId("model-pause-toggle-model-1")).toBeChecked();
 
       rerender(
@@ -254,7 +256,9 @@ describe("AllModelsTable", () => {
     it("pauses an active model and resumes a blocked one", async () => {
       const user = userEvent.setup();
       const onTogglePauseClick = vi.fn();
-      const { rerender } = render(<AllModelsTable {...baseProps} onTogglePauseClick={onTogglePauseClick} />);
+      const { rerender } = renderWithProviders(
+        <AllModelsTable {...baseProps} onTogglePauseClick={onTogglePauseClick} />,
+      );
 
       await user.click(screen.getByTestId("model-pause-toggle-model-1"));
       expect(onTogglePauseClick).toHaveBeenCalledWith("model-1", true);
@@ -275,7 +279,9 @@ describe("AllModelsTable", () => {
     it("does not let a non-admin toggle a model", async () => {
       const user = userEvent.setup();
       const onTogglePauseClick = vi.fn();
-      render(<AllModelsTable {...baseProps} userRole="Internal User" onTogglePauseClick={onTogglePauseClick} />);
+      renderWithProviders(
+        <AllModelsTable {...baseProps} userRole="Internal User" onTogglePauseClick={onTogglePauseClick} />,
+      );
 
       const toggle = screen.getByTestId("model-pause-toggle-model-1");
       expect(toggle).toHaveAttribute("data-disabled");
@@ -286,7 +292,7 @@ describe("AllModelsTable", () => {
     it("does not let a view-only admin toggle a model", async () => {
       const user = userEvent.setup();
       const onTogglePauseClick = vi.fn();
-      render(<AllModelsTable {...baseProps} isViewOnly onTogglePauseClick={onTogglePauseClick} />);
+      renderWithProviders(<AllModelsTable {...baseProps} isViewOnly onTogglePauseClick={onTogglePauseClick} />);
 
       const toggle = screen.getByTestId("model-pause-toggle-model-1");
       expect(toggle).toHaveAttribute("data-disabled");
@@ -297,7 +303,7 @@ describe("AllModelsTable", () => {
     it("does not let anyone toggle a config model", async () => {
       const user = userEvent.setup();
       const onTogglePauseClick = vi.fn();
-      render(
+      renderWithProviders(
         <AllModelsTable
           {...baseProps}
           onTogglePauseClick={onTogglePauseClick}
@@ -312,7 +318,7 @@ describe("AllModelsTable", () => {
     });
 
     it("replaces the toggle with a pending indicator while a PATCH is in flight", () => {
-      render(<AllModelsTable {...baseProps} pausingModelId="model-1" />);
+      renderWithProviders(<AllModelsTable {...baseProps} pausingModelId="model-1" />);
 
       expect(screen.getByTestId("model-pause-pending-model-1")).toBeInTheDocument();
       expect(screen.queryByTestId("model-pause-toggle-model-1")).not.toBeInTheDocument();
@@ -323,7 +329,7 @@ describe("AllModelsTable", () => {
     it("lets an admin delete a DB model", async () => {
       const user = userEvent.setup();
       const onDeleteClick = vi.fn();
-      render(<AllModelsTable {...baseProps} userID="someone-else" onDeleteClick={onDeleteClick} />);
+      renderWithProviders(<AllModelsTable {...baseProps} userID="someone-else" onDeleteClick={onDeleteClick} />);
 
       await user.click(screen.getByTestId("model-delete-model-1"));
       expect(onDeleteClick).toHaveBeenCalledWith("model-1");
@@ -332,7 +338,9 @@ describe("AllModelsTable", () => {
     it("lets the creator delete their own DB model", async () => {
       const user = userEvent.setup();
       const onDeleteClick = vi.fn();
-      render(<AllModelsTable {...baseProps} userRole="Internal User" userID="alice" onDeleteClick={onDeleteClick} />);
+      renderWithProviders(
+        <AllModelsTable {...baseProps} userRole="Internal User" userID="alice" onDeleteClick={onDeleteClick} />,
+      );
 
       await user.click(screen.getByTestId("model-delete-model-1"));
       expect(onDeleteClick).toHaveBeenCalledWith("model-1");
@@ -341,7 +349,9 @@ describe("AllModelsTable", () => {
     it("blocks deleting a model the user did not create", async () => {
       const user = userEvent.setup();
       const onDeleteClick = vi.fn();
-      render(<AllModelsTable {...baseProps} userRole="Internal User" userID="bob" onDeleteClick={onDeleteClick} />);
+      renderWithProviders(
+        <AllModelsTable {...baseProps} userRole="Internal User" userID="bob" onDeleteClick={onDeleteClick} />,
+      );
 
       const deleteButton = screen.getByTestId("model-delete-model-1");
       expect(deleteButton).toBeDisabled();
@@ -352,7 +362,7 @@ describe("AllModelsTable", () => {
     it("blocks a view-only admin from deleting a DB model they created", async () => {
       const user = userEvent.setup();
       const onDeleteClick = vi.fn();
-      render(<AllModelsTable {...baseProps} isViewOnly onDeleteClick={onDeleteClick} />);
+      renderWithProviders(<AllModelsTable {...baseProps} isViewOnly onDeleteClick={onDeleteClick} />);
 
       const deleteButton = screen.getByTestId("model-delete-model-1");
       expect(deleteButton).toBeDisabled();
@@ -363,7 +373,7 @@ describe("AllModelsTable", () => {
     it("blocks deleting a config model", async () => {
       const user = userEvent.setup();
       const onDeleteClick = vi.fn();
-      render(
+      renderWithProviders(
         <AllModelsTable
           {...baseProps}
           onDeleteClick={onDeleteClick}
@@ -384,7 +394,7 @@ describe("AllModelsTable", () => {
       const onSearchChange = vi.fn();
       const onRefresh = vi.fn();
       const onOpenModelSettings = vi.fn();
-      render(
+      renderWithProviders(
         <AllModelsTable
           {...baseProps}
           onSearchChange={onSearchChange}
@@ -409,7 +419,7 @@ describe("AllModelsTable", () => {
     it("switches the current team", async () => {
       const user = userEvent.setup();
       const onTeamChange = vi.fn();
-      render(<AllModelsTable {...baseProps} onTeamChange={onTeamChange} />);
+      renderWithProviders(<AllModelsTable {...baseProps} onTeamChange={onTeamChange} />);
 
       await user.click(screen.getByTestId("models-team-select"));
       await user.click(await screen.findByRole("option", { name: "Engineering" }));
@@ -420,7 +430,7 @@ describe("AllModelsTable", () => {
     it("truncates long team options instead of clipping them at the popup edge", async () => {
       const user = userEvent.setup();
       const longLabel = "db29687d-0ca2-4bbe-a0f1-9c5f0f7c2a11";
-      render(
+      renderWithProviders(
         <AllModelsTable
           {...baseProps}
           teamOptions={[
@@ -444,7 +454,7 @@ describe("AllModelsTable", () => {
     it("runs the full reset from the filter drawer", async () => {
       const user = userEvent.setup();
       const onResetFilters = vi.fn();
-      render(<AllModelsTable {...baseProps} onResetFilters={onResetFilters} />);
+      renderWithProviders(<AllModelsTable {...baseProps} onResetFilters={onResetFilters} />);
 
       await user.click(screen.getByTestId("datatable-filters-trigger"));
       await user.click(await screen.findByTestId("filter-drawer-reset"));
@@ -455,7 +465,7 @@ describe("AllModelsTable", () => {
     it("renders active filters as removable chips", async () => {
       const user = userEvent.setup();
       const onColumnFiltersChange = vi.fn();
-      render(
+      renderWithProviders(
         <AllModelsTable
           {...baseProps}
           columnFilters={[{ id: "model_name", value: "wildcard" }]}
@@ -473,13 +483,13 @@ describe("AllModelsTable", () => {
   });
 
   it("shows the server row count in the pagination footer", () => {
-    render(<AllModelsTable {...baseProps} rowCount={137} />);
+    renderWithProviders(<AllModelsTable {...baseProps} rowCount={137} />);
 
     expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-50 of 137");
   });
 
   it("shows the empty state when there are no models", () => {
-    render(<AllModelsTable {...baseProps} data={[]} rowCount={0} />);
+    renderWithProviders(<AllModelsTable {...baseProps} data={[]} rowCount={0} />);
 
     expect(screen.getByText("No models found")).toBeInTheDocument();
   });

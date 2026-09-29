@@ -53,8 +53,8 @@ export function AutoRoutersTable({
   const t = useTranslations("models.autoRouters");
 
   const columns = useMemo(
-    () => getAutoRoutersTableColumns({ canModify, onRouterClick, onDeleteClick }),
-    [canModify, onRouterClick, onDeleteClick],
+    () => getAutoRoutersTableColumns({ canModify, onRouterClick, onDeleteClick, t }),
+    [canModify, onRouterClick, onDeleteClick, t],
   );
 
   return (

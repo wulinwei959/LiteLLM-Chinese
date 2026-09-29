@@ -547,7 +547,11 @@
       "deleted": "已删除自动路由器: {name}",
       "deleteError": "删除自动路由器失败: {error}",
       "table": {},
-      "emptyState": {}
+      "emptyState": {
+        "title": "暂无自动路由器",
+        "descriptionCanModify": "创建一个自动路由器,按每个请求自动挑选合适的模型,而不是固定使用某一个。",
+        "descriptionNoModify": "自动路由器会按每个请求挑选合适的模型,而不是固定使用某一个。"
+      }
     },
     "modelTable": {
       "modelName": "模型名称",
@@ -560,8 +564,7 @@
       "updatedAt": "更新时间",
       "costs": "成本",
       "teamId": "团队 ID",
-      "accessGroups": "访问组",
-      "status": "状态",
+      "status": "来源",
       "createdAt": "创建时间",
       "inputCost": "输入成本",
       "outputCost": "输出成本",
@@ -580,7 +583,7 @@
       "wildcardModels": "通配符模型 (*)",
       "allModels": "所有模型",
       "modelAccessGroup": "模型访问组",
-      "searchPlaceholder": "搜索模型名称...",
+      "searchPlaceholder": "按模型名称搜索...",
       "loading": "正在加载模型...",
       "teamLabel": "团队",
       "viewLabel": "视图",
@@ -619,7 +622,8 @@
       },
       "resumeAria": "恢复模型",
       "unknownProvider": "未知提供商",
-      "dbModel": "数据库模型"
+      "dbModel": "数据库模型",
+      "configBadge": "配置模型"
     },
     "addAutoRouter": {
       "title": "添加自动路由器",
@@ -652,7 +656,8 @@
         "type": "类型",
         "id": "ID"
       }
-    }
+    },
+    "modelAccessGroup": "模型访问组"
   },
   "teams": {
     "title": "团队",

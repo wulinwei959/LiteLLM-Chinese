@@ -1,8 +1,9 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { renderWithProviders, testQueryClient } from "../../../../../tests/test-utils";
 
 const { GET, PUT, DELETE, userRole } = vi.hoisted(() => ({
   GET: vi.fn(),
@@ -40,14 +41,7 @@ const FREE_GROUP = {
   budget: null,
 };
 
-const renderPanel = () => {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <AccessGroupBudgetsPanel />
-    </QueryClientProvider>,
-  );
-};
+const renderPanel = () => renderWithProviders(<AccessGroupBudgetsPanel />);
 
 const openActions = async (accessGroup: string) => {
   await userEvent.click(await screen.findByTestId(`access-group-actions-${accessGroup}`));
@@ -55,6 +49,10 @@ const openActions = async (accessGroup: string) => {
 
 describe("AccessGroupBudgetsPanel", () => {
   beforeEach(() => {
+    // testQueryClient is a module singleton with staleTime Infinity, so without this
+    // a test that overrides GET.mockResolvedValue would still render the previous
+    // test's cached access groups.
+    testQueryClient.clear();
     vi.clearAllMocks();
     userRole.current = "Admin";
     GET.mockResolvedValue({ data: { access_groups: [BUDGETED_GROUP, FREE_GROUP] } });

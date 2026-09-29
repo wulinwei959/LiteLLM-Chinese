@@ -1,6 +1,8 @@
 /* @vitest-environment jsdom */
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import PriceDataManagementTab from "./PriceDataManagementTab";
 
 vi.mock("@/components/price_data_reload", () => ({ default: () => <div>reload</div> }));
@@ -11,7 +13,7 @@ vi.mock("@/app/(dashboard)/hooks/models/useModelCostMap", () => ({
 
 describe("PriceDataManagementTab", () => {
   it("renders its content standalone, without a tab-panel ancestor", () => {
-    render(<PriceDataManagementTab />);
+    renderWithProviders(<PriceDataManagementTab />);
     expect(screen.getByText("Price Data Management")).toBeInTheDocument();
   });
 });

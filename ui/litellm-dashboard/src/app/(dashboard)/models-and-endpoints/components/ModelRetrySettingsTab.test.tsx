@@ -1,6 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import ModelRetrySettingsTab from "./ModelRetrySettingsTab";
 
 type GlobalRetryPolicy = { [key: string]: number };
@@ -23,19 +25,19 @@ const buildProps = (overrides: Record<string, unknown> = {}) => ({
 
 describe("ModelRetrySettingsTab", () => {
   it("should render the 'Global Retry Policy' heading when selectedModelGroup is 'global'", () => {
-    render(<ModelRetrySettingsTab {...buildProps()} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps()} />);
 
     expect(screen.getByText("Global Retry Policy")).toBeInTheDocument();
   });
 
   it("should render a model-specific heading when a model group is selected", () => {
-    render(<ModelRetrySettingsTab {...buildProps({ selectedModelGroup: "gpt-4" })} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps({ selectedModelGroup: "gpt-4" })} />);
 
     expect(screen.getByText("Retry Policy for gpt-4")).toBeInTheDocument();
   });
 
   it("should render a row for every error type in the retry policy map", () => {
-    render(<ModelRetrySettingsTab {...buildProps()} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps()} />);
 
     expect(screen.getByText(/BadRequestError \(400\)/)).toBeInTheDocument();
     expect(screen.getByText(/AuthenticationError/)).toBeInTheDocument();
@@ -48,7 +50,7 @@ describe("ModelRetrySettingsTab", () => {
 
   it("should write the NotFoundError row to NotFoundErrorRetries ahead of the catch-all row", () => {
     const setGlobalRetryPolicy = vi.fn();
-    render(
+    renderWithProviders(
       <ModelRetrySettingsTab
         {...buildProps({
           selectedModelGroup: "global",
@@ -66,7 +68,7 @@ describe("ModelRetrySettingsTab", () => {
   });
 
   it("should use defaultRetry when globalRetryPolicy is null (global scope)", () => {
-    render(<ModelRetrySettingsTab {...buildProps({ defaultRetry: 3 })} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps({ defaultRetry: 3 })} />);
 
     // All 6 spinbutton inputs should show the defaultRetry value
     const inputs = screen.getAllByRole("spinbutton");
@@ -76,7 +78,7 @@ describe("ModelRetrySettingsTab", () => {
   });
 
   it("should expose retry counts as nonnegative integer spinbuttons", () => {
-    render(<ModelRetrySettingsTab {...buildProps()} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps()} />);
 
     screen.getAllByRole("spinbutton").forEach((input) => {
       expect(input).toHaveAttribute("type", "number");
@@ -90,7 +92,7 @@ describe("ModelRetrySettingsTab", () => {
     const globalRetryPolicy: GlobalRetryPolicy = {
       RateLimitErrorRetries: 5,
     };
-    render(<ModelRetrySettingsTab {...buildProps({ globalRetryPolicy, defaultRetry: 0 })} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps({ globalRetryPolicy, defaultRetry: 0 })} />);
 
     // The RateLimitError row is the 4th entry in the map
     const inputs = screen.getAllByRole("spinbutton");
@@ -105,7 +107,7 @@ describe("ModelRetrySettingsTab", () => {
     const globalRetryPolicy: GlobalRetryPolicy = {
       TimeoutErrorRetries: 7,
     };
-    render(
+    renderWithProviders(
       <ModelRetrySettingsTab
         {...buildProps({
           selectedModelGroup: "gpt-4",
@@ -129,7 +131,7 @@ describe("ModelRetrySettingsTab", () => {
   it("should clear a model-group override when Reset is clicked", async () => {
     const user = userEvent.setup();
     const setModelGroupRetryPolicy = vi.fn();
-    render(
+    renderWithProviders(
       <ModelRetrySettingsTab
         {...buildProps({
           selectedModelGroup: "gpt-4",
@@ -160,7 +162,7 @@ describe("ModelRetrySettingsTab", () => {
       setModelGroupRetryPolicy,
       defaultRetry: 0,
     };
-    render(<ModelRetrySettingsTab {...buildProps(overrides)} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps(overrides)} />);
 
     await user.clear(screen.getAllByRole("spinbutton")[0]);
 
@@ -171,7 +173,7 @@ describe("ModelRetrySettingsTab", () => {
 
   it.each(["abc", "-1", "1.5"])("should reject an invalid retry count of %s", (invalidValue) => {
     const setGlobalRetryPolicy = vi.fn();
-    render(
+    renderWithProviders(
       <ModelRetrySettingsTab
         {...buildProps({
           selectedModelGroup: "global",
@@ -190,7 +192,7 @@ describe("ModelRetrySettingsTab", () => {
 
   it("should accept zero as a retry count", () => {
     const setGlobalRetryPolicy = vi.fn();
-    render(
+    renderWithProviders(
       <ModelRetrySettingsTab
         {...buildProps({
           selectedModelGroup: "global",
@@ -207,7 +209,7 @@ describe("ModelRetrySettingsTab", () => {
   });
 
   it("should disable the Save button while a save is in flight", () => {
-    render(<ModelRetrySettingsTab {...buildProps({ isSaving: true })} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps({ isSaving: true })} />);
 
     expect(screen.getByRole("button", { name: /save/i })).toBeDisabled();
   });
@@ -219,7 +221,7 @@ describe("ModelRetrySettingsTab", () => {
     const modelGroupRetryPolicy: ModelGroupRetryPolicy = {
       "gpt-4": { RateLimitErrorRetries: 9 },
     };
-    render(
+    renderWithProviders(
       <ModelRetrySettingsTab
         {...buildProps({
           selectedModelGroup: "gpt-4",
@@ -237,7 +239,7 @@ describe("ModelRetrySettingsTab", () => {
 
   it("should show the global reference value text for each row in model-specific scope", () => {
     const globalRetryPolicy: GlobalRetryPolicy = { BadRequestErrorRetries: 2 };
-    render(
+    renderWithProviders(
       <ModelRetrySettingsTab
         {...buildProps({
           selectedModelGroup: "gpt-4",
@@ -252,7 +254,7 @@ describe("ModelRetrySettingsTab", () => {
   });
 
   it("should not show global reference annotations in global scope", () => {
-    render(<ModelRetrySettingsTab {...buildProps({ selectedModelGroup: "global" })} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps({ selectedModelGroup: "global" })} />);
 
     expect(screen.queryByText(/Global:/)).not.toBeInTheDocument();
   });
@@ -260,7 +262,7 @@ describe("ModelRetrySettingsTab", () => {
   it("should call handleSaveRetrySettings when the Save button is clicked", async () => {
     const user = userEvent.setup();
     const handleSaveRetrySettings = vi.fn();
-    render(<ModelRetrySettingsTab {...buildProps({ handleSaveRetrySettings })} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps({ handleSaveRetrySettings })} />);
 
     await user.click(screen.getByRole("button", { name: /save/i }));
 
@@ -270,7 +272,7 @@ describe("ModelRetrySettingsTab", () => {
   it("should call setGlobalRetryPolicy with an updater function when an input changes (global scope)", async () => {
     const user = userEvent.setup();
     const setGlobalRetryPolicy = vi.fn();
-    render(
+    renderWithProviders(
       <ModelRetrySettingsTab
         {...buildProps({
           selectedModelGroup: "global",
@@ -298,7 +300,7 @@ describe("ModelRetrySettingsTab", () => {
   it("should call setModelGroupRetryPolicy with an updater function when an input changes (model scope)", async () => {
     const user = userEvent.setup();
     const setModelGroupRetryPolicy = vi.fn();
-    render(
+    renderWithProviders(
       <ModelRetrySettingsTab
         {...buildProps({
           selectedModelGroup: "gpt-4",
@@ -323,13 +325,13 @@ describe("ModelRetrySettingsTab", () => {
   });
 
   it("shows the global scope by its human label rather than the raw value", () => {
-    render(<ModelRetrySettingsTab {...buildProps()} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps()} />);
 
     expect(screen.getByRole("combobox")).toHaveTextContent("Global Default");
   });
 
   it("shows a selected model group by its own name", () => {
-    render(<ModelRetrySettingsTab {...buildProps({ selectedModelGroup: "gpt-4" })} />);
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps({ selectedModelGroup: "gpt-4" })} />);
 
     expect(screen.getByRole("combobox")).toHaveTextContent("gpt-4");
   });
