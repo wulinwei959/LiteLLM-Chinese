@@ -1,4 +1,5 @@
 import { ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { z } from "zod/v4";
 import { useCreateBudget } from "@/app/(dashboard)/hooks/budgets/useBudgets";
@@ -13,32 +14,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useZodForm } from "@/lib/forms/useZodForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const budgetShape = {
-  budget_id: z.string().min(1, "Please input a human-friendly name for the budget"),
-  tpm_limit: z.number().nullish(),
-  rpm_limit: z.number().nullish(),
-  tpd_limit: z.number().nullish(),
-  max_budget: z.number().nullish(),
-  budget_duration: z.string().nullish(),
-};
+const buildBudgetSchema = (t: ReturnType<typeof useTranslations>) =>
+  z.object({
+    budget_id: z.string().min(1, t("budgetIdRequired")),
+    tpm_limit: z.number().nullish(),
+    rpm_limit: z.number().nullish(),
+    tpd_limit: z.number().nullish(),
+    max_budget: z.number().nullish(),
+    budget_duration: z.string().nullish(),
+  });
 
-const budgetSchema = z.object(budgetShape);
-
-type BudgetFormValues = z.output<typeof budgetSchema>;
+type BudgetFormValues = z.output<ReturnType<typeof buildBudgetSchema>>;
 
 const BUDGET_DURATION_OPTIONS = [
-  { value: "24h", label: "daily" },
-  { value: "7d", label: "weekly" },
-  { value: "30d", label: "monthly" },
-];
+  { value: "24h", labelKey: "durationDailyLower" },
+  { value: "7d", labelKey: "durationWeeklyLower" },
+  { value: "30d", labelKey: "durationMonthlyLower" },
+] as const;
 
 interface BudgetModalProps {
   isModalVisible: boolean;
   setIsModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVisible }) => {
+  const t = useTranslations("budgets");
   const [optionalSettingsOpen, setOptionalSettingsOpen] = React.useState(false);
-  const form = useZodForm(budgetSchema, { defaultValues: { budget_id: "" } });
+  const form = useZodForm(buildBudgetSchema(t), { defaultValues: { budget_id: "" } });
   const createBudget = useCreateBudget();
 
   const handleCancel = () => {
@@ -48,18 +49,18 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
 
   const handleCreate = async (formValues: BudgetFormValues) => {
     try {
-      toast.info("Making API Call");
+      toast.info(t("makingApiCall"));
       await createBudget.mutateAsync(
         applyBudgetPrecision(
           optionalSettingsOpen ? formValues : { ...formValues, max_budget: undefined, budget_duration: undefined },
         ),
       );
-      toast.success("Budget Created");
+      toast.success(t("budgetCreated"));
       form.reset();
       setIsModalVisible(false);
     } catch (error) {
       console.error("Error creating the budget:", error);
-      toast.fromError(`Error creating the budget: ${error}`);
+      toast.fromError(t("createFailedDetail", { error: String(error) }));
     }
   };
 
@@ -67,24 +68,14 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
     <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>Create Budget</DialogTitle>
+          <DialogTitle>{t("createBudget")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleCreate)} noValidate>
           <FieldGroup>
-            <FormField
-              control={form.control}
-              name="budget_id"
-              label="Budget ID"
-              description="A human-friendly name for the budget"
-            >
+            <FormField control={form.control} name="budget_id" label={t("budgetID")} description={t("budgetIdHint")}>
               {({ ref, ...field }) => <Input {...field} ref={ref} value={field.value ?? ""} placeholder="" />}
             </FormField>
-            <FormField
-              control={form.control}
-              name="tpm_limit"
-              label="Max Tokens per minute"
-              description="Leave blank for no LiteLLM limit. Provider rate limits still apply."
-            >
+            <FormField control={form.control} name="tpm_limit" label={t("tpmLimitFull")} description={t("tpmRpmHint")}>
               {({ ref, value, onChange, ...field }) => (
                 <Input
                   {...field}
@@ -96,12 +87,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
                 />
               )}
             </FormField>
-            <FormField
-              control={form.control}
-              name="rpm_limit"
-              label="Max Requests per minute"
-              description="Leave blank for no LiteLLM limit. Provider rate limits still apply."
-            >
+            <FormField control={form.control} name="rpm_limit" label={t("rpmLimitFull")} description={t("tpmRpmHint")}>
               {({ ref, value, onChange, ...field }) => (
                 <Input
                   {...field}
@@ -113,12 +99,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
                 />
               )}
             </FormField>
-            <FormField
-              control={form.control}
-              name="tpd_limit"
-              label="Max Tokens per day (batch)"
-              description="Daily token budget for batch submissions. When set, batches are charged against this instead of TPM/RPM."
-            >
+            <FormField control={form.control} name="tpd_limit" label={t("tpdLimitFull")} description={t("tpdHint")}>
               {({ ref, value, onChange, ...field }) => (
                 <Input
                   {...field}
@@ -133,11 +114,11 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
 
             <Collapsible open={optionalSettingsOpen} onOpenChange={setOptionalSettingsOpen} className="mt-20 mb-8">
               <CollapsibleTrigger className="group flex w-full items-center justify-between py-2 text-left">
-                <b>Optional Settings</b>
+                <b>{t("optionalSettings")}</b>
                 <ChevronRight className="size-4 text-muted-foreground transition-transform group-data-panel-open:rotate-90" />
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <FormField control={form.control} name="max_budget" label="Max Budget (USD)">
+                <FormField control={form.control} name="max_budget" label={t("maxBudgetUsd")}>
                   {({ ref, value, onChange, ...field }) => (
                     <Input
                       {...field}
@@ -149,16 +130,23 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
                     />
                   )}
                 </FormField>
-                <FormField className="mt-8" control={form.control} name="budget_duration" label="Reset Budget">
+                <FormField className="mt-8" control={form.control} name="budget_duration" label={t("resetBudgetFull")}>
                   {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
-                    <Select items={BUDGET_DURATION_OPTIONS} value={value ?? null} onValueChange={onChange}>
+                    <Select
+                      items={BUDGET_DURATION_OPTIONS.map((option) => ({
+                        value: option.value,
+                        label: t(option.labelKey),
+                      }))}
+                      value={value ?? null}
+                      onValueChange={onChange}
+                    >
                       <SelectTrigger id={id} aria-invalid={ariaInvalid} aria-describedby={ariaDescribedBy}>
                         <SelectValue placeholder="n/a" />
                       </SelectTrigger>
                       <SelectContent>
                         {BUDGET_DURATION_OPTIONS.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                            {t(option.labelKey)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -170,7 +158,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
           </FieldGroup>
 
           <div style={{ textAlign: "right", marginTop: "10px" }}>
-            <Button type="submit">Create Budget</Button>
+            <Button type="submit">{t("createBudget")}</Button>
           </div>
         </form>
       </DialogContent>

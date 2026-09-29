@@ -84,9 +84,7 @@ function EmptyState({ hasQuery, t }: { hasQuery: boolean; t: ReturnType<typeof u
       </div>
       <div className="text-sm font-medium text-foreground">{hasQuery ? t("noMatchingBudgets") : t("noBudgets")}</div>
       <div className="text-sm text-muted-foreground">
-        {hasQuery
-          ? t("noBudgetMatchesSearch")
-          : t("createBudgetDescription")}
+        {hasQuery ? t("noBudgetMatchesSearch") : t("createBudgetDescription")}
       </div>
     </div>
   );
@@ -99,18 +97,22 @@ function ErrorState({ error, t }: { error: Error; t: ReturnType<typeof useTransl
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <ShieldAlert className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">
-        {forbidden ? t("forbidden") : t("couldNotLoadBudgets")}
-      </div>
-      <div className="text-sm text-muted-foreground">
-        {forbidden ? t("askProxyAdmin") : error.message}
-      </div>
+      <div className="text-sm font-medium text-foreground">{forbidden ? t("forbidden") : t("couldNotLoadBudgets")}</div>
+      <div className="text-sm text-muted-foreground">{forbidden ? t("askProxyAdmin") : error.message}</div>
     </div>
   );
 }
 
 /** "Not set" and the concrete durations are exclusive; see serializeBudgetFilters for why. */
-function DurationFilter({ selected, onChange, t }: { selected: string[]; onChange: (selected: string[]) => void; t: ReturnType<typeof useTranslations> }) {
+function DurationFilter({
+  selected,
+  onChange,
+  t,
+}: {
+  selected: string[];
+  onChange: (selected: string[]) => void;
+  t: ReturnType<typeof useTranslations>;
+}) {
   const toggle = (value: string, checked: boolean): void => {
     if (!checked) {
       onChange(selected.filter((entry) => entry !== value));
@@ -136,7 +138,15 @@ function DurationFilter({ selected, onChange, t }: { selected: string[]; onChang
   );
 }
 
-function BudgetFilterFields({ get, set, t }: { get: (key: string) => unknown; set: (key: string, value: unknown) => void; t: ReturnType<typeof useTranslations> }) {
+function BudgetFilterFields({
+  get,
+  set,
+  t,
+}: {
+  get: (key: string) => unknown;
+  set: (key: string, value: unknown) => void;
+  t: ReturnType<typeof useTranslations>;
+}) {
   const maxBudget = (get("max_budget") as MaxBudgetFilterValue | undefined) ?? {};
   const created = (get("created_at") as CreatedAtFilterValue | undefined) ?? {};
   const unlimitedOnly = maxBudget.unlimitedOnly === true;
@@ -144,7 +154,11 @@ function BudgetFilterFields({ get, set, t }: { get: (key: string) => unknown; se
   return (
     <>
       <DataTableFilterField label={t("reset")}>
-        <DurationFilter selected={(get("budget_duration") as string[] | undefined) ?? []} onChange={(selected) => set("budget_duration", selected)} t={t} />
+        <DurationFilter
+          selected={(get("budget_duration") as string[] | undefined) ?? []}
+          onChange={(selected) => set("budget_duration", selected)}
+          t={t}
+        />
       </DataTableFilterField>
       <DataTableFilterField label={t("maxBudget")}>
         <div className="flex items-center gap-2">
@@ -212,7 +226,8 @@ const BudgetTable: React.FC<BudgetTableProps> = ({ list, canModify, onEditClick,
   );
 
   const hasQuery = list.searchValue.trim() !== "" || list.columnFilters.length > 0;
-  const emptyMessage = list.error === null ? <EmptyState hasQuery={hasQuery} t={t} /> : <ErrorState error={list.error} t={t} />;
+  const emptyMessage =
+    list.error === null ? <EmptyState hasQuery={hasQuery} t={t} /> : <ErrorState error={list.error} t={t} />;
 
   return (
     <DataTable

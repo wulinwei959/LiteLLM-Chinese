@@ -146,7 +146,33 @@ const buildXSchema = (t: ReturnType<typeof useTranslations>) =>
 
 已按此处理：`adminPanel.allowedIPSchema`、`changePassword.changePasswordSchema`、`accessGroupFormSchema`、`accessGroupCreateSchema`、`projectFormSchema`。注意 `projectFormSchema.ts` 的 7 条提示在批次 12 结束时漏掉了，是全量搜索校验文案时才补上的，所以收尾时要搜的关键词是 `min(1, "`、`refine(` 后跟英文逗号、以及 `message: "` / `error: "`。
 
-后续批次仍待处理（`vector-stores`、`guardrails/TeamGuardrailsTab`、`memory`、`tag-management`、`search-tools`、`policies`、`prompts`、`budgets`、`MCPToolsetsTab`、`add_pass_through`、`SCIM`、`routing_groups`、`organization/org-settings`、`models-and-endpoints/AccessGroupBudgetModal`、`skills`、`cost-optimization`、`cloudzero*`、`PluginSettings/schema`、`MetadataKeyValueFields`、`add_model`、`edit_auto_router`、`model_add`、`templates`、`update_model_credentials_modal`、`login`、`onboarding`），统一放进批次 24 的共享组件与表单校验清扫。
+后续批次仍待处理（`vector-stores`、`guardrails/TeamGuardrailsTab`、`memory`、`tag-management`、`search-tools`、`policies`、`prompts`、`MCPToolsetsTab`、`add_pass_through`、`SCIM`、`routing_groups`、`organization/org-settings`、`models-and-endpoints/AccessGroupBudgetModal`、`skills`、`cost-optimization`、`cloudzero*`、`PluginSettings/schema`、`MetadataKeyValueFields`、`add_model`、`edit_auto_router`、`model_add`、`templates`、`update_model_credentials_modal`、`login`、`onboarding`），统一放进批次 24 的共享组件与表单校验清扫。
+
+## 已知缺陷：被引用但 en.json 里不存在的 key
+
+比"文案没翻译"更严重。next-intl 解析不到会抛 `MISSING_MESSAGE`，界面上直接报错而不是显示英文。
+
+写一个一次性脚本扫描：遍历 `src` 下所有含 `useTranslations` 的文件，收集作用域内的命名空间，再把每个 `t("...")` 引用（含 `t("ns.key")` 显式命名空间的）在 `en.json` 里解析一遍，解析不到的就是缺失。
+
+注意 `useTranslations("models")` 作用域内的调用写作 `t("modelTable.x")`，不带 `models.` 前缀。只匹配 `t("ns.key")` 会漏掉大部分。
+
+2026-09-29 扫描结果：**100 个缺失**，`common` 60、`models` 31、`virtualKeys` 9。集中在 `AddModelForm.tsx`(36)、`VirtualKeysTable.tsx`、`ModelsTableColumns.tsx`(24)、`AllModelsTable.tsx`(9)、`PassThroughSettings.tsx`(5)，来自批次 2 与批次 3。
+
+补这些 key 时英文原文要从 i18n 之前的快照取，不要凭上下文猜（测试可能断言了原文）：`git show '610473c:ui/litellm-dashboard/src/app/(dashboard)/...'`。
+
+## 收尾时容易搞错的两处
+
+一是同一段 JSX 里两个不同英文被映射到同一个已存在的 key，会让测试报 "Found multiple elements"。`BudgetTable` 的空状态里 "No matching budgets" 和 "No budget matches your search or filters." 就是这种，要各自独立的 key。
+
+二是 `budgets` 里 `reset` 是"重置预算"、`save` 是"保存"，不要混用。把提交按钮的 "Save" 写成 `t("reset")` 会同时改掉文案和让测试找不到按钮。
+
+## 自身引入过的错误（已修，留作对照）
+
+- 翻译列定义时把 `header: ({ column }) => <DataTableSortHeader .../>` 写成 `header: t("name")`，组件被整个丢掉，排序静默失效
+- 给共享的 `DataTableSortHeader` 加 `aria-label` 想让测试通过，会改掉全仓库表头的无障碍名称
+- 写 key 的脚本里 `writeFileSync` 放在循环之后，前面某个命名空间冲突抛错，导致后面所有 key 都没落盘，而代码已经引用了它们
+- `UsagePageView.tsx` 里的翻译变量叫 `usageT` 不是 `t`，凭习惯写 `t(...)` 会得到 `t is not defined`
+- 用 `git stash` 对比基线时忘了 `git stash pop`，会把改动留在 stash 里
 6. 删除任何临时脚本（`write-*.js`、`check-*.js` 等），不要留在仓库里。
 7. 提交并推送。提交信息用 conventional commits 类型前缀加中文正文，例如 `feat(ui): 翻译 MCP 服务器页面为简体中文`。提交标题、提交正文与 PR 说明一律用简体中文书写，类型前缀（`feat`、`fix`、`chore`、`docs`）保留英文。
 

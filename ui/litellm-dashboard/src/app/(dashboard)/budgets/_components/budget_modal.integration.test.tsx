@@ -1,10 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import BudgetModal from "./budget_modal";
-import { chooseSelectOption } from "../../../../../tests/test-utils";
+import { chooseSelectOption, renderWithProviders } from "../../../../../tests/test-utils";
 
 const { createMock } = vi.hoisted(() => ({ createMock: vi.fn() }));
 
@@ -20,7 +20,7 @@ const FULL_PAYLOAD = {
   budget_duration: "30d",
 };
 
-const renderModal = () => render(<BudgetModal isModalVisible={true} setIsModalVisible={vi.fn()} />);
+const renderModal = () => renderWithProviders(<BudgetModal isModalVisible={true} setIsModalVisible={vi.fn()} />);
 
 const create = async (user: ReturnType<typeof userEvent.setup>) =>
   user.click(screen.getByRole("button", { name: "Create Budget" }));

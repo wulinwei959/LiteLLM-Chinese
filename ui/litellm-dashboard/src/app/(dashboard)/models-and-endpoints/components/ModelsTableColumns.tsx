@@ -55,7 +55,15 @@ const formatShortDate = (value: string | null | undefined): string | null => {
   return Number.isNaN(date.getTime()) ? null : formatCellDate(date, "date");
 };
 
-function ModelInformationCell({ model, displayName, t }: { model: ModelData; displayName: string; t: ReturnType<typeof useTranslations> }) {
+function ModelInformationCell({
+  model,
+  displayName,
+  t,
+}: {
+  model: ModelData;
+  displayName: string;
+  t: ReturnType<typeof useTranslations>;
+}) {
   const litellmModelName = model.litellm_model_name || "-";
 
   return (
@@ -85,7 +93,9 @@ function ModelInformationCell({ model, displayName, t }: { model: ModelData; dis
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
             {model.provider ? <ProviderLogo provider={model.provider} className="size-4 shrink-0" /> : null}
-            <span className="truncate text-xs text-muted-foreground">{model.provider || t("modelTable.unknownProvider")}</span>
+            <span className="truncate text-xs text-muted-foreground">
+              {model.provider || t("modelTable.unknownProvider")}
+            </span>
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="text-xs text-muted-foreground">{t("modelTable.publicModelName")}</span>
@@ -131,7 +141,7 @@ function CredentialsHeader({ t }: { t: ReturnType<typeof useTranslations> }) {
             />
           }
         >
-        <Info className="size-3.5" />
+          <Info className="size-3.5" />
         </HoverCardTrigger>
         <HoverCardContent align="start" className="w-80">
           <div className="flex flex-col gap-3">
@@ -141,18 +151,14 @@ function CredentialsHeader({ t }: { t: ReturnType<typeof useTranslations> }) {
                 <RefreshCw className="size-3.5" />
                 {t("table.reusable")}
               </span>
-              <span className="text-xs text-muted-foreground">
-                {t("table.reusableDesc")}
-              </span>
+              <span className="text-xs text-muted-foreground">{t("table.reusableDesc")}</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
                 <Pencil className="size-3.5" />
                 {t("table.manual")}
               </span>
-              <span className="text-xs text-muted-foreground">
-                {t("table.manualDesc")}
-              </span>
+              <span className="text-xs text-muted-foreground">{t("table.manualDesc")}</span>
             </div>
           </div>
         </HoverCardContent>
@@ -219,16 +225,22 @@ function CostsCell({ model, t }: { model: ModelData; t: ReturnType<typeof useTra
       content={hasPerSecond ? t("table.costTooltipPerSecond") : t("table.costTooltip")}
       trigger={
         <div className="flex flex-col gap-0.5 whitespace-nowrap">
-          {showInput && <CostRow label="IN" value={`$${inputCost}`} />}
-          {showOutput && <CostRow label="OUT" value={`$${outputCost}`} />}
-          {hasPerSecond && <CostRow label="OUT" value={formatPerSecondCost(perSecond)} />}
+          {showInput && <CostRow label={t("table.costIn")} value={`$${inputCost}`} />}
+          {showOutput && <CostRow label={t("table.costOut")} value={`$${outputCost}`} />}
+          {hasPerSecond && <CostRow label={t("table.costOut")} value={formatPerSecondCost(perSecond)} />}
         </div>
       }
     />
   );
 }
 
-function AccessGroupsCell({ accessGroups, t }: { accessGroups: string[] | null; t: ReturnType<typeof useTranslations> }) {
+function AccessGroupsCell({
+  accessGroups,
+  t,
+}: {
+  accessGroups: string[] | null;
+  t: ReturnType<typeof useTranslations>;
+}) {
   if (!accessGroups || accessGroups.length === 0) {
     return <span className="text-sm text-muted-foreground">-</span>;
   }
@@ -298,9 +310,7 @@ function ModelRowActions({
     return isBlocked ? t("modelTable.resumeTooltip") : t("modelTable.pauseTooltip");
   };
 
-  const deleteTooltip = isConfigModel
-    ? t("modelTable.deleteTooltipConfig")
-    : t("modelTable.deleteTooltip");
+  const deleteTooltip = isConfigModel ? t("modelTable.deleteTooltipConfig") : t("modelTable.deleteTooltip");
 
   return (
     <div className="flex items-center justify-end gap-1.5">

@@ -301,7 +301,9 @@
       "outputCost": "Output Cost",
       "teamId": "Team ID",
       "accessGroups": "Access Groups",
-      "litellmModelName": "LiteLLM Model Name"
+      "litellmModelName": "LiteLLM Model Name",
+      "costIn": "IN",
+      "costOut": "OUT"
     },
     "emptyState": {
       "noModels": "No models found",
@@ -1456,7 +1458,26 @@
     "max_budget": "Max Budget",
     "budget_id": "Budget ID",
     "tpm_limit": "TPM",
-    "rpm_limit": "RPM"
+    "rpm_limit": "RPM",
+    "budgetIdRequired": "Please input a human-friendly name for the budget",
+    "budgetIdHint": "A human-friendly name for the budget",
+    "tpmLimitFull": "Max Tokens per minute",
+    "rpmLimitFull": "Max Requests per minute",
+    "tpdLimitFull": "Max Tokens per day (batch)",
+    "tpmRpmHint": "Leave blank for no LiteLLM limit. Provider rate limits still apply.",
+    "tpdHint": "Daily token budget for batch submissions. When set, batches are charged against this instead of TPM/RPM.",
+    "optionalSettings": "Optional Settings",
+    "maxBudgetUsd": "Max Budget (USD)",
+    "resetBudgetFull": "Reset Budget",
+    "durationDailyLower": "daily",
+    "durationWeeklyLower": "weekly",
+    "durationMonthlyLower": "monthly",
+    "makingApiCall": "Making API Call",
+    "createFailedDetail": "Error creating the budget: {error}",
+    "budgetIdLocked": "Budget ID cannot be changed after creation",
+    "updateFailedDetail": "Error updating the budget: {error}",
+    "noBudgetMatchesSearch": "No budget matches your search or filters.",
+    "save": "Save"
   },
   "guardrails": {
     "title": "Guardrails",
@@ -1599,7 +1620,11 @@
     "last30Days": "Last 30 days",
     "custom": "Custom",
     "noData": "No usage data available",
-    "loading": "Loading usage data..."
+    "loading": "Loading usage data...",
+    "filterByUser": "Filter by user",
+    "reusableCredentialsTagTitle": "Reusable credentials are automatically tracked as tags",
+    "reusableCredentialsTagBody": "When a reusable credential is used, it will appear as a tag prefixed with",
+    "closeBanner": "Close"
   },
   "logs": {
     "title": "Logs",
@@ -1915,6 +1940,8 @@
     "lastCheck": "Last check: {time}",
     "errorLabel": "Error",
     "noHealthData": "No health data",
-    "clickToRecheck": "Click to recheck"
+    "clickToRecheck": "Click to recheck",
+    "deletedSuccessfully": "Deleted MCP Server successfully",
+    "missingAuthParams": "Missing required authentication parameters."
   }
 }

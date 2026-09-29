@@ -301,7 +301,9 @@
       "outputCost": "输出成本",
       "teamId": "团队 ID",
       "accessGroups": "访问组",
-      "litellmModelName": "LiteLLM 模型名称"
+      "litellmModelName": "LiteLLM 模型名称",
+      "costIn": "输入",
+      "costOut": "输出"
     },
     "emptyState": {
       "noModels": "未找到模型",
@@ -1458,7 +1460,26 @@
     "max_budget": "最大预算",
     "budget_id": "预算 ID",
     "tpm_limit": "TPM",
-    "rpm_limit": "RPM"
+    "rpm_limit": "RPM",
+    "budgetIdRequired": "请输入预算的易读名称",
+    "budgetIdHint": "预算的易读名称",
+    "tpmLimitFull": "每分钟最大 Token 数",
+    "rpmLimitFull": "每分钟最大请求数",
+    "tpdLimitFull": "每天最大 Token 数(批量)",
+    "tpmRpmHint": "留空表示不设 LiteLLM 限制,提供商自身的速率限制仍然生效。",
+    "tpdHint": "批量提交的每日 Token 预算。设置后,批量请求按此额度计费,不占用 TPM/RPM。",
+    "optionalSettings": "可选设置",
+    "maxBudgetUsd": "最大预算 (USD)",
+    "resetBudgetFull": "预算重置周期",
+    "durationDailyLower": "每日",
+    "durationWeeklyLower": "每周",
+    "durationMonthlyLower": "每月",
+    "makingApiCall": "正在发起 API 请求",
+    "createFailedDetail": "创建预算时出错:{error}",
+    "budgetIdLocked": "预算 ID 创建后无法修改",
+    "updateFailedDetail": "更新预算时出错:{error}",
+    "noBudgetMatchesSearch": "没有预算符合你的搜索或筛选条件。",
+    "save": "保存"
   },
   "guardrails": {
     "title": "护栏",
@@ -1601,7 +1622,11 @@
     "last30Days": "最近 30 天",
     "custom": "自定义",
     "noData": "暂无用量数据",
-    "loading": "正在加载用量数据..."
+    "loading": "正在加载用量数据...",
+    "filterByUser": "按用户筛选",
+    "reusableCredentialsTagTitle": "可复用凭据会自动作为标签统计",
+    "reusableCredentialsTagBody": "使用可复用凭据时,它会以此前缀显示为标签",
+    "closeBanner": "关闭"
   },
   "logs": {
     "title": "日志",
@@ -1917,6 +1942,8 @@
     "lastCheck": "上次检查:{time}",
     "errorLabel": "错误",
     "noHealthData": "暂无健康数据",
-    "clickToRecheck": "点击重新检查"
+    "clickToRecheck": "点击重新检查",
+    "deletedSuccessfully": "MCP 服务器删除成功",
+    "missingAuthParams": "缺少必要的认证参数。"
   }
 }

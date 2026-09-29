@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { components } from "@/lib/http/schema";
 
 import EditBudgetModal from "./edit_budget_modal";
-import { chooseSelectOption } from "../../../../../tests/test-utils";
+import { chooseSelectOption, renderWithProviders } from "../../../../../tests/test-utils";
 
 const { updateMock } = vi.hoisted(() => ({ updateMock: vi.fn() }));
 
@@ -29,7 +29,9 @@ const EXISTING_BUDGET: BudgetItem = {
 };
 
 const renderModal = () =>
-  render(<EditBudgetModal isModalVisible={true} setIsModalVisible={vi.fn()} existingBudget={EXISTING_BUDGET} />);
+  renderWithProviders(
+    <EditBudgetModal isModalVisible={true} setIsModalVisible={vi.fn()} existingBudget={EXISTING_BUDGET} />,
+  );
 
 const save = async (user: ReturnType<typeof userEvent.setup>) =>
   user.click(screen.getByRole("button", { name: "Save" }));
