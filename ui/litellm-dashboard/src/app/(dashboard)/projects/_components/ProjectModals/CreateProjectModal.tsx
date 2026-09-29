@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { useCreateProject, ProjectCreateParams } from "@/app/(dashboard)/hooks/projects/useCreateProject";
 import { ProjectBaseForm } from "./ProjectBaseForm";
-import { emptyProjectFormValues, projectFormSchema } from "./projectFormSchema";
+import { emptyProjectFormValues, buildProjectFormSchema } from "./projectFormSchema";
 import { buildProjectCreateParams } from "./projectFormUtils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -21,7 +21,7 @@ interface CreateProjectModalProps {
 
 function CreateProjectForm({ onClose }: { onClose: () => void }) {
   const t = useTranslations("projects");
-  const form = useZodForm(projectFormSchema, { defaultValues: emptyProjectFormValues });
+  const form = useZodForm(buildProjectFormSchema(t), { defaultValues: emptyProjectFormValues });
   const createMutation = useCreateProject();
   const [advancedOpen, setAdvancedOpen] = useState(false);
 

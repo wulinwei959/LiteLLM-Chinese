@@ -132,6 +132,21 @@
    - 只替换**传给组件的字符串**，绝不替换组件本身。列定义里 `header: ({ column }) => <DataTableSortHeader column={column} title="Name" />` 应改成 `title={t("name")}`；写成 `header: t("name")` 会把 `DataTableSortHeader` 整个丢掉，表头不再可点击排序，且测试只在断言排序时才暴露。
 4. 对改动或新增的测试，优先改用 `tests/test-utils.tsx` 的 `renderWithProviders`，它已经包好 `LocaleProvider`。只有当测试需要自定义包裹层且不便改造时，才参照 `VirtualKeysTable.test.tsx` mock `next-intl`。纯 `render` 的测试在组件引入 `useTranslations` 后会抛 “context from `NextIntlClientProvider` was not found”。
 5. 验证：`npx vitest run <改动测试> src/lib/i18n/messagesParity.test.ts`、对改动文件跑 `npx eslint`、`npx tsc --noEmit` 确认无新错误、`npm run build` 通过。
+
+### zod 校验文案
+
+校验提示也是用户可见文案，不能漏。schema 定义在模块顶层时拿不到 `t`，按仓库既有做法改成接收 `t` 的工厂函数（见 `Teams.tsx` 的 `createTeamFieldsSchema`、`EditMembership.tsx` 的 `buildMemberSchema`、`TeamInfo.tsx`）：
+
+```ts
+const buildXSchema = (t: ReturnType<typeof useTranslations>) =>
+  z.object({ name: z.string().min(1, t("nameRequired")) });
+```
+
+类型用 `z.infer<ReturnType<typeof buildXSchema>>` / `z.output<ReturnType<...>>` 跟着变。`superRefine` 里的 `ctx.addIssue({ message })` 同样要接 `t`。
+
+已按此处理：`adminPanel.allowedIPSchema`、`changePassword.changePasswordSchema`、`accessGroupFormSchema`、`accessGroupCreateSchema`、`projectFormSchema`。注意 `projectFormSchema.ts` 的 7 条提示在批次 12 结束时漏掉了，是全量搜索校验文案时才补上的，所以收尾时要搜的关键词是 `min(1, "`、`refine(` 后跟英文逗号、以及 `message: "` / `error: "`。
+
+后续批次仍待处理（`vector-stores`、`guardrails/TeamGuardrailsTab`、`memory`、`tag-management`、`search-tools`、`policies`、`prompts`、`budgets`、`MCPToolsetsTab`、`add_pass_through`、`SCIM`、`routing_groups`、`organization/org-settings`、`models-and-endpoints/AccessGroupBudgetModal`、`skills`、`cost-optimization`、`cloudzero*`、`PluginSettings/schema`、`MetadataKeyValueFields`、`add_model`、`edit_auto_router`、`model_add`、`templates`、`update_model_credentials_modal`、`login`、`onboarding`），统一放进批次 24 的共享组件与表单校验清扫。
 6. 删除任何临时脚本（`write-*.js`、`check-*.js` 等），不要留在仓库里。
 7. 提交并推送。提交信息用 conventional commits 类型前缀加中文正文，例如 `feat(ui): 翻译 MCP 服务器页面为简体中文`。提交标题、提交正文与 PR 说明一律用简体中文书写，类型前缀（`feat`、`fix`、`chore`、`docs`）保留英文。
 

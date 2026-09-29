@@ -19,23 +19,24 @@ import { toast } from "@/lib/toast";
 import { revokeSessionAndClearClientState } from "@/app/(dashboard)/hooks/useLogout";
 import { getLoginUrl } from "@/utils/returnUrlUtils";
 
-const changePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z.string().min(1, "New password is required"),
-    confirmNewPassword: z.string().min(1, "Confirm your new password"),
-  })
-  .refine((values) => values.newPassword === values.confirmNewPassword, {
-    message: "New passwords do not match",
-    path: ["confirmNewPassword"],
-  });
+const buildChangePasswordSchema = (t: ReturnType<typeof useTranslations>) =>
+  z
+    .object({
+      currentPassword: z.string().min(1, t("currentPasswordRequired")),
+      newPassword: z.string().min(1, t("newPasswordRequired")),
+      confirmNewPassword: z.string().min(1, t("confirmNewPasswordRequired")),
+    })
+    .refine((values) => values.newPassword === values.confirmNewPassword, {
+      message: t("passwordsDoNotMatch"),
+      path: ["confirmNewPassword"],
+    });
 
-type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
+type ChangePasswordValues = z.infer<ReturnType<typeof buildChangePasswordSchema>>;
 
 export function ChangePasswordForm() {
   const t = useTranslations("changePassword");
   const { accessToken, passwordResetRequired } = useAuthorized();
-  const form = useZodForm(changePasswordSchema, {
+  const form = useZodForm(buildChangePasswordSchema(t), {
     defaultValues: { currentPassword: "", newPassword: "", confirmNewPassword: "" },
   });
   const [isPending, setIsPending] = useState(false);

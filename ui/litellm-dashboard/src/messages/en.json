@@ -1718,7 +1718,14 @@
     "keyPlaceholder": "Key",
     "valuePlaceholder": "Value",
     "removeMetadataPair": "Remove metadata pair {index}",
-    "addKeyValuePair": "Add Key-Value Pair"
+    "addKeyValuePair": "Add Key-Value Pair",
+    "projectNameRequired": "Please enter a project name",
+    "teamRequired": "Please select a team",
+    "missingModel": "Missing model",
+    "missingKey": "Missing key",
+    "missingValue": "Missing value",
+    "duplicateModel": "Duplicate model",
+    "duplicateKey": "Duplicate key"
   },
   "access-groups": {
     "title": "Access Groups",
@@ -1779,7 +1786,8 @@
     "creating": "Creating...",
     "createGroup": "Create Group",
     "updatedSuccessfully": "Access group updated successfully",
-    "editGroupTitle": "Edit Access Group"
+    "editGroupTitle": "Edit Access Group",
+    "groupNameRequired": "Please enter the access group name"
   },
   "uiTheme": {
     "themeTitle": "UI Theme Customization",

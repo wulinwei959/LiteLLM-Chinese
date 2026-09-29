@@ -1720,7 +1720,14 @@
     "keyPlaceholder": "键",
     "valuePlaceholder": "值",
     "removeMetadataPair": "移除第 {index} 组元数据",
-    "addKeyValuePair": "添加键值对"
+    "addKeyValuePair": "添加键值对",
+    "projectNameRequired": "请输入项目名称",
+    "teamRequired": "请选择团队",
+    "missingModel": "请填写模型",
+    "missingKey": "请填写键",
+    "missingValue": "请填写值",
+    "duplicateModel": "模型重复",
+    "duplicateKey": "键重复"
   },
   "access-groups": {
     "title": "访问组",
@@ -1781,7 +1788,8 @@
     "creating": "创建中...",
     "createGroup": "创建访问组",
     "updatedSuccessfully": "访问组更新成功",
-    "editGroupTitle": "编辑访问组"
+    "editGroupTitle": "编辑访问组",
+    "groupNameRequired": "请输入访问组名称"
   },
   "uiTheme": {
     "themeTitle": "界面主题自定义",

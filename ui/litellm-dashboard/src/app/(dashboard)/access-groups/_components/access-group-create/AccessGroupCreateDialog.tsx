@@ -22,7 +22,7 @@ import { useZodForm } from "@/lib/forms/useZodForm";
 import { fetchClient } from "@/lib/http/api";
 
 import { buildAccessGroupCreateBody, emptyAccessGroupFormValues, type AccessGroupCreateBody } from "./mapper";
-import { accessGroupCreateSchema } from "./schema";
+import { buildAccessGroupCreateSchema } from "./schema";
 
 const GENERAL_TAB = "general";
 
@@ -91,7 +91,7 @@ export const AccessGroupCreateDialog = ({
 }: AccessGroupCreateDialogProps) => {
   const t = useTranslations("access-groups");
   const queryClient = useQueryClient();
-  const form = useZodForm(accessGroupCreateSchema, { defaultValues: emptyAccessGroupFormValues });
+  const form = useZodForm(buildAccessGroupCreateSchema(t), { defaultValues: emptyAccessGroupFormValues });
   const [activeTab, setActiveTab] = React.useState(GENERAL_TAB);
 
   const { data: agentsData } = useAgents();

@@ -11,7 +11,7 @@ import { AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAcc
 
 import {
   AccessGroupBaseForm,
-  accessGroupFormSchema,
+  buildAccessGroupFormSchema,
   AGENTS_TAB,
   GENERAL_TAB,
   MCP_SERVERS_TAB,
@@ -37,7 +37,7 @@ const toFormValues = (accessGroup: AccessGroupResponse): AccessGroupFormValues =
 
 function AccessGroupEditForm({ accessGroup, onCancel, onSuccess }: Omit<AccessGroupEditModalProps, "visible">) {
   const t = useTranslations("access-groups");
-  const form = useZodForm(accessGroupFormSchema, { defaultValues: toFormValues(accessGroup) });
+  const form = useZodForm(buildAccessGroupFormSchema(t), { defaultValues: toFormValues(accessGroup) });
   const editMutation = useEditAccessGroup();
   const [activeTab, setActiveTab] = useState(GENERAL_TAB);
   const [visitedTabs, setVisitedTabs] = useState<ReadonlySet<string>>(new Set([GENERAL_TAB]));

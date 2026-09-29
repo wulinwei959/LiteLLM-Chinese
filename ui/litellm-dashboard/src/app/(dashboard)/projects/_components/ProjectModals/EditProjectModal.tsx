@@ -11,7 +11,7 @@ import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 import { useUpdateProject, ProjectUpdateParams } from "@/app/(dashboard)/hooks/projects/useUpdateProject";
 import { ProjectBaseForm } from "./ProjectBaseForm";
-import { projectFormSchema, type ProjectFormValues, type ProjectSubmitValues } from "./projectFormSchema";
+import { buildProjectFormSchema, type ProjectFormValues, type ProjectSubmitValues } from "./projectFormSchema";
 import { buildProjectUpdateParams } from "./projectFormUtils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -72,7 +72,7 @@ export const toFormValues = (project: ProjectResponse): ProjectFormValues => {
 
 function EditProjectForm({ project, onClose, onSuccess }: Omit<EditProjectModalProps, "isOpen">) {
   const t = useTranslations("projects");
-  const form = useZodForm(projectFormSchema, { defaultValues: toFormValues(project) });
+  const form = useZodForm(buildProjectFormSchema(t), { defaultValues: toFormValues(project) });
   const updateMutation = useUpdateProject();
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [advancedEverOpened, setAdvancedEverOpened] = useState(false);

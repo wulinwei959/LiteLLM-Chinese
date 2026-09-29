@@ -15,15 +15,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 
-export const accessGroupFormSchema = z.object({
-  name: z.string().min(1, "Please enter the access group name"),
-  description: z.string(),
-  modelIds: z.array(z.string()),
-  mcpServerIds: z.array(z.string()),
-  agentIds: z.array(z.string()),
-});
+export const buildAccessGroupFormSchema = (t: ReturnType<typeof useTranslations>) =>
+  z.object({
+    name: z.string().min(1, t("groupNameRequired")),
+    description: z.string(),
+    modelIds: z.array(z.string()),
+    mcpServerIds: z.array(z.string()),
+    agentIds: z.array(z.string()),
+  });
 
-export type AccessGroupFormValues = z.output<typeof accessGroupFormSchema>;
+export type AccessGroupFormValues = z.output<ReturnType<typeof buildAccessGroupFormSchema>>;
 
 export const GENERAL_TAB = "general";
 export const MODELS_TAB = "models";
