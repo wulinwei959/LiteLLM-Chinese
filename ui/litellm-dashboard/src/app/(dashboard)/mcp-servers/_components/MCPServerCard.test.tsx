@@ -1,7 +1,9 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, afterEach } from "vitest";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import MCPServerCard from "./MCPServerCard";
 import type { MCPServer } from "@/components/mcp_tools/types";
 import { setServerRootPath } from "@/lib/serverRootPath";
@@ -16,7 +18,7 @@ const baseServer: MCPServer = {
 } as MCPServer;
 
 function renderCard(overrides: Partial<MCPServer>) {
-  render(<MCPServerCard server={{ ...baseServer, ...overrides } as MCPServer} onClick={vi.fn()} />);
+  renderWithProviders(<MCPServerCard server={{ ...baseServer, ...overrides } as MCPServer} onClick={vi.fn()} />);
 }
 
 describe("MCPServerCard health", () => {
@@ -86,7 +88,9 @@ describe("MCPServerCard per-user credentials", () => {
   const renderUserFields = (props: { missingUserFields?: string[]; hasUserFields?: boolean }) => {
     const onOpenFillFields = vi.fn();
     const onClick = vi.fn();
-    render(<MCPServerCard server={baseServer} onClick={onClick} onOpenFillFields={onOpenFillFields} {...props} />);
+    renderWithProviders(
+      <MCPServerCard server={baseServer} onClick={onClick} onOpenFillFields={onOpenFillFields} {...props} />,
+    );
     return { onOpenFillFields, onClick };
   };
 

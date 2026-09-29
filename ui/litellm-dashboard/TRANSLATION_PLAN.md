@@ -10,7 +10,7 @@
 
 翻译基于 `next-intl`。语言资源放在 `src/messages/en.json` 与 `src/messages/zh-CN.json`，两侧键树必须完全一致，由 `src/lib/i18n/messagesParity.test.ts` 强制校验。组件通过 `useTranslations("<namespace>")` 取词。语言状态与切换在 `src/contexts/LocaleContext.tsx`，切换器是 `src/components/shared/LanguageSwitcher.tsx`，入口在 `UserDropdown` 与 `SidebarAccountMenu`。
 
-命名空间按功能域划分，当前已有：`common`、`nav`、`viewSwitcher`、`login`、`onboarding`、`breadcrumb`、`ssoEnabledNotice`、`virtualKeys`、`models`、`teams`、`users`、`organizations`、`budgets`、`guardrails`、`policies`、`adminPanel`、`usage`、`logs`、`projects`、`access-groups`、`uiTheme`、`routerSettings`、`changePassword`、`transformRequest`。
+命名空间按功能域划分，当前已有：`common`、`nav`、`viewSwitcher`、`login`、`onboarding`、`breadcrumb`、`ssoEnabledNotice`、`virtualKeys`、`models`、`teams`、`users`、`organizations`、`budgets`、`guardrails`、`policies`、`adminPanel`、`usage`、`logs`、`projects`、`access-groups`、`uiTheme`、`routerSettings`、`changePassword`、`transformRequest`、`mcpServers`。
 
 ## 进度概览
 
@@ -18,7 +18,7 @@
 
 | 路由 | 未翻译/总数 | 路由 | 未翻译/总数 |
 | --- | --- | --- | --- |
-| mcp-servers | 43/43 | cost-optimization | 11/11 |
+| mcp-servers | 42/44 | cost-optimization | 11/11 |
 | playground | 37/37 | projects | 1/11 |
 | guardrails | 34/35 | cost-tracking | 10/10 |
 | prompts | 27/27 | search-tools | 10/10 |
@@ -53,6 +53,7 @@
 | 11 | 组织与预算 | `OrganizationsPanel.tsx`、`BudgetTableColumns.tsx`、`edit_budget_modal.tsx` |
 | 12 | 项目与访问组 | `ProjectsPage.tsx`、`ProjectDetailsPage.tsx`、`ProjectModals/*`、`AccessGroupsPage.tsx`、`AccessGroupsTableColumns.tsx`、`AccessGroupCreateDialog.tsx` |
 | 13 | 管理面板与系统设置 | `AdminPanel.tsx`、`UIThemeSettings.tsx`、`general_settings.tsx`、`ChangePasswordForm.tsx`、`TransformRequestPanel.tsx` |
+| 14a | MCP 服务器列表页与卡片 | `mcp_servers.tsx`、`MCPServerCard.tsx` |
 
 批次 3 到 8 存在“只翻译外壳、未翻译子组件”的欠账，因此下面把对应页面族重新列出收尾。
 
@@ -81,8 +82,16 @@
 
 `AdminPanel.test.tsx`、`UIThemeSettings.test.tsx`、`TransformRequestPanel.test.tsx`、`ChangePasswordForm.integration.test.tsx` 原本都用普通 `render`，改为 `renderWithProviders`。注意 `tests/test-utils` 的相对层级：文件在 `src/app/(dashboard)/<route>/` 下用 4 级 `../`，在 `.../<route>/_components/` 下用 5 级。
 
-### 批次 14：MCP 服务器（43）
-`mcp-servers/_components/*`，含创建、导入、网关会话、工具集、权限、OAuth 等。新增 `mcpServers` 命名空间。
+### 批次 14：MCP 服务器（44，分四个子批次）
+
+规模最大的一批，约 11000 行，按用户可见的主线拆开做。
+
+- **14a 列表页与卡片（已完成）**：`mcp_servers.tsx`（页头、标签页、筛选、搜索、排序、删除弹窗、空状态）、`MCPServerCard.tsx`（卡片菜单、健康度标签、OAuth 提示、按用户凭据与 BYOK 行）。新增 `mcpServers` 命名空间。
+- **14b 详情页**：`mcp_server_view.tsx`、`mcp_connection_status.tsx`、`mcp_server_cost_config.tsx`、`mcp_server_cost_display.tsx`、`MCPServerUserCredentialsPanel.tsx`。
+- **14c 创建与编辑表单**：`CreateMCPServer.tsx`、`mcp_server_edit.tsx`、`mcpFormStore`、各 `*FormFields`（OAuth、IdJag、AwsSigV4、TokenExchange、EnvVars 等）、`OpenAPI*`、`StdioConfiguration`、`MCPLogoSelector`、`ImportMCPServers`。
+- **14d 工具与权限**：`mcp_tools.tsx`、`mcp_tool_configuration.tsx`、`MCPToolsetsTab.tsx`、`MCPToolsetTableColumns.tsx`、`ToolArgumentsForm.tsx`、`ToolTestPanel.tsx`、`MCPPermissionManagement.tsx`、`MCPGatewaySessionsTab.tsx`、`MCPSubmissionsTab.tsx`、`MCPNetworkSettings.tsx`、`mcp_connect.tsx`、`mcp_discovery.tsx`。
+
+`mcp_servers.tsx` 里 `SORT_OPTIONS` 原本是带 `label` 的字面量数组，翻译时改为 `SORT_KEYS`（只存 key）加 `SORT_LABEL_KEYS`（key 到 i18n key 的映射），下拉项和 `items` prop 都从 `SORT_KEYS` 派生。
 
 ### 批次 15：Playground（37）
 `playground/components/chat_ui/*`、`compareUI/*`、`complianceUI/*`。注意 `llm_calls/*.tsx` 是调用封装，不是界面文案，按情况跳过。新增 `playground` 命名空间。

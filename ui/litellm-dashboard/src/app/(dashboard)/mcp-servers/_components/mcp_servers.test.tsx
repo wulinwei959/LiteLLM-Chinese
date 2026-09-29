@@ -1,7 +1,9 @@
 import React from "react";
-import { render, waitFor, screen, act, within } from "@testing-library/react";
+import { waitFor, screen, act, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import MCPServers, { compareServers, type SortKey } from "./mcp_servers";
 import type { MCPServer } from "@/components/mcp_tools/types";
@@ -142,7 +144,7 @@ describe("MCPServers", () => {
     vi.mocked(networking.fetchMCPServers).mockResolvedValue([]);
 
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MCPServers {...defaultProps} />
       </QueryClientProvider>,
@@ -160,7 +162,7 @@ describe("MCPServers", () => {
   it.each(["Admin", "Internal User"])("links a %s to their MCP connections page", async (userRole) => {
     vi.mocked(networking.fetchMCPServers).mockResolvedValue([]);
 
-    render(
+    renderWithProviders(
       <QueryClientProvider client={createQueryClient()}>
         <MCPServers {...defaultProps} userRole={userRole} />
       </QueryClientProvider>,
@@ -204,7 +206,7 @@ describe("MCPServers", () => {
           finishDelete = () => (outcome === "failure" ? reject(new Error("Delete failed")) : resolve(undefined));
         }),
     );
-    render(
+    renderWithProviders(
       <QueryClientProvider client={createQueryClient()}>
         <MCPServers {...defaultProps} />
       </QueryClientProvider>,
@@ -259,7 +261,7 @@ describe("MCPServers", () => {
       },
     ]);
     vi.mocked(networking.fetchMCPServerHealth).mockResolvedValue([]);
-    render(
+    renderWithProviders(
       <QueryClientProvider client={createQueryClient()}>
         <MCPServers {...defaultProps} />
       </QueryClientProvider>,
@@ -284,7 +286,7 @@ describe("MCPServers", () => {
     };
     vi.mocked(networking.fetchMCPServers).mockResolvedValue([server]);
     vi.mocked(networking.fetchMCPServerHealth).mockResolvedValue([]);
-    render(
+    renderWithProviders(
       <QueryClientProvider client={createQueryClient()}>
         <MCPServers {...defaultProps} />
       </QueryClientProvider>,
@@ -335,7 +337,7 @@ describe("MCPServers", () => {
     vi.mocked(networking.fetchMCPServers).mockResolvedValue(mockServers);
 
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MCPServers {...defaultProps} />
       </QueryClientProvider>,
@@ -407,7 +409,7 @@ describe("MCPServers", () => {
     vi.mocked(networking.fetchMCPServerHealth).mockResolvedValue(mockHealthStatuses);
 
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MCPServers {...defaultProps} />
       </QueryClientProvider>,
@@ -450,7 +452,7 @@ describe("MCPServers", () => {
     );
 
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MCPServers {...defaultProps} />
       </QueryClientProvider>,
@@ -518,7 +520,7 @@ describe("MCPServers", () => {
     vi.mocked(networking.fetchMCPServerHealth).mockResolvedValue([]);
 
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MCPServers {...defaultProps} />
       </QueryClientProvider>,
@@ -610,7 +612,7 @@ describe("MCPServers", () => {
       defaultOptions: { queries: { retry: false, gcTime: 60_000 } },
     });
 
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MCPServers {...defaultProps} />
       </QueryClientProvider>,
@@ -663,7 +665,7 @@ describe("MCPServers", () => {
   const openLiveConnections = async (props: { isViewOnly?: boolean }) => {
     vi.mocked(networking.fetchMCPServers).mockResolvedValue([]);
     vi.mocked(networking.fetchMCPGatewaySessions).mockResolvedValue(liveSessionsReport);
-    render(
+    renderWithProviders(
       <QueryClientProvider client={createQueryClient()}>
         <MCPServers {...defaultProps} {...props} />
       </QueryClientProvider>,
