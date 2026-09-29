@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import MCPDiscovery from "./mcp_discovery";
@@ -93,7 +93,7 @@ describe("MCPDiscovery", () => {
   const groupHeading = (category: string) => screen.getAllByText(category).filter((el) => el.tagName !== "BUTTON");
 
   it("lists every discoverable server grouped under its category", async () => {
-    render(<MCPDiscovery {...defaultProps} />);
+    renderWithProviders(<MCPDiscovery {...defaultProps} />);
 
     expect(await screen.findByText("GitHub")).toBeInTheDocument();
     expect(screen.getByText("Slack")).toBeInTheDocument();
@@ -103,7 +103,7 @@ describe("MCPDiscovery", () => {
   });
 
   it("filters the list down to the chosen category", async () => {
-    render(<MCPDiscovery {...defaultProps} />);
+    renderWithProviders(<MCPDiscovery {...defaultProps} />);
     await screen.findByText("GitHub");
 
     await userEvent.click(screen.getByRole("button", { name: "Communication" }));
@@ -113,7 +113,7 @@ describe("MCPDiscovery", () => {
   });
 
   it("filters the list by the search term", async () => {
-    render(<MCPDiscovery {...defaultProps} />);
+    renderWithProviders(<MCPDiscovery {...defaultProps} />);
     await screen.findByText("GitHub");
 
     fireEvent.change(screen.getByPlaceholderText("Search servers..."), { target: { value: "chat" } });
@@ -124,7 +124,7 @@ describe("MCPDiscovery", () => {
 
   it("hands the picked server back to the caller", async () => {
     const onSelectServer = vi.fn();
-    render(<MCPDiscovery {...defaultProps} onSelectServer={onSelectServer} />);
+    renderWithProviders(<MCPDiscovery {...defaultProps} onSelectServer={onSelectServer} />);
 
     await userEvent.click(await screen.findByText("GitHub"));
 
@@ -133,7 +133,7 @@ describe("MCPDiscovery", () => {
 
   it("offers a custom-server escape hatch", async () => {
     const onCustomServer = vi.fn();
-    render(<MCPDiscovery {...defaultProps} onCustomServer={onCustomServer} />);
+    renderWithProviders(<MCPDiscovery {...defaultProps} onCustomServer={onCustomServer} />);
 
     await userEvent.click(await screen.findByRole("button", { name: "+ Custom Server" }));
 
@@ -143,7 +143,7 @@ describe("MCPDiscovery", () => {
   it("surfaces a fetch failure", async () => {
     vi.mocked(fetchDiscoverableMCPServers).mockRejectedValue(new Error("registry down"));
 
-    render(<MCPDiscovery {...defaultProps} />);
+    renderWithProviders(<MCPDiscovery {...defaultProps} />);
 
     expect(await screen.findByText(/Failed to load servers: registry down/)).toBeInTheDocument();
   });
@@ -151,13 +151,13 @@ describe("MCPDiscovery", () => {
   it("offers the custom-server link when nothing matches", async () => {
     vi.mocked(fetchDiscoverableMCPServers).mockResolvedValue({ servers: [], categories: [] });
 
-    render(<MCPDiscovery {...defaultProps} />);
+    renderWithProviders(<MCPDiscovery {...defaultProps} />);
 
     expect(await screen.findByText(/No servers found/)).toBeInTheDocument();
   });
 
   it("keeps the wide dialog width the antd modal had", async () => {
-    render(<MCPDiscovery {...defaultProps} />);
+    renderWithProviders(<MCPDiscovery {...defaultProps} />);
     await screen.findByText("GitHub");
 
     const dialog = document.querySelector("[data-slot='dialog-content']");
@@ -171,7 +171,7 @@ describe("MCPDiscovery", () => {
   // row lays out as if it were not there. Without a reserved margin the custom-server
   // action sits underneath it. jsdom has no layout engine, so this pins the class.
   it("keeps the custom-server action clear of the close button", async () => {
-    render(<MCPDiscovery {...defaultProps} />);
+    renderWithProviders(<MCPDiscovery {...defaultProps} />);
     await screen.findByText("GitHub");
 
     expect(document.querySelector("[data-slot='dialog-close']")).toHaveClass("absolute");
@@ -179,7 +179,7 @@ describe("MCPDiscovery", () => {
   });
 
   it("does not fetch while hidden", () => {
-    render(<MCPDiscovery {...defaultProps} isVisible={false} />);
+    renderWithProviders(<MCPDiscovery {...defaultProps} isVisible={false} />);
 
     expect(fetchDiscoverableMCPServers).not.toHaveBeenCalled();
   });

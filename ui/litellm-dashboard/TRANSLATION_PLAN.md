@@ -37,26 +37,26 @@
 
 ## 已完成批次
 
-| 批次 | 内容                               | 主要文件                                                                                                                                                                                                    |
-| ---- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0    | i18n 基础设施与语言切换器          | `LocaleContext.tsx`、`locales.ts`、`LanguageSwitcher.tsx`、`layout.tsx`                                                                                                                                     |
-| 1    | 侧边栏、导航栏、面包屑、登录、入门 | `leftnav.tsx`、`DashboardHeader.tsx`、`login`、`onboarding`                                                                                                                                                 |
-| 2    | 虚拟密钥页                         | `VirtualKeysTable.tsx`、`keyTableColumns.tsx`                                                                                                                                                               |
-| 3    | 模型与端点                         | `ModelsTableColumns.tsx`、`AllModelsTable.tsx`、`AddModelForm.tsx`、`AutoRouters*`                                                                                                                          |
-| 4    | 访问组预算与模型重试               | `AccessGroupBudgetsPanel.tsx`、`ModelRetrySettings*`                                                                                                                                                        |
-| 5    | 价格数据、凭证、直通               | `PriceDataManagementTab.tsx`、`CredentialsPanel.tsx`、`PassThroughSettings.tsx`                                                                                                                             |
-| 6    | 组织与预算面板                     | `budget_panel.tsx`、`OrganizationsPanel.tsx`                                                                                                                                                                |
-| 7    | 护栏与策略面板                     | `GuardrailsPanel.tsx`、`policies/index.tsx`                                                                                                                                                                 |
-| 8    | 用量与日志页                       | `UsagePageView.tsx`、`view_logs/index.tsx`                                                                                                                                                                  |
-| 9    | 内部用户表格                       | `UsersTable.tsx`、`UsersTableColumns.tsx`、`UsersTable.test.tsx`                                                                                                                                            |
-| 10   | 内部用户页收尾与团队管理           | `view_users.tsx`、`BulkEditUsers.tsx`、`user_edit_view.tsx`、`DefaultUserSettingsForm.tsx`、`user_info_view.tsx`、`components/Teams.tsx`、`components/team/*`、`TeamSSOSettings.tsx`、`MSTeamsSettings.tsx` |
-| 11   | 组织与预算                         | `OrganizationsPanel.tsx`、`BudgetTableColumns.tsx`、`edit_budget_modal.tsx`                                                                                                                                 |
-| 12   | 项目与访问组                       | `ProjectsPage.tsx`、`ProjectDetailsPage.tsx`、`ProjectModals/*`、`AccessGroupsPage.tsx`、`AccessGroupsTableColumns.tsx`、`AccessGroupCreateDialog.tsx`                                                      |
-| 13   | 管理面板与系统设置                 | `AdminPanel.tsx`、`UIThemeSettings.tsx`、`general_settings.tsx`、`ChangePasswordForm.tsx`、`TransformRequestPanel.tsx`                                                                                      |
-| 14a  | MCP 服务器列表页与卡片             | `mcp_servers.tsx`、`MCPServerCard.tsx`                                                                                                                                                                      |
-| 14b  | MCP 服务器详情页                   | `mcp_server_view.tsx`、`mcp_connection_status.tsx`、`mcp_server_cost_config.tsx`、`mcp_server_cost_display.tsx`、`MCPServerUserCredentialsPanel.tsx`、`utils.tsx`                                           |
-| 14c  | MCP 创建与编辑表单                 | 29 个组件，拆成 14c-1 字段组件、14c-2 弹窗与剩余表单、14c-3 表单主体                                                                                                                                        |
-| 14d  | MCP 工具与权限                     | `mcp_tools.tsx`、`mcp_tool_configuration.tsx`、`MCPToolsetsTab.tsx`、`ToolTestPanel.tsx`、`MCPPermissionManagement.tsx`、`MCPNetworkSettings.tsx`、`mcp_connect.tsx`、`mcp_discovery.tsx` 等                |
+| 批次 | 内容                               | 主要文件                                                                                                                                                                                                                                                                                                            |
+| ---- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0    | i18n 基础设施与语言切换器          | `LocaleContext.tsx`、`locales.ts`、`LanguageSwitcher.tsx`、`layout.tsx`                                                                                                                                                                                                                                             |
+| 1    | 侧边栏、导航栏、面包屑、登录、入门 | `leftnav.tsx`、`DashboardHeader.tsx`、`login`、`onboarding`                                                                                                                                                                                                                                                         |
+| 2    | 虚拟密钥页                         | `VirtualKeysTable.tsx`、`keyTableColumns.tsx`                                                                                                                                                                                                                                                                       |
+| 3    | 模型与端点                         | `ModelsTableColumns.tsx`、`AllModelsTable.tsx`、`AddModelForm.tsx`、`AutoRouters*`                                                                                                                                                                                                                                  |
+| 4    | 访问组预算与模型重试               | `AccessGroupBudgetsPanel.tsx`、`ModelRetrySettings*`                                                                                                                                                                                                                                                                |
+| 5    | 价格数据、凭证、直通               | `PriceDataManagementTab.tsx`、`CredentialsPanel.tsx`、`PassThroughSettings.tsx`                                                                                                                                                                                                                                     |
+| 6    | 组织与预算面板                     | `budget_panel.tsx`、`OrganizationsPanel.tsx`                                                                                                                                                                                                                                                                        |
+| 7    | 护栏与策略面板                     | `GuardrailsPanel.tsx`、`policies/index.tsx`                                                                                                                                                                                                                                                                         |
+| 8    | 用量与日志页                       | `UsagePageView.tsx`、`view_logs/index.tsx`                                                                                                                                                                                                                                                                          |
+| 9    | 内部用户表格                       | `UsersTable.tsx`、`UsersTableColumns.tsx`、`UsersTable.test.tsx`                                                                                                                                                                                                                                                    |
+| 10   | 内部用户页收尾与团队管理           | `view_users.tsx`、`BulkEditUsers.tsx`、`user_edit_view.tsx`、`DefaultUserSettingsForm.tsx`、`user_info_view.tsx`、`components/Teams.tsx`、`components/team/*`、`TeamSSOSettings.tsx`、`MSTeamsSettings.tsx`                                                                                                         |
+| 11   | 组织与预算                         | `OrganizationsPanel.tsx`、`BudgetTableColumns.tsx`、`edit_budget_modal.tsx`                                                                                                                                                                                                                                         |
+| 12   | 项目与访问组                       | `ProjectsPage.tsx`、`ProjectDetailsPage.tsx`、`ProjectModals/*`、`AccessGroupsPage.tsx`、`AccessGroupsTableColumns.tsx`、`AccessGroupCreateDialog.tsx`                                                                                                                                                              |
+| 13   | 管理面板与系统设置                 | `AdminPanel.tsx`、`UIThemeSettings.tsx`、`general_settings.tsx`、`ChangePasswordForm.tsx`、`TransformRequestPanel.tsx`                                                                                                                                                                                              |
+| 14a  | MCP 服务器列表页与卡片             | `mcp_servers.tsx`、`MCPServerCard.tsx`                                                                                                                                                                                                                                                                              |
+| 14b  | MCP 服务器详情页                   | `mcp_server_view.tsx`、`mcp_connection_status.tsx`、`mcp_server_cost_config.tsx`、`mcp_server_cost_display.tsx`、`MCPServerUserCredentialsPanel.tsx`、`utils.tsx`                                                                                                                                                   |
+| 14c  | MCP 创建与编辑表单                 | 29 个组件，拆成 14c-1 字段组件、14c-2 弹窗与剩余表单、14c-3 表单主体                                                                                                                                                                                                                                                |
+| 14d  | MCP 工具与权限                     | `mcp_tools.tsx`、`mcp_discovery.tsx`、`MCPToolsetsTab.tsx`、`MCPToolsetTableColumns.tsx` 已完成，余 `mcp_tool_configuration.tsx`、`ToolTestPanel.tsx`、`MCPPermissionManagement.tsx`、`MCPNetworkSettings.tsx`、`mcp_connect.tsx`、`MCPGatewaySessionsTab.tsx`、`MCPSubmissionsTab.tsx`、`MCPStandardsSettings.tsx` |
 
 批次 3 到 8 存在“只翻译外壳、未翻译子组件”的欠账，因此下面把对应页面族重新列出收尾。
 
@@ -97,7 +97,7 @@
 - **14c-1 表单字段组件（已完成）**：`AwsSigV4Fields`、`IdJagFormFields`、`TokenExchangeFormFields`、`OpenApiByokFields`、`UpstreamTokenHeaderField`、`DcrBridgeToggle`、`StdioConfiguration`、`TruePassthroughWarning`、`PassthroughAuthorizeSection`、`OpenAPIFormSection`、`OpenAPIQuickPicker`、`TokenEndpointAuthMethodField`、`MCPLogoSelector`、`EnvVarsSection`。新增 136 个 key，`mcpServers` 命名空间共 297 个。
 - **14c-2 其余表单与弹窗（已完成）**：`UserEnvVarsModal`、`ImportMCPServers`、`ToolArgumentsForm`、`OAuthFormFields`。新增 88 个 key，`mcpServers` 命名空间共 385 个。
 - **14c-3 创建与编辑表单主体（已完成）**：`CreateMCPServer.tsx`（44KB）、`mcp_server_edit.tsx`（58KB）、共享的 `types.tsx` 选项标签。新增 96 个 key，`mcpServers` 命名空间共 481 个。
-- **14d 工具与权限**：`mcp_tools.tsx`、`mcp_tool_configuration.tsx`、`MCPToolsetsTab.tsx`、`MCPToolsetTableColumns.tsx`、`ToolArgumentsForm.tsx`、`ToolTestPanel.tsx`、`MCPPermissionManagement.tsx`、`MCPGatewaySessionsTab.tsx`、`MCPSubmissionsTab.tsx`、`MCPNetworkSettings.tsx`、`mcp_connect.tsx`、`mcp_discovery.tsx`。
+- **14d 工具与权限（进行中）**：`mcp_tools.tsx`、`mcp_discovery.tsx`、`MCPToolsetsTab.tsx`、`MCPToolsetTableColumns.tsx` 已完成。余 `mcp_tool_configuration.tsx`、`ToolTestPanel.tsx`、`MCPPermissionManagement.tsx`、`MCPNetworkSettings.tsx`、`mcp_connect.tsx`、`MCPGatewaySessionsTab.tsx`、`MCPSubmissionsTab.tsx`、`MCPStandardsSettings.tsx`。`ToolArgumentsForm.tsx` 虽列在本批原始清单里，实际已在 14c-2 完成。
 
 `mcp_servers.tsx` 里 `SORT_OPTIONS` 原本是带 `label` 的字面量数组，翻译时改为 `SORT_KEYS`（只存 key）加 `SORT_LABEL_KEYS`（key 到 i18n key 的映射），下拉项和 `items` prop 都从 `SORT_KEYS` 派生。
 
@@ -191,6 +191,42 @@ git diff -U0 610473c HEAD -- <相对仓库根的路径>
 `git diff` 天然给出前后行配对，比按行号对齐可靠。`git show` 的路径要加 `ui/litellm-dashboard/` 前缀，而 `git diff` 的 pathspec 是相对当前目录的，两者不一样。Windows 上用 `execFileSync` 传参数数组，cmd 不认单引号，路径里的 `(dashboard)` 会被吃掉。
 
 2026-09-29 修掉的：`common` 60 个、`models` 32 个、`virtualKeys` 9 个，来自批次 2 与批次 3。同时发现 `AddModelForm.tsx` 写的是 `useTranslations("models.addModel")`，这个命名空间不存在，导致该文件 37 处文案全部解析失败。
+
+### 基线对比要逐条，不要按文件去重
+
+`tsc --noEmit` 的输出按文件去重后对比，会**掩盖同一文件内的新增错误**。批次 14d-1 就栽在这里：`MCPToolsetsTab.tsx` 里把 `t.rich` 写成了 `t()`，构建报 `Type error: Type '(chunks: any) => Element' is not assignable to type 'string | number | Date'`，但那次 `tsc` 对比显示"56 个文件对 56 个，零差异"，于是放行了。
+
+原因是那个文件本来就已经因为别的原因在报错列表里，新增的第二条被同一个文件名吸收了。正确的做法是保留完整错误行（含行号与错误码）再逐条对比：
+
+```powershell
+npx tsc --noEmit 2>&1 | Select-String "error TS" | ForEach-Object { $_.Line.Trim() } | Sort-Object -Unique
+```
+
+基线约 819 条，逐条 `Compare-Object` 才能看见真实差异。
+
+另外 `npm run build` 的 TypeScript 阶段和 `npx tsc --noEmit` 的判定并不完全一致，`build` 更严。两者都要跑。
+
+### `t(...)` 传函数是 `t.rich(...)` 的用法
+
+`t(key, values)` 的 `values` 只接受 `string | number | Date`。要传 React 节点处理器必须用 `t.rich(key, handlers)`。写成 `t(key, { tag: (chunks) => <b>{chunks}</b> })` 编译不过。
+
+写富文本时先看消息里有没有 `{tag}...{/tag}`，有就用 `t.rich`。
+
+### 组件外用得到的 t，要一个能查 en.json 的替身
+
+列定义工厂、纯函数这类拿不到 React 上下文的场景，测试里没法直接调 `useTranslations`。加一个 `tests/i18nStub.ts` 里的 `enMessages(key, values?)`，按 `mcpServers` 命名空间去 `en.json` 查值，查不到就抛错而不是返回键名。
+
+这样测试断言的仍是真实英文文案（`+1 more` 而不是 `toolsets.moreCount`），键名写错也会立刻失败。
+
+注意 `enMessages` 的命名空间要和生产调用点的 `useTranslations("mcpServers")` 一致，所以列工厂里的键要写相对路径（`toolsets.edit`），不能写全名。守卫 `missingKeys.test.ts` 也是按相对路径拼命名空间的，写成 `mcpServers.toolsets.edit` 会被拼成两层而报错。
+
+工厂的参数类型不要写成 `ReturnType<typeof useTranslations>`。next-intl 的 `t` 是重载函数，类型很宽，测试传一个 `(key: string, values?) => string` 的替身会报 `TS2345`。改成只声明工厂真正用到的切片：
+
+```ts
+export type Translate = (key: string, values?: Record<string, string | number>) => string;
+```
+
+真实的 `t` 结构上可赋值给这个窄类型，替身也可以，两边都过。这也更诚实：工厂只调了基础形式，不需要 `.rich` / `.markup`。
 
 ### 共享模块里的选项标签改成键名
 

@@ -1,9 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { DataTable } from "@/components/shared/DataTable";
 import { MCPToolset } from "@/components/mcp_tools/types";
 import { getMCPToolsetTableColumns } from "./MCPToolsetTableColumns";
+import { renderWithProviders } from "../../../../../tests/test-utils";
+import { enMessages } from "../../../../../tests/i18nStub";
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: () => "http://localhost:4000",
@@ -29,8 +31,8 @@ const serverPrefixById = new Map([
 ]);
 
 function renderTable({ isAdmin = true, onEditClick = vi.fn(), onDeleteClick = vi.fn() } = {}) {
-  const deps = { isAdmin, serverPrefixById, onEditClick, onDeleteClick };
-  render(
+  const deps = { isAdmin, serverPrefixById, onEditClick, onDeleteClick, t: enMessages };
+  renderWithProviders(
     <DataTable
       data={[mockToolset]}
       columns={getMCPToolsetTableColumns(deps)}

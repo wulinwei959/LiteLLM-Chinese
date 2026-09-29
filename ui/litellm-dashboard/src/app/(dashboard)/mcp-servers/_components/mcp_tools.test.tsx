@@ -1,4 +1,6 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+
+import { renderWithProviders, testQueryClient } from "../../../../../tests/test-utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import MCPToolsViewer from "./mcp_tools";
@@ -36,7 +38,7 @@ const GATE_TEXT = "Authentication required";
 const TOKEN_URL = "https://slack.com/api/oauth.v2.user.access";
 
 const renderViewer = (props: Record<string, unknown>) =>
-  render(
+  renderWithProviders(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
       <MCPToolsViewer
         serverId="srv-1"
@@ -81,6 +83,9 @@ describe("MCPToolsViewer gatewayMintsClient wiring", () => {
 
 describe("MCPToolsViewer auth gate routing", () => {
   beforeEach(() => {
+    // testQueryClient is a module singleton with staleTime Infinity, so without
+    // this a test overriding listMCPTools would render the previous test's cache.
+    testQueryClient.clear();
     vi.mocked(listMCPTools).mockReset().mockResolvedValue({ tools: [], error: null });
     vi.mocked(isTokenValid).mockReset().mockReturnValue(false);
     vi.mocked(getToken)

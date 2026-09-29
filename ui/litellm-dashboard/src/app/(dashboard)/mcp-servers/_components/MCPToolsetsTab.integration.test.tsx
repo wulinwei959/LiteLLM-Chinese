@@ -1,8 +1,9 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent, { PointerEventsCheckLevel } from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+import { renderWithProviders, testQueryClient } from "../../../../../tests/test-utils";
 import { MCPToolsetsTab } from "./MCPToolsetsTab";
 import * as networking from "@/components/networking";
 import { useMCPToolsets } from "@/app/(dashboard)/hooks/mcpServers/useMCPToolsets";
@@ -28,11 +29,7 @@ const renderTab = (toolsets: MCPToolset[] = []) => {
     isLoading: false,
   } as unknown as ReturnType<typeof useMCPToolsets>);
   vi.mocked(useMCPServers).mockReturnValue({ data: [] } as unknown as ReturnType<typeof useMCPServers>);
-  render(
-    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } })}>
-      <MCPToolsetsTab accessToken="sk-test" userRole="Admin" />
-    </QueryClientProvider>,
-  );
+  renderWithProviders(<MCPToolsetsTab accessToken="sk-test" userRole="Admin" />);
 };
 
 const dialogWithButton = async (name: string) => {
@@ -57,6 +54,9 @@ const openCreate = async (user: ReturnType<typeof setup>) => {
 
 describe("MCPToolsetsTab create/edit toolset form", () => {
   beforeEach(() => {
+    // testQueryClient is a module singleton with staleTime Infinity, so without
+    // this a test overriding the toolsets query would render the previous cache.
+    testQueryClient.clear();
     vi.clearAllMocks();
   });
 

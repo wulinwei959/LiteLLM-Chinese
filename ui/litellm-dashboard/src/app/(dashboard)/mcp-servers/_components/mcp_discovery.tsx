@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -35,6 +36,9 @@ function getInitialAvatar(name: string) {
   return { initial, backgroundClass: INITIAL_COLORS[colorIndex] };
 }
 
+const ALL_CATEGORIES = Symbol("all");
+type CategorySelection = string | typeof ALL_CATEGORIES;
+
 const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
   isVisible,
   onClose,
@@ -42,12 +46,13 @@ const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
   onCustomServer,
   accessToken,
 }) => {
+  const t = useTranslations("mcpServers");
   const [servers, setServers] = useState<DiscoverableMCPServer[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState<CategorySelection>(ALL_CATEGORIES);
 
   useEffect(() => {
     if (isVisible && accessToken) {
@@ -59,24 +64,24 @@ const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
           setCategories(data.categories || []);
         })
         .catch((err: Error) => {
-          setError(err.message || "Failed to load MCP servers");
+          setError(err.message || t("discovery.loadFailedShort"));
         })
         .finally(() => {
           setLoading(false);
         });
     }
-  }, [isVisible, accessToken]);
+  }, [isVisible, accessToken, t]);
 
   useEffect(() => {
     if (isVisible) {
       setSearchQuery("");
-      setSelectedCategory("All");
+      setSelectedCategory(ALL_CATEGORIES);
     }
   }, [isVisible]);
 
   const filteredServers = useMemo(() => {
     let result = servers;
-    if (selectedCategory !== "All") {
+    if (selectedCategory !== ALL_CATEGORIES) {
       result = result.filter((s) => s.category === selectedCategory);
     }
     if (searchQuery.trim()) {
@@ -94,12 +99,12 @@ const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
   const groupedServers = useMemo(() => {
     const groups: Record<string, DiscoverableMCPServer[]> = {};
     for (const server of filteredServers) {
-      const cat = server.category || "Other";
+      const cat = server.category || t("discovery.otherCategory");
       if (!groups[cat]) groups[cat] = [];
       groups[cat].push(server);
     }
     return groups;
-  }, [filteredServers]);
+  }, [filteredServers, t]);
 
   return (
     <Dialog open={isVisible} onOpenChange={(open) => !open && onClose()}>
@@ -107,11 +112,15 @@ const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
         <DialogHeader>
           <div className="flex items-center justify-between border-b border-border pb-4">
             <div className="flex items-center space-x-3">
-              <img src={resolveLogoSrc(mcpLogoImg)} alt="MCP Logo" className="mr-2 size-5 object-contain" />
-              <DialogTitle className="text-xl font-semibold">Add MCP Server</DialogTitle>
+              <img
+                src={resolveLogoSrc(mcpLogoImg)}
+                alt={t("discovery.logoAlt")}
+                className="mr-2 size-5 object-contain"
+              />
+              <DialogTitle className="text-xl font-semibold">{t("discovery.title")}</DialogTitle>
             </div>
             <Button variant="link" size="sm" className="mr-8" onClick={onCustomServer}>
-              + Custom Server
+              {t("discovery.customServer")}
             </Button>
           </div>
         </DialogHeader>
@@ -119,16 +128,16 @@ const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
         <div className="max-h-[70vh] overflow-y-auto">
           {/* Filter pills */}
           <div className="mb-3 flex flex-wrap gap-1.5">
-            {["All", ...categories].map((cat) => {
+            {([ALL_CATEGORIES, ...categories] as const).map((cat) => {
               const isSelected = selectedCategory === cat;
               return (
                 <Button
-                  key={cat}
+                  key={String(cat)}
                   size="sm"
                   variant={isSelected ? "default" : "outline"}
                   onClick={() => setSelectedCategory(cat)}
                 >
-                  {cat}
+                  {cat === ALL_CATEGORIES ? t("discovery.allCategories") : cat}
                 </Button>
               );
             })}
@@ -140,7 +149,7 @@ const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
               <Search className="size-4 text-muted-foreground" />
             </InputGroupAddon>
             <InputGroupInput
-              placeholder="Search servers..."
+              placeholder={t("discovery.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -157,16 +166,16 @@ const MCPDiscovery: React.FC<MCPDiscoveryProps> = ({
 
           {error && (
             <div className="py-8 text-center text-muted-foreground">
-              <p className="text-sm">Failed to load servers: {error}</p>
+              <p className="text-sm">{t("discovery.loadFailed", { error })}</p>
             </div>
           )}
 
           {!loading && !error && filteredServers.length === 0 && (
             <div className="py-8 text-center text-muted-foreground">
               <p className="text-sm">
-                No servers found.{" "}
+                {t("discovery.noneFound")}{" "}
                 <Button variant="link" size="sm" onClick={onCustomServer}>
-                  Add a custom server
+                  {t("discovery.addCustom")}
                 </Button>
               </p>
             </div>
