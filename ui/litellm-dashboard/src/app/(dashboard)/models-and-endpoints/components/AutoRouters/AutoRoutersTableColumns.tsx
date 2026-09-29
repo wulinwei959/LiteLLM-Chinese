@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import type { ModelsAutoRoutersTranslator } from "@/lib/i18n/translators";
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { DateCell, IdentityCell } from "@/components/shared/table_cells";
 import { Badge } from "@/components/ui/badge";
@@ -101,7 +102,7 @@ interface AutoRoutersTableColumnsDeps {
   canModify: boolean;
   onRouterClick: (row: AutoRouterRow) => void;
   onDeleteClick: (row: AutoRouterRow) => void;
-  t: ReturnType<typeof useTranslations>;
+  t: ModelsAutoRoutersTranslator;
 }
 
 export const getAutoRoutersTableColumns = ({

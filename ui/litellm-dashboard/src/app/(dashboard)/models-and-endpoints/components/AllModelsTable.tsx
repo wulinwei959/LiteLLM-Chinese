@@ -5,6 +5,8 @@ import { Search, Settings } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import type { ModelsTranslator } from "@/lib/i18n/translators";
+
 import { ModelData } from "@/components/model_dashboard/types";
 import {
   DataTable,
@@ -72,7 +74,7 @@ export interface AllModelsTableProps {
   pausingModelId: string | null;
 }
 
-function EmptyState({ t }: { t: ReturnType<typeof useTranslations> }) {
+function EmptyState({ t }: { t: ModelsTranslator }) {
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-11 items-center justify-center rounded-xl bg-muted">

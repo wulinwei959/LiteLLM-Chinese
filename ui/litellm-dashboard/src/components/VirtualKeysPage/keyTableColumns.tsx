@@ -2,7 +2,8 @@
 
 import { Info } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+
+import type { CommonTranslator, VirtualKeysTranslator } from "@/lib/i18n/translators";
 
 import { DataTableMultiSortHeader, DataTableSortHeader, type DataTableSortField } from "@/components/shared/DataTable";
 import { inheritedBudgetGates, keyOwnerBudgetSource } from "@/components/shared/InheritedBudgetHint";
@@ -44,7 +45,7 @@ export const KEY_TABLE_SORT_FIELDS: readonly string[] = [
   ...SPEND_BUDGET_SORT_FIELDS.map((field) => field.id),
 ];
 
-const getKeyStatus = (key: KeyResponse, t: ReturnType<typeof useTranslations>): KeyStatus => {
+const getKeyStatus = (key: KeyResponse, t: VirtualKeysTranslator): KeyStatus => {
   if (key.deleted_at) {
     return {
       tone: "neutral",
@@ -60,9 +61,7 @@ const getKeyStatus = (key: KeyResponse, t: ReturnType<typeof useTranslations>): 
     return {
       tone: "error",
       label: t("status.blocked"),
-      tooltip: isScimBlocked
-        ? t("statusBlockedScimTooltip")
-        : t("statusBlockedTooltip"),
+      tooltip: isScimBlocked ? t("statusBlockedScimTooltip") : t("statusBlockedTooltip"),
     };
   }
   const expiresAt = key.expires ? Date.parse(key.expires) : Number.NaN;
@@ -91,7 +90,8 @@ interface KeyTableColumnsDeps {
   organizations: Organization[];
   onSelectKey: (key: KeyResponse) => void;
   applyUserBudgetToTeamKeys: boolean;
-  t: ReturnType<typeof useTranslations>;
+  t: VirtualKeysTranslator;
+  commonT: CommonTranslator;
 }
 
 export const getKeyTableColumns = ({
@@ -100,6 +100,7 @@ export const getKeyTableColumns = ({
   onSelectKey,
   applyUserBudgetToTeamKeys,
   t,
+  commonT,
 }: KeyTableColumnsDeps): ColumnDef<KeyResponse>[] => [
   {
     id: "key_alias",
@@ -191,12 +192,7 @@ export const getKeyTableColumns = ({
     id: "user",
     accessorKey: "user",
     meta: { title: t("columns.user") },
-    header: () => (
-      <InfoHeader
-        label={t("columns.user")}
-        tooltip={t("columns.userTooltip")}
-      />
-    ),
+    header: () => <InfoHeader label={t("columns.user")} tooltip={t("columns.userTooltip")} />,
     size: 160,
     enableSorting: false,
     cell: ({ row }) => {
@@ -215,7 +211,9 @@ export const getKeyTableColumns = ({
     id: "created_at",
     accessorKey: "created_at",
     meta: { title: t("columns.createdAt") },
-    header: ({ column }) => <DataTableSortHeader column={column} title={t("columns.createdAt")} variant="header-cycle" />,
+    header: ({ column }) => (
+      <DataTableSortHeader column={column} title={t("columns.createdAt")} variant="header-cycle" />
+    ),
     size: 120,
     enableSorting: true,
     cell: (info) => <DateCell value={info.getValue() as string | null} precision="date" />,
@@ -245,24 +243,23 @@ export const getKeyTableColumns = ({
     id: "updated_at",
     accessorKey: "updated_at",
     meta: { title: t("columns.updatedAt") },
-    header: ({ column }) => <DataTableSortHeader column={column} title={t("columns.updatedAt")} variant="header-cycle" />,
+    header: ({ column }) => (
+      <DataTableSortHeader column={column} title={t("columns.updatedAt")} variant="header-cycle" />
+    ),
     size: 120,
     enableSorting: true,
-    cell: (info) => <DateCell value={info.getValue() as string | null} precision="date" fallback={t("common.never")} />,
+    cell: (info) => <DateCell value={info.getValue() as string | null} precision="date" fallback={commonT("never")} />,
   },
   {
     id: "last_active",
     accessorKey: "last_active",
     meta: { title: t("columns.lastActive") },
-    header: () => (
-      <InfoHeader
-        label={t("columns.lastActive")}
-        tooltip={t("columns.lastActiveTooltip")}
-      />
-    ),
+    header: () => <InfoHeader label={t("columns.lastActive")} tooltip={t("columns.lastActiveTooltip")} />,
     size: 130,
     enableSorting: false,
-    cell: (info) => <DateCell value={info.getValue() as string | null} precision="date" fallback={t("common.unknown")} />,
+    cell: (info) => (
+      <DateCell value={info.getValue() as string | null} precision="date" fallback={commonT("unknown")} />
+    ),
   },
   {
     id: "expires",
@@ -271,7 +268,7 @@ export const getKeyTableColumns = ({
     header: t("columns.expires"),
     size: 120,
     enableSorting: false,
-    cell: (info) => <DateCell value={info.getValue() as string | null} precision="date" fallback={t("common.never")} />,
+    cell: (info) => <DateCell value={info.getValue() as string | null} precision="date" fallback={commonT("never")} />,
   },
   {
     id: "spend",
@@ -301,12 +298,7 @@ export const getKeyTableColumns = ({
     id: "total_spend",
     accessorKey: "total_spend",
     meta: { title: t("columns.lifetimeSpend") },
-    header: () => (
-      <InfoHeader
-        label={t("columns.lifetimeSpend")}
-        tooltip={t("columns.lifetimeSpendTooltip")}
-      />
-    ),
+    header: () => <InfoHeader label={t("columns.lifetimeSpend")} tooltip={t("columns.lifetimeSpendTooltip")} />,
     size: 130,
     enableSorting: false,
     cell: (info) => <MoneyCell value={info.getValue() as number | null | undefined} showZero />,
@@ -318,7 +310,7 @@ export const getKeyTableColumns = ({
     header: t("columns.budgetReset"),
     size: 130,
     enableSorting: false,
-    cell: (info) => <DateCell value={info.getValue() as string | null} fallback={t("common.never")} />,
+    cell: (info) => <DateCell value={info.getValue() as string | null} fallback={commonT("never")} />,
   },
   {
     id: "models",
@@ -345,8 +337,12 @@ export const getKeyTableColumns = ({
       const key = row.original;
       return (
         <div className="text-xs">
-          <div>{t("columns.tpm")}: {key.tpm_limit !== null ? key.tpm_limit : t("common.unlimited")}</div>
-          <div>{t("columns.rpm")}: {key.rpm_limit !== null ? key.rpm_limit : t("common.unlimited")}</div>
+          <div>
+            {t("columns.tpm")}: {key.tpm_limit !== null ? key.tpm_limit : commonT("unlimited")}
+          </div>
+          <div>
+            {t("columns.rpm")}: {key.rpm_limit !== null ? key.rpm_limit : commonT("unlimited")}
+          </div>
         </div>
       );
     },

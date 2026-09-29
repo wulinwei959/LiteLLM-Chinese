@@ -1,5 +1,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
+
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { useForm, type Control } from "react-hook-form";
 import { CircleHelp } from "lucide-react";
 
@@ -34,7 +36,7 @@ const argumentLabel = (field: ToolArgumentField): React.ReactNode => (
   </span>
 );
 
-const booleanTitleFor = (value: unknown, t: ReturnType<typeof useTranslations>): string | undefined => {
+const booleanTitleFor = (value: unknown, t: McpServersTranslator): string | undefined => {
   switch (value) {
     case true:
       return t("toolArgs.true");
@@ -45,7 +47,7 @@ const booleanTitleFor = (value: unknown, t: ReturnType<typeof useTranslations>):
   }
 };
 
-const callButtonLabelFor = (isLoading: boolean, hasRun: boolean, t: ReturnType<typeof useTranslations>): string => {
+const callButtonLabelFor = (isLoading: boolean, hasRun: boolean, t: McpServersTranslator): string => {
   if (isLoading) return t("toolArgs.calling");
   return hasRun ? t("toolArgs.callAgain") : t("toolArgs.call");
 };

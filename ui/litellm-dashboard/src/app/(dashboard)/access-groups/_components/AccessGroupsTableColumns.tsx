@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Bot, Layers, MoreHorizontal, Server, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import type { AccessGroupsTranslator } from "@/lib/i18n/translators";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { DateCell, IdentityCell } from "@/components/shared/table_cells";
@@ -32,7 +32,7 @@ const RESOURCE_TONES: Record<"models" | "mcpServers" | "agents", ResourceTone> =
   },
 };
 
-function ResourcesCell({ group, t }: { group: AccessGroup; t: ReturnType<typeof useTranslations> }) {
+function ResourcesCell({ group, t }: { group: AccessGroup; t: AccessGroupsTranslator }) {
   const items = [
     { key: "models" as const, label: t("models"), count: group.modelIds.length },
     { key: "mcpServers" as const, label: t("mcpServers"), count: group.mcpServerIds.length },
@@ -69,7 +69,7 @@ function AccessGroupRowActions({
 }: {
   group: AccessGroup;
   onDeleteClick: (group: AccessGroup) => void;
-  t: ReturnType<typeof useTranslations>;
+  t: AccessGroupsTranslator;
 }) {
   return (
     <DropdownMenu>
@@ -98,7 +98,7 @@ interface AccessGroupsTableColumnsDeps {
   canModify: boolean;
   onGroupClick: (id: string) => void;
   onDeleteClick: (group: AccessGroup) => void;
-  t: ReturnType<typeof useTranslations>;
+  t: AccessGroupsTranslator;
 }
 
 export const getAccessGroupsTableColumns = ({

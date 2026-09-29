@@ -2,13 +2,13 @@ import type { ColumnFilter, ColumnFiltersState } from "@tanstack/react-table";
 
 export const BUDGET_DURATION_UNSET = "__unset__";
 
-export const BUDGET_DURATION_FILTER_OPTIONS: readonly { value: string; label: string }[] = [
-  { value: "1h", label: "hourly" },
-  { value: "24h", label: "daily" },
-  { value: "7d", label: "weekly" },
-  { value: "30d", label: "monthly" },
-  { value: BUDGET_DURATION_UNSET, label: "Not set" },
-];
+export const BUDGET_DURATION_FILTER_OPTIONS = [
+  { value: "1h", labelKey: "durationHourlyLower" },
+  { value: "24h", labelKey: "durationDailyLower" },
+  { value: "7d", labelKey: "durationWeeklyLower" },
+  { value: "30d", labelKey: "durationMonthlyLower" },
+  { value: BUDGET_DURATION_UNSET, labelKey: "notSet" },
+] as const;
 
 export interface MaxBudgetFilterValue {
   min?: string;

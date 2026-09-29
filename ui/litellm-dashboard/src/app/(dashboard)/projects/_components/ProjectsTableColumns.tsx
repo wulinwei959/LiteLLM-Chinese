@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { LayersIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import type { ProjectsTranslator } from "@/lib/i18n/translators";
 
 import { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -19,7 +19,7 @@ function ProjectTeamCell({
   project: ProjectResponse;
   teamAliasMap: Map<string, string>;
   isTeamsLoading: boolean;
-  t: ReturnType<typeof useTranslations>;
+  t: ProjectsTranslator;
 }) {
   if (!project.team_id) return <span className="text-sm">—</span>;
   const alias = teamAliasMap.get(project.team_id);
@@ -38,7 +38,7 @@ function ProjectTeamCell({
   );
 }
 
-function ProjectModelsCell({ project, t }: { project: ProjectResponse; t: ReturnType<typeof useTranslations> }) {
+function ProjectModelsCell({ project, t }: { project: ProjectResponse; t: ProjectsTranslator }) {
   const models = project.models ?? [];
   return (
     <CellTooltip
@@ -57,7 +57,7 @@ interface ProjectsTableColumnsDeps {
   onProjectClick: (projectId: string) => void;
   teamAliasMap: Map<string, string>;
   isTeamsLoading: boolean;
-  t: ReturnType<typeof useTranslations>;
+  t: ProjectsTranslator;
 }
 
 export const getProjectsTableColumns = ({

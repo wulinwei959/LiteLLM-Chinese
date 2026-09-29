@@ -81,6 +81,8 @@ import SidebarUsageCard from "./SidebarUsageCard";
 import { routeSegmentForPathname, uiHref } from "@/utils/uiHref";
 import { useTranslations } from "next-intl";
 
+import type { NavTranslator } from "@/lib/i18n/translators";
+
 const ICON = { strokeWidth: 1.75 } as const;
 
 const LOGO_CLASS_NAME = "h-7 w-auto max-w-[150px] object-contain group-data-[collapsed=true]/sidebar:w-7";
@@ -357,7 +359,13 @@ const menuGroups: MenuGroup[] = [
             icon: <BarChart3 {...ICON} />,
             roles: all_admin_roles,
           },
-          { key: "ui-theme", page: "ui-theme", label: "nav.uiTheme", icon: <Palette {...ICON} />, roles: all_admin_roles },
+          {
+            key: "ui-theme",
+            page: "ui-theme",
+            label: "nav.uiTheme",
+            icon: <Palette {...ICON} />,
+            roles: all_admin_roles,
+          },
         ],
       },
     ],
@@ -407,45 +415,51 @@ const prettify = (key: string): string =>
 
 const labelText = (item: MenuItem): string => (typeof item.label === "string" ? item.label : prettify(item.key));
 
+export type NavMessageKey = Parameters<NavTranslator>[0];
+
+/**
+ * Menu labels and section names are stored as 'nav.<key>' so one config drives
+ * the sidebar and the breadcrumb. Stripping the prefix must yield a valid nav
+ * key; the assertion pins that invariant so a renamed key fails here instead
+ * of rendering a MISSING_MESSAGE at runtime.
+ */
+const navMessageKey = (label: string): NavMessageKey => label.replace(/^nav\./, "") as NavMessageKey;
+
 // Breadcrumb ("Section" / "Page") for the top bar, derived from the same nav config.
-export const getBreadcrumb = (
-  pathname: string,
-  navT: ReturnType<typeof useTranslations> | ((key: string) => string),
-): { section: string | null; title: string } => {
+export const getBreadcrumb = (pathname: string, navT: NavTranslator): { section: string | null; title: string } => {
   const route = routeForPathname(pathname);
   for (const group of menuGroups) {
     for (const item of group.items) {
       const sectionKey = SECTION_DISPLAY[group.groupLabel] ?? group.groupLabel;
-      if (routeOf(item) === route) return { section: navT(sectionKey.replace('nav.', '')), title: translateLabelForBreadcrumb(item.label, navT) };
+      if (routeOf(item) === route)
+        return { section: navT(navMessageKey(sectionKey)), title: translateLabelForBreadcrumb(item.label, navT) };
       const child = item.children?.find((c) => routeOf(c) === route);
-      if (child) return { section: navT(sectionKey.replace('nav.', '')), title: translateLabelForBreadcrumb(child.label, navT) };
+      if (child)
+        return { section: navT(navMessageKey(sectionKey)), title: translateLabelForBreadcrumb(child.label, navT) };
     }
   }
   return { section: null, title: prettify(route) };
 };
 
-const translateLabelForBreadcrumb = (
-  label: string | React.ReactNode,
-  navT: ReturnType<typeof useTranslations> | ((key: string) => string),
-): string => {
-  if (typeof label === 'string' && label.startsWith('nav.')) {
-    return navT(label.replace('nav.', ''));
+const translateLabelForBreadcrumb = (label: string | React.ReactNode, navT: NavTranslator): string => {
+  if (typeof label === "string" && label.startsWith("nav.")) {
+    return navT(navMessageKey(label));
   }
-  if (typeof label === 'string') {
+  if (typeof label === "string") {
     return label;
   }
   // For React nodes, extract text content (fallback to key prettify)
   if (React.isValidElement(label)) {
     const props = label.props as Record<string, unknown>;
-    if (props['data-i18n'] && typeof props['data-i18n'] === 'string') {
-      return navT(props['data-i18n'].replace('nav.', ''));
+    if (props["data-i18n"] && typeof props["data-i18n"] === "string") {
+      return navT(navMessageKey(props["data-i18n"]));
     }
     // Try to get text from children
-    if (typeof props.children === 'string') {
+    if (typeof props.children === "string") {
       return props.children;
     }
   }
-  return '';
+  return "";
 };
 
 const Sidebar_: React.FC<SidebarProps> = ({
@@ -471,12 +485,12 @@ const Sidebar_: React.FC<SidebarProps> = ({
   const currentRoute = routeForPathname(usePathname());
   const selectedKey = findMenuItemKey(currentRoute);
 
-  const navT = useTranslations('nav');
+  const navT = useTranslations("nav");
 
   // Translate a label which can be a translation key (string) or a React node (e.g., with BetaBadge)
   const translateLabel = (label: string | React.ReactNode): React.ReactNode => {
-    if (typeof label === 'string' && label.startsWith('nav.')) {
-      return navT(label.replace('nav.', ''));
+    if (typeof label === "string" && label.startsWith("nav.")) {
+      return navT(navMessageKey(label));
     }
     // For React nodes (e.g., with BetaBadge), clone and translate data-i18n attributes
     if (React.isValidElement(label)) {
@@ -486,9 +500,9 @@ const Sidebar_: React.FC<SidebarProps> = ({
           if (React.isValidElement(child)) {
             const childElement = child as React.ReactElement<Record<string, unknown>>;
             const childProps = childElement.props;
-            if (childProps['data-i18n'] && typeof childProps['data-i18n'] === 'string') {
+            if (childProps["data-i18n"] && typeof childProps["data-i18n"] === "string") {
               return React.cloneElement(childElement, {
-                children: navT(childProps['data-i18n'].replace('nav.', '')),
+                children: navT(navMessageKey(childProps["data-i18n"])),
               });
             }
           }
@@ -501,21 +515,21 @@ const Sidebar_: React.FC<SidebarProps> = ({
 
   // Translate a label for title attribute (must return string)
   const translateLabelForTitle = (label: string | React.ReactNode): string | undefined => {
-    if (typeof label === 'string' && label.startsWith('nav.')) {
-      return navT(label.replace('nav.', ''));
+    if (typeof label === "string" && label.startsWith("nav.")) {
+      return navT(navMessageKey(label));
     }
-    if (typeof label === 'string') {
+    if (typeof label === "string") {
       return label;
     }
     if (React.isValidElement(label)) {
       const props = label.props as Record<string, unknown>;
       // Check for data-i18n on this element
-      if (props['data-i18n'] && typeof props['data-i18n'] === 'string') {
-        return navT(props['data-i18n'].replace('nav.', ''));
+      if (props["data-i18n"] && typeof props["data-i18n"] === "string") {
+        return navT(navMessageKey(props["data-i18n"]));
       }
       // Recursively search children for data-i18n or text content
       const findInChildren = (children: React.ReactNode): string | undefined => {
-        if (typeof children === 'string') return children;
+        if (typeof children === "string") return children;
         if (Array.isArray(children)) {
           for (const child of children) {
             const found = findInChildren(child);
@@ -526,8 +540,8 @@ const Sidebar_: React.FC<SidebarProps> = ({
         if (React.isValidElement(children)) {
           const childElement = children as React.ReactElement<Record<string, unknown>>;
           const childProps = childElement.props;
-          if (childProps['data-i18n'] && typeof childProps['data-i18n'] === 'string') {
-            return navT(childProps['data-i18n'].replace('nav.', ''));
+          if (childProps["data-i18n"] && typeof childProps["data-i18n"] === "string") {
+            return navT(navMessageKey(childProps["data-i18n"]));
           }
           return findInChildren(childProps.children as React.ReactNode);
         }
@@ -622,7 +636,9 @@ const Sidebar_: React.FC<SidebarProps> = ({
   const renderLeaf = (item: MenuItem, isChild: boolean) => {
     const active = selectedKey === item.key;
     const size = isChild ? "sub" : "default";
-    const label = <span className="flex-1 truncate group-data-[collapsed=true]/sidebar:hidden">{translateLabel(item.label)}</span>;
+    const label = (
+      <span className="flex-1 truncate group-data-[collapsed=true]/sidebar:hidden">{translateLabel(item.label)}</span>
+    );
 
     if (item.external_url) {
       return (
@@ -673,7 +689,9 @@ const Sidebar_: React.FC<SidebarProps> = ({
           title={collapsed ? translateLabelForTitle(item.label) : undefined}
         >
           {item.icon}
-          <span className="flex-1 truncate group-data-[collapsed=true]/sidebar:hidden">{translateLabel(item.label)}</span>
+          <span className="flex-1 truncate group-data-[collapsed=true]/sidebar:hidden">
+            {translateLabel(item.label)}
+          </span>
           <ChevronRight
             className={cn(
               "size-4 shrink-0 transition-transform group-data-[collapsed=true]/sidebar:hidden",

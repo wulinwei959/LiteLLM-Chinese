@@ -6,6 +6,7 @@ import { MCPToolset } from "@/components/mcp_tools/types";
 import { getMCPToolsetTableColumns } from "./MCPToolsetTableColumns";
 import { renderWithProviders } from "../../../../../tests/test-utils";
 import { enMessages } from "../../../../../tests/i18nStub";
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: () => "http://localhost:4000",
@@ -31,7 +32,13 @@ const serverPrefixById = new Map([
 ]);
 
 function renderTable({ isAdmin = true, onEditClick = vi.fn(), onDeleteClick = vi.fn() } = {}) {
-  const deps = { isAdmin, serverPrefixById, onEditClick, onDeleteClick, t: enMessages };
+  const deps = {
+    isAdmin,
+    serverPrefixById,
+    onEditClick,
+    onDeleteClick,
+    t: enMessages as unknown as McpServersTranslator,
+  };
   renderWithProviders(
     <DataTable
       data={[mockToolset]}

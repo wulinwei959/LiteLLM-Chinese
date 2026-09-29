@@ -5,6 +5,8 @@ import { Layers } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import type { AccessGroupsTranslator } from "@/lib/i18n/translators";
+
 import { DataTable } from "@/components/shared/DataTable";
 
 import { getAccessGroupsTableColumns } from "./AccessGroupsTableColumns";
@@ -21,7 +23,7 @@ interface AccessGroupsTableProps {
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
-function EmptyState({ isFiltered, t }: { isFiltered: boolean; t: ReturnType<typeof useTranslations> }) {
+function EmptyState({ isFiltered, t }: { isFiltered: boolean; t: AccessGroupsTranslator }) {
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">

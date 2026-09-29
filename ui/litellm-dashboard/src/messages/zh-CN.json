@@ -167,7 +167,10 @@
     "teamRequired": "请选择团队。",
     "teamSelectionRequired": "需要先选择团队",
     "teamSelectionRequiredDesc": "作为团队管理员,添加模型前需要先选择你的团队。",
-    "title": "添加模型"
+    "title": "添加模型",
+    "never": "从不",
+    "unknown": "未知",
+    "unlimited": "无限制"
   },
   "nav": {
     "aiGateway": "AI 网关",
@@ -327,7 +330,26 @@
       "organization": "选择组织...",
       "team": "选择团队...",
       "userId": "输入用户 ID..."
-    }
+    },
+    "status.blocked": "已封禁",
+    "statusDeletedTooltip": "已于 {date}{by} 删除。为审计与消费历史保留；使用此密钥的请求会被拒绝。",
+    "statusBlockedScimTooltip": "被 SCIM 封禁（外部身份提供商停用或删除了所属用户）。",
+    "statusBlockedTooltip": "已封禁。使用此密钥的请求会被以 401 拒绝。",
+    "statusExpiredTooltip": "此密钥已过有效期。",
+    "statusActiveTooltip": "此密钥未被封禁且未过期。",
+    "columns.key": "密钥",
+    "columns.userTooltip": "显示第一个可用的值：用户别名、用户邮箱或用户 ID。",
+    "columns.createdBy": "创建人",
+    "columns.updatedAt": "更新时间",
+    "columns.lastActive": "最近活跃",
+    "columns.lastActiveTooltip": "这是新增字段，不会回填。只有新的密钥使用才会更新此值。",
+    "columns.expires": "过期时间",
+    "columns.spendBudget": "消费 / 预算",
+    "columns.lifetimeSpend": "累计消费",
+    "columns.lifetimeSpendTooltip": "跨所有预算周期的累计消费。预算重置不会影响此值。累计统计自 2026 年 9 月 19 日的 LiteLLM v1.103.0 开始，因此此前创建的密钥只统计该次升级之后的消费。",
+    "columns.budgetReset": "预算重置",
+    "columns.models": "模型",
+    "columns.rateLimits": "速率限制"
   },
   "models": {
     "title": "模型管理",
@@ -546,12 +568,21 @@
       "deleteConfirm": "确定要删除此自动路由器吗？",
       "deleted": "已删除自动路由器: {name}",
       "deleteError": "删除自动路由器失败: {error}",
-      "table": {},
+      "table": {
+        "name": "名称",
+        "type": "类型",
+        "routesTo": "路由到",
+        "defaultModel": "默认模型",
+        "createdAt": "创建时间",
+        "deleteAria": "打开 {name} 的操作",
+        "delete": "删除自动路由器"
+      },
       "emptyState": {
         "title": "暂无自动路由器",
         "descriptionCanModify": "创建一个自动路由器,按每个请求自动挑选合适的模型,而不是固定使用某一个。",
         "descriptionNoModify": "自动路由器会按每个请求挑选合适的模型,而不是固定使用某一个。"
-      }
+      },
+      "loading": "正在加载自动路由器..."
     },
     "modelTable": {
       "modelName": "模型名称",
@@ -1590,7 +1621,8 @@
     "budgetIdLocked": "预算 ID 创建后无法修改",
     "updateFailedDetail": "更新预算时出错:{error}",
     "noBudgetMatchesSearch": "没有预算符合你的搜索或筛选条件。",
-    "save": "保存"
+    "save": "保存",
+    "durationHourlyLower": "每小时"
   },
   "guardrails": {
     "title": "护栏",

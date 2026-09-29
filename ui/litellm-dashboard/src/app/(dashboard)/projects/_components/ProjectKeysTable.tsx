@@ -5,6 +5,8 @@ import { KeyRound } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 
+import type { ProjectsTranslator } from "@/lib/i18n/translators";
+
 import { KeyResponse } from "@/components/key_team_helpers/key_list";
 import { DataTable } from "@/components/shared/DataTable";
 
@@ -20,7 +22,7 @@ interface ProjectKeysTableProps {
   onPaginationChange: OnChangeFn<PaginationState>;
 }
 
-function EmptyState({ t }: { t: ReturnType<typeof useTranslations> }) {
+function EmptyState({ t }: { t: ProjectsTranslator }) {
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">

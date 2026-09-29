@@ -1,7 +1,8 @@
-import { useTranslations } from "next-intl";
 import { z } from "zod/v4";
 
-export const buildAccessGroupCreateSchema = (t: ReturnType<typeof useTranslations>) =>
+import type { AccessGroupsTranslator } from "@/lib/i18n/translators";
+
+export const buildAccessGroupCreateSchema = (t: AccessGroupsTranslator) =>
   z.object({
     name: z.string().refine((value) => value.trim() !== "", t("groupNameRequired")),
     description: z.string(),

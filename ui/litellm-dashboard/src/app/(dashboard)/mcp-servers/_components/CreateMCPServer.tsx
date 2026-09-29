@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslations } from "next-intl";
+
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { ChevronDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -87,7 +89,7 @@ interface CreateMCPServerProps {
 
 const payloadErrorMessage = (
   result: Exclude<BuildCreatePayloadResult, { kind: "ok" }>,
-  t: ReturnType<typeof useTranslations>,
+  t: McpServersTranslator,
 ): string => {
   switch (result.kind) {
     case "invalid_tool_display_name":

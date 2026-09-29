@@ -15,15 +15,16 @@ import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { isProxyAdminRole, isUserTeamAdminForSingleTeam } from "@/utils/roles";
 import { CircleHelp } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 import { useState, type ComponentProps } from "react";
 import { TeamData, TeamMemberBudgetSource, TeamMembership } from "./TeamInfo";
 
-const BUDGET_SOURCE_LABEL_KEYS: Record<Exclude<TeamMemberBudgetSource, "none">, string> = {
+const BUDGET_SOURCE_LABEL_KEYS = {
   team_default: "member.budgetSourceTeamDefault",
   custom: "member.budgetSourceCustom",
-};
+} as const satisfies Record<Exclude<TeamMemberBudgetSource, "none">, string>;
 
-const formatBudget = (value: number | null, t: ReturnType<typeof useTranslations>): string =>
+const formatBudget = (value: number | null, t: TeamsTranslator): string =>
   value === null ? t("member.unlimited") : `$${formatNumberWithCommas(value, 2)}`;
 
 export const seedMemberBudgetFields = (

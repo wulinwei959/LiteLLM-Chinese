@@ -176,11 +176,11 @@ const buildXSchema = (t: ReturnType<typeof useTranslations>) =>
 
 手工扫描的做法：遍历 `src` 下所有含 `useTranslations` 的文件，收集作用域内的命名空间，再把每个 `t("...")` 在 `en.json` 里解析一遍。
 
-三个坑，都踩过：
+三个坑，都踩过（类型增强后，后两个已被 tsc 覆盖，守卫留作快检）：
 
 - `useTranslations("models")` 作用域内的调用写作 `t("modelTable.x")`，不带 `models.` 前缀。只匹配 `t("ns.key")` 会漏掉大部分
-- 一个文件可能同时引入多个命名空间，裸 `t("x")` 只要在**任意一个**作用域里能解析就不算缺失
-- `t` 通过 props 传进来的文件无法静态判定作用域，守卫会跳过
+- 一个文件可能同时引入多个命名空间，裸 `t("x")` 只要在**任意一个**作用域里能解析就不算缺失。`VirtualKeysTable` 就是这么漏掉 `filterLabels.*` 的：key 在 `common` 里存在，但运行时走的是 `virtualKeys` 的 `t`
+- `t` 通过 props 传进来的文件无法静态判定作用域，守卫会跳过。`keyTableColumns` 的 19 个缺失就是这么漏的
 
 补 key 时英文原文要从 i18n 之前的快照取，不要凭上下文猜（测试可能断言了原文）：
 
@@ -191,6 +191,8 @@ git diff -U0 610473c HEAD -- <相对仓库根的路径>
 `git diff` 天然给出前后行配对，比按行号对齐可靠。`git show` 的路径要加 `ui/litellm-dashboard/` 前缀，而 `git diff` 的 pathspec 是相对当前目录的，两者不一样。Windows 上用 `execFileSync` 传参数数组，cmd 不认单引号，路径里的 `(dashboard)` 会被吃掉。
 
 2026-09-29 修掉的：`common` 60 个、`models` 32 个、`virtualKeys` 9 个，来自批次 2 与批次 3。同时发现 `AddModelForm.tsx` 写的是 `useTranslations("models.addModel")`，这个命名空间不存在，导致该文件 37 处文案全部解析失败。
+
+类型增强后又挖出一批（英文全部从 `610473c` 逐字恢复）：`virtualKeys` 19 个（`status.blocked`、5 个状态 tooltip、`columns.key/userTooltip/createdBy/updatedAt/lastActive(+Tooltip)/expires/spendBudget/lifetimeSpend(+Tooltip)/budgetReset/models/rateLimits`）；`models.autoRouters` 8 个（空 `table` 对象下的 7 个加 `loading`）；顶层 `common` 3 个（`never/unknown/unlimited`，`models.common` 下的重复保留，别处在用）；`budgets.durationHourlyLower` 1 个（其余复用 `duration*Lower` 与 `notSet`，`budget_modal` 早就是这个约定）。另有不需加 key 的错命名空间引用：`VirtualKeysTable` 的 `filterLabels.*` 与 `keyTableColumns` 的 `t("common.*")` 改走 `commonT`；`BudgetTable` 的 duration 选项把展示文案当 key，改成 `labelKey`。
 
 ### 基线对比要逐条，不要按文件去重
 
@@ -220,13 +222,64 @@ npx tsc --noEmit 2>&1 | Select-String "error TS" | ForEach-Object { $_.Line.Trim
 
 注意 `enMessages` 的命名空间要和生产调用点的 `useTranslations("mcpServers")` 一致，所以列工厂里的键要写相对路径（`toolsets.edit`），不能写全名。守卫 `missingKeys.test.ts` 也是按相对路径拼命名空间的，写成 `mcpServers.toolsets.edit` 会被拼成两层而报错。
 
-工厂的参数类型不要写成 `ReturnType<typeof useTranslations>`。next-intl 的 `t` 是重载函数，类型很宽，测试传一个 `(key: string, values?) => string` 的替身会报 `TS2345`。改成只声明工厂真正用到的切片：
+工厂的参数类型不要写成 `ReturnType<typeof useTranslations>`，也不要写成 `(key: string, ...) => string` 这种宽切片。原因见下面"裸 translator 类型两边都不可靠"。每个命名空间在 `src/lib/i18n/translators.ts` 里有一个具体类型（如 `VirtualKeysTranslator`、`McpServersTranslator`），直接拿来用：
 
 ```ts
-export type Translate = (key: string, values?: Record<string, string | number>) => string;
+import type { McpServersTranslator } from "@/lib/i18n/translators";
+
+interface Deps {
+  t: McpServersTranslator;
+}
 ```
 
-真实的 `t` 结构上可赋值给这个窄类型，替身也可以，两边都过。这也更诚实：工厂只调了基础形式，不需要 `.rich` / `.markup`。
+测试替身按 `as unknown as McpServersTranslator` 传入（`permission_definitions.test.tsx` 与 `MCPToolsetTableColumns.test.tsx` 都是这么做的）。替身本身查 `en.json`，键名写错照样在运行时抛错，牙齿没丢。
+
+### 裸 translator 类型两边都不可靠，必须根除
+
+`ReturnType<typeof useTranslations>`（不带命名空间参数）在 props 与函数参数位置出现了 57 处。加上 `AppConfig.Messages` 增强后，用探针证明了它两个方向都坏：
+
+```ts
+declare const t: ReturnType<typeof useTranslations>;
+t("common.save"); // 合法全路径，报错（误报）
+t("loading"); // 到处都不存在，通过（漏报）
+```
+
+原因是无参数时命名空间泛型取 `never`，key 联合退化成全目录 2400+ 条的巨型联合，编译器算到一半放弃（`TS2590`），剩下的判定全凭联合的内部排布碰运气。今天 `"common.save"` 报错而 `"loading"` 通过，改一行目录就可能反过来。所以"没报错"不等于"key 正确"，之前所有"tsc 零新增"的结论里，只要涉及裸 `t` 传参的文件都不可信。
+
+修法：`src/lib/i18n/translators.ts` 给每个命名空间一个 wrapper，导出具体类型。调用方继续写 `useTranslations("<ns>")`（结构完全一致，赋值双向通过），props 只接受具体类型。`next-intl` 把真正的 `Translator` 类型藏成了私有的 `_Translator`，不要去引。
+
+同理，`Record<Col, string>`、`{ label: string }` 这类装着 key 的 map 也要 `as const`，否则 `t(map[key])` 的参数是 `string`，直接被拒。`as const` 后 key 是字面量联合，逐个被检查。注意 `.map()` 回调里写的对象字面量会重新 widen，得在内部再加 `as const`（`VirtualKeysTable` 的 scope 字段就栽过一次）；解构后再判定的写法会丢掉字段间的关联（`scope === "common" ? commonT(labelKey)` 里 labelKey 还是全联合），改成 `item.scope === ... ? ...(item.labelKey)` 让 narrowing 生效。
+
+`leftnav` 的 `navT(label.replace('nav.', ''))` 这类动态 key，用一个集中断言收口：
+
+```ts
+export type NavMessageKey = Parameters<NavTranslator>[0];
+const navMessageKey = (label: string): NavMessageKey => label.replace(/^nav\./, "") as NavMessageKey;
+```
+
+断言只出现一次，注释写清"菜单配置保证前缀合法"。注意原来是 `replace('nav.', '')`（替换任意位置首次出现），改成锚定开头的 `/^nav\./`，已核实 `data-i18n` 只有两处且都是前缀，无行为差异。
+
+测试里给 `getBreadcrumb` 传 mock，原来的 `(key: string) => string` 不能赋值给重载的 `Translator`，改成 `as unknown as NavTranslator`（已有先例）。mock 自带的英文表是第二真相源，有空再换成 `enMessages`。
+
+### `AppConfig.Messages` 类型增强
+
+`src/lib/i18n/next-intl.d.ts`，三行：
+
+```ts
+import type { UiLocale } from "./locales";
+import type enMessages from "@/messages/en.json";
+
+declare module "next-intl" {
+  interface AppConfig {
+    Locale: UiLocale;
+    Messages: typeof enMessages;
+  }
+}
+```
+
+加上后第一次跑，多了 75 条，全是历史欠账，一批修完，基线回到 819。它抓到的真 bug：`VirtualKeysTable` 用 `virtualKeys` 的 `t` 调 `common` 才有的 `filterLabels.*`（7 处，筛选抽屉标签全坏）；`keyTableColumns` 里 19 个从没进过目录的 key、`t("common.never")` 这类跨命名空间引用；`models.autoRouters.table` 建了空对象但 7 个 key 一个没加，外加 `loading`；`BudgetTable` 把展示文案（`"hourly"`、`"Not set"`）直接塞进 `t()`。
+
+它抓不到的：`t` 拿到的是变量而 key 合法但语义错（比如中英文占位符对不上，那是下一步守卫的事）。
 
 ### 共享模块里的选项标签改成键名
 

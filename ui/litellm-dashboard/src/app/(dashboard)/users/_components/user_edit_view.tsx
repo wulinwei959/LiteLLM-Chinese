@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+
+import type { UsersTranslator } from "@/lib/i18n/translators";
 import { z } from "zod/v4";
 import { all_admin_roles } from "@/utils/roles";
 import BudgetDurationDropdown from "@/components/common_components/budget_duration_dropdown";
@@ -58,7 +60,7 @@ const userEditShape = {
   mcp_tool_permissions: z.record(z.string(), z.array(z.string())).optional(),
 };
 
-const budgetSchema = (unlimitedBudget: boolean, t: ReturnType<typeof useTranslations>) =>
+const budgetSchema = (unlimitedBudget: boolean, t: UsersTranslator) =>
   z.object({
     ...userEditShape,
     max_budget: z

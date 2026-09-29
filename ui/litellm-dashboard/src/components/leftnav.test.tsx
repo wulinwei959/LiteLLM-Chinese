@@ -2,6 +2,7 @@ import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../tests/test-utils";
 import Sidebar, { menuGroups, getBreadcrumb } from "./leftnav";
+import type { NavTranslator } from "@/lib/i18n/translators";
 
 vi.mock("../utils/roles", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../utils/roles")>();
@@ -595,7 +596,7 @@ describe("Sidebar (leftnav)", () => {
   });
 });
 
-const mockNavT = (key: string) => {
+const mockNavT = ((key: string) => {
   const translations: Record<string, string> = {
     aiGateway: "AI Gateway",
     observability: "Observability",
@@ -643,7 +644,7 @@ const mockNavT = (key: string) => {
     uiTheme: "UI Theme",
   };
   return translations[key] ?? key;
-};
+}) as unknown as NavTranslator;
 
 describe("getBreadcrumb", () => {
   it("resolves a top-level route to its section + title", () => {
@@ -652,7 +653,10 @@ describe("getBreadcrumb", () => {
   });
 
   it("resolves routes whose segment differs from the sidebar page id", () => {
-    expect(getBreadcrumb("/ui/models-and-endpoints", mockNavT)).toEqual({ section: "AI Gateway", title: "Models + Endpoints" });
+    expect(getBreadcrumb("/ui/models-and-endpoints", mockNavT)).toEqual({
+      section: "AI Gateway",
+      title: "Models + Endpoints",
+    });
     expect(getBreadcrumb("/ui/usage", mockNavT)).toEqual({ section: "Observability", title: "Usage" });
     expect(getBreadcrumb("/ui/old-usage", mockNavT)).toEqual({ section: "Developer Tools", title: "Old Usage" });
   });

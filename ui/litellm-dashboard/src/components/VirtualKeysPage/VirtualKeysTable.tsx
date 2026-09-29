@@ -37,29 +37,33 @@ interface VirtualKeysTableProps {
 const FILTER_COLUMNS = ["team_id", "org_id", "user_id", "key_hash", "status"] as const;
 type FilterColumn = (typeof FILTER_COLUMNS)[number];
 
-const FILTER_LABEL_KEYS: Record<FilterColumn, string> = {
+const FILTER_LABEL_KEYS = {
   team_id: "filterLabels.team",
   org_id: "filterLabels.organization",
   user_id: "filterLabels.userId",
   key_hash: "filterLabels.keyId",
   status: "filterLabels.status",
-};
+} as const satisfies Record<FilterColumn, string>;
 
 const KEY_STATUS_VALUES = ["active", "expired", "blocked", "deleted"] as const;
 type KeyStatusFilter = (typeof KEY_STATUS_VALUES)[number];
 const ALL_STATUSES = "all";
 
-const KEY_STATUS_LABEL_KEYS: Record<KeyStatusFilter, string> = {
+const KEY_STATUS_LABEL_KEYS = {
   active: "status.active",
   expired: "status.expired",
   blocked: "status.blocked",
   deleted: "status.deleted",
-};
+} as const satisfies Record<KeyStatusFilter, string>;
 
 const STATUS_FILTER_ITEM_KEYS = [
-  { value: ALL_STATUSES, labelKey: "filterLabels.allStatuses" },
-  ...KEY_STATUS_VALUES.map((value) => ({ value, labelKey: KEY_STATUS_LABEL_KEYS[value] })),
-];
+  { value: ALL_STATUSES, labelKey: "filterLabels.allStatuses", scope: "common" },
+  ...KEY_STATUS_VALUES.map((value) => ({
+    value,
+    labelKey: KEY_STATUS_LABEL_KEYS[value],
+    scope: "virtualKeys" as const,
+  })),
+] as const;
 
 const isKeyStatusFilter = (value: unknown): value is KeyStatusFilter =>
   (KEY_STATUS_VALUES as readonly unknown[]).includes(value);
@@ -93,18 +97,18 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
 
   // Translate filter labels
   const filterLabels = useMemo(
-    () => Object.fromEntries(Object.entries(FILTER_LABEL_KEYS).map(([key, labelKey]) => [key, t(labelKey)])),
-    [t],
+    () => Object.fromEntries(Object.entries(FILTER_LABEL_KEYS).map(([key, labelKey]) => [key, commonT(labelKey)])),
+    [commonT],
   );
 
   // Translate status filter items
   const statusFilterItems = useMemo(
     () =>
-      STATUS_FILTER_ITEM_KEYS.map(({ value, labelKey }) => ({
-        value,
-        label: t(labelKey),
+      STATUS_FILTER_ITEM_KEYS.map((item) => ({
+        value: item.value,
+        label: item.scope === "common" ? commonT(item.labelKey) : t(item.labelKey),
       })),
-    [t],
+    [t, commonT],
   );
 
   const { data: fetchedOrganizations } = useOrganizations();
@@ -169,8 +173,9 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
       onSelectKey: (key: KeyResponse) => void setSelectedKeyId(key.token),
       applyUserBudgetToTeamKeys,
       t,
+      commonT,
     }),
-    [allTeams, organizations, setSelectedKeyId, applyUserBudgetToTeamKeys, t],
+    [allTeams, organizations, setSelectedKeyId, applyUserBudgetToTeamKeys, t, commonT],
   );
   const columns = useMemo(() => getKeyTableColumns(columnDeps), [columnDeps]);
 
@@ -298,7 +303,7 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
             >
               {({ get, set }) => (
                 <>
-                  <DataTableFilterField label={t("filterLabels.team")}>
+                  <DataTableFilterField label={commonT("filterLabels.team")}>
                     <SearchSelect
                       options={teamOptions}
                       value={(get("team_id") as string) || undefined}
@@ -307,7 +312,7 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
                       emptyText={t("empty.team")}
                     />
                   </DataTableFilterField>
-                  <DataTableFilterField label={t("filterLabels.organization")}>
+                  <DataTableFilterField label={commonT("filterLabels.organization")}>
                     <SearchSelect
                       options={orgOptions}
                       value={(get("org_id") as string) || undefined}
@@ -316,28 +321,28 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
                       emptyText={t("empty.organization")}
                     />
                   </DataTableFilterField>
-                  <DataTableFilterField label={t("filterLabels.userId")}>
+                  <DataTableFilterField label={commonT("filterLabels.userId")}>
                     <Input
                       value={(get("user_id") as string) ?? ""}
                       onChange={(event) => set("user_id", event.target.value)}
                       placeholder={t("placeholder.userId")}
                     />
                   </DataTableFilterField>
-                  <DataTableFilterField label={t("filterLabels.keyId")}>
+                  <DataTableFilterField label={commonT("filterLabels.keyId")}>
                     <Input
                       value={(get("key_hash") as string) ?? ""}
                       onChange={(event) => set("key_hash", event.target.value)}
                       placeholder={t("placeholder.keyId")}
                     />
                   </DataTableFilterField>
-                  <DataTableFilterField label={t("filterLabels.status")}>
+                  <DataTableFilterField label={commonT("filterLabels.status")}>
                     <Select
                       items={statusFilterItems}
                       value={(get("status") as string) || ALL_STATUSES}
                       onValueChange={(value) => set("status", value === ALL_STATUSES ? undefined : value)}
                     >
-                      <SelectTrigger className="w-full" aria-label={t("filterLabels.status")}>
-                        <SelectValue placeholder={t("filterLabels.allStatuses")} />
+                      <SelectTrigger className="w-full" aria-label={commonT("filterLabels.status")}>
+                        <SelectValue placeholder={commonT("filterLabels.allStatuses")} />
                       </SelectTrigger>
                       <SelectContent>
                         {statusFilterItems.map((item) => (

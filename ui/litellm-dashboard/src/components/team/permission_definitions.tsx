@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 
 export interface PermissionInfo {
   method: string;
@@ -10,7 +10,7 @@ export interface PermissionInfo {
 /**
  * Map of permission endpoint patterns to the translation key for their description
  */
-export const PERMISSION_DESCRIPTION_KEYS: Record<string, string> = {
+export const PERMISSION_DESCRIPTION_KEYS = {
   "/auto_router/manage": "perm.autoRouterManage",
   "/key/generate": "perm.keyGenerate",
   "/key/service-account/generate": "perm.keyServiceAccountGenerate",
@@ -25,7 +25,7 @@ export const PERMISSION_DESCRIPTION_KEYS: Record<string, string> = {
   "/key/access_group_assignment": "perm.keyAccessGroupAssignment",
   "/team/daily/activity": "perm.teamDailyActivity",
   "/spend/logs": "perm.spendLogs",
-};
+} as const;
 
 /**
  * Determines the HTTP method for a given permission endpoint
@@ -42,14 +42,17 @@ export const getMethodForEndpoint = (endpoint: string): string => {
   return "POST";
 };
 
-const getDescriptionKey = (permission: string): string | undefined =>
-  PERMISSION_DESCRIPTION_KEYS[permission] ??
-  Object.entries(PERMISSION_DESCRIPTION_KEYS).find(([pattern]) => permission.includes(pattern))?.[1];
+type PermissionDescriptionKey = (typeof PERMISSION_DESCRIPTION_KEYS)[keyof typeof PERMISSION_DESCRIPTION_KEYS];
+
+const getDescriptionKey = (permission: string): PermissionDescriptionKey | undefined => {
+  const table: Record<string, PermissionDescriptionKey> = PERMISSION_DESCRIPTION_KEYS;
+  return table[permission] ?? Object.entries(table).find(([pattern]) => permission.includes(pattern))?.[1];
+};
 
 /**
  * Parses a permission string into a structured PermissionInfo object
  */
-export const getPermissionInfo = (permission: string, t: ReturnType<typeof useTranslations>): PermissionInfo => {
+export const getPermissionInfo = (permission: string, t: TeamsTranslator): PermissionInfo => {
   const method = getMethodForEndpoint(permission);
   const descriptionKey = getDescriptionKey(permission);
 

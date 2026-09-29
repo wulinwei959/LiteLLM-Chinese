@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslations } from "next-intl";
+
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { cn } from "@/lib/cva.config";
 import { AUTH_TYPE, MCP_REACHABLE_DESCRIPTION, type MCPServer } from "@/components/mcp_tools/types";
 import { Logo } from "@/components/molecules/logo/Logo";
@@ -322,7 +324,7 @@ interface HealthChipProps {
   lastCheck?: string | null;
   error?: string | null;
   dotClass: string;
-  t: ReturnType<typeof useTranslations>;
+  t: McpServersTranslator;
 }
 
 const HealthChip: FC<HealthChipProps> = ({
@@ -384,7 +386,7 @@ const HealthChip: FC<HealthChipProps> = ({
   );
 };
 
-const UserFieldsRow: FC<{ onUpdate?: () => void; t: ReturnType<typeof useTranslations> }> = ({ onUpdate, t }) => (
+const UserFieldsRow: FC<{ onUpdate?: () => void; t: McpServersTranslator }> = ({ onUpdate, t }) => (
   <div className="flex items-center justify-between gap-2 text-xs">
     <span className="text-muted-foreground">{t("perUserCredentials")}</span>
     <div className="flex items-center gap-2">
@@ -410,7 +412,7 @@ const UserFieldsRow: FC<{ onUpdate?: () => void; t: ReturnType<typeof useTransla
 interface ByokRowProps {
   connected: boolean;
   onConnect?: () => void;
-  t: ReturnType<typeof useTranslations>;
+  t: McpServersTranslator;
 }
 
 const ByokRow: FC<ByokRowProps> = ({ connected, onConnect, t }) => {

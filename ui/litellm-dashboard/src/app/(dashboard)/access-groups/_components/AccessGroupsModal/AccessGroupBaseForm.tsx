@@ -2,6 +2,8 @@
 
 import { BotIcon, InfoIcon, LayersIcon, ServerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+
+import type { AccessGroupsTranslator } from "@/lib/i18n/translators";
 import type { UseFormReturn } from "react-hook-form";
 import { z } from "zod/v4";
 
@@ -15,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 
-export const buildAccessGroupFormSchema = (t: ReturnType<typeof useTranslations>) =>
+export const buildAccessGroupFormSchema = (t: AccessGroupsTranslator) =>
   z.object({
     name: z.string().min(1, t("groupNameRequired")),
     description: z.string(),

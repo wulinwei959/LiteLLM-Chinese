@@ -4,6 +4,8 @@ import useCan from "@/app/(dashboard)/hooks/useCan";
 import { organizationKeys, useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 import UserSearchModal from "@/components/common_components/user_search_modal";
 import {
   getPoliciesList,
@@ -201,7 +203,7 @@ export type McpGrantInput = {
 
 export const grantedMcpServerIds = async (
   { effectiveServers, selectedAccessGroupIds, accessGroups, standingServerIds, loadTeamGroups }: McpGrantInput,
-  t: ReturnType<typeof useTranslations>,
+  t: TeamsTranslator,
 ): Promise<McpGrantResolution> => {
   const selectedGroups = accessGroups.filter((group) => selectedAccessGroupIds.includes(group.access_group_id));
   const direct = effectiveServers
@@ -255,7 +257,7 @@ export const retainedMcpToolPermissions = (
   );
 };
 
-export const mcpUnresolvableSaveError = (reason: string, t: ReturnType<typeof useTranslations>): string =>
+export const mcpUnresolvableSaveError = (reason: string, t: TeamsTranslator): string =>
   t("infoMcpUnresolvableSaveError", { reason });
 
 export type TeamMemberBudgetSource = components["schemas"]["TeamMemberResetBudgetResponse"]["budget_source"];
@@ -349,7 +351,7 @@ const SUPPRESSED_BY_DESCRIPTION = "";
 
 const numericInputSchema = z.union([z.string(), z.number()]).nullish();
 
-const buildTeamUpdateFieldsSchema = (t: ReturnType<typeof useTranslations>) => {
+const buildTeamUpdateFieldsSchema = (t: TeamsTranslator) => {
   const schema = z.object({
     team_alias: z.string().min(1, t("infoPleaseInputTeamName")),
     models: z.array(z.string()).optional(),

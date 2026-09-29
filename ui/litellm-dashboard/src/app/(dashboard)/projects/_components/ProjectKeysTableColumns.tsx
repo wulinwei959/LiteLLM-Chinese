@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import type { ProjectsTranslator } from "@/lib/i18n/translators";
 
 import DefaultProxyAdminTag from "@/components/common_components/DefaultProxyAdminTag";
 import { KeyResponse } from "@/components/key_team_helpers/key_list";
@@ -23,7 +23,7 @@ function OwnerCell({ record }: { record: KeyResponse }) {
   );
 }
 
-export const getProjectKeysTableColumns = (t: ReturnType<typeof useTranslations>): ColumnDef<KeyResponse>[] => [
+export const getProjectKeysTableColumns = (t: ProjectsTranslator): ColumnDef<KeyResponse>[] => [
   {
     id: "key_alias",
     accessorKey: "key_alias",

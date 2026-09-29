@@ -1,5 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
+
+import type { BudgetsTranslator } from "@/lib/i18n/translators";
 import React from "react";
 import { z } from "zod/v4";
 import { useCreateBudget } from "@/app/(dashboard)/hooks/budgets/useBudgets";
@@ -14,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useZodForm } from "@/lib/forms/useZodForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const buildBudgetSchema = (t: ReturnType<typeof useTranslations>) =>
+const buildBudgetSchema = (t: BudgetsTranslator) =>
   z.object({
     budget_id: z.string().min(1, t("budgetIdRequired")),
     tpm_limit: z.number().nullish(),

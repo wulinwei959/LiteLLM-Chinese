@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
+
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
@@ -21,7 +23,7 @@ interface MSTeamsSettingsProps {
 
 const SENSITIVE_FIELD_PATTERN = /(PASSWORD|SECRET|KEY|TOKEN|URL)/i;
 
-const getFieldHelp = (t: ReturnType<typeof useTranslations>): Record<string, React.ReactNode> => ({
+const getFieldHelp = (t: TeamsTranslator): Record<string, React.ReactNode> => ({
   MS_TEAMS_WEBHOOK_URL: (
     <>
       {t("msTeams.webhookUrlHelp")}

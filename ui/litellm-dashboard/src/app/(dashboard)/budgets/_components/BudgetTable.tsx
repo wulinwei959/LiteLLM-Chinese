@@ -4,6 +4,8 @@ import { Inbox, ShieldAlert } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import type { BudgetsTranslator } from "@/lib/i18n/translators";
+
 import {
   BUDGET_DURATION_FILTER_OPTIONS,
   BUDGET_DURATION_UNSET,
@@ -35,13 +37,14 @@ interface BudgetTableProps {
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
 
-function durationLabel(value: string): string {
-  return BUDGET_DURATION_FILTER_OPTIONS.find((option) => option.value === value)?.label ?? value;
+function durationLabel(value: string, t: BudgetsTranslator): string {
+  const labelKey = BUDGET_DURATION_FILTER_OPTIONS.find((option) => option.value === value)?.labelKey;
+  return labelKey ? t(labelKey) : value;
 }
 
-function formatFilterValue(columnId: string, value: unknown): string {
+function formatFilterValue(t: BudgetsTranslator, columnId: string, value: unknown): string {
   if (columnId === "budget_duration") {
-    return (Array.isArray(value) ? value : []).map((entry) => durationLabel(String(entry))).join(", ");
+    return (Array.isArray(value) ? value : []).map((entry) => durationLabel(String(entry), t)).join(", ");
   }
   if (columnId === "max_budget") {
     const { min, max, unlimitedOnly } = (value ?? {}) as MaxBudgetFilterValue;
@@ -76,7 +79,7 @@ const normalizeCreatedAt = (draft: CreatedAtFilterValue): CreatedAtFilterValue |
   return { ...(from === "" ? {} : { from }), ...(to === "" ? {} : { to }) };
 };
 
-function EmptyState({ hasQuery, t }: { hasQuery: boolean; t: ReturnType<typeof useTranslations> }) {
+function EmptyState({ hasQuery, t }: { hasQuery: boolean; t: BudgetsTranslator }) {
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
@@ -90,7 +93,7 @@ function EmptyState({ hasQuery, t }: { hasQuery: boolean; t: ReturnType<typeof u
   );
 }
 
-function ErrorState({ error, t }: { error: Error; t: ReturnType<typeof useTranslations> }) {
+function ErrorState({ error, t }: { error: Error; t: BudgetsTranslator }) {
   const forbidden = error instanceof ApiError && error.status === 403;
   return (
     <div className="flex flex-col items-center gap-1 py-6">
@@ -111,7 +114,7 @@ function DurationFilter({
 }: {
   selected: string[];
   onChange: (selected: string[]) => void;
-  t: ReturnType<typeof useTranslations>;
+  t: BudgetsTranslator;
 }) {
   const toggle = (value: string, checked: boolean): void => {
     if (!checked) {
@@ -131,7 +134,7 @@ function DurationFilter({
             onCheckedChange={(checked) => toggle(option.value, checked === true)}
             data-testid={`budget-filter-duration-${option.value}`}
           />
-          {t(option.label)}
+          {t(option.labelKey)}
         </Label>
       ))}
     </div>
@@ -145,7 +148,7 @@ function BudgetFilterFields({
 }: {
   get: (key: string) => unknown;
   set: (key: string, value: unknown) => void;
-  t: ReturnType<typeof useTranslations>;
+  t: BudgetsTranslator;
 }) {
   const maxBudget = (get("max_budget") as MaxBudgetFilterValue | undefined) ?? {};
   const created = (get("created_at") as CreatedAtFilterValue | undefined) ?? {};
@@ -266,7 +269,7 @@ const BudgetTable: React.FC<BudgetTableProps> = ({ list, canModify, onEditClick,
               max_budget: t("maxBudget"),
               created_at: t("createdAt"),
             }}
-            formatFilterValue={formatFilterValue}
+            formatFilterValue={(columnId, value) => formatFilterValue(t, columnId, value)}
           />
           <DataTableFilterDrawer
             table={table}

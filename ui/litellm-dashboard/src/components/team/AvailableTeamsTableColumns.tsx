@@ -4,6 +4,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import type { TeamsTranslator } from "@/lib/i18n/translators";
+
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { IdentityCell, ModelsCell } from "@/components/shared/table_cells";
 import { buttonVariants } from "@/components/ui/button";
@@ -46,7 +48,7 @@ function AvailableTeamRowActions({ team, onJoinTeam }: { team: AvailableTeam; on
 
 interface AvailableTeamsTableColumnsDeps {
   onJoinTeam: (teamId: string) => void;
-  t: ReturnType<typeof useTranslations>;
+  t: TeamsTranslator;
 }
 
 export const getAvailableTeamsTableColumns = ({

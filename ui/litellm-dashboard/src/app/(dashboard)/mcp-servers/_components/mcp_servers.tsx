@@ -19,6 +19,8 @@ import {
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { useMCPServers } from "@/app/(dashboard)/hooks/mcpServers/useMCPServers";
 import { useMCPServerHealth } from "@/app/(dashboard)/hooks/mcpServers/useMCPServerHealth";
 import { toast } from "@/lib/toast";
@@ -54,12 +56,12 @@ export type SortKey = "created_desc" | "updated_desc" | "name_asc" | "health";
 
 const SORT_KEYS: readonly SortKey[] = ["created_desc", "updated_desc", "name_asc", "health"];
 
-const SORT_LABEL_KEYS: Record<SortKey, string> = {
+const SORT_LABEL_KEYS = {
   created_desc: "sortCreatedDesc",
   updated_desc: "sortUpdatedDesc",
   name_asc: "sortNameAsc",
   health: "sortHealth",
-};
+} as const satisfies Record<SortKey, string>;
 
 const HEALTH_RANK: Record<string, number> = {
   unhealthy: 0,
@@ -130,7 +132,7 @@ function DeleteServerDialog({
   server: MCPServer | undefined;
   isDeleting: boolean;
   onConfirm: () => Promise<void>;
-  t: ReturnType<typeof useTranslations>;
+  t: McpServersTranslator;
 }) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>

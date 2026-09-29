@@ -167,7 +167,10 @@
     "teamRequired": "Please select a team.",
     "teamSelectionRequired": "Team Selection Required",
     "teamSelectionRequiredDesc": "As a team admin, you need to select your team first before adding models.",
-    "title": "Add Model"
+    "title": "Add Model",
+    "never": "Never",
+    "unknown": "Unknown",
+    "unlimited": "Unlimited"
   },
   "nav": {
     "aiGateway": "AI Gateway",
@@ -327,7 +330,26 @@
       "organization": "Select an organization…",
       "team": "Select a team…",
       "userId": "Enter User ID…"
-    }
+    },
+    "status.blocked": "Blocked",
+    "statusDeletedTooltip": "Deleted {date}{by}. Kept for audit and spend history; requests using this key are rejected.",
+    "statusBlockedScimTooltip": "Blocked by SCIM (external identity provider deactivated or deleted the owning user).",
+    "statusBlockedTooltip": "Blocked. Requests using this key will be rejected with 401.",
+    "statusExpiredTooltip": "This key has passed its expiry date.",
+    "statusActiveTooltip": "This key is not blocked and has not expired.",
+    "columns.key": "Key",
+    "columns.userTooltip": "Displays the first available value: User Alias, User Email, or User ID.",
+    "columns.createdBy": "Created By",
+    "columns.updatedAt": "Updated At",
+    "columns.lastActive": "Last Active",
+    "columns.lastActiveTooltip": "This is a new field and is not backfilled. Only new key usage will update this value.",
+    "columns.expires": "Expires",
+    "columns.spendBudget": "Spend / Budget",
+    "columns.lifetimeSpend": "Lifetime Spend",
+    "columns.lifetimeSpendTooltip": "Cumulative spend across every budget period. Budget resets do not touch this value. Lifetime tracking started with LiteLLM v1.103.0 on September 19, 2026, so keys created earlier only count spend since that upgrade.",
+    "columns.budgetReset": "Budget Reset",
+    "columns.models": "Models",
+    "columns.rateLimits": "Rate Limits"
   },
   "models": {
     "title": "Model Management",
@@ -550,7 +572,17 @@
         "title": "No auto routers yet",
         "descriptionCanModify": "Create an auto router to pick the right model per request instead of pinning one.",
         "descriptionNoModify": "An auto router picks the right model per request instead of pinning one."
-      }
+      },
+      "table": {
+        "name": "Name",
+        "type": "Type",
+        "routesTo": "Routes to",
+        "defaultModel": "Default model",
+        "createdAt": "Created",
+        "deleteAria": "Open actions for {name}",
+        "delete": "Delete auto router"
+      },
+      "loading": "Loading auto routers…"
     },
     "modelTable": {
       "modelName": "Model Name",
@@ -1589,7 +1621,8 @@
     "budgetIdLocked": "Budget ID cannot be changed after creation",
     "updateFailedDetail": "Error updating the budget: {error}",
     "noBudgetMatchesSearch": "No budget matches your search or filters.",
-    "save": "Save"
+    "save": "Save",
+    "durationHourlyLower": "hourly"
   },
   "guardrails": {
     "title": "Guardrails",

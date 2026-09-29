@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { z } from "zod/v4";
@@ -51,10 +53,7 @@ const isEmailish = (value: string): boolean => value === "" || z.email().safePar
 
 const memberFieldSchema = z.union([z.string(), z.number(), z.null(), z.array(z.string())]).optional();
 
-const buildMemberSchema = (
-  config: ModalConfig,
-  t: ReturnType<typeof useTranslations>,
-): z.ZodType<MemberFormValues, MemberFormValues> => {
+const buildMemberSchema = (config: ModalConfig, t: TeamsTranslator): z.ZodType<MemberFormValues, MemberFormValues> => {
   const shape = {
     user_email: z.string().refine(isEmailish, t("member.invalidEmail")).nullish(),
     user_id: z.string().nullish(),

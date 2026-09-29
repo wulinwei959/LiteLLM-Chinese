@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Copy, Info, Loader2, Pencil, RefreshCw, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import type { ModelsTranslator } from "@/lib/i18n/translators";
 
 import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
 import { ModelData } from "@/components/model_dashboard/types";
@@ -62,7 +62,7 @@ function ModelInformationCell({
 }: {
   model: ModelData;
   displayName: string;
-  t: ReturnType<typeof useTranslations>;
+  t: ModelsTranslator;
 }) {
   const litellmModelName = model.litellm_model_name || "-";
 
@@ -126,7 +126,7 @@ function ModelInformationCell({
   );
 }
 
-function CredentialsHeader({ t }: { t: ReturnType<typeof useTranslations> }) {
+function CredentialsHeader({ t }: { t: ModelsTranslator }) {
   return (
     <span className="flex items-center gap-1">
       {t("table.credentials")}
@@ -185,7 +185,7 @@ function CredentialsCell({ credentialName }: { credentialName: string | undefine
   );
 }
 
-function CreatedByCell({ model, t }: { model: ModelData; t: ReturnType<typeof useTranslations> }) {
+function CreatedByCell({ model, t }: { model: ModelData; t: ModelsTranslator }) {
   const isConfigModel = !model.model_info?.db_model;
   const createdAt = formatShortDate(model.model_info.created_at);
   const primary = isConfigModel ? t("modelTable.configModel") : model.model_info.created_by || t("common.unknown");
@@ -210,7 +210,7 @@ function CostRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function CostsCell({ model, t }: { model: ModelData; t: ReturnType<typeof useTranslations> }) {
+function CostsCell({ model, t }: { model: ModelData; t: ModelsTranslator }) {
   const { input_cost: inputCost, output_cost: outputCost, output_cost_per_second: perSecond } = model;
   const hasPerSecond = perSecond != null;
   const showInput = inputCost != null && (!hasPerSecond || Number(inputCost) > 0);
@@ -234,13 +234,7 @@ function CostsCell({ model, t }: { model: ModelData; t: ReturnType<typeof useTra
   );
 }
 
-function AccessGroupsCell({
-  accessGroups,
-  t,
-}: {
-  accessGroups: string[] | null;
-  t: ReturnType<typeof useTranslations>;
-}) {
+function AccessGroupsCell({ accessGroups, t }: { accessGroups: string[] | null; t: ModelsTranslator }) {
   if (!accessGroups || accessGroups.length === 0) {
     return <span className="text-sm text-muted-foreground">-</span>;
   }
@@ -280,7 +274,7 @@ interface ModelRowActionsProps {
   isPausing: boolean;
   onDeleteClick?: (modelId: string) => void;
   onTogglePauseClick?: (modelId: string, blocked: boolean) => void | Promise<void>;
-  t: ReturnType<typeof useTranslations>;
+  t: ModelsTranslator;
 }
 
 function ModelRowActions({
@@ -377,7 +371,7 @@ interface ModelsTableColumnDeps {
   onDeleteClick?: (modelId: string) => void;
   onTogglePauseClick?: (modelId: string, blocked: boolean) => void | Promise<void>;
   pausingModelId?: string | null;
-  t: ReturnType<typeof useTranslations>;
+  t: ModelsTranslator;
 }
 
 export const getModelsTableColumns = ({

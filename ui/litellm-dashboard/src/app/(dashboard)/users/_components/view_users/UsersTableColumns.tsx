@@ -4,6 +4,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Copy, Info, KeyRound, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import type { UsersTranslator } from "@/lib/i18n/translators";
+
 import { UserInfo } from "@/components/networking";
 import { createSelectionColumn, DataTableSortHeader } from "@/components/shared/DataTable";
 import { CellTooltip, DateCell, IdentityCell, MoneyCell, StatusBadge } from "@/components/shared/table_cells";
@@ -79,7 +81,7 @@ export interface UsersTableColumnsDeps {
   onUserClick: (userId: string, openInEditMode?: boolean) => void;
   onDeleteUser: (user: UserInfo) => void;
   onResetPassword: (userId: string) => void;
-  t: ReturnType<typeof useTranslations>;
+  t: UsersTranslator;
 }
 
 export const getUsersTableColumns = ({

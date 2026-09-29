@@ -36,7 +36,9 @@ export const getMCPNetworkAccess = (
  * Maps the classification onto translation keys. The keys are listed out rather
  * than interpolated so missingKeys.test.ts can still resolve them statically.
  */
-export const networkAccessLabelKey = (kind: MCPNetworkAccessKind): string => {
+export const networkAccessLabelKey = (
+  kind: MCPNetworkAccessKind,
+): "networkAccess.publicLabel" | "networkAccess.internalLabel" | "networkAccess.unknownLabel" => {
   switch (kind) {
     case "public":
       return "networkAccess.publicLabel";
@@ -47,7 +49,9 @@ export const networkAccessLabelKey = (kind: MCPNetworkAccessKind): string => {
   }
 };
 
-export const networkAccessDescriptionKey = (reason: MCPNetworkAccessReason): string => {
+export const networkAccessDescriptionKey = (
+  reason: MCPNetworkAccessReason,
+): "networkAccess.publicDescription" | "networkAccess.hubPublishedDescription" | "networkAccess.unknownDescription" => {
   switch (reason) {
     case "direct":
       return "networkAccess.publicDescription";

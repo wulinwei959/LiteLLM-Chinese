@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { CircleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
+
+import type { ChangePasswordTranslator } from "@/lib/i18n/translators";
 import { z } from "zod/v4";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { Alert, AlertTitle } from "@/components/shared/Alert";
@@ -19,7 +21,7 @@ import { toast } from "@/lib/toast";
 import { revokeSessionAndClearClientState } from "@/app/(dashboard)/hooks/useLogout";
 import { getLoginUrl } from "@/utils/returnUrlUtils";
 
-const buildChangePasswordSchema = (t: ReturnType<typeof useTranslations>) =>
+const buildChangePasswordSchema = (t: ChangePasswordTranslator) =>
   z
     .object({
       currentPassword: z.string().min(1, t("currentPasswordRequired")),

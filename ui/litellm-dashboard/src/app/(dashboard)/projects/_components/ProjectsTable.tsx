@@ -5,6 +5,8 @@ import { FolderKanban } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import type { ProjectsTranslator } from "@/lib/i18n/translators";
+
 import { ProjectResponse } from "@/app/(dashboard)/hooks/projects/useProjects";
 import { DataTable, DataTablePagination } from "@/components/shared/DataTable";
 
@@ -22,7 +24,7 @@ interface ProjectsTableProps {
 
 const PAGE_SIZE_OPTIONS = [PROJECTS_DEFAULT_PAGE_SIZE, 25, 50];
 
-function EmptyState({ isFiltered, t }: { isFiltered: boolean; t: ReturnType<typeof useTranslations> }) {
+function EmptyState({ isFiltered, t }: { isFiltered: boolean; t: ProjectsTranslator }) {
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">

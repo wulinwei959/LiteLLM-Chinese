@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
+
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, ShieldOff } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -25,7 +27,7 @@ const mcpServerUserCredentialKeys = createQueryKeys("mcpServerUserCredentials");
 
 export function credentialTypeLabel(
   credentialType: MCPServerUserCredentialListItem["credential_type"],
-  t: ReturnType<typeof useTranslations>,
+  t: McpServersTranslator,
 ): string {
   return credentialType === "oauth2" ? t("userCredentials.typeOAuth2") : t("userCredentials.typeByok");
 }
@@ -47,7 +49,7 @@ function CredentialsBody({
   error: Error | null;
   isLoading: boolean;
   onRevoke: ((item: MCPServerUserCredentialListItem) => void) | null;
-  t: ReturnType<typeof useTranslations>;
+  t: McpServersTranslator;
 }) {
   if (isLoading) {
     return (

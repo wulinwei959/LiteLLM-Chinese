@@ -10,6 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Info, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
+
+import type { AdminPanelTranslator } from "@/lib/i18n/translators";
 import React, { useEffect, useState } from "react";
 import { useBaseUrl } from "@/components/constants";
 import { toast } from "@/lib/toast";
@@ -38,7 +40,7 @@ import { Input } from "@/components/ui/input";
 import { useZodForm } from "@/lib/forms/useZodForm";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const buildAllowedIPSchema = (t: ReturnType<typeof useTranslations>) =>
+const buildAllowedIPSchema = (t: AdminPanelTranslator) =>
   z.object({
     ip: z.string().min(1, t("ipRequired")),
   });

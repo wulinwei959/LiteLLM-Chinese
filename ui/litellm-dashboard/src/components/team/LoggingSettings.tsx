@@ -19,7 +19,7 @@ const CALLBACK_TYPE_ITEMS = [
   { value: "success", labelKey: "logging.callbackTypeSuccess" },
   { value: "failure", labelKey: "logging.callbackTypeFailure" },
   { value: "success_and_failure", labelKey: "logging.callbackTypeSuccessAndFailure" },
-];
+] as const;
 
 const CallbackVarInput: React.FC<{
   sensitive: boolean;

@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/cva.config";
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { getProxyBaseUrl } from "@/components/networking";
 import { MCPToolset } from "@/components/mcp_tools/types";
 import { copyToClipboard } from "@/utils/dataUtils";
@@ -89,18 +90,12 @@ function ToolsetRowActions({ toolset, isAdmin, onEditClick, onDeleteClick }: Too
   );
 }
 
-/**
- * The slice of next-intl's `t` this factory actually calls, so a test can pass a
- * plain stub instead of a full useTranslations return.
- */
-export type Translate = (key: string, values?: Record<string, string | number>) => string;
-
 interface MCPToolsetTableColumnsDeps {
   isAdmin: boolean;
   serverPrefixById: Map<string, string>;
   onEditClick: (toolset: MCPToolset) => void;
   onDeleteClick: (toolsetId: string) => void;
-  t: Translate;
+  t: McpServersTranslator;
 }
 
 export const getMCPToolsetTableColumns = ({

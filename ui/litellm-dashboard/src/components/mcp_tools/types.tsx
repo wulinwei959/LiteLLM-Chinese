@@ -46,11 +46,10 @@ export const AUTH_TYPE = {
   OAUTH_DELEGATE: "oauth_delegate",
 };
 
-// label holds a message key rather than display copy, so the create and edit forms
-// can render it in the active locale. Resolve with t(item.labelKey).
-export type AuthTypeItem = { value: string; labelKey: string };
-
-export const AUTH_TYPE_ITEMS: readonly AuthTypeItem[] = [
+// labelKey holds a message key rather than display copy, so the create and edit
+// forms can render it in the active locale. Resolve with t(item.labelKey); the
+// as const keeps each key a literal so the call is type-checked.
+export const AUTH_TYPE_ITEMS = [
   { value: AUTH_TYPE.NONE, labelKey: "authType.none" },
   { value: AUTH_TYPE.API_KEY, labelKey: "authType.apiKey" },
   { value: AUTH_TYPE.BEARER_TOKEN, labelKey: "authType.bearerToken" },
@@ -62,7 +61,7 @@ export const AUTH_TYPE_ITEMS: readonly AuthTypeItem[] = [
   { value: AUTH_TYPE.AWS_SIGV4, labelKey: "authType.awsSigV4" },
   { value: AUTH_TYPE.TRUE_PASSTHROUGH, labelKey: "authType.truePassthrough" },
   { value: AUTH_TYPE.OAUTH_DELEGATE, labelKey: "authType.oauthDelegate" },
-];
+] as const;
 
 // The two client-forwarded token modes: the caller supplies the upstream Authorization (forwarded
 // verbatim for true_passthrough, alongside LiteLLM admission for oauth_delegate). The dashboard holds
@@ -268,14 +267,12 @@ export const TRANSPORT = {
   OPENAPI: "openapi",
 };
 
-export type TransportItem = { value: string; labelKey: string };
-
-export const TRANSPORT_ITEMS: readonly TransportItem[] = [
+export const TRANSPORT_ITEMS = [
   { value: TRANSPORT.HTTP, labelKey: "transport.streamableHttp" },
   { value: TRANSPORT.SSE, labelKey: "transport.sse" },
   { value: TRANSPORT.STDIO, labelKey: "transport.stdio" },
   { value: TRANSPORT.OPENAPI, labelKey: "transport.openapi" },
-];
+] as const;
 
 export const handleTransport = (transport?: string | null, specPath?: string | null): string => {
   if (transport === null || transport === undefined) {

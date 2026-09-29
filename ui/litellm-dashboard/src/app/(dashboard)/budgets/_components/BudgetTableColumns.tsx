@@ -2,7 +2,7 @@
 
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import type { BudgetsTranslator } from "@/lib/i18n/translators";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { DateCell, IdCell, MoneyCell } from "@/components/shared/table_cells";
@@ -34,7 +34,7 @@ function RateLimitCell({ value }: { value: number | null | undefined }) {
   return <span className="tabular-nums">{value}</span>;
 }
 
-function BudgetDurationCell({ value, t }: { value: string | null | undefined; t: ReturnType<typeof useTranslations> }) {
+function BudgetDurationCell({ value, t }: { value: string | null | undefined; t: BudgetsTranslator }) {
   if (!value) {
     return <span className="text-muted-foreground">{t("notSet")}</span>;
   }
@@ -45,7 +45,7 @@ interface BudgetRowActionsProps {
   budget: budgetItem;
   onEditClick: (budget: budgetItem) => void;
   onDeleteClick: (budget: budgetItem) => void;
-  t: ReturnType<typeof useTranslations>;
+  t: BudgetsTranslator;
 }
 
 function BudgetRowActions({ budget, onEditClick, onDeleteClick, t }: BudgetRowActionsProps) {
@@ -87,7 +87,7 @@ interface BudgetTableColumnsDeps {
   canModify: boolean;
   onEditClick: (budget: budgetItem) => void;
   onDeleteClick: (budget: budgetItem) => void;
-  t: ReturnType<typeof useTranslations>;
+  t: BudgetsTranslator;
 }
 
 export const getBudgetTableColumns = ({

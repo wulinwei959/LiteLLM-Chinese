@@ -1,6 +1,8 @@
 import React from "react";
 import { CircleAlert, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
+
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod/v4";
 import { MCPServer, MCPUserEnvVarsStatus, MCPUserEnvVarSpec } from "@/components/mcp_tools/types";
@@ -41,7 +43,7 @@ interface UserEnvVarsFormProps {
   onSubmit: (values: Record<string, string>) => void;
 }
 
-const buildSchema = (required: readonly MCPUserEnvVarSpec[], t: ReturnType<typeof useTranslations>) =>
+const buildSchema = (required: readonly MCPUserEnvVarSpec[], t: McpServersTranslator) =>
   z.object(
     Object.fromEntries(
       required.map((spec) => [

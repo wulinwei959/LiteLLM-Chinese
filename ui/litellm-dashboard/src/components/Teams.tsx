@@ -18,6 +18,8 @@ import { TagsInput } from "@/app/(dashboard)/guardrails/_components/content_filt
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronDown, Plus, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 import React, { useEffect, useMemo, useState } from "react";
 import { z } from "zod/v4";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -71,7 +73,7 @@ const SUPPRESSED_BY_DESCRIPTION = "";
 
 const numericInputSchema = z.union([z.string(), z.number()]).optional();
 
-const createTeamFieldsSchema = (t: ReturnType<typeof useTranslations>) =>
+const createTeamFieldsSchema = (t: TeamsTranslator) =>
   z.object({
     team_alias: z.string().min(1, t("listTeamNameRequired")),
     organization_id: z.string().nullish(),
