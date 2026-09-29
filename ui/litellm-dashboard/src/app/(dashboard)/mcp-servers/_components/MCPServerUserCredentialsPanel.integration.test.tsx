@@ -1,8 +1,9 @@
 import React from "react";
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+import { renderWithProviders, testQueryClient } from "../../../../../tests/test-utils";
 import { MCPServerUserCredentialsPanel } from "./MCPServerUserCredentialsPanel";
 import * as networking from "@/components/networking";
 import type { MCPServerUserCredentialListItem } from "@/components/mcp_tools/types";
@@ -29,17 +30,15 @@ const ITEMS: MCPServerUserCredentialListItem[] = [
   },
 ];
 
-const renderPanel = ({ canRevoke = false }: { canRevoke?: boolean } = {}) => {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <MCPServerUserCredentialsPanel serverId="srv-1" accessToken="token" canRevoke={canRevoke} />
-    </QueryClientProvider>,
-  );
-};
+const renderPanel = ({ canRevoke = false }: { canRevoke?: boolean } = {}) =>
+  renderWithProviders(<MCPServerUserCredentialsPanel serverId="srv-1" accessToken="token" canRevoke={canRevoke} />);
 
 describe("MCPServerUserCredentialsPanel", () => {
   beforeEach(() => {
+    // testQueryClient is a module singleton with staleTime Infinity, so without this
+    // a test overriding fetchMCPServerUserCredentials would render the previous
+    // test's cached rows.
+    testQueryClient.clear();
     vi.clearAllMocks();
   });
 

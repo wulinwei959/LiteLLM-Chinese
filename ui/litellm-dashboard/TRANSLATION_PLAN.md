@@ -90,7 +90,7 @@
 规模最大的一批，约 11000 行，按用户可见的主线拆开做。
 
 - **14a 列表页与卡片（已完成）**：`mcp_servers.tsx`（页头、标签页、筛选、搜索、排序、删除弹窗、空状态）、`MCPServerCard.tsx`（卡片菜单、健康度标签、OAuth 提示、按用户凭据与 BYOK 行）。新增 `mcpServers` 命名空间。
-- **14b 详情页**：`mcp_server_view.tsx`、`mcp_connection_status.tsx`、`mcp_server_cost_config.tsx`、`mcp_server_cost_display.tsx`、`MCPServerUserCredentialsPanel.tsx`。
+- **14b 详情页（已完成）**：`mcp_server_view.tsx`、`mcp_connection_status.tsx`、`mcp_server_cost_config.tsx`、`mcp_server_cost_display.tsx`、`MCPServerUserCredentialsPanel.tsx`，另加共享的 `utils.tsx`（见下）。新增 103 个 key，`mcpServers` 命名空间共 161 个。
 - **14c 创建与编辑表单**：`CreateMCPServer.tsx`、`mcp_server_edit.tsx`、`mcpFormStore`、各 `*FormFields`（OAuth、IdJag、AwsSigV4、TokenExchange、EnvVars 等）、`OpenAPI*`、`StdioConfiguration`、`MCPLogoSelector`、`ImportMCPServers`。
 - **14d 工具与权限**：`mcp_tools.tsx`、`mcp_tool_configuration.tsx`、`MCPToolsetsTab.tsx`、`MCPToolsetTableColumns.tsx`、`ToolArgumentsForm.tsx`、`ToolTestPanel.tsx`、`MCPPermissionManagement.tsx`、`MCPGatewaySessionsTab.tsx`、`MCPSubmissionsTab.tsx`、`MCPNetworkSettings.tsx`、`mcp_connect.tsx`、`mcp_discovery.tsx`。
 
@@ -187,6 +187,30 @@ git diff -U0 610473c HEAD -- <相对仓库根的路径>
 
 2026-09-29 修掉的：`common` 60 个、`models` 32 个、`virtualKeys` 9 个，来自批次 2 与批次 3。同时发现 `AddModelForm.tsx` 写的是 `useTranslations("models.addModel")`，这个命名空间不存在，导致该文件 37 处文案全部解析失败。
 
+### 大小写不同的两个字符串也要分开
+
+`mcp_connection_status.tsx` 里状态行写 `Connection failed`，告警标题写 `Connection Failed`。看着是同一个词的不同大小写，其实测试各断言一次。合成一个 key 就会漏掉其中一个。批次 14b 因为这个红了一个用例。
+
+定 key 的时候按字面量逐个对，不要按"这句话是什么意思"归并。
+
+### 数据函数不要返回展示文案
+
+`getMCPNetworkAccess` 原本返回 `{ label, description }`，两个都是英文句子。它同时被 `mcp_server_view.tsx`（批次 14b）和 `MCPServerCard.tsx`（批次 14a）用，所以翻译完的卡片上仍有一块英文，而且纯函数测试只能断言英文散文。
+
+改成返回分类，文案交给组件渲染：
+
+```ts
+type MCPNetworkAccess = {
+  readonly kind: "public" | "internal" | "unknown";
+  readonly dotClassName: string;
+  readonly reason: "direct" | "hubPublished" | "unknown";
+};
+```
+
+配两个把分类映射到键名的函数（`networkAccessLabelKey`、`networkAccessDescriptionKey`），用 `switch` 穷举而不是模板拼接，这样 `missingKeys.test.ts` 还能静态扫到这些字面量。测试也从断言英文散文改成断言 `kind` 与 `reason`，断的是我们自己的分类逻辑。
+
+写 `switch` 时要逐个组合核对原始布尔条件。改成三条独立分支那次漏掉了 `available_on_public_internet` 为 `undefined` 而 `is_public_explicit` 为 `true` 的组合，原逻辑判 public，新逻辑判 unknown。
+
 ### 英文必须与原文逐字一致
 
 翻译时把英文一并润色，是比缺 key 更隐蔽的一类破坏。测试断言的是原文，改了就红。2026-09-29 在 `models-and-endpoints` 一次改回四处：
@@ -252,6 +276,7 @@ const columns = useMemo(() => getModelsTableColumns({ ...deps, t }), [t, ...]);
 - 写 key 的脚本用 `path.split(".")` 拆路径，`["modelTable", "searchPlaceholder"]` 少处理一层，把值写到了 `models.searchPlaceholder`，脚本却打印成功
 - 脚本打印"写入成功"就当成功，其实 JSON 被覆盖后要重新读回来核对。这次连着两次被同一个假成功骗到
 - 翻译时顺手把英文润色（`Source` 改 `Status`、省略号改三个点、`Model Access Group` 改成 `Access Groups`），比缺 key 更隐蔽，因为界面看着完全正常
+- 批量改测试文件的 PowerShell 脚本里，用 `$Matches[1]` 从 `import { describe, it, expect } from "vitest"` 抓取名字，`describe, ` 被正则的 `describe, ` 前缀吃掉了，四个文件的 `describe` 导入全丢。改完必须 `rg` 确认 import 行还在，`vitest` 测试运行时不报这个错，只有 `tsc` 会报
 
 ## 验证清单
 

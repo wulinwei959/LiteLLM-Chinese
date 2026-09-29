@@ -1,36 +1,61 @@
 import { MCPEnvVar, MCPEnvVarScope, type MCPServer } from "@/components/mcp_tools/types";
 
+export type MCPNetworkAccessKind = "public" | "internal" | "unknown";
+export type MCPNetworkAccessReason = "direct" | "hubPublished" | "unknown";
+
+export type MCPNetworkAccess = {
+  readonly kind: MCPNetworkAccessKind;
+  readonly dotClassName: string;
+  readonly reason: MCPNetworkAccessReason;
+};
+
+const DOT_CLASS_BY_KIND: Record<MCPNetworkAccessKind, string> = {
+  public: "bg-success",
+  internal: "bg-warning",
+  unknown: "bg-border",
+};
+
 export const getMCPNetworkAccess = (
   server: Pick<MCPServer, "available_on_public_internet" | "mcp_info">,
-): {
-  readonly label: "All Networks" | "Internal Only" | "Unknown";
-  readonly dotClassName: string;
-  readonly description: string;
-} => {
+): MCPNetworkAccess => {
   const explicitlyPublished = server.mcp_info?.is_public_explicit;
   if (server.available_on_public_internet === true || explicitlyPublished === true) {
     return {
-      label: "All Networks",
-      dotClassName: "bg-success",
-      description:
-        server.available_on_public_internet === true
-          ? "Allows requests from public and internal IPs. Authentication and access permissions still apply"
-          : "Allows requests from public and internal IPs because this server is published in MCP Hub. Authentication and access permissions still apply",
+      kind: "public",
+      dotClassName: DOT_CLASS_BY_KIND.public,
+      reason: server.available_on_public_internet === true ? "direct" : "hubPublished",
     };
   }
   if (server.available_on_public_internet === false && explicitlyPublished === false) {
-    return {
-      label: "Internal Only",
-      dotClassName: "bg-warning",
-      description:
-        "Allows requests only from internal/private IP ranges. Authentication and access permissions still apply",
-    };
+    return { kind: "internal", dotClassName: DOT_CLASS_BY_KIND.internal, reason: "direct" };
   }
-  return {
-    label: "Unknown",
-    dotClassName: "bg-border",
-    description: "The proxy did not report enough network and publication settings to determine allowed client IPs",
-  };
+  return { kind: "unknown", dotClassName: DOT_CLASS_BY_KIND.unknown, reason: "unknown" };
+};
+
+/**
+ * Maps the classification onto translation keys. The keys are listed out rather
+ * than interpolated so missingKeys.test.ts can still resolve them statically.
+ */
+export const networkAccessLabelKey = (kind: MCPNetworkAccessKind): string => {
+  switch (kind) {
+    case "public":
+      return "networkAccess.publicLabel";
+    case "internal":
+      return "networkAccess.internalLabel";
+    case "unknown":
+      return "networkAccess.unknownLabel";
+  }
+};
+
+export const networkAccessDescriptionKey = (reason: MCPNetworkAccessReason): string => {
+  switch (reason) {
+    case "direct":
+      return "networkAccess.publicDescription";
+    case "hubPublished":
+      return "networkAccess.hubPublishedDescription";
+    case "unknown":
+      return "networkAccess.unknownDescription";
+  }
 };
 
 export const extractMCPToken = (url: string): { token: string | null; baseUrl: string } => {

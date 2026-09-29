@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cva.config";
 import { AUTH_TYPE, MCP_REACHABLE_DESCRIPTION, type MCPServer } from "@/components/mcp_tools/types";
 import { Logo } from "@/components/molecules/logo/Logo";
-import { getMaskedAndFullUrl, getMCPNetworkAccess } from "./utils";
+import { getMaskedAndFullUrl, getMCPNetworkAccess, networkAccessDescriptionKey, networkAccessLabelKey } from "./utils";
 
 interface MCPServerCardProps {
   server: MCPServer;
@@ -73,6 +73,8 @@ const MCPServerCard: FC<MCPServerCardProps> = ({
   const status = server.status || "unknown";
   const healthTone = HEALTH_TONE[status] ?? HEALTH_TONE.unknown;
   const networkAccess = getMCPNetworkAccess(server);
+  const networkAccessLabel = t(networkAccessLabelKey(networkAccess.kind));
+  const networkAccessDescription = t(networkAccessDescriptionKey(networkAccess.reason));
   const accessGroups = (server.mcp_access_groups ?? []).filter((g): g is string => typeof g === "string");
 
   const missing = missingUserFields ?? [];
@@ -241,11 +243,11 @@ const MCPServerCard: FC<MCPServerCardProps> = ({
               render={
                 <Badge variant="outline">
                   <span className={cn("h-1.5 w-1.5 rounded-full", networkAccess.dotClassName)} />
-                  {networkAccess.label}
+                  {networkAccessLabel}
                 </Badge>
               }
             />
-            <TooltipContent>{networkAccess.description}</TooltipContent>
+            <TooltipContent>{networkAccessDescription}</TooltipContent>
           </Tooltip>
           {accessGroups.slice(0, 2).map((g) => (
             <Tooltip key={g}>

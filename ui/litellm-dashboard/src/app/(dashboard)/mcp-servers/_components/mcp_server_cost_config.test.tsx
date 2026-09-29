@@ -1,6 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import MCPServerCostConfig from "./mcp_server_cost_config";
 
 const tools = [
@@ -10,7 +12,7 @@ const tools = [
 
 describe("MCPServerCostConfig", () => {
   it("renders the default cost field with the current value", () => {
-    render(<MCPServerCostConfig value={{ default_cost_per_query: 0.02 }} tools={[]} />);
+    renderWithProviders(<MCPServerCostConfig value={{ default_cost_per_query: 0.02 }} tools={[]} />);
 
     expect(screen.getByText("Cost Configuration")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("0.0000")).toHaveValue("0.0200");
@@ -18,7 +20,7 @@ describe("MCPServerCostConfig", () => {
 
   it("reports the edited default cost as a number", async () => {
     const onChange = vi.fn();
-    render(<MCPServerCostConfig value={{}} tools={[]} onChange={onChange} />);
+    renderWithProviders(<MCPServerCostConfig value={{}} tools={[]} onChange={onChange} />);
 
     fireEvent.change(screen.getByPlaceholderText("0.0000"), { target: { value: "0.5" } });
 
@@ -26,19 +28,19 @@ describe("MCPServerCostConfig", () => {
   });
 
   it("disables the default cost field when disabled", () => {
-    render(<MCPServerCostConfig value={{}} tools={[]} disabled />);
+    renderWithProviders(<MCPServerCostConfig value={{}} tools={[]} disabled />);
 
     expect(screen.getByPlaceholderText("0.0000")).toBeDisabled();
   });
 
   it("hides the per-tool section when the server exposes no tools", () => {
-    render(<MCPServerCostConfig value={{}} tools={[]} />);
+    renderWithProviders(<MCPServerCostConfig value={{}} tools={[]} />);
 
     expect(screen.queryByText("Available Tools")).not.toBeInTheDocument();
   });
 
   it("offers a per-tool override for every tool once tools are loaded", async () => {
-    render(<MCPServerCostConfig value={{}} tools={tools} />);
+    renderWithProviders(<MCPServerCostConfig value={{}} tools={tools} />);
 
     await userEvent.click(screen.getByText("Available Tools"));
 
@@ -50,7 +52,7 @@ describe("MCPServerCostConfig", () => {
 
   it("merges a per-tool override into the existing cost map", async () => {
     const onChange = vi.fn();
-    render(
+    renderWithProviders(
       <MCPServerCostConfig
         value={{ default_cost_per_query: 0.01, tool_name_to_cost_per_query: { fetch: 0.2 } }}
         tools={tools}
@@ -68,7 +70,7 @@ describe("MCPServerCostConfig", () => {
   });
 
   it("summarises the configured costs", () => {
-    render(
+    renderWithProviders(
       <MCPServerCostConfig
         value={{ default_cost_per_query: 0.01, tool_name_to_cost_per_query: { search: 0.25 } }}
         tools={tools}
@@ -80,7 +82,7 @@ describe("MCPServerCostConfig", () => {
   });
 
   it("shows no summary when nothing is configured", () => {
-    render(<MCPServerCostConfig value={{}} tools={tools} />);
+    renderWithProviders(<MCPServerCostConfig value={{}} tools={tools} />);
 
     expect(screen.queryByText("Cost Summary:")).not.toBeInTheDocument();
   });

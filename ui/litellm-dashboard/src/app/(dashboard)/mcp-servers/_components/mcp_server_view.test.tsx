@@ -1,7 +1,7 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderWithProviders, testQueryClient } from "../../../../../tests/test-utils";
 import { MCPServerView } from "./mcp_server_view";
 import * as networking from "@/components/networking";
 import { setSecureItem } from "@/utils/secureStorage";
@@ -34,20 +34,18 @@ const baseServer = {
 } as MCPServer;
 
 const renderView = (overrides: Partial<MCPServer> = {}, props: Record<string, unknown> = {}) =>
-  render(
-    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } })}>
-      <MCPServerView
-        mcpServer={{ ...baseServer, ...overrides } as MCPServer}
-        onBack={vi.fn()}
-        isProxyAdmin
-        isEditing={false}
-        accessToken="tok"
-        userRole="Admin"
-        userID="u1"
-        availableAccessGroups={[]}
-        {...props}
-      />
-    </QueryClientProvider>,
+  renderWithProviders(
+    <MCPServerView
+      mcpServer={{ ...baseServer, ...overrides } as MCPServer}
+      onBack={vi.fn()}
+      isProxyAdmin
+      isEditing={false}
+      accessToken="tok"
+      userRole="Admin"
+      userID="u1"
+      availableAccessGroups={[]}
+      {...props}
+    />,
   );
 
 const openUserCredentials = async (props: Record<string, unknown>) => {
@@ -69,6 +67,9 @@ const openUserCredentials = async (props: Record<string, unknown>) => {
 
 describe("MCPServerView", () => {
   beforeEach(() => {
+    // testQueryClient is a module singleton with staleTime Infinity, so without this
+    // the User Credentials tab would render the previous test's cached rows.
+    testQueryClient.clear();
     vi.clearAllMocks();
     sessionStorage.clear();
   });
