@@ -286,7 +286,8 @@
       "active": "Active",
       "expired": "Expired",
       "revoked": "Revoked (blocked)",
-      "deleted": "Deleted"
+      "deleted": "Deleted",
+      "blocked": "Blocked"
     },
     "columns": {
       "keyId": "Key ID",
@@ -301,7 +302,20 @@
       "tpm": "TPM",
       "createdAt": "Created At",
       "lastUsed": "Last Used",
-      "actions": "Actions"
+      "actions": "Actions",
+      "key": "Key",
+      "userTooltip": "Displays the first available value: User Alias, User Email, or User ID.",
+      "createdBy": "Created By",
+      "updatedAt": "Updated At",
+      "lastActive": "Last Active",
+      "lastActiveTooltip": "This is a new field and is not backfilled. Only new key usage will update this value.",
+      "expires": "Expires",
+      "spendBudget": "Spend / Budget",
+      "lifetimeSpend": "Lifetime Spend",
+      "lifetimeSpendTooltip": "Cumulative spend across every budget period. Budget resets do not touch this value. Lifetime tracking started with LiteLLM v1.103.0 on September 19, 2026, so keys created earlier only count spend since that upgrade.",
+      "budgetReset": "Budget Reset",
+      "models": "Models",
+      "rateLimits": "Rate Limits"
     },
     "actions": {
       "copy": "Copy",
@@ -331,25 +345,11 @@
       "team": "Select a team…",
       "userId": "Enter User ID…"
     },
-    "status.blocked": "Blocked",
     "statusDeletedTooltip": "Deleted {date}{by}. Kept for audit and spend history; requests using this key are rejected.",
     "statusBlockedScimTooltip": "Blocked by SCIM (external identity provider deactivated or deleted the owning user).",
     "statusBlockedTooltip": "Blocked. Requests using this key will be rejected with 401.",
     "statusExpiredTooltip": "This key has passed its expiry date.",
-    "statusActiveTooltip": "This key is not blocked and has not expired.",
-    "columns.key": "Key",
-    "columns.userTooltip": "Displays the first available value: User Alias, User Email, or User ID.",
-    "columns.createdBy": "Created By",
-    "columns.updatedAt": "Updated At",
-    "columns.lastActive": "Last Active",
-    "columns.lastActiveTooltip": "This is a new field and is not backfilled. Only new key usage will update this value.",
-    "columns.expires": "Expires",
-    "columns.spendBudget": "Spend / Budget",
-    "columns.lifetimeSpend": "Lifetime Spend",
-    "columns.lifetimeSpendTooltip": "Cumulative spend across every budget period. Budget resets do not touch this value. Lifetime tracking started with LiteLLM v1.103.0 on September 19, 2026, so keys created earlier only count spend since that upgrade.",
-    "columns.budgetReset": "Budget Reset",
-    "columns.models": "Models",
-    "columns.rateLimits": "Rate Limits"
+    "statusActiveTooltip": "This key is not blocked and has not expired."
   },
   "models": {
     "title": "Model Management",

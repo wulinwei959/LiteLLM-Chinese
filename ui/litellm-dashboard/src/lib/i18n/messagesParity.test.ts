@@ -21,7 +21,84 @@ function collectKeyPaths(node: unknown, prefix: string): string[] {
   return [prefix];
 }
 
+/**
+ * Top-level ICU argument names of a message, e.g. `{name}` and the `count` in
+ * `{count, plural, one {...} other {...}}`. Rich-text tags (`{strong}`, `{/link}`)
+ * are not arguments and are skipped; `#` inside a plural arm refers to the
+ * enclosing number and is always legitimate.
+ */
+function collectArgumentNames(value: string): string[] {
+  const unquoted = value.replace(/'[^']*'/g, "");
+  const names: string[] = [];
+  let depth = 0;
+  let headStart = -1;
+  for (let i = 0; i < unquoted.length; i++) {
+    const char = unquoted[i];
+    if (char === "{") {
+      if (depth === 0) headStart = i + 1;
+      depth++;
+    } else if (char === "}") {
+      depth--;
+      if (depth === 0 && headStart >= 0) {
+        const head = unquoted.slice(headStart, i).split(",")[0].trim();
+        if (head !== "" && !head.startsWith("/") && head !== "#") names.push(head);
+        headStart = -1;
+      }
+    }
+  }
+  return [...new Set(names)];
+}
+
+describe("message contract", () => {
+  const enEntries = collectEntries(en, "");
+  const zhMap = new Map(collectEntries(zhCN, ""));
+
+  it("should not have empty translations on either side", () => {
+    const empty = [
+      ...enEntries.filter(([, value]) => value.trim() === "").map(([path]) => `en.${path}`),
+      ...[...zhMap.entries()].filter(([, value]) => value.trim() === "").map(([path]) => `zh-CN.${path}`),
+    ];
+
+    expect(empty).toEqual([]);
+  });
+
+  it("should use the same argument names in both languages", () => {
+    const mismatched = enEntries.flatMap(([path, enValue]) => {
+      const zhValue = zhMap.get(path);
+      if (zhValue === undefined) return [];
+      const enArgs = collectArgumentNames(enValue);
+      const zhArgs = collectArgumentNames(zhValue);
+      return [
+        ...enArgs.filter((name) => !zhArgs.includes(name)).map((name) => `${path}: en has {${name}}, zh-CN does not`),
+        ...zhArgs.filter((name) => !enArgs.includes(name)).map((name) => `${path}: zh-CN has {${name}}, en does not`),
+      ];
+    });
+
+    expect(mismatched).toEqual([]);
+  });
+});
+
 describe("message catalogs", () => {
+  it("should not contain flat dotted keys", () => {
+    // next-intl resolves "a.b" by walking objects, so a literal property named
+    // "a.b" never resolves at runtime — yet key-tree walks, the TS types, and
+    // missingKeys all see the same path string and stay green. Only this test
+    // looks at the raw property names.
+    const flat: string[] = [];
+    const scan = (node: unknown, prefix: string) => {
+      if (typeof node === "object" && node !== null) {
+        for (const [key, value] of Object.entries(node)) {
+          if (key.includes(".")) flat.push(prefix === "" ? key : `${prefix}.${key}`);
+          scan(value, prefix === "" ? key : `${prefix}.${key}`);
+        }
+      }
+    };
+    scan(en, "");
+    scan(zhCN, "");
+
+    expect([...new Set(flat)]).toEqual([]);
+  });
+
   it("should keep the zh-CN key tree identical to en", () => {
     const enKeys = collectKeyPaths(en, "").sort();
     const zhKeys = collectKeyPaths(zhCN, "").sort();

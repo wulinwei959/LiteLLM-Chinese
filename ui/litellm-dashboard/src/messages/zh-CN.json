@@ -286,7 +286,8 @@
       "active": "活跃",
       "expired": "已过期",
       "revoked": "已撤销（已阻止）",
-      "deleted": "已删除"
+      "deleted": "已删除",
+      "blocked": "已封禁"
     },
     "columns": {
       "keyId": "密钥 ID",
@@ -301,7 +302,20 @@
       "tpm": "TPM",
       "createdAt": "创建时间",
       "lastUsed": "最后使用",
-      "actions": "操作"
+      "actions": "操作",
+      "spendBudget": "花费 / 预算",
+      "lifetimeSpend": "累计花费",
+      "lifetimeSpendTooltip": "跨所有预算周期的累计花费。预算重置不会影响此值。累计统计自 2026 年 9 月 19 日的 LiteLLM v1.103.0 开始，因此此前创建的密钥只统计该次升级之后的花费。",
+      "key": "密钥",
+      "userTooltip": "显示第一个可用的值：用户别名、用户邮箱或用户 ID。",
+      "createdBy": "创建人",
+      "updatedAt": "更新时间",
+      "lastActive": "最近活跃",
+      "lastActiveTooltip": "这是新增字段，不会回填。只有新的密钥使用才会更新此值。",
+      "expires": "过期时间",
+      "budgetReset": "预算重置",
+      "models": "模型",
+      "rateLimits": "速率限制"
     },
     "actions": {
       "copy": "复制",
@@ -331,25 +345,11 @@
       "team": "选择团队...",
       "userId": "输入用户 ID..."
     },
-    "status.blocked": "已封禁",
     "statusDeletedTooltip": "已于 {date}{by} 删除。为审计与消费历史保留；使用此密钥的请求会被拒绝。",
     "statusBlockedScimTooltip": "被 SCIM 封禁（外部身份提供商停用或删除了所属用户）。",
     "statusBlockedTooltip": "已封禁。使用此密钥的请求会被以 401 拒绝。",
     "statusExpiredTooltip": "此密钥已过有效期。",
-    "statusActiveTooltip": "此密钥未被封禁且未过期。",
-    "columns.key": "密钥",
-    "columns.userTooltip": "显示第一个可用的值：用户别名、用户邮箱或用户 ID。",
-    "columns.createdBy": "创建人",
-    "columns.updatedAt": "更新时间",
-    "columns.lastActive": "最近活跃",
-    "columns.lastActiveTooltip": "这是新增字段，不会回填。只有新的密钥使用才会更新此值。",
-    "columns.expires": "过期时间",
-    "columns.spendBudget": "消费 / 预算",
-    "columns.lifetimeSpend": "累计消费",
-    "columns.lifetimeSpendTooltip": "跨所有预算周期的累计消费。预算重置不会影响此值。累计统计自 2026 年 9 月 19 日的 LiteLLM v1.103.0 开始，因此此前创建的密钥只统计该次升级之后的消费。",
-    "columns.budgetReset": "预算重置",
-    "columns.models": "模型",
-    "columns.rateLimits": "速率限制"
+    "statusActiveTooltip": "此密钥未被封禁且未过期。"
   },
   "models": {
     "title": "模型管理",

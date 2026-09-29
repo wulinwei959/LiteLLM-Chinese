@@ -279,7 +279,7 @@ declare module "next-intl" {
 
 加上后第一次跑，多了 75 条，全是历史欠账，一批修完，基线回到 819。它抓到的真 bug：`VirtualKeysTable` 用 `virtualKeys` 的 `t` 调 `common` 才有的 `filterLabels.*`（7 处，筛选抽屉标签全坏）；`keyTableColumns` 里 19 个从没进过目录的 key、`t("common.never")` 这类跨命名空间引用；`models.autoRouters.table` 建了空对象但 7 个 key 一个没加，外加 `loading`；`BudgetTable` 把展示文案（`"hourly"`、`"Not set"`）直接塞进 `t()`。
 
-它抓不到的：`t` 拿到的是变量而 key 合法但语义错（比如中英文占位符对不上，那是下一步守卫的事）。
+它抓不到的：`t` 拿到的是变量而 key 合法但语义错（比如中英文占位符对不上，已由 `messagesParity.test.ts` 的契约测试覆盖，见"约定"）。
 
 ### 共享模块里的选项标签改成键名
 
@@ -463,6 +463,8 @@ const columns = useMemo(() => getModelsTableColumns({ ...deps, t }), [t, ...]);
 - 判断测试失败是否与本次改动有关，用 `git stash` 回到基线复跑同一文件对比，不要顺手改掉既有失败
 - 改用 `renderWithProviders` 前先看组件是否用 react-query。用到的话，共享的 `testQueryClient` 带 `staleTime: Infinity`，用例内覆盖 `mockResolvedValue` 必须在 `beforeEach` 里 `testQueryClient.clear()`，否则拿到上一个用例的缓存
 - 不留语义相近的重复 key。同一个词有多个英文说法时各开各的键，`accessGroups` 与 `modelAccessGroup` 并存正是这次出错的诱因
+- 新增或修改中文文案时，以 `src/messages/GLOSSARY.md` 为准。通用词已有定译的不再发明，存量分歧只记录不批量回改
+- 占位符只增不改：`messagesParity.test.ts` 的契约测试要求两侧顶层参数名集合一致。`t.rich` 的标签（`{strong}`、`{/link}`）、复数体内的 `{#}`、引号内的字面量不参比，`{count, plural, ...}` 只取 `count`
 
 ## 待清理与技术债
 
