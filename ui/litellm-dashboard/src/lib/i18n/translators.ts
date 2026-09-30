@@ -90,6 +90,11 @@ function useGuardrailsTranslator() {
 }
 export type GuardrailsTranslator = ReturnType<typeof useGuardrailsTranslator>;
 
+function useGuardrailsMonitorTranslator() {
+  return useTranslations("guardrailsMonitor");
+}
+export type GuardrailsMonitorTranslator = ReturnType<typeof useGuardrailsMonitorTranslator>;
+
 function usePoliciesTranslator() {
   return useTranslations("policies");
 }

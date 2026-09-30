@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Settings, Shield, TriangleAlert } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 import { getGuardrailsUsageLogs } from "@/components/networking";
 import { useGuardrailsUsageDetail } from "@/app/(dashboard)/hooks/guardrails/useGuardrailsUsage";
@@ -33,6 +34,7 @@ export function GuardrailDetail({ guardrailId, onBack, accessToken = null, start
   const [evaluationModalOpen, setEvaluationModalOpen] = useState(false);
   const [logsPage] = useState(1);
   const logsPageSize = 50;
+  const t = useTranslations("guardrailsMonitor");
 
   const {
     data: detailData,
@@ -92,7 +94,7 @@ export function GuardrailDetail({ guardrailId, onBack, accessToken = null, start
 
   if (detailLoading && !detailData) {
     return (
-      <div role="status" aria-busy="true" aria-label="Loading" className="flex items-center justify-center py-12">
+      <div role="status" aria-busy="true" aria-label={t("overview.loading")} className="flex items-center justify-center py-12">
         <UiLoadingSpinner className="size-8 text-primary" />
       </div>
     );
@@ -102,9 +104,9 @@ export function GuardrailDetail({ guardrailId, onBack, accessToken = null, start
       <div>
         <Button variant="link" onClick={onBack} className="mb-4 pl-0">
           <ArrowLeft className="size-4" />
-          Back to Overview
+          {t("detail.back")}
         </Button>
-        <p className="text-destructive">Failed to load guardrail details.</p>
+        <p className="text-destructive">{t("detail.loadFailed")}</p>
       </div>
     );
   }
@@ -127,7 +129,7 @@ export function GuardrailDetail({ guardrailId, onBack, accessToken = null, start
       <div className="mb-6">
         <Button variant="link" onClick={onBack} className="mb-4 pl-0">
           <ArrowLeft className="size-4" />
-          Back to Overview
+          {t("detail.back")}
         </Button>
 
         <div className="flex items-start justify-between">
@@ -148,7 +150,7 @@ export function GuardrailDetail({ guardrailId, onBack, accessToken = null, start
               variant="outline"
               size="icon"
               onClick={() => setEvaluationModalOpen(true)}
-              title="Evaluation settings"
+              title={t("eval.buttonTitle")}
             >
               <Settings className="size-4" />
             </Button>
@@ -159,25 +161,27 @@ export function GuardrailDetail({ guardrailId, onBack, accessToken = null, start
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as string)}>
         <TabsList variant="line">
           <TabsTrigger value="overview" className="flex-none">
-            Overview
+            {t("detail.tabOverview")}
           </TabsTrigger>
           <TabsTrigger value="logs" className="flex-none">
-            Logs
+            {t("detail.tabLogs")}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-4 space-y-6">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-            <MetricCard label="Requests Evaluated" value={data.requestsEvaluated.toLocaleString()} />
+            <MetricCard label={t("detail.requests")} value={data.requestsEvaluated.toLocaleString()} />
             <MetricCard
-              label="Fail Rate"
+              label={t("detail.failRate")}
               value={`${data.failRate}%`}
               valueColor={data.failRate > 15 ? "text-destructive" : data.failRate > 5 ? "text-warning" : "text-success"}
-              subtitle={`${Math.round((data.requestsEvaluated * data.failRate) / 100).toLocaleString()} blocked`}
+              subtitle={t("detail.blockedSuffix", {
+                count: Math.round((data.requestsEvaluated * data.failRate) / 100).toLocaleString(),
+              })}
               icon={data.failRate > 15 ? <TriangleAlert className="size-4 text-destructive" /> : undefined}
             />
             <MetricCard
-              label="Avg. latency added"
+              label={t("detail.avgLatency")}
               value={data.avgLatency != null ? `${Math.round(data.avgLatency)}ms` : "—"}
               valueColor={
                 data.avgLatency != null
@@ -188,7 +192,7 @@ export function GuardrailDetail({ guardrailId, onBack, accessToken = null, start
                       : "text-success"
                   : "text-muted-foreground"
               }
-              subtitle={data.avgLatency != null ? "Per request (avg)" : "No data"}
+              subtitle={data.avgLatency != null ? t("detail.perRequest") : t("detail.noData")}
             />
           </div>
 

@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import type { GuardrailUsageDetail } from "@/app/(dashboard)/hooks/guardrails/useGuardrailsUsage";
@@ -40,7 +41,7 @@ const rowNamed = (name: string) => screen.getByRole("row", { name: new RegExp(na
 
 describe("GuardrailUsageBreakdown", () => {
   it("totals the units and the cost, and says how many units the cost leaves out", () => {
-    render(<GuardrailUsageBreakdown detail={detail} />);
+    renderWithProviders(<GuardrailUsageBreakdown detail={detail} />);
 
     const cost = screen.getByRole("group", { name: "Cost" });
     expect(cost).toHaveTextContent("$0.1800");
@@ -52,7 +53,7 @@ describe("GuardrailUsageBreakdown", () => {
   });
 
   it("lists each counter with its units, cost and unpriced share", () => {
-    render(<GuardrailUsageBreakdown detail={detail} />);
+    renderWithProviders(<GuardrailUsageBreakdown detail={detail} />);
 
     const content = rowNamed("Content Policy");
     expect(within(content).getByText("1,000")).toBeInTheDocument();
@@ -65,7 +66,7 @@ describe("GuardrailUsageBreakdown", () => {
   });
 
   it("breaks units and cost down by team and by key, flagging the unpriced share of each row", () => {
-    render(<GuardrailUsageBreakdown detail={detail} />);
+    renderWithProviders(<GuardrailUsageBreakdown detail={detail} />);
 
     expect(screen.getByRole("heading", { name: "By team" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "By key" })).toBeInTheDocument();
@@ -96,7 +97,7 @@ describe("GuardrailUsageBreakdown", () => {
 
   it("lays the cost math out per counter as units × price = cost", async () => {
     const user = userEvent.setup();
-    render(<GuardrailUsageBreakdown detail={detail} />);
+    renderWithProviders(<GuardrailUsageBreakdown detail={detail} />);
 
     await user.click(
       within(screen.getByRole("group", { name: "Cost" })).getByRole("button", { name: /How is this calculated/ }),
@@ -120,7 +121,7 @@ describe("GuardrailUsageBreakdown", () => {
 
   it("does not ask for pricing when every unit was priced", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <GuardrailUsageBreakdown
         detail={{
           ...detail,
@@ -146,7 +147,7 @@ describe("GuardrailUsageBreakdown", () => {
 
   it("lays the units sum out per counter", async () => {
     const user = userEvent.setup();
-    render(<GuardrailUsageBreakdown detail={detail} />);
+    renderWithProviders(<GuardrailUsageBreakdown detail={detail} />);
 
     await user.click(
       within(screen.getByRole("group", { name: "Usage Units" })).getByRole("button", {
@@ -164,7 +165,7 @@ describe("GuardrailUsageBreakdown", () => {
   });
 
   it("orders teams and keys by units, largest first", () => {
-    render(<GuardrailUsageBreakdown detail={detail} />);
+    renderWithProviders(<GuardrailUsageBreakdown detail={detail} />);
 
     const rows = screen.getAllByRole("row").map((row) => row.textContent ?? "");
     expect(rows.findIndex((text) => text.includes("team-a"))).toBeLessThan(
@@ -176,7 +177,7 @@ describe("GuardrailUsageBreakdown", () => {
   });
 
   it("says so when the window has no billable units instead of rendering empty tables", () => {
-    render(
+    renderWithProviders(
       <GuardrailUsageBreakdown
         detail={{
           ...detail,

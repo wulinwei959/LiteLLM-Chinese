@@ -1,4 +1,5 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type {
@@ -81,7 +82,7 @@ const overview: GuardrailUsageOverview = {
 };
 
 function renderOverview(onSelectGuardrail = vi.fn()) {
-  return render(
+  return renderWithProviders(
     <GuardrailsOverview
       accessToken="test-token"
       startDate="2026-08-01"

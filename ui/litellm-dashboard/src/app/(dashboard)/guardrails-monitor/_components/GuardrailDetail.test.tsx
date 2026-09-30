@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import type { GuardrailUsageDetail } from "@/app/(dashboard)/hooks/guardrails/useGuardrailsUsage";
 import { GuardrailDetail } from "./GuardrailDetail";
 
@@ -62,7 +63,11 @@ const defaultProps = {
 function renderDetail(props: Partial<typeof defaultProps> = {}) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(<GuardrailDetail {...defaultProps} {...props} />, {
-    wrapper: ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
+    wrapper: ({ children }) => (
+      <QueryClientProvider client={queryClient}>
+        <LocaleProvider>{children}</LocaleProvider>
+      </QueryClientProvider>
+    ),
   });
 }
 

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import { EvaluationSettingsModal } from "./EvaluationSettingsModal";
 
 const mockFetchAvailableModels = vi.fn();
@@ -31,23 +32,23 @@ describe("EvaluationSettingsModal", () => {
   });
 
   it("should render nothing while closed", () => {
-    render(<EvaluationSettingsModal {...defaultProps} open={false} />);
+    renderWithProviders(<EvaluationSettingsModal {...defaultProps} open={false} />);
     expect(screen.queryByText("Evaluation Settings")).not.toBeInTheDocument();
   });
 
   it("should show the title and the guardrail-specific description when open", () => {
-    render(<EvaluationSettingsModal {...defaultProps} />);
+    renderWithProviders(<EvaluationSettingsModal {...defaultProps} />);
     expect(screen.getByText("Evaluation Settings")).toBeInTheDocument();
     expect(screen.getByText("Configure AI evaluation for pii-detector")).toBeInTheDocument();
   });
 
   it("should fall back to a generic description when no guardrail name is given", () => {
-    render(<EvaluationSettingsModal {...defaultProps} guardrailName={undefined} />);
+    renderWithProviders(<EvaluationSettingsModal {...defaultProps} guardrailName={undefined} />);
     expect(screen.getByText("Configure AI evaluation for re-running on logs")).toBeInTheDocument();
   });
 
   it("should prefill the prompt and the response schema with their defaults", () => {
-    render(<EvaluationSettingsModal {...defaultProps} />);
+    renderWithProviders(<EvaluationSettingsModal {...defaultProps} />);
     expect(screen.getByDisplayValue(/Evaluate whether this guardrail's decision was correct/)).toBeInTheDocument();
     expect(
       screen.getByDisplayValue(/"verdict": "correct" \| "false_positive" \| "false_negative"/),
@@ -56,7 +57,7 @@ describe("EvaluationSettingsModal", () => {
 
   it("should restore the default prompt when 'Reset to default' is clicked", async () => {
     const user = userEvent.setup();
-    render(<EvaluationSettingsModal {...defaultProps} />);
+    renderWithProviders(<EvaluationSettingsModal {...defaultProps} />);
 
     const promptBox = screen.getByDisplayValue(/Evaluate whether this guardrail's decision was correct/);
     await user.clear(promptBox);
@@ -68,12 +69,12 @@ describe("EvaluationSettingsModal", () => {
   });
 
   it("should load the available models with the access token when opened", async () => {
-    render(<EvaluationSettingsModal {...defaultProps} />);
+    renderWithProviders(<EvaluationSettingsModal {...defaultProps} />);
     await waitFor(() => expect(mockFetchAvailableModels).toHaveBeenCalledWith("test-token"));
   });
 
   it("should not load models when there is no access token", () => {
-    render(<EvaluationSettingsModal {...defaultProps} accessToken={null} />);
+    renderWithProviders(<EvaluationSettingsModal {...defaultProps} accessToken={null} />);
     expect(mockFetchAvailableModels).not.toHaveBeenCalled();
   });
 
@@ -81,7 +82,7 @@ describe("EvaluationSettingsModal", () => {
     const user = userEvent.setup();
     const onRunEvaluation = vi.fn();
     const onClose = vi.fn();
-    render(<EvaluationSettingsModal {...defaultProps} onRunEvaluation={onRunEvaluation} onClose={onClose} />);
+    renderWithProviders(<EvaluationSettingsModal {...defaultProps} onRunEvaluation={onRunEvaluation} onClose={onClose} />);
 
     await user.click(screen.getByRole("button", { name: /run evaluation/i }));
 
@@ -93,7 +94,7 @@ describe("EvaluationSettingsModal", () => {
     const user = userEvent.setup();
     const onRunEvaluation = vi.fn();
     const onClose = vi.fn();
-    render(<EvaluationSettingsModal {...defaultProps} onRunEvaluation={onRunEvaluation} onClose={onClose} />);
+    renderWithProviders(<EvaluationSettingsModal {...defaultProps} onRunEvaluation={onRunEvaluation} onClose={onClose} />);
 
     await waitFor(() => expect(mockFetchAvailableModels).toHaveBeenCalled());
     await selectModel(user, "claude-sonnet-5");
@@ -111,7 +112,7 @@ describe("EvaluationSettingsModal", () => {
     const user = userEvent.setup();
     const onRunEvaluation = vi.fn();
     const onClose = vi.fn();
-    render(<EvaluationSettingsModal {...defaultProps} onRunEvaluation={onRunEvaluation} onClose={onClose} />);
+    renderWithProviders(<EvaluationSettingsModal {...defaultProps} onRunEvaluation={onRunEvaluation} onClose={onClose} />);
 
     await user.click(screen.getByRole("button", { name: /cancel/i }));
 

@@ -3599,5 +3599,100 @@
       "configSnippetLabel": "Claude Code / Cursor config",
       "copy": "copy"
     }
+  },
+  "guardrailsMonitor": {
+    "overview": {
+      "title": "Guardrails Monitor",
+      "subtitle": "Monitor guardrail performance across all requests",
+      "export": "Export Data",
+      "comingSoon": "Coming soon",
+      "totalEvals": "Total Evaluations",
+      "blocked": "Blocked Requests",
+      "passRate": "Pass Rate",
+      "avgLatency": "Avg. latency added",
+      "cost": "Guardrail Cost",
+      "active": "Active Guardrails",
+      "loadFailed": "Failed to load data. Try again.",
+      "noData": "No data for this period",
+      "perfTitle": "Guardrail Performance",
+      "perfDesc": "Click a guardrail to view details, logs, and configuration",
+      "colStatus": "Status",
+      "colGuardrail": "Guardrail",
+      "colProvider": "Provider",
+      "colRequests": "Requests",
+      "colFailRate": "Fail Rate",
+      "colLatency": "Avg. latency added",
+      "colUnits": "Usage Units",
+      "colCost": "Cost",
+      "costTitle": "How this cost is calculated",
+      "costDesc": "Each guardrail's cost is its units per counter × that counter's per-unit price from the cost map. Open a guardrail for its per-counter math.",
+      "unpricedTip": "{summary}: these units have no known price and are left out of the cost",
+      "loading": "Loading"
+    },
+    "breakdown": {
+      "section": "Usage & Cost",
+      "desc": "Billable units the provider reported for this guardrail and what LiteLLM priced them at",
+      "empty": "No billable usage units were recorded in this period.",
+      "cost": "Cost",
+      "units": "Usage Units",
+      "counters": "{count, plural, one {# counter} other {# counters}}",
+      "colCounter": "Counter",
+      "colUnits": "Units",
+      "colCost": "Cost",
+      "colUnpriced": "Unpriced Units",
+      "byCounter": "By counter",
+      "byTeam": "By team",
+      "byKey": "By key",
+      "noTeam": "No team",
+      "noKey": "No key",
+      "costMathDesc": "Per-unit prices come from the cost map LiteLLM ships with.",
+      "unitsMathDesc": "Units are the billable counters the provider reported for this guardrail, added up over every call.",
+      "unitsMathTitle": "How usage units add up",
+      "sectionAria": "Usage and cost"
+    },
+    "detail": {
+      "back": "Back to Overview",
+      "loadFailed": "Failed to load guardrail details.",
+      "tabOverview": "Overview",
+      "tabLogs": "Logs",
+      "requests": "Requests Evaluated",
+      "failRate": "Fail Rate",
+      "blockedSuffix": "{count} blocked",
+      "avgLatency": "Avg. latency added",
+      "perRequest": "Per request (avg)",
+      "noData": "No data"
+    },
+    "eval": {
+      "title": "Evaluation Settings",
+      "descNamed": "Configure AI evaluation for {name}",
+      "descGeneric": "Configure AI evaluation for re-running on logs",
+      "promptLabel": "Evaluation Prompt",
+      "reset": "Reset to default",
+      "promptHint": "System prompt sent to the evaluation model. Output is structured via response_format.",
+      "schemaLabel": "Response Schema",
+      "modelLabel": "Model",
+      "loadingModels": "Loading models…",
+      "selectModel": "Select a model",
+      "noAccess": "Sign in to see models",
+      "noModels": "No models available",
+      "cancel": "Cancel",
+      "run": "Run Evaluation",
+      "buttonTitle": "Evaluation settings"
+    },
+    "chart": {
+      "title": "Request Outcomes Over Time",
+      "empty": "No chart data for this period"
+    },
+    "calc": {
+      "how": "How is this calculated?",
+      "total": "Total"
+    },
+    "unpriced": {
+      "body": "{count, plural, one {# unit with no known price is left out of the cost.} other {# units with no known price are left out of the cost.}}",
+      "link": "Request pricing on GitHub"
+    },
+    "log": {
+      "sample": "Sample:"
+    }
   }
 }

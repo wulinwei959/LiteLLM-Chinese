@@ -3599,5 +3599,100 @@
       "configSnippetLabel": "Claude Code / Cursor 配置",
       "copy": "复制"
     }
+  },
+  "guardrailsMonitor": {
+    "overview": {
+      "title": "护栏监控",
+      "subtitle": "监控所有请求中的护栏表现",
+      "export": "导出数据",
+      "comingSoon": "即将推出",
+      "totalEvals": "总评估数",
+      "blocked": "拦截请求",
+      "passRate": "通过率",
+      "avgLatency": "平均增加延迟",
+      "cost": "护栏成本",
+      "active": "活跃护栏",
+      "loadFailed": "加载数据失败，请重试。",
+      "noData": "该时段暂无数据",
+      "perfTitle": "护栏表现",
+      "perfDesc": "点击护栏查看详情、日志与配置",
+      "colStatus": "状态",
+      "colGuardrail": "护栏",
+      "colProvider": "提供商",
+      "colRequests": "请求数",
+      "colFailRate": "失败率",
+      "colLatency": "平均增加延迟",
+      "colUnits": "用量单位",
+      "colCost": "成本",
+      "costTitle": "成本如何计算",
+      "costDesc": "每个护栏的成本 = 各计数器用量 × 成本图中该计数器的单价。打开护栏查看按计数器的明细。",
+      "unpricedTip": "{summary}：这些用量无已知价格，未计入成本",
+      "loading": "加载中"
+    },
+    "breakdown": {
+      "section": "用量与成本",
+      "desc": "提供商上报的该护栏计费用量，以及 LiteLLM 的计价结果",
+      "empty": "该时段未记录计费用量。",
+      "cost": "成本",
+      "units": "用量单位",
+      "counters": "{count} 个计数器",
+      "colCounter": "计数器",
+      "colUnits": "用量",
+      "colCost": "成本",
+      "colUnpriced": "未计价用量",
+      "byCounter": "按计数器",
+      "byTeam": "按团队",
+      "byKey": "按密钥",
+      "noTeam": "无团队",
+      "noKey": "无密钥",
+      "costMathDesc": "单价来自 LiteLLM 自带的成本图。",
+      "unitsMathDesc": "用量是提供商上报的该护栏计费计数器，按每次调用累加。",
+      "unitsMathTitle": "用量如何累加",
+      "sectionAria": "用量与成本"
+    },
+    "detail": {
+      "back": "返回概览",
+      "loadFailed": "加载护栏详情失败。",
+      "tabOverview": "概览",
+      "tabLogs": "日志",
+      "requests": "已评估请求",
+      "failRate": "失败率",
+      "blockedSuffix": "已拦截 {count} 个",
+      "avgLatency": "平均增加延迟",
+      "perRequest": "按请求（平均）",
+      "noData": "暂无数据"
+    },
+    "eval": {
+      "title": "评估设置",
+      "descNamed": "为 {name} 配置 AI 评估",
+      "descGeneric": "配置 AI 评估以在日志上重跑",
+      "promptLabel": "评估提示词",
+      "reset": "恢复默认",
+      "promptHint": "发送给评估模型的系统提示词，输出经 response_format 结构化。",
+      "schemaLabel": "响应结构",
+      "modelLabel": "模型",
+      "loadingModels": "正在加载模型...",
+      "selectModel": "选择模型",
+      "noAccess": "登录后查看模型",
+      "noModels": "暂无可用模型",
+      "cancel": "取消",
+      "run": "运行评估",
+      "buttonTitle": "评估设置"
+    },
+    "chart": {
+      "title": "请求结果趋势",
+      "empty": "该时段暂无图表数据"
+    },
+    "calc": {
+      "how": "如何计算？",
+      "total": "合计"
+    },
+    "unpriced": {
+      "body": "有 {count} 个单位无已知价格，未计入成本。",
+      "link": "在 GitHub 上请求定价"
+    },
+    "log": {
+      "sample": "示例："
+    }
   }
 }

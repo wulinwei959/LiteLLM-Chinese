@@ -1,4 +1,5 @@
 import { CircleCheck, ChevronDown, MinusCircle, TriangleAlert, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import React, { useState } from "react";
@@ -68,6 +69,7 @@ export function LogViewer({
   const [activeFilter, setActiveFilter] = useState<string>(filterAction);
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const t = useTranslations("guardrailsMonitor");
 
   const filteredLogs = logs.filter((log) => activeFilter === "all" || log.action === activeFilter);
   const displayLogs = filteredLogs.slice(0, sampleSize);
@@ -144,7 +146,7 @@ export function LogViewer({
               </div>
               <div className="h-4 w-px bg-border" />
               <div className="flex items-center gap-1">
-                <span className="text-xs text-muted-foreground mr-1">Sample:</span>
+                <span className="text-xs text-muted-foreground mr-1">{t("log.sample")}</span>
                 {sampleSizes.map((size) => (
                   <Button
                     key={size}
