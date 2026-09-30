@@ -1,13 +1,14 @@
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { screen, waitFor, fireEvent } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import ToolPermissionRulesEditor, { ToolPermissionConfig } from "./ToolPermissionRulesEditor";
 
 describe("ToolPermissionRulesEditor", () => {
   it("renders empty state and lets users add a new rule", async () => {
     const onChange = vi.fn();
-    render(<ToolPermissionRulesEditor value={undefined} onChange={onChange} />);
+    renderWithProviders(<ToolPermissionRulesEditor value={undefined} onChange={onChange} />);
 
     expect(screen.getByText(/No tool rules added yet/i)).toBeInTheDocument();
 
@@ -43,7 +44,7 @@ describe("ToolPermissionRulesEditor", () => {
       return <ToolPermissionRulesEditor value={state} onChange={handleChange} />;
     };
 
-    render(<Wrapper />);
+    renderWithProviders(<Wrapper />);
 
     await userEvent.click(screen.getByRole("button", { name: /restrict tool arguments/i }));
     const initialInput = await screen.findByPlaceholderText(/messages\[0\].content/i);

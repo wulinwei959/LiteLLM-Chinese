@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cva.config";
@@ -17,28 +18,39 @@ interface GuardrailDetailViewProps {
 const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack, accessToken, onGuardrailCreated }) => {
   const [isAddFormVisible, setIsAddFormVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const t = useTranslations("guardrails");
 
   const detailRows = [
-    { property: "Provider", value: card.category === "litellm" ? "LiteLLM Content Filter" : "Partner Guardrail" },
-    ...(card.subcategory ? [{ property: "Subcategory", value: card.subcategory }] : []),
-    ...(card.category === "litellm" ? [{ property: "Cost", value: "$0 / request" }] : []),
-    ...(card.category === "litellm" ? [{ property: "External Dependencies", value: "None" }] : []),
-    ...(card.category === "litellm" ? [{ property: "Latency", value: card.eval?.latency || "<1ms" }] : []),
+    {
+      property: t("info.provider"),
+      value: card.category === "litellm" ? t("garden.litellmTitle") : t("garden.providerPartner"),
+    },
+    ...(card.subcategory ? [{ property: t("garden.rowSubcategory"), value: card.subcategory }] : []),
+    ...(card.category === "litellm" ? [{ property: t("garden.rowCost"), value: "$0 / request" }] : []),
+    ...(card.category === "litellm"
+      ? [{ property: t("garden.rowExtDeps"), value: t("garden.none") }]
+      : []),
+    ...(card.category === "litellm"
+      ? [{ property: t("garden.rowLatency"), value: card.eval?.latency || "<1ms" }]
+      : []),
   ];
 
   const evalRows = card.eval
     ? [
-        { metric: "Precision", value: `${card.eval.precision}%` },
-        { metric: "Recall", value: `${card.eval.recall}%` },
-        { metric: "F1 Score", value: `${card.eval.f1}%` },
-        { metric: "Test Cases", value: String(card.eval.testCases) },
-        { metric: "False Positives", value: "0" },
-        { metric: "False Negatives", value: "0" },
-        { metric: "Latency (p50)", value: card.eval.latency },
+        { metric: t("garden.metricPrecision"), value: `${card.eval.precision}%` },
+        { metric: t("garden.metricRecall"), value: `${card.eval.recall}%` },
+        { metric: t("garden.metricF1"), value: `${card.eval.f1}%` },
+        { metric: t("garden.metricCases"), value: String(card.eval.testCases) },
+        { metric: t("garden.metricFalsePos"), value: "0" },
+        { metric: t("garden.metricFalseNeg"), value: "0" },
+        { metric: t("garden.metricLatencyP50"), value: card.eval.latency },
       ]
     : [];
 
-  const tabs = [{ key: "overview", label: "Overview" }, ...(card.eval ? [{ key: "eval", label: "Eval Results" }] : [])];
+  const tabs = [
+    { key: "overview", label: t("info.tabOverview") },
+    ...(card.eval ? [{ key: "eval", label: t("garden.tabEval") }] : []),
+  ];
 
   return (
     <div className="mx-auto max-w-[960px]">
@@ -62,7 +74,7 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
       {/* Action buttons — outlined style like Vertex */}
       <div className="mb-8 flex gap-2.5">
         <Button variant="outline" className="rounded-full" onClick={() => setIsAddFormVisible(true)}>
-          Create Guardrail
+          {t("form.create")}
         </Button>
       </div>
 
@@ -91,16 +103,16 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
         <div className="flex gap-16">
           {/* Left column — overview + details table */}
           <div className="min-w-0 flex-1">
-            <h2 className="m-0 mb-3 text-lg font-normal text-foreground">Overview</h2>
+            <h2 className="m-0 mb-3 text-lg font-normal text-foreground">{t("info.tabOverview")}</h2>
             <p className="m-0 mb-8 text-sm leading-[1.7] text-foreground">{card.description}</p>
 
-            <h2 className="m-0 mb-1 text-lg font-normal text-foreground">Guardrail Details</h2>
-            <p className="m-0 mb-4 text-[13px] text-muted-foreground">Details are as follows</p>
+            <h2 className="m-0 mb-1 text-lg font-normal text-foreground">{t("garden.detailsTitle")}</h2>
+            <p className="m-0 mb-4 text-[13px] text-muted-foreground">{t("garden.detailsSub")}</p>
 
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="w-50 py-3 text-left font-medium text-muted-foreground">Property</th>
+                  <th className="w-50 py-3 text-left font-medium text-muted-foreground">{t("garden.propHeader")}</th>
                   <th className="py-3 text-left font-medium text-muted-foreground">{card.name}</th>
                 </tr>
               </thead>
@@ -119,22 +131,22 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
           <div className="w-60 shrink-0">
             {/* Guardrail ID */}
             <div className="mb-7">
-              <div className="mb-1 text-xs text-muted-foreground">Guardrail ID</div>
+              <div className="mb-1 text-xs text-muted-foreground">{t("info.idLabel")}</div>
               <div className="break-all text-[13px] text-foreground">litellm/{card.id}</div>
             </div>
 
             {/* Type */}
             <div className="mb-7">
-              <div className="mb-1 text-xs text-muted-foreground">Type</div>
+              <div className="mb-1 text-xs text-muted-foreground">{t("test.typeLabel")}</div>
               <div className="text-[13px] text-foreground">
-                {card.category === "litellm" ? "Content Filter" : "Partner"}
+                {card.category === "litellm" ? t("garden.typeContent") : t("garden.typePartner")}
               </div>
             </div>
 
             {/* Tags — pill style like Vertex */}
             {card.tags.length > 0 && (
               <div className="mb-7">
-                <div className="mb-2 text-xs text-muted-foreground">Tags</div>
+                <div className="mb-2 text-xs text-muted-foreground">{t("garden.tagsLabel")}</div>
                 <div className="flex flex-wrap gap-1.5">
                   {card.tags.map((tag) => (
                     <span
@@ -153,12 +165,12 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
 
       {activeTab === "eval" && (
         <div>
-          <h2 className="m-0 mb-4 text-lg font-normal text-foreground">Eval Results</h2>
+          <h2 className="m-0 mb-4 text-lg font-normal text-foreground">{t("garden.tabEval")}</h2>
           <table className="w-full max-w-[560px] border-collapse text-sm">
             <thead>
               <tr className="border-b border-border bg-muted">
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Metric</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Value</th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t("garden.metricHeader")}</th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t("garden.valueHeader")}</th>
               </tr>
             </thead>
             <tbody>

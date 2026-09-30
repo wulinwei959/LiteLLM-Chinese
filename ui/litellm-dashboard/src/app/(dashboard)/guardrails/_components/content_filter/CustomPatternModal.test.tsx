@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import CustomPatternModal from "./CustomPatternModal";
 
@@ -21,7 +22,7 @@ describe("CustomPatternModal", () => {
      */
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <CustomPatternModal
         visible={true}
         patternName=""

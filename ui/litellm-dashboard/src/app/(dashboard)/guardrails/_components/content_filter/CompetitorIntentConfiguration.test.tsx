@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -53,7 +54,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
 
   it("reports the seeded config when switched on and null when switched off", async () => {
     const user = userEvent.setup();
-    render(<Harness initialEnabled={false} />);
+    renderWithProviders(<Harness initialEnabled={false} />);
 
     await user.click(screen.getByRole("switch"));
     expect(onChange).toHaveBeenNthCalledWith(1, true, DEFAULT_CONFIG);
@@ -64,7 +65,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
 
   it("keeps every other key when the intent type changes", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     await chooseOption(user, 0, "Generic (specify competitors manually)");
 
@@ -75,7 +76,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
 
   it("reports a policy change without dropping the other policy key", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     await chooseOption(user, 3, "Reframe (suggest alternative)");
 
@@ -87,7 +88,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
 
   it("commits comma separated brand terms as separate tags", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     const brandSelf = screen.getAllByRole("combobox")[1];
     await user.click(brandSelf);
@@ -98,7 +99,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
 
   it("commits the pending brand term when the field loses focus", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     const brandSelf = screen.getAllByRole("combobox")[1];
     await user.click(brandSelf);
@@ -111,7 +112,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
   it("expands a picked airline into all of its match variants, lowercased", async () => {
     mockAirlines.mockResolvedValue({ airlines: [{ id: "qr", match: "Qatar Airways|qatar|qr", tags: [] }] });
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     await user.click(screen.getAllByRole("combobox")[1]);
     const options = await screen.findAllByText(/Qatar Airways/);
@@ -122,7 +123,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
 
   it("reports locations only while the airline type is selected", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     const locations = screen.getAllByRole("combobox")[2];
     await user.click(locations);
@@ -133,7 +134,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
 
   it("reports a typed decimal threshold and leaves the other two alone", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     const thresholds = screen.getAllByRole("spinbutton");
     await user.clear(thresholds[0]);
@@ -144,7 +145,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
 
   it("falls back to the default threshold when the field is cleared", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     await user.clear(screen.getAllByRole("spinbutton")[1]);
 
@@ -153,7 +154,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
 
   it("clamps a threshold above the maximum back to 1 when the field is left", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     const thresholds = screen.getAllByRole("spinbutton");
     await user.clear(thresholds[2]);
@@ -164,7 +165,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
   });
 
   it("explains the filter without rendering any control while switched off", () => {
-    render(<Harness initialEnabled={false} />);
+    renderWithProviders(<Harness initialEnabled={false} />);
 
     expect(
       screen.getByText(
@@ -180,14 +181,14 @@ describe("CompetitorIntentConfiguration reported config", () => {
     ["Policy: Competitor comparison", "Refuse (block request)"],
     ["Policy: Possible competitor comparison", "Reframe (suggest alternative to backend LLM)"],
   ])("shows the human label on the %s trigger", (name, label) => {
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     expect(screen.getByRole("combobox", { name })).toHaveTextContent(label);
   });
 
   it("shows the human label on the Type trigger after switching to generic", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     await user.click(screen.getByRole("combobox", { name: "Type" }));
     await user.click(await screen.findByRole("option", { name: "Generic (specify competitors manually)" }));

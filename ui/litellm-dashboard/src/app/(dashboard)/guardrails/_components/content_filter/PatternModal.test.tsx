@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import PatternModal from "./PatternModal";
 
@@ -29,7 +30,7 @@ describe("PatternModal", () => {
   const mockCategories = ["PII Patterns", "Financial Patterns", "Credential Patterns"];
 
   const renderModal = () =>
-    render(
+    renderWithProviders(
       <PatternModal
         visible={true}
         prebuiltPatterns={mockPrebuiltPatterns}
@@ -126,7 +127,7 @@ describe("PatternModal", () => {
   });
 
   it("should not render its content when not visible", () => {
-    render(
+    renderWithProviders(
       <PatternModal
         visible={false}
         prebuiltPatterns={mockPrebuiltPatterns}

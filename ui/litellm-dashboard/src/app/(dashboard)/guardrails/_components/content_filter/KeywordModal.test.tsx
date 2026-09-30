@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import KeywordModal from "./KeywordModal";
 
@@ -13,7 +14,7 @@ describe("KeywordModal", () => {
   };
 
   const renderModal = (overrides: Partial<React.ComponentProps<typeof KeywordModal>> = {}) =>
-    render(<KeywordModal visible keyword="" action="BLOCK" description="" {...handlers} {...overrides} />);
+    renderWithProviders(<KeywordModal visible keyword="" action="BLOCK" description="" {...handlers} {...overrides} />);
 
   beforeEach(() => {
     vi.clearAllMocks();

@@ -1,10 +1,10 @@
 export const ACTION_ITEMS = [
-  { value: "BLOCK", label: "Block" },
-  { value: "MASK", label: "Mask" },
+  { value: "BLOCK", labelKey: "filter.block" },
+  { value: "MASK", labelKey: "filter.mask" },
 ] as const;
 
 export const SEVERITY_ITEMS = [
-  { value: "high", label: "High" },
-  { value: "medium", label: "Medium" },
-  { value: "low", label: "Low" },
+  { value: "high", labelKey: "filter.sevHigh" },
+  { value: "medium", labelKey: "filter.sevMedium" },
+  { value: "low", labelKey: "filter.sevLow" },
 ] as const;

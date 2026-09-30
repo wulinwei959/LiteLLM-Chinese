@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import GuardrailGarden from "./guardrail_garden";
 import { ALL_CARDS } from "./guardrail_garden_data";
@@ -22,7 +23,8 @@ describe("GuardrailGarden", () => {
     vi.clearAllMocks();
   });
 
-  const renderGarden = () => render(<GuardrailGarden accessToken="test-token" onGuardrailCreated={vi.fn()} />);
+  const renderGarden = () =>
+    renderWithProviders(<GuardrailGarden accessToken="test-token" onGuardrailCreated={vi.fn()} />);
 
   it("should render both sections with their descriptions", () => {
     renderGarden();

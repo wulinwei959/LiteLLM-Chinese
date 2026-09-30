@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Plus, Upload } from "lucide-react";
 import { validateBlockedWordsFile } from "@/components/networking";
 import { toast } from "@/lib/toast";
@@ -116,10 +117,11 @@ const ContentFilterConfiguration: React.FC<ContentFilterConfigurationProps> = ({
   const [newKeywordDescription, setNewKeywordDescription] = useState<string>("");
   const [uploadValidating, setUploadValidating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations("guardrails");
 
   const handleAddPrebuiltPattern = () => {
     if (!selectedPatternName) {
-      toast.error("Please select a pattern");
+      toast.error(t("filter.selectPattern"));
       return;
     }
 
@@ -140,7 +142,7 @@ const ContentFilterConfiguration: React.FC<ContentFilterConfigurationProps> = ({
 
   const handleAddCustomPattern = () => {
     if (!customPatternName || !customPatternRegex) {
-      toast.error("Please provide pattern name and regex");
+      toast.error(t("filter.needNameRegex"));
       return;
     }
 
@@ -160,7 +162,7 @@ const ContentFilterConfiguration: React.FC<ContentFilterConfigurationProps> = ({
 
   const handleAddKeyword = () => {
     if (!newKeyword) {
-      toast.error("Please enter a keyword");
+      toast.error(t("filter.enterKeyword"));
       return;
     }
 
@@ -188,14 +190,14 @@ const ContentFilterConfiguration: React.FC<ContentFilterConfigurationProps> = ({
           if (onFileUpload) {
             onFileUpload(content);
           }
-          toast.success(result.message || "File uploaded successfully");
+          toast.success(result.message || t("filter.uploaded"));
         } else {
-          const errorMessage = result.error || (result.errors && result.errors.join(", ")) || "Invalid file";
-          toast.error(`Validation failed: ${errorMessage}`);
+          const errorMessage = result.error || (result.errors && result.errors.join(", ")) || t("filter.invalidFile");
+          toast.error(t("filter.validationFailed", { error: errorMessage }));
         }
       }
     } catch (error) {
-      toast.error(`Failed to upload file: ${error}`);
+      toast.error(t("filter.uploadFailed", { error: String(error) }));
     } finally {
       setUploadValidating(false);
     }
@@ -220,8 +222,7 @@ const ContentFilterConfiguration: React.FC<ContentFilterConfigurationProps> = ({
       {!showStep && (
         <div>
           <p className="text-muted-foreground">
-            Configure patterns, keywords, and content categories to detect and filter sensitive information in requests
-            and responses.
+            {t("filter.intro")}
           </p>
         </div>
       )}
@@ -230,9 +231,9 @@ const ContentFilterConfiguration: React.FC<ContentFilterConfigurationProps> = ({
         <Card>
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <CardTitle>Pattern Detection</CardTitle>
+              <CardTitle>{t("filter.patternsTitle")}</CardTitle>
               <p className="text-sm font-normal text-muted-foreground">
-                Detect sensitive information using regex patterns (SSN, credit cards, API keys, etc.)
+                {t("filter.patternsDesc")}
               </p>
             </div>
           </CardHeader>
@@ -240,11 +241,11 @@ const ContentFilterConfiguration: React.FC<ContentFilterConfigurationProps> = ({
             <div className="mb-4 flex flex-wrap gap-2">
               <Button onClick={() => setPatternModalVisible(true)}>
                 <Plus />
-                Add prebuilt pattern
+                {t("filter.addPrebuilt")}
               </Button>
               <Button variant="outline" onClick={() => setCustomPatternModalVisible(true)}>
                 <Plus />
-                Add custom regex
+                {t("filter.addCustom")}
               </Button>
             </div>
             <PatternTable
@@ -260,9 +261,9 @@ const ContentFilterConfiguration: React.FC<ContentFilterConfigurationProps> = ({
         <Card>
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <CardTitle>Blocked Keywords</CardTitle>
+              <CardTitle>{t("filter.keywordsTitle")}</CardTitle>
               <p className="text-sm font-normal text-muted-foreground">
-                Block or mask specific sensitive terms and phrases
+                {t("filter.keywordsDesc")}
               </p>
             </div>
           </CardHeader>
@@ -270,7 +271,7 @@ const ContentFilterConfiguration: React.FC<ContentFilterConfigurationProps> = ({
             <div className="mb-4 flex flex-wrap gap-2">
               <Button onClick={() => setKeywordModalVisible(true)}>
                 <Plus />
-                Add keyword
+                {t("filter.addKeyword")}
               </Button>
               <input
                 ref={fileInputRef}
@@ -286,7 +287,7 @@ const ContentFilterConfiguration: React.FC<ContentFilterConfigurationProps> = ({
                 onClick={() => fileInputRef.current?.click()}
               >
                 {uploadValidating ? <UiLoadingSpinner className="size-4" /> : <Upload />}
-                Upload YAML file
+                {t("filter.uploadYaml")}
               </Button>
             </div>
             <KeywordTable keywords={blockedWords} onActionChange={onBlockedWordUpdate} onRemove={onBlockedWordRemove} />

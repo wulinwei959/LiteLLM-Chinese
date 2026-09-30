@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import ContentFilterManager, { formatContentFilterDataForAPI } from "./ContentFilterManager";
 
@@ -92,7 +93,7 @@ describe("ContentFilterManager", () => {
   });
 
   it("should render when guardrail is content filter and isEditing is true", async () => {
-    render(
+    renderWithProviders(
       <ContentFilterManager
         guardrailData={CONTENT_FILTER_GUARDRAIL_DATA}
         guardrailSettings={GUARDRAIL_SETTINGS}
@@ -113,7 +114,7 @@ describe("ContentFilterManager", () => {
       litellm_params: { guardrail: "presidio" },
     };
 
-    const { container } = render(
+    const { container } = renderWithProviders(
       <ContentFilterManager
         guardrailData={guardrailData}
         guardrailSettings={GUARDRAIL_SETTINGS}
@@ -128,7 +129,7 @@ describe("ContentFilterManager", () => {
   });
 
   it("should render read-only display when isEditing is false", async () => {
-    render(
+    renderWithProviders(
       <ContentFilterManager
         guardrailData={CONTENT_FILTER_GUARDRAIL_DATA}
         guardrailSettings={GUARDRAIL_SETTINGS}
@@ -150,7 +151,7 @@ describe("ContentFilterManager", () => {
     const mockOnUnsavedChanges = vi.fn();
     const mockOnDataChange = vi.fn();
 
-    render(
+    renderWithProviders(
       <ContentFilterManager
         guardrailData={CONTENT_FILTER_GUARDRAIL_DATA}
         guardrailSettings={GUARDRAIL_SETTINGS}
@@ -176,7 +177,7 @@ describe("ContentFilterManager", () => {
     const mockOnUnsavedChanges = vi.fn();
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <ContentFilterManager
         guardrailData={CONTENT_FILTER_GUARDRAIL_DATA}
         guardrailSettings={GUARDRAIL_SETTINGS}
@@ -201,7 +202,7 @@ describe("ContentFilterManager", () => {
     const mockOnUnsavedChanges = vi.fn();
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <ContentFilterManager
         guardrailData={CONTENT_FILTER_GUARDRAIL_DATA}
         guardrailSettings={GUARDRAIL_SETTINGS}
@@ -226,7 +227,7 @@ describe("ContentFilterManager", () => {
     const mockOnUnsavedChanges = vi.fn();
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <ContentFilterManager
         guardrailData={CONTENT_FILTER_GUARDRAIL_DATA}
         guardrailSettings={GUARDRAIL_SETTINGS}
@@ -250,7 +251,7 @@ describe("ContentFilterManager", () => {
   it("should show unsaved changes alert when data has changed", async () => {
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <ContentFilterManager
         guardrailData={CONTENT_FILTER_GUARDRAIL_DATA}
         guardrailSettings={GUARDRAIL_SETTINGS}
@@ -278,7 +279,7 @@ describe("ContentFilterManager", () => {
     const mockOnDataChange = vi.fn();
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <ContentFilterManager
         guardrailData={CONTENT_FILTER_GUARDRAIL_DATA}
         guardrailSettings={GUARDRAIL_SETTINGS}
@@ -307,7 +308,7 @@ describe("ContentFilterManager", () => {
   it("should not call onUnsavedChanges when isEditing is false", async () => {
     const mockOnUnsavedChanges = vi.fn();
 
-    render(
+    renderWithProviders(
       <ContentFilterManager
         guardrailData={CONTENT_FILTER_GUARDRAIL_DATA}
         guardrailSettings={GUARDRAIL_SETTINGS}
@@ -333,7 +334,7 @@ describe("ContentFilterManager", () => {
 
     const mockOnDataChange = vi.fn();
 
-    render(
+    renderWithProviders(
       <ContentFilterManager
         guardrailData={guardrailData}
         guardrailSettings={GUARDRAIL_SETTINGS}
@@ -349,7 +350,7 @@ describe("ContentFilterManager", () => {
   });
 
   it("should not render ContentFilterConfiguration when guardrailSettings has no content_filter_settings", async () => {
-    render(
+    renderWithProviders(
       <ContentFilterManager
         guardrailData={CONTENT_FILTER_GUARDRAIL_DATA}
         guardrailSettings={null}

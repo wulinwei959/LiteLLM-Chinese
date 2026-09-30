@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { ChevronRight, FileText, Plus, Trash2 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { getCategoryYaml } from "@/components/networking";
@@ -64,6 +65,7 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
   const [expandedYamlCategories, setExpandedYamlCategories] = React.useState<string[]>([]);
   const [previewYaml, setPreviewYaml] = React.useState<string>("");
   const [loadingPreviewYaml, setLoadingPreviewYaml] = React.useState<boolean>(false);
+  const t = useTranslations("guardrails");
 
   const handleAddCategory = () => {
     if (!selectedCategoryName) {
@@ -174,7 +176,7 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
 
   const columns: ColumnDef<SelectedCategory>[] = [
     {
-      header: "Category",
+      header: t("filter.colCategory"),
       accessorKey: "display_name",
       cell: ({ row }) => {
         const category = availableCategories.find((c) => c.name === row.original.category);
@@ -187,16 +189,16 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
       },
     },
     {
-      header: "Action",
+      header: t("pii.actionHeader"),
       accessorKey: "action",
       size: 150,
       cell: ({ row }) => (
         <Select
-          items={ACTION_ITEMS}
+          items={ACTION_ITEMS.map((item) => ({ value: item.value, label: t(item.labelKey) }))}
           value={row.original.action}
           onValueChange={(value: string | null) => value && onCategoryUpdate(row.original.id, "action", value)}
         >
-          <SelectTrigger size="sm" className="w-full" aria-label="Action">
+          <SelectTrigger size="sm" className="w-full" aria-label={t("pii.actionHeader")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -210,24 +212,24 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
       ),
     },
     {
-      header: "Severity Threshold",
+      header: t("filter.colSeverity"),
       accessorKey: "severity_threshold",
       size: 180,
       cell: ({ row }) => (
         <Select
-          items={SEVERITY_ITEMS}
+          items={SEVERITY_ITEMS.map((item) => ({ value: item.value, label: t(item.labelKey) }))}
           value={row.original.severity_threshold}
           onValueChange={(value: string | null) =>
             value && onCategoryUpdate(row.original.id, "severity_threshold", value)
           }
         >
-          <SelectTrigger size="sm" className="w-full" aria-label="Severity Threshold">
+          <SelectTrigger size="sm" className="w-full" aria-label={t("filter.colSeverity")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {SEVERITY_ITEMS.map((item) => (
               <SelectItem key={item.value} value={item.value}>
-                {item.label}
+                {t(item.labelKey)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -241,7 +243,7 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
       cell: ({ row }) => (
         <Button variant="outline" size="sm" onClick={() => onCategoryRemove(row.original.id)}>
           <Trash2 />
-          Remove
+          {t("optional.remove")}
         </Button>
       ),
     },
@@ -256,9 +258,9 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
     <Card>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <CardTitle>Blocked topics</CardTitle>
+          <CardTitle>{t("filter.topicsTitle")}</CardTitle>
           <p className="text-xs font-normal text-muted-foreground">
-            Select topics to block using keyword and semantic analysis
+            {t("filter.topicsDesc")}
           </p>
         </div>
       </CardHeader>
@@ -270,9 +272,9 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
             onValueChange={(category: ContentCategory | null) => setSelectedCategoryName(category?.name ?? "")}
             itemToStringLabel={(category: ContentCategory) => category.display_name}
           >
-            <ComboboxInput className="w-full" placeholder="Select a content category" />
+            <ComboboxInput className="w-full" placeholder={t("filter.selectCategory")} />
             <ComboboxContent>
-              <ComboboxEmpty>No matching categories</ComboboxEmpty>
+              <ComboboxEmpty>{t("pii.noMatchingCategories")}</ComboboxEmpty>
               <ComboboxList>
                 {(cat: ContentCategory) => (
                   <ComboboxItem key={cat.name} value={cat}>
@@ -287,7 +289,7 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
           </Combobox>
           <Button onClick={handleAddCategory} disabled={!selectedCategoryName}>
             <Plus />
-            Add
+            {t("filter.add")}
           </Button>
         </div>
 
@@ -295,7 +297,9 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
         {selectedCategoryName && (
           <div className="mb-4 rounded-md border border-border bg-muted/40 p-3">
             <div className="mb-2 text-sm font-medium">
-              Preview: {availableCategories.find((c) => c.name === selectedCategoryName)?.display_name}
+              {t("filter.preview", {
+                name: availableCategories.find((c) => c.name === selectedCategoryName)?.display_name ?? selectedCategoryName,
+              })}
               {categoryFileTypes[selectedCategoryName] && (
                 <span className="ml-2 text-xs font-normal text-muted-foreground">
                   ({categoryFileTypes[selectedCategoryName]?.toUpperCase()})
@@ -303,13 +307,13 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
               )}
             </div>
             {loadingPreviewYaml ? (
-              <div className="p-4 text-center text-muted-foreground">Loading content...</div>
+              <div className="p-4 text-center text-muted-foreground">{t("filter.loadingContent")}</div>
             ) : previewYaml ? (
               <pre className="m-0 max-h-[300px] max-w-full overflow-auto rounded-md border border-border bg-background p-3 text-xs leading-relaxed break-words whitespace-pre-wrap">
                 <code>{previewYaml}</code>
               </pre>
             ) : (
-              <div className="p-2 text-center text-xs text-muted-foreground">Unable to load category content</div>
+              <div className="p-2 text-center text-xs text-muted-foreground">{t("filter.loadFailedCat")}</div>
             )}
           </div>
         )}
@@ -339,18 +343,18 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
                       <ChevronRight className={`size-4 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                       <FileText className="size-4" />
                       <span>
-                        View {fileType.toUpperCase()} for {category.display_name}
+                        {t("filter.viewYaml", { type: fileType.toUpperCase(), name: category.display_name })}
                       </span>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       {loadingYaml[category.category] ? (
-                        <div className="p-4 text-center text-muted-foreground">Loading content...</div>
+                        <div className="p-4 text-center text-muted-foreground">{t("filter.loadingContent")}</div>
                       ) : categoryYaml[category.category] ? (
                         <pre className="m-0 max-h-[400px] overflow-auto rounded-md bg-muted p-4 text-xs leading-relaxed">
                           <code>{categoryYaml[category.category]}</code>
                         </pre>
                       ) : (
-                        <div className="p-4 text-center text-muted-foreground">Content will load when expanded</div>
+                        <div className="p-4 text-center text-muted-foreground">{t("filter.willLoad")}</div>
                       )}
                     </CollapsibleContent>
                   </Collapsible>
@@ -360,7 +364,7 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
           </>
         ) : (
           <div className="rounded-md border border-dashed border-border p-6 text-center text-muted-foreground">
-            No blocked topics selected. Add topics to detect and block harmful content.
+            {t("filter.noTopics")}
           </div>
         )}
       </CardContent>

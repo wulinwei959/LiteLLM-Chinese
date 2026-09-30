@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import CustomCodeModal from "./CustomCodeModal";
 import { createGuardrailCall, updateGuardrailCall, testCustomCodeGuardrail } from "@/components/networking";
@@ -19,7 +20,9 @@ describe("CustomCodeModal", () => {
   const onSuccess = vi.fn();
 
   const renderModal = (overrides = {}) =>
-    render(<CustomCodeModal visible onClose={onClose} onSuccess={onSuccess} accessToken="test-token" {...overrides} />);
+    renderWithProviders(
+      <CustomCodeModal visible onClose={onClose} onSuccess={onSuccess} accessToken="test-token" {...overrides} />,
+    );
 
   beforeEach(() => {
     vi.clearAllMocks();

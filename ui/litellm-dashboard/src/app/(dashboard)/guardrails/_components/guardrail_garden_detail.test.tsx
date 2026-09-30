@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import GuardrailDetailView from "./guardrail_garden_detail";
 import type { GuardrailCardInfo } from "./guardrail_garden_data";
@@ -16,7 +17,7 @@ const makeCard = (overrides: Partial<GuardrailCardInfo> = {}): GuardrailCardInfo
 });
 
 const renderDetail = (card: GuardrailCardInfo) =>
-  render(<GuardrailDetailView card={card} onBack={vi.fn()} accessToken={null} onGuardrailCreated={vi.fn()} />);
+  renderWithProviders(<GuardrailDetailView card={card} onBack={vi.fn()} accessToken={null} onGuardrailCreated={vi.fn()} />);
 
 describe("GuardrailDetailView logo", () => {
   it("renders the card logo through the shared Logo component with the bundled src", () => {
