@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -84,6 +85,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
   const [isEnriching, setIsEnriching] = useState(false);
   const [enrichStatusMessage, setEnrichStatusMessage] = useState("");
   const [enrichBrandName, setEnrichBrandName] = useState("");
+  const t = useTranslations("policies");
 
   useEffect(() => {
     if (visible && availableModels.length === 0) {
@@ -162,7 +164,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
       setSelectedIds(new Set((result.selected_templates || []).map((s: SuggestedTemplate) => s.template_id)));
     } catch {
       setSuggestions([]);
-      setExplanation("Failed to get suggestions. Please try again.");
+      setExplanation(t("ai.suggestFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -288,7 +290,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
     try {
       for (const template of templatesToEnrich) {
         const paramName = template.llm_enrichment.parameter;
-        setEnrichStatusMessage(`Discovering competitors for ${template.title}...`);
+        setEnrichStatusMessage(t("ai.discoveringFor", { title: template.title }));
 
         // Keep existing guardrails until streaming completes to avoid temporary empty payloads.
         setEnrichedDefs((prev) => {
@@ -405,8 +407,8 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
               d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <p className="font-medium">No matching templates found</p>
-          <p className="text-sm mt-1">Try adjusting your examples or description.</p>
+          <p className="font-medium">{t("ai.noMatch")}</p>
+          <p className="text-sm mt-1">{t("ai.tryAdjust")}</p>
         </div>
       );
     }
@@ -460,9 +462,12 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
                               />
                             }
                           >
-                            +{template.estimated_latency_ms <= 1 ? "<1" : template.estimated_latency_ms}ms latency
+                            {t("ai.latency", {
+                              latency:
+                                template.estimated_latency_ms <= 1 ? "<1" : template.estimated_latency_ms,
+                            })}
                           </TooltipTrigger>
-                          <TooltipContent>Estimated latency overhead added to each request</TooltipContent>
+                          <TooltipContent>{t("ai.latencyHint")}</TooltipContent>
                         </Tooltip>
                       )}
                     </div>
@@ -479,7 +484,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
                         ))}
                       {template.guardrails && template.guardrails.length > 4 && (
                         <span className="text-[10px] text-muted-foreground">
-                          +{template.guardrails.length - 4} more
+                          {t("ai.more", { count: template.guardrails.length - 4 })}
                         </span>
                       )}
                     </div>
@@ -500,7 +505,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
             <div className="flex items-center gap-2 mb-1">
               <Info className="size-3.5 text-muted-foreground" />
               <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Why these templates
+                {t("ai.whyTitle")}
               </span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">{explanation}</p>
@@ -521,7 +526,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
         {/* Test header */}
         <div className="pb-3 border-b border-border">
           <div className="flex items-center justify-between mb-1">
-            <h3 className="text-base font-semibold text-foreground">Test Guardrails</h3>
+            <h3 className="text-base font-semibold text-foreground">{t("ai.testTitle")}</h3>
             <button
               onClick={() => {
                 setShowTestPanel(false);
@@ -549,8 +554,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
             })}
           </div>
           <p className="text-xs text-muted-foreground">
-            {allSelectedGuardrailDefs.length} guardrails across {selectedIds.size} template
-            {selectedIds.size !== 1 ? "s" : ""}
+            {t("ai.countLine", { guards: allSelectedGuardrailDefs.length, count: selectedIds.size })}
           </p>
         </div>
 
@@ -574,7 +578,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
                 </svg>
               )}
               <span className={`text-xs font-medium ${hasEnrichedGuardrails ? "text-success" : "text-warning"}`}>
-                Competitor template requires your brand name to discover competitors
+                {t("ai.needBrand")}
               </span>
             </div>
 
@@ -589,7 +593,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
                 className="flex-1"
               />
               <Button size="sm" onClick={handleEnrichCompetitors} disabled={!enrichBrandName.trim() || isEnriching}>
-                {isEnriching ? "Discovering..." : hasEnrichedGuardrails ? "Re-discover" : "Discover"}
+                {isEnriching ? t("ai.discovering") : hasEnrichedGuardrails ? t("ai.rediscover") : t("ai.discover")}
               </Button>
             </div>
 
@@ -603,7 +607,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
             {hasEnrichedGuardrails && (
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="size-4 text-success" />
-                <span className="text-xs text-success">Competitor names loaded for {enrichBrandName}</span>
+                <span className="text-xs text-success">{t("ai.brandLoaded", { brand: enrichBrandName })}</span>
               </div>
             )}
           </div>
@@ -613,7 +617,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
           <div className="p-3 bg-info/10 rounded-lg border border-info/20">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-info">
-                Generated Competitors ({generatedCompetitors.length})
+                {t("ai.generated", { count: generatedCompetitors.length })}
               </span>
             </div>
             <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
@@ -634,33 +638,33 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
           <div>
             <div className="flex justify-between items-center mb-2">
               <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-foreground">Input Text</label>
+                <label className="text-sm font-medium text-foreground">{t("ai.inputLabel")}</label>
                 <Tooltip>
                   <TooltipTrigger render={<Info className="size-3.5 cursor-help text-muted-foreground" />} />
-                  <TooltipContent>Press Enter to submit. Use Shift+Enter for new line.</TooltipContent>
+                  <TooltipContent>{t("ai.inputHint")}</TooltipContent>
                 </Tooltip>
               </div>
-              <span className="text-xs text-muted-foreground">Characters: {testInputText.length}</span>
+              <span className="text-xs text-muted-foreground">{t("ai.characters", { count: testInputText.length })}</span>
             </div>
             <Textarea
               value={testInputText}
               onChange={(e) => setTestInputText(e.target.value)}
               onKeyDown={handleTestKeyDown}
-              placeholder="Enter text to test against all selected policy guardrails..."
+              placeholder={t("ai.testPlaceholder")}
               rows={4}
               className="field-sizing-fixed font-mono text-sm"
             />
             <div className="mt-1">
               <span className="text-xs text-muted-foreground">
-                Press <kbd className="rounded-sm border border-border bg-muted px-1 py-0.5 text-xs">Enter</kbd> to
-                submit
+                {t("ai.press")} <kbd className="rounded-sm border border-border bg-muted px-1 py-0.5 text-xs">Enter</kbd>{" "}
+                {t("ai.submit")}
               </span>
             </div>
           </div>
           <Button onClick={handleRunTest} disabled={!testInputText.trim() || isTestLoading} className="w-full">
             {isTestLoading
-              ? `Testing ${allSelectedGuardrailDefs.length} guardrails...`
-              : `Test ${allSelectedGuardrailDefs.length} guardrails`}
+              ? t("ai.testing", { count: allSelectedGuardrailDefs.length })
+              : t("ai.testN", { count: allSelectedGuardrailDefs.length })}
           </Button>
         </div>
 
@@ -677,30 +681,30 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
                 {/* Summary bar */}
                 <div className="rounded-lg border border-border bg-muted p-3 mb-3">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-semibold text-foreground">Results</h4>
-                    <span className="text-[10px] text-muted-foreground">{testResults.length} guardrails tested</span>
+                    <h4 className="text-sm font-semibold text-foreground">{t("ai.results")}</h4>
+                    <span className="text-[10px] text-muted-foreground">{t("ai.tested", { count: testResults.length })}</span>
                   </div>
                   <div className="flex gap-2">
                     {blockedCount > 0 && (
                       <div className="flex-1 rounded-md bg-destructive/10 border border-destructive/20 px-3 py-2 text-center">
                         <div className="text-lg font-bold text-destructive">{blockedCount}</div>
-                        <div className="text-[10px] font-medium text-destructive">Blocked</div>
+                        <div className="text-[10px] font-medium text-destructive">{t("ai.blocked")}</div>
                       </div>
                     )}
                     {maskedCount > 0 && (
                       <div className="flex-1 rounded-md bg-warning/10 border border-warning/20 px-3 py-2 text-center">
                         <div className="text-lg font-bold text-warning">{maskedCount}</div>
-                        <div className="text-[10px] font-medium text-warning">Masked</div>
+                        <div className="text-[10px] font-medium text-warning">{t("ai.masked")}</div>
                       </div>
                     )}
                     <div className="flex-1 rounded-md bg-success/10 border border-success/20 px-3 py-2 text-center">
                       <div className="text-lg font-bold text-success">{passedCount}</div>
-                      <div className="text-[10px] font-medium text-success">Passed</div>
+                      <div className="text-[10px] font-medium text-success">{t("ai.passed")}</div>
                     </div>
                     {otherCount > 0 && (
                       <div className="flex-1 rounded-md bg-muted border border-border px-3 py-2 text-center">
                         <div className="text-lg font-bold text-muted-foreground">{otherCount}</div>
-                        <div className="text-[10px] font-medium text-muted-foreground">Other</div>
+                        <div className="text-[10px] font-medium text-muted-foreground">{t("ai.other")}</div>
                       </div>
                     )}
                   </div>
@@ -775,7 +779,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
                             {isMasked && result.output_text && (
                               <div className="bg-card border border-warning/20 rounded-sm p-2">
                                 <label className="text-[10px] font-medium text-muted-foreground mb-1 block">
-                                  Output Text
+                                  {t("ai.outputLabel")}
                                 </label>
                                 <div className="font-mono text-xs text-foreground whitespace-pre-wrap wrap-break-word">
                                   {result.output_text}
@@ -785,12 +789,12 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
                             {isBlocked && result.details && (
                               <div className="bg-card border border-destructive/20 rounded-sm p-2">
                                 <label className="text-[10px] font-medium text-muted-foreground mb-1 block">
-                                  Details
+                                  {t("ai.details")}
                                 </label>
                                 <p className="text-xs text-destructive">{result.details}</p>
                               </div>
                             )}
-                            {isPassed && <div className="text-[10px] text-success">Passed unchanged.</div>}
+                            {isPassed && <div className="text-[10px] text-success">{t("ai.passedUnchanged")}</div>}
                           </>
                         )}
                       </CardContent>
@@ -803,7 +807,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
 
         {testResults && testResults.length === 0 && !isTestLoading && (
           <p className="py-3 text-center text-xs text-muted-foreground">
-            No testable guardrails in selected templates.
+            {t("ai.noTestable")}
           </p>
         )}
       </div>
@@ -815,11 +819,11 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
       <DialogContent className={showTestPanel ? "gap-0 p-0 sm:max-w-300" : "gap-0 p-0 sm:max-w-205"}>
         {/* Header */}
         <div className="px-8 pt-8 pb-4">
-          <DialogTitle className="mb-1 text-xl font-semibold">AI Policy Suggestion</DialogTitle>
+          <DialogTitle className="mb-1 text-xl font-semibold">{t("ai.title")}</DialogTitle>
           <p className="text-sm text-muted-foreground">
             {showResults
-              ? `${suggestions?.length || 0} template${(suggestions?.length || 0) !== 1 ? "s" : ""} matched your requirements`
-              : "Describe what you want to block and we'll suggest the best policy templates"}
+              ? t("ai.matched", { count: suggestions?.length || 0 })
+              : t("ai.inputDesc")}
           </p>
         </div>
 
@@ -831,15 +835,15 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
             {/* Model selector */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-1.5">
-                Model
+                {t("sim.modelLabel")}
                 <span className="text-destructive ml-0.5">*</span>
               </label>
               <SearchSelect
                 options={availableModels.map((m) => ({ label: m, value: m }))}
                 value={selectedModel}
                 onValueChange={setSelectedModel}
-                placeholder={isLoadingModels ? "Loading models..." : "Select a model to analyze your requirements"}
-                emptyText="No models found"
+                placeholder={isLoadingModels ? t("ai.loadingModels") : t("ai.selectModel")}
+                emptyText={t("ai.noModels")}
                 disabled={isLoadingModels}
               />
             </div>
@@ -847,7 +851,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
             {/* Attack examples */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-1.5">
-                Example attack prompts you want to block
+                {t("ai.examplesLabel")}
               </label>
               <div className="space-y-2">
                 {attackExamples.map((example, index) => (
@@ -891,7 +895,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
               </div>
               {attackExamples.length < MAX_EXAMPLES && (
                 <button onClick={handleAddExample} className="text-sm text-info hover:text-info/80 mt-2 font-medium">
-                  + Add another example
+                  {t("ai.addExample")}
                 </button>
               )}
             </div>
@@ -899,7 +903,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-1.5">
-                Description of what you want to block
+                {t("ai.descLabel")}
               </label>
               <textarea
                 className="w-full rounded-lg border border-border px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-info focus:ring-1 focus:ring-ring overflow-hidden"
@@ -929,7 +933,7 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
                 />
               </svg>
               <p className="text-sm text-info">
-                The selected model will analyze your requirements and match them against available policy templates.
+                {t("ai.infoBox")}
               </p>
             </div>
 
@@ -937,17 +941,17 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
             {isLoading && (
               <div className="flex items-center justify-center gap-3 rounded-lg border border-border bg-muted p-4">
                 <UiLoadingSpinner className="size-4" />
-                <span className="text-sm text-muted-foreground">Analyzing your requirements...</span>
+                <span className="text-sm text-muted-foreground">{t("ai.analyzing")}</span>
               </div>
             )}
 
             {/* Footer */}
             <div className="flex justify-end gap-3 pt-2">
               <Button variant="secondary" onClick={handleCancel} disabled={isLoading}>
-                Cancel
+                {t("form.cancel")}
               </Button>
               <Button onClick={handleSuggest} disabled={!hasInput || !selectedModel || isLoading}>
-                {isLoading ? "Analyzing..." : "Suggest Policies"}
+                {isLoading ? t("ai.analyzingBtn") : t("ai.suggest")}
               </Button>
             </div>
           </div>
@@ -970,15 +974,15 @@ const AiSuggestionModal: React.FC<AiSuggestionModalProps> = ({
             {/* Footer */}
             <div className="flex justify-end gap-3 pt-6 border-t border-border mt-4">
               <Button variant="secondary" onClick={handleBack}>
-                Back
+                {t("ai.back")}
               </Button>
               {suggestions && suggestions.length > 0 && selectedIds.size > 0 && !showTestPanel && (
                 <Button variant="secondary" onClick={() => setShowTestPanel(true)}>
-                  Test Suggestions
+                  {t("ai.testSuggestions")}
                 </Button>
               )}
               <Button onClick={handleUseSelected} disabled={selectedIds.size === 0 || isEnriching}>
-                Use {selectedIds.size} Selected Template{selectedIds.size !== 1 ? "s" : ""}
+                {t("ai.useSelected", { count: selectedIds.size })}
               </Button>
             </div>
           </div>

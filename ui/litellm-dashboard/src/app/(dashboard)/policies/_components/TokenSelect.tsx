@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 
 import {
   Combobox,
@@ -48,10 +49,11 @@ export const TokenSelect: React.FC<TokenSelectProps> = ({
   options,
   allowCustomValues = false,
   tokenSeparators = [],
-  emptyText = "No options found",
+  emptyText,
   ariaInvalid,
   ariaDescribedBy,
 }) => {
+  const t = useTranslations("policies");
   const anchor = useComboboxAnchor();
   const [query, setQuery] = React.useState("");
   const selected = value ?? [];
@@ -117,7 +119,7 @@ export const TokenSelect: React.FC<TokenSelectProps> = ({
       </ComboboxChips>
       {showDropdown && (
         <ComboboxContent anchor={anchor}>
-          <ComboboxEmpty>{emptyText}</ComboboxEmpty>
+          <ComboboxEmpty>{emptyText ?? t("sim.noOptions")}</ComboboxEmpty>
           <ComboboxList>
             {(item: string) => (
               <ComboboxItem key={item} value={item} title={item}>
