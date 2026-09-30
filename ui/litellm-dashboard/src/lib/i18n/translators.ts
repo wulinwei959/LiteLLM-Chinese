@@ -99,3 +99,8 @@ function usePoliciesTranslator() {
   return useTranslations("policies");
 }
 export type PoliciesTranslator = ReturnType<typeof usePoliciesTranslator>;
+
+function usePromptsTranslator() {
+  return useTranslations("prompts");
+}
+export type PromptsTranslator = ReturnType<typeof usePromptsTranslator>;

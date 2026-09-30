@@ -1,5 +1,6 @@
 import React from "react";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { toast } from "@/lib/toast";
@@ -28,7 +29,7 @@ const CONVERTED_JSON = { model: "gpt-4o", messages: [{ role: "user", content: "h
 const renderForm = () => {
   const onClose = vi.fn();
   const onSuccess = vi.fn();
-  render(<AddPromptForm visible onClose={onClose} accessToken="sk-test" onSuccess={onSuccess} />);
+  renderWithProviders(<AddPromptForm visible onClose={onClose} accessToken="sk-test" onSuccess={onSuccess} />);
   return { onClose, onSuccess };
 };
 

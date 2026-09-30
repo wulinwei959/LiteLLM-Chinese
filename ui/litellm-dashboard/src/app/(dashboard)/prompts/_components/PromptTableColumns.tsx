@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/cva.config";
 import { copyToClipboard } from "@/utils/dataUtils";
+import type { PromptsTranslator } from "@/lib/i18n/translators";
 import { userDetailHref } from "@/utils/entityLinks";
 
 import { extractModel, getProviderFromModelHub, ModelGroupInfo } from "./prompt_utils";
@@ -66,13 +67,14 @@ interface PromptRowActionsProps {
   prompt: PromptSpec;
   isAdmin: boolean;
   onDeleteClick?: (id: string, name: string, environment: string) => void;
+  t: PromptsTranslator;
 }
 
-function PromptRowActions({ prompt, isAdmin, onDeleteClick }: PromptRowActionsProps) {
+function PromptRowActions({ prompt, isAdmin, onDeleteClick, t }: PromptRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open prompt actions"
+        aria-label={t("table.openActions")}
         data-testid={`prompt-actions-${prompt.prompt_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -81,10 +83,10 @@ function PromptRowActions({ prompt, isAdmin, onDeleteClick }: PromptRowActionsPr
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem
           data-testid="prompt-action-copy"
-          onClick={() => void copyToClipboard(prompt.prompt_id, "Prompt ID copied")}
+          onClick={() => void copyToClipboard(prompt.prompt_id, t("table.copiedToast"))}
         >
           <Copy />
-          Copy prompt ID
+          {t("table.copyId")}
         </DropdownMenuItem>
         {isAdmin && (
           <>
@@ -95,13 +97,13 @@ function PromptRowActions({ prompt, isAdmin, onDeleteClick }: PromptRowActionsPr
               onClick={() =>
                 onDeleteClick?.(
                   prompt.prompt_id,
-                  prompt.prompt_id || "Unknown Prompt",
+                  prompt.prompt_id || t("table.unknown"),
                   prompt.environment || "development",
                 )
               }
             >
               <Trash2 />
-              Delete
+              {t("table.delete")}
             </DropdownMenuItem>
           </>
         )}
@@ -115,6 +117,7 @@ interface PromptTableColumnsDeps {
   isAdmin: boolean;
   onPromptClick?: (id: string, environment: string) => void;
   onDeleteClick?: (id: string, name: string, environment: string) => void;
+  t: PromptsTranslator;
 }
 
 export const getPromptTableColumns = ({
@@ -122,12 +125,13 @@ export const getPromptTableColumns = ({
   isAdmin,
   onPromptClick,
   onDeleteClick,
+  t,
 }: PromptTableColumnsDeps): ColumnDef<PromptSpec>[] => [
   {
     id: "prompt_id",
     accessorKey: "prompt_id",
-    meta: { title: "Prompt ID" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Prompt ID" />,
+    meta: { title: t("table.idCol") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.idCol")} />,
     size: 220,
     enableSorting: true,
     cell: ({ row }) => (
@@ -145,8 +149,8 @@ export const getPromptTableColumns = ({
   },
   {
     id: "model",
-    meta: { title: "Model" },
-    header: "Model",
+    meta: { title: t("table.modelCol") },
+    header: t("table.modelCol"),
     size: 200,
     enableSorting: false,
     cell: ({ row }) => <PromptModelCell prompt={row.original} modelHubData={modelHubData} />,
@@ -155,8 +159,8 @@ export const getPromptTableColumns = ({
     id: "created_at",
     accessorKey: "created_at",
     sortingFn: "datetime",
-    meta: { title: "Created At" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Created At" />,
+    meta: { title: t("table.createdCol") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.createdCol")} />,
     size: 160,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.created_at} />,
@@ -165,8 +169,8 @@ export const getPromptTableColumns = ({
     id: "updated_at",
     accessorKey: "updated_at",
     sortingFn: "datetime",
-    meta: { title: "Updated At" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Updated At" />,
+    meta: { title: t("table.updatedCol") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.updatedCol")} />,
     size: 160,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.updated_at} />,
@@ -174,8 +178,8 @@ export const getPromptTableColumns = ({
   {
     id: "environment",
     accessorKey: "environment",
-    meta: { title: "Environment", skeleton: "badge" },
-    header: "Environment",
+    meta: { title: t("table.envCol"), skeleton: "badge" },
+    header: t("table.envCol"),
     size: 130,
     enableSorting: false,
     cell: ({ row }) => {
@@ -186,8 +190,8 @@ export const getPromptTableColumns = ({
   {
     id: "created_by",
     accessorKey: "created_by",
-    meta: { title: "Created By" },
-    header: "Created By",
+    meta: { title: t("table.byCol") },
+    header: t("table.byCol"),
     size: 160,
     enableSorting: false,
     cell: ({ row }) => {
@@ -209,8 +213,8 @@ export const getPromptTableColumns = ({
   {
     id: "prompt_type",
     accessorKey: "prompt_info.prompt_type",
-    meta: { title: "Type" },
-    header: "Type",
+    meta: { title: t("table.typeCol") },
+    header: t("table.typeCol"),
     size: 140,
     enableSorting: false,
     cell: ({ row }) => {
@@ -225,13 +229,13 @@ export const getPromptTableColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("table.actionsCol")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <PromptRowActions prompt={row.original} isAdmin={isAdmin} onDeleteClick={onDeleteClick} />
+        <PromptRowActions prompt={row.original} isAdmin={isAdmin} onDeleteClick={onDeleteClick} t={t} />
       </div>
     ),
   },

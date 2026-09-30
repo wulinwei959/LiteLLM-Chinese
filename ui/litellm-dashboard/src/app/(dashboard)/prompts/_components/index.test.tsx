@@ -1,4 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent, { PointerEventsCheckLevel } from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -51,7 +52,7 @@ const mockGetPromptsList = vi.mocked(getPromptsList);
 const mockDeletePromptCall = vi.mocked(deletePromptCall);
 
 const renderPanel = (userRole?: string) =>
-  render(<PromptsPanel accessToken="sk-test" userRole={userRole ?? "Admin"} />);
+  renderWithProviders(<PromptsPanel accessToken="sk-test" userRole={userRole ?? "Admin"} />);
 
 describe("PromptsPanel loading state", () => {
   beforeEach(() => {
@@ -60,7 +61,7 @@ describe("PromptsPanel loading state", () => {
   });
 
   it("should resolve the loading state when accessToken is null instead of showing the skeleton forever", async () => {
-    render(<PromptsPanel accessToken={null} />);
+    renderWithProviders(<PromptsPanel accessToken={null} />);
     expect(await screen.findByText("table-loaded")).toBeInTheDocument();
     expect(mockGetPromptsList).not.toHaveBeenCalled();
   });
@@ -72,7 +73,7 @@ describe("PromptsPanel loading state", () => {
         resolveFetch = resolve;
       }) as never,
     );
-    render(<PromptsPanel accessToken="sk-test" userRole="Admin" />);
+    renderWithProviders(<PromptsPanel accessToken="sk-test" userRole="Admin" />);
     expect(screen.getByText("table-loading")).toBeInTheDocument();
 
     resolveFetch({ prompts: [] });

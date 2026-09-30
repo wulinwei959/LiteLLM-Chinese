@@ -1,11 +1,12 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import ToolModal from "./tool_modal";
 
 describe("ToolModal", () => {
   it("rejects invalid JSON and saves valid JSON", async () => {
     const onSave = vi.fn();
-    render(<ToolModal visible initialJson="{}" onSave={onSave} onClose={vi.fn()} />);
+    renderWithProviders(<ToolModal visible initialJson="{}" onSave={onSave} onClose={vi.fn()} />);
     expect(await screen.findByRole("dialog")).toHaveClass("max-h-[calc(100dvh-2rem)]", "overflow-y-auto");
     const editor = await screen.findByPlaceholderText("Paste your tool JSON here...");
     fireEvent.change(editor, { target: { value: "invalid" } });

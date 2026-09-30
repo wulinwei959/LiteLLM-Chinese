@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -49,7 +50,7 @@ describe("PromptTable", () => {
   });
 
   it("should render every column header", () => {
-    render(<PromptTable {...defaultProps} />);
+    renderWithProviders(<PromptTable {...defaultProps} />);
     for (const header of ["Prompt ID", "Model", "Created At", "Updated At", "Environment", "Created By", "Type"]) {
       expect(screen.getByText(header)).toBeInTheDocument();
     }
@@ -57,7 +58,7 @@ describe("PromptTable", () => {
 
   it("links the Created By cell to the creator's detail page, leaving the placeholder unlinked", () => {
     const prompts = [mockPrompts[0], { ...mockPrompts[1], created_by: "default_user_id" }];
-    render(<PromptTable {...defaultProps} promptsList={prompts} />);
+    renderWithProviders(<PromptTable {...defaultProps} promptsList={prompts} />);
 
     expect(screen.getByRole("link", { name: "user-1" })).toHaveAttribute("href", "/ui/users?user=user-1");
     expect(screen.getByText("default_user_id")).toBeInTheDocument();
@@ -65,12 +66,12 @@ describe("PromptTable", () => {
   });
 
   it("should display the empty state when data is empty", () => {
-    render(<PromptTable {...defaultProps} promptsList={[]} />);
+    renderWithProviders(<PromptTable {...defaultProps} promptsList={[]} />);
     expect(screen.getByText("No prompts yet")).toBeInTheDocument();
   });
 
   it("should sort by created date descending by default", () => {
-    render(<PromptTable {...defaultProps} />);
+    renderWithProviders(<PromptTable {...defaultProps} />);
     const rows = screen.getAllByRole("row").slice(1);
     expect(within(rows[0]).getByText("prompt-newer")).toBeInTheDocument();
     expect(within(rows[1]).getByText("prompt-older")).toBeInTheDocument();
@@ -78,7 +79,7 @@ describe("PromptTable", () => {
 
   it("should call onPromptClick with the row's environment, defaulting to development", async () => {
     const user = userEvent.setup();
-    render(<PromptTable {...defaultProps} />);
+    renderWithProviders(<PromptTable {...defaultProps} />);
     await user.click(screen.getByRole("button", { name: "prompt-newer" }));
     expect(mockOnPromptClick).toHaveBeenCalledWith("prompt-newer", "production");
     await user.click(screen.getByRole("button", { name: "prompt-older" }));
@@ -86,14 +87,14 @@ describe("PromptTable", () => {
   });
 
   it("should label the environment and default missing environments to development", () => {
-    render(<PromptTable {...defaultProps} />);
+    renderWithProviders(<PromptTable {...defaultProps} />);
     expect(screen.getByText("production")).toBeInTheDocument();
     expect(screen.getByText("development")).toBeInTheDocument();
   });
 
   it("should delete a prompt through the actions menu when admin", async () => {
     const user = userEvent.setup();
-    render(<PromptTable {...defaultProps} />);
+    renderWithProviders(<PromptTable {...defaultProps} />);
     await user.click(screen.getByTestId("prompt-actions-prompt-newer"));
     await user.click(await screen.findByTestId("prompt-action-delete"));
     expect(mockOnDeleteClick).toHaveBeenCalledWith("prompt-newer", "prompt-newer", "production");
@@ -101,7 +102,7 @@ describe("PromptTable", () => {
 
   it("should copy the prompt ID through the actions menu", async () => {
     const user = userEvent.setup();
-    render(<PromptTable {...defaultProps} />);
+    renderWithProviders(<PromptTable {...defaultProps} />);
     await user.click(screen.getByTestId("prompt-actions-prompt-newer"));
     await user.click(await screen.findByTestId("prompt-action-copy"));
     expect(await window.navigator.clipboard.readText()).toBe("prompt-newer");
@@ -109,7 +110,7 @@ describe("PromptTable", () => {
 
   it("should hide the delete action for non-admins but keep copy available", async () => {
     const user = userEvent.setup();
-    render(<PromptTable {...defaultProps} isAdmin={false} />);
+    renderWithProviders(<PromptTable {...defaultProps} isAdmin={false} />);
     await user.click(screen.getByTestId("prompt-actions-prompt-newer"));
     expect(await screen.findByTestId("prompt-action-copy")).toBeInTheDocument();
     expect(screen.queryByTestId("prompt-action-delete")).not.toBeInTheDocument();

@@ -1,5 +1,6 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import PromptInfoView from "./prompt_info";
@@ -38,7 +39,7 @@ describe("PromptInfoView environment scoping", () => {
   });
 
   it("fetches the initial environment it was opened with", async () => {
-    render(
+    renderWithProviders(
       <PromptInfoView
         promptId="support-reply"
         initialEnvironment="staging"
@@ -53,7 +54,7 @@ describe("PromptInfoView environment scoping", () => {
   });
 
   it("fetches the serve default when opened without an environment", async () => {
-    render(<PromptInfoView promptId="support-reply" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
+    renderWithProviders(<PromptInfoView promptId="support-reply" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
     await screen.findByRole("tab", { name: "Raw JSON" });
     expect(networking.getPromptInfo).toHaveBeenCalledWith("sk-test", "support-reply", undefined);
@@ -77,7 +78,7 @@ describe("PromptInfoView code snippets", () => {
         environments,
       });
 
-    render(
+    renderWithProviders(
       <PromptInfoView
         promptId="support-reply"
         initialEnvironment={environment}
@@ -100,7 +101,7 @@ describe("PromptInfoView tabs", () => {
 
   it("shows the raw API response for a prompt that has no template", async () => {
     const user = userEvent.setup();
-    render(<PromptInfoView promptId="support-reply" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
+    renderWithProviders(<PromptInfoView promptId="support-reply" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
     expect(await screen.findByRole("tab", { name: "Raw JSON" })).toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Prompt Template" })).not.toBeInTheDocument();
