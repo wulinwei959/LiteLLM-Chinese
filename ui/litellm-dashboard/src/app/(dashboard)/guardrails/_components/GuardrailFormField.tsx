@@ -1,6 +1,7 @@
 "use client";
 
 import { CircleHelp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useId } from "react";
 import { useController, type Control, type ControllerRenderProps, type RegisterOptions } from "react-hook-form";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
@@ -100,23 +101,28 @@ export const GuardrailField: React.FC<GuardrailFieldProps> = ({
 };
 
 const SKIP_MESSAGE_ITEMS = [
-  { label: "Use global default", value: "inherit" },
-  { label: "Yes — exclude from guardrail scan", value: "yes" },
-  { label: "No — always include in scan", value: "no" },
-];
+  { labelKey: "info.skipUseDefault", value: "inherit" },
+  { labelKey: "info.skipYes", value: "yes" },
+  { labelKey: "info.skipNo", value: "no" },
+] as const;
 
 export const SkipMessageSelect: React.FC<{ control: GuardrailFieldControlProps }> = ({ control }) => {
+  const t = useTranslations("guardrails");
   const { id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy } = control;
 
   return (
-    <Select items={SKIP_MESSAGE_ITEMS} value={asText(value) || null} onValueChange={onChange}>
+    <Select
+      items={SKIP_MESSAGE_ITEMS.map((item) => ({ value: item.value, label: t(item.labelKey) }))}
+      value={asText(value) || null}
+      onValueChange={onChange}
+    >
       <SelectTrigger id={id} aria-invalid={ariaInvalid} aria-describedby={ariaDescribedBy} className="w-full">
-        <SelectValue placeholder="Select an option" />
+        <SelectValue placeholder={t("info.selectOption")} />
       </SelectTrigger>
       <SelectContent>
         {SKIP_MESSAGE_ITEMS.map((item) => (
           <SelectItem key={item.value} value={item.value}>
-            {item.label}
+            {t(item.labelKey)}
           </SelectItem>
         ))}
       </SelectContent>
