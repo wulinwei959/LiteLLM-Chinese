@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { FlaskConical, Search } from "lucide-react";
 import GuardrailTestPanel from "./GuardrailTestPanel";
 import { applyGuardrail } from "@/components/networking";
@@ -52,6 +53,7 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [testErrors, setTestErrors] = useState<TestError[]>([]);
   const [isTesting, setIsTesting] = useState(false);
+  const t = useTranslations("guardrails");
 
   const filteredGuardrails = guardrailsList.filter((guardrail) =>
     guardrail.guardrail_name?.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -107,10 +109,10 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
     setIsTesting(false);
 
     if (results.length > 0) {
-      toast.success(`${results.length} guardrail${results.length > 1 ? "s" : ""} applied successfully`);
+      toast.success(t("test.appliedToast", { count: results.length }));
     }
     if (errors.length > 0) {
-      toast.fromError(`${errors.length} guardrail${errors.length > 1 ? "s" : ""} failed`);
+      toast.fromError(t("test.failedToast", { count: errors.length }));
     }
   };
 
@@ -123,13 +125,13 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
             <div className="flex w-1/4 flex-col overflow-hidden border-r border-border">
               <div className="border-b border-border p-4">
                 <div className="mb-3">
-                  <h3 className="mb-3 text-lg font-semibold">Guardrails</h3>
+                  <h3 className="mb-3 text-lg font-semibold">{t("test.sidebarTitle")}</h3>
                   <InputGroup>
                     <InputGroupAddon>
                       <Search className="size-4 text-muted-foreground" />
                     </InputGroupAddon>
                     <InputGroupInput
-                      placeholder="Search guardrails..."
+                      placeholder={t("test.searchPlaceholder")}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -144,7 +146,7 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
                   </div>
                 ) : filteredGuardrails.length === 0 ? (
                   <div className="p-4 text-center text-muted-foreground">
-                    {searchQuery ? "No guardrails match your search" : "No guardrails available"}
+                    {searchQuery ? t("test.noMatch") : t("test.noAvailable")}
                   </div>
                 ) : (
                   <ul className="m-0 list-none p-0">
@@ -168,11 +170,11 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
                         </div>
                         <div className="mt-1 space-y-1 text-xs">
                           <div>
-                            <span className="font-medium">Type: </span>
+                            <span className="font-medium">{t("test.typeLabel")}: </span>
                             <span className="text-muted-foreground">{guardrail.litellm_params.guardrail}</span>
                           </div>
                           <div>
-                            <span className="font-medium">Mode: </span>
+                            <span className="font-medium">{t("test.modeLabel")}: </span>
                             <span className="text-muted-foreground">
                               {formatGuardrailMode(guardrail.litellm_params.mode)}
                             </span>
@@ -186,7 +188,7 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
 
               <div className="border-t border-border bg-muted/40 p-3">
                 <span className="text-xs text-muted-foreground">
-                  {selectedGuardrails.size} of {filteredGuardrails.length} selected
+                  {t("test.selectedCount", { selected: selectedGuardrails.size, total: filteredGuardrails.length })}
                 </span>
               </div>
             </div>
@@ -194,16 +196,16 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
             {/* Right Panel - Test Area */}
             <div className="flex w-3/4 flex-col">
               <div className="flex items-center justify-between border-b border-border p-4">
-                <h2 className="mb-0 text-xl font-semibold">Guardrail Testing Playground</h2>
+                <h2 className="mb-0 text-xl font-semibold">{t("test.playgroundTitle")}</h2>
               </div>
 
               <div className="flex-1 overflow-auto p-4">
                 {selectedGuardrails.size === 0 ? (
                   <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
                     <FlaskConical className="mb-4 size-12" />
-                    <p className="mb-2 text-lg font-medium">Select Guardrails to Test</p>
+                    <p className="mb-2 text-lg font-medium">{t("test.selectTitle")}</p>
                     <p className="max-w-md text-center">
-                      Choose one or more guardrails from the left sidebar to start testing and comparing results.
+                      {t("test.selectHint")}
                     </p>
                   </div>
                 ) : (

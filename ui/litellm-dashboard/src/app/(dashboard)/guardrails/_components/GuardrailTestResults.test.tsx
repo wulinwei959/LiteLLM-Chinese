@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { GuardrailTestResults } from "./GuardrailTestResults";
 
@@ -36,7 +37,7 @@ describe("GuardrailTestResults", () => {
       },
     ];
 
-    render(<GuardrailTestResults results={mockResults} errors={null} />);
+    renderWithProviders(<GuardrailTestResults results={mockResults} errors={null} />);
 
     // Verify output text is initially visible
     expect(screen.getByText("This is a very long response text that should be collapsible")).toBeInTheDocument();

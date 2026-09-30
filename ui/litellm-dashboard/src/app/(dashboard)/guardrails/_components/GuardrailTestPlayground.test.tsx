@@ -1,4 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import GuardrailTestPlayground from "./GuardrailTestPlayground";
@@ -45,7 +46,7 @@ describe("GuardrailTestPlayground", () => {
      */
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <GuardrailTestPlayground
         guardrailsList={mockGuardrails}
         isLoading={false}

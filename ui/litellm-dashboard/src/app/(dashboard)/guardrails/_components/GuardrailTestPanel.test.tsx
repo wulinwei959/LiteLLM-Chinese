@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { GuardrailTestPanel } from "./GuardrailTestPanel";
 
@@ -33,7 +34,7 @@ describe("GuardrailTestPanel", () => {
      */
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <GuardrailTestPanel
         guardrailNames={mockGuardrailNames}
         onSubmit={mockOnSubmit}
@@ -64,7 +65,7 @@ describe("GuardrailTestPanel", () => {
      */
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <GuardrailTestPanel
         guardrailNames={mockGuardrailNames}
         onSubmit={mockOnSubmit}
@@ -96,7 +97,7 @@ describe("GuardrailTestPanel", () => {
      */
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <GuardrailTestPanel
         guardrailNames={mockGuardrailNames}
         onSubmit={mockOnSubmit}
