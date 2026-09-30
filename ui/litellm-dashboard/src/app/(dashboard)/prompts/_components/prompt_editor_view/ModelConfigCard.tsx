@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ const ModelConfigCard: React.FC<ModelConfigCardProps> = ({
   onMaxTokensChange,
 }) => {
   const [showConfig, setShowConfig] = useState(false);
+  const t = useTranslations("prompts");
 
   return (
     <div className="flex items-center gap-3">
@@ -34,19 +36,19 @@ const ModelConfigCard: React.FC<ModelConfigCardProps> = ({
 
       <Button type="button" variant="outline" onClick={() => setShowConfig(!showConfig)} className="gap-2">
         <SettingsIcon size={16} />
-        <span>Parameters</span>
+        <span>{t("editor.parameters")}</span>
       </Button>
 
       <Dialog open={showConfig} onOpenChange={setShowConfig}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Model Parameters</DialogTitle>
+            <DialogTitle>{t("editor.paramsTitle")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label htmlFor="prompt-temperature" className="text-sm text-foreground">
-                  Temperature
+                  {t("editor.temperature")}
                 </label>
                 <Input
                   id="prompt-temperature"
@@ -63,7 +65,7 @@ const ModelConfigCard: React.FC<ModelConfigCardProps> = ({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label htmlFor="prompt-max-tokens" className="text-sm text-foreground">
-                  Max Tokens
+                  {t("editor.maxTokens")}
                 </label>
                 <Input
                   id="prompt-max-tokens"

@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import MessageInput from "./MessageInput";
 
@@ -6,7 +7,7 @@ describe("MessageInput", () => {
   it("updates and sends a message", () => {
     const onInputChange = vi.fn();
     const onSend = vi.fn();
-    render(
+    renderWithProviders(
       <MessageInput
         inputMessage="Hello"
         isLoading={false}

@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import PromptMessagesCard from "./PromptMessagesCard";
 
@@ -9,7 +10,7 @@ vi.mock("../variable_textarea", () => ({
 describe("PromptMessagesCard", () => {
   it("renders messages and adds another message", () => {
     const onAddMessage = vi.fn();
-    render(
+    renderWithProviders(
       <PromptMessagesCard
         messages={[{ role: "user", content: "Hello" }]}
         onAddMessage={onAddMessage}
@@ -28,7 +29,7 @@ describe("PromptMessagesCard", () => {
     ["assistant", "Assistant"],
     ["system", "System"],
   ])("shows the %s role by its human label", (role, label) => {
-    render(
+    renderWithProviders(
       <PromptMessagesCard
         messages={[{ role, content: "Hello" }]}
         onAddMessage={vi.fn()}

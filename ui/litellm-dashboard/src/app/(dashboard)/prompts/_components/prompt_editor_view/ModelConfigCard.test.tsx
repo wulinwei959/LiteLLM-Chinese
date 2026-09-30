@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import ModelConfigCard from "./ModelConfigCard";
 
@@ -10,7 +11,7 @@ describe("ModelConfigCard", () => {
   it("edits model parameters", () => {
     const onTemperatureChange = vi.fn();
     const onMaxTokensChange = vi.fn();
-    render(
+    renderWithProviders(
       <ModelConfigCard
         model="gpt-4o"
         accessToken="token"

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { PlusIcon, TrashIcon, GripVerticalIcon } from "lucide-react";
 import VariableTextArea from "../variable_textarea";
 import { Message } from "./types";
@@ -7,9 +8,9 @@ import { Card } from "@/components/ui/card";
 import { Select as ShadcnSelect, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const ROLE_ITEMS = [
-  { value: "user", label: "User" },
-  { value: "assistant", label: "Assistant" },
-  { value: "system", label: "System" },
+  { value: "user", labelKey: "editor.roleUser" },
+  { value: "assistant", labelKey: "editor.roleAssistant" },
+  { value: "system", labelKey: "editor.roleSystem" },
 ] as const;
 
 interface PromptMessagesCardProps {
@@ -29,6 +30,7 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
 }) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const t = useTranslations("prompts");
 
   const handleDragStart = (index: number) => {
     setDraggedIndex(index);
@@ -56,9 +58,10 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
   return (
     <Card className="p-3">
       <div className="mb-2">
-        <p className="text-sm font-medium">Prompt messages</p>
+        <p className="text-sm font-medium">{t("editor.messages")}</p>
         <p className="text-muted-foreground text-xs mt-1">
-          Use <code className="bg-muted px-1 rounded-sm text-xs">{"{{variable}}"}</code> syntax for template variables
+          {t("editor.varHintPre")} <code className="bg-muted px-1 rounded-sm text-xs">{"{{variable}}"}</code>{" "}
+          {t("editor.varHintPost")}
         </p>
       </div>
       <div className="space-y-2">
@@ -76,21 +79,21 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
           >
             <div className="bg-muted px-2 py-1.5 border-b border-border flex items-center justify-between">
               <ShadcnSelect
-                items={ROLE_ITEMS}
+                items={ROLE_ITEMS.map((item) => ({ value: item.value, label: t(item.labelKey) }))}
                 value={message.role}
                 onValueChange={(value) => onUpdateMessage(index, "role", String(value))}
               >
                 <SelectTrigger
                   size="sm"
                   className="w-[110px] border-0 shadow-none"
-                  aria-label={`Message ${index + 1} role`}
+                  aria-label={t("editor.msgRole", { index: index + 1 })}
                 >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {ROLE_ITEMS.map((item) => (
                     <SelectItem key={item.value} value={item.value}>
-                      {item.label}
+                      {t(item.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -100,7 +103,7 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
                   <Button
                     variant="ghost"
                     size="icon-sm"
-                    aria-label={`Remove message ${index + 1}`}
+                    aria-label={t("editor.removeMsg", { index: index + 1 })}
                     onClick={() => onRemoveMessage(index)}
                   >
                     <TrashIcon size={14} />
@@ -116,7 +119,7 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
                 value={message.content}
                 onChange={(value) => onUpdateMessage(index, "content", value)}
                 rows={3}
-                placeholder="Enter prompt content..."
+                placeholder={t("editor.msgPlaceholder")}
               />
             </div>
           </div>
@@ -124,7 +127,7 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
       </div>
       <Button variant="ghost" size="sm" onClick={onAddMessage} className="mt-2">
         <PlusIcon size={14} className="mr-1" />
-        Add message
+        {t("editor.addMessage")}
       </Button>
     </Card>
   );

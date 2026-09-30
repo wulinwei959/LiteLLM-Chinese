@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import PublishModal from "./PublishModal";
 
@@ -6,7 +7,7 @@ describe("PublishModal", () => {
   it("edits and publishes a prompt name", async () => {
     const onNameChange = vi.fn();
     const onPublish = vi.fn();
-    render(
+    renderWithProviders(
       <PublishModal
         visible
         promptName="welcome"

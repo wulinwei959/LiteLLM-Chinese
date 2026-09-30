@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import ConversationPanel from "./index";
 
@@ -23,7 +24,7 @@ vi.mock("./useConversation", () => ({
 
 describe("ConversationPanel", () => {
   it("renders the empty conversation input", () => {
-    render(<ConversationPanel prompt={{}} accessToken="token" />);
+    renderWithProviders(<ConversationPanel prompt={{}} accessToken="token" />);
     expect(screen.getByPlaceholderText(/type your message/i)).toBeInTheDocument();
   });
 });

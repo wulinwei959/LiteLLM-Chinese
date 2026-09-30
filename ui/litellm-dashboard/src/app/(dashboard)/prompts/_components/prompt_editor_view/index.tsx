@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import ToolModal from "../tool_modal";
 import { toast } from "@/lib/toast";
 import { createPromptCall, updatePromptCall, getPromptInfo } from "@/components/networking";
@@ -15,17 +16,18 @@ import DotpromptViewTab from "./DotpromptViewTab";
 import VersionHistorySidePanel from "./VersionHistorySidePanel";
 
 const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess, accessToken, initialPromptData }) => {
+  const t = useTranslations("prompts");
   const getInitialPrompt = (): PromptType => {
     if (initialPromptData) {
       try {
         return parseExistingPrompt(initialPromptData);
       } catch (error) {
         console.error("Error parsing existing prompt:", error);
-        toast.fromError("Failed to parse prompt data");
+        toast.fromError(t("editor.parseFailed"));
       }
     }
     return {
-      name: "New prompt",
+      name: t("editor.newPrompt"),
       model: "gpt-4o",
       config: {
         temperature: 1,
@@ -142,7 +144,7 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
       setShowToolModal(false);
       setEditingToolIndex(null);
     } catch (error) {
-      toast.fromError("Invalid JSON format");
+      toast.fromError(t("editor.invalidJson"));
     }
   };
 
@@ -171,12 +173,12 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
       setActiveVersionId(`${versionData.prompt_id}.v${versionNum}`);
     } catch (error) {
       console.error("Error loading version:", error);
-      toast.fromError("Failed to load prompt version");
+      toast.fromError(t("editor.loadVersionFailed"));
     }
   };
 
   const handleSaveClick = () => {
-    if (!prompt.name || prompt.name.trim() === "" || prompt.name === "New prompt") {
+    if (!prompt.name || prompt.name.trim() === "" || prompt.name === t("editor.newPrompt")) {
       setShowNameModal(true);
     } else {
       handleSave();
@@ -185,12 +187,12 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
 
   const handleSave = async () => {
     if (!accessToken) {
-      toast.fromError("Access token is required");
+      toast.fromError(t("form.noToken"));
       return;
     }
 
     if (!prompt.name || prompt.name.trim() === "") {
-      toast.fromError("Please enter a valid prompt name");
+      toast.fromError(t("editor.enterName"));
       return;
     }
 
@@ -214,16 +216,16 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
 
       if (editMode && initialPromptData?.prompt_spec?.prompt_id) {
         await updatePromptCall(accessToken, initialPromptData.prompt_spec.prompt_id, promptData);
-        toast.success("Prompt updated successfully!");
+        toast.success(t("editor.updated"));
       } else {
         await createPromptCall(accessToken, promptData);
-        toast.success("Prompt created successfully!");
+        toast.success(t("form.created"));
       }
       onSuccess();
       onClose();
     } catch (error) {
       console.error("Error saving prompt:", error);
-      toast.fromError(editMode ? "Failed to update prompt" : "Failed to save prompt");
+      toast.fromError(editMode ? t("editor.updateFailed") : t("editor.saveFailed"));
     } finally {
       setIsSaving(false);
       setShowNameModal(false);

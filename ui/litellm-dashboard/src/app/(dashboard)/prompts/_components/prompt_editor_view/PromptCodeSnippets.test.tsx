@@ -1,11 +1,12 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import userEvent, { PointerEventsCheckLevel } from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PromptCodeSnippets from "./PromptCodeSnippets";
 
 describe("PromptCodeSnippets", () => {
   it("opens generated code for the selected prompt", async () => {
-    render(
+    renderWithProviders(
       <PromptCodeSnippets
         promptId="welcome"
         model="gpt-4o"
@@ -24,7 +25,7 @@ describe("PromptCodeSnippets", () => {
 
   it("shows the selected language by its human label on the trigger", async () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
-    render(
+    renderWithProviders(
       <PromptCodeSnippets
         promptId="welcome"
         model="gpt-4o"
@@ -47,7 +48,7 @@ describe("PromptCodeSnippets", () => {
 
   it("shows a key placeholder when there is no access token", async () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
-    render(<PromptCodeSnippets promptId="welcome" model="gpt-4o" accessToken={null} version="2" />);
+    renderWithProviders(<PromptCodeSnippets promptId="welcome" model="gpt-4o" accessToken={null} version="2" />);
     await user.click(screen.getByRole("button", { name: /get code/i }));
     await screen.findByText("Generated Code");
 
@@ -57,7 +58,7 @@ describe("PromptCodeSnippets", () => {
 
   it("includes the viewed environment in every generated request", async () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
-    render(
+    renderWithProviders(
       <PromptCodeSnippets
         promptId="welcome"
         model="gpt-4o"

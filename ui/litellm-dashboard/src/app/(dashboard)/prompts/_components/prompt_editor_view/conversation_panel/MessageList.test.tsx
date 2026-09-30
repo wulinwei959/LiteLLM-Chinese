@@ -1,11 +1,12 @@
 import { createRef } from "react";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../../tests/test-utils";
 import { describe, expect, it } from "vitest";
 import MessageList from "./MessageList";
 
 describe("MessageList", () => {
   it("renders conversation messages", () => {
-    render(
+    renderWithProviders(
       <MessageList
         messages={[{ role: "user", content: "Hello" }]}
         isLoading={false}

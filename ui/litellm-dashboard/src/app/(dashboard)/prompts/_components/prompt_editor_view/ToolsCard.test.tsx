@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import ToolsCard from "./ToolsCard";
 import { Tool } from "./types";
@@ -25,17 +26,17 @@ describe("ToolsCard", () => {
   };
 
   it("should render the component", () => {
-    render(<ToolsCard {...defaultProps} />);
+    renderWithProviders(<ToolsCard {...defaultProps} />);
     expect(screen.getByText("Tools")).toBeInTheDocument();
   });
 
   it("should display no tools message when tools array is empty", () => {
-    render(<ToolsCard {...defaultProps} />);
+    renderWithProviders(<ToolsCard {...defaultProps} />);
     expect(screen.getByText("No tools added")).toBeInTheDocument();
   });
 
   it("should render tools when provided", () => {
-    render(<ToolsCard {...defaultProps} tools={mockTools} />);
+    renderWithProviders(<ToolsCard {...defaultProps} tools={mockTools} />);
 
     expect(screen.getByText("Calculator")).toBeInTheDocument();
     expect(screen.getByText("Performs mathematical calculations")).toBeInTheDocument();
@@ -45,7 +46,7 @@ describe("ToolsCard", () => {
 
   it("should call onAddTool when Add button is clicked", () => {
     const mockOnAddTool = vi.fn();
-    render(<ToolsCard {...defaultProps} onAddTool={mockOnAddTool} />);
+    renderWithProviders(<ToolsCard {...defaultProps} onAddTool={mockOnAddTool} />);
 
     act(() => {
       fireEvent.click(screen.getByRole("button", { name: /add/i }));
@@ -56,7 +57,7 @@ describe("ToolsCard", () => {
 
   it("should call onEditTool with correct index when Edit button is clicked", () => {
     const mockOnEditTool = vi.fn();
-    render(<ToolsCard {...defaultProps} tools={mockTools} onEditTool={mockOnEditTool} />);
+    renderWithProviders(<ToolsCard {...defaultProps} tools={mockTools} onEditTool={mockOnEditTool} />);
 
     const editButtons = screen.getAllByText("Edit");
     act(() => {
@@ -69,7 +70,7 @@ describe("ToolsCard", () => {
 
   it("should call onRemoveTool with correct index when remove button is clicked", () => {
     const mockOnRemoveTool = vi.fn();
-    render(<ToolsCard {...defaultProps} tools={mockTools} onRemoveTool={mockOnRemoveTool} />);
+    renderWithProviders(<ToolsCard {...defaultProps} tools={mockTools} onRemoveTool={mockOnRemoveTool} />);
 
     const removeButtons = screen.getAllByRole("button", { name: /remove/i });
     act(() => {

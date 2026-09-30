@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import DeveloperMessageCard from "./DeveloperMessageCard";
 
@@ -15,7 +16,7 @@ vi.mock("../variable_textarea", () => ({
 describe("DeveloperMessageCard", () => {
   it("shows and updates the developer message", () => {
     const onChange = vi.fn();
-    render(<DeveloperMessageCard value="Be concise" onChange={onChange} />);
+    renderWithProviders(<DeveloperMessageCard value="Be concise" onChange={onChange} />);
     fireEvent.change(screen.getByRole("textbox", { name: "Developer message" }), { target: { value: "Be kind" } });
     expect(screen.getByText("Optional system instructions for the model")).toBeInTheDocument();
     expect(onChange).toHaveBeenCalledWith("Be kind");

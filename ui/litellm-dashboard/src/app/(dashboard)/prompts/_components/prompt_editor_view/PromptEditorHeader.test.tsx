@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import PromptEditorHeader from "./PromptEditorHeader";
 
@@ -11,7 +12,7 @@ describe("PromptEditorHeader", () => {
     const onBack = vi.fn();
     const onSave = vi.fn();
     const onNameChange = vi.fn();
-    render(
+    renderWithProviders(
       <PromptEditorHeader
         promptName="welcome"
         onNameChange={onNameChange}
@@ -36,7 +37,7 @@ describe("PromptEditorHeader", () => {
     ["staging", "Staging"],
     ["production", "Production"],
   ])("shows the %s environment by its human label", (environment, label) => {
-    render(
+    renderWithProviders(
       <PromptEditorHeader
         promptName="welcome"
         onNameChange={vi.fn()}
