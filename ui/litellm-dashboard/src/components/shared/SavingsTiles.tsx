@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 import SummaryCard from "@/components/shared/SummaryCard";
 import {
@@ -33,33 +34,34 @@ const useSavingsTotals = (results: DailyData[]) =>
 
 const SavingsTiles = ({ results, isLoading }: { results: DailyData[]; isLoading: boolean }) => {
   const totals = useSavingsTotals(results);
+  const t = useTranslations("costOptimization");
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       <SummaryCard
-        label="Total recorded savings"
+        label={t("tiles.total")}
         value={usd(totals.total)}
-        hint={isLoading ? "Loading..." : "Compression + prompt caching + auto-router"}
-        info="The sum of recorded savings in the three tiles beside it. Auto-router requests without an estimate are excluded. Its caching term is the LiteLLM-injected share; caching supplied by clients or providers appears only in the caching tile's Total figure."
+        hint={isLoading ? t("overview.loading") : t("tiles.totalHint")}
+        info={t("tiles.totalInfo")}
       />
       <SummaryCard
-        label="Compression savings"
+        label={t("tiles.compression")}
         value={usd(totals.compression)}
-        hint={`${formatNumberWithCommas(totals.savedTokens)} tokens compressed`}
-        info="Tokens Headroom removed before the call, priced at the model's input rate."
+        hint={t("tiles.tokens", { count: formatNumberWithCommas(totals.savedTokens) })}
+        info={t("tiles.compressionInfo")}
       />
       <SummaryCard
-        label="Prompt caching savings"
+        label={t("tiles.caching")}
         value={usd(totals.gatewayAttributedCaching)}
-        hint="LiteLLM injected"
-        secondary={{ label: "Total", value: usd(totals.caching) }}
-        info="What caching saved against paying the input rate for every token: the discount on tokens served from cache, less the premium providers charge to write a cache entry. The headline figure is the share LiteLLM earned by inserting the breakpoints itself, through configured injection points or auto prompt caching. The total beside it also counts requests that arrived with their own cache_control and providers that cache implicitly. Either can be negative on traffic that writes more cache than it reuses, which is why the headline is not always the smaller of the two."
+        hint={t("tiles.injected")}
+        secondary={{ label: t("tiles.totalLabel"), value: usd(totals.caching) }}
+        info={t("tiles.cachingInfo")}
       />
       <SummaryCard
-        label="Auto-router savings"
+        label={t("tiles.auto")}
         value={usd(totals.autorouter)}
-        hint="Recorded estimates subtotal"
-        info="Sum of available per-request savings estimates against each router's highest-tier baseline, net of classifier cost. Requests without an estimate contribute nothing to this subtotal; this does not mean they saved zero. Historical records retain the estimator used when they were written. The Auto-router usage tab shows coverage for current estimates."
+        hint={t("tiles.autoHint")}
+        info={t("tiles.autoInfo")}
       />
     </div>
   );

@@ -100,6 +100,11 @@ function usePoliciesTranslator() {
 }
 export type PoliciesTranslator = ReturnType<typeof usePoliciesTranslator>;
 
+function useCostOptimizationTranslator() {
+  return useTranslations("costOptimization");
+}
+export type CostOptimizationTranslator = ReturnType<typeof useCostOptimizationTranslator>;
+
 function usePromptsTranslator() {
   return useTranslations("prompts");
 }

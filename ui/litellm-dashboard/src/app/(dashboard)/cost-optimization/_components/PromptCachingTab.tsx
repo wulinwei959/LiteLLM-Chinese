@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { getGeneralSettingsCall } from "@/components/networking";
 import AdvancedDatePicker from "@/components/shared/advanced_date_picker";
@@ -19,6 +20,7 @@ interface PromptCachingTabProps {
 }
 
 const PromptCachingTab: React.FC<PromptCachingTabProps> = ({ accessToken, activity }) => {
+  const t = useTranslations("costOptimization");
   const [settings, setSettings] = useState<generalSettingsItem[]>([]);
 
   const loadSettings = useCallback(() => {
@@ -29,9 +31,9 @@ const PromptCachingTab: React.FC<PromptCachingTabProps> = ({ accessToken, activi
       .then((data: generalSettingsItem[]) => setSettings(data))
       .catch((error) => {
         console.error("Failed to load prompt caching settings:", error);
-        toast.fromError("Failed to load prompt caching settings");
+        toast.fromError(t("caching.loadFailed"));
       });
-  }, [accessToken]);
+  }, [accessToken, t]);
 
   useEffect(() => {
     loadSettings();
@@ -51,7 +53,7 @@ const PromptCachingTab: React.FC<PromptCachingTabProps> = ({ accessToken, activi
     <div className="w-full space-y-6">
       <PromptCachingPanel accessToken={accessToken} settings={settings} onChange={handleChange} />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">Date range for requests and cache leakage</p>
+        <p className="text-sm text-muted-foreground">{t("caching.rangeNote")}</p>
         <AdvancedDatePicker value={activity.dateValue} onValueChange={activity.onDateChange} />
       </div>
       <PromptCachingRequestsTable accessToken={accessToken} dateValue={activity.dateValue} />

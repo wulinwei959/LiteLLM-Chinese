@@ -2,6 +2,7 @@
 
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -33,6 +34,7 @@ interface PromptCachingRequestsTableProps {
 }
 
 export default function PromptCachingRequestsTable({ accessToken, dateValue }: PromptCachingRequestsTableProps) {
+  const t = useTranslations("costOptimization");
   const [filter, setFilter] = useState<RequestFilter>("all");
   const [pageSize, setPageSize] = useState(10);
   const window = activityWindow(dateValue, new Date());
@@ -79,36 +81,34 @@ export default function PromptCachingRequestsTable({ accessToken, dateValue }: P
     <Card>
       <CardHeader className="gap-3">
         <div>
-          <CardTitle>Prompt caching requests</CardTitle>
+          <CardTitle>{t("req.title")}</CardTitle>
           <p className="mt-1 text-sm text-muted-foreground">
-            Requests with recorded LiteLLM injection or provider cache reads or writes. A cache hit alone does not
-            establish LiteLLM injection; older logs may not record it.
+            {t("req.desc1")}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Net savings are estimated from logged usage and current configured pricing, after cache-write premiums.
-            Negative values mean caching cost more; unavailable means the request could not be priced.
+            {t("req.desc2")}
           </p>
         </div>
         <Tabs value={filter} onValueChange={changeFilter}>
-          <TabsList aria-label="Prompt caching request filters">
-            <TabsTrigger value="all">All caching</TabsTrigger>
-            <TabsTrigger value="injected">LiteLLM injected</TabsTrigger>
-            <TabsTrigger value="hits">Cache hits</TabsTrigger>
+          <TabsList aria-label={t("req.filterLabel")}>
+            <TabsTrigger value="all">{t("req.all")}</TabsTrigger>
+            <TabsTrigger value="injected">{t("req.injected")}</TabsTrigger>
+            <TabsTrigger value="hits">{t("req.hits")}</TabsTrigger>
           </TabsList>
         </Tabs>
       </CardHeader>
       <CardContent>
-        {!enabled && <p className="py-8 text-center text-muted-foreground">Select a date range to view requests</p>}
+        {!enabled && <p className="py-8 text-center text-muted-foreground">{t("req.selectRange")}</p>}
         {enabled && requests.isPending && (
           <p role="status" className="py-8 text-center text-muted-foreground">
-            Loading requests...
+            {t("req.loading")}
           </p>
         )}
         {enabled && requests.isError && (
           <div role="alert" className="flex items-center justify-center gap-3 py-8">
-            <p>Could not load prompt caching requests</p>
+            <p>{t("req.loadFailed")}</p>
             <Button variant="outline" onClick={() => void requests.refetch()} disabled={requests.isFetching}>
-              Retry
+              {t("req.retry")}
             </Button>
           </div>
         )}
@@ -116,19 +116,19 @@ export default function PromptCachingRequestsTable({ accessToken, dateValue }: P
           <>
             {requests.data.requests.length === 0 ? (
               <p className="py-8 text-center text-muted-foreground">
-                No matching prompt caching requests in this range
+                {t("req.empty")}
               </p>
             ) : (
-              <Table aria-label="Prompt caching requests">
+              <Table aria-label={t("req.title")}>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Request</TableHead>
-                    <TableHead>Model</TableHead>
-                    <TableHead>LiteLLM injection</TableHead>
-                    <TableHead className="text-right">Cache reads</TableHead>
-                    <TableHead className="text-right">Cache writes</TableHead>
-                    <TableHead className="text-right">Actual cost</TableHead>
-                    <TableHead className="text-right">Net savings</TableHead>
+                    <TableHead>{t("req.colRequest")}</TableHead>
+                    <TableHead>{t("req.colModel")}</TableHead>
+                    <TableHead>{t("req.colInjection")}</TableHead>
+                    <TableHead className="text-right">{t("req.colReads")}</TableHead>
+                    <TableHead className="text-right">{t("req.colWrites")}</TableHead>
+                    <TableHead className="text-right">{t("req.colCost")}</TableHead>
+                    <TableHead className="text-right">{t("req.colSavings")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -151,14 +151,14 @@ export default function PromptCachingRequestsTable({ accessToken, dateValue }: P
                           {request.model}
                         </span>
                       </TableCell>
-                      <TableCell>{request.gateway_injected ? "Recorded" : "Not recorded"}</TableCell>
+                      <TableCell>{request.gateway_injected ? t("req.recorded") : t("req.notRecorded")}</TableCell>
                       <TableCell className="text-right">{formatNumberWithCommas(request.cache_read_tokens)}</TableCell>
                       <TableCell className="text-right">
                         {formatNumberWithCommas(request.cache_creation_tokens)}
                       </TableCell>
                       <TableCell className="text-right">{usd(request.spend)}</TableCell>
                       <TableCell className="text-right">
-                        {request.net_savings === null ? "Unavailable" : usd(request.net_savings)}
+                        {request.net_savings === null ? t("req.unavailable") : usd(request.net_savings)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -167,7 +167,7 @@ export default function PromptCachingRequestsTable({ accessToken, dateValue }: P
             )}
             <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>Rows per page</span>
+                <span>{t("req.rowsPerPage")}</span>
                 <Select
                   value={String(pageSize)}
                   onValueChange={(value) => {
@@ -176,7 +176,7 @@ export default function PromptCachingRequestsTable({ accessToken, dateValue }: P
                     }
                   }}
                 >
-                  <SelectTrigger size="sm" aria-label="Rows per page" className="w-[4.5rem]">
+                  <SelectTrigger size="sm" aria-label={t("req.rowsPerPage")} className="w-[4.5rem]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -189,12 +189,12 @@ export default function PromptCachingRequestsTable({ accessToken, dateValue }: P
                 </Select>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-sm text-muted-foreground tabular-nums">Page {page}</span>
+                <span className="text-sm text-muted-foreground tabular-nums">{t("req.page", { page })}</span>
                 <div className="flex items-center gap-1">
                   <Button
                     variant="outline"
                     size="icon-sm"
-                    aria-label="Go to previous page"
+                    aria-label={t("req.prevPage")}
                     disabled={page === 1}
                     onClick={() => setPagination({ scope, cursors: cursors.slice(0, -1) })}
                   >
@@ -203,7 +203,7 @@ export default function PromptCachingRequestsTable({ accessToken, dateValue }: P
                   <Button
                     variant="outline"
                     size="icon-sm"
-                    aria-label="Go to next page"
+                    aria-label={t("req.nextPage")}
                     disabled={!requests.data.has_more || !nextCursor}
                     onClick={() => nextCursor && setPagination({ scope, cursors: [...cursors, nextCursor] })}
                   >

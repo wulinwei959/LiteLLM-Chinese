@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowDown, ArrowUp, ArrowUpDown, Info } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,6 +59,7 @@ const SortableHead = ({
   sort: SortState;
   onSort: (column: SortColumn) => void;
 }) => {
+  const t = useTranslations("costOptimization");
   const active = sort.column === column;
   const ActiveArrow = sort.dir === "asc" ? ArrowUp : ArrowDown;
   const Arrow = active ? ActiveArrow : ArrowUpDown;
@@ -67,7 +69,7 @@ const SortableHead = ({
         <button
           type="button"
           onClick={() => onSort(column)}
-          aria-label={`Sort by ${label}`}
+          aria-label={t("leak.sortBy", { label })}
           className="inline-flex items-center gap-1 font-medium hover:text-foreground"
         >
           {label}
@@ -80,6 +82,7 @@ const SortableHead = ({
 };
 
 const CacheLeakageCard: React.FC<CacheLeakageCardProps> = ({ activity }) => {
+  const t = useTranslations("costOptimization");
   const { results, loading, isFetchingMore, apiKeyTruncation } = activity;
   const [dimension, setDimension] = useState<CacheLeakageDimension>("key");
   const [sort, setSort] = useState<SortState>({ column: "potentialSavings", dir: "desc" });
@@ -93,9 +96,12 @@ const CacheLeakageCard: React.FC<CacheLeakageCardProps> = ({ activity }) => {
         : { column, dir: NATURAL_DIR[column] },
     );
 
-  const subject = dimension === "model" ? "Models" : "Keys";
-  const firstColumn = dimension === "model" ? "Model" : "Key";
-  const emptyNoun = dimension === "model" ? "model" : "key";
+  const subject = dimension === "model" ? t("leak.models") : t("leak.keys");
+  const firstColumn = dimension === "model" ? t("leak.firstModel") : t("leak.firstKey");
+  const emptyMessage =
+    loading || isFetchingMore
+      ? t("overview.loading")
+      : t(dimension === "model" ? "leak.emptyModel" : "leak.emptyKey");
 
   return (
     <TooltipProvider delay={300}>
@@ -103,37 +109,36 @@ const CacheLeakageCard: React.FC<CacheLeakageCardProps> = ({ activity }) => {
         <CardHeader>
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0">
-              <CardTitle>Cache leakage by {dimension === "model" ? "model" : "virtual key"}</CardTitle>
+              <CardTitle>{dimension === "model" ? t("leak.byModel") : t("leak.byKey")}</CardTitle>
               <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                {subject} sending large volumes of uncached input with a low cache hit rate are likely missing prompt
-                caching. Potential savings is approximate: uncached input priced at what your cached traffic nets per
-                cached token, after cache-write premiums.
+                {t("leak.desc", { subject })}
               </p>
             </div>
           </div>
           <Tabs value={dimension} onValueChange={(value) => setDimension(value === "model" ? "model" : "key")}>
             <TabsList>
-              <TabsTrigger value="key">By virtual key</TabsTrigger>
-              <TabsTrigger value="model">By model</TabsTrigger>
+              <TabsTrigger value="key">{t("leak.byKeyTab")}</TabsTrigger>
+              <TabsTrigger value="model">{t("leak.byModelTab")}</TabsTrigger>
             </TabsList>
           </Tabs>
         </CardHeader>
         <CardContent>
           {dimension === "key" && apiKeyTruncation !== undefined && (
             <p className="mb-2 text-sm text-muted-foreground" role="note">
-              Only the {apiKeyTruncation.limit.toLocaleString()} highest-spend keys of{" "}
-              {apiKeyTruncation.total.toLocaleString()} are loaded, so a lower-spend key that leaks more is not listed
-              here. Raise USAGE_TOP_API_KEYS_LIMIT on the proxy to load more keys.
+              {t("leak.truncNote", {
+                limit: apiKeyTruncation.limit.toLocaleString(),
+                total: apiKeyTruncation.total.toLocaleString(),
+              })}
             </p>
           )}
           {rows.length > 0 && isFetchingMore && (
             <p className="mb-2 text-sm text-muted-foreground">
-              Data is still loading; rows and totals will update as the rest of the range arrives.
+              {t("leak.stillLoading")}
             </p>
           )}
           {rows.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              {loading || isFetchingMore ? "Loading..." : `No ${emptyNoun} usage in this range.`}
+              {emptyMessage}
             </p>
           ) : (
             <Table>
@@ -142,22 +147,22 @@ const CacheLeakageCard: React.FC<CacheLeakageCardProps> = ({ activity }) => {
                   <TableHead>{firstColumn}</TableHead>
                   <SortableHead
                     column="uncachedPromptTokens"
-                    label="Uncached input tokens"
-                    info="Input tokens you sent in this range that weren't served from or written to the cache"
+                    label={t("leak.colUncached")}
+                    info={t("leak.uncachedHint")}
                     sort={sort}
                     onSort={onSort}
                   />
                   <SortableHead
                     column="cacheHitRatio"
-                    label="Cache hit rate"
-                    info="Share of your input tokens that were served from the cache"
+                    label={t("leak.colHitRate")}
+                    info={t("leak.hitRateHint")}
                     sort={sort}
                     onSort={onSort}
                   />
                   <SortableHead
                     column="potentialSavings"
-                    label="Potential savings"
-                    info="About how much you'd save if this uncached input used prompt caching. Estimated as uncached input tokens times what your cached traffic already nets per cached token (realized cache savings, after write premiums, ÷ cache read and write tokens). Blank when caching is not currently saving anything overall."
+                    label={t("leak.colPotential")}
+                    info={t("leak.potentialHint")}
                     sort={sort}
                     onSort={onSort}
                   />

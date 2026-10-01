@@ -1,5 +1,6 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -32,7 +33,7 @@ import CostOptimizationView from "./CostOptimizationView";
 const renderView = (userRole = "Admin") => {
   useAuthorizedMock.mockReturnValue({ accessToken: "test-token", userId: "u1", userRole });
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(
+  return renderWithProviders(
     <QueryClientProvider client={queryClient}>
       <CostOptimizationView accessToken="test-token" userId="u1" userRole={userRole} />
     </QueryClientProvider>,
