@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
 import { CircleHelp } from "lucide-react";
 
 import { Logo } from "@/components/molecules/logo/Logo";
@@ -69,6 +72,7 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
   onDiscountChange,
   onAddProvider,
 }) => {
+  const t = useTranslations("costTracking");
   const options = providerOptionsWithoutDiscount(discountConfig);
   const selectedOption = selectedProviderOption(selectedProvider);
 
@@ -87,7 +91,7 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
               itemToStringLabel={(option: ProviderOption) => option.label}
               isItemEqualToValue={(option: ProviderOption, value: ProviderOption) => option.value === value.value}
             >
-              <ComboboxInput id={PROVIDER_FIELD_ID} placeholder="Select provider" className="w-full">
+              <ComboboxInput id={PROVIDER_FIELD_ID} placeholder={t("selectProvider")} className="w-full">
                 {selectedOption && (
                   <InputGroupAddon align="inline-start">
                     <Logo provider={selectedOption.value} label={selectedOption.label} className="w-5 h-5" />
@@ -95,7 +99,7 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
                 )}
               </ComboboxInput>
               <ComboboxContent>
-                <ComboboxEmpty>No providers found</ComboboxEmpty>
+                <ComboboxEmpty>{t("noProviders")}</ComboboxEmpty>
                 <ComboboxList>
                   {(option: ProviderOption) => (
                     <ComboboxItem key={option.value} value={option}>

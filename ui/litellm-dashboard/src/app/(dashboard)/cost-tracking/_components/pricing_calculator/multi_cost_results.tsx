@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,7 +37,8 @@ const SingleModelBreakdown: React.FC<{
   loading: boolean;
   timePeriod: "day" | "month";
 }> = ({ result, loading, timePeriod }) => {
-  const periodLabel = timePeriod === "day" ? "Daily" : "Monthly";
+  const t = useTranslations("costTracking");
+  const periodLabel = timePeriod === "day" ? t("daily") : t("monthly");
   const periodCost = timePeriod === "day" ? result.daily_cost : result.monthly_cost;
   const periodInputCost = timePeriod === "day" ? result.daily_input_cost : result.monthly_input_cost;
   const periodOutputCost = timePeriod === "day" ? result.daily_output_cost : result.monthly_output_cost;
@@ -46,25 +50,25 @@ const SingleModelBreakdown: React.FC<{
       {loading && (
         <div className="flex items-center gap-2 text-muted-foreground text-sm">
           <UiLoadingSpinner className="size-3.5" />
-          <span>Updating...</span>
+          <span>{t("updating")}</span>
         </div>
       )}
 
       <div className="grid grid-cols-4 gap-4">
         <div className="min-w-0">
-          <p className="text-xs text-muted-foreground block">Total/Request</p>
+          <p className="text-xs text-muted-foreground block">{t("totalPerRequestShort")}</p>
           <p className="text-base font-semibold text-info break-words">{formatCost(result.cost_per_request)}</p>
         </div>
         <div className="min-w-0">
-          <p className="text-xs text-muted-foreground block">Input Cost</p>
+          <p className="text-xs text-muted-foreground block">{t("inputCost")}</p>
           <p className="text-sm break-words">{formatCost(result.input_cost_per_request)}</p>
         </div>
         <div className="min-w-0">
-          <p className="text-xs text-muted-foreground block">Output Cost</p>
+          <p className="text-xs text-muted-foreground block">{t("outputCost")}</p>
           <p className="text-sm break-words">{formatCost(result.output_cost_per_request)}</p>
         </div>
         <div className="min-w-0">
-          <p className="text-xs text-muted-foreground block">Margin Fee</p>
+          <p className="text-xs text-muted-foreground block">{t("marginFee")}</p>
           <p className={`text-sm break-words ${result.margin_cost_per_request > 0 ? "text-warning" : ""}`}>
             {formatCost(result.margin_cost_per_request)}
           </p>
@@ -118,6 +122,7 @@ const SingleModelBreakdown: React.FC<{
 
 const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePeriod }) => {
   const [expandedModels, setExpandedModels] = useState<Set<string>>(new Set());
+  const t = useTranslations("costTracking");
 
   const validEntries = multiResult.entries.filter((e) => e.result !== null);
   const loadingEntries = multiResult.entries.filter((e) => e.loading);
@@ -130,7 +135,7 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
   if (!hasAnyResult && !isAnyLoading && !hasAnyError) {
     return (
       <div className="py-6 text-center border border-dashed border-border rounded-lg bg-muted">
-        <p className="text-muted-foreground">Select models above to see cost estimates</p>
+        <p className="text-muted-foreground">{t("selectModelsFirst")}</p>
       </div>
     );
   }
@@ -140,7 +145,7 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
     return (
       <div className="py-6 text-center">
         <UiLoadingSpinner className="inline-block size-5" />
-        <p className="text-muted-foreground block mt-2">Calculating costs...</p>
+        <p className="text-muted-foreground block mt-2">{t("calculating")}</p>
       </div>
     );
   }
@@ -151,7 +156,7 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
       <div className="space-y-4">
         <Separator className="my-4" />
         <div className="flex items-center justify-between">
-          <p className="text-base font-semibold text-foreground">Cost Estimates</p>
+          <p className="text-base font-semibold text-foreground">{t("costEstimates")}</p>
           {isAnyLoading && <UiLoadingSpinner className="size-3.5" />}
         </div>
         {/* Error Messages */}
@@ -204,7 +209,7 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
       <Separator className="my-4" />
 
       <div className="flex items-center justify-between">
-        <p className="text-base font-semibold text-foreground">Cost Estimates</p>
+        <p className="text-base font-semibold text-foreground">{t("costEstimates")}</p>
         <div className="flex items-center gap-2">
           {isAnyLoading && <UiLoadingSpinner className="size-3.5" />}
           <MultiExportDropdown multiResult={multiResult} />
@@ -215,7 +220,7 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
       <Card size="sm" className="px-4 bg-linear-to-r from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-950">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
           <div className="min-w-0">
-            <span className="text-xs text-muted-foreground">Total Per Request</span>
+            <span className="text-xs text-muted-foreground">{t("totalPerRequest")}</span>
             <div className="text-lg font-mono text-info break-words">
               {formatCost(multiResult.totals.cost_per_request)}
             </div>
@@ -232,7 +237,7 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
         {hasMargin && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mt-3 pt-3 border-t border-border">
             <div className="min-w-0">
-              <div className="text-xs text-muted-foreground">Margin Fee/Request</div>
+              <div className="text-xs text-muted-foreground">{t("marginFeePerRequest")}</div>
               <div className="text-sm font-mono text-warning break-words">
                 {formatCost(multiResult.totals.margin_per_request)}
               </div>
@@ -252,12 +257,12 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
         <Table className="border border-border rounded-lg">
           <TableHeader>
             <TableRow>
-              <TableHead>Model</TableHead>
-              <TableHead className="text-right">Per Request</TableHead>
-              <TableHead className="text-right">Margin Fee</TableHead>
+              <TableHead>{t("modelCol")}</TableHead>
+              <TableHead className="text-right">{t("perRequestCol")}</TableHead>
+              <TableHead className="text-right">{t("marginFee")}</TableHead>
               <TableHead className="text-right">{periodLabel}</TableHead>
               <TableHead className="w-10">
-                <span className="sr-only">Cost breakdown</span>
+                <span className="sr-only">{t("costBreakdown")}</span>
               </TableHead>
             </TableRow>
           </TableHeader>

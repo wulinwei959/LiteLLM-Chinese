@@ -154,3 +154,8 @@ function useAgentsTranslator() {
   return useTranslations("agents");
 }
 export type AgentsTranslator = ReturnType<typeof useAgentsTranslator>;
+
+function useCostTrackingTranslator() {
+  return useTranslations("costTracking");
+}
+export type CostTrackingTranslator = ReturnType<typeof useCostTrackingTranslator>;

@@ -1,10 +1,14 @@
+"use client";
+
 import React, { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import CodeBlock from "@/components/CodeBlock";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const HowItWorks: React.FC = () => {
   const [responseCost, setResponseCost] = useState("");
+  const t = useTranslations("costTracking");
   const [discountAmount, setDiscountAmount] = useState("");
 
   const calculatedDiscount = useMemo(() => {
@@ -31,7 +35,7 @@ const HowItWorks: React.FC = () => {
   return (
     <div className="space-y-4 pt-2">
       <div>
-        <h3 className="mb-1 text-sm font-medium text-foreground">Cost Calculation</h3>
+        <h3 className="mb-1 text-sm font-medium text-foreground">{t("calcTitle")}</h3>
         <p className="text-xs text-muted-foreground">
           Discounts are applied to provider costs:{" "}
           <code className="rounded-sm bg-muted px-1.5 py-0.5 text-xs text-foreground">
@@ -40,18 +44,18 @@ const HowItWorks: React.FC = () => {
         </p>
       </div>
       <div>
-        <h3 className="mb-1 text-sm font-medium text-foreground">Example</h3>
+        <h3 className="mb-1 text-sm font-medium text-foreground">{t("example")}</h3>
         <p className="text-xs text-muted-foreground">
           A 5% discount on a $10.00 request results in: $10.00 × (1 - 0.05) = $9.50
         </p>
       </div>
       <div>
-        <h3 className="mb-1 text-sm font-medium text-foreground">Valid Range</h3>
-        <p className="text-xs text-muted-foreground">Discount percentages must be between 0% and 100%</p>
+        <h3 className="mb-1 text-sm font-medium text-foreground">{t("validRange")}</h3>
+        <p className="text-xs text-muted-foreground">{t("validRangeDesc")}</p>
       </div>
 
       <div className="border-t border-border pt-4">
-        <h3 className="mb-2 text-sm font-medium text-foreground">Validating Discounts</h3>
+        <h3 className="mb-2 text-sm font-medium text-foreground">{t("validating")}</h3>
         <p className="mb-3 text-xs text-muted-foreground">
           Make a test request and check the response headers to verify discounts are applied:
         </p>
@@ -65,31 +69,31 @@ const HowItWorks: React.FC = () => {
     "messages": [{"role": "user", "content": "Hello"}]
   }'`}
         />
-        <p className="mb-2 mt-3 text-xs text-muted-foreground">Look for these headers in the response:</p>
+        <p className="mb-2 mt-3 text-xs text-muted-foreground">{t("lookHeaders")}</p>
         <div className="space-y-1.5">
           <div className="flex items-start gap-3">
             <code className="whitespace-nowrap rounded-sm bg-muted px-2 py-1 font-mono text-xs text-foreground">
               x-litellm-response-cost
             </code>
-            <p className="text-xs text-muted-foreground">Final cost after discount</p>
+            <p className="text-xs text-muted-foreground">{t("finalCostAfter")}</p>
           </div>
           <div className="flex items-start gap-3">
             <code className="whitespace-nowrap rounded-sm bg-muted px-2 py-1 font-mono text-xs text-foreground">
               x-litellm-response-cost-original
             </code>
-            <p className="text-xs text-muted-foreground">Original cost before discount</p>
+            <p className="text-xs text-muted-foreground">{t("originalCostBefore")}</p>
           </div>
           <div className="flex items-start gap-3">
             <code className="whitespace-nowrap rounded-sm bg-muted px-2 py-1 font-mono text-xs text-foreground">
               x-litellm-response-cost-discount-amount
             </code>
-            <p className="text-xs text-muted-foreground">Amount discounted</p>
+            <p className="text-xs text-muted-foreground">{t("amountDiscounted")}</p>
           </div>
         </div>
       </div>
 
       <div className="border-t border-border pt-4">
-        <h3 className="mb-3 text-sm font-medium text-foreground">Discount Calculator</h3>
+        <h3 className="mb-3 text-sm font-medium text-foreground">{t("calcSection")}</h3>
         <p className="mb-3 text-xs text-muted-foreground">
           Enter values from your response headers to verify the discount:
         </p>
@@ -122,22 +126,22 @@ const HowItWorks: React.FC = () => {
 
         {calculatedDiscount && (
           <div className="rounded-lg border border-border bg-muted/50 p-4">
-            <p className="mb-2 text-sm font-medium text-foreground">Calculated Results</p>
+            <p className="mb-2 text-sm font-medium text-foreground">{t("results")}</p>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">Original Cost:</p>
+                <p className="text-xs text-muted-foreground">{t("originalCost")}</p>
                 <code className="font-mono text-xs text-foreground">${calculatedDiscount.originalCost}</code>
               </div>
               <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">Final Cost:</p>
+                <p className="text-xs text-muted-foreground">{t("finalCost")}</p>
                 <code className="font-mono text-xs text-foreground">${calculatedDiscount.finalCost}</code>
               </div>
               <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">Discount Amount:</p>
+                <p className="text-xs text-muted-foreground">{t("discountAmount")}</p>
                 <code className="font-mono text-xs text-foreground">${calculatedDiscount.discountAmount}</code>
               </div>
               <div className="flex items-center justify-between border-t border-border pt-2">
-                <p className="text-xs font-semibold text-foreground">Discount Applied:</p>
+                <p className="text-xs font-semibold text-foreground">{t("discountApplied")}</p>
                 <p className="text-sm font-bold text-foreground">{calculatedDiscount.discountPercentage}%</p>
               </div>
             </div>

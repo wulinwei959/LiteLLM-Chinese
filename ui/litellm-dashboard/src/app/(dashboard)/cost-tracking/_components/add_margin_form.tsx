@@ -1,4 +1,8 @@
+"use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
+import type { CostTrackingTranslator } from "@/lib/i18n/translators";
 import { CircleHelp } from "lucide-react";
 import { Providers, provider_map } from "@/components/provider_info_helpers";
 import { Logo } from "@/components/molecules/logo/Logo";
@@ -36,14 +40,14 @@ interface ProviderOption {
   providerEnum: string | null;
 }
 
-const GLOBAL_OPTION: ProviderOption = {
+const buildGlobalOption = (t: CostTrackingTranslator): ProviderOption => ({
   value: "global",
-  label: "Global (All Providers)",
+  label: t("globalAll"),
   providerEnum: null,
-};
+});
 
-const buildProviderOptions = (marginConfig: MarginConfig): ProviderOption[] => [
-  GLOBAL_OPTION,
+const buildProviderOptions = (marginConfig: MarginConfig, t: CostTrackingTranslator): ProviderOption[] => [
+  buildGlobalOption(t),
   ...Object.entries(Providers).flatMap(([providerEnum, providerDisplayName]) => {
     const providerValue = provider_map[providerEnum as keyof typeof provider_map];
     if (providerValue && marginConfig[providerValue]) {
@@ -75,7 +79,8 @@ const AddMarginForm: React.FC<AddMarginFormProps> = ({
   onFixedAmountChange,
   onAddProvider,
 }) => {
-  const providerOptions = buildProviderOptions(marginConfig);
+  const t = useTranslations("costTracking");
+  const providerOptions = buildProviderOptions(marginConfig, t);
   const selectedOption = providerOptions.find((option) => option.value === selectedProvider) ?? null;
 
   return (
@@ -95,9 +100,9 @@ const AddMarginForm: React.FC<AddMarginFormProps> = ({
             itemToStringLabel={(option: ProviderOption) => option.label}
             isItemEqualToValue={(option: ProviderOption, selected: ProviderOption) => option.value === selected.value}
           >
-            <ComboboxInput id="margin-provider" placeholder="Select provider or 'Global'" className="w-full" />
+            <ComboboxInput id="margin-provider" placeholder={t("selectProviderOrGlobal")} className="w-full" />
             <ComboboxContent>
-              <ComboboxEmpty>No matching providers</ComboboxEmpty>
+              <ComboboxEmpty>{t("noMatchingProviders")}</ComboboxEmpty>
               <ComboboxList>
                 {(option: ProviderOption) => (
                   <ComboboxItem key={option.value} value={option}>
