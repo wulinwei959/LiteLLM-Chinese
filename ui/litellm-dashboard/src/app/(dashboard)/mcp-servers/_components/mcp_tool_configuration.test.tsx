@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import MCPToolConfiguration from "./mcp_tool_configuration";
+import { renderWithProviders } from "@/../tests/test-utils";
 
 const tools = [
   { name: "read_user", description: "Read user" },
@@ -9,7 +10,7 @@ const tools = [
 ];
 
 const renderToolConfiguration = (onAllowedToolsChange = vi.fn()) => {
-  render(
+  renderWithProviders(
     <MCPToolConfiguration
       accessToken="token"
       formValues={{ url: "https://example.com/mcp", transport: "http", auth_type: "none" }}
@@ -48,7 +49,7 @@ describe("MCPToolConfiguration", () => {
   it("preserves a restored selection on a legacy server instead of clearing it on init", async () => {
     const onAllowedToolsChange = vi.fn();
 
-    render(
+    renderWithProviders(
       <MCPToolConfiguration
         accessToken="token"
         formValues={{ url: "https://example.com/mcp", transport: "http", auth_type: "none" }}
@@ -98,7 +99,7 @@ describe("MCPToolConfiguration", () => {
       );
     };
 
-    render(<Wrapper />);
+    renderWithProviders(<Wrapper />);
 
     fireEvent.click(screen.getByText("Flat List"));
     fireEvent.click(screen.getByText("read_user"));
@@ -132,7 +133,7 @@ describe("MCPToolConfiguration", () => {
       );
     };
 
-    render(<Wrapper />);
+    renderWithProviders(<Wrapper />);
 
     fireEvent.click(screen.getByText("Flat List"));
     fireEvent.click(screen.getAllByTitle("Edit display name and description")[0]);
@@ -169,7 +170,7 @@ describe("MCPToolConfiguration", () => {
       );
     };
 
-    render(<Wrapper />);
+    renderWithProviders(<Wrapper />);
 
     fireEvent.click(screen.getByText("Flat List"));
     fireEvent.click(screen.getAllByTitle("Edit display name and description")[0]);

@@ -2,6 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { useAutoRouters, useInvalidateAutoRouters } from "@/app/(dashboard)/hooks/models/useModels";
 import { useModelDetailRouting } from "@/app/(dashboard)/models-and-endpoints/detailNavigation";
@@ -35,6 +36,7 @@ export function AutoRoutersPanel({
   teams,
   createScope,
 }: AutoRoutersPanelProps) {
+  const t = useTranslations("models.autoRouters");
   const canCreate = createScope !== "forbidden";
   const { data: deployments, isLoading } = useAutoRouters();
   const invalidateAutoRouters = useInvalidateAutoRouters();
@@ -75,16 +77,13 @@ export function AutoRoutersPanel({
     <div className="w-full space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-base font-semibold text-foreground">Auto routers</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Auto routers sit above your deployments and pick a model per request. They are called like any other model,
-            so clients keep using a single model name.
-          </p>
+          <h2 className="text-base font-semibold text-foreground">{t("title")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("description")}</p>
         </div>
         {canCreate && (
           <Button onClick={() => setIsCreating(true)} className="shrink-0">
             <Plus />
-            Add Auto Router
+            {t("addButton")}
           </Button>
         )}
       </div>
@@ -102,10 +101,9 @@ export function AutoRoutersPanel({
             growing past the viewport. */}
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
           <DialogHeader>
-            <DialogTitle>Add Auto Router</DialogTitle>
+            <DialogTitle>{t("addDialog.title")}</DialogTitle>
             <DialogDescription>
-              Choose a classifier to route each request to a model. Called like any other model, so clients keep using a
-              single model name.
+              {t("addDialog.description")}
             </DialogDescription>
           </DialogHeader>
           <AddAutoRouterTab

@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import type { PaginationState } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import HealthCheckComponent from "@/components/model_dashboard/HealthCheckComponent";
 import { getDisplayModelName } from "@/components/view_model/model_name_display";
 import { useModelsInfo } from "@/app/(dashboard)/hooks/models/useModels";
@@ -14,6 +15,7 @@ import { useModelDetailRouting } from "@/app/(dashboard)/models-and-endpoints/de
 const HEALTH_PAGE_SIZE = 50;
 
 export default function HealthStatusPanel() {
+  const t = useTranslations("models");
   const { accessToken } = useAuthorized();
   const { data: teams } = useTeams();
   const { data: modelCostMapData } = useModelCostMap();

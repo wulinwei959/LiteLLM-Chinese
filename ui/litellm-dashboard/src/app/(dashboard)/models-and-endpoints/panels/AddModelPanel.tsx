@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import AddModelForm from "@/components/add_model/AddModelForm";
 import { handleAddModelSubmit } from "@/components/add_model/handle_add_model_submit";
 import {
@@ -19,6 +20,7 @@ import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 const INITIAL_VALUES: MountedFormValues = { litellm_credential_name: null };
 
 export default function AddModelPanel() {
+  const t = useTranslations("models");
   const { accessToken } = useAuthorized();
   const form = useForm<MountedFormValues>({ mode: "onChange", defaultValues: INITIAL_VALUES });
   const registry = useMountRegistry();

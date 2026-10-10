@@ -2,65 +2,81 @@
 
 import { MCPServer } from "@/components/mcp_tools/types";
 
+export type StandardsKey =
+  | "mcpStandards.documentation"
+  | "mcpStandards.description"
+  | "mcpStandards.descriptionDesc"
+  | "mcpStandards.alias"
+  | "mcpStandards.aliasDesc"
+  | "mcpStandards.source"
+  | "mcpStandards.sourceUrl"
+  | "mcpStandards.sourceUrlDesc"
+  | "mcpStandards.connection"
+  | "mcpStandards.url"
+  | "mcpStandards.urlDesc"
+  | "mcpStandards.security"
+  | "mcpStandards.authConfigured"
+  | "mcpStandards.authConfiguredDesc";
+
 export interface RequiredFieldDef {
   key: string;
-  label: string;
-  description: string;
+  label: StandardsKey;
+  description: StandardsKey;
   check: (server: MCPServer) => boolean;
 }
 
 export interface FieldGroup {
-  label: string;
+  label: StandardsKey;
   fields: RequiredFieldDef[];
 }
 
 export const FIELD_GROUPS: FieldGroup[] = [
   {
-    label: "Documentation",
+    label: "mcpStandards.documentation",
     fields: [
       {
         key: "description",
-        label: "Description",
-        description: "Must have a non-empty description",
+        label: "mcpStandards.description",
+        description: "mcpStandards.descriptionDesc",
         check: (s) => !!s.description?.trim(),
       },
       {
         key: "alias",
-        label: "Alias",
-        description: "Must have a display alias",
+        label: "mcpStandards.alias",
+        description: "mcpStandards.aliasDesc",
         check: (s) => !!s.alias?.trim(),
       },
     ],
   },
   {
-    label: "Source",
+    label: "mcpStandards.source",
     fields: [
       {
         key: "source_url",
-        label: "GitHub / Source URL",
-        description: "Must link to a source repository",
+        label: "mcpStandards.sourceUrl",
+        description: "mcpStandards.sourceUrlDesc",
         check: (s) => !!s.source_url?.trim(),
       },
     ],
   },
   {
-    label: "Connection",
+    label: "mcpStandards.connection",
     fields: [
       {
         key: "url",
-        label: "Server URL",
-        description: "Must have a URL configured",
+        label: "mcpStandards.url",
+        description: "mcpStandards.urlDesc",
         check: (s) => !!s.url?.trim(),
       },
     ],
   },
   {
-    label: "Security",
+    label: "mcpStandards.security",
     fields: [
       {
         key: "auth_type",
-        label: "Auth configured",
-        description: "Must use authentication (not 'none')",
+        label: "mcpStandards.authConfigured",
+        description: "mcpStandards.authConfiguredDesc",
         check: (s) => !!s.auth_type && s.auth_type !== "none",
       },
     ],

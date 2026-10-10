@@ -1,4 +1,5 @@
 import React, { useId, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Paperclip } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ const ResponsesImageUpload: React.FC<ResponsesImageUploadProps> = ({
   onImageUpload,
   disabled = false,
 }) => {
+  const t = useTranslations("playground");
   const inputRef = useRef<HTMLInputElement>(null);
   const inputId = useId();
 
@@ -59,7 +61,7 @@ const ResponsesImageUpload: React.FC<ResponsesImageUploadProps> = ({
               variant="ghost"
               size="icon-sm"
               disabled={disabled}
-              aria-label="Attach image or PDF"
+              aria-label={t("chatImageUpload.attachImageOrPdf")}
               className="text-muted-foreground hover:text-foreground"
               onClick={() => inputRef.current?.click()}
             />
@@ -67,7 +69,7 @@ const ResponsesImageUpload: React.FC<ResponsesImageUploadProps> = ({
         >
           <Paperclip className="size-4" />
         </TooltipTrigger>
-        <TooltipContent>Attach image or PDF</TooltipContent>
+        <TooltipContent>{t("chatImageUpload.attachImageOrPdf")}</TooltipContent>
       </Tooltip>
     </>
   );

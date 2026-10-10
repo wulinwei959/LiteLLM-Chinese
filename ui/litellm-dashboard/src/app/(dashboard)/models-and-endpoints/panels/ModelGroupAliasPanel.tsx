@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import ModelGroupAliasSettings from "@/components/model_group_alias_settings";
 import { getCallbacksCall } from "@/components/networking";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 
 export default function ModelGroupAliasPanel() {
+  const t = useTranslations("models");
   const { accessToken, userId: userID, userRole } = useAuthorized();
   const [modelGroupAlias, setModelGroupAlias] = useState<{ [key: string]: string }>({});
 

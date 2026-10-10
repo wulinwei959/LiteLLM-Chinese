@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Copy, Info, Loader2, Pencil, RefreshCw, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { ModelsTranslator } from "@/lib/i18n/translators";
 
 import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";

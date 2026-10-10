@@ -4,6 +4,7 @@ import { toast } from "@/lib/toast";
 import { DEBOUNCE_WAIT_MS } from "@/utils/debounceConstants";
 import { Eraser, FileText, Plus, Trash2 } from "lucide-react";
 import { useDebouncedValue } from "@tanstack/react-pacer/debouncer";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -50,14 +51,19 @@ interface CompareUIProps {
   accessToken: string | null;
   disabledPersonalKeyCreation: boolean;
 }
-const GENERIC_FOLLOW_UPS = [
-  "Can you summarize the key points?",
-  "What assumptions did you make?",
-  "What are the next steps?",
-];
-const SUGGESTED_PROMPTS = ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"];
+const GENERIC_FOLLOW_UP_KEYS = [
+  "compare.genericFollowUps.0",
+  "compare.genericFollowUps.1",
+  "compare.genericFollowUps.2",
+] as const;
+const SUGGESTED_PROMPT_KEYS = [
+  "compare.suggestedPrompts.0",
+  "compare.suggestedPrompts.1",
+  "compare.suggestedPrompts.2",
+] as const;
 const DEFAULT_ENDPOINT = EndpointId.CHAT_COMPLETIONS;
 export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: CompareUIProps) {
+  const t = useTranslations("playground");
   const [comparisons, setComparisons] = useState<ComparisonInstance[]>([
     {
       id: "1",
@@ -482,7 +488,7 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
       return;
     }
     if (!effectiveApiKey) {
-      toast.fromError("Please provide a Virtual Key or select Current UI Session");
+      toast.fromError(t("compare.provideVirtualKey"));
       return;
     }
     const targetComparisons = comparisons;
@@ -628,7 +634,7 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
         .catch((error) => {
           const errorMessage = error instanceof Error ? error.message : String(error);
           console.error("CompareUI: failed to fetch response", error);
-          toast.fromError(errorMessage);
+          toast.fromError(t("compare.errorFetching", { error: errorMessage }));
           setComparisons((prev) =>
             prev.map((comparison) => {
               if (comparison.id !== prepared.id) {
@@ -692,20 +698,20 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
         <div className="border-b px-4 py-2">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground">Virtual Key Source</span>
+              <span className="text-sm font-medium text-muted-foreground">{t("config.virtualKeySource")}</span>
               <Select
                 value={apiKeySource}
                 onValueChange={(value) => setApiKeySource(value as "session" | "custom")}
                 disabled={disabledPersonalKeyCreation}
               >
-                <SelectTrigger className="w-48" aria-label="Virtual Key Source">
-                  <SelectValue>{apiKeySource === "custom" ? "Virtual Key" : "Current UI Session"}</SelectValue>
+                <SelectTrigger className="w-48" aria-label={t("config.virtualKeySource")}>
+                  <SelectValue>{apiKeySource === "custom" ? t("config.customKey") : t("config.session")}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="session" disabled={!canUseSessionKey}>
-                    Current UI Session
+                    {t("config.session")}
                   </SelectItem>
-                  <SelectItem value="custom">Virtual Key</SelectItem>
+                  <SelectItem value="custom">{t("config.customKey")}</SelectItem>
                 </SelectContent>
               </Select>
               {apiKeySource === "custom" && (
@@ -713,15 +719,15 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
                   type="password"
                   value={customApiKey}
                   onChange={(event) => setCustomApiKey(event.target.value)}
-                  placeholder="Enter Virtual Key"
+                  placeholder={t("config.enterVirtualKey")}
                   className="w-56"
                 />
               )}
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground">Endpoint</span>
+              <span className="text-sm font-medium text-muted-foreground">{t("config.endpointType")}</span>
               <Select value={selectedEndpoint} onValueChange={(value) => setSelectedEndpoint(value as EndpointIdType)}>
-                <SelectTrigger className="w-56" aria-label="Endpoint">
+                <SelectTrigger className="w-56" aria-label={t("config.endpointType")}>
                   <SelectValue>{endpointConfig.label}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -736,17 +742,17 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
             <div className="flex items-center gap-3">
               <Button variant="outline" onClick={clearAllChats} disabled={!hasMessages}>
                 <Eraser />
-                Clear All Chats
+                {t("compare.clearAllChats")}
               </Button>
               <Tooltip>
                 <TooltipTrigger render={<span className="inline-flex" />}>
                   <Button variant="outline" onClick={addComparison} disabled={comparisons.length >= maxComparisons}>
                     <Plus />
-                    Add Comparison
+                    {t("compare.addComparison")}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {comparisons.length >= maxComparisons ? "Compare up to 3 models at a time" : "Add another comparison"}
+                  {comparisons.length >= maxComparisons ? t("compare.maxComparisonsReached") : t("compare.addAnotherComparison")}
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -778,30 +784,30 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
             <div className="border border-border shadow-lg rounded-xl bg-card p-4">
               <div className="flex items-center justify-between gap-4 mb-3 min-h-8">
                 {hasAttachment ? (
-                  <span className="text-sm text-muted-foreground">Attachment ready to send</span>
+                  <span className="text-sm text-muted-foreground">{t("compare.attachmentReady")}</span>
                 ) : showSuggestedPrompts ? (
                   <div className="flex items-center gap-2 overflow-x-auto">
-                    {SUGGESTED_PROMPTS.map((prompt) => (
+                    {SUGGESTED_PROMPT_KEYS.map((promptKey) => (
                       <button
-                        key={prompt}
+                        key={promptKey}
                         type="button"
-                        onClick={() => handleFollowUpSelect(prompt)}
+                        onClick={() => handleFollowUpSelect(t(promptKey))}
                         className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent cursor-pointer"
                       >
-                        {prompt}
+                        {t(promptKey)}
                       </button>
                     ))}
                   </div>
                 ) : haveAllResponses && !hasAttachment ? (
                   <div className="flex items-center gap-2 overflow-x-auto">
-                    {GENERIC_FOLLOW_UPS.map((question) => (
+                    {GENERIC_FOLLOW_UP_KEYS.map((questionKey) => (
                       <button
-                        key={question}
+                        key={questionKey}
                         type="button"
-                        onClick={() => handleFollowUpSelect(question)}
+                        onClick={() => handleFollowUpSelect(t(questionKey))}
                         className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent cursor-pointer"
                       >
-                        {question}
+                        {t(questionKey)}
                       </button>
                     ))}
                   </div>

@@ -520,7 +520,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
     <div className="p-4">
       <div>
         {backButton}
-        <h1 className="text-2xl font-semibold">{guardrailData.guardrail_name || "Unnamed Guardrail"}</h1>
+        <h1 className="text-2xl font-semibold">{guardrailData.guardrail_name || t("info.unnamed")}</h1>
         <div className="flex items-center cursor-pointer">
           <p className="text-muted-foreground font-mono">{guardrailData.guardrail_id}</p>
 

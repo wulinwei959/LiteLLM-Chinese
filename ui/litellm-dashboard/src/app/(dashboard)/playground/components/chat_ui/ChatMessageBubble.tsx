@@ -1,5 +1,6 @@
 import { Bot, User } from "lucide-react";
 import React from "react";
+import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -40,6 +41,7 @@ function ChatMessageBubble({
   codeInterpreterResult,
   accessToken,
 }: ChatMessageBubbleProps) {
+  const t = useTranslations("playground");
   const syntaxTheme = useSyntaxTheme(coy);
   const isUser = message.role === "user";
 
@@ -65,7 +67,9 @@ function ChatMessageBubble({
               <Bot className="size-3 text-muted-foreground" aria-hidden="true" />
             )}
           </div>
-          <strong className="text-sm capitalize">{message.role}</strong>
+          <strong className="text-sm capitalize">
+              {message.role === "assistant" ? t("chatMessageBubble.assistant") : t("chatMessageBubble.user")}
+            </strong>
           {message.role === "assistant" && message.model && (
             <span className="max-w-48 truncate rounded-sm bg-muted px-2 py-0.5 text-xs font-normal text-muted-foreground sm:max-w-80">
               {message.model}

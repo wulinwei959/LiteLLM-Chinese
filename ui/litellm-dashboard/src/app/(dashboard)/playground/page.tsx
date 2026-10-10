@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import AgentBuilderView from "@/app/(dashboard)/playground/components/chat_ui/AgentBuilderView";
 import ChatUI from "@/app/(dashboard)/playground/components/chat_ui/ChatUI";
 import CompareUI from "@/app/(dashboard)/playground/components/compareUI/CompareUI";
@@ -19,6 +20,7 @@ interface ProxySettings {
 }
 
 export default function PlaygroundPage() {
+  const t = useTranslations("playground");
   const { accessToken, userRole, userId, disabledPersonalKeyCreation, token, isViewOnly } = useAuthorized();
   const [proxySettings, setProxySettings] = useState<ProxySettings | undefined>(undefined);
   const [activeTab, setActiveTab] = useUrlTab(PLAYGROUND_TABS, "chat");
@@ -42,9 +44,9 @@ export default function PlaygroundPage() {
   if (isViewOnly) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-2 p-8 text-center">
-        <h1 className="text-2xl font-semibold">Access Denied</h1>
+        <h1 className="text-2xl font-semibold">{t("accessDenied.title")}</h1>
         <p className="text-muted-foreground">
-          Your role does not have access to the Playground. Ask your proxy admin for access to test models.
+          {t("accessDenied.description")}
         </p>
       </div>
     );
@@ -59,16 +61,16 @@ export default function PlaygroundPage() {
       >
         <TabsList variant="line" className="w-full shrink-0 justify-start overflow-x-auto pb-1">
           <TabsTrigger value="chat" className="flex-none">
-            Chat
+            {t("tabs.chat")}
           </TabsTrigger>
           <TabsTrigger value="compare" className="flex-none">
-            Compare
+            {t("tabs.compare")}
           </TabsTrigger>
           <TabsTrigger value="compliance" className="flex-none">
-            Compliance
+            {t("tabs.compliance")}
           </TabsTrigger>
           <TabsTrigger value="agent-builder" className="flex-none">
-            Agent Builder (Experimental)
+            {t("tabs.agentBuilder")}
           </TabsTrigger>
         </TabsList>
         <TabsContent

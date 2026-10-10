@@ -15,6 +15,7 @@ import { ColumnFiltersState, functionalUpdate, OnChangeFn, PaginationState, Sort
 import { Info } from "lucide-react";
 import { createParser, parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { useModelsInfo } from "../../hooks/models/useModels";
 import { transformModelData } from "../utils/modelDataTransformer";
@@ -77,6 +78,7 @@ const AllModelsTab = ({
   setSelectedModelId,
   setSelectedTeamId,
 }: AllModelsTabProps) => {
+  const t = useTranslations("models");
   const { data: modelCostMapData, isLoading: isLoadingModelCostMap } = useModelCostMap();
   const { accessToken, userId, userRole, isViewOnly } = useAuthorized();
   const { data: teams, isLoading: isLoadingTeams } = useTeams();

@@ -1,9 +1,9 @@
 import React from "react";
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MCPGatewaySessionsTab, describeTerminateResult, formatIdleSeconds } from "./MCPGatewaySessionsTab";
+import { renderWithProviders, testQueryClient } from "@/../tests/test-utils";
 import * as networking from "@/components/networking";
 import type { MCPGatewaySessionsResponse, MCPGatewaySessionsTerminateResponse } from "@/components/mcp_tools/types";
 
@@ -66,14 +66,8 @@ const REPORT: MCPGatewaySessionsResponse = {
   ],
 };
 
-const renderTab = ({ canTerminate = false }: { canTerminate?: boolean } = {}) => {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <MCPGatewaySessionsTab accessToken="token" canTerminate={canTerminate} />
-    </QueryClientProvider>,
-  );
-};
+const renderTab = ({ canTerminate = false }: { canTerminate?: boolean } = {}) =>
+  renderWithProviders(<MCPGatewaySessionsTab accessToken="token" canTerminate={canTerminate} />);
 
 describe("formatIdleSeconds", () => {
   it("renders seconds under a minute and minutes plus seconds above it", () => {
@@ -99,6 +93,7 @@ describe("describeTerminateResult", () => {
 describe("MCPGatewaySessionsTab", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    testQueryClient.clear();
   });
 
   it("shows grouped counts and session rows from /v1/mcp/sessions", async () => {

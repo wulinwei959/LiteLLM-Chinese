@@ -1,5 +1,6 @@
 import { Bot, Loader2, UserRound } from "lucide-react";
 import React from "react";
+import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -17,6 +18,7 @@ interface MessageDisplayProps {
 }
 
 export function MessageDisplay({ messages, isLoading }: MessageDisplayProps) {
+  const t = useTranslations("playground");
   const syntaxTheme = useSyntaxTheme(coy);
   if (messages.length === 0) {
     return <div className="h-full" />;
@@ -113,7 +115,7 @@ export function MessageDisplay({ messages, isLoading }: MessageDisplayProps) {
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-info/15 text-info">
                     <UserRound size={16} />
                   </div>
-                  <div className="text-sm font-semibold text-foreground">You</div>
+                  <div className="text-sm font-semibold text-foreground">{t("compare.you")}</div>
                 </div>
                 {renderMessageBody(block.user)}
               </div>
@@ -155,10 +157,10 @@ export function MessageDisplay({ messages, isLoading }: MessageDisplayProps) {
             ) : isLoading && blockIndex === conversationBlocks.length - 1 ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 size={18} className="animate-spin" />
-                <span>Generating response...</span>
+                <span>{t("compare.generatingResponse")}</span>
               </div>
             ) : (
-              <div className="text-sm text-muted-foreground">Waiting for a response...</div>
+              <div className="text-sm text-muted-foreground">{t("compare.waitingForResponse")}</div>
             )}
           </div>
         );
@@ -166,7 +168,7 @@ export function MessageDisplay({ messages, isLoading }: MessageDisplayProps) {
       {isLoading && conversationBlocks.length === 0 && (
         <div className="flex items-center gap-2 text-muted-foreground">
           <Loader2 size={18} className="animate-spin" />
-          <span>Generating response...</span>
+          <span>{t("compare.generatingResponse")}</span>
         </div>
       )}
     </div>

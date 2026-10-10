@@ -17,7 +17,7 @@ export const enMessages = (key: string, values?: Record<string, string | number>
   const segments = (key.startsWith(`${NAMESPACE}.`) ? key.slice(NAMESPACE.length + 1) : key).split(".");
   const resolved = segments.reduce<Catalog | string | undefined>(
     (node, segment) => (typeof node === "object" ? node[segment] : undefined),
-    (en as Catalog)[NAMESPACE] as Catalog,
+    (en as unknown as Catalog)[NAMESPACE] as Catalog,
   );
 
   if (typeof resolved !== "string") {

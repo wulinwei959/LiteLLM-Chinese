@@ -7,6 +7,7 @@ import { internalUserRoles } from "@/utils/roles";
 import { autoRouterCreationScope } from "@/utils/modelPermissions";
 
 import { AutoRoutersPanel } from "../components/AutoRouters/AutoRoutersPanel";
+import { useTranslations } from "next-intl";
 
 /**
  * Owns the permission decision for the Auto-Routers tab so the panel stays a renderer.
@@ -14,6 +15,7 @@ import { AutoRoutersPanel } from "../components/AutoRouters/AutoRoutersPanel";
  * Viewer roles reach the list without write affordances.
  */
 export default function AutoRoutersTabPanel() {
+  const t = useTranslations("models.autoRouters");
   const { accessToken, userRole, userId: userID, isViewOnly } = useAuthorized();
   const { data: teams } = useTeams();
   const { data: uiSettings } = useUISettings();
