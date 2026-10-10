@@ -328,11 +328,11 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
   // Get unique MCP access groups from all servers
   const teamSelectItems = React.useMemo(
     () => ({
-      all: isInternalUser ? "All Available Servers" : "All Servers",
+      all: isInternalUser ? t("allAvailableServers") : t("allServers"),
       personal: "Personal",
       ...Object.fromEntries(uniqueTeams.map((team) => [team.team_id, team.team_alias || team.team_id])),
     }),
-    [isInternalUser, uniqueTeams],
+    [isInternalUser, uniqueTeams, t],
   );
 
   const uniqueMcpAccessGroups = React.useMemo(() => {
@@ -348,10 +348,10 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
 
   const accessGroupSelectItems = React.useMemo(
     () => ({
-      all: "All Access Groups",
+      all: t("allAccessGroups"),
       ...Object.fromEntries(uniqueMcpAccessGroups.map((group) => [group, group])),
     }),
-    [uniqueMcpAccessGroups],
+    [uniqueMcpAccessGroups, t],
   );
 
   // Filtering logic for both team and access group

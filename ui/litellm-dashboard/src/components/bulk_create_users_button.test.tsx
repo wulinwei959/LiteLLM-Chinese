@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen, renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import BulkCreateUsersButton from "./bulk_create_users_button";

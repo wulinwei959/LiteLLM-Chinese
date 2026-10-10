@@ -1,5 +1,5 @@
 import type { ColumnDef, ExpandedState, OnChangeFn, PaginationState, VisibilityState } from "@tanstack/react-table";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from "vitest";
 import { DataTable } from "./DataTable";
 import { DataTableMultiSortHeader, DataTableSortHeader } from "./DataTableSortHeader";
 import { DataTableViewOptions } from "./DataTableViewOptions";
-import { chooseSelectOption } from "../../../../tests/test-utils";
+import { chooseSelectOption, renderWithProviders } from "../../../../tests/test-utils";
 
 interface Person {
   id: string;
@@ -146,7 +146,7 @@ const CHARLIE_ALICE_BOB: Person[] = [person("c", "Charlie"), person("a", "Alice"
 describe("DataTable sorting", () => {
   it("client mode reorders rows when the sort header is clicked", async () => {
     const user = userEvent.setup();
-    render(<DataTable data={CHARLIE_ALICE_BOB} columns={headerCycleColumns} sortingMode="client" />);
+    renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={headerCycleColumns} sortingMode="client" />);
 
     expect(names()).toEqual(["Charlie", "Alice", "Bob"]);
     await user.click(screen.getByTestId("sort-header-name"));
@@ -156,7 +156,7 @@ describe("DataTable sorting", () => {
   it("server mode fires the callback but never reorders locally", async () => {
     const user = userEvent.setup();
     const onSortingChange = vi.fn();
-    render(
+    renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={headerCycleColumns}
@@ -175,7 +175,7 @@ describe("DataTable sorting", () => {
 
   it("dropdown-tristate variant sorts ascending, descending, then resets", async () => {
     const user = userEvent.setup();
-    render(<DataTable data={CHARLIE_ALICE_BOB} columns={dropdownSortColumns} sortingMode="client" />);
+    renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={dropdownSortColumns} sortingMode="client" />);
 
     await chooseSelectOption(user, screen.getByTestId("sort-trigger-name"), "Ascending", "menuitem");
     expect(names()).toEqual(["Alice", "Bob", "Charlie"]);
@@ -190,7 +190,7 @@ describe("DataTable sorting", () => {
   it("multi-sort header emits the chosen field id (not the column id) as the sort key", async () => {
     const user = userEvent.setup();
     const onSortingChange = vi.fn();
-    render(
+    renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={multiSortColumns}
@@ -210,7 +210,7 @@ describe("DataTable sorting", () => {
   it("multi-sort header reflects the active field and direction, and Reset clears it", async () => {
     const user = userEvent.setup();
     const onSortingChange = vi.fn();
-    render(
+    renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={multiSortColumns}
@@ -231,7 +231,7 @@ describe("DataTable sorting", () => {
 
 describe("DataTable layout", () => {
   it("stretches the table to fill the container when resizing is on, so hidden columns leave no right-side gap", () => {
-    render(<DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} enableColumnResizing />);
+    renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} enableColumnResizing />);
 
     // width pins the natural column total (horizontal scroll on overflow); minWidth:100% fills the gap on underflow.
     expect(screen.getByRole("table")).toHaveStyle({ minWidth: "100%" });
@@ -243,7 +243,7 @@ describe("DataTable pagination", () => {
 
   it("client mode slices rows and advances pages", async () => {
     const user = userEvent.setup();
-    render(<DataTable data={fivePeople} columns={nameCellColumns} paginationMode="client" pageSizeOptions={[2]} />);
+    renderWithProviders(<DataTable data={fivePeople} columns={nameCellColumns} paginationMode="client" pageSizeOptions={[2]} />);
 
     expect(names()).toEqual(["P0", "P1"]);
     expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-2 of 5");
@@ -257,7 +257,7 @@ describe("DataTable pagination", () => {
     const user = userEvent.setup();
     const onPaginationChange = vi.fn();
     const pageSlice: Person[] = [person("10", "P10"), person("11", "P11"), person("12", "P12")];
-    render(
+    renderWithProviders(
       <DataTable
         data={pageSlice}
         columns={nameCellColumns}
@@ -312,7 +312,7 @@ describe("DataTable pagination", () => {
 
   it("server mode snaps to the last page when rowCount no longer reaches the current page", async () => {
     const onChange = vi.fn();
-    render(<ServerPageHarness rowCount={15} initialPageIndex={2} onChange={onChange} />);
+    renderWithProviders(<ServerPageHarness rowCount={15} initialPageIndex={2} onChange={onChange} />);
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith({ pageIndex: 1, pageSize: 10 }));
     expect(onChange).toHaveBeenCalledTimes(1);
@@ -323,7 +323,7 @@ describe("DataTable pagination", () => {
 
   it("server mode falls back to the first page when rowCount drops to zero", async () => {
     const onChange = vi.fn();
-    render(<ServerPageHarness rowCount={0} initialPageIndex={2} onChange={onChange} />);
+    renderWithProviders(<ServerPageHarness rowCount={0} initialPageIndex={2} onChange={onChange} />);
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith({ pageIndex: 0, pageSize: 10 }));
     expect(onChange).toHaveBeenCalledTimes(1);
@@ -335,7 +335,7 @@ describe("DataTable pagination", () => {
 
   it("server mode leaves the page index alone while loading and clamps once the response lands", async () => {
     const onChange = vi.fn();
-    const { rerender } = render(<ServerPageHarness rowCount={0} isLoading initialPageIndex={2} onChange={onChange} />);
+    const { rerender } = renderWithProviders(<ServerPageHarness rowCount={0} isLoading initialPageIndex={2} onChange={onChange} />);
 
     expect(screen.getByText("Page 3 of 1")).toBeInTheDocument();
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -350,7 +350,7 @@ describe("DataTable pagination", () => {
 
   it("server mode keeps a deep-linked page when the fetch failed, instead of snapping to page 1 on rowCount 0", async () => {
     const onChange = vi.fn();
-    render(<ServerPageHarness rowCount={0} isError initialPageIndex={2} onChange={onChange} />);
+    renderWithProviders(<ServerPageHarness rowCount={0} isError initialPageIndex={2} onChange={onChange} />);
 
     expect(screen.getByText("Page 3 of 1")).toBeInTheDocument();
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -386,7 +386,7 @@ describe("DataTable pagination", () => {
 
   it("client mode keeps a controlled page when rows arrive after loading and when they are refetched", async () => {
     const onChange = vi.fn();
-    const { rerender } = render(<ClientPageHarness data={[]} isLoading initialPageIndex={1} onChange={onChange} />);
+    const { rerender } = renderWithProviders(<ClientPageHarness data={[]} isLoading initialPageIndex={1} onChange={onChange} />);
 
     rerender(<ClientPageHarness data={fivePeople} initialPageIndex={1} onChange={onChange} />);
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -400,7 +400,7 @@ describe("DataTable pagination", () => {
 
   it("client mode snaps a controlled page past the end back to the last page", async () => {
     const onChange = vi.fn();
-    render(<ClientPageHarness data={fivePeople} initialPageIndex={5} onChange={onChange} />);
+    renderWithProviders(<ClientPageHarness data={fivePeople} initialPageIndex={5} onChange={onChange} />);
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith({ pageIndex: 2, pageSize: 2 }));
     expect(onChange).toHaveBeenCalledTimes(1);
@@ -409,7 +409,7 @@ describe("DataTable pagination", () => {
 
   it("client mode leaves a controlled page alone while there are no rows to page through", async () => {
     const onChange = vi.fn();
-    render(<ClientPageHarness data={[]} initialPageIndex={3} onChange={onChange} />);
+    renderWithProviders(<ClientPageHarness data={[]} initialPageIndex={3} onChange={onChange} />);
 
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(onChange).not.toHaveBeenCalled();
@@ -417,7 +417,7 @@ describe("DataTable pagination", () => {
 
   it("client mode without a controlled page still returns to the first page when the rows change", async () => {
     const user = userEvent.setup();
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <DataTable data={fivePeople} columns={nameCellColumns} paginationMode="client" pageSizeOptions={[2]} />,
     );
 
@@ -432,7 +432,7 @@ describe("DataTable pagination", () => {
 
   it("server mode resumes clamping once the error clears and a real rowCount arrives", async () => {
     const onChange = vi.fn();
-    const { rerender } = render(<ServerPageHarness rowCount={0} isError initialPageIndex={2} onChange={onChange} />);
+    const { rerender } = renderWithProviders(<ServerPageHarness rowCount={0} isError initialPageIndex={2} onChange={onChange} />);
 
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(onChange).not.toHaveBeenCalled();
@@ -447,7 +447,7 @@ describe("DataTable pagination", () => {
 
 describe("DataTable filtering", () => {
   it("client mode filters rows by columnFilters", () => {
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={filterableColumns}
@@ -471,7 +471,7 @@ describe("DataTable filtering", () => {
   });
 
   it("client global filter matches substrings across columns", () => {
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={nameEmailColumns}
@@ -504,7 +504,7 @@ describe("DataTable filtering", () => {
         header: "Nickname",
       },
     ];
-    render(
+    renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={nicknameColumns}
@@ -517,7 +517,7 @@ describe("DataTable filtering", () => {
   });
 
   it("server mode never filters locally even when columnFilters is set", () => {
-    render(
+    renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={filterableColumns}
@@ -532,7 +532,7 @@ describe("DataTable filtering", () => {
 
 describe("DataTable loading", () => {
   it("renders skeleton rows while loading and real rows once loaded", () => {
-    const { rerender } = render(<DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} isLoading />);
+    const { rerender } = renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} isLoading />);
     expect(screen.getAllByTestId("skeleton-row").length).toBeGreaterThan(0);
     expect(screen.queryByTestId("name-cell")).not.toBeInTheDocument();
 
@@ -542,7 +542,7 @@ describe("DataTable loading", () => {
   });
 
   it("gives compact skeleton rows the same height as loaded rows so loading does not shrink the table", () => {
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} size="compact" isLoading />,
     );
     const skeletonHeight = heightClassesOf(screen.getAllByRole("row").at(-1));
@@ -555,7 +555,7 @@ describe("DataTable loading", () => {
   });
 
   it("does not force the compact height on default-size skeleton rows", () => {
-    const { rerender } = render(<DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} isLoading />);
+    const { rerender } = renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} isLoading />);
     const skeletonHeight = heightClassesOf(screen.getAllByRole("row").at(-1));
 
     rerender(<DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} size="compact" isLoading />);
@@ -567,7 +567,7 @@ describe("DataTable loading", () => {
       { accessorKey: "name", header: "Name", meta: { skeleton: "twoLine" }, cell: () => null },
       { accessorKey: "email", header: "Email", cell: () => null },
     ];
-    render(<DataTable data={CHARLIE_ALICE_BOB} columns={columns} isLoading />);
+    renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={columns} isLoading />);
 
     const firstRow = screen.getAllByTestId("skeleton-row").at(0);
     expect(firstRow).toBeDefined();
@@ -585,7 +585,7 @@ describe("DataTable loading", () => {
       { id: "chips", header: "Chips", meta: { skeleton: "chips" }, cell: () => null },
       { id: "meter", header: "Meter", meta: { skeleton: "meter" }, cell: () => null },
     ];
-    render(<DataTable data={CHARLIE_ALICE_BOB} columns={columns} isLoading />);
+    renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={columns} isLoading />);
 
     const firstRow = screen.getAllByTestId("skeleton-row").at(0);
     const cells = Array.from(firstRow?.querySelectorAll("td") ?? []);
@@ -607,7 +607,7 @@ describe("DataTable loading", () => {
         cell: () => null,
       },
     ];
-    render(<DataTable data={CHARLIE_ALICE_BOB} columns={columns} isLoading />);
+    renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={columns} isLoading />);
     expect(screen.getAllByTestId("custom-skeleton").length).toBeGreaterThan(0);
   });
 });
@@ -615,7 +615,7 @@ describe("DataTable loading", () => {
 describe("DataTable column visibility", () => {
   it("hides a column when toggled off in the view-options menu", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={nameEmailColumns}
@@ -647,7 +647,7 @@ describe("DataTable column visibility", () => {
         cell: ({ row }) => <span>{row.original.email}</span>,
       },
     ];
-    render(
+    renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={columns}
@@ -662,7 +662,7 @@ describe("DataTable column visibility", () => {
 
   it("uncontrolled mode seeds hidden columns from defaultColumnVisibility and still toggles internally", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={nameEmailColumns}
@@ -680,7 +680,7 @@ describe("DataTable column visibility", () => {
   it("controlled mode hides columns from the prop and reports toggles without changing them locally", async () => {
     const user = userEvent.setup();
     const onColumnVisibilityChange = vi.fn<OnChangeFn<VisibilityState>>();
-    render(
+    renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={nameEmailColumns}
@@ -715,7 +715,7 @@ describe("DataTable column visibility", () => {
         />
       );
     };
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     expect(screen.queryByRole("columnheader", { name: "Email" })).not.toBeInTheDocument();
     await user.click(screen.getByTestId("view-options-trigger"));
@@ -726,7 +726,7 @@ describe("DataTable column visibility", () => {
 
 describe("DataTable pinned columns", () => {
   it("applies sticky positioning to a pinned column only", () => {
-    render(<DataTable data={CHARLIE_ALICE_BOB} columns={pinnedColumns} />);
+    renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={pinnedColumns} />);
 
     expect(screen.getByRole("columnheader", { name: "Name" })).toHaveStyle({ position: "sticky", left: "0px" });
     expect(screen.getByRole("columnheader", { name: "Email" })).not.toHaveStyle({ position: "sticky" });
@@ -737,7 +737,7 @@ describe("DataTable row click guard", () => {
   it("fires onRowClick from a plain cell but not from interactive elements", async () => {
     const user = userEvent.setup();
     const onRowClick = vi.fn();
-    render(<DataTable data={[person("a", "Alice")]} columns={rowClickColumns} onRowClick={onRowClick} />);
+    renderWithProviders(<DataTable data={[person("a", "Alice")]} columns={rowClickColumns} onRowClick={onRowClick} />);
 
     await user.click(screen.getByTestId("name-cell"));
     expect(onRowClick).toHaveBeenCalledTimes(1);
@@ -758,7 +758,7 @@ describe("DataTable expansion", () => {
 
   it("toggles the sub-row in uncontrolled mode", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <DataTable
         data={[person("a", "Alice")]}
         columns={expansionColumns}
@@ -791,7 +791,7 @@ describe("DataTable expansion", () => {
         />
       );
     };
-    render(<Harness />);
+    renderWithProviders(<Harness />);
 
     expect(screen.queryByTestId("sub-row")).not.toBeInTheDocument();
     await user.click(screen.getByTestId("expand-a"));
@@ -803,7 +803,7 @@ describe("DataTable expansion", () => {
   it("stays collapsed in controlled mode when the parent ignores the change", async () => {
     const user = userEvent.setup();
     const onExpandedChange = vi.fn();
-    render(
+    renderWithProviders(
       <DataTable
         data={[person("a", "Alice")]}
         columns={expansionColumns}
@@ -824,7 +824,7 @@ describe("DataTable expansion", () => {
 describe("DataTable row styling and footer", () => {
   it("applies rowClassName to the matching row only", () => {
     const data = [person("a", "Alice", true), person("b", "Bob", false)];
-    render(
+    renderWithProviders(
       <DataTable
         data={data}
         columns={nameCellColumns}
@@ -838,7 +838,7 @@ describe("DataTable row styling and footer", () => {
   });
 
   it("renders the footer slot inside a tfoot element", () => {
-    render(
+    renderWithProviders(
       <DataTable
         data={CHARLIE_ALICE_BOB}
         columns={nameCellColumns}
@@ -857,7 +857,7 @@ describe("DataTable row styling and footer", () => {
 
 describe("DataTable layout", () => {
   it("exposes resize handles with stable selectors only when resizing is enabled", () => {
-    const { rerender } = render(<DataTable data={CHARLIE_ALICE_BOB} columns={nameEmailColumns} enableColumnResizing />);
+    const { rerender } = renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={nameEmailColumns} enableColumnResizing />);
     expect(screen.getByTestId("column-resizer-name")).toBeInTheDocument();
     expect(screen.getByTestId("column-resizer-email")).toBeInTheDocument();
 
@@ -866,7 +866,7 @@ describe("DataTable layout", () => {
   });
 
   it("makes the header sticky and constrains body height when maxBodyHeight is set", () => {
-    render(<DataTable data={CHARLIE_ALICE_BOB} columns={nameEmailColumns} maxBodyHeight={240} />);
+    renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={nameEmailColumns} maxBodyHeight={240} />);
     const scroller = screen.getByTestId("data-table-scroller");
     expect(scroller).toHaveStyle({ maxHeight: "240px" });
     expect(scroller).toHaveClass("overflow-auto");
@@ -875,7 +875,7 @@ describe("DataTable layout", () => {
   });
 
   it("caps fillHeight at the parent's height instead of stretching to it, so a short table stays short", () => {
-    render(<DataTable data={CHARLIE_ALICE_BOB} columns={nameEmailColumns} fillHeight />);
+    renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={nameEmailColumns} fillHeight />);
     const outer = screen.getByTestId("data-table-root");
     const frame = screen.getByTestId("data-table-frame");
     const scroller = screen.getByTestId("data-table-scroller");
@@ -897,7 +897,7 @@ describe("DataTable layout", () => {
   });
 
   it("leaves the default layout untouched when neither height mode is set", () => {
-    render(<DataTable data={CHARLIE_ALICE_BOB} columns={nameEmailColumns} />);
+    renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={nameEmailColumns} />);
     const scroller = screen.getByTestId("data-table-scroller");
 
     expect(scroller).toHaveClass("overflow-x-auto");

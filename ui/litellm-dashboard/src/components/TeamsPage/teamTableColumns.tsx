@@ -19,6 +19,7 @@ import { orgDetailHref } from "@/utils/entityLinks";
 import { copyToClipboard, formatNumberWithCommas } from "@/utils/dataUtils";
 
 import { Team } from "../key_team_helpers/key_list";
+import type { TeamsTableTranslator } from "@/lib/i18n/translators";
 import { Organization } from "../networking";
 
 interface ResourceTone {
@@ -131,6 +132,7 @@ interface TeamTableColumnsDeps {
   onSelectTeam: (team: Team) => void;
   onEditTeam: (team: Team) => void;
   onDeleteTeam: (team: Team) => void;
+  t: TeamsTableTranslator;
 }
 
 export const getTeamTableColumns = ({
@@ -139,6 +141,7 @@ export const getTeamTableColumns = ({
   onSelectTeam,
   onEditTeam,
   onDeleteTeam,
+  t,
 }: TeamTableColumnsDeps): ColumnDef<Team>[] => {
   const canManage = userRole === "Admin";
 
@@ -147,7 +150,7 @@ export const getTeamTableColumns = ({
       id: "team_alias",
       accessorKey: "team_alias",
       meta: {
-        title: "Team",
+        title: t("table.team"),
         renderSkeleton: () => (
           <div className="flex flex-col gap-2 py-1">
             <Skeleton className="h-4 w-32" />
@@ -155,7 +158,7 @@ export const getTeamTableColumns = ({
           </div>
         ),
       },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Team" variant="header-cycle" />,
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("table.team")} variant="header-cycle" />,
       size: 260,
       enableSorting: true,
       cell: ({ row }) => {
@@ -174,7 +177,7 @@ export const getTeamTableColumns = ({
       id: "organization_alias",
       accessorKey: "organization_id",
       meta: { title: "Organization" },
-      header: "Organization",
+      header: t("table.organization"),
       size: 160,
       enableSorting: false,
       cell: (info) => {
@@ -202,7 +205,7 @@ export const getTeamTableColumns = ({
           </div>
         ),
       },
-      header: "Resources",
+      header: t("table.resources"),
       size: 210,
       enableSorting: false,
       cell: ({ row }) => <ResourcesCell team={row.original} />,
@@ -210,8 +213,8 @@ export const getTeamTableColumns = ({
     {
       id: "spend",
       accessorKey: "spend",
-      meta: { title: "Spend / Budget", skeleton: "meter" },
-      header: "Spend / Budget",
+      meta: { title: t("table.spendBudget"), skeleton: "meter" },
+      header: t("table.spendBudget"),
       size: 200,
       enableSorting: false,
       cell: ({ row }) => (
@@ -235,7 +238,7 @@ export const getTeamTableColumns = ({
     {
       id: "members",
       meta: { title: "Members" },
-      header: "Members",
+      header: t("table.members"),
       size: 110,
       enableSorting: false,
       cell: ({ row }) => <span className="text-sm tabular-nums">{teamMemberCount(row.original)}</span>,
@@ -243,7 +246,7 @@ export const getTeamTableColumns = ({
     {
       id: "models",
       meta: { title: "Models" },
-      header: "Models",
+      header: t("table.models"),
       size: 100,
       enableSorting: false,
       cell: ({ row }) => <span className="text-sm tabular-nums">{teamModelCount(row.original)}</span>,
@@ -251,7 +254,7 @@ export const getTeamTableColumns = ({
     {
       id: "rate_limits",
       meta: { title: "Rate Limits", skeleton: "twoLine" },
-      header: "Rate Limits",
+      header: t("table.rateLimits"),
       size: 140,
       enableSorting: false,
       cell: ({ row }) => (
@@ -265,7 +268,7 @@ export const getTeamTableColumns = ({
       id: "updated_at",
       accessorKey: "updated_at",
       meta: { title: "Updated" },
-      header: "Updated",
+      header: t("table.updated"),
       size: 130,
       enableSorting: false,
       cell: (info) => <DateCell value={info.getValue() as string | null} precision="date" fallback="Never" />,

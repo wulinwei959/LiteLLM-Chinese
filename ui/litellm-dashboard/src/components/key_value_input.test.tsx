@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -20,7 +21,7 @@ const ControlledKeyValueInput = ({ onChange }: { onChange?: (value: readonly Key
 
 describe("KeyValueInput", () => {
   it("renders existing header pairs", () => {
-    render(<KeyValueInput value={[["Authorization", "Bearer token"]]} />);
+    renderWithProviders(<KeyValueInput value={[["Authorization", "Bearer token"]]} />);
 
     expect(screen.getByPlaceholderText("Header Name")).toHaveValue("Authorization");
     expect(screen.getByPlaceholderText("Header Value")).toHaveValue("Bearer token");
@@ -29,7 +30,7 @@ describe("KeyValueInput", () => {
   it("adds a header row and emits edits", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
-    render(<ControlledKeyValueInput onChange={onChange} />);
+    renderWithProviders(<ControlledKeyValueInput onChange={onChange} />);
 
     await user.click(screen.getByRole("button", { name: /Add Header$/ }));
     fireEvent.change(screen.getByPlaceholderText("Header Name"), { target: { value: "X-Trace" } });
@@ -39,7 +40,7 @@ describe("KeyValueInput", () => {
   });
 
   it("renders no rows once the value prop goes back to empty", () => {
-    const { rerender } = render(<KeyValueInput value={[["Authorization", "Bearer token"]]} />);
+    const { rerender } = renderWithProviders(<KeyValueInput value={[["Authorization", "Bearer token"]]} />);
     expect(screen.getByPlaceholderText("Header Name")).toHaveValue("Authorization");
 
     rerender(<KeyValueInput value={[]} />);
@@ -50,7 +51,7 @@ describe("KeyValueInput", () => {
 
   it("keeps a half-typed row editable while its name is still empty", async () => {
     const user = userEvent.setup();
-    render(<ControlledKeyValueInput />);
+    renderWithProviders(<ControlledKeyValueInput />);
 
     await user.click(screen.getByRole("button", { name: /Add Header$/ }));
     await user.click(screen.getByRole("button", { name: /Add Header$/ }));
@@ -65,7 +66,7 @@ describe("KeyValueInput", () => {
   it("removes only the row whose remove button is clicked", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
-    render(
+    renderWithProviders(
       <KeyValueInput
         value={[
           ["a", "1"],

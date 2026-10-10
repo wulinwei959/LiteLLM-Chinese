@@ -17,6 +17,7 @@ import { useDebouncedValue } from "@tanstack/react-pacer/debouncer";
 import { ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
 import { Download } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Team } from "../key_team_helpers/key_list";
 import { getTeamTableColumns, TEAM_TABLE_HIDDEN_COLUMNS } from "./teamTableColumns";
@@ -117,10 +118,11 @@ export function TeamsTable({ userRole, userID, onSelectTeam, onEditTeam, onDelet
     }
   }, [accessToken, isExporting, teamListOptions]);
 
+  const t = useTranslations("teams");
   const columns = useMemo(() => {
-    const columnDeps = { organizations, userRole, onSelectTeam, onEditTeam, onDeleteTeam };
+    const columnDeps = { organizations, userRole, onSelectTeam, onEditTeam, onDeleteTeam, t };
     return getTeamTableColumns(columnDeps);
-  }, [organizations, userRole, onSelectTeam, onEditTeam, onDeleteTeam]);
+  }, [organizations, userRole, onSelectTeam, onEditTeam, onDeleteTeam, t]);
 
   const orgOptions = useMemo(
     () =>
@@ -163,8 +165,8 @@ export function TeamsTable({ userRole, userID, onSelectTeam, onEditTeam, onDelet
       enableColumnResizing
       columnResizeMode="onChange"
       isLoading={isPending || isPlaceholderData}
-      loadingMessage="Loading teams..."
-      noDataMessage="No teams found"
+      loadingMessage={t("teamsTable.loading")}
+      noDataMessage={t("teamsTable.noTeamsFound")}
       fillHeight
       size="compact"
       toolbar={(table) => (
@@ -173,7 +175,7 @@ export function TeamsTable({ userRole, userID, onSelectTeam, onEditTeam, onDelet
             table={table}
             searchValue={searchInput}
             onSearchChange={handleSearchChange}
-            searchPlaceholder="Search teams by name or ID…"
+            searchPlaceholder={t("teamsTable.searchPlaceholder")}
             onRefresh={() => refetch?.()}
             isRefreshing={isFetching}
             onOpenFilters={() => setFiltersOpen(true)}
@@ -188,15 +190,15 @@ export function TeamsTable({ userRole, userID, onSelectTeam, onEditTeam, onDelet
               data-testid="teams-export-csv"
             >
               <Download />
-              {isExporting ? "Exporting..." : "Export CSV"}
+              {isExporting ? t("teamsTable.exporting") : t("teamsTable.exportCsv")}
             </Button>
           </DataTableToolbar>
           <DataTableFilterDrawer
             table={table}
             open={filtersOpen}
             onOpenChange={setFiltersOpen}
-            title="Filters"
-            description="Narrow down your teams"
+            title={t("teamsTable.filters")}
+            description={t("teamsTable.filtersDesc")}
           >
             {({ get, set }) => (
               <>

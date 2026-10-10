@@ -2,6 +2,7 @@
 
 import { Copy, Edit, Shield, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { useSSOSettings, type SSOSettingsValues } from "@/app/(dashboard)/hooks/sso/useSSOSettings";
 import { Logo } from "@/components/molecules/logo/Logo";
@@ -53,6 +54,7 @@ function EndpointValue({ value }: { value?: string | null }) {
 }
 
 export default function SSOSettings() {
+  const t = useTranslations("adminPanel");
   const { data: ssoSettings, refetch, isLoading } = useSSOSettings();
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -240,7 +242,7 @@ export default function SSOSettings() {
                   <CardTitle>
                     <h3>SSO Configuration</h3>
                   </CardTitle>
-                  <CardDescription>Manage Single Sign-On authentication settings</CardDescription>
+                  <CardDescription>{t("ssoDesc")}</CardDescription>
                 </div>
               </div>
               {isSSOConfigured && (

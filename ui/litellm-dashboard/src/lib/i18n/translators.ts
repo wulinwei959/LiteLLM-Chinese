@@ -45,6 +45,11 @@ function useMcpServersTranslator() {
 }
 export type McpServersTranslator = ReturnType<typeof useMcpServersTranslator>;
 
+function useTeamsTableTranslator() {
+  return useTranslations("teams");
+}
+export type TeamsTableTranslator = ReturnType<typeof useTeamsTableTranslator>;
+
 function useModelsTranslator() {
   return useTranslations("models");
 }

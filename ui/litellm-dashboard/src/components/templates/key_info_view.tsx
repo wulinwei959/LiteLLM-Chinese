@@ -21,6 +21,7 @@ import KeySavingsTab from "./KeySavingsTab";
 import KeyAutoRouterUsageTab from "./KeyAutoRouterUsageTab";
 import { useActivityDateRange } from "@/app/(dashboard)/cost-optimization/_components/useDailyActivityRange";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   hasProxyWideSpendView,
   isProxyAdminRole,
@@ -94,6 +95,7 @@ export default function KeyInfoView({
   onDelete,
   backButtonText = "Back to Keys",
 }: KeyInfoViewProps) {
+  const t = useTranslations("budgets");
   const { accessToken, userId: userID, userRole, premiumUser } = useAuthorized();
   const activityDateRange = useActivityDateRange();
   const queryClient = useQueryClient();
@@ -740,7 +742,7 @@ export default function KeyInfoView({
                   <p className="text-sm">
                     RPM: {currentKeyData.rpm_limit !== null ? currentKeyData.rpm_limit : "Unlimited"}
                   </p>
-                  <p className="text-sm">TPD (batch): {currentKeyData.tpd_limit ?? "Unlimited"}</p>
+                  <p className="text-sm">{t("tpdBatch")}: {currentKeyData.tpd_limit ?? "Unlimited"}</p>
                   {Boolean(currentKeyData.metadata?.throttle_on_budget_exceeded) && (
                     <p className="text-sm">Throttle on budget exceeded: Yes</p>
                   )}
@@ -1122,7 +1124,7 @@ export default function KeyInfoView({
                     <p className="text-sm">
                       RPM: {currentKeyData.rpm_limit !== null ? currentKeyData.rpm_limit : "Unlimited"}
                     </p>
-                    <p className="text-sm">TPD (batch): {currentKeyData.tpd_limit ?? "Unlimited"}</p>
+                    <p className="text-sm">{t("tpdBatch")}: {currentKeyData.tpd_limit ?? "Unlimited"}</p>
                     <p className="text-sm">
                       Max Parallel Requests:{" "}
                       {currentKeyData.max_parallel_requests !== null

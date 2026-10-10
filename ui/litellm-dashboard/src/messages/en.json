@@ -173,7 +173,18 @@
     "never": "Never",
     "unknown": "Unknown",
     "unlimited": "Unlimited",
-    "unavailable": "unavailable"
+    "unavailable": "unavailable",
+    "pagination": {
+      "rowsPerPage": "Rows per page",
+      "showing": "Showing {start}-{end} of {total}",
+      "pageOf": "Page {page} of {total}",
+      "goFirst": "Go to first page",
+      "goPrev": "Go to previous page",
+      "goNext": "Go to next page",
+      "goLast": "Go to last page"
+    },
+    "empty": "No results",
+    "emptyFiltered": "No rows match your search or filters."
   },
   "nav": {
     "aiGateway": "AI Gateway",
@@ -352,7 +363,8 @@
     "statusBlockedScimTooltip": "Blocked by SCIM (external identity provider deactivated or deleted the owning user).",
     "statusBlockedTooltip": "Blocked. Requests using this key will be rejected with 401.",
     "statusExpiredTooltip": "This key has passed its expiry date.",
-    "statusActiveTooltip": "This key is not blocked and has not expired."
+    "statusActiveTooltip": "This key is not blocked and has not expired.",
+    "createNewKey": "+ Create New Key"
   },
   "models": {
     "title": "Model Management",
@@ -1265,6 +1277,25 @@
       "tpmLimitDescription": "Maximum tokens per minute allowed across all models.",
       "updateFailed": "Failed to update team settings",
       "updateSuccess": "Default team settings updated successfully"
+    },
+    "table": {
+      "organization": "Organization",
+      "resources": "Resources",
+      "spendBudget": "Spend / Budget",
+      "members": "Members",
+      "models": "Models",
+      "rateLimits": "Rate Limits",
+      "updated": "Updated",
+      "team": "Team"
+    },
+    "teamsTable": {
+      "exportCsv": "Export CSV",
+      "exporting": "Exporting...",
+      "noTeamsFound": "No teams found",
+      "loading": "Loading teams...",
+      "searchPlaceholder": "Search teams by name or ID…",
+      "filters": "Filters",
+      "filtersDesc": "Narrow down your teams"
     }
   },
   "users": {
@@ -1465,7 +1496,9 @@
     "infoMemberRoleUserHint": "Can view team info, but not manage it",
     "infoMemberRoleAdminHint": "Can create team keys, add members, and manage settings",
     "infoAdding": "Adding...",
-    "infoAddToTeam": "Add to Team"
+    "infoAddToTeam": "Add to Team",
+    "inviteUserButton": "+ Invite User",
+    "bulkInviteUsersButton": "+ Bulk Invite Users"
   },
   "organizations": {
     "title": "Organizations",
@@ -2721,7 +2754,8 @@
     "premiumOnlyIps": "This feature is only available for premium users. Please upgrade your account.",
     "failedFetchIps": "Failed to fetch allowed IPs",
     "failedAddIp": "Failed to add IP address",
-    "failedDeleteIp": "Failed to delete IP address"
+    "failedDeleteIp": "Failed to delete IP address",
+    "ssoDesc": "Manage Single Sign-On authentication settings"
   },
   "usage": {
     "title": "Usage",
@@ -3888,7 +3922,9 @@
       "security": "Security",
       "authConfigured": "Auth configured",
       "authConfiguredDesc": "Must use authentication (not 'none')"
-    }
+    },
+    "allAvailableServers": "All Available Servers",
+    "allServers": "All Servers"
   },
   "guardrailsMonitor": {
     "overview": {
@@ -4343,7 +4379,11 @@
       "aboutVectorStores": "About vector stores",
       "aboutGuardrails": "About guardrails",
       "aboutPolicies": "About policies",
-      "unavailable": "unavailable"
+      "unavailable": "unavailable",
+      "headerName": "Header Name",
+      "headerValue": "Header Value",
+      "addHeader": "Add Header",
+      "removeHeader": "Remove header {index}"
     },
     "chat": {
       "testKey": "Test Key",

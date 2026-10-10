@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -60,6 +61,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const csvInputId = React.useId();
+  const t = useTranslations("users");
 
   useEffect(() => {
     // Get UI settings
@@ -512,13 +514,13 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
   return (
     <>
       <Button className="mb-0" onClick={() => setIsModalVisible(true)}>
-        + Bulk Invite Users
+        {t("bulkInviteUsersButton")}
       </Button>
 
       <Dialog open={isModalVisible} onOpenChange={(open) => !open && setIsModalVisible(false)}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle>Bulk Invite Users</DialogTitle>
+            <DialogTitle>{t("bulkInviteUsersButton")}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col">
             {/* Step indicator */}

@@ -6,6 +6,7 @@ import { CreateUserButton } from "./CreateUserButton";
 import * as networking from "./networking";
 import { toast } from "@/lib/toast";
 import { expectControlBesideLabel } from "../../tests/fieldOrientation";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 vi.mock("./networking", () => ({
   userCreateCall: vi.fn(),
@@ -44,7 +45,11 @@ const defaultProps = {
 
 function renderWithProviders(ui: React.ReactElement) {
   const qc = createQueryClient();
-  return render(<QueryClientProvider client={qc}>{ui}</QueryClientProvider>);
+  return render(
+    <QueryClientProvider client={qc}>
+      <LocaleProvider>{ui}</LocaleProvider>
+    </QueryClientProvider>,
+  );
 }
 
 describe("CreateUserButton", () => {

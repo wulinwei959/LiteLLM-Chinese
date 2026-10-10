@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
 import { ChevronRight, CircleHelp, Info, UserPlus } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import TeamDropdown from "./common_components/team_dropdown";
 import { getModelDisplayName } from "./key_team_helpers/fetch_available_models_team_key";
@@ -154,6 +155,7 @@ export const CreateUserButton: React.FC<CreateuserProps> = ({
   onUserCreated,
   isEmbedded = false,
 }) => {
+  const t = useTranslations("users");
   const queryClient = useQueryClient();
   const [uiSettings, setUISettings] = useState<UISettings | null>(null);
   const defaultValues = isEmbedded ? EMBEDDED_DEFAULTS : STANDALONE_DEFAULTS;
@@ -326,12 +328,12 @@ export const CreateUserButton: React.FC<CreateuserProps> = ({
   return (
     <>
       <Button type="button" onClick={() => setIsModalVisible(true)}>
-        + Invite User
+        {t("inviteUserButton")}
       </Button>
       <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle>Invite User</DialogTitle>
+            <DialogTitle>{t("inviteUserButton")}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-3">
             <p className="mb-1 text-sm text-foreground">Create a User who can own keys</p>
