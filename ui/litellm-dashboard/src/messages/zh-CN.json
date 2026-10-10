@@ -5157,5 +5157,31 @@
       "completed": "已完成",
       "failed": "已失败"
     }
+  },
+  "agents": {
+    "customOther": "自定义 / 其他",
+    "accessGroupsPlaceholder": "选择访问组（可选）",
+    "mcpPlaceholder": "选择 MCP 服务器或访问组（可选）",
+    "tracing": "追踪",
+    "sessionBudgets": "会话预算",
+    "maxIterations": "最大迭代次数",
+    "maxIterationsHint": "每个会话 LLM 调用次数的硬上限",
+    "maxBudgetPerSession": "每会话最大预算（美元）",
+    "maxBudgetHint": "返回 429 前每次追踪的最大消费",
+    "agentRateLimits": "智能体速率限制",
+    "agentRateLimitsHint": "应用于此智能体所有调用方的全局速率限制。",
+    "perSessionRateLimits": "会话级速率限制",
+    "guardrails": "护栏",
+    "descriptionPlaceholder": "描述这个智能体的用途……",
+    "newKeyTitle": "为此智能体创建新密钥",
+    "newKeyDesc": "专用于此智能体的密钥。",
+    "keyName": "密钥名称",
+    "existingKeyTitle": "分配现有密钥",
+    "existingKeyDesc": "将你已有的密钥重新分配给此智能体。",
+    "addNewAgent": "新建智能体",
+    "done": "完成",
+    "agentTypeLabel": "智能体类型",
+    "agentTypeHint": "选择要创建的智能体类型",
+    "perSessionRateLimitsHint": "按会话（x-litellm-trace-id）的速率限制。每个会话有独立的计数。"
   }
 }

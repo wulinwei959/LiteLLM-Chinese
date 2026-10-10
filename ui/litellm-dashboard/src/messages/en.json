@@ -5157,5 +5157,31 @@
       "completed": "Completed",
       "failed": "Failed"
     }
+  },
+  "agents": {
+    "customOther": "Custom / Other",
+    "accessGroupsPlaceholder": "Select access groups (optional)",
+    "mcpPlaceholder": "Select MCP servers or access groups (optional)",
+    "tracing": "Tracing",
+    "sessionBudgets": "Session Budgets",
+    "maxIterations": "Max Iterations",
+    "maxIterationsHint": "Hard cap on LLM calls per session",
+    "maxBudgetPerSession": "Max Budget Per Session ($)",
+    "maxBudgetHint": "Max spend per trace before returning 429",
+    "agentRateLimits": "Agent Rate Limits",
+    "agentRateLimitsHint": "Global rate limits applied across all callers of this agent.",
+    "perSessionRateLimits": "Per-Session Rate Limits",
+    "guardrails": "Guardrails",
+    "descriptionPlaceholder": "Describe what this agent does…",
+    "newKeyTitle": "Create a new key for this agent",
+    "newKeyDesc": "A dedicated key scoped to this agent.",
+    "keyName": "Key Name",
+    "existingKeyTitle": "Assign an existing key",
+    "existingKeyDesc": "Re-assign a key you already have to this agent.",
+    "addNewAgent": "Add New Agent",
+    "done": "Done",
+    "agentTypeLabel": "Agent Type",
+    "agentTypeHint": "Select the type of agent you want to create",
+    "perSessionRateLimitsHint": "Rate limits per session (x-litellm-trace-id). Each session gets its own counters."
   }
 }

@@ -149,3 +149,8 @@ function useMemoryTranslator() {
   return useTranslations("memory");
 }
 export type MemoryTranslator = ReturnType<typeof useMemoryTranslator>;
+
+function useAgentsTranslator() {
+  return useTranslations("agents");
+}
+export type AgentsTranslator = ReturnType<typeof useAgentsTranslator>;

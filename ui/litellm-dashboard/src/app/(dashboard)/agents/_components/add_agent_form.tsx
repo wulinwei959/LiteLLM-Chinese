@@ -1,4 +1,8 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import type { AgentsTranslator } from "@/lib/i18n/translators";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { toast } from "@/lib/toast";
 import { Logo } from "@/components/molecules/logo/Logo";
@@ -70,12 +74,12 @@ const stepTitleClass = (index: number, current: number): string => {
   return "text-muted-foreground";
 };
 
-const AgentTypeLabel: React.FC<{ agentType: string; info: AgentCreateInfo | undefined }> = ({ agentType, info }) => {
+const AgentTypeLabel: React.FC<{ agentType: string; info: AgentCreateInfo | undefined; t: AgentsTranslator }> = ({ agentType, info, t }) => {
   if (agentType === CUSTOM_AGENT_TYPE) {
     return (
       <span className="flex items-center gap-2">
         <LayoutGrid className="size-4 text-warning" />
-        <span>Custom / Other</span>
+        <span>{t("customOther")}</span>
       </span>
     );
   }
@@ -130,6 +134,7 @@ interface AddAgentFormProps {
 }
 
 const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessToken, onSuccess, teams }) => {
+  const t = useTranslations("agents");
   const { userId, userRole } = useAuthorized();
   const form = useForm<AgentFormValues>({ defaultValues: buildInitialValues("a2a") });
   const panels = useCollapsiblePanels([AGENT_FORM_CONFIG.basic.key]);
@@ -510,7 +515,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
             <AccessGroupSelector
               value={Array.isArray(value) ? (value as string[]) : []}
               onChange={onChange}
-              placeholder="Select access groups (optional)"
+              placeholder={t("accessGroupsPlaceholder")}
             />
           )}
         </AgentFormField>
@@ -532,7 +537,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                 accessGroups: (value as McpServerSelection | undefined)?.accessGroups ?? [],
               }}
               accessToken={accessToken ?? ""}
-              placeholder="Select MCP servers or access groups (optional)"
+              placeholder={t("mcpPlaceholder")}
             />
           )}
         </AgentFormField>
@@ -570,7 +575,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
   const renderObservabilityStep = () => (
     <div className="space-y-6">
       <div>
-        <h4 className="mb-3 text-sm font-medium text-foreground">Tracing</h4>
+        <h4 className="mb-3 text-sm font-medium text-foreground">{t("tracing")}</h4>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
@@ -619,10 +624,10 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
             </div>
           )}
 
-          <div className="text-sm font-medium text-foreground">Session Budgets</div>
+          <div className="text-sm font-medium text-foreground">{t("sessionBudgets")}</div>
           <div className="grid grid-cols-2 gap-4">
             <Field className="gap-1">
-              <FieldLabel htmlFor="agent-max-iterations">Max Iterations</FieldLabel>
+              <FieldLabel htmlFor="agent-max-iterations">{t("maxIterations")}</FieldLabel>
               <Input
                 id="agent-max-iterations"
                 type="number"
@@ -635,10 +640,10 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                 }
                 onBlur={() => setMaxIterations((current) => (current !== null && current < 1 ? 1 : current))}
               />
-              <p className="mt-1 text-xs text-muted-foreground">Hard cap on LLM calls per session</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("maxIterationsHint")}</p>
             </Field>
             <Field className="gap-1">
-              <FieldLabel htmlFor="agent-max-budget-per-session">Max Budget Per Session ($)</FieldLabel>
+              <FieldLabel htmlFor="agent-max-budget-per-session">{t("maxBudgetPerSession")}</FieldLabel>
               <Input
                 id="agent-max-budget-per-session"
                 type="number"
@@ -653,23 +658,21 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                   setMaxBudgetPerSession((current) => (current !== null && current < 0.01 ? 0.01 : current))
                 }
               />
-              <p className="mt-1 text-xs text-muted-foreground">Max spend per trace before returning 429</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("maxBudgetHint")}</p>
             </Field>
           </div>
 
           <Separator className="my-2" />
 
-          <div className="text-sm font-medium text-foreground">Agent Rate Limits</div>
-          <p className="text-xs text-muted-foreground">Global rate limits applied across all callers of this agent.</p>
+          <div className="text-sm font-medium text-foreground">{t("agentRateLimits")}</div>
+          <p className="text-xs text-muted-foreground">{t("agentRateLimitsHint")}</p>
           <div className="grid grid-cols-2 gap-4">
             {rateLimitField("tpm_limit", "TPM Limit", "e.g. 100000")}
             {rateLimitField("rpm_limit", "RPM Limit", "e.g. 100")}
           </div>
 
-          <div className="mt-4 text-sm font-medium text-foreground">Per-Session Rate Limits</div>
-          <p className="text-xs text-muted-foreground">
-            Rate limits per session (x-litellm-trace-id). Each session gets its own counters.
-          </p>
+          <div className="mt-4 text-sm font-medium text-foreground">{t("perSessionRateLimits")}</div>
+          <p className="text-xs text-muted-foreground">{t("perSessionRateLimitsHint")}</p>
           <div className="grid grid-cols-2 gap-4">
             {rateLimitField("session_tpm_limit", "Session TPM Limit", "e.g. 10000")}
             {rateLimitField("session_rpm_limit", "Session RPM Limit", "e.g. 20")}
@@ -680,7 +683,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
       <Separator />
 
       <div>
-        <h4 className="mb-3 text-sm font-medium text-foreground">Guardrails</h4>
+        <h4 className="mb-3 text-sm font-medium text-foreground">{t("guardrails")}</h4>
         <p className="mb-3 text-xs text-muted-foreground">
           Apply guardrails to this agent. Selected guardrails will run on all calls made by this agent.
         </p>
@@ -759,11 +762,11 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
     <>
       <Field className="gap-1">
         <FieldLabel htmlFor="agent-type">
-          {labelWithHint("Agent Type", "Select the type of agent you want to create")}
+          {labelWithHint(t("agentTypeLabel"), t("agentTypeHint"))}
         </FieldLabel>
         <Select value={agentType} onValueChange={(value) => value !== null && handleAgentTypeChange(value)}>
           <SelectTrigger id="agent-type" className="h-10 w-full">
-            <SelectValue>{() => <AgentTypeLabel agentType={agentType} info={selectedAgentTypeInfo} />}</SelectValue>
+            <SelectValue>{() => <AgentTypeLabel agentType={agentType} info={selectedAgentTypeInfo} t={t} />}</SelectValue>
           </SelectTrigger>
           <SelectContent className="p-1">
             {agentTypeMetadata.map((info) => (
@@ -788,7 +791,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                 <LayoutGrid className="size-4.5 shrink-0 text-warning" />
                 <span className="block">
                   <span className="flex items-center gap-2">
-                    <span className="font-medium text-warning">Custom / Other</span>
+                    <span className="font-medium text-warning">{t("customOther")}</span>
                     <StatusBadge tone="warning" label="GENERIC" className="h-4 px-1 text-[10px]" />
                   </span>
                   <span className="block text-xs whitespace-normal text-warning">
@@ -821,7 +824,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                   {...control}
                   ref={ref}
                   rows={3}
-                  placeholder="Describe what this agent does…"
+                  placeholder={t("descriptionPlaceholder")}
                   value={typeof value === "string" ? value : ""}
                   onChange={onChange}
                 />
@@ -936,17 +939,17 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
           >
             <div className="flex items-start justify-between">
               <div className="flex flex-1 items-start gap-3">
-                <RadioGroupItem value="create_new" aria-label="Create a new key for this agent" />
+                <RadioGroupItem value="create_new" aria-label={t("newKeyTitle")} />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <Key className="size-4 text-info" />
-                    <span className="font-medium text-foreground">Create a new key for this agent</span>
+                    <span className="font-medium text-foreground">{t("newKeyTitle")}</span>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">A dedicated key scoped to this agent.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{t("newKeyDesc")}</p>
                   {keyAssignOption === "create_new" && (
                     <div className="mt-3 space-y-3" onClick={(e) => e.stopPropagation()}>
                       <Field className="gap-1">
-                        <FieldLabel htmlFor="agent-new-key-name">Key Name</FieldLabel>
+                        <FieldLabel htmlFor="agent-new-key-name">{t("keyName")}</FieldLabel>
                         <Input
                           id="agent-new-key-name"
                           value={newKeyName}
@@ -972,13 +975,13 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
             onClick={() => setKeyAssignOption("existing_key")}
           >
             <div className="flex items-start gap-3">
-              <RadioGroupItem value="existing_key" aria-label="Assign an existing key" />
+              <RadioGroupItem value="existing_key" aria-label={t("existingKeyTitle")} />
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <Key className="size-4 text-muted-foreground" />
-                  <span className="font-medium text-foreground">Assign an existing key</span>
+                  <span className="font-medium text-foreground">{t("existingKeyTitle")}</span>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">Re-assign a key you already have to this agent.</p>
+                <p className="mt-1 text-sm text-muted-foreground">{t("existingKeyDesc")}</p>
                 {keyAssignOption === "existing_key" && (
                   <div className="mt-3" onClick={(e) => e.stopPropagation()}>
                     <SearchSelect
@@ -1047,7 +1050,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
             {selectedLogo && currentStep < 1 && (
               <Logo src={selectedLogo} label="Agent" className="h-6 w-6 object-contain" />
             )}
-            <DialogTitle className="text-xl font-semibold text-foreground">Add New Agent</DialogTitle>
+            <DialogTitle className="text-xl font-semibold text-foreground">{t("addNewAgent")}</DialogTitle>
           </div>
         </DialogHeader>
         <TooltipProvider>
@@ -1085,7 +1088,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                     {isSubmitting ? "Creating..." : "Create Agent →"}
                   </Button>
                 )}
-                {currentStep === 4 && <Button onClick={handleClose}>Done</Button>}
+                {currentStep === 4 && <Button onClick={handleClose}>{t("done")}</Button>}
               </div>
             </div>
           </div>
