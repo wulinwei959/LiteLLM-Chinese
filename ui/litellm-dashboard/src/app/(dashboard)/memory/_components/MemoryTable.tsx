@@ -3,6 +3,7 @@
 import { OnChangeFn, PaginationState } from "@tanstack/react-table";
 import { Database } from "lucide-react";
 import React, { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 import { MemoryRow } from "@/components/networking";
 import { DataTable, DataTableToolbar } from "@/components/shared/DataTable";
@@ -26,18 +27,17 @@ interface MemoryTableProps {
 }
 
 function MemoryEmptyState({ hasActiveSearch }: { hasActiveSearch: boolean }) {
+  const t = useTranslations("memory");
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Database className="size-5 text-muted-foreground" />
       </div>
       <div className="text-sm font-medium text-foreground">
-        {hasActiveSearch ? "No matching memories" : "No memories stored yet"}
+        {hasActiveSearch ? t("noMatching") : t("noneYet")}
       </div>
       <div className="text-sm text-muted-foreground">
-        {hasActiveSearch
-          ? "No memories match your search."
-          : "Memories your agents store under /v1/memory will appear here."}
+        {hasActiveSearch ? t("noMatchDesc") : t("noneYetDesc")}
       </div>
     </div>
   );
@@ -58,10 +58,11 @@ export function MemoryTable({
   onEditClick,
   onDeleteClick,
 }: MemoryTableProps) {
+  const t = useTranslations("memory");
   const columns = useMemo(() => {
-    const columnDeps = { onViewClick, onEditClick, onDeleteClick };
+    const columnDeps = { onViewClick, onEditClick, onDeleteClick, t };
     return getMemoryTableColumns(columnDeps);
-  }, [onViewClick, onEditClick, onDeleteClick]);
+  }, [onViewClick, onEditClick, onDeleteClick, t]);
 
   return (
     <DataTable

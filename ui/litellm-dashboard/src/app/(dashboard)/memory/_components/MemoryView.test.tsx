@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRow } from "@/components/networking";
 
 import { MemoryView } from "./MemoryView";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 interface CapturedTableProps {
   isLoading: boolean;
@@ -41,9 +42,11 @@ vi.mock("@tanstack/react-pacer/debouncer", () => ({
 const renderView = (accessToken: string | null) => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryView accessToken={accessToken} userID={null} userRole={null} />
-    </QueryClientProvider>,
+    <LocaleProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryView accessToken={accessToken} userID={null} userRole={null} />
+      </QueryClientProvider>
+    </LocaleProvider>,
   );
 };
 

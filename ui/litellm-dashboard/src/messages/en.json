@@ -1591,7 +1591,9 @@
     "openOrganizationActions": "Open organization actions",
     "edit": "Edit",
     "delete": "Delete",
-    "actions": "Actions"
+    "actions": "Actions",
+    "searchByName": "Search by Organization Name",
+    "searchById": "Search by Organization ID"
   },
   "budgets": {
     "title": "Budgets",
@@ -4324,6 +4326,13 @@
       "warnTitle": "Please fill in all template variables above",
       "missing": "Missing: {vars}",
       "latestBadge": "Latest"
+    },
+    "variables": {
+      "detected": "Detected variables:",
+      "editName": "Edit variable name",
+      "namePlaceholder": "Variable name",
+      "save": "Save",
+      "cancel": "Cancel"
     }
   },
   "costOptimization": {
@@ -5098,5 +5107,55 @@
     "category": "Category",
     "public": "Public",
     "createdAt": "Created At"
+  },
+  "memory": {
+    "title": "Memory",
+    "memoryId": "Memory ID",
+    "userId": "User ID",
+    "teamId": "Team ID",
+    "value": "Value",
+    "metadata": "Metadata",
+    "editPlaceholder": "What the agent should remember…",
+    "actions": "Actions",
+    "idCol": "ID",
+    "nameCol": "Name",
+    "previewCol": "Preview",
+    "updatedCol": "Updated",
+    "subtitle": "Inspect what your agents have stored under <code>/v1/memory</code>. Scoped to memories visible to your user / team (admins see all).",
+    "newMemory": "New memory",
+    "deleteTitle": "Delete memory",
+    "deleteWarning": "This action cannot be undone.",
+    "keyLabel": "Key",
+    "noMatching": "No matching memories",
+    "noneYet": "No memories stored yet",
+    "noMatchDesc": "No memories match your search.",
+    "noneYetDesc": "Memories your agents store under /v1/memory will appear here."
+  },
+  "workflows": {
+    "title": "Workflow Runs",
+    "subtitle": "Durable state tracking for agents and automated workflows",
+    "loadingRuns": "Loading workflow runs…",
+    "noRuns": "No workflow runs yet",
+    "searchPlaceholder": "Search runs…",
+    "filtersTitle": "Filters",
+    "filtersDesc": "Narrow down workflow runs",
+    "allStatuses": "All statuses",
+    "statusLabel": "Status",
+    "typeLabel": "Type",
+    "typePlaceholder": "Filter by type…",
+    "detailsTitle": "Workflow run details",
+    "detailsDesc": "Metadata, timeline and messages for the selected workflow run",
+    "close": "close",
+    "refresh": "Refresh",
+    "timeline": "Timeline",
+    "eventsCount": "{count, plural, one {# event} other {# events}}",
+    "noEvents": "No events recorded",
+    "status": {
+      "pending": "Pending",
+      "running": "Running",
+      "paused": "Paused",
+      "completed": "Completed",
+      "failed": "Failed"
+    }
   }
 }

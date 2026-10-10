@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { MemoryTranslator } from "@/lib/i18n/translators";
 import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { MemoryRow } from "@/components/networking";
@@ -17,13 +18,14 @@ import { cn } from "@/lib/cva.config";
 import { teamDetailHref, userDetailHref } from "@/utils/entityLinks";
 
 interface MemoryRowActionsProps {
+  t: MemoryTranslator;
   row: MemoryRow;
   onViewClick: (row: MemoryRow) => void;
   onEditClick: (row: MemoryRow) => void;
   onDeleteClick: (row: MemoryRow) => void;
 }
 
-function MemoryRowActions({ row, onViewClick, onEditClick, onDeleteClick }: MemoryRowActionsProps) {
+function MemoryRowActions({ row, onViewClick, onEditClick, onDeleteClick, t }: MemoryRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -53,6 +55,7 @@ function MemoryRowActions({ row, onViewClick, onEditClick, onDeleteClick }: Memo
 }
 
 export interface MemoryTableColumnsDeps {
+  t: MemoryTranslator;
   onViewClick: (row: MemoryRow) => void;
   onEditClick: (row: MemoryRow) => void;
   onDeleteClick: (row: MemoryRow) => void;
@@ -62,12 +65,13 @@ export const getMemoryTableColumns = ({
   onViewClick,
   onEditClick,
   onDeleteClick,
+  t,
 }: MemoryTableColumnsDeps): ColumnDef<MemoryRow>[] => [
   {
     id: "memory_id",
     accessorKey: "memory_id",
-    meta: { title: "ID" },
-    header: "ID",
+    meta: { title: t("idCol") },
+    header: t("idCol"),
     size: 180,
     enableSorting: false,
     cell: ({ row }) => (
@@ -81,8 +85,8 @@ export const getMemoryTableColumns = ({
   {
     id: "key",
     accessorKey: "key",
-    meta: { title: "Name" },
-    header: "Name",
+    meta: { title: t("nameCol") },
+    header: t("nameCol"),
     size: 200,
     enableSorting: false,
     cell: ({ row }) => (
@@ -94,8 +98,8 @@ export const getMemoryTableColumns = ({
   {
     id: "value",
     accessorKey: "value",
-    meta: { title: "Preview" },
-    header: "Preview",
+    meta: { title: t("previewCol") },
+    header: t("previewCol"),
     enableSorting: false,
     cell: ({ row }) => (
       <span className="block max-w-72 truncate text-sm text-muted-foreground" title={row.original.value}>
@@ -106,8 +110,8 @@ export const getMemoryTableColumns = ({
   {
     id: "user_id",
     accessorKey: "user_id",
-    meta: { title: "User ID" },
-    header: "User ID",
+    meta: { title: t("userId") },
+    header: t("userId"),
     size: 160,
     enableSorting: false,
     cell: ({ row }) => {
@@ -118,8 +122,8 @@ export const getMemoryTableColumns = ({
   {
     id: "team_id",
     accessorKey: "team_id",
-    meta: { title: "Team ID" },
-    header: "Team ID",
+    meta: { title: t("teamId") },
+    header: t("teamId"),
     size: 160,
     enableSorting: false,
     cell: ({ row }) => {
@@ -130,8 +134,8 @@ export const getMemoryTableColumns = ({
   {
     id: "updated_at",
     accessorKey: "updated_at",
-    meta: { title: "Updated" },
-    header: "Updated",
+    meta: { title: t("updatedCol") },
+    header: t("updatedCol"),
     size: 170,
     enableSorting: false,
     cell: ({ row }) => <DateCell value={row.original.updated_at} />,
@@ -139,7 +143,7 @@ export const getMemoryTableColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
@@ -150,6 +154,7 @@ export const getMemoryTableColumns = ({
           onViewClick={onViewClick}
           onEditClick={onEditClick}
           onDeleteClick={onDeleteClick}
+          t={t}
         />
       </div>
     ),

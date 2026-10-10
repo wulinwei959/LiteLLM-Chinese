@@ -144,3 +144,8 @@ function useSkillsTranslator() {
   return useTranslations("skills");
 }
 export type SkillsTranslator = ReturnType<typeof useSkillsTranslator>;
+
+function useMemoryTranslator() {
+  return useTranslations("memory");
+}
+export type MemoryTranslator = ReturnType<typeof useMemoryTranslator>;

@@ -2,6 +2,7 @@
 
 import { CircleHelp } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { z } from "zod/v4";
 
 import type { MemoryRow } from "@/components/networking";
@@ -43,6 +44,7 @@ interface MemoryEditModalProps {
 }
 
 export const MemoryEditModal: React.FC<MemoryEditModalProps> = ({ open, mode, initialRow, onClose, onSave }) => {
+  const t = useTranslations("memory");
   const form = useZodForm(memorySchema, { defaultValues: EMPTY_MEMORY, mode: "onChange" });
   const [submitting, setSubmitting] = useState(false);
 
@@ -104,7 +106,7 @@ export const MemoryEditModal: React.FC<MemoryEditModalProps> = ({ open, mode, in
                 label={labelWithHint("Value", "Markdown/text injected into LLM context. Plain strings are fine.")}
               >
                 {({ ref, ...field }) => (
-                  <Textarea {...field} ref={ref} rows={8} placeholder="What the agent should remember…" />
+                  <Textarea {...field} ref={ref} rows={8} placeholder={t("editPlaceholder")} />
                 )}
               </FormField>
 

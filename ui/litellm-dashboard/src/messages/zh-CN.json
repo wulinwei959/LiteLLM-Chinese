@@ -1591,7 +1591,9 @@
     "openOrganizationActions": "打开组织操作",
     "edit": "编辑",
     "delete": "删除",
-    "actions": "操作"
+    "actions": "操作",
+    "searchByName": "按组织名称搜索",
+    "searchById": "按组织 ID 搜索"
   },
   "budgets": {
     "title": "预算",
@@ -4324,6 +4326,13 @@
       "warnTitle": "请在上方填写所有模板变量",
       "missing": "缺失：{vars}",
       "latestBadge": "最新"
+    },
+    "variables": {
+      "detected": "检测到的变量：",
+      "editName": "修改变量名",
+      "namePlaceholder": "变量名",
+      "save": "保存",
+      "cancel": "取消"
     }
   },
   "costOptimization": {
@@ -5098,5 +5107,55 @@
     "category": "分类",
     "public": "公开",
     "createdAt": "创建时间"
+  },
+  "memory": {
+    "title": "记忆",
+    "memoryId": "记忆 ID",
+    "userId": "用户 ID",
+    "teamId": "团队 ID",
+    "value": "内容",
+    "metadata": "元数据",
+    "editPlaceholder": "智能体应记住的内容……",
+    "actions": "操作",
+    "idCol": "ID",
+    "nameCol": "名称",
+    "previewCol": "预览",
+    "updatedCol": "更新时间",
+    "subtitle": "查看智能体存储在 <code>/v1/memory</code> 下的内容。仅限你的用户/团队可见的记忆（管理员可见全部）。",
+    "newMemory": "新建记忆",
+    "deleteTitle": "删除记忆",
+    "deleteWarning": "此操作无法撤销。",
+    "keyLabel": "键",
+    "noMatching": "没有匹配的记忆",
+    "noneYet": "尚未存储记忆",
+    "noMatchDesc": "没有符合搜索条件的记忆。",
+    "noneYetDesc": "智能体存储在 /v1/memory 下的记忆会显示在这里。"
+  },
+  "workflows": {
+    "title": "工作流运行",
+    "subtitle": "为智能体和自动化工作流提供持久状态追踪",
+    "loadingRuns": "正在加载工作流运行…",
+    "noRuns": "暂无工作流运行",
+    "searchPlaceholder": "搜索运行…",
+    "filtersTitle": "筛选",
+    "filtersDesc": "缩小工作流运行范围",
+    "allStatuses": "全部状态",
+    "statusLabel": "状态",
+    "typeLabel": "类型",
+    "typePlaceholder": "按类型筛选…",
+    "detailsTitle": "工作流运行详情",
+    "detailsDesc": "所选工作流运行的元数据、时间线与消息",
+    "close": "关闭",
+    "refresh": "刷新",
+    "timeline": "时间线",
+    "eventsCount": "{count} 个事件",
+    "noEvents": "暂无事件记录",
+    "status": {
+      "pending": "等待中",
+      "running": "运行中",
+      "paused": "已暂停",
+      "completed": "已完成",
+      "failed": "已失败"
+    }
   }
 }
