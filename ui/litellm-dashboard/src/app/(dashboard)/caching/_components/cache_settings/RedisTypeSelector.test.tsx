@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import RedisTypeSelector from "./RedisTypeSelector";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 
 describe("RedisTypeSelector", () => {
   it("should render the component", () => {

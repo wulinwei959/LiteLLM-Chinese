@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
 import CoordinationRedisSettings from "./index";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { REDACTED_VALUE } from "./types";
 import * as networking from "@/components/networking";
 import { toast } from "@/lib/toast";
@@ -29,7 +31,11 @@ const settingsResponse = (
 
 const wrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <LocaleProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </LocaleProvider>
+  );
 };
 
 const renderSettings = () => render(<CoordinationRedisSettings />, { wrapper });

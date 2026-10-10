@@ -5405,5 +5405,33 @@
     "perMonth": "Per Month",
     "daily": "Daily",
     "monthly": "Monthly"
+  },
+  "caching": {
+    "refresh": "Refresh",
+    "selectVirtualKeys": "Select Virtual Keys",
+    "noVirtualKeys": "No virtual keys found",
+    "selectModels": "Select Models",
+    "noModels": "No models found",
+    "hitsVsRequests": "Cache Hits vs API Requests",
+    "errorMessage": "Error Message",
+    "traceback": "Traceback",
+    "cacheConfig": "Cache Configuration",
+    "pingResponse": "Ping Response",
+    "setCacheResponse": "Set Cache Response",
+    "redisHost": "Redis Host",
+    "redisPort": "Redis Port",
+    "redisVersion": "Redis Version",
+    "startupNodes": "Startup Nodes",
+    "namespace": "Namespace",
+    "closeErrorBreakdown": "Close error breakdown",
+    "hoverHint": "Hover a bar to see the error classes behind that code.",
+    "selectOption": "Select an option",
+    "searchModel": "Search and select a model...",
+    "settingsTitle": "Cache Settings",
+    "settingsDesc": "Configure Redis cache for LiteLLM",
+    "advancedSettings": "Advanced Settings",
+    "redisType": "Redis Type",
+    "coordinationRedis": "Coordination Redis",
+    "restartNote": "Saved changes take effect on proxy restart."
   }
 }

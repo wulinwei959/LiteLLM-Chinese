@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
@@ -24,6 +27,7 @@ import {
 
 const CoordinationRedisSettings: React.FC = () => {
   const form = useForm<CoordinationFormValues>({ defaultValues: buildInitialValues({}) });
+  const t = useTranslations("caching");
   const [selectedRedisType, setSelectedRedisType] = useState<CoordinationRedisType | null>(null);
 
   const { data, isLoading, isError } = useCoordinationRedisSettings();
@@ -97,7 +101,7 @@ const CoordinationRedisSettings: React.FC = () => {
         <form onSubmit={(event) => event.preventDefault()} className="space-y-6">
           <div className="max-w-3xl space-y-2">
             <div className="flex items-center gap-3">
-              <h3 className="text-sm font-medium text-foreground">Coordination Redis</h3>
+              <h3 className="text-sm font-medium text-foreground">{t("coordinationRedis")}</h3>
               {!isLoading && (
                 <StatusBadge tone={badge.tone} label={badge.label} dataTestId="coordination-redis-source" />
               )}
@@ -107,7 +111,7 @@ const CoordinationRedisSettings: React.FC = () => {
               manager. It is configured independently of the response cache.
             </p>
             <p className="text-xs text-muted-foreground">{badge.tooltip}</p>
-            <p className="text-xs text-warning">Saved changes take effect on proxy restart.</p>
+            <p className="text-xs text-warning">{t("restartNote")}</p>
           </div>
 
           <CoordinationRedisTypeSelector redisType={redisType} onTypeChange={setSelectedRedisType} />

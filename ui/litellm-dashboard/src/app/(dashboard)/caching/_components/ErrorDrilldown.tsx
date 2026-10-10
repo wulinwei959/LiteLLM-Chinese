@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { BarChart } from "@/components/shared/charts";
 import type { ChartTooltipProps } from "@/components/shared/charts/chart_tooltip";
@@ -70,16 +71,18 @@ interface ErrorDrilldownCardProps {
   onClose: () => void;
 }
 
-export const ErrorDrilldownCard = ({ callType, buckets, valueFormatter, onClose }: ErrorDrilldownCardProps) => (
+export const ErrorDrilldownCard = ({ callType, buckets, valueFormatter, onClose }: ErrorDrilldownCardProps) => {
+  const t = useTranslations("caching");
+  return (
   <Card className="mt-4">
     <CardHeader className="flex flex-row items-center justify-between">
       <CardTitle className="text-base font-semibold">Failed requests by error code: {callType}</CardTitle>
-      <Button variant="outline" size="icon-sm" onClick={onClose} aria-label="Close error breakdown">
+      <Button variant="outline" size="icon-sm" onClick={onClose} aria-label={t("closeErrorBreakdown")}>
         <X />
       </Button>
     </CardHeader>
     <CardContent>
-      <p className="text-sm text-muted-foreground">Hover a bar to see the error classes behind that code.</p>
+      <p className="text-sm text-muted-foreground">{t("hoverHint")}</p>
       <BarChart
         data={groupErrorBuckets(buckets, callType)}
         index="error_code"
@@ -93,4 +96,5 @@ export const ErrorDrilldownCard = ({ callType, buckets, valueFormatter, onClose 
       />
     </CardContent>
   </Card>
-);
+  );
+};

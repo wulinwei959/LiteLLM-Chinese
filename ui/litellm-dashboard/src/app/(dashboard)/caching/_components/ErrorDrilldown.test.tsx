@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import { ErrorCodeTooltip, groupErrorBuckets, type CacheActivityErrorBucket } from "./ErrorDrilldown";
 
 const BUCKETS: CacheActivityErrorBucket[] = [

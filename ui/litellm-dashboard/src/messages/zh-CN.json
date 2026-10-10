@@ -5405,5 +5405,33 @@
     "perMonth": "每月",
     "daily": "每天",
     "monthly": "每月"
+  },
+  "caching": {
+    "refresh": "刷新",
+    "selectVirtualKeys": "选择虚拟密钥",
+    "noVirtualKeys": "未找到虚拟密钥",
+    "selectModels": "选择模型",
+    "noModels": "未找到模型",
+    "hitsVsRequests": "缓存命中与 API 请求数",
+    "errorMessage": "错误信息",
+    "traceback": "调用栈",
+    "cacheConfig": "缓存配置",
+    "pingResponse": "Ping 响应",
+    "setCacheResponse": "Set Cache 响应",
+    "redisHost": "Redis 主机",
+    "redisPort": "Redis 端口",
+    "redisVersion": "Redis 版本",
+    "startupNodes": "启动节点",
+    "namespace": "命名空间",
+    "closeErrorBreakdown": "关闭错误细分",
+    "hoverHint": "将鼠标悬停在柱子上查看该错误码背后的错误类别。",
+    "selectOption": "选择一个选项",
+    "searchModel": "搜索并选择模型...",
+    "settingsTitle": "缓存设置",
+    "settingsDesc": "为 LiteLLM 配置 Redis 缓存",
+    "advancedSettings": "高级设置",
+    "redisType": "Redis 类型",
+    "coordinationRedis": "协调 Redis",
+    "restartNote": "保存的更改会在代理重启后生效。"
   }
 }

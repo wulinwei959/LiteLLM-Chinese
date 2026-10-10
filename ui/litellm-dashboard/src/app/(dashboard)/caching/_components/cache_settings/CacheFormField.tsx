@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { FormField } from "@/components/shared/form/FormField";
 import { PasswordInput } from "@/components/shared/PasswordInput";
@@ -33,6 +36,7 @@ interface CacheFormFieldProps {
 
 const CacheFormField: React.FC<CacheFormFieldProps> = ({ field, embeddingModels, isSecretConfigured = false }) => {
   const form = useFormContext<CacheFormValues>();
+  const t = useTranslations("caching");
   const placeholder = isSecretConfigured ? SECRET_ALREADY_SET_PLACEHOLDER : field.helpText;
 
   return (
@@ -83,7 +87,7 @@ const CacheFormField: React.FC<CacheFormFieldProps> = ({ field, embeddingModels,
                 onBlur={onBlur}
                 className="w-full"
               >
-                <SelectValue placeholder="Select an option" />
+                <SelectValue placeholder={t("selectOption")} />
               </SelectTrigger>
               <SelectContent>
                 {options.map((option) => (
@@ -107,11 +111,11 @@ const CacheFormField: React.FC<CacheFormFieldProps> = ({ field, embeddingModels,
                 model.value === other.value
               }
             >
-              <ComboboxInput {...rest} placeholder="Search and select a model..." className="w-full">
+              <ComboboxInput {...rest} placeholder={t("searchModel")} className="w-full">
                 <ComboboxClear />
               </ComboboxInput>
               <ComboboxContent>
-                <ComboboxEmpty>No models found</ComboboxEmpty>
+                <ComboboxEmpty>{t("noModels")}</ComboboxEmpty>
                 <ComboboxList>
                   {(model: EmbeddingModelOption) => (
                     <ComboboxItem key={model.value} value={model} title={model.label}>

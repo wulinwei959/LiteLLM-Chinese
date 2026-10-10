@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { ChevronRight } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -31,6 +34,7 @@ const toRedisType = (value: unknown): RedisType =>
 
 const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
   const form = useForm<CacheFormValues>({ defaultValues: buildInitialValues({}) });
+  const t = useTranslations("caching");
   const [redisType, setRedisType] = useState<RedisType>("node");
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [embeddingModels, setEmbeddingModels] = useState<EmbeddingModelOption[]>([]);
@@ -148,8 +152,8 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
       <FormProvider {...form}>
         <form onSubmit={(event) => event.preventDefault()} className="space-y-6">
           <div className="max-w-3xl">
-            <h3 className="text-sm font-medium text-foreground">Cache Settings</h3>
-            <p className="text-xs text-muted-foreground mt-1">Configure Redis cache for LiteLLM</p>
+            <h3 className="text-sm font-medium text-foreground">{t("settingsTitle")}</h3>
+            <p className="text-xs text-muted-foreground mt-1">{t("settingsDesc")}</p>
           </div>
 
           <RedisTypeSelector
@@ -205,7 +209,7 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
 
           <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen} className="mt-4">
             <CollapsibleTrigger className="group flex w-full items-center justify-between py-2 text-left">
-              <span className="text-sm font-medium text-foreground">Advanced Settings</span>
+              <span className="text-sm font-medium text-foreground">{t("advancedSettings")}</span>
               <ChevronRight className="size-4 text-muted-foreground transition-transform group-data-panel-open:rotate-90" />
             </CollapsibleTrigger>
             <CollapsibleContent>
