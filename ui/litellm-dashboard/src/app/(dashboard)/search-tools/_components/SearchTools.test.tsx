@@ -1,6 +1,8 @@
 import * as roles from "@/utils/roles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { LocaleProvider } from "@/contexts/LocaleContext";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "@/components/networking";
@@ -109,7 +111,9 @@ const createWrapper = () => {
     },
   });
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <LocaleProvider locale="zh-CN">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </LocaleProvider>
   );
   Wrapper.displayName = "TestWrapper";
   return Wrapper;
@@ -132,23 +136,23 @@ describe("SearchTools", () => {
   it("should render", async () => {
     render(<SearchTools {...defaultProps} />, { wrapper: createWrapper() });
     await waitFor(() => {
-      expect(screen.getByText("Search Tools")).toBeInTheDocument();
+      expect(screen.getByText("搜索工具")).toBeInTheDocument();
     });
   });
 
   it("should display missing authentication parameters message when accessToken is missing", () => {
     render(<SearchTools {...defaultProps} accessToken={null} />, { wrapper: createWrapper() });
-    expect(screen.getByText("Missing required authentication parameters.")).toBeInTheDocument();
+    expect(screen.getByText("缺少必要的认证参数。")).toBeInTheDocument();
   });
 
   it("should display missing authentication parameters message when userRole is missing", () => {
     render(<SearchTools {...defaultProps} userRole={null} />, { wrapper: createWrapper() });
-    expect(screen.getByText("Missing required authentication parameters.")).toBeInTheDocument();
+    expect(screen.getByText("缺少必要的认证参数。")).toBeInTheDocument();
   });
 
   it("should display missing authentication parameters message when userID is missing", () => {
     render(<SearchTools {...defaultProps} userID={null} />, { wrapper: createWrapper() });
-    expect(screen.getByText("Missing required authentication parameters.")).toBeInTheDocument();
+    expect(screen.getByText("缺少必要的认证参数。")).toBeInTheDocument();
   });
 
   it("should display search tools table with tools", async () => {
@@ -164,7 +168,7 @@ describe("SearchTools", () => {
 
     render(<SearchTools {...defaultProps} />, { wrapper: createWrapper() });
     await waitFor(() => {
-      expect(screen.getByText("No search tools configured")).toBeInTheDocument();
+      expect(screen.getByText("尚未配置搜索工具")).toBeInTheDocument();
     });
   });
 
@@ -180,7 +184,7 @@ describe("SearchTools", () => {
 
     render(<SearchTools {...defaultProps} />, { wrapper: createWrapper() });
     await waitFor(() => {
-      expect(screen.getByText("Search Tools")).toBeInTheDocument();
+      expect(screen.getByText("搜索工具")).toBeInTheDocument();
     });
     expect(screen.queryByRole("button", { name: /add new search tool/i })).not.toBeInTheDocument();
   });

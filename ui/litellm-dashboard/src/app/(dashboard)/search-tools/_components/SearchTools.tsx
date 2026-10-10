@@ -1,6 +1,9 @@
+"use client";
+
 import { isAdminRole } from "@/utils/roles";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { z } from "zod/v4";
 import DeleteResourceModal from "@/components/common_components/DeleteResourceModal";
 import { toast } from "@/lib/toast";
@@ -46,6 +49,7 @@ type EditSearchToolFormValues = z.infer<typeof editSearchToolSchema>;
 const EMPTY_EDIT_VALUES: EditSearchToolFormValues = { search_tool_name: "", search_provider: "" };
 
 const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID }) => {
+  const t = useTranslations("searchTools");
   const {
     data: searchTools,
     isLoading: isLoadingTools,
@@ -184,7 +188,7 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
               onValueChange={(provider: string | null) => onChange(provider ?? "")}
             >
               <SelectTrigger id={id} aria-invalid={ariaInvalid} aria-describedby={ariaDescribedBy} className="w-full">
-                <SelectValue placeholder="Select a search provider" />
+                <SelectValue placeholder={t("selectProvider")} />
                 {isLoadingProviders && <UiLoadingSpinner className="size-4" />}
               </SelectTrigger>
               <SelectContent>
@@ -200,13 +204,13 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
 
         <FormField control={form.control} name="api_key" label="API Key" description="API key for the search provider">
           {({ ref, value, ...field }) => (
-            <PasswordInput {...field} ref={ref} value={value ?? ""} placeholder="Enter API key" />
+            <PasswordInput {...field} ref={ref} value={value ?? ""} placeholder={t("enterApiKeyShort")} />
           )}
         </FormField>
 
         <FormField control={form.control} name="description" label="Description">
           {({ ref, value, ...field }) => (
-            <Textarea {...field} ref={ref} value={value ?? ""} rows={3} placeholder="Description of this search tool" />
+            <Textarea {...field} ref={ref} value={value ?? ""} rows={3} placeholder={t("descPlaceholderShort")} />
           )}
         </FormField>
       </FieldGroup>
@@ -214,7 +218,7 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
   );
 
   if (!accessToken || !userRole || !userID) {
-    return <div className="p-6 text-center text-muted-foreground">Missing required authentication parameters.</div>;
+    return <div className="p-6 text-center text-muted-foreground">{t("missingAuthParams")}</div>;
   }
 
   const ToolsTab = () =>
@@ -296,7 +300,7 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
       >
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Edit Search Tool</DialogTitle>
+            <DialogTitle>{t("editTitle")}</DialogTitle>
           </DialogHeader>
           {renderEditForm()}
           <DialogFooter>
@@ -315,8 +319,8 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
         </DialogContent>
       </Dialog>
 
-      <h1 className="text-lg font-semibold text-foreground">Search Tools</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Configure and manage your search providers</p>
+      <h1 className="text-lg font-semibold text-foreground">{t("title")}</h1>
+      <p className="mt-2 text-sm text-muted-foreground">{t("subtitle")}</p>
       {isAdminRole(userRole) && (
         <Button className="mt-4 mb-4" variant="outline" onClick={() => setCreateModalVisible(true)}>
           + Add New Search Tool

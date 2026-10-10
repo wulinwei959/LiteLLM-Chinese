@@ -1,7 +1,10 @@
+"use client";
+
 import { isAdminRole } from "@/utils/roles";
 import { useQuery } from "@tanstack/react-query";
 import { CircleHelp } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useWatch } from "react-hook-form";
 import { z } from "zod/v4";
 import { Logo } from "@/components/molecules/logo/Logo";
@@ -104,6 +107,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
   isModalVisible,
   setModalVisible,
 }) => {
+  const t = useTranslations("searchTools");
   const form = useZodForm(createSearchToolSchema, { defaultValues: EMPTY_VALUES });
   const [isLoading, setIsLoading] = useState(false);
   const [isTestModalVisible, setIsTestModalVisible] = useState(false);
@@ -182,7 +186,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
         <DialogHeader>
           <div className="flex items-center space-x-3 pb-4 border-b border-border">
             <span className="text-2xl">🔍</span>
-            <DialogTitle className="text-xl font-semibold text-foreground">Add New Search Tool</DialogTitle>
+            <DialogTitle className="text-xl font-semibold text-foreground">{t("addNew")}</DialogTitle>
           </div>
         </DialogHeader>
         <div className="mt-6">
@@ -226,13 +230,13 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                         id={id}
                         aria-invalid={ariaInvalid}
                         aria-describedby={ariaDescribedBy}
-                        placeholder="Select a search provider"
+                        placeholder={t("selectProvider")}
                         className="h-10 w-full rounded-lg"
                         disabled={isLoadingProviders}
                         showClear={value != null && value !== ""}
                       />
                       <ComboboxContent>
-                        <ComboboxEmpty>No matching search providers</ComboboxEmpty>
+                        <ComboboxEmpty>{t("noMatchingProviders")}</ComboboxEmpty>
                         <ComboboxList>
                           {(providerName: string) => (
                             <ComboboxItem key={providerName} value={providerName}>
@@ -261,7 +265,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                       {...field}
                       ref={ref}
                       value={value ?? ""}
-                      placeholder="Enter your API key"
+                      placeholder={t("enterApiKey")}
                       groupClassName="h-10 rounded-lg"
                     />
                   )}
@@ -274,7 +278,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                       ref={ref}
                       value={value ?? ""}
                       rows={3}
-                      placeholder="Brief description of this search tool's purpose"
+                      placeholder={t("descPlaceholder")}
                       className="rounded-lg"
                     />
                   )}
@@ -295,7 +299,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                       </a>
                     }
                   />
-                  <TooltipContent>Get help on our github</TooltipContent>
+                  <TooltipContent>{t("githubHelp")}</TooltipContent>
                 </Tooltip>
                 <div className="flex gap-2">
                   <Button type="submit" variant="outline" onClick={handleTestConnection} disabled={isTestingConnection}>
@@ -323,7 +327,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
         >
           <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[700px]">
             <DialogHeader>
-              <DialogTitle>Connection Test Results</DialogTitle>
+              <DialogTitle>{t("connectionResults")}</DialogTitle>
             </DialogHeader>
             {isTestModalVisible && accessToken && (
               <SearchConnectionTest

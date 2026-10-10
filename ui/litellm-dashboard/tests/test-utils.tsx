@@ -34,7 +34,7 @@ export const renderWithProviders = (ui: React.ReactElement, options?: RenderOpti
   const Providers: React.FC<PropsWithChildren> = ({ children }) => (
     <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={onUrlUpdate} hasMemory>
       <QueryClientProvider client={testQueryClient}>
-        <LocaleProvider>{children}</LocaleProvider>
+        <LocaleProvider locale="zh-CN">{children}</LocaleProvider>
       </QueryClientProvider>
     </NuqsTestingAdapter>
   );

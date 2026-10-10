@@ -39,7 +39,7 @@ describe("SearchToolTable", () => {
     expect(screen.getByText("Perplexity Search")).toBeInTheDocument();
     expect(screen.getByText("tool-1")).toBeInTheDocument();
     expect(screen.getByText("Perplexity AI")).toBeInTheDocument();
-    expect(screen.getByText("DB")).toBeInTheDocument();
+    expect(screen.getByText(/数据库|DB/)).toBeInTheDocument();
   });
 
   it("should call onView when the search tool ID is clicked", async () => {
@@ -112,6 +112,6 @@ describe("SearchToolTable", () => {
 
   it("should show the empty state when there are no search tools", () => {
     renderWithProviders(<SearchToolTable {...defaultProps} searchTools={[]} />);
-    expect(screen.getByText("No search tools configured")).toBeInTheDocument();
+    expect(screen.getByText(/尚未配置搜索工具|No search tools configured/)).toBeInTheDocument();
   });
 });

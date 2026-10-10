@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ExternalLink, Search } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { searchToolQueryCall } from "@/components/networking";
@@ -25,6 +28,7 @@ interface SearchToolTesterProps {
 
 export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolName, accessToken, className = "" }) => {
   const [query, setQuery] = useState("");
+  const t = useTranslations("searchTools");
   const [isLoading, setIsLoading] = useState(false);
   const [searchHistory, setSearchHistory] = useState<
     {
@@ -89,7 +93,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
   return (
     <Card className={`mt-6 ${className}`}>
       <div className="px-6">
-        <h2 className="text-lg font-semibold text-foreground">Test Search Tool</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t("testerTitle")}</h2>
       </div>
 
       <div className="flex min-h-[600px] flex-col px-6">
@@ -106,7 +110,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
                     handleSearch();
                   }
                 }}
-                placeholder="Enter your search query..."
+                placeholder={t("queryPlaceholder")}
                 disabled={isLoading}
                 className="h-12 pl-11 text-[15px]"
               />
@@ -124,15 +128,15 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
               <div className="mb-6 flex size-24 items-center justify-center rounded-full bg-muted">
                 <Search className="size-12 text-muted-foreground" />
               </div>
-              <p className="text-lg font-medium text-foreground">Test your search tool</p>
-              <p className="mt-2 text-sm text-muted-foreground">Enter a query above to see search results</p>
+              <p className="text-lg font-medium text-foreground">{t("testerEmpty")}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{t("testerEmptyDesc")}</p>
             </div>
           ) : (
             <div>
               {isLoading && (
                 <div className="flex flex-col items-center justify-center py-16">
                   <UiLoadingSpinner className="size-8 text-primary" />
-                  <p className="mt-4 font-medium text-muted-foreground">Searching...</p>
+                  <p className="mt-4 font-medium text-muted-foreground">{t("searching")}</p>
                 </div>
               )}
 
@@ -225,8 +229,8 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
                       <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-muted">
                         <Search className="size-6 text-muted-foreground" />
                       </div>
-                      <p className="font-medium text-foreground">No results found</p>
-                      <p className="mt-1 text-sm text-muted-foreground">Try a different search query</p>
+                      <p className="font-medium text-foreground">{t("noResults")}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">{t("noResultsDesc")}</p>
                     </div>
                   )}
                 </>
@@ -235,7 +239,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
               {searchHistory.length > 1 && (
                 <div className="mt-8 border-t border-border pt-6">
                   <div className="mb-4 flex items-center justify-between">
-                    <p className="text-sm font-semibold text-foreground">Previous Searches</p>
+                    <p className="text-sm font-semibold text-foreground">{t("previousSearches")}</p>
                     <Button variant="link" size="sm" className="h-auto p-0" onClick={clearHistory}>
                       Clear All
                     </Button>

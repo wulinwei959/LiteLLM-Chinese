@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import { describe, expect, it } from "vitest";
 import { SearchProviderLabel } from "./CreateSearchTools";
 

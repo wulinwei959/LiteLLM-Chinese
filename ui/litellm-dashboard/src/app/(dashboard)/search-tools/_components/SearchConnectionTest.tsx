@@ -1,5 +1,8 @@
+"use client";
+
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import { testSearchToolConnection } from "@/components/networking";
 import { Button } from "@/components/ui/button";
@@ -14,6 +17,7 @@ interface SearchConnectionTestProps {
 
 const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmParams, accessToken, onTestComplete }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const t = useTranslations("searchTools");
   const [testResult, setTestResult] = useState<{
     status: "success" | "error";
     message: string;
@@ -124,7 +128,7 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
           </div>
 
           <div className="mb-5 rounded-lg border border-destructive/30 bg-destructive/10 p-4">
-            <p className="mb-2 font-semibold text-foreground">Error: </p>
+            <p className="mb-2 font-semibold text-foreground">{t("errorPrefix")}</p>
             <p className="text-sm leading-relaxed text-destructive">{errorMessage}</p>
 
             {testResult.error_type && (
@@ -149,7 +153,7 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
 
           {showDetails && (
             <div className="mb-5">
-              <p className="mb-2 text-[15px] font-semibold text-foreground">Full Error Details</p>
+              <p className="mb-2 text-[15px] font-semibold text-foreground">{t("fullErrorDetails")}</p>
               <pre className="max-h-52 overflow-auto rounded-lg border border-border bg-muted p-4 text-[13px] leading-relaxed break-words whitespace-pre-wrap">
                 {testResult.message}
               </pre>
@@ -157,11 +161,11 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
           )}
 
           <div className="rounded-lg border border-warning/20 border-l-4 border-l-amber-500 bg-warning/10 p-4">
-            <p className="mb-2 font-semibold text-warning">Troubleshooting tips:</p>
+            <p className="mb-2 font-semibold text-warning">{t("troubleshooting")}</p>
             <ul className="my-2 list-disc pl-5 text-warning">
-              <li className="mb-1.5">Verify your API key is correct and active</li>
-              <li className="mb-1.5">Check if the search provider service is operational</li>
-              <li className="mb-1.5">Ensure you have sufficient credits/quota with the provider</li>
+              <li className="mb-1.5">{t("tipKey")}</li>
+              <li className="mb-1.5">{t("tipService")}</li>
+              <li className="mb-1.5">{t("tipQuota")}</li>
               <li className="mb-1.5">Review the provider&apos;s documentation for any additional requirements</li>
             </ul>
           </div>

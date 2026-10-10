@@ -1,4 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SearchConnectionTest from "./SearchConnectionTest";
@@ -85,7 +86,7 @@ describe("SearchConnectionTest", () => {
     expect(await screen.findByText(/Connection to tavily failed/i)).toBeInTheDocument();
     expect(screen.getByText("Invalid API key")).toBeInTheDocument();
     expect(screen.getByText("AuthenticationError")).toBeInTheDocument();
-    expect(screen.getByText("Verify your API key is correct and active")).toBeInTheDocument();
+    expect(screen.getByText("确认 API 密钥正确且有效")).toBeInTheDocument();
   });
 
   it("reveals the raw error details when Show Details is toggled", async () => {
@@ -99,11 +100,11 @@ describe("SearchConnectionTest", () => {
     render(<SearchConnectionTest {...defaultProps} />);
 
     const toggle = await screen.findByRole("button", { name: /show details/i });
-    expect(screen.queryByText("Full Error Details")).not.toBeInTheDocument();
+    expect(screen.queryByText("完整错误详情")).not.toBeInTheDocument();
 
     await user.click(toggle);
 
-    expect(screen.getByText("Full Error Details")).toBeInTheDocument();
+    expect(screen.getByText("完整错误详情")).toBeInTheDocument();
     expect(screen.getByText(/stack trace: deep internals/i)).toBeInTheDocument();
   });
 

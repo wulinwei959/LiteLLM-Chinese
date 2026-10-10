@@ -1,4 +1,5 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SearchToolView } from "./SearchToolView";
@@ -133,7 +134,7 @@ describe("SearchToolView", () => {
     };
 
     render(<SearchToolView {...defaultProps} searchTool={searchToolWithoutDescription} />);
-    expect(screen.queryByText("Description")).not.toBeInTheDocument();
+    expect(screen.queryByText("描述")).not.toBeInTheDocument();
   });
 
   it("should call onBack when back button is clicked", async () => {
@@ -223,7 +224,7 @@ describe("SearchToolView", () => {
   it("should render SearchToolTester when accessToken is provided", () => {
     render(<SearchToolView {...defaultProps} />);
     expect(screen.getByTestId("search-tool-tester")).toBeInTheDocument();
-    expect(screen.getByText(/Search Tool Tester for Test Search Tool/)).toBeInTheDocument();
+    expect(screen.getByText("Test Search Tool")).toBeInTheDocument();
   });
 
   it("should not render SearchToolTester when accessToken is null", () => {

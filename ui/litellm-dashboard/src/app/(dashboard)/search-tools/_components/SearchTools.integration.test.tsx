@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -57,9 +58,11 @@ const providers = [
 const renderPage = () => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
   return render(
-    <QueryClientProvider client={queryClient}>
-      <SearchTools accessToken="test-token" userRole="Admin" userID="user-1" />
-    </QueryClientProvider>,
+    <LocaleProvider locale="zh-CN">
+      <QueryClientProvider client={queryClient}>
+        <SearchTools accessToken="test-token" userRole="Admin" userID="user-1" />
+      </QueryClientProvider>
+    </LocaleProvider>,
   );
 };
 

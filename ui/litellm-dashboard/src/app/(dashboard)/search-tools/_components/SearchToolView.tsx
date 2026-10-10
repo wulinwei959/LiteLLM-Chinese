@@ -1,6 +1,9 @@
+"use client";
+
 import { copyToClipboard as utilCopyToClipboard } from "@/utils/dataUtils";
 import { ArrowLeft, Check, Copy } from "lucide-react";
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SearchToolTester } from "./SearchToolTester";
@@ -21,6 +24,7 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
   accessToken,
   availableProviders,
 }) => {
+  const t = useTranslations("searchTools");
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
 
   const copyToClipboard = async (text: string | null | undefined, key: string) => {
@@ -76,7 +80,7 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card>
           <CardContent>
-            <p className="text-sm text-muted-foreground">Provider</p>
+            <p className="text-sm text-muted-foreground">{t("providerCol")}</p>
             <p className="mt-2 text-lg font-semibold text-foreground">
               {getProviderDisplayName(searchTool.litellm_params.search_provider)}
             </p>
@@ -85,14 +89,14 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
 
         <Card>
           <CardContent>
-            <p className="text-sm text-muted-foreground">API Key</p>
+            <p className="text-sm text-muted-foreground">{t("apiKeyCol")}</p>
             <p className="mt-2 text-foreground">{searchTool.litellm_params.api_key ? "****" : "Not set"}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent>
-            <p className="text-sm text-muted-foreground">Created At</p>
+            <p className="text-sm text-muted-foreground">{t("createdAtCol")}</p>
             <p className="mt-2 text-foreground">
               {searchTool.created_at ? new Date(searchTool.created_at).toLocaleString() : "Unknown"}
             </p>
@@ -103,7 +107,7 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
       {searchTool.search_tool_info?.description && (
         <Card className="mt-6">
           <CardContent>
-            <p className="text-sm text-muted-foreground">Description</p>
+            <p className="text-sm text-muted-foreground">{t("descriptionCol")}</p>
             <p className="mt-2 text-foreground">{searchTool.search_tool_info.description}</p>
           </CardContent>
         </Card>

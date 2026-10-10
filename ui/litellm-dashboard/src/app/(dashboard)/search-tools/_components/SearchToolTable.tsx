@@ -3,6 +3,8 @@
 import { SortingState } from "@tanstack/react-table";
 import { Inbox } from "lucide-react";
 import React, { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
+import type { SearchToolsTranslator } from "@/lib/i18n/translators";
 
 import { DataTable } from "@/components/shared/DataTable";
 
@@ -20,17 +22,18 @@ interface SearchToolTableProps {
 
 const DEFAULT_SORTING: SortingState = [{ id: "created_at", desc: true }];
 
-function EmptyState() {
+function EmptyState({ t }: { t: SearchToolsTranslator }) {
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Inbox className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No search tools configured</div>
-      <div className="text-sm text-muted-foreground">Add a search tool to enable web search for your models.</div>
+      <div className="text-sm font-medium text-foreground">{t("noTools")}</div>
+      <div className="text-sm text-muted-foreground">{t("noToolsDesc")}</div>
     </div>
   );
 }
+
 
 const SearchToolTable: React.FC<SearchToolTableProps> = ({
   searchTools,
@@ -40,10 +43,11 @@ const SearchToolTable: React.FC<SearchToolTableProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const t = useTranslations("searchTools");
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
   const columns = useMemo(() => {
-    const deps = { availableProviders, onView, onEdit, onDelete };
+    const deps = { availableProviders, onView, onEdit, onDelete, t };
     return getSearchToolTableColumns(deps);
   }, [availableProviders, onView, onEdit, onDelete]);
 
@@ -58,7 +62,7 @@ const SearchToolTable: React.FC<SearchToolTableProps> = ({
       onSortingChange={setSorting}
       isLoading={isLoading}
       loadingMessage="Loading search tools…"
-      noDataMessage={<EmptyState />}
+      noDataMessage={<EmptyState t={t} />}
       size="compact"
     />
   );

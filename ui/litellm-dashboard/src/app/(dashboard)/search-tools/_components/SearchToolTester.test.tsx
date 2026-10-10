@@ -1,4 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SearchToolTester } from "./SearchToolTester";
@@ -39,18 +40,18 @@ describe("SearchToolTester", () => {
 
   it("should render", () => {
     render(<SearchToolTester {...defaultProps} />);
-    expect(screen.getByText("Test Search Tool")).toBeInTheDocument();
+    expect(screen.getByText("测试搜索工具")).toBeInTheDocument();
   });
 
   it("should display empty state when no search has been performed", () => {
     render(<SearchToolTester {...defaultProps} />);
-    expect(screen.getByText("Test your search tool")).toBeInTheDocument();
-    expect(screen.getByText("Enter a query above to see search results")).toBeInTheDocument();
+    expect(screen.getByText("测试你的搜索工具")).toBeInTheDocument();
+    expect(screen.getByText("在上方输入查询以查看搜索结果")).toBeInTheDocument();
   });
 
   it("should display search input with placeholder", () => {
     render(<SearchToolTester {...defaultProps} />);
-    expect(screen.getByPlaceholderText("Enter your search query...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("输入搜索查询...")).toBeInTheDocument();
   });
 
   it("should display search button", () => {
@@ -67,7 +68,7 @@ describe("SearchToolTester", () => {
   it("should enable search button when input has text", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     expect(searchButton).toBeEnabled();
@@ -76,7 +77,7 @@ describe("SearchToolTester", () => {
   it("should call searchToolQueryCall when search button is clicked", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -86,7 +87,7 @@ describe("SearchToolTester", () => {
   it("should call searchToolQueryCall when Enter is pressed in input", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query{Enter}");
     expect(networking.searchToolQueryCall).toHaveBeenCalledWith("test-token", "test-search-tool", "test query");
   });
@@ -94,7 +95,7 @@ describe("SearchToolTester", () => {
   it("should not call searchToolQueryCall when Shift+Enter is pressed", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     await user.keyboard("{Shift>}{Enter}{/Shift}");
     expect(networking.searchToolQueryCall).not.toHaveBeenCalled();
@@ -106,11 +107,11 @@ describe("SearchToolTester", () => {
     );
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
-    expect(screen.getByText("Searching...")).toBeInTheDocument();
+    expect(screen.getByText("搜索中...")).toBeInTheDocument();
 
     expect(await screen.findByText("Test Result 1")).toBeInTheDocument();
   });
@@ -118,7 +119,7 @@ describe("SearchToolTester", () => {
   it("should display search results after successful search", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -131,7 +132,7 @@ describe("SearchToolTester", () => {
   it("should display search query in results header", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -143,7 +144,7 @@ describe("SearchToolTester", () => {
   it("should display result count in results header", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -165,7 +166,7 @@ describe("SearchToolTester", () => {
     vi.mocked(networking.searchToolQueryCall).mockResolvedValue(singleResult);
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -177,7 +178,7 @@ describe("SearchToolTester", () => {
   it("should display result URLs", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -190,7 +191,7 @@ describe("SearchToolTester", () => {
   it("should display result snippets", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -202,7 +203,7 @@ describe("SearchToolTester", () => {
   it("should truncate long snippets and show expand button", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -214,7 +215,7 @@ describe("SearchToolTester", () => {
   it("should expand snippet when Show more is clicked", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -229,7 +230,7 @@ describe("SearchToolTester", () => {
   it("should collapse snippet when Show less is clicked", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -247,26 +248,26 @@ describe("SearchToolTester", () => {
     vi.mocked(networking.searchToolQueryCall).mockResolvedValue({ results: [] });
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
     await waitFor(() => {
-      expect(screen.getByText("No results found")).toBeInTheDocument();
+      expect(screen.getByText("未找到结果")).toBeInTheDocument();
     });
-    expect(screen.getByText("Try a different search query")).toBeInTheDocument();
+    expect(screen.getByText("试试其他搜索查询")).toBeInTheDocument();
   });
 
   it("should display no results message when search returns null results", async () => {
     vi.mocked(networking.searchToolQueryCall).mockResolvedValue({ results: null });
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
     await waitFor(() => {
-      expect(screen.getByText("No results found")).toBeInTheDocument();
+      expect(screen.getByText("未找到结果")).toBeInTheDocument();
     });
   });
 
@@ -276,7 +277,7 @@ describe("SearchToolTester", () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -289,7 +290,7 @@ describe("SearchToolTester", () => {
   it("should maintain search history", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "first query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -302,14 +303,14 @@ describe("SearchToolTester", () => {
     await waitFor(() => {
       expect(screen.getByText("second query")).toBeInTheDocument();
     });
-    expect(screen.getByText("Previous Searches")).toBeInTheDocument();
+    expect(screen.getByText("历史搜索")).toBeInTheDocument();
     expect(screen.getByText("first query")).toBeInTheDocument();
   });
 
   it("should allow clicking previous search to set query", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "first query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -333,7 +334,7 @@ describe("SearchToolTester", () => {
   it("should clear history when Clear All is clicked", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "first query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -344,18 +345,18 @@ describe("SearchToolTester", () => {
     await user.type(input, "second query");
     await user.click(searchButton);
     await waitFor(() => {
-      expect(screen.getByText("Previous Searches")).toBeInTheDocument();
+      expect(screen.getByText("历史搜索")).toBeInTheDocument();
     });
     const clearButton = screen.getByRole("button", { name: /clear all/i });
     await user.click(clearButton);
     expect(toast.success).toHaveBeenCalledWith("Search history cleared");
-    expect(screen.queryByText("Previous Searches")).not.toBeInTheDocument();
+    expect(screen.queryByText("历史搜索")).not.toBeInTheDocument();
   });
 
   it("should limit history display to 5 previous searches", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     for (let i = 1; i <= 7; i++) {
       await user.clear(input);
       await user.type(input, `query ${i}`);
@@ -375,7 +376,7 @@ describe("SearchToolTester", () => {
   it("should preserve query text after search", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -391,7 +392,7 @@ describe("SearchToolTester", () => {
     );
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);
@@ -404,7 +405,7 @@ describe("SearchToolTester", () => {
   it("should display result links that open in new tab", async () => {
     const user = userEvent.setup();
     render(<SearchToolTester {...defaultProps} />);
-    const input = screen.getByPlaceholderText("Enter your search query...");
+    const input = screen.getByPlaceholderText("输入搜索查询...");
     await user.type(input, "test query");
     const searchButton = screen.getByRole("button", { name: /search/i });
     await user.click(searchButton);

@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { SearchToolsTranslator } from "@/lib/i18n/translators";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -68,6 +69,7 @@ function SearchToolRowActions({ tool, onEdit, onDelete }: SearchToolRowActionsPr
 }
 
 interface SearchToolTableColumnsDeps {
+  t: SearchToolsTranslator;
   availableProviders: AvailableSearchProvider[];
   onView: (searchToolId: string) => void;
   onEdit: (searchToolId: string) => void;
@@ -79,6 +81,7 @@ export const getSearchToolTableColumns = ({
   onView,
   onEdit,
   onDelete,
+  t,
 }: SearchToolTableColumnsDeps): ColumnDef<SearchTool>[] => [
   {
     id: "search_tool_id",
@@ -113,8 +116,8 @@ export const getSearchToolTableColumns = ({
   },
   {
     id: "provider",
-    meta: { title: "Provider" },
-    header: "Provider",
+    meta: { title: t("providerCol") },
+    header: t("providerCol"),
     size: 160,
     enableSorting: false,
     cell: ({ row }) => {
@@ -126,8 +129,8 @@ export const getSearchToolTableColumns = ({
   {
     id: "created_at",
     accessorKey: "created_at",
-    meta: { title: "Created At" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Created At" />,
+    meta: { title: t("createdAtCol") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("createdAtCol")} />,
     size: 130,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.created_at} precision="date" />,
@@ -155,7 +158,7 @@ export const getSearchToolTableColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
