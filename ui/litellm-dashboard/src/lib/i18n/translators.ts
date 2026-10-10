@@ -114,3 +114,23 @@ function usePromptsTranslator() {
   return useTranslations("prompts");
 }
 export type PromptsTranslator = ReturnType<typeof usePromptsTranslator>;
+
+function useUsageTranslator() {
+  return useTranslations("usage");
+}
+export type UsageTranslator = ReturnType<typeof useUsageTranslator>;
+
+function useUsageAiChatTranslator() {
+  return useTranslations("usage.aiChat");
+}
+export type UsageAiChatTranslator = ReturnType<typeof useUsageAiChatTranslator>;
+
+function useUsageProviderTranslator() {
+  return useTranslations("usage.provider");
+}
+export type UsageProviderTranslator = ReturnType<typeof useUsageProviderTranslator>;
+
+function useUsageTeamUserSpendTranslator() {
+  return useTranslations("usage.teamUserSpend");
+}
+export type UsageTeamUserSpendTranslator = ReturnType<typeof useUsageTeamUserSpendTranslator>;

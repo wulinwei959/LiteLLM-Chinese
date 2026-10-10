@@ -43,7 +43,9 @@ function walk(dir: string, out: string[] = []): string[] {
  */
 function unresolvedKeys(source: string): string[] {
   const scopes = new Set(
-    [...source.matchAll(/useTranslations\(\s*"([A-Za-z0-9_-]+)"/g)].map((m) => m[1]).filter((ns) => NAMESPACES.has(ns)),
+    [...source.matchAll(/useTranslations\(\s*"([A-Za-z0-9_.-]+)"/g)]
+      .map((m) => m[1])
+      .filter((ns) => resolve(en as Record<string, unknown>, ns) !== undefined),
   );
   if (scopes.size === 0) return [];
 
@@ -54,8 +56,10 @@ function unresolvedKeys(source: string): string[] {
     if (seen.has(key)) continue;
     seen.add(key);
 
-    const explicit = call[0].match(/"([A-Za-z0-9_-]+)\./);
-    const namespaces = explicit && NAMESPACES.has(explicit[1]) ? [explicit[1]] : [...scopes];
+    // A fully-qualified key like "usage.metrics.title" names its own namespace,
+    // so it resolves against the catalog root instead of any file scope.
+    const explicitRoot = key.split(".")[0];
+    const namespaces = NAMESPACES.has(explicitRoot) ? [explicitRoot] : [...scopes];
     // A bare t("x") resolves against whichever namespace the file brought into
     // scope, so it is satisfied when any of them has the key. Only a key that
     // exists in none of them is genuinely broken.
