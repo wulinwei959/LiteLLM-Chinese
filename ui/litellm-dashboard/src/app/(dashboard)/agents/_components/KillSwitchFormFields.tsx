@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -109,24 +112,25 @@ const TextField = ({
 );
 
 const KillSwitchAuthFields = () => {
+  const t = useTranslations("agents");
   const { control } = useFormContext<AgentFormValues>();
   const authType = useWatch({ control, name: "kill_switch.auth_type" });
 
   switch (authType) {
     case "bearer":
-      return <TextField name="kill_switch.auth_token" label="Bearer token" required="Token required" secret />;
+      return <TextField name="kill_switch.auth_token" label={t("bearerToken")} required={t("tokenRequired")} secret />;
     case "api_key":
       return (
         <>
-          <TextField name="kill_switch.auth_header_name" label="Header name" placeholder="X-API-Key" />
-          <TextField name="kill_switch.auth_api_key" label="API key" required="API key required" secret />
+          <TextField name="kill_switch.auth_header_name" label={t("headerNameLabel")} placeholder={t("xApiKey")} />
+          <TextField name="kill_switch.auth_api_key" label={t("apiKeyLabel")} required={t("apiKeyRequired")} secret />
         </>
       );
     case "basic":
       return (
         <>
-          <TextField name="kill_switch.auth_username" label="Username" required="Username required" />
-          <TextField name="kill_switch.auth_password" label="Password" required="Password required" secret />
+          <TextField name="kill_switch.auth_username" label={t("username")} required={t("usernameRequired")} />
+          <TextField name="kill_switch.auth_password" label={t("password")} required={t("passwordRequired")} secret />
         </>
       );
     default:
@@ -134,18 +138,17 @@ const KillSwitchAuthFields = () => {
   }
 };
 
-const KillSwitchFormFields = () => (
-  <>
+const KillSwitchFormFields = () => {
+  const t = useTranslations("agents");
+  return (
+    <>
     <TextField
       name="kill_switch.url"
-      label={labelWithHint(
-        "Webhook URL",
-        "Absolute http(s) URL LiteLLM calls when the kill switch is triggered. Leave empty to remove the kill switch.",
-      )}
+      label={labelWithHint(t("webhookUrl"), t("webhookUrlHint"))}
       placeholder="https://example.com/hooks/kill-agent"
     />
 
-    <AgentFormField name="kill_switch.method" label="Method">
+    <AgentFormField name="kill_switch.method" label={t("method")}>
       {({ value, onChange, ref: _ref, ...control }) => (
         <Select value={typeof value === "string" ? value : "POST"} onValueChange={onChange}>
           <SelectTrigger {...control} className="w-full">
@@ -163,20 +166,20 @@ const KillSwitchFormFields = () => (
     </AgentFormField>
 
     <Field>
-      <FieldTitle>Headers</FieldTitle>
+      <FieldTitle>{t("headers")}</FieldTitle>
       <KeyValueFieldArray
         name="kill_switch.headers"
-        addLabel="Add Header"
-        keyPlaceholder="Header name"
-        valuePlaceholder="Header value"
+        addLabel={t("addHeader")}
+        keyPlaceholder={t("headerNamePh")}
+        valuePlaceholder={t("headerValuePh")}
       />
     </Field>
 
     <Field>
-      <FieldTitle>Query Parameters</FieldTitle>
+      <FieldTitle>{t("queryParams")}</FieldTitle>
       <KeyValueFieldArray
         name="kill_switch.query_params"
-        addLabel="Add Query Parameter"
+        addLabel={t("addQueryParam")}
         keyPlaceholder="Parameter name"
         valuePlaceholder="Parameter value"
       />
@@ -199,7 +202,7 @@ const KillSwitchFormFields = () => (
       )}
     </AgentFormField>
 
-    <AgentFormField name="kill_switch.auth_type" label="Authentication">
+    <AgentFormField name="kill_switch.auth_type" label={t("authentication")}>
       {({ value, onChange, ref: _ref, ...control }) => (
         <Select value={typeof value === "string" ? value : "none"} onValueChange={onChange}>
           <SelectTrigger {...control} className="w-full">
@@ -217,7 +220,8 @@ const KillSwitchFormFields = () => (
     </AgentFormField>
 
     <KillSwitchAuthFields />
-  </>
-);
+    </>
+  );
+};
 
 export default KillSwitchFormFields;

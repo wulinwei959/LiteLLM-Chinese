@@ -96,7 +96,7 @@ const AgentsTable: React.FC<AgentsTableProps> = ({
             />
             {searchTerm && (
               <InputGroupAddon align="inline-end">
-                <InputGroupButton size="icon-xs" aria-label="Clear search" onClick={() => setSearchTerm("")}>
+                <InputGroupButton size="icon-xs" aria-label={t("clearSearch")} onClick={() => setSearchTerm("")}>
                   <X />
                 </InputGroupButton>
               </InputGroupAddon>

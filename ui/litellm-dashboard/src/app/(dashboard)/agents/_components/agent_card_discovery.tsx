@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ChevronDown, CircleAlert, CircleCheck, Info, Link as LinkIcon, RotateCw, Search, X } from "lucide-react";
 
 import { useDebouncedCallback } from "@tanstack/react-pacer/debouncer";
@@ -63,6 +64,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
   discoveryRequest,
   savedAgentCard,
 }) => {
+  const t = useTranslations("agents");
   // When the parent drives discovery, ``manualUrl`` is unused — the URL
   // comes from ``discoveryRequest.url`` directly. When the parent hasn't
   // supplied a plan, the admin types into this field manually.
@@ -253,7 +255,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
     <div className="mb-4 rounded-lg border border-border bg-muted/50 p-4">
       <div className="mb-2 flex items-center gap-2">
         <LinkIcon className="size-4 text-primary" />
-        <span className="text-sm font-medium text-foreground">Discover from agent URL</span>
+        <span className="text-sm font-medium text-foreground">{t("discoverFromUrl")}</span>
         <TooltipProvider delay={300}>
           <Tooltip>
             <TooltipTrigger
@@ -277,7 +279,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
           </p>
           <div className="mb-3 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs break-all text-foreground">
             {discoveryRequest!.display_url || effectiveUrl || (
-              <span className="text-muted-foreground italic">Fill in the fields above first</span>
+              <span className="text-muted-foreground italic">{t("fillFieldsFirst")}</span>
             )}
           </div>
           <div className="flex justify-end">
@@ -315,10 +317,10 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
       {error && (
         <Alert variant="destructive" className="mt-3">
           <CircleAlert />
-          <AlertTitle>Discovery failed</AlertTitle>
+          <AlertTitle>{t("discoveryFailed")}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
           <AlertAction>
-            <Button variant="ghost" size="icon-xs" aria-label="Dismiss error" onClick={() => setError(null)}>
+            <Button variant="ghost" size="icon-xs" aria-label={t("dismissError")} onClick={() => setError(null)}>
               <X />
             </Button>
           </AlertAction>
@@ -335,7 +337,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
         <div className="mt-4 rounded-lg border border-border bg-background p-4">
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <CircleCheck className="size-4 text-success" />
-            <span className="text-sm font-medium text-foreground">Upstream card loaded</span>
+            <span className="text-sm font-medium text-foreground">{t("upstreamLoaded")}</span>
             {card.version && <Badge variant="secondary">v{card.version}</Badge>}
             {card.provider?.organization && <Badge variant="secondary">{card.provider.organization}</Badge>}
           </div>
@@ -343,18 +345,18 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
           <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">
-                Name (shown to API clients)
+                {t("nameShownToClients")}
               </label>
-              <Input value={editedName} onChange={(e) => setEditedName(e.target.value)} placeholder="Agent name" />
+              <Input value={editedName} onChange={(e) => setEditedName(e.target.value)} placeholder={t("agentName")} />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Description</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("description")}</label>
               <Textarea
                 className="field-sizing-fixed min-h-0"
                 value={editedDescription}
                 onChange={(e) => setEditedDescription(e.target.value)}
                 rows={2}
-                placeholder="What this agent does"
+                placeholder={t("descriptionHint")}
               />
             </div>
           </div>
@@ -366,7 +368,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
                   render={
                     <button type="button" className="group flex items-center gap-2">
                       <ChevronDown className="size-4 text-muted-foreground transition-transform group-data-[panel-open]:rotate-180" />
-                      <span className="text-sm font-medium text-foreground">Skills</span>
+                      <span className="text-sm font-medium text-foreground">{t("skills")}</span>
                     </button>
                   }
                 />
@@ -376,7 +378,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
               </div>
               <CollapsibleContent className="pt-2">
                 {skillCount === 0 ? (
-                  <div className="py-6 text-center text-sm text-muted-foreground">Upstream card has no skills</div>
+                  <div className="py-6 text-center text-sm text-muted-foreground">{t("noSkillsHint")}</div>
                 ) : (
                   <div className="space-y-2">
                     {(card.skills ?? []).map((skill, idx) => {
@@ -418,7 +420,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
                   render={
                     <button type="button" className="group flex items-center gap-2">
                       <ChevronDown className="size-4 text-muted-foreground transition-transform group-data-[panel-open]:rotate-180" />
-                      <span className="text-sm font-medium text-foreground">Capabilities</span>
+                      <span className="text-sm font-medium text-foreground">{t("capabilities")}</span>
                     </button>
                   }
                 />

@@ -27,7 +27,7 @@ function AgentRowActions({ agent, onDeleteClick, t }: AgentRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open agent actions"
+        aria-label={t("openAgentActions")}
         data-testid={`agent-actions-${agent.agent_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -141,9 +141,9 @@ export const getAgentsTableColumns = ({
     cell: ({ row }) => {
       const hasKeys = (row.original.keys?.length ?? 0) > 0;
       return hasKeys ? (
-        <StatusBadge tone="success" label="Active" />
+        <StatusBadge tone="success" label={t("active")} />
       ) : (
-        <StatusBadge tone="warning" label="Needs Setup" />
+        <StatusBadge tone="warning" label={t("needsSetup")} />
       );
     },
   },

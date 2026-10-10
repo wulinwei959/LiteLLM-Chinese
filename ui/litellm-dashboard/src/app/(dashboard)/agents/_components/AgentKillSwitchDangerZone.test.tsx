@@ -1,5 +1,6 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AgentKillSwitchDangerZone from "./AgentKillSwitchDangerZone";
 import * as networking from "@/components/networking";

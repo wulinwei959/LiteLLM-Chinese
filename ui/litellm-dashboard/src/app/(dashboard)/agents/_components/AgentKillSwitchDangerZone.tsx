@@ -1,5 +1,8 @@
+"use client";
+
 import { CircleAlert } from "lucide-react";
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -24,6 +27,7 @@ const AgentKillSwitchDangerZone: React.FC<AgentKillSwitchDangerZoneProps> = ({
   accessToken,
   isAdmin,
 }) => {
+  const t = useTranslations("agents");
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [confirmationInput, setConfirmationInput] = useState("");
   const [isFiring, setIsFiring] = useState(false);
@@ -60,11 +64,11 @@ const AgentKillSwitchDangerZone: React.FC<AgentKillSwitchDangerZoneProps> = ({
       <div className="mt-4 rounded-lg border border-destructive/40 bg-destructive/5 p-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0 space-y-1 text-sm">
-            <p className="font-medium text-foreground">Kill switch</p>
+            <p className="font-medium text-foreground">{t("killSwitch")}</p>
             {killSwitch ? (
               <>
                 <p className="text-muted-foreground">
-                  Calls the configured webhook to stop this agent&apos;s upstream runtime. This can cause an outage for
+                  Calls the configured webhook to stop this agent&apos;s upstream runtime. {t("killSwitchWarning")} for
                   everyone using the agent and cannot be undone from LiteLLM
                 </p>
                 <p className="font-mono break-all text-foreground">
@@ -100,7 +104,7 @@ const AgentKillSwitchDangerZone: React.FC<AgentKillSwitchDangerZoneProps> = ({
           <div className="space-y-4">
             <Alert variant="error">
               <CircleAlert />
-              <AlertTitle>This can cause an outage</AlertTitle>
+              <AlertTitle>{t("killSwitchWarning")}</AlertTitle>
               <AlertDescription>
                 LiteLLM will call {killSwitch?.method ?? "POST"} {killSwitch?.url} immediately. Whatever that webhook
                 does to the agent is outside LiteLLM&apos;s control and cannot be reverted here
@@ -115,7 +119,7 @@ const AgentKillSwitchDangerZone: React.FC<AgentKillSwitchDangerZoneProps> = ({
                   <CircleAlert className="size-3.5 text-destructive" />
                 </InputGroupAddon>
                 <InputGroupInput
-                  aria-label="Confirm agent name"
+                  aria-label={t("confirmAgentName")}
                   value={confirmationInput}
                   onChange={(e) => setConfirmationInput(e.target.value)}
                   placeholder={agentName}

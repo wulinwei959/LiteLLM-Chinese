@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
 import { KeyRound } from "lucide-react";
 import { KeyResponse } from "@/components/key_team_helpers/key_list";
 import { Button } from "@/components/ui/button";
@@ -11,13 +14,14 @@ interface AgentVirtualKeysProps {
 }
 
 const AgentVirtualKeys: React.FC<AgentVirtualKeysProps> = ({ keys, isLoading, onKeyClick }) => {
+  const t = useTranslations("agents");
   return (
     <div className="mt-6">
-      <h4 className="text-base font-semibold text-foreground">Virtual Keys</h4>
+      <h4 className="text-base font-semibold text-foreground">{t("virtualKeys")}</h4>
       {isLoading ? (
-        <p className="mt-2 text-sm text-muted-foreground">Loading keys...</p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("loadingKeys")}</p>
       ) : keys.length === 0 ? (
-        <p className="mt-2 text-sm text-muted-foreground">No virtual key assigned to this agent.</p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("noVirtualKey")}</p>
       ) : (
         <div className="mt-3 flex flex-col gap-2">
           {keys.map((key) => (

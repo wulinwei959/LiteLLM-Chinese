@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -103,13 +106,15 @@ const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => 
   );
 };
 
-const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({ agentTypeInfo, panels }) => (
+const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({ agentTypeInfo, panels }) => {
+  const t = useTranslations("agents");
+  return (
   <>
     <FieldGroup className="mb-4">
       <AgentFormField
         name="agent_name"
-        label={labelWithHint("Agent Name", "Unique identifier for the agent")}
-        rules={{ required: "Please enter a unique agent name" }}
+        label={labelWithHint(t("agentName"), t("nameFieldHint"))}
+        rules={{ required: t("nameRequired") }}
       >
         {({ value, onChange, ref, ...control }) => (
           <Input
@@ -124,14 +129,14 @@ const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({ agentTy
 
       <AgentFormField
         name="description"
-        label={labelWithHint("Description", "Brief description of what this agent does")}
+        label={labelWithHint(t("description"), t("descFieldHint"))}
       >
         {({ value, onChange, ref, ...control }) => (
           <Textarea
             {...control}
             ref={ref}
             rows={2}
-            placeholder="Describe what this agent does..."
+            placeholder={t("descriptionPlaceholder")}
             value={typeof value === "string" ? value : ""}
             onChange={onChange}
           />
@@ -152,7 +157,8 @@ const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({ agentTy
       </AgentFormPanel>
     </div>
   </>
-);
+  );
+};
 
 export const buildDynamicAgentData = (
   values: AgentFormValues,

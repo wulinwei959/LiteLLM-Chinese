@@ -221,7 +221,7 @@ describe("AddAgentForm submit payload", () => {
     await user.click(await screen.findByText("Custom / Other"));
 
     await user.type(await screen.findByLabelText("Agent Name"), "my-custom-agent");
-    await user.type(screen.getByPlaceholderText("Describe what this agent does\u2026"), "custom thing");
+    await user.type(screen.getByPlaceholderText("Describe what this agent does..."), "custom thing");
 
     await goToLastStepAndCreate(user);
 
