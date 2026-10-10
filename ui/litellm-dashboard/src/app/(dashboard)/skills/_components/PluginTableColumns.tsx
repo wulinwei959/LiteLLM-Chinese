@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { SkillsTranslator } from "@/lib/i18n/translators";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -42,12 +43,13 @@ function PluginCategoryBadge({ category }: { category?: string }) {
 }
 
 interface PluginRowActionsProps {
+  t: SkillsTranslator;
   plugin: Plugin;
   isAdmin: boolean;
   onDeleteClick: (pluginName: string, displayName: string) => void;
 }
 
-function PluginRowActions({ plugin, isAdmin, onDeleteClick }: PluginRowActionsProps) {
+function PluginRowActions({ plugin, isAdmin, onDeleteClick, t }: PluginRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -87,18 +89,20 @@ interface PluginTableColumnsDeps {
   isAdmin: boolean;
   onPluginClick: (pluginId: string) => void;
   onDeleteClick: (pluginName: string, displayName: string) => void;
+  t: SkillsTranslator;
 }
 
 export const getPluginTableColumns = ({
   isAdmin,
   onPluginClick,
   onDeleteClick,
+  t,
 }: PluginTableColumnsDeps): ColumnDef<Plugin>[] => [
   {
     id: "name",
     accessorKey: "name",
-    meta: { title: "Skill Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Skill Name" />,
+    meta: { title: t("skillName") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("skillName")} />,
     size: 220,
     enableSorting: true,
     cell: ({ row }) => (
@@ -113,8 +117,8 @@ export const getPluginTableColumns = ({
   {
     id: "version",
     accessorKey: "version",
-    meta: { title: "Version" },
-    header: "Version",
+    meta: { title: t("version") },
+    header: t("version"),
     size: 100,
     enableSorting: false,
     cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.version || "N/A"}</span>,
@@ -122,8 +126,8 @@ export const getPluginTableColumns = ({
   {
     id: "description",
     accessorKey: "description",
-    meta: { title: "Description" },
-    header: "Description",
+    meta: { title: t("description") },
+    header: t("description"),
     size: 300,
     enableSorting: false,
     cell: ({ row }) => {
@@ -138,8 +142,8 @@ export const getPluginTableColumns = ({
   {
     id: "category",
     accessorKey: "category",
-    meta: { title: "Category", skeleton: "badge" },
-    header: "Category",
+    meta: { title: t("category"), skeleton: "badge" },
+    header: t("category"),
     size: 150,
     enableSorting: false,
     cell: ({ row }) => <PluginCategoryBadge category={row.original.category} />,
@@ -147,8 +151,8 @@ export const getPluginTableColumns = ({
   {
     id: "enabled",
     accessorKey: "enabled",
-    meta: { title: "Public", skeleton: "badge" },
-    header: "Public",
+    meta: { title: t("public"), skeleton: "badge" },
+    header: t("public"),
     size: 100,
     enableSorting: false,
     cell: ({ row }) => (
@@ -159,8 +163,8 @@ export const getPluginTableColumns = ({
     id: "created_at",
     accessorKey: "created_at",
     sortingFn: "datetime",
-    meta: { title: "Created At" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Created At" />,
+    meta: { title: t("createdAt") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("createdAt")} />,
     size: 160,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.created_at} />,
@@ -168,13 +172,13 @@ export const getPluginTableColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <PluginRowActions plugin={row.original} isAdmin={isAdmin} onDeleteClick={onDeleteClick} />
+        <PluginRowActions plugin={row.original} isAdmin={isAdmin} onDeleteClick={onDeleteClick} t={t} />
       </div>
     ),
   },

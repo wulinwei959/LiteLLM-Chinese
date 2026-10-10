@@ -139,3 +139,8 @@ function useTagManagementTranslator() {
   return useTranslations("tagManagement");
 }
 export type TagManagementTranslator = ReturnType<typeof useTagManagementTranslator>;
+
+function useSkillsTranslator() {
+  return useTranslations("skills");
+}
+export type SkillsTranslator = ReturnType<typeof useSkillsTranslator>;

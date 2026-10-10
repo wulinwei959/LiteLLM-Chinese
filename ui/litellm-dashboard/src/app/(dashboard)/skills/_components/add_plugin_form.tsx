@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { CircleHelp } from "lucide-react";
 import { z } from "zod/v4";
 import { toast } from "@/lib/toast";
@@ -147,6 +150,7 @@ const labelWithHint = (label: string, hint: string): React.ReactNode => (
 );
 
 const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessToken, onSuccess }) => {
+  const t = useTranslations("skills");
   const form = useZodForm(addPluginSchema, { defaultValues: EMPTY_VALUES });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [urlPreview, setUrlPreview] = useState<SkillSourcePreview | null>(null);
@@ -222,7 +226,7 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
     <Dialog open={visible} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="top-8 max-h-[calc(100dvh-4rem)] translate-y-0 overflow-y-auto sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle>Add New Skill</DialogTitle>
+          <DialogTitle>{t("addNew")}</DialogTitle>
         </DialogHeader>
         <TooltipProvider>
           <form onSubmit={form.handleSubmit(handleSubmit)} noValidate className="mt-4">
@@ -230,10 +234,7 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
               <FormField
                 control={form.control}
                 name="skillUrl"
-                label={labelWithHint(
-                  "Source URL",
-                  "Paste an HTTPS git repository URL from GitHub, GitLab, Bitbucket, or a self-hosted host (e.g. github.com/org/repo or github.com/org/repo/tree/main/my-skill), or an HTTPS link to a .zip archive of the skill hosted on S3 or any static file server. For a private repository use its SSH clone URL (git@ghe.example.com:org/repo.git) so Claude Code clones it with your own SSH key.",
-                )}
+                label={labelWithHint(t("sourceUrlLabel"), t("sourceUrlHint"))}
               >
                 {({ ref, onChange, ...field }) => (
                   <Input
@@ -297,7 +298,7 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
               <FormField
                 control={form.control}
                 name="name"
-                label={labelWithHint("Skill Name", "Unique identifier in kebab-case format (e.g., my-skill)")}
+                label={labelWithHint(t("nameLabel"), t("nameHint"))}
               >
                 {({ ref, ...field }) => <Input {...field} ref={ref} placeholder="my-skill" className="rounded-lg" />}
               </FormField>
@@ -306,7 +307,7 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
                 <FormField
                   control={form.control}
                   name="domain"
-                  label={labelWithHint("Domain (Optional)", "Top-level grouping in the Skill Hub (e.g., Productivity)")}
+                  label={labelWithHint(t("domainLabel"), t("domainHint"))}
                   className="flex-1"
                 >
                   {({ ref, ...field }) => (
@@ -316,7 +317,7 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
                 <FormField
                   control={form.control}
                   name="namespace"
-                  label={labelWithHint("Namespace (Optional)", "Sub-grouping within domain (e.g., workflows)")}
+                  label={labelWithHint(t("namespaceLabel"), t("namespaceHint"))}
                   className="flex-1"
                 >
                   {({ ref, ...field }) => <Input {...field} ref={ref} placeholder="workflows" className="rounded-lg" />}
@@ -326,14 +327,14 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
               <FormField
                 control={form.control}
                 name="description"
-                label={labelWithHint("Description (Optional)", "Brief description of what the skill does")}
+                label={labelWithHint(t("descriptionLabel"), t("descriptionHint"))}
               >
                 {({ ref, ...field }) => (
                   <Textarea
                     {...field}
                     ref={ref}
                     rows={3}
-                    placeholder="A skill that helps with..."
+                    placeholder={t("descriptionPlaceholder")}
                     maxLength={500}
                     className="rounded-lg"
                   />
@@ -343,7 +344,7 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
               <FormField
                 control={form.control}
                 name="category"
-                label={labelWithHint("Category (Optional)", "Select a category or enter a custom one")}
+                label={labelWithHint(t("categoryLabel"), t("categoryHint"))}
               >
                 {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
                   <Combobox items={PREDEFINED_CATEGORIES} value={value} onValueChange={onChange}>
@@ -351,12 +352,12 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
                       id={id}
                       aria-invalid={ariaInvalid}
                       aria-describedby={ariaDescribedBy}
-                      placeholder="Select or type a category"
+                      placeholder={t("categoryPlaceholder")}
                       className="w-full rounded-lg"
                       showClear={value != null && value !== ""}
                     />
                     <ComboboxContent>
-                      <ComboboxEmpty>No matching categories</ComboboxEmpty>
+                      <ComboboxEmpty>{t("noMatchingCategories")}</ComboboxEmpty>
                       <ComboboxList>
                         {(category: string) => (
                           <ComboboxItem key={category} value={category}>
@@ -372,7 +373,7 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
               <FormField
                 control={form.control}
                 name="keywords"
-                label={labelWithHint("Keywords (Optional)", "Comma-separated list of keywords for search")}
+                label={labelWithHint(t("keywordsLabel"), t("keywordsHint"))}
               >
                 {({ ref, ...field }) => (
                   <Input {...field} ref={ref} placeholder="search, web, api" className="rounded-lg" />
@@ -382,7 +383,7 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
               <FormField
                 control={form.control}
                 name="version"
-                label={labelWithHint("Version (Optional)", "Semantic version (e.g., 1.0.0)")}
+                label={labelWithHint(t("versionLabel"), t("versionHint"))}
               >
                 {({ ref, ...field }) => <Input {...field} ref={ref} placeholder="1.0.0" className="rounded-lg" />}
               </FormField>
@@ -390,17 +391,17 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
               <FormField
                 control={form.control}
                 name="authorName"
-                label={labelWithHint("Author Name (Optional)", "Name of the skill author or organization")}
+                label={labelWithHint(t("authorLabel"), t("authorHint"))}
               >
                 {({ ref, ...field }) => (
-                  <Input {...field} ref={ref} placeholder="Your Name or Organization" className="rounded-lg" />
+                  <Input {...field} ref={ref} placeholder={t("authorPlaceholder")} className="rounded-lg" />
                 )}
               </FormField>
 
               <FormField
                 control={form.control}
                 name="authorEmail"
-                label={labelWithHint("Author Email (Optional)", "Contact email for the skill author")}
+                label={labelWithHint(t("emailLabel"), t("emailHint"))}
               >
                 {({ ref, ...field }) => (
                   <Input {...field} ref={ref} type="email" placeholder="author@example.com" className="rounded-lg" />
