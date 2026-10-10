@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { AgentsTranslator } from "@/lib/i18n/translators";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 
 import { Agent } from "@/components/agents/types";
@@ -17,11 +18,12 @@ import {
 import { cn } from "@/lib/cva.config";
 
 interface AgentRowActionsProps {
+  t: AgentsTranslator;
   agent: Agent;
   onDeleteClick: (agentId: string, agentName: string) => void;
 }
 
-function AgentRowActions({ agent, onDeleteClick }: AgentRowActionsProps) {
+function AgentRowActions({ agent, onDeleteClick, t }: AgentRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -46,6 +48,7 @@ function AgentRowActions({ agent, onDeleteClick }: AgentRowActionsProps) {
 }
 
 interface AgentsTableColumnsDeps {
+  t: AgentsTranslator;
   isAdmin: boolean;
   onAgentClick: (agentId: string) => void;
   onDeleteClick: (agentId: string, agentName: string) => void;
@@ -55,11 +58,12 @@ export const getAgentsTableColumns = ({
   isAdmin,
   onAgentClick,
   onDeleteClick,
+  t,
 }: AgentsTableColumnsDeps): ColumnDef<Agent>[] => [
   {
     id: "agent_name",
     accessorKey: "agent_name",
-    meta: { title: "Agent Name" },
+    meta: { title: t("colAgentName") },
     header: ({ column }) => <DataTableSortHeader column={column} title="Agent Name" />,
     size: 200,
     enableSorting: true,
@@ -75,7 +79,7 @@ export const getAgentsTableColumns = ({
   {
     id: "agent_id",
     accessorKey: "agent_id",
-    meta: { title: "Agent ID" },
+    meta: { title: t("colAgentId") },
     header: ({ column }) => <DataTableSortHeader column={column} title="Agent ID" />,
     size: 200,
     enableSorting: true,
@@ -90,7 +94,7 @@ export const getAgentsTableColumns = ({
   {
     id: "spend",
     accessorKey: "spend",
-    meta: { title: "Spend (USD)" },
+    meta: { title: t("colSpend") },
     header: ({ column }) => <DataTableSortHeader column={column} title="Spend (USD)" />,
     size: 130,
     enableSorting: true,
@@ -98,14 +102,14 @@ export const getAgentsTableColumns = ({
   },
   {
     id: "model",
-    meta: { title: "Model" },
-    header: "Model",
+    meta: { title: t("colModel") },
+    header: t("colModel"),
     size: 170,
     enableSorting: false,
     cell: ({ row }) => {
       const model = row.original.litellm_params?.model;
       if (!model) {
-        return <span className="text-muted-foreground">N/A</span>;
+        return <span className="text-muted-foreground">{t("na")}</span>;
       }
       return (
         <Badge variant="outline" className="max-w-40 font-normal">
@@ -122,16 +126,16 @@ export const getAgentsTableColumns = ({
       const timestamp = agent.created_at ? new Date(agent.created_at).getTime() : 0;
       return Number.isNaN(timestamp) ? 0 : timestamp;
     },
-    meta: { title: "Created" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Created" />,
+    meta: { title: t("colCreated") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colCreated")} />,
     size: 150,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.created_at} precision="date" />,
   },
   {
     id: "status",
-    meta: { title: "Status" },
-    header: "Status",
+    meta: { title: t("colStatus") },
+    header: t("colStatus"),
     size: 130,
     enableSorting: false,
     cell: ({ row }) => {
@@ -148,13 +152,13 @@ export const getAgentsTableColumns = ({
         {
           id: "actions",
           meta: { className: "text-right", headerClassName: "text-right" },
-          header: () => <span className="sr-only">Actions</span>,
+          header: () => <span className="sr-only">{t("actions")}</span>,
           size: 64,
           enableSorting: false,
           enableHiding: false,
           cell: ({ row }) => (
             <div className="flex justify-end">
-              <AgentRowActions agent={row.original} onDeleteClick={onDeleteClick} />
+              <AgentRowActions agent={row.original} onDeleteClick={onDeleteClick} t={t} />
             </div>
           ),
         } satisfies ColumnDef<Agent>,
