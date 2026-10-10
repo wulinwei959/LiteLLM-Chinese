@@ -2366,7 +2366,8 @@
       "noToken": "无可用访问令牌",
       "updated": "策略更新成功",
       "created": "策略创建成功",
-      "saveFailed": "保存策略失败：{error}"
+      "saveFailed": "保存策略失败：{error}",
+      "addNewLabel": "+ 新建策略"
     },
     "sim": {
       "title": "策略模拟器",
@@ -2412,22 +2413,26 @@
       "loading": "正在加载策略..."
     },
     "info": {
+      "title": "策略信息",
+      "name": "名称",
+      "description": "描述",
+      "inheritsFrom": "继承自",
       "notFound": "未找到策略",
-      "goBack": "返回",
+      "goBack": "返回策略列表",
       "back": "返回策略列表",
       "edit": "编辑策略",
       "noDesc": "无描述",
       "none": "无",
-      "pipelineTitle": "流水线流程",
-      "pipelineMeta": "流水线（{mode} 模式，共 {count} 步）",
-      "guardrailsTitle": "护栏配置",
+      "pipelineTitle": "执行流程",
+      "pipelineMeta": "{mode} · {count} 个步骤",
       "resolvedTitle": "解析后的护栏",
-      "resolvedDesc": "最终将应用的护栏（含继承）：",
-      "addLabel": "要添加的护栏",
-      "removeLabel": "要移除的护栏",
-      "condTitle": "条件",
+      "resolvedDesc": "这些护栏已附加到此策略并随之运行。",
+      "addLabel": "护栏（新增）",
+      "removeLabel": "护栏（移除）",
+      "condTitle": "匹配条件",
       "modelCond": "模型条件",
-      "noModelCond": "无模型条件（适用于所有模型）"
+      "noModelCond": "无模型条件",
+      "guardrailsTitle": "已附加护栏"
     },
     "ai": {
       "title": "AI 策略推荐",
@@ -2616,7 +2621,24 @@
       "delete": "删除附件",
       "emptyTitle": "未找到附件",
       "emptyDesc": "将策略附加到团队、密钥、模型或标签，以控制其适用范围。",
-      "loading": "正在加载附件..."
+      "loading": "正在加载附件...",
+      "aboutTitle": "关于策略附件",
+      "aboutDesc": "策略附件控制策略在何处生效。策略只有在附加到特定的团队、密钥、模型、标签或全局后才会起作用。",
+      "scopesTitle": "附件作用范围：",
+      "scopeGlobal": "<code>Global (*)</code> 作用于所有请求",
+      "scopeTeams": "<code>Teams</code> 仅作用于特定团队",
+      "scopeKeys": "<code>Keys</code> 仅作用于特定 API 密钥（支持 <code>dev-*</code> 等通配符）",
+      "scopeModels": "<code>Models</code> 仅在使用特定模型时生效",
+      "scopeTags": "<code>Tags</code> 匹配密钥/团队 <code>metadata.tags</code> 中的标签，或请求体中动态传入的标签。可用于跨组实施策略，例如“所有标记 <code>healthcare</code> 的密钥都套用 HIPAA 护栏”。支持通配符（<code>prod-*</code>）。",
+      "learnMore": "了解更多附件信息 ->",
+      "enterpriseTitle": "企业版功能提示",
+      "enterpriseDesc": "策略附件的部分功能将在后续版本中归入 LiteLLM 企业版。",
+      "addNewLabel": "+ 新建附件",
+      "deleteConfirmTitle": "删除附件",
+      "deleteConfirmMessage": "确定要删除此附件吗？此操作无法撤销。",
+      "infoTitle": "附件信息",
+      "idLabel": "附件 ID",
+      "scopeLabel": "作用范围"
     },
     "templates": {
       "title": "策略模板",
@@ -2693,8 +2715,13 @@
       "allExist": "护栏均已存在，可直接使用此模板。",
       "pickOne": "至少选择一个要创建的护栏，或点击“{use}”直接继续，不创建新护栏。",
       "useTemplate": "使用模板",
-      "createN": "创建 {count} 个护栏并使用模板"
-    }
+      "createN": "创建 {count} 个护栏并使用模板",
+      "loadFailed": "加载护栏失败，请重试。",
+      "configFailed": "配置模板失败，请重试。",
+      "readyToast": "模板就绪！请完成策略表单后保存。",
+      "createFailed": "创建护栏失败，请重试。"
+    },
+    "deleteConfirmNamedMessage": "确定要删除策略：{name} 吗？此操作无法撤销。"
   },
   "adminPanel": {
     "title": "管理员设置",

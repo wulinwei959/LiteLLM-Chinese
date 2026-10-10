@@ -2366,7 +2366,8 @@
       "noToken": "No access token available",
       "updated": "Policy updated successfully",
       "created": "Policy created successfully",
-      "saveFailed": "Failed to save policy: {error}"
+      "saveFailed": "Failed to save policy: {error}",
+      "addNewLabel": "+ Add New Policy"
     },
     "sim": {
       "title": "Policy Simulator",
@@ -2412,22 +2413,26 @@
       "loading": "Loading policies…"
     },
     "info": {
+      "title": "Policy Information",
+      "name": "Name",
+      "description": "Description",
+      "inheritsFrom": "Inherits From",
       "notFound": "Policy not found",
-      "goBack": "Go Back",
+      "goBack": "Back to Policies",
       "back": "Back to Policies",
       "edit": "Edit Policy",
       "noDesc": "No description",
       "none": "None",
-      "pipelineTitle": "Pipeline Flow",
-      "pipelineMeta": "Pipeline ({mode} mode, {count, plural, one {# step} other {# steps}})",
-      "guardrailsTitle": "Guardrails Configuration",
-      "resolvedTitle": "Resolved Guardrails",
-      "resolvedDesc": "Final guardrails that will be applied (including inheritance):",
-      "addLabel": "Guardrails to Add",
-      "removeLabel": "Guardrails to Remove",
-      "condTitle": "Conditions",
+      "pipelineTitle": "Execution Pipeline",
+      "pipelineMeta": "{mode} · {count, plural, one {# step} other {# steps}}",
+      "resolvedTitle": "Resolved guardrails",
+      "resolvedDesc": "These guardrails are attached to this policy and run with it.",
+      "addLabel": "Guardrails (Add)",
+      "removeLabel": "Guardrails (Remove)",
+      "condTitle": "Condition",
       "modelCond": "Model Condition",
-      "noModelCond": "No model condition (applies to all models)"
+      "noModelCond": "No model condition",
+      "guardrailsTitle": "Attached Guardrails"
     },
     "ai": {
       "title": "AI Policy Suggestion",
@@ -2616,7 +2621,24 @@
       "delete": "Delete attachment",
       "emptyTitle": "No attachments found",
       "emptyDesc": "Attach a policy to teams, keys, models, or tags to control where it applies.",
-      "loading": "Loading attachments…"
+      "loading": "Loading attachments…",
+      "aboutTitle": "About Policy Attachments",
+      "aboutDesc": "Policy attachments control where your policies apply. Policies don't do anything until you attach them to specific teams, keys, models, tags, or globally.",
+      "scopesTitle": "Attachment Scopes:",
+      "scopeGlobal": "<code>Global (*)</code> applies to all requests",
+      "scopeTeams": "<code>Teams</code> applies only to specific teams",
+      "scopeKeys": "<code>Keys</code> applies only to specific API keys (supports wildcards like <code>dev-*</code>)",
+      "scopeModels": "<code>Models</code> applies only when specific models are used",
+      "scopeTags": "<code>Tags</code> matches tags from key/team <code>metadata.tags</code> or tags passed dynamically in the request body. Use this to enforce policies across groups, e.g. \"all keys tagged <code>healthcare</code> get HIPAA guardrails.\" Supports wildcards (<code>prod-*</code>).",
+      "learnMore": "Learn more about attachments ->",
+      "enterpriseTitle": "Enterprise Feature Notice",
+      "enterpriseDesc": "Parts of policy attachments will be on LiteLLM Enterprise in subsequent releases.",
+      "addNewLabel": "+ Add New Attachment",
+      "deleteConfirmTitle": "Delete Attachment",
+      "deleteConfirmMessage": "Are you sure you want to delete this attachment? This action cannot be undone.",
+      "infoTitle": "Attachment Information",
+      "idLabel": "Attachment ID",
+      "scopeLabel": "Scope"
     },
     "templates": {
       "title": "Policy Templates",
@@ -2693,8 +2715,13 @@
       "allExist": "All guardrails already exist. You can proceed to use this template.",
       "pickOne": "Select at least one guardrail to create, or click \"{use}\" to proceed without creating new guardrails.",
       "useTemplate": "Use Template",
-      "createN": "Create {count, plural, one {# Guardrail} other {# Guardrails}} & Use Template"
-    }
+      "createN": "Create {count, plural, one {# Guardrail} other {# Guardrails}} & Use Template",
+      "loadFailed": "Failed to load guardrails. Please try again.",
+      "configFailed": "Failed to configure template. Please try again.",
+      "readyToast": "Template ready! Complete the policy form to save.",
+      "createFailed": "Failed to create guardrails. Please try again."
+    },
+    "deleteConfirmNamedMessage": "Are you sure you want to delete policy: {name}? This action cannot be undone."
   },
   "adminPanel": {
     "title": "Admin Settings",
