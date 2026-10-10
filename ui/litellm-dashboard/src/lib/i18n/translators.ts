@@ -134,3 +134,8 @@ function useUsageTeamUserSpendTranslator() {
   return useTranslations("usage.teamUserSpend");
 }
 export type UsageTeamUserSpendTranslator = ReturnType<typeof useUsageTeamUserSpendTranslator>;
+
+function useTagManagementTranslator() {
+  return useTranslations("tagManagement");
+}
+export type TagManagementTranslator = ReturnType<typeof useTagManagementTranslator>;

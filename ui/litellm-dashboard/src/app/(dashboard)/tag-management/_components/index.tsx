@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TagInfoView from "./tag_info";
@@ -27,6 +30,7 @@ interface TagProps {
 }
 
 const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) => {
+  const t = useTranslations("tagManagement");
   const [tags, setTags] = useState<Tag[]>([]);
   const [isLoadingTags, setIsLoadingTags] = useState(true);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
@@ -141,10 +145,10 @@ const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) =>
       ) : (
         <div className="flex h-full w-full flex-col p-8 pt-10">
           <div className="mt-2 mb-4 flex w-full items-center justify-between">
-            <h1>Tag Management</h1>
+            <h1>{t("title")}</h1>
             <div className="flex items-center space-x-2">
-              {lastRefreshed && <p className="text-sm">Last Refreshed: {lastRefreshed}</p>}
-              <Button variant="outline" size="icon-sm" aria-label="Refresh tags" onClick={handleRefreshClick}>
+              {lastRefreshed && <p className="text-sm">{t("lastRefreshed", { time: lastRefreshed })}</p>}
+              <Button variant="outline" size="icon-sm" aria-label={t("refreshTags")} onClick={handleRefreshClick}>
                 <RefreshCw />
               </Button>
             </div>
