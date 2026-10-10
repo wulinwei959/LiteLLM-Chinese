@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -75,7 +76,7 @@ describe("VectorStoreTable", () => {
 
   it("should display the empty state when data is empty", () => {
     render(<VectorStoreTable {...defaultProps} data={[]} />);
-    expect(screen.getByText("No vector stores")).toBeInTheDocument();
+    expect(screen.getByText("暂无向量存储")).toBeInTheDocument();
   });
 
   it("should sort by created date descending by default", () => {

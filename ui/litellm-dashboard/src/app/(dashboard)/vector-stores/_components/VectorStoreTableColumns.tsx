@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { VectorStoresTranslator } from "@/lib/i18n/translators";
 import { Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -66,12 +67,17 @@ interface VectorStoreRowActionsProps {
   onDelete: (vectorStoreId: string) => void;
 }
 
-function VectorStoreRowActions({ vectorStore, onEdit, onDelete }: VectorStoreRowActionsProps) {
+function VectorStoreRowActions({
+  vectorStore,
+  onEdit,
+  onDelete,
+  t,
+}: VectorStoreRowActionsProps & { t: VectorStoresTranslator }) {
   const isFromConfig = vectorStore.is_config ?? false;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open vector store actions"
+        aria-label={t("openActions")}
         data-testid={`vector-store-actions-${vectorStore.vector_store_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -114,6 +120,7 @@ function VectorStoreRowActions({ vectorStore, onEdit, onDelete }: VectorStoreRow
 }
 
 interface VectorStoreTableColumnsDeps {
+  t: VectorStoresTranslator;
   onView: (vectorStoreId: string) => void;
   onEdit: (vectorStoreId: string) => void;
   onDelete: (vectorStoreId: string) => void;
@@ -123,6 +130,7 @@ export const getVectorStoreTableColumns = ({
   onView,
   onEdit,
   onDelete,
+  t,
 }: VectorStoreTableColumnsDeps): ColumnDef<VectorStore>[] => [
   {
     id: "vector_store_id",
@@ -224,13 +232,13 @@ export const getVectorStoreTableColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <VectorStoreRowActions vectorStore={row.original} onEdit={onEdit} onDelete={onDelete} />
+        <VectorStoreRowActions vectorStore={row.original} onEdit={onEdit} onDelete={onDelete} t={t} />
       </div>
     ),
   },

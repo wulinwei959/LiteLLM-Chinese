@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { CircleHelp, Eye, EyeOff, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
 import { useWatch } from "react-hook-form";
@@ -202,6 +205,7 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
   accessToken,
   credentials,
 }) => {
+  const t = useTranslations("vectorStores");
   const form = useZodForm(vectorStoreSchema, { defaultValues: EMPTY_VALUES });
   const [metadataJson, setMetadataJson] = useState("{}");
   const [selectedProvider, setSelectedProvider] = useState("bedrock");
@@ -285,7 +289,7 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
     <Dialog open={isVisible} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
         <DialogHeader>
-          <DialogTitle>Add New Vector Store</DialogTitle>
+          <DialogTitle>{t("addNewTitle")}</DialogTitle>
         </DialogHeader>
         <TooltipProvider>
           <form onSubmit={form.handleSubmit(handleCreate)}>
@@ -334,7 +338,7 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
               {selectedProvider === "pg_vector" && (
                 <Alert variant="info">
                   <Info />
-                  <AlertTitle>PG Vector Setup Required</AlertTitle>
+                  <AlertTitle>{t("pgVectorSetup")}</AlertTitle>
                   <AlertDescription>
                     <p>LiteLLM provides a server to connect to PG Vector. To use this provider:</p>
                     <ol style={{ marginLeft: "16px", marginTop: "8px", listStyleType: "decimal" }}>
@@ -344,9 +348,9 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
                           https://github.com/BerriAI/litellm-pgvector
                         </a>
                       </li>
-                      <li>Configure your PostgreSQL database with pgvector extension</li>
-                      <li>Start the server and note the API base URL and API key</li>
-                      <li>Enter those details in the fields below</li>
+                      <li>{t("pgVectorDesc")}</li>
+                      <li>{t("pgVectorNote")}</li>
+                      <li>{t("pgVectorFields")}</li>
                     </ol>
                   </AlertDescription>
                 </Alert>
@@ -355,7 +359,7 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
               {selectedProvider === "valkey" && (
                 <Alert variant="info">
                   <Info />
-                  <AlertTitle>Valkey Setup Required</AlertTitle>
+                  <AlertTitle>{t("valkeySetup")}</AlertTitle>
                   <AlertDescription>
                     <p>
                       LiteLLM searches documents you have already stored in Valkey. It does not create the index or
@@ -390,9 +394,9 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
               {selectedProvider === "vertex_rag_engine" && (
                 <Alert variant="info">
                   <Info />
-                  <AlertTitle>Vertex AI RAG Engine Setup</AlertTitle>
+                  <AlertTitle>{t("vertexRAGSetup")}</AlertTitle>
                   <AlertDescription>
-                    <p>To use Vertex AI RAG Engine:</p>
+                    <p>{t("vertexRAGDesc")}</p>
                     <p style={{ marginTop: "4px", fontStyle: "italic" }}>
                       Note: Google Cloud has renamed this to &quot;RAG Engine&quot; in its console — the steps below
                       still apply.
@@ -408,12 +412,12 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
                           Vertex AI RAG Engine Overview
                         </a>
                       </li>
-                      <li>Create a corpus in your Google Cloud project</li>
+                      <li>{t("vertexRAGStep1Desc")}</li>
                       <li>
                         Note the corpus ID from the Vertex AI console (now labeled &quot;RAG Engine&quot; in Google
                         Cloud)
                       </li>
-                      <li>Enter the corpus ID in the Vector Store ID field below</li>
+                      <li>{t("vertexRAGStep2Desc")}</li>
                     </ol>
                   </AlertDescription>
                 </Alert>
@@ -422,9 +426,9 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
               {selectedProvider === "vertex_ai/search_api" && (
                 <Alert variant="info">
                   <Info />
-                  <AlertTitle>Vertex AI Search Setup</AlertTitle>
+                  <AlertTitle>{t("vertexSearchSetup")}</AlertTitle>
                   <AlertDescription>
-                    <p>To use Vertex AI Search (Discovery Engine):</p>
+                    <p>{t("vertexSearchDesc")}</p>
                     <p style={{ marginTop: "4px", fontStyle: "italic" }}>
                       Note: Google Cloud has renamed this to &quot;Agent Search&quot; in its console — the steps below
                       still apply.

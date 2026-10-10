@@ -160,6 +160,11 @@ function useSearchToolsTranslator() {
 }
 export type SearchToolsTranslator = ReturnType<typeof useSearchToolsTranslator>;
 
+function useVectorStoresTranslator() {
+  return useTranslations("vectorStores");
+}
+export type VectorStoresTranslator = ReturnType<typeof useVectorStoresTranslator>;
+
 function useCostTrackingTranslator() {
   return useTranslations("costTracking");
 }

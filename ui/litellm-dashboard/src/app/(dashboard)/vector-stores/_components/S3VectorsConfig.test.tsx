@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import S3VectorsConfig from "./S3VectorsConfig";
 import * as fetchModels from "@/components/llm_calls/fetch_models";
@@ -25,7 +26,7 @@ describe("S3VectorsConfig", () => {
 
     render(<S3VectorsConfig {...defaultProps} />);
 
-    expect(screen.getByText("AWS S3 Vectors Setup")).toBeInTheDocument();
+    expect(screen.getByText("AWS S3 Vectors 设置")).toBeInTheDocument();
     expect(screen.getByText("Vector Bucket Name")).toBeInTheDocument();
     expect(screen.getByText("Index Name")).toBeInTheDocument();
     expect(screen.getByText("AWS Region")).toBeInTheDocument();

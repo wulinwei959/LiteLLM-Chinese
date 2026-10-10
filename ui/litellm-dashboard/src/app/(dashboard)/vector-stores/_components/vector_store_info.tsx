@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowLeft, CircleHelp, Lock } from "lucide-react";
 import { z } from "zod/v4";
 import {
@@ -90,6 +93,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
   is_admin,
   editVectorStore,
 }) => {
+  const t = useTranslations("vectorStores");
   const form = useZodForm(vectorStoreEditSchema, { defaultValues: EMPTY_VALUES });
   const [vectorStoreDetails, setVectorStoreDetails] = useState<VectorStore | null>(null);
   const [loadFailed, setLoadFailed] = useState<boolean>(false);
@@ -171,12 +175,12 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       fetchVectorStoreDetails();
     } catch (error) {
       console.error("Error updating vector store:", error);
-      toast.fromError("Error updating vector store: " + error);
+      toast.fromError(t("updateFailed", { error: String(error) }));
     }
   };
 
   const credentialOptions: CredentialOption[] = [
-    { value: null, label: "None" },
+    { value: null, label: t("noneLabel") },
     ...credentials.map((credential) => ({
       value: credential.credential_name,
       label: credential.credential_name,
@@ -190,16 +194,16 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
           <ArrowLeft />
           Back to Vector Stores
         </Button>
-        <h1 className="text-xl font-semibold">Vector store not found</h1>
+        <h1 className="text-xl font-semibold">{t("notFound")}</h1>
         <p className="text-sm text-muted-foreground">
-          Vector store {vectorStoreId} could not be loaded. It may have been deleted.
+          {t("loadFailedDesc", { id: vectorStoreId })}
         </p>
       </div>
     );
   }
 
   if (!vectorStoreDetails) {
-    return <div>Loading...</div>;
+    return <div>{t("loading")}</div>;
   }
 
   const canEdit = is_admin && !vectorStoreDetails.is_config;
@@ -214,26 +218,25 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
             Back to Vector Stores
           </Button>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold">Vector Store ID: {vectorStoreDetails.vector_store_id}</h1>
+            <h1 className="text-xl font-semibold">{`${t("idLabel")}${vectorStoreDetails.vector_store_id}`}</h1>
             <StatusBadge
               tone={vectorStoreDetails.is_config ? "neutral" : "info"}
               label={vectorStoreDetails.is_config ? "Config" : "DB"}
             />
           </div>
           <p className="text-sm text-muted-foreground">
-            {vectorStoreDetails.vector_store_description || "No description"}
+            {vectorStoreDetails.vector_store_description || t("noDescription")}
           </p>
         </div>
-        {canEdit && !isEditing && <Button onClick={startEditing}>Edit Vector Store</Button>}
+        {canEdit && !isEditing && <Button onClick={startEditing}>{t("editTitle")}</Button>}
       </div>
 
       {vectorStoreDetails.is_config && (
         <Alert variant="info" className="mb-4">
           <Lock className="size-4" aria-hidden />
-          <AlertTitle>Read only: defined in the config file</AlertTitle>
+          <AlertTitle>{t("readOnlyConfig")}</AlertTitle>
           <AlertDescription>
-            This vector store comes from the proxy config YAML, so it cannot be edited or deleted on the dashboard.
-            Change or remove it in the config file and restart the proxy.
+            {t("readOnlyDesc")}
           </AlertDescription>
         </Alert>
       )}
@@ -241,10 +244,10 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       <Tabs defaultValue="details">
         <TabsList variant="line" className="mb-6 h-auto w-full justify-start rounded-none p-0">
           <TabsTrigger value="details" className="flex-none rounded-none px-4 py-2">
-            Details
+            {t("detailsTab")}
           </TabsTrigger>
           <TabsTrigger value="test" className="flex-none rounded-none px-4 py-2">
-            Test Vector Store
+            {t("testerTitle")}
           </TabsTrigger>
         </TabsList>
 
@@ -252,22 +255,22 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
           {showEditForm ? (
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Edit Vector Store</h3>
+                <h3 className="text-lg font-medium">{t("editTitle")}</h3>
               </div>
               <Card>
                 <CardContent>
                   <TooltipProvider>
                     <form onSubmit={form.handleSubmit(handleSave)}>
                       <FieldGroup>
-                        <FormField control={form.control} name="vector_store_id" label="Vector Store ID">
+                        <FormField control={form.control} name="vector_store_id" label={t("idLabel")}>
                           {({ ref, ...field }) => <Input {...field} ref={ref} disabled />}
                         </FormField>
 
-                        <FormField control={form.control} name="vector_store_name" label="Vector Store Name">
+                        <FormField control={form.control} name="vector_store_name" label={t("nameLabel")}>
                           {({ ref, value, ...field }) => <Input {...field} ref={ref} value={value ?? ""} />}
                         </FormField>
 
-                        <FormField control={form.control} name="vector_store_description" label="Description">
+                        <FormField control={form.control} name="vector_store_description" label={t("descriptionLabel")}>
                           {({ ref, value, ...field }) => <Textarea {...field} ref={ref} value={value ?? ""} rows={4} />}
                         </FormField>
 
@@ -320,7 +323,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                           Either select existing credentials OR enter provider credentials below
                         </p>
 
-                        <FormField control={form.control} name="litellm_credential_name" label="Existing Credentials">
+                        <FormField control={form.control} name="litellm_credential_name" label={t("existingCreds")}>
                           {({
                             id,
                             value,
@@ -343,12 +346,12 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                                 id={id}
                                 aria-invalid={ariaInvalid}
                                 aria-describedby={ariaDescribedBy}
-                                placeholder="Select or search for existing credentials"
+                                placeholder={t("selectCreds")}
                                 className="w-full"
                                 showClear={value !== undefined}
                               />
                               <ComboboxContent>
-                                <ComboboxEmpty>No matching credentials</ComboboxEmpty>
+                                <ComboboxEmpty>{t("noMatchingCreds")}</ComboboxEmpty>
                                 <ComboboxList>
                                   {(option: CredentialOption) => (
                                     <ComboboxItem key={option.label} value={option}>
@@ -384,7 +387,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                         <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
                           Cancel
                         </Button>
-                        <Button type="submit">Save Changes</Button>
+                        <Button type="submit">{t("saveChanges")}</Button>
                       </div>
                     </form>
                   </TooltipProvider>
@@ -395,7 +398,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium">Vector Store Details</h3>
-                {canEdit && <Button onClick={startEditing}>Edit Vector Store</Button>}
+                {canEdit && <Button onClick={startEditing}>{t("editTitle")}</Button>}
               </div>
               <Card>
                 <CardContent>

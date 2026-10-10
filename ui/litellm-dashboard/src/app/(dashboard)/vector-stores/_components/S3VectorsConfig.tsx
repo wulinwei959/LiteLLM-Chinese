@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { CircleHelp, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
 import { fetchAvailableModels, ModelGroup } from "@/components/llm_calls/fetch_models";
@@ -33,6 +36,7 @@ const labelWithHint = (label: string, hint: string): React.ReactNode => (
 const asText = (value: unknown): string => (typeof value === "string" ? value : "");
 
 const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({ accessToken, providerParams, onParamsChange }) => {
+  const t = useTranslations("vectorStores");
   const [embeddingModels, setEmbeddingModels] = useState<ModelGroup[]>([]);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
 
@@ -74,7 +78,7 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({ accessToken, provider
     <TooltipProvider>
       <Alert variant="info" className="mb-4">
         <Info />
-        <AlertTitle>AWS S3 Vectors Setup</AlertTitle>
+        <AlertTitle>{t("s3Setup")}</AlertTitle>
         <AlertDescription>
           <div>
             <p>AWS S3 Vectors allows you to store and query vector embeddings directly in S3:</p>
@@ -152,7 +156,7 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({ accessToken, provider
           onValueChange={(value: string | null) => value !== null && handleFieldChange("embedding_model", value)}
           items={embeddingModels.map((model) => model.model_group)}
         >
-          <ComboboxInput id="s3-embedding-model" placeholder="Select an embedding model" />
+          <ComboboxInput id="s3-embedding-model" placeholder={t("selectEmbeddingModel")} />
           <ComboboxContent>
             <ComboboxEmpty>{isLoadingModels ? "Loading models..." : "No embedding models found."}</ComboboxEmpty>
             <ComboboxList>

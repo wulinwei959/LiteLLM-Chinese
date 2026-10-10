@@ -1,4 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -30,11 +31,11 @@ const searchResponse = {
   ],
 };
 
-const EMPTY_STATE = "Test your vector store by entering a search query below";
+const EMPTY_STATE = "在下方输入搜索查询以测试向量存储";
 
 const renderTester = () => render(<VectorStoreTester vectorStoreId="vs_123" accessToken="sk-test" />);
 
-const queryInput = () => screen.getByPlaceholderText(/enter your search query/i);
+const queryInput = () => screen.getByPlaceholderText(/输入搜索查询/i);
 const searchButton = () => screen.getByRole("button", { name: /search/i });
 
 describe("VectorStoreTester", () => {
@@ -89,8 +90,8 @@ describe("VectorStoreTester", () => {
     await user.click(screen.getByText("Result 1"));
 
     expect(screen.getByText("the quick brown fox")).toBeInTheDocument();
-    expect(screen.getByText("File ID:").parentElement).toHaveTextContent("file-1");
-    expect(screen.getByText("Filename:").parentElement).toHaveTextContent("notes.txt");
+    expect(screen.getByText("文件 ID：").parentElement).toHaveTextContent("file-1");
+    expect(screen.getByText("文件名：").parentElement).toHaveTextContent("notes.txt");
   });
 
   it("warns instead of searching when the query is only whitespace", async () => {
@@ -126,7 +127,7 @@ describe("VectorStoreTester", () => {
     await user.click(searchButton());
 
     await waitFor(() => expect(mockFromBackend).toHaveBeenCalledWith(errorBody));
-    expect(screen.getByText(`Search failed: ${errorBody}`)).toBeInTheDocument();
+    expect(screen.getByText(/搜索失败/)).toBeInTheDocument();
     expect(screen.queryByText("No results found")).not.toBeInTheDocument();
     expect(screen.queryByText(EMPTY_STATE)).not.toBeInTheDocument();
     // the failed query stays in the input for retry
@@ -141,7 +142,7 @@ describe("VectorStoreTester", () => {
     await user.type(queryInput(), "hello");
     await user.click(searchButton());
 
-    expect(await screen.findByText("No results found")).toBeInTheDocument();
+    expect(await screen.findByText("未找到结果")).toBeInTheDocument();
     expect(screen.queryByText(/search failed/i)).not.toBeInTheDocument();
   });
 

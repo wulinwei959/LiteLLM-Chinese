@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -56,7 +57,7 @@ describe("VectorStoreInfoView", () => {
         editVectorStore={false}
       />,
     );
-    expect(await screen.findByText("Vector Store ID: vs-1")).toBeInTheDocument();
+    expect(await screen.findByText(/向量存储 ID：vs-1/)).toBeInTheDocument();
   });
 
   it("should render a config-defined store read-only for an admin, even when opened in edit mode", async () => {
@@ -79,12 +80,12 @@ describe("VectorStoreInfoView", () => {
         editVectorStore={true}
       />,
     );
-    expect(await screen.findByText("Vector Store ID: vs-config")).toBeInTheDocument();
-    expect(screen.getByText("Read only: defined in the config file")).toBeInTheDocument();
+    expect(await screen.findByText(/向量存储 ID：vs-config/)).toBeInTheDocument();
+    expect(screen.getByText("只读：在配置文件中定义")).toBeInTheDocument();
     expect(screen.getByText("Config")).toBeInTheDocument();
     expect(screen.queryByText("DB")).not.toBeInTheDocument();
     expect(screen.getByText("Vector Store Details")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Edit Vector Store" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "编辑向量存储" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Save/ })).not.toBeInTheDocument();
   });
 
@@ -108,16 +109,16 @@ describe("VectorStoreInfoView", () => {
         editVectorStore={false}
       />,
     );
-    expect(await screen.findByText("Vector Store ID: vs-db")).toBeInTheDocument();
-    expect(screen.queryByText("Read only: defined in the config file")).not.toBeInTheDocument();
+    expect(await screen.findByText(/向量存储 ID：vs-db/)).toBeInTheDocument();
+    expect(screen.queryByText("只读：在配置文件中定义")).not.toBeInTheDocument();
     expect(screen.getByText("DB")).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Edit Vector Store" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: "编辑向量存储" }).length).toBeGreaterThan(0);
   });
 
   it("should show a not-found state with a working back button when the fetch fails instead of loading forever", async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
-    mockVectorStoreInfoCall.mockRejectedValue(new Error("Vector store not found"));
+    mockVectorStoreInfoCall.mockRejectedValue(new Error("未找到向量存储"));
     render(
       <VectorStoreInfoView
         vectorStoreId="vs-gone"
@@ -127,9 +128,9 @@ describe("VectorStoreInfoView", () => {
         editVectorStore={false}
       />,
     );
-    expect(await screen.findByText("Vector store not found")).toBeInTheDocument();
-    expect(screen.getByText(/vs-gone could not be loaded/)).toBeInTheDocument();
-    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+    expect(await screen.findByText("未找到向量存储")).toBeInTheDocument();
+    expect(screen.getByText(/无法加载/)).toBeInTheDocument();
+    expect(screen.queryByText("加载中...")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /Back to Vector Stores/ }));
     expect(onClose).toHaveBeenCalled();
   });
@@ -154,14 +155,14 @@ describe("VectorStoreInfoView", () => {
         editVectorStore={false}
       />,
     );
-    expect(await screen.findByText("Vector Store ID: vs-1")).toBeInTheDocument();
+    expect(await screen.findByText(/向量存储 ID：vs-1/)).toBeInTheDocument();
 
-    await user.click(screen.getByRole("tab", { name: "Test Vector Store" }));
+    await user.click(screen.getByRole("tab", { name: "测试向量存储" }));
     await user.click(screen.getByRole("button", { name: "Run search" }));
     expect(screen.getByText("Searches run: 1")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("tab", { name: "Details" }));
-    await user.click(screen.getByRole("tab", { name: "Test Vector Store" }));
+    await user.click(screen.getByRole("tab", { name: "详情" }));
+    await user.click(screen.getByRole("tab", { name: "测试向量存储" }));
     expect(screen.getByText("Searches run: 1")).toBeInTheDocument();
   });
 
@@ -176,6 +177,6 @@ describe("VectorStoreInfoView", () => {
         editVectorStore={false}
       />,
     );
-    expect(await screen.findByText("Vector store not found")).toBeInTheDocument();
+    expect(await screen.findByText("未找到向量存储")).toBeInTheDocument();
   });
 });

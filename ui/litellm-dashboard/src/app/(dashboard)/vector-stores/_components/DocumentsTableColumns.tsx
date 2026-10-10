@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { VectorStoresTranslator } from "@/lib/i18n/translators";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
 
 import { StatusBadge, type StatusTone } from "@/components/shared/table_cells";
@@ -29,11 +30,19 @@ function formatFileSize(bytes?: number): string {
   return `${(kb / 1024).toFixed(2)} MB`;
 }
 
-function DocumentRowActions({ document, onRemove }: { document: DocumentUpload; onRemove: (uid: string) => void }) {
+function DocumentRowActions({
+  document,
+  onRemove,
+  t,
+}: {
+  document: DocumentUpload;
+  onRemove: (uid: string) => void;
+  t: VectorStoresTranslator;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open document actions"
+        aria-label={t("openDocActions")}
         data-testid={`document-actions-${document.uid}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -61,10 +70,11 @@ function DocumentRowActions({ document, onRemove }: { document: DocumentUpload; 
 }
 
 interface DocumentsTableColumnsDeps {
+  t: VectorStoresTranslator;
   onRemove: (uid: string) => void;
 }
 
-export const getDocumentsTableColumns = ({ onRemove }: DocumentsTableColumnsDeps): ColumnDef<DocumentUpload>[] => [
+export const getDocumentsTableColumns = ({ onRemove, t }: DocumentsTableColumnsDeps): ColumnDef<DocumentUpload>[] => [
   {
     id: "name",
     accessorKey: "name",
@@ -97,13 +107,13 @@ export const getDocumentsTableColumns = ({ onRemove }: DocumentsTableColumnsDeps
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <DocumentRowActions document={row.original} onRemove={onRemove} />
+        <DocumentRowActions document={row.original} onRemove={onRemove} t={t} />
       </div>
     ),
   },

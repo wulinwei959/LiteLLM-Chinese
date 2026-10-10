@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useId, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import { CircleCheck, CircleHelp, Inbox, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
@@ -48,6 +51,7 @@ const providerItems = Object.entries(VectorStoreProviders)
 const asText = (value: unknown): string => (typeof value === "string" ? value : "");
 
 const IngestSuccessAlert: React.FC<{ ingestResults: RAGIngestResponse[] }> = ({ ingestResults }) => {
+  const t = useTranslations("vectorStores");
   const [dismissed, setDismissed] = useState(false);
 
   if (dismissed) {
@@ -57,19 +61,19 @@ const IngestSuccessAlert: React.FC<{ ingestResults: RAGIngestResponse[] }> = ({ 
   return (
     <Alert variant="success">
       <CircleCheck />
-      <AlertTitle>Vector Store Created Successfully</AlertTitle>
+      <AlertTitle>{t("createdSuccess")}</AlertTitle>
       <AlertDescription>
         <div>
           <p>
-            <strong>Vector Store ID:</strong> {ingestResults[0]?.vector_store_id}
+            <strong>{t("vectorStoreId")}</strong> {ingestResults[0]?.vector_store_id}
           </p>
           <p>
-            <strong>Documents Ingested:</strong> {ingestResults.length}
+            <strong>{t("documentsIngested")}</strong> {ingestResults.length}
           </p>
         </div>
       </AlertDescription>
       <AlertAction>
-        <Button variant="ghost" size="icon-sm" aria-label="Close" onClick={() => setDismissed(true)}>
+        <Button variant="ghost" size="icon-sm" aria-label={t("close")} onClick={() => setDismissed(true)}>
           <X className="size-4" />
         </Button>
       </AlertAction>
@@ -93,6 +97,7 @@ interface CreateVectorStoreProps {
 }
 
 const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSuccess }) => {
+  const t = useTranslations("vectorStores");
   const [documents, setDocuments] = useState<DocumentUpload[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<string>("bedrock");
@@ -238,9 +243,9 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
     <TooltipProvider>
       <div className="space-y-6">
         <div>
-          <h3 className="text-lg font-medium">Create Vector Store</h3>
+          <h3 className="text-lg font-medium">{t("createTitle")}</h3>
           <p className="text-sm text-muted-foreground">
-            Upload documents and select a provider to create a new vector store with embedded content.
+            {t("createDesc")}
           </p>
         </div>
 
@@ -248,9 +253,9 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
         <Card>
           <CardContent>
             <div className="mb-4">
-              <p className="font-medium">Step 1: Upload Documents</p>
+              <p className="font-medium">{t("step1")}</p>
               <p className="text-sm text-muted-foreground block mt-1">
-                Upload one or more documents (PDF, TXT, DOCX, MD). Maximum file size: 50MB per file.
+                {t("uploadNote")}
               </p>
             </div>
             <label
@@ -298,7 +303,7 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
         <Card>
           <CardContent className="space-y-4">
             <div>
-              <p className="font-medium">Step 2: Configure Vector Store</p>
+              <p className="font-medium">{t("step2")}</p>
               <p className="text-sm text-muted-foreground block mt-1">
                 Choose the provider and optionally provide a name and description for your vector store.
               </p>
@@ -340,7 +345,7 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
                   onValueChange={(value: string | null) => value !== null && setSelectedProvider(value)}
                 >
                   <SelectTrigger id="vector-store-provider" className="w-full">
-                    <SelectValue placeholder="Select a provider" />
+                    <SelectValue placeholder={t("selectProvider")} />
                   </SelectTrigger>
                   <SelectContent>
                     {providerItems.map((item) => (

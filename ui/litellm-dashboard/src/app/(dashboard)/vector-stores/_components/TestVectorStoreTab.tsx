@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Combobox,
@@ -19,13 +22,14 @@ interface TestVectorStoreTabProps {
 const storeLabel = (store: VectorStore) => store.vector_store_name || store.vector_store_id;
 
 const TestVectorStoreTab: React.FC<TestVectorStoreTabProps> = ({ accessToken, vectorStores }) => {
+  const t = useTranslations("vectorStores");
   const [selectedVectorStore, setSelectedVectorStore] = useState<VectorStore | null>(vectorStores[0] ?? null);
 
   if (!accessToken) {
     return (
       <Card>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Access token is required to test vector stores.</p>
+          <p className="text-sm text-muted-foreground">{t("accessTokenRequired")}</p>
         </CardContent>
       </Card>
     );
@@ -36,7 +40,7 @@ const TestVectorStoreTab: React.FC<TestVectorStoreTabProps> = ({ accessToken, ve
       <Card>
         <CardContent>
           <div className="py-8 text-center">
-            <p className="text-sm text-muted-foreground">No vector stores available. Create one first to test it.</p>
+            <p className="text-sm text-muted-foreground">{t("noVectorStores")}</p>
           </div>
         </CardContent>
       </Card>
@@ -48,8 +52,8 @@ const TestVectorStoreTab: React.FC<TestVectorStoreTabProps> = ({ accessToken, ve
       <Card>
         <CardContent className="space-y-4">
           <div>
-            <h5 className="text-base font-medium text-foreground">Select Vector Store</h5>
-            <p className="text-sm text-muted-foreground">Choose a vector store to test search queries against</p>
+            <h5 className="text-base font-medium text-foreground">{t("selectVectorStore")}</h5>
+            <p className="text-sm text-muted-foreground">{t("selectVectorStoreDesc")}</p>
           </div>
 
           <Combobox
@@ -58,9 +62,9 @@ const TestVectorStoreTab: React.FC<TestVectorStoreTabProps> = ({ accessToken, ve
             onValueChange={setSelectedVectorStore}
             itemToStringLabel={storeLabel}
           >
-            <ComboboxInput className="w-full" placeholder="Select a vector store" />
+            <ComboboxInput className="w-full" placeholder={t("selectVectorStorePlaceholder")} />
             <ComboboxContent>
-              <ComboboxEmpty>No matching vector stores</ComboboxEmpty>
+              <ComboboxEmpty>{t("noMatchingStores")}</ComboboxEmpty>
               <ComboboxList>
                 {(store: VectorStore) => (
                   <ComboboxItem key={store.vector_store_id} value={store}>

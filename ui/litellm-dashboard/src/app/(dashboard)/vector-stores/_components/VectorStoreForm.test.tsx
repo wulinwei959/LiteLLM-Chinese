@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CredentialItem, vectorStoreCreateCall } from "@/components/networking";
@@ -35,7 +36,7 @@ describe("VectorStoreForm", () => {
   it("should render the form when visible", () => {
     renderForm();
 
-    expect(screen.getByText("Add New Vector Store")).toBeInTheDocument();
+    expect(screen.getByText("新建向量存储")).toBeInTheDocument();
   });
 
   it("renders the default provider's bundled logo via the shared Logo component", () => {

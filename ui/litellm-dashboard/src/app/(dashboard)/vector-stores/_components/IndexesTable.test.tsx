@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -39,7 +40,7 @@ const noResolve = () => undefined;
 describe("IndexesTable", () => {
   it("should display the empty state when no indexes are registered", () => {
     render(<IndexesTable data={[]} resolveVectorStoreId={noResolve} onViewVectorStore={vi.fn()} />);
-    expect(screen.getByText("No indexes registered yet")).toBeInTheDocument();
+    expect(screen.getByText("暂无注册索引")).toBeInTheDocument();
   });
 
   it("should render index rows with dash fallbacks for missing created_by and created_at", () => {

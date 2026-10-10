@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -83,8 +84,8 @@ describe("DocumentsTable", () => {
   it("should show the empty state when no documents", () => {
     render(<DocumentsTable documents={[]} onRemove={vi.fn()} />);
 
-    expect(screen.getByText("No documents uploaded yet")).toBeInTheDocument();
-    expect(screen.getByText("Upload documents above to get started.")).toBeInTheDocument();
+    expect(screen.getByText("暂无上传文档")).toBeInTheDocument();
+    expect(screen.getByText("请在上方上传文档以开始。")).toBeInTheDocument();
   });
 
   it("should render one actions menu per document", () => {

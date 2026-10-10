@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -58,9 +59,9 @@ describe("VectorStoreInfoView save payload", () => {
       vector_store: { ...serverRecord, vector_store_name: null, vector_store_description: null },
     });
     renderView(true);
-    await screen.findByRole("button", { name: "Save Changes" });
+    await screen.findByRole("button", { name: "保存更改" });
 
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await vi.waitFor(() => expect(mockUpdate).toHaveBeenCalledTimes(1));
     expect(savedPayload()).toStrictEqual({
@@ -79,7 +80,7 @@ describe("VectorStoreInfoView save payload", () => {
     const nameInput = await screen.findByDisplayValue("support-docs-store");
     await user.clear(nameInput);
     fireEvent.change(nameInput, { target: { value: "renamed-store" } });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await vi.waitFor(() => expect(mockUpdate).toHaveBeenCalledTimes(1));
     expect(mockUpdate.mock.calls[0][0]).toBe("sk-test");
@@ -96,12 +97,12 @@ describe("VectorStoreInfoView save payload", () => {
     const user = userEvent.setup();
     renderView(false);
 
-    const editButtons = await screen.findAllByRole("button", { name: "Edit Vector Store" });
+    const editButtons = await screen.findAllByRole("button", { name: "编辑向量存储" });
     await user.click(editButtons[0]);
     const descriptionInput = await screen.findByDisplayValue("Docs for support");
     await user.clear(descriptionInput);
     fireEvent.change(descriptionInput, { target: { value: "new description" } });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await vi.waitFor(() => expect(mockUpdate).toHaveBeenCalledTimes(1));
     expect(savedPayload()).toStrictEqual({
@@ -121,7 +122,7 @@ describe("VectorStoreInfoView save payload", () => {
     await user.click(screen.getAllByRole("combobox")[1]);
     const options = await screen.findAllByText("bedrock-prod");
     await user.click(options[options.length - 1]);
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await vi.waitFor(() => expect(mockUpdate).toHaveBeenCalledTimes(1));
     expect(Object.keys(savedPayload())).toStrictEqual([
@@ -140,7 +141,7 @@ describe("VectorStoreInfoView save payload", () => {
     const metadataInput = await screen.findByPlaceholderText('{"key": "value"}');
     await user.clear(metadataInput);
     fireEvent.change(metadataInput, { target: { value: "not json" } });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await vi.waitFor(() => expect(mockToast.fromError).toHaveBeenCalledWith("Invalid JSON in metadata field"));
     expect(mockUpdate).not.toHaveBeenCalled();
@@ -152,7 +153,7 @@ describe("VectorStoreInfoView save payload", () => {
     renderView(true);
 
     await screen.findByDisplayValue("support-docs-store");
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     expect(await screen.findByText("Please input a vector store ID")).toBeInTheDocument();
     expect(mockUpdate).not.toHaveBeenCalled();

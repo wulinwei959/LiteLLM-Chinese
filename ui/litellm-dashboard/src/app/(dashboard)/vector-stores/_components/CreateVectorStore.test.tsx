@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import CreateVectorStore from "./CreateVectorStore";
@@ -74,8 +75,8 @@ describe("CreateVectorStore", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
     expect(screen.getAllByText("Create Vector Store").length).toBeGreaterThan(0);
-    expect(screen.getByText("Step 1: Upload Documents")).toBeInTheDocument();
-    expect(screen.getByText("Step 2: Configure Vector Store")).toBeInTheDocument();
+    expect(screen.getByText("步骤 1：上传文档")).toBeInTheDocument();
+    expect(screen.getByText("步骤 2：配置向量存储")).toBeInTheDocument();
   });
 
   it("should display upload area with correct text", () => {
@@ -211,7 +212,7 @@ describe("CreateVectorStore", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Vector Store Created Successfully")).toBeInTheDocument();
+      expect(screen.getByText("向量存储创建成功")).toBeInTheDocument();
     });
   });
 

@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import TestVectorStoreTab from "./TestVectorStoreTab";
@@ -37,20 +38,20 @@ describe("TestVectorStoreTab", () => {
   it("should render the component successfully", () => {
     render(<TestVectorStoreTab accessToken="test-token" vectorStores={mockVectorStores} />);
 
-    expect(screen.getByText("Select Vector Store")).toBeInTheDocument();
-    expect(screen.getByText("Choose a vector store to test search queries against")).toBeInTheDocument();
+    expect(screen.getByText("选择向量存储")).toBeInTheDocument();
+    expect(screen.getByText("选择一个向量存储以测试搜索查询")).toBeInTheDocument();
   });
 
   it("should show message when no access token", () => {
     render(<TestVectorStoreTab accessToken={null} vectorStores={mockVectorStores} />);
 
-    expect(screen.getByText("Access token is required to test vector stores.")).toBeInTheDocument();
+    expect(screen.getByText("测试向量存储需要访问令牌。")).toBeInTheDocument();
   });
 
   it("should show message when no vector stores available", () => {
     render(<TestVectorStoreTab accessToken="test-token" vectorStores={[]} />);
 
-    expect(screen.getByText("No vector stores available. Create one first to test it.")).toBeInTheDocument();
+    expect(screen.getByText("暂无可用向量存储。请先创建一个以便测试。")).toBeInTheDocument();
   });
 
   it("should render VectorStoreTester with first vector store by default", () => {
