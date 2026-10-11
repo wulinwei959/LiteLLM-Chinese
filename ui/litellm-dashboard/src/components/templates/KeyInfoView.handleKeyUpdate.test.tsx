@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { toast } from "@/lib/toast";
 
@@ -232,7 +233,7 @@ const renderView = (premiumUser: boolean) => {
     showSSOBanner: false,
   });
 
-  return render(
+  return renderWithProviders(
     <KeyInfoView
       keyId="tok_123"
       onClose={() => {}}
@@ -263,7 +264,7 @@ describe("KeyInfoView handleKeyUpdate guardrails guard", () => {
       showSSOBanner: false,
     });
 
-    render(
+    renderWithProviders(
       <KeyInfoView
         keyId="tok_123"
         onClose={() => {}}
@@ -478,7 +479,7 @@ describe("KeyInfoView handleKeyUpdate budget_duration", () => {
       showSSOBanner: false,
     });
 
-    render(
+    renderWithProviders(
       <KeyInfoView
         keyId="tok_123"
         onClose={() => {}}
@@ -543,7 +544,7 @@ describe("KeyInfoView handleKeyUpdate soft_budget", () => {
   const renderWithSoftBudget = (softBudget: number | null) => {
     mockUseAuthorized.mockReturnValue(premiumAdminAuth);
 
-    return render(
+    return renderWithProviders(
       <KeyInfoView
         keyId="tok_123"
         onClose={() => {}}

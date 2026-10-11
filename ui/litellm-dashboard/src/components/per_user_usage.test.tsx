@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { screen, fireEvent, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import PerUserUsage from "./per_user_usage";
@@ -67,7 +68,7 @@ describe("PerUserUsage", () => {
   });
 
   it("renders the user details table by default", async () => {
-    render(<PerUserUsage {...defaultProps} />);
+    renderWithProviders(<PerUserUsage {...defaultProps} />);
 
     await waitFor(() => {
       expect(mockPerUserAnalyticsCall).toHaveBeenCalled();
@@ -80,7 +81,7 @@ describe("PerUserUsage", () => {
   });
 
   it("keeps both tab panels mounted so switching tabs does not reset their state", async () => {
-    render(<PerUserUsage {...defaultProps} />);
+    renderWithProviders(<PerUserUsage {...defaultProps} />);
 
     await waitFor(() => {
       expect(screen.getByText("u1")).toBeInTheDocument();
@@ -121,19 +122,19 @@ describe("PerUserUsage", () => {
     const lastCall = () => mockPerUserAnalyticsCall.mock.calls[mockPerUserAnalyticsCall.mock.calls.length - 1];
 
     it("renders every row the server returns and shows the range from total_count", async () => {
-      render(<PerUserUsage {...defaultProps} />);
+      renderWithProviders(<PerUserUsage {...defaultProps} />);
 
       expect(await screen.findByText("user-50")).toBeInTheDocument();
       expect(screen.getByText("user-1")).toBeInTheDocument();
       expect(screen.getAllByRole("row")).toHaveLength(51);
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-50 of 120");
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-50 条，共 120 条");
       expect(screen.getByTestId("pagination-prev")).toBeDisabled();
       expect(screen.getByTestId("pagination-next")).toBeEnabled();
     });
 
     it("refetches the next page when Next is clicked", async () => {
       const user = userEvent.setup();
-      render(<PerUserUsage {...defaultProps} />);
+      renderWithProviders(<PerUserUsage {...defaultProps} />);
       await screen.findByText("user-1");
 
       await user.click(screen.getByTestId("pagination-next"));
@@ -141,26 +142,26 @@ describe("PerUserUsage", () => {
       expect(await screen.findByText("user-51")).toBeInTheDocument();
       expect(lastCall()).toEqual(["test-token", 2, 50, undefined]);
       expect(screen.queryByText("user-1")).not.toBeInTheDocument();
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 51-100 of 120");
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 51-100 条，共 120 条");
       expect(screen.getByTestId("pagination-prev")).toBeEnabled();
     });
 
     it("disables Next once the response says this is the last page", async () => {
       const user = userEvent.setup();
-      render(<PerUserUsage {...defaultProps} />);
+      renderWithProviders(<PerUserUsage {...defaultProps} />);
       await screen.findByText("user-1");
 
       await user.click(screen.getByTestId("pagination-last"));
 
       expect(await screen.findByText("user-120")).toBeInTheDocument();
       expect(lastCall()).toEqual(["test-token", 3, 50, undefined]);
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 101-120 of 120");
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 101-120 条，共 120 条");
       expect(screen.getByTestId("pagination-next")).toBeDisabled();
     });
 
     it("falls back to the last existing page when the data shrinks under the current page", async () => {
       const user = userEvent.setup();
-      render(<PerUserUsage {...defaultProps} />);
+      renderWithProviders(<PerUserUsage {...defaultProps} />);
       await screen.findByText("user-1");
       await user.click(screen.getByTestId("pagination-next"));
       await screen.findByText("user-51");
@@ -174,13 +175,13 @@ describe("PerUserUsage", () => {
         ["test-token", 2, 50, undefined],
       ]);
       expect(screen.getAllByRole("row")).toHaveLength(11);
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 51-60 of 60");
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 51-60 条，共 60 条");
       expect(screen.getByTestId("pagination-next")).toBeDisabled();
     });
 
     it("goes back to the first page when the data disappears under the current page", async () => {
       const user = userEvent.setup();
-      render(<PerUserUsage {...defaultProps} />);
+      renderWithProviders(<PerUserUsage {...defaultProps} />);
       await screen.findByText("user-1");
       await user.click(screen.getByTestId("pagination-next"));
       await screen.findByText("user-51");
@@ -196,15 +197,15 @@ describe("PerUserUsage", () => {
         ["test-token", 1, 50, undefined],
       ]);
       expect(screen.getByText("No per-user usage data")).toBeInTheDocument();
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("No results");
-      expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("暂无结果");
+      expect(screen.getByText("第 1 页，共 1 页")).toBeInTheDocument();
       expect(screen.getByTestId("pagination-first")).toBeDisabled();
       expect(screen.getByTestId("pagination-prev")).toBeDisabled();
     });
 
     it("refetches with the selected page size and goes back to the first page", async () => {
       const user = userEvent.setup();
-      render(<PerUserUsage {...defaultProps} />);
+      renderWithProviders(<PerUserUsage {...defaultProps} />);
       await screen.findByText("user-1");
       await user.click(screen.getByTestId("pagination-next"));
       await screen.findByText("user-51");
@@ -215,12 +216,12 @@ describe("PerUserUsage", () => {
       expect(await screen.findByText("user-100")).toBeInTheDocument();
       expect(lastCall()).toEqual(["test-token", 1, 100, undefined]);
       expect(screen.getAllByRole("row")).toHaveLength(101);
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-100 of 120");
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-100 条，共 120 条");
     });
 
     it("goes back to the first page when the tag filter changes", async () => {
       const user = userEvent.setup();
-      const { rerender } = render(<PerUserUsage {...defaultProps} />);
+      const { rerender } = renderWithProviders(<PerUserUsage {...defaultProps} />);
       await screen.findByText("user-1");
       await user.click(screen.getByTestId("pagination-next"));
       await screen.findByText("user-51");
@@ -235,11 +236,11 @@ describe("PerUserUsage", () => {
         ["test-token", 1, 50, ["curl/8.0"]],
       ]);
       expect(await screen.findByText("user-1")).toBeInTheDocument();
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-50 of 120");
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-50 条，共 120 条");
     });
 
     it("does not request anything without an access token", () => {
-      render(<PerUserUsage {...defaultProps} accessToken={null} />);
+      renderWithProviders(<PerUserUsage {...defaultProps} accessToken={null} />);
 
       expect(mockPerUserAnalyticsCall).not.toHaveBeenCalled();
       expect(screen.getByText("No per-user usage data")).toBeInTheDocument();
@@ -247,7 +248,7 @@ describe("PerUserUsage", () => {
   });
 
   it("renders the usage distribution as a stacked bar chart with the explicit palette and users formatter", async () => {
-    render(<PerUserUsage {...defaultProps} />);
+    renderWithProviders(<PerUserUsage {...defaultProps} />);
 
     await waitFor(() => {
       expect(mockPerUserAnalyticsCall).toHaveBeenCalled();

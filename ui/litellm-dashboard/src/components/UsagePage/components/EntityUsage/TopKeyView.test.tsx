@@ -1,5 +1,6 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { KeyResponse } from "../../../key_team_helpers/key_list";
@@ -65,39 +66,39 @@ describe("TopKeyView", () => {
   });
 
   it("should render", () => {
-    render(<TopKeyView {...baseProps} />);
+    renderWithProviders(<TopKeyView {...baseProps} />);
     expect(screen.getByRole("button", { name: "Table View" })).toBeInTheDocument();
   });
 
   it("should display table view button", () => {
-    render(<TopKeyView {...baseProps} />);
+    renderWithProviders(<TopKeyView {...baseProps} />);
     expect(screen.getByRole("button", { name: "Table View" })).toBeInTheDocument();
   });
 
   it("should display chart view button", () => {
-    render(<TopKeyView {...baseProps} />);
+    renderWithProviders(<TopKeyView {...baseProps} />);
     expect(screen.getByRole("button", { name: "Chart View" })).toBeInTheDocument();
   });
 
   it("should display base table column headers", () => {
-    render(<TopKeyView {...baseProps} />);
+    renderWithProviders(<TopKeyView {...baseProps} />);
     expect(screen.getByText("Key ID")).toBeInTheDocument();
     expect(screen.getByText("Key Alias")).toBeInTheDocument();
     expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
   });
 
   it("should display Tags column when showTags is true", () => {
-    render(<TopKeyView {...baseProps} showTags={true} />);
+    renderWithProviders(<TopKeyView {...baseProps} showTags={true} />);
     expect(screen.getByText("Tags")).toBeInTheDocument();
   });
 
   it("should not display Tags column when showTags is false", () => {
-    render(<TopKeyView {...baseProps} showTags={false} />);
+    renderWithProviders(<TopKeyView {...baseProps} showTags={false} />);
     expect(screen.queryByText("Tags")).not.toBeInTheDocument();
   });
 
   it("should display key information in table view", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -122,7 +123,7 @@ describe("TopKeyView", () => {
   });
 
   it("should render User column only when a row has user attribution", () => {
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -157,7 +158,7 @@ describe("TopKeyView", () => {
   });
 
   it("should render a user ID in the User column", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -177,7 +178,7 @@ describe("TopKeyView", () => {
 
   it("should switch to chart view when chart view button is clicked", async () => {
     const user = userEvent.setup();
-    render(<TopKeyView {...baseProps} />);
+    renderWithProviders(<TopKeyView {...baseProps} />);
 
     const chartViewButton = screen.getByRole("button", { name: "Chart View" });
     await user.click(chartViewButton);
@@ -192,7 +193,7 @@ describe("TopKeyView", () => {
     mockTransformKeyInfo.mockReturnValue(mockTransformedData);
 
     const user = userEvent.setup();
-    const { container } = render(
+    const { container } = renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -227,7 +228,7 @@ describe("TopKeyView", () => {
 
   it("should switch to table view when table view button is clicked", async () => {
     const user = userEvent.setup();
-    render(<TopKeyView {...baseProps} />);
+    renderWithProviders(<TopKeyView {...baseProps} />);
 
     const chartViewButton = screen.getByRole("button", { name: "Chart View" });
     const tableViewButton = screen.getByRole("button", { name: "Table View" });
@@ -240,7 +241,7 @@ describe("TopKeyView", () => {
 
   it("should call setTopKeysLimit when limit is changed via the segmented control", async () => {
     const user = userEvent.setup();
-    render(<TopKeyView {...baseProps} />);
+    renderWithProviders(<TopKeyView {...baseProps} />);
 
     await user.click(screen.getByRole("radio", { name: "10" }));
 
@@ -248,7 +249,7 @@ describe("TopKeyView", () => {
   });
 
   it("should display truncated key ID in table", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -267,7 +268,7 @@ describe("TopKeyView", () => {
   });
 
   it("should display dash for missing key alias", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -284,7 +285,7 @@ describe("TopKeyView", () => {
   });
 
   it("should format spend values with two decimal places", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -301,7 +302,7 @@ describe("TopKeyView", () => {
   });
 
   it("should display sub-cent spend as < $0.01", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -318,7 +319,7 @@ describe("TopKeyView", () => {
   });
 
   it("should display zero spend as a dash", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -336,7 +337,7 @@ describe("TopKeyView", () => {
   });
 
   it("should display dash for empty tags", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -355,7 +356,7 @@ describe("TopKeyView", () => {
   });
 
   it("should display dash for missing tags", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -373,7 +374,7 @@ describe("TopKeyView", () => {
   });
 
   it("should display first two tags by default and show expand button", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -399,7 +400,7 @@ describe("TopKeyView", () => {
 
   it("should expand tags when expand button is clicked", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -427,7 +428,7 @@ describe("TopKeyView", () => {
 
   it("should collapse tags when collapse button is clicked", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -465,7 +466,7 @@ describe("TopKeyView", () => {
     mockTransformKeyInfo.mockReturnValue(mockTransformedData);
 
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -498,7 +499,7 @@ describe("TopKeyView", () => {
     mockTransformKeyInfo.mockReturnValue({ transformed: "data" } as unknown as KeyResponse);
 
     const user = userEvent.setup();
-    const { container } = render(
+    const { container } = renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -529,7 +530,7 @@ describe("TopKeyView", () => {
     mockTransformKeyInfo.mockReturnValue(mockTransformedData);
 
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -567,7 +568,7 @@ describe("TopKeyView", () => {
     mockTransformKeyInfo.mockReturnValue(mockTransformedData);
 
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -604,7 +605,7 @@ describe("TopKeyView", () => {
     mockTransformKeyInfo.mockReturnValue(mockTransformedData);
 
     const user = userEvent.setup();
-    const { container } = render(
+    const { container } = renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -644,7 +645,7 @@ describe("TopKeyView", () => {
     });
 
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -675,7 +676,7 @@ describe("TopKeyView", () => {
     mockKeyInfoV1Call.mockRejectedValue(new Error("Network error"));
 
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -706,7 +707,7 @@ describe("TopKeyView", () => {
   });
 
   it("should sort tags by usage descending", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -734,13 +735,13 @@ describe("TopKeyView", () => {
   });
 
   it("should handle empty key list", () => {
-    render(<TopKeyView {...baseProps} topKeys={[]} />);
+    renderWithProviders(<TopKeyView {...baseProps} topKeys={[]} />);
     expect(screen.getByText("Key ID")).toBeInTheDocument();
     expect(screen.getByText("Key Alias")).toBeInTheDocument();
   });
 
   it("should display full key alias in table view", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[
@@ -757,7 +758,7 @@ describe("TopKeyView", () => {
   });
 
   it("should handle keys with no alias", () => {
-    render(
+    renderWithProviders(
       <TopKeyView
         {...baseProps}
         topKeys={[

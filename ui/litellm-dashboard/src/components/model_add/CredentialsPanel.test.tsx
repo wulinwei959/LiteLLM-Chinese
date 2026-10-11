@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -80,7 +81,7 @@ const createQueryClient = () =>
   });
 
 const renderPanel = () =>
-  render(
+  renderWithProviders(
     <QueryClientProvider client={createQueryClient()}>
       <CredentialsPanel />
     </QueryClientProvider>,
@@ -97,7 +98,7 @@ describe("CredentialsPanel", () => {
 
     renderPanel();
 
-    expect(screen.getByRole("button", { name: /add credential/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加凭据" })).toBeInTheDocument();
   });
 
   it("displays the credential rows", () => {
@@ -136,7 +137,7 @@ describe("CredentialsPanel", () => {
     renderPanel();
 
     expect(screen.queryByTestId("credential-modal-add-submit")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /add credential/i }));
+    await user.click(screen.getByRole("button", { name: "添加凭据" }));
     expect(screen.getByTestId("credential-modal-add-submit")).toBeInTheDocument();
   });
 
@@ -149,11 +150,11 @@ describe("CredentialsPanel", () => {
 
     renderPanel();
 
-    await user.click(screen.getByRole("button", { name: /add credential/i }));
+    await user.click(screen.getByRole("button", { name: "添加凭据" }));
     await user.click(screen.getByTestId("credential-modal-add-submit"));
 
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith("Credential added successfully");
+      expect(toast.success).toHaveBeenCalledWith("凭据添加成功");
     });
     expect(refetch).toHaveBeenCalled();
     expect(screen.queryByTestId("credential-modal-add-submit")).not.toBeInTheDocument();
@@ -167,11 +168,11 @@ describe("CredentialsPanel", () => {
 
     renderPanel();
 
-    await user.click(screen.getByRole("button", { name: /add credential/i }));
+    await user.click(screen.getByRole("button", { name: "添加凭据" }));
     await user.click(screen.getByTestId("credential-modal-add-submit"));
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Failed to add credential");
+      expect(toast.error).toHaveBeenCalledWith("添加凭据失败");
     });
     // The modal stays open so the user can retry, and no success toast fired.
     expect(screen.getByTestId("credential-modal-add-submit")).toBeInTheDocument();
@@ -207,7 +208,7 @@ describe("CredentialsPanel", () => {
       renderPanel();
 
       expect(screen.getByText("openai-key")).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /add credential/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "添加凭据" })).not.toBeInTheDocument();
     });
 
     it("does not render the per-row actions menu for Admin Viewer", () => {

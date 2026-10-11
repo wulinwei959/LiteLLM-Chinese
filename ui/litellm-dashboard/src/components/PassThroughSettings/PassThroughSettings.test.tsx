@@ -1,4 +1,5 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -57,7 +58,7 @@ describe("PassThroughSettings", () => {
   });
 
   it("should render nothing without an access token", () => {
-    const { container } = render(<PassThroughSettings {...defaultProps} accessToken={null} />);
+    const { container } = renderWithProviders(<PassThroughSettings {...defaultProps} accessToken={null} />);
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -69,7 +70,7 @@ describe("PassThroughSettings", () => {
       }),
     );
 
-    render(<PassThroughSettings {...defaultProps} />);
+    renderWithProviders(<PassThroughSettings {...defaultProps} />);
     expect(screen.getByTestId("endpoints-table")).toHaveAttribute("data-loading", "true");
 
     await act(async () => {
@@ -82,7 +83,7 @@ describe("PassThroughSettings", () => {
   });
 
   it("should resolve loading without fetching when the user id is missing", async () => {
-    render(<PassThroughSettings {...defaultProps} userID={null} />);
+    renderWithProviders(<PassThroughSettings {...defaultProps} userID={null} />);
 
     await waitFor(() => {
       expect(screen.getByTestId("endpoints-table")).toHaveAttribute("data-loading", "false");
@@ -92,7 +93,7 @@ describe("PassThroughSettings", () => {
 
   it("should swap to the endpoint info view when an endpoint is opened", async () => {
     const user = userEvent.setup();
-    render(<PassThroughSettings {...defaultProps} />);
+    renderWithProviders(<PassThroughSettings {...defaultProps} />);
 
     await user.click(await screen.findByText("open-ep-1"));
     expect(screen.getByTestId("endpoint-info")).toHaveTextContent("ep-1");
@@ -101,13 +102,13 @@ describe("PassThroughSettings", () => {
   it("should confirm before deleting an endpoint", async () => {
     const user = userEvent.setup();
     mockDeleteEndpoint.mockResolvedValue(undefined);
-    render(<PassThroughSettings {...defaultProps} />);
+    renderWithProviders(<PassThroughSettings {...defaultProps} />);
 
     await user.click(await screen.findByText("delete-ep-1"));
-    expect(screen.getByText("Delete Pass-Through Endpoint")).toBeInTheDocument();
+    expect(screen.getByText("删除直通端点")).toBeInTheDocument();
     expect(mockDeleteEndpoint).not.toHaveBeenCalled();
 
-    await user.click(screen.getByRole("button", { name: "Delete" }));
+    await user.click(screen.getByRole("button", { name: "删除" }));
     await waitFor(() => {
       expect(mockDeleteEndpoint).toHaveBeenCalledWith("token", "ep-1");
     });

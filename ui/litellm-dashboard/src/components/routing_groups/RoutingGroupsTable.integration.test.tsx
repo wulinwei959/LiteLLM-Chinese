@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -41,19 +42,19 @@ describe("RoutingGroupsTable", () => {
   });
 
   it("should render every column header", () => {
-    render(<RoutingGroupsTable {...defaultProps} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} />);
     for (const header of ["Group Name", "Models", "Strategy"]) {
       expect(screen.getByText(header)).toBeInTheDocument();
     }
   });
 
   it("should show the empty state when there are no groups", () => {
-    render(<RoutingGroupsTable {...defaultProps} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} />);
     expect(screen.getByText("No routing groups yet")).toBeInTheDocument();
   });
 
   it("should render the group name, its models, and a human-readable strategy label", () => {
-    render(<RoutingGroupsTable {...defaultProps} groups={[prodGroup]} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} groups={[prodGroup]} />);
     const row = rowFor("prod-group");
     expect(within(row).getByText("prod-group")).toBeInTheDocument();
     expect(within(row).getByText("gpt-4o")).toBeInTheDocument();
@@ -62,13 +63,13 @@ describe("RoutingGroupsTable", () => {
   });
 
   it("should fall back to the raw strategy value when it has no friendly label", () => {
-    render(<RoutingGroupsTable {...defaultProps} groups={[{ ...prodGroup, routing_strategy: "custom-strategy" }]} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} groups={[{ ...prodGroup, routing_strategy: "custom-strategy" }]} />);
     expect(within(rowFor("prod-group")).getByText("custom-strategy")).toBeInTheDocument();
   });
 
   it("should collapse models beyond the first three behind a +N more badge", () => {
     const wideGroup: RoutingGroup = { ...prodGroup, models: ["a", "b", "c", "d", "e"] };
-    render(<RoutingGroupsTable {...defaultProps} groups={[wideGroup]} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} groups={[wideGroup]} />);
     const row = rowFor("prod-group");
     expect(within(row).getByText("+2 more")).toBeInTheDocument();
     expect(within(row).queryByText("d")).not.toBeInTheDocument();
@@ -76,7 +77,7 @@ describe("RoutingGroupsTable", () => {
 
   it("should keep the incoming order until a column is sorted", async () => {
     const user = userEvent.setup();
-    render(<RoutingGroupsTable {...defaultProps} groups={[prodGroup, devGroup]} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} groups={[prodGroup, devGroup]} />);
 
     const namesInOrder = () =>
       screen
@@ -92,7 +93,7 @@ describe("RoutingGroupsTable", () => {
 
   it("should toggle the usage panel when the group name is clicked", async () => {
     const user = userEvent.setup();
-    render(<RoutingGroupsTable {...defaultProps} groups={[prodGroup]} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} groups={[prodGroup]} />);
 
     expect(screen.queryByText("How routing works for this group")).not.toBeInTheDocument();
 
@@ -105,7 +106,7 @@ describe("RoutingGroupsTable", () => {
 
   it("should build the usage snippet from the proxy base url and the group's first model", async () => {
     const user = userEvent.setup();
-    render(<RoutingGroupsTable {...defaultProps} groups={[prodGroup]} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} groups={[prodGroup]} />);
     await user.click(screen.getByRole("button", { name: "prod-group" }));
 
     const panel = (await screen.findByText("How routing works for this group")).closest("div")?.parentElement;
@@ -115,7 +116,7 @@ describe("RoutingGroupsTable", () => {
 
   it("uses the callable group name in every priority routing example", async () => {
     const user = userEvent.setup();
-    render(<RoutingGroupsTable {...defaultProps} groups={[{ ...prodGroup, routing_strategy: "priority" }]} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} groups={[{ ...prodGroup, routing_strategy: "priority" }]} />);
     expect(within(rowFor("prod-group")).getByText("Priority")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "prod-group" }));
 
@@ -131,7 +132,7 @@ describe("RoutingGroupsTable", () => {
 
   it("should expand only the clicked group", async () => {
     const user = userEvent.setup();
-    render(<RoutingGroupsTable {...defaultProps} groups={[prodGroup, devGroup]} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} groups={[prodGroup, devGroup]} />);
 
     await user.click(screen.getByRole("button", { name: "dev-group" }));
     expect(await screen.findAllByText("How routing works for this group")).toHaveLength(1);
@@ -140,7 +141,7 @@ describe("RoutingGroupsTable", () => {
 
   it("should edit a group through the actions menu", async () => {
     const user = userEvent.setup();
-    render(<RoutingGroupsTable {...defaultProps} groups={[prodGroup]} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} groups={[prodGroup]} />);
     await user.click(screen.getByTestId("routing-group-actions-prod-group"));
     await user.click(await screen.findByTestId("routing-group-action-edit"));
     expect(onEdit).toHaveBeenCalledWith(prodGroup);
@@ -148,14 +149,14 @@ describe("RoutingGroupsTable", () => {
 
   it("should delete a group through the actions menu", async () => {
     const user = userEvent.setup();
-    render(<RoutingGroupsTable {...defaultProps} groups={[prodGroup]} />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} groups={[prodGroup]} />);
     await user.click(screen.getByTestId("routing-group-actions-prod-group"));
     await user.click(await screen.findByTestId("routing-group-action-delete"));
     expect(onDelete).toHaveBeenCalledWith(prodGroup);
   });
 
   it("should show skeleton rows instead of the empty state while loading", () => {
-    render(<RoutingGroupsTable {...defaultProps} isLoading />);
+    renderWithProviders(<RoutingGroupsTable {...defaultProps} isLoading />);
     expect(screen.queryByText("No routing groups yet")).not.toBeInTheDocument();
   });
 });

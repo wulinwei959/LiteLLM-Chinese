@@ -6,6 +6,7 @@ import { NuqsTestingAdapter, type UrlUpdateEvent } from "nuqs/adapters/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { render, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import type { LogEntry } from "./columns";
 import RequestLogsPanel from "./RequestLogsPanel";
 
@@ -119,7 +120,9 @@ const renderPanelWithHistory = () => {
   const tree = (searchParams: string) => (
     <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={handleUrlUpdate} hasMemory>
       <QueryClientProvider client={testQueryClient}>
-        <RequestLogsPanel {...defaultProps} />
+        <LocaleProvider locale="zh-CN">
+          <RequestLogsPanel {...defaultProps} />
+        </LocaleProvider>
       </QueryClientProvider>
     </NuqsTestingAdapter>
   );
@@ -182,7 +185,7 @@ describe("RequestLogsPanel", () => {
       renderPanel();
 
       await waitFor(() => expect(row("req-a")).not.toBeNull());
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-3 of 3");
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-3 条，共 3 条");
       expect(screen.getByTestId("pagination-next")).toBeDisabled();
     });
 
@@ -200,7 +203,7 @@ describe("RequestLogsPanel", () => {
       renderPanel();
 
       await waitFor(() => expect(row("req-0")).not.toBeNull());
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-25 of 80");
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-25 条，共 80 条");
       expect(screen.getByTestId("pagination-next")).toBeEnabled();
     });
 
@@ -284,14 +287,14 @@ describe("RequestLogsPanel", () => {
       renderPanel();
 
       await waitFor(() => expect(row("req-0")).not.toBeNull());
-      expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 3");
+      expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 3 页");
       fireEvent.click(screen.getByTestId("pagination-last"));
 
       await waitFor(() => expect(row("req-last-0")).not.toBeNull());
       expect(lastCall()?.page).toBe(3);
       expect(lastCall()?.params?.session_cursor).toBeUndefined();
-      expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 3 of 3");
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 51-60 of 60");
+      expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 3 页，共 3 页");
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 51-60 条，共 60 条");
       expect(vi.mocked(uiSpendLogsCall).mock.calls.filter(([options]) => options.page === 2)).toHaveLength(0);
     });
 

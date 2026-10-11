@@ -1,6 +1,7 @@
 /* @vitest-environment jsdom */
 import type { PaginationState } from "@tanstack/react-table";
-import { act, render, screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -58,7 +59,7 @@ function Harness({ modelData, allModelsOnProxy, rowCount = 1, onPageIndexChange 
 
 const renderHealthCheck = async (props: HarnessProps) => {
   await act(async () => {
-    render(<Harness {...props} />);
+    renderWithProviders(<Harness {...props} />);
   });
   await act(async () => {
     await new Promise((r) => setTimeout(r, 0));
@@ -87,7 +88,7 @@ describe("HealthCheckComponent", () => {
   });
 
   it("should call individualModelHealthCheckCall with model id when run health check is triggered", async () => {
-    render(
+    renderWithProviders(
       <Harness modelData={{ data: [makeModel("deployment-abc-123")] }} allModelsOnProxy={["deployment-abc-123"]} />,
     );
 
@@ -114,7 +115,7 @@ describe("HealthCheckComponent", () => {
       onPageIndexChange,
     });
 
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-50 of 75");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-50 条，共 75 条");
 
     const user = userEvent.setup();
     await user.click(screen.getByTestId("pagination-next"));

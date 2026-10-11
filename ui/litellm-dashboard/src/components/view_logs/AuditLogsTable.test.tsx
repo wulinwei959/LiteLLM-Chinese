@@ -1,5 +1,6 @@
 import type { ColumnFiltersState, PaginationState } from "@tanstack/react-table";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -47,7 +48,7 @@ function renderTable(overrides: Partial<React.ComponentProps<typeof AuditLogsTab
     onViewLog: vi.fn(),
     ...overrides,
   };
-  render(<AuditLogsTable {...props} />);
+  renderWithProviders(<AuditLogsTable {...props} />);
   return props;
 }
 
@@ -85,7 +86,7 @@ describe("AuditLogsTable", () => {
     renderTable({ rowCount: 120, onPaginationChange });
 
     // ceil(120 / 50) = 3 pages, proving rowCount (not data length) feeds the footer
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 3");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 3 页");
 
     await user.click(screen.getByTestId("pagination-next"));
     expect(onPaginationChange).toHaveBeenCalledTimes(1);
@@ -99,7 +100,7 @@ describe("AuditLogsTable", () => {
   });
 
   it("uses a distinct empty state for unfiltered vs filtered-empty results", () => {
-    const { unmount } = render(
+    const { unmount } = renderWithProviders(
       <AuditLogsTable
         data={[]}
         rowCount={0}

@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import RealtimePlayground from "./RealtimePlayground";
@@ -46,7 +47,7 @@ class FakeSocket {
 const latestSocket = () => FakeSocket.instances[FakeSocket.instances.length - 1];
 
 const connect = async (user: ReturnType<typeof userEvent.setup>) => {
-  await user.click(screen.getByRole("button", { name: /Connect/i }));
+  await user.click(screen.getByRole("button", { name: "连接" }));
   await act(async () => {
     latestSocket().open();
   });
@@ -92,25 +93,25 @@ afterEach(() => {
 
 describe("RealtimePlayground", () => {
   it("opens disconnected, with the invitation to connect", () => {
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
-    expect(screen.getByText("Realtime Voice Chat")).toBeInTheDocument();
-    expect(screen.getByText("Disconnected")).toBeInTheDocument();
-    expect(screen.getByText("Realtime Voice Playground")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Connect/i })).toBeInTheDocument();
+    expect(screen.getByText("实时语音聊天")).toBeInTheDocument();
+    expect(screen.getByText("已断开")).toBeInTheDocument();
+    expect(screen.getByText("实时语音游乐场")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "连接" })).toBeInTheDocument();
   });
 
   it("hides the composer until a session exists", () => {
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
-    expect(screen.queryByPlaceholderText("Type a message or use the mic...")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("输入消息或使用麦克风...")).not.toBeInTheDocument();
   });
 
   it("dials the realtime endpoint for the selected model, carrying the key as a protocol", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
-    await user.click(screen.getByRole("button", { name: /Connect/i }));
+    await user.click(screen.getByRole("button", { name: "连接" }));
 
     expect(latestSocket().url).toBe("wss://proxy.example.com/v1/realtime?model=gpt-realtime");
     expect(latestSocket().protocols).toEqual(["realtime", "openai-insecure-api-key.sk-realtime"]);
@@ -118,48 +119,48 @@ describe("RealtimePlayground", () => {
 
   it("passes a custom proxy base url through instead of the default", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} customProxyBaseUrl="https://tenant.example.com" />);
+    renderWithProviders(<RealtimePlayground {...props} customProxyBaseUrl="https://tenant.example.com" />);
 
-    await user.click(screen.getByRole("button", { name: /Connect/i }));
+    await user.click(screen.getByRole("button", { name: "连接" }));
 
     expect(latestSocket().url).toContain("wss://tenant.example.com/v1/realtime");
   });
 
   it("appends the selected guardrails to the session url", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} selectedGuardrails={["pii", "toxicity"]} />);
+    renderWithProviders(<RealtimePlayground {...props} selectedGuardrails={["pii", "toxicity"]} />);
 
-    await user.click(screen.getByRole("button", { name: /Connect/i }));
+    await user.click(screen.getByRole("button", { name: "连接" }));
 
     expect(latestSocket().url).toContain("guardrails=pii%2Ctoxicity");
   });
 
   it("refuses to dial without a model and says why", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} selectedModel="" />);
+    renderWithProviders(<RealtimePlayground {...props} selectedModel="" />);
 
-    await user.click(screen.getByRole("button", { name: /Connect/i }));
+    await user.click(screen.getByRole("button", { name: "连接" }));
 
     expect(FakeSocket.instances).toHaveLength(0);
-    expect(screen.getByText("Please select a model first")).toBeInTheDocument();
+    expect(screen.getByText("请先选择模型")).toBeInTheDocument();
   });
 
   it("reveals the composer and the disconnect control once the session opens", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
     await connect(user);
 
-    expect(screen.getByText("Connected")).toBeInTheDocument();
-    expect(screen.getByText("Connected to realtime API")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Type a message or use the mic...")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Disconnect/i })).toBeInTheDocument();
-    expect(screen.getByTitle("Start recording")).toBeInTheDocument();
+    expect(screen.getByText("已连接")).toBeInTheDocument();
+    expect(screen.getByText("已连接到实时 API")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("输入消息或使用麦克风...")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "断开" })).toBeInTheDocument();
+    expect(screen.getByTitle("开始录音")).toBeInTheDocument();
   });
 
   it("configures the session against the chosen voice when it is created", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
     await connect(user);
     await act(async () => {
@@ -174,34 +175,34 @@ describe("RealtimePlayground", () => {
 
   it("sends what was typed and then asks for a response", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
     await connect(user);
-    fireEvent.change(screen.getByPlaceholderText("Type a message or use the mic..."), {
+    fireEvent.change(screen.getByPlaceholderText("输入消息或使用麦克风..."), {
       target: { value: "hello there" },
     });
-    await user.click(screen.getByRole("button", { name: /send/i }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
 
     const payloads = latestSocket().sent.map((raw) => JSON.parse(raw));
     expect(payloads[0].item.content[0].text).toBe("hello there");
     expect(payloads[1]).toEqual({ type: "response.create" });
     expect(screen.getByText("hello there")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Type a message or use the mic...")).toHaveValue("");
+    expect(screen.getByPlaceholderText("输入消息或使用麦克风...")).toHaveValue("");
   });
 
   it("will not send an empty message", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
     await connect(user);
-    await user.click(screen.getByRole("button", { name: /send/i }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
 
     expect(latestSocket().sent).toHaveLength(0);
   });
 
   it("streams assistant text deltas into a single reply", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
     await connect(user);
     await act(async () => {
@@ -214,7 +215,7 @@ describe("RealtimePlayground", () => {
 
   it("falls back to the completed response when no delta arrived", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
     await connect(user);
     await act(async () => {
@@ -229,7 +230,7 @@ describe("RealtimePlayground", () => {
 
   it("shows what the microphone heard", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
     await connect(user);
     await act(async () => {
@@ -244,7 +245,7 @@ describe("RealtimePlayground", () => {
 
   it("surfaces an error frame in the transcript", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
     await connect(user);
     await act(async () => {
@@ -256,14 +257,14 @@ describe("RealtimePlayground", () => {
 
   it("closes the socket and returns to the disconnected state", async () => {
     const user = userEvent.setup();
-    render(<RealtimePlayground {...props} />);
+    renderWithProviders(<RealtimePlayground {...props} />);
 
     await connect(user);
     const socket = latestSocket();
-    await user.click(screen.getByRole("button", { name: /Disconnect/i }));
+    await user.click(screen.getByRole("button", { name: "断开" }));
 
     expect(socket.close).toHaveBeenCalled();
-    expect(await screen.findByRole("button", { name: /Connect/i })).toBeInTheDocument();
-    expect(screen.queryByPlaceholderText("Type a message or use the mic...")).not.toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "连接" })).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("输入消息或使用麦克风...")).not.toBeInTheDocument();
   });
 });

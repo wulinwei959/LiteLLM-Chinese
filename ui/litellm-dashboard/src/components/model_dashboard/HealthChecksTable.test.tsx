@@ -1,6 +1,7 @@
 /* @vitest-environment jsdom */
 import type { PaginationState, RowSelectionState } from "@tanstack/react-table";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -63,7 +64,7 @@ const rowIds = (): string[] =>
 describe("HealthChecksTable client sorting", () => {
   it("orders health status healthy > checking > unknown > unhealthy", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <Harness
         data={[
           makeRow({ id: "unhealthy-row", health_status: "unhealthy" }),
@@ -81,7 +82,7 @@ describe("HealthChecksTable client sorting", () => {
 
   it("floats in-progress checks to the top, sinks never-checked, and sorts real checks most-recent-first", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <Harness
         data={[
           makeRow({ id: "never", last_check: "Never checked" }),
@@ -100,7 +101,7 @@ describe("HealthChecksTable client sorting", () => {
   // "Never succeeded" is ranked below "None" -- both sink, but not to the same slot.
   it("sinks None below real successes and Never succeeded below None", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <Harness
         data={[
           makeRow({ id: "never", last_success: "Never succeeded" }),
@@ -119,7 +120,7 @@ describe("HealthChecksTable client sorting", () => {
 
 describe("HealthChecksTable rows", () => {
   it("renders the live checking cell while a row is loading and disables its run button", () => {
-    render(<Harness data={[makeRow({ id: "busy", health_loading: true, health_status: "checking" })]} />);
+    renderWithProviders(<Harness data={[makeRow({ id: "busy", health_loading: true, health_status: "checking" })]} />);
 
     expect(screen.getByText("Checking...")).toBeInTheDocument();
     expect(screen.getByTestId("run-health-check-btn")).toBeDisabled();
@@ -128,7 +129,7 @@ describe("HealthChecksTable rows", () => {
   it("runs a health check for the row's model id", async () => {
     const user = userEvent.setup();
     const onRunHealthCheck = vi.fn();
-    render(<Harness data={[makeRow({ id: "deployment-9" })]} onRunHealthCheck={onRunHealthCheck} />);
+    renderWithProviders(<Harness data={[makeRow({ id: "deployment-9" })]} onRunHealthCheck={onRunHealthCheck} />);
 
     await user.click(screen.getByTestId("run-health-check-btn"));
 
@@ -138,7 +139,7 @@ describe("HealthChecksTable rows", () => {
   it("opens the model detail from the identity cell", async () => {
     const user = userEvent.setup();
     const onSelectModel = vi.fn();
-    render(<Harness data={[makeRow({ id: "deployment-9" })]} onSelectModel={onSelectModel} />);
+    renderWithProviders(<Harness data={[makeRow({ id: "deployment-9" })]} onSelectModel={onSelectModel} />);
 
     await user.click(screen.getByRole("button", { name: /deployment-9/ }));
 
@@ -146,7 +147,7 @@ describe("HealthChecksTable rows", () => {
   });
 
   it("surfaces the error detail button only when a fuller error exists", () => {
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <Harness
         data={[makeRow({ id: "m1", health_status: "unhealthy" })]}
         modelHealthStatuses={{
@@ -168,7 +169,7 @@ describe("HealthChecksTable rows", () => {
   });
 
   it("renders the empty state when the page has no models", () => {
-    render(<Harness data={[]} />);
+    renderWithProviders(<Harness data={[]} />);
 
     expect(screen.getByText("No models found")).toBeInTheDocument();
   });

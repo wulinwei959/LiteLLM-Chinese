@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
-import { render, screen, waitFor, within, fireEvent } from "@testing-library/react";
+import { screen, waitFor, within, fireEvent } from "@testing-library/react";
+import { renderWithProviders } from "../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import PublicModelHub from "./public_model_hub";
@@ -94,7 +95,7 @@ const lastModelQuery = (): QueryRecord => modelQueries()[modelQueries().length -
 
 const renderHub = () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
-  return render(
+  return renderWithProviders(
     <QueryClientProvider client={client}>
       <PublicModelHub />
     </QueryClientProvider>,
@@ -176,8 +177,8 @@ describe("PublicModelHub", () => {
     renderHub();
 
     await screen.findByText("gpt-4");
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("of 300");
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 6");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("共 300 条");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 6 页");
   });
 
   it("asks the server for the next page", async () => {
@@ -438,21 +439,21 @@ function PublicMcpTestTable({ data }: { data: MCPServerData[] }) {
 
 describe("publicMCPHubColumns", () => {
   it("keeps the non-sensitive columns", () => {
-    render(<PublicMcpTestTable data={[mockMcpServer]} />);
+    renderWithProviders(<PublicMcpTestTable data={[mockMcpServer]} />);
     expect(screen.getByText("Server Name")).toBeInTheDocument();
     expect(screen.getByText("Transport")).toBeInTheDocument();
     expect(screen.getByText("Auth Type")).toBeInTheDocument();
   });
 
   it("does not expose a URL column header", () => {
-    render(<PublicMcpTestTable data={[mockMcpServer]} />);
+    renderWithProviders(<PublicMcpTestTable data={[mockMcpServer]} />);
     expect(screen.queryByText("URL")).not.toBeInTheDocument();
     const columns = getPublicMCPHubColumns({ onServerClick: vi.fn() });
     expect(columns.some((c) => c.header === "URL" || c.meta?.title === "URL")).toBe(false);
   });
 
   it("does not render the server url anywhere in the table", () => {
-    render(<PublicMcpTestTable data={[mockMcpServer]} />);
+    renderWithProviders(<PublicMcpTestTable data={[mockMcpServer]} />);
     expect(screen.queryByText(PUBLIC_SERVER_URL)).not.toBeInTheDocument();
   });
 });

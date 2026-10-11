@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SSOSettings from "./SSOSettings";
 
@@ -23,7 +24,7 @@ const createQueryClient = () =>
 const renderSSOSettings = () => {
   const queryClient = createQueryClient();
 
-  return render(
+  return renderWithProviders(
     <QueryClientProvider client={queryClient}>
       <SSOSettings />
     </QueryClientProvider>,
@@ -84,7 +85,7 @@ describe("SSOSettings", () => {
     renderSSOSettings();
 
     expect(screen.getByText("SSO Configuration")).toBeInTheDocument();
-    expect(screen.getByText("Manage Single Sign-On authentication settings")).toBeInTheDocument();
+    expect(screen.getByText("管理单点登录（SSO）认证设置")).toBeInTheDocument();
   });
 
   it("shows the local google logo asset for a google-configured settings payload", () => {

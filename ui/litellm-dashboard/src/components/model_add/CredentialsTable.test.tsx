@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -45,20 +46,20 @@ describe("CredentialsTable", () => {
   });
 
   it("should render the data column headers", () => {
-    render(<CredentialsTable {...defaultProps} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} />);
     for (const header of ["Credential Name", "Provider"]) {
       expect(screen.getByText(header)).toBeInTheDocument();
     }
   });
 
   it("should display each credential name", () => {
-    render(<CredentialsTable {...defaultProps} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} />);
     expect(screen.getByText("b-openai-key")).toBeInTheDocument();
     expect(screen.getByText("a-azure-key")).toBeInTheDocument();
   });
 
   it("should render provider display names from the logo helper", () => {
-    render(<CredentialsTable {...defaultProps} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} />);
     expect(screen.getByText("OpenAI")).toBeInTheDocument();
     expect(screen.getByText("Azure")).toBeInTheDocument();
   });
@@ -67,26 +68,26 @@ describe("CredentialsTable", () => {
     const credentials: CredentialItem[] = [
       { credential_name: "no-provider", credential_values: {}, credential_info: {} },
     ];
-    render(<CredentialsTable {...defaultProps} credentials={credentials} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} credentials={credentials} />);
     const row = screen.getAllByRole("row").slice(1)[0];
     expect(within(row).getByText("-")).toBeInTheDocument();
   });
 
   it("should sort by credential name ascending by default", () => {
-    render(<CredentialsTable {...defaultProps} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} />);
     const rows = screen.getAllByRole("row").slice(1);
     expect(within(rows[0]).getByText("a-azure-key")).toBeInTheDocument();
     expect(within(rows[1]).getByText("b-openai-key")).toBeInTheDocument();
   });
 
   it("should display the empty state when there are no credentials", () => {
-    render(<CredentialsTable {...defaultProps} credentials={[]} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} credentials={[]} />);
     expect(screen.getByText("No credentials configured")).toBeInTheDocument();
   });
 
   it("should edit a credential through the actions menu", async () => {
     const user = userEvent.setup();
-    render(<CredentialsTable {...defaultProps} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} />);
     await user.click(screen.getByTestId("credential-actions-b-openai-key"));
     await user.click(await screen.findByTestId("credential-action-edit"));
     expect(mockOnEdit).toHaveBeenCalledWith(mockCredentials[0]);
@@ -94,7 +95,7 @@ describe("CredentialsTable", () => {
 
   it("should delete a credential through the actions menu", async () => {
     const user = userEvent.setup();
-    render(<CredentialsTable {...defaultProps} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} />);
     await user.click(screen.getByTestId("credential-actions-b-openai-key"));
     await user.click(await screen.findByTestId("credential-action-delete"));
     expect(mockOnDelete).toHaveBeenCalledWith(mockCredentials[0]);
@@ -102,14 +103,14 @@ describe("CredentialsTable", () => {
 
   it("should copy the credential name through the actions menu", async () => {
     const user = userEvent.setup();
-    render(<CredentialsTable {...defaultProps} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} />);
     await user.click(screen.getByTestId("credential-actions-b-openai-key"));
     await user.click(await screen.findByTestId("credential-action-copy"));
     expect(await window.navigator.clipboard.readText()).toBe("b-openai-key");
   });
 
   it("should not render the actions menu when the user cannot modify credentials", () => {
-    render(<CredentialsTable {...defaultProps} canModifyCredentials={false} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} canModifyCredentials={false} />);
     // Read parity: names still render...
     expect(screen.getByText("b-openai-key")).toBeInTheDocument();
     // ...but there is no per-row actions trigger.

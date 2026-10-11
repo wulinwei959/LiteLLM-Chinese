@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -74,7 +75,7 @@ describe("RoutingGroups delete confirmation", () => {
 
   it("should not show the confirmation until a group is chosen for deletion", () => {
     setup();
-    render(<RoutingGroups />);
+    renderWithProviders(<RoutingGroups />);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.queryByText("Delete routing group?")).not.toBeInTheDocument();
   });
@@ -82,7 +83,7 @@ describe("RoutingGroups delete confirmation", () => {
   it("should name the group being deleted in the confirmation", async () => {
     const user = userEvent.setup();
     setup();
-    render(<RoutingGroups />);
+    renderWithProviders(<RoutingGroups />);
 
     const dialog = await openDeleteConfirm(user);
 
@@ -94,7 +95,7 @@ describe("RoutingGroups delete confirmation", () => {
   it("should save the remaining groups and report success when confirmed", async () => {
     const user = userEvent.setup();
     const { mutateAsync } = setup();
-    render(<RoutingGroups />);
+    renderWithProviders(<RoutingGroups />);
 
     const dialog = await openDeleteConfirm(user);
     await user.click(within(dialog).getByRole("button", { name: "Delete" }));
@@ -107,7 +108,7 @@ describe("RoutingGroups delete confirmation", () => {
     const user = userEvent.setup();
     const mutateAsync = vi.fn().mockRejectedValue(new Error("boom"));
     setup({ mutateAsync });
-    render(<RoutingGroups />);
+    renderWithProviders(<RoutingGroups />);
 
     const dialog = await openDeleteConfirm(user);
     await user.click(within(dialog).getByRole("button", { name: "Delete" }));
@@ -119,7 +120,7 @@ describe("RoutingGroups delete confirmation", () => {
   it("should dismiss without saving when cancelled", async () => {
     const user = userEvent.setup();
     const { mutateAsync } = setup();
-    render(<RoutingGroups />);
+    renderWithProviders(<RoutingGroups />);
 
     const dialog = await openDeleteConfirm(user);
     await user.click(within(dialog).getByRole("button", { name: "Cancel" }));

@@ -1,9 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import React, { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ModelInfoView from "./model_info_view";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { toast } from "@/lib/toast";
 import * as networking from "./networking";
 vi.mock(
@@ -186,11 +188,14 @@ describe("ModelInfoView", () => {
     mockCredentialCreateCall.mockResolvedValue({});
   });
 
-  const wrapper = ({ children }: { children: ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>
+      <LocaleProvider locale="zh-CN">{children}</LocaleProvider>
+    </QueryClientProvider>
+  );
 
   it("should render", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Model Settings")).toBeInTheDocument();
     });
@@ -203,7 +208,7 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
@@ -216,14 +221,14 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Model not found")).toBeInTheDocument();
     });
   });
 
   it("should display model name in the header", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText(/Public Model Name:/)).toBeInTheDocument();
     });
@@ -232,7 +237,7 @@ describe("ModelInfoView", () => {
   it("should display back button that calls onClose when clicked", async () => {
     const mockOnClose = vi.fn();
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} onClose={mockOnClose} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} onClose={mockOnClose} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText("Model Settings")).toBeInTheDocument();
@@ -245,7 +250,7 @@ describe("ModelInfoView", () => {
   });
 
   it("should display test connection button", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /test connection/i })).toBeInTheDocument();
     });
@@ -253,7 +258,7 @@ describe("ModelInfoView", () => {
 
   it("should test connection when test connection button is clicked", async () => {
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText("Model Settings")).toBeInTheDocument();
@@ -275,7 +280,7 @@ describe("ModelInfoView", () => {
     // Otherwise /health/test_connection silently probes deployments[0]
     // instead of the deployment the user actually selected.
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText("Model Settings")).toBeInTheDocument();
@@ -299,7 +304,7 @@ describe("ModelInfoView", () => {
     const user = userEvent.setup();
     mockTestConnectionRequest.mockRejectedValue(new Error("Connection failed"));
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText("Model Settings")).toBeInTheDocument();
@@ -314,14 +319,14 @@ describe("ModelInfoView", () => {
   });
 
   it("should display reuse credentials button for admin users", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /re-use credentials/i })).toBeInTheDocument();
     });
   });
 
   it("should disable reuse credentials button for non-admin users", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole="User" />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole="User" />, { wrapper });
     await waitFor(() => {
       const button = screen.getByRole("button", { name: /re-use credentials/i });
       expect(button).toBeDisabled();
@@ -329,7 +334,7 @@ describe("ModelInfoView", () => {
   });
 
   it("should display delete model button", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /delete model/i })).toBeInTheDocument();
     });
@@ -338,7 +343,7 @@ describe("ModelInfoView", () => {
   // A proxy_admin_viewer session reads "Admin" through effectiveSessionRole, but the update
   // and delete endpoints 403 it, so the write buttons must not be offered.
   it("should disable delete and update buttons for a view-only admin session", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} isViewOnly={true} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} isViewOnly={true} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByTestId("delete-model-button")).toBeDisabled();
     });
@@ -362,7 +367,7 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       const deleteButton = screen.getByRole("button", { name: /delete model/i });
       expect(deleteButton).toBeDisabled();
@@ -386,7 +391,7 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole="User" />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole="User" />, { wrapper });
     await waitFor(() => {
       const deleteButton = screen.getByRole("button", { name: /delete model/i });
       expect(deleteButton).toBeDisabled();
@@ -394,7 +399,7 @@ describe("ModelInfoView", () => {
   });
 
   it("should display overview and raw JSON tabs", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByRole("tab", { name: /overview/i })).toBeInTheDocument();
       expect(screen.getByRole("tab", { name: /raw json/i })).toBeInTheDocument();
@@ -403,7 +408,7 @@ describe("ModelInfoView", () => {
 
   it("keeps the edit form and its touched fields alive across a tab switch", async () => {
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
     const costInput = screen.getByPlaceholderText("Enter input cost") as HTMLInputElement;
@@ -424,7 +429,7 @@ describe("ModelInfoView", () => {
   });
 
   it("should display model information in overview tab", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Provider")).toBeInTheDocument();
       expect(screen.getByText("LiteLLM Model")).toBeInTheDocument();
@@ -455,7 +460,7 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     expect(await screen.findByText("Output: $0.10/s")).toBeInTheDocument();
     expect(screen.getByText("Output (1080p): $0.12/s")).toBeInTheDocument();
@@ -464,7 +469,7 @@ describe("ModelInfoView", () => {
   });
 
   it("should display edit settings button when user can edit model", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
     });
@@ -487,7 +492,7 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.queryByRole("button", { name: /edit settings/i })).not.toBeInTheDocument();
     });
@@ -495,7 +500,7 @@ describe("ModelInfoView", () => {
 
   it("should enter edit mode when edit settings button is clicked", async () => {
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
@@ -512,7 +517,7 @@ describe("ModelInfoView", () => {
 
   it("should display form fields in edit mode", async () => {
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
@@ -529,7 +534,7 @@ describe("ModelInfoView", () => {
 
   it("should allow editing model name in edit mode", async () => {
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
@@ -547,7 +552,7 @@ describe("ModelInfoView", () => {
 
   it("should cancel editing when cancel button is clicked", async () => {
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
@@ -572,7 +577,7 @@ describe("ModelInfoView", () => {
   it("should save model changes when save button is clicked", async () => {
     const user = userEvent.setup();
     const mockOnModelUpdate = vi.fn();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} onModelUpdate={mockOnModelUpdate} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} onModelUpdate={mockOnModelUpdate} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
@@ -596,14 +601,14 @@ describe("ModelInfoView", () => {
   });
 
   it("should display tags section", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Tags")).toBeInTheDocument();
     });
   });
 
   it("should display LiteLLM Params section", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("LiteLLM Params")).toBeInTheDocument();
     });
@@ -611,7 +616,7 @@ describe("ModelInfoView", () => {
 
   it("should show existing credentials field in edit mode", async () => {
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
@@ -626,7 +631,7 @@ describe("ModelInfoView", () => {
 
   it("should keep selector credential and ignore litellm_credential_name from LiteLLM Params json", async () => {
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
@@ -664,7 +669,7 @@ describe("ModelInfoView", () => {
     // vector_store_ids: [] into litellm_params, which then propagated to
     // inference requests and broke Anthropic calls.
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
@@ -707,7 +712,7 @@ describe("ModelInfoView", () => {
     const renderWithPtuModel = () => {
       mockUseModelsInfo.mockReturnValue({ data: { data: [ptuModelData] }, isLoading: false, error: null });
       mockModelInfoV1Call.mockResolvedValue({ data: [ptuModelData] });
-      return render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      return renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     };
 
     it("hides the PTU fields when disabled, even for a model that already stores PTU config", async () => {
@@ -806,7 +811,7 @@ describe("ModelInfoView", () => {
       mockUseModelsInfo.mockReturnValue({ data: { data: [seededModel] }, isLoading: false, error: null });
       mockModelInfoV1Call.mockResolvedValue({ data: [seededModel] });
       const user = userEvent.setup();
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       await waitFor(() => {
         expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
@@ -847,7 +852,7 @@ describe("ModelInfoView", () => {
       mockUseModelsInfo.mockReturnValue({ data: { data: [halfSetPtuModel] }, isLoading: false, error: null });
       mockModelInfoV1Call.mockResolvedValue({ data: [halfSetPtuModel] });
       const user = userEvent.setup();
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
@@ -896,7 +901,7 @@ describe("ModelInfoView", () => {
       mockUseModelsInfo.mockReturnValue({ data: { data: [undatedPtuModel] }, isLoading: false, error: null });
       mockModelInfoV1Call.mockResolvedValue({ data: [undatedPtuModel] });
       const user = userEvent.setup();
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
@@ -975,7 +980,7 @@ describe("ModelInfoView", () => {
 
   it("blocks the save when the LiteLLM Params box does not hold valid JSON", async () => {
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /edit settings/i }));
@@ -1000,7 +1005,7 @@ describe("ModelInfoView", () => {
     // input_cost_per_token: 0 and output_cost_per_token: 0 into litellm_params,
     // overriding the built-in pricing table from model_prices_and_context_window.json.
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
@@ -1046,7 +1051,7 @@ describe("ModelInfoView", () => {
     mockModelInfoV1Call.mockResolvedValue({ data: [maskedModelData] });
 
     const user = userEvent.setup();
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
@@ -1085,14 +1090,14 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Health Check Model")).toBeInTheDocument();
     });
   });
 
   it("should not display health check model field for non-wildcard models", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Model Settings")).toBeInTheDocument();
       expect(screen.queryByText("Health Check Model")).not.toBeInTheDocument();
@@ -1116,7 +1121,7 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit auto router/i })).toBeInTheDocument();
     });
@@ -1139,7 +1144,7 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Model Settings")).toBeInTheDocument();
     });
@@ -1167,7 +1172,7 @@ describe("ModelInfoView", () => {
     });
     mockTestModelGroupConnection.mockResolvedValue({ status: "success" });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     const testConnectionButton = await screen.findByTestId("test-connection-button");
     await userEvent.click(testConnectionButton);
 
@@ -1200,7 +1205,7 @@ describe("ModelInfoView", () => {
     });
     mockTestModelGroupConnection.mockResolvedValue({ status: "success" });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     const testConnectionButton = await screen.findByTestId("test-connection-button");
     await userEvent.click(testConnectionButton);
 
@@ -1232,7 +1237,7 @@ describe("ModelInfoView", () => {
     });
     mockTestModelGroupConnection.mockResolvedValue({ status: "success" });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     const testConnectionButton = await screen.findByTestId("test-connection-button");
     await userEvent.click(testConnectionButton);
 
@@ -1262,7 +1267,7 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     const testConnectionButton = await screen.findByTestId("test-connection-button");
     await userEvent.click(testConnectionButton);
 
@@ -1301,7 +1306,7 @@ describe("ModelInfoView", () => {
     });
     mockTestModelGroupConnection.mockResolvedValue({ status: "success" });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     const testConnectionButton = await screen.findByTestId("test-connection-button");
     await userEvent.click(testConnectionButton);
 
@@ -1313,21 +1318,21 @@ describe("ModelInfoView", () => {
   });
 
   it("should display model access groups field", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Model Access Groups")).toBeInTheDocument();
     });
   });
 
   it("should display guardrails field", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Guardrails")).toBeInTheDocument();
     });
   });
 
   it("should display pricing information", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText(/Input:/)).toBeInTheDocument();
       expect(screen.getByText(/Output:/)).toBeInTheDocument();
@@ -1335,7 +1340,7 @@ describe("ModelInfoView", () => {
   });
 
   it("should display created at and created by information", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText(/Created At/)).toBeInTheDocument();
       expect(screen.getByText(/Created By/)).toBeInTheDocument();
@@ -1369,7 +1374,7 @@ describe("ModelInfoView", () => {
         error: null,
       });
       const user = userEvent.setup();
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       expect(await screen.findByText("alpha (team-1)")).toBeInTheDocument();
 
@@ -1386,7 +1391,7 @@ describe("ModelInfoView", () => {
         error: null,
       });
       const user = userEvent.setup();
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       expect(await screen.findByText("team-1")).toBeInTheDocument();
 
@@ -1404,7 +1409,7 @@ describe("ModelInfoView", () => {
         error: null,
       });
       const user = userEvent.setup();
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       expect(await screen.findByText("Team")).toBeInTheDocument();
       expect(screen.queryByText(/alpha/)).not.toBeInTheDocument();
@@ -1415,7 +1420,7 @@ describe("ModelInfoView", () => {
   });
 
   it("renders the provider card logo from the bundled provider map", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     const logo = await screen.findByAltText("openai logo");
     expect(logo).toHaveAttribute("src", expect.stringContaining("openai_small"));
@@ -1438,7 +1443,7 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getAllByText("zzz-internal").length).toBeGreaterThan(0);
@@ -1465,7 +1470,7 @@ describe("ModelInfoView", () => {
       ["auto_router/quality_router", "quality"],
     ])("is absent for a %s router", async (model) => {
       withRouter({ model });
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       expect(await screen.findByText("GPT-4")).toBeInTheDocument();
       expect(screen.queryByRole("button", { name: /edit auto router/i })).not.toBeInTheDocument();
@@ -1473,7 +1478,7 @@ describe("ModelInfoView", () => {
 
     it("is present for a complexity router, which the modal does understand", async () => {
       withRouter({ model: "auto_router/complexity_router", complexity_router_config: { tiers: {} } });
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       expect(await screen.findByRole("button", { name: /edit auto router/i })).toBeInTheDocument();
     });
@@ -1497,7 +1502,7 @@ describe("ModelInfoView", () => {
       ["auto_router/my-semantic"],
     ])("hides the credential actions and renames delete for %s", async (model) => {
       withParams({ model });
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       expect(await screen.findByTestId("delete-model-button")).toHaveTextContent("Delete Auto-Router");
       expect(screen.queryByTestId("update-api-key-button")).not.toBeInTheDocument();
@@ -1506,7 +1511,7 @@ describe("ModelInfoView", () => {
 
     it("keeps both credential actions and the Delete Model label for an ordinary model", async () => {
       withParams({ model: "gpt-4", api_base: "https://api.openai.com/v1" });
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       expect(await screen.findByTestId("delete-model-button")).toHaveTextContent("Delete Model");
       expect(screen.getByTestId("update-api-key-button")).toBeInTheDocument();
@@ -1517,7 +1522,7 @@ describe("ModelInfoView", () => {
       "offers no Test Connection for %s, whose targets it cannot build",
       async (model) => {
         withParams({ model });
-        render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+        renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
         await screen.findByTestId("delete-model-button");
         expect(screen.queryByTestId("test-connection-button")).not.toBeInTheDocument();
@@ -1526,7 +1531,7 @@ describe("ModelInfoView", () => {
 
     it("keeps Test Connection for a complexity router", async () => {
       withParams({ model: "auto_router/complexity_router", complexity_router_config: { tiers: {} } });
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       expect(await screen.findByTestId("test-connection-button")).toBeInTheDocument();
     });
@@ -1534,7 +1539,7 @@ describe("ModelInfoView", () => {
 
   describe("payload parity pins", () => {
     const enterEditMode = async (user: ReturnType<typeof userEvent.setup>) => {
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
       expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
       expect(await screen.findByRole("button", { name: /save changes/i })).toBeInTheDocument();
@@ -1771,7 +1776,7 @@ describe("ModelInfoView", () => {
       mockUseModelsInfo.mockReturnValue({ data: { data: [teamModel] }, isLoading: false, error: null });
       mockModelInfoV1Call.mockResolvedValue({ data: [teamModel] });
       const user = userEvent.setup();
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole={userRole} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole={userRole} />, { wrapper });
       await user.click(await screen.findByRole("button", { name: /edit settings/i }));
 
       await user.click(await screen.findByText("alpha (team-1)"));
@@ -2005,11 +2010,11 @@ describe("ModelInfoView", () => {
         const user = userEvent.setup();
         await enterEditMode(user);
 
-        expect(screen.queryByRole("button", { name: /add injection point/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "添加注入点" })).not.toBeInTheDocument();
 
         await user.click(screen.getByRole("switch"));
 
-        expect(await screen.findByRole("button", { name: /add injection point/i })).toBeInTheDocument();
+        expect(await screen.findByRole("button", { name: "添加注入点" })).toBeInTheDocument();
       });
 
       it("round-trips the stored injection points on an untouched save", async () => {
@@ -2037,7 +2042,7 @@ describe("ModelInfoView", () => {
         const user = userEvent.setup();
         await enterEditMode(user);
 
-        await user.type(screen.getByPlaceholderText("Optional"), "2");
+        await user.type(screen.getByPlaceholderText("可选"), "2");
         const payload = await save(user);
 
         expect(payload.litellm_params.cache_control_injection_points).toEqual([{ location: "message", index: "2" }]);

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import KeySavingsTab from "./KeySavingsTab";
 import { DailyData, SpendMetrics } from "@/components/UsagePage/types";
 import * as useScopedDailyActivityRangeModule from "@/app/(dashboard)/cost-optimization/_components/useDailyActivityRange";
@@ -53,7 +54,7 @@ const activity = {
 };
 
 const renderTab = (props: Partial<React.ComponentProps<typeof KeySavingsTab>> = {}) =>
-  render(
+  renderWithProviders(
     <KeySavingsTab
       accessToken="test-token"
       keyToken="key-abc123"
@@ -94,15 +95,15 @@ describe("KeySavingsTab", () => {
 
     renderTab();
 
-    expect(screen.getByTestId("summary-card-total-recorded-savings")).toHaveTextContent("$5.40");
-    expect(screen.getByTestId("summary-card-compression-savings")).toHaveTextContent("$2.00");
-    expect(screen.getByTestId("summary-card-compression-savings")).toHaveTextContent("1,000 tokens compressed");
+    expect(screen.getByTestId("summary-card-累计已记录节省")).toHaveTextContent("$5.40");
+    expect(screen.getByTestId("summary-card-压缩节省")).toHaveTextContent("$2.00");
+    expect(screen.getByTestId("summary-card-压缩节省")).toHaveTextContent("已压缩 1,000 个 token");
     // the card leads with what LiteLLM's own injection earned and carries the total beneath it,
     // so a key whose caching came mostly from its own cache_control does not read as gateway-earned
-    expect(screen.getByTestId("summary-card-prompt-caching-savings")).toHaveTextContent("$0.40");
-    expect(screen.getByTestId("summary-card-prompt-caching-savings")).toHaveTextContent("$1.00Total");
-    expect(screen.getByTestId("summary-card-auto-router-savings")).toHaveTextContent("$3.00");
-    expect(screen.getByTestId("summary-card-auto-router-savings")).toHaveTextContent("Recorded estimates subtotal");
+    expect(screen.getByTestId("summary-card-提示词缓存节省")).toHaveTextContent("$0.40");
+    expect(screen.getByTestId("summary-card-提示词缓存节省")).toHaveTextContent("$1.00总计");
+    expect(screen.getByTestId("summary-card-自动路由节省")).toHaveTextContent("$3.00");
+    expect(screen.getByTestId("summary-card-自动路由节省")).toHaveTextContent("已记录估算小计");
   });
 
   it("separates a key with no traffic from one still loading", () => {

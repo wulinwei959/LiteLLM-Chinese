@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { NuqsTestingAdapter, type OnUrlUpdateFunction } from "nuqs/adapters/testing";
 import { vi, test, expect, beforeEach, describe, type Mock } from "vitest";
 import { renderWithProviders, testQueryClient } from "../../../tests/test-utils";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import OrganizationInfoView from "./organization_view";
 import { useOrganization } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 
@@ -384,7 +385,9 @@ describe("organization detail tab in the URL (?org_tab=)", () => {
           hasMemory
           resetUrlUpdateQueueOnMount={false}
         >
-          <QueryClientProvider client={testQueryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={testQueryClient}>
+            <LocaleProvider locale="zh-CN">{children}</LocaleProvider>
+          </QueryClientProvider>
         </NuqsTestingAdapter>
       ),
     });
@@ -398,7 +401,9 @@ describe("organization detail tab in the URL (?org_tab=)", () => {
   test("follows back and forward navigation between tabs while the detail view stays open", () => {
     const atUrl = (searchParams: string) => (
       <NuqsTestingAdapter searchParams={searchParams} hasMemory>
-        <QueryClientProvider client={testQueryClient}>{renderOrgView()}</QueryClientProvider>
+        <QueryClientProvider client={testQueryClient}>
+          <LocaleProvider locale="zh-CN">{renderOrgView()}</LocaleProvider>
+        </QueryClientProvider>
       </NuqsTestingAdapter>
     );
     const { rerender } = render(atUrl("?org=org_123&org_tab=members"));
