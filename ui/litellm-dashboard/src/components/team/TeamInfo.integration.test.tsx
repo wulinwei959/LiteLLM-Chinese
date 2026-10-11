@@ -408,14 +408,14 @@ describe("TeamInfoView - member budget reset prompt", () => {
     renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "Settings" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
-    await user.click(screen.getByText("Team Member Settings"));
-    return await screen.findByLabelText("Default Budget (USD)");
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
+    await user.click(screen.getByText("团队成员设置"));
+    return await screen.findByLabelText("默认预算（USD）");
   };
 
   const submitNewDefault = async (user: ReturnType<typeof userEvent.setup>, input: HTMLElement, value: string) => {
     fireEvent.change(input, { target: { value } });
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
   };
 
   beforeEach(() => {
@@ -433,9 +433,9 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     await submitNewDefault(user, input, "20");
 
-    expect(await screen.findByText("Reset member budgets?")).toBeInTheDocument();
-    expect(screen.getByText(/1 member has a custom budget/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Reset to $20.00" })).toBeInTheDocument();
+    expect(await screen.findByText("重置成员预算？")).toBeInTheDocument();
+    expect(screen.getByText(/1 位成员有自定义预算/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "重置为 $20.00" })).toBeInTheDocument();
     expect(networking.teamUpdateCall).not.toHaveBeenCalled();
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
   });
@@ -445,12 +445,12 @@ describe("TeamInfoView - member budget reset prompt", () => {
     const input = await openEditorWithCustomMembers(user);
 
     await submitNewDefault(user, input, "20");
-    await user.click(await screen.findByRole("button", { name: "Keep custom budget" }));
+    await user.click(await screen.findByRole("button", { name: "保留自定义预算" }));
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
     expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].team_member_budget).toBe(20);
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
-    await waitFor(() => expect(screen.queryByText("Reset member budgets?")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument());
   });
 
   it("saves the new default then clears each custom budget through the bulk endpoint on reset all", async () => {
@@ -466,7 +466,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     });
 
     await submitNewDefault(user, input, "20");
-    await user.click(await screen.findByRole("button", { name: "Reset all to $20.00" }));
+    await user.click(await screen.findByRole("button", { name: "全部重置为 $20.00" }));
 
     await waitFor(() => expect(bulkUpdatePOST).toHaveBeenCalledTimes(1));
     expect(networking.teamUpdateCall).toHaveBeenCalled();
@@ -491,14 +491,14 @@ describe("TeamInfoView - member budget reset prompt", () => {
     bulkUpdatePOST.mockImplementationOnce(() => bulk.promise);
 
     await submitNewDefault(user, input, "20");
-    await user.click(await screen.findByRole("button", { name: "Reset to $20.00" }));
+    await user.click(await screen.findByRole("button", { name: "重置为 $20.00" }));
 
     await waitFor(() => expect(bulkUpdatePOST).toHaveBeenCalled());
-    expect(screen.getByText("Reset member budgets?")).toBeInTheDocument();
+    expect(screen.getByText("重置成员预算？")).toBeInTheDocument();
     expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
 
     bulk.resolve({ data: { data: [{ success: true, user_id: "user-custom" }] } });
-    await waitFor(() => expect(screen.queryByText("Reset member budgets?")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument());
   });
 
   it("offers a retry after a failed reset and never re-saves the team", async () => {
@@ -509,21 +509,21 @@ describe("TeamInfoView - member budget reset prompt", () => {
       .mockResolvedValueOnce({ data: { data: [{ success: true, user_id: "user-custom" }] } });
 
     await submitNewDefault(user, input, "20");
-    await user.click(await screen.findByRole("button", { name: "Reset to $20.00" }));
+    await user.click(await screen.findByRole("button", { name: "重置为 $20.00" }));
 
     await waitFor(() =>
       expect(toast.fromError).toHaveBeenCalledWith("Team updated, but member budgets could not be reset"),
     );
-    expect(screen.getByText("Reset member budgets?")).toBeInTheDocument();
+    expect(screen.getByText("重置成员预算？")).toBeInTheDocument();
     expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
     await waitFor(() => expect(vi.mocked(networking.teamInfoCall).mock.calls.length).toBeGreaterThan(1));
 
-    await user.click(screen.getByRole("button", { name: "Retry reset" }));
+    await user.click(screen.getByRole("button", { name: "重试重置" }));
 
     await waitFor(() => expect(bulkUpdatePOST).toHaveBeenCalledTimes(2));
     expect(vi.mocked(networking.teamUpdateCall).mock.calls).toHaveLength(1);
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Reset 1 member budget to the team default"));
-    await waitFor(() => expect(screen.queryByText("Reset member budgets?")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument());
   });
 
   it("returns to the prompt without its own toast when the team save fails", async () => {
@@ -532,9 +532,9 @@ describe("TeamInfoView - member budget reset prompt", () => {
     vi.mocked(networking.teamUpdateCall).mockRejectedValueOnce(new Error("save failed"));
 
     await submitNewDefault(user, input, "20");
-    await user.click(await screen.findByRole("button", { name: "Reset to $20.00" }));
+    await user.click(await screen.findByRole("button", { name: "重置为 $20.00" }));
 
-    expect(await screen.findByRole("button", { name: "Reset to $20.00" })).toBeEnabled();
+    expect(await screen.findByRole("button", { name: "重置为 $20.00" })).toBeEnabled();
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
     expect(toast.fromError).not.toHaveBeenCalled();
     expect(toast.error).not.toHaveBeenCalled();
@@ -557,7 +557,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
       });
 
     await submitNewDefault(user, input, "20");
-    await user.click(await screen.findByRole("button", { name: "Reset all to $20.00" }));
+    await user.click(await screen.findByRole("button", { name: "全部重置为 $20.00" }));
 
     await waitFor(() =>
       expect(toast.error).toHaveBeenCalledWith(
@@ -566,7 +566,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     );
     expect(bulkUpdatePOST).toHaveBeenCalledTimes(2);
 
-    await user.click(screen.getByRole("button", { name: "Retry reset" }));
+    await user.click(screen.getByRole("button", { name: "重试重置" }));
 
     await waitFor(() => expect(bulkUpdatePOST).toHaveBeenCalledTimes(3));
     expect(vi.mocked(bulkUpdatePOST).mock.calls[2][1]).toEqual({
@@ -596,7 +596,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     });
 
     await submitNewDefault(user, input, "20");
-    await user.click(await screen.findByRole("button", { name: "Reset all to $20.00" }));
+    await user.click(await screen.findByRole("button", { name: "全部重置为 $20.00" }));
 
     await waitFor(() =>
       expect(toast.error).toHaveBeenCalledWith("Team updated, but 1 member budget could not be reset"),
@@ -608,9 +608,9 @@ describe("TeamInfoView - member budget reset prompt", () => {
     const input = await openEditorWithCustomMembers(user);
 
     await submitNewDefault(user, input, "20");
-    await user.click(await screen.findByRole("button", { name: "Cancel" }));
+    await user.click(await screen.findByRole("button", { name: "取消" }));
 
-    await waitFor(() => expect(screen.queryByText("Reset member budgets?")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument());
     expect(networking.teamUpdateCall).not.toHaveBeenCalled();
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
   });
@@ -623,7 +623,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
     expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].team_member_budget).toBe(20);
-    expect(screen.queryByText("Reset member budgets?")).not.toBeInTheDocument();
+    expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument();
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
   });
 
@@ -631,11 +631,11 @@ describe("TeamInfoView - member budget reset prompt", () => {
     const user = userEvent.setup({ delay: null });
     await openEditorWithCustomMembers(user);
 
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
     expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].team_member_budget).toBe(10);
-    expect(screen.queryByText("Reset member budgets?")).not.toBeInTheDocument();
+    expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument();
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
   });
 
@@ -653,16 +653,16 @@ describe("TeamInfoView - member budget reset prompt", () => {
     const { rerender } = renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "Settings" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
-    await user.click(screen.getByText("Team Member Settings"));
-    const input = await screen.findByLabelText("Default Budget (USD)");
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
+    await user.click(screen.getByText("团队成员设置"));
+    const input = await screen.findByLabelText("默认预算（USD）");
 
     await submitNewDefault(user, input, "20");
-    expect(await screen.findByText("Reset member budgets?")).toBeInTheDocument();
+    expect(await screen.findByText("重置成员预算？")).toBeInTheDocument();
 
     rerender(<TeamInfoView {...props} teamId="456" />);
 
-    await waitFor(() => expect(screen.queryByText("Reset member budgets?")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument());
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
   });
 
@@ -682,19 +682,19 @@ describe("TeamInfoView - member budget reset prompt", () => {
     const { rerender } = renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "Settings" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
-    await user.click(screen.getByText("Team Member Settings"));
-    const input = await screen.findByLabelText("Default Budget (USD)");
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
+    await user.click(screen.getByText("团队成员设置"));
+    const input = await screen.findByLabelText("默认预算（USD）");
 
     await submitNewDefault(user, input, "20");
-    await user.click(await screen.findByRole("button", { name: "Reset to $20.00" }));
+    await user.click(await screen.findByRole("button", { name: "重置为 $20.00" }));
     await waitFor(() => expect(bulkUpdatePOST).toHaveBeenCalled());
 
     const infoCallsBeforeSwitch = vi.mocked(networking.teamInfoCall).mock.calls.length;
     rerender(<TeamInfoView {...props} teamId="456" />);
     bulkDone.resolve({ data: { data: [{ success: true, user_id: "user-custom" }] } });
 
-    await waitFor(() => expect(screen.queryByText("Reset member budgets?")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument());
     await waitFor(() =>
       expect(
         vi
@@ -705,7 +705,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     );
     const infoCallsAfterSwitch = vi.mocked(networking.teamInfoCall).mock.calls.slice(infoCallsBeforeSwitch);
     expect(infoCallsAfterSwitch.every((call) => call[1] === "456")).toBe(true);
-    expect(screen.queryByRole("button", { name: "Retry reset" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "重试重置" })).not.toBeInTheDocument();
   });
 
   it("saves directly when a custom member's cap is null and already inherits the default", async () => {
@@ -716,7 +716,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
     expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].team_member_budget).toBe(20);
-    expect(screen.queryByText("Reset member budgets?")).not.toBeInTheDocument();
+    expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument();
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
   });
 });

@@ -99,7 +99,7 @@ vi.mock("./ModelSelect/ModelSelect", () => {
         const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
         onChange(selectedValues);
       }}
-      aria-label="Models"
+      aria-label="模型"
     >
       <option value="gpt-4">gpt-4</option>
       <option value="claude-3">claude-3</option>
@@ -151,7 +151,7 @@ describe("TeamSSOSettings", () => {
     const { container } = renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     expect(container.querySelector('[aria-busy="true"]')).toBeInTheDocument();
-    expect(screen.queryByText("Default Team Settings")).not.toBeInTheDocument();
+    expect(screen.queryByText("默认团队设置")).not.toBeInTheDocument();
   });
 
   it("should display error message when fetch fails", async () => {
@@ -161,10 +161,10 @@ describe("TeamSSOSettings", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("No team settings available or you do not have permission to view them."),
+        screen.getByText("没有可用的团队设置，或者您没有查看它们的权限。"),
       ).toBeInTheDocument();
     });
-    expect(mockToast.fromError).toHaveBeenCalledWith("Failed to fetch team settings");
+    expect(mockToast.fromError).toHaveBeenCalledWith("获取团队设置失败");
   });
 
   it("should not fetch settings when access token is null", async () => {
@@ -183,9 +183,9 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Default Team Settings")).toBeInTheDocument();
+      expect(screen.getByText("默认团队设置")).toBeInTheDocument();
       expect(
-        screen.getByText("These settings will be applied by default when creating new teams."),
+        screen.getByText("创建新团队时，将默认应用这些设置。"),
       ).toBeInTheDocument();
     });
   });
@@ -196,8 +196,8 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Budget & Rate Limits")).toBeInTheDocument();
-      expect(screen.getByText("Access & Permissions")).toBeInTheDocument();
+      expect(screen.getByText("预算与速率限制")).toBeInTheDocument();
+      expect(screen.getByText("访问与权限")).toBeInTheDocument();
     });
   });
 
@@ -207,17 +207,17 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Max Budget")).toBeInTheDocument();
-      expect(screen.getByText("Budget Duration")).toBeInTheDocument();
-      expect(screen.getByText("TPM Limit")).toBeInTheDocument();
-      expect(screen.getByText("RPM Limit")).toBeInTheDocument();
-      expect(screen.getByText("Models")).toBeInTheDocument();
-      expect(screen.getByText("Team Member Permissions")).toBeInTheDocument();
+      expect(screen.getByText("最大预算")).toBeInTheDocument();
+      expect(screen.getByText("预算周期")).toBeInTheDocument();
+      expect(screen.getByText("TPM 限制")).toBeInTheDocument();
+      expect(screen.getByText("RPM 限制")).toBeInTheDocument();
+      expect(screen.getByText("模型")).toBeInTheDocument();
+      expect(screen.getByText("团队成员权限")).toBeInTheDocument();
     });
 
     // Descriptions
-    expect(screen.getByText("Maximum budget (in USD) for new automatically created teams.")).toBeInTheDocument();
-    expect(screen.getByText("How frequently the team's budget resets.")).toBeInTheDocument();
+    expect(screen.getByText("自动创建的新团队的最大预算（美元）。")).toBeInTheDocument();
+    expect(screen.getByText("团队预算重置的频率。")).toBeInTheDocument();
   });
 
   it("should display formatted values in view mode", async () => {
@@ -273,7 +273,7 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      const notSetElements = screen.getAllByText("Not set");
+      const notSetElements = screen.getAllByText("未设置");
       // max_budget, budget_duration, tpm_limit, rpm_limit, models (empty), permissions (empty)
       expect(notSetElements.length).toBeGreaterThanOrEqual(4);
     });
@@ -287,14 +287,14 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
 
-    expect(screen.getByRole("button", { name: /Cancel/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Save Changes/i })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Edit Settings/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "保存更改" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "编辑设置" })).not.toBeInTheDocument();
   });
 
   it("should cancel edit mode and reset values", async () => {
@@ -303,14 +303,14 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
-    await userEvent.click(screen.getByRole("button", { name: /Cancel/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
+    await userEvent.click(screen.getByRole("button", { name: "取消" }));
 
-    expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Cancel/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "取消" })).not.toBeInTheDocument();
   });
 
   // --- Edit Mode Fields ---
@@ -321,10 +321,10 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
 
     await waitFor(() => {
       expect(screen.getByTestId("budget-duration-dropdown")).toBeInTheDocument();
@@ -337,10 +337,10 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
 
     await waitFor(() => {
       expect(screen.getByTestId("model-select")).toBeInTheDocument();
@@ -353,10 +353,10 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
 
     await waitFor(() => {
       expect(screen.getAllByRole("spinbutton")).toHaveLength(3);
@@ -375,10 +375,10 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
     const permissionComboboxes = screen.getAllByRole("combobox");
     const permissionCombobox = permissionComboboxes[permissionComboboxes.length - 1];
     expect(permissionCombobox).toBeInTheDocument();
@@ -387,7 +387,7 @@ describe("TeamSSOSettings", () => {
     await userEvent.click(deletePermissionOptions[deletePermissionOptions.length - 1]);
     await userEvent.keyboard("{Escape}");
 
-    await userEvent.click(screen.getByRole("button", { name: /Save Changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(mockUpdateDefaultTeamSettings).toHaveBeenCalledWith("test-token", {
@@ -410,21 +410,21 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
-    await userEvent.click(screen.getByRole("button", { name: /Save Changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
+    await userEvent.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(mockUpdateDefaultTeamSettings).toHaveBeenCalledWith("test-token", expect.any(Object));
     });
 
-    expect(mockToast.success).toHaveBeenCalledWith("Default team settings updated successfully");
+    expect(mockToast.success).toHaveBeenCalledWith("默认团队设置更新成功");
 
     // Should exit edit mode after save
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
   });
 
@@ -441,7 +441,7 @@ describe("TeamSSOSettings", () => {
       expect(screen.getByText("Sales (org-2)")).toBeInTheDocument();
     });
     expect(
-      screen.getByText("Teams created without an explicit organization are assigned to this organization."),
+      screen.getByText("未指定组织而创建的团队将分配到该组织。"),
     ).toBeInTheDocument();
   });
 
@@ -463,7 +463,7 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Not set")).toBeInTheDocument();
+      expect(screen.getByText("未设置")).toBeInTheDocument();
     });
   });
 
@@ -473,10 +473,10 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
 
     await waitFor(() => {
       const dropdown = screen.getByTestId("organization-dropdown");
@@ -494,15 +494,15 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
     await waitFor(() => {
       expect(screen.getByRole("option", { name: "Sales (org-2)" })).toBeInTheDocument();
     });
     await userEvent.selectOptions(screen.getByTestId("organization-dropdown"), "org-2");
-    await userEvent.click(screen.getByRole("button", { name: /Save Changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(mockUpdateDefaultTeamSettings).toHaveBeenCalledWith("test-token", {
@@ -527,12 +527,12 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
     await userEvent.click(screen.getByTestId("organization-dropdown-clear"));
-    await userEvent.click(screen.getByRole("button", { name: /Save Changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(mockUpdateDefaultTeamSettings).toHaveBeenCalledWith("test-token", {
@@ -542,7 +542,7 @@ describe("TeamSSOSettings", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Not set")).toBeInTheDocument();
+      expect(screen.getByText("未设置")).toBeInTheDocument();
     });
   });
 
@@ -553,14 +553,14 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
-    await userEvent.click(screen.getByRole("button", { name: /Save Changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
+    await userEvent.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
-      expect(mockToast.fromError).toHaveBeenCalledWith("Failed to update team settings");
+      expect(mockToast.fromError).toHaveBeenCalledWith("更新团队设置失败");
     });
   });
 
@@ -573,12 +573,12 @@ describe("TeamSSOSettings", () => {
     renderWithProviders(<TeamSSOSettings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Edit Settings/i }));
-    await userEvent.click(screen.getByRole("button", { name: /Save Changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
+    await userEvent.click(screen.getByRole("button", { name: "保存更改" }));
 
-    expect(screen.getByRole("button", { name: /Cancel/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "取消" })).toBeDisabled();
   });
 });

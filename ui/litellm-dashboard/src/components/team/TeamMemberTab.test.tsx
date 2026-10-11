@@ -154,7 +154,7 @@ describe("TeamMembersComponent", () => {
 
     expect(screen.getByRole("columnheader", { name: /user email/i })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /user id/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /team role/i })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "团队角色" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /actions/i })).toBeInTheDocument();
   });
 
@@ -328,7 +328,7 @@ describe("TeamMembersComponent", () => {
     );
 
     expect(screen.getByText("$1,000.00")).toBeInTheDocument();
-    expect(screen.getByText("Unlimited")).toBeInTheDocument();
+    expect(screen.getByText("无限制", { selector: "span.tabular-nums" })).toBeInTheDocument();
   });
 
   it("should display No Limits for rate limits when member has no limits", () => {
@@ -345,7 +345,7 @@ describe("TeamMembersComponent", () => {
       />,
     );
 
-    expect(screen.getByText("No Limits")).toBeInTheDocument();
+    expect(screen.getByText("无限制", { selector: "span:not([class])" })).toBeInTheDocument();
   });
 
   it("should call setIsEditMemberModalVisible and setSelectedEditMember when edit button is clicked", async () => {
@@ -404,7 +404,7 @@ describe("TeamMembersComponent", () => {
 
     const memberRow = screen.getByRole("row", { name: /user1@test\.com/ });
     expect(within(memberRow).getByText("0 RPM / 0 TPM")).toBeInTheDocument();
-    expect(within(memberRow).queryByText("No Limits")).not.toBeInTheDocument();
+    expect(within(memberRow).queryByText("无限制")).not.toBeInTheDocument();
 
     await user.click(within(memberRow).getByTestId("edit-member"));
 
@@ -555,12 +555,12 @@ describe("TeamMembersComponent", () => {
       const memberRow = screen.getByRole("row", { name: /user1@test\.com/ });
       await user.click(within(memberRow).getByTestId("reset-member-spend"));
 
-      const dialog = await screen.findByRole("dialog", { name: "Reset Team Member Spend" });
+      const dialog = await screen.findByRole("dialog", { name: "重置团队成员支出" });
       expect(dialog).toHaveTextContent("user1@test.com");
       expect(dialog).toHaveTextContent("$100.5000");
       expect(POST).not.toHaveBeenCalled();
 
-      await user.click(within(dialog).getByRole("button", { name: "Reset" }));
+      await user.click(within(dialog).getByRole("button", { name: "重置" }));
 
       await waitFor(() => expect(mockOnMemberSpendReset).toHaveBeenCalledTimes(1));
       expect(POST).toHaveBeenCalledExactlyOnceWith("/team/{team_id}/member/{user_id}/reset_spend", {
@@ -576,12 +576,12 @@ describe("TeamMembersComponent", () => {
       renderEditableTab();
 
       await user.click(screen.getByTestId("reset-member-spend"));
-      const dialog = await screen.findByRole("dialog", { name: "Reset Team Member Spend" });
-      await user.click(within(dialog).getByRole("button", { name: "Reset" }));
+      const dialog = await screen.findByRole("dialog", { name: "重置团队成员支出" });
+      await user.click(within(dialog).getByRole("button", { name: "重置" }));
 
       await waitFor(() => expect(POST).toHaveBeenCalledTimes(1));
       expect(mockOnMemberSpendReset).not.toHaveBeenCalled();
-      expect(screen.getByRole("dialog", { name: "Reset Team Member Spend" })).toBeInTheDocument();
+      expect(screen.getByRole("dialog", { name: "重置团队成员支出" })).toBeInTheDocument();
     });
 
     it("does not call the API when the dialog is cancelled", async () => {
@@ -589,8 +589,8 @@ describe("TeamMembersComponent", () => {
       renderEditableTab();
 
       await user.click(screen.getByTestId("reset-member-spend"));
-      const dialog = await screen.findByRole("dialog", { name: "Reset Team Member Spend" });
-      await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
+      const dialog = await screen.findByRole("dialog", { name: "重置团队成员支出" });
+      await user.click(within(dialog).getByRole("button", { name: "取消" }));
 
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
       expect(POST).not.toHaveBeenCalled();
@@ -676,9 +676,9 @@ describe("TeamMembersComponent", () => {
 
       const customRow = screen.getByRole("row", { name: /user1@test\.com/ });
       const inheritedRow = screen.getByRole("row", { name: /user2@test\.com/ });
-      expect(within(customRow).getByTestId("member-budget-source")).toHaveTextContent("Custom");
+      expect(within(customRow).getByTestId("member-budget-source")).toHaveTextContent("自定义");
       expect(customRow).toHaveTextContent("$1,000.00");
-      expect(within(inheritedRow).getByTestId("member-budget-source")).toHaveTextContent("Team default");
+      expect(within(inheritedRow).getByTestId("member-budget-source")).toHaveTextContent("团队默认");
       expect(inheritedRow).toHaveTextContent("$25.00");
     });
 
@@ -715,9 +715,9 @@ describe("TeamMembersComponent", () => {
       );
 
       const row = screen.getByRole("row", { name: /user2@test\.com/ });
-      expect(within(row).getByTestId("member-budget-source")).toHaveTextContent("Custom");
+      expect(within(row).getByTestId("member-budget-source")).toHaveTextContent("自定义");
       expect(row).toHaveTextContent("$20.00");
-      expect(row).not.toHaveTextContent("Unlimited");
+      expect(row).not.toHaveTextContent("无限制");
     });
 
     it("shows no source label for a member with neither a custom nor a team budget", () => {
@@ -749,13 +749,13 @@ describe("TeamMembersComponent", () => {
 
       await user.click(screen.getByTestId("reset-member-budget"));
 
-      const dialog = await screen.findByRole("dialog", { name: "Reset Team Member Budget" });
+      const dialog = await screen.findByRole("dialog", { name: "重置团队成员预算" });
       expect(dialog).toHaveTextContent("user1@test.com");
-      expect(dialog).toHaveTextContent("team default of $25.00");
-      expect(dialog).toHaveTextContent("Custom budget: $1,000.00");
+      expect(dialog).toHaveTextContent("团队默认值 $25.00");
+      expect(dialog).toHaveTextContent("自定义预算：$1,000.00");
       expect(POST).not.toHaveBeenCalled();
 
-      await user.click(within(dialog).getByRole("button", { name: "Use team default" }));
+      await user.click(within(dialog).getByRole("button", { name: "使用团队默认值" }));
 
       await waitFor(() => expect(mockOnMemberBudgetReset).toHaveBeenCalledTimes(1));
       expect(POST).toHaveBeenCalledExactlyOnceWith("/team/{team_id}/member/{user_id}/reset_budget", {
@@ -771,12 +771,12 @@ describe("TeamMembersComponent", () => {
       renderTab(teamDataWithDefault());
 
       await user.click(screen.getByTestId("reset-member-budget"));
-      const dialog = await screen.findByRole("dialog", { name: "Reset Team Member Budget" });
-      await user.click(within(dialog).getByRole("button", { name: "Use team default" }));
+      const dialog = await screen.findByRole("dialog", { name: "重置团队成员预算" });
+      await user.click(within(dialog).getByRole("button", { name: "使用团队默认值" }));
 
       await waitFor(() => expect(POST).toHaveBeenCalledTimes(1));
       expect(mockOnMemberBudgetReset).not.toHaveBeenCalled();
-      expect(screen.getByRole("dialog", { name: "Reset Team Member Budget" })).toBeInTheDocument();
+      expect(screen.getByRole("dialog", { name: "重置团队成员预算" })).toBeInTheDocument();
     });
 
     it("does not call the API when the dialog is cancelled", async () => {
@@ -784,8 +784,8 @@ describe("TeamMembersComponent", () => {
       renderTab(teamDataWithDefault());
 
       await user.click(screen.getByTestId("reset-member-budget"));
-      const dialog = await screen.findByRole("dialog", { name: "Reset Team Member Budget" });
-      await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
+      const dialog = await screen.findByRole("dialog", { name: "重置团队成员预算" });
+      await user.click(within(dialog).getByRole("button", { name: "取消" }));
 
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
       expect(POST).not.toHaveBeenCalled();

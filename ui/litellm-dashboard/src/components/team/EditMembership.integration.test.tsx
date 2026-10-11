@@ -65,7 +65,7 @@ const renderEdit = (config: object, initialData: Member) =>
     />,
   );
 
-const save = () => fireEvent.click(screen.getByRole("button", { name: "Save Changes" }));
+const save = () => fireEvent.click(screen.getByRole("button", { name: "保存更改" }));
 
 const submitted = (): Record<string, unknown> => onSubmit.mock.calls[0][0] as Record<string, unknown>;
 
@@ -173,7 +173,7 @@ describe("EditMembership submit payload", () => {
   it("trims surrounding whitespace off text fields", async () => {
     renderEdit(orgMemberConfig, { user_id: "u1", user_email: "a@b.com", role: "user" });
 
-    fireEvent.change(screen.getByLabelText("User ID"), { target: { value: "  padded-id  " } });
+    fireEvent.change(screen.getByLabelText("用户 ID"), { target: { value: "  padded-id  " } });
 
     save();
 
@@ -184,7 +184,7 @@ describe("EditMembership submit payload", () => {
   it("keeps a blanked text field as an empty string rather than null", async () => {
     renderEdit(orgMemberConfig, { user_id: "u1", user_email: "a@b.com", role: "user" });
 
-    fireEvent.change(screen.getByLabelText("User ID"), { target: { value: "   " } });
+    fireEvent.change(screen.getByLabelText("用户 ID"), { target: { value: "   " } });
 
     save();
 
@@ -199,11 +199,11 @@ describe("EditMembership submit payload", () => {
         onCancel={vi.fn()}
         onSubmit={onSubmit}
         mode="add"
-        config={{ ...orgMemberConfig, title: "Add Member", defaultRole: "user" } as never}
+        config={{ ...orgMemberConfig, title: "添加成员", defaultRole: "user" } as never}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Add Member" }));
+    fireEvent.click(screen.getByRole("button", { name: "添加成员" }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
     expect(submitted()).toStrictEqual({ user_email: undefined, user_id: undefined, role: "user" });
@@ -217,11 +217,11 @@ describe("EditMembership submit payload", () => {
         onCancel={vi.fn()}
         onSubmit={onSubmit}
         mode="add"
-        config={{ ...orgMemberConfig, title: "Add Member" } as never}
+        config={{ ...orgMemberConfig, title: "添加成员" } as never}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Add Member" }));
+    fireEvent.click(screen.getByRole("button", { name: "添加成员" }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
     expect(submitted().role).toBe("admin");
@@ -230,10 +230,10 @@ describe("EditMembership submit payload", () => {
   it("blocks submission when the email is not an address", async () => {
     renderEdit(orgMemberConfig, { user_id: "u1", user_email: "a@b.com", role: "user" });
 
-    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "not-an-email" } });
+    fireEvent.change(screen.getByLabelText("邮箱"), { target: { value: "not-an-email" } });
     save();
 
-    expect(await screen.findByText("Please enter a valid email!")).toBeInTheDocument();
+    expect(await screen.findByText("请输入有效的电子邮件地址！")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -242,7 +242,7 @@ describe("EditMembership submit payload", () => {
 
     save();
 
-    expect(await screen.findByText("Please select a role!")).toBeInTheDocument();
+    expect(await screen.findByText("请选择角色！")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -313,7 +313,7 @@ describe("EditMembership submit payload", () => {
     save();
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
-    await waitFor(() => expect(screen.getByLabelText("User ID")).toHaveValue(""));
-    expect(screen.getByLabelText("Email")).toHaveValue("");
+    await waitFor(() => expect(screen.getByLabelText("用户 ID")).toHaveValue(""));
+    expect(screen.getByLabelText("邮箱")).toHaveValue("");
   });
 });

@@ -124,17 +124,17 @@ it("renders the Resources cell with member, model, and key counts", () => {
   expect(screen.getByTitle("3 keys")).toBeInTheDocument();
 });
 
-it("shows 'No teams found' when the list is empty", () => {
+it("shows '未找到团队' when the list is empty", () => {
   mockUseTeamsTable.mockReturnValue(teamsResult([]));
   renderTable();
-  expect(screen.getByText("No teams found")).toBeInTheDocument();
+  expect(screen.getByText("未找到团队")).toBeInTheDocument();
 });
 
 it("shows a loading state on initial load and hides the data", () => {
   mockUseTeamsTable.mockReturnValue(teamsResult([], {}, { data: null, isPending: true, isFetching: true }));
   renderTable();
 
-  expect(screen.getByText("Loading teams...")).toBeInTheDocument();
+  expect(screen.getByText("正在加载团队...")).toBeInTheDocument();
   expect(screen.queryByText("Acme Team")).not.toBeInTheDocument();
 });
 
@@ -142,7 +142,7 @@ it("replaces the previous rows with the loading state while a new search is pend
   mockUseTeamsTable.mockReturnValue(teamsResult([mockTeam], {}, { isPlaceholderData: true, isFetching: true }));
   renderTable();
 
-  expect(screen.getByText("Loading teams...")).toBeInTheDocument();
+  expect(screen.getByText("正在加载团队...")).toBeInTheDocument();
   expect(screen.queryByText("Acme Team")).not.toBeInTheDocument();
 });
 
@@ -154,7 +154,7 @@ describe("sort contract – only backend-sortable columns are sortable", () => {
 
   it("sorts by the backend team_alias field (not the label) when the Team header is clicked", async () => {
     renderTable();
-    fireEvent.click(screen.getByText("Team").closest("button") as HTMLElement);
+    fireEvent.click(screen.getByText("团队").closest("button") as HTMLElement);
 
     await waitFor(() => {
       expect(mockUseTeamsTable).toHaveBeenLastCalledWith(1, 50, expect.objectContaining({ sortBy: "team_alias" }));
@@ -163,9 +163,9 @@ describe("sort contract – only backend-sortable columns are sortable", () => {
 
   it("does not make Spend / Budget sortable (the backend rejects sort_by=spend)", () => {
     renderTable();
-    expect(screen.queryByText("Spend / Budget").closest("button")).toBeNull();
+    expect(screen.queryByText("支出 / 预算").closest("button")).toBeNull();
     // Team and Created are the only sortable headers.
-    expect(screen.getByText("Team").closest("button")).not.toBeNull();
+    expect(screen.getByText("团队").closest("button")).not.toBeNull();
     expect(screen.getByText("Created").closest("button")).not.toBeNull();
   });
 });
@@ -277,8 +277,8 @@ describe("pagination total comes from the query response", () => {
     renderTable();
 
     await waitFor(() => {
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-50 of 137");
-      expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 3");
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-50 条，共 137 条");
+      expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 3 页");
     });
   });
 });

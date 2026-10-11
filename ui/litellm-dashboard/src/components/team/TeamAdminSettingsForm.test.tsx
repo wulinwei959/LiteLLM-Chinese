@@ -42,7 +42,7 @@ describe("TeamAdminSettingsForm", () => {
     const { onSave } = renderForm(new Set(["tpm_limit"]));
 
     fireEvent.change(screen.getByLabelText("Tokens per minute Limit (TPM)"), { target: { value: "5000" } });
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith({ tpm_limit: 5000 }));
   });
@@ -53,7 +53,7 @@ describe("TeamAdminSettingsForm", () => {
 
     fireEvent.change(screen.getByLabelText("Requests per minute Limit (RPM)"), { target: { value: "80" } });
     fireEvent.change(screen.getByLabelText("Max Budget (USD)"), { target: { value: "12.5" } });
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith({ rpm_limit: 80, max_budget: 12.5 }));
   });
@@ -63,7 +63,7 @@ describe("TeamAdminSettingsForm", () => {
     const { onSave } = renderForm(new Set(["tpm_limit"]));
 
     fireEvent.change(screen.getByLabelText("Tokens per minute Limit (TPM)"), { target: { value: "" } });
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith({ tpm_limit: null }));
   });
@@ -71,7 +71,7 @@ describe("TeamAdminSettingsForm", () => {
   it("keeps Save disabled until the TPM limit differs from the team's", () => {
     renderForm(new Set(["tpm_limit"]));
     const tpmInput = screen.getByLabelText("Tokens per minute Limit (TPM)");
-    const save = screen.getByRole("button", { name: /save changes/i });
+    const save = screen.getByRole("button", { name: "保存更改" });
 
     expect(save).toBeDisabled();
     fireEvent.change(tpmInput, { target: { value: "5000" } });
@@ -84,7 +84,7 @@ describe("TeamAdminSettingsForm", () => {
     const user = userEvent.setup();
     const { onSave, onCancel } = renderForm(new Set(["tpm_limit"]));
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
     expect(onCancel).toHaveBeenCalledTimes(1);
     expect(onSave).not.toHaveBeenCalled();
@@ -94,7 +94,7 @@ describe("TeamAdminSettingsForm", () => {
     renderForm(new Set(["tpm_limit"]), { isSaving: true });
     fireEvent.change(screen.getByLabelText("Tokens per minute Limit (TPM)"), { target: { value: "5000" } });
 
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: /save changes/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "取消" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "保存更改" })).toBeDisabled();
   });
 });
