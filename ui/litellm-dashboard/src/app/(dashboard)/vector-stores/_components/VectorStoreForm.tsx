@@ -446,14 +446,14 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
                           Create a Vertex AI Search data store
                         </a>
                       </li>
-                      <li>Pick a supported location: global, us, or eu</li>
+                      <li>{t("locationHint")}</li>
                       <li>
                         For most data store types (Cloud Storage, BigQuery, Media): copy the data store ID and enter it
                         in the Vector Store ID field below.
                       </li>
                       <li>
                         For website, healthcare, and connector-based sources (Drive, Gmail, Slack, Jira, etc.): create a
-                        search app on top of the data store, then copy the <strong>Engine ID</strong> and enter it in
+                        search app on top of the data store, then copy the <strong>{t("engineId")}</strong> and enter it in
                         the Engine ID field. The Vector Store ID is still required as the LiteLLM-side name for this
                         record, but it isn&apos;t used in the GCP URL when Engine ID is set.
                       </li>
@@ -513,12 +513,12 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
                       id={id}
                       aria-invalid={ariaInvalid}
                       aria-describedby={ariaDescribedBy}
-                      placeholder="Select or search for existing credentials"
+                      placeholder={t("selectCreds")}
                       className="w-full"
                       showClear={value !== undefined}
                     />
                     <ComboboxContent>
-                      <ComboboxEmpty>No matching credentials</ComboboxEmpty>
+                      <ComboboxEmpty>{t("noMatchingCreds")}</ComboboxEmpty>
                       <ComboboxList>
                         {(option: CredentialOption) => (
                           <ComboboxItem key={option.label} value={option}>
@@ -548,7 +548,7 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
               <Button type="button" variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button type="submit">Create</Button>
+              <Button type="submit">{t("createBtn")}</Button>
             </div>
           </form>
         </TooltipProvider>
@@ -569,6 +569,7 @@ interface ProviderFieldProps {
 }
 
 const ProviderField: React.FC<ProviderFieldProps> = ({ field, control, modelInfo }) => {
+  const t = useTranslations("vectorStores");
   const label = labelWithHint(field.label, field.tooltip);
 
   if (field.type === "select") {
@@ -602,7 +603,7 @@ const ProviderField: React.FC<ProviderFieldProps> = ({ field, control, modelInfo
               className="w-full"
             />
             <ComboboxContent>
-              <ComboboxEmpty>No matching options</ComboboxEmpty>
+              <ComboboxEmpty>{t("noMatchingOptions")}</ComboboxEmpty>
               <ComboboxList>
                 {(option: { value: string; label: string }) => (
                   <ComboboxItem key={option.value} value={option}>

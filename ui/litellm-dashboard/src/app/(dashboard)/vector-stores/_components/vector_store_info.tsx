@@ -397,7 +397,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
           ) : (
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Vector Store Details</h3>
+                <h3 className="text-lg font-medium">{t("detailsTitle")}</h3>
                 {canEdit && <Button onClick={startEditing}>{t("editTitle")}</Button>}
               </div>
               <Card>
@@ -408,15 +408,15 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                       <p>{vectorStoreDetails.vector_store_id}</p>
                     </div>
                     <div>
-                      <p className="font-medium">Name</p>
+                      <p className="font-medium">{t("nameShort")}</p>
                       <p>{vectorStoreDetails.vector_store_name || "-"}</p>
                     </div>
                     <div>
-                      <p className="font-medium">Description</p>
+                      <p className="font-medium">{t("descriptionShort")}</p>
                       <p>{vectorStoreDetails.vector_store_description || "-"}</p>
                     </div>
                     <div>
-                      <p className="font-medium">Provider</p>
+                      <p className="font-medium">{t("providerShort")}</p>
                       <div className="flex items-center space-x-2 mt-1">
                         {(() => {
                           const provider = vectorStoreDetails.custom_llm_provider || "bedrock";
@@ -432,19 +432,19 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                       </div>
                     </div>
                     <div>
-                      <p className="font-medium">Metadata</p>
+                      <p className="font-medium">{t("metadataShort")}</p>
                       <div className="bg-muted p-3 rounded-sm mt-2 font-mono text-xs overflow-auto max-h-48">
                         <pre>{metadataString}</pre>
                       </div>
                     </div>
                     <div>
-                      <p className="font-medium">Created</p>
+                      <p className="font-medium">{t("createdShort")}</p>
                       <p>
                         {vectorStoreDetails.created_at ? new Date(vectorStoreDetails.created_at).toLocaleString() : "-"}
                       </p>
                     </div>
                     <div>
-                      <p className="font-medium">Last Updated</p>
+                      <p className="font-medium">{t("lastUpdatedShort")}</p>
                       <p>
                         {vectorStoreDetails.updated_at ? new Date(vectorStoreDetails.updated_at).toLocaleString() : "-"}
                       </p>

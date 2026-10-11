@@ -51,7 +51,7 @@ describe("VectorStoreForm", () => {
     renderForm();
 
     fireEvent.change(screen.getByLabelText(/Vector Store ID/), { target: { value: "vs-created" } });
-    await user.click(screen.getByRole("button", { name: "Create" }));
+    await user.click(screen.getByRole("button", { name: "创建" }));
 
     await vi.waitFor(() => expect(vectorStoreCreateCall).toHaveBeenCalledTimes(1));
     expect(vi.mocked(vectorStoreCreateCall).mock.calls[0][1]).toMatchObject({ vector_store_id: "vs-created" });

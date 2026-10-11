@@ -268,7 +268,7 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
               }}
             >
               <Inbox className="size-12 text-primary" />
-              <span className="text-base">Click or drag files to this area to upload</span>
+              <span className="text-base">{t("uploadDragHint")}</span>
               <span className="text-sm text-muted-foreground">
                 Support for single or bulk upload. Supported formats: PDF, TXT, DOCX, MD
               </span>

@@ -5600,6 +5600,18 @@
     "noneLabel": "None",
     "detailsTab": "Details",
     "readOnlyDesc": "This vector store comes from the proxy config YAML, so it cannot be edited or deleted on the dashboard. Change or remove it in the config file and restart the proxy.",
-    "updateFailed": "Error updating vector store: {error}"
+    "updateFailed": "Error updating vector store: {error}",
+    "uploadDragHint": "Click or drag files to this area to upload",
+    "locationHint": "Pick a supported location: global, us, or eu",
+    "engineId": "Engine ID",
+    "createBtn": "Create",
+    "noMatchingOptions": "No matching options",
+    "detailsTitle": "Vector Store Details",
+    "nameShort": "Name",
+    "descriptionShort": "Description",
+    "providerShort": "Provider",
+    "metadataShort": "Metadata",
+    "createdShort": "Created",
+    "lastUpdatedShort": "Last Updated"
   }
 }

@@ -82,7 +82,7 @@ describe("CreateVectorStore", () => {
   it("should display upload area with correct text", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
-    expect(screen.getByText("Click or drag files to this area to upload")).toBeInTheDocument();
+    expect(screen.getByText("点击或拖拽文件到此处上传")).toBeInTheDocument();
     expect(screen.getByText(/Support for single or bulk upload/)).toBeInTheDocument();
   });
 

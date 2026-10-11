@@ -5600,6 +5600,18 @@
     "noneLabel": "无",
     "detailsTab": "详情",
     "readOnlyDesc": "此向量存储来自代理配置 YAML，因此无法在管理面板中编辑或删除。请在配置文件中修改或移除它，然后重启代理。",
-    "updateFailed": "更新向量存储出错：{error}"
+    "updateFailed": "更新向量存储出错：{error}",
+    "uploadDragHint": "点击或拖拽文件到此处上传",
+    "locationHint": "选择支持的位置：global、us 或 eu",
+    "engineId": "引擎 ID",
+    "createBtn": "创建",
+    "noMatchingOptions": "没有匹配的选项",
+    "detailsTitle": "向量存储详情",
+    "nameShort": "名称",
+    "descriptionShort": "描述",
+    "providerShort": "供应商",
+    "metadataShort": "元数据",
+    "createdShort": "创建时间",
+    "lastUpdatedShort": "最后更新"
   }
 }

@@ -84,7 +84,7 @@ describe("VectorStoreInfoView", () => {
     expect(screen.getByText("只读：在配置文件中定义")).toBeInTheDocument();
     expect(screen.getByText("Config")).toBeInTheDocument();
     expect(screen.queryByText("DB")).not.toBeInTheDocument();
-    expect(screen.getByText("Vector Store Details")).toBeInTheDocument();
+    expect(screen.getByText("向量存储详情")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "编辑向量存储" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Save/ })).not.toBeInTheDocument();
   });

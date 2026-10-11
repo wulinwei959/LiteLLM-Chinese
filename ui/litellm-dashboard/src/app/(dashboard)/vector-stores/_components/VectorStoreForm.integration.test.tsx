@@ -52,7 +52,7 @@ const chooseProvider = (user: ReturnType<typeof userEvent.setup>, providerLabel:
   chooseFromSelect(user, 0, providerLabel);
 
 const submit = async (user: ReturnType<typeof userEvent.setup>) =>
-  user.click(screen.getByRole("button", { name: "Create" }));
+  user.click(screen.getByRole("button", { name: "创建" }));
 
 const createdPayload = () => mockCreate.mock.calls[0][1];
 
