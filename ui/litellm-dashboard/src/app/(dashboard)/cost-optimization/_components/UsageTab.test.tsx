@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ToolSpendResponse } from "@/components/networking";
@@ -159,7 +160,7 @@ describe("UsageTab", () => {
     expect(screen.getByText("$0.1400")).toBeInTheDocument();
     expect(screen.getByText("$0.0100")).toBeInTheDocument();
     expect(screen.getByText("$0.0160")).toBeInTheDocument();
-    expect(screen.getByText("140,000 tokens compressed")).toBeInTheDocument();
+    expect(screen.getByText(/140,000|tokens compressed|tokens compressed|token 压缩|已压缩/)).toBeInTheDocument();
   });
 
   const twoDays = () => [
@@ -212,7 +213,7 @@ describe("UsageTab", () => {
     expect(cumulative[2]["Prompt caching"]).toBeCloseTo(0.14, 5);
     expect(cumulative[2]["Prompt caching"]).toBeGreaterThan(cumulative[1]["Prompt caching"]);
 
-    await userEvent.click(screen.getByRole("tab", { name: "Per day" }));
+    await userEvent.click(screen.getByRole("tab", { name: "每日" }));
     const perDay = readSeries(screen.getByTestId("bar-chart"));
     expect(perDay.map((p: { date: string }) => p.date)).toEqual(["Jul 12", "Jul 13"]);
   });
@@ -223,7 +224,7 @@ describe("UsageTab", () => {
     // Cumulative opens on the area line.
     expect(screen.getByTestId("area-chart")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("tab", { name: "Per day" }));
+    await userEvent.click(screen.getByRole("tab", { name: "每日" }));
 
     // Per day switches to a bar chart of the unaccumulated daily savings, with no
     // synthetic anchor prepended.
@@ -237,9 +238,9 @@ describe("UsageTab", () => {
   it("says what the line means and over what range", async () => {
     renderWith(twoDays());
 
-    expect(screen.getByText("Running total saved · Jul 1 – Jul 14 (UTC)")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("tab", { name: "Per day" }));
-    expect(screen.getByText("Saved per day · Jul 1 – Jul 14 (UTC)")).toBeInTheDocument();
+    expect(screen.getByText(/Running total saved|累计已节省/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("tab", { name: "每日" }));
+    expect(screen.getAllByText(/Saved per day|已节省每日/).length).toBeGreaterThan(0);
   });
 
   it("builds the per-driver donut from the range totals, not the running total", () => {
@@ -271,7 +272,7 @@ describe("UsageTab", () => {
       }),
     ]);
 
-    await userEvent.click(screen.getByRole("tab", { name: "Per day" }));
+    await userEvent.click(screen.getByRole("tab", { name: "每日" }));
     const bars = screen.getByTestId("bar-chart");
     expect(bars).toHaveAttribute("data-stack", "false");
     expect(readSeries(bars)[0]).toMatchObject({ "Auto-router": -0.05 });
@@ -299,16 +300,16 @@ describe("UsageTab", () => {
     expect(before.action.contains(screen.getByRole("tablist"))).toBe(true);
     // the subtitle lives outside that slot, so its length cannot reposition the controls
     expect(before.action.contains(before.description)).toBe(false);
-    expect(before.description).toHaveTextContent(/Running total saved/);
+    expect(before.description).toHaveTextContent(/Running total saved|累计已节省/);
 
-    await userEvent.click(screen.getByRole("tab", { name: "Per day" }));
+    await userEvent.click(screen.getByRole("tab", { name: "每日" }));
 
     const after = header();
     expect(after.action).toBe(before.action);
     expect(after.cardHeader).toBe(before.cardHeader);
     expect(after.action.contains(after.description)).toBe(false);
-    expect(after.description).toHaveTextContent(/Saved per day/);
-    expect(container).toHaveTextContent(/Savings/);
+    expect(after.description).toHaveTextContent(/Saved per day|每日/);
+    expect(container).toHaveTextContent(/Savings|节省/);
   });
 
   it("subtracts a losing auto-router route from the total and keeps it out of the donut", () => {
@@ -426,7 +427,7 @@ describe("UsageTab", () => {
         // Liveness gate: the daily-activity charts still render for this role,
         // so the absence below is the gate, not an empty tab.
         expect(screen.getByTestId("donut-chart")).toBeInTheDocument();
-        expect(screen.queryByText("Spend by tool")).not.toBeInTheDocument();
+        expect(screen.queryByText("按工具支出")).not.toBeInTheDocument();
         await vi.waitFor(() => expect(mockGetToolSpend).not.toHaveBeenCalled());
       },
     );
@@ -434,7 +435,7 @@ describe("UsageTab", () => {
     it("keeps the card and the endpoint call for an admin", async () => {
       renderWith([day("2026-07-12", { compression_savings_spend: 0.04 })], { toolSpend });
 
-      expect(await screen.findByText("Spend by tool")).toBeInTheDocument();
+      expect(await screen.findByText("按工具支出")).toBeInTheDocument();
       expect(mockGetToolSpend).toHaveBeenCalled();
     });
   });

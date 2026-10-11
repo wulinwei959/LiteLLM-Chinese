@@ -75,9 +75,9 @@ describe("PromptCachingRequestsTable", () => {
     );
     renderWithProviders(<PromptCachingRequestsTable accessToken="token-a" dateValue={dates} />);
 
-    const table = await screen.findByRole("table", { name: "Prompt caching requests" });
+    const table = await screen.findByRole("table", { name: "提示词缓存请求" });
     const write = within(table).getByRole("row", { name: /injected\/write/ });
-    expect(within(write).getByText("Recorded")).toBeInTheDocument();
+    expect(within(write).getByText("已记录")).toBeInTheDocument();
     expect(within(write).getByText("1,000")).toBeInTheDocument();
     expect(within(write).getByText("$0.0375")).toBeInTheDocument();
     expect(within(write).getByText("-$0.0075")).toBeInTheDocument();
@@ -86,12 +86,12 @@ describe("PromptCachingRequestsTable", () => {
     expect(within(write).getByRole("link")).toHaveAttribute("href", "/ui/logs?log_id=injected%2Fwrite%3F%26");
 
     const hit = within(table).getByRole("row", { name: /client-hit/ });
-    expect(within(hit).getByText("Not recorded")).toBeInTheDocument();
+    expect(within(hit).getByText("未记录")).toBeInTheDocument();
     expect(within(hit).getByText("10,000")).toBeInTheDocument();
     expect(within(hit).getByText("$0.2700")).toBeInTheDocument();
     expect(within(table).getByRole("row", { name: /unknown-price/ })).toHaveTextContent("Unavailable");
     expect(within(table).getByRole("row", { name: /no-benefit/ })).toHaveTextContent("$0.00");
-    expect(screen.getByText(/after cache-write premiums/)).toBeInTheDocument();
+    expect(screen.getByText(/cache-write premiums|溢价/)).toBeInTheDocument();
     expect(lastQuery().get("start_date")).toBe("2026-09-01T00:00:00.000Z");
     expect(lastQuery().get("end_date")).toBe("2026-09-02T23:59:59.999Z");
     expect(fetchMock.mock.calls[0][1]?.headers).toEqual(expect.objectContaining({ Authorization: "Bearer token-a" }));
@@ -112,19 +112,19 @@ describe("PromptCachingRequestsTable", () => {
     });
     renderWithProviders(<PromptCachingRequestsTable accessToken="token-a" dateValue={dates} />);
 
-    const table = await screen.findByRole("table", { name: "Prompt caching requests" });
+    const table = await screen.findByRole("table", { name: "提示词缓存请求" });
     expect(within(table).getAllByRole("link")).toHaveLength(10);
     expect(within(table).queryByRole("link", { name: "request-11" })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+    fireEvent.click(screen.getByRole("button", { name: "下一页" }));
     await screen.findByRole("link", { name: "request-11" });
-    expect(within(screen.getByRole("table", { name: "Prompt caching requests" })).getAllByRole("link")).toHaveLength(1);
-    expect(screen.getByRole("button", { name: "Go to next page" })).toBeDisabled();
-    fireEvent.click(screen.getByRole("button", { name: "Go to previous page" }));
+    expect(within(screen.getByRole("table", { name: "提示词缓存请求" })).getAllByRole("link")).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "下一页" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "上一页" }));
     await screen.findByRole("link", { name: "request-1" });
-    expect(within(screen.getByRole("table", { name: "Prompt caching requests" })).getAllByRole("link")).toHaveLength(
+    expect(within(screen.getByRole("table", { name: "提示词缓存请求" })).getAllByRole("link")).toHaveLength(
       10,
     );
-    expect(screen.getByRole("button", { name: "Go to previous page" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "上一页" })).toBeDisabled();
   });
 
   it.each([25, 50, 100])(
@@ -147,41 +147,41 @@ describe("PromptCachingRequestsTable", () => {
       });
       renderWithProviders(<PromptCachingRequestsTable accessToken="token-a" dateValue={dates} />);
       await screen.findByRole("link", { name: "request-1" });
-      expect(screen.getByRole("combobox", { name: "Rows per page" })).toHaveTextContent("10");
-      fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+      expect(screen.getByRole("combobox", { name: "每页行数" })).toHaveTextContent("10");
+      fireEvent.click(screen.getByRole("button", { name: "下一页" }));
       await screen.findByRole("link", { name: "request-11" });
 
-      await chooseSelectOption(user, screen.getByRole("combobox", { name: "Rows per page" }), String(pageSize));
+      await chooseSelectOption(user, screen.getByRole("combobox", { name: "每页行数" }), String(pageSize));
       await screen.findByRole("link", { name: "request-1" });
-      expect(within(screen.getByRole("table", { name: "Prompt caching requests" })).getAllByRole("link")).toHaveLength(
+      expect(within(screen.getByRole("table", { name: "提示词缓存请求" })).getAllByRole("link")).toHaveLength(
         pageSize,
       );
       expect(lastQuery().get("page_size")).toBe(String(pageSize));
       expect(lastQuery().has("cursor_request_id")).toBe(false);
       expect(lastQuery().has("cursor_start_time")).toBe(false);
-      expect(screen.getByText("Page 1")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Go to previous page" })).toBeDisabled();
+      expect(screen.getByText(/第 1 页/).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "上一页" })).toBeDisabled();
 
-      fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+      fireEvent.click(screen.getByRole("button", { name: "下一页" }));
       await screen.findByRole("link", { name: `request-${pageSize + 1}` });
       expect(lastQuery().get("page_size")).toBe(String(pageSize));
       expect(lastQuery().get("cursor_request_id")).toBe(`request-${pageSize}`);
-      expect(screen.getByText("Page 2")).toBeInTheDocument();
-      fireEvent.click(screen.getByRole("button", { name: "Go to previous page" }));
+      expect(screen.getByText(/第 2 页/).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "上一页" }));
       await screen.findByRole("link", { name: "request-1" });
-      expect(within(screen.getByRole("table", { name: "Prompt caching requests" })).getAllByRole("link")).toHaveLength(
+      expect(within(screen.getByRole("table", { name: "提示词缓存请求" })).getAllByRole("link")).toHaveLength(
         pageSize,
       );
 
-      fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+      fireEvent.click(screen.getByRole("button", { name: "下一页" }));
       await screen.findByRole("link", { name: `request-${pageSize + 1}` });
-      fireEvent.click(screen.getByRole("tab", { name: "Cache hits" }));
+      fireEvent.click(screen.getByRole("tab", { name: "缓存命中" }));
       await screen.findByRole("link", { name: "request-1" });
       expect(lastQuery().get("filter")).toBe("hits");
       expect(lastQuery().get("page_size")).toBe(String(pageSize));
       expect(lastQuery().has("cursor_request_id")).toBe(false);
-      expect(screen.getByText("Page 1")).toBeInTheDocument();
-      expect(screen.getByRole("combobox", { name: "Rows per page" })).toHaveTextContent(String(pageSize));
+      expect(screen.getByText(/第 1 页/).toBeInTheDocument();
+      expect(screen.getByRole("combobox", { name: "每页行数" })).toHaveTextContent(String(pageSize));
     },
   );
 
@@ -203,49 +203,49 @@ describe("PromptCachingRequestsTable", () => {
     });
     renderWithProviders(<PromptCachingRequestsTable accessToken="token-a" dateValue={dates} />);
     await screen.findByRole("link", { name: "all-1" });
-    expect(screen.getByRole("button", { name: "Go to previous page" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "上一页" })).toBeDisabled();
     expect(lastQuery().has("page")).toBe(false);
     expect(lastQuery().has("cursor_request_id")).toBe(false);
 
-    fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+    fireEvent.click(screen.getByRole("button", { name: "下一页" }));
     await screen.findByRole("link", { name: "all-2" });
-    expect(screen.getByText("Page 2")).toBeInTheDocument();
+    expect(screen.getByText(/第 2 页/).toBeInTheDocument();
     expect(lastQuery().get("cursor_start_time")).toBe(firstCursor.start_time);
     expect(lastQuery().get("cursor_request_id")).toBe(firstCursor.request_id);
-    fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+    fireEvent.click(screen.getByRole("button", { name: "下一页" }));
     await screen.findByRole("link", { name: "all-3" });
     expect(screen.getByText("Page 3")).toBeInTheDocument();
     expect(lastQuery().get("cursor_start_time")).toBe(secondCursor.start_time);
     expect(lastQuery().get("cursor_request_id")).toBe(secondCursor.request_id);
-    expect(screen.getByRole("button", { name: "Go to next page" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "下一页" })).toBeDisabled();
 
     await testQueryClient.invalidateQueries({ refetchType: "none" });
-    fireEvent.click(screen.getByRole("button", { name: "Go to previous page" }));
+    fireEvent.click(screen.getByRole("button", { name: "上一页" }));
     await screen.findByRole("link", { name: "all-2" });
     await waitFor(() => expect(lastQuery().get("cursor_request_id")).toBe(firstCursor.request_id));
     expect(lastQuery().get("cursor_start_time")).toBe(firstCursor.start_time);
-    expect(screen.getByText("Page 2")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Go to previous page" }));
+    expect(screen.getByText(/第 2 页/).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "上一页" }));
     await screen.findByRole("link", { name: "all-1" });
     await waitFor(() => expect(lastQuery().has("cursor_request_id")).toBe(false));
     expect(lastQuery().has("cursor_start_time")).toBe(false);
-    fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+    fireEvent.click(screen.getByRole("button", { name: "下一页" }));
     await screen.findByRole("link", { name: "all-2" });
 
-    fireEvent.click(screen.getByRole("tab", { name: "LiteLLM injected" }));
+    fireEvent.click(screen.getByRole("tab", { name: "LiteLLM 注入" }));
     await screen.findByRole("link", { name: "injected-1" });
     expect(screen.queryByRole("link", { name: "all-2" })).not.toBeInTheDocument();
     expect(lastQuery().get("filter")).toBe("injected");
     expect(lastQuery().has("cursor_request_id")).toBe(false);
     expect(lastQuery().has("cursor_start_time")).toBe(false);
 
-    fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+    fireEvent.click(screen.getByRole("button", { name: "下一页" }));
     await screen.findByRole("link", { name: "injected-2" });
-    fireEvent.click(screen.getByRole("tab", { name: "Cache hits" }));
+    fireEvent.click(screen.getByRole("tab", { name: "缓存命中" }));
     await screen.findByRole("link", { name: "hits-1" });
     expect(lastQuery().get("filter")).toBe("hits");
     expect(lastQuery().get("page_size")).toBe("10");
-    expect(screen.getByText("Page 1")).toBeInTheDocument();
+    expect(screen.getByText(/第 1 页/).toBeInTheDocument();
   });
 
   it("includes the current UTC day for a range ending today, matching the activity totals", async () => {
@@ -255,7 +255,7 @@ describe("PromptCachingRequestsTable", () => {
     const today = { from: new Date(2026, 8, 19), to: new Date() };
     renderWithProviders(<PromptCachingRequestsTable accessToken="token-a" dateValue={today} />);
 
-    await screen.findByText("No matching prompt caching requests in this range");
+    await screen.findByText("该范围没有匹配的提示词缓存请求");
     expect(lastQuery().get("start_date")).toBe("2026-09-19T00:00:00.000Z");
     expect(lastQuery().get("end_date")).toBe("2026-09-20T23:59:59.999Z");
   });
@@ -276,7 +276,7 @@ describe("PromptCachingRequestsTable", () => {
       );
       const { rerender } = renderWithProviders(tree("token-a", dates));
       await screen.findByRole("link", { name: "old-first" });
-      fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+      fireEvent.click(screen.getByRole("button", { name: "下一页" }));
       await screen.findByRole("link", { name: "old-second" });
 
       const pending = Promise.withResolvers<Response>();
@@ -289,7 +289,7 @@ describe("PromptCachingRequestsTable", () => {
         ),
       );
 
-      expect(screen.getByRole("status")).toHaveTextContent("Loading requests");
+      expect(screen.getByRole("status")).toHaveTextContent(/Loading requests|正在加载请求/);
       expect(committedOldRows.length).toBeGreaterThan(0);
       expect(committedOldRows.every((visible) => !visible)).toBe(true);
       expect(lastQuery().has("cursor_request_id")).toBe(false);
@@ -304,7 +304,7 @@ describe("PromptCachingRequestsTable", () => {
 
       pending.resolve(response([request({ request_id: "new-first" })]));
       await screen.findByRole("link", { name: "new-first" });
-      expect(screen.getByText("Page 1")).toBeInTheDocument();
+      expect(screen.getByText(/第 1 页/).toBeInTheDocument();
       expect(committedOldRows.every((visible) => !visible)).toBe(true);
     },
   );
@@ -314,7 +314,7 @@ describe("PromptCachingRequestsTable", () => {
     const current = Promise.withResolvers<Response>();
     fetchMock.mockReturnValueOnce(stale.promise).mockReturnValueOnce(current.promise);
     renderWithProviders(<PromptCachingRequestsTable accessToken="token-a" dateValue={dates} />);
-    fireEvent.click(screen.getByRole("tab", { name: "Cache hits" }));
+    fireEvent.click(screen.getByRole("tab", { name: "缓存命中" }));
     expect(lastQuery().get("filter")).toBe("hits");
 
     current.resolve(response([request({ request_id: "current-hit" })]));
@@ -326,7 +326,7 @@ describe("PromptCachingRequestsTable", () => {
 
     expect(screen.getByRole("link", { name: "current-hit" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "stale-all" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Go to next page" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "下一页" })).toBeDisabled();
   });
 
   it("offers retry after a failed read and shows the empty state after it succeeds", async () => {
@@ -334,17 +334,17 @@ describe("PromptCachingRequestsTable", () => {
     fetchMock.mockResolvedValueOnce(response([]));
     renderWithProviders(<PromptCachingRequestsTable accessToken="token-a" dateValue={dates} />);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Could not load prompt caching requests");
-    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
-    expect(await screen.findByText("No matching prompt caching requests in this range")).toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toHaveTextContent(/Could not load|无法加载提示词缓存请求/);
+    fireEvent.click(screen.getByRole("button", { name: "重试" }));
+    expect(await screen.findByText("该范围没有匹配的提示词缓存请求")).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Go to next page" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "下一页" })).toBeDisabled();
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it("does not request data for an incomplete date range", async () => {
     renderWithProviders(<PromptCachingRequestsTable accessToken="token-a" dateValue={{ from: dates.from }} />);
-    expect(screen.getByText("Select a date range to view requests")).toBeInTheDocument();
+    expect(screen.getByText("选择日期范围查看请求")).toBeInTheDocument();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     await waitFor(() => expect(fetchMock).not.toHaveBeenCalled());
   });

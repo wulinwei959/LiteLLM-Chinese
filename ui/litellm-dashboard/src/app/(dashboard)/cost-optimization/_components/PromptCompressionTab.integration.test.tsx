@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -27,11 +28,11 @@ describe("PromptCompressionTab submit payload", () => {
     const user = userEvent.setup();
     render(<PromptCompressionTab accessToken="test-token" />);
 
-    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "  headroom-compression  " } });
+    fireEvent.change(screen.getByLabelText("名称"), { target: { value: "  headroom-compression  " } });
     fireEvent.change(screen.getByLabelText("Headroom API base"), {
       target: { value: "  https://headroom.example.com  " },
     });
-    await user.click(screen.getByRole("button", { name: "Add guardrail" }));
+    await user.click(screen.getByRole("button", { name: "添加护栏" }));
 
     await vi.waitFor(() =>
       expect(submittedPayload()).toEqual({
@@ -51,10 +52,10 @@ describe("PromptCompressionTab submit payload", () => {
     const user = userEvent.setup();
     render(<PromptCompressionTab accessToken="test-token" />);
 
-    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "headroom-optin" } });
+    fireEvent.change(screen.getByLabelText("名称"), { target: { value: "headroom-optin" } });
     fireEvent.change(screen.getByLabelText("Headroom API base"), { target: { value: "https://headroom.example.com" } });
-    await user.click(screen.getByLabelText("Apply to all requests"));
-    await user.click(screen.getByRole("button", { name: "Add guardrail" }));
+    await user.click(screen.getByLabelText("应用于所有请求"));
+    await user.click(screen.getByRole("button", { name: "添加护栏" }));
 
     await vi.waitFor(() =>
       expect(submittedPayload()).toEqual({
@@ -73,10 +74,10 @@ describe("PromptCompressionTab submit payload", () => {
     const user = userEvent.setup();
     render(<PromptCompressionTab accessToken="test-token" />);
 
-    await user.click(screen.getByRole("button", { name: "Add guardrail" }));
+    await user.click(screen.getByRole("button", { name: "添加护栏" }));
 
-    expect(await screen.findByText("Name is required")).toBeInTheDocument();
-    expect(screen.getByText("API base is required")).toBeInTheDocument();
+    expect(await screen.findByText("名称必填")).toBeInTheDocument();
+    expect(screen.getByText("API base 必填")).toBeInTheDocument();
     expect(createGuardrailCall).not.toHaveBeenCalled();
   });
 
@@ -84,7 +85,7 @@ describe("PromptCompressionTab submit payload", () => {
     const user = userEvent.setup();
     render(<PromptCompressionTab accessToken="test-token" />);
 
-    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "headroom-compression" } });
+    fireEvent.change(screen.getByLabelText("名称"), { target: { value: "headroom-compression" } });
     await user.type(screen.getByLabelText("Headroom API base"), "https://headroom.example.com{Enter}");
 
     await vi.waitFor(() => expect(createGuardrailCall).toHaveBeenCalledTimes(1));
@@ -94,14 +95,14 @@ describe("PromptCompressionTab submit payload", () => {
     const user = userEvent.setup();
     render(<PromptCompressionTab accessToken="test-token" />);
 
-    fireEvent.change(screen.getByLabelText("Name"), { target: { value: "headroom-compression" } });
+    fireEvent.change(screen.getByLabelText("名称"), { target: { value: "headroom-compression" } });
     fireEvent.change(screen.getByLabelText("Headroom API base"), { target: { value: "https://headroom.example.com" } });
-    await user.click(screen.getByLabelText("Apply to all requests"));
-    await user.click(screen.getByRole("button", { name: "Add guardrail" }));
+    await user.click(screen.getByLabelText("应用于所有请求"));
+    await user.click(screen.getByRole("button", { name: "添加护栏" }));
 
-    await vi.waitFor(() => expect(screen.getByLabelText("Name")).toHaveValue(""));
+    await vi.waitFor(() => expect(screen.getByLabelText("名称")).toHaveValue(""));
     expect(screen.getByLabelText("Headroom API base")).toHaveValue("");
-    expect(screen.getByLabelText("Apply to all requests")).toBeChecked();
+    expect(screen.getByLabelText("应用于所有请求")).toBeChecked();
     expect(getGuardrailsList).toHaveBeenCalledTimes(2);
   });
 
@@ -122,8 +123,8 @@ describe("PromptCompressionTab submit payload", () => {
     });
     render(<PromptCompressionTab accessToken="test-token" />);
 
-    expect(await screen.findByText("Always on")).toBeInTheDocument();
-    expect(screen.getByText("Opt-in")).toBeInTheDocument();
+    expect(await screen.findByText("始终启用")).toBeInTheDocument();
+    expect(screen.getByText("按需启用")).toBeInTheDocument();
     expect(screen.getByText("https://a.example.com")).toBeInTheDocument();
   });
 });

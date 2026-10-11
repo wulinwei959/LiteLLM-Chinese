@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -165,7 +166,7 @@ describe("TierTurnsChart", () => {
 
   it("renders nothing for the all-routers view, which carries no router identity", () => {
     const { container } = render(
-      <TierTurnsChart view={{ label: "All auto-routers", stats: totalsOnly }} autoRouters={[]} />,
+      <TierTurnsChart view={{ label: "全部自动路由", stats: totalsOnly }} autoRouters={[]} />,
     );
 
     expect(container).toBeEmptyDOMElement();

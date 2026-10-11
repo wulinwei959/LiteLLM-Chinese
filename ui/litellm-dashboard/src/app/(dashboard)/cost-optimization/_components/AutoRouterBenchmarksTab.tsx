@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import type { AutoRouterDeployment } from "@/app/(dashboard)/hooks/models/useModels";
 import { useAutoRouters } from "@/app/(dashboard)/hooks/models/useModels";
@@ -25,6 +26,7 @@ import {
   groupLabel,
   pctLabel,
   viewFor,
+  ALL_ROUTERS_LABEL,
   type AutoRouterBenchmarksResponse,
   type AutoRouterCacheStats,
   type BenchmarkView,
@@ -175,14 +177,16 @@ const StackedTurnBar: React.FC<{ buckets: BucketRow[] }> = ({ buckets }) => {
   );
 };
 
-const BucketTable: React.FC<{ buckets: BucketRow[] }> = ({ buckets }) => (
+const BucketTable: React.FC<{ buckets: BucketRow[] }> = ({ buckets }) => {
+  const t = useTranslations("costOptimization");
+  return (
   <Table className="border-b">
     <TableHeader>
       <TableRow className="hover:bg-transparent">
-        <TableHead className="text-[11px] uppercase tracking-wide">Bucket</TableHead>
-        <TableHead className="text-right text-[11px] uppercase tracking-wide">Turns</TableHead>
+        <TableHead className="text-[11px] uppercase tracking-wide">{t("autoRouter.bucket")}</TableHead>
+        <TableHead className="text-right text-[11px] uppercase tracking-wide">{t("autoRouter.turns")}</TableHead>
         <TableHead className="w-1/2" />
-        <TableHead className="text-right text-[11px] uppercase tracking-wide">Hit rate</TableHead>
+        <TableHead className="text-right text-[11px] uppercase tracking-wide">{t("autoRouter.hitRate")}</TableHead>
       </TableRow>
     </TableHeader>
     <TableBody>
@@ -212,9 +216,11 @@ const BucketTable: React.FC<{ buckets: BucketRow[] }> = ({ buckets }) => (
       ))}
     </TableBody>
   </Table>
-);
+  );
+};
 
 const CachingCard: React.FC<{ cache: AutoRouterCacheStats }> = ({ cache }) => {
+  const t = useTranslations("costOptimization");
   const buckets = bucketRows(cache);
   const total = bucketTurnsTotal(cache);
   const expiredMissPct = expiredMissShare(cache);
@@ -223,7 +229,7 @@ const CachingCard: React.FC<{ cache: AutoRouterCacheStats }> = ({ cache }) => {
       <div className="grid lg:grid-cols-[1fr_3fr]">
         <div className="flex flex-col border-b p-6 lg:border-b-0 lg:border-r">
           <div className="flex flex-1 flex-col justify-center gap-3">
-            <p className="text-sm text-muted-foreground">Cache hit rate</p>
+            <p className="text-sm text-muted-foreground">{t("autoRouter.cacheHitRate")}</p>
             <p className="text-5xl font-semibold tracking-tight text-foreground">{pctLabel(cache.hit_rate_pct)}</p>
           </div>
           {expiredMissPct === null ? null : (
@@ -253,7 +259,7 @@ const CachingCard: React.FC<{ cache: AutoRouterCacheStats }> = ({ cache }) => {
 
         <div className="flex flex-col gap-3 p-6">
           <div className="flex items-baseline justify-between">
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Share of turns</p>
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{t("autoRouter.shareOfTurns")}</p>
             <p className="text-xs text-muted-foreground">
               <span className="text-lg font-semibold tabular-nums text-foreground">{total.toLocaleString()}</span> turns
               measured
@@ -281,11 +287,12 @@ interface BenchmarksBodyProps {
 }
 
 const BenchmarksBody: React.FC<BenchmarksBodyProps> = ({ isPending, error, data, selectedKey, autoRouters }) => {
-  if (isPending) return <Message>Loading auto-router usage...</Message>;
+  const t = useTranslations("costOptimization");
+  if (isPending) return <Message>{t("autoRouter.loadingUsage")}</Message>;
   if (error instanceof ApiError && error.status === 403) {
-    return <Message>Auto-router usage is visible to proxy admin roles only</Message>;
+    return <Message>{t("autoRouter.adminOnly")}</Message>;
   }
-  if (error || !data) return <Message>Auto-router usage is unavailable right now</Message>;
+  if (error || !data) return <Message>{t("autoRouter.unavailable")}</Message>;
 
   const view = viewFor(data, selectedKey);
   const stats = view.stats;
@@ -317,7 +324,7 @@ const BenchmarksBody: React.FC<BenchmarksBodyProps> = ({ isPending, error, data,
 
       <div className="space-y-4">
         <div className="flex flex-wrap items-baseline gap-2">
-          <h3 className="text-lg font-semibold text-foreground">Auto-router prompt caching</h3>
+          <h3 className="text-lg font-semibold text-foreground">{t("autoRouter.promptCaching")}</h3>
           <p className="text-xs text-muted-foreground">
             every turn falls in exactly one bucket, by what the router did
           </p>
@@ -341,20 +348,22 @@ export const AutoRouterUsageView: React.FC<AutoRouterBenchmarksTabProps> = ({
   apiKey,
   userId,
 }) => {
+  const t = useTranslations("costOptimization");
   const { dateValue, onDateChange } = activity;
   const { data, isPending, error } = useAutoRouterBenchmarks(accessToken, dateValue, apiKey, userId);
   const [selectedKey, setSelectedKey] = useState<string>(ALL_ROUTERS);
   const { data: autoRouters } = useAutoRouters();
 
   const groups = data?.groups ?? [];
-  const selectedLabel = data ? viewFor(data, selectedKey).label : "All auto-routers";
+  const selectedLabel = data ? viewFor(data, selectedKey).label : t("autoRouter.allRouters");
+  const displayLabel = selectedLabel === ALL_ROUTERS_LABEL || !data ? t("autoRouter.allRouters") : selectedLabel;
   const rangeLabel = formatRangeLabel(dateValue.from, dateValue.to);
 
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">Auto-router usage</h2>
+          <h2 className="text-xl font-semibold text-foreground">{t("autoRouter.usageTitle")}</h2>
           {rangeLabel && <p className="mt-1 text-sm text-muted-foreground">{rangeLabel} (UTC)</p>}
         </div>
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
@@ -362,10 +371,10 @@ export const AutoRouterUsageView: React.FC<AutoRouterBenchmarksTabProps> = ({
           <div className="w-full sm:w-64">
             <Select value={selectedKey} onValueChange={(value: string | null) => setSelectedKey(value ?? ALL_ROUTERS)}>
               <SelectTrigger className="w-full">
-                <SelectValue>{selectedLabel}</SelectValue>
+                <SelectValue>{displayLabel}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={ALL_ROUTERS}>All auto-routers</SelectItem>
+                <SelectItem value={ALL_ROUTERS}>{t("autoRouter.allRouters")}</SelectItem>
                 {groups.map((g) => (
                   <SelectItem key={groupKey(g)} value={groupKey(g)}>
                     {groupLabel(g, groups)}
@@ -395,6 +404,7 @@ export const AutoRouterUsageView: React.FC<AutoRouterBenchmarksTabProps> = ({
 };
 
 const AutoRouterBenchmarksTab: React.FC<AutoRouterBenchmarksTabProps> = ({ accessToken, activity }) => {
+  const t = useTranslations("costOptimization");
   const [visitedTabs, setVisitedTabs] = useState<readonly string[]>(["usage"]);
 
   const handleTabChange = (value: unknown) => {

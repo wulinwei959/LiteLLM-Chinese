@@ -92,9 +92,9 @@ describe("CacheLeakageCard", () => {
     expect(screen.getByText("0.0%")).toBeInTheDocument();
     expect(screen.getByText("90.0%")).toBeInTheDocument();
     [
-      "Input tokens you sent in this range that weren't served from or written to the cache",
-      "Share of your input tokens that were served from the cache",
-      "About how much you'd save if this uncached input used prompt caching. Estimated as uncached input tokens times what your cached traffic already nets per cached token (realized cache savings, after write premiums, ÷ cache read and write tokens). Blank when caching is not currently saving anything overall.",
+      "该范围你发送的、既未命中缓存也未写入缓存的输入 token",
+      "从缓存提供的输入 token 占比",
+      /About how much|潜在节省/,
     ].forEach((info) => expect(screen.getByLabelText(info)).toBeInTheDocument());
   });
 
@@ -117,10 +117,10 @@ describe("CacheLeakageCard", () => {
 
     expect(firstDataRow()).toHaveTextContent("alpha");
 
-    fireEvent.click(screen.getByText("Cache hit rate"));
+    fireEvent.click(screen.getByText("缓存命中率"));
     expect(firstDataRow()).toHaveTextContent("bravo");
 
-    fireEvent.click(screen.getByText("Cache hit rate"));
+    fireEvent.click(screen.getByText("缓存命中率"));
     expect(firstDataRow()).toHaveTextContent("alpha");
   });
 
@@ -132,9 +132,9 @@ describe("CacheLeakageCard", () => {
       }),
     ]);
 
-    fireEvent.click(screen.getByText("By model"));
+    fireEvent.click(screen.getByText("按模型"));
 
-    expect(screen.getByText("Cache leakage by model")).toBeInTheDocument();
+    expect(screen.getByText("按模型的缓存泄漏")).toBeInTheDocument();
     expect(screen.getByText("claude-sonnet-5")).toBeInTheDocument();
     expect(screen.getByText("vertex_ai/gemini-2.5-pro")).toBeInTheDocument();
   });
@@ -142,7 +142,7 @@ describe("CacheLeakageCard", () => {
   it("shows an empty state when no key used tokens in the range", () => {
     renderWith([dayWithKeys("2026-07-12", {})]);
 
-    expect(screen.getByText("No key usage in this range.")).toBeInTheDocument();
+    expect(screen.getByText("该范围无密钥用量。")).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 
@@ -154,7 +154,7 @@ describe("CacheLeakageCard", () => {
 
     expect(screen.getByRole("table")).toBeInTheDocument();
     expect(
-      screen.getByText("Data is still loading; rows and totals will update as the rest of the range arrives."),
+      screen.getByText("数据仍在加载，其余范围到达后行与总计会更新。"),
     ).toBeInTheDocument();
   });
 
@@ -165,7 +165,7 @@ describe("CacheLeakageCard", () => {
     renderWith([day], { loading: true });
 
     expect(
-      screen.queryByText("Data is still loading; rows and totals will update as the rest of the range arrives."),
+      screen.queryByText("数据仍在加载，其余范围到达后行与总计会更新。"),
     ).not.toBeInTheDocument();
   });
 
@@ -176,7 +176,7 @@ describe("CacheLeakageCard", () => {
     renderWith([day]);
 
     expect(
-      screen.queryByText("Data is still loading; rows and totals will update as the rest of the range arrives."),
+      screen.queryByText("数据仍在加载，其余范围到达后行与总计会更新。"),
     ).not.toBeInTheDocument();
   });
 
@@ -187,10 +187,10 @@ describe("CacheLeakageCard", () => {
     renderWith([day], { apiKeyTruncation: { limit: 100, total: 3000 } });
 
     expect(screen.getByRole("note")).toHaveTextContent(
-      "Only the 100 highest-spend keys of 3,000 are loaded, so a lower-spend key that leaks more is not listed here.",
+      /仅加载支出最高的|highest-spend keys/,
     );
 
-    fireEvent.click(screen.getByRole("tab", { name: "By model" }));
+    fireEvent.click(screen.getByRole("tab", { name: "按模型" }));
 
     expect(screen.queryByRole("note")).not.toBeInTheDocument();
   });

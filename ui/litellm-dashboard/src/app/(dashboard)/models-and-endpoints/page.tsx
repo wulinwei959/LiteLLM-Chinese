@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { RefreshCw } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
@@ -81,6 +82,7 @@ const renderPanel = (key: string) => {
 
 export default function ModelsAndEndpointsPage() {
   const { accessToken, userRole, userId: userID, premiumUser, isViewOnly } = useAuthorized();
+  const t = useTranslations("models");
   const { data: teams } = useTeams();
   const { data: uiSettings } = useUISettings();
   const queryClient = useQueryClient();
@@ -166,12 +168,12 @@ export default function ModelsAndEndpointsPage() {
       <div className="mt-2 flex w-full flex-col gap-2 p-8">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold">Model Management</h2>
+            <h2 className="text-lg font-semibold">{t("title")}</h2>
             {isAdmin ? (
-              <p className="text-sm text-muted-foreground">Add and manage models for the proxy</p>
+              <p className="text-sm text-muted-foreground">{isAdmin ? t("subtitleAdmin") : t("subtitleUser")}</p>
             ) : (
               <p className="text-sm text-muted-foreground">
-                View your models and manage routers for teams that allow it.
+                {t("subtitleUser")}
               </p>
             )}
           </div>

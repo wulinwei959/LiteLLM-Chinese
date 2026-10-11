@@ -22,10 +22,12 @@ export const groupLabel = (group: AutoRouterBenchmarkGroup, groups: readonly Aut
   return duplicated ? `${group.router_name} (${group.router_type})` : group.router_name;
 };
 
+export const ALL_ROUTERS_LABEL = "__all_routers__" as const;
+
 export const viewFor = (data: AutoRouterBenchmarksResponse, selectedKey: string): BenchmarkView => {
   const group = data.groups.find((g) => groupKey(g) === selectedKey);
   if (selectedKey === ALL_ROUTERS || !group) {
-    return { label: "All auto-routers", stats: data.totals };
+    return { label: ALL_ROUTERS_LABEL, stats: data.totals };
   }
   return { label: groupLabel(group, data.groups), stats: group };
 };

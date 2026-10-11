@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -384,7 +385,7 @@ describe("AutoRouterBenchmarksTab", () => {
     mockHook({ data: response([group()]) });
     renderTab();
 
-    expect(screen.getByText("All auto-routers")).toBeInTheDocument();
+    expect(screen.getByText("全部自动路由")).toBeInTheDocument();
     expect(screen.queryByText("__all__")).not.toBeInTheDocument();
   });
 
@@ -392,21 +393,21 @@ describe("AutoRouterBenchmarksTab", () => {
     mockHook({ isPending: true });
     renderTab();
 
-    expect(screen.getByText("Loading auto-router usage...")).toBeInTheDocument();
+    expect(screen.getByText("正在加载自动路由用量...")).toBeInTheDocument();
   });
 
   it("names the admin requirement when the proxy answers 403", () => {
     mockHook({ error: new ApiError("forbidden", 403, {}) });
     renderTab();
 
-    expect(screen.getByText("Auto-router usage is visible to proxy admin roles only")).toBeInTheDocument();
+    expect(screen.getByText("自动路由用量仅代理管理员角色可见")).toBeInTheDocument();
   });
 
   it("degrades to a message when the endpoint is unavailable", () => {
     mockHook({ error: new ApiError("boom", 500, {}) });
     renderTab();
 
-    expect(screen.getByText("Auto-router usage is unavailable right now")).toBeInTheDocument();
+    expect(screen.getByText("自动路由用量暂时不可用")).toBeInTheDocument();
   });
 
   it("renders the full dashboard with zeroed stats when the window has no sessions", () => {
@@ -486,7 +487,7 @@ describe("AutoRouterBenchmarksTab", () => {
     mockHook({ error: new ApiError("boom", 500, {}) });
     renderTab();
 
-    expect(screen.getByText("Auto-router usage is unavailable right now")).toBeInTheDocument();
+    expect(screen.getByText("自动路由用量暂时不可用")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("tab", { name: "Shadow Evals" }));
     expect(screen.getByTestId("shadow-eval-section")).toBeInTheDocument();
@@ -497,6 +498,6 @@ describe("AutoRouterBenchmarksTab", () => {
     renderTab();
 
     expect(screen.getByTestId("date-picker")).toBeInTheDocument();
-    expect(screen.getByText("All auto-routers")).toBeInTheDocument();
+    expect(screen.getByText("全部自动路由")).toBeInTheDocument();
   });
 });

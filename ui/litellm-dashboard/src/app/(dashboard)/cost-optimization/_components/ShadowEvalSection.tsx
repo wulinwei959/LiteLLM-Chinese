@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { Badge } from "@/components/ui/badge";
@@ -260,13 +261,14 @@ const VerdictBar: React.FC<{ direction: ShadowEvalDirection; results: NonNullabl
 };
 
 const TargetTable: React.FC<{ job: ShadowEvalJob }> = ({ job }) => {
+  const t = useTranslations("costOptimization");
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Target</TableHead>
-          <TableHead>Status</TableHead>
-          {["Budget used", "Router wins", `${otherArmLabel(job.direction)} wins`].map((label) => (
+          <TableHead>{t("shadowEval.target")}</TableHead>
+          <TableHead>{t("shadowEval.status")}</TableHead>
+          {[t("shadowEval.budgetUsed"), t("shadowEval.routerWins"), t("shadowEval.otherWins", { arm: otherArmLabel(job.direction) })].map((label) => (
             <TableHead key={label} className="text-right">
               {label}
             </TableHead>
@@ -496,6 +498,7 @@ const JobCard: React.FC<{ job: ShadowEvalJob; readOnly: boolean }> = ({ job, rea
 
 const ShadowEvalSection: React.FC = () => {
   const { data: jobs, error, isPending } = useShadowEvalJobs();
+  const t = useTranslations("costOptimization");
   const { isViewOnly } = useAuthorized();
   const { showcased, listed } = useMemo(() => {
     const active = (jobs ?? []).filter(isActive);
@@ -509,7 +512,7 @@ const ShadowEvalSection: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-baseline gap-2">
-        <h2 className="text-xl font-semibold text-foreground">Shadow eval</h2>
+        <h2 className="text-xl font-semibold text-foreground">{t("shadowEval.title")}</h2>
         <p className="text-sm text-muted-foreground">
           Blind-judge the auto-router on the real traffic of a key, team, or user (teams and users cover
           JWT-authenticated traffic): against the models they use today before switching, or against a fixed baseline
@@ -521,7 +524,7 @@ const ShadowEvalSection: React.FC = () => {
         <p className="text-sm text-destructive">Existing evaluations could not be loaded. Refresh the page to retry.</p>
       )}
 
-      {isPending && error == null && <p className="text-sm text-muted-foreground">Loading evaluations...</p>}
+      {isPending && error == null && <p className="text-sm text-muted-foreground">{t("shadowEval.loading")}</p>}
 
       {showcased.map((job) => (
         <JobCard key={job.job_id} job={job} readOnly={isViewOnly} />

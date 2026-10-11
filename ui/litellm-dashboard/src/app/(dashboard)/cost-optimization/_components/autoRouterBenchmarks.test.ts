@@ -13,7 +13,7 @@ import {
   type AutoRouterBenchmarkGroup,
   type AutoRouterBenchmarksResponse,
   type AutoRouterCacheStats,
-} from "./autoRouterBenchmarks";
+ ALL_ROUTERS_LABEL,} from "./autoRouterBenchmarks";
 
 const cache = (overrides: Partial<AutoRouterCacheStats> = {}): AutoRouterCacheStats => ({
   coverage_pct: 99.6,
@@ -68,7 +68,7 @@ describe("viewFor", () => {
     const data = response([group(), group({ router_name: "gpt-auto", sessions: 7 })]);
     const view = viewFor(data, ALL_ROUTERS);
     expect(view.stats).toBe(data.totals);
-    expect(view.label).toBe("All auto-routers");
+    expect(view.label).toBe(ALL_ROUTERS_LABEL);
   });
 
   it("maps a selected router to that group's slice with a scope of one", () => {
@@ -83,7 +83,7 @@ describe("viewFor", () => {
     const data = response([group()]);
     const view = viewFor(data, "vanished complexity");
     expect(view.stats).toBe(data.totals);
-    expect(view.label).toBe("All auto-routers");
+    expect(view.label).toBe(ALL_ROUTERS_LABEL);
   });
 
   it("distinguishes two groups sharing an alias by their router type", () => {
