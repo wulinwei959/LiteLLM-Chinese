@@ -106,14 +106,14 @@ describe("OrganizationsPanel", () => {
   it("gates non-premium users behind the enterprise notice", () => {
     renderPanel({ premiumUser: false });
 
-    expect(screen.getByText(/LiteLLM Enterprise feature/i)).toBeInTheDocument();
-    expect(screen.queryByText("+ Create Organization")).not.toBeInTheDocument();
+    expect(screen.getByText(/LiteLLM 企业功能/i)).toBeInTheDocument();
+    expect(screen.queryByText("+ 创建组织")).not.toBeInTheDocument();
   });
 
   it("shows the create button for a premium admin", () => {
     renderPanel();
 
-    expect(screen.getByText("+ Create Organization")).toBeInTheDocument();
+    expect(screen.getByText("+ 创建组织")).toBeInTheDocument();
   });
 
   it("resolves the loading skeleton to false when the query is disabled (no token)", () => {
@@ -200,7 +200,7 @@ describe("OrganizationsPanel - org detail deep link (?org=)", () => {
 
     await expectQueryString("?org_search=Acme&filter_org_id=org-7&sort_by=spend&sort_order=asc&page=2");
     expect(onUrlUpdate).toHaveBeenCalledTimes(1);
-    expect(screen.getByPlaceholderText("Search by Organization Name")).toHaveValue("Acme");
+    expect(screen.getByPlaceholderText("按组织名称搜索")).toHaveValue("Acme");
     expect(useOrganizationsSpy).toHaveBeenLastCalledWith({ org_id: "org-7", org_alias: "Acme" });
   });
 
@@ -221,8 +221,8 @@ describe("OrganizationsPanel - list filters in the URL", () => {
   it("restores the name search and org ID filter from the URL and fetches with both", () => {
     renderPanel({ searchParams: "?org_search=Acme&filter_org_id=org-7" });
 
-    expect(screen.getByPlaceholderText("Search by Organization Name")).toHaveValue("Acme");
-    expect(screen.getByPlaceholderText("Search by Organization ID")).toHaveValue("org-7");
+    expect(screen.getByPlaceholderText("按组织名称搜索")).toHaveValue("Acme");
+    expect(screen.getByPlaceholderText("按组织 ID 搜索")).toHaveValue("org-7");
     expect(useOrganizationsSpy).toHaveBeenLastCalledWith({ org_id: "org-7", org_alias: "Acme" });
     expect(capturedTableProps?.searchActive).toBe(true);
   });
@@ -230,14 +230,14 @@ describe("OrganizationsPanel - list filters in the URL", () => {
   it("keeps the org ID filter panel collapsed when the URL has no org ID filter", () => {
     renderPanel({ searchParams: "?org_search=Acme" });
 
-    expect(screen.queryByPlaceholderText("Search by Organization ID")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("按组织 ID 搜索")).not.toBeInTheDocument();
     expect(useOrganizationsSpy).toHaveBeenLastCalledWith({ org_id: "", org_alias: "Acme" });
   });
 
   it("writes the name search to ?org_search= and returns the list to the first page", async () => {
     renderPanel({ searchParams: "?page=3" });
 
-    fireEvent.change(screen.getByPlaceholderText("Search by Organization Name"), { target: { value: "Acme" } });
+    fireEvent.change(screen.getByPlaceholderText("按组织名称搜索"), { target: { value: "Acme" } });
 
     await waitFor(() => expect(lastSearchParams()?.get("org_search")).toBe("Acme"));
     expect(lastSearchParams()?.has("page")).toBe(false);
@@ -248,7 +248,7 @@ describe("OrganizationsPanel - list filters in the URL", () => {
     renderPanel({ searchParams: "?page=3" });
 
     fireEvent.click(screen.getByRole("button", { name: "Filters" }));
-    fireEvent.change(screen.getByPlaceholderText("Search by Organization ID"), { target: { value: "org-9" } });
+    fireEvent.change(screen.getByPlaceholderText("按组织 ID 搜索"), { target: { value: "org-9" } });
 
     await waitFor(() => expect(lastSearchParams()?.get("filter_org_id")).toBe("org-9"));
     expect(lastSearchParams()?.has("page")).toBe(false);

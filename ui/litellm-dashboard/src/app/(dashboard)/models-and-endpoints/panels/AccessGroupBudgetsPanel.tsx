@@ -49,9 +49,10 @@ export default function AccessGroupBudgetsPanel() {
   const [clearing, setClearing] = useState<ModelAccessGroup | null>(null);
 
   const canWrite = isProxyAdminRole(userRole ?? "");
+  const tModels = useTranslations("models");
   const columns = useMemo(
-    () => getAccessGroupBudgetColumns({ canWrite, onSetBudget: setEditing, onClearBudget: setClearing }),
-    [canWrite],
+    () => getAccessGroupBudgetColumns({ canWrite, onSetBudget: setEditing, onClearBudget: setClearing, t: tModels }),
+    [canWrite, tModels],
   );
 
   const handleSubmit = (params: SetModelAccessGroupBudgetParams) => {

@@ -80,6 +80,7 @@ const UserEnvVarsForm: React.FC<UserEnvVarsFormProps> = ({ required, isSaving, o
               <PasswordInput
                 {...field}
                 disabled={isSaving}
+                data-testid="env-var-field"
                 placeholder={
                   spec.is_set
                     ? t("userEnvVars.overwritePlaceholder")

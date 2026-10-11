@@ -100,23 +100,23 @@ describe("MCPGatewaySessionsTab", () => {
     vi.mocked(networking.fetchMCPGatewaySessions).mockResolvedValue(REPORT);
     renderTab();
 
-    const byClient = await screen.findByRole("region", { name: "Sessions by AI client" });
+    const byClient = await screen.findByRole("region", { name: "按 AI 客户端统计会话" });
     expect(within(byClient).getByRole("row", { name: /claude-code 2/ })).toBeInTheDocument();
     expect(within(byClient).getByRole("row", { name: /cursor 1/ })).toBeInTheDocument();
 
-    const byUser = screen.getByRole("region", { name: "Sessions by user" });
+    const byUser = screen.getByRole("region", { name: "按用户统计会话" });
     expect(within(byUser).getByRole("row", { name: /alice 2/ })).toBeInTheDocument();
-    expect(within(byUser).getByRole("row", { name: /\(unknown\) 1/ })).toBeInTheDocument();
+    expect(within(byUser).getByRole("row", { name: /\(未知\) 1/ })).toBeInTheDocument();
 
-    const sessions = screen.getByRole("region", { name: "Live sessions" });
+    const sessions = screen.getByRole("region", { name: "实时会话" });
     const firstRow = within(sessions).getByRole("row", { name: /aaaa1111/ });
     expect(firstRow).toHaveTextContent("claude-code");
     expect(firstRow).toHaveTextContent("v1.0.0");
     expect(firstRow).toHaveTextContent("alice@example.com");
     expect(firstRow).toHaveTextContent("platform");
     expect(firstRow).toHaveTextContent("1m 15s");
-    expect(within(sessions).getByRole("row", { name: /cccc3333/ })).toHaveTextContent("(unknown)");
-    expect(screen.getByText("Live sessions (worker pid 4242)")).toBeInTheDocument();
+    expect(within(sessions).getByRole("row", { name: /cccc3333/ })).toHaveTextContent("(未知)");
+    expect(screen.getByText("实时会话 (工作进程 pid 4242)")).toBeInTheDocument();
     expect(networking.fetchMCPGatewaySessions).toHaveBeenCalledWith("token");
   });
 
@@ -131,8 +131,8 @@ describe("MCPGatewaySessionsTab", () => {
     vi.mocked(networking.fetchMCPGatewaySessions).mockResolvedValue(emptyReport);
     renderTab();
 
-    expect(await screen.findByText(/No live MCP connections on this worker \(pid 7\)/)).toBeInTheDocument();
-    expect(screen.queryByRole("region", { name: "Live sessions" })).not.toBeInTheDocument();
+    expect(await screen.findByText(/此工作进程 \(pid 7\) 上没有实时 MCP 连接/)).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "实时会话" })).not.toBeInTheDocument();
   });
 
   it("shows the API error when the request fails", async () => {
@@ -140,7 +140,7 @@ describe("MCPGatewaySessionsTab", () => {
     renderTab();
 
     const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent("Could not load live connections");
+    expect(alert).toHaveTextContent("无法加载实时连接");
     expect(alert).toHaveTextContent("Admin access required");
   });
 
@@ -148,7 +148,7 @@ describe("MCPGatewaySessionsTab", () => {
     vi.mocked(networking.fetchMCPGatewaySessions).mockResolvedValue(REPORT);
     renderTab({ canTerminate: false });
 
-    await screen.findByRole("region", { name: "Live sessions" });
+    await screen.findByRole("region", { name: "实时会话" });
     expect(screen.queryByRole("button", { name: /^Disconnect/ })).not.toBeInTheDocument();
   });
 
@@ -163,11 +163,11 @@ describe("MCPGatewaySessionsTab", () => {
     vi.mocked(networking.terminateMCPGatewaySessions).mockResolvedValue(terminated);
     renderTab({ canTerminate: true });
 
-    await user.click(await screen.findByRole("button", { name: "Disconnect session bbbb2222" }));
+    await user.click(await screen.findByRole("button", { name: "断开会话 bbbb2222" }));
     expect(networking.terminateMCPGatewaySessions).not.toHaveBeenCalled();
     const dialog = await screen.findByRole("alertdialog");
     expect(dialog).toHaveTextContent("session bbbb2222");
-    await user.click(within(dialog).getByRole("button", { name: "Disconnect" }));
+    await user.click(within(dialog).getByRole("button", { name: "断开" }));
 
     const status = await screen.findByText("Disconnected 1 session on worker pid 4242.", { exact: false });
     expect(status).toBeInTheDocument();
@@ -185,12 +185,12 @@ describe("MCPGatewaySessionsTab", () => {
     });
     renderTab({ canTerminate: true });
 
-    const byUser = await screen.findByRole("region", { name: "Sessions by user" });
+    const byUser = await screen.findByRole("region", { name: "按用户统计会话" });
     expect(within(byUser).queryByRole("button", { name: /\(unknown\)/ })).not.toBeInTheDocument();
-    await user.click(within(byUser).getByRole("button", { name: "Disconnect all sessions for user alice" }));
+    await user.click(within(byUser).getByRole("button", { name: "断开用户 alice 的所有会话" }));
     const dialog = await screen.findByRole("alertdialog");
-    expect(dialog).toHaveTextContent("every live session opened by user alice");
-    await user.click(within(dialog).getByRole("button", { name: "Disconnect" }));
+    expect(dialog).toHaveTextContent(/alice/);
+    await user.click(within(dialog).getByRole("button", { name: "断开" }));
 
     expect(await screen.findByText(/Disconnected 2 sessions on worker pid 4242\./)).toBeInTheDocument();
     expect(networking.terminateMCPGatewaySessions).toHaveBeenCalledWith("token", { user_id: "alice" });
@@ -204,12 +204,12 @@ describe("MCPGatewaySessionsTab", () => {
     );
     renderTab({ canTerminate: true });
 
-    await user.click(await screen.findByRole("button", { name: "Disconnect session aaaa1111" }));
-    await user.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "Disconnect" }));
+    await user.click(await screen.findByRole("button", { name: "断开会话 aaaa1111" }));
+    await user.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "断开" }));
 
     const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent("Could not disconnect");
+    expect(alert).toHaveTextContent("无法断开");
     expect(alert).toHaveTextContent("Proxy admin access required to terminate MCP gateway sessions.");
-    expect(screen.getByRole("region", { name: "Live sessions" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "实时会话" })).toBeInTheDocument();
   });
 });

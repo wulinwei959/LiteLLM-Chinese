@@ -66,7 +66,7 @@ describe("EnvVarsSection", () => {
   it("carries a row added after mount into the submitted list, scoped global without the user picking one", async () => {
     const onFinish = renderSection({ env_vars: [] });
 
-    await userEvent.click(screen.getByText("Add Variable"));
+    await userEvent.click(screen.getByText("添加变量"));
     await userEvent.type(screen.getByPlaceholderText("e.g. DB_PROTOCOL"), "DB_PROTOCOL");
     await userEvent.type(screen.getByPlaceholderText("e.g. postgresql"), "postgresql");
     await userEvent.click(screen.getByText("Submit"));
@@ -83,6 +83,6 @@ describe("EnvVarsSection", () => {
 
     await userEvent.type(screen.getByPlaceholderText("e.g. DB_PROTOCOL"), "9LIVES");
 
-    expect(await screen.findByText("Use letters, digits, underscores; cannot start with a digit.")).toBeInTheDocument();
+    expect(await screen.findByText("可使用字母、数字和下划线，不能以数字开头。")).toBeInTheDocument();
   });
 });

@@ -22,6 +22,7 @@ vi.mock("@/components/networking", () => ({
   listMCPUserEnvVarStatus: vi.fn().mockResolvedValue([]),
   fetchMCPGatewaySessions: vi.fn(),
   terminateMCPGatewaySessions: vi.fn(),
+  modelHubCall: vi.fn().mockResolvedValue({ data: [] }),
 }));
 
 const createQueryClient = () =>
@@ -152,11 +153,11 @@ describe("MCPServers", () => {
 
     // Wait for the component to load and check if title renders
     await waitFor(() => {
-      expect(screen.getByText("MCP Servers")).toBeInTheDocument();
+      expect(screen.getByText("MCP 服务器")).toBeInTheDocument();
     });
 
     // Verify the title is rendered
-    expect(screen.getByText("MCP Servers")).toBeInTheDocument();
+    expect(screen.getByText("MCP 服务器")).toBeInTheDocument();
   });
 
   it.each(["Admin", "Internal User"])("links a %s to their MCP connections page", async (userRole) => {
@@ -168,10 +169,10 @@ describe("MCPServers", () => {
       </QueryClientProvider>,
     );
 
-    const myConnections = await screen.findByRole("link", { name: "My Connections" });
+    const myConnections = await screen.findByRole("link", { name: "我的连接" });
     expect(myConnections).toBeVisible();
     expect(myConnections).toHaveAttribute("href", "/ui/connect");
-    for (const name of ["Semantic Filter", "Tool Search", "Network Settings", "Submitted MCPs"]) {
+    for (const name of ["语义筛选", "工具搜索", "网络设置", "已提交的 MCP"]) {
       const tab = screen.queryByRole("tab", { name });
       if (userRole === "Admin") {
         expect(tab).toBeVisible();
@@ -181,7 +182,7 @@ describe("MCPServers", () => {
     }
     expect(
       screen.getByRole("button", {
-        name: userRole === "Admin" ? "+ Add New MCP Server" : "+ Submit MCP Server",
+        name: userRole === "Admin" ? "+ 添加 MCP 服务器" : "+ 提交 MCP 服务器",
       }),
     ).toBeVisible();
   });
@@ -211,24 +212,24 @@ describe("MCPServers", () => {
         <MCPServers {...defaultProps} />
       </QueryClientProvider>,
     );
-    await userEvent.click(await screen.findByRole("button", { name: "Server actions" }));
-    await userEvent.click(await screen.findByRole("menuitem", { name: "Delete" }));
-    const dialog = await screen.findByRole("alertdialog", { name: "Delete MCP Server?" });
+    await userEvent.click(await screen.findByRole("button", { name: "服务器操作菜单" }));
+    await userEvent.click(await screen.findByRole("menuitem", { name: "删除" }));
+    const dialog = await screen.findByRole("alertdialog", { name: "删除 MCP 服务器?" });
     expect(within(dialog).getByText("delete-server")).toBeVisible();
     if (outcome === "unnamed") {
-      expect(within(dialog).queryByText("Name")).not.toBeInTheDocument();
+      expect(within(dialog).queryByText("名称")).not.toBeInTheDocument();
       expect(within(dialog).queryByText("URL")).not.toBeInTheDocument();
     } else {
       expect(within(dialog).getByText("Delete fixture")).toBeVisible();
       expect(within(dialog).getByText("https://example.com/mcp")).toBeVisible();
     }
     if (outcome === "cancel") {
-      await userEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+      await userEvent.click(within(dialog).getByRole("button", { name: "取消" }));
       expect(networking.deleteMCPServer).not.toHaveBeenCalled();
     } else {
-      await userEvent.click(within(dialog).getByRole("button", { name: "Delete" }));
-      expect(within(dialog).getByRole("button", { name: "Deleting..." })).toBeDisabled();
-      expect(within(dialog).getByRole("button", { name: "Cancel" })).toBeDisabled();
+      await userEvent.click(within(dialog).getByRole("button", { name: "删除" }));
+      expect(within(dialog).getByRole("button", { name: "删除中..." })).toBeDisabled();
+      expect(within(dialog).getByRole("button", { name: "取消" })).toBeDisabled();
       expect(networking.deleteMCPServer).toHaveBeenCalledWith("123", "delete-server");
       await act(async () => finishDelete());
     }
@@ -267,7 +268,7 @@ describe("MCPServers", () => {
       </QueryClientProvider>,
     );
     await screen.findByText("String group");
-    await userEvent.click(screen.getByRole("combobox", { name: "Access Group" }));
+    await userEvent.click(screen.getByRole("combobox", { name: "访问组" }));
     await userEvent.click(await screen.findByRole("option", { name: "shared" }));
     expect(screen.getByText("String group")).toBeVisible();
     expect(screen.getByText("Legacy group")).toBeVisible();
@@ -292,13 +293,13 @@ describe("MCPServers", () => {
       </QueryClientProvider>,
     );
     await screen.findByTestId("mcp-servers-grid");
-    const search = screen.getByPlaceholderText("Search by name, alias, URL, or ID");
+    const search = screen.getByPlaceholderText("按名称、别名、URL 或 ID 搜索");
     await userEvent.type(search, "  NEEDLE  ");
     expect(screen.getByTestId("mcp-servers-grid")).toBeVisible();
     await userEvent.clear(search);
     await userEvent.type(search, "no-match");
     expect(screen.queryByTestId("mcp-servers-grid")).not.toBeInTheDocument();
-    expect(screen.getByText("No servers match the current filters or search.")).toBeVisible();
+    expect(screen.getByText("没有服务器符合当前的筛选或搜索条件。")).toBeVisible();
   });
 
   it("should render mocked MCP servers data in the table", async () => {
@@ -345,7 +346,7 @@ describe("MCPServers", () => {
 
     // Wait for the component to load
     await waitFor(() => {
-      expect(screen.getByText("MCP Servers")).toBeInTheDocument();
+      expect(screen.getByText("MCP 服务器")).toBeInTheDocument();
     });
 
     // Wait for the mocked data to render in the table
@@ -417,7 +418,7 @@ describe("MCPServers", () => {
 
     // Wait for the component to load
     await waitFor(() => {
-      expect(screen.getByText("MCP Servers")).toBeInTheDocument();
+      expect(screen.getByText("MCP 服务器")).toBeInTheDocument();
     });
 
     // Verify the health check API was called (without a server ID filter — the hook always
@@ -460,7 +461,7 @@ describe("MCPServers", () => {
 
     // Wait for the component to load
     await waitFor(() => {
-      expect(screen.getByText("MCP Servers")).toBeInTheDocument();
+      expect(screen.getByText("MCP 服务器")).toBeInTheDocument();
     });
 
     // Verify that health check was initiated
@@ -528,7 +529,7 @@ describe("MCPServers", () => {
 
     // Wait for the component to load
     await waitFor(() => {
-      expect(screen.getByText("MCP Servers")).toBeInTheDocument();
+      expect(screen.getByText("MCP 服务器")).toBeInTheDocument();
     });
 
     // Wait for servers to be rendered
@@ -541,7 +542,7 @@ describe("MCPServers", () => {
     expect(screen.getByText("Team B Server")).toBeInTheDocument();
     expect(screen.getByText("Team A Server 2")).toBeInTheDocument();
 
-    const teamSelect = screen.getByRole("combobox", { name: "Team" });
+    const teamSelect = screen.getByRole("combobox", { name: "团队" });
 
     await userEvent.click(teamSelect);
 
@@ -670,13 +671,13 @@ describe("MCPServers", () => {
         <MCPServers {...defaultProps} {...props} />
       </QueryClientProvider>,
     );
-    await userEvent.click(await screen.findByRole("tab", { name: "Live Connections" }));
-    return within(await screen.findByRole("region", { name: "Live sessions" })).getByRole("row", { name: /aaaa1111/ });
+    await userEvent.click(await screen.findByRole("tab", { name: "实时连接" }));
+    return within(await screen.findByRole("region", { name: "实时会话" })).getByRole("row", { name: /aaaa1111/ });
   };
 
   it("lets a full admin disconnect a live session", async () => {
     const row = await openLiveConnections({ isViewOnly: false });
-    expect(within(row).getByRole("button", { name: "Disconnect session aaaa1111" })).toBeInTheDocument();
+    expect(within(row).getByRole("button", { name: "断开会话 aaaa1111" })).toBeInTheDocument();
   });
 
   it("shows live sessions to a view-only admin session without any disconnect control", async () => {

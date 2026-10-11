@@ -81,7 +81,7 @@ describe("UIThemeSettings", () => {
 
     fireEvent.change(screen.getByPlaceholderText(LOGO_PLACEHOLDER), { target: { value: "https://a.test/logo.png" } });
     fireEvent.change(screen.getByPlaceholderText(FAVICON_PLACEHOLDER), { target: { value: "https://a.test/fav.ico" } });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(patchCalls()).toHaveLength(1));
     expect(bodyOf(patchCalls()[0])).toEqual({
@@ -89,7 +89,7 @@ describe("UIThemeSettings", () => {
       logo_url_dark: null,
       favicon_url: "https://a.test/fav.ico",
     });
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Theme settings updated successfully!"));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("主题设置更新成功!"));
   });
 
   it("should load and save a separate dark-mode logo url", async () => {
@@ -106,7 +106,7 @@ describe("UIThemeSettings", () => {
     fireEvent.change(screen.getByPlaceholderText(LOGO_DARK_PLACEHOLDER), {
       target: { value: "https://a.test/logo-dark.png" },
     });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(patchCalls()).toHaveLength(1));
     expect(bodyOf(patchCalls()[0]).logo_url_dark).toBe("https://a.test/logo-dark.png");
@@ -119,9 +119,9 @@ describe("UIThemeSettings", () => {
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
     fetchMock.mockImplementation(() => Promise.resolve({ ok: false } as Response));
 
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
-    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("Failed to update theme settings"));
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("更新主题设置失败"));
     expect(toast.success).not.toHaveBeenCalled();
   });
 
@@ -137,7 +137,7 @@ describe("UIThemeSettings", () => {
       expect(screen.getByPlaceholderText(LOGO_PLACEHOLDER)).toHaveValue("https://cdn.example.com/logo.svg");
     });
 
-    await user.click(screen.getByRole("button", { name: "Reset to Default" }));
+    await user.click(screen.getByRole("button", { name: "恢复默认" }));
 
     await waitFor(() => expect(patchCalls()).toHaveLength(1));
     expect(bodyOf(patchCalls()[0])).toEqual({ logo_url: null, logo_url_dark: null, favicon_url: null });
@@ -147,6 +147,6 @@ describe("UIThemeSettings", () => {
     expect(setLogoUrl).toHaveBeenLastCalledWith(null);
     expect(setLogoUrlDark).toHaveBeenLastCalledWith(null);
     expect(setFaviconUrl).toHaveBeenLastCalledWith(null);
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Theme settings reset to default!"));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("主题设置已恢复默认!"));
   });
 });

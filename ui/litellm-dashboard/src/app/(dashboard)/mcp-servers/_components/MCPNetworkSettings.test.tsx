@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import MCPNetworkSettings from "./MCPNetworkSettings";
@@ -30,15 +31,15 @@ const clientCard = (alias: string) => screen.getByRole("button", { name: new Reg
 
 const fillClientDialog = async (alias: string, value: string) => {
   const dialog = await screen.findByRole("dialog");
-  fireEvent.change(within(dialog).getByRole("textbox", { name: "Alias" }), { target: { value: alias } });
-  fireEvent.change(within(dialog).getByRole("textbox", { name: "Value" }), { target: { value } });
+  fireEvent.change(within(dialog).getByRole("textbox", { name: "别名" }), { target: { value: alias } });
+  fireEvent.change(within(dialog).getByRole("textbox", { name: "值" }), { target: { value } });
   return dialog;
 };
 
 const addClient = async (alias: string, value: string) => {
-  await userEvent.click(screen.getByRole("button", { name: "Add client" }));
+  await userEvent.click(screen.getByRole("button", { name: "添加客户端" }));
   const dialog = await fillClientDialog(alias, value);
-  await userEvent.click(within(dialog).getByRole("button", { name: "Add" }));
+  await userEvent.click(within(dialog).getByRole("button", { name: "添加" }));
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
 };
 
@@ -69,7 +70,7 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
 
-    await screen.findByText("Private IP Ranges");
+    await screen.findByText("私有 IP 段");
     expect(screen.queryByText("should-not-show")).not.toBeInTheDocument();
   });
 
@@ -78,7 +79,7 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
 
-    expect(await screen.findByText("203.0.113.45")).toBeInTheDocument();
+    expect(await screen.findByText(/您当前的 IP：203\.0\.113\.45/)).toBeInTheDocument();
     expect(screen.getByText("203.0.113.0/24")).toBeInTheDocument();
   });
 
@@ -93,7 +94,7 @@ describe("MCPNetworkSettings", () => {
 
     await userEvent.keyboard("{Enter}");
 
-    await waitFor(() => expect(screen.queryByText("Suggested range:")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("建议的网段：")).not.toBeInTheDocument());
   });
 
   it("adds the suggested range to the list when clicked, and stops suggesting it", async () => {
@@ -102,7 +103,7 @@ describe("MCPNetworkSettings", () => {
     renderSettings();
     await userEvent.click(await screen.findByText("203.0.113.0/24"));
 
-    await waitFor(() => expect(screen.queryByText("Suggested range:")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("建议的网段：")).not.toBeInTheDocument());
     expect(screen.getByText("203.0.113.0/24")).toBeInTheDocument();
   });
 
@@ -114,7 +115,7 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
     await userEvent.click(await screen.findByText("203.0.113.0/24"));
-    await userEvent.click(await screen.findByRole("button", { name: /Save/ }));
+    await userEvent.click(await screen.findByRole("button", { name: /Save|保存/ }));
 
     await waitFor(() =>
       expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_internal_ip_ranges", [
@@ -132,7 +133,7 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
     await userEvent.click(await screen.findByRole("button", { name: "Remove 10.0.0.0/8" }));
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_internal_ip_ranges"));
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
@@ -140,9 +141,9 @@ describe("MCPNetworkSettings", () => {
 
   it("does not write settings that were never stored and are still empty", async () => {
     renderSettings();
-    await userEvent.click(await screen.findByRole("button", { name: /Save/ }));
+    await userEvent.click(await screen.findByRole("button", { name: /Save|保存/ }));
 
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("MCP network settings saved"));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("MCP 网络设置已保存"));
     expect(deleteConfigFieldSetting).not.toHaveBeenCalled();
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
   });
@@ -154,7 +155,7 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
 
-    expect(await screen.findByText("Allowed Clients")).toBeVisible();
+    expect(await screen.findByText("允许的客户端")).toBeVisible();
     expect(screen.queryByText(/Allowed Client IDs/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Allowed Client Applications/)).not.toBeInTheDocument();
     expect(clientCard("Antigravity CLI")).toHaveTextContent("antigravity-cli");
@@ -168,12 +169,12 @@ describe("MCPNetworkSettings", () => {
     ]);
 
     renderSettings();
-    await screen.findByText("Allowed Clients");
+    await screen.findByText("允许的客户端");
     await userEvent.click(clientCard("Codex"));
 
-    const dialog = await screen.findByRole("dialog", { name: "Edit client" });
-    expect(within(dialog).getByRole("textbox", { name: "Alias" })).toHaveValue("Codex");
-    expect(within(dialog).getByRole("textbox", { name: "Value" })).toHaveValue("codex-mcp-client");
+    const dialog = await screen.findByRole("dialog", { name: "编辑客户端" });
+    expect(within(dialog).getByRole("textbox", { name: "别名" })).toHaveValue("Codex");
+    expect(within(dialog).getByRole("textbox", { name: "值" })).toHaveValue("codex-mcp-client");
   });
 
   it("warns that a stored allowlist in the old plain-string shape denies every client and lets Save remove it", async () => {
@@ -183,10 +184,10 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
 
-    expect(await screen.findByText(/stored allowlist is not a list of alias and value pairs/)).toBeVisible();
+    expect(await screen.findByText(/存储的允许列表不是别名与值的配对列表|stored allowlist is not a list/)).toBeVisible();
     expect(screen.queryByText("antigravity-cli")).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients"));
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
@@ -200,9 +201,9 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
 
-    await screen.findByText(/stored allowlist is not a list of alias and value pairs/);
+    await screen.findByText(/存储的允许列表不是别名与值的配对列表|stored allowlist is not a list/);
     await addClient(ANTIGRAVITY.alias, ANTIGRAVITY.value);
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
       expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [ANTIGRAVITY]),
@@ -218,17 +219,17 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
 
-    expect(await screen.findByText(/stored allowlist is not a list of alias and value pairs/)).toBeVisible();
+    expect(await screen.findByText(/存储的允许列表不是别名与值的配对列表|stored allowlist is not a list/)).toBeVisible();
     expect(screen.queryByRole("button", { name: /^Antigravity CLI/ })).not.toBeInTheDocument();
   });
 
   it("adds clients as alias and value pairs and saves them under mcp_allowed_clients", async () => {
     renderSettings();
-    await screen.findByText("Allowed Clients");
+    await screen.findByText("允许的客户端");
 
     await addClient(" Antigravity CLI ", " antigravity-cli ");
     await addClient("Codex", "codex-mcp-client");
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
       expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [ANTIGRAVITY, CODEX]),
@@ -242,17 +243,17 @@ describe("MCPNetworkSettings", () => {
     ]);
 
     renderSettings();
-    await screen.findByText("Allowed Clients");
+    await screen.findByText("允许的客户端");
     await userEvent.click(clientCard("Antigravity CLI"));
     const dialog = await screen.findByRole("dialog");
-    fireEvent.change(within(dialog).getByRole("textbox", { name: "Value" }), {
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "值" }), {
       target: { value: " 0oa1b2c3d4e5f6g7h8i9 " },
     });
-    await userEvent.click(within(dialog).getByRole("button", { name: "Done" }));
+    await userEvent.click(within(dialog).getByRole("button", { name: "完成" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(clientCard("Antigravity CLI")).toHaveTextContent("0oa1b2c3d4e5f6g7h8i9");
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
       expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [
@@ -267,28 +268,28 @@ describe("MCPNetworkSettings", () => {
     ]);
 
     renderSettings();
-    await screen.findByText("Allowed Clients");
+    await screen.findByText("允许的客户端");
     await userEvent.click(clientCard("Antigravity CLI"));
     const dialog = await screen.findByRole("dialog");
-    fireEvent.change(within(dialog).getByRole("textbox", { name: "Value" }), { target: { value: "changed" } });
-    await userEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "值" }), { target: { value: "changed" } });
+    await userEvent.click(within(dialog).getByRole("button", { name: "取消" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(clientCard("Antigravity CLI")).toHaveTextContent("antigravity-cli");
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("MCP network settings saved"));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("MCP 网络设置已保存"));
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
   });
 
   it("will not add a client that has an alias but no value", async () => {
     renderSettings();
-    await screen.findByText("Allowed Clients");
+    await screen.findByText("允许的客户端");
 
-    await userEvent.click(screen.getByRole("button", { name: "Add client" }));
+    await userEvent.click(screen.getByRole("button", { name: "添加客户端" }));
     const dialog = await fillClientDialog("Antigravity CLI", "   ");
 
-    expect(within(dialog).getByRole("button", { name: "Add" })).toBeDisabled();
+    expect(within(dialog).getByRole("button", { name: "添加" })).toBeDisabled();
   });
 
   it("adds nothing when the add dialog is cancelled", async () => {
@@ -297,16 +298,16 @@ describe("MCPNetworkSettings", () => {
     ]);
 
     renderSettings();
-    await screen.findByText("Allowed Clients");
-    await userEvent.click(screen.getByRole("button", { name: "Add client" }));
+    await screen.findByText("允许的客户端");
+    await userEvent.click(screen.getByRole("button", { name: "添加客户端" }));
     const dialog = await fillClientDialog("Codex", "codex-mcp-client");
-    await userEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+    await userEvent.click(within(dialog).getByRole("button", { name: "取消" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(screen.queryByText("Codex")).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("MCP network settings saved"));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("MCP 网络设置已保存"));
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
     expect(deleteConfigFieldSetting).not.toHaveBeenCalled();
   });
@@ -320,13 +321,13 @@ describe("MCPNetworkSettings", () => {
     ]);
 
     renderSettings();
-    await screen.findByText("Allowed Clients");
+    await screen.findByText("允许的客户端");
     await userEvent.click(clientCard("Claude Code"));
-    await userEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Remove client" }));
+    await userEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "移除客户端" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(screen.queryByText("claude-code")).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
       expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [ANTIGRAVITY, CODEX]),
@@ -339,14 +340,14 @@ describe("MCPNetworkSettings", () => {
     ]);
 
     renderSettings();
-    await screen.findByText("Allowed Clients");
+    await screen.findByText("允许的客户端");
     await userEvent.click(clientCard("Claude Code"));
-    await userEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Remove client" }));
+    await userEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "移除客户端" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(screen.queryByText("claude-code")).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients"));
     expect(updateConfigFieldSetting).not.toHaveBeenCalledWith("tok", "mcp_allowed_clients", expect.anything());
@@ -357,13 +358,13 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
 
-    expect(await screen.findByText(/An empty allowlist is currently stored, so every client is denied/)).toBeVisible();
+    expect(await screen.findByText(/当前存储了空的允许列表，因此所有客户端都会被拒绝/)).toBeVisible();
 
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients"));
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
-    await waitFor(() => expect(screen.queryByText(/An empty allowlist is currently stored/)).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText(/当前存储了空的允许列表/)).not.toBeInTheDocument());
   });
 
   it("does not show the deny-all warning when no allowlist is stored", async () => {
@@ -371,7 +372,7 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
 
-    await screen.findByText("Allowed Clients");
+    await screen.findByText("允许的客户端");
     expect(screen.queryByText(/every client is denied/)).not.toBeInTheDocument();
   });
 
@@ -379,7 +380,7 @@ describe("MCPNetworkSettings", () => {
     renderSettings();
 
     expect(await screen.findByText(/litellm_jwtauth\.mcp_client_id_jwt_field/)).toBeVisible();
-    expect(screen.getByText(/Clients pick this value themselves, so it is a policy control/)).toBeVisible();
+    expect(screen.getByText(/该值由客户端自行选择，因此是策略控制/)).toBeVisible();
     expect(screen.queryByText(/clientInfo/)).not.toBeInTheDocument();
   });
 
@@ -390,16 +391,16 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
 
-    expect(await screen.findByRole("textbox", { name: "Client identity header" })).toHaveValue("x-mcp-client");
+    expect(await screen.findByRole("textbox", { name: "客户端身份请求头（安全性较低）" })).toHaveValue("x-mcp-client");
   });
 
   it("saves a newly typed client identity header under mcp_client_id_header", async () => {
     renderSettings();
-    fireEvent.change(await screen.findByRole("textbox", { name: "Client identity header" }), {
+    fireEvent.change(await screen.findByRole("textbox", { name: "客户端身份请求头（安全性较低）" }), {
       target: { value: " x-mcp-client " },
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
       expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_client_id_header", "x-mcp-client"),
@@ -414,11 +415,11 @@ describe("MCPNetworkSettings", () => {
     ]);
 
     renderSettings();
-    fireEvent.change(await screen.findByRole("textbox", { name: "Client identity header" }), {
+    fireEvent.change(await screen.findByRole("textbox", { name: "客户端身份请求头（安全性较低）" }), {
       target: { value: "" },
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_client_id_header"));
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
@@ -430,8 +431,8 @@ describe("MCPNetworkSettings", () => {
     ]);
 
     renderSettings();
-    await screen.findByRole("textbox", { name: "Client identity header" });
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await screen.findByRole("textbox", { name: "客户端身份请求头（安全性较低）" });
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() => expect(toast.success).toHaveBeenCalled());
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
@@ -445,9 +446,9 @@ describe("MCPNetworkSettings", () => {
     ]);
 
     renderSettings();
-    await screen.findByText("Allowed Clients");
+    await screen.findByText("允许的客户端");
     await addClient("Codex", "codex-mcp-client");
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
       expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [ANTIGRAVITY, CODEX]),
@@ -466,7 +467,7 @@ describe("MCPNetworkSettings", () => {
     renderSettings();
     await userEvent.click(await screen.findByRole("button", { name: "Remove 10.0.0.0/8" }));
     await addClient("Codex", "codex-mcp-client");
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() => expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [CODEX]));
     await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith(rangeFailure));
@@ -490,7 +491,7 @@ describe("MCPNetworkSettings", () => {
     renderSettings();
     await userEvent.click(await screen.findByText("203.0.113.0/24"));
     await addClient("Codex", "codex-mcp-client");
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
       expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_internal_ip_ranges", ["203.0.113.0/24"]),
@@ -499,6 +500,6 @@ describe("MCPNetworkSettings", () => {
 
     finishRangeWrite?.();
     await waitFor(() => expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [CODEX]));
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("MCP network settings saved"));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("MCP 网络设置已保存"));
   });
 });

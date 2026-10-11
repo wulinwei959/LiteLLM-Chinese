@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { z } from "zod/v4";
@@ -102,7 +104,7 @@ function MCPToolList({ serverId, serverName, accessToken, selectedTools, onToggl
               <UiLoadingSpinner className="size-4" />
             </div>
           ) : tools.length === 0 ? (
-            <p className="text-xs text-muted-foreground px-2 py-2">No tools found for this server.</p>
+            <p className="text-xs text-muted-foreground px-2 py-2">{t("noToolsForServer")}</p>
           ) : (
             <div className="flex flex-col gap-1">
               {tools.map((tool) => {

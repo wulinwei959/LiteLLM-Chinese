@@ -69,14 +69,14 @@ describe("OrganizationsTable", () => {
   it("renders every column header", () => {
     renderWithProviders(<OrganizationsTable {...baseProps} organizations={[]} />);
     for (const header of [
-      "Organization ID",
-      "Organization Name",
-      "Created At",
-      "Spend (USD)",
-      "Budget (USD)",
-      "Models",
-      "TPM / RPM Limits",
-      "Members",
+      "组织 ID",
+      "组织名称",
+      "创建时间",
+      "花费 (USD)",
+      "预算 (USD)",
+      "模型",
+      "TPM / RPM 限制",
+      "成员",
     ]) {
       expect(screen.getByText(header)).toBeInTheDocument();
     }
@@ -175,7 +175,7 @@ describe("OrganizationsTable", () => {
     expect(screen.getByText("$100.00")).toBeInTheDocument();
     expect(screen.getByText("TPM: 1000")).toBeInTheDocument();
     expect(screen.getByText("RPM: 60")).toBeInTheDocument();
-    expect(screen.getByText("3 Members")).toBeInTheDocument();
+    expect(screen.getByText("3 成员")).toBeInTheDocument();
     // Five models, three visible -> the shared ModelsCell collapses the rest.
     expect(screen.getByText("+2 more")).toBeInTheDocument();
   });
@@ -190,9 +190,9 @@ describe("OrganizationsTable", () => {
 
     expect(screen.getByText("All Proxy Models")).toBeInTheDocument();
     // Budget shows a standalone "Unlimited"; the limits fall back inline.
-    expect(screen.getByText("Unlimited")).toBeInTheDocument();
-    expect(screen.getByText("TPM: Unlimited")).toBeInTheDocument();
-    expect(screen.getByText("RPM: Unlimited")).toBeInTheDocument();
+    expect(screen.getByText("无限制")).toBeInTheDocument();
+    expect(screen.getByText("TPM: 无限制")).toBeInTheDocument();
+    expect(screen.getByText("RPM: 无限制")).toBeInTheDocument();
   });
 
   it("renders a tpm/rpm limit of 0 as 0, never as Unlimited", () => {
@@ -205,8 +205,8 @@ describe("OrganizationsTable", () => {
 
     expect(screen.getByText("TPM: 0")).toBeInTheDocument();
     expect(screen.getByText("RPM: 0")).toBeInTheDocument();
-    expect(screen.queryByText("TPM: Unlimited")).not.toBeInTheDocument();
-    expect(screen.queryByText("RPM: Unlimited")).not.toBeInTheDocument();
+    expect(screen.queryByText("TPM: 无限制")).not.toBeInTheDocument();
+    expect(screen.queryByText("RPM: 无限制")).not.toBeInTheDocument();
   });
 
   it("renders loading skeletons instead of rows while loading", () => {
@@ -228,13 +228,13 @@ describe("OrganizationsTable", () => {
     renderWithProviders(<OrganizationsTable {...baseProps} organizations={thirtyOrganizations} />, { onUrlUpdate });
 
     expect(screen.getAllByRole("row")).toHaveLength(26);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-25 of 30");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-25 条，共 30 条");
 
     await user.click(screen.getByTestId("pagination-page-size"));
     await user.click(await screen.findByRole("option", { name: "50" }));
 
     expect(screen.getAllByRole("row")).toHaveLength(31);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-30 of 30");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-30 条，共 30 条");
     await waitFor(() => expect(onUrlUpdate.mock.calls.at(-1)?.[0].searchParams.get("page_size")).toBe("50"));
   });
 
@@ -273,7 +273,7 @@ describe("OrganizationsTable URL state", () => {
       searchParams: "?page=2",
       onUrlUpdate,
     });
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 26-30 of 30");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 26-30 条，共 30 条");
 
     await user.click(screen.getByTestId("sort-header-organization_alias"));
 
@@ -281,7 +281,7 @@ describe("OrganizationsTable URL state", () => {
     expect(onUrlUpdate).toHaveBeenCalledTimes(1);
     expect(lastSearchParams(onUrlUpdate)?.get("sort_order")).toBe("asc");
     expect(lastSearchParams(onUrlUpdate)?.has("page")).toBe(false);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-25 of 30");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-25 条，共 30 条");
     expect(within(screen.getAllByRole("row")[1]).getByText("Org 0")).toBeInTheDocument();
   });
 
@@ -293,12 +293,12 @@ describe("OrganizationsTable URL state", () => {
       onUrlUpdate,
     });
 
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 26-30 of 30");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 26-30 条，共 30 条");
     expect(screen.getByText("org-29")).toBeInTheDocument();
 
     await user.click(screen.getByTestId("pagination-prev"));
 
-    await waitFor(() => expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-25 of 30"));
+    await waitFor(() => expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-25 条，共 30 条"));
     expect(lastSearchParams(onUrlUpdate)?.has("page")).toBe(false);
 
     await user.click(screen.getByTestId("pagination-next"));
@@ -315,7 +315,7 @@ describe("OrganizationsTable URL state", () => {
 
     rerender(<OrganizationsTable {...baseProps} organizations={thirtyOrganizations} />);
 
-    await waitFor(() => expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 26-30 of 30"));
+    await waitFor(() => expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 26-30 条，共 30 条"));
     expect(onUrlUpdate).not.toHaveBeenCalled();
   });
 });

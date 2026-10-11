@@ -16,11 +16,11 @@ const notify = vi.mocked(toast);
 
 const ACCESS_TOKEN = "sk-test-token";
 
-const getRequestTextarea = () => screen.getByPlaceholderText(/press cmd\/ctrl \+ enter to transform/i);
+const getRequestTextarea = () => screen.getByPlaceholderText(/cmd\/ctrl \+ enter/i);
 
-const getTransformButton = () => screen.getByRole("button", { name: /transform/i });
+const getTransformButton = () => screen.getByRole("button", { name: /转换/i });
 
-const getCopyButton = () => screen.getByRole("button", { name: /copy to clipboard/i });
+const getCopyButton = () => screen.getByRole("button", { name: /复制到剪贴板/i });
 
 describe("TransformRequestPanel", () => {
   beforeEach(() => {
@@ -34,14 +34,14 @@ describe("TransformRequestPanel", () => {
   it("renders both panels, the prefilled request and the placeholder curl", () => {
     renderWithProviders(<TransformRequestPanel accessToken={ACCESS_TOKEN} />);
 
-    expect(screen.getByText("Original Request")).toBeInTheDocument();
-    expect(screen.getByText("Transformed Request")).toBeInTheDocument();
-    expect(screen.getByText(/sensitive headers are not shown/i)).toBeInTheDocument();
+    expect(screen.getByText("原始请求")).toBeInTheDocument();
+    expect(screen.getByText("转换后请求")).toBeInTheDocument();
+    expect(screen.getByText(/敏感请求头不会显示/i)).toBeInTheDocument();
 
     expect((getRequestTextarea() as HTMLTextAreaElement).value).toContain('"model": "openai/gpt-4o"');
     expect(screen.getByText(/https:\/\/api\.openai\.com\/v1\/chat\/completions/)).toBeInTheDocument();
 
-    expect(screen.getByRole("link", { name: /here/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /这里/i })).toHaveAttribute(
       "href",
       "https://github.com/BerriAI/litellm/issues",
     );
@@ -74,7 +74,7 @@ describe("TransformRequestPanel", () => {
     expect(output).toHaveTextContent(/\-H 'x\-api\-key: redacted'/);
     expect(output).toHaveTextContent(/"model": "claude\-opus\-4\-8"/);
     expect(output).toHaveTextContent(/"max_tokens": 42/);
-    expect(notify.success).toHaveBeenCalledWith("Request transformed successfully");
+    expect(notify.success).toHaveBeenCalledWith("请求转换成功");
   });
 
   it("transforms on Cmd/Ctrl + Enter without clicking the button", async () => {
@@ -127,7 +127,7 @@ describe("TransformRequestPanel", () => {
 
     await user.click(getTransformButton());
 
-    await waitFor(() => expect(notify.fromError).toHaveBeenCalledWith("Failed to transform request"));
+    await waitFor(() => expect(notify.fromError).toHaveBeenCalledWith("转换请求失败"));
     expect(screen.getByText(/https:\/\/api\.openai\.com\/v1\/chat\/completions/)).toBeInTheDocument();
   });
 
@@ -149,6 +149,6 @@ describe("TransformRequestPanel", () => {
 
     expect(writeText).toHaveBeenCalledTimes(1);
     expect(writeText.mock.calls[0]?.[0]).toContain("https://api.anthropic.com/v1/messages");
-    expect(notify.success).toHaveBeenCalledWith("Copied to clipboard");
+    expect(notify.success).toHaveBeenCalledWith("已复制到剪贴板");
   });
 });

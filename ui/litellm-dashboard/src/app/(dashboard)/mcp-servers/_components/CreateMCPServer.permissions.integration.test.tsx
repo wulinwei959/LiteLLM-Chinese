@@ -63,7 +63,7 @@ const getServerNameInput = () => document.getElementById("server_name") as HTMLI
 // The switches live behind a collapsed panel, so they only reach the accessibility tree once an
 // operator expands it.
 const expandPermissionPanel = async (): Promise<void> => {
-  const trigger = screen.getByRole("button", { name: /Permission Management/ });
+  const trigger = screen.getByRole("button", { name: /权限管理/ });
   if (trigger.getAttribute("aria-expanded") !== "true") {
     await userEvent.setup({ delay: null }).click(trigger);
   }
@@ -75,19 +75,19 @@ const switchFor = async (labelText: string): Promise<HTMLElement> => {
 };
 
 const fillMinimalHttpServer = async (name: string) => {
-  await selectOption("Transport Type", "Streamable HTTP");
+  await selectOption("传输类型", "Streamable HTTP");
   await waitFor(() => {
     expect(screen.getByPlaceholderText("https://your-mcp-server.com")).toBeInTheDocument();
   });
   const user = userEvent.setup({ delay: null });
   await user.type(getServerNameInput(), name);
   await user.type(screen.getByPlaceholderText("https://your-mcp-server.com"), "https://example.com/mcp");
-  await selectOption("Authentication", "None");
+  await selectOption(/认证方式/, "无");
 };
 
 const submitAndReadPayload = async () => {
   await act(async () => {
-    fireEvent.click(screen.getByRole("button", { name: "Add MCP Server" }));
+    fireEvent.click(screen.getByRole("button", { name: "添加 MCP 服务器" }));
   });
   await waitFor(() => expect(networking.createMCPServer).toHaveBeenCalledTimes(1));
   return vi.mocked(networking.createMCPServer).mock.calls[0][1];
@@ -126,7 +126,7 @@ describe("CreateMCPServer permission toggles reaching the payload", () => {
     renderWithProviders(<CreateMCPServer {...defaultProps} />);
     await fillMinimalHttpServer("Perm_Server");
 
-    const allowAllKeys = await switchFor("Allow All LiteLLM Keys");
+    const allowAllKeys = await switchFor("允许所有 LiteLLM 密钥");
     await act(async () => {
       fireEvent.click(allowAllKeys);
     });
@@ -140,7 +140,7 @@ describe("CreateMCPServer permission toggles reaching the payload", () => {
     renderWithProviders(<CreateMCPServer {...defaultProps} />);
     await fillMinimalHttpServer("Perm_Server");
 
-    const internalOnly = await switchFor("Internal network only");
+    const internalOnly = await switchFor("仅限内部网络");
     expect(internalOnly).toHaveAttribute("aria-checked", "false");
 
     await act(async () => {
@@ -157,8 +157,9 @@ describe("CreateMCPServer permission toggles reaching the payload", () => {
     renderWithProviders(<CreateMCPServer {...defaultProps} />);
     await fillMinimalHttpServer("Perm_Server");
 
-    expect(screen.getByText("Allow All LiteLLM Keys")).toBeInTheDocument();
-    expect(screen.queryByText("Delegate auth to upstream (PKCE passthrough)")).not.toBeInTheDocument();
+    const expanded = await screen.findByRole("button", { name: /权限管理/ });
+    expect(expanded).toBeInTheDocument();
+    expect(screen.queryByText("将认证委托给上游（PKCE 直通）")).not.toBeInTheDocument();
 
     const payload = await submitAndReadPayload();
 

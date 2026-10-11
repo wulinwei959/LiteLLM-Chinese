@@ -245,7 +245,7 @@ export function ToolTestPanel({
                   </div>
                   <h4 className="text-sm font-medium text-foreground mb-1">{t("toolTest.readyToCall")}</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Configure the input parameters and click &quot;Call Tool&quot; to see the results here.
+                    {t("toolTest.configureAndClick")}
                   </p>
                 </div>
               </div>

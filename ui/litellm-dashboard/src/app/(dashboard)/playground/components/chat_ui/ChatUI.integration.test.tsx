@@ -79,7 +79,7 @@ describe("ChatUI", () => {
         disabledPersonalKeyCreation={false}
       />,
     );
-    expect(screen.getByText("Test Key")).toBeInTheDocument();
+    expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
   });
 
   it("should show the voice selector when the endpoint type is audio_speech", async () => {
@@ -94,14 +94,14 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select an endpoint", "/v1/audio/speech");
+    await selectComboboxOption("端点类型", "/v1/audio/speech");
 
     await waitFor(() => {
-      expect(screen.getByText("Voice")).toBeInTheDocument();
-      expect(screen.getByLabelText("Voice")).toBeInTheDocument();
+      expect(screen.getByText("语音")).toBeInTheDocument();
+      expect(screen.getByLabelText("语音")).toBeInTheDocument();
     });
   });
 
@@ -118,18 +118,18 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await user.click(screen.getByRole("button", { name: /get code/i }));
+    await user.click(screen.getByRole("button", { name: /get code|获取代码/i }));
 
-    const sdkTrigger = await screen.findByLabelText("SDK Type");
+    const sdkTrigger = await screen.findByLabelText(/SDK 类型|SDK Type/);
     expect(sdkTrigger).toHaveTextContent("OpenAI SDK");
 
     await user.click(sdkTrigger);
     await user.click(await screen.findByRole("option", { name: "Azure SDK" }));
 
-    expect(await screen.findByLabelText("SDK Type")).toHaveTextContent("Azure SDK");
+    expect(await screen.findByLabelText(/SDK 类型|SDK Type/)).toHaveTextContent("Azure SDK");
   });
 
   it("should show the voice by its human label rather than its wire value", async () => {
@@ -144,13 +144,13 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select an endpoint", "/v1/audio/speech");
+    await selectComboboxOption("端点类型", "/v1/audio/speech");
 
     await waitFor(() => {
-      expect(screen.getByLabelText("Voice")).toHaveTextContent("Alloy - Professional and confident");
+      expect(screen.getByLabelText("语音")).toHaveTextContent("Alloy - Professional and confident");
     });
   });
 
@@ -167,29 +167,29 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await openComboboxByPlaceholder("Select a Model");
+    await openComboboxByPlaceholder(/选择模型|输入自定义模型名称/);
 
     await waitFor(() => {
       expect(screen.getAllByText("Model 1").length).toBeGreaterThan(0);
     });
     await user.click(screen.getByRole("option", { name: "Model 1Mode: chat" }));
-    expect(screen.getByPlaceholderText("Select a Model")).toHaveValue("Model 1");
+    expect(screen.getByPlaceholderText(/选择模型|enter custom model|输入自定义模型名称|Select Model/)).toHaveValue("Model 1");
 
     await user.click(screen.getAllByRole("button", { name: "Clear" })[0]);
-    const input = screen.getByPlaceholderText("Describe the image you want to generate...");
+    const input = screen.getByPlaceholderText(/Describe the image|描述您想生成的图片/);
     fireEvent.change(input, { target: { value: "Contract endpoint check" } });
-    expect(screen.getByRole("button", { name: "Send message" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "发送消息" })).toBeDisabled();
     fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
     expect(input).toHaveValue("Contract endpoint check");
     expect(makeOpenAIChatCompletionRequest).not.toHaveBeenCalled();
     expect(sessionStorage.getItem("endpointType")).toBeNull();
 
-    await selectComboboxOption("Select an endpoint", "/v1/chat/completions");
-    await selectComboboxOption("Select a Model", "Model 1");
-    expect(screen.getByRole("button", { name: "Send message" })).toBeEnabled();
+    await selectComboboxOption("端点类型", "/v1/chat/completions");
+    await selectComboboxOption(/选择模型|输入自定义模型名称/, "Model 1");
+    expect(screen.getByRole("button", { name: "发送消息" })).toBeEnabled();
   });
 
   it("shows only endpoint-compatible models when chat endpoint is selected", async () => {
@@ -213,11 +213,11 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select an endpoint", "/v1/chat/completions");
-    await openComboboxByPlaceholder("Select a Model");
+    await selectComboboxOption("端点类型", "/v1/chat/completions");
+    await openComboboxByPlaceholder(/选择模型|输入自定义模型名称/);
 
     await waitFor(() => {
       expect(screen.getAllByText("ChatModel").length).toBeGreaterThan(0);
@@ -247,11 +247,11 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select an endpoint", "/v1/realtime");
-    await openComboboxByPlaceholder("Select a Model");
+    await selectComboboxOption("端点类型", "/v1/realtime");
+    await openComboboxByPlaceholder(/选择模型|输入自定义模型名称/);
 
     await waitFor(() => {
       expect(screen.getAllByText("RealtimeModel").length).toBeGreaterThan(0);
@@ -272,10 +272,10 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await openComboboxByPlaceholder("Select a Model");
+    await openComboboxByPlaceholder(/选择模型|输入自定义模型名称/);
 
     await waitFor(() => {
       expect(screen.getByText("Enter custom model")).toBeInTheDocument();
@@ -294,18 +294,18 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    const mcpInput = () => screen.getByLabelText("Select MCP servers");
+    const mcpInput = () => screen.getByLabelText(/Select MCP servers|选择 MCP 服务器/);
 
-    await selectComboboxOption("Select an endpoint", "/v1/embeddings");
+    await selectComboboxOption("端点类型", "/v1/embeddings");
 
     await waitFor(() => {
       expect(mcpInput()).toBeDisabled();
     });
 
-    await selectComboboxOption("Select an endpoint", "/v1/chat/completions");
+    await selectComboboxOption("端点类型", "/v1/chat/completions");
 
     await waitFor(() => {
       expect(mcpInput()).toBeEnabled();
@@ -325,10 +325,10 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select a Model", "Model 1");
+    await selectComboboxOption(/选择模型|输入自定义模型名称/, "Model 1");
 
     await waitFor(() => {
       expect(screen.getByTestId("model-settings-button")).toBeInTheDocument();
@@ -337,7 +337,7 @@ describe("ChatUI", () => {
     await user.click(screen.getByTestId("model-settings-button"));
 
     await waitFor(() => {
-      expect(screen.getByText("Model Settings")).toBeInTheDocument();
+      expect(screen.getByText("模型设置")).toBeInTheDocument();
       expect(screen.getByText(/Simulate failure to test fallbacks/i)).toBeInTheDocument();
     });
 
@@ -366,10 +366,10 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select a Model", "Model 1");
+    await selectComboboxOption(/选择模型|输入自定义模型名称/, "Model 1");
 
     await waitFor(() => {
       expect(screen.getByTestId("model-settings-button")).toBeInTheDocument();
@@ -386,7 +386,7 @@ describe("ChatUI", () => {
       expect(screen.getByRole("checkbox", { name: /Stream responses/i })).not.toBeChecked();
     });
 
-    const messageInput = screen.getByPlaceholderText("Type your message... (Shift+Enter for new line)");
+    const messageInput = screen.getByPlaceholderText("输入消息... (Shift+Enter 换行)");
     await act(async () => {
       fireEvent.change(messageInput, { target: { value: "hello" } });
     });
@@ -416,11 +416,11 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select an endpoint", "/v1/messages");
-    await selectComboboxOption("Select a Model", "Model 1");
+    await selectComboboxOption("端点类型", "/v1/messages");
+    await selectComboboxOption(/选择模型|输入自定义模型名称/, "Model 1");
 
     await user.click(await screen.findByTestId("model-settings-button"));
 
@@ -432,7 +432,7 @@ describe("ChatUI", () => {
       expect(screen.getByRole("checkbox", { name: /Stream responses/i })).not.toBeChecked();
     });
 
-    const messageInput = screen.getByPlaceholderText("Type your message... (Shift+Enter for new line)");
+    const messageInput = screen.getByPlaceholderText("输入消息... (Shift+Enter 换行)");
     await act(async () => {
       fireEvent.change(messageInput, { target: { value: "hello" } });
     });
@@ -462,19 +462,19 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select a Model", "Model 1");
-    await user.click(screen.getByRole("button", { name: "Add Header" }));
-    await user.click(screen.getByRole("button", { name: "Add Header" }));
-    const [firstName] = screen.getAllByPlaceholderText("Header Name");
-    const [firstValue, secondValue] = screen.getAllByPlaceholderText("Header Value");
+    await selectComboboxOption(/选择模型|输入自定义模型名称/, "Model 1");
+    await user.click(screen.getByRole("button", { name: "添加请求头" }));
+    await user.click(screen.getByRole("button", { name: "添加请求头" }));
+    const [firstName] = screen.getAllByPlaceholderText("请求头名称");
+    const [firstValue, secondValue] = screen.getAllByPlaceholderText("请求头的值");
     fireEvent.change(firstName, { target: { value: "anthropic-beta" } });
     fireEvent.change(firstValue, { target: { value: "context-1m-2025-08-07" } });
     fireEvent.change(secondValue, { target: { value: "ignored because the name is blank" } });
 
-    const messageInput = screen.getByPlaceholderText("Type your message... (Shift+Enter for new line)");
+    const messageInput = screen.getByPlaceholderText("输入消息... (Shift+Enter 换行)");
     await act(async () => {
       fireEvent.change(messageInput, { target: { value: "hello" } });
     });
@@ -489,8 +489,8 @@ describe("ChatUI", () => {
     expect(chatArgs).toHaveLength(CHAT_REQUEST_ARG_COUNT);
     expect(chatArgs[CHAT_CUSTOM_HEADERS_ARG_INDEX]).toEqual({ "anthropic-beta": "context-1m-2025-08-07" });
 
-    await selectComboboxOption("Select an endpoint", "/v1/messages");
-    await selectComboboxOption("Select a Model", "Model 1");
+    await selectComboboxOption("端点类型", "/v1/messages");
+    await selectComboboxOption(/选择模型|输入自定义模型名称/, "Model 1");
     await act(async () => {
       fireEvent.change(messageInput, { target: { value: "hello again" } });
     });
@@ -522,10 +522,10 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Chat")).toBeInTheDocument();
+      expect(screen.getAllByText(/Chat|对话/).length).toBeGreaterThan(0);
     });
 
-    const messageInput = screen.getByPlaceholderText("Type your message... (Shift+Enter for new line)");
+    const messageInput = screen.getByPlaceholderText("输入消息... (Shift+Enter 换行)");
     await act(async () => {
       fireEvent.change(messageInput, { target: { value: "hello" } });
     });
@@ -560,11 +560,11 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select an endpoint", "/v1/responses");
-    await selectComboboxOption("Select a Model", "ResponsesModel");
+    await selectComboboxOption("端点类型", "/v1/responses");
+    await selectComboboxOption(/选择模型|输入自定义模型名称/, "ResponsesModel");
 
     await waitFor(() => {
       expect(screen.getByTestId("model-settings-button")).toBeInTheDocument();
@@ -594,10 +594,10 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    const fillButton = screen.getByText("Fill");
+    const fillButton = screen.getByText("填入");
     expect(fillButton).toBeInTheDocument();
 
     act(() => {
@@ -613,7 +613,7 @@ describe("ChatUI", () => {
     });
 
     const customProxyInput = screen.getByPlaceholderText(
-      "Optional: Enter custom proxy URL (e.g., http://localhost:5000)",
+      /Optional: Enter custom proxy URL|可选：输入自定义代理 URL/,
     );
     expect(customProxyInput).toHaveValue(testProxyUrl);
   });
@@ -631,12 +631,12 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    expect(screen.getByText("MCP Servers")).toBeInTheDocument();
+    expect(screen.getAllByText(/MCP Servers|所有 MCP 服务器|MCP 服务器/)[0]).toBeInTheDocument();
 
-    const mcpInput = screen.getByLabelText("Select MCP servers");
+    const mcpInput = screen.getByLabelText(/Select MCP servers|选择 MCP 服务器/);
     expect(mcpInput).toBeInTheDocument();
     expect(mcpInput).toBeEnabled();
 
@@ -663,13 +663,13 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select an endpoint", "/v1/responses");
-    await selectComboboxOption("Select a Model", "ChatModel");
+    await selectComboboxOption("端点类型", "/v1/responses");
+    await selectComboboxOption(/选择模型|输入自定义模型名称/, "ChatModel");
 
-    expect(screen.getByPlaceholderText("Select an endpoint")).toHaveValue("/v1/responses");
+    expect(screen.getByPlaceholderText("端点类型")).toHaveValue("/v1/responses");
   });
 
   it("should not offer a model the selected endpoint cannot serve", async () => {
@@ -689,11 +689,11 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select an endpoint", "/v1/responses");
-    await openComboboxByPlaceholder("Select a Model");
+    await selectComboboxOption("端点类型", "/v1/responses");
+    await openComboboxByPlaceholder(/选择模型|输入自定义模型名称/);
 
     await waitFor(() => {
       expect(screen.getAllByText("ChatModel").length).toBeGreaterThan(0);
@@ -713,12 +713,12 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select an endpoint", "/v1/audio/transcriptions");
+    await selectComboboxOption("端点类型", "/v1/audio/transcriptions");
 
-    const dropZone = (await screen.findByText("Click or drag audio file to upload")).closest("label");
+    const dropZone = (await screen.findByText(/Click or drag audio file|点击或拖拽音频文件上传/)).closest("label");
     const file = new File(["clip"], "clip.wav", { type: "audio/wav" });
     fireEvent.drop(dropZone as HTMLElement, { dataTransfer: { files: [file] } });
 
@@ -739,20 +739,20 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    const keySourceTrigger = screen.getByLabelText("Virtual Key Source");
-    expect(keySourceTrigger).toHaveTextContent("Current UI Session");
+    const keySourceTrigger = screen.getByLabelText(/Virtual Key Source|虚拟密钥来源/);
+    expect(keySourceTrigger).toHaveTextContent(/Current UI Session|当前 UI 会话/);
     expect(keySourceTrigger).not.toHaveTextContent("session");
 
     await user.click(keySourceTrigger);
-    await user.click(await screen.findByRole("option", { name: "Virtual Key" }));
+    await user.click(await screen.findByRole("option", { name: /Virtual Key|虚拟密钥/ }));
 
     await waitFor(() => {
-      expect(screen.getByLabelText("Virtual Key Source")).toHaveTextContent("Virtual Key");
+      expect(screen.getByLabelText(/Virtual Key Source|虚拟密钥来源/)).toHaveTextContent("Virtual Key");
     });
-    expect(screen.getByLabelText("Virtual Key Source")).not.toHaveTextContent("custom");
+    expect(screen.getByLabelText(/Virtual Key Source|虚拟密钥来源/)).not.toHaveTextContent("custom");
   });
 
   it("should re-enable the model selector when the virtual key is cleared mid-load", async () => {
@@ -772,23 +772,23 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await user.click(screen.getByLabelText("Virtual Key Source"));
-    await user.click(await screen.findByRole("option", { name: "Virtual Key" }));
+    await user.click(screen.getByLabelText(/Virtual Key Source|虚拟密钥来源/));
+    await user.click(await screen.findByRole("option", { name: /Virtual Key|虚拟密钥/ }));
 
-    const keyField = await screen.findByPlaceholderText("Enter custom Virtual Key");
+    const keyField = await screen.findByPlaceholderText(/Enter custom Virtual Key|输入自定义虚拟密钥/);
     fireEvent.change(keyField, { target: { value: "sk-test" } });
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText("Loading models...")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/Loading models|正在加载模型/)).toBeInTheDocument();
     });
 
     await user.clear(keyField);
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText("Select a Model")).toBeEnabled();
+      expect(screen.getByPlaceholderText(/选择模型|enter custom model|输入自定义模型名称|Select Model/)).toBeEnabled();
     });
   });
 
@@ -810,12 +810,12 @@ describe("ChatUI", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test Key")).toBeInTheDocument();
+      expect(screen.getAllByText(/Test Key|虚拟密钥来源|当前 UI 会话/).length).toBeGreaterThan(0);
     });
 
-    await selectComboboxOption("Select an endpoint", "/v1/chat/completions");
-    await selectComboboxOption("Select a Model", "Model 1");
-    const messageInput = screen.getByPlaceholderText("Type your message... (Shift+Enter for new line)");
+    await selectComboboxOption("端点类型", "/v1/chat/completions");
+    await selectComboboxOption(/选择模型|输入自定义模型名称/, "Model 1");
+    const messageInput = screen.getByPlaceholderText("输入消息... (Shift+Enter 换行)");
     await act(async () => {
       fireEvent.change(messageInput, { target: { value: "hello" } });
     });

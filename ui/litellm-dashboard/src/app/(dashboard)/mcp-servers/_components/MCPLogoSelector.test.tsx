@@ -13,17 +13,17 @@ describe("MCPLogoSelector", () => {
 
   it("should render the logo grid and custom URL input", () => {
     renderWithProviders(<MCPLogoSelector />);
-    expect(screen.getByPlaceholderText(/paste a custom logo URL/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/粘贴自定义 Logo URL/i)).toBeInTheDocument();
   });
 
   it("should show a preview when a value is provided", () => {
     renderWithProviders(<MCPLogoSelector value="/ui/assets/logos/github.svg" />);
-    expect(screen.getByAltText("Selected logo")).toBeInTheDocument();
+    expect(screen.getByAltText("已选择 logo")).toBeInTheDocument();
   });
 
   it("should not show a preview when no value is provided", () => {
     renderWithProviders(<MCPLogoSelector />);
-    expect(screen.queryByAltText("Selected logo")).not.toBeInTheDocument();
+    expect(screen.queryByAltText("已选择 logo")).not.toBeInTheDocument();
   });
 
   it("should call onChange with undefined when the clear button is clicked", async () => {
@@ -64,13 +64,13 @@ describe("MCPLogoSelector", () => {
 
   it("should preview a stored well-known path via its bundled asset", () => {
     renderWithProviders(<MCPLogoSelector value="/ui/assets/logos/github.svg" />);
-    const src = screen.getByAltText("Selected logo").getAttribute("src");
+    const src = screen.getByAltText("已选择 logo").getAttribute("src");
     expect(src).toMatch(/^\/_next\//);
     expect(src).toContain("github.svg");
   });
 
   it("should preview a custom external URL untouched", () => {
     renderWithProviders(<MCPLogoSelector value="https://cdn.example.com/logo.png" />);
-    expect(screen.getByAltText("Selected logo")).toHaveAttribute("src", "https://cdn.example.com/logo.png");
+    expect(screen.getByAltText("已选择 logo")).toHaveAttribute("src", "https://cdn.example.com/logo.png");
   });
 });

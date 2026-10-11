@@ -398,9 +398,16 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
         // what guarantees a token-only snapshot never clears a stored client_id/client_secret: the
         // server's declared app survives and only the token keys drop. Assigning the cleaned result (not
         // spreading the raw snapshot) also ensures a stale token can never rehydrate into the form.
+        // Filter out undefined values from formValues.credentials before merging
+        // to prevent undefined values from overwriting stored credentials (e.g., client_id).
+        const formCredentials = (parsed.formValues.credentials as Record<string, unknown> | undefined) ?? {};
+        const filteredFormCredentials = Object.fromEntries(
+          Object.entries(formCredentials).filter(([, value]) => value !== undefined)
+        );
+
         const restoredCredentials = withoutMintedTokenCredentials({
           ...(mcpServer.credentials ?? {}),
-          ...((parsed.formValues.credentials as Record<string, unknown> | undefined) ?? {}),
+          ...filteredFormCredentials,
         });
         const restoredValues = {
           ...mcpServer,

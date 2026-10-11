@@ -4,7 +4,7 @@ import { expect } from "vitest";
 
 export async function selectOption(labelText: string, optionText: string) {
   const user = userEvent.setup({ delay: null });
-  await user.click(screen.getByLabelText(labelText));
+  await user.click(screen.getAllByLabelText(labelText)[0]);
 
   const option = (await screen.findAllByRole("option")).find((el) => el.textContent?.includes(optionText));
   expect(option).toBeTruthy();

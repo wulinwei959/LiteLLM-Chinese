@@ -1268,7 +1268,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                       setApiKeySource(value as "session" | "custom");
                     }}
                   >
-                    <SelectTrigger className="w-full" size="sm" aria-label="Virtual Key Source">
+                    <SelectTrigger className="w-full" size="sm" aria-label={t("config.virtualKeySource")}>
                       <SelectValue>{apiKeySource === "custom" ? t("config.customKey") : t("config.session")}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
@@ -1281,7 +1281,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                       <Key className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         className="h-8 pl-8"
-                        placeholder="Enter custom Virtual Key"
+                        placeholder={t("chat.enterVirtualKeyPh")}
                         type="password"
                         onChange={(event) => setApiKey(event.target.value)}
                         value={apiKey}
@@ -1366,7 +1366,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                         value={selectedVoice}
                         onValueChange={handleVoiceChange}
                       >
-                        <SelectTrigger className="w-full" size="sm" aria-label="Voice">
+                        <SelectTrigger className="w-full" size="sm" aria-label={t("config.voice")}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -2218,14 +2218,14 @@ const ChatUI: React.FC<ChatUIProps> = ({
           </DialogHeader>
           <div className="space-y-4 py-2">
             <p className="text-foreground">
-              <strong>Toolsets</strong> are named collections of specific tools from one or more MCP servers. Instead of
+              <strong>{t("chat.toolsets")}</strong> are named collections of specific tools from one or more MCP servers. Instead of
               exposing all tools from a server, a toolset gives an agent exactly the tools it needs.
             </p>
             <div>
               <h4 className="mb-2 font-semibold text-foreground">{t("toolsets.howToUse")}</h4>
               <ol className="list-inside list-decimal space-y-2 text-foreground">
                 <li>
-                  Select a <span className="font-semibold text-violet-600">Toolset</span> (purple badge) from the MCP
+                  Select a <span className="font-semibold text-violet-600">{t("chat.toolset")}</span> (purple badge) from the MCP
                   Servers dropdown.
                 </li>
                 <li>{t("toolsets.step2")}</li>
@@ -2235,7 +2235,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
             </div>
             <div className="rounded-sm border border-purple-200 bg-purple-50 p-3 dark:border-purple-800 dark:bg-purple-950">
               <p className="text-sm text-purple-800 dark:text-purple-300">
-                <strong>Example:</strong> A &quot;GitHub Read-only&quot; toolset might include only{" "}
+                <strong>{t("chat.example")}</strong> A &quot;GitHub Read-only&quot; toolset might include only{" "}
                 <code>list_repos</code> and <code>get_file</code> from a GitHub MCP server, preventing agents from
                 making writes.
               </p>
@@ -2243,7 +2243,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
             <div>
               <h4 className="mb-1 font-semibold text-foreground">{t("toolsets.creatingToolsets")}</h4>
               <p className="text-sm text-muted-foreground">
-                Admins can create and manage toolsets from the <strong>MCP</strong> page → <strong>Toolsets</strong>{" "}
+                Admins can create and manage toolsets from the <strong>{t("chat.mcpLabel")}</strong> page → <strong>{t("chat.toolsets")}</strong>{" "}
                 tab. Toolsets can then be assigned to keys and teams to scope their tool access.
               </p>
             </div>

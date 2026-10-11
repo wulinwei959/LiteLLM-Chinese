@@ -102,8 +102,8 @@ function GroupCountTable({
         <TableHeader>
           <TableRow>
             <TableHead>{t(labelHeader)}</TableHead>
-            <TableHead className="text-right">Sessions</TableHead>
-            {onDisconnectUser ? <TableHead className="text-right">Actions</TableHead> : null}
+            <TableHead className="text-right">{t("sessionsTab")}</TableHead>
+            {onDisconnectUser ? <TableHead className="text-right">{t("actions")}</TableHead> : null}
           </TableRow>
         </TableHeader>
         <TableBody>

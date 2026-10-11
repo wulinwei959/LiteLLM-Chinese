@@ -36,8 +36,8 @@ describe("MCPToolConfiguration", () => {
 
     fireEvent.click(screen.getByText("Flat List"));
 
-    expect(screen.getByText("2 of 2 tools enabled for user access")).toBeInTheDocument();
-    expect(screen.getAllByText("Enabled")).toHaveLength(2);
+    expect(screen.getByText("已启用 2/2 个工具供用户访问")).toBeInTheDocument();
+    expect(screen.getAllByText("已启用")).toHaveLength(2);
 
     fireEvent.click(screen.getByText("read_user"));
 
@@ -106,8 +106,8 @@ describe("MCPToolConfiguration", () => {
     fireEvent.click(screen.getByText("delete_user"));
 
     await waitFor(() => {
-      expect(screen.getByText("0 of 2 tools enabled for user access")).toBeInTheDocument();
-      expect(screen.getAllByText("Disabled")).toHaveLength(2);
+      expect(screen.getByText("已启用 0/2 个工具供用户访问")).toBeInTheDocument();
+      expect(screen.getAllByText("已禁用")).toHaveLength(2);
     });
   });
 
@@ -143,7 +143,7 @@ describe("MCPToolConfiguration", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Only letters, digits, underscores, and hyphens are allowed (no spaces)."),
+        screen.getByText("只允许字母、数字、下划线和连字符（不允许空格）。"),
       ).toBeInTheDocument();
     });
   });
@@ -180,7 +180,7 @@ describe("MCPToolConfiguration", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Only letters, digits, underscores, and hyphens are allowed (no spaces)."),
+        screen.queryByText("只允许字母、数字、下划线和连字符（不允许空格）。"),
       ).not.toBeInTheDocument();
     });
   });

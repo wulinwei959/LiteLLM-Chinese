@@ -80,7 +80,7 @@ describe("WorkflowRuns (migrated onto shared DataTable)", () => {
     vi.stubGlobal("fetch", mockFetch([]));
     render(<WorkflowRuns accessToken="tok" />);
 
-    expect(await screen.findByText("No workflow runs yet")).toBeInTheDocument();
+    expect(await screen.findByText("暂无工作流运行")).toBeInTheDocument();
   });
 
   it("sends the configured litellm key header on every fetch instead of hardcoding Authorization", async () => {
@@ -175,7 +175,7 @@ async function openDetailDrawer(events = DETAIL_EVENTS, messages = DETAIL_MESSAG
 
   await user.click(await screen.findByText("First run"));
   const drawer = await screen.findByRole("dialog");
-  await waitFor(() => expect(within(drawer).getByText("Timeline")).toBeInTheDocument());
+  await waitFor(() => expect(within(drawer).getByText("时间线")).toBeInTheDocument());
   return { user, fetchSpy, drawer };
 }
 
@@ -198,7 +198,7 @@ describe("WorkflowRuns detail drawer", () => {
   it("renders every event in the timeline, ordered by sequence number", async () => {
     const { drawer } = await openDetailDrawer();
 
-    expect(within(drawer).getByText("2 events")).toBeInTheDocument();
+    expect(within(drawer).getByText("2 个事件")).toBeInTheDocument();
 
     const stepLabels = within(drawer)
       .getAllByText(/^(plan|review)$/)
@@ -212,7 +212,7 @@ describe("WorkflowRuns detail drawer", () => {
   it("says no events were recorded when the run has none", async () => {
     const { drawer } = await openDetailDrawer([], DETAIL_MESSAGES);
 
-    expect(within(drawer).getByText("No events recorded")).toBeInTheDocument();
+    expect(within(drawer).getByText("暂无事件记录")).toBeInTheDocument();
   });
 
   it("keeps the messages section collapsed until it is opened", async () => {
@@ -220,7 +220,7 @@ describe("WorkflowRuns detail drawer", () => {
 
     expect(within(drawer).queryByText("kick off the run")).not.toBeInTheDocument();
 
-    await user.click(within(drawer).getByRole("button", { name: /Messages/ }));
+    await user.click(within(drawer).getByRole("button", { name: /Messages/i }));
 
     expect(await within(drawer).findByText("kick off the run")).toBeInTheDocument();
     expect(within(drawer).getByText("[user]")).toBeInTheDocument();
@@ -232,7 +232,7 @@ describe("WorkflowRuns detail drawer", () => {
     const eventFetches = () => fetchSpy.mock.calls.filter(([url]) => String(url).includes("/events")).length;
     expect(eventFetches()).toBe(1);
 
-    await user.click(within(drawer).getByRole("button", { name: /refresh/i }));
+    await user.click(within(drawer).getByRole("button", { name: /刷新/i }));
 
     await waitFor(() => expect(eventFetches()).toBe(2));
   });
@@ -240,7 +240,7 @@ describe("WorkflowRuns detail drawer", () => {
   it("dismisses the drawer when its close control is clicked", async () => {
     const { user, drawer } = await openDetailDrawer();
 
-    await user.click(within(drawer).getByRole("button", { name: /close/i }));
+    await user.click(within(drawer).getByRole("button", { name: /关闭/i }));
 
     await waitFor(() => expect(screen.queryAllByRole("dialog")).toHaveLength(0));
   });

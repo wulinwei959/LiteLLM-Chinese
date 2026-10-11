@@ -86,14 +86,14 @@ describe("AccessGroupBudgetsPanel", () => {
 
     await openActions("shared");
 
-    expect(await screen.findByText("Set budget")).toBeInTheDocument();
+    expect(await screen.findByText("设置预算")).toBeInTheDocument();
     expect(screen.getByTestId("access-group-action-clear-budget")).toHaveAttribute("aria-disabled", "true");
   });
 
   it("sends the filled fields to the group's budget route", async () => {
     renderPanel();
     await openActions("shared");
-    await userEvent.click(await screen.findByText("Set budget"));
+    await userEvent.click(await screen.findByText("设置预算"));
 
     fireEvent.change(await screen.findByLabelText(/Max Budget/), { target: { value: "12.5" } });
     await userEvent.click(screen.getByRole("button", { name: "Save Budget" }));
@@ -109,7 +109,7 @@ describe("AccessGroupBudgetsPanel", () => {
   it("pre-fills the modal from the budget the group already has", async () => {
     renderPanel();
     await openActions("premium");
-    await userEvent.click(await screen.findByText("Edit budget"));
+    await userEvent.click(await screen.findByRole("menuitem", { name: /Edit budget|编辑预算/ }));
 
     expect(await screen.findByLabelText(/Max Budget/)).toHaveValue(2.5);
   });
@@ -117,7 +117,7 @@ describe("AccessGroupBudgetsPanel", () => {
   it("refuses to save a budget with every field blank", async () => {
     renderPanel();
     await openActions("shared");
-    await userEvent.click(await screen.findByText("Set budget"));
+    await userEvent.click(await screen.findByText("设置预算"));
     await userEvent.click(await screen.findByRole("button", { name: "Save Budget" }));
 
     expect(await screen.findByText(/Set at least one of max budget/)).toBeInTheDocument();
@@ -148,7 +148,7 @@ describe("AccessGroupBudgetsPanel", () => {
   it("clears a budget only after the confirmation is accepted", async () => {
     renderPanel();
     await openActions("premium");
-    await userEvent.click(await screen.findByRole("menuitem", { name: /clear budget/i }));
+    await userEvent.click(await screen.findByRole("menuitem", { name: /Clear budget|清除预算/ }));
 
     expect(DELETE).not.toHaveBeenCalled();
 

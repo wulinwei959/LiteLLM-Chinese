@@ -1,3 +1,5 @@
+"use client";
+
 /* eslint-disable react/no-unescaped-entities */
 
 import React, { useId, useState } from "react";
@@ -47,6 +49,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   serverName,
   accessGroups = ["dev-group"],
 }) => {
+  const t = useTranslations("mcpServers");
   const [useServerHeader, setUseServerHeader] = useState(false);
   const serverHeaderToggleId = useId();
 
@@ -89,14 +92,14 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
             {useServerHeader && (
               <Alert className="mt-2" variant="info">
                 <Info />
-                <AlertTitle>Two Options</AlertTitle>
+                <AlertTitle>{t("twoOptions")}</AlertTitle>
                 <AlertDescription>
                   <div>
                     <p>
-                      <strong>Option 1:</strong> Get a specific server: <code>"{serverName.replace(/\s+/g, "_")}"</code>
+                      <strong>{t("option1")}</strong> Get a specific server: <code>"{serverName.replace(/\s+/g, "_")}"</code>
                     </p>
                     <p>
-                      <strong>Option 2:</strong> Get a group of MCPs: <code>"dev-group"</code>
+                      <strong>{t("option2")}</strong> Get a group of MCPs: <code>"dev-group"</code>
                     </p>
                     <p className="mt-2 text-sm text-muted-foreground">
                       You can also mix both: <code>"Server1,dev-group"</code>

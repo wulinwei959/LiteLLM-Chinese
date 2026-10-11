@@ -104,20 +104,20 @@ const { api_base: _omitted, ...ALWAYS_MOUNTED_WITHOUT_API_BASE } = alwaysMounted
 const setup = async () => {
   const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
   renderWithProviders(<AddModelPanel />);
-  await screen.findByText("Provider");
+  await screen.findByText("提供商");
 
   const openAdvanced = async () => {
-    await user.click(screen.getByText("Advanced Settings"));
-    await screen.findByText("Tags");
+    await user.click(screen.getByText("高级设置"));
+    await screen.findByText("标签");
   };
 
   const closeAdvanced = async () => {
-    await user.click(screen.getByText("Advanced Settings"));
-    await waitFor(() => expect(screen.queryByText("Tags")).not.toBeInTheDocument());
+    await user.click(screen.getByText("高级设置"));
+    await waitFor(() => expect(screen.queryByText("标签")).not.toBeInTheDocument());
   };
 
   const fillRequired = async (modelName = "gpt-4o") => {
-    await user.click(screen.getByRole("combobox", { name: /provider/i }));
+    await user.click(screen.getByRole("combobox", { name: /提供商/i }));
     await user.click(await screen.findByText("OpenAI"));
     await user.type(await screen.findByPlaceholderText("gpt-3.5-turbo"), modelName);
   };
@@ -218,9 +218,9 @@ describe("AddModelPanel submit payload contract", () => {
     const { user, openAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.click(screen.getByRole("switch", { name: "Custom Pricing" }));
-    await user.type(await screen.findByLabelText("Input Cost (per 1M tokens)"), "3");
-    await user.type(screen.getByLabelText("Output Cost (per 1M tokens)"), "9");
+    await user.click(screen.getByRole("switch", { name: "自定义定价" }));
+    await user.type(await screen.findByLabelText("输入成本（每百万 Token）"), "3");
+    await user.type(screen.getByLabelText("输出成本（每百万 Token）"), "9");
     await submit();
 
     expect(lastCreatedModel()).toStrictEqual({
@@ -240,8 +240,8 @@ describe("AddModelPanel submit payload contract", () => {
     const { user, openAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.click(screen.getByRole("switch", { name: "Cache Control Injection Points" }));
-    await screen.findByText("Add Injection Point");
+    await user.click(screen.getByRole("switch", { name: "缓存控制" }));
+    await screen.findByText("添加注入点");
     await submit();
 
     expect(lastCreatedModel()).toStrictEqual({
@@ -259,11 +259,11 @@ describe("AddModelPanel submit payload contract", () => {
     const { user, openAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.click(screen.getByRole("switch", { name: "Cache Control Injection Points" }));
-    await screen.findByText("Add Injection Point");
-    await user.click(screen.getByText("Select a role"));
-    await user.click(await screen.findByText("System"));
-    await user.type(screen.getByPlaceholderText("Optional"), "3");
+    await user.click(screen.getByRole("switch", { name: "缓存控制" }));
+    await screen.findByText("添加注入点");
+    await user.click(screen.getByText("选择角色"));
+    await user.click(await screen.findByText("系统"));
+    await user.type(screen.getByPlaceholderText("可选"), "3");
     await submit();
 
     expect(lastCreatedModel()).toStrictEqual({
@@ -280,8 +280,8 @@ describe("AddModelPanel submit payload contract", () => {
   it("mounts team_id only once the Team-BYOK switch is on", async () => {
     const { user, fillRequired, submit } = await setup();
     await fillRequired();
-    await user.click(screen.getByRole("switch", { name: "Team-BYOK Model" }));
-    await screen.findByText("Select Team");
+    await user.click(screen.getByRole("switch", { name: "团队自带密钥模型" }));
+    await screen.findByText("选择团队");
     await submit();
 
     expect(lastCreatedModel()).toStrictEqual({
@@ -336,8 +336,8 @@ describe("AddModelPanel validation gates", () => {
     const { user, openAdvanced, fillRequired, submitExpectingRejection } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.type(screen.getByLabelText("PTU Count"), "15");
-    await user.type(screen.getByLabelText("Calculated Cost per PTU / Hour (USD)"), "2");
+    await user.type(screen.getByLabelText("PTU 数量"), "15");
+    await user.type(screen.getByLabelText("计算的 PTU 每小时成本 (USD)"), "2");
     await submitExpectingRejection("PTU Effective From is required when PTU Count is set");
 
     expect(modelCreateCall).not.toHaveBeenCalled();
@@ -349,12 +349,12 @@ describe("AddModelPanel validation gates", () => {
     await fillRequired();
     await openAdvanced();
 
-    expect(screen.queryByLabelText("PTU Count")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("PTU 数量")).not.toBeInTheDocument();
   });
 
   it("requires a model before anything is sent", async () => {
     const { user, submitExpectingRejection } = await setup();
-    await user.click(screen.getByRole("combobox", { name: /provider/i }));
+    await user.click(screen.getByRole("combobox", { name: /提供商/i }));
     await user.click(await screen.findByText("OpenAI"));
     await submitExpectingRejection("Please enter at least one model.");
 
@@ -384,7 +384,7 @@ describe("AddModelPanel behaviours the removed Advanced Settings form instance n
     const { user, openAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.click(screen.getByRole("switch", { name: "Use in pass through routes" }));
+    await user.click(screen.getByRole("switch", { name: "在直通路由中使用" }));
     expect(screen.getByLabelText("LiteLLM Params")).toHaveValue("");
 
     await submit();
@@ -400,12 +400,12 @@ describe("AddModelPanel behaviours the removed Advanced Settings form instance n
     const { user, openAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.click(screen.getByRole("switch", { name: "Custom Pricing" }));
-    await user.type(await screen.findByLabelText("Input Cost (per 1M tokens)"), "3");
-    await user.click(screen.getByRole("switch", { name: "Custom Pricing" }));
-    await waitFor(() => expect(screen.queryByLabelText("Input Cost (per 1M tokens)")).not.toBeInTheDocument());
-    await user.click(screen.getByRole("switch", { name: "Custom Pricing" }));
-    expect(await screen.findByLabelText("Input Cost (per 1M tokens)")).toHaveValue("3");
+    await user.click(screen.getByRole("switch", { name: "自定义定价" }));
+    await user.type(await screen.findByLabelText("输入成本（每百万 Token）"), "3");
+    await user.click(screen.getByRole("switch", { name: "自定义定价" }));
+    await waitFor(() => expect(screen.queryByLabelText("输入成本（每百万 Token）")).not.toBeInTheDocument());
+    await user.click(screen.getByRole("switch", { name: "自定义定价" }));
+    expect(await screen.findByLabelText("输入成本（每百万 Token）")).toHaveValue("3");
 
     await submit();
 

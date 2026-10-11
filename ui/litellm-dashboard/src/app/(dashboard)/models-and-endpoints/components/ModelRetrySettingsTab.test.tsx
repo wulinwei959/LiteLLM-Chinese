@@ -27,13 +27,13 @@ describe("ModelRetrySettingsTab", () => {
   it("should render the 'Global Retry Policy' heading when selectedModelGroup is 'global'", () => {
     renderWithProviders(<ModelRetrySettingsTab {...buildProps()} />);
 
-    expect(screen.getByText("Global Retry Policy")).toBeInTheDocument();
+    expect(screen.getByText("全局重试策略")).toBeInTheDocument();
   });
 
   it("should render a model-specific heading when a model group is selected", () => {
     renderWithProviders(<ModelRetrySettingsTab {...buildProps({ selectedModelGroup: "gpt-4" })} />);
 
-    expect(screen.getByText("Retry Policy for gpt-4")).toBeInTheDocument();
+    expect(screen.getByText("gpt-4 的重试策略")).toBeInTheDocument();
   });
 
   it("should render a row for every error type in the retry policy map", () => {
@@ -60,7 +60,7 @@ describe("ModelRetrySettingsTab", () => {
       />,
     );
 
-    const notFoundInput = screen.getByRole("spinbutton", { name: /NotFoundError \(404\) retry count$/ });
+    const notFoundInput = screen.getByRole("spinbutton", { name: /NotFoundError \(404\) 重试次数$/ });
     fireEvent.change(notFoundInput, { target: { value: "2" } });
 
     const updater = setGlobalRetryPolicy.mock.calls.at(-1)![0];
@@ -84,7 +84,7 @@ describe("ModelRetrySettingsTab", () => {
       expect(input).toHaveAttribute("type", "number");
       expect(input).toHaveAttribute("min", "0");
       expect(input).toHaveAttribute("step", "1");
-      expect(input).toHaveAccessibleName(/retry count$/);
+      expect(input).toHaveAccessibleName(/重试次数$/);
     });
   });
 
@@ -143,7 +143,7 @@ describe("ModelRetrySettingsTab", () => {
     );
 
     // Reset only renders for rows that actually have an override
-    const resetButtons = screen.getAllByRole("button", { name: /reset/i });
+    const resetButtons = screen.getAllByRole("button", { name: /重置/i });
     expect(resetButtons).toHaveLength(1);
 
     await user.click(resetButtons[0]);
@@ -211,7 +211,7 @@ describe("ModelRetrySettingsTab", () => {
   it("should disable the Save button while a save is in flight", () => {
     renderWithProviders(<ModelRetrySettingsTab {...buildProps({ isSaving: true })} />);
 
-    expect(screen.getByRole("button", { name: /save/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /保存/i })).toBeDisabled();
   });
 
   it("should prefer model-specific retry count over the global value (model scope)", () => {
@@ -249,8 +249,8 @@ describe("ModelRetrySettingsTab", () => {
       />,
     );
 
-    // "(Global: X)" annotations are shown next to each row label in model scope
-    expect(screen.getByText("(Global: 2)")).toBeInTheDocument();
+    // "(全局: X)" annotations are shown next to each row label in model scope
+    expect(screen.getByText("(全局: 2)")).toBeInTheDocument();
   });
 
   it("should not show global reference annotations in global scope", () => {
@@ -264,7 +264,7 @@ describe("ModelRetrySettingsTab", () => {
     const handleSaveRetrySettings = vi.fn();
     renderWithProviders(<ModelRetrySettingsTab {...buildProps({ handleSaveRetrySettings })} />);
 
-    await user.click(screen.getByRole("button", { name: /save/i }));
+    await user.click(screen.getByRole("button", { name: /保存/i }));
 
     expect(handleSaveRetrySettings).toHaveBeenCalledTimes(1);
   });
@@ -327,7 +327,7 @@ describe("ModelRetrySettingsTab", () => {
   it("shows the global scope by its human label rather than the raw value", () => {
     renderWithProviders(<ModelRetrySettingsTab {...buildProps()} />);
 
-    expect(screen.getByRole("combobox")).toHaveTextContent("Global Default");
+    expect(screen.getByRole("combobox")).toHaveTextContent("全局默认");
   });
 
   it("shows a selected model group by its own name", () => {

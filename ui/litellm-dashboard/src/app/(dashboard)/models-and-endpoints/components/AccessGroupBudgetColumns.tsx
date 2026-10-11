@@ -46,8 +46,7 @@ interface AccessGroupRowActionsProps {
   onClearBudget: (accessGroup: ModelAccessGroup) => void;
 }
 
-function AccessGroupRowActions({ accessGroup, canWrite, onSetBudget, onClearBudget }: AccessGroupRowActionsProps) {
-  const t = useTranslations("models");
+function AccessGroupRowActions({ accessGroup, canWrite, onSetBudget, onClearBudget, t }: AccessGroupRowActionsProps & { t: ReturnType<typeof import("next-intl").useTranslations> }) {
   const hasBudget = accessGroup.budget != null;
   const blocked = writeBlockedReason(
     accessGroup,
@@ -96,12 +95,19 @@ interface AccessGroupBudgetColumnsDeps {
   onClearBudget: (accessGroup: ModelAccessGroup) => void;
 }
 
+export interface AccessGroupBudgetColumnsDeps {
+  canWrite: boolean;
+  onSetBudget: (accessGroup: ModelAccessGroup) => void;
+  onClearBudget: (accessGroup: ModelAccessGroup) => void;
+  t: ReturnType<typeof import("next-intl").useTranslations>;
+}
+
 export const getAccessGroupBudgetColumns = ({
   canWrite,
   onSetBudget,
   onClearBudget,
+  t,
 }: AccessGroupBudgetColumnsDeps): ColumnDef<ModelAccessGroup>[] => {
-  const t = useTranslations("models");
   return [
     {
       id: "access_group",
@@ -174,6 +180,7 @@ export const getAccessGroupBudgetColumns = ({
             canWrite={canWrite}
             onSetBudget={onSetBudget}
             onClearBudget={onClearBudget}
+            t={t}
           />
         </div>
       ),

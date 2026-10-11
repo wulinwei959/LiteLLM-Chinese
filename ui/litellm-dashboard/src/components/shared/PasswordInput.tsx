@@ -10,7 +10,7 @@ export type PasswordInputProps = Omit<React.ComponentPropsWithoutRef<"input">, "
 };
 
 export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ className, groupClassName, disabled, ...props }, ref) => {
+  ({ className, groupClassName, disabled, "data-testid": testId, ...props }, ref) => {
     const [revealed, setRevealed] = React.useState(false);
 
     return (
@@ -21,6 +21,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
           type={revealed ? "text" : "password"}
           disabled={disabled}
           className={className}
+          data-testid={testId}
         />
         <InputGroupAddon align="inline-end">
           <InputGroupButton

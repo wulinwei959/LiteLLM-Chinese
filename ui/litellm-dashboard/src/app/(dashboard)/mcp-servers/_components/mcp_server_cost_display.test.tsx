@@ -9,20 +9,20 @@ describe("MCPServerCostDisplay", () => {
     renderWithProviders(<MCPServerCostDisplay costConfig={null} />);
 
     expect(
-      screen.getByText("No cost configuration set for this server. Tool calls will be charged at $0.00 per tool call."),
+      screen.getByText("此服务器未设置费用配置。每次工具调用将按 $0.00 收费。"),
     ).toBeInTheDocument();
   });
 
   it("treats a config with only a null default cost as unconfigured", () => {
     renderWithProviders(<MCPServerCostDisplay costConfig={{ default_cost_per_query: null }} />);
 
-    expect(screen.getByText(/No cost configuration set for this server/)).toBeInTheDocument();
+    expect(screen.getByText(/此服务器未设置费用配置/)).toBeInTheDocument();
   });
 
   it("shows a zero default cost rather than falling back to the empty state", () => {
     renderWithProviders(<MCPServerCostDisplay costConfig={{ default_cost_per_query: 0 }} />);
 
-    expect(screen.getByText("Default Cost per Query")).toBeInTheDocument();
+    expect(screen.getByText("每次查询的默认费用")).toBeInTheDocument();
     expect(screen.getByText("$0.0000")).toBeInTheDocument();
   });
 
@@ -30,7 +30,7 @@ describe("MCPServerCostDisplay", () => {
     renderWithProviders(<MCPServerCostDisplay costConfig={{ default_cost_per_query: 0.0125 }} />);
 
     expect(screen.getByText("$0.0125")).toBeInTheDocument();
-    expect(screen.getByText("• Default cost: $0.0125 per query")).toBeInTheDocument();
+    expect(screen.getByText("• 默认费用：每次查询 0.0125")).toBeInTheDocument();
   });
 
   it("lists each tool-specific cost and counts them in the summary", () => {
@@ -41,10 +41,10 @@ describe("MCPServerCostDisplay", () => {
     );
 
     expect(screen.getByText("search")).toBeInTheDocument();
-    expect(screen.getByText("$0.5000 per query")).toBeInTheDocument();
+    expect(screen.getByText("每次查询 0.5000")).toBeInTheDocument();
     expect(screen.getByText("fetch")).toBeInTheDocument();
-    expect(screen.getByText("$0.2500 per query")).toBeInTheDocument();
+    expect(screen.getByText("每次查询 0.2500")).toBeInTheDocument();
     expect(screen.queryByText("skipped")).not.toBeInTheDocument();
-    expect(screen.getByText("• 3 tool(s) with custom pricing")).toBeInTheDocument();
+    expect(screen.getByText("• 3 个工具使用自定义定价")).toBeInTheDocument();
   });
 });

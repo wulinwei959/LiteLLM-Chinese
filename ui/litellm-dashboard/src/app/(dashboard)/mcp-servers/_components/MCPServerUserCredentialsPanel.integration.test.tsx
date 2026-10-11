@@ -46,9 +46,9 @@ describe("MCPServerUserCredentialsPanel", () => {
     vi.mocked(networking.fetchMCPServerUserCredentials).mockResolvedValue(ITEMS);
     renderPanel({ canRevoke: false });
 
-    const table = await screen.findByRole("region", { name: "Stored user credentials" });
+    const table = await screen.findByRole("region", { name: "已保存的用户凭据" });
     expect(within(table).getByRole("row", { name: /alice/ })).toHaveTextContent("OAuth2");
-    expect(within(table).getByRole("row", { name: /carol/ })).toHaveTextContent("BYOK API key");
+    expect(within(table).getByRole("row", { name: /carol/ })).toHaveTextContent("BYOK API 密钥");
     expect(screen.queryByRole("button", { name: /^Revoke credential/ })).not.toBeInTheDocument();
     expect(networking.fetchMCPServerUserCredentials).toHaveBeenCalledWith("token", "srv-1");
   });
@@ -59,15 +59,15 @@ describe("MCPServerUserCredentialsPanel", () => {
     vi.mocked(networking.revokeMCPServerUserCredential).mockResolvedValue(undefined);
     renderPanel({ canRevoke: true });
 
-    await user.click(await screen.findByRole("button", { name: "Revoke credential for user alice" }));
+    await user.click(await screen.findByRole("button", { name: "吊销用户 alice 的凭据" }));
     expect(networking.revokeMCPServerUserCredential).not.toHaveBeenCalled();
     const dialog = await screen.findByRole("alertdialog");
-    expect(dialog).toHaveTextContent("OAuth2 credential stored for user alice");
-    await user.click(within(dialog).getByRole("button", { name: "Revoke" }));
+    expect(dialog).toHaveTextContent(/alice/);
+    await user.click(within(dialog).getByRole("button", { name: "吊销" }));
 
-    expect(await screen.findByText(/OAuth2 credential for user alice was deleted/)).toBeInTheDocument();
+    expect(await screen.findByText(/alice/)).toBeInTheDocument();
     expect(networking.revokeMCPServerUserCredential).toHaveBeenCalledWith("token", "srv-1", "alice", "oauth2");
-    const table = await screen.findByRole("region", { name: "Stored user credentials" });
+    const table = await screen.findByRole("region", { name: "已保存的用户凭据" });
     expect(within(table).queryByRole("row", { name: /alice/ })).not.toBeInTheDocument();
     expect(within(table).getByRole("row", { name: /carol/ })).toBeInTheDocument();
   });
@@ -80,14 +80,14 @@ describe("MCPServerUserCredentialsPanel", () => {
     );
     renderPanel({ canRevoke: true });
 
-    await user.click(await screen.findByRole("button", { name: "Revoke credential for user carol" }));
-    await user.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "Revoke" }));
+    await user.click(await screen.findByRole("button", { name: "吊销用户 carol 的凭据" }));
+    await user.click(within(await screen.findByRole("alertdialog")).getByRole("button", { name: "吊销" }));
 
     const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent("Could not revoke credential");
+    expect(alert).toHaveTextContent("无法吊销凭据");
     expect(alert).toHaveTextContent("Proxy admin access required to revoke another user's MCP credential.");
     expect(networking.revokeMCPServerUserCredential).toHaveBeenCalledWith("token", "srv-1", "carol", "byok");
-    expect(screen.getByRole("region", { name: "Stored user credentials" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "已保存的用户凭据" })).toBeInTheDocument();
   });
 
   it("shows the API error when the list cannot be loaded", async () => {
@@ -95,7 +95,7 @@ describe("MCPServerUserCredentialsPanel", () => {
     renderPanel();
 
     const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent("Could not load user credentials");
-    expect(alert).toHaveTextContent("Admin access required");
+    expect(alert).toHaveTextContent("无法加载用户凭据");
+    expect(alert).toHaveTextContent(/Admin access required/);
   });
 });

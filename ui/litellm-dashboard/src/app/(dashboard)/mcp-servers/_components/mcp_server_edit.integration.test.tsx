@@ -315,7 +315,7 @@ const saveAndCapture = async (server: MCPServer): Promise<Record<string, unknown
     />,
   );
   await act(async () => {
-    screen.getAllByRole("button", { name: "Save Changes" })[0].click();
+    screen.getAllByRole("button", { name: "保存更改" })[0].click();
   });
   await waitFor(() => {
     expect(networking.updateMCPServer).toHaveBeenCalled();
@@ -401,10 +401,10 @@ describe("MCPServerEdit live tool preview", () => {
   it("replaces the saved connection failure with tools after correcting Basic Auth without saving", async () => {
     renderEditor();
     expect(await screen.findByText("Saved credentials rejected")).toBeInTheDocument();
-    await selectOption("Authentication", "Basic Auth");
-    fireEvent.change(screen.getByLabelText("Authentication Value"), { target: { value: "preview:correct" } });
+    await selectOption(/Authentication|认证/, "Basic 认证");
+    fireEvent.change(screen.getByLabelText("认证值"), { target: { value: "preview:correct" } });
     expect(screen.queryByText("Saved credentials rejected")).not.toBeInTheDocument();
-    expect(screen.getByText("Loading tools...")).toBeInTheDocument();
+    expect(screen.getByText("正在加载工具...")).toBeInTheDocument();
     expect(networking.testMCPToolsListRequest).not.toHaveBeenCalled();
     fireEvent.click(await screen.findByRole("button", { name: "Flat List" }));
     expect(screen.getByText("echo")).toBeInTheDocument();
@@ -424,7 +424,7 @@ describe("MCPServerEdit live tool preview", () => {
   it("refreshes tools when a static header is corrected", async () => {
     renderEditor({ ...BASE, static_headers: { "X-Preview-Key": "wrong" } });
     expect(await screen.findByText("Saved credentials rejected")).toBeInTheDocument();
-    fireEvent.change(screen.getByPlaceholderText("Header value"), { target: { value: "correct" } });
+    fireEvent.change(screen.getByPlaceholderText("请求头的值"), { target: { value: "correct" } });
     fireEvent.click(await screen.findByRole("button", { name: "Flat List" }));
     expect(screen.getByText("echo")).toBeInTheDocument();
     expect(networking.testMCPToolsListRequest).toHaveBeenCalledExactlyOnceWith(
@@ -439,10 +439,10 @@ describe("MCPServerEdit live tool preview", () => {
     vi.mocked(networking.testMCPToolsListRequest).mockImplementationOnce(() => older.promise);
     renderEditor();
     expect(await screen.findByText("Saved credentials rejected")).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("MCP Server URL"), { target: { value: "https://first.example/mcp" } });
+    fireEvent.change(screen.getByLabelText(/MCP Server URL|MCP 服务器 URL/), { target: { value: "https://first.example/mcp" } });
     await waitFor(() => expect(networking.testMCPToolsListRequest).toHaveBeenCalledTimes(1));
-    await user.clear(screen.getByLabelText("MCP Server URL"));
-    await user.type(screen.getByLabelText("MCP Server URL"), "https://latest.example/mcp");
+    await user.clear(screen.getByLabelText(/MCP Server URL|MCP 服务器 URL/));
+    await user.type(screen.getByLabelText(/MCP Server URL|MCP 服务器 URL/), "https://latest.example/mcp");
     expect(networking.testMCPToolsListRequest).toHaveBeenCalledTimes(1);
     fireEvent.click(await screen.findByRole("button", { name: "Flat List" }));
     expect(screen.getByText("echo")).toBeInTheDocument();
@@ -461,13 +461,13 @@ describe("MCPServerEdit live tool preview", () => {
     vi.mocked(networking.listMCPTools).mockImplementationOnce(() => saved.promise);
     renderEditor();
     await waitFor(() => expect(networking.listMCPTools).toHaveBeenCalledTimes(1));
-    fireEvent.change(screen.getByLabelText("MCP Server URL"), { target: { value: "https://correct.example/mcp" } });
+    fireEvent.change(screen.getByLabelText(/MCP Server URL|MCP 服务器 URL/), { target: { value: "https://correct.example/mcp" } });
     fireEvent.click(await screen.findByRole("button", { name: "Flat List" }));
     expect(screen.getByText("echo")).toBeInTheDocument();
     await act(async () => saved.resolve({ tools: [], error: "connection_error", message: "Stale saved response" }));
     expect(screen.getByText("echo")).toBeInTheDocument();
     expect(screen.queryByText("Stale saved response")).not.toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("MCP Server URL"), { target: { value: BASE.url } });
+    fireEvent.change(screen.getByLabelText(/MCP Server URL|MCP 服务器 URL/), { target: { value: BASE.url } });
     expect(await screen.findByText("Saved credentials rejected")).toBeInTheDocument();
     expect(networking.listMCPTools).toHaveBeenCalledTimes(2);
   });

@@ -59,8 +59,8 @@ const openUserCredentials = async (props: Record<string, unknown>) => {
     },
   ]);
   renderView({}, props);
-  await userEvent.click(screen.getByRole("tab", { name: "User Credentials" }));
-  return within(await screen.findByRole("region", { name: "Stored user credentials" })).getByRole("row", {
+  await userEvent.click(screen.getByRole("tab", { name: "用户凭据" }));
+  return within(await screen.findByRole("region", { name: "已保存的用户凭据" })).getByRole("row", {
     name: /alice/,
   });
 };
@@ -88,34 +88,34 @@ describe("MCPServerView", () => {
   it("falls back to a placeholder name when the server has neither name nor alias", () => {
     renderView({ server_name: undefined, alias: undefined });
 
-    expect(screen.getByText("Unnamed Server")).toBeInTheDocument();
+    expect(screen.getByText("未命名服务器")).toBeInTheDocument();
   });
 
-  // "Transport" and "Authentication" label both an Overview card and a Settings
+  // "Transport" and /Authentication|认证/ label both an Overview card and a Settings
   // row, so only Overview-exclusive labels identify the Overview panel.
   it("summarises the connection on the Overview tab", () => {
     renderView();
 
-    expect(screen.getByText("Host URL")).toBeInTheDocument();
-    expect(screen.getByText("Cost Configuration")).toBeInTheDocument();
+    expect(screen.getByText("主机 URL")).toBeInTheDocument();
+    expect(screen.getByText("费用配置")).toBeInTheDocument();
     expect(screen.getAllByText("HTTP").length).toBeGreaterThan(0);
     expect(screen.getAllByText("https://example.com/mcp").length).toBeGreaterThan(0);
   });
 
   it("offers a Settings tab to proxy admins only", () => {
     renderView();
-    expect(screen.getByRole("tab", { name: "Settings" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "设置" })).toBeInTheDocument();
   });
 
   it("hides the Settings tab from non-admins", () => {
     renderView({}, { isProxyAdmin: false });
-    expect(screen.queryByRole("tab", { name: "Settings" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "设置" })).not.toBeInTheDocument();
   });
 
   it("opens the tools viewer on the MCP Tools tab", async () => {
     renderView();
 
-    await userEvent.click(screen.getByRole("tab", { name: "MCP Tools" }));
+    await userEvent.click(screen.getByRole("tab", { name: "MCP 工具" }));
 
     expect(await screen.findByText("tools viewer")).toBeInTheDocument();
   });
@@ -127,13 +127,13 @@ describe("MCPServerView", () => {
       mcp_info: { server_name: "demo server", is_public: true, is_public_explicit: true },
     });
 
-    await userEvent.click(screen.getByRole("tab", { name: "Settings" }));
+    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
 
-    expect(await screen.findByText("MCP Server Settings")).toBeInTheDocument();
-    expect(screen.getByText("Allow All Keys")).toBeInTheDocument();
-    expect(screen.getByText("Enabled")).toBeInTheDocument();
-    expect(screen.getByText("Network access")).toBeInTheDocument();
-    expect(screen.getByText("All Networks")).toBeInTheDocument();
+    expect(await screen.findByText("MCP 服务器设置")).toBeInTheDocument();
+    expect(screen.getByText("允许所有密钥")).toBeInTheDocument();
+    expect(screen.getByText("已启用")).toBeInTheDocument();
+    expect(screen.getByText("网络访问")).toBeInTheDocument();
+    expect(screen.getByText("所有网络")).toBeInTheDocument();
     expect(screen.queryByText("MCP Hub")).not.toBeInTheDocument();
     expect(screen.queryByText("Listed")).not.toBeInTheDocument();
     expect(screen.queryByText("edit form")).not.toBeInTheDocument();
@@ -142,8 +142,8 @@ describe("MCPServerView", () => {
   it("swaps in the edit form when Edit Settings is pressed", async () => {
     renderView();
 
-    await userEvent.click(screen.getByRole("tab", { name: "Settings" }));
-    await userEvent.click(await screen.findByRole("button", { name: "Edit Settings" }));
+    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
+    await userEvent.click(await screen.findByRole("button", { name: "编辑设置" }));
 
     expect(await screen.findByText("edit form")).toBeInTheDocument();
   });
@@ -151,19 +151,19 @@ describe("MCPServerView", () => {
   it("opens straight into the edit form when isEditing is set", async () => {
     renderView({}, { isEditing: true });
 
-    await userEvent.click(screen.getByRole("tab", { name: "Settings" }));
+    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
 
     expect(await screen.findByText("edit form")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Edit Settings" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "编辑设置" })).not.toBeInTheDocument();
   });
 
   it.each([false, true])("keeps config settings read-only with isEditing=%s", async (isEditing) => {
     renderView({ is_config: true }, { isEditing });
 
-    await userEvent.click(screen.getByRole("tab", { name: "Settings" }));
+    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
 
-    expect(screen.getByRole("button", { name: "Edit Settings" })).toBeDisabled();
-    expect(screen.getByText("Defined in config. Edit your YAML configuration to make changes")).toBeVisible();
+    expect(screen.getByRole("button", { name: "编辑设置" })).toBeDisabled();
+    expect(screen.getByText("在配置文件中定义。请编辑你的 YAML 配置以进行修改")).toBeVisible();
     expect(screen.queryByText("edit form")).not.toBeInTheDocument();
   });
 
@@ -171,11 +171,11 @@ describe("MCPServerView", () => {
     setSecureItem(EDIT_OAUTH_UI_STATE_KEY, JSON.stringify({ serverId: "srv-1" }));
     renderView({ is_config: isConfig });
 
-    await userEvent.click(screen.getByRole("tab", { name: "Settings" }));
+    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
 
     if (isConfig) {
       expect(screen.queryByText("edit form")).not.toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Edit Settings" })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeDisabled();
     } else {
       expect(screen.getByText("edit form")).toBeVisible();
     }
@@ -183,8 +183,8 @@ describe("MCPServerView", () => {
 
   it("does not open the editor for a view-only admin", async () => {
     renderView({}, { isViewOnly: true, isEditing: true });
-    await userEvent.click(screen.getByRole("tab", { name: "Settings" }));
-    expect(screen.getByRole("button", { name: "Edit Settings" })).toBeDisabled();
+    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
+    expect(screen.getByRole("button", { name: "编辑设置" })).toBeDisabled();
     expect(screen.queryByText("edit form")).not.toBeInTheDocument();
   });
 
@@ -198,35 +198,35 @@ describe("MCPServerView", () => {
     const onBack = vi.fn();
     renderView({}, { onBack });
 
-    await userEvent.click(screen.getByRole("button", { name: /Back to All Servers/ }));
+    await userEvent.click(screen.getByRole("button", { name: /返回全部服务器/ }));
 
     expect(onBack).toHaveBeenCalled();
   });
 
   it("lists the allowed tools, or says all tools are enabled", async () => {
     renderView({ allowed_tools: ["search", "fetch"] });
-    await userEvent.click(screen.getByRole("tab", { name: "Settings" }));
+    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
 
     expect(await screen.findByText("search")).toBeInTheDocument();
     expect(screen.getByText("fetch")).toBeInTheDocument();
-    expect(screen.queryByText("All tools enabled")).not.toBeInTheDocument();
+    expect(screen.queryByText("所有工具已启用")).not.toBeInTheDocument();
   });
 
   it("says all tools are enabled when no allowlist is stored", async () => {
     renderView({ allowed_tools: [] });
-    await userEvent.click(screen.getByRole("tab", { name: "Settings" }));
+    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
 
-    expect(await screen.findByText("All tools enabled")).toBeInTheDocument();
+    expect(await screen.findByText("所有工具已启用")).toBeInTheDocument();
   });
 
   it("lets a full admin revoke a stored user credential", async () => {
     const row = await openUserCredentials({});
-    expect(within(row).getByRole("button", { name: "Revoke credential for user alice" })).toBeInTheDocument();
+    expect(within(row).getByRole("button", { name: "吊销用户 alice 的凭据" })).toBeInTheDocument();
   });
 
   it("shows stored credentials to a view-only admin session without a revoke control", async () => {
     const row = await openUserCredentials({ isViewOnly: true });
-    expect(row).toHaveTextContent("BYOK API key");
-    expect(within(row).queryByRole("button", { name: /^Revoke credential/ })).not.toBeInTheDocument();
+    expect(row).toHaveTextContent("BYOK API 密钥");
+    expect(within(row).queryByRole("button", { name: /^吊销用户/ })).not.toBeInTheDocument();
   });
 });

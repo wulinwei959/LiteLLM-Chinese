@@ -37,27 +37,27 @@ describe("MCPServerCard health", () => {
 describe("MCPServerCard OAuth flow indicator", () => {
   it("shows the 'OAuth flow not set' badge for an oauth2 server with no oauth2_flow", () => {
     renderCard({ auth_type: "oauth2", oauth2_flow: null });
-    expect(screen.getByText("OAuth flow not set")).toBeInTheDocument();
+    expect(screen.getByText("未设置 OAuth 流程")).toBeInTheDocument();
   });
 
   it("does not show the badge once oauth2_flow is set (client_credentials)", () => {
     renderCard({ auth_type: "oauth2", oauth2_flow: "client_credentials" });
-    expect(screen.queryByText("OAuth flow not set")).not.toBeInTheDocument();
+    expect(screen.queryByText("未设置 OAuth 流程")).not.toBeInTheDocument();
   });
 
   it("does not show the badge once oauth2_flow is set (authorization_code)", () => {
     renderCard({ auth_type: "oauth2", oauth2_flow: "authorization_code" });
-    expect(screen.queryByText("OAuth flow not set")).not.toBeInTheDocument();
+    expect(screen.queryByText("未设置 OAuth 流程")).not.toBeInTheDocument();
   });
 
   it("does not show the badge for a non-oauth2 server", () => {
     renderCard({ auth_type: "api_key", oauth2_flow: null });
-    expect(screen.queryByText("OAuth flow not set")).not.toBeInTheDocument();
+    expect(screen.queryByText("未设置 OAuth 流程")).not.toBeInTheDocument();
   });
 
   it("does not show the badge for a delegate (PKCE passthrough) server", () => {
     renderCard({ auth_type: "oauth2", oauth2_flow: null, delegate_auth_to_upstream: true });
-    expect(screen.queryByText("OAuth flow not set")).not.toBeInTheDocument();
+    expect(screen.queryByText("未设置 OAuth 流程")).not.toBeInTheDocument();
   });
 });
 
@@ -96,27 +96,27 @@ describe("MCPServerCard per-user credentials", () => {
 
   it("offers Set while a field is missing", () => {
     const { onOpenFillFields, onClick } = renderUserFields({ missingUserFields: ["USER_TOKEN"], hasUserFields: true });
-    expect(screen.getByText("1 user field missing")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Update" })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Set" }));
+    expect(screen.getByText("1 个用户字段缺失")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "更新" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "设置" }));
     expect(onOpenFillFields).toHaveBeenCalledTimes(1);
     expect(onClick).not.toHaveBeenCalled();
   });
 
   it("keeps an Update entry point once every field is set", () => {
     const { onOpenFillFields, onClick } = renderUserFields({ missingUserFields: [], hasUserFields: true });
-    expect(screen.getByText("Per-user credentials")).toBeInTheDocument();
-    expect(screen.getByText("Set")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Set" })).not.toBeInTheDocument();
+    expect(screen.getByText("按用户凭据")).toBeInTheDocument();
+    expect(screen.getByText("设置")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "设置" })).not.toBeInTheDocument();
     expect(screen.queryByText(/user field/)).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Update" }));
+    fireEvent.click(screen.getByRole("button", { name: "更新" }));
     expect(onOpenFillFields).toHaveBeenCalledTimes(1);
     expect(onClick).not.toHaveBeenCalled();
   });
 
   it("keeps Enter on the Update button away from the card's open handler", () => {
     const { onClick } = renderUserFields({ missingUserFields: [], hasUserFields: true });
-    const update = screen.getByRole("button", { name: "Update" });
+    const update = screen.getByRole("button", { name: "更新" });
     expect(fireEvent.keyDown(update, { key: "Enter" }), "default activation must survive").toBe(true);
     expect(onClick).not.toHaveBeenCalled();
     fireEvent.keyDown(screen.getAllByRole("button")[0], { key: "Enter" });
@@ -125,9 +125,9 @@ describe("MCPServerCard per-user credentials", () => {
 
   it("renders no credential row for a server without per-user fields", () => {
     renderUserFields({ missingUserFields: [], hasUserFields: false });
-    expect(screen.queryByText("Per-user credentials")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Update" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Set" })).not.toBeInTheDocument();
+    expect(screen.queryByText("按用户凭据")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "更新" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "设置" })).not.toBeInTheDocument();
   });
 });
 
@@ -138,7 +138,7 @@ describe("MCPServerCard network access", () => {
       mcp_info: { server_name: "demo_server", is_public: true, is_public_explicit: true },
     });
 
-    expect(screen.getByText("All Networks")).toBeInTheDocument();
+    expect(screen.getByText("所有网络")).toBeInTheDocument();
     expect(screen.queryByText(/^Hub:/)).not.toBeInTheDocument();
   });
 });

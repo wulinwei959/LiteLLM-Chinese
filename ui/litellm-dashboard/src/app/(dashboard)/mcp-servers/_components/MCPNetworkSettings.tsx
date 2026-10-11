@@ -146,7 +146,7 @@ const AllowedClientDialog: React.FC<AllowedClientDialogProps> = ({ draft, onChan
         <DialogFooter>
           {draft.key !== null && (
             <Button type="button" variant="destructive" className="sm:mr-auto" onClick={onRemove}>
-              Remove client
+              {t("networkSettings.removeClient")}
             </Button>
           )}
           <Button type="button" variant="outline" onClick={onClose}>
@@ -438,7 +438,7 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
           <p className="text-sm font-medium">{t("networkSettings.clientIdentityHeader")}</p>
         </div>
         <Input
-          aria-label="Client identity header"
+          aria-label={t("networkSettings.clientIdentityHeader")}
           value={clientIdHeader}
           placeholder={t("networkSettings.clientIdentityPlaceholder")}
           onChange={(e) => setClientIdHeader(e.target.value)}

@@ -28,19 +28,19 @@ describe("MCPConnectionStatus", () => {
 
   it("should show 'Complete required fields' message when URL is set but canFetchTools is false", () => {
     renderWithProviders(<MCPConnectionStatus {...defaultProps} />);
-    expect(screen.getByText(/Complete required fields to test connection/i)).toBeInTheDocument();
+    expect(screen.getByText(/请填写必填项以测试连接/i)).toBeInTheDocument();
   });
 
   it("should show 'Connection successful' when tools are loaded", () => {
     renderWithProviders(<MCPConnectionStatus {...defaultProps} canFetchTools={true} tools={[{ name: "tool1" }]} />);
-    expect(screen.getByText("Connection successful")).toBeInTheDocument();
-    expect(screen.getByText("Connected")).toBeInTheDocument();
+    expect(screen.getByText("连接成功")).toBeInTheDocument();
+    expect(screen.getByText("已连接")).toBeInTheDocument();
   });
 
   it("should show loading state when isLoadingTools is true", () => {
     renderWithProviders(<MCPConnectionStatus {...defaultProps} canFetchTools={true} isLoadingTools={true} />);
-    expect(screen.getByText(/Testing connection to MCP server/i)).toBeInTheDocument();
-    expect(screen.getByText("Connecting...")).toBeInTheDocument();
+    expect(screen.getByText(/正在测试与 MCP 服务器的连接/i)).toBeInTheDocument();
+    expect(screen.getByText("正在连接...")).toBeInTheDocument();
   });
 
   it("should show info message without retry when tool preview returns 403", () => {
@@ -54,8 +54,8 @@ describe("MCPConnectionStatus", () => {
     );
 
     expect(screen.getByRole("alert")).toHaveTextContent(/Tools will be verified by an admin during review/i);
-    expect(screen.queryByText("Connection Failed")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /retry/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toHaveTextContent("连接失败");
+    expect(screen.queryByRole("button", { name: /重试/i })).not.toBeInTheDocument();
   });
 
   it("should show error state with retry button when toolsError is set", async () => {
@@ -70,15 +70,15 @@ describe("MCPConnectionStatus", () => {
       />,
     );
 
-    expect(screen.getByText("Connection Failed")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("连接失败");
     expect(screen.getByText("Connection refused")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /retry/i }));
+    await user.click(screen.getByRole("button", { name: /重试/i }));
     expect(fetchTools).toHaveBeenCalled();
   });
 
   it("should show 'No tools found' when connection succeeds but no tools returned", () => {
     renderWithProviders(<MCPConnectionStatus {...defaultProps} canFetchTools={true} tools={[]} />);
-    expect(screen.getByText(/No tools found for this MCP server/i)).toBeInTheDocument();
+    expect(screen.getByText(/此 MCP 服务器未找到任何工具/i)).toBeInTheDocument();
   });
 });

@@ -89,7 +89,7 @@ describe("PromptCachingRequestsTable", () => {
     expect(within(hit).getByText("未记录")).toBeInTheDocument();
     expect(within(hit).getByText("10,000")).toBeInTheDocument();
     expect(within(hit).getByText("$0.2700")).toBeInTheDocument();
-    expect(within(table).getByRole("row", { name: /unknown-price/ })).toHaveTextContent("Unavailable");
+    expect(within(table).getByRole("row", { name: /unknown-price/ })).toHaveTextContent("不可用");
     expect(within(table).getByRole("row", { name: /no-benefit/ })).toHaveTextContent("$0.00");
     expect(screen.getByText(/cache-write premiums|溢价/)).toBeInTheDocument();
     expect(lastQuery().get("start_date")).toBe("2026-09-01T00:00:00.000Z");
@@ -159,14 +159,14 @@ describe("PromptCachingRequestsTable", () => {
       expect(lastQuery().get("page_size")).toBe(String(pageSize));
       expect(lastQuery().has("cursor_request_id")).toBe(false);
       expect(lastQuery().has("cursor_start_time")).toBe(false);
-      expect(screen.getByText(/第 1 页/).toBeInTheDocument();
+      expect(screen.getByText(/第 1 页/)).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "上一页" })).toBeDisabled();
 
       fireEvent.click(screen.getByRole("button", { name: "下一页" }));
       await screen.findByRole("link", { name: `request-${pageSize + 1}` });
       expect(lastQuery().get("page_size")).toBe(String(pageSize));
       expect(lastQuery().get("cursor_request_id")).toBe(`request-${pageSize}`);
-      expect(screen.getByText(/第 2 页/).toBeInTheDocument();
+      expect(screen.getByText(/第 2 页/)).toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", { name: "上一页" }));
       await screen.findByRole("link", { name: "request-1" });
       expect(within(screen.getByRole("table", { name: "提示词缓存请求" })).getAllByRole("link")).toHaveLength(
@@ -180,7 +180,7 @@ describe("PromptCachingRequestsTable", () => {
       expect(lastQuery().get("filter")).toBe("hits");
       expect(lastQuery().get("page_size")).toBe(String(pageSize));
       expect(lastQuery().has("cursor_request_id")).toBe(false);
-      expect(screen.getByText(/第 1 页/).toBeInTheDocument();
+      expect(screen.getByText(/第 1 页/)).toBeInTheDocument();
       expect(screen.getByRole("combobox", { name: "每页行数" })).toHaveTextContent(String(pageSize));
     },
   );
@@ -209,12 +209,12 @@ describe("PromptCachingRequestsTable", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "下一页" }));
     await screen.findByRole("link", { name: "all-2" });
-    expect(screen.getByText(/第 2 页/).toBeInTheDocument();
+    expect(screen.getByText(/第 2 页/)).toBeInTheDocument();
     expect(lastQuery().get("cursor_start_time")).toBe(firstCursor.start_time);
     expect(lastQuery().get("cursor_request_id")).toBe(firstCursor.request_id);
     fireEvent.click(screen.getByRole("button", { name: "下一页" }));
     await screen.findByRole("link", { name: "all-3" });
-    expect(screen.getByText("Page 3")).toBeInTheDocument();
+    expect(screen.getByText("第 3 页")).toBeInTheDocument();
     expect(lastQuery().get("cursor_start_time")).toBe(secondCursor.start_time);
     expect(lastQuery().get("cursor_request_id")).toBe(secondCursor.request_id);
     expect(screen.getByRole("button", { name: "下一页" })).toBeDisabled();
@@ -224,7 +224,7 @@ describe("PromptCachingRequestsTable", () => {
     await screen.findByRole("link", { name: "all-2" });
     await waitFor(() => expect(lastQuery().get("cursor_request_id")).toBe(firstCursor.request_id));
     expect(lastQuery().get("cursor_start_time")).toBe(firstCursor.start_time);
-    expect(screen.getByText(/第 2 页/).toBeInTheDocument();
+    expect(screen.getByText(/第 2 页/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "上一页" }));
     await screen.findByRole("link", { name: "all-1" });
     await waitFor(() => expect(lastQuery().has("cursor_request_id")).toBe(false));
@@ -245,7 +245,7 @@ describe("PromptCachingRequestsTable", () => {
     await screen.findByRole("link", { name: "hits-1" });
     expect(lastQuery().get("filter")).toBe("hits");
     expect(lastQuery().get("page_size")).toBe("10");
-    expect(screen.getByText(/第 1 页/).toBeInTheDocument();
+    expect(screen.getByText(/第 1 页/)).toBeInTheDocument();
   });
 
   it("includes the current UTC day for a range ending today, matching the activity totals", async () => {
@@ -304,7 +304,7 @@ describe("PromptCachingRequestsTable", () => {
 
       pending.resolve(response([request({ request_id: "new-first" })]));
       await screen.findByRole("link", { name: "new-first" });
-      expect(screen.getByText(/第 1 页/).toBeInTheDocument();
+      expect(screen.getByText(/第 1 页/)).toBeInTheDocument();
       expect(committedOldRows.every((visible) => !visible)).toBe(true);
     },
   );

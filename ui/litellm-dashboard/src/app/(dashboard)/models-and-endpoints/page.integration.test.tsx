@@ -225,10 +225,10 @@ describe("ModelsAndEndpointsPage ?team drill-in", () => {
     renderWithProviders(<ModelsAndEndpointsPage />, { searchParams: { team: "team-a1b2" } });
 
     await user.click(await screen.findByRole("tab", { name: "Settings" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
-    await screen.findByLabelText(/Team Name/);
+    await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
+    await screen.findByLabelText(/团队名称/);
 
-    expect(screen.getByRole("switch", { name: /Disable all global guardrails/i })).toBeChecked();
+    expect(screen.getByRole("switch", { name: /禁用所有全局护栏/i })).toBeChecked();
   });
 
   it("keeps the switch hidden from an internal user session on the same team", async () => {

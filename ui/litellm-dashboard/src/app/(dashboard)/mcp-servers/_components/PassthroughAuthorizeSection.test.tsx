@@ -22,8 +22,8 @@ describe("PassthroughAuthorizeSection credential-class-aware copy", () => {
         />
       </WithForm>,
     );
-    expect(screen.getByPlaceholderText("Leave blank to keep the currently saved app (if any)")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Leave blank to keep the currently saved secret (if any)")).toBeInTheDocument();
+    expect(screen.getAllByPlaceholderText(/留空则保留当前已保存/)[0]).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("留空则保留当前已保存的密钥（若有）")).toBeInTheDocument();
   });
 
   it("shows the discard warning copy when switching from a different class (oauth2 -> true_passthrough)", () => {
@@ -37,9 +37,9 @@ describe("PassthroughAuthorizeSection credential-class-aware copy", () => {
         />
       </WithForm>,
     );
-    expect(screen.getByPlaceholderText("Leave blank to use dynamic client registration")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Leave blank for public clients / PKCE")).toBeInTheDocument();
-    expect(screen.getByText(/Switching the auth type discards the previously saved app/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/留空则使用动态客户端注册/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/公开客户端或 PKCE 请留空/)).toBeInTheDocument();
+    expect(screen.getByText(/切换认证方式会丢弃之前保存的应用/)).toBeInTheDocument();
   });
 
   it("shows the keep+warn banner when the upstream may no longer match", () => {
@@ -48,6 +48,6 @@ describe("PassthroughAuthorizeSection credential-class-aware copy", () => {
         <PassthroughAuthorizeSection authType="true_passthrough" oauthFlow={noopFlow} appMayNotMatchUpstream />
       </WithForm>,
     );
-    expect(screen.getByText(/registered for the previous upstream/)).toBeInTheDocument();
+    expect(screen.getByText(/为上一个上游注册/)).toBeInTheDocument();
   });
 });

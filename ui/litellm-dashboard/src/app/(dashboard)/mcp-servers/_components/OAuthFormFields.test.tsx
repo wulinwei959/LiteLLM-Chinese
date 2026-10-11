@@ -25,7 +25,7 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={false} />
         </WithForm>,
       );
-      expect(screen.getByText("Resource Indicator (optional)")).toBeInTheDocument();
+      expect(screen.getByText("资源指示符（可选）")).toBeInTheDocument();
     });
 
     it("renders in M2M mode", () => {
@@ -34,7 +34,7 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={true} />
         </WithForm>,
       );
-      expect(screen.getByText("Resource Indicator (optional)")).toBeInTheDocument();
+      expect(screen.getByText("资源指示符（可选）")).toBeInTheDocument();
     });
 
     it("keeps one placeholder when editing, since the stored value is returned and shown", () => {
@@ -45,7 +45,7 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={false} isEditing={true} />
         </WithForm>,
       );
-      expect(screen.getByPlaceholderText("auto, or https://mcp.example.com/mcp")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/auto，或 https:\/\/mcp.example.com\/mcp/)).toBeInTheDocument();
     });
 
     it("submits its value under credentials.upstream_resource", async () => {
@@ -55,7 +55,7 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={false} />
         </WithForm>,
       );
-      const input = screen.getByPlaceholderText("auto, or https://mcp.example.com/mcp");
+      const input = screen.getByPlaceholderText(/auto，或 https:\/\/mcp.example.com\/mcp/);
       await act(async () => {
         fireEvent.change(input, { target: { value: "api://finance-api/.default" } });
       });
@@ -79,7 +79,7 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={false} />
         </WithForm>,
       );
-      expect(screen.getByText("Token Validation Rules (optional)")).toBeInTheDocument();
+      expect(screen.getByText("令牌校验规则（可选）")).toBeInTheDocument();
     });
 
     it("renders Token Storage TTL field", () => {
@@ -88,7 +88,7 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={false} />
         </WithForm>,
       );
-      expect(screen.getByText("Token Storage TTL (seconds, optional)")).toBeInTheDocument();
+      expect(screen.getByText("令牌存储 TTL（秒，可选）")).toBeInTheDocument();
     });
 
     it("renders standard interactive fields alongside the new fields", () => {
@@ -97,10 +97,10 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={false} />
         </WithForm>,
       );
-      expect(screen.getByText("Authorization URL (optional)")).toBeInTheDocument();
-      expect(screen.getByText("Registration URL (optional)")).toBeInTheDocument();
-      expect(screen.getByText("Token Validation Rules (optional)")).toBeInTheDocument();
-      expect(screen.getByText("Token Storage TTL (seconds, optional)")).toBeInTheDocument();
+      expect(screen.getByText("授权 URL（可选）")).toBeInTheDocument();
+      expect(screen.getByText("注册 URL（可选）")).toBeInTheDocument();
+      expect(screen.getByText("令牌校验规则（可选）")).toBeInTheDocument();
+      expect(screen.getByText("令牌存储 TTL（秒，可选）")).toBeInTheDocument();
     });
   });
 
@@ -129,7 +129,7 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={true} />
         </WithForm>,
       );
-      expect(screen.getByText("Client ID")).toBeInTheDocument();
+      expect(screen.getByText("客户端 ID")).toBeInTheDocument();
       expect(screen.getByText("Token URL")).toBeInTheDocument();
     });
   });
@@ -141,8 +141,8 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={false} />
         </WithForm>,
       );
-      const tokenUrlLabel = screen.getByText("Token URL (optional)");
-      const authMethodLabel = screen.getByText("Token Endpoint Auth Method (optional)");
+      const tokenUrlLabel = screen.getByText("令牌 URL（可选）");
+      const authMethodLabel = screen.getByText(/令牌端点认证方式（可选）|令牌端点认证方法/);
       expect(tokenUrlLabel.compareDocumentPosition(authMethodLabel) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
@@ -153,7 +153,7 @@ describe("OAuthFormFields", () => {
         </WithForm>,
       );
       const tokenUrlLabel = screen.getByText("Token URL");
-      const authMethodLabel = screen.getByText("Token Endpoint Auth Method (optional)");
+      const authMethodLabel = screen.getByText(/令牌端点认证方式（可选）|令牌端点认证方法/);
       expect(tokenUrlLabel.compareDocumentPosition(authMethodLabel) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
@@ -163,7 +163,7 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={false} />
         </WithForm>,
       );
-      const selector = screen.getByLabelText("Token Endpoint Auth Method (optional)");
+      const selector = screen.getByLabelText("令牌端点认证方式（可选）");
       await act(async () => {
         fireEvent.mouseDown(selector);
       });
@@ -192,7 +192,7 @@ describe("OAuthFormFields", () => {
       });
 
       await waitFor(() => {
-        expect(screen.queryByText("Must be valid JSON")).not.toBeInTheDocument();
+        expect(screen.queryByText("必须是合法的 JSON")).not.toBeInTheDocument();
       });
     });
 
@@ -214,7 +214,7 @@ describe("OAuthFormFields", () => {
       });
 
       await waitFor(() => {
-        expect(screen.queryByText("Must be valid JSON")).not.toBeInTheDocument();
+        expect(screen.queryByText("必须是合法的 JSON")).not.toBeInTheDocument();
       });
     });
 
@@ -236,7 +236,7 @@ describe("OAuthFormFields", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Must be valid JSON")).toBeInTheDocument();
+        expect(screen.getByText("必须是合法的 JSON")).toBeInTheDocument();
       });
     });
 
@@ -261,7 +261,7 @@ describe("OAuthFormFields", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Must be valid JSON")).toBeInTheDocument();
+        expect(screen.getByText("必须是合法的 JSON")).toBeInTheDocument();
       });
     });
 
@@ -284,7 +284,7 @@ describe("OAuthFormFields", () => {
       });
 
       await waitFor(() => {
-        expect(screen.queryByText("Must be valid JSON")).not.toBeInTheDocument();
+        expect(screen.queryByText("必须是合法的 JSON")).not.toBeInTheDocument();
       });
     });
   });

@@ -8,6 +8,7 @@ import {
   useMountRegistry,
   type MountedFormValues,
 } from "@/components/common_components/MountedFormField";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 export const McpFormHarness: React.FC<{
   defaultValues?: MountedFormValues;
@@ -17,19 +18,21 @@ export const McpFormHarness: React.FC<{
   const form = useForm<MountedFormValues>({ mode: "onChange", defaultValues });
   const registry = useMountRegistry();
   return (
-    <FormProvider {...form}>
-      <MountedFormProvider value={{ control: form.control, registry }}>
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            onFinish?.(projectMountedValues(registry, form.getValues));
-          }}
-        >
-          {children}
-          <button type="submit">Submit</button>
-        </form>
-      </MountedFormProvider>
-    </FormProvider>
+    <LocaleProvider locale="zh-CN">
+      <FormProvider {...form}>
+        <MountedFormProvider value={{ control: form.control, registry }}>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              onFinish?.(projectMountedValues(registry, form.getValues));
+            }}
+          >
+            {children}
+            <button type="submit">Submit</button>
+          </form>
+        </MountedFormProvider>
+      </FormProvider>
+    </LocaleProvider>
   );
 };
 

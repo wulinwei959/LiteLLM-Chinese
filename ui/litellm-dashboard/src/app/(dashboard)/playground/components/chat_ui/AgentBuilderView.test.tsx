@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -127,7 +128,7 @@ describe("AgentBuilderView", () => {
     await waitForRoster();
 
     expect(screen.getByRole("button", { name: "research-agent litellm_agent" })).toBeInTheDocument();
-    expect(screen.getByText("Agent Builder")).toBeInTheDocument();
+    expect(screen.getByText("智能体构建器")).toBeInTheDocument();
     expect(await screen.findByDisplayValue("support-agent")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Be helpful.")).toBeInTheDocument();
     expect(screen.getByDisplayValue("0.3")).toBeInTheDocument();
@@ -161,7 +162,7 @@ describe("AgentBuilderView", () => {
     await waitForRoster();
 
     await user.click(screen.getByRole("button", { name: /New agent/i }));
-    fireEvent.change(screen.getByPlaceholderText("My Agent"), { target: { value: "billing-agent" } });
+    fireEvent.change(screen.getByPlaceholderText("我的智能体"), { target: { value: "billing-agent" } });
     await user.click(screen.getByRole("button", { name: /Save Agent/i }));
 
     await waitFor(() => expect(modelCreateCall).toHaveBeenCalled());
@@ -291,7 +292,7 @@ describe("AgentBuilderView", () => {
     await waitForRoster();
     await screen.findByDisplayValue("support-agent");
 
-    await user.click(controlUnder("MCP servers"));
+    await user.click(controlUnder("MCP 服务器"));
     const options = await screen.findAllByText("github");
     await user.click(options[options.length - 1]);
     await user.keyboard("{Escape}");

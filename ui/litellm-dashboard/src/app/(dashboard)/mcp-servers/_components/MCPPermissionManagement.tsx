@@ -202,17 +202,17 @@ const MCPPermissionManagement: React.FC<MCPPermissionManagementProps> = ({
           <div className="flex items-start justify-between gap-4">
             <div>
               <span className="text-sm font-medium text-foreground flex items-center">
-                Allow All LiteLLM Keys
-                <SimpleTooltip content="When enabled, every API key can access this MCP server.">
+                {t("permissionMgmt.allowAllKeys")}
+                <SimpleTooltip content={t("permissionMgmt.allowAllKeysTooltip")}>
                   <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
                 </SimpleTooltip>
               </span>
               <p className="text-sm text-muted-foreground mt-1">
-                Enable if this server should be &quot;public&quot; to all keys.
+                {t("permissionMgmt.allowAllKeysDesc")}
               </p>
             </div>
             <MountedFormField name="allow_all_keys" defaultValue={mcpServer?.allow_all_keys ?? false} className="mb-0">
-              {(control) => <Switch aria-label="Allow All LiteLLM Keys" {...switchControl(control)} />}
+              {(control) => <Switch aria-label={t("permissionMgmt.allowAllKeys")} {...switchControl(control)} />}
             </MountedFormField>
           </div>
 
@@ -229,7 +229,7 @@ const MCPPermissionManagement: React.FC<MCPPermissionManagementProps> = ({
               </p>
             </div>
             <MountedFormField name="available_on_public_internet" defaultValue={true} className="mb-0">
-              {(control) => <Switch aria-label="Internal network only" {...invertedSwitchControl(control)} />}
+              {(control) => <Switch aria-label={t("permissionMgmt.internalNetworkOnly")} {...invertedSwitchControl(control)} />}
             </MountedFormField>
           </div>
 
@@ -252,7 +252,7 @@ const MCPPermissionManagement: React.FC<MCPPermissionManagementProps> = ({
                 className="mb-0"
               >
                 {(control) => (
-                  <Switch aria-label="Delegate auth to upstream (PKCE passthrough)" {...switchControl(control)} />
+                  <Switch aria-label={t("permissionMgmt.delegateAuthUpstream")} {...switchControl(control)} />
                 )}
               </MountedFormField>
             </div>
@@ -276,7 +276,7 @@ const MCPPermissionManagement: React.FC<MCPPermissionManagementProps> = ({
                 defaultValue={mcpServer?.oauth_passthrough ?? false}
                 className="mb-0"
               >
-                {(control) => <Switch aria-label="OAuth pass-through" {...switchControl(control)} />}
+                {(control) => <Switch aria-label={t("permissionMgmt.oauthPassthrough")} {...switchControl(control)} />}
               </MountedFormField>
             </div>
           )}

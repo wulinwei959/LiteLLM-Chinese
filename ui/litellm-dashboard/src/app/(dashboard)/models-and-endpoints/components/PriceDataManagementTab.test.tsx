@@ -14,6 +14,6 @@ vi.mock("@/app/(dashboard)/hooks/models/useModelCostMap", () => ({
 describe("PriceDataManagementTab", () => {
   it("renders its content standalone, without a tab-panel ancestor", () => {
     renderWithProviders(<PriceDataManagementTab />);
-    expect(screen.getByText("Price Data Management")).toBeInTheDocument();
+    expect(screen.getByText("价格数据管理")).toBeInTheDocument();
   });
 });

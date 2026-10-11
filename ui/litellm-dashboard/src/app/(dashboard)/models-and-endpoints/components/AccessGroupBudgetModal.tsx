@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import NumericalInput from "@/components/shared/numerical_input";
 import { Button } from "@/components/ui/button";
 import { useZodForm } from "@/lib/forms/useZodForm";
+import { useTranslations } from "next-intl";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ModelAccessGroup } from "@/app/(dashboard)/hooks/modelAccessGroups/useModelAccessGroups";
 import { SetModelAccessGroupBudgetParams } from "@/app/(dashboard)/hooks/modelAccessGroups/useSetModelAccessGroupBudget";
@@ -49,6 +50,7 @@ const AccessGroupBudgetModal: React.FC<AccessGroupBudgetModalProps> = ({
   onCancel,
   onSubmit,
 }) => {
+  const t = useTranslations("models");
   const budget = accessGroup?.budget ?? null;
   const form = useZodForm(budgetSchema, { values: accessGroupBudgetFormValues(budget) });
 

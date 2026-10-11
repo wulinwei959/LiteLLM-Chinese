@@ -984,13 +984,13 @@ export default function ComplianceUI({
 
                   <div className="mb-2 p-2 bg-card rounded-sm border border-border">
                     <p className="text-[10px] text-muted-foreground leading-relaxed">
-                      <span className="font-semibold text-muted-foreground">Required columns:</span>{" "}
+                      <span className="font-semibold text-muted-foreground">{t("compliance.requiredColumns")}</span>{" "}
                       <code className="bg-muted px-1 rounded-sm text-[10px]">prompt</code>,{" "}
                       <code className="bg-muted px-1 rounded-sm text-[10px]">expected_result</code>{" "}
                       <span className="text-muted-foreground">(fail or pass)</span>
                     </p>
                     <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5">
-                      <span className="font-semibold text-muted-foreground">Optional columns:</span>{" "}
+                      <span className="font-semibold text-muted-foreground">{t("compliance.optionalColumns")}</span>{" "}
                       <code className="bg-muted px-1 rounded-sm text-[10px]">framework</code>,{" "}
                       <code className="bg-muted px-1 rounded-sm text-[10px]">category</code>
                     </p>
@@ -1249,7 +1249,7 @@ export default function ComplianceUI({
                         <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center mx-auto mb-3">
                           <MessageSquare className="w-5 h-5 text-muted-foreground" />
                         </div>
-                        <p className="text-xs text-muted-foreground">Type a prompt below to quickly test it.</p>
+                        <p className="text-xs text-muted-foreground">{t("compliance.typeToTest")}</p>
                       </div>
                     </div>
                   )}
@@ -1275,7 +1275,7 @@ export default function ComplianceUI({
                           {msg.text}
                           {msg.type === "system" && msg.returnedText != null && (
                             <span className="block mt-1.5 pt-1.5 border-t border-gray-200/60">
-                              <span className="text-muted-foreground">Returned: </span>
+                              <span className="text-muted-foreground">{t("compliance.returned")}</span>
                               <span className="font-medium text-foreground break-all">{msg.returnedText}</span>
                             </span>
                           )}
@@ -1511,7 +1511,7 @@ export default function ComplianceUI({
                                 <div className="mt-2 pt-2 border-t border-border text-[11px] space-y-1">
                                   {result.triggeredBy && (
                                     <div>
-                                      <span className="text-muted-foreground">Triggered by:</span>{" "}
+                                      <span className="text-muted-foreground">{t("compliance.triggeredBy")}</span>{" "}
                                       <span className="font-medium text-foreground bg-muted px-1.5 py-0.5 rounded-sm">
                                         {result.triggeredBy}
                                       </span>

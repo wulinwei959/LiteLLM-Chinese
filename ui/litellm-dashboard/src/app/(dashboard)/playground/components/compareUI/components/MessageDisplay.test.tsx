@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import type { MessageType } from "@/components/chat_ui/types";
 import { MessageDisplay } from "./MessageDisplay";

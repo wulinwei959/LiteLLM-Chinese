@@ -159,7 +159,7 @@ describe("AllModelsTab", () => {
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
     expect(await screen.findByText("gpt-4")).toBeInTheDocument();
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-50 of 137");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-50 条，共 137 条");
   });
 
   it("does not re-query after the mount-time debounced search settles unchanged", async () => {
@@ -175,7 +175,7 @@ describe("AllModelsTab", () => {
     setModelsInfo([], 0);
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
-    expect(screen.getByText("No models found")).toBeInTheDocument();
+    expect(screen.getByText("未找到模型")).toBeInTheDocument();
   });
 
   it("shows the loading skeleton while the first page is in flight", () => {
@@ -183,7 +183,7 @@ describe("AllModelsTab", () => {
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
     expect(screen.getAllByTestId("skeleton-row").length).toBeGreaterThan(0);
-    expect(screen.queryByText("No models found")).not.toBeInTheDocument();
+    expect(screen.queryByText("未找到模型")).not.toBeInTheDocument();
   });
 
   describe("server sort contract", () => {
@@ -394,7 +394,7 @@ describe("AllModelsTab", () => {
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
     await user.click(screen.getByTestId("datatable-filters-trigger"));
-    await user.click(await screen.findByPlaceholderText("Filter by Public Model Name"));
+    await user.click(await screen.findByPlaceholderText("按公开模型名称筛选"));
     await user.click(await screen.findByRole("option", { name: "gpt-3.5-turbo" }));
     await user.click(screen.getByTestId("filter-drawer-apply"));
 
@@ -410,7 +410,7 @@ describe("AllModelsTab", () => {
     const table = screen.getByRole("table");
     expect(within(table).getByText("claude-opus")).toBeInTheDocument();
     expect(within(table).getByText("gpt-4")).toBeInTheDocument();
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-2 of 2");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-2 条，共 2 条");
   });
 
   it("asks the server for wildcard deployments instead of hiding rows client-side", () => {
@@ -419,7 +419,7 @@ describe("AllModelsTab", () => {
 
     expect(lastModelsInfoCall().wildcardOnly).toBe(true);
     expect(within(screen.getByRole("table")).getByText("gpt-4")).toBeInTheDocument();
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-2 of 2");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-2 条，共 2 条");
   });
 
   it("asks the server for the selected access group instead of hiding rows client-side", async () => {
@@ -428,13 +428,13 @@ describe("AllModelsTab", () => {
     expect(lastModelsInfoCall().wildcardOnly).toBe(false);
 
     await user.click(screen.getByTestId("datatable-filters-trigger"));
-    await user.click(await screen.findByPlaceholderText("Filter by Model Access Group"));
+    await user.click(await screen.findByPlaceholderText("按模型访问组筛选"));
     await user.click(await screen.findByRole("option", { name: "sales-team" }));
     await user.click(screen.getByTestId("filter-drawer-apply"));
 
     await waitFor(() => expect(lastModelsInfoCall().accessGroup).toBe("sales-team"));
     expect(within(screen.getByRole("table")).getByText("gpt-4")).toBeInTheDocument();
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-1 of 1");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-1 条，共 1 条");
   });
 
   it("asks the server for the exact selected model group so deployments beyond the first page are found", () => {
@@ -453,7 +453,7 @@ describe("AllModelsTab", () => {
   it("keeps the exact model group alongside a typed search", async () => {
     renderWithProviders(<AllModelsTab {...defaultProps} selectedModelGroup="claude-opus" />);
 
-    fireEvent.change(screen.getByPlaceholderText("Search model names…"), { target: { value: "opus" } });
+    fireEvent.change(screen.getByPlaceholderText("按模型名称搜索..."), { target: { value: "opus" } });
 
     await waitFor(() => expect(lastModelsInfoCall().search).toBe("opus"));
     expect(lastModelsInfoCall().modelName).toBe("claude-opus");
@@ -567,7 +567,7 @@ describe("AllModelsTab", () => {
       renderWithProviders(<AllModelsTab {...defaultProps} />);
 
       await user.click(screen.getByTestId("models-view-select"));
-      await user.click(await screen.findByRole("option", { name: "All Available Models" }));
+      await user.click(await screen.findByRole("option", { name: "所有可用模型" }));
 
       await waitFor(() => {
         expect(screen.queryByText(/create a Virtual Key/i)).not.toBeInTheDocument();

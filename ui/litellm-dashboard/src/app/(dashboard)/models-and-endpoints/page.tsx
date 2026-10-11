@@ -41,16 +41,16 @@ type ModelTabSlug =
 
 const BASE_TAB_KEY = "all-models";
 
-const TAB_LABELS: Record<ModelTabSlug, string> = {
-  add: "Add Model",
-  "auto-routers": "Auto-Routers",
-  "llm-credentials": "LLM Credentials",
-  "pass-through": "Pass-Through Endpoints",
-  health: "Health Status",
-  "retry-settings": "Model Retry Settings",
-  "model-group-alias": "Model Group Alias",
-  "access-group-budgets": "Model Access Group Budgets",
-  "price-data": "Price Data Reload",
+const TAB_LABELS_KEYS: Record<ModelTabSlug, keyof typeof models.tabs> = {
+  add: "addModel",
+  "auto-routers": "autoRouters",
+  "llm-credentials": "llmCredentials",
+  "pass-through": "passThrough",
+  health: "health",
+  "retry-settings": "retrySettings",
+  "model-group-alias": "modelGroupAlias",
+  "access-group-budgets": "accessGroupBudgets",
+  "price-data": "priceData",
 };
 
 const renderPanel = (key: string) => {
@@ -125,17 +125,17 @@ export default function ModelsAndEndpointsPage() {
     [canCreate, canViewAutoRouters, isAdmin, isViewOnly],
   );
 
-  const allModelsLabel = isAdmin ? "All Models" : "Your Models";
+  const allModelsLabel = isAdmin ? t("tabs.allModels") : t("tabs.yourModels");
   const tabLabel = (slug: "" | ModelTabSlug): React.ReactNode => {
     if (!slug) return allModelsLabel;
     if (slug === "auto-routers" || slug === "access-group-budgets") {
       return (
         <span className="flex items-center gap-2">
-          {TAB_LABELS[slug]} <BetaBadge />
+          {t(`tabs.${TAB_LABELS_KEYS[slug]}`)} <BetaBadge />
         </span>
       );
     }
-    return TAB_LABELS[slug];
+    return t(`tabs.${TAB_LABELS_KEYS[slug]}`);
   };
 
   const handleRefreshClick = () => {

@@ -2,6 +2,7 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import AutoRoutersTabPanel from "./AutoRoutersTabPanel";
+import { renderWithProviders } from "@tests/test-utils";
 
 const panelProps = vi.fn();
 vi.mock("../components/AutoRouters/AutoRoutersPanel", () => ({
@@ -37,14 +38,14 @@ describe("AutoRoutersTabPanel", () => {
       ],
     });
     mockUseUISettings.mockReturnValueOnce({ data: { values: { disable_model_add_for_internal_users: true } } });
-    render(<AutoRoutersTabPanel />);
+    renderWithProviders(<AutoRoutersTabPanel />);
 
     expect(lastProps().createScope).toBe("team-required");
   });
 
   it("grants an unscoped create to a real proxy admin", () => {
     mockUseAuthorized.mockReturnValue(SESSION);
-    render(<AutoRoutersTabPanel />);
+    renderWithProviders(<AutoRoutersTabPanel />);
     expect(lastProps().createScope).toBe("unscoped-ok");
   });
 
@@ -52,7 +53,7 @@ describe("AutoRoutersTabPanel", () => {
   // so the panel must not be told it may create.
   it("withholds the create affordance from a view-only admin session", () => {
     mockUseAuthorized.mockReturnValue({ ...SESSION, isViewOnly: true });
-    render(<AutoRoutersTabPanel />);
+    renderWithProviders(<AutoRoutersTabPanel />);
     expect(lastProps().createScope).toBe("forbidden");
   });
 });

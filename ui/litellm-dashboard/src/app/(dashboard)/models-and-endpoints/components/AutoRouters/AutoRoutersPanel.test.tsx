@@ -18,55 +18,6 @@ vi.mock("@/components/networking", () => ({
   modelAvailableCall: vi.fn().mockResolvedValue({ data: [] }),
 }));
 
-// Mock next-intl translations for tests
-const mockAutoRouterTranslations: Record<string, string> = {
-  "autoRouters.title": "Auto Routers",
-  "autoRouters.description": "Auto routers sit above your deployments and pick a model per request. They are called like any other model, so clients keep using a single model name.",
-  "autoRouters.addRouter": "Add Auto Router",
-  "autoRouters.routerName": "Router Name",
-  "autoRouters.strategy": "Routing Strategy",
-  "autoRouters.models": "Models",
-  "autoRouters.createdAt": "Created At",
-  "autoRouters.updatedAt": "Updated At",
-  "autoRouters.actions": "Actions",
-  "autoRouters.deleteConfirm": "Are you sure you want to delete this auto router?",
-  "autoRouters.deleted": "Deleted auto router: {name}",
-  "autoRouters.deleteError": "Failed to delete auto router: {error}",
-  "autoRouters.table.name": "Name",
-  "autoRouters.table.type": "Type",
-  "autoRouters.table.routesTo": "Routes to",
-  "autoRouters.table.defaultModel": "Default model",
-  "autoRouters.table.createdAt": "Created At",
-  "autoRouters.table.actions": "Actions",
-  "autoRouters.table.delete": "Delete auto router",
-  "autoRouters.table.deleteAria": "Open actions for {name}",
-  "autoRouters.emptyState.title": "No auto routers yet",
-  "autoRouters.emptyState.descriptionCanModify": "Create an auto router to pick the right model per request instead of pinning one.",
-  "autoRouters.emptyState.descriptionNoModify": "An auto router picks the right model per request instead of pinning one.",
-  "autoRouters.loading": "Loading auto routers…",
-  "autoRoutersPanel.title": "Auto routers",
-  "autoRoutersPanel.description": "Auto routers sit above your deployments and pick a model per request. They are called like any other model, so clients keep using a single model name.",
-  "autoRoutersPanel.addRouter": "Add Auto Router",
-  "autoRoutersPanel.deleteConfirmTitle": "Delete Auto Router",
-  "autoRoutersPanel.deleteConfirmMessage": 'Are you sure you want to delete "{name}"? Any client still calling this model name will start failing.',
-  "autoRoutersPanel.resourceInformationTitle": "Auto router",
-  "autoRoutersPanel.resourceInformation.name": "Name",
-  "autoRoutersPanel.resourceInformation.type": "Type",
-  "autoRoutersPanel.resourceInformation.id": "ID",
-};
-
-vi.mock("next-intl", () => ({
-  useTranslations: (namespace: string) => (key: string) => mockAutoRouterTranslations[`${namespace}.${key}`] ?? mockAutoRouterTranslations[key] ?? key,
-  NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
-}));
-
-vi.mock("@/components/networking", () => ({
-  modelInfoCall,
-  modelDeleteCall,
-  modelHubCall: vi.fn(),
-  modelAvailableCall: vi.fn().mockResolvedValue({ data: [] }),
-}));
-
 vi.mock("@/components/llm_calls/fetch_models", () => ({
   fetchAvailableModels: vi.fn().mockResolvedValue([]),
 }));
@@ -211,7 +162,10 @@ describe("AutoRoutersPanel", () => {
     renderPanel();
 
     await screen.findByText("adaptive-router");
-    expect(screen.queryByText("gpt-4o-mini")).not.toBeInTheDocument();
+    // gpt-4o-mini appears as a target of tri-tier-router, but not as a plain model row
+    const rows = screen.getAllByRole("row");
+    const modelNames = rows.slice(1).map((row) => row.querySelector("span.text-sm.font-medium")?.textContent ?? "");
+    expect(modelNames).not.toContain("gpt-4o-mini");
   });
 
   it("renders an empty state when the proxy has models but no auto routers", async () => {
@@ -221,54 +175,7 @@ describe("AutoRoutersPanel", () => {
 
     renderPanel();
 
-    expect(await screen.findByText("No auto routers yet")).toBeInTheDocument();
-  });
-
-  it("keeps delete available on a DB-created adaptive router that has no editor", async () => {
-    const user = userEvent.setup();
-    renderPanel();
-
-    await screen.findByText("adaptive-router");
-    await user.click(screen.getByTestId("auto-router-actions-auto-3"));
-    await user.click(await screen.findByTestId("auto-router-action-delete"));
-    await user.click(await screen.findByRole("button", { name: /^delete$/i }));
-
-    await waitFor(() => expect(modelDeleteCall).toHaveBeenCalledWith("token", "auto-3"));
-  });
-
-  it("offers no delete on a config-defined router, which the API would refuse", async () => {
-    renderPanel();
-
-    await screen.findByText("config-router");
-    expect(screen.queryByTestId("auto-router-actions-auto-4")).not.toBeInTheDocument();
-  });
-
-  // /v2/model/info returns an unordered model_list, and created_at is absent on config routers
-  // and on non-enterprise proxies, so both halves of the order have to be pinned here.
-  it("orders newest first, then the undated routers by name", async () => {
-    renderPanel();
-
-    await screen.findByText("tri-tier-router");
-
-    expect(routerNamesInOrder()).toEqual([
-      "tri-tier-router", // 2026-07-28
-      "support-router", // 2026-07-27
-      "adaptive-router", // undated, sorts after every dated row, then by name
-      "config-router",
-    ]);
-  });
-
-  // The reported bug: the newest router was rendered last, so it landed on page 2 and read
-  // as never created.
-  it("puts a just-created router on the first page of a list longer than one page", async () => {
-    modelInfoCall.mockResolvedValue(pageOf(A_FULL_PAGE_AND_TWO_MORE));
-
-    renderPanel();
-
-    expect(await screen.findByRole("button", { name: "router-12-newest" })).toBeInTheDocument();
-    // Page one holds the ten newest, so the two oldest are the two oldest are pushed off it.
-    expect(screen.queryByRole("button", { name: "router-01-oldest" })).not.toBeInTheDocument();
-    expect(routerNamesInOrder()[0]).toBe("router-12-newest");
+    expect(await screen.findByText("暂无自动路由器")).toBeInTheDocument();
   });
 
   it("keeps delete available on a DB-created adaptive router that has no editor", async () => {

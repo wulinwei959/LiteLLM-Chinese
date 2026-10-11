@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import { describe, it, expect, vi } from "vitest";
 import ChatMessageBubble from "./ChatMessageBubble";
 import { EndpointType } from "@/components/chat_ui/mode_endpoint_mapping";
@@ -76,14 +77,14 @@ describe("ChatMessageBubble", () => {
   it("should render a user message with right-aligned text", () => {
     render(<ChatMessageBubble {...defaultProps} message={{ role: "user", content: "Hello" }} />);
 
-    expect(screen.getByText("user")).toBeInTheDocument();
+    expect(screen.getByText(/用户|user/i)).toBeInTheDocument();
     expect(screen.getByText("Hello")).toBeInTheDocument();
   });
 
   it("should render an assistant message with left-aligned text", () => {
     render(<ChatMessageBubble {...defaultProps} message={{ role: "assistant", content: "Hi there" }} />);
 
-    expect(screen.getByText("assistant")).toBeInTheDocument();
+    expect(screen.getByText(/助手|assistant/i)).toBeInTheDocument();
     expect(screen.getByText("Hi there")).toBeInTheDocument();
   });
 

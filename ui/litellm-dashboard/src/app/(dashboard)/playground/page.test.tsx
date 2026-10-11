@@ -50,7 +50,7 @@ describe("PlaygroundPage role guard", () => {
     authState.userRole = role;
     renderWithProviders(<PlaygroundPage />);
 
-    expect(screen.getByText("Access Denied")).toBeInTheDocument();
+    expect(screen.getByText("访问被拒绝")).toBeInTheDocument();
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
     expect(screen.queryByTestId("chat-ui")).not.toBeInTheDocument();
     expect(screen.queryByTestId("compare-ui")).not.toBeInTheDocument();
@@ -62,7 +62,7 @@ describe("PlaygroundPage role guard", () => {
     authState.userRole = role;
     renderWithProviders(<PlaygroundPage />);
 
-    expect(screen.queryByText("Access Denied")).not.toBeInTheDocument();
+    expect(screen.queryByText("访问被拒绝")).not.toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Chat" })).toBeInTheDocument();
     expect(screen.getByTestId("chat-ui")).toBeInTheDocument();
   });
