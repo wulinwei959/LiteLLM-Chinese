@@ -31,6 +31,10 @@ interface ProviderOptions {
 
 export const renderWithProviders = (ui: React.ReactElement, options?: RenderOptions & ProviderOptions) => {
   const { searchParams, onUrlUpdate, ...renderOptions } = options ?? {};
+  // TODO(human): give a caller a way to leave the locale unpinned. Pinning "zh-CN"
+  // below is what translation assertions want, but it short-circuits the
+  // localStorage path that LanguageSwitcher's own tests exist to exercise, so
+  // those two cases cannot use this helper as it stands.
   const Providers: React.FC<PropsWithChildren> = ({ children }) => (
     <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={onUrlUpdate} hasMemory>
       <QueryClientProvider client={testQueryClient}>

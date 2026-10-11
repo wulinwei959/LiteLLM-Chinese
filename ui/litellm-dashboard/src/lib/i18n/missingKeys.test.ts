@@ -9,19 +9,21 @@ import en from "@/messages/en.json";
  * Guards the direction messagesParity does not cover: parity only compares en
  * against zh, so a t() call naming a key neither catalog has passes there while
  * next-intl throws MISSING_MESSAGE at runtime.
+ *
+ * next-intl resolves a key strictly relative to the namespace it was handed:
+ * under useTranslations("usage"), t("common.save") looks up usage.common.save
+ * and throws, because there is no root-qualified fallback. Verified against the
+ * installed next-intl by rendering such a call, so the guard must not treat a
+ * key whose first segment happens to name a top-level namespace as absolute.
  */
 
 const SRC = "src";
-const NAMESPACES = new Set(Object.keys(en));
 
-function resolve(namespace: string, dotted: string): unknown {
-  return dotted.split(".").reduce<unknown>(
-    (node, key) => {
-      if (typeof node !== "object" || node === null) return undefined;
-      return (node as Record<string, unknown>)[key];
-    },
-    (en as Record<string, unknown>)[namespace],
-  );
+function walkPath(root: unknown, dotted: string): unknown {
+  return dotted.split(".").reduce<unknown>((node, key) => {
+    if (typeof node !== "object" || node === null) return undefined;
+    return (node as Record<string, unknown>)[key];
+  }, root);
 }
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -37,17 +39,20 @@ function walk(dir: string, out: string[] = []): string[] {
 }
 
 /**
- * next-intl resolves a bare t("x") against whichever namespace the file pulled
- * in with useTranslations. Call sites that receive `t` as a prop cannot be
- * resolved statically, so they are skipped rather than guessed.
+ * A bare t("x") resolves against whichever namespace the file pulled in with
+ * useTranslations, so it is satisfied when any of them has the key and broken
+ * only when none does. Call sites that receive `t` as a prop cannot be resolved
+ * statically, so they are skipped rather than guessed.
  */
 function unresolvedKeys(source: string): string[] {
-  const scopes = new Set(
-    [...source.matchAll(/useTranslations\(\s*"([A-Za-z0-9_.-]+)"/g)]
-      .map((m) => m[1])
-      .filter((ns) => resolve(en as Record<string, unknown>, ns) !== undefined),
-  );
-  if (scopes.size === 0) return [];
+  const scopes = [
+    ...new Set(
+      [...source.matchAll(/useTranslations\(\s*"([A-Za-z0-9_.-]+)"/g)]
+        .map((match) => match[1])
+        .filter((namespace) => walkPath(en, namespace) !== undefined),
+    ),
+  ];
+  if (scopes.length === 0) return [];
 
   const out: string[] = [];
   const seen = new Set<string>();
@@ -56,15 +61,8 @@ function unresolvedKeys(source: string): string[] {
     if (seen.has(key)) continue;
     seen.add(key);
 
-    // A fully-qualified key like "usage.metrics.title" names its own namespace,
-    // so it resolves against the catalog root instead of any file scope.
-    const explicitRoot = key.split(".")[0];
-    const namespaces = NAMESPACES.has(explicitRoot) ? [explicitRoot] : [...scopes];
-    // A bare t("x") resolves against whichever namespace the file brought into
-    // scope, so it is satisfied when any of them has the key. Only a key that
-    // exists in none of them is genuinely broken.
-    if (namespaces.every((ns) => resolve(ns, key) === undefined)) {
-      out.push(`${namespaces.join("|")}.${key}`);
+    if (scopes.every((namespace) => walkPath(en, `${namespace}.${key}`) === undefined)) {
+      out.push(`${scopes.join("|")}.${key}`);
     }
   }
   return out;

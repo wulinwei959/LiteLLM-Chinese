@@ -1,5 +1,9 @@
 # LiteLLM 管理 UI 中文翻译开发计划
 
+> 这套文档已拆分为 `docs/i18n/` 下的五篇，本文件保留作为历史记录。它的**技术方案**、**单批执行流程**、**踩坑记录**仍然有效且是最详细的一手材料，但下面的**进度概览表已经过期**（数字停在 2026-09），不要再引用
+>
+> 当前状态见 [`docs/i18n/PROGRESS.md`](docs/i18n/PROGRESS.md)，文档索引见 [`docs/i18n/README.md`](docs/i18n/README.md)
+
 本计划跟踪 `ui/litellm-dashboard` 的简体中文翻译进度与后续安排。英语为默认语言，简体中文（`zh-CN`）为可选语言，通过右上角/侧边栏的语言切换器切换。
 
 ## 目标与原则
@@ -12,9 +16,11 @@
 
 命名空间按功能域划分，当前已有：`common`、`nav`、`viewSwitcher`、`login`、`onboarding`、`breadcrumb`、`ssoEnabledNotice`、`virtualKeys`、`models`、`teams`、`users`、`organizations`、`budgets`、`guardrails`、`policies`、`adminPanel`、`usage`、`logs`、`projects`、`access-groups`、`uiTheme`、`routerSettings`、`changePassword`、`transformRequest`、`mcpServers`。
 
-## 进度概览
+## 进度概览（已过期）
 
-翻译覆盖以“是否引入 `next-intl`”粗略统计。`src` 下共 860 个非测试 `.tsx`，其中 73 个已引入 `next-intl`。这个数字偏低，是因为早期批次多只翻译了每个页面的外层 Panel，未覆盖其子组件。下表列出各路由的未翻译文件数（仅统计该路由目录下的 `.tsx`）。
+这一节的数字停在 2026-09，不要引用。当前数据见 [`docs/i18n/PROGRESS.md`](docs/i18n/PROGRESS.md)
+
+保留下面的口径说明，是为了讲清这个统计方式是怎么来的，以及它为什么偏低。翻译覆盖以“是否引入 `next-intl`”粗略统计。`src` 下共 860 个非测试 `.tsx`，其中 73 个已引入 `next-intl`。这个数字偏低，是因为早期批次多只翻译了每个页面的外层 Panel，未覆盖其子组件。下表列出各路由的未翻译文件数（仅统计该路由目录下的 `.tsx`）。
 
 | 路由                                                                              | 未翻译/总数 | 路由                                        | 未翻译/总数 |
 | --------------------------------------------------------------------------------- | ----------- | ------------------------------------------- | ----------- |
