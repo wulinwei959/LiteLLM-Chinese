@@ -81,15 +81,15 @@ describe("ProjectsPage", () => {
   it("should render the Projects heading", () => {
     mockUseProjects.mockReturnValue({ data: [], isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    expect(screen.getByRole("heading", { name: /projects/i })).toBeInTheDocument();
-    expect(screen.getByText("Manage projects within your teams")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /^项目$/ })).toBeInTheDocument();
+    expect(screen.getByText("管理团队内的项目")).toBeInTheDocument();
     expect(document.querySelector(".lucide-folder")).not.toBeNull();
   });
 
   it("should show a 'Create Project' button", () => {
     mockUseProjects.mockReturnValue({ data: [], isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    expect(screen.getByRole("button", { name: /create project/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /创建项目/ })).toBeInTheDocument();
   });
 
   it("should render the projects table", () => {
@@ -110,20 +110,20 @@ describe("ProjectsPage", () => {
   it("should display 'Active' tag for non-blocked projects", () => {
     mockUseProjects.mockReturnValue({ data: [mockProjects[0]], isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("活跃")).toBeInTheDocument();
   });
 
   it("should display 'Blocked' tag for blocked projects", () => {
     mockUseProjects.mockReturnValue({ data: [mockProjects[1]], isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    expect(screen.getByText("Blocked")).toBeInTheDocument();
+    expect(screen.getByText("已封禁")).toBeInTheDocument();
   });
 
   it("should open the create modal when 'Create Project' is clicked", async () => {
     const user = userEvent.setup();
     mockUseProjects.mockReturnValue({ data: [], isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    await user.click(screen.getByRole("button", { name: /create project/i }));
+    await user.click(screen.getByRole("button", { name: /创建项目/ }));
     expect(screen.getByTestId("create-modal")).toBeInTheDocument();
   });
 
@@ -139,7 +139,7 @@ describe("ProjectsPage", () => {
     const user = userEvent.setup();
     mockUseProjects.mockReturnValue({ data: mockProjects, isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    fireEvent.change(screen.getByPlaceholderText(/search projects/i), { target: { value: "Alpha" } });
+    fireEvent.change(screen.getByPlaceholderText(/搜索项目/), { target: { value: "Alpha" } });
     await waitFor(() => {
       expect(screen.getByText("Alpha Project")).toBeInTheDocument();
       expect(screen.queryByText("Beta Project")).not.toBeInTheDocument();
@@ -149,7 +149,7 @@ describe("ProjectsPage", () => {
   it("should show the total project count in the pagination", () => {
     mockUseProjects.mockReturnValue({ data: mockProjects, isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-2 of 2");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-2 条，共 2 条");
   });
 
   it("should show skeleton rows while projects are loading", () => {
@@ -161,16 +161,16 @@ describe("ProjectsPage", () => {
   it("should show the empty state when there are no projects", () => {
     mockUseProjects.mockReturnValue({ data: [], isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    expect(screen.getByText("No projects yet")).toBeInTheDocument();
+    expect(screen.getByText("暂无项目")).toBeInTheDocument();
   });
 
   it("should show the filtered empty state when a search matches nothing", async () => {
     const user = userEvent.setup();
     mockUseProjects.mockReturnValue({ data: mockProjects, isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    fireEvent.change(screen.getByPlaceholderText(/search projects/i), { target: { value: "zzz-no-match" } });
+    fireEvent.change(screen.getByPlaceholderText(/搜索项目/), { target: { value: "zzz-no-match" } });
     await waitFor(() => {
-      expect(screen.getByText("No matching projects")).toBeInTheDocument();
+      expect(screen.getByText("无匹配的项目")).toBeInTheDocument();
     });
   });
 
@@ -179,11 +179,11 @@ describe("ProjectsPage", () => {
     mockUseProjects.mockReturnValue({ data: mockProjects, isLoading: false });
     renderWithProviders(<ProjectsPage />);
 
-    await user.click(screen.getByRole("button", { name: /^name$/i }));
+    await user.click(screen.getByRole("button", { name: /^名称$/ }));
     let rows = screen.getAllByRole("row").slice(1);
     expect(within(rows[0]).getByText("Alpha Project")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /^name$/i }));
+    await user.click(screen.getByRole("button", { name: /^名称$/ }));
     rows = screen.getAllByRole("row").slice(1);
     expect(within(rows[0]).getByText("Beta Project")).toBeInTheDocument();
   });
@@ -200,13 +200,13 @@ describe("ProjectsPage", () => {
     renderWithProviders(<ProjectsPage />, { onUrlUpdate });
 
     await user.click(screen.getByTestId("pagination-next"));
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 2 of 2");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 2 页，共 2 页");
     await waitFor(() => expect(onUrlUpdate.mock.calls.at(-1)?.[0].searchParams.get("page")).toBe("2"));
 
-    fireEvent.change(screen.getByPlaceholderText(/search projects/i), { target: { value: "Project 01" } });
+    fireEvent.change(screen.getByPlaceholderText(/搜索项目/), { target: { value: "Project 01" } });
     await waitFor(() => {
       expect(screen.getByText("Project 01")).toBeInTheDocument();
-      expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 1");
+      expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 1 页");
     });
     await waitFor(() => expect(onUrlUpdate.mock.calls.at(-1)?.[0].queryString).toBe("?project_search=Project+01"));
     expect(onUrlUpdate).toHaveBeenCalledTimes(2);
@@ -216,7 +216,7 @@ describe("ProjectsPage", () => {
     mockUseProjects.mockReturnValue({ data: mockProjects, isLoading: false });
     renderWithProviders(<ProjectsPage />, { searchParams: "?project_search=Beta" });
 
-    expect(screen.getByPlaceholderText(/search projects/i)).toHaveValue("Beta");
+    expect(screen.getByPlaceholderText(/搜索项目/)).toHaveValue("Beta");
     expect(screen.getByText("Beta Project")).toBeInTheDocument();
     expect(screen.queryByText("Alpha Project")).not.toBeInTheDocument();
   });
@@ -227,10 +227,10 @@ describe("ProjectsPage", () => {
     mockUseProjects.mockReturnValue({ data: mockProjects, isLoading: false });
     renderWithProviders(<ProjectsPage />, { searchParams: "?project_search=Beta", onUrlUpdate });
 
-    await user.click(screen.getByRole("button", { name: /clear search/i }));
+    await user.click(screen.getByRole("button", { name: /清除搜索/ }));
 
     await waitFor(() => expect(onUrlUpdate).toHaveBeenLastCalledWith(expect.objectContaining({ queryString: "" })));
-    expect(screen.getByPlaceholderText(/search projects/i)).toHaveValue("");
+    expect(screen.getByPlaceholderText(/搜索项目/)).toHaveValue("");
     expect(screen.getByText("Alpha Project")).toBeInTheDocument();
   });
 
@@ -239,7 +239,7 @@ describe("ProjectsPage", () => {
     renderWithProviders(<ProjectsPage />, { searchParams: "?project=proj-2" });
 
     expect(screen.getByTestId("project-detail")).toHaveTextContent("proj-2");
-    expect(screen.queryByRole("heading", { name: /projects/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /^项目$/ })).not.toBeInTheDocument();
   });
 
   it("should push ?project= as a new history entry when a project is opened", async () => {

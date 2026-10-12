@@ -28,7 +28,7 @@ describe("ProjectKeysSection", () => {
   it("should show the Keys card title", () => {
     mockUseKeys.mockReturnValue(emptyKeysResponse);
     renderWithProviders(<ProjectKeysSection projectId="proj-1" />);
-    expect(screen.getByText("Keys")).toBeInTheDocument();
+    expect(screen.getByText("密钥")).toBeInTheDocument();
   });
 
   it("should display the total key count from the API response", () => {
@@ -37,19 +37,19 @@ describe("ProjectKeysSection", () => {
       isLoading: false,
     });
     renderWithProviders(<ProjectKeysSection projectId="proj-1" />);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("of 42");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("共 42 条");
   });
 
   it("should show 'No keys found' when the project has no keys", () => {
     mockUseKeys.mockReturnValue(emptyKeysResponse);
     renderWithProviders(<ProjectKeysSection projectId="proj-1" />);
-    expect(screen.getByText("No keys found")).toBeInTheDocument();
+    expect(screen.getByText("未找到密钥")).toBeInTheDocument();
   });
 
   it("should render a search input for filtering by key name", () => {
     mockUseKeys.mockReturnValue(emptyKeysResponse);
     renderWithProviders(<ProjectKeysSection projectId="proj-1" />);
-    expect(screen.getByPlaceholderText("Filter by key name...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("按密钥名称筛选...")).toBeInTheDocument();
   });
 
   it("should call useKeys with the projectId", () => {
@@ -96,8 +96,8 @@ describe("ProjectKeysSection URL state (keys_ prefix)", () => {
       10,
       expect.objectContaining({ projectID: "proj-1", selectedKeyAlias: "prod" }),
     );
-    expect(screen.getByPlaceholderText("Filter by key name...")).toHaveValue("prod");
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 2 of 5");
+    expect(screen.getByPlaceholderText("按密钥名称筛选...")).toHaveValue("prod");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 2 页，共 5 页");
   });
 
   it("should cap an oversized ?keys_page_size= at the largest offered page size", () => {
@@ -105,7 +105,7 @@ describe("ProjectKeysSection URL state (keys_ prefix)", () => {
     renderWithProviders(<ProjectKeysSection projectId="proj-1" />, { searchParams: "?keys_page_size=500" });
 
     expect(mockUseKeys).toHaveBeenLastCalledWith(1, 25, expect.anything());
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 2");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 2 页");
   });
 
   it("should fall back to the default page size for a ?keys_page_size= outside the offered options", () => {
@@ -113,7 +113,7 @@ describe("ProjectKeysSection URL state (keys_ prefix)", () => {
     renderWithProviders(<ProjectKeysSection projectId="proj-1" />, { searchParams: "?keys_page_size=7" });
 
     expect(mockUseKeys).toHaveBeenLastCalledWith(1, 5, expect.anything());
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 9");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 9 页");
   });
 
   it("should drop an unsupported ?keys_page_size= when the user pages forward", async () => {
@@ -136,7 +136,7 @@ describe("ProjectKeysSection URL state (keys_ prefix)", () => {
       onUrlUpdate,
     });
 
-    fireEvent.change(screen.getByPlaceholderText("Filter by key name..."), { target: { value: "prod" } });
+    fireEvent.change(screen.getByPlaceholderText("按密钥名称筛选..."), { target: { value: "prod" } });
 
     await waitFor(() => expect(lastSearchParams(onUrlUpdate)?.get("keys_search")).toBe("prod"));
     expect(lastSearchParams(onUrlUpdate)?.has("keys_page")).toBe(false);
@@ -150,7 +150,7 @@ describe("ProjectKeysSection URL state (keys_ prefix)", () => {
     const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
     renderWithProviders(<ProjectKeysSection projectId="proj-1" />, { searchParams: "?keys_search=prod", onUrlUpdate });
 
-    await user.click(screen.getByRole("button", { name: /clear key filter/i }));
+    await user.click(screen.getByRole("button", { name: /清除密钥筛选/ }));
 
     await waitFor(() => expect(lastSearchParams(onUrlUpdate)?.has("keys_search")).toBe(false));
     expect(mockUseKeys).toHaveBeenLastCalledWith(1, 5, expect.objectContaining({ selectedKeyAlias: null }));

@@ -69,8 +69,8 @@ describe("ProjectsTable pagination URL state", () => {
 
     expect(firstDataRow().getByText("Project 11")).toBeInTheDocument();
     expect(screen.queryByText("Project 01")).not.toBeInTheDocument();
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 2 of 2");
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 11-14 of 14");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 2 页，共 2 页");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 11-14 条，共 14 条");
   });
 
   it("should push ?page=2 onto history when the next page control is clicked", async () => {
@@ -109,7 +109,7 @@ describe("ProjectsTable pagination URL state", () => {
 
     rerenderWith(allProjects);
 
-    await waitFor(() => expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 2 of 2"));
+    await waitFor(() => expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 2 页，共 2 页"));
     expect(firstDataRow().getByText("Project 11")).toBeInTheDocument();
     expect(onUrlUpdate).not.toHaveBeenCalled();
   });
@@ -121,7 +121,7 @@ describe("ProjectsTable pagination URL state", () => {
 
     rerenderWith(allProjects.slice(0, 12), true);
 
-    await waitFor(() => expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 2"));
+    await waitFor(() => expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 2 页"));
     expect(firstDataRow().getByText("Project 01")).toBeInTheDocument();
     expect(dataRowCount()).toBe(10);
   });
@@ -131,7 +131,7 @@ describe("ProjectsTable pagination URL state", () => {
 
     expect(firstDataRow().getByText("Project 01")).toBeInTheDocument();
     expect(dataRowCount()).toBe(10);
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 2");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 2 页");
   });
 
   it("should return to the first page and write ?page_size= in one history entry when the page size changes", async () => {
@@ -142,7 +142,7 @@ describe("ProjectsTable pagination URL state", () => {
     await user.click(screen.getByTestId("pagination-page-size"));
     await user.click(await screen.findByRole("option", { name: "25" }));
 
-    await waitFor(() => expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-14 of 14"));
+    await waitFor(() => expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-14 条，共 14 条"));
     expect(firstDataRow().getByText("Project 01")).toBeInTheDocument();
     expect(onUrlUpdate).toHaveBeenCalledTimes(1);
     const lastUpdate = onUrlUpdate.mock.calls.at(-1)?.[0];
@@ -156,14 +156,14 @@ describe("ProjectsTable pagination URL state", () => {
     renderTable({ projects: manyProjects, searchParams: "?page=2&page_size=25" });
 
     expect(firstDataRow().getByText("Project 26")).toBeInTheDocument();
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 2 of 2");
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 26-44 of 44");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 2 页，共 2 页");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 26-44 条，共 44 条");
   });
 
   it("should fall back to the default page size for a ?page_size= value outside the offered options", () => {
     renderTable({ searchParams: "?page_size=7" });
 
     expect(dataRowCount()).toBe(10);
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 2");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 2 页");
   });
 });
