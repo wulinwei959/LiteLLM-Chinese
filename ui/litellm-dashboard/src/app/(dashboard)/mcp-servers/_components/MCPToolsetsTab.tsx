@@ -54,6 +54,7 @@ interface ToolEntry {
 }
 
 function MCPToolList({ serverId, serverName, accessToken, selectedTools, onToggle }: MCPToolListProps) {
+  const t = useTranslations("mcpServers");
   const [tools, setTools] = useState<ToolEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);

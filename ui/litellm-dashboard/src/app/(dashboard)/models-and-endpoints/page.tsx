@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import type enMessages from "@/messages/en.json";
 import { RefreshCw } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
@@ -41,7 +42,7 @@ type ModelTabSlug =
 
 const BASE_TAB_KEY = "all-models";
 
-const TAB_LABELS_KEYS: Record<ModelTabSlug, keyof typeof models.tabs> = {
+const TAB_LABELS_KEYS: Record<ModelTabSlug, keyof typeof enMessages.models.tabs> = {
   add: "addModel",
   "auto-routers": "autoRouters",
   "llm-credentials": "llmCredentials",

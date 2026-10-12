@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, waitFor } from "@testing-library/react";
+import { renderWithProviders, waitFor } from "../../../tests/test-utils";
 import { AgentControlPlaneView } from "./layout";
 
 const { getMock } = vi.hoisted(() => ({ getMock: vi.fn(() => Promise.resolve({ session_claim: "claim" })) }));
@@ -25,7 +25,7 @@ vi.mock("@/components/networking", () => ({ getProxyBaseUrl: () => "" }));
 
 describe("AgentControlPlaneView iframe", () => {
   it("embeds the plugin at its ROOT url, never a hardcoded subpath like /sessions", () => {
-    const { container } = render(<AgentControlPlaneView />);
+    const { container } = renderWithProviders(<AgentControlPlaneView />);
     const iframe = container.querySelector("iframe");
 
     expect(iframe).not.toBeNull();
@@ -42,7 +42,7 @@ describe("AgentControlPlaneView iframe", () => {
       display_name: "Chat UI",
       url: "http://localhost:3300/",
     };
-    const { container } = render(<AgentControlPlaneView />);
+    const { container } = renderWithProviders(<AgentControlPlaneView />);
     expect(container.querySelector("iframe")!).toHaveAttribute("src", "http://localhost:3300/");
     pluginModeValue.activePlugin = {
       name: "litellm-platform-plugin",
@@ -52,12 +52,12 @@ describe("AgentControlPlaneView iframe", () => {
   });
 
   it("does not leak the raw token in the iframe src (token goes via encrypted postMessage)", () => {
-    const { container } = render(<AgentControlPlaneView />);
+    const { container } = renderWithProviders(<AgentControlPlaneView />);
     expect(container.querySelector("iframe")!.getAttribute("src")).not.toContain("token");
   });
 
   it("does not delegate clipboard-read to the untrusted plugin iframe", () => {
-    const { container } = render(<AgentControlPlaneView />);
+    const { container } = renderWithProviders(<AgentControlPlaneView />);
     const allow = container.querySelector("iframe")!.getAttribute("allow") ?? "";
 
     expect(allow).not.toContain("clipboard-read");
@@ -67,7 +67,7 @@ describe("AgentControlPlaneView iframe", () => {
   it("requests the auth-token claim scoped to the active plugin, not a hardcoded default", async () => {
     getMock.mockClear();
     pluginModeValue.activePlugin = { name: "reports-plugin", display_name: "Reports", url: "http://localhost:3300" };
-    render(<AgentControlPlaneView />);
+    renderWithProviders(<AgentControlPlaneView />);
 
     await waitFor(() => expect(getMock).toHaveBeenCalled());
     const [path, opts] = getMock.mock.calls[0];

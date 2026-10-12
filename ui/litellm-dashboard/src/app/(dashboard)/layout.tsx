@@ -31,6 +31,7 @@ function PluginModeProviderWithAuth({ children }: { children: React.ReactNode })
 }
 
 export function AgentControlPlaneView() {
+  const t = useTranslations("nav");
   const { activePlugin } = usePluginMode();
   const activePluginName = activePlugin?.name;
   const agentPlatformUrl = activePlugin?.url ?? "";
@@ -75,8 +76,8 @@ export function AgentControlPlaneView() {
     return (
       <div className="flex flex-1 items-center justify-center text-muted-foreground">
         <div className="text-center">
-          <p className="text-lg font-medium mb-2">{t("nav.plugin")}</p>
-          <p className="text-sm">{t("nav.pluginHint")}</p>
+          <p className="text-lg font-medium mb-2">{t("plugin")}</p>
+          <p className="text-sm">{t("pluginHint")}</p>
         </div>
       </div>
     );

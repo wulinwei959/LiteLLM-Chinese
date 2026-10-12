@@ -85,6 +85,7 @@ const copyToClipboard = (text: string) => {
 };
 
 const A2AMetrics: React.FC<A2AMetricsProps> = ({ a2aMetadata, timeToFirstToken, totalLatency }) => {
+  const t = useTranslations("playground");
   const [showDetails, setShowDetails] = useState(false);
 
   if (!a2aMetadata && !timeToFirstToken && !totalLatency) return null;

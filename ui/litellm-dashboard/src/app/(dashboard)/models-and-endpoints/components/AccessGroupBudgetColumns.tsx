@@ -87,12 +87,6 @@ function AccessGroupRowActions({ accessGroup, canWrite, onSetBudget, onClearBudg
   );
 }
 
-interface AccessGroupBudgetColumnsDeps {
-  canWrite: boolean;
-  onSetBudget: (accessGroup: ModelAccessGroup) => void;
-  onClearBudget: (accessGroup: ModelAccessGroup) => void;
-}
-
 export interface AccessGroupBudgetColumnsDeps {
   canWrite: boolean;
   onSetBudget: (accessGroup: ModelAccessGroup) => void;

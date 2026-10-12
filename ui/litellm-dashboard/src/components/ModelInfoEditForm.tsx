@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleHelp } from "lucide-react";
 import type { Dayjs } from "dayjs";
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { useForm, type Resolver } from "react-hook-form";
 import { z } from "zod/v4";
 
@@ -19,11 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 
-import CacheControlInjectionPoints, {
-  CACHE_CONTROL_LABEL,
-  CACHE_CONTROL_TOOLTIP,
-  type CacheControlInjectionPoint,
-} from "./add_model/cache_control_settings";
+import CacheControlInjectionPoints, { type CacheControlInjectionPoint } from "./add_model/cache_control_settings";
 import type { Team } from "./key_team_helpers/key_list";
 import type { CredentialItem } from "./networking";
 import NumericalInput from "./shared/numerical_input";
@@ -365,6 +362,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
   healthCheckModelOptions,
   teams,
 }) => {
+  const t = useTranslations("models.addModel");
   // Neither RHF's blur-based touchedFields nor its resettable dirtyFields matches antd's touched-on-change.
   const touchedRef = React.useRef<ReadonlySet<string>>(new Set<string>());
   const isFieldTouched = React.useCallback((field: TouchedPricingField) => touchedRef.current.has(field), []);
@@ -705,8 +703,8 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                   name="cache_control"
                   label={
                     <>
-                      {CACHE_CONTROL_LABEL}
-                      <Hint text={CACHE_CONTROL_TOOLTIP} />
+                      {t("cacheControlLabel")}
+                      <Hint text={t("cacheControlTooltipDesc")} />
                     </>
                   }
                   orientation="horizontal"
