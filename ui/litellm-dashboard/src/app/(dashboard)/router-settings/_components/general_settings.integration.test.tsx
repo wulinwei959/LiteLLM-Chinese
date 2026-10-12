@@ -84,10 +84,10 @@ describe("GeneralSettings General tab", () => {
     const user = userEvent.setup();
     renderWithProviders(<GeneralSettings accessToken="token" userRole="Admin" userID="user" />);
 
-    await user.click(screen.getByText("General"));
+    await user.click(screen.getByText("通用"));
     const row = await settingsRow("max_ui_session_budget");
 
-    await user.click(within(row).getByRole("button", { name: /update/i }));
+    await user.click(within(row).getByRole("button", { name: /更新/ }));
 
     expect(updateConfigFieldSetting).toHaveBeenCalledWith("token", "max_ui_session_budget", 7.5);
   });
@@ -96,7 +96,7 @@ describe("GeneralSettings General tab", () => {
     const user = userEvent.setup();
     renderWithProviders(<GeneralSettings accessToken="token" userRole="Admin" userID="user" />);
 
-    await user.click(screen.getByText("General"));
+    await user.click(screen.getByText("通用"));
     const row = await settingsRow("max_ui_session_budget");
     expect(numericValueIn(row)).toBe(7.5);
 
@@ -121,8 +121,8 @@ describe("GeneralSettings Prompt Caching tab", () => {
     const user = userEvent.setup();
     renderWithProviders(<GeneralSettings accessToken="token" userRole="Admin" userID="user" />);
 
-    await user.click(await screen.findByRole("tab", { name: "Prompt Caching" }));
-    const toggle = await screen.findByRole("switch", { name: "System messages first for OpenAI" });
+    await user.click(await screen.findByRole("tab", { name: "提示词缓存" }));
+    const toggle = await screen.findByRole("switch", { name: "OpenAI 系统消息前置" });
     expect(toggle).not.toBeChecked();
 
     await user.click(toggle);
@@ -136,7 +136,7 @@ describe("GeneralSettings Prompt Caching tab", () => {
     const user = userEvent.setup();
     renderWithProviders(<GeneralSettings accessToken="token" userRole="Admin" userID="user" />);
 
-    await user.click(screen.getByText("General"));
+    await user.click(screen.getByText("通用"));
     await settingsRow("max_ui_session_budget");
 
     expect(screen.queryByText("openai_system_messages_first")).not.toBeInTheDocument();
@@ -152,7 +152,7 @@ describe("GeneralSettings tabs", () => {
   it("renders the proxy-wide tabs and no auto-router tab", async () => {
     renderWithProviders(<GeneralSettings accessToken="token" userRole="proxy_admin" userID="u" />);
 
-    for (const name of ["Loadbalancing", "Routing Groups", "Fallbacks", "Prompt Caching", "General"]) {
+    for (const name of ["负载均衡", "路由组", "回退", "提示词缓存", "通用"]) {
       expect(await screen.findByRole("tab", { name })).toBeInTheDocument();
     }
     expect(screen.queryByRole("tab", { name: /auto.?router/i })).not.toBeInTheDocument();
@@ -172,12 +172,12 @@ it("persists a List setting typed as comma-separated text as a trimmed string ar
   vi.mocked(updateConfigFieldSetting).mockClear();
   const user = userEvent.setup();
   renderWithProviders(<GeneralSettings accessToken="token" userRole="Admin" userID="user" />);
-  await user.click(screen.getByRole("tab", { name: "General" }));
+  await user.click(screen.getByRole("tab", { name: "通用" }));
   const input = await screen.findByRole("textbox", { name: "transcribe_media_buckets" });
   expect(input).toHaveValue("old-bucket");
   fireEvent.change(input, { target: { value: " team-audio, shared.audio ,, " } });
   await user.click(
-    within(screen.getByRole("row", { name: /transcribe_media_buckets/ })).getByRole("button", { name: "Update" }),
+    within(screen.getByRole("row", { name: /transcribe_media_buckets/ })).getByRole("button", { name: "更新" }),
   );
   expect(vi.mocked(updateConfigFieldSetting).mock.calls).toEqual([
     ["token", "transcribe_media_buckets", ["team-audio", "shared.audio"]],
@@ -198,11 +198,11 @@ it("clears a stored List setting when Update is clicked on an emptied input", as
   vi.mocked(deleteConfigFieldSetting).mockClear();
   const user = userEvent.setup();
   renderWithProviders(<GeneralSettings accessToken="token" userRole="Admin" userID="user" />);
-  await user.click(screen.getByRole("tab", { name: "General" }));
+  await user.click(screen.getByRole("tab", { name: "通用" }));
   const input = await screen.findByRole("textbox", { name: "transcribe_media_buckets" });
   fireEvent.change(input, { target: { value: " , " } });
   await user.click(
-    within(screen.getByRole("row", { name: /transcribe_media_buckets/ })).getByRole("button", { name: "Update" }),
+    within(screen.getByRole("row", { name: /transcribe_media_buckets/ })).getByRole("button", { name: "更新" }),
   );
   expect(vi.mocked(deleteConfigFieldSetting).mock.calls).toEqual([["token", "transcribe_media_buckets"]]);
   expect(updateConfigFieldSetting).not.toHaveBeenCalled();
@@ -238,14 +238,14 @@ it("should delete only the Default setting and retain explicit false and zero", 
   vi.mocked(deleteConfigFieldSetting).mockClear();
   const user = userEvent.setup();
   renderWithProviders(<GeneralSettings accessToken="token" userRole="Admin" userID="user" />);
-  await user.click(screen.getByRole("tab", { name: "General" }));
+  await user.click(screen.getByRole("tab", { name: "通用" }));
   const row = await screen.findByRole("row", { name: /synthetic_choice/ });
   await user.click(within(row).getByRole("combobox"));
-  await user.click(await screen.findByRole("option", { name: "Default" }));
-  await user.click(within(row).getByRole("button", { name: "Update" }));
-  await user.click(within(screen.getByRole("row", { name: /synthetic_flag/ })).getByRole("button", { name: "Update" }));
+  await user.click(await screen.findByRole("option", { name: "默认" }));
+  await user.click(within(row).getByRole("button", { name: "更新" }));
+  await user.click(within(screen.getByRole("row", { name: /synthetic_flag/ })).getByRole("button", { name: "更新" }));
   await user.click(
-    within(screen.getByRole("row", { name: /synthetic_count/ })).getByRole("button", { name: "Update" }),
+    within(screen.getByRole("row", { name: /synthetic_count/ })).getByRole("button", { name: "更新" }),
   );
   expect(vi.mocked(deleteConfigFieldSetting).mock.calls).toEqual([["token", "synthetic_choice"]]);
   expect(vi.mocked(updateConfigFieldSetting).mock.calls).toEqual([

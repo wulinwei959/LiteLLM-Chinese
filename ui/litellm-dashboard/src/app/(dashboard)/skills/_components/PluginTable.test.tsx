@@ -45,14 +45,14 @@ describe("PluginTable", () => {
 
   it("should render every column header", () => {
     render(<PluginTable {...defaultProps} />);
-    for (const header of ["Skill Name", "Version", "Description", "Category", "Public", "Created At"]) {
+    for (const header of ["技能名称", "版本", "描述", "分类", "公开", "创建时间"]) {
       expect(screen.getByText(header)).toBeInTheDocument();
     }
   });
 
   it("should display the empty state when data is empty", () => {
     render(<PluginTable {...defaultProps} pluginsList={[]} />);
-    expect(screen.getByText("No skills found")).toBeInTheDocument();
+    expect(screen.getByText("未找到技能")).toBeInTheDocument();
   });
 
   it("should sort by created date descending by default", () => {

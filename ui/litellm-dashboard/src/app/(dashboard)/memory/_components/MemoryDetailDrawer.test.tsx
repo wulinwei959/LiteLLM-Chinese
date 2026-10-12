@@ -26,21 +26,21 @@ describe("MemoryDetailDrawer", () => {
   it("renders nothing until a row is selected", () => {
     render(<MemoryDetailDrawer row={null} onClose={vi.fn()} />);
 
-    expect(screen.queryByText("Memory ID")).not.toBeInTheDocument();
-    expect(screen.queryByText("Value")).not.toBeInTheDocument();
+    expect(screen.queryByText("记忆 ID")).not.toBeInTheDocument();
+    expect(screen.queryByText("内容")).not.toBeInTheDocument();
   });
 
   it("shows the selected row's key, identifiers and value", () => {
     render(<MemoryDetailDrawer row={makeMemory()} onClose={vi.fn()} />);
 
     expect(screen.getByText("user:profile")).toBeInTheDocument();
-    expect(screen.getByText("Memory ID")).toBeInTheDocument();
+    expect(screen.getByText("记忆 ID")).toBeInTheDocument();
     expect(screen.getByText("mem-1")).toBeInTheDocument();
-    expect(screen.getByText("User ID")).toBeInTheDocument();
+    expect(screen.getByText("用户 ID")).toBeInTheDocument();
     expect(screen.getByText("user-42")).toBeInTheDocument();
-    expect(screen.getByText("Team ID")).toBeInTheDocument();
+    expect(screen.getByText("团队 ID")).toBeInTheDocument();
     expect(screen.getByText("team-7")).toBeInTheDocument();
-    expect(screen.getByText("Value")).toBeInTheDocument();
+    expect(screen.getByText("内容")).toBeInTheDocument();
     expect(screen.getByText("The user prefers concise answers.")).toBeInTheDocument();
   });
 
@@ -54,13 +54,13 @@ describe("MemoryDetailDrawer", () => {
   it("omits the metadata block when the row carries no metadata", () => {
     render(<MemoryDetailDrawer row={makeMemory({ metadata: null })} onClose={vi.fn()} />);
 
-    expect(screen.queryByText("Metadata")).not.toBeInTheDocument();
+    expect(screen.queryByText("元数据")).not.toBeInTheDocument();
   });
 
   it("pretty-prints metadata as JSON when present", () => {
     render(<MemoryDetailDrawer row={makeMemory({ metadata: { tags: ["example"] } })} onClose={vi.fn()} />);
 
-    expect(screen.getByText("Metadata")).toBeInTheDocument();
+    expect(screen.getByText("元数据")).toBeInTheDocument();
     expect(screen.getByText('{ "tags": [ "example" ] }')).toBeInTheDocument();
   });
 

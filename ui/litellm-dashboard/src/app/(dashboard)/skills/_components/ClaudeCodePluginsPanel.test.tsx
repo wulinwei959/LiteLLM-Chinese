@@ -91,9 +91,9 @@ describe("ClaudeCodePluginsPanel delete confirmation", () => {
 
     await user.click(await screen.findByTestId("row-delete-plugin-1"));
 
-    expect(await screen.findByText(/are you sure you want to delete skill/i)).toBeInTheDocument();
+    expect(await screen.findByText(/确定要删除技能：/)).toBeInTheDocument();
     expect(screen.getByText("my-skill")).toBeInTheDocument();
-    expect(screen.getByText("This action cannot be undone.")).toBeInTheDocument();
+    expect(screen.getByText("此操作无法撤销。")).toBeInTheDocument();
     expect(mockDeleteClaudeCodePlugin).not.toHaveBeenCalled();
   });
 
@@ -103,12 +103,12 @@ describe("ClaudeCodePluginsPanel delete confirmation", () => {
     render(<ClaudeCodePluginsPanel accessToken="sk-test" userRole="Admin" />);
 
     await user.click(await screen.findByTestId("row-delete-plugin-1"));
-    await screen.findByText(/are you sure you want to delete skill/i);
-    await user.click(screen.getByRole("button", { name: "Delete" }));
+    await screen.findByText(/确定要删除技能：/);
+    await user.click(screen.getByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(mockDeleteClaudeCodePlugin).toHaveBeenCalledWith("sk-test", "my-skill"));
     await waitFor(() => expect(mockGetClaudeCodePluginsList).toHaveBeenCalledTimes(2));
-    await waitFor(() => expect(screen.queryByText(/are you sure you want to delete skill/i)).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText(/确定要删除技能：/)).not.toBeInTheDocument());
   });
 
   it("should not delete the skill when the confirmation is cancelled", async () => {
@@ -116,10 +116,10 @@ describe("ClaudeCodePluginsPanel delete confirmation", () => {
     render(<ClaudeCodePluginsPanel accessToken="sk-test" userRole="Admin" />);
 
     await user.click(await screen.findByTestId("row-delete-plugin-1"));
-    await screen.findByText(/are you sure you want to delete skill/i);
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await screen.findByText(/确定要删除技能：/);
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
-    await waitFor(() => expect(screen.queryByText(/are you sure you want to delete skill/i)).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText(/确定要删除技能：/)).not.toBeInTheDocument());
     expect(mockDeleteClaudeCodePlugin).not.toHaveBeenCalled();
   });
 });

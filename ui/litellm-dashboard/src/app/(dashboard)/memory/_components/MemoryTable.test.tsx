@@ -58,7 +58,7 @@ describe("MemoryTable", () => {
 
   it("renders every column header", () => {
     render(<MemoryTable {...baseProps} />);
-    for (const header of ["ID", "Name", "Preview", "User ID", "Team ID", "Updated"]) {
+    for (const header of ["ID", "名称", "预览", "用户 ID", "团队 ID", "更新时间"]) {
       expect(screen.getByText(header)).toBeInTheDocument();
     }
   });
@@ -108,28 +108,28 @@ describe("MemoryTable", () => {
 
   it("shows the empty-only copy when there is no data and no active search", () => {
     render(<MemoryTable {...baseProps} data={[]} rowCount={0} hasActiveSearch={false} />);
-    expect(screen.getByText("No memories stored yet")).toBeInTheDocument();
-    expect(screen.queryByText("No matching memories")).not.toBeInTheDocument();
+    expect(screen.getByText("尚未存储记忆")).toBeInTheDocument();
+    expect(screen.queryByText("没有匹配的记忆")).not.toBeInTheDocument();
   });
 
   it("shows the filtered-empty copy when a search is active", () => {
     render(<MemoryTable {...baseProps} data={[]} rowCount={0} hasActiveSearch={true} />);
-    expect(screen.getByText("No matching memories")).toBeInTheDocument();
-    expect(screen.getByText("No memories match your search.")).toBeInTheDocument();
-    expect(screen.queryByText("No memories stored yet")).not.toBeInTheDocument();
+    expect(screen.getByText("没有匹配的记忆")).toBeInTheDocument();
+    expect(screen.getByText("没有符合搜索条件的记忆。")).toBeInTheDocument();
+    expect(screen.queryByText("尚未存储记忆")).not.toBeInTheDocument();
   });
 
   it("renders loading skeleton rows instead of the empty state while loading", () => {
     render(<MemoryTable {...baseProps} data={[]} rowCount={0} isLoading={true} />);
     expect(screen.getAllByTestId("skeleton-row").length).toBeGreaterThan(0);
-    expect(screen.queryByText("No memories stored yet")).not.toBeInTheDocument();
+    expect(screen.queryByText("尚未存储记忆")).not.toBeInTheDocument();
   });
 
   it("drives the pagination footer from the server rowCount, not the page's row length", () => {
     render(<MemoryTable {...baseProps} data={[makeMemory()]} rowCount={120} />);
     const range = screen.getByTestId("pagination-range");
-    expect(range).toHaveTextContent("Showing 1-50 of 120");
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 3");
+    expect(range).toHaveTextContent("显示第 1-50 条，共 120 条");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 3 页");
     expect(screen.getByTestId("pagination-next")).toBeEnabled();
   });
 
@@ -171,7 +171,7 @@ describe("MemoryTable", () => {
     }
 
     render(<Harness />);
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 5 of 5");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 5 页，共 5 页");
 
     await user.click(screen.getByTestId("pagination-page-size"));
     await user.click(await screen.findByRole("option", { name: "100" }));
@@ -179,7 +179,7 @@ describe("MemoryTable", () => {
     const final = seen[seen.length - 1];
     expect(final.pageSize).toBe(100);
     expect(final.pageIndex).toBeLessThanOrEqual(Math.ceil(rowCount / final.pageSize) - 1);
-    expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 2 of 2");
+    expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 2 页，共 2 页");
   });
 
   it("renders secondary id and date cells for the row", () => {

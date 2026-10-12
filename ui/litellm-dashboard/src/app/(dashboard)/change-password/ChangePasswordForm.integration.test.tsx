@@ -30,12 +30,12 @@ vi.mock("@/utils/cookieUtils", () => ({
 }));
 
 const fillForm = (values: { current: string; next: string; confirm: string }) => {
-  fireEvent.change(screen.getByLabelText("Current Password"), { target: { value: values.current } });
-  fireEvent.change(screen.getByLabelText("New Password"), { target: { value: values.next } });
-  fireEvent.change(screen.getByLabelText("Confirm New Password"), { target: { value: values.confirm } });
+  fireEvent.change(screen.getByLabelText("当前密码"), { target: { value: values.current } });
+  fireEvent.change(screen.getByLabelText("新密码"), { target: { value: values.next } });
+  fireEvent.change(screen.getByLabelText("确认新密码"), { target: { value: values.confirm } });
 };
 
-const submit = () => fireEvent.click(screen.getByRole("button", { name: "Change Password" }));
+const submit = () => fireEvent.click(screen.getByRole("button", { name: "修改密码" }));
 
 describe("ChangePasswordForm", () => {
   beforeEach(() => {
@@ -50,7 +50,7 @@ describe("ChangePasswordForm", () => {
     fillForm({ current: "OldP@ssw0rd-2026", next: "NewP@ssw0rd-2026", confirm: "NewP@ssw0rd-2026" });
     submit();
 
-    expect(await screen.findByLabelText("Current Password")).toHaveValue("");
+    expect(await screen.findByLabelText("当前密码")).toHaveValue("");
     expect(mockChangePasswordCall).toHaveBeenCalledWith("sk-session-token", "OldP@ssw0rd-2026", "NewP@ssw0rd-2026");
     expect(mockToastSuccess).toHaveBeenCalled();
   });
@@ -61,7 +61,7 @@ describe("ChangePasswordForm", () => {
     fillForm({ current: "OldP@ssw0rd-2026", next: "NewP@ssw0rd-2026", confirm: "Different-2026" });
     submit();
 
-    expect(await screen.findByText("New passwords do not match")).toBeInTheDocument();
+    expect(await screen.findByText("两次输入的新密码不一致")).toBeInTheDocument();
     expect(mockChangePasswordCall).not.toHaveBeenCalled();
   });
 
@@ -81,13 +81,13 @@ describe("ChangePasswordForm", () => {
       mockPasswordResetRequired = true;
       renderWithProviders(<ChangePasswordForm />);
 
-      expect(screen.getByText(/must be changed before you can use the dashboard/)).toBeInTheDocument();
+      expect(screen.getByText(/在使用管理面板前必须修改密码/)).toBeInTheDocument();
     });
 
     it("hides the forced-reset warning for a normal session", () => {
       renderWithProviders(<ChangePasswordForm />);
 
-      expect(screen.queryByText(/must be changed before you can use the dashboard/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/在使用管理面板前必须修改密码/)).not.toBeInTheDocument();
     });
 
     it("signs the user out to re-login after a successful forced change", async () => {

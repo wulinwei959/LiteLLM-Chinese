@@ -38,7 +38,7 @@ const tag: Tag = {
 const renderEditor = async () => {
   const user = userEvent.setup();
   render(<TagInfoView tagId="prod-tag" onClose={vi.fn()} accessToken="sk-test" is_admin editTag />);
-  const nameInput = await screen.findByLabelText("Tag Name");
+  const nameInput = await screen.findByLabelText("标签名称");
   return { user, nameInput };
 };
 
@@ -55,11 +55,11 @@ describe("TagInfoView save payload", () => {
     await user.clear(nameInput);
     fireEvent.change(nameInput, { target: { value: "renamed-tag" } });
 
-    const descriptionInput = screen.getByLabelText("Description");
+    const descriptionInput = screen.getByLabelText("描述");
     await user.clear(descriptionInput);
     fireEvent.change(descriptionInput, { target: { value: "updated description" } });
 
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     const expected = {
       name: "renamed-tag",
@@ -78,13 +78,13 @@ describe("TagInfoView save payload", () => {
     const { user, nameInput } = await renderEditor();
     expect(nameInput).toHaveValue("prod-tag");
 
-    await user.click(screen.getByRole("button", { name: /Budget & Rate Limits/ }));
+    await user.click(screen.getByRole("button", { name: /预算与速率限制/ }));
 
-    const maxBudgetInput = await screen.findByLabelText("Max Budget (USD)");
+    const maxBudgetInput = await screen.findByLabelText("最大预算（美元）");
     await user.clear(maxBudgetInput);
     fireEvent.change(maxBudgetInput, { target: { value: "150.75" } });
 
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     const expected = {
       name: "prod-tag",
@@ -103,7 +103,7 @@ describe("TagInfoView save payload", () => {
     const { user, nameInput } = await renderEditor();
 
     await user.clear(nameInput);
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     expect(await screen.findByText("Please input a tag name")).toBeInTheDocument();
     expect(mockTagUpdateCall).not.toHaveBeenCalled();
@@ -111,19 +111,19 @@ describe("TagInfoView save payload", () => {
 
   it("keeps a typed budget when the section is collapsed and reopened, as antd's store did", async () => {
     const { user } = await renderEditor();
-    const toggle = () => screen.getByRole("button", { name: /Budget & Rate Limits/ });
+    const toggle = () => screen.getByRole("button", { name: /预算与速率限制/ });
 
     await user.click(toggle());
-    const maxBudgetInput = await screen.findByLabelText("Max Budget (USD)");
+    const maxBudgetInput = await screen.findByLabelText("最大预算（美元）");
     await user.clear(maxBudgetInput);
     fireEvent.change(maxBudgetInput, { target: { value: "150.75" } });
 
     await user.click(toggle());
     await user.click(toggle());
 
-    expect(await screen.findByLabelText("Max Budget (USD)")).toHaveValue(150.75);
+    expect(await screen.findByLabelText("最大预算（美元）")).toHaveValue(150.75);
 
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     const expected = {
       name: "prod-tag",
@@ -141,13 +141,13 @@ describe("TagInfoView save payload", () => {
   it("leaves the tag untouched and returns to the detail view when Cancel is clicked", async () => {
     const { user } = await renderEditor();
 
-    const descriptionInput = screen.getByLabelText("Description");
+    const descriptionInput = screen.getByLabelText("描述");
     await user.clear(descriptionInput);
     fireEvent.change(descriptionInput, { target: { value: "abandoned description" } });
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
-    expect(await screen.findByText("Tag Details")).toBeInTheDocument();
+    expect(await screen.findByText("标签详情")).toBeInTheDocument();
     expect(mockTagUpdateCall).not.toHaveBeenCalled();
   });
 });

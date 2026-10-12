@@ -34,7 +34,7 @@ describe("AddPluginForm", () => {
   it("renders the host-agnostic source URL input and subfolder field, hiding the digest until a zip is entered", () => {
     renderWithProviders(<AddPluginForm {...DEFAULT_PROPS} />);
 
-    expect(screen.getByText("Source URL")).toBeInTheDocument();
+    expect(screen.getByText("来源 URL")).toBeInTheDocument();
     expect(screen.getByPlaceholderText(URL_PLACEHOLDER)).toBeInTheDocument();
     expect(screen.getByText("Subfolder path (Optional)")).toBeInTheDocument();
     expect(screen.getByPlaceholderText(SUBPATH_PLACEHOLDER)).toBeInTheDocument();
