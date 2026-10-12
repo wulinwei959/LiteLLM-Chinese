@@ -54,12 +54,12 @@ describe("AddAttachmentForm", () => {
 
   it("should render the modal title when visible", async () => {
     renderWithProviders(<AddAttachmentForm {...defaultProps} />);
-    expect(await screen.findByText("Create Policy Attachment")).toBeInTheDocument();
+    expect(await screen.findByText("创建策略附件")).toBeInTheDocument();
   });
 
   it("should not render modal content when visible is false", () => {
     renderWithProviders(<AddAttachmentForm {...defaultProps} visible={false} />);
-    expect(screen.queryByText("Create Policy Attachment")).not.toBeInTheDocument();
+    expect(screen.queryByText("创建策略附件")).not.toBeInTheDocument();
   });
 
   it("should fetch teams, keys, and models on mount when visible and accessToken are provided", async () => {
@@ -87,55 +87,55 @@ describe("AddAttachmentForm", () => {
   it("should call onClose when the Cancel button is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(<AddAttachmentForm {...defaultProps} />);
-    await user.click(await screen.findByRole("button", { name: /cancel/i }));
+    await user.click(await screen.findByRole("button", { name: /取消/ }));
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
 
   it("should not show scope-specific fields when scope is global (default)", async () => {
     renderWithProviders(<AddAttachmentForm {...defaultProps} />);
-    await screen.findByText("Create Policy Attachment");
-    expect(screen.queryByText("Teams")).not.toBeInTheDocument();
-    expect(screen.queryByText("Keys")).not.toBeInTheDocument();
-    expect(screen.queryByText("Models")).not.toBeInTheDocument();
+    await screen.findByText("创建策略附件");
+    expect(screen.queryByText("团队")).not.toBeInTheDocument();
+    expect(screen.queryByText("密钥")).not.toBeInTheDocument();
+    expect(screen.queryByText("模型")).not.toBeInTheDocument();
   });
 
   it("should show Teams, Keys, Models, and Tags fields when scope is switched to specific", async () => {
     const user = userEvent.setup();
     renderWithProviders(<AddAttachmentForm {...defaultProps} />);
-    await screen.findByText("Create Policy Attachment");
-    await user.click(screen.getByRole("radio", { name: /specific/i }));
-    expect(screen.getByText("Teams")).toBeInTheDocument();
-    expect(screen.getByText("Keys")).toBeInTheDocument();
-    expect(screen.getByText("Models")).toBeInTheDocument();
-    expect(screen.getByText("Tags")).toBeInTheDocument();
+    await screen.findByText("创建策略附件");
+    await user.click(screen.getByRole("radio", { name: /特定/ }));
+    expect(screen.getByText("团队")).toBeInTheDocument();
+    expect(screen.getByText("密钥")).toBeInTheDocument();
+    expect(screen.getByText("模型")).toBeInTheDocument();
+    expect(screen.getByText("标签")).toBeInTheDocument();
   });
 
   it("should show the 'Estimate Impact' button only when scope is specific", async () => {
     const user = userEvent.setup();
     renderWithProviders(<AddAttachmentForm {...defaultProps} />);
-    await screen.findByText("Create Policy Attachment");
-    expect(screen.queryByRole("button", { name: /estimate impact/i })).not.toBeInTheDocument();
-    await user.click(screen.getByRole("radio", { name: /specific/i }));
-    expect(screen.getByRole("button", { name: /estimate impact/i })).toBeInTheDocument();
+    await screen.findByText("创建策略附件");
+    expect(screen.queryByRole("button", { name: /预估影响/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("radio", { name: /特定/ }));
+    expect(screen.getByRole("button", { name: /预估影响/ })).toBeInTheDocument();
   });
 
   it("should render a 'Create Attachment' submit button", async () => {
     renderWithProviders(<AddAttachmentForm {...defaultProps} />);
-    expect(await screen.findByRole("button", { name: /create attachment/i })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /创建附件/ })).toBeInTheDocument();
   });
 
   type UserEvent = ReturnType<typeof userEvent.setup>;
 
-  const TEAMS_ERROR = /these teams don't exist/i;
+  const TEAMS_ERROR = /这些团队不存在/;
 
   const openSpecificScope = async (user: UserEvent) => {
-    await screen.findByText("Create Policy Attachment");
+    await screen.findByText("创建策略附件");
     await waitFor(() => expect(networking.teamListCall).toHaveBeenCalled());
-    await user.click(screen.getByRole("radio", { name: /specific/i }));
+    await user.click(screen.getByRole("radio", { name: /特定/ }));
   };
 
   const enterTeam = async (user: UserEvent, value: string) => {
-    const input = screen.getByLabelText("Teams");
+    const input = screen.getByLabelText("团队");
     await user.click(input);
     await user.type(input, `${value}{Enter}`);
   };
@@ -144,8 +144,8 @@ describe("AddAttachmentForm", () => {
   // the "select at least one policy" required error always appears - we use it as a
   // synchronization point, then assert whether the teams validator also complained.
   const submitAndSettle = async (user: UserEvent) => {
-    await user.click(screen.getByRole("button", { name: /create attachment/i }));
-    await screen.findByText(/select at least one policy/i);
+    await user.click(screen.getByRole("button", { name: /创建附件/ }));
+    await screen.findByText(/请至少选择一个策略/);
   };
 
   it("blocks submit with a field error when a concrete team that does not exist is entered", async () => {
@@ -181,18 +181,18 @@ describe("AddAttachmentForm", () => {
   });
 
   const selectPolicy = async (user: UserEvent, policyName: string) => {
-    await screen.findByText("Create Policy Attachment");
-    const input = screen.getByLabelText("Policies");
+    await screen.findByText("创建策略附件");
+    const input = screen.getByLabelText("策略");
     await user.click(input);
     await user.type(input, `${policyName}{Enter}`);
   };
 
   const setPriority = (value: string) => {
-    fireEvent.change(screen.getByLabelText("Priority"), { target: { value } });
+    fireEvent.change(screen.getByLabelText("优先级"), { target: { value } });
   };
 
   const submit = async (user: UserEvent) => {
-    await user.click(screen.getByRole("button", { name: /create attachment/i }));
+    await user.click(screen.getByRole("button", { name: /创建附件/ }));
   };
 
   it("sends the entered priority with the attachment", async () => {
@@ -215,7 +215,7 @@ describe("AddAttachmentForm", () => {
     const createAttachment = vi.fn().mockResolvedValue({});
     renderWithProviders(<AddAttachmentForm {...defaultProps} createAttachment={createAttachment} />);
     await selectPolicy(user, "policy-alpha");
-    const priority = screen.getByLabelText("Priority");
+    const priority = screen.getByLabelText("优先级");
     await user.type(priority, "-5");
     expect(priority).toHaveValue(-5);
     await submit(user);
@@ -242,7 +242,7 @@ describe("AddAttachmentForm", () => {
     const createAttachment = vi.fn().mockResolvedValue({});
     renderWithProviders(<AddAttachmentForm {...defaultProps} createAttachment={createAttachment} />);
     await selectPolicy(user, "policy-alpha");
-    await user.click(screen.getByRole("switch", { name: /default/i }));
+    await user.click(screen.getByRole("switch", { name: /默认/ }));
     await submit(user);
     await waitFor(() => expect(createAttachment).toHaveBeenCalledTimes(1));
     expect(createAttachment).toHaveBeenCalledWith("test-token", {
@@ -253,9 +253,9 @@ describe("AddAttachmentForm", () => {
   });
 
   it.each([
-    ["2147483648", /at most 2147483647/i],
-    ["-2147483649", /at least -2147483648/i],
-    ["1.5", /whole number/i],
+    ["2147483648", /不得大于 2147483647/],
+    ["-2147483649", /不得小于 -2147483648/],
+    ["1.5", /必须是整数/],
   ])("blocks submit with a field error when priority is %s", async (value, error) => {
     const user = userEvent.setup();
     const createAttachment = vi.fn();

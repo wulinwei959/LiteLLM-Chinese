@@ -66,28 +66,28 @@ describe("AdminPanel", () => {
 
   it("should render the admin panel", () => {
     renderWithProviders(<AdminPanel />);
-    expect(screen.getByRole("heading", { name: /admin access/i })).toBeInTheDocument();
-    expect(screen.getByText(/go to 'internal users' page to add other admins/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /管理员权限/ })).toBeInTheDocument();
+    expect(screen.getByText(/添加其他管理员/)).toBeInTheDocument();
   });
 
   describe("Tabs", () => {
     it("should render all tabs", () => {
       renderWithProviders(<AdminPanel />);
-      expect(screen.getByRole("tab", { name: /sso settings/i })).toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: /security settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /SSO 设置/ })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /安全设置/ })).toBeInTheDocument();
       expect(screen.getByRole("tab", { name: /scim/i })).toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: /ui settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /界面设置/ })).toBeInTheDocument();
     });
 
     it("should display Security Settings content when Security Settings tab is clicked", async () => {
       const user = userEvent.setup();
       renderWithProviders(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", { name: /安全设置/ });
       await user.click(securityTab);
-      expect(screen.getByRole("heading", { name: /security settings/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /add sso/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /allowed ips/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /ui access control/i })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: /安全设置/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /添加 SSO/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /允许的 IP/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /界面访问控制/ })).toBeInTheDocument();
     });
 
     it("should display SCIM content when SCIM tab is clicked", async () => {
@@ -113,10 +113,10 @@ describe("AdminPanel", () => {
         values: {},
       });
       renderWithProviders(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", { name: /安全设置/ });
       await user.click(securityTab);
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /add sso/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /添加 SSO/ })).toBeInTheDocument();
       });
     });
 
@@ -129,10 +129,10 @@ describe("AdminPanel", () => {
         },
       });
       renderWithProviders(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", { name: /安全设置/ });
       await user.click(securityTab);
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit sso settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /编辑 SSO 设置/ })).toBeInTheDocument();
       });
     });
 
@@ -193,24 +193,24 @@ describe("AdminPanel", () => {
         userId: "user-1",
       });
       renderWithProviders(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", { name: /安全设置/ });
       await user.click(securityTab);
     });
 
     it("should open allowed IPs modal when premium user clicks Allowed IPs button", async () => {
       const user = userEvent.setup();
       mockGetAllowedIPs.mockResolvedValue(["192.168.1.1", "10.0.0.1"]);
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      const allowedIPsButton = screen.getByRole("button", { name: /允许的 IP/ });
       await user.click(allowedIPsButton);
       await waitFor(() => {
-        expect(screen.getByRole("dialog", { name: /manage allowed ip addresses/i })).toBeInTheDocument();
+        expect(screen.getByRole("dialog", { name: /管理允许的 IP 地址/ })).toBeInTheDocument();
       });
     });
 
     it("should display 'All IP Addresses Allowed' when no IPs are configured", async () => {
       const user = userEvent.setup();
       mockGetAllowedIPs.mockResolvedValue([]);
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      const allowedIPsButton = screen.getByRole("button", { name: /允许的 IP/ });
       await user.click(allowedIPsButton);
       await waitFor(() => {
         expect(screen.getByText("All IP Addresses Allowed")).toBeInTheDocument();
@@ -220,7 +220,7 @@ describe("AdminPanel", () => {
     it("should display list of allowed IPs", async () => {
       const user = userEvent.setup();
       mockGetAllowedIPs.mockResolvedValue(["192.168.1.1", "10.0.0.1"]);
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      const allowedIPsButton = screen.getByRole("button", { name: /允许的 IP/ });
       await user.click(allowedIPsButton);
       await waitFor(() => {
         expect(screen.getByText("192.168.1.1")).toBeInTheDocument();
@@ -231,10 +231,10 @@ describe("AdminPanel", () => {
     it("should show delete button for IP addresses except 'All IP Addresses Allowed'", async () => {
       const user = userEvent.setup();
       mockGetAllowedIPs.mockResolvedValue(["192.168.1.1", "All IP Addresses Allowed"]);
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      const allowedIPsButton = screen.getByRole("button", { name: /允许的 IP/ });
       await user.click(allowedIPsButton);
       await waitFor(() => {
-        const deleteButtons = screen.queryAllByRole("button", { name: /delete/i });
+        const deleteButtons = screen.queryAllByRole("button", { name: /删除/ });
         expect(deleteButtons.length).toBeGreaterThan(0);
       });
     });
@@ -242,19 +242,19 @@ describe("AdminPanel", () => {
     it("should not show delete button for 'All IP Addresses Allowed'", async () => {
       const user = userEvent.setup();
       mockGetAllowedIPs.mockResolvedValue(["All IP Addresses Allowed"]);
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      const allowedIPsButton = screen.getByRole("button", { name: /允许的 IP/ });
       await user.click(allowedIPsButton);
       await waitFor(() => {
         expect(screen.getByText("All IP Addresses Allowed")).toBeInTheDocument();
       });
-      const deleteButtons = screen.queryAllByRole("button", { name: /delete/i });
+      const deleteButtons = screen.queryAllByRole("button", { name: /删除/ });
       expect(deleteButtons.length).toBe(0);
     });
 
     it("should handle error when fetching allowed IPs fails", async () => {
       const user = userEvent.setup();
       mockGetAllowedIPs.mockRejectedValue(new Error("Network error"));
-      const allowedIPsButton = screen.getByRole("button", { name: /allowed ips/i });
+      const allowedIPsButton = screen.getByRole("button", { name: /允许的 IP/ });
       await user.click(allowedIPsButton);
       await waitFor(() => {
         expect(mockGetAllowedIPs).toHaveBeenCalled();
@@ -271,12 +271,12 @@ describe("AdminPanel", () => {
         userId: "user-1",
       });
       renderWithProviders(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", { name: /安全设置/ });
       await user.click(securityTab);
-      const uiAccessControlButton = screen.getByRole("button", { name: /ui access control/i });
+      const uiAccessControlButton = screen.getByRole("button", { name: /界面访问控制/ });
       await user.click(uiAccessControlButton);
       await waitFor(() => {
-        expect(screen.queryByRole("dialog", { name: /ui access control settings/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole("dialog", { name: /界面访问控制设置/ })).not.toBeInTheDocument();
       });
     });
 
@@ -288,12 +288,12 @@ describe("AdminPanel", () => {
         userId: "user-1",
       });
       renderWithProviders(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", { name: /安全设置/ });
       await user.click(securityTab);
-      const uiAccessControlButton = screen.getByRole("button", { name: /ui access control/i });
+      const uiAccessControlButton = screen.getByRole("button", { name: /界面访问控制/ });
       await user.click(uiAccessControlButton);
       await waitFor(() => {
-        expect(screen.getByRole("dialog", { name: /ui access control settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("dialog", { name: /界面访问控制设置/ })).toBeInTheDocument();
         expect(screen.getByText("UI Access Control Form")).toBeInTheDocument();
       });
     });
@@ -303,7 +303,7 @@ describe("AdminPanel", () => {
     it("should display fallback login URL", async () => {
       const user = userEvent.setup();
       renderWithProviders(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", { name: /安全设置/ });
       await user.click(securityTab);
       const link = screen.getByRole("link", { name: /http:\/\/localhost:4000\/fallback\/login/i });
       expect(link).toBeInTheDocument();
@@ -316,12 +316,12 @@ describe("AdminPanel", () => {
     it("should display deprecation warning in Security Settings tab", async () => {
       const user = userEvent.setup();
       renderWithProviders(<AdminPanel />);
-      const securityTab = screen.getByRole("tab", { name: /security settings/i });
+      const securityTab = screen.getByRole("tab", { name: /安全设置/ });
       await user.click(securityTab);
       await waitFor(() => {
-        expect(screen.getByText(/sso configuration deprecated/i)).toBeInTheDocument();
+        expect(screen.getByText(/SSO 配置已废弃/)).toBeInTheDocument();
         expect(
-          screen.getByText(/editing sso settings on this page is deprecated and will be removed/i),
+          screen.getByText(/在此页面编辑 SSO 设置已废弃/),
         ).toBeInTheDocument();
       });
     });
@@ -342,18 +342,18 @@ describe("AdminPanel add allowed IP form", () => {
 
     const user = userEvent.setup();
     renderWithProviders(<AdminPanel />);
-    await user.click(screen.getByRole("tab", { name: /security settings/i }));
-    await user.click(screen.getByRole("button", { name: /allowed ips/i }));
-    const manageDialog = await screen.findByRole("dialog", { name: /manage allowed ip addresses/i });
-    await user.click(within(manageDialog).getByRole("button", { name: /add ip address/i }));
-    await screen.findByPlaceholderText("Enter IP address");
+    await user.click(screen.getByRole("tab", { name: /安全设置/ }));
+    await user.click(screen.getByRole("button", { name: /允许的 IP/ }));
+    const manageDialog = await screen.findByRole("dialog", { name: /管理允许的 IP 地址/ });
+    await user.click(within(manageDialog).getByRole("button", { name: /添加 IP 地址/ }));
+    await screen.findByPlaceholderText("请输入 IP 地址");
   });
 
-  const ipField = () => screen.getByPlaceholderText("Enter IP address") as HTMLInputElement;
+  const ipField = () => screen.getByPlaceholderText("请输入 IP 地址") as HTMLInputElement;
 
   const submitAddIP = async (user: ReturnType<typeof userEvent.setup>) => {
     const addIpForm = ipField().form as HTMLFormElement;
-    await user.click(within(addIpForm).getByText("Add IP Address"));
+    await user.click(within(addIpForm).getByText("添加 IP 地址"));
   };
 
   it("sends the access token and the typed IP address", async () => {
@@ -373,7 +373,7 @@ describe("AdminPanel add allowed IP form", () => {
 
     await submitAddIP(user);
 
-    expect(await screen.findByText("Please enter an IP address")).toBeInTheDocument();
+    expect(await screen.findByText("请输入 IP 地址")).toBeInTheDocument();
     expect(mockAddAllowedIP).not.toHaveBeenCalled();
   });
 

@@ -185,7 +185,7 @@ describe("AddModelForm", () => {
 
     renderWithProviders(<AddModelForm {...props} />);
 
-    expect(await screen.findByRole("heading", { name: "Add Model" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "添加模型" })).toBeInTheDocument();
   });
 
   it("should show proxy admin only (not team admin) - should not see Select Team dropdown unless switch is toggled", async () => {
@@ -196,19 +196,19 @@ describe("AddModelForm", () => {
 
     renderWithProviders(<AddModelForm {...props} />);
 
-    await screen.findByText("Provider");
+    await screen.findByText("提供商");
 
-    expect(screen.queryByText("Team Selection Required")).not.toBeInTheDocument();
-    expect(screen.queryByText("Select Team")).not.toBeInTheDocument();
+    expect(screen.queryByText("需要先选择团队")).not.toBeInTheDocument();
+    expect(screen.queryByText("选择团队")).not.toBeInTheDocument();
 
     const teamSwitch = screen.getByRole("switch");
     expect(teamSwitch).toBeInTheDocument();
 
-    expect(screen.queryByText("Select Team")).not.toBeInTheDocument();
+    expect(screen.queryByText("选择团队")).not.toBeInTheDocument();
 
     await userEvent.click(teamSwitch);
 
-    expect(await screen.findByText("Select Team")).toBeInTheDocument();
+    expect(await screen.findByText("选择团队")).toBeInTheDocument();
   });
 
   it("should show proxy admin who is also team admin - should not see Select Team dropdown unless switch is toggled", async () => {
@@ -219,19 +219,19 @@ describe("AddModelForm", () => {
 
     renderWithProviders(<AddModelForm {...props} />);
 
-    await screen.findByText("Provider");
+    await screen.findByText("提供商");
 
-    expect(screen.queryByText("Team Selection Required")).not.toBeInTheDocument();
-    expect(screen.queryByText("Select Team")).not.toBeInTheDocument();
+    expect(screen.queryByText("需要先选择团队")).not.toBeInTheDocument();
+    expect(screen.queryByText("选择团队")).not.toBeInTheDocument();
 
     const teamSwitch = screen.getByRole("switch");
     expect(teamSwitch).toBeInTheDocument();
 
-    expect(screen.queryByText("Select Team")).not.toBeInTheDocument();
+    expect(screen.queryByText("选择团队")).not.toBeInTheDocument();
 
     await userEvent.click(teamSwitch);
 
-    expect(await screen.findByText("Select Team")).toBeInTheDocument();
+    expect(await screen.findByText("选择团队")).toBeInTheDocument();
   });
 
   it("should show team admin (not proxy admin) - should see alert and team select, must select team before seeing remaining fields", async () => {
@@ -242,20 +242,20 @@ describe("AddModelForm", () => {
 
     renderWithProviders(<AddModelForm {...props} />);
 
-    await screen.findByRole("heading", { name: "Add Model" });
+    await screen.findByRole("heading", { name: "添加模型" });
 
-    expect(screen.getByText("Team Selection Required")).toBeInTheDocument();
+    expect(screen.getByText("需要先选择团队")).toBeInTheDocument();
 
-    expect(screen.getByText("Select Team")).toBeInTheDocument();
+    expect(screen.getByText("选择团队")).toBeInTheDocument();
 
-    expect(screen.queryByText("Provider")).not.toBeInTheDocument();
+    expect(screen.queryByText("提供商")).not.toBeInTheDocument();
 
     const teamSelect = screen.getByRole("combobox");
     await userEvent.click(teamSelect);
     await userEvent.click(screen.getByText("Test Team"));
 
     await waitFor(() => {
-      expect(screen.getByText("Provider")).toBeInTheDocument();
+      expect(screen.getByText("提供商")).toBeInTheDocument();
     });
   });
 
@@ -267,14 +267,14 @@ describe("AddModelForm", () => {
 
     renderWithProviders(<AddModelForm {...props} />);
 
-    await screen.findByText("Select Team");
+    await screen.findByText("选择团队");
 
     const teamSelect = screen.getByRole("combobox");
     await userEvent.click(teamSelect);
     await userEvent.click(screen.getByText("Test Team"));
 
     await waitFor(() => {
-      expect(screen.getByText("Provider")).toBeInTheDocument();
+      expect(screen.getByText("提供商")).toBeInTheDocument();
     });
 
     expect(screen.queryByRole("switch")).not.toBeInTheDocument();
@@ -288,13 +288,13 @@ describe("AddModelForm", () => {
 
     renderWithProviders(<AddModelForm {...props} />);
 
-    await screen.findByRole("heading", { name: "Add Model" });
+    await screen.findByRole("heading", { name: "添加模型" });
 
-    expect(screen.queryByText("Team Selection Required")).not.toBeInTheDocument();
+    expect(screen.queryByText("需要先选择团队")).not.toBeInTheDocument();
 
-    expect(screen.queryByText("Select Team")).not.toBeInTheDocument();
+    expect(screen.queryByText("选择团队")).not.toBeInTheDocument();
 
-    expect(screen.queryByText("Provider")).not.toBeInTheDocument();
+    expect(screen.queryByText("提供商")).not.toBeInTheDocument();
 
     expect(screen.queryByRole("switch")).not.toBeInTheDocument();
   });
@@ -307,9 +307,9 @@ describe("AddModelForm", () => {
 
     renderWithProviders(<AddModelForm {...props} />);
 
-    expect(await screen.findByText("Provider")).toBeInTheDocument();
-    expect((await screen.findAllByRole("button", { name: "Test Connect" })).length).toBeGreaterThan(0);
-    expect(await screen.findByRole("button", { name: "Add Model" })).toBeInTheDocument();
+    expect(await screen.findByText("提供商")).toBeInTheDocument();
+    expect((await screen.findAllByRole("button", { name: "测试连接" })).length).toBeGreaterThan(0);
+    expect(await screen.findByRole("button", { name: "添加模型" })).toBeInTheDocument();
   });
 
   it("shows only the Close button in the connection test dialog footer", async () => {
@@ -323,7 +323,7 @@ describe("AddModelForm", () => {
     const dialog = await screen.findByRole("dialog");
     const footer = dialog.querySelector('[data-slot="dialog-footer"]');
     expect(footer).not.toBeNull();
-    expect(footer!.textContent?.trim()).toBe("Close");
+    expect(footer!.textContent?.trim()).toBe("关闭");
   });
 
   describe("the enterprise gate on the Team-BYOK switch", () => {
@@ -331,7 +331,7 @@ describe("AddModelForm", () => {
       const mockUseAuthorized = vi.mocked(await import("@/app/(dashboard)/hooks/useAuthorized"));
       mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser("proxy_admin", "user-1", premiumUser));
       renderWithProviders(<AddModelForm {...createTestProps()} />);
-      return screen.findByRole("switch", { name: "Team-BYOK Model" });
+      return screen.findByRole("switch", { name: "团队自带密钥模型" });
     };
 
     it("explains the gate on hover even though the switch it sits on is disabled", async () => {
@@ -341,7 +341,7 @@ describe("AddModelForm", () => {
 
       await user.hover(teamOnlySwitch);
 
-      expect(await screen.findByText(/enterprise-only feature/)).toBeInTheDocument();
+      expect(await screen.findByText(/企业版/)).toBeInTheDocument();
     });
 
     it("says nothing on hover once the user is premium", async () => {
@@ -351,7 +351,7 @@ describe("AddModelForm", () => {
 
       await user.hover(teamOnlySwitch);
 
-      expect(screen.queryByText(/enterprise-only feature/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/企业版/)).not.toBeInTheDocument();
     });
   });
 
@@ -362,18 +362,18 @@ describe("AddModelForm", () => {
       const props = createTestProps();
       const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
       renderWithProviders(<AddModelForm {...props} />);
-      await screen.findByText("Provider");
+      await screen.findByText("提供商");
 
       return {
         user,
         openCacheControl: async () => {
-          await user.click(await screen.findByText("Advanced Settings"));
-          await user.click(screen.getByRole("switch", { name: "Cache Control Injection Points" }));
-          await screen.findByText("Add Injection Point");
+          await user.click(await screen.findByText("高级设置"));
+          await user.click(screen.getByRole("switch", { name: "缓存控制" }));
+          await screen.findByText("添加注入点");
         },
         closeCacheControl: async () => {
-          await user.click(screen.getByRole("switch", { name: "Cache Control Injection Points" }));
-          await waitFor(() => expect(screen.queryByText("Add Injection Point")).not.toBeInTheDocument());
+          await user.click(screen.getByRole("switch", { name: "缓存控制" }));
+          await waitFor(() => expect(screen.queryByText("添加注入点")).not.toBeInTheDocument());
         },
         mountedValues: async (): Promise<Record<string, unknown>> => props.mountedValues(),
       };
@@ -398,9 +398,9 @@ describe("AddModelForm", () => {
       const { user, openCacheControl, mountedValues } = await renderWithForm();
       await openCacheControl();
 
-      await user.click(screen.getByText("Select a role"));
-      await user.click(await screen.findByText("System"));
-      await user.type(screen.getByPlaceholderText("Optional"), "3");
+      await user.click(screen.getByText("选择角色"));
+      await user.click(await screen.findByText("系统"));
+      await user.type(screen.getByPlaceholderText("可选"), "3");
 
       const values = await mountedValues();
       expect(values.cache_control_injection_points).toEqual([{ location: "message", role: "system", index: "3" }]);
@@ -410,9 +410,9 @@ describe("AddModelForm", () => {
       const { user, openCacheControl, mountedValues } = await renderWithForm();
       await openCacheControl();
 
-      await user.click(screen.getByText("Add Injection Point"));
-      await waitFor(() => expect(screen.getAllByPlaceholderText("Optional")).toHaveLength(2));
-      await user.type(screen.getAllByPlaceholderText("Optional")[1], "7");
+      await user.click(screen.getByText("添加注入点"));
+      await waitFor(() => expect(screen.getAllByPlaceholderText("可选")).toHaveLength(2));
+      await user.type(screen.getAllByPlaceholderText("可选")[1], "7");
 
       const values = await mountedValues();
       expect(values.cache_control_injection_points).toEqual([
