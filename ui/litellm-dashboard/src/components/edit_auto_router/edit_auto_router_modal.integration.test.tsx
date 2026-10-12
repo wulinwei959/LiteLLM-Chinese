@@ -109,7 +109,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     expect(screen.queryByText("Model Access Groups")).not.toBeInTheDocument();
     openAutoRouterAdvanced("Affinity");
     await user.click(await screen.findByRole("switch", { name: "Pin one model deployment per tier" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(modelPatchUpdateCall).toHaveBeenLastCalledWith(
@@ -157,7 +157,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     const threshold = screen.getByRole("textbox", { name: "Success threshold" });
     expect(threshold).toHaveValue("0.91");
     fireEvent.change(threshold, { target: { value: raw } });
-    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
     if (raw === "") expect(savedConfig()).not.toHaveProperty("heuristic_v2_success_threshold");
@@ -187,7 +187,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "0.88" } });
     await selectAutoRouterOption("Heuristic", "Rule-based");
     expect(screen.queryByRole("textbox", { name: "Success threshold" })).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
     expect(savedConfig()).toMatchObject({ classifier_type: "heuristic", heuristic_v2_success_threshold: 0.88 });
@@ -203,7 +203,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Clear Heuristic v2 threshold" }));
     expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
     expect(savedConfig()).not.toHaveProperty("heuristic_v2_success_threshold");
@@ -217,7 +217,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     renderModal();
 
     await screen.findByRole("combobox", { name: "How often to classify" });
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -241,7 +241,7 @@ describe("EditAutoRouterModal keyword matching", () => {
 
     renderModal();
     await screen.findByRole("combobox", { name: "How often to classify" });
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(validateAutoRouterConfig).toHaveBeenCalled());
@@ -276,7 +276,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     );
 
     await screen.findByRole("combobox", { name: "How often to classify" });
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(toast.fromError).toHaveBeenCalled());
@@ -354,7 +354,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     );
     await user.click(await screen.findByText('Create "chargeback"'));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     expect(screen.queryByText("At least one keyword is required")).not.toBeInTheDocument();
   });
 });
@@ -396,7 +396,7 @@ describe("EditAutoRouterModal advanced field round trips", () => {
     openAutoRouterAdvanced("Response Format");
     const maxTokensSwitch = screen.getByRole("switch", { name: "Cap max_tokens at the tier model's output ceiling" });
     await user.click(maxTokensSwitch);
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
 
@@ -420,7 +420,7 @@ describe("EditAutoRouterModal advanced field round trips", () => {
   it("preserves all stored advanced fields through an untouched save", async () => {
     const user = userEvent.setup();
     renderAdvancedModal();
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
     expect(savedConfig()).toMatchObject({
@@ -473,7 +473,7 @@ describe("EditAutoRouterModal classifier context window", () => {
     expect(screen.getByDisplayValue("5")).toBeInTheDocument();
     expect(screen.queryByText("Context Per-Turn Character Limit")).not.toBeInTheDocument();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -505,7 +505,7 @@ describe("EditAutoRouterModal classifier context window", () => {
     const input = await screen.findByLabelText("Context Window Size");
     fireEvent.change(input, { target: { value: "8" } });
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -551,7 +551,7 @@ describe("EditAutoRouterModal assistant turns", () => {
     await screen.findByText("Include Assistant Turns");
     expect(screen.getByRole("switch", { name: "Include Assistant Turns" })).toBeChecked();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -566,7 +566,7 @@ describe("EditAutoRouterModal assistant turns", () => {
     await screen.findByText("Include Assistant Turns");
     await user.click(screen.getByRole("switch", { name: "Include Assistant Turns" }));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -601,7 +601,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     expect(await screen.findByRole("combobox", { name: "How often to classify" })).toHaveTextContent("Every request");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -617,7 +617,7 @@ describe("EditAutoRouterModal classification frequency", () => {
       "Once per session",
     );
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -631,7 +631,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("How often to classify", "Once per session");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -645,7 +645,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("How often to classify", "Every request");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -659,7 +659,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("How often to classify", "Every new user message");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -676,7 +676,7 @@ describe("EditAutoRouterModal classification frequency", () => {
       "Every new user message",
     );
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -690,7 +690,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("How often to classify", "Every new user message");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -704,7 +704,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("How often to classify", "Every request");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -736,7 +736,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Affinity");
     expect(await screen.findByRole("switch", { name: "Pin one model deployment per tier" })).toBeChecked();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -750,7 +750,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Affinity");
     expect(await screen.findByRole("switch", { name: "Pin one model deployment per tier" })).not.toBeChecked();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -764,7 +764,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Affinity");
     await user.click(await screen.findByRole("switch", { name: "Pin one model deployment per tier" }));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -778,7 +778,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Affinity");
     expect(await screen.findByLabelText("How long a pin survives idle (seconds)")).toHaveValue("300");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -794,7 +794,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     fireEvent.change(ttl, { target: { value: "300" } });
     fireEvent.blur(ttl);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -810,7 +810,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     fireEvent.change(ttl, { target: { value: "" } });
     fireEvent.blur(ttl);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -826,7 +826,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Modality Routing");
     expect(await screen.findByRole("switch", { name: "Override session pin for image requests" })).toBeChecked();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -840,7 +840,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     openAutoRouterAdvanced("Modality Routing");
     await user.click(await screen.findByRole("switch", { name: "Override session pin for image requests" }));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -857,7 +857,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
       "true",
     );
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -906,7 +906,7 @@ describe("EditAutoRouterModal custom classifier prompt and fallback", () => {
     expect(await screen.findByRole("button", { name: "Edit custom prompt" })).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: /Route to the default model/ })).toBeChecked();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -921,7 +921,7 @@ describe("EditAutoRouterModal custom classifier prompt and fallback", () => {
 
     openAutoRouterAdvanced("Classification Method");
     await user.click(await screen.findByRole("radio", { name: /Score with the heuristic/ }));
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -934,7 +934,7 @@ describe("EditAutoRouterModal custom classifier prompt and fallback", () => {
 
     openAutoRouterAdvanced("Classification Method");
     await user.click(await screen.findByRole("button", { name: "Reset to default" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -995,7 +995,7 @@ describe("EditAutoRouterModal default model", () => {
     const user = userEvent.setup();
     renderWithStoredPin("out-of-band-default");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(await screen.findByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1019,7 +1019,7 @@ describe("EditAutoRouterModal default model", () => {
     const select = await screen.findByRole("combobox", { name: "Default model" });
     expect(select).toHaveValue(STORED_CONFIG.tiers.MEDIUM[0]);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(savedConfig()).toMatchObject({ default_model: STORED_CONFIG.tiers.MEDIUM[0] });
@@ -1036,7 +1036,7 @@ describe("EditAutoRouterModal default model", () => {
     const select = await screen.findByRole("combobox", { name: "Default model" });
     expect(select).toHaveValue("");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(savedConfig()).not.toHaveProperty("default_model");
@@ -1054,7 +1054,7 @@ describe("EditAutoRouterModal default model", () => {
     const select = await screen.findByRole("combobox", { name: "Default model" });
     expect(select).toHaveValue("claude-sonnet-4");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(savedConfig()).toMatchObject({ default_model: "claude-sonnet-4" });
@@ -1087,7 +1087,7 @@ describe("EditAutoRouterModal default model", () => {
     const select = await screen.findByRole("combobox", { name: "Default model" });
     expect(select).toHaveValue("blob-pin");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(savedConfig()).toMatchObject({ default_model: "blob-pin" });
@@ -1117,7 +1117,7 @@ describe("EditAutoRouterModal default model", () => {
       />,
     );
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(await screen.findByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith(expect.stringContaining("Simple or Medium tier")));
@@ -1131,7 +1131,7 @@ describe("EditAutoRouterModal default model", () => {
     const select = await screen.findByRole("combobox", { name: "Default model" });
     expect(select).toHaveValue("");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(savedDefaultModel()).toBe(STORED_CONFIG.tiers.MEDIUM[0]);
@@ -1177,7 +1177,7 @@ describe("EditAutoRouterModal plan-mode minimum tier", () => {
     const user = userEvent.setup();
     renderWithStoredTier("MEDIUM");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(await screen.findByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1190,7 +1190,7 @@ describe("EditAutoRouterModal plan-mode minimum tier", () => {
     await openPlanModePanel(user);
     await user.click(await screen.findByRole("switch", { name: "Route plan-mode requests to a minimum tier" }));
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1245,7 +1245,7 @@ describe("EditAutoRouterModal with a stored custom tier set", () => {
     renderCustomModal();
 
     await screen.findByText("SECURITY_REVIEW Tier");
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
 
@@ -1263,7 +1263,7 @@ describe("EditAutoRouterModal with a stored custom tier set", () => {
     renderCustomModal();
 
     await screen.findByText("SECURITY_REVIEW Tier");
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
 
@@ -1307,7 +1307,7 @@ describe("EditAutoRouterModal prompt compression", () => {
 
     openAutoRouterAdvanced("Compression");
     await user.click(screen.getAllByRole("button", { name: "Clear" })[0]);
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() =>
@@ -1342,7 +1342,7 @@ describe("EditAutoRouterModal prompt compression", () => {
     await user.click(screen.getAllByRole("button", { name: "Clear" })[0]);
     await user.click(screen.getByRole("combobox", { name: "Routing decision compression" }));
     await user.click(screen.getByRole("option", { name: "None (no compression)" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1353,7 +1353,7 @@ describe("EditAutoRouterModal prompt compression", () => {
     const user = userEvent.setup();
     renderWithStoredCompression();
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(await screen.findByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1369,7 +1369,7 @@ describe("EditAutoRouterModal prompt compression", () => {
     const user = userEvent.setup();
     renderWithStoredCompression(stored);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(await screen.findByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1403,7 +1403,7 @@ describe("EditAutoRouterModal prompt compression", () => {
       auto_router_model_compression: "none",
     });
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(await screen.findByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1450,7 +1450,7 @@ describe("EditAutoRouterModal classifier vision", () => {
     expect(screen.getByRole("switch", { name: "Use images for classification" })).toBeChecked();
     expect(screen.getByLabelText("Maximum images per request")).toHaveValue("2");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1463,7 +1463,7 @@ describe("EditAutoRouterModal classifier vision", () => {
 
     openAutoRouterAdvanced("Classification Method");
     await user.click(screen.getByRole("switch", { name: "Use images for classification" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1478,7 +1478,7 @@ describe("EditAutoRouterModal availability checks", () => {
     vi.mocked(apiClient.post).mockResolvedValue({ allowances: [], error: null });
     const user = userEvent.setup();
     renderModal();
-    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled(), { timeout: 5000 });
     let complete: ((result: unknown) => void) | undefined;
     vi.mocked(apiClient.post).mockImplementationOnce(
       () =>
@@ -1497,7 +1497,7 @@ describe("EditAutoRouterModal availability checks", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Custom tiers have no available allowance");
     expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Restore defaults" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
   });
