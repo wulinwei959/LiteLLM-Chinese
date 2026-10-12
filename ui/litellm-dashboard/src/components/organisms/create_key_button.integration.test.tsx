@@ -1194,7 +1194,7 @@ describe("CreateKey", () => {
     it("names the create form dialog", async () => {
       await openModal();
 
-      expect(screen.getByRole("dialog", { name: "Create New Key" })).toBeInTheDocument();
+      expect(screen.getByRole("dialog", { name: "+ 创建新密钥" })).toBeInTheDocument();
     });
 
     it("names the created key dialog", async () => {

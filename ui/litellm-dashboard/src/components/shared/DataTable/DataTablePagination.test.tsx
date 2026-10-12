@@ -16,12 +16,12 @@ const baseProps = {
 describe("DataTablePagination", () => {
   it("renders the current range from plain props", () => {
     renderWithProviders(<DataTablePagination {...baseProps} />);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-25 of 100");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-25 条，共 100 条");
   });
 
   it("computes the range for a middle page and clamps the end to rowCount", () => {
     renderWithProviders(<DataTablePagination {...baseProps} page={3} pageSize={30} rowCount={100} />);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 91-100 of 100");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 91-100 条，共 100 条");
   });
 
   it("disables the previous controls on the first page", () => {
@@ -56,7 +56,7 @@ describe("DataTablePagination", () => {
 
   it("shows an empty state and disables all navigation when there are no rows", () => {
     renderWithProviders(<DataTablePagination {...baseProps} rowCount={0} />);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("No results");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("暂无结果");
     expect(screen.getByTestId("pagination-next")).toBeDisabled();
     expect(screen.getByTestId("pagination-prev")).toBeDisabled();
   });

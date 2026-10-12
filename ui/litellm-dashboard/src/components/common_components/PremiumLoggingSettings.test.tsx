@@ -27,13 +27,13 @@ describe("PremiumLoggingSettings", () => {
 
     expect(screen.getByText(/LiteLLM Enterprise feature/)).toBeInTheDocument();
     expect(screen.getByText("✨ langfuse-logging")).toBeInTheDocument();
-    expect(screen.queryByText("Logging Integrations")).not.toBeInTheDocument();
+    expect(screen.queryByText("日志集成")).not.toBeInTheDocument();
   });
 
   it("renders the editor for a premium user", () => {
     renderWithProviders(<PremiumLoggingSettings value={[]} onChange={vi.fn()} premiumUser />);
 
-    expect(screen.getByText("Logging Integrations")).toBeInTheDocument();
+    expect(screen.getByText("日志集成")).toBeInTheDocument();
     expect(screen.queryByText(/LiteLLM Enterprise feature/)).not.toBeInTheDocument();
   });
 });

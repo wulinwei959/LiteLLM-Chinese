@@ -54,7 +54,7 @@ it("requests the first page of 25 deleted teams and shows the server total in th
   renderWithProviders(<DeletedTeamsPage />);
 
   expect(mockUseDeletedTeams).toHaveBeenLastCalledWith(1, 25);
-  expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-25 of 137");
+  expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-25 条，共 137 条");
   expect(screen.getByTestId("pagination-next")).toBeEnabled();
 });
 

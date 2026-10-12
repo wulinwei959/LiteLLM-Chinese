@@ -2509,7 +2509,7 @@ describe("KeyEditView", () => {
       renderForPayload(onSubmitMock);
       await screen.findByRole("button", { name: /save changes/i });
 
-      await userEvent.click(screen.getByRole("button", { name: /add integration/i }));
+      await userEvent.click(screen.getByRole("button", { name: /添加集成/ }));
       await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
 
       await waitFor(() => {
