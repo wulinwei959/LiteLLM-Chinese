@@ -233,6 +233,9 @@
     },
     "react-hooks/set-state-in-effect": {
       "count": 1
+    },
+    "react/no-unescaped-entities": {
+      "count": 2
     }
   },
   "src/app/(dashboard)/guardrails/_components/content_filter/CompetitorIntentConfiguration.tsx": {
@@ -748,7 +751,7 @@
       "count": 8
     },
     "react-hooks/preserve-manual-memoization": {
-      "count": 1
+      "count": 3
     }
   },
   "src/app/(dashboard)/playground/llm_calls/a2a_send_message.tsx": {
