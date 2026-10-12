@@ -176,6 +176,8 @@ describe("AllModelsTable", () => {
     const { rerender } = renderWithProviders(<AllModelsTable {...baseProps} />);
     expect(screen.getByText("$30")).toBeInTheDocument();
     expect(screen.getByText("$60")).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: /\$30/ })).toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: /costs/i })).toHaveClass("text-right");
 
     rerender(<AllModelsTable {...baseProps} data={[makeModel({ input_cost: null, output_cost: null })]} />);
     expect(screen.queryByText(/^\$/)).not.toBeInTheDocument();

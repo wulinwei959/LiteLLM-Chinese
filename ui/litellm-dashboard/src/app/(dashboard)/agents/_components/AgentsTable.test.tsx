@@ -34,6 +34,12 @@ describe("AgentsTable", () => {
     }
   });
 
+  it("right-aligns the Spend (USD) column", () => {
+    render(<AgentsTable agents={[]} {...baseProps} />);
+    expect(screen.getByRole("columnheader", { name: "Spend (USD)" })).toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "Agent Name" })).not.toHaveClass("text-right");
+  });
+
   it("renders the agent's model and opens the detail view when the ID cell is clicked", async () => {
     const user = userEvent.setup();
     const onAgentClick = vi.fn();
@@ -61,6 +67,12 @@ describe("AgentsTable", () => {
     const keylessRow = screen.getByText("Keyless Agent").closest("tr")!;
     expect(within(keyedRow).getByText("活跃")).toBeInTheDocument();
     expect(within(keylessRow).getByText("待配置")).toBeInTheDocument();
+  });
+
+  it("shows JWT configured for agents without a virtual key", () => {
+    render(<AgentsTable agents={[makeAgent({ keys: [], jwt_auth_configured: true })]} {...baseProps} />);
+    expect(screen.getByText("JWT configured")).toBeInTheDocument();
+    expect(screen.queryByText("Needs Setup")).not.toBeInTheDocument();
   });
 
   it("deletes an agent through the ⋯ actions menu", async () => {

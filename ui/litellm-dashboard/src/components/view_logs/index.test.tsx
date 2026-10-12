@@ -65,12 +65,14 @@ describe("SpendLogsTable", () => {
     useOrganizationsMock.mockReturnValue({ data: [] });
   });
 
-  it("renders the four log tabs", () => {
+  it("keeps request and audit logs here while traces live in Lens", () => {
     renderAs("Admin");
 
     for (const label of ["请求日志", "审计日志", "已删除密钥", "已删除团队"]) {
       expect(screen.getByRole("tab", { name: label })).toBeInTheDocument();
     }
+    expect(screen.queryByRole("tab", { name: /Agent Traces/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Request Logs" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("marks only the visible tab's panel active so background tabs do not query", async () => {
