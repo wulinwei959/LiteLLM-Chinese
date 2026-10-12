@@ -37,12 +37,12 @@ const MODEL_TABLE_BODY_HEIGHT = 600;
 const ALL_PROXY_MODELS_LABEL = "All Proxy Models";
 
 const FILTER_LABELS: Record<string, string> = {
-  [MODEL_NAME_COLUMN_ID]: t("modelTable.filterLabels.publicModelName"),
-  [ACCESS_GROUPS_COLUMN_ID]: t("modelTable.filterLabels.accessGroup"),
+  [MODEL_NAME_COLUMN_ID]: "Public Model Name",
+  [ACCESS_GROUPS_COLUMN_ID]: "Model Access Group",
 };
 
 const VIEW_MODE_LABELS: Record<ModelViewMode, string> = {
-  current_team: t("modelTable.viewModes.currentTeam"),
+  current_team: "Current Team Models",
   all: ALL_PROXY_MODELS_LABEL,
 };
 
@@ -188,13 +188,13 @@ export function AllModelsTable({
     teamOptions.find((option) => option.value === selectedTeamValue)?.label ?? teamOptions[0]?.label ?? "";
 
   const viewModeLabels: Record<ModelViewMode, string> = {
-    current_team: t("modelTable.viewModes.currentTeam"),
+    current_team: "Current Team Models",
     all: t("modelTable.viewModes.all"),
   };
 
   const filterLabels = {
-    [MODEL_NAME_COLUMN_ID]: t("modelTable.filterLabels.publicModelName"),
-    [ACCESS_GROUPS_COLUMN_ID]: t("modelTable.filterLabels.accessGroup"),
+    [MODEL_NAME_COLUMN_ID]: "Public Model Name",
+    [ACCESS_GROUPS_COLUMN_ID]: "Model Access Group",
   };
 
   return (

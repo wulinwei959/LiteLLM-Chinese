@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
@@ -55,6 +56,7 @@ const formatShortDate = (value: string | null | undefined): string | null => {
 };
 
 function ModelInformationCell({ model, displayName }: { model: ModelData; displayName: string }) {
+  const t = useTranslations("models");
   const litellmModelName = model.litellm_model_name || "-";
 
   return (
@@ -116,6 +118,7 @@ function ModelInformationCell({ model, displayName }: { model: ModelData; displa
 }
 
 function CredentialsHeader() {
+  const t = useTranslations("models");
   return (
     <span className="flex items-center gap-1">{t("table.credentials")}<HoverCard>
         <HoverCardTrigger
@@ -151,6 +154,7 @@ function CredentialsHeader() {
 }
 
 function CredentialsCell({ credentialName }: { credentialName: string | undefined }) {
+  const t = useTranslations("models");
   if (!credentialName) {
     return (
       <Badge variant="outline" className="gap-1 font-normal text-muted-foreground">
@@ -167,6 +171,7 @@ function CredentialsCell({ credentialName }: { credentialName: string | undefine
 }
 
 function CreatedByCell({ model }: { model: ModelData }) {
+  const t = useTranslations("models");
   const isConfigModel = !model.model_info?.db_model;
   const createdAt = formatShortDate(model.model_info.created_at);
   const primary = isConfigModel ? t("modelTable.configModel") : model.model_info.created_by || t("health.unknown");
@@ -192,6 +197,7 @@ function CostRow({ label, value }: { label: string; value: string }) {
 }
 
 function CostsCell({ model }: { model: ModelData }) {
+  const t = useTranslations("models");
   const { input_cost: inputCost, output_cost: outputCost, output_cost_per_second: perSecond } = model;
   const hasPerSecond = perSecond != null;
   const showInput = inputCost != null && (!hasPerSecond || Number(inputCost) > 0);

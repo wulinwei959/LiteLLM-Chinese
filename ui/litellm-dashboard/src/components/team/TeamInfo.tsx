@@ -1,3 +1,4 @@
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { useTranslations } from "next-intl";
 import type { components } from "@/lib/http/schema";
@@ -200,13 +201,10 @@ export type McpGrantInput = {
   readonly loadTeamGroups: () => Promise<TeamAccessGroupGrants>;
 };
 
-export const grantedMcpServerIds = async ({
-  effectiveServers,
-  selectedAccessGroupIds,
-  accessGroups,
-  standingServerIds,
-  loadTeamGroups,
-}: McpGrantInput): Promise<McpGrantResolution> => {
+export const grantedMcpServerIds = async (
+  { effectiveServers, selectedAccessGroupIds, accessGroups, standingServerIds, loadTeamGroups }: McpGrantInput,
+  t: TeamsTranslator,
+): Promise<McpGrantResolution> => {
   const selectedGroups = accessGroups.filter((group) => selectedAccessGroupIds.includes(group.access_group_id));
   const direct = effectiveServers
     .filter(({ source }) => source.kind !== "toolPermission")
@@ -353,7 +351,8 @@ const SUPPRESSED_BY_DESCRIPTION = "";
 
 const numericInputSchema = z.union([z.string(), z.number()]).nullish();
 
-const teamUpdateFieldsSchema = z.object({
+const buildTeamUpdateFieldsSchema = (t: TeamsTranslator) =>
+  z.object({
   team_alias: z.string().min(1, t("listTeamNameRequired")),
   models: z.array(z.string()).optional(),
   max_budget: numericInputSchema,
@@ -433,7 +432,7 @@ const teamUpdateFieldsSchema = z.object({
   metadata: metadataPairsSchema.optional(),
 });
 
-type TeamUpdateFormValues = z.infer<typeof teamUpdateFieldsSchema>;
+type TeamUpdateFormValues = z.infer<ReturnType<typeof buildTeamUpdateFieldsSchema>>;
 
 type TeamInfoRecord = TeamData["team_info"] & { team_member_key_duration?: string };
 
@@ -582,7 +581,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   const t = useTranslations("teams");
   const teamUpdateSchema = useMemo(
     () =>
-      teamUpdateFieldsSchema.superRefine((values, ctx) => {
+      buildTeamUpdateFieldsSchema(t).superRefine((values, ctx) => {
         if (!isParsableJson(values.secret_manager_settings)) {
           ctx.addIssue({ code: "custom", message: SUPPRESSED_BY_DESCRIPTION, path: ["secret_manager_settings"] });
         }

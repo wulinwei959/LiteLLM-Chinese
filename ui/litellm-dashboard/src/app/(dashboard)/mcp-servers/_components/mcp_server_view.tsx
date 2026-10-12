@@ -335,9 +335,9 @@ export const MCPServerView: React.FC<MCPServerViewProps> = ({
                   <div className="col-span-2">
                     <Badge variant="outline">
                       <span className={`h-1.5 w-1.5 rounded-full ${networkAccess.dotClassName}`} />
-                      {networkAccess.label}
+                      {t(networkAccessLabelKey(networkAccess.kind))}
                     </Badge>
-                    <p className="mt-2 text-xs text-muted-foreground">{networkAccess.description}</p>
+                    <p className="mt-2 text-xs text-muted-foreground">{t(networkAccessDescriptionKey(networkAccess.reason))}</p>
                   </div>
                 </div>
                 {handleAuth(mcpServer.auth_type) === "oauth2" && (

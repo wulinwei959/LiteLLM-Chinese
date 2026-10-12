@@ -43,6 +43,7 @@ interface OrganizationRowActionsProps {
 }
 
 function OrganizationRowActions({ organization, onEditClick, onDeleteClick }: OrganizationRowActionsProps) {
+  const t = useTranslations("organizations");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger

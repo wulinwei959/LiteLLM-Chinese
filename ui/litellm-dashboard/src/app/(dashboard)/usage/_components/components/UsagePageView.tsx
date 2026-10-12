@@ -77,6 +77,7 @@ const MetricValue = ({ pending, className, children }: { pending: boolean; class
   pending ? <Skeleton className="h-8 w-24 mt-2" /> : <p className={className}>{children}</p>;
 
 const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
+  const t = useTranslations("usage");
   const usageT = useTranslations("usage");
   const { accessToken, userRole, userId: userID, premiumUser } = useAuthorized();
   const [gatewayActivityData, setGatewayActivityData] = useState<FetchedGatewayActivity | null>(null);
