@@ -78,7 +78,7 @@ it("renders the shared pagination footer with the server row count", () => {
     />,
   );
 
-  expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 101-137 of 137");
+  expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 101-137 条，共 137 条");
   expect(screen.getByTestId("pagination-page-size")).toHaveTextContent("50");
   expect(screen.getByTestId("pagination-prev")).toBeEnabled();
   expect(screen.getByTestId("pagination-next")).toBeDisabled();
