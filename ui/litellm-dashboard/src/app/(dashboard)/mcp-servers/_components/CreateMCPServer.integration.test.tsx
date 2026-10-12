@@ -1001,20 +1001,20 @@ describe("CreateMCPServer", () => {
       await waitFor(() => {
         expect(screen.queryByText("Token Exchange Endpoint (optional)")).not.toBeInTheDocument();
       });
-      expect(screen.queryByText("Subject Token Type (optional)")).not.toBeInTheDocument();
+      expect(screen.queryByText("主体令牌类型（可选）")).not.toBeInTheDocument();
 
       await selectOption(/认证方式/, "OAuth 令牌交换（OBO）");
       await waitFor(() => {
         expect(screen.getByText(/令牌交换端点|Token Exchange Endpoint/)).toBeInTheDocument();
       });
-      expect(screen.getByText("Subject Token Type (optional)")).toBeInTheDocument();
+      expect(screen.getByText("主体令牌类型（可选）")).toBeInTheDocument();
 
       // Switching away hides the section again.
       await selectOption(/认证方式/, "API 密钥");
       await waitFor(() => {
         expect(screen.queryByText("Token Exchange Endpoint (optional)")).not.toBeInTheDocument();
       });
-      expect(screen.queryByText("Subject Token Type (optional)")).not.toBeInTheDocument();
+      expect(screen.queryByText("主体令牌类型（可选）")).not.toBeInTheDocument();
 
       // Selecting token exchange and then switching transport to stdio unmounts the
       // whole Authentication section (the section-level transport gate), taking the
@@ -1024,11 +1024,11 @@ describe("CreateMCPServer", () => {
       await waitFor(() => {
         expect(screen.getByText(/令牌交换端点|Token Exchange Endpoint/)).toBeInTheDocument();
       });
-      await selectOption("传输类型", "Standard Input/Output");
+      await selectOption("传输类型", "标准输入/输出（stdio）");
       await waitFor(() => {
         expect(screen.queryByText("Token Exchange Endpoint (optional)")).not.toBeInTheDocument();
       });
-      expect(screen.queryByText("Subject Token Type (optional)")).not.toBeInTheDocument();
+      expect(screen.queryByText("主体令牌类型（可选）")).not.toBeInTheDocument();
     });
 
     it("sends max_concurrent_requests in the create payload when set", async () => {
@@ -1093,10 +1093,10 @@ describe("CreateMCPServer", () => {
       fireEvent.change(screen.getByPlaceholderText("https://idp.example.com/oauth2/token"), {
         target: { value: "https://idp.example.com/oauth2/token" },
       });
-      fireEvent.change(screen.getByPlaceholderText("Enter OAuth client ID"), {
+      fireEvent.change(screen.getByPlaceholderText("输入 OAuth 客户端 ID"), {
         target: { value: "te-client-id" },
       });
-      fireEvent.change(screen.getByPlaceholderText("Enter OAuth client secret"), {
+      fireEvent.change(screen.getByPlaceholderText("输入 OAuth 客户端密钥"), {
         target: { value: "te-client-secret" },
       });
 
@@ -1138,22 +1138,22 @@ describe("CreateMCPServer", () => {
       // The sibling OBO mode must not render the ID-JAG section.
       await selectOption(/认证方式/, "OAuth 令牌交换（OBO）");
       await waitFor(() => {
-        expect(screen.queryByText("Org Token Endpoint (leg 1)")).not.toBeInTheDocument();
+        expect(screen.queryByText("组织令牌端点（第一段）")).not.toBeInTheDocument();
       });
-      expect(screen.queryByText("Resource Token Endpoint (leg 2)")).not.toBeInTheDocument();
+      expect(screen.queryByText("资源令牌端点（第二段）")).not.toBeInTheDocument();
 
-      await selectOption(/Authentication|认证/, "ID-JAG (Okta Cross App Access)");
+      await selectOption(/Authentication|认证/, "ID-JAG（Okta 跨应用访问）");
       await waitFor(() => {
-        expect(screen.getByText("Org Token Endpoint (leg 1)")).toBeInTheDocument();
+        expect(screen.getByText("组织令牌端点（第一段）")).toBeInTheDocument();
       });
-      expect(screen.getByText("Resource Token Endpoint (leg 2)")).toBeInTheDocument();
-      expect(screen.getByText("Client Private Key (PEM)")).toBeInTheDocument();
+      expect(screen.getByText("资源令牌端点（第二段）")).toBeInTheDocument();
+      expect(screen.getByText("客户端私钥（PEM）")).toBeInTheDocument();
 
       await selectOption(/认证方式/, "API 密钥");
       await waitFor(() => {
-        expect(screen.queryByText("Org Token Endpoint (leg 1)")).not.toBeInTheDocument();
+        expect(screen.queryByText("组织令牌端点（第一段）")).not.toBeInTheDocument();
       });
-      expect(screen.queryByText("Resource Token Endpoint (leg 2)")).not.toBeInTheDocument();
+      expect(screen.queryByText("资源令牌端点（第二段）")).not.toBeInTheDocument();
     });
 
     it("routes ID-JAG config to the backend payload with both legs and the private key", async () => {
@@ -1164,7 +1164,7 @@ describe("CreateMCPServer", () => {
         target: { value: "https://upstream.example.com/mcp" },
       });
 
-      await selectOption(/Authentication|认证/, "ID-JAG (Okta Cross App Access)");
+      await selectOption(/Authentication|认证/, "ID-JAG（Okta 跨应用访问）");
 
       await waitFor(() => {
         expect(screen.getByPlaceholderText("https://your-org.okta.com/oauth2/v1/token")).toBeInTheDocument();
@@ -1176,7 +1176,7 @@ describe("CreateMCPServer", () => {
       fireEvent.change(screen.getByPlaceholderText("https://upstream.example.com/oauth2/token"), {
         target: { value: "https://jira.example.com/oauth2/token" },
       });
-      fireEvent.change(screen.getByPlaceholderText("Enter OAuth client ID"), {
+      fireEvent.change(screen.getByPlaceholderText("输入 OAuth 客户端 ID"), {
         target: { value: "id-jag-client" },
       });
       fireEvent.change(screen.getByPlaceholderText("-----BEGIN PRIVATE KEY-----"), {
@@ -1227,7 +1227,7 @@ describe("CreateMCPServer", () => {
         target: { value: "https://upstream.example.com/mcp" },
       });
 
-      await selectOption(/Authentication|认证/, "ID-JAG (Okta Cross App Access)");
+      await selectOption(/Authentication|认证/, "ID-JAG（Okta 跨应用访问）");
 
       await waitFor(() => {
         expect(screen.getByPlaceholderText("https://your-org.okta.com/oauth2/v1/token")).toBeInTheDocument();
@@ -1239,7 +1239,7 @@ describe("CreateMCPServer", () => {
       fireEvent.change(screen.getByPlaceholderText("https://upstream.example.com/oauth2/token"), {
         target: { value: "https://jira.example.com/oauth2/token" },
       });
-      fireEvent.change(screen.getByPlaceholderText("Enter OAuth client ID"), {
+      fireEvent.change(screen.getByPlaceholderText("输入 OAuth 客户端 ID"), {
         target: { value: "id-jag-client" },
       });
 
@@ -1248,7 +1248,7 @@ describe("CreateMCPServer", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Provide either a client secret or a client private key")).toBeInTheDocument();
+        expect(screen.getByText("请提供客户端密钥或客户端私钥其中之一")).toBeInTheDocument();
       });
       expect(networking.createMCPServer).not.toHaveBeenCalled();
     });
@@ -1269,15 +1269,15 @@ describe("CreateMCPServer", () => {
         expect(screen.getByPlaceholderText("https://idp.example.com/oauth2/token")).toBeInTheDocument();
       });
 
-      await selectOption("Profile", "Microsoft Entra OBO");
+      await selectOption("配置文件", "Microsoft Entra OBO");
 
       fireEvent.change(screen.getByPlaceholderText("https://idp.example.com/oauth2/token"), {
         target: { value: "https://login.microsoftonline.com/tenant/oauth2/v2.0/token" },
       });
-      fireEvent.change(screen.getByPlaceholderText("Enter OAuth client ID"), {
+      fireEvent.change(screen.getByPlaceholderText("输入 OAuth 客户端 ID"), {
         target: { value: "entra-client" },
       });
-      fireEvent.change(screen.getByPlaceholderText("Enter OAuth client secret"), {
+      fireEvent.change(screen.getByPlaceholderText("输入 OAuth 客户端密钥"), {
         target: { value: "entra-secret" },
       });
 
@@ -1289,7 +1289,7 @@ describe("CreateMCPServer", () => {
       });
       await waitFor(() => {
         expect(
-          screen.getByText("Microsoft Entra OBO requires a scope, e.g. api://<app-id>/.default"),
+          screen.getByText("Microsoft Entra OBO 需要一个作用域，例如 api://<app-id>/.default"),
         ).toBeInTheDocument();
       });
       expect(networking.createMCPServer).not.toHaveBeenCalled();
@@ -1448,7 +1448,7 @@ describe("CreateMCPServer", () => {
       });
       oauthHook.reset.mockClear();
 
-      await selectOption("传输类型", "Server-Sent Events (SSE)");
+      await selectOption("传输类型", "服务器发送事件（SSE）");
 
       await waitFor(() => {
         expect(screen.getByPlaceholderText("https://your-mcp-server.com")).toBeInTheDocument();
@@ -1550,7 +1550,7 @@ describe("CreateMCPServer", () => {
 
     it("invalidates the DCR client and OAuth flow when the OpenAPI spec URL changes after Authorize & Fetch", async () => {
       renderWithProviders(<CreateMCPServer {...defaultProps} />);
-      await selectOption("传输类型", "OpenAPI Spec");
+      await selectOption("传输类型", "OpenAPI 规范");
       await waitFor(() => {
         expect(screen.getByPlaceholderText("https://petstore3.swagger.io/api/v3/openapi.json")).toBeInTheDocument();
       });
@@ -1606,7 +1606,7 @@ describe("CreateMCPServer", () => {
 
     it("invalidates the DCR client and OAuth flow when the transport changes after Authorize & Fetch", async () => {
       renderWithProviders(<CreateMCPServer {...defaultProps} />);
-      await selectOption("传输类型", "OpenAPI Spec");
+      await selectOption("传输类型", "OpenAPI 规范");
       await waitFor(() => {
         expect(screen.getByPlaceholderText("https://petstore3.swagger.io/api/v3/openapi.json")).toBeInTheDocument();
       });
@@ -1920,11 +1920,11 @@ describe("CreateMCPServer", () => {
     it("should not show auth type or URL fields", async () => {
       renderWithProviders(<CreateMCPServer {...defaultProps} />);
 
-      await selectOption("传输类型", "Standard Input/Output");
+      await selectOption("传输类型", "标准输入/输出（stdio）");
 
       // Auth and URL fields should not be present for stdio
       await waitFor(() => {
-        expect(screen.queryByText(/Authentication|认证/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/认证方式/)).not.toBeInTheDocument();
         expect(screen.queryByPlaceholderText("https://your-mcp-server.com")).not.toBeInTheDocument();
       });
     });
@@ -2035,15 +2035,15 @@ describe("CreateMCPServer oauth2_flow persistence", () => {
     await waitFor(() => {
       expect(screen.getByText(/OAuth Flow Type|OAuth 流程类型/)).toBeInTheDocument();
     });
-    await selectOption(/OAuth Flow Type|OAuth 流程类型/, "Machine-to-Machine (M2M)");
+    await selectOption(/OAuth Flow Type|OAuth 流程类型/, "机器对机器（M2M）");
     await waitFor(() => {
-      expect(screen.getByPlaceholderText("Enter OAuth client ID")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("输入 OAuth 客户端 ID")).toBeInTheDocument();
     });
     await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText("Enter OAuth client ID"), { target: { value: "cid" } });
+      fireEvent.change(screen.getByPlaceholderText("输入 OAuth 客户端 ID"), { target: { value: "cid" } });
     });
     await act(async () => {
-      fireEvent.change(screen.getByPlaceholderText("Enter OAuth client secret"), { target: { value: "csecret" } });
+      fireEvent.change(screen.getByPlaceholderText("输入 OAuth 客户端密钥"), { target: { value: "csecret" } });
     });
     await act(async () => {
       fireEvent.change(screen.getByPlaceholderText("https://auth.example.com/oauth/token"), {
@@ -2079,7 +2079,7 @@ describe("CreateMCPServer dcr_bridge toggle", () => {
     updated_by: "user-1",
   };
 
-  const getDcrToggle = () => screen.queryByRole("switch", { name: /Gateway-hosted sign-in \(DCR bridge\)/ });
+  const getDcrToggle = () => screen.queryByRole("switch", { name: /网关托管登录（DCR 桥接）/ });
 
   async function setupHttpServerForm() {
     renderWithProviders(<CreateMCPServer {...defaultProps} />);
@@ -2122,7 +2122,7 @@ describe("CreateMCPServer dcr_bridge toggle", () => {
       await waitFor(() => {
         expect(getDcrToggle()).toBeInTheDocument();
       });
-      expect(screen.getByText(/网关代持登录|Gateway-hosted sign-in/)).toBeInTheDocument();
+      expect(screen.getByText(/网关托管登录/)).toBeInTheDocument();
       expect(getDcrToggle()).toHaveAttribute("aria-checked", "true");
     },
   );
@@ -2133,7 +2133,7 @@ describe("CreateMCPServer dcr_bridge toggle", () => {
     await selectOption(/认证方式/, optionLabel);
 
     await waitFor(() => {
-      expect(screen.queryByText(/网关代持登录|Gateway-hosted sign-in/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/网关托管登录/)).not.toBeInTheDocument();
     });
     expect(getDcrToggle()).not.toBeInTheDocument();
   });
@@ -2154,8 +2154,8 @@ describe("CreateMCPServer dcr_bridge toggle", () => {
   });
 
   it.each([
-    ["true_passthrough", "True Passthrough (no LiteLLM auth)"],
-    ["oauth_delegate", "OAuth Delegate (client-supplied upstream token)"],
+    ["true_passthrough", "完全直通（不经过 LiteLLM 认证）"],
+    ["oauth_delegate", "OAuth 委派（调用方自带上游令牌）"],
   ])("sends dcr_bridge: true by default on create for %s", async (authType, optionLabel) => {
     vi.mocked(networking.createMCPServer).mockResolvedValue({ ...createdServer, auth_type: authType });
     await setupHttpServerForm();
