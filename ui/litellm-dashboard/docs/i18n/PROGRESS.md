@@ -89,6 +89,8 @@ mcp-servers 名义上剩 5 个未接入文件，但其中 4 个本来就没有�
 
 223 条缺 `NextIntlClientProvider` 已全部清零。剩下的主力是 820 条"找不到元素"，绝大多数是断言停在英文（第六类），但其中混有与翻译无关的既有失败，处理时要逐文件回 HEAD 基线确认，不要一律当成翻译的账
 
+上面的数字是 HEAD 快照 `ff54aee` 那一次全量的结果，此后四次提交累计清掉 217 例（113 + 85 + 19），剩余量级按 820 - 217 - 46 ≈ 560 估算（那 46 例 `edit_auto_router` 是全量并发下的假失败，本就不该计入），下一次全量报告出来后再校准
+
 失败最集中的目录与文件
 
 | 位置                                        | 失败用例数 |
@@ -155,19 +157,14 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 ## 下一步优先级
 
-原来的四个优先级里，第一（223 条缺 Provider）、第二（team 172 例）、第三（页面收口）都已完成。mcp-servers 剩余 5 个"未接入"文件里四个本来就没有面向用户文案（页面壳、键常量、测试 harness），校验文案补齐后该页真正剩下的只有 20 例第六类断言过时；cost-optimization 剩的那 1 个文件是无文案的页面壳
+原来的四个优先级里，第一（223 条缺 Provider）、第二（team 172 例）、第三（页面收口）都已完成。此前按失败集中度排出的 1-6 号目标也全部清零：`edit_auto_router_modal.integration` 的 46 例经单文件复跑确认是全量并发造成的假失败（独立运行为 0），其余按 6d06b7b、e2350f6、c109bdb、0e8f5f6 四次提交逐个转绿。中途顺带清掉了未列进表的 `AdminPanel`（19）、`EntityUsage`（18）、`add_attachment_form`（17）、`BulkEditUsers`（16）、`leftnav` 之外的 `user_edit_view` / `user_info_view.integration` / `old-usage`
 
-所以下一步就是一件事：按第六类清 820 条"找不到元素"。建议从失败最集中的单文件开始，逐个用"回 HEAD 基线确认既有失败"的办法区分翻译账和非翻译账
+剩下唯一的主力是第 7 项：guardrails 族（24 个文件 120 例）与 policies 族（14 个文件 112 例），合计 232 例。清的时候仍按"回 HEAD 基线确认既有失败"区分翻译账和非翻译账，并且先单文件复跑，别信全量报告里的集中失败
 
-| 顺序 | 目标                                                                 | 失败数 |
-| ---- | -------------------------------------------------------------------- | ------ |
-| 1    | `edit_auto_router/edit_auto_router_modal.integration.test.tsx`        | 46     |
-| 2    | `users/user_edit_view.test.tsx`                                       | 38     |
-| 3    | `users/view_users/user_info_view.integration.test.tsx`                | 28     |
-| 4    | `leftnav.test.tsx`                                                    | 27     |
-| 5    | `old-usage/usage.test.tsx`                                            | 20     |
-| 6    | `mcp-servers/CreateMCPServer.integration.test.tsx`（含 1 例 OAuth 既有失败） | 19     |
-| 7    | guardrails 族（24 个文件 120 例）与 policies 族（14 个文件 112 例）    | 232    |
+两处踩过的坑，写在这里省得再查：
+
+- 组件里的硬编码英文哨兵值不能被翻译。`AdminPanel.tsx` 的 `all_ip_address_allowed = "All IP Addresses Allowed"` 同时用于渲染和比对后端返回的 IP 行，测试的 mock 数据必须保持英文，只有断言渲染文本的那几处才跟着 t() 走
+- next-intl 走 ICU 语法，消息里的单引号是转义符而不是字面量。`Microsoft Entra OBO requires a scope, e.g. api://'<app-id>'/.default` 渲染出来是 `api://<app-id>/.default`（引号被吞），断言要按渲染结果写
 
 最后才是批次 24 的共享组件长尾与硬编码收口，欠账清单见 [FIXES.md](./FIXES.md) 的"批次 24 硬编码英文欠账清单"
 
