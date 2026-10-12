@@ -1,5 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { toast } from "@/lib/toast";
 import { MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES } from "./memberBudgetReset";
 import { useMemberBudgetReset, type MemberBudgetResetGateway } from "./useMemberBudgetReset";
@@ -19,7 +21,9 @@ const pendingFor = (userIds: string[]) => ({
   newBudget: 20,
 });
 
-const renderReset = (gateway: MemberBudgetResetGateway) => renderHook(() => useMemberBudgetReset(gateway));
+const wrapper = ({ children }: { children: ReactNode }) => <LocaleProvider locale="zh-CN">{children}</LocaleProvider>;
+
+const renderReset = (gateway: MemberBudgetResetGateway) => renderHook(() => useMemberBudgetReset(gateway), { wrapper });
 
 describe("useMemberBudgetReset", () => {
   afterEach(() => {
@@ -57,7 +61,7 @@ describe("useMemberBudgetReset", () => {
     expect(gateway.saveTeam).toHaveBeenCalledTimes(1);
     expect(gateway.saveTeam).toHaveBeenCalledWith({ team_id: "team-123", team_member_budget: 20 });
     expect(gateway.resetMemberBudgets).toHaveBeenCalledWith("team-123", ["u-1", "u-2"]);
-    expect(toast.success).toHaveBeenCalledWith("Reset 2 member budgets to the team default");
+    expect(toast.success).toHaveBeenCalledWith("已将 2 个成员预算重置为团队默认值");
     expect(gateway.refreshTeamData).toHaveBeenCalledTimes(1);
     expect(result.current.state.phase).toBe("idle");
   });
@@ -141,7 +145,7 @@ describe("useMemberBudgetReset", () => {
 
     expect(result.current.state.phase).toBe("resetFailed");
     expect(toast.error).toHaveBeenCalledWith(
-      `Reset ${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES} of ${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES + 1} member budgets; the rest could not be reset`,
+      `已重置 ${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES}/${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES + 1} 个成员预算，其余重置失败`,
     );
 
     gateway.resetMemberBudgets.mockResolvedValueOnce([
@@ -156,7 +160,7 @@ describe("useMemberBudgetReset", () => {
     expect(gateway.resetMemberBudgets.mock.calls[2][0]).toBe("team-123");
     expect(gateway.resetMemberBudgets.mock.calls[2][1]).toEqual([`u-${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES}`]);
     expect(toast.success).toHaveBeenCalledWith(
-      `Reset ${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES + 1} member budgets to the team default`,
+      `已将 ${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES + 1} 个成员预算重置为团队默认值`,
     );
     expect(result.current.state.phase).toBe("idle");
   });
@@ -174,7 +178,7 @@ describe("useMemberBudgetReset", () => {
     });
 
     expect(result.current.state.phase).toBe("resetFailed");
-    expect(toast.fromError).toHaveBeenCalledWith("Team updated, but member budgets could not be reset");
+    expect(toast.fromError).toHaveBeenCalledWith("团队已更新，但成员预算无法重置");
     expect(gateway.refreshTeamData).toHaveBeenCalledTimes(1);
   });
 
@@ -193,7 +197,7 @@ describe("useMemberBudgetReset", () => {
       await result.current.reset();
     });
 
-    expect(toast.error).toHaveBeenCalledWith("Team updated, but 1 member budget could not be reset");
+    expect(toast.error).toHaveBeenCalledWith("团队已更新，但 1 个成员预算无法重置");
     expect(toast.success).not.toHaveBeenCalled();
     expect(result.current.state.phase).toBe("idle");
     expect(gateway.refreshTeamData).toHaveBeenCalledTimes(1);
@@ -211,7 +215,7 @@ describe("useMemberBudgetReset", () => {
     });
 
     expect(gateway.saveTeam).toHaveBeenCalledTimes(1);
-    expect(toast.success).toHaveBeenCalledWith("Team settings updated successfully");
+    expect(toast.success).toHaveBeenCalledWith("团队设置更新成功");
     expect(gateway.resetMemberBudgets).not.toHaveBeenCalled();
     expect(gateway.refreshTeamData).toHaveBeenCalledTimes(1);
     expect(result.current.state.phase).toBe("idle");

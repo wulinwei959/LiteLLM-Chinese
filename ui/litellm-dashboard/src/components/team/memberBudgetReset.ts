@@ -34,5 +34,3 @@ export const chunk = <T>(items: readonly T[], size: number): T[][] => {
   if (size <= 0) return [];
   return Array.from({ length: Math.ceil(items.length / size) }, (_, i) => items.slice(i * size, i * size + size));
 };
-
-export const pluralize = (count: number, singular: string, plural: string): string => (count === 1 ? singular : plural);

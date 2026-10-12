@@ -480,7 +480,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
         ],
       },
     });
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Reset 2 member budgets to the team default"));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("已将 2 个成员预算重置为团队默认值"));
   });
 
   it("keeps the prompt mounted while the member-budget reset is in flight", async () => {
@@ -512,7 +512,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await user.click(await screen.findByRole("button", { name: "重置为 $20.00" }));
 
     await waitFor(() =>
-      expect(toast.fromError).toHaveBeenCalledWith("Team updated, but member budgets could not be reset"),
+      expect(toast.fromError).toHaveBeenCalledWith("团队已更新，但成员预算无法重置"),
     );
     expect(screen.getByText("重置成员预算？")).toBeInTheDocument();
     expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
@@ -522,7 +522,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     await waitFor(() => expect(bulkUpdatePOST).toHaveBeenCalledTimes(2));
     expect(vi.mocked(networking.teamUpdateCall).mock.calls).toHaveLength(1);
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Reset 1 member budget to the team default"));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("已将 1 个成员预算重置为团队默认值"));
     await waitFor(() => expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument());
   });
 
@@ -561,7 +561,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     await waitFor(() =>
       expect(toast.error).toHaveBeenCalledWith(
-        `Reset ${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES} of ${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES + 1} member budgets; the rest could not be reset`,
+        `已重置 ${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES}/${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES + 1} 个成员预算，其余重置失败`,
       ),
     );
     expect(bulkUpdatePOST).toHaveBeenCalledTimes(2);
@@ -578,7 +578,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     expect(vi.mocked(networking.teamUpdateCall).mock.calls).toHaveLength(1);
     await waitFor(() =>
       expect(toast.success).toHaveBeenCalledWith(
-        `Reset ${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES + 1} member budgets to the team default`,
+        `已将 ${MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES + 1} 个成员预算重置为团队默认值`,
       ),
     );
   });
@@ -599,7 +599,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await user.click(await screen.findByRole("button", { name: "全部重置为 $20.00" }));
 
     await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith("Team updated, but 1 member budget could not be reset"),
+      expect(toast.error).toHaveBeenCalledWith("团队已更新，但 1 个成员预算无法重置"),
     );
   });
 

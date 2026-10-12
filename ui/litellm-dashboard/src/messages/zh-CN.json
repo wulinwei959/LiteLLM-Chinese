@@ -1263,6 +1263,13 @@
     "resetMemberResetOther": "全部重置为 ${budget}",
     "resetMemberRetry": "重试重置",
     "resetMemberTitle": "重置成员预算？",
+    "resetMemberAllFailed": "团队已更新，但成员预算无法重置",
+    "resetMemberDoneOne": "已将 {count} 个成员预算重置为团队默认值",
+    "resetMemberDoneOther": "已将 {count} 个成员预算重置为团队默认值",
+    "resetMemberFailedOne": "团队已更新，但 {count} 个成员预算无法重置",
+    "resetMemberFailedOther": "团队已更新，但 {count} 个成员预算无法重置",
+    "resetMemberPartialOne": "已重置 {done}/{total} 个成员预算，其余重置失败",
+    "resetMemberPartialOther": "已重置 {done}/{total} 个成员预算，其余重置失败",
     "logging": {
       "addIntegration": "添加集成",
       "callbackTypeFailure": "仅失败",

@@ -3,7 +3,6 @@ import {
   chunk,
   customBudgetMemberUserIds,
   MAX_BULK_TEAM_MEMBER_BUDGET_UPDATES,
-  pluralize,
   shouldPromptMemberBudgetReset,
 } from "./memberBudgetReset";
 
@@ -86,16 +85,5 @@ describe("chunk", () => {
   it("returns no chunks for a non-positive size", () => {
     expect(chunk(["u-1"], 0)).toEqual([]);
     expect(chunk(["u-1"], -3)).toEqual([]);
-  });
-});
-
-describe("pluralize", () => {
-  it("uses the singular form for exactly one", () => {
-    expect(pluralize(1, "budget", "budgets")).toBe("budget");
-  });
-
-  it("uses the plural form for zero and for more than one", () => {
-    expect(pluralize(0, "budget", "budgets")).toBe("budgets");
-    expect(pluralize(3, "budget", "budgets")).toBe("budgets");
   });
 });

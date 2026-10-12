@@ -1263,6 +1263,13 @@
     "resetMemberResetOther": "Reset all to ${budget}",
     "resetMemberRetry": "Retry reset",
     "resetMemberTitle": "Reset member budgets?",
+    "resetMemberAllFailed": "Team updated, but member budgets could not be reset",
+    "resetMemberDoneOne": "Reset {count} member budget to the team default",
+    "resetMemberDoneOther": "Reset {count} member budgets to the team default",
+    "resetMemberFailedOne": "Team updated, but {count} member budget could not be reset",
+    "resetMemberFailedOther": "Team updated, but {count} member budgets could not be reset",
+    "resetMemberPartialOne": "Reset {done} of {total} member budget; the rest could not be reset",
+    "resetMemberPartialOther": "Reset {done} of {total} member budgets; the rest could not be reset",
     "logging": {
       "addIntegration": "Add Integration",
       "callbackTypeFailure": "Failure Only",
