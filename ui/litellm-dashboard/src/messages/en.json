@@ -184,7 +184,8 @@
       "goLast": "Go to last page"
     },
     "empty": "No results",
-    "emptyFiltered": "No rows match your search or filters."
+    "emptyFiltered": "No rows match your search or filters.",
+    "saving": "Saving..."
   },
   "nav": {
     "aiGateway": "AI Gateway",
@@ -1195,6 +1196,10 @@
       "updateSuccess": "Permissions updated successfully"
     },
     "settingsAdminOnlyNotice": "A proxy admin chose which settings team admins can change. Ask a proxy admin to change anything else.",
+    "adminFieldProjects": "Create and update projects",
+    "adminFieldMemberKeyBudgets": "Update budgets on team members' keys",
+    "adminEditDisabledTitle": "Team admins cannot edit team settings on this proxy",
+    "adminEditDisabledDescription": "Ask a proxy admin to enable fields under Settings > UI > Team admin editable fields.",
     "settingsCancel": "Cancel",
     "settingsSaveChanges": "Save Changes",
     "availableActions": "Actions",
@@ -2834,7 +2839,15 @@
     "failedFetchIps": "Failed to fetch allowed IPs",
     "failedAddIp": "Failed to add IP address",
     "failedDeleteIp": "Failed to delete IP address",
-    "ssoDesc": "Manage Single Sign-On authentication settings"
+    "ssoDesc": "Manage Single Sign-On authentication settings",
+    "teamAdminEditable": {
+      "title": "Team admin editable fields",
+      "fieldsEnabled": "{count, plural, one {# field enabled} other {# fields enabled}}",
+      "noFieldsEnabled": "Team admins cannot edit team settings",
+      "descriptionFallback": "Team settings fields a team admin may change on the teams they administer.",
+      "unsupportedProxy": "This proxy version does not support enabling any team settings fields for team admins yet.",
+      "updatedToast": "Team admin editable fields updated successfully"
+    }
   },
   "usage": {
     "title": "Usage",

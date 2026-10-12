@@ -1888,8 +1888,8 @@ describe("TeamInfoView", () => {
       await user.click(await screen.findByRole("tab", { name: "Settings" }));
       await user.click(await screen.findByRole("button", { name: "编辑设置" }));
 
-      expect(toast.error).toHaveBeenCalledWith("Team admins cannot edit team settings on this proxy", {
-        description: "Ask a proxy admin to enable fields under Settings > UI > Team admin editable fields.",
+      expect(toast.error).toHaveBeenCalledWith("此代理上团队管理员无法编辑团队设置", {
+        description: "请联系代理管理员在 设置 > UI > 团队管理员可编辑字段 中启用相关字段。",
       });
       expect(screen.queryByLabelText("团队名称")).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
@@ -1910,10 +1910,10 @@ describe("TeamInfoView", () => {
       await user.click(await screen.findByRole("tab", { name: "Settings" }));
       await user.click(await screen.findByRole("button", { name: "编辑设置" }));
 
-      const tpmInput = await screen.findByLabelText("Tokens per minute Limit (TPM)");
+      const tpmInput = await screen.findByLabelText("每分钟 Token 限制（TPM）");
       expect(tpmInput).toHaveValue(1000);
       expect(screen.queryByLabelText("团队名称")).not.toBeInTheDocument();
-      expect(screen.queryByLabelText("Requests per minute Limit (RPM)")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("每分钟请求限制（RPM）")).not.toBeInTheDocument();
 
       fireEvent.change(tpmInput, { target: { value: "5000" } });
       await user.click(screen.getByRole("button", { name: "保存更改" }));
@@ -1939,8 +1939,8 @@ describe("TeamInfoView", () => {
       await user.click(await screen.findByRole("tab", { name: "Settings" }));
       await user.click(await screen.findByRole("button", { name: "编辑设置" }));
 
-      expect(await screen.findByLabelText("Requests per minute Limit (RPM)")).toHaveValue(50);
-      expect(screen.getByLabelText("Max Budget (USD)")).toHaveValue(20);
+      expect(await screen.findByLabelText("每分钟请求限制（RPM）")).toHaveValue(50);
+      expect(screen.getByLabelText("最大预算（USD）")).toHaveValue(20);
       expect(screen.getByRole("button", { name: "保存更改" })).toBeDisabled();
     });
 

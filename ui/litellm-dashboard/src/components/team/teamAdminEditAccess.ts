@@ -1,10 +1,8 @@
 import { z } from "zod/v4";
 
-export const TEAM_ADMIN_EDITABLE_TEAM_FIELDS_SETTING = "team_admin_editable_team_fields";
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 
-export const TEAM_ADMIN_EDITING_DISABLED_TITLE = "Team admins cannot edit team settings on this proxy";
-export const TEAM_ADMIN_EDITING_DISABLED_DESCRIPTION =
-  "Ask a proxy admin to enable fields under Settings > UI > Team admin editable fields.";
+export const TEAM_ADMIN_EDITABLE_TEAM_FIELDS_SETTING = "team_admin_editable_team_fields";
 
 const callerEditAccessSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("unrestricted") }),
@@ -43,15 +41,22 @@ export const TEAM_ADMIN_SETTINGS_FIELDS = ["tpm_limit", "rpm_limit", "max_budget
 
 export type TeamAdminSettingsField = (typeof TEAM_ADMIN_SETTINGS_FIELDS)[number];
 
-const TEAM_ADMIN_FIELD_LABELS: ReadonlyMap<string, string> = new Map([
-  ["tpm_limit", "Tokens per minute Limit (TPM)"],
-  ["rpm_limit", "Requests per minute Limit (RPM)"],
-  ["max_budget", "Max Budget (USD)"],
-  ["projects", "Create and update projects"],
-  ["member_key_budgets", "Update budgets on team members' keys"],
-]);
-
-export const teamAdminFieldLabel = (field: string): string => TEAM_ADMIN_FIELD_LABELS.get(field) ?? field;
+export const teamAdminFieldLabel = (t: TeamsTranslator, field: string): string => {
+  switch (field) {
+    case "tpm_limit":
+      return t("infoTpmLimitLabel");
+    case "rpm_limit":
+      return t("infoRpmLimitLabel");
+    case "max_budget":
+      return t("infoMaxBudgetUsd");
+    case "projects":
+      return t("adminFieldProjects");
+    case "member_key_budgets":
+      return t("adminFieldMemberKeyBudgets");
+    default:
+      return field;
+  }
+};
 
 export type TeamAdminSettingsValues = { readonly [F in TeamAdminSettingsField]?: string | number | null };
 

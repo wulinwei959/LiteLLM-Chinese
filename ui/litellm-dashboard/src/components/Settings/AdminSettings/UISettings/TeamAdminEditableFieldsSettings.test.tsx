@@ -20,8 +20,8 @@ vi.mock("@/app/(dashboard)/hooks/uiSettings/useUpdateUISettings", () => ({
   useUpdateUISettings: mockUseUpdateUISettings,
 }));
 
-const TPM_LABEL = "Tokens per minute Limit (TPM)";
-const MAX_BUDGET_LABEL = "Max Budget (USD)";
+const TPM_LABEL = "每分钟 Token 限制（TPM）";
+const MAX_BUDGET_LABEL = "最大预算（USD）";
 
 const mockSettings = (supported: readonly string[], enabled: readonly string[]) =>
   mockUseUISettings.mockReturnValue({
@@ -53,7 +53,7 @@ const mockSave = ({
   return mutate;
 };
 
-const saveButton = () => screen.getByRole("button", { name: "Save" });
+const saveButton = () => screen.getByRole("button", { name: "保存" });
 
 describe("TeamAdminEditableFieldsSettings", () => {
   beforeEach(() => {
@@ -66,10 +66,10 @@ describe("TeamAdminEditableFieldsSettings", () => {
 
     renderWithProviders(<TeamAdminEditableFieldsSettings />);
 
-    expect(screen.getByText("Team admins cannot edit team settings")).toBeInTheDocument();
-    expect(screen.getByText(/does not support enabling any team settings fields/)).toBeInTheDocument();
+    expect(screen.getByText("团队管理员无法编辑团队设置")).toBeInTheDocument();
+    expect(screen.getByText(/暂不支持为团队管理员启用任何团队设置字段/)).toBeInTheDocument();
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Save" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "保存" })).not.toBeInTheDocument();
   });
 
   it("renders one checkbox per supported field, checked for the saved ones, with Save disabled until something changes", () => {
@@ -78,8 +78,8 @@ describe("TeamAdminEditableFieldsSettings", () => {
 
     renderWithProviders(<TeamAdminEditableFieldsSettings />);
 
-    expect(screen.getByText("Team admin editable fields")).toBeInTheDocument();
-    expect(screen.getByText("1 field enabled")).toBeInTheDocument();
+    expect(screen.getByText("团队管理员可编辑字段")).toBeInTheDocument();
+    expect(screen.getByText("已启用 1 个字段")).toBeInTheDocument();
     expect(screen.getByText("Fields a team admin may change")).toBeInTheDocument();
     expect(screen.getByRole("checkbox", { name: MAX_BUDGET_LABEL })).not.toBeChecked();
     expect(screen.getByRole("checkbox", { name: TPM_LABEL })).toBeChecked();
@@ -98,7 +98,7 @@ describe("TeamAdminEditableFieldsSettings", () => {
 
     fireEvent.click(saveButton());
 
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Team admin editable fields updated successfully"));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("团队管理员可编辑字段更新成功"));
     expect(mutate).toHaveBeenCalledWith(
       { team_admin_editable_team_fields: ["max_budget", "tpm_limit"] },
       expect.anything(),
@@ -139,7 +139,7 @@ describe("TeamAdminEditableFieldsSettings", () => {
 
     renderWithProviders(<TeamAdminEditableFieldsSettings />);
 
-    expect(screen.getByText("2 fields enabled")).toBeInTheDocument();
+    expect(screen.getByText("已启用 2 个字段")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("checkbox", { name: TPM_LABEL }));
     fireEvent.click(screen.getByRole("checkbox", { name: TPM_LABEL }));
@@ -170,7 +170,7 @@ describe("TeamAdminEditableFieldsSettings", () => {
     fireEvent.click(screen.getByRole("checkbox", { name: TPM_LABEL }));
 
     expect(screen.getByRole("checkbox", { name: TPM_LABEL })).not.toBeChecked();
-    expect(screen.getByRole("button", { name: "Saving..." })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "保存中..." })).toBeDisabled();
     expect(mutate).not.toHaveBeenCalled();
   });
 });

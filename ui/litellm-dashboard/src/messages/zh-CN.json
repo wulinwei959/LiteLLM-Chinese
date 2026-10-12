@@ -184,7 +184,8 @@
       "goLast": "前往最后一页"
     },
     "empty": "暂无结果",
-    "emptyFiltered": "没有符合搜索或筛选条件的行。"
+    "emptyFiltered": "没有符合搜索或筛选条件的行。",
+    "saving": "保存中..."
   },
   "nav": {
     "aiGateway": "AI 网关",
@@ -1195,6 +1196,10 @@
       "updateSuccess": "权限更新成功"
     },
     "settingsAdminOnlyNotice": "代理管理员已选择团队管理员可以更改哪些设置。如需更改其它内容，请联系代理管理员。",
+    "adminFieldProjects": "创建和更新项目",
+    "adminFieldMemberKeyBudgets": "更新团队成员密钥的预算",
+    "adminEditDisabledTitle": "此代理上团队管理员无法编辑团队设置",
+    "adminEditDisabledDescription": "请联系代理管理员在 设置 > UI > 团队管理员可编辑字段 中启用相关字段。",
     "settingsCancel": "取消",
     "settingsSaveChanges": "保存更改",
     "availableActions": "操作",
@@ -2834,7 +2839,15 @@
     "failedFetchIps": "获取允许的 IP 列表失败",
     "failedAddIp": "添加 IP 地址失败",
     "failedDeleteIp": "删除 IP 地址失败",
-    "ssoDesc": "管理单点登录（SSO）认证设置"
+    "ssoDesc": "管理单点登录（SSO）认证设置",
+    "teamAdminEditable": {
+      "title": "团队管理员可编辑字段",
+      "fieldsEnabled": "已启用 {count} 个字段",
+      "noFieldsEnabled": "团队管理员无法编辑团队设置",
+      "descriptionFallback": "团队管理员可在其管理的团队上更改的团队设置字段。",
+      "unsupportedProxy": "当前代理版本暂不支持为团队管理员启用任何团队设置字段。",
+      "updatedToast": "团队管理员可编辑字段更新成功"
+    }
   },
   "usage": {
     "title": "用量",

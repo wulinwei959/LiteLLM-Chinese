@@ -57,7 +57,7 @@ export default function TeamAdminSettingsForm({
       <FieldGroup>
         <p className="text-sm text-muted-foreground">{t("settingsAdminOnlyNotice")}</p>
         {TEAM_ADMIN_SETTINGS_FIELDS.filter((name) => editableFields.has(name)).map((name) => (
-          <FormField key={name} control={form.control} name={name} label={teamAdminFieldLabel(name)}>
+          <FormField key={name} control={form.control} name={name} label={teamAdminFieldLabel(t, name)}>
             {({ ref, value, ...field }) => (
               <NumericalInput {...field} ref={ref} value={value ?? ""} step={INPUT_STEP[name]} />
             )}

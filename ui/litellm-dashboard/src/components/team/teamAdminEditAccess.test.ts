@@ -8,18 +8,25 @@ import {
   teamAdminSettingsChanges,
 } from "./teamAdminEditAccess";
 
+type LabelTranslator = Parameters<typeof teamAdminFieldLabel>[0];
+
+// Echoes the message key instead of resolving it, so the case pins which catalog entry each
+// field maps to; the catalogs themselves are covered by the i18n parity tests.
+const echoKeyTranslator = ((key: string) => `teams.${key}`) as unknown as LabelTranslator;
+
 describe("teamAdminFieldLabel", () => {
   it.each([
-    ["tpm_limit", "Tokens per minute Limit (TPM)"],
-    ["rpm_limit", "Requests per minute Limit (RPM)"],
-    ["max_budget", "Max Budget (USD)"],
-    ["projects", "Create and update projects"],
-  ])("names %s the way the team settings form does", (field, label) => {
-    expect(teamAdminFieldLabel(field)).toBe(label);
+    ["tpm_limit", "teams.infoTpmLimitLabel"],
+    ["rpm_limit", "teams.infoRpmLimitLabel"],
+    ["max_budget", "teams.infoMaxBudgetUsd"],
+    ["projects", "teams.adminFieldProjects"],
+    ["member_key_budgets", "teams.adminFieldMemberKeyBudgets"],
+  ])("names %s the way the team settings form does", (field, key) => {
+    expect(teamAdminFieldLabel(echoKeyTranslator, field)).toBe(key);
   });
 
   it("falls back to the raw field name for a field the dashboard has no label for", () => {
-    expect(teamAdminFieldLabel("team_alias")).toBe("team_alias");
+    expect(teamAdminFieldLabel(echoKeyTranslator, "team_alias")).toBe("team_alias");
   });
 });
 

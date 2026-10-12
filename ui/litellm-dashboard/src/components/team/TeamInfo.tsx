@@ -55,8 +55,6 @@ import GuardrailsSelect from "./GuardrailsSelect";
 import {
   type CallerEditAccess,
   parseTeamEditAccess,
-  TEAM_ADMIN_EDITING_DISABLED_DESCRIPTION,
-  TEAM_ADMIN_EDITING_DISABLED_TITLE,
   type TeamAdminSettingsChanges,
 } from "./teamAdminEditAccess";
 import TeamAdminSettingsForm from "./TeamAdminSettingsForm";
@@ -680,7 +678,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
 
   const openSettingsEditor = (modelAliases: Record<string, string>) => {
     if (teamEditAccess.kind === "team_admin_disabled") {
-      toast.error(TEAM_ADMIN_EDITING_DISABLED_TITLE, { description: TEAM_ADMIN_EDITING_DISABLED_DESCRIPTION });
+      toast.error(t("adminEditDisabledTitle"), { description: t("adminEditDisabledDescription") });
       return;
     }
     setTeamModelAliases(modelAliases);
