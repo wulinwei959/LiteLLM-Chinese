@@ -53,9 +53,9 @@ const fillRequiredFields = async (user: User, values: RequiredFieldValues = {}) 
   fireEvent.change(screen.getByPlaceholderText("https://engine.prod.bria-api.com"), {
     target: { value: target },
   });
-  await user.click(screen.getByRole("button", { name: /add header/i }));
-  fireEvent.change(screen.getByPlaceholderText("Header Name"), { target: { value: headerName } });
-  fireEvent.change(screen.getByPlaceholderText("Header Value"), { target: { value: headerValue } });
+  await user.click(screen.getByRole("button", { name: /添加请求头/ }));
+  fireEvent.change(screen.getByPlaceholderText("请求头名称"), { target: { value: headerName } });
+  fireEvent.change(screen.getByPlaceholderText("请求头的值"), { target: { value: headerValue } });
 };
 
 const addQueryParam = async (user: User, name: string, value: string) => {
@@ -267,7 +267,7 @@ describe("add_pass_through submit payload", () => {
     await user.click(screen.getByRole("button", { name: "Cancel" }));
     await openModal(user);
 
-    expect(screen.queryByPlaceholderText("Header Name")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("请求头名称")).not.toBeInTheDocument();
     expect(screen.queryByPlaceholderText("Parameter Name (e.g., version)")).not.toBeInTheDocument();
   });
 
