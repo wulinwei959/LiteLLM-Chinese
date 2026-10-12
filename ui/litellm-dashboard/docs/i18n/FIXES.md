@@ -234,6 +234,17 @@ const namespaces = NAMESPACES.has(explicitRoot) ? [explicitRoot] : [...scopes];
 
 教训有三条。删导出前全仓搜引用，搜索范围要包含未翻译的批次 24 长尾文件；改大文件里的 `t()` 之前确认 hook 在作用域里（改前 diff 里看得到 `Cannot find name 't'` 这种低级错误不该进提交）；每批收口跑一次 `npm run build` 并检查退出码，vitest 与 tsc 基线比对都拦不住这一类
 
+## 2026-10-12 四族清零：229 例断言同步的踩坑记录
+
+projects（82）、prompts（56）、agents（55）、cost-tracking（36）四个路由收口时，除了常规的"断言停在英文"，还踩到几类值得记的坑：
+
+- 以旧英文串为锚的测试辅助函数会静默失效。`multi_cost_results.test.tsx` 的 `shownBreakdown()` 找的是上游时代的硬编码标记 `Total/Request`，翻译接入 `t("totalPerRequestShort")`（渲染"合计/请求"）后它永远返回 null：两条"隐藏态"断言假绿、两条"可见态"断言报错。改键之前先搜测试里的辅助函数，别只搜断言本身。`ProjectsPage.test.tsx` 的 `queryByRole("heading", { name: /projects/i })` 同理，翻译后变成真空断言，本次一并改成 `/^项目$/`
+- 同一表单的两种变体翻译进度可能不一致。agents 编辑器里 agent_name 标签在静态表单是硬编码英文、在动态表单已是 `t("agentName")`，测试断言哪种语言都会有一半走不通；修法是给静态表单补接既有键（`agentName` / `nameFieldHint` / `nameRequired`），而不是让断言迁就半成品
+- "键已存在但调用点没接"是常见残留。`AgentsTableColumns` 的 meta 里已有 `t("colAgentName")`，header 却写死英文；同理 agents 面板标题、表单标签都有"目录有键、调用点写死"的情况。碰到"界面是英文但目录里明明有键"时先确认是不是这一类，接上即可，不用加新键
+- 面板级翻译不完整会产生"标题中文、字段英文"的混排（agents 的 capabilities / optional / cost / auth headers 面板都是这样）。断言同步时逐串确认该串在源码里是 `t()` 还是硬编码：`t()` 的改为中文断言，硬编码的保持英文断言，并在提交信息里记下边界
+- 批量改断言时把消息值从 `zh-CN.json` 读出来生成替换串，不要手抄。"请求头名称（如 Authorization）"的全角括号、"移除中…"的省略号、ICU 里的 `{name}` 占位符，手抄一次错一次；用脚本取值替换，一步到位
+- `findByLabelText` / `getByLabelText` 前缀不同，替换模式写 `getByLabelText(...)` 会漏掉 `findByLabelText(...)` 的那些行。替换后按 `ByLabelText(` 之类的后缀再扫一遍兜底
+
 ## 批次 24 硬编码英文欠账清单
 
 2026-10-12 修 Provider 批次和 team 批次时实测确认：以下位置的组件仍输出硬编码英文，对应测试断言保留英文原文。批次 24 收口时先把这些字符串接入 `t()`，再把断言同步为中文

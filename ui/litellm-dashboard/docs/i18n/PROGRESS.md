@@ -66,6 +66,8 @@ mcp-servers 名义上剩 5 个未接入文件，但其中 4 个本来就没有�
 
 起始基线是 1323 失败，此后 team 批次（`deab7e7`）、Provider 批次（`6d06b7b`）、guardrails 与 policies 两族收口累计消掉 873 例
 
+2026-10-12 下午又清掉失败最集中的四个路由共 229 例：projects（`8218f0c`，82）、prompts（`c9fa5a1`，56）、agents（`c4ed112`，55）、cost-tracking（`eb8394d`，36），四个路由复跑分别 161 / 117 / 128 / 206 例全绿。全量口径未重跑，下表 450 的分布仍是 507e347 的旧快照
+
 ### 失败的归属
 
 按被测源文件（同目录同名去 `.test`）是否引入 `next-intl` 分类
@@ -205,9 +207,9 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 507e347 上实测的 450 例失败，扣掉 `edit_auto_router_modal.integration` 的 23 例并发假失败，实际约 427 例，分布在 96 个文件里
 
-其中 projects（82）、prompts（56）、agents（55）、cost-tracking（36）四个路由占了 229 例，是接下来最值得动的四块。`src/components` 下的非路由测试（81 例）里，`view_logs/index` 与 `add_pass_through` 各占 12 例
+其中最重的四个路由已清零（229 例）：projects 82（`8218f0c`）、prompts 56（`c9fa5a1`）、agents 55（`c4ed112`）、cost-tracking 36（`eb8394d`）。剩余约 198 例仍是 507e347 的旧快照，按路由是 `src/components` 非路由 81（`view_logs/index` 与 `add_pass_through` 各 12）、playground 27、usage 27、budgets 21、caching 18、tag-management 11、users 9、router-settings 8、memory 7、skills 6、change-password 5，其余为个位数
 
-处理顺序建议按失败数从多到少，每处理完一组就单文件复跑确认，不要直接看下一份全量报告
+处理顺序仍是按失败数从多到少，每处理完一组就单文件复跑确认，不要直接看下一份全量报告
 
 ## 技术债
 
