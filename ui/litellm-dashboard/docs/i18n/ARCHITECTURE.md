@@ -85,9 +85,13 @@
 
 ## 测试侧的两个入口
 
-`renderWithProviders` 把 `NuqsTestingAdapter`、`QueryClientProvider`、`LocaleProvider` 三层包好，并强制 `locale="zh-CN"`。强制中文是有意的：翻译工作的断言对象是中文文案，让每个用例都自己拼语言环境只会重复
+`renderWithProviders` 把 `NuqsTestingAdapter`、`QueryClientProvider`、`LocaleProvider` 三层包好，默认把 `locale` 钉在 `zh-CN`。钉住是有意的：翻译工作的断言对象是中文文案，让每个用例都自己拼语言环境只会重复
 
-但这个强制也带来一个副作用，写测试时要知道。`LanguageSwitcher` 自己的行为是"读 `localStorage` 决定语言"，而强制 `locale` 会把这条链路短路掉，所以那个组件的测试不能靠 `renderWithProviders`
+但钉住会把 `localStorage` 那条链路短路掉，而 `LanguageSwitcher` 要测的恰恰是它。所以 helper 的 `locale` 选项接受 `null` 表示不钉，此时 `LocaleProvider` 回落到读存储与浏览器语言。用 `null` 而不是省略，是因为省略的语义是"用默认值"，两者必须能区分
+
+switcher 的用例走这条出口，并在 `beforeEach` 里清 `localStorage`、显式 stub `navigator.language`。这样做不是啰嗦：`localStorage` 在同一文件内跨用例存活，而浏览器语言的默认值由 jsdom 决定，属于我们不拥有的外部事实，钉住它会让用例随环境漂移
+
+`LocaleProvider` 里 `useSyncExternalStore` 必须无条件调用，取值时才在 `forcedLocale` 与存储值之间选。写成 `forcedLocale ?? useSyncExternalStore(...)` 会让 hook 的调用次数随 `forcedLocale` 的有无变化，`react-hooks/rules-of-hooks` 直接报 error，一旦有调用方让它变过就会崩
 
 `enMessages` 给列定义工厂这类拿不到 React 上下文的纯函数用。它按 `mcpServers` 命名空间去 `en.json` 查值，查不到就抛错。这样测试断言的仍是真实英文文案（`+1 more`）而不是键名（`toolsets.moreCount`），键名写错会立刻失败
 

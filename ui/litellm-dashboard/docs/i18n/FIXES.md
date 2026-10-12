@@ -30,6 +30,8 @@ npx vitest run "<路径>" --reporter=json --outputFile="$TEMP/fails.json"
 | tsc 报 `TS2345` / 裸 `Translator` 判定不可靠                | props 用了 `ReturnType<typeof useTranslations>`   | 换成 `translators.ts` 里的具体类型                        |
 | 测试报 `Found multiple elements`                            | 两处不同英文被映射到同一个已存在的键              | 各开各的键                                               |
 | 测试断言失败，实际界面已变中文                              | 断言还是英文原文                                 | 更新断言                                                 |
+| 用例要验证的正是被测试 helper 钉住的那条链路                | helper 固定了环境值，把被测链路短路              | 给 helper 加"不钉"出口，用 `null` 而不是省略             |
+| ESLint 报 `rules-of-hooks` 说 hook 被条件调用               | `cond ?? useHook()` 这类短路写法                 | hook 无条件调用，取值时再在候选值之间选                   |
 
 ## 缺 Provider（第一类）
 
@@ -158,7 +160,21 @@ t("loading");     // 哪都不存在，漏报
 npx tsc --noEmit 2>&1 | grep "error TS" | sed 's/^ *//' | sort -u
 ```
 
-基线是 928 条、60 个文件（2026-10-12 实测）
+基线是 904 条（去重后）、56 个文件（2026-10-13 实测），全部落在测试文件里，非测试文件零错误
+
+## 测试 helper 与被测链路冲突（第八类）
+
+`renderWithProviders` 默认把 `locale` 钉在 `zh-CN`，这对翻译断言是对的：它们读的是真实中文文案。但 `LanguageSwitcher` 要测的行为恰恰是"读 `localStorage` 决定语言"，钉住就把这条链路短路了，于是它的两个用例一直是红的，而组件本身没有缺陷
+
+修法是给 helper 加一个"不钉"的出口，让调用方自己选。三个细节值得记
+
+出口的值用 `null` 而不是省略。省略在 JS 里的语义是"没传，用默认值"，和"明确要求不钉"必须能区分开，否则默认值就永远关不掉
+
+用例要自带前置条件。`localStorage` 在同一文件内跨用例存活，而浏览器语言的默认值由 jsdom 决定，属于我们不拥有的外部事实。switcher 的用例在 `beforeEach` 里清存储，并显式 stub `navigator.language`，这样"无存储偏好且浏览器语言非中文时回落到英文"这条断言才有意义，不会随 jsdom 版本漂移
+
+顺带修掉 `LocaleProvider` 里 `useSyncExternalStore` 的条件调用。`forcedLocale ?? useSyncExternalStore(...)` 让 hook 的调用次数随 prop 的有无变化，`react-hooks/rules-of-hooks` 报 error 且不在 `eslint-suppressions.json` 基线里，也就是说这是一条常驻的 lint 红灯。改成无条件调用、取值时再在两个候选之间选，钉住的行为不变（`forcedLocale` 优先），只是钉住时也会订阅存储
+
+新增的用例要有牙齿。把 `getSnapshot` 里的浏览器语言回退临时去掉，只有"跟随浏览器语言"那一条变红，其余三条仍绿，说明它盯的确实是这条回退
 
 ## 本轮修过的缺陷
 

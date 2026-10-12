@@ -1,6 +1,6 @@
 # 开发进度
 
-数据快照 2026-10-12，分支 `main`。目录规模、欠账清单与文件覆盖率随每次提交更新；测试统计来自 `507e347` 上的全量实测（11306 个用例）
+数据快照 2026-10-13，分支 `main`。目录规模、欠账清单与文件覆盖率随每次提交更新；最新的测试统计见"### 修复后的复核"（11308 个用例、1 失败），而 `## 测试状态` 的表格是 `507e347` 的旧快照，保留用于对照起点
 
 ## 统计口径
 
@@ -158,7 +158,7 @@ npx vitest run src/lib/i18n
 
 其中 `missingKeys.test.ts` 在这一轮之前是失效的，见 [FIXES.md](./FIXES.md) 的"2026-10-12 新发现并修复的两条"。修好之后它报出 47 条真实缺失，补齐后转绿
 
-`src/components/shared/LanguageSwitcher.test.tsx` 有 2 个失败，属于设计冲突而非缺陷：`renderWithProviders` 强制 `locale="zh-CN"`，而这两个用例假设默认是英文，并且想验证"切换后变中文"这条链路。强制 locale 会把 `localStorage` 驱动的那条链路短路掉，所以这个组件的测试不能走 `renderWithProviders`，需要一个可以省略 `locale` 的包裹层
+`src/components/shared/LanguageSwitcher.test.tsx` 曾有 2 个失败，属于设计冲突而非缺陷：`renderWithProviders` 强制 `locale="zh-CN"`，而这两个用例假设默认是英文，并且想验证"切换后变中文"这条链路。强制 locale 会把 `localStorage` 驱动的那条链路短路掉。已给 helper 加 `locale: null` 出口解决，见 [ARCHITECTURE.md](./ARCHITECTURE.md) 的"测试侧的两个入口"
 
 ## 已完成的部分
 
@@ -205,13 +205,13 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 顺带修掉 `dd32399` 留在非测试文件里的 22 处类型错误，生产构建从那时起一直红着，本次恢复绿色。起点是 `cache_control_settings.tsx` 的导出常量被删后 `ModelInfoEditForm.tsx`（未翻译的长尾文件）还在 import；修掉缺导出后构建推进到下一层，又停在 `layout.tsx` 的 `Cannot find name 't'`。同一提交共留下五类错误：删掉的导出仍被引用、`t()` 调用处没有 hook（10 条）、`keyof typeof` 指向不存在的名字、重复的 interface 声明、无意义的 `data-testid` 解构。vitest 对这些全绿（Vite 把缺失导出解析成 `undefined`），tsc 会报但混在存量里没被逐条比对，只有 `npm run build` 会硬失败且一次只报第一个错。五类的例子与修法见 [FIXES.md](./FIXES.md) 的"2026-10-12 构建报错"一节
 
-另外有一件小事不依赖批次顺序，且卡着一个具体失败：`renderWithProviders` 强制 `locale="zh-CN"`，`LanguageSwitcher` 的 2 个失败就是它造成的。判断口径在 `tests/test-utils.tsx` 里留了标记
+`renderWithProviders` 与 `LanguageSwitcher` 的设计冲突已解决，题面就是 `tests/test-utils.tsx` 里那条标记：helper 默认钉 `zh-CN`，而 switcher 要测的正是被钉住时短路掉的那条链路。修法是让 `locale` 选项接受 `null` 表示不钉，配合修掉 `LocaleProvider` 里 `useSyncExternalStore` 的条件调用（`react-hooks/rules-of-hooks` 的 error，此前一直红着）
 
 ### 核实后的剩余工作
 
 507e347 快照里的失败已逐块清零：四个重路由 229 例 + 晚场六个块 165 例 + 分片复核补抓的 27 例第六类/同类 = 421 例，另有 6 例 auto_router 时序假红转为等待预算修复（`4550833`）。四片全量复核覆盖全部 858 个文件，各分片的失败项已逐一单文件复跑清零或定性，**第六类（断言停在英文）在本轮观测中归零**
 
-剩余失败均为非第六类，口径是分片全量加单文件复跑：`LanguageSwitcher` 2 例（`renderWithProviders` 强制 zh-CN 的设计冲突，需要一个可省略 locale 的包裹层）、`mcp_server_edit` 1 例（`stored client_id` 取值失败，早前已用 stash 对照确认与翻译无关；单跑会通过，分片高并发下偶发）。此前记在技术债里的 `AutoRoutersPanel` 2、`AccessGroupBudgetsPanel` 2、`fetch-location-rule` 1 在本轮四片全量中均未复现
+剩余失败均为非第六类，口径是分片全量加单文件复跑：`LanguageSwitcher` 2 例（`renderWithProviders` 强制 zh-CN 的设计冲突，需要一个可省略 locale 的包裹层，已修）、`mcp_server_edit` 1 例（`stored client_id` 取值失败，与翻译无关）。此前记在技术债里的 `AutoRoutersPanel` 2、`AccessGroupBudgetsPanel` 2、`fetch-location-rule` 1 在本轮四片全量中均未复现
 
 后续若开新清理轮：先按分片拿全量失败清单，逐项单文件复跑区分真假，再按失败数从多到少逐块清零；不要跑单进程全量（会撞执行窗），也别并发跑多个 vitest（互相拖慢且放大失败数）
 
@@ -223,19 +223,23 @@ i18n 自身的三条守卫也是全绿，16 个用例
 | ------ | ---- | ---- |
 | `DeletedKeysPage/DeletedKeysTable.test.tsx :: should show the total count in the pagination footer` | 第六类漏网。同一用例的 `pagination-range` 已改中文，紧邻的 `pagination-page` 停在 `Page 1 of 3` | 已改中文，单文件复跑 8 例全绿 |
 | `mcp_server_edit.test.tsx :: preserves a stored client_id ...` | 取值失败，非 i18n | 保留，见技术债 |
-| `LanguageSwitcher.test.tsx` 2 例 | 设计冲突 | 保留，需可省略 locale 的包裹层 |
+| `LanguageSwitcher.test.tsx` 2 例 | 设计冲突 | 已修，helper 加 `locale: null` 出口 |
 
 同一次复核还发现 `ProjectDetailsPage.tsx` 的项目状态徽标写死 `"Blocked" : "Active"`，而 `projects.statusBlocked` / `projects.statusActive` 两个键早就存在于两侧目录（`活跃` / `已封禁`），属于"键已存在但调用点没接"，是 `AgentsTableColumns` / `TeamGuardrailsTab` 那一类的残留。接上 `t()` 并同步两条断言后，该文件 22 例全绿
 
-两处修完，`LanguageSwitcher` 2 例与 `mcp_server_edit` 1 例是仅剩的已知失败
+三处修完，`mcp_server_edit` 1 例是仅剩的已知失败
+
+修复后（2026-10-13）重跑四片全量：11308 个用例，11307 通过，1 失败（99.99%）。用例数比上一轮多 1，来自 `LanguageSwitcher` 的用例由 3 个扩到 4 个（新增"跟随浏览器语言"一条）。唯一的失败就是上面那条 `mcp_server_edit`，其余全部转绿，说明 `LanguageSwitcher` 与 `LocaleProvider` 的改动没有波及依赖钉住 locale 的其余测试
 
 ## 技术债
 
 `AutoRoutersPanel` 2 个与 `AccessGroupBudgetsPanel` 2 个失败是既有问题，与 i18n 无关，留给对应模块
 
-`mcp_server_edit.test.tsx` 的 "preserves a stored client_id on OAuth-resume restore" 1 例在 HEAD 上即失败（`expected '' to be 'stored-client'`），2026-10-12 用单文件 stash 对照确认与翻译无关。同日分片全量里它分别报 3 例与 1 例，但单文件复跑两次均通过，属高并发下的偶发，非稳定失败
+`mcp_server_edit.test.tsx` 的 "preserves a stored client_id on OAuth-resume restore" 1 例是**稳定失败**，不是偶发。2026-10-13 用 `-t` 只跑该用例（其余 80 例 skip）仍然失败，`waitFor` 超时后字段值停在 `''`，这就排除了并发竞态。此前记的"单跑会通过、分片下偶发"与本机实测不符，已按实测更正
 
-全仓库 `tsc --noEmit` 有 904 条错误，分布在 82 个文件（2026-10-12 实测），**全部位于 `*.test.tsx` / `*.test.ts`**，大头是 vitest 全局类型缺失的 TS2304/TS2582 与测试文件自身的类型债。此前记的 928 条里有 24 条是翻译引入的，全部在非测试文件（`dd32399` 的五个错误类，9 个文件 22 条 + `ModelInfoEditForm.tsx` 引用缺导出的 2 条），本次修完后降到 904，**非测试文件清零**，`npm run build` 恢复绿色。注意 `next.config.mjs` 设了 `useTypeScriptCli: false`，Next 16 自带的类型检查阶段不扫测试文件，所以这 904 条与绿色构建共存；哪天开了这个实验开关，测试文件债会立刻变成构建红灯。`TRANSLATION_PLAN.md` 里写的"约 819 条、56 个文件"是更早的一次测量，已过时。基线比对之后要区分"非测试文件 0 错误"与"测试文件存量债"两件事
+判定与翻译无关的依据是逻辑本身：该用例走 `mcp_server_edit.tsx` 的 OAuth 恢复 effect，那段"服务器凭据与快照合并后再剥 token"的代码与 `610473c` 上游版本逐行一致，翻译只动了文案。上游快照里这个测试就存在，所以它要么是上游带来的既有缺陷，要么依赖某些环境条件。定级为待查，本轮没动手改，因为修它要先判断期望行为该由组件还是测试承担
+
+全仓库 `tsc --noEmit` 有 904 条错误（去重后，原始输出 905 行），分布在 56 个文件（2026-10-13 实测），**全部位于 `*.test.tsx` / `*.test.ts`**，大头是 vitest 全局类型缺失的 TS2304/TS2582 与测试文件自身的类型债。此前记的 928 条里有 24 条是翻译引入的，全部在非测试文件（`dd32399` 的五个错误类，9 个文件 22 条 + `ModelInfoEditForm.tsx` 引用缺导出的 2 条），本次修完后降到 904，**非测试文件清零**，`npm run build` 恢复绿色。注意 `next.config.mjs` 设了 `useTypeScriptCli: false`，Next 16 自带的类型检查阶段不扫测试文件，所以这 904 条与绿色构建共存；哪天开了这个实验开关，测试文件债会立刻变成构建红灯。`TRANSLATION_PLAN.md` 里写的"约 819 条、56 个文件"是更早的一次测量，已过时。基线比对之后要区分"非测试文件 0 错误"与"测试文件存量债"两件事
 
 比对基线前先确认 `ui/litellm-dashboard/next-env.d.ts` 存在（它被 gitignore，删掉后会虚增 145 条 `assets/logos` 的 TS2307），标准内容就两行 `/// <reference types="next" />` 与 `/// <reference types="next/image-types/global" />`
 

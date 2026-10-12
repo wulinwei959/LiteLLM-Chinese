@@ -6,6 +6,10 @@ import { NuqsTestingAdapter, OnUrlUpdateFunction } from "nuqs/adapters/testing";
 import { expect } from "vitest";
 
 import { LocaleProvider } from "@/contexts/LocaleContext";
+import type { UiLocale } from "@/lib/i18n/locales";
+
+/** Pinned locale for the suite; the catalog translation assertions read. */
+const DEFAULT_TEST_LOCALE: UiLocale = "zh-CN";
 
 // Create a client for testing
 export const testQueryClient = new QueryClient({
@@ -27,18 +31,22 @@ export const testQueryClient = new QueryClient({
 interface ProviderOptions {
   searchParams?: string | Record<string, string> | URLSearchParams;
   onUrlUpdate?: OnUrlUpdateFunction;
+  /**
+   * Locale the tree is pinned to. Defaults to "zh-CN", which is what translation
+   * assertions want: they read the real Chinese copy rather than a key name. Pass
+   * null to leave it unpinned, so the tree follows localStorage and the browser
+   * language instead. A test of the locale mechanism itself needs that, because
+   * pinning short-circuits the very path it exists to exercise.
+   */
+  locale?: UiLocale | null;
 }
 
 export const renderWithProviders = (ui: React.ReactElement, options?: RenderOptions & ProviderOptions) => {
-  const { searchParams, onUrlUpdate, ...renderOptions } = options ?? {};
-  // TODO(human): give a caller a way to leave the locale unpinned. Pinning "zh-CN"
-  // below is what translation assertions want, but it short-circuits the
-  // localStorage path that LanguageSwitcher's own tests exist to exercise, so
-  // those two cases cannot use this helper as it stands.
+  const { searchParams, onUrlUpdate, locale = DEFAULT_TEST_LOCALE, ...renderOptions } = options ?? {};
   const Providers: React.FC<PropsWithChildren> = ({ children }) => (
     <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={onUrlUpdate} hasMemory>
       <QueryClientProvider client={testQueryClient}>
-        <LocaleProvider locale="zh-CN">{children}</LocaleProvider>
+        <LocaleProvider locale={locale ?? undefined}>{children}</LocaleProvider>
       </QueryClientProvider>
     </NuqsTestingAdapter>
   );

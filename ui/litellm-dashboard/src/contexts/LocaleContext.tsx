@@ -83,7 +83,8 @@ interface LocaleProviderProps {
 }
 
 export const LocaleProvider: React.FC<LocaleProviderProps> = ({ children, locale: forcedLocale }) => {
-  const locale = forcedLocale ?? useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const storedLocale = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const locale = forcedLocale ?? storedLocale;
 
   useEffect(() => {
     document.documentElement.lang = locale;
