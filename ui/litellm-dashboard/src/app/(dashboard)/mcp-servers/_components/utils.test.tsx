@@ -109,29 +109,29 @@ describe("getMaskedAndFullUrl", () => {
 
 describe("validateMCPServerUrl", () => {
   it("should resolve for a valid HTTP URL", async () => {
-    await expect(validateMCPServerUrl("https://example.com/path")).resolves.toBeUndefined();
+    await expect(validateMCPServerUrl("https://example.com/path", "bad url")).resolves.toBeUndefined();
   });
 
   it("should resolve for an empty string", async () => {
-    await expect(validateMCPServerUrl("")).resolves.toBeUndefined();
+    await expect(validateMCPServerUrl("", "bad url")).resolves.toBeUndefined();
   });
 
-  it("should reject for an invalid URL", async () => {
-    await expect(validateMCPServerUrl("not-a-url")).rejects.toBeDefined();
+  it("should reject with the caller-provided message for an invalid URL", async () => {
+    await expect(validateMCPServerUrl("not-a-url", "无效的 URL")).rejects.toBe("无效的 URL");
   });
 });
 
 describe("validateMCPServerName", () => {
   it("should resolve for a valid underscore name", async () => {
-    await expect(validateMCPServerName("my_server")).resolves.toBeUndefined();
+    await expect(validateMCPServerName("my_server", "bad name")).resolves.toBeUndefined();
   });
 
-  it("should reject names containing hyphens", async () => {
-    await expect(validateMCPServerName("my-server")).rejects.toBeDefined();
+  it("should reject names containing hyphens with the caller-provided message", async () => {
+    await expect(validateMCPServerName("my-server", "无效的名称")).rejects.toBe("无效的名称");
   });
 
   it("should reject names containing spaces", async () => {
-    await expect(validateMCPServerName("my server")).rejects.toBeDefined();
+    await expect(validateMCPServerName("my server", "无效的名称")).rejects.toBe("无效的名称");
   });
 });
 

@@ -100,28 +100,25 @@ export const getMaskedAndFullUrl = (url: string): { maskedUrl: string; hasToken:
   };
 };
 
-// Validation utilities for MCP server forms
-export const validateMCPServerUrl = (value: string) => {
+// Validation utilities for MCP server forms. Callers pass the localized
+// rejection message so this module stays free of translation hooks.
+export const validateMCPServerUrl = (value: string, invalidMessage: string) => {
   if (!value) return Promise.resolve();
   // More flexible URL validation that allows Kubernetes service names and various URL formats
   const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
-  return urlPattern.test(value)
-    ? Promise.resolve()
-    : Promise.reject("Please enter a valid URL (e.g., http://service-name.domain:1234/path or https://example.com)");
+  return urlPattern.test(value) ? Promise.resolve() : Promise.reject(invalidMessage);
 };
 
-export const validateMCPServerName = (value: string) => {
+export const validateMCPServerName = (value: string, invalidMessage: string) => {
   return value && (value.includes("-") || value.includes(" "))
-    ? Promise.reject("Cannot contain '-' (hyphen) or spaces. Please use '_' (underscore) instead.")
+    ? Promise.reject(invalidMessage)
     : Promise.resolve();
 };
 
 export const TOOL_DISPLAY_NAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
 
-export const validateToolDisplayName = (value: string) => {
-  return value && !TOOL_DISPLAY_NAME_PATTERN.test(value)
-    ? Promise.reject("Only letters, digits, underscores, and hyphens are allowed (no spaces).")
-    : Promise.resolve();
+export const validateToolDisplayName = (value: string, invalidMessage: string) => {
+  return value && !TOOL_DISPLAY_NAME_PATTERN.test(value) ? Promise.reject(invalidMessage) : Promise.resolve();
 };
 
 // Normalize the env_vars form list into the payload shape the backend expects.

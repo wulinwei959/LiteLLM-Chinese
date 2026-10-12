@@ -3232,7 +3232,11 @@
     "transformFailed": "Failed to transform request"
   },
   "mcpServers": {
-    "title": "MCP Servers",
+    "validation": {
+        "invalidUrl": "Please enter a valid URL (e.g., http://service-name.domain:1234/path or https://example.com)",
+        "invalidName": "Cannot contain '-' (hyphen) or spaces. Please use '_' (underscore) instead.",
+        "invalidToolDisplayName": "Only letters, digits, underscores, and hyphens are allowed (no spaces)."
+    },    "title": "MCP Servers",
     "subtitle": "Configure and manage your MCP servers",
     "myConnections": "My Connections",
     "importFromJson": "Import from JSON",

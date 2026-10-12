@@ -830,7 +830,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                 <MountedFormField
                   label={t("edit.serverName")}
                   name="server_name"
-                  rules={{ validate: validatorRules({ validator: (_, value) => validateMCPServerName(value) }) }}
+                  rules={{ validate: validatorRules({ validator: (_, value) => validateMCPServerName(value, t("validation.invalidName")) }) }}
                 >
                   {(control) => (
                     <Input
@@ -842,7 +842,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                 <MountedFormField
                   label="Alias"
                   name="alias"
-                  rules={{ validate: validatorRules({ validator: (_, value) => validateMCPServerName(value) }) }}
+                  rules={{ validate: validatorRules({ validator: (_, value) => validateMCPServerName(value, t("validation.invalidName")) }) }}
                 >
                   {(control) => (
                     <Input
@@ -899,7 +899,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                     rules={{
                       validate: {
                         required: requiredRule(t("edit.urlRequired")),
-                        ...validatorRules({ validator: (_, value) => validateMCPServerUrl(value) }),
+                        ...validatorRules({ validator: (_, value) => validateMCPServerUrl(value, t("validation.invalidUrl")) }),
                       },
                     }}
                   >

@@ -676,7 +676,7 @@ const CreateMCPServer: React.FC<CreateMCPServerProps> = ({
                       </span>
                     }
                     name="server_name"
-                    rules={{ validate: validatorRules({ validator: (_, value) => validateMCPServerName(value) }) }}
+                    rules={{ validate: validatorRules({ validator: (_, value) => validateMCPServerName(value, t("validation.invalidName")) }) }}
                   >
                     {(control) => (
                       <Input
@@ -697,7 +697,7 @@ const CreateMCPServer: React.FC<CreateMCPServerProps> = ({
                       </span>
                     }
                     name="alias"
-                    rules={{ validate: validatorRules({ validator: (_, value) => validateMCPServerName(value) }) }}
+                    rules={{ validate: validatorRules({ validator: (_, value) => validateMCPServerName(value, t("validation.invalidName")) }) }}
                   >
                     {(control) => (
                       <Input
@@ -775,7 +775,7 @@ const CreateMCPServer: React.FC<CreateMCPServerProps> = ({
                       rules={{
                         validate: {
                           required: requiredRule(t("create.urlRequired")),
-                          ...validatorRules({ validator: (_, value) => validateMCPServerUrl(value) }),
+                          ...validatorRules({ validator: (_, value) => validateMCPServerUrl(value, t("validation.invalidUrl")) }),
                         },
                       }}
                     >

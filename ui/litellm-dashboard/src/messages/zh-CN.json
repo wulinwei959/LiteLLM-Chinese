@@ -3232,7 +3232,11 @@
     "transformFailed": "转换请求失败"
   },
   "mcpServers": {
-    "title": "MCP 服务器",
+    "validation": {
+        "invalidUrl": "请输入有效的 URL（例如 http://service-name.domain:1234/path 或 https://example.com）",
+        "invalidName": "不能包含 '-'（连字符）或空格，请使用 '_'（下划线）",
+        "invalidToolDisplayName": "仅允许字母、数字、下划线和连字符（不允许空格）"
+    },    "title": "MCP 服务器",
     "subtitle": "配置和管理你的 MCP 服务器",
     "myConnections": "我的连接",
     "importFromJson": "从 JSON 导入",
