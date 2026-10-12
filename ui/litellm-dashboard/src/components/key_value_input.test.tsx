@@ -23,8 +23,8 @@ describe("KeyValueInput", () => {
   it("renders existing header pairs", () => {
     renderWithProviders(<KeyValueInput value={[["Authorization", "Bearer token"]]} />);
 
-    expect(screen.getByPlaceholderText("Header Name")).toHaveValue("Authorization");
-    expect(screen.getByPlaceholderText("Header Value")).toHaveValue("Bearer token");
+    expect(screen.getByPlaceholderText("请求头名称")).toHaveValue("Authorization");
+    expect(screen.getByPlaceholderText("请求头的值")).toHaveValue("Bearer token");
   });
 
   it("adds a header row and emits edits", async () => {
@@ -32,35 +32,35 @@ describe("KeyValueInput", () => {
     const onChange = vi.fn();
     renderWithProviders(<ControlledKeyValueInput onChange={onChange} />);
 
-    await user.click(screen.getByRole("button", { name: /Add Header$/ }));
-    fireEvent.change(screen.getByPlaceholderText("Header Name"), { target: { value: "X-Trace" } });
-    fireEvent.change(screen.getByPlaceholderText("Header Value"), { target: { value: "enabled" } });
+    await user.click(screen.getByRole("button", { name: /添加请求头$/ }));
+    fireEvent.change(screen.getByPlaceholderText("请求头名称"), { target: { value: "X-Trace" } });
+    fireEvent.change(screen.getByPlaceholderText("请求头的值"), { target: { value: "enabled" } });
 
     expect(onChange).toHaveBeenLastCalledWith([["X-Trace", "enabled"]]);
   });
 
   it("renders no rows once the value prop goes back to empty", () => {
     const { rerender } = renderWithProviders(<KeyValueInput value={[["Authorization", "Bearer token"]]} />);
-    expect(screen.getByPlaceholderText("Header Name")).toHaveValue("Authorization");
+    expect(screen.getByPlaceholderText("请求头名称")).toHaveValue("Authorization");
 
     rerender(<KeyValueInput value={[]} />);
 
-    expect(screen.queryByPlaceholderText("Header Name")).not.toBeInTheDocument();
-    expect(screen.queryByPlaceholderText("Header Value")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("请求头名称")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("请求头的值")).not.toBeInTheDocument();
   });
 
   it("keeps a half-typed row editable while its name is still empty", async () => {
     const user = userEvent.setup();
     renderWithProviders(<ControlledKeyValueInput />);
 
-    await user.click(screen.getByRole("button", { name: /Add Header$/ }));
-    await user.click(screen.getByRole("button", { name: /Add Header$/ }));
-    expect(screen.getAllByPlaceholderText("Header Name")).toHaveLength(2);
+    await user.click(screen.getByRole("button", { name: /添加请求头$/ }));
+    await user.click(screen.getByRole("button", { name: /添加请求头$/ }));
+    expect(screen.getAllByPlaceholderText("请求头名称")).toHaveLength(2);
 
-    fireEvent.change(screen.getAllByPlaceholderText("Header Value")[1], { target: { value: "pending" } });
+    fireEvent.change(screen.getAllByPlaceholderText("请求头的值")[1], { target: { value: "pending" } });
 
-    expect(screen.getAllByPlaceholderText("Header Name")).toHaveLength(2);
-    expect(screen.getAllByPlaceholderText("Header Value")[1]).toHaveValue("pending");
+    expect(screen.getAllByPlaceholderText("请求头名称")).toHaveLength(2);
+    expect(screen.getAllByPlaceholderText("请求头的值")[1]).toHaveValue("pending");
   });
 
   it("removes only the row whose remove button is clicked", async () => {
@@ -76,7 +76,7 @@ describe("KeyValueInput", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "Remove header 1" }));
+    await user.click(screen.getByRole("button", { name: "移除请求头 1" }));
 
     expect(onChange).toHaveBeenLastCalledWith([["b", "2"]]);
   });

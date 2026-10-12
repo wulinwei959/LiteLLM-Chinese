@@ -20,14 +20,14 @@ const csvFile = () =>
 const openUploadStep = async () => {
   const user = userEvent.setup();
   render(<BulkCreateUsersButton accessToken="test-token" teams={[]} possibleUIRoles={null} />);
-  await user.click(screen.getByText("+ Bulk Invite Users"));
+  await user.click(screen.getByText("+ 批量邀请用户"));
   return user;
 };
 
 describe("BulkCreateUsersButton", () => {
   it("should render", () => {
     render(<BulkCreateUsersButton accessToken="test-token" teams={[]} possibleUIRoles={null} />);
-    expect(screen.getByText("+ Bulk Invite Users")).toBeInTheDocument();
+    expect(screen.getByText("+ 批量邀请用户")).toBeInTheDocument();
   });
 
   it("parses a CSV chosen through the file input", async () => {

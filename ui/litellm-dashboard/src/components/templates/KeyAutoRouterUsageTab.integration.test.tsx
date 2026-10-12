@@ -94,9 +94,9 @@ describe("KeyAutoRouterUsageTab", () => {
     expect(screen.getByText("($62.50 / 1K turns)")).toBeInTheDocument();
     expect(screen.getByText("Estimated spend at highest-tier model")).toBeInTheDocument();
     expect(screen.getByText("$10.00")).toBeInTheDocument();
-    expect(screen.getByText("Auto-router prompt caching")).toBeInTheDocument();
+    expect(screen.getByText("自动路由提示缓存")).toBeInTheDocument();
     expect(screen.getAllByText("50.0%").length).toBeGreaterThan(0);
-    expect(screen.getByText("All auto-routers")).toBeInTheDocument();
+    expect(screen.getByText("全部自动路由")).toBeInTheDocument();
 
     const benchmarkUrl = new URL(requestedUrls().find((url) => url.includes("/auto_router/benchmarks")) ?? "");
     expect(benchmarkUrl.searchParams.get("api_key")).toBe("key-hash-1");

@@ -246,11 +246,11 @@ describe("DataTable pagination", () => {
     renderWithProviders(<DataTable data={fivePeople} columns={nameCellColumns} paginationMode="client" pageSizeOptions={[2]} />);
 
     expect(names()).toEqual(["P0", "P1"]);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-2 of 5");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-2 条，共 5 条");
 
     await user.click(screen.getByTestId("pagination-next"));
     expect(names()).toEqual(["P2", "P3"]);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 3-4 of 5");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 3-4 条，共 5 条");
   });
 
   it("server mode shows X-Y of Z from rowCount and does NOT slice the given rows", async () => {
@@ -269,7 +269,7 @@ describe("DataTable pagination", () => {
     );
 
     expect(names()).toEqual(["P10", "P11", "P12"]);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 11-20 of 25");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 11-20 条，共 25 条");
 
     await user.click(screen.getByTestId("pagination-next"));
     expect(onPaginationChange).toHaveBeenCalledTimes(1);
@@ -316,8 +316,8 @@ describe("DataTable pagination", () => {
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith({ pageIndex: 1, pageSize: 10 }));
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 11-15 of 15");
-    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 11-15 条，共 15 条");
+    expect(screen.getByText("第 2 页，共 2 页")).toBeInTheDocument();
     expect(screen.getByTestId("pagination-next")).toBeDisabled();
   });
 
@@ -327,8 +327,8 @@ describe("DataTable pagination", () => {
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith({ pageIndex: 0, pageSize: 10 }));
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("No results");
-    expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("暂无结果");
+    expect(screen.getByText("第 1 页，共 1 页")).toBeInTheDocument();
     expect(screen.getByTestId("pagination-first")).toBeDisabled();
     expect(screen.getByTestId("pagination-prev")).toBeDisabled();
   });
@@ -337,7 +337,7 @@ describe("DataTable pagination", () => {
     const onChange = vi.fn();
     const { rerender } = renderWithProviders(<ServerPageHarness rowCount={0} isLoading initialPageIndex={2} onChange={onChange} />);
 
-    expect(screen.getByText("Page 3 of 1")).toBeInTheDocument();
+    expect(screen.getByText("第 3 页，共 1 页")).toBeInTheDocument();
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(onChange).not.toHaveBeenCalled();
 
@@ -345,14 +345,14 @@ describe("DataTable pagination", () => {
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith({ pageIndex: 1, pageSize: 10 }));
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+    expect(screen.getByText("第 2 页，共 2 页")).toBeInTheDocument();
   });
 
   it("server mode keeps a deep-linked page when the fetch failed, instead of snapping to page 1 on rowCount 0", async () => {
     const onChange = vi.fn();
     renderWithProviders(<ServerPageHarness rowCount={0} isError initialPageIndex={2} onChange={onChange} />);
 
-    expect(screen.getByText("Page 3 of 1")).toBeInTheDocument();
+    expect(screen.getByText("第 3 页，共 1 页")).toBeInTheDocument();
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(onChange).not.toHaveBeenCalled();
   });
@@ -441,7 +441,7 @@ describe("DataTable pagination", () => {
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith({ pageIndex: 1, pageSize: 10 }));
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+    expect(screen.getByText("第 2 页，共 2 页")).toBeInTheDocument();
   });
 });
 
