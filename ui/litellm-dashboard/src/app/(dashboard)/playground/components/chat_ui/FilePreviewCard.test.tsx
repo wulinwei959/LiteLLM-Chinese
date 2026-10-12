@@ -21,7 +21,7 @@ describe("FilePreviewCard", () => {
 
   it("should show 'Image' label for non-PDF files", () => {
     render(<FilePreviewCard file={makeFile("photo.png")} previewUrl="blob:http://localhost/abc" onRemove={vi.fn()} />);
-    expect(screen.getByText("Image")).toBeInTheDocument();
+    expect(screen.getByText("图片")).toBeInTheDocument();
   });
 
   it("should show 'PDF' label for PDF files", () => {
@@ -31,12 +31,12 @@ describe("FilePreviewCard", () => {
 
   it("should render an image preview when the file is not a PDF", () => {
     render(<FilePreviewCard file={makeFile("photo.png")} previewUrl="blob:http://localhost/abc" onRemove={vi.fn()} />);
-    expect(screen.getByAltText("Upload preview")).toBeInTheDocument();
+    expect(screen.getByAltText("上传预览")).toBeInTheDocument();
   });
 
   it("should not render an image preview when the file is a PDF", () => {
     render(<FilePreviewCard file={makeFile("doc.PDF")} previewUrl={null} onRemove={vi.fn()} />);
-    expect(screen.queryByAltText("Upload preview")).not.toBeInTheDocument();
+    expect(screen.queryByAltText("上传预览")).not.toBeInTheDocument();
   });
 
   it("should call onRemove when the remove button is clicked", async () => {
@@ -50,6 +50,6 @@ describe("FilePreviewCard", () => {
   it("should treat .PDF (uppercase) as a PDF file", () => {
     render(<FilePreviewCard file={makeFile("REPORT.PDF")} previewUrl={null} onRemove={vi.fn()} />);
     expect(screen.getByText("PDF")).toBeInTheDocument();
-    expect(screen.queryByAltText("Upload preview")).not.toBeInTheDocument();
+    expect(screen.queryByAltText("上传预览")).not.toBeInTheDocument();
   });
 });

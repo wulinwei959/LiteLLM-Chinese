@@ -750,7 +750,7 @@ describe("ChatUI", () => {
     await user.click(await screen.findByRole("option", { name: /Virtual Key|虚拟密钥/ }));
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/Virtual Key Source|虚拟密钥来源/)).toHaveTextContent("Virtual Key");
+      expect(screen.getByLabelText(/Virtual Key Source|虚拟密钥来源/)).toHaveTextContent("虚拟密钥");
     });
     expect(screen.getByLabelText(/Virtual Key Source|虚拟密钥来源/)).not.toHaveTextContent("custom");
   });

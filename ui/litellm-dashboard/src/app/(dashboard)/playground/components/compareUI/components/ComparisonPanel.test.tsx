@@ -87,7 +87,7 @@ const buttonWithIcon = (icon: string): HTMLButtonElement => {
 
 const openSettings = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.click(buttonWithIcon("settings"));
-  await screen.findByText("General Settings");
+  await screen.findByText("常规设置");
 };
 
 describe("ComparisonPanel", () => {
@@ -118,12 +118,12 @@ describe("ComparisonPanel", () => {
     const user = userEvent.setup();
     render(<ComparisonPanel {...mockProps} />);
 
-    expect(screen.queryByText("General Settings")).not.toBeInTheDocument();
+    expect(screen.queryByText("常规设置")).not.toBeInTheDocument();
 
     await openSettings(user);
 
-    expect(screen.getByText("General Settings")).toBeInTheDocument();
-    expect(screen.getByText("Advanced Settings")).toBeInTheDocument();
+    expect(screen.getByText("常规设置")).toBeInTheDocument();
+    expect(screen.getByText("高级设置")).toBeInTheDocument();
     expect(screen.getByTestId("tag-selector")).toBeInTheDocument();
     expect(screen.getByTestId("vector-store-selector")).toBeInTheDocument();
     expect(screen.getByTestId("guardrail-selector")).toBeInTheDocument();
@@ -135,9 +135,9 @@ describe("ComparisonPanel", () => {
 
     await openSettings(user);
 
-    expect(screen.getByText("Temperature")).toBeInTheDocument();
+    expect(screen.getByText("温度")).toBeInTheDocument();
     expect(screen.getByText("1.00")).toBeInTheDocument();
-    expect(screen.getByText("Max Tokens")).toBeInTheDocument();
+    expect(screen.getByText("最大 Token 数")).toBeInTheDocument();
     expect(screen.getByText("2048")).toBeInTheDocument();
 
     const ranges = Array.from(document.querySelectorAll("[aria-valuenow]"));
@@ -150,7 +150,7 @@ describe("ComparisonPanel", () => {
     render(<ComparisonPanel {...mockProps} onUpdate={onUpdate} />);
 
     await openSettings(user);
-    await user.click(screen.getByRole("checkbox", { name: /Sync Settings Across Models/i }));
+    await user.click(screen.getByRole("checkbox", { name: /跨模型同步设置/ }));
 
     await waitFor(() => expect(onUpdate).toHaveBeenCalled());
     const [updates, options] = onUpdate.mock.calls[0];
@@ -174,7 +174,7 @@ describe("ComparisonPanel", () => {
     );
 
     await openSettings(user);
-    await user.click(screen.getByRole("checkbox", { name: /Sync Settings Across Models/i }));
+    await user.click(screen.getByRole("checkbox", { name: /跨模型同步设置/ }));
 
     await waitFor(() => expect(onUpdate).toHaveBeenCalled());
     expect(onUpdate.mock.calls[0][0]).toEqual({ applyAcrossModels: false });
@@ -186,7 +186,7 @@ describe("ComparisonPanel", () => {
     render(<ComparisonPanel {...mockProps} onUpdate={onUpdate} />);
 
     await openSettings(user);
-    await user.click(screen.getByRole("checkbox", { name: /Use Advanced Parameters/i }));
+    await user.click(screen.getByRole("checkbox", { name: /使用高级参数/ }));
 
     await waitFor(() => expect(onUpdate).toHaveBeenCalled());
     expect(onUpdate.mock.calls[0][0]).toEqual({ useAdvancedParams: true });
@@ -205,7 +205,7 @@ describe("ComparisonPanel", () => {
     );
 
     await openSettings(user);
-    await user.click(screen.getByRole("checkbox", { name: /Use Advanced Parameters/i }));
+    await user.click(screen.getByRole("checkbox", { name: /使用高级参数/ }));
 
     await waitFor(() => expect(onUpdate).toHaveBeenCalled());
     expect(onUpdate.mock.calls[0][1]).toEqual({ applyToAll: true, keysToApply: ["useAdvancedParams"] });

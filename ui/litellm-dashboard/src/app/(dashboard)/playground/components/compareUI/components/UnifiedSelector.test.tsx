@@ -45,7 +45,7 @@ describe("UnifiedSelector", () => {
   it("swaps the prompt for a loading message while options are in flight", () => {
     render(<UnifiedSelector value="" options={[]} loading config={CHAT} onChange={vi.fn()} />);
 
-    expect(promptIsVisible(`Loading ${CHAT.selectorLabel.toLowerCase()}s...`)).toBe(true);
+    expect(promptIsVisible(`正在加载 ${CHAT.selectorLabel.toLowerCase()}...`)).toBe(true);
   });
 
   it("reports the chosen option's value, not its label", async () => {
@@ -117,6 +117,6 @@ describe("UnifiedSelector", () => {
 
     await openList(user);
 
-    expect(await screen.findByText(`No ${CHAT.selectorLabel.toLowerCase()}s available`)).toBeInTheDocument();
+    expect(await screen.findByText(`无可用 ${CHAT.selectorLabel.toLowerCase()}`)).toBeInTheDocument();
   });
 });

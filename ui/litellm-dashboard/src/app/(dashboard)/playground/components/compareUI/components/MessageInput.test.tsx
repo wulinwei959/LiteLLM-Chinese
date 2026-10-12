@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { MessageInput } from "./MessageInput";
 
-const PLACEHOLDER = "Type your message... (Shift+Enter for new line)";
+const PLACEHOLDER = "输入消息... (Shift+Enter 换行)";
 
 describe("MessageInput", () => {
   it("renders a message box and a send control", () => {

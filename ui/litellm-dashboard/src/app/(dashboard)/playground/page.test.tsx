@@ -63,7 +63,7 @@ describe("PlaygroundPage role guard", () => {
     renderWithProviders(<PlaygroundPage />);
 
     expect(screen.queryByText("访问被拒绝")).not.toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Chat" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "聊天" })).toBeInTheDocument();
     expect(screen.getByTestId("chat-ui")).toBeInTheDocument();
   });
 });
@@ -72,20 +72,20 @@ describe("PlaygroundPage ?tab= deep link", () => {
   it("opens on Chat when the URL has no tab", () => {
     renderWithProviders(<PlaygroundPage />);
 
-    expect(screen.getByRole("tab", { name: "Chat" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "聊天" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("activates the tab named in ?tab=", () => {
     renderWithProviders(<PlaygroundPage />, { searchParams: { tab: "compare" } });
 
-    expect(screen.getByRole("tab", { name: "Compare" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: "Chat" })).toHaveAttribute("aria-selected", "false");
+    expect(screen.getByRole("tab", { name: "对比" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "聊天" })).toHaveAttribute("aria-selected", "false");
   });
 
   it("falls back to Chat when ?tab= is not a playground tab", () => {
     renderWithProviders(<PlaygroundPage />, { searchParams: { tab: "settings" } });
 
-    expect(screen.getByRole("tab", { name: "Chat" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "聊天" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("clicking a tab writes ?tab= with history replace", async () => {
@@ -93,9 +93,9 @@ describe("PlaygroundPage ?tab= deep link", () => {
     const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
     renderWithProviders(<PlaygroundPage />, { onUrlUpdate });
 
-    await user.click(screen.getByRole("tab", { name: "Compliance" }));
+    await user.click(screen.getByRole("tab", { name: "合规" }));
 
-    expect(await screen.findByRole("tab", { name: "Compliance", selected: true })).toBeInTheDocument();
+    expect(await screen.findByRole("tab", { name: "合规", selected: true })).toBeInTheDocument();
     await waitFor(() => expect(lastUrlUpdate(onUrlUpdate)?.searchParams.get("tab")).toBe("compliance"));
     expect(lastUrlUpdate(onUrlUpdate)?.options.history).toBe("replace");
   });

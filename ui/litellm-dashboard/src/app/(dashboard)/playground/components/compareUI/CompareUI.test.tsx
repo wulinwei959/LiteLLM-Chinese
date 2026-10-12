@@ -107,7 +107,7 @@ describe("CompareUI", () => {
     let comparisonPanels = container.querySelectorAll('[data-testid^="comparison-panel-"]');
     expect(comparisonPanels).toHaveLength(2);
 
-    await user.click(screen.getByRole("button", { name: /Add Comparison/i }));
+    await user.click(screen.getByRole("button", { name: /添加对比/ }));
 
     // Wait for the new comparison panel to be added (should have 3 total now)
     await waitFor(() => {

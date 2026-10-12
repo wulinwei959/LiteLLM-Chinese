@@ -66,7 +66,7 @@ describe("MessageDisplay", () => {
       },
     ];
     render(<MessageDisplay messages={messages} isLoading={false} />);
-    expect(screen.getByText("You")).toBeInTheDocument();
+    expect(screen.getByText("你")).toBeInTheDocument();
     expect(screen.getByText("What is 2+2?")).toBeInTheDocument();
     expect(screen.getByText("gpt-4")).toBeInTheDocument();
     expect(screen.getByText("calculator")).toBeInTheDocument();

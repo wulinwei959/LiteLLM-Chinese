@@ -25,7 +25,7 @@ describe("CodeInterpreterOutput", () => {
   it("should render", () => {
     render(<CodeInterpreterOutput code="print('hello')" accessToken="test-token" />);
 
-    expect(screen.getByText("Python Code Executed")).toBeInTheDocument();
+    expect(screen.getByText("已执行 Python 代码")).toBeInTheDocument();
   });
 
   it("should display code in syntax highlighter", async () => {
@@ -33,7 +33,7 @@ describe("CodeInterpreterOutput", () => {
     const code = "print('hello world')";
     const { container } = render(<CodeInterpreterOutput code={code} accessToken="test-token" />);
 
-    expect(screen.getByText("Python Code Executed")).toBeInTheDocument();
+    expect(screen.getByText("已执行 Python 代码")).toBeInTheDocument();
 
     const collapseHeader = screen.getByRole("button");
     await user.click(collapseHeader);
@@ -123,12 +123,12 @@ describe("CodeInterpreterOutput", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Loading image...")).toBeInTheDocument();
+      expect(screen.getByText("正在加载图片...")).toBeInTheDocument();
     });
 
     resolveBlob!(mockBlob);
     await waitFor(() => {
-      expect(screen.queryByText("Loading image...")).not.toBeInTheDocument();
+      expect(screen.queryByText("正在加载图片...")).not.toBeInTheDocument();
     });
   });
 
@@ -169,7 +169,7 @@ describe("CodeInterpreterOutput", () => {
       expect(screen.getByText("chart.png")).toBeInTheDocument();
     });
 
-    const downloadButton = screen.getByText("Download");
+    const downloadButton = screen.getByText("下载");
     await user.click(downloadButton);
 
     await waitFor(() => {
