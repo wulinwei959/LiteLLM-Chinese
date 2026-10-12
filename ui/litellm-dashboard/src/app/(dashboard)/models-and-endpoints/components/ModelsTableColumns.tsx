@@ -1,3 +1,4 @@
+import type { ModelsTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 "use client";
 
@@ -261,6 +262,7 @@ interface ModelRowActionsProps {
   isPausing: boolean;
   onDeleteClick?: (modelId: string) => void;
   onTogglePauseClick?: (modelId: string, blocked: boolean) => void | Promise<void>;
+  t: ModelsTranslator;
 }
 
 function ModelRowActions({
@@ -271,6 +273,7 @@ function ModelRowActions({
   isPausing,
   onDeleteClick,
   onTogglePauseClick,
+  t,
 }: ModelRowActionsProps) {
   const modelId = model.model_info?.id;
   const isConfigModel = !model.model_info?.db_model;
@@ -358,6 +361,7 @@ export interface ModelsTableColumnDeps {
   onDeleteClick?: (modelId: string) => void;
   onTogglePauseClick?: (modelId: string, blocked: boolean) => void | Promise<void>;
   pausingModelId?: string | null;
+  t: ModelsTranslator;
 }
 
 export const getModelsTableColumns = ({
@@ -369,6 +373,7 @@ export const getModelsTableColumns = ({
   onDeleteClick,
   onTogglePauseClick,
   pausingModelId,
+  t,
 }: ModelsTableColumnDeps): ColumnDef<ModelData>[] => [
   {
     id: MODEL_ID_COLUMN_ID,
@@ -497,6 +502,7 @@ export const getModelsTableColumns = ({
         isPausing={pausingModelId === row.original.model_info?.id}
         onDeleteClick={onDeleteClick}
         onTogglePauseClick={onTogglePauseClick}
+        t={t}
       />
     ),
   },

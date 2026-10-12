@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
+import type { OrganizationsTranslator } from "@/lib/i18n/translators";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -75,6 +76,7 @@ export interface OrganizationsTableColumnsDeps {
   onOrganizationClick: (organizationId: string) => void;
   onEditClick: (organizationId: string) => void;
   onDeleteClick: (organizationId: string) => void;
+  t: OrganizationsTranslator;
 }
 
 export const getOrganizationsTableColumns = ({
@@ -82,6 +84,7 @@ export const getOrganizationsTableColumns = ({
   onOrganizationClick,
   onEditClick,
   onDeleteClick,
+  t,
 }: OrganizationsTableColumnsDeps): ColumnDef<Organization>[] => [
   {
     id: "organization_id",

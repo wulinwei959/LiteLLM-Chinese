@@ -1165,8 +1165,8 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
     }
     if (isDecisionModelProvider) {
       return [
-        { title: "Basic Info", optional: false },
-        { title: "Decision Model Configuration", optional: false },
+        { labelKey: "form.stepBasic", optional: false },
+        { labelKey: "form.stepDecisionModel", optional: false },
       ];
     }
     return [

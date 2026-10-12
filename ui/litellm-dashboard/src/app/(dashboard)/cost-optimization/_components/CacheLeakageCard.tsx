@@ -116,11 +116,12 @@ const CacheLeakageCard: React.FC<CacheLeakageCardProps> = ({ activity }) => {
 
   const subject = dimension === "model" ? t("leak.models") : t("leak.keys");
   const firstColumn = dimension === "model" ? t("leak.firstModel") : t("leak.firstKey");
-  const emptyNoun = dimension === "model" ? "model" : "key";
   const emptyMessage =
     dimension === "key" && keyLeakage.failed
-      ? "Could not load key usage for this range."
-      : `No ${emptyNoun} usage in this range.`;
+      ? t("leak.loadFailed")
+      : dimension === "key"
+        ? t("leak.emptyKey")
+        : t("leak.emptyModel");
 
   return (
     <TooltipProvider delay={300}>

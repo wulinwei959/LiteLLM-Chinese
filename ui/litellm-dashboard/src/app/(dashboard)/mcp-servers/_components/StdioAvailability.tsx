@@ -1,4 +1,5 @@
 import { type FC } from "react";
+import { useTranslations } from "next-intl";
 import { TriangleAlert } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
 import { SelectItem } from "@/components/ui/select";
@@ -12,19 +13,22 @@ export const STDIO_DISABLED_MESSAGE =
 export const useMcpStdioEnabled = (): boolean =>
   $api.useQuery("get", "/.well-known/litellm-ui-config").data?.mcp_stdio_enabled !== false;
 
-export const TransportSelectItems: FC<{ stdioEnabled: boolean }> = ({ stdioEnabled }) => (
-  <>
-    {TRANSPORT_ITEMS.map((item) => {
-      const disabled = item.value === TRANSPORT.STDIO && !stdioEnabled;
-      return (
-        <SelectItem key={item.value} value={item.value} disabled={disabled}>
-          {item.label}
-          {disabled && <SimpleTooltip content={STDIO_DISABLED_MESSAGE} className="pointer-events-auto" />}
-        </SelectItem>
-      );
-    })}
-  </>
-);
+export const TransportSelectItems: FC<{ stdioEnabled: boolean }> = ({ stdioEnabled }) => {
+  const t = useTranslations("mcpServers");
+  return (
+    <>
+      {TRANSPORT_ITEMS.map((item) => {
+        const disabled = item.value === TRANSPORT.STDIO && !stdioEnabled;
+        return (
+          <SelectItem key={item.value} value={item.value} disabled={disabled}>
+            {t(item.labelKey)}
+            {disabled && <SimpleTooltip content={STDIO_DISABLED_MESSAGE} className="pointer-events-auto" />}
+          </SelectItem>
+        );
+      })}
+    </>
+  );
+};
 
 export const StdioDisabledBanner: FC = () => (
   <Alert variant="warning" className="mb-4 rounded-lg">

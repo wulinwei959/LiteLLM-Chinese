@@ -1,5 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 
 import type { components } from "@/lib/http/schema";
 import type { KeySpendActivityRow } from "@/components/UsagePage/dailyActivityApi";
@@ -66,7 +68,7 @@ const dayWithModels = (date: string, models: Record<string, Partial<SpendMetrics
 });
 
 const renderWith = (results: DailyData[], overrides: Partial<DailyActivityRange> = {}) =>
-  render(
+  renderWithProviders(
     <CacheLeakageCard
       activity={{
         dateValue: {},
@@ -183,7 +185,7 @@ describe("CacheLeakageCard", () => {
     mockCacheLeakageKeysCall.mockRejectedValue(new Error("route unavailable"));
     renderWith([]);
 
-    expect(await screen.findByText("Could not load key usage for this range.")).toBeInTheDocument();
+    expect(await screen.findByText("无法加载该范围的密钥用量")).toBeInTheDocument();
     expect(screen.queryByText("该范围无密钥用量。")).not.toBeInTheDocument();
   });
 
@@ -191,6 +193,6 @@ describe("CacheLeakageCard", () => {
     mockCacheLeakageKeysCall.mockReturnValue(new Promise(() => {}));
     renderWith([]);
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(screen.getByText("加载中...")).toBeInTheDocument();
   });
 });

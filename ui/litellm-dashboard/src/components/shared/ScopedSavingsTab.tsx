@@ -25,12 +25,12 @@ import {
 import {
   useScopedDailyActivityRange,
   type ActivityDateRange,
-  type DailyActivityScope,
+  type ScopedActivityInput,
 } from "@/app/(dashboard)/cost-optimization/_components/useDailyActivityRange";
 
 interface ScopedSavingsTabProps {
   accessToken: string | null;
-  scope: DailyActivityScope;
+  scope: ScopedActivityInput;
   activity: ActivityDateRange;
   entityType: "key" | "user";
   scopeNote?: string;
@@ -38,7 +38,7 @@ interface ScopedSavingsTabProps {
 
 const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote }: ScopedSavingsTabProps) => {
   const t = useTranslations("costOptimization");
-  const { dateValue, onDateChange, results, loading, isFetchingMore, failed, cancelled } = useScopedDailyActivityRange(
+  const { dateValue, onDateChange, results, loading, failed } = useScopedDailyActivityRange(
     accessToken,
     scope,
     activity,
@@ -67,8 +67,8 @@ const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote 
     .filter(Boolean)
     .join(" · ");
 
-  const isLoading = loading || isFetchingMore;
-  const unavailable = failed || cancelled;
+  const isLoading = loading;
+  const unavailable = failed;
   const showResults = !isLoading && !unavailable;
   const hasRows = results.length > 0;
   const showEmpty = !unavailable && (isLoading || !hasRows);

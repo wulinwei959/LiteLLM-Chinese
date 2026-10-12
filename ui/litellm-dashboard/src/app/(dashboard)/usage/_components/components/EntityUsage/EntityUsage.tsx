@@ -318,25 +318,25 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         cell: ({ row }) => row.original.metadata.alias,
       },
       {
-        header: t("spend"),
+        header: "Spend",
         accessorKey: "metrics.spend",
         meta: { numeric: true },
         cell: ({ row }) => <MoneyCell value={row.original.metrics.spend} decimals={4} />,
       },
       {
-        header: t("provider.successful"),
+        header: "Successful",
         accessorKey: "metrics.successful_requests",
         meta: { numeric: true, className: "text-success" },
         cell: ({ row }) => row.original.metrics.successful_requests.toLocaleString(),
       },
       {
-        header: t("provider.failed"),
+        header: "Failed",
         accessorKey: "metrics.failed_requests",
         meta: { numeric: true, className: "text-destructive" },
         cell: ({ row }) => row.original.metrics.failed_requests.toLocaleString(),
       },
       {
-        header: t("provider.tokens"),
+        header: "Tokens",
         accessorKey: "metrics.total_tokens",
         meta: { numeric: true },
         cell: ({ row }) => row.original.metrics.total_tokens.toLocaleString(),
@@ -347,7 +347,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   const providerSpendColumns = useMemo<ColumnDef<ProviderSpendRow>[]>(
     () => [
       {
-        header: t("provider.provider"),
+        header: "Provider",
         accessorKey: "provider",
         cell: ({ row }) => (
           <div className="flex items-center space-x-2">
@@ -357,25 +357,25 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         ),
       },
       {
-        header: t("spend"),
+        header: "Spend",
         accessorKey: "spend",
         meta: { numeric: true },
         cell: ({ row }) => <MoneyCell value={row.original.spend} decimals={2} />,
       },
       {
-        header: t("provider.successful"),
+        header: "Successful",
         accessorKey: "successful_requests",
         meta: { numeric: true, className: "text-success" },
         cell: ({ row }) => row.original.successful_requests.toLocaleString(),
       },
       {
-        header: t("provider.failed"),
+        header: "Failed",
         accessorKey: "failed_requests",
         meta: { numeric: true, className: "text-destructive" },
         cell: ({ row }) => row.original.failed_requests.toLocaleString(),
       },
       {
-        header: t("provider.tokens"),
+        header: "Tokens",
         accessorKey: "tokens",
         meta: { numeric: true },
         cell: ({ row }) => row.original.tokens.toLocaleString(),
@@ -518,7 +518,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
                 <a
                   href="https://docs.litellm.ai/docs/proxy/enterprise#spend-tracking"
                   className="text-info hover:text-info/80 ml-1"
-                >{t(t(t("entity.here")))}</a>
+                >{t("here")}</a>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-6">
@@ -665,10 +665,10 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   );
 
   const tabs: readonly { key: string; label: string; content: ReactNode }[] = [
-    { key: "cost", label: t("tabs.cost"), content: costPanel },
+    { key: "cost", label: "Cost", content: costPanel },
     {
       key: "models",
-      label: entityType === "agent" ? "Request / Token Consumption" : t("tabs.models"),
+      label: entityType === "agent" ? "Request / Token Consumption" : "Model Activity",
       content: (
         <>
           <div className="flex justify-end mt-2 mb-4">
@@ -693,7 +693,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
       : []),
     {
       key: "keys",
-      label: t("tabs.keys"),
+      label: "Key Activity",
       content: (
         <KeyActivityPanel
           summary={summaryMetrics}
@@ -706,7 +706,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         />
       ),
     },
-    { key: "endpoints", label: t("tabs.endpoints"), content: <EndpointUsage userSpendData={spendData} /> },
+    { key: "endpoints", label: "Endpoint Activity", content: <EndpointUsage userSpendData={spendData} /> },
   ];
 
   return (

@@ -55,8 +55,6 @@ import GuardrailsSelect from "./GuardrailsSelect";
 import {
   type CallerEditAccess,
   parseTeamEditAccess,
-  TEAM_ADMIN_EDITING_DISABLED_DESCRIPTION,
-  TEAM_ADMIN_EDITING_DISABLED_TITLE,
   type TeamAdminSettingsChanges,
 } from "./teamAdminEditAccess";
 import TeamAdminSettingsForm from "./TeamAdminSettingsForm";
@@ -257,8 +255,8 @@ export const retainedMcpToolPermissions = (
   );
 };
 
-export const mcpUnresolvableSaveError = (reason: string): string =>
-  `Cannot save MCP tool permissions because ${reason}. Retry once the page has finished loading`;
+export const mcpUnresolvableSaveError = (reason: string, t: TeamsTranslator): string =>
+  t("infoMcpUnresolvableSaveError", { reason });
 
 export type TeamMemberBudgetSource = components["schemas"]["TeamMemberResetBudgetResponse"]["budget_source"];
 
@@ -678,7 +676,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
 
   const openSettingsEditor = (modelAliases: Record<string, string>) => {
     if (teamEditAccess.kind === "team_admin_disabled") {
-      toast.error(TEAM_ADMIN_EDITING_DISABLED_TITLE, { description: TEAM_ADMIN_EDITING_DISABLED_DESCRIPTION });
+      toast.error(t("adminEditDisabledTitle"), { description: t("adminEditDisabledDescription") });
       return;
     }
     setTeamModelAliases(modelAliases);
@@ -1136,9 +1134,9 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
       const mcpResolution: McpGrantResolution =
         mcpLookupFailure !== null
           ? { kind: "unresolvable", reason: mcpLookupFailure }
-          : await grantedMcpServerIds(mcpGrantInput);
+          : await grantedMcpServerIds(mcpGrantInput, t);
       if (mcpResolution.kind === "unresolvable" && Object.keys(submittedToolPermissions).length > 0) {
-        toast.fromError(mcpUnresolvableSaveError(mcpResolution.reason));
+        toast.fromError(mcpUnresolvableSaveError(mcpResolution.reason, t));
         return;
       }
       const mcpToolPermissions =
