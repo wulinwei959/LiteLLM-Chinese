@@ -80,9 +80,9 @@ describe("BudgetTable", () => {
   it("should open on the four columns the page has always shown, with reset and created off", () => {
     renderWithProviders(<BudgetTable {...defaultProps} list={makeList()} />);
     const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
-    expect(headers).toEqual(expect.arrayContaining(["Budget ID", "Max Budget", "TPM", "RPM"]));
-    expect(headers).not.toContain("Reset");
-    expect(headers).not.toContain("Created");
+    expect(headers).toEqual(expect.arrayContaining(["预算 ID", "最大预算", "TPM", "RPM"]));
+    expect(headers).not.toContain("重置");
+    expect(headers).not.toContain("创建时间");
   });
 
   it("should render the reset column with the friendly duration label once it is turned on", async () => {
@@ -139,7 +139,7 @@ describe("BudgetTable", () => {
     renderWithProviders(<BudgetTable {...defaultProps} list={makeList()} />);
     await showColumn(user, "budget_duration");
     const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
-    expect(headers).toContain("Reset");
+    expect(headers).toContain("重置");
     expect(screen.queryByTestId("sort-header-budget_duration")).not.toBeInTheDocument();
   });
 
@@ -156,7 +156,7 @@ describe("BudgetTable", () => {
     const list = makeList({ rows: [makeBudget(noLimits)] });
     renderWithProviders(<BudgetTable {...defaultProps} list={list} />);
     expect(screen.getAllByText("n/a")).toHaveLength(3);
-    expect(screen.getByText("Unlimited")).toBeInTheDocument();
+    expect(screen.getByText("无限制")).toBeInTheDocument();
   });
 
   it("should call onEditClick from the actions menu", async () => {
@@ -189,21 +189,21 @@ describe("BudgetTable", () => {
 
   it("should show the empty state when there are no budgets", () => {
     renderWithProviders(<BudgetTable {...defaultProps} list={makeList({ rows: [], rowCount: 0 })} />);
-    expect(screen.getByText("No budgets yet")).toBeInTheDocument();
+    expect(screen.getByText("暂无预算")).toBeInTheDocument();
   });
 
   it("should tell the user their search matched nothing rather than that no budgets exist", () => {
     const list = makeList({ rows: [], rowCount: 0, searchValue: "nope" });
     renderWithProviders(<BudgetTable {...defaultProps} list={list} />);
-    expect(screen.getByText("No matching budgets")).toBeInTheDocument();
+    expect(screen.getByText("无匹配的预算")).toBeInTheDocument();
   });
 
   it("should render an access-denied state for a 403 instead of an empty table", () => {
     const error = new ApiError("Only proxy admins can view budgets", 403, FORBIDDEN_PROBLEM);
     const list = makeList({ rows: [], rowCount: 0, error });
     const { container } = renderWithProviders(<BudgetTable {...defaultProps} list={list} />);
-    expect(screen.getByText("You do not have access to budgets")).toBeInTheDocument();
-    expect(screen.queryByText("No budgets yet")).not.toBeInTheDocument();
+    expect(screen.getByText("您无权访问预算")).toBeInTheDocument();
+    expect(screen.queryByText("暂无预算")).not.toBeInTheDocument();
     expect(container.querySelector(".lucide-shield-alert")).not.toBeNull();
   });
 
@@ -211,7 +211,7 @@ describe("BudgetTable", () => {
     const error = new ApiError("budget store unavailable", 500, null);
     const list = makeList({ rows: [], rowCount: 0, error });
     renderWithProviders(<BudgetTable {...defaultProps} list={list} />);
-    expect(screen.getByText("Could not load budgets")).toBeInTheDocument();
+    expect(screen.getByText("无法加载预算")).toBeInTheDocument();
     expect(screen.getByText("budget store unavailable")).toBeInTheDocument();
   });
 });
