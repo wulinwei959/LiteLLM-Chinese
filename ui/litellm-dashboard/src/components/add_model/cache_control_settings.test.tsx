@@ -24,7 +24,7 @@ describe("CacheControlInjectionPoints field hints", () => {
     const user = userEvent.setup();
     renderWithProviders(<CacheControlInjectionPoints value={ONE_POINT} onChange={vi.fn()} />);
 
-    await user.hover(screen.getByRole("button", { name: "角色 help" }));
+    await user.hover(screen.getByRole("button", { name: "角色 帮助" }));
 
     expect(await screen.findByText(ROLE_HINT)).toBeInTheDocument();
   });
@@ -33,7 +33,7 @@ describe("CacheControlInjectionPoints field hints", () => {
     const user = userEvent.setup();
     renderWithProviders(<CacheControlInjectionPoints value={ONE_POINT} onChange={vi.fn()} />);
 
-    await user.hover(screen.getByRole("button", { name: "索引 help" }));
+    await user.hover(screen.getByRole("button", { name: "索引 帮助" }));
 
     expect(await screen.findByText(INDEX_HINT)).toBeInTheDocument();
   });
@@ -42,7 +42,7 @@ describe("CacheControlInjectionPoints field hints", () => {
     const user = userEvent.setup();
     renderWithProviders(<CacheControlInjectionPoints value={ONE_POINT} onChange={vi.fn()} />);
 
-    await tabTo(user, "角色 help");
+    await tabTo(user, "角色 帮助");
 
     expect(await screen.findByText(ROLE_HINT)).toBeInTheDocument();
   });
@@ -51,7 +51,7 @@ describe("CacheControlInjectionPoints field hints", () => {
     const user = userEvent.setup();
     renderWithProviders(<CacheControlInjectionPoints value={ONE_POINT} onChange={vi.fn()} />);
 
-    await tabTo(user, "索引 help");
+    await tabTo(user, "索引 帮助");
 
     expect(await screen.findByText(INDEX_HINT)).toBeInTheDocument();
   });
@@ -68,8 +68,8 @@ describe("CacheControlInjectionPoints field hints", () => {
       <CacheControlInjectionPoints value={[{ location: "message" }, { location: "message" }]} onChange={vi.fn()} />,
     );
 
-    expect(screen.getAllByRole("button", { name: "角色 help" })).toHaveLength(2);
-    expect(screen.getAllByRole("button", { name: "索引 help" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "角色 帮助" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "索引 帮助" })).toHaveLength(2);
   });
 
   it("still reports a typed index as a string through onChange", async () => {

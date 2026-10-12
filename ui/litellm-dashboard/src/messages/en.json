@@ -522,7 +522,8 @@
       "cacheControlRoleSystem": "System",
       "cacheControlRoleAssistant": "Assistant",
       "cacheControlSelectRole": "Select a role",
-      "cacheControlIndexPlaceholder": "Optional"
+      "cacheControlIndexPlaceholder": "Optional",
+      "cacheControlHelpAria": "{label} help"
     },
     "health": {
       "title": "Health Status",

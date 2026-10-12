@@ -49,7 +49,7 @@ const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = 
             render={
               <button
                 type="button"
-                aria-label={`${label} help`}
+                aria-label={t("cacheControlHelpAria", { label })}
                 className="ml-1 inline-flex cursor-help items-center rounded-sm text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             }

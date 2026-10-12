@@ -522,7 +522,8 @@
       "cacheControlRoleSystem": "系统",
       "cacheControlRoleAssistant": "助手",
       "cacheControlSelectRole": "选择角色",
-      "cacheControlIndexPlaceholder": "可选"
+      "cacheControlIndexPlaceholder": "可选",
+      "cacheControlHelpAria": "{label} 帮助"
     },
     "health": {
       "title": "健康状态",
