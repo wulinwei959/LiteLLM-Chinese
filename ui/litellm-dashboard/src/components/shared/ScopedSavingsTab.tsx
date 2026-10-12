@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { AreaChart, BarChart, CustomLegend } from "@/components/shared/charts";
 import AdvancedDatePicker from "@/components/shared/advanced_date_picker";
@@ -36,6 +37,7 @@ interface ScopedSavingsTabProps {
 }
 
 const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote }: ScopedSavingsTabProps) => {
+  const t = useTranslations("costOptimization");
   const { dateValue, onDateChange, results, loading, isFetchingMore, failed, cancelled } = useScopedDailyActivityRange(
     accessToken,
     scope,
@@ -54,10 +56,12 @@ const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote 
     return withStartAnchor(toCumulative(perInterval), startLabel);
   }, [accumulation, perInterval, startTime]);
 
-  const intervalLabel = "Per day";
+  const intervalLabel = t("overview.perDayTab");
   const rangeLabel = formatRangeLabel(startTime, endTime);
   const savingsSubtitle = [
-    accumulation === "cumulative" ? "Running total saved" : `Saved ${intervalLabel.toLowerCase()}`,
+    accumulation === "cumulative"
+      ? t("overview.runningTotal")
+      : t("overview.savedInterval", { interval: t("overview.perDay") }),
     rangeLabel && `${rangeLabel} (UTC)`,
   ]
     .filter(Boolean)
@@ -69,6 +73,7 @@ const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote 
   const hasRows = results.length > 0;
   const showEmpty = !unavailable && (isLoading || !hasRows);
   const showChart = showResults && hasRows;
+  const noUsageMessageKey = entityType === "key" ? "overview.noUsageKey" : "overview.noUsageUser";
   const chartProps = {
     data: overTime,
     index: "date",
@@ -81,7 +86,7 @@ const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote 
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-wrap items-center justify-end gap-4">
-        <span className="text-sm text-muted-foreground">Spend is bucketed by UTC day</span>
+        <span className="text-sm text-muted-foreground">{t("overview.bucketNote")}</span>
         <AdvancedDatePicker value={dateValue} onValueChange={onDateChange} />
       </div>
 
@@ -93,20 +98,20 @@ const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote 
 
       {unavailable && (
         <p role="alert" className="text-sm text-muted-foreground">
-          Savings are unavailable for this range. Try another date range or reopen this tab.
+          {t("overview.unavailable")}
         </p>
       )}
       {showResults && <SavingsTiles results={results} isLoading={false} />}
 
       <Card>
         <CardHeader>
-          <CardTitle>Savings</CardTitle>
+          <CardTitle>{t("overview.savings")}</CardTitle>
           <CardDescription>{savingsSubtitle}</CardDescription>
           <CardAction className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
             <CustomLegend categories={SAVINGS_SERIES} colors={SAVINGS_COLORS} />
             <Tabs value={accumulation} onValueChange={(value) => setAccumulation(value as SavingsAccumulation)}>
               <TabsList>
-                <TabsTrigger value="cumulative">Cumulative</TabsTrigger>
+                <TabsTrigger value="cumulative">{t("overview.cumulative")}</TabsTrigger>
                 <TabsTrigger value="per-interval">{intervalLabel}</TabsTrigger>
               </TabsList>
             </Tabs>
@@ -115,7 +120,7 @@ const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote 
         <CardContent>
           {showEmpty && (
             <p className="py-12 text-center text-sm text-muted-foreground" data-testid={`${entityType}-savings-empty`}>
-              {isLoading ? "Loading savings..." : `No usage recorded for this ${entityType} in this range.`}
+              {isLoading ? t("overview.loadingSavings") : t(noUsageMessageKey)}
             </p>
           )}
           {showChart &&

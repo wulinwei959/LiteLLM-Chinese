@@ -376,7 +376,8 @@
     "statusBlockedTooltip": "Blocked. Requests using this key will be rejected with 401.",
     "statusExpiredTooltip": "This key has passed its expiry date.",
     "statusActiveTooltip": "This key is not blocked and has not expired.",
-    "createNewKey": "+ Create New Key"
+    "createNewKey": "+ Create New Key",
+    "savingsScopeNote": "Showing your own requests on this key. A key shared across a team will have spend from other members that is not counted here."
   },
   "models": {
     "title": "Model Management",
@@ -4543,7 +4544,11 @@
       "loading": "Loading...",
       "noToolUsage": "No tool usage in this range.",
       "totalByTool": "Total by tool",
-      "dailyByTool": "Daily spend by tool"
+      "dailyByTool": "Daily spend by tool",
+      "loadingSavings": "Loading savings...",
+      "noUsageKey": "No usage recorded for this key in this range.",
+      "noUsageUser": "No usage recorded for this user in this range.",
+      "unavailable": "Savings are unavailable for this range. Try another date range or reopen this tab."
     },
     "autoRouter": {
       "bucket": "Bucket",

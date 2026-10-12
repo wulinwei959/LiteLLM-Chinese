@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import ScopedSavingsTab from "@/components/shared/ScopedSavingsTab";
 import { hasProxyWideSpendView, spendScopeUserId } from "@/utils/roles";
 import type { ActivityDateRange } from "@/app/(dashboard)/cost-optimization/_components/useDailyActivityRange";
@@ -12,18 +14,17 @@ interface KeySavingsTabProps {
   activity: ActivityDateRange;
 }
 
-const KeySavingsTab = ({ accessToken, keyToken, userId, userRole, activity }: KeySavingsTabProps) => (
-  <ScopedSavingsTab
-    accessToken={accessToken}
-    scope={{ userId: spendScopeUserId(userRole, userId), apiKey: keyToken }}
-    activity={activity}
-    entityType="key"
-    scopeNote={
-      hasProxyWideSpendView(userRole)
-        ? undefined
-        : "Showing your own requests on this key. A key shared across a team will have spend from other members that is not counted here."
-    }
-  />
-);
+const KeySavingsTab = ({ accessToken, keyToken, userId, userRole, activity }: KeySavingsTabProps) => {
+  const t = useTranslations("virtualKeys");
+  return (
+    <ScopedSavingsTab
+      accessToken={accessToken}
+      scope={{ userId: spendScopeUserId(userRole, userId), apiKey: keyToken }}
+      activity={activity}
+      entityType="key"
+      scopeNote={hasProxyWideSpendView(userRole) ? undefined : t("savingsScopeNote")}
+    />
+  );
+};
 
 export default KeySavingsTab;

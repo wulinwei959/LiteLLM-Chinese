@@ -376,7 +376,8 @@
     "statusBlockedTooltip": "已封禁。使用此密钥的请求会被以 401 拒绝。",
     "statusExpiredTooltip": "此密钥已过有效期。",
     "statusActiveTooltip": "此密钥未被封禁且未过期。",
-    "createNewKey": "+ 创建新密钥"
+    "createNewKey": "+ 创建新密钥",
+    "savingsScopeNote": "仅显示你在此密钥上的请求。团队共用的密钥会包含其他成员的支出，这部分不计入此处。"
   },
   "models": {
     "title": "模型管理",
@@ -4543,7 +4544,11 @@
       "loading": "加载中...",
       "noToolUsage": "该范围无工具用量。",
       "totalByTool": "按工具总计",
-      "dailyByTool": "按工具每日支出"
+      "dailyByTool": "按工具每日支出",
+      "loadingSavings": "正在加载节省数据...",
+      "noUsageKey": "该范围无此密钥的用量记录。",
+      "noUsageUser": "该范围无此用户的用量记录。",
+      "unavailable": "该范围无法获取节省数据，请更换日期范围或重新打开此标签页。"
     },
     "autoRouter": {
       "bucket": "分桶",

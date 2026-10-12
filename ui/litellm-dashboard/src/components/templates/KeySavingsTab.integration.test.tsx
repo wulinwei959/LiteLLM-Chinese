@@ -110,12 +110,12 @@ describe("KeySavingsTab", () => {
     scopedRange().mockReturnValue(mockActivity());
 
     const { unmount } = renderTab();
-    expect(screen.getByTestId("key-savings-empty")).toHaveTextContent("No usage recorded for this key");
+    expect(screen.getByTestId("key-savings-empty")).toHaveTextContent("该范围无此密钥的用量记录");
     unmount();
 
     scopedRange().mockReturnValue(mockActivity({ loading: true }));
     renderTab();
-    expect(screen.getByTestId("key-savings-empty")).toHaveTextContent("Loading savings");
+    expect(screen.getByTestId("key-savings-empty")).toHaveTextContent("正在加载节省数据");
   });
 
   it("asks the endpoint for this key alone, scoped to the viewer's own rows", () => {
@@ -124,7 +124,7 @@ describe("KeySavingsTab", () => {
     renderTab({ userId: "user-456", userRole: "Internal User" });
 
     expect(hook).toHaveBeenCalledWith("test-token", { userId: "user-456", apiKey: "key-abc123" }, activity);
-    expect(screen.getByTestId("key-savings-scope-note")).toHaveTextContent("Showing your own requests");
+    expect(screen.getByTestId("key-savings-scope-note")).toHaveTextContent("仅显示你在此密钥上的请求");
   });
 
   it("reads the whole key for a proxy admin, with no scope note to contradict it", () => {
@@ -142,6 +142,6 @@ describe("KeySavingsTab", () => {
     renderTab({ userId: "org-admin-1", userRole: "Org Admin" });
 
     expect(hook).toHaveBeenCalledWith("test-token", { userId: "org-admin-1", apiKey: "key-abc123" }, activity);
-    expect(screen.getByTestId("key-savings-scope-note")).toHaveTextContent("Showing your own requests");
+    expect(screen.getByTestId("key-savings-scope-note")).toHaveTextContent("仅显示你在此密钥上的请求");
   });
 });

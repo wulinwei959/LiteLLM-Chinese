@@ -471,7 +471,7 @@ describe("UserInfoView savings", () => {
       const user = userEvent.setup();
       const { rerender } = render(<UserInfoView {...props} userId="user-1" userRole={userRole} />);
       await user.click(await screen.findByRole("tab", { name: "节省" }));
-      expect(await screen.findByText("No usage recorded for this user in this range.")).toBeInTheDocument();
+      expect(await screen.findByText("该范围无此用户的用量记录。")).toBeInTheDocument();
       expect(mockUserDailyActivityAggregatedCall.mock.calls[0][3]).toBe("user-1");
 
       mockUserDailyActivityAggregatedCall.mockClear();
@@ -480,7 +480,7 @@ describe("UserInfoView savings", () => {
       await screen.findAllByText("another-user");
       expect(screen.getByRole("tab", { name: "概览" })).toHaveAttribute("aria-selected", "true");
       expect(screen.queryByRole("tab", { name: "节省" })).not.toBeInTheDocument();
-      expect(screen.queryByText("No usage recorded for this user in this range.")).not.toBeInTheDocument();
+      expect(screen.queryByText("该范围无此用户的用量记录。")).not.toBeInTheDocument();
       expect(mockUserDailyActivityAggregatedCall).not.toHaveBeenCalled();
       expect(mockUserDailyActivityCall).not.toHaveBeenCalled();
     },
@@ -524,8 +524,8 @@ describe("UserInfoView savings", () => {
       null,
     );
     expect(screen.getByTestId("user-savings-scope-note")).toHaveTextContent("JWT 鉴权请求");
-    await user.click(screen.getByRole("tab", { name: "Per day" }));
-    expect(screen.getByRole("tab", { name: "Per day" })).toHaveAttribute("aria-selected", "true");
+    await user.click(screen.getByRole("tab", { name: "每日" }));
+    expect(screen.getByRole("tab", { name: "每日" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByTestId("summary-card-累计已记录节省")).toHaveTextContent("-$0.6000");
   });
 
@@ -541,7 +541,7 @@ describe("UserInfoView savings", () => {
 
     rerender(<UserInfoView {...props} userId="user-456" />);
 
-    expect(await screen.findByTestId("user-savings-empty")).toHaveTextContent("Loading savings");
+    expect(await screen.findByTestId("user-savings-empty")).toHaveTextContent("正在加载节省数据");
     expect(screen.queryByTestId("summary-card-累计已记录节省")).not.toBeInTheDocument();
     expect(mockUserDailyActivityAggregatedCall).toHaveBeenLastCalledWith(
       "admin-token",
@@ -568,7 +568,7 @@ describe("UserInfoView savings", () => {
       .mockReturnValue(nextRange.promise);
     const committedTotals: Array<string | null> = [];
     const captureNewRange = () => {
-      if (screen.queryByText("Running total saved · Sep 1 – Sep 2 (UTC)")) {
+      if (screen.queryByText("累计已节省 · Sep 1 – Sep 2 (UTC)")) {
         committedTotals.push(screen.queryByTestId("summary-card-累计已记录节省")?.textContent ?? null);
       }
     };
@@ -589,7 +589,7 @@ describe("UserInfoView savings", () => {
 
     expect(committedTotals.length).toBeGreaterThan(0);
     expect(committedTotals.every((total) => total === null)).toBe(true);
-    expect(screen.getByTestId("user-savings-empty")).toHaveTextContent("Loading savings");
+    expect(screen.getByTestId("user-savings-empty")).toHaveTextContent("正在加载节省数据");
     await act(async () => {
       nextRange.resolve(savingsResponse([savingsDay("2026-09-02", { autorouter_savings_spend: -7 })]));
     });
@@ -608,7 +608,7 @@ describe("UserInfoView savings", () => {
     render(<UserInfoView {...props} />);
     await user.click(await screen.findByRole("tab", { name: "节省" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Savings are unavailable for this range");
+    expect(await screen.findByRole("alert")).toHaveTextContent("该范围无法获取节省数据");
     expect(mockUserDailyActivityCall).toHaveBeenLastCalledWith(
       "admin-token",
       expect.any(Date),
@@ -619,7 +619,7 @@ describe("UserInfoView savings", () => {
       null,
     );
     expect(screen.queryByTestId("summary-card-累计已记录节省")).not.toBeInTheDocument();
-    expect(screen.queryByText(/No usage recorded/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/无此用户的用量记录/)).not.toBeInTheDocument();
   });
 
   it("distinguishes a user with no usage from an unavailable read", async () => {
@@ -627,7 +627,7 @@ describe("UserInfoView savings", () => {
     render(<UserInfoView {...props} />);
     await user.click(await screen.findByRole("tab", { name: "节省" }));
 
-    expect(await screen.findByTestId("user-savings-empty")).toHaveTextContent("No usage recorded for this user");
+    expect(await screen.findByTestId("user-savings-empty")).toHaveTextContent("该范围无此用户的用量记录");
     expect(screen.getByTestId("summary-card-累计已记录节省")).toHaveTextContent("$0.00");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
