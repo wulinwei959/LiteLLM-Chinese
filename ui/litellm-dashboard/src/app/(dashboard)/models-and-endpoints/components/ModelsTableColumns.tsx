@@ -223,6 +223,7 @@ function CostsCell({ model }: { model: ModelData }) {
 }
 
 function AccessGroupsCell({ accessGroups }: { accessGroups: string[] | null }) {
+  const t = useTranslations("common");
   if (!accessGroups || accessGroups.length === 0) {
     return <span className="text-sm text-muted-foreground">-</span>;
   }
@@ -245,7 +246,7 @@ function AccessGroupsCell({ accessGroups }: { accessGroups: string[] | null }) {
           }
           trigger={
             <Badge variant="outline" className="shrink-0 cursor-default font-normal">
-              +{overflow.length} more
+              +{overflow.length} {t("common.more")}
             </Badge>
           }
         />

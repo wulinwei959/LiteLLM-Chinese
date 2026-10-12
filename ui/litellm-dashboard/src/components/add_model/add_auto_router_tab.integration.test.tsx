@@ -215,8 +215,8 @@ describe("AddAutoRouterTab", () => {
     await userEvent.click(screen.getByRole("button", { name: "Advanced settings" }));
     expect(screen.queryByRole("button", { name: "Classifier tuning" })).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Auto Router Name"), { target: { value: "jev-router" } });
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeEnabled());
-    await userEvent.click(screen.getByRole("button", { name: "添加自动路由器" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
+    await userEvent.click(screen.getByRole("button", { name: "Add Auto Router" }));
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
     const expected = {
       classifier_type: "jev",
@@ -257,8 +257,8 @@ describe("AddAutoRouterTab", () => {
     expect(screen.getAllByRole("option")).toHaveLength(1);
     await userEvent.click(option);
     fireEvent.change(screen.getByLabelText("Auto Router Name"), { target: { value: "decision-router" } });
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeEnabled());
-    await userEvent.click(screen.getByRole("button", { name: "添加自动路由器" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
+    await userEvent.click(screen.getByRole("button", { name: "Add Auto Router" }));
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls[0][0].complexity_router_config).toMatchObject({
       classifier_type: "jev",
@@ -272,9 +272,9 @@ describe("AddAutoRouterTab", () => {
     await waitForAutomaticTiers();
     await userEvent.click(screen.getByRole("radio", { name: "Decisions Model" }));
     await userEvent.click(screen.getByRole("combobox", { name: "Decision model" }));
-    expect(await screen.findByText("暂无结果")).toBeVisible();
+    expect(await screen.findByText("No results")).toBeVisible();
     await userEvent.keyboard("{Escape}");
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
   });
 
   it("does not refill a tier cleared by the user when models refresh", async () => {
@@ -285,7 +285,7 @@ describe("AddAutoRouterTab", () => {
     await act(async () => {
       await testQueryClient.refetchQueries({ queryKey: ["availableModels"] });
     });
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
   });
 
   it.each([1, 0])("defaults to Rule-based with %s v2 slots remaining", async (remaining) => {
@@ -307,7 +307,7 @@ describe("AddAutoRouterTab", () => {
     renderWithProviders(<Harness />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Heuristic" })).toHaveTextContent("Rule-based"));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
   });
 
   it("keeps the Rule-based default when the form reopens with a cached allowance", async () => {
@@ -404,18 +404,18 @@ describe("AddAutoRouterTab", () => {
     await user.click(screen.getByRole("button", { name: "Edit tiers" }));
     await user.click(screen.getByRole("button", { name: "Add tier" }));
     expect(screen.getByLabelText("Name for tier 5")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Restore defaults" }));
     expect(screen.queryByLabelText("Name for tier 5")).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Definition for tier 1"), { target: { value: "Only short requests" } });
     expect(await screen.findByRole("alert")).toHaveTextContent(blocked);
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
     expect(within(screen.getByRole("alert")).getByRole("link", { name: "Talk to our team" })).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Restore defaults" }));
     await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
     expect(screen.getByRole("radio", { name: "Decisions Model" })).toBeChecked();
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由器" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
     const saved = vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config;
     expect(saved).not.toHaveProperty("tier_definitions");
@@ -436,7 +436,7 @@ describe("AddAutoRouterTab", () => {
     await userEvent.click(screen.getByRole("combobox", { name: "Decision model" }));
     await userEvent.click(await screen.findByRole("option", { name: "my-decision" }));
     fireEvent.change(screen.getByLabelText("Auto Router Name"), { target: { value: "checked-router" } });
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
     let complete: ((result: unknown) => void) | undefined;
     vi.mocked(apiClient.post).mockImplementationOnce(
       () =>
@@ -446,17 +446,17 @@ describe("AddAutoRouterTab", () => {
     );
     await user.click(screen.getByRole("button", { name: "Edit tiers" }));
     fireEvent.change(screen.getByLabelText("Definition for tier 1"), { target: { value: "Custom definition" } });
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
     fireEvent.submit(screen.getByLabelText("Auto Router Name").closest("form")!);
     await waitFor(() => expect(complete).toBeDefined());
     expect(handleAddAutoRouterSubmit).not.toHaveBeenCalled();
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
     await act(async () => complete?.({ allowances: [], error: "Custom tiers have no available allowance" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Custom tiers have no available allowance");
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Restore defaults" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由器" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
   });
 
@@ -532,7 +532,7 @@ describe("AddAutoRouterTab", () => {
       }
       await user.click(screen.getByRole("combobox", { name: "Judge model" }));
       await user.click(await screen.findByRole("option", { name: "judge", exact: true }));
-      expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
       if (capability) {
         fireEvent.change(screen.getByLabelText("Solve probability threshold"), { target: { value: "0.7" } });
       } else {
@@ -542,7 +542,7 @@ describe("AddAutoRouterTab", () => {
         fireEvent.change(screen.getByLabelText("Maximum quality gap"), { target: { value: "0.05" } });
       }
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeEnabled());
+      await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
       openAutoRouterAdvanced("Housekeeping Routing");
       openAutoRouterAdvanced("Affinity");
       openAutoRouterAdvanced("Response Format");
@@ -556,8 +556,8 @@ describe("AddAutoRouterTab", () => {
       expect(screen.queryByText("Classification Method")).not.toBeInTheDocument();
       openAutoRouterAdvanced("Affinity");
       expect(screen.getByText("Affinity")).toBeInTheDocument();
-      await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeEnabled());
-      await user.click(screen.getByRole("button", { name: "添加自动路由器" }));
+      await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
+      await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledTimes(1));
       const expected = {
         classifier_type: capability ? "capability" : "llm_v2",
@@ -612,7 +612,7 @@ describe("AddAutoRouterTab", () => {
       });
       expect(await screen.findByText("Could not load available models.")).toBeVisible();
       expect(screen.queryByTestId("template-selector")).not.toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: "重试", exact: true }));
+      await user.click(screen.getByRole("button", { name: "Retry", exact: true }));
       await waitFor(() => expect(screen.queryByText("Could not load available models.")).not.toBeInTheDocument());
       expect(screen.getByRole("button", { name: "Routing approach" })).toHaveTextContent(label);
       expect(screen.getByLabelText("Auto Router Name")).toHaveValue("forecast-retry");
@@ -661,7 +661,7 @@ describe("AddAutoRouterTab", () => {
     await waitForAutomaticTiers();
 
     expectTierModel("Simple", "gpt-5.6-luna");
-    expectTierModel("中", "claude-sonnet-5");
+    expectTierModel("Medium", "claude-sonnet-5");
     expectTierModel("Complex", "claude-opus-5-5");
     expectTierModel("Reasoning", "claude-opus-5-5");
     expect(toast.success).not.toHaveBeenCalledWith(expect.stringContaining("Configured with"));
@@ -680,7 +680,7 @@ describe("AddAutoRouterTab", () => {
     await waitForAutomaticTiers();
 
     expectTierModel("Simple", "gpt-5.6-luna");
-    expectTierModel("中", "claude-sonnet-5");
+    expectTierModel("Medium", "claude-sonnet-5");
     expectTierModel("Complex", "gpt-5.6-sol");
     expectTierModel("Reasoning", "gpt-5.6-sol");
   });
@@ -730,7 +730,7 @@ describe("AddAutoRouterTab", () => {
     );
 
     expect(screen.getByTestId("team-dropdown")).toBeInTheDocument();
-    expect(screen.getByText("选择团队")).toBeInTheDocument();
+    expect(screen.getByText("Select Team")).toBeInTheDocument();
   });
 
   // POST /model/new 403s an unscoped create from a non-proxy-admin, so a selected team that
@@ -972,7 +972,7 @@ describe("AddAutoRouterTab", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: /add auto router/i }));
 
-    expect(await screen.findByText("请选择团队以继续")).toBeInTheDocument();
+    expect(await screen.findByText((_, el) => el?.textContent === "Please select a team to continue")).toBeInTheDocument();
     expect(handleAddAutoRouterSubmit).not.toHaveBeenCalled();
   });
 
@@ -992,7 +992,7 @@ describe("AddAutoRouterTab", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: /add auto router/i }));
 
-    expect(await screen.findByText("请选择团队以继续")).toBeInTheDocument();
+    expect(await screen.findByText((_, el) => el?.textContent === "Please select a team to continue")).toBeInTheDocument();
     expect(handleAddAutoRouterSubmit).not.toHaveBeenCalled();
   });
 
@@ -1033,17 +1033,17 @@ describe("AddAutoRouterTab", () => {
     fireEvent.blur(threshold);
     expect(threshold).toHaveValue("invalid");
     expect(threshold).toHaveAttribute("aria-invalid", "true");
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
     expect(screen.getByTestId("auto-router-test-routing-btn")).toBeDisabled();
 
     await selectAutoRouterOption("Heuristic", "Rule-based");
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
     await selectAutoRouterOption("Heuristic", "Heuristic v2");
     fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "1.01" } });
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
     fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "0" } });
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由器" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).toMatchObject({
@@ -1061,16 +1061,16 @@ describe("AddAutoRouterTab", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("Heuristic", "Heuristic v2");
     fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "1.1" } });
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
 
     await act(async () => {
       await testQueryClient.refetchQueries({ queryKey: ["availableModels"] });
     });
     expect(screen.getByRole("textbox", { name: "Success threshold" })).toHaveValue("1.1");
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
     fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "" } });
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由器" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).not.toHaveProperty(
       "heuristic_v2_success_threshold",
@@ -1087,11 +1087,11 @@ describe("AddAutoRouterTab", () => {
     await selectAutoRouterOption("Heuristic", "Heuristic v2");
     fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "invalid" } });
     await selectAutoRouterOption("Heuristic", "Rule-based");
-    expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Clear Heuristic v2 threshold" }));
     expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "添加自动路由器" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config).not.toHaveProperty(
       "heuristic_v2_success_threshold",
@@ -2029,8 +2029,8 @@ describe("preset catalog fetch states", () => {
     await userEvent.click(screen.getByRole("combobox", { name: "Decision model" }));
     await userEvent.click(await screen.findByRole("option", { name: "my-decision" }));
     fireEvent.change(screen.getByLabelText("Auto Router Name"), { target: { value: "bounded-router" } });
-    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由器" })).toBeEnabled());
-    fireEvent.click(screen.getByRole("button", { name: "添加自动路由器" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Add Auto Router" }));
 
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
     expect(vi.mocked(handleAddAutoRouterSubmit).mock.calls[0][0].complexity_router_config).toMatchObject({
@@ -2080,7 +2080,7 @@ describe("preset catalog fetch states", () => {
     expect(options).toHaveLength(1);
     expect(options[0]).toHaveTextContent("Start from scratch");
 
-    fireEvent.click(screen.getByRole("button", { name: "重试" }));
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
     expect(refetch).toHaveBeenCalled();
   });
 });

@@ -134,9 +134,9 @@ describe("TeamVirtualKeysTable", () => {
   it("right-aligns the Spend (USD) and Budget (USD) columns", async () => {
     renderWithProviders(<TeamVirtualKeysTable {...defaultProps} />);
 
-    expect(await screen.findByRole("columnheader", { name: "Spend (USD)" })).toHaveClass("text-right");
-    expect(screen.getByRole("columnheader", { name: "Budget (USD)" })).toHaveClass("text-right");
-    expect(screen.getByRole("columnheader", { name: "Key ID" })).not.toHaveClass("text-right");
+    expect(await screen.findByRole("columnheader", { name: "花费 (USD)" })).toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "预算 (USD)" })).toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "密钥 ID" })).not.toHaveClass("text-right");
   });
 
   it("should display keys in table when data is loaded", async () => {

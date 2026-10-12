@@ -385,6 +385,7 @@
     "subtitleAdmin": "为代理添加和管理模型",
     "subtitleUser": "查看您的模型并为允许的团队管理路由器。",
     "tabs": {
+      "deployed": "已部署模型",
       "allModels": "所有模型",
       "yourModels": "您的模型",
       "addModel": "添加模型",

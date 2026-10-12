@@ -193,8 +193,8 @@ export function AllModelsTable({
   };
 
   const filterLabels = {
-    [MODEL_NAME_COLUMN_ID]: "Public Model Name",
-    [ACCESS_GROUPS_COLUMN_ID]: "Model Access Group",
+    [MODEL_NAME_COLUMN_ID]: t("modelTable.filterLabels.publicModelName"),
+    [ACCESS_GROUPS_COLUMN_ID]: t("modelTable.filterLabels.accessGroup"),
   };
 
   return (

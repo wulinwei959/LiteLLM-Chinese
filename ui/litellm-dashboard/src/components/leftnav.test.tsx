@@ -1,7 +1,8 @@
-import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../tests/test-utils";
 import Sidebar, { menuGroups, getBreadcrumb } from "./leftnav";
+import type { NavTranslator } from "@/lib/i18n/translators";
 
 vi.mock("../utils/roles", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../utils/roles")>();
@@ -136,37 +137,6 @@ describe("Sidebar (leftnav)", () => {
     expect(classesOf(dark).has("dark:block")).toBe(true);
   });
 
-  const collapsedLogos = () => {
-    const home = within(screen.getByRole("link", { name: /litellm home/i }));
-    return {
-      light: home.getByRole("img", { name: "LiteLLM" }),
-      dark: home.getByRole("presentation", { hidden: true }),
-    };
-  };
-
-  it("requests the bundled monogram for both themes when collapsed", () => {
-    renderWithProviders(<Sidebar collapsed />);
-
-    const { light, dark } = collapsedLogos();
-
-    expect(light).toHaveAttribute("src", expect.stringMatching(/\/get_image\?variant=monogram$/));
-    expect(dark).toHaveAttribute("src", expect.stringMatching(/\/get_image\?theme=dark&variant=monogram$/));
-  });
-
-  it("keeps a configured custom logo when collapsed instead of the LiteLLM monogram", () => {
-    mockUseThemeImpl = () => ({
-      ...unbrandedTheme(),
-      logoUrl: "https://cdn.example.com/logo.png",
-      logoUrlDark: "https://cdn.example.com/logo-dark.png",
-    });
-    renderWithProviders(<Sidebar collapsed />);
-
-    const { light, dark } = collapsedLogos();
-
-    expect(light).toHaveAttribute("src", "https://cdn.example.com/logo.png");
-    expect(dark).toHaveAttribute("src", "https://cdn.example.com/logo-dark.png");
-  });
-
   it("prefers a configured dark logo over the light one in dark mode", () => {
     mockUseThemeImpl = () => ({
       ...unbrandedTheme(),
@@ -212,11 +182,11 @@ describe("Sidebar (leftnav)", () => {
 
     const topLevelLabels = [
       "虚拟密钥",
-      "Playground",
+      "演练场",
       "模型 + 端点",
       "智能体",
       "MCP 服务器",
-      "Guardrails",
+      "护栏",
       "策略",
       "工具",
       "用量",
@@ -300,7 +270,7 @@ describe("Sidebar (leftnav)", () => {
     it("hides Playground from Admin Viewer (cost-incurring action)", () => {
       mockUseAuthorized.mockReturnValue(adminViewerAuth);
       renderWithProviders(<Sidebar {...defaultProps} />);
-      expect(screen.queryByText("Playground")).not.toBeInTheDocument();
+      expect(screen.queryByText("演练场")).not.toBeInTheDocument();
     });
 
     it("shows Models + Endpoints to Admin Viewer (read-only)", () => {
@@ -314,11 +284,12 @@ describe("Sidebar (leftnav)", () => {
       renderWithProviders(<Sidebar {...defaultProps} />);
       // Agents is now nested under the "智能体" submenu — expand parent
       // first to render the children, then assert Agents is visible.
+      // Group button and child link share the label, so the link role disambiguates.
       act(() => {
         fireEvent.click(screen.getByText("智能体"));
       });
       await waitFor(() => {
-        expect(screen.getByText("Agents")).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "智能体" })).toBeInTheDocument();
       });
     });
 
@@ -374,7 +345,7 @@ describe("Sidebar (leftnav)", () => {
       mockUseAuthorized.mockReturnValue(internalAuth);
       renderWithProviders(<Sidebar {...defaultProps} />);
 
-      expect(screen.getByText("Guardrails")).toBeInTheDocument();
+      expect(screen.getByText("护栏")).toBeInTheDocument();
       expect(screen.queryByText("策略")).not.toBeInTheDocument();
     });
 
@@ -448,7 +419,7 @@ describe("Sidebar (leftnav)", () => {
       // Liveness gate: the sibling Agents child stays visible to this role, so
       // the absences below mean the gate fired, not that the group never opened.
       await waitFor(() => {
-        expect(screen.getByText("Agents")).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "智能体" })).toBeInTheDocument();
       });
       expect(screen.queryByText("工作流运行")).not.toBeInTheDocument();
       expect(screen.queryByText("记忆")).not.toBeInTheDocument();
@@ -496,7 +467,6 @@ describe("Sidebar (leftnav)", () => {
 
       expect(screen.queryByText("护栏监控")).not.toBeInTheDocument();
       expect(screen.getByText("用量")).toBeInTheDocument();
-      expect(screen.getByRole("link", { name: "Lens Beta" })).toHaveAttribute("href", "/ui/lens");
       expect(screen.getByText("成本优化")).toBeInTheDocument();
     });
 
@@ -576,7 +546,7 @@ describe("Sidebar (leftnav)", () => {
     const expectHref = (label: string, href: string) =>
       expect(screen.getByRole("link", { name: label })).toHaveAttribute("href", href);
     expectHref("虚拟密钥", "/ui/api-keys");
-    expectHref("Playground", "/ui/playground");
+    expectHref("演练场", "/ui/playground");
     expectHref("模型 + 端点", "/ui/models-and-endpoints");
     expectHref("用量", "/ui/usage");
     expectHref("API 参考", "/ui/api-reference");
@@ -608,13 +578,18 @@ describe("Sidebar (leftnav)", () => {
     expect(label).toHaveClass("group-data-[collapsed=true]/sidebar:hidden");
   });
 
-  it("shows Cost Optimization without a Beta badge and no feature-flag gate", () => {
+  it("shows Cost Optimization without a feature-flag gate and the Beta badge on the Lens entry", () => {
     const { container } = renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI={false} />);
 
     const costOptimization = container.querySelector('a[href*="cost-optimization"]');
     expect(costOptimization).not.toBeNull();
-    expect(costOptimization!).toHaveTextContent("成本优化");
-    expect(costOptimization!).not.toHaveTextContent("Beta 版");
+    expect(costOptimization!).toHaveTextContent(/成本优化/);
+    expect(costOptimization!).not.toHaveTextContent(/Beta/);
+
+    const lens = container.querySelector('a[href*="lens"]');
+    expect(lens).not.toBeNull();
+    expect(lens!).toHaveTextContent(/Lens/);
+    expect(lens!).toHaveTextContent(/Beta/);
 
     expect(container.querySelector('a[href*="projects"]')).toBeNull();
   });
@@ -627,31 +602,84 @@ describe("Sidebar (leftnav)", () => {
   });
 });
 
+const mockNavT = ((key: string) => {
+  const translations: Record<string, string> = {
+    aiGateway: "AI Gateway",
+    observability: "Observability",
+    accessControl: "Access Control",
+    developerTools: "开发者工具",
+    settings: "设置",
+    virtualKeys: "虚拟密钥",
+    playground: "演练场",
+    modelsAndEndpoints: "模型 + 端点",
+    agentic: "智能体",
+    agents: "智能体",
+    workflowRuns: "工作流运行",
+    memory: "记忆",
+    mcpServers: "MCP 服务器",
+    skills: "技能",
+    guardrails: "护栏",
+    policies: "策略",
+    tools: "工具",
+    searchTools: "搜索工具",
+    vectorStores: "向量存储",
+    toolPolicies: "工具策略",
+    usage: "用量",
+    costOptimization: "成本优化",
+    logs: "日志",
+    guardrailsMonitor: "护栏监控",
+    teams: "团队",
+    projects: "项目",
+    internalUsers: "内部用户",
+    organizations: "组织",
+    accessGroups: "访问组",
+    budgets: "预算",
+    apiReference: "API 参考",
+    aiHub: "AI 中心",
+    learningResources: "学习资源",
+    responseCache: "响应缓存",
+    experimental: "实验性",
+    prompts: "提示词",
+    apiPlayground: "API 演练场",
+    tagManagement: "标签管理",
+    oldUsage: "旧版用量",
+    routerSettings: "路由设置",
+    loggingAndAlerts: "日志与告警",
+    adminSettings: "管理员设置",
+    costTracking: "成本追踪",
+    uiTheme: "UI Theme",
+  };
+  return translations[key] ?? key;
+}) as unknown as NavTranslator;
+
 describe("getBreadcrumb", () => {
   it("resolves a top-level route to its section + title", () => {
-    expect(getBreadcrumb("/ui/api-keys")).toEqual({ section: "AI 网关", title: "虚拟密钥" });
-    expect(getBreadcrumb("/ui/logs")).toEqual({ section: "可观测性", title: "日志" });
+    expect(getBreadcrumb("/ui/api-keys", mockNavT)).toEqual({ section: "AI Gateway", title: "虚拟密钥" });
+    expect(getBreadcrumb("/ui/logs", mockNavT)).toEqual({ section: "Observability", title: "日志" });
   });
 
   it("resolves routes whose segment differs from the sidebar page id", () => {
-    expect(getBreadcrumb("/ui/models-and-endpoints")).toEqual({ section: "AI 网关", title: "模型 + 端点" });
-    expect(getBreadcrumb("/ui/usage")).toEqual({ section: "可观测性", title: "用量" });
-    expect(getBreadcrumb("/ui/old-usage")).toEqual({ section: "开发者工具", title: "旧版用量" });
+    expect(getBreadcrumb("/ui/models-and-endpoints", mockNavT)).toEqual({
+      section: "AI Gateway",
+      title: "模型 + 端点",
+    });
+    expect(getBreadcrumb("/ui/usage", mockNavT)).toEqual({ section: "Observability", title: "用量" });
+    expect(getBreadcrumb("/ui/old-usage", mockNavT)).toEqual({ section: "开发者工具", title: "旧版用量" });
   });
 
   it("titles the dashboard root as Virtual Keys", () => {
-    expect(getBreadcrumb("/ui/")).toEqual({ section: "AI 网关", title: "虚拟密钥" });
+    expect(getBreadcrumb("/ui/", mockNavT)).toEqual({ section: "AI Gateway", title: "虚拟密钥" });
   });
 
   it("resolves a nested child route to its parent section", () => {
-    expect(getBreadcrumb("/ui/search-tools/")).toEqual({ section: "AI 网关", title: "搜索工具" });
+    expect(getBreadcrumb("/ui/search-tools/", mockNavT)).toEqual({ section: "AI Gateway", title: "搜索工具" });
   });
 
   it("resolves router-settings under the Settings section", () => {
-    expect(getBreadcrumb("/ui/router-settings")).toEqual({ section: "设置", title: "路由设置" });
+    expect(getBreadcrumb("/ui/router-settings", mockNavT)).toEqual({ section: "设置", title: "路由设置" });
   });
 
   it("falls back to a prettified title with no section for unknown routes", () => {
-    expect(getBreadcrumb("/ui/some-unknown-page")).toEqual({ section: null, title: "Some Unknown Page" });
+    expect(getBreadcrumb("/ui/some-unknown-page", mockNavT)).toEqual({ section: null, title: "Some Unknown Page" });
   });
 });

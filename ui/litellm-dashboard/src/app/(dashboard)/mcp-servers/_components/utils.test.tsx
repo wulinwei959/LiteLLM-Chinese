@@ -4,6 +4,8 @@ import {
   maskUrl,
   getMaskedAndFullUrl,
   getMCPNetworkAccess,
+  networkAccessDescriptionKey,
+  networkAccessLabelKey,
   validateMCPServerUrl,
   validateMCPServerName,
   normalizeToolOverrideMap,
@@ -11,29 +13,58 @@ import {
 
 describe("getMCPNetworkAccess", () => {
   it.each([
-    { publicIp: true, explicit: false, label: "所有网络" },
-    { publicIp: false, explicit: true, label: "所有网络" },
-    { publicIp: true, explicit: true, label: "所有网络" },
-    { publicIp: false, explicit: false, label: "仅限内网" },
-    { publicIp: true, explicit: undefined, label: "所有网络" },
-    { publicIp: false, explicit: undefined, label: "未知" },
-    { publicIp: undefined, explicit: false, label: "未知" },
-  ])("reports $label for network=$publicIp and publication=$explicit", ({ publicIp, explicit, label }) => {
-    expect(
+    { publicIp: true, explicit: false, kind: "public", reason: "direct" },
+    { publicIp: false, explicit: true, kind: "public", reason: "hubPublished" },
+    { publicIp: true, explicit: true, kind: "public", reason: "direct" },
+    { publicIp: false, explicit: false, kind: "internal", reason: "direct" },
+    { publicIp: true, explicit: undefined, kind: "public", reason: "direct" },
+    { publicIp: false, explicit: undefined, kind: "unknown", reason: "unknown" },
+    { publicIp: undefined, explicit: false, kind: "unknown", reason: "unknown" },
+    { publicIp: undefined, explicit: true, kind: "public", reason: "hubPublished" },
+    { publicIp: undefined, explicit: undefined, kind: "unknown", reason: "unknown" },
+  ])(
+    "reports $kind/$reason for network=$publicIp and publication=$explicit",
+    ({ publicIp, explicit, kind, reason }) => {
+      const access = getMCPNetworkAccess({
+        available_on_public_internet: publicIp,
+        mcp_info: { server_name: "demo", is_public: true, is_public_explicit: explicit },
+      });
+      expect(access.kind).toBe(kind);
+      expect(access.reason).toBe(reason);
+    },
+  );
+
+  it("marks every kind with a distinct status dot", () => {
+    const dotFor = (publicIp: boolean | undefined, explicit: boolean | undefined) =>
       getMCPNetworkAccess({
         available_on_public_internet: publicIp,
         mcp_info: { server_name: "demo", is_public: true, is_public_explicit: explicit },
-      }).label,
-    ).toBe(label);
+      }).dotClassName;
+    expect(dotFor(true, false)).toBe("bg-success");
+    expect(dotFor(false, false)).toBe("bg-warning");
+    expect(dotFor(undefined, undefined)).toBe("bg-border");
   });
 
-  it("explains when hub publication permits public IPs", () => {
-    expect(
+  it("routes each reason to the description explaining it", () => {
+    const reasonFor = (publicIp: boolean | undefined, explicit: boolean | undefined) =>
       getMCPNetworkAccess({
-        available_on_public_internet: false,
-        mcp_info: { server_name: "demo", is_public_explicit: true },
-      }).description,
-    ).toContain("because this server is published in MCP Hub");
+        available_on_public_internet: publicIp,
+        mcp_info: { server_name: "demo", is_public_explicit: explicit },
+      }).reason;
+    expect(networkAccessDescriptionKey(reasonFor(true, false))).toBe("networkAccess.publicDescription");
+    expect(networkAccessDescriptionKey(reasonFor(false, true))).toBe("networkAccess.hubPublishedDescription");
+    expect(networkAccessDescriptionKey(reasonFor(undefined, undefined))).toBe("networkAccess.unknownDescription");
+  });
+
+  it("routes each kind to its own label key", () => {
+    const kindFor = (publicIp: boolean | undefined, explicit: boolean | undefined) =>
+      getMCPNetworkAccess({
+        available_on_public_internet: publicIp,
+        mcp_info: { server_name: "demo", is_public_explicit: explicit },
+      }).kind;
+    expect(networkAccessLabelKey(kindFor(true, false))).toBe("networkAccess.publicLabel");
+    expect(networkAccessLabelKey(kindFor(false, false))).toBe("networkAccess.internalLabel");
+    expect(networkAccessLabelKey(kindFor(undefined, undefined))).toBe("networkAccess.unknownLabel");
   });
 });
 
@@ -78,29 +109,29 @@ describe("getMaskedAndFullUrl", () => {
 
 describe("validateMCPServerUrl", () => {
   it("should resolve for a valid HTTP URL", async () => {
-    await expect(validateMCPServerUrl("https://example.com/path")).resolves.toBeUndefined();
+    await expect(validateMCPServerUrl("https://example.com/path", "bad url")).resolves.toBeUndefined();
   });
 
   it("should resolve for an empty string", async () => {
-    await expect(validateMCPServerUrl("")).resolves.toBeUndefined();
+    await expect(validateMCPServerUrl("", "bad url")).resolves.toBeUndefined();
   });
 
-  it("should reject for an invalid URL", async () => {
-    await expect(validateMCPServerUrl("not-a-url")).rejects.toBeDefined();
+  it("should reject with the caller-provided message for an invalid URL", async () => {
+    await expect(validateMCPServerUrl("not-a-url", "无效的 URL")).rejects.toBe("无效的 URL");
   });
 });
 
 describe("validateMCPServerName", () => {
   it("should resolve for a valid underscore name", async () => {
-    await expect(validateMCPServerName("my_server")).resolves.toBeUndefined();
+    await expect(validateMCPServerName("my_server", "bad name")).resolves.toBeUndefined();
   });
 
-  it("should reject names containing hyphens", async () => {
-    await expect(validateMCPServerName("my-server")).rejects.toBeDefined();
+  it("should reject names containing hyphens with the caller-provided message", async () => {
+    await expect(validateMCPServerName("my-server", "无效的名称")).rejects.toBe("无效的名称");
   });
 
   it("should reject names containing spaces", async () => {
-    await expect(validateMCPServerName("my server")).rejects.toBeDefined();
+    await expect(validateMCPServerName("my server", "无效的名称")).rejects.toBe("无效的名称");
   });
 });
 

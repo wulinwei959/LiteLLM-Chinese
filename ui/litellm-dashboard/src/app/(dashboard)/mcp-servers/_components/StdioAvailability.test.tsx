@@ -1,5 +1,7 @@
 import React from "react";
-import { render, renderHook, screen, waitFor } from "@testing-library/react";
+import { renderHook, screen, waitFor } from "@testing-library/react";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -9,7 +11,7 @@ import { switchToWorkerUrl } from "@/components/networking";
 import { STDIO_DISABLED_MESSAGE, TransportSelectItems, useMcpStdioEnabled } from "./StdioAvailability";
 
 function openTransportSelect(stdioEnabled: boolean) {
-  render(
+  renderWithProviders(
     <Select items={TRANSPORT_ITEMS} value={null} defaultOpen>
       <SelectTrigger data-testid="trigger">
         <SelectValue placeholder="Select transport" />
@@ -28,10 +30,10 @@ describe("TransportSelectItems", () => {
     const user = userEvent.setup();
     openTransportSelect(false);
 
-    expect(option(/Standard Input\/Output \(stdio\)/)).toHaveAttribute("data-disabled");
-    expect(option(/Streamable HTTP/)).not.toHaveAttribute("data-disabled");
-    expect(option(/Server-Sent Events/)).not.toHaveAttribute("data-disabled");
-    expect(option(/OpenAPI Spec/)).not.toHaveAttribute("data-disabled");
+    expect(option(/标准输入\/输出（stdio）/)).toHaveAttribute("data-disabled");
+    expect(option(/Streamable HTTP（推荐）/)).not.toHaveAttribute("data-disabled");
+    expect(option(/服务器发送事件（SSE）/)).not.toHaveAttribute("data-disabled");
+    expect(option(/OpenAPI 规范/)).not.toHaveAttribute("data-disabled");
 
     await user.hover(screen.getByLabelText("question-circle"));
 
@@ -41,7 +43,7 @@ describe("TransportSelectItems", () => {
   it("offers stdio like any other transport when stdio is on", () => {
     openTransportSelect(true);
 
-    expect(option(/Standard Input\/Output \(stdio\)/)).not.toHaveAttribute("data-disabled");
+    expect(option(/标准输入\/输出（stdio）/)).not.toHaveAttribute("data-disabled");
     expect(screen.queryByLabelText("question-circle")).not.toBeInTheDocument();
   });
 });

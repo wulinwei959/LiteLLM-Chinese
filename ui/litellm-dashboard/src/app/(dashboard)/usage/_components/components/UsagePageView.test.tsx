@@ -91,7 +91,7 @@ vi.mock("./UsageViewSelect/UsageViewSelect", async () => {
       React.createElement("option", { value: "global" }, "Global Usage"),
       React.createElement("option", { value: "team" }, "Team Usage"),
       React.createElement("option", { value: "organization" }, "Organization Usage"),
-      React.createElement("option", { value: "customer" }, "Customer Usage"),
+      React.createElement("option", { value: "customer" }, "客户用量"),
       tagOption,
       React.createElement("option", { value: "agent" }, "Agent Usage"),
       React.createElement("option", { value: "user" }, "User Usage"),
@@ -244,7 +244,7 @@ describe("UsagePage", () => {
                 cache_creation_input_tokens: 0,
               },
               metadata: {
-                key_alias: "Test Key",
+                key_alias: "测试密钥",
                 tags: ["production"],
               },
             },
@@ -486,9 +486,9 @@ describe("UsagePage", () => {
     });
     expect(screen.queryByText("75,000")).not.toBeInTheDocument();
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
-    expect(screen.getByText("Total Tokens")).toBeInTheDocument();
+    expect(screen.getByText("总令牌数")).toBeInTheDocument();
     expect(await screen.findByText("425,151")).toBeInTheDocument();
-    expect(screen.getByText("Total Tokens").closest('[data-slot="card"]')).not.toHaveTextContent(/\d/);
+    expect(screen.getByText("总令牌数").closest('[data-slot="card"]')).not.toHaveTextContent(/\d/);
     expect(screen.queryByText("$0.0000")).not.toBeInTheDocument();
 
     await act(async () => {
@@ -497,7 +497,7 @@ describe("UsagePage", () => {
     await waitFor(() => {
       expect(screen.getAllByText("75,000").length).toBeGreaterThan(0);
     });
-    expect(screen.getByText("Total Tokens")).toBeInTheDocument();
+    expect(screen.getByText("总令牌数")).toBeInTheDocument();
     expect(screen.getByText("$0.0838")).toBeInTheDocument();
   });
 
@@ -507,7 +507,7 @@ describe("UsagePage", () => {
     await waitFor(() => {
       expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
     });
-    fireEvent.click(screen.getByText("Key Activity"));
+    fireEvent.click(screen.getByText("密钥活动"));
     await waitFor(() => {
       expect(mockDailyActivityKeyPageCall).toHaveBeenCalledWith("user", expect.any(Object), 0, 50);
     });
@@ -1137,7 +1137,7 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(screen.getByText("Ask AI")).toBeInTheDocument();
+      expect(screen.getByText("AI 问答")).toBeInTheDocument();
     });
 
     it("should render AI chat panel component", async () => {

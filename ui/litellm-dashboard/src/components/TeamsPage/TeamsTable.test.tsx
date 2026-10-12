@@ -163,8 +163,8 @@ describe("sort contract – only backend-sortable columns are sortable", () => {
 
   it("right-aligns Spend / Budget but not Team", () => {
     renderTable();
-    expect(screen.getByRole("columnheader", { name: "Spend / Budget" })).toHaveClass("text-right");
-    expect(screen.getByRole("columnheader", { name: "Team" })).not.toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "支出 / 预算" })).toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "团队" })).not.toHaveClass("text-right");
   });
 
   it("does not make Spend / Budget sortable (the backend rejects sort_by=spend)", () => {

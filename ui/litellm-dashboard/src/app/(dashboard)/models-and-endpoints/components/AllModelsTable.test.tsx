@@ -153,10 +153,10 @@ describe("AllModelsTable", () => {
       />,
     );
     expect(screen.getByText("openai-prod")).toBeInTheDocument();
-    expect(screen.queryByText("Manual")).not.toBeInTheDocument();
+    expect(screen.queryByText("手动输入")).not.toBeInTheDocument();
 
     rerender(<AllModelsTable {...baseProps} data={[makeModel()]} />);
-    expect(screen.getByText("Manual")).toBeInTheDocument();
+    expect(screen.getByText("手动输入")).toBeInTheDocument();
   });
 
   it("shows 'Defined in config' for a config model and the creator for a DB model", () => {
@@ -177,7 +177,7 @@ describe("AllModelsTable", () => {
     expect(screen.getByText("$30")).toBeInTheDocument();
     expect(screen.getByText("$60")).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: /\$30/ })).toHaveClass("text-right");
-    expect(screen.getByRole("columnheader", { name: /costs/i })).toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: /成本/ })).toHaveClass("text-right");
 
     rerender(<AllModelsTable {...baseProps} data={[makeModel({ input_cost: null, output_cost: null })]} />);
     expect(screen.queryByText(/^\$/)).not.toBeInTheDocument();
@@ -415,7 +415,7 @@ describe("AllModelsTable", () => {
       expect(onOpenModelSettings).toHaveBeenCalled();
 
       expect(screen.getByTestId("models-team-select")).toHaveTextContent("Personal");
-      expect(screen.getByTestId("models-view-select")).toHaveTextContent("当前团队模型");
+      expect(screen.getByTestId("models-view-select")).toHaveTextContent("Current Team Models");
     });
 
     it("switches the current team", async () => {

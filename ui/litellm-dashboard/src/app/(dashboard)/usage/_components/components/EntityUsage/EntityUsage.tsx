@@ -665,10 +665,10 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   );
 
   const tabs: readonly { key: string; label: string; content: ReactNode }[] = [
-    { key: "cost", label: "Cost", content: costPanel },
+    { key: "cost", label: usageT("tabs.cost"), content: costPanel },
     {
       key: "models",
-      label: entityType === "agent" ? "Request / Token Consumption" : "Model Activity",
+      label: entityType === "agent" ? "Request / Token Consumption" : usageT("tabs.models"),
       content: (
         <>
           <div className="flex justify-end mt-2 mb-4">
@@ -686,14 +686,14 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
       ? [
           {
             key: "agents",
-            label: "Agent Activity",
+            label: usageT("entity.topAgents"),
             content: <ActivityMetrics modelMetrics={agentMetrics} />,
           },
         ]
       : []),
     {
       key: "keys",
-      label: "Key Activity",
+      label: usageT("tabs.keys"),
       content: (
         <KeyActivityPanel
           summary={summaryMetrics}
@@ -706,7 +706,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         />
       ),
     },
-    { key: "endpoints", label: "Endpoint Activity", content: <EndpointUsage userSpendData={spendData} /> },
+    { key: "endpoints", label: usageT("tabs.endpoints"), content: <EndpointUsage userSpendData={spendData} /> },
   ];
 
   return (

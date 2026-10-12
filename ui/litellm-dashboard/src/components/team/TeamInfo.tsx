@@ -1308,12 +1308,24 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
             <p>{t("infoBudgetStatus")}</p>
             <div className="mt-2">
               <h3 className="text-lg font-medium">${formatNumberWithCommas(info.spend, 2)}</h3>
-              <p>of {info.max_budget === null ? t("infoUnlimited") : `$${formatNumberWithCommas(info.max_budget, 2)}`}</p>
-              {info.budget_duration && <p className="text-muted-foreground">Reset: {info.budget_duration}</p>}
+              <p>
+                {t("infoOfBudget", {
+                  budget:
+                    info.max_budget === null ? t("infoUnlimited") : `$${formatNumberWithCommas(info.max_budget, 2)}`,
+                })}
+              </p>
+              {info.budget_duration && (
+                <p className="text-muted-foreground">{t("infoResetValue", { value: info.budget_duration })}</p>
+              )}
+              {info.budget_duration && (
+                <p className="text-muted-foreground">{t("infoResetValue", { value: info.budget_duration })}</p>
+              )}
               <br />
               {info.team_member_budget_table && (
                 <p className="text-muted-foreground">
-                  Team Member Budget: ${formatNumberWithCommas(info.team_member_budget_table.max_budget, 2)}
+                  {t("infoTeamMemberBudgetValue", {
+                    value: formatNumberWithCommas(info.team_member_budget_table.max_budget, 2),
+                  })}
                 </p>
               )}
             </div>
@@ -1322,10 +1334,10 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
           <Card className="block p-6">
             <p>{t("infoRateLimits")}</p>
             <div className="mt-2">
-              <p>TPM: {info.tpm_limit ?? t("infoUnlimited")}</p>
-              <p>RPM: {info.rpm_limit ?? t("infoUnlimited")}</p>
-              <p>TPD (batch): {info.tpd_limit ?? t("infoUnlimited")}</p>
-              {info.max_parallel_requests && <p>Max Parallel Requests: {info.max_parallel_requests}</p>}
+              <p>{t("infoTpmValue", { value: info.tpm_limit ?? t("infoUnlimited") })}</p>
+              <p>{t("infoRpmValue", { value: info.rpm_limit ?? t("infoUnlimited") })}</p>
+              <p>{t("infoTpdBatchValue", { value: info.tpd_limit ?? t("infoUnlimited") })}</p>
+              {info.max_parallel_requests && <p>{t("infoMaxParallelRequests", { value: info.max_parallel_requests })}</p>}
               {(() => {
                 const modelTpm = (info.metadata?.model_tpm_limit ?? {}) as Record<string, number>;
                 const modelRpm = (info.metadata?.model_rpm_limit ?? {}) as Record<string, number>;
@@ -1336,18 +1348,25 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     <p className="text-muted-foreground">{t("infoPerModelLimits")}</p>
                     {models.map((m) => (
                       <p key={m} className="text-xs">
-                        {m}: TPM {modelTpm[m] ?? "—"}, RPM {modelRpm[m] ?? "—"}
+                        {t("infoPerModelLimitsRow", {
+                          model: m,
+                          tpm: modelTpm[m] ?? "—",
+                          rpm: modelRpm[m] ?? "—",
+                        })}
                       </p>
                     ))}
                   </div>
                 );
               })()}
-              <p>Estimated Output Tokens: {info.metadata?.default_estimated_output_tokens ?? t("infoDefault")}</p>
+              <p>{t("infoEstimatedOutputTokensValue", {
+                  value: info.metadata?.default_estimated_output_tokens ?? t("infoDefault"),
+                })}</p>
               <p>
-                Estimated Output Tokens Per Model:{" "}
-                {info.metadata?.default_estimated_output_tokens_per_model
-                  ? JSON.stringify(info.metadata.default_estimated_output_tokens_per_model)
-                  : t("infoDefault")}
+                {t("infoEstimatedOutputTokensPerModelValue", {
+                  value: info.metadata?.default_estimated_output_tokens_per_model
+                    ? JSON.stringify(info.metadata.default_estimated_output_tokens_per_model)
+                    : t("infoDefault"),
+                })}
               </p>
             </div>
           </Card>
@@ -1754,7 +1773,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     hint={t("listModelMaxBudgetHint")}
                   />
 
-                  <FormField control={form.control} name="tpm_limit" label={t("listTpmLimit")}>
+                  <FormField control={form.control} name="tpm_limit" label={t("infoTpmLimitLabel")}>
                     {({ ref, value, ...field }) => <NumericalInput {...field} ref={ref} value={value ?? ""} step={1} />}
                   </FormField>
 
@@ -2164,7 +2183,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     <Button type="button" variant="outline" onClick={() => setIsEditing(false)} disabled={isTeamSaving}>{t("infoCancel")}</Button>
                     <Button type="submit" disabled={isTeamSaving}>
                       {isTeamSaving ? <UiLoadingSpinner className="size-4" /> : <Save className="size-4" />}
-                      Save Changes
+                      {t("infoSaveChanges")}
                     </Button>
                   </div>
                 </div>
@@ -2228,9 +2247,9 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               </div>
               <div>
                 <p className="font-medium">{t("infoRateLimits")}</p>
-                <div>TPM: {info.tpm_limit ?? t("infoUnlimited")}</div>
-                <div>RPM: {info.rpm_limit ?? t("infoUnlimited")}</div>
-                <div>TPD (batch): {info.tpd_limit ?? t("infoUnlimited")}</div>
+                <div>{t("infoTpmValue", { value: info.tpm_limit ?? t("infoUnlimited") })}</div>
+                <div>{t("infoRpmValue", { value: info.rpm_limit ?? t("infoUnlimited") })}</div>
+                <div>{t("infoTpdBatchValue", { value: info.tpd_limit ?? t("infoUnlimited") })}</div>
                 {(() => {
                   const modelTpm = (info.metadata?.model_tpm_limit ?? {}) as Record<string, number>;
                   const modelRpm = (info.metadata?.model_rpm_limit ?? {}) as Record<string, number>;
@@ -2241,39 +2260,57 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                       <p className="text-muted-foreground">{t("infoPerModelLimits")}</p>
                       {models.map((m) => (
                         <div key={m} className="text-xs ml-2">
-                          {m}: TPM {modelTpm[m] ?? "—"}, RPM {modelRpm[m] ?? "—"}
+                          {t("infoPerModelLimitsRow", {
+                          model: m,
+                          tpm: modelTpm[m] ?? "—",
+                          rpm: modelRpm[m] ?? "—",
+                        })}
                         </div>
                       ))}
                     </div>
                   );
                 })()}
-                <div>Estimated Output Tokens: {info.metadata?.default_estimated_output_tokens ?? t("infoDefault")}</div>
                 <div>
-                  Estimated Output Tokens Per Model:{" "}
-                  {info.metadata?.default_estimated_output_tokens_per_model
-                    ? JSON.stringify(info.metadata.default_estimated_output_tokens_per_model)
-                    : t("infoDefault")}
+                  {t("infoEstimatedOutputTokensValue", {
+                    value: info.metadata?.default_estimated_output_tokens ?? t("infoDefault"),
+                  })}
+                </div>
+                <div>
+                  {t("infoEstimatedOutputTokensPerModelValue", {
+                    value: info.metadata?.default_estimated_output_tokens_per_model
+                      ? JSON.stringify(info.metadata.default_estimated_output_tokens_per_model)
+                      : t("infoDefault"),
+                  })}
                 </div>
               </div>
               <div>
                 <p className="font-medium">{t("infoTeamBudget")}</p>
                 <div>
-                  Max Budget: {info.max_budget !== null ? `$${formatNumberWithCommas(info.max_budget, 4)}` : t("infoNoLimit")}
+                  {t("infoMaxBudgetValue", {
+                    value:
+                      info.max_budget !== null ? `$${formatNumberWithCommas(info.max_budget, 4)}` : t("infoNoLimit"),
+                  })}
                 </div>
                 <div>
-                  Soft Budget:{" "}
-                  {info.soft_budget !== null && info.soft_budget !== undefined
-                    ? `$${formatNumberWithCommas(info.soft_budget, 4)}`
-                    : t("infoNoLimit")}
+                  {t("infoSoftBudgetValue", {
+                    value:
+                      info.soft_budget !== null && info.soft_budget !== undefined
+                        ? `$${formatNumberWithCommas(info.soft_budget, 4)}`
+                        : t("infoNoLimit"),
+                  })}
                 </div>
-                <div>Budget Reset: {info.budget_duration || t("infoNever")}</div>
+                <div>{t("infoBudgetResetValue", { value: info.budget_duration || t("infoNever") })}</div>
                 {modelMaxBudgetToEntries(info.model_max_budget as ModelMaxBudget | null | undefined).map(
                   ({ model, budgetLimit, timePeriod }) => {
                     const spent = model === null ? undefined : info.model_max_budget_usage?.[model]?.current_spend;
                     return (
                       <div key={model}>
-                        Per-Model Budget ({model}): ${budgetLimit ?? "?"} per {timePeriod}
-                        {spent !== undefined && `, spent $${spent}`}
+                        {t("infoPerModelBudget", {
+                          model: model ?? "",
+                          budget: budgetLimit ?? "?",
+                          period: timePeriod,
+                        })}
+                        {spent !== undefined && t("infoPerModelBudgetSpent", { spent })}
                       </div>
                     );
                   },
@@ -2281,7 +2318,11 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 {info.metadata?.soft_budget_alerting_emails &&
                   Array.isArray(info.metadata.soft_budget_alerting_emails) &&
                   info.metadata.soft_budget_alerting_emails.length > 0 && (
-                    <div>Soft Budget Alerting Emails: {info.metadata.soft_budget_alerting_emails.join(", ")}</div>
+                    <div>
+                      {t("infoSoftBudgetAlertingEmailsValue", {
+                        value: info.metadata.soft_budget_alerting_emails.join(", "),
+                      })}
+                    </div>
                   )}
               </div>
               <div>
@@ -2291,11 +2332,11 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
                 </p>
-                <div>Max Budget: {info.team_member_budget_table?.max_budget ?? t("infoNoLimit")}</div>
+                <div>{t("infoMaxBudgetValue", { value: info.team_member_budget_table?.max_budget ?? t("infoNoLimit") })}</div>
                 <div>Budget Duration: {info.team_member_budget_table?.budget_duration || t("infoNoLimit")}</div>
                 <div>Key Duration: {info.metadata?.team_member_key_duration || t("infoNoLimit")}</div>
-                <div>TPM Limit: {info.team_member_budget_table?.tpm_limit ?? t("infoNoLimit")}</div>
-                <div>RPM Limit: {info.team_member_budget_table?.rpm_limit ?? t("infoNoLimit")}</div>
+                <div>{t("infoTpmLimitValue", { value: info.team_member_budget_table?.tpm_limit ?? t("infoNoLimit") })}</div>
+                <div>{t("infoRpmLimitValue", { value: info.team_member_budget_table?.rpm_limit ?? t("infoNoLimit") })}</div>
                 <div>Budget Alert Thresholds: {teamMemberBudgetAlertSummary(info.metadata).join("; ") || t("infoNone")}</div>
               </div>
               <div>
@@ -2501,7 +2542,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               name: "tpm_limit",
               label: (
                 <span>
-                  Team Member TPM Limit{" "}
+                  {t("infoTeamMemberTpmLimit")}{" "}
                   <SimpleTooltip content={t("infoTeamMemberTpmLimitTooltip")}>
                     <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
@@ -2516,7 +2557,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               name: "rpm_limit",
               label: (
                 <span>
-                  Team Member RPM Limit{" "}
+                  {t("infoTeamMemberRpmLimit")}{" "}
                   <SimpleTooltip content={t("infoTeamMemberRpmLimitTooltip")}>
                     <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>

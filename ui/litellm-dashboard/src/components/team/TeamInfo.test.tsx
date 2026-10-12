@@ -15,7 +15,7 @@ import TeamInfoView, {
   type TeamData,
 } from "./TeamInfo";
 
-const authState = vi.hoisted(() => ({ userRole: "管理员" }));
+const authState = vi.hoisted(() => ({ userRole: "Admin" }));
 
 vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
   default: () => ({
@@ -234,7 +234,7 @@ vi.mock("../key_team_helpers/filter_helpers", () => ({
 import { useAllProxyModels } from "@/app/(dashboard)/hooks/models/useModels";
 import { useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import { useOrganization } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
-import { teamKeys, teamsTableKeys, useTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
+import { useTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { useCurrentUser } from "@/app/(dashboard)/hooks/users/useCurrentUser";
 import { useMCPServers } from "@/app/(dashboard)/hooks/mcpServers/useMCPServers";
 import { useMCPToolsets } from "@/app/(dashboard)/hooks/mcpServers/useMCPToolsets";
@@ -357,7 +357,7 @@ describe("TeamInfoView", () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-    authState.userRole = "管理员";
+    authState.userRole = "Admin";
   });
 
   describe("display and rendering", () => {
@@ -439,8 +439,8 @@ describe("TeamInfoView", () => {
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
-      expect(await screen.findByText("所有代理模型")).toBeInTheDocument();
-      expect(screen.queryByRole("link", { name: "所有代理模型" })).not.toBeInTheDocument();
+      expect(await screen.findByText("All proxy models")).toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: "All proxy models" })).not.toBeInTheDocument();
     });
 
     it("should display loading state while fetching team data", () => {
@@ -448,7 +448,7 @@ describe("TeamInfoView", () => {
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
-      expect(screen.getByText("Loading...")).toBeInTheDocument();
+      expect(screen.getByText("加载中...")).toBeInTheDocument();
     });
 
     it("should display error message when team is not found", async () => {
@@ -481,7 +481,7 @@ describe("TeamInfoView", () => {
         expect(screen.getByText("预算状态")).toBeInTheDocument();
       });
       expect(screen.getByText("$250.50")).toBeInTheDocument();
-      expect(screen.getByText(/of \$1,000\.00/)).toBeInTheDocument();
+      expect(screen.getByText(/共 \$1,000\.00/)).toBeInTheDocument();
     });
 
     it("renders a tpm/rpm/budget limit of 0 as 0 in the overview and settings tabs, never as Unlimited or No Limit", async () => {
@@ -495,17 +495,17 @@ describe("TeamInfoView", () => {
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
-      const overview = await screen.findByRole("tabpanel", { name: "概览" });
-      expect(within(overview).getByText("TPM: 0")).toBeInTheDocument();
-      expect(within(overview).getByText("RPM: 0")).toBeInTheDocument();
+      const overview = await screen.findByRole("tabpanel", { name: "Overview" });
+      expect(within(overview).getByText("TPM：0")).toBeInTheDocument();
+      expect(within(overview).getByText("RPM：0")).toBeInTheDocument();
 
-      await userEvent.setup({ delay: null }).click(screen.getByRole("tab", { name: "设置" }));
-      const settings = await screen.findByRole("tabpanel", { name: "设置" });
-      expect(within(settings).getByText("TPM: 0")).toBeInTheDocument();
-      expect(within(settings).getByText("RPM: 0")).toBeInTheDocument();
-      expect(within(settings).getByText("TPM Limit: 0")).toBeInTheDocument();
-      expect(within(settings).getByText("RPM Limit: 0")).toBeInTheDocument();
-      expect(within(settings).getByText("Max Budget: 0")).toBeInTheDocument();
+      await userEvent.setup({ delay: null }).click(screen.getByRole("tab", { name: "Settings" }));
+      const settings = await screen.findByRole("tabpanel", { name: "Settings" });
+      expect(within(settings).getByText("TPM：0")).toBeInTheDocument();
+      expect(within(settings).getByText("RPM：0")).toBeInTheDocument();
+      expect(within(settings).getByText("TPM 限制：0")).toBeInTheDocument();
+      expect(within(settings).getByText("RPM 限制：0")).toBeInTheDocument();
+      expect(within(settings).getByText("最大预算：0")).toBeInTheDocument();
       expect(screen.queryByText("TPM: Unlimited")).not.toBeInTheDocument();
       expect(screen.queryByText("RPM: Unlimited")).not.toBeInTheDocument();
       expect(screen.queryByText("TPM Limit: No Limit")).not.toBeInTheDocument();
@@ -562,7 +562,7 @@ describe("TeamInfoView", () => {
       await waitFor(() => {
         expect(screen.getByText("预算状态")).toBeInTheDocument();
       });
-      expect(screen.getByText("Team Member Budget: $500.00")).toBeInTheDocument();
+      expect(screen.getByText("团队成员预算：$500.00")).toBeInTheDocument();
     });
 
     it("should display virtual keys information", async () => {
@@ -574,7 +574,7 @@ describe("TeamInfoView", () => {
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: "虚拟密钥" })).toBeInTheDocument();
+        expect(screen.getByRole("tab", { name: "Virtual Keys" })).toBeInTheDocument();
       });
     });
 
@@ -646,7 +646,7 @@ describe("TeamInfoView", () => {
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: "成员" })).toBeInTheDocument();
+        expect(screen.getByRole("tab", { name: "Members" })).toBeInTheDocument();
       });
     });
 
@@ -660,7 +660,7 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      expect(screen.queryByRole("tab", { name: "成员" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("tab", { name: "Members" })).not.toBeInTheDocument();
     });
 
     it("should show settings tab when user can edit team", async () => {
@@ -669,7 +669,7 @@ describe("TeamInfoView", () => {
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: "设置" })).toBeInTheDocument();
+        expect(screen.getByRole("tab", { name: "Settings" })).toBeInTheDocument();
       });
     });
 
@@ -681,9 +681,9 @@ describe("TeamInfoView", () => {
       renderWithProviders(<TeamInfoView {...defaultProps} is_team_admin={false} is_proxy_admin={false} />);
 
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: "设置" })).toBeInTheDocument();
+        expect(screen.getByRole("tab", { name: "Settings" })).toBeInTheDocument();
       });
-      expect(screen.getByRole("tab", { name: "成员" })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "Members" })).toBeInTheDocument();
     });
 
     it("should navigate to settings tab when clicked", async () => {
@@ -697,7 +697,7 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const settingsTab = screen.getByRole("tab", { name: "设置" });
+      const settingsTab = screen.getByRole("tab", { name: "Settings" });
       await user.click(settingsTab);
 
       await waitFor(() => {
@@ -717,7 +717,7 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const backButton = screen.getByRole("button", { name: /back to teams/i });
+      const backButton = screen.getByRole("button", { name: "返回团队" });
       await user.click(backButton);
 
       expect(onClose).toHaveBeenCalled();
@@ -749,7 +749,7 @@ describe("TeamInfoView", () => {
       renderWithProviders(<TeamInfoView {...defaultProps} is_team_admin={false} is_proxy_admin={false} />);
 
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: "虚拟密钥" })).toBeInTheDocument();
+        expect(screen.getByRole("tab", { name: "Virtual Keys" })).toBeInTheDocument();
       });
     });
 
@@ -784,11 +784,11 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const virtualKeysTab = screen.getByRole("tab", { name: "虚拟密钥" });
+      const virtualKeysTab = screen.getByRole("tab", { name: "Virtual Keys" });
       await user.click(virtualKeysTab);
 
       await waitFor(() => {
-        expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-5 of 5");
+        expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-5 条，共 5 条");
       });
     });
 
@@ -829,14 +829,14 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const virtualKeysTab = screen.getByRole("tab", { name: "虚拟密钥" });
+      const virtualKeysTab = screen.getByRole("tab", { name: "Virtual Keys" });
       await user.click(virtualKeysTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: "筛选" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument();
       });
       expect(screen.getByRole("button", { name: "Columns" })).toBeInTheDocument();
-      expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-1 of 1");
+      expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-1 条，共 1 条");
       expect(screen.getByTestId("pagination-prev")).toBeInTheDocument();
       expect(screen.getByTestId("pagination-next")).toBeInTheDocument();
     });
@@ -856,8 +856,8 @@ describe("TeamInfoView", () => {
       });
       expect(can).toHaveBeenCalledWith("viewPolicies");
 
-      await user.click(screen.getByRole("tab", { name: "设置" }));
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
+      await user.click(await screen.findByRole("button", { name: "编辑设置" }));
 
       await waitFor(() => {
         expect(policiesFormFieldLabel()).toBeInTheDocument();
@@ -871,8 +871,8 @@ describe("TeamInfoView", () => {
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
-      await user.click(await screen.findByRole("tab", { name: "设置" }));
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+      await user.click(await screen.findByRole("tab", { name: "Settings" }));
+      await user.click(await screen.findByRole("button", { name: "编辑设置" }));
 
       expect(await screen.findByLabelText("团队名称")).toBeInTheDocument();
 
@@ -891,14 +891,14 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const settingsTab = screen.getByRole("tab", { name: "设置" });
+      const settingsTab = screen.getByRole("tab", { name: "Settings" });
       await user.click(settingsTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
       });
 
-      const editButton = screen.getByRole("button", { name: /edit settings/i });
+      const editButton = screen.getByRole("button", { name: "编辑设置" });
       await user.click(editButton);
 
       await waitFor(() => {
@@ -917,21 +917,21 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const settingsTab = screen.getByRole("tab", { name: "设置" });
+      const settingsTab = screen.getByRole("tab", { name: "Settings" });
       await user.click(settingsTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
       });
 
-      const editButton = screen.getByRole("button", { name: /edit settings/i });
+      const editButton = screen.getByRole("button", { name: "编辑设置" });
       await user.click(editButton);
 
       await waitFor(() => {
         expect(screen.getByLabelText("团队名称")).toBeInTheDocument();
       });
 
-      const cancelButton = screen.getByRole("button", { name: /cancel/i });
+      const cancelButton = screen.getByRole("button", { name: "取消" });
       await user.click(cancelButton);
 
       await waitFor(() => {
@@ -956,14 +956,14 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const settingsTab = screen.getByRole("tab", { name: "设置" });
+      const settingsTab = screen.getByRole("tab", { name: "Settings" });
       await user.click(settingsTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
       });
 
-      const editButton = screen.getByRole("button", { name: /edit settings/i });
+      const editButton = screen.getByRole("button", { name: "编辑设置" });
       await user.click(editButton);
 
       const secretField = await screen.findByPlaceholderText(
@@ -990,14 +990,14 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const settingsTab = screen.getByRole("tab", { name: "设置" });
+      const settingsTab = screen.getByRole("tab", { name: "Settings" });
       await user.click(settingsTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
       });
 
-      const editButton = screen.getByRole("button", { name: /edit settings/i });
+      const editButton = screen.getByRole("button", { name: "编辑设置" });
       await user.click(editButton);
 
       const secretField = await screen.findByPlaceholderText(
@@ -1020,7 +1020,7 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const membersTab = screen.getByRole("tab", { name: "成员" });
+      const membersTab = screen.getByRole("tab", { name: "Members" });
       await user.click(membersTab);
 
       await waitFor(() => {
@@ -1031,10 +1031,10 @@ describe("TeamInfoView", () => {
       await user.click(addButton);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: "提交" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
       });
 
-      const submitButton = screen.getByRole("button", { name: "提交" });
+      const submitButton = screen.getByRole("button", { name: "Submit" });
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -1058,7 +1058,7 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const settingsTab = screen.getByRole("tab", { name: "设置" });
+      const settingsTab = screen.getByRole("tab", { name: "Settings" });
       await user.click(settingsTab);
 
       await waitFor(() => {
@@ -1066,7 +1066,7 @@ describe("TeamInfoView", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Soft Budget:/)).toBeInTheDocument();
+        expect(screen.getByText(/软预算：/)).toBeInTheDocument();
         expect(screen.getByText(/\$500\.75/)).toBeInTheDocument();
       });
     });
@@ -1088,7 +1088,7 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const settingsTab = screen.getByRole("tab", { name: "设置" });
+      const settingsTab = screen.getByRole("tab", { name: "Settings" });
       await user.click(settingsTab);
 
       await waitFor(() => {
@@ -1096,7 +1096,7 @@ describe("TeamInfoView", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Soft Budget Alerting Emails:/)).toBeInTheDocument();
+        expect(screen.getByText(/软预算告警邮箱：/)).toBeInTheDocument();
         expect(screen.getByText(/alert1@test\.com, alert2@test\.com/)).toBeInTheDocument();
       });
     });
@@ -1119,21 +1119,21 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      const settingsTab = screen.getByRole("tab", { name: "设置" });
+      const settingsTab = screen.getByRole("tab", { name: "Settings" });
       await user.click(settingsTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
       });
 
-      const editButton = screen.getByRole("button", { name: /edit settings/i });
+      const editButton = screen.getByRole("button", { name: "编辑设置" });
       await user.click(editButton);
 
       await waitFor(() => {
         expect(screen.getByLabelText("团队名称")).toBeInTheDocument();
       });
 
-      const saveButton = screen.getByRole("button", { name: /save changes/i });
+      const saveButton = screen.getByRole("button", { name: "保存更改" });
       await user.click(saveButton);
 
       await waitFor(() => {
@@ -1145,26 +1145,6 @@ describe("TeamInfoView", () => {
           }),
         );
       });
-    });
-
-    it("invalidates the cached team list and team detail queries after saving team settings", async () => {
-      const user = userEvent.setup({ delay: null });
-      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData({ models: ["gpt-4"] }));
-      vi.mocked(networking.teamUpdateCall).mockResolvedValue({ data: {}, team_id: "123" } as any);
-      const tableKey = teamsTableKeys.list({ page: 1, limit: 10 });
-      const detailKey = teamKeys.detail("123");
-      testQueryClient.setQueryData(tableKey, { teams: [], total: 0 });
-      testQueryClient.setQueryData(detailKey, { team_id: "123" });
-
-      renderWithProviders(<TeamInfoView {...defaultProps} />);
-
-      await user.click(await screen.findByRole("tab", { name: "设置" }));
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
-      await screen.findByLabelText("团队名称");
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
-
-      await waitFor(() => expect(testQueryClient.getQueryState(tableKey)?.isInvalidated).toBe(true));
-      expect(testQueryClient.getQueryState(detailKey)?.isInvalidated).toBe(true);
     });
 
     const openSettingsEditorForTeam = async (
@@ -1180,16 +1160,16 @@ describe("TeamInfoView", () => {
         expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0);
       });
 
-      await user.click(screen.getByRole("tab", { name: "设置" }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
       });
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("button", { name: "编辑设置" }));
       await waitFor(() => {
         expect(screen.getByLabelText("团队名称")).toBeInTheDocument();
       });
 
-      return screen.getByLabelText("Reset Budget");
+      return screen.getByLabelText("重置预算");
     };
 
     it("should send an explicit null budget_duration when a stored Reset Budget is cleared", async () => {
@@ -1202,7 +1182,7 @@ describe("TeamInfoView", () => {
         expect(resetBudgetSelect).toHaveTextContent("从不重置");
       });
 
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
@@ -1217,7 +1197,7 @@ describe("TeamInfoView", () => {
       const user = userEvent.setup({ delay: null });
       await openSettingsEditorForTeam(user, { budget_duration: "30d" });
 
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
@@ -1232,7 +1212,7 @@ describe("TeamInfoView", () => {
 
       await chooseSelectOption(user, resetBudgetSelect, "每周");
 
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
@@ -1249,13 +1229,13 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      await user.click(screen.getByRole("tab", { name: "设置" }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("button", { name: "编辑设置" }));
 
       await waitFor(() => {
         expect(screen.getByLabelText("团队名称")).toBeInTheDocument();
@@ -1289,7 +1269,7 @@ describe("TeamInfoView", () => {
       const valueValues = screen.getAllByPlaceholderText("Value").map((input) => (input as HTMLInputElement).value);
       expect(valueValues).toEqual(["research", "3", "true", '{"region":"us"}']);
 
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
@@ -1331,7 +1311,7 @@ describe("TeamInfoView", () => {
 
       fireEvent.change(screen.getByLabelText("预估输出 Token"), { target: { value: "999" } });
 
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
@@ -1350,7 +1330,7 @@ describe("TeamInfoView", () => {
       renderWithProviders(<TeamInfoView {...defaultProps} />);
       await openSettingsEditor(user);
 
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
@@ -1383,7 +1363,7 @@ describe("TeamInfoView", () => {
         expect(screen.getByLabelText("预估输出 Token")).toBeDisabled();
         expect(screen.getByLabelText("每个模型的预估输出 Token")).toBeDisabled();
 
-        await user.click(screen.getByRole("button", { name: /save changes/i }));
+        await user.click(screen.getByRole("button", { name: "保存更改" }));
 
         await waitFor(() => {
           expect(networking.teamUpdateCall).toHaveBeenCalled();
@@ -1395,7 +1375,7 @@ describe("TeamInfoView", () => {
       },
     );
 
-    it.each(["管理员", "proxy_admin"])("leaves both estimate controls editable for %s", async (userRole) => {
+    it.each(["Admin", "proxy_admin"])("leaves both estimate controls editable for %s", async (userRole) => {
       authState.userRole = userRole;
       const user = userEvent.setup({ delay: null });
       vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData({ models: ["gpt-4"] }));
@@ -1438,7 +1418,7 @@ describe("TeamInfoView", () => {
 
       await user.clear(screen.getAllByPlaceholderText("Value")[0]);
       fireEvent.change(screen.getAllByPlaceholderText("Value")[0], { target: { value: "CC-NEW" } });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
@@ -1459,13 +1439,13 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      await user.click(screen.getByRole("tab", { name: "设置" }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("button", { name: "编辑设置" }));
 
       await waitFor(() => {
         expect(screen.getByLabelText("团队名称")).toBeInTheDocument();
@@ -1487,7 +1467,7 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      await user.click(screen.getByRole("tab", { name: "设置" }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
 
       await waitFor(() => {
         expect(screen.getByText("团队设置")).toBeInTheDocument();
@@ -1518,14 +1498,14 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      await user.click(screen.getByRole("tab", { name: "设置" }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
 
       await waitFor(() => {
         expect(screen.getByText("团队设置")).toBeInTheDocument();
       });
 
-      expect(screen.getAllByText("Estimated Output Tokens: 512")).toHaveLength(2);
-      expect(screen.getAllByText('Estimated Output Tokens Per Model: {"gpt-4":4096}')).toHaveLength(2);
+      expect(screen.getAllByText("预估输出 Token：512")).toHaveLength(2);
+      expect(screen.getAllByText('每个模型的预估输出 Token：{"gpt-4":4096}')).toHaveLength(2);
     });
 
     it("should show an empty state when the team has no model aliases", async () => {
@@ -1539,7 +1519,7 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      await user.click(screen.getByRole("tab", { name: "设置" }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
 
       await waitFor(() => {
         expect(screen.getByText("团队设置")).toBeInTheDocument();
@@ -1576,7 +1556,7 @@ describe("TeamInfoView", () => {
       await openSettingsEditor(user);
 
       await user.click(screen.getByRole("button", { name: "Set Alias" }));
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalledWith(
@@ -1604,7 +1584,7 @@ describe("TeamInfoView", () => {
       await openSettingsEditor(user);
 
       await user.click(screen.getByRole("button", { name: "Clear Aliases" }));
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
@@ -1625,7 +1605,7 @@ describe("TeamInfoView", () => {
 
       await openSettingsEditor(user);
 
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
@@ -1648,8 +1628,8 @@ describe("TeamInfoView", () => {
       await waitFor(() => {
         expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0);
       });
-      await user.click(screen.getByRole("tab", { name: "设置" }));
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
+      await user.click(await screen.findByRole("button", { name: "编辑设置" }));
       await screen.findByLabelText("团队名称");
     };
 
@@ -1669,9 +1649,9 @@ describe("TeamInfoView", () => {
       await waitFor(() => {
         expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0);
       });
-      await user.click(screen.getByRole("tab", { name: "设置" }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
 
-      expect(await screen.findByText("Per-Model Budget (gpt-4): $5 per 1d, spent $1.25")).toBeInTheDocument();
+      expect(await screen.findByText("各模型预算（gpt-4）：每 1d $5，已支出 $1.25")).toBeInTheDocument();
     });
 
     it("seeds the editor from the stored budget and keeps it read-only without an enterprise license", async () => {
@@ -1695,7 +1675,7 @@ describe("TeamInfoView", () => {
       renderWithProviders(<TeamInfoView {...defaultProps} premiumUser={true} />);
 
       await openSettingsEditor(user);
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       expect(await savedPayload()).not.toHaveProperty("model_max_budget");
     });
@@ -1709,7 +1689,7 @@ describe("TeamInfoView", () => {
 
       await openSettingsEditor(user);
       fireEvent.change(screen.getByPlaceholderText("Max spend ($)"), { target: { value: "2.5" } });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       expect((await savedPayload()).model_max_budget).toEqual({ "gpt-4": { budget_limit: 2.5, time_period: "1d" } });
     });
@@ -1723,7 +1703,7 @@ describe("TeamInfoView", () => {
 
       await openSettingsEditor(user);
       await user.click(screen.getByRole("button", { name: "Remove model budget" }));
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       expect((await savedPayload()).model_max_budget).toEqual({});
     });
@@ -1742,18 +1722,18 @@ describe("TeamInfoView", () => {
         expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0);
       });
 
-      await user.click(screen.getByRole("tab", { name: "设置" }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("button", { name: "编辑设置" }));
 
-      await user.click(await screen.findByRole("button", { name: /team member settings/i }));
+      await user.click(await screen.findByRole("button", { name: "团队成员设置" }));
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/^Default Key Duration/)).toHaveValue("30d");
+        expect(screen.getByLabelText(/^默认密钥有效期/)).toHaveValue("30d");
       });
     });
   });
@@ -1772,19 +1752,19 @@ describe("TeamInfoView", () => {
         expect(teamNameElements.length).toBeGreaterThan(0);
       });
 
-      await user.click(screen.getByRole("tab", { name: "设置" }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("button", { name: "编辑设置" }));
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/^Guardrails/)).toBeInTheDocument();
+        expect(screen.getByLabelText(/^护栏/)).toBeInTheDocument();
       });
 
-      await user.click(screen.getByLabelText(/^Guardrails/));
+      await user.click(screen.getByLabelText(/^护栏/));
 
       const listbox = await screen.findByRole("listbox", {}, { timeout: 5000 });
       return listbox.closest('[data-slot="combobox-content"]') as HTMLElement;
@@ -1862,8 +1842,8 @@ describe("TeamInfoView", () => {
         expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0);
       });
 
-      await user.click(screen.getByRole("tab", { name: "设置" }));
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("tab", { name: "Settings" }));
+      await user.click(await screen.findByRole("button", { name: "编辑设置" }));
 
       await user.click(await screen.findByRole("combobox", { name: "选择透传路由" }));
 
@@ -1875,7 +1855,7 @@ describe("TeamInfoView", () => {
       await waitFor(() => {
         expect(screen.getByText("POST /bedrock-passthrough")).toBeInTheDocument();
       });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalledWith(
@@ -1906,14 +1886,14 @@ describe("TeamInfoView", () => {
 
       renderWithProviders(<TeamInfoView {...teamAdminProps} />);
 
-      await user.click(await screen.findByRole("tab", { name: "设置" }));
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+      await user.click(await screen.findByRole("tab", { name: "Settings" }));
+      await user.click(await screen.findByRole("button", { name: "编辑设置" }));
 
       expect(toast.error).toHaveBeenCalledWith("此代理上团队管理员无法编辑团队设置", {
         description: "请联系代理管理员在 设置 > UI > 团队管理员可编辑字段 中启用相关字段。",
       });
       expect(screen.queryByLabelText("团队名称")).not.toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     });
 
     it("gives a team admin only the fields the proxy enabled and sends only those on save", async () => {
@@ -1928,16 +1908,16 @@ describe("TeamInfoView", () => {
 
       renderWithProviders(<TeamInfoView {...teamAdminProps} />);
 
-      await user.click(await screen.findByRole("tab", { name: "设置" }));
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+      await user.click(await screen.findByRole("tab", { name: "Settings" }));
+      await user.click(await screen.findByRole("button", { name: "编辑设置" }));
 
-      const tpmInput = await screen.findByLabelText("Tokens per minute Limit (TPM)");
+      const tpmInput = await screen.findByLabelText("每分钟 Token 限制（TPM）");
       expect(tpmInput).toHaveValue(1000);
       expect(screen.queryByLabelText("团队名称")).not.toBeInTheDocument();
-      expect(screen.queryByLabelText("Requests per minute Limit (RPM)")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("每分钟请求限制（RPM）")).not.toBeInTheDocument();
 
       fireEvent.change(tpmInput, { target: { value: "5000" } });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalledTimes(1));
       expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1]).toStrictEqual({ team_id: "123", tpm_limit: 5000 });
@@ -1957,12 +1937,12 @@ describe("TeamInfoView", () => {
 
       renderWithProviders(<TeamInfoView {...teamAdminProps} />);
 
-      await user.click(await screen.findByRole("tab", { name: "设置" }));
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+      await user.click(await screen.findByRole("tab", { name: "Settings" }));
+      await user.click(await screen.findByRole("button", { name: "编辑设置" }));
 
-      expect(await screen.findByLabelText("Requests per minute Limit (RPM)")).toHaveValue(50);
-      expect(screen.getByLabelText("Max Budget (USD)")).toHaveValue(20);
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeDisabled();
+      expect(await screen.findByLabelText("每分钟请求限制（RPM）")).toHaveValue(50);
+      expect(screen.getByLabelText("最大预算（USD）")).toHaveValue(20);
+      expect(screen.getByRole("button", { name: "保存更改" })).toBeDisabled();
     });
 
     it("opens the form when the proxy reports unrestricted access although the props only mark a team admin", async () => {
@@ -1973,15 +1953,15 @@ describe("TeamInfoView", () => {
 
       renderWithProviders(<TeamInfoView {...teamAdminProps} />);
 
-      await user.click(await screen.findByRole("tab", { name: "设置" }));
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+      await user.click(await screen.findByRole("tab", { name: "Settings" }));
+      await user.click(await screen.findByRole("button", { name: "编辑设置" }));
 
       expect(await screen.findByLabelText("团队名称")).toBeInTheDocument();
       expect(toast.error).not.toHaveBeenCalled();
     });
 
     it("never gates a proxy admin on the team admin field list", async () => {
-      authState.userRole = "管理员";
+      authState.userRole = "Admin";
       const user = userEvent.setup({ delay: null });
       vi.mocked(networking.teamInfoCall).mockResolvedValue(
         createMockTeamData({ caller_edit_access: { kind: "unrestricted" } }),
@@ -1989,8 +1969,8 @@ describe("TeamInfoView", () => {
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
-      await user.click(await screen.findByRole("tab", { name: "设置" }));
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+      await user.click(await screen.findByRole("tab", { name: "Settings" }));
+      await user.click(await screen.findByRole("button", { name: "编辑设置" }));
 
       expect(await screen.findByLabelText("团队名称")).toBeInTheDocument();
       expect(toast.error).not.toHaveBeenCalled();
@@ -2035,13 +2015,13 @@ describe("TeamInfoView - which team member fields reach the update payload depen
 
     renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
   };
 
   const save = async (user: ReturnType<typeof userEvent.setup>) => {
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
     return vi.mocked(networking.teamUpdateCall).mock.calls[0][1] as Record<string, unknown>;
   };
@@ -2175,13 +2155,13 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
 
     renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
   };
 
   const save = async (user: ReturnType<typeof userEvent.setup>) => {
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
     return vi.mocked(networking.teamUpdateCall).mock.calls[0][1] as Record<string, unknown>;
   };
@@ -2249,8 +2229,8 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
 
     renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
   };
 
@@ -2290,8 +2270,8 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
 
     renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
 
     const payload = await save(user);
@@ -2309,8 +2289,8 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
 
     renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
 
     await user.click(within(screen.getByLabelText("private-skill")).getByRole("button"));
@@ -2371,8 +2351,8 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
 
     renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
   };
 
@@ -2395,7 +2375,7 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
     await user.click(screen.getByText("团队成员设置"));
     await screen.findByLabelText("默认预算（USD）");
     const thresholds = screen.getAllByPlaceholderText("占预算的百分比");
-    const recipients = screen.getAllByPlaceholderText(/Additional recipients/);
+    const recipients = screen.getAllByPlaceholderText(/其他收件人/);
     expect(thresholds.map((input) => (input as HTMLInputElement).value)).toStrictEqual(["50", "100"]);
     expect(recipients.map((input) => (input as HTMLInputElement).value)).toStrictEqual(["", "finance@test.com"]);
 
@@ -2438,7 +2418,7 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
     fireEvent.change(threshold, { target: { value: "150" } });
     expect(threshold.validity.rangeOverflow).toBe(true);
 
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(networking.teamUpdateCall).not.toHaveBeenCalled());
   });
@@ -2450,7 +2430,7 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
     await user.click(screen.getByText("团队成员设置"));
     await screen.findByLabelText("默认预算（USD）");
     await user.click(screen.getByRole("button", { name: "添加预算告警阈值" }));
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await screen.findByText("请输入 1 到 100 之间的整数");
     expect(networking.teamUpdateCall).not.toHaveBeenCalled();
@@ -2464,15 +2444,15 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
     await user.clear(alias);
     await user.type(alias, "Renamed Team");
 
-    const softBudget = screen.getByLabelText("Soft Budget (USD)");
+    const softBudget = screen.getByLabelText("软预算（USD）");
     await user.clear(softBudget);
     await user.type(softBudget, "9.5");
 
-    const emails = screen.getByLabelText(/Soft Budget Alerting Emails/);
+    const emails = screen.getByLabelText(/软预算告警邮箱/);
     await user.clear(emails);
     await user.type(emails, "a@test.com,  b@test.com ");
 
-    const tpm = screen.getByLabelText("Tokens per minute Limit (TPM)");
+    const tpm = screen.getByLabelText("每分钟 Token 限制（TPM）");
     await user.clear(tpm);
     await user.type(tpm, "555");
 
@@ -2504,8 +2484,8 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
 
     renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
 
     const payload = await save(user);
@@ -2570,13 +2550,13 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
 
     renderWithProviders(<TeamInfoView {...props} premiumUser={true} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
 
     expect(screen.queryAllByLabelText("always-on")).toHaveLength(0);
 
-    await user.click(screen.getByRole("switch", { name: /Disable all global guardrails/ }));
+    await user.click(screen.getByRole("switch", { name: /禁用所有全局护栏/ }));
 
     expect(await screen.findAllByLabelText("always-on")).toHaveLength(1);
 
@@ -2600,8 +2580,8 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
 
     renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
 
     const rpmInput = await screen.findByPlaceholderText("RPM 限制");
@@ -2622,8 +2602,8 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
 
     renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
 
     const payload = await save(user);
@@ -2637,7 +2617,7 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
     await openEditor(user);
 
     await user.clear(screen.getByLabelText("团队名称"));
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     expect(await screen.findByText("请输入团队名称")).toBeInTheDocument();
     expect(networking.teamUpdateCall).not.toHaveBeenCalled();
@@ -2727,13 +2707,13 @@ describe("TeamInfo MCP permission retention", () => {
       />,
     );
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
   };
 
   const saveMcpEditor = async (user: ReturnType<typeof userEvent.setup>) => {
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
     const calls = vi.mocked(networking.teamUpdateCall).mock.calls;
     const [, payload] = calls[calls.length - 1];
@@ -2742,11 +2722,20 @@ describe("TeamInfo MCP permission retention", () => {
 
   const refuseMcpSave = async (user: ReturnType<typeof userEvent.setup>, reason: RegExp) => {
     const errorToast = vi.spyOn(toast, "fromError").mockImplementation(() => {});
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(errorToast).toHaveBeenCalledWith(expect.stringMatching(reason)));
     expect(networking.teamUpdateCall).not.toHaveBeenCalled();
     errorToast.mockRestore();
   };
+
+  const mcpReasonTranslations: Record<string, string> = {
+    infoMcpAccessGroupsCouldNotBeReloaded: "无法重新加载团队的访问组",
+    infoMcpAccessGroupsCouldNotBeLoaded: "无法加载团队的访问组",
+  };
+
+  const mcpReasonTranslator = ((key: string) => mcpReasonTranslations[key] ?? key) as unknown as Parameters<
+    typeof grantedMcpServerIds
+  >[1];
 
   const resolveGrants = (overrides: Partial<McpGrantInput>) => {
     const input: McpGrantInput = {
@@ -2757,7 +2746,7 @@ describe("TeamInfo MCP permission retention", () => {
       loadTeamGroups: vi.fn(),
       ...overrides,
     };
-    return grantedMcpServerIds(input);
+    return grantedMcpServerIds(input, mcpReasonTranslator);
   };
 
   it("retains permissions for directly and indirectly granted servers", async () => {
@@ -2840,14 +2829,14 @@ describe("TeamInfo MCP permission retention", () => {
       }),
     ).toEqual({
       kind: "unresolvable",
-      reason: expect.stringMatching(/access groups could not be loaded/),
+      reason: expect.stringMatching(/无法加载团队的访问组/),
     });
   });
 
   it("is unresolvable when the team reload fails", async () => {
     expect(await resolveGrants({ loadTeamGroups: vi.fn().mockRejectedValue(new Error("boom")) })).toEqual({
       kind: "unresolvable",
-      reason: expect.stringMatching(/access groups could not be reloaded/),
+      reason: expect.stringMatching(/无法重新加载团队的访问组/),
     });
   });
 
@@ -2859,7 +2848,7 @@ describe("TeamInfo MCP permission retention", () => {
       }),
     ).toEqual({
       kind: "unresolvable",
-      reason: expect.stringMatching(/access groups could not be loaded/),
+      reason: expect.stringMatching(/无法加载团队的访问组/),
     });
   });
 
@@ -2902,7 +2891,7 @@ describe("TeamInfo MCP permission retention", () => {
     await renderMcpEditor(user);
 
     await user.click(screen.getByRole("button", { name: "remove first unified access group" }));
-    await refuseMcpSave(user, /access groups could not be loaded/);
+    await refuseMcpSave(user, /无法加载团队的访问组/);
   });
 
   it("keeps the group server allowlist when a selected access group is missing from the list", async () => {
@@ -2950,7 +2939,7 @@ describe("TeamInfo MCP permission retention", () => {
     await renderMcpEditor(user);
     vi.mocked(networking.teamInfoCall).mockRejectedValueOnce(new Error("boom"));
 
-    await refuseMcpSave(user, /access groups could not be reloaded/);
+    await refuseMcpSave(user, /无法重新加载团队的访问组/);
   });
 
   it("identifies standing tool-permission grants not covered by loaded access groups", () => {
@@ -3027,11 +3016,11 @@ describe("TeamInfo MCP permission retention", () => {
       />,
     );
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await user.clear(screen.getByLabelText("团队名称"));
     await user.type(screen.getByLabelText("团队名称"), "Renamed Team");
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
     const [, payload] = vi.mocked(networking.teamUpdateCall).mock.calls[0];
@@ -3071,12 +3060,12 @@ describe("TeamInfo MCP permission retention", () => {
       />,
     );
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() =>
-      expect(errorToast).toHaveBeenCalledWith(expect.stringMatching(/server list could not be loaded/)),
+      expect(errorToast).toHaveBeenCalledWith(expect.stringMatching(/MCP 服务器列表无法加载/)),
     );
     expect(networking.teamUpdateCall).not.toHaveBeenCalled();
     errorToast.mockRestore();
@@ -3091,7 +3080,7 @@ describe("TeamInfoView - disable_global_guardrails switch gating", () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-    authState.userRole = "管理员";
+    authState.userRole = "Admin";
   });
 
   const props = {
@@ -3109,8 +3098,8 @@ describe("TeamInfoView - disable_global_guardrails switch gating", () => {
   const openEditForm = async () => {
     const user = userEvent.setup({ delay: null });
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await screen.findByLabelText("团队名称");
   };
 
@@ -3119,13 +3108,13 @@ describe("TeamInfoView - disable_global_guardrails switch gating", () => {
     renderWithProviders(<TeamInfoView {...props} is_proxy_admin={false} />);
     await openEditForm();
 
-    expect(screen.queryByRole("switch", { name: /Disable all global guardrails/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("switch", { name: /禁用所有全局护栏/ })).not.toBeInTheDocument();
   });
 
   it("shows the Disable all global guardrails switch to a proxy admin", async () => {
     renderWithProviders(<TeamInfoView {...props} />);
     await openEditForm();
 
-    expect(await screen.findByRole("switch", { name: /Disable all global guardrails/i })).toBeInTheDocument();
+    expect(await screen.findByRole("switch", { name: /禁用所有全局护栏/ })).toBeInTheDocument();
   });
 });

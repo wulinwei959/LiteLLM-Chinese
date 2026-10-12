@@ -1,7 +1,9 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, afterEach } from "vitest";
+
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import MCPServerCard from "./MCPServerCard";
 import type { MCPServer } from "@/components/mcp_tools/types";
 import { setServerRootPath } from "@/lib/serverRootPath";
@@ -16,7 +18,7 @@ const baseServer: MCPServer = {
 } as MCPServer;
 
 function renderCard(overrides: Partial<MCPServer>) {
-  render(<MCPServerCard server={{ ...baseServer, ...overrides } as MCPServer} onClick={vi.fn()} />);
+  renderWithProviders(<MCPServerCard server={{ ...baseServer, ...overrides } as MCPServer} onClick={vi.fn()} />);
 }
 
 describe("MCPServerCard health", () => {
@@ -27,13 +29,13 @@ describe("MCPServerCard health", () => {
     await user.hover(screen.getByText("Reachable"));
 
     expect(await screen.findByText("Server responded. Authentication and tools were not checked")).toBeInTheDocument();
-    expect(screen.queryByText("暂无健康数据")).not.toBeInTheDocument();
-    expect(screen.queryByText("健康")).not.toBeInTheDocument();
+    expect(screen.queryByText("No health data")).not.toBeInTheDocument();
+    expect(screen.queryByText("Healthy")).not.toBeInTheDocument();
   });
 });
 
 describe("MCPServerCard OAuth flow indicator", () => {
-  it("shows the '未设置 OAuth 流程' badge for an oauth2 server with no oauth2_flow", () => {
+  it("shows the 'OAuth flow not set' badge for an oauth2 server with no oauth2_flow", () => {
     renderCard({ auth_type: "oauth2", oauth2_flow: null });
     expect(screen.getByText("未设置 OAuth 流程")).toBeInTheDocument();
   });
@@ -86,15 +88,17 @@ describe("MCPServerCard per-user credentials", () => {
   const renderUserFields = (props: { missingUserFields?: string[]; hasUserFields?: boolean }) => {
     const onOpenFillFields = vi.fn();
     const onClick = vi.fn();
-    render(<MCPServerCard server={baseServer} onClick={onClick} onOpenFillFields={onOpenFillFields} {...props} />);
+    renderWithProviders(
+      <MCPServerCard server={baseServer} onClick={onClick} onOpenFillFields={onOpenFillFields} {...props} />,
+    );
     return { onOpenFillFields, onClick };
   };
 
   it("offers Set while a field is missing", () => {
     const { onOpenFillFields, onClick } = renderUserFields({ missingUserFields: ["USER_TOKEN"], hasUserFields: true });
-    expect(screen.getByText("1 user field missing")).toBeInTheDocument();
+    expect(screen.getByText("1 个用户字段缺失")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "更新" })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Set" }));
+    fireEvent.click(screen.getByRole("button", { name: "设置" }));
     expect(onOpenFillFields).toHaveBeenCalledTimes(1);
     expect(onClick).not.toHaveBeenCalled();
   });
@@ -102,8 +106,8 @@ describe("MCPServerCard per-user credentials", () => {
   it("keeps an Update entry point once every field is set", () => {
     const { onOpenFillFields, onClick } = renderUserFields({ missingUserFields: [], hasUserFields: true });
     expect(screen.getByText("按用户凭据")).toBeInTheDocument();
-    expect(screen.getByText("Set")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Set" })).not.toBeInTheDocument();
+    expect(screen.getByText("设置")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "设置" })).not.toBeInTheDocument();
     expect(screen.queryByText(/user field/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "更新" }));
     expect(onOpenFillFields).toHaveBeenCalledTimes(1);
@@ -123,7 +127,7 @@ describe("MCPServerCard per-user credentials", () => {
     renderUserFields({ missingUserFields: [], hasUserFields: false });
     expect(screen.queryByText("按用户凭据")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "更新" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Set" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "设置" })).not.toBeInTheDocument();
   });
 });
 
@@ -136,38 +140,5 @@ describe("MCPServerCard network access", () => {
 
     expect(screen.getByText("所有网络")).toBeInTheDocument();
     expect(screen.queryByText(/^Hub:/)).not.toBeInTheDocument();
-  });
-});
-
-describe("MCPServerCard stdio availability", () => {
-  const stdioServer = { transport: "stdio", url: undefined, command: "python", args: ["server.py"], auth_type: "none" };
-
-  it("flags a stdio server with how to enable stdio when the proxy has it off", async () => {
-    const user = userEvent.setup();
-    render(
-      <MCPServerCard server={{ ...baseServer, ...stdioServer } as MCPServer} onClick={vi.fn()} stdioEnabled={false} />,
-    );
-
-    await user.hover(screen.getByText("stdio disabled"));
-
-    expect(
-      await screen.findByText(
-        "stdio MCP servers are disabled on this proxy. Set LITELLM_ENABLE_MCP_STDIO=true on the proxy and restart to enable them",
-      ),
-    ).toBeInTheDocument();
-  });
-
-  it("does not flag a stdio server when the proxy has stdio on", () => {
-    render(<MCPServerCard server={{ ...baseServer, ...stdioServer } as MCPServer} onClick={vi.fn()} stdioEnabled />);
-
-    expect(screen.getByText("STDIO")).toBeInTheDocument();
-    expect(screen.queryByText("stdio disabled")).not.toBeInTheDocument();
-  });
-
-  it("does not flag a non-stdio server when the proxy has stdio off", () => {
-    render(<MCPServerCard server={baseServer} onClick={vi.fn()} stdioEnabled={false} />);
-
-    expect(screen.getByText("HTTP")).toBeInTheDocument();
-    expect(screen.queryByText("stdio disabled")).not.toBeInTheDocument();
   });
 });

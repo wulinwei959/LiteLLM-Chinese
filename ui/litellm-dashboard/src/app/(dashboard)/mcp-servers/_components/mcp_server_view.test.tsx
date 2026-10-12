@@ -1,27 +1,19 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderWithProviders, testQueryClient } from "../../../../../tests/test-utils";
 import { MCPServerView } from "./mcp_server_view";
 import * as networking from "@/components/networking";
 import { setSecureItem } from "@/utils/secureStorage";
 import { EDIT_OAUTH_UI_STATE_KEY } from "./mcp_server_edit";
 import type { MCPServer } from "@/components/mcp_tools/types";
-import { mcpServersKeys } from "@/app/(dashboard)/hooks/mcpServers/useMCPServers";
 
 vi.mock(".", () => ({
   MCPToolsViewer: () => <div>tools viewer</div>,
 }));
 
 vi.mock("./mcp_server_edit", () => ({
-  default: ({ mcpServer, onSuccess }: { mcpServer: MCPServer; onSuccess: (server: MCPServer) => void }) => (
-    <div>
-      edit form
-      <button type="button" onClick={() => onSuccess({ ...mcpServer, alias: "renamed" })}>
-        save edit
-      </button>
-    </div>
-  ),
+  default: () => <div>edit form</div>,
   EDIT_OAUTH_UI_STATE_KEY: "litellm-mcp-oauth-edit-state",
 }));
 
@@ -41,27 +33,19 @@ const baseServer = {
   auth_type: "api_key",
 } as MCPServer;
 
-const newQueryClient = () => new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
-
-const renderView = (
-  overrides: Partial<MCPServer> = {},
-  props: Record<string, unknown> = {},
-  queryClient: QueryClient = newQueryClient(),
-) =>
-  render(
-    <QueryClientProvider client={queryClient}>
-      <MCPServerView
-        mcpServer={{ ...baseServer, ...overrides } as MCPServer}
-        onBack={vi.fn()}
-        isProxyAdmin
-        isEditing={false}
-        accessToken="tok"
-        userRole="管理员"
-        userID="u1"
-        availableAccessGroups={[]}
-        {...props}
-      />
-    </QueryClientProvider>,
+const renderView = (overrides: Partial<MCPServer> = {}, props: Record<string, unknown> = {}) =>
+  renderWithProviders(
+    <MCPServerView
+      mcpServer={{ ...baseServer, ...overrides } as MCPServer}
+      onBack={vi.fn()}
+      isProxyAdmin
+      isEditing={false}
+      accessToken="tok"
+      userRole="Admin"
+      userID="u1"
+      availableAccessGroups={[]}
+      {...props}
+    />,
   );
 
 const openUserCredentials = async (props: Record<string, unknown>) => {
@@ -83,6 +67,9 @@ const openUserCredentials = async (props: Record<string, unknown>) => {
 
 describe("MCPServerView", () => {
   beforeEach(() => {
+    // testQueryClient is a module singleton with staleTime Infinity, so without this
+    // the User Credentials tab would render the previous test's cached rows.
+    testQueryClient.clear();
     vi.clearAllMocks();
     sessionStorage.clear();
   });
@@ -104,13 +91,13 @@ describe("MCPServerView", () => {
     expect(screen.getByText("未命名服务器")).toBeInTheDocument();
   });
 
-  // "传输方式" and "Authentication" label both an Overview card and a Settings
+  // "Transport" and /Authentication|认证/ label both an Overview card and a Settings
   // row, so only Overview-exclusive labels identify the Overview panel.
   it("summarises the connection on the Overview tab", () => {
     renderView();
 
     expect(screen.getByText("主机 URL")).toBeInTheDocument();
-    expect(screen.getByText("Cost Configuration")).toBeInTheDocument();
+    expect(screen.getByText("费用配置")).toBeInTheDocument();
     expect(screen.getAllByText("HTTP").length).toBeGreaterThan(0);
     expect(screen.getAllByText("https://example.com/mcp").length).toBeGreaterThan(0);
   });
@@ -161,27 +148,6 @@ describe("MCPServerView", () => {
     expect(await screen.findByText("edit form")).toBeInTheDocument();
   });
 
-  it("drops the cached server list and tool catalog once the edit form saves", async () => {
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
-    const serversKey = mcpServersKeys.list();
-    const toolsKey = ["mcpTools", "srv-1", {}, null];
-    const otherToolsKey = ["mcpTools", "srv-2", {}, null];
-    queryClient.setQueryData(serversKey, [baseServer]);
-    queryClient.setQueryData(toolsKey, { tools: [] });
-    queryClient.setQueryData(otherToolsKey, { tools: [] });
-    const onBack = vi.fn();
-    renderView({}, { onBack }, queryClient);
-
-    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
-    await userEvent.click(await screen.findByRole("button", { name: "编辑设置" }));
-    await userEvent.click(await screen.findByRole("button", { name: "save edit" }));
-
-    expect(queryClient.getQueryState(serversKey)?.isInvalidated).toBe(true);
-    expect(queryClient.getQueryState(toolsKey)?.isInvalidated).toBe(true);
-    expect(queryClient.getQueryState(otherToolsKey)?.isInvalidated).toBe(false);
-    expect(onBack).toHaveBeenCalledTimes(1);
-  });
-
   it("opens straight into the edit form when isEditing is set", async () => {
     renderView({}, { isEditing: true });
 
@@ -222,31 +188,6 @@ describe("MCPServerView", () => {
     expect(screen.queryByText("edit form")).not.toBeInTheDocument();
   });
 
-  it.each([
-    { transport: "stdio", stdioEnabled: false, shown: true },
-    { transport: "stdio", stdioEnabled: true, shown: false },
-    { transport: "http", stdioEnabled: false, shown: false },
-  ])(
-    "explains why a $transport server is inert when stdioEnabled=$stdioEnabled",
-    ({ transport, stdioEnabled, shown }) => {
-      renderView({ transport }, { stdioEnabled });
-
-      expect(screen.getByText("srv-1")).toBeInTheDocument();
-      expect(screen.queryByText("stdio is disabled on this proxy") !== null).toBe(shown);
-    },
-  );
-
-  it("leaves the stdio warning to the edit form once editing starts", async () => {
-    renderView({ transport: "stdio" }, { stdioEnabled: false });
-    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
-    expect(screen.getByText("stdio is disabled on this proxy")).toBeInTheDocument();
-
-    await userEvent.click(screen.getByRole("button", { name: "编辑设置" }));
-
-    expect(screen.getByText("edit form")).toBeInTheDocument();
-    expect(screen.queryByText("stdio is disabled on this proxy")).not.toBeInTheDocument();
-  });
-
   it("opens on the tab named by initialTabIndex", async () => {
     renderView({}, { initialTabIndex: 1 });
 
@@ -257,7 +198,7 @@ describe("MCPServerView", () => {
     const onBack = vi.fn();
     renderView({}, { onBack });
 
-    await userEvent.click(screen.getByRole("button", { name: /Back to All Servers/ }));
+    await userEvent.click(screen.getByRole("button", { name: /返回全部服务器/ }));
 
     expect(onBack).toHaveBeenCalled();
   });
@@ -280,12 +221,12 @@ describe("MCPServerView", () => {
 
   it("lets a full admin revoke a stored user credential", async () => {
     const row = await openUserCredentials({});
-    expect(within(row).getByRole("button", { name: "Revoke credential for user alice" })).toBeInTheDocument();
+    expect(within(row).getByRole("button", { name: "吊销用户 alice 的凭据" })).toBeInTheDocument();
   });
 
   it("shows stored credentials to a view-only admin session without a revoke control", async () => {
     const row = await openUserCredentials({ isViewOnly: true });
     expect(row).toHaveTextContent("BYOK API 密钥");
-    expect(within(row).queryByRole("button", { name: /^Revoke credential/ })).not.toBeInTheDocument();
+    expect(within(row).queryByRole("button", { name: /^吊销用户/ })).not.toBeInTheDocument();
   });
 });

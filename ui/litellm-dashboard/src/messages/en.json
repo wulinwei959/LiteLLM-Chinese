@@ -385,6 +385,7 @@
     "subtitleAdmin": "Add and manage models for the proxy",
     "subtitleUser": "View your models and manage routers for teams that allow it.",
     "tabs": {
+      "deployed": "Deployed Models",
       "allModels": "All Models",
       "yourModels": "Your Models",
       "addModel": "Add Model",
