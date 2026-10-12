@@ -1875,7 +1875,13 @@
       "approveFailed": "Failed to approve guardrail",
       "rejectedToast": "Guardrail rejected",
       "rejectFailed": "Failed to reject guardrail",
-      "unnamed": "Unnamed Guardrail"
+      "unnamed": "Unnamed Guardrail",
+      "yamlModeComment": "# or post_call, during_call",
+      "yamlApiKeyComment": "# optional",
+      "yamlFallbackComment": "# default: fail_closed. Set to fail_open to proceed if the guardrail endpoint is unreachable.",
+      "yamlModelComment": "# LLM model name sent to the guardrail for context",
+      "yamlHeadersComment": "# static headers (sent with every request)",
+      "yamlExtraHeadersComment": "# forward these client request headers to the guardrail"
     },
     "table": {
       "id": "Guardrail ID",
@@ -2204,7 +2210,8 @@
       "descContainsAny": "Check if any substring exists",
       "descWordCount": "Count words",
       "descCharCount": "Count characters",
-      "descCase": "String transforms"
+      "descCase": "String transforms",
+      "namePlaceholder": "e.g., block-pii-custom"
     },
     "judge": {
       "modelName": "Judge Model",
@@ -3264,10 +3271,11 @@
   },
   "mcpServers": {
     "validation": {
-        "invalidUrl": "Please enter a valid URL (e.g., http://service-name.domain:1234/path or https://example.com)",
-        "invalidName": "Cannot contain '-' (hyphen) or spaces. Please use '_' (underscore) instead.",
-        "invalidToolDisplayName": "Only letters, digits, underscores, and hyphens are allowed (no spaces)."
-    },    "title": "MCP Servers",
+      "invalidUrl": "Please enter a valid URL (e.g., http://service-name.domain:1234/path or https://example.com)",
+      "invalidName": "Cannot contain '-' (hyphen) or spaces. Please use '_' (underscore) instead.",
+      "invalidToolDisplayName": "Only letters, digits, underscores, and hyphens are allowed (no spaces)."
+    },
+    "title": "MCP Servers",
     "subtitle": "Configure and manage your MCP servers",
     "myConnections": "My Connections",
     "importFromJson": "Import from JSON",
@@ -4182,7 +4190,8 @@
       "costTitle": "How this cost is calculated",
       "costDesc": "Each guardrail's cost is its units per counter × that counter's per-unit price from the cost map. Open a guardrail for its per-counter math.",
       "unpricedTip": "{summary}: these units have no known price and are left out of the cost",
-      "loading": "Loading"
+      "loading": "Loading",
+      "costFormula": "guardrail + guardrail + … = guardrail cost"
     },
     "breakdown": {
       "section": "Usage & Cost",
@@ -4203,7 +4212,11 @@
       "costMathDesc": "Per-unit prices come from the cost map LiteLLM ships with.",
       "unitsMathDesc": "Units are the billable counters the provider reported for this guardrail, added up over every call.",
       "unitsMathTitle": "How usage units add up",
-      "sectionAria": "Usage and cost"
+      "sectionAria": "Usage and cost",
+      "costFormula": "priced units × price per unit = cost, per counter",
+      "unitsFormula": "counter + counter + … = usage units",
+      "costNoteNoPrice": "no known price, left out",
+      "costNoteUnpriced": "{count, plural, one {# unpriced unit left out} other {# unpriced units left out}}"
     },
     "detail": {
       "back": "Back to Overview",
@@ -4236,7 +4249,9 @@
     },
     "chart": {
       "title": "Request Outcomes Over Time",
-      "empty": "No chart data for this period"
+      "empty": "No chart data for this period",
+      "blocked": "Blocked",
+      "passed": "Passed"
     },
     "calc": {
       "how": "How is this calculated?",
@@ -4244,10 +4259,22 @@
     },
     "unpriced": {
       "body": "{count, plural, one {# unit with no known price is left out of the cost.} other {# units with no known price are left out of the cost.}}",
-      "link": "Request pricing on GitHub"
+      "link": "Request pricing on GitHub",
+      "summary": "{count, plural, one {# unit unpriced} other {# units unpriced}}"
     },
     "log": {
       "sample": "Sample:"
+    },
+    "counters": {
+      "automatedReasoningPolicy": "Automated Reasoning Policy",
+      "contentPolicy": "Content Policy",
+      "contentPolicyImage": "Content Policy Image",
+      "contextualGroundingPolicy": "Contextual Grounding Policy",
+      "sensitiveInformationPolicy": "Sensitive Information Policy",
+      "sensitiveInformationPolicyFree": "Sensitive Information Policy Free",
+      "textRecords": "Text Records",
+      "topicPolicy": "Topic Policy",
+      "wordPolicy": "Word Policy"
     }
   },
   "prompts": {

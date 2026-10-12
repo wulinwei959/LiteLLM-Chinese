@@ -35,7 +35,7 @@ describe("CustomCodeModal", () => {
 
     expect(await screen.findByText("创建自定义护栏")).toBeInTheDocument();
     expect(screen.getByText("使用类 Python 语法定义自定义逻辑")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("e.g., block-pii-custom")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("例如 block-pii-custom")).toBeInTheDocument();
     expect(screen.getByText("护栏名称")).toBeInTheDocument();
     expect(screen.getByText("模式（可多选）")).toBeInTheDocument();
     expect(screen.getByText("可用原语")).toBeInTheDocument();
@@ -78,7 +78,7 @@ describe("CustomCodeModal", () => {
     await user.click(await screen.findByRole("button", { name: /保存护栏/ }));
     expect(mockCreate).not.toHaveBeenCalled();
 
-    await user.type(screen.getByPlaceholderText("e.g., block-pii-custom"), "my-guardrail");
+    await user.type(screen.getByPlaceholderText("例如 block-pii-custom"), "my-guardrail");
     await user.click(screen.getByRole("button", { name: /保存护栏/ }));
 
     await waitFor(() => {
@@ -90,7 +90,7 @@ describe("CustomCodeModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.type(await screen.findByPlaceholderText("e.g., block-pii-custom"), "block-pii");
+    await user.type(await screen.findByPlaceholderText("例如 block-pii-custom"), "block-pii");
     await user.click(screen.getByRole("button", { name: /保存护栏/ }));
 
     await waitFor(() => {

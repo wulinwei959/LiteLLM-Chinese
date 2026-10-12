@@ -32,8 +32,8 @@ describe("ScoreChart", () => {
     const { container } = renderWithProviders(<ScoreChart data={data} />);
 
     expect(screen.queryByText("该时段暂无图表数据")).not.toBeInTheDocument();
-    expect(screen.getByText("passed")).toBeInTheDocument();
-    expect(screen.getByText("blocked")).toBeInTheDocument();
+    expect(screen.getByText("通过")).toBeInTheDocument();
+    expect(screen.getByText("拦截")).toBeInTheDocument();
     expect(screen.getAllByText(/2026-03-01/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/2026-03-02/).length).toBeGreaterThan(0);
     const bars = container.querySelectorAll(".recharts-bar");

@@ -27,6 +27,7 @@ export function ScoreChart({ data }: ScoreChartProps) {
               data={chartData}
               index="date"
               categories={["passed", "blocked"]}
+              categoryLabels={{ passed: t("chart.passed"), blocked: t("chart.blocked") }}
               colors={["green", "red"]}
               valueFormatter={(v) => v.toLocaleString()}
               yAxisWidth={48}

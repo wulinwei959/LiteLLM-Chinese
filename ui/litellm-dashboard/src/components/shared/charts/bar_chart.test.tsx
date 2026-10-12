@@ -106,6 +106,23 @@ describe("BarChart", () => {
     expect(screen.queryByText("passed")).not.toBeInTheDocument();
   });
 
+  it("shows the legend under the categoryLabels names while the data keys stay untouched", () => {
+    const { container } = render(
+      <BarChart
+        data={data}
+        index="date"
+        categories={["passed", "blocked"]}
+        categoryLabels={{ passed: "通过", blocked: "拦截" }}
+        colors={["green", "red"]}
+      />,
+    );
+
+    expect(screen.getByText("通过")).toBeInTheDocument();
+    expect(screen.getByText("拦截")).toBeInTheDocument();
+    expect(screen.queryByText("passed")).not.toBeInTheDocument();
+    expect(container.querySelectorAll("path.recharts-rectangle")).toHaveLength(4);
+  });
+
   it("emits no per-chart style tag; colors flow through fills, not CSS vars", () => {
     const { container } = render(
       <BarChart data={data} index="date" categories={["passed", "blocked"]} colors={["green", "red"]} />,

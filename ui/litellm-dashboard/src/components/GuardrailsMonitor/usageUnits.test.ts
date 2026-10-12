@@ -1,4 +1,6 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
+import zh from "@/messages/zh-CN.json";
 import {
   counterLabel,
   counterMathRow,
@@ -11,6 +13,8 @@ import {
   unpricedSummary,
   type CounterMath,
 } from "./usageUnits";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "guardrailsMonitor" });
 
 const counterOf = (counter: string, units: number, unpriced: number, cost: number | null): CounterMath => ({
   counter,
@@ -50,25 +54,27 @@ describe("totalUnits", () => {
 });
 
 describe("counterLabel", () => {
-  it("turns a Bedrock counter name into words without the Units suffix", () => {
-    expect(counterLabel("sensitiveInformationPolicyUnits")).toBe("Sensitive Information Policy");
-    expect(counterLabel("contentPolicyUnits")).toBe("Content Policy");
+  it("names a known provider counter from the message catalog", () => {
+    expect(counterLabel(t, "sensitiveInformationPolicyUnits")).toBe("敏感信息策略");
+    expect(counterLabel(t, "contentPolicyUnits")).toBe("内容策略");
+    expect(counterLabel(t, "text_records")).toBe("文本记录");
   });
 
-  it("leaves a name it cannot split alone apart from capitalising it", () => {
-    expect(counterLabel("units")).toBe("Units");
+  it("falls back to the bare key, word-split and capitalised, for a counter it has no name for", () => {
+    expect(counterLabel(t, "someFutureCounter")).toBe("Some Future Counter");
+    expect(counterLabel(t, "units")).toBe("Units");
   });
 });
 
 describe("unpricedSummary", () => {
   it("is null when every unit was priced", () => {
-    expect(unpricedSummary({})).toBeNull();
-    expect(unpricedSummary({ contentPolicyUnits: 0 })).toBeNull();
+    expect(unpricedSummary(t, {})).toBeNull();
+    expect(unpricedSummary(t, { contentPolicyUnits: 0 })).toBeNull();
   });
 
-  it("counts unpriced units across counters with a pluralised label", () => {
-    expect(unpricedSummary({ contentPolicyUnits: 1200, someFutureCounter: 34 })).toBe("1,234 units unpriced");
-    expect(unpricedSummary({ someFutureCounter: 1 })).toBe("1 unit unpriced");
+  it("counts unpriced units across counters", () => {
+    expect(unpricedSummary(t, { contentPolicyUnits: 1200, someFutureCounter: 34 })).toBe("1,234 个单位未定价");
+    expect(unpricedSummary(t, { someFutureCounter: 1 })).toBe("1 个单位未定价");
   });
 });
 
@@ -98,42 +104,42 @@ describe("formatUnitPrice", () => {
 
 describe("counterMathRow", () => {
   it("shows units × price = cost for a fully priced counter", () => {
-    expect(counterMathRow(counterOf("contentPolicyUnits", 1000, 0, 0.15))).toEqual({
-      label: "Content Policy",
+    expect(counterMathRow(t, counterOf("contentPolicyUnits", 1000, 0, 0.15))).toEqual({
+      label: "内容策略",
       parts: ["1,000", "× $0.00015", "= $0.1500"],
       note: null,
     });
   });
 
   it("prices only the priced share and calls out the rest", () => {
-    expect(counterMathRow(counterOf("sensitiveInformationPolicyUnits", 8, 2, 0.0006))).toEqual({
-      label: "Sensitive Information Policy",
+    expect(counterMathRow(t, counterOf("sensitiveInformationPolicyUnits", 8, 2, 0.0006))).toEqual({
+      label: "敏感信息策略",
       parts: ["6", "× $0.0001", "= $0.0006"],
-      note: "2 unpriced units left out",
+      note: "2 个未定价单位未计入",
     });
-    expect(counterMathRow(counterOf("sensitiveInformationPolicyUnits", 8, 1, 0.0007)).note).toBe(
-      "1 unpriced unit left out",
+    expect(counterMathRow(t, counterOf("sensitiveInformationPolicyUnits", 8, 1, 0.0007)).note).toBe(
+      "1 个未定价单位未计入",
     );
   });
 
   it("says so when a counter has no known price at all", () => {
-    expect(counterMathRow(counterOf("someFutureCounter", 7, 7, null))).toEqual({
+    expect(counterMathRow(t, counterOf("someFutureCounter", 7, 7, null))).toEqual({
       label: "Some Future Counter",
       parts: ["7", "× —", "= —"],
-      note: "no known price, left out",
+      note: "无已知价格，未计入",
     });
   });
 
   it("shows a free counter as × $0", () => {
-    expect(counterMathRow(counterOf("wordPolicyUnits", 2, 0, 0)).parts).toEqual(["2", "× $0", "= $0.0000"]);
+    expect(counterMathRow(t, counterOf("wordPolicyUnits", 2, 0, 0)).parts).toEqual(["2", "× $0", "= $0.0000"]);
   });
 });
 
 describe("unitsMathRows", () => {
   it("lists the counters in order with their counts", () => {
-    expect(unitsMathRows({ contentPolicyUnits: 2, wordPolicyUnits: 1200 })).toEqual([
-      { label: "Content Policy", parts: ["2"], note: null },
-      { label: "Word Policy", parts: ["1,200"], note: null },
+    expect(unitsMathRows(t, { contentPolicyUnits: 2, wordPolicyUnits: 1200 })).toEqual([
+      { label: "内容策略", parts: ["2"], note: null },
+      { label: "词语策略", parts: ["1,200"], note: null },
     ]);
   });
 });

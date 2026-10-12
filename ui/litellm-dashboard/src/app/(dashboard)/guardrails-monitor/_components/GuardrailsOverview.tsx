@@ -54,6 +54,7 @@ const EMPTY_METRICS = {
 };
 
 function UsageUnitsCell({ units }: { units: GuardrailUsageOverviewRow["usageUnits"] }) {
+  const t = useTranslations("guardrailsMonitor");
   const counters = Object.entries(units);
   if (counters.length === 0) return <span className="text-muted-foreground">—</span>;
   return (
@@ -62,7 +63,7 @@ function UsageUnitsCell({ units }: { units: GuardrailUsageOverviewRow["usageUnit
         <ul className="space-y-0.5">
           {counters.map(([counter, n]) => (
             <li key={counter}>
-              {counterLabel(counter)}: {n.toLocaleString()}
+              {counterLabel(t, counter)}: {n.toLocaleString()}
             </li>
           ))}
         </ul>
@@ -83,7 +84,7 @@ function TotalCostMath({
 }) {
   const t = useTranslations("guardrailsMonitor");
   return (
-    <CalcPopover title={t("overview.costTitle")} formula="guardrail + guardrail + … = guardrail cost">
+    <CalcPopover title={t("overview.costTitle")} formula={t("overview.costFormula")}>
       <MathTable
         rows={rows
           .filter((row) => row.cost != null)
@@ -100,7 +101,7 @@ function TotalCostMath({
 
 function CostCell({ row }: { row: GuardrailUsageOverviewRow }) {
   const t = useTranslations("guardrailsMonitor");
-  const unpriced = unpricedSummary(row.untrackedUsageUnits);
+  const unpriced = unpricedSummary(t, row.untrackedUsageUnits);
   return (
     <span className="inline-flex w-full items-center justify-end gap-1">
       {unpriced && (
@@ -327,7 +328,7 @@ export function GuardrailsOverview({
           value={formatCost(metrics.totalCost)}
           valueColor={metrics.totalCost != null ? "text-foreground" : "text-muted-foreground"}
           icon={<CircleDollarSign className="size-4" />}
-          subtitle={unpricedSummary(metrics.untracked) ?? undefined}
+          subtitle={unpricedSummary(t, metrics.untracked) ?? undefined}
           hint={<TotalCostMath rows={activeData} total={metrics.totalCost} untracked={metrics.untracked} />}
         />
         <MetricCard label={t("overview.active")} value={metrics.count} />

@@ -142,12 +142,12 @@ describe("GuardrailsOverview", () => {
     const priced = rowNamed("High Failure Guardrail");
     expect(within(priced).getByText("1,250")).toBeInTheDocument();
     expect(within(priced).getByText("$0.1500")).toBeInTheDocument();
-    expect(within(priced).getByLabelText("250 units unpriced")).toBeInTheDocument();
+    expect(within(priced).getByLabelText("250 个单位未定价")).toBeInTheDocument();
 
     const free = rowNamed("Free Bedrock Guardrail");
     expect(within(free).getByText("40")).toBeInTheDocument();
     expect(within(free).getByText("$0.0000")).toBeInTheDocument();
-    expect(within(free).queryByLabelText(/unpriced/)).not.toBeInTheDocument();
+    expect(within(free).queryByLabelText(/未定价/)).not.toBeInTheDocument();
 
     const unmetered = rowNamed("Low Failure Guardrail");
     expect(within(unmetered).getAllByText("—")).toHaveLength(2);
@@ -159,8 +159,8 @@ describe("GuardrailsOverview", () => {
 
     await user.hover(within(rowNamed("High Failure Guardrail")).getByText("1,250"));
 
-    expect(await screen.findByText("Content Policy: 1,000")).toBeInTheDocument();
-    expect(screen.getByText("Sensitive Information Policy: 250")).toBeInTheDocument();
+    expect(await screen.findByText("内容策略: 1,000")).toBeInTheDocument();
+    expect(screen.getByText("敏感信息策略: 250")).toBeInTheDocument();
   });
 
   it("sorts by cost when its header is clicked, keeping guardrails with no known cost last either way", async () => {
@@ -211,7 +211,7 @@ describe("GuardrailsOverview", () => {
 
     const card = await screen.findByRole("group", { name: "护栏成本" });
     expect(card).toHaveTextContent("$0.1500");
-    expect(card).toHaveTextContent("250 units unpriced");
+    expect(card).toHaveTextContent("250 个单位未定价");
   });
 
   it("lays the guardrail cost total out per guardrail", async () => {
@@ -251,7 +251,7 @@ describe("GuardrailsOverview", () => {
 
     const card = await screen.findByRole("group", { name: "护栏成本" });
     expect(card).toHaveTextContent("—");
-    expect(card).not.toHaveTextContent("unpriced");
+    expect(card).not.toHaveTextContent("未定价");
   });
 
   it("renders the table toolbar heading and its description", async () => {

@@ -31,6 +31,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
+import { TEST_INPUT_EXAMPLES } from "./testInputExamples";
 
 // Code templates
 const CODE_TEMPLATES = {
@@ -225,96 +226,6 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [testExpanded, setTestExpanded] = useState(false);
-
-  // Test input examples for pre_call and post_call
-  const TEST_INPUT_EXAMPLES = {
-    pre_call: {
-      name: "Pre-call (Request)",
-      data: {
-        texts: ["Hello, my SSN is 123-45-6789"],
-        images: [],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "get_weather",
-              description: "Get the current weather in a location",
-              parameters: {
-                type: "object",
-                properties: {
-                  location: { type: "string", description: "City name" },
-                },
-                required: ["location"],
-              },
-            },
-          },
-        ],
-        tool_calls: [],
-        structured_messages: [
-          { role: "system", content: "You are a helpful assistant." },
-          { role: "user", content: "Hello, my SSN is 123-45-6789" },
-        ],
-        model: "gpt-4",
-      },
-    },
-    post_call: {
-      name: "Post-call (Response)",
-      data: {
-        texts: ["The weather in San Francisco is 72°F and sunny."],
-        images: [],
-        tools: [],
-        tool_calls: [
-          {
-            id: "call_abc123",
-            type: "function",
-            function: {
-              name: "get_weather",
-              arguments: '{"location": "San Francisco"}',
-            },
-          },
-        ],
-        structured_messages: [],
-        model: "gpt-4",
-      },
-    },
-    pre_mcp_call: {
-      name: "Pre MCP (MCP tool as OpenAI tool)",
-      data: {
-        texts: ['Tool: read_wiki_structure\nArguments: {"repoName": "BerriAI/litellm"}'],
-        images: [],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "read_wiki_structure",
-              description: "Read the structure of a GitHub repository (MCP tool passed as OpenAI tool)",
-              parameters: {
-                type: "object",
-                properties: {
-                  repoName: { type: "string", description: "Repository name, e.g. BerriAI/litellm" },
-                },
-                required: ["repoName"],
-              },
-            },
-          },
-        ],
-        tool_calls: [
-          {
-            id: "call_mcp_001",
-            type: "function",
-            function: {
-              name: "read_wiki_structure",
-              arguments: '{"repoName": "BerriAI/litellm"}',
-            },
-          },
-        ],
-        structured_messages: [
-          { role: "user", content: 'Tool: read_wiki_structure\nArguments: {"repoName": "BerriAI/litellm"}' },
-        ],
-        model: "mcp-tool-call",
-      },
-    },
-  };
 
   const [testInput, setTestInput] = useState(JSON.stringify(TEST_INPUT_EXAMPLES.pre_call.data, null, 2));
   const [testResult, setTestResult] = useState<any>(null);
@@ -539,7 +450,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
             <Input
               value={guardrailName}
               onChange={(e) => setGuardrailName(e.target.value)}
-              placeholder="e.g., block-pii-custom"
+              placeholder={t("custom.namePlaceholder")}
             />
           </div>
           <div className="w-[280px]">

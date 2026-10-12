@@ -213,30 +213,30 @@ const TEAM_COLORS: Record<string, string> = {
   Finance: "bg-success/15 text-success",
 };
 
-function buildEquivalentConfigYaml(g: TeamGuardrail): string {
+function buildEquivalentConfigYaml(t: GuardrailsTranslator, g: TeamGuardrail): string {
   const lines: string[] = [
     "litellm_settings:",
     "  guardrails:",
     `    - guardrail_name: "${g.name.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`,
     "      litellm_params:",
     `        guardrail: ${g.guardrailType ?? "generic_guardrail_api"}`,
-    `        mode: ${g.mode ?? "pre_call"}  # or post_call, during_call`,
+    `        mode: ${g.mode ?? "pre_call"}  ${t("team.yamlModeComment")}`,
     `        api_base: ${g.endpoint || "https://your-guardrail-api.com"}`,
-    "        api_key: os.environ/YOUR_GUARDRAIL_API_KEY  # optional",
-    `        unreachable_fallback: ${g.unreachable_fallback ?? "fail_closed"}  # default: fail_closed. Set to fail_open to proceed if the guardrail endpoint is unreachable.`,
+    `        api_key: os.environ/YOUR_GUARDRAIL_API_KEY  ${t("team.yamlApiKeyComment")}`,
+    `        unreachable_fallback: ${g.unreachable_fallback ?? "fail_closed"}  ${t("team.yamlFallbackComment")}`,
     `        forward_api_key: ${g.forwardKey}`,
   ];
   if (g.model && g.model !== "—") {
-    lines.push(`        model: "${g.model}"  # LLM model name sent to the guardrail for context`);
+    lines.push(`        model: "${g.model}"  ${t("team.yamlModelComment")}`);
   }
   if (g.customHeaders.length > 0) {
-    lines.push("        headers:  # static headers (sent with every request)");
+    lines.push(`        headers:  ${t("team.yamlHeadersComment")}`);
     for (const h of g.customHeaders) {
       lines.push(`          ${h.key}: "${String(h.value).replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`);
     }
   }
   if (g.extraHeaders.length > 0) {
-    lines.push("        extra_headers:  # forward these client request headers to the guardrail");
+    lines.push(`        extra_headers:  ${t("team.yamlExtraHeadersComment")}`);
     for (const name of g.extraHeaders) {
       lines.push(`          - ${name}`);
     }
@@ -702,7 +702,7 @@ function DetailPanel({
             </button>
             {configExpanded && (
               <pre className="p-3 text-xs font-mono text-foreground bg-card border-t border-border overflow-x-auto whitespace-pre-wrap break-all">
-                {buildEquivalentConfigYaml(g)}
+                {buildEquivalentConfigYaml(t, g)}
               </pre>
             )}
           </div>

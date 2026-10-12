@@ -70,7 +70,11 @@ const unpricedColumn = <TRow extends { unpriced: number }>(t: GuardrailsMonitorT
 });
 
 const counterColumns = (t: GuardrailsMonitorTranslator): ColumnDef<CounterRow>[] => [
-  { header: t("breakdown.colCounter"), accessorKey: "counter", cell: ({ row }) => counterLabel(row.original.counter) },
+  {
+    header: t("breakdown.colCounter"),
+    accessorKey: "counter",
+    cell: ({ row }) => counterLabel(t, row.original.counter),
+  },
   {
     header: t("breakdown.colUnits"),
     accessorKey: "units",
@@ -119,8 +123,8 @@ const groupColumns = (
 const CostMath = ({ counters, detail }: { counters: CounterRow[]; detail: GuardrailUsageDetail }) => {
   const t = useTranslations("guardrailsMonitor");
   return (
-    <CalcPopover title={t("overview.costTitle")} formula="priced units × price per unit = cost, per counter">
-      <MathTable rows={counters.map(counterMathRow)} total={formatCost(detail.cost)} />
+    <CalcPopover title={t("overview.costTitle")} formula={t("breakdown.costFormula")}>
+      <MathTable rows={counters.map((row) => counterMathRow(t, row))} total={formatCost(detail.cost)} />
       <p className="text-xs text-muted-foreground">{t("breakdown.costMathDesc")}</p>
       <UnpricedNote unpriced={detail.untracked_usage_units} provider={detail.provider} />
     </CalcPopover>
@@ -130,8 +134,8 @@ const CostMath = ({ counters, detail }: { counters: CounterRow[]; detail: Guardr
 const UnitsMath = ({ units }: { units: GuardrailUsageDetail["usage_units"] }) => {
   const t = useTranslations("guardrailsMonitor");
   return (
-    <CalcPopover title={t("breakdown.unitsMathTitle")} formula="counter + counter + … = usage units">
-      <MathTable rows={unitsMathRows(units)} total={totalUnits(units).toLocaleString()} />
+    <CalcPopover title={t("breakdown.unitsMathTitle")} formula={t("breakdown.unitsFormula")}>
+      <MathTable rows={unitsMathRows(t, units)} total={totalUnits(units).toLocaleString()} />
       <p className="text-xs text-muted-foreground">{t("breakdown.unitsMathDesc")}</p>
     </CalcPopover>
   );
@@ -144,7 +148,7 @@ const TableHeading = ({ title }: { title: string }) => (
 export function GuardrailUsageBreakdown({ detail }: { detail: GuardrailUsageDetail }) {
   const t = useTranslations("guardrailsMonitor");
   const counters = counterRows(detail);
-  const unpriced = unpricedSummary(detail.untracked_usage_units);
+  const unpriced = unpricedSummary(t, detail.untracked_usage_units);
   const teamCols = groupColumns(t, t("breakdown.byTeam"), t("breakdown.noTeam"));
   const keyCols = groupColumns(t, t("breakdown.byKey"), t("breakdown.noKey"));
 

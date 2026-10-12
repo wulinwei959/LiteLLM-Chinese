@@ -1875,7 +1875,13 @@
       "approveFailed": "批准护栏失败",
       "rejectedToast": "护栏已拒绝",
       "rejectFailed": "拒绝护栏失败",
-      "unnamed": "未命名护栏"
+      "unnamed": "未命名护栏",
+      "yamlModeComment": "# 或 post_call、during_call",
+      "yamlApiKeyComment": "# 可选",
+      "yamlFallbackComment": "# 默认：fail_closed。设为 fail_open 可在护栏端点不可达时继续放行。",
+      "yamlModelComment": "# 发送给护栏作为上下文的 LLM 模型名",
+      "yamlHeadersComment": "# 静态请求头（随每个请求发送）",
+      "yamlExtraHeadersComment": "# 将以下客户端请求头转发给护栏"
     },
     "table": {
       "id": "护栏 ID",
@@ -2204,7 +2210,8 @@
       "descContainsAny": "检查任一子串是否存在",
       "descWordCount": "统计词数",
       "descCharCount": "统计字符数",
-      "descCase": "字符串转换"
+      "descCase": "字符串转换",
+      "namePlaceholder": "例如 block-pii-custom"
     },
     "judge": {
       "modelName": "评审模型",
@@ -3264,10 +3271,11 @@
   },
   "mcpServers": {
     "validation": {
-        "invalidUrl": "请输入有效的 URL（例如 http://service-name.domain:1234/path 或 https://example.com）",
-        "invalidName": "不能包含 '-'（连字符）或空格，请使用 '_'（下划线）",
-        "invalidToolDisplayName": "仅允许字母、数字、下划线和连字符（不允许空格）"
-    },    "title": "MCP 服务器",
+      "invalidUrl": "请输入有效的 URL（例如 http://service-name.domain:1234/path 或 https://example.com）",
+      "invalidName": "不能包含 '-'（连字符）或空格，请使用 '_'（下划线）",
+      "invalidToolDisplayName": "仅允许字母、数字、下划线和连字符（不允许空格）"
+    },
+    "title": "MCP 服务器",
     "subtitle": "配置和管理你的 MCP 服务器",
     "myConnections": "我的连接",
     "importFromJson": "从 JSON 导入",
@@ -4182,7 +4190,8 @@
       "costTitle": "成本如何计算",
       "costDesc": "每个护栏的成本 = 各计数器用量 × 成本图中该计数器的单价。打开护栏查看按计数器的明细。",
       "unpricedTip": "{summary}：这些用量无已知价格，未计入成本",
-      "loading": "加载中"
+      "loading": "加载中",
+      "costFormula": "护栏 + 护栏 + … = 护栏成本"
     },
     "breakdown": {
       "section": "用量与成本",
@@ -4203,7 +4212,11 @@
       "costMathDesc": "单价来自 LiteLLM 自带的成本图。",
       "unitsMathDesc": "用量是提供商上报的该护栏计费计数器，按每次调用累加。",
       "unitsMathTitle": "用量如何累加",
-      "sectionAria": "用量与成本"
+      "sectionAria": "用量与成本",
+      "costFormula": "已定价单位 × 单价 = 成本（逐计数器）",
+      "unitsFormula": "计数器 + 计数器 + … = 用量单位",
+      "costNoteNoPrice": "无已知价格，未计入",
+      "costNoteUnpriced": "{count, number} 个未定价单位未计入"
     },
     "detail": {
       "back": "返回概览",
@@ -4236,18 +4249,32 @@
     },
     "chart": {
       "title": "请求结果趋势",
-      "empty": "该时段暂无图表数据"
+      "empty": "该时段暂无图表数据",
+      "blocked": "拦截",
+      "passed": "通过"
     },
     "calc": {
       "how": "如何计算？",
       "total": "合计"
     },
     "unpriced": {
-      "body": "有 {count} 个单位无已知价格，未计入成本。",
-      "link": "在 GitHub 上请求定价"
+      "body": "有 {count, number} 个单位无已知价格，未计入成本。",
+      "link": "在 GitHub 上请求定价",
+      "summary": "{count, number} 个单位未定价"
     },
     "log": {
       "sample": "示例："
+    },
+    "counters": {
+      "automatedReasoningPolicy": "自动推理策略",
+      "contentPolicy": "内容策略",
+      "contentPolicyImage": "图片内容策略",
+      "contextualGroundingPolicy": "上下文依据策略",
+      "sensitiveInformationPolicy": "敏感信息策略",
+      "sensitiveInformationPolicyFree": "敏感信息策略免费额度",
+      "textRecords": "文本记录",
+      "topicPolicy": "主题策略",
+      "wordPolicy": "词语策略"
     }
   },
   "prompts": {

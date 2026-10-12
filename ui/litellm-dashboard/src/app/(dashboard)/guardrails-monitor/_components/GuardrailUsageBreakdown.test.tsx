@@ -45,7 +45,7 @@ describe("GuardrailUsageBreakdown", () => {
 
     const cost = screen.getByRole("group", { name: "成本" });
     expect(cost).toHaveTextContent("$0.1800");
-    expect(cost).toHaveTextContent("7 units unpriced");
+    expect(cost).toHaveTextContent("7 个单位未定价");
 
     const units = screen.getByRole("group", { name: "用量单位" });
     expect(units).toHaveTextContent("1,307");
@@ -55,7 +55,7 @@ describe("GuardrailUsageBreakdown", () => {
   it("lists each counter with its units, cost and unpriced share", () => {
     renderWithProviders(<GuardrailUsageBreakdown detail={detail} />);
 
-    const content = rowNamed("Content Policy");
+    const content = rowNamed("内容策略");
     expect(within(content).getByText("1,000")).toBeInTheDocument();
     expect(within(content).getByText("$0.1500")).toBeInTheDocument();
     expect(within(content).getByText("—")).toBeInTheDocument();
@@ -105,10 +105,10 @@ describe("GuardrailUsageBreakdown", () => {
 
     const dialog = await screen.findByRole("dialog", { name: "成本如何计算" });
     expect(cellsOf(dialog)).toEqual([
-      ["Content Policy", "1,000", "× $0.00015", "= $0.1500"],
-      ["Sensitive Information Policy", "300", "× $0.0001", "= $0.0300"],
+      ["内容策略", "1,000", "× $0.00015", "= $0.1500"],
+      ["敏感信息策略", "300", "× $0.0001", "= $0.0300"],
       ["Some Future Counter", "7", "× —", "= —"],
-      ["no known price, left out"],
+      ["无已知价格，未计入"],
       ["合计", "$0.1800"],
     ]);
     expect(within(dialog).getByText(/有 7 个单位无已知价格，未计入成本/)).toBeInTheDocument();
@@ -139,7 +139,7 @@ describe("GuardrailUsageBreakdown", () => {
 
     const dialog = await screen.findByRole("dialog", { name: "成本如何计算" });
     expect(cellsOf(dialog)).toEqual([
-      ["Content Policy", "1,000", "× $0.00015", "= $0.1500"],
+      ["内容策略", "1,000", "× $0.00015", "= $0.1500"],
       ["合计", "$0.1500"],
     ]);
     expect(within(dialog).queryByRole("link", { name: "在 GitHub 上请求定价" })).not.toBeInTheDocument();
@@ -157,8 +157,8 @@ describe("GuardrailUsageBreakdown", () => {
 
     const dialog = await screen.findByRole("dialog", { name: "用量如何累加" });
     expect(cellsOf(dialog)).toEqual([
-      ["Content Policy", "1,000"],
-      ["Sensitive Information Policy", "300"],
+      ["内容策略", "1,000"],
+      ["敏感信息策略", "300"],
       ["Some Future Counter", "7"],
       ["合计", "1,307"],
     ]);

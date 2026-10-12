@@ -1,3 +1,4 @@
+import type { GuardrailsMonitorTranslator } from "@/lib/i18n/translators";
 import { formatNumberWithCommas, getSpendString } from "@/utils/dataUtils";
 
 export type UsageUnits = Readonly<Record<string, number>>;
@@ -9,15 +10,43 @@ export const formatCost = (cost: number | null | undefined): string => {
 
 export const totalUnits = (units: UsageUnits): number => Object.values(units).reduce((sum, n) => sum + n, 0);
 
-export const counterLabel = (counter: string): string =>
+type CounterLabelKey =
+  | "counters.automatedReasoningPolicy"
+  | "counters.contentPolicy"
+  | "counters.contentPolicyImage"
+  | "counters.contextualGroundingPolicy"
+  | "counters.sensitiveInformationPolicy"
+  | "counters.sensitiveInformationPolicyFree"
+  | "counters.textRecords"
+  | "counters.topicPolicy"
+  | "counters.wordPolicy";
+
+const COUNTER_KEYS: Readonly<Record<string, CounterLabelKey>> = {
+  automatedReasoningPolicyUnits: "counters.automatedReasoningPolicy",
+  contentPolicyUnits: "counters.contentPolicy",
+  contentPolicyImageUnits: "counters.contentPolicyImage",
+  contextualGroundingPolicyUnits: "counters.contextualGroundingPolicy",
+  sensitiveInformationPolicyUnits: "counters.sensitiveInformationPolicy",
+  sensitiveInformationPolicyFreeUnits: "counters.sensitiveInformationPolicyFree",
+  text_records: "counters.textRecords",
+  topicPolicyUnits: "counters.topicPolicy",
+  wordPolicyUnits: "counters.wordPolicy",
+};
+
+const derivedCounterLabel = (counter: string): string =>
   counter
     .replace(/Units$/, "")
     .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
     .replace(/^./, (c) => c.toUpperCase());
 
-export const unpricedSummary = (untracked: UsageUnits): string | null => {
+export const counterLabel = (t: GuardrailsMonitorTranslator, counter: string): string => {
+  const known = COUNTER_KEYS[counter];
+  return known === undefined ? derivedCounterLabel(counter) : t(known);
+};
+
+export const unpricedSummary = (t: GuardrailsMonitorTranslator, untracked: UsageUnits): string | null => {
   const total = totalUnits(untracked);
-  return total > 0 ? `${total.toLocaleString()} ${total === 1 ? "unit" : "units"} unpriced` : null;
+  return total > 0 ? t("unpriced.summary", { count: total }) : null;
 };
 
 export interface CounterMath {
@@ -46,25 +75,22 @@ export interface MathRow {
   readonly note: string | null;
 }
 
-export const counterMathRow = (row: CounterMath): MathRow => {
-  const label = counterLabel(row.counter);
+export const counterMathRow = (t: GuardrailsMonitorTranslator, row: CounterMath): MathRow => {
+  const label = counterLabel(t, row.counter);
   const price = unitPrice(row);
   if (price == null) {
-    return { label, parts: [row.units.toLocaleString(), "× —", "= —"], note: "no known price, left out" };
+    return { label, parts: [row.units.toLocaleString(), "× —", "= —"], note: t("breakdown.costNoteNoPrice") };
   }
   return {
     label,
     parts: [pricedUnits(row).toLocaleString(), `× ${formatUnitPrice(price)}`, `= ${formatCost(row.cost)}`],
-    note:
-      row.unpriced > 0
-        ? `${row.unpriced.toLocaleString()} unpriced ${row.unpriced === 1 ? "unit" : "units"} left out`
-        : null,
+    note: row.unpriced > 0 ? t("breakdown.costNoteUnpriced", { count: row.unpriced }) : null,
   };
 };
 
-export const unitsMathRows = (units: UsageUnits): readonly MathRow[] =>
+export const unitsMathRows = (t: GuardrailsMonitorTranslator, units: UsageUnits): readonly MathRow[] =>
   Object.entries(units).map(([counter, n]) => ({
-    label: counterLabel(counter),
+    label: counterLabel(t, counter),
     parts: [n.toLocaleString()],
     note: null,
   }));
