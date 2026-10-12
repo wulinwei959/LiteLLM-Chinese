@@ -6,6 +6,6 @@ import EmptyState from "./EmptyState";
 describe("EmptyState", () => {
   it("explains when variables must be filled", () => {
     renderWithProviders(<EmptyState hasVariables />);
-    expect(screen.getByText(/fill in the variables/i)).toBeInTheDocument();
+    expect(screen.getByText(/在上方填写变量/)).toBeInTheDocument();
   });
 });

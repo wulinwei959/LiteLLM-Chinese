@@ -22,7 +22,7 @@ const mockCreate = vi.mocked(createPromptCall);
 const mockFromBackend = vi.mocked(toast.fromError);
 const mockSuccess = vi.mocked(toast.success);
 
-const PROMPT_ID_PLACEHOLDER = "Enter unique prompt ID (e.g., my_prompt_id)";
+const PROMPT_ID_PLACEHOLDER = "输入唯一提示词 ID（例如 my_prompt_id）";
 
 const CONVERTED_JSON = { model: "gpt-4o", messages: [{ role: "user", content: "hi {{name}}" }] };
 
@@ -41,12 +41,12 @@ const attachPromptFile = async (file: File) => {
   await act(async () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
   });
-  await screen.findByText(`Selected: ${file.name}`);
+  await screen.findByText(`已选择：${file.name}`);
 };
 
 const submit = async () => {
   await act(async () => {
-    fireEvent.click(screen.getByRole("button", { name: "Create Prompt" }));
+    fireEvent.click(screen.getByRole("button", { name: "创建提示词" }));
   });
 };
 
@@ -79,7 +79,7 @@ describe("AddPromptForm", () => {
       });
     });
     expect(mockConvert).toHaveBeenCalledWith("sk-test", file);
-    expect(mockSuccess).toHaveBeenCalledWith("Prompt created successfully!");
+    expect(mockSuccess).toHaveBeenCalledWith("提示词创建成功！");
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(onSuccess).toHaveBeenCalledTimes(1);
   });
@@ -91,7 +91,7 @@ describe("AddPromptForm", () => {
     await submit();
 
     await waitFor(() => {
-      expect(mockFromBackend).toHaveBeenCalledWith("Please upload a .prompt file");
+      expect(mockFromBackend).toHaveBeenCalledWith("请上传 .prompt 文件");
     });
     expect(mockConvert).not.toHaveBeenCalled();
     expect(mockCreate).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ describe("AddPromptForm", () => {
 
     await submit();
 
-    expect(await screen.findByText("Please enter a prompt ID")).toBeInTheDocument();
+    expect(await screen.findByText("请输入提示词 ID")).toBeInTheDocument();
     expect(mockCreate).not.toHaveBeenCalled();
   });
 
@@ -115,7 +115,7 @@ describe("AddPromptForm", () => {
     await submit();
 
     expect(
-      await screen.findByText("Prompt ID can only contain letters, numbers, underscores, and hyphens"),
+      await screen.findByText("提示词 ID 只能包含字母、数字、下划线和连字符"),
     ).toBeInTheDocument();
     expect(mockCreate).not.toHaveBeenCalled();
   });

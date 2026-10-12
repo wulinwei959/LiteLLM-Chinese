@@ -18,7 +18,7 @@ describe("DeveloperMessageCard", () => {
     const onChange = vi.fn();
     renderWithProviders(<DeveloperMessageCard value="Be concise" onChange={onChange} />);
     fireEvent.change(screen.getByRole("textbox", { name: "Developer message" }), { target: { value: "Be kind" } });
-    expect(screen.getByText("Optional system instructions for the model")).toBeInTheDocument();
+    expect(screen.getByText("给模型的可选系统指令")).toBeInTheDocument();
     expect(onChange).toHaveBeenCalledWith("Be kind");
   });
 });

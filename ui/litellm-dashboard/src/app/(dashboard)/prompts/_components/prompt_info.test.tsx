@@ -49,14 +49,14 @@ describe("PromptInfoView environment scoping", () => {
       />,
     );
 
-    await screen.findByRole("tab", { name: "Raw JSON" });
+    await screen.findByRole("tab", { name: "原始 JSON" });
     expect(networking.getPromptInfo).toHaveBeenCalledWith("sk-test", "support-reply", "staging");
   });
 
   it("fetches the serve default when opened without an environment", async () => {
     renderWithProviders(<PromptInfoView promptId="support-reply" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
-    await screen.findByRole("tab", { name: "Raw JSON" });
+    await screen.findByRole("tab", { name: "原始 JSON" });
     expect(networking.getPromptInfo).toHaveBeenCalledWith("sk-test", "support-reply", undefined);
   });
 });
@@ -88,7 +88,7 @@ describe("PromptInfoView code snippets", () => {
       />,
     );
 
-    await screen.findByRole("tab", { name: "Raw JSON" });
+    await screen.findByRole("tab", { name: "原始 JSON" });
     expect(screen.getByTestId("prompt-code-snippets")).toHaveAttribute("data-environment", environment);
   });
 });
@@ -103,12 +103,12 @@ describe("PromptInfoView tabs", () => {
     const user = userEvent.setup();
     renderWithProviders(<PromptInfoView promptId="support-reply" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
-    expect(await screen.findByRole("tab", { name: "Raw JSON" })).toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: "Prompt Template" })).not.toBeInTheDocument();
+    expect(await screen.findByRole("tab", { name: "原始 JSON" })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "提示词模板" })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("tab", { name: "Raw JSON" }));
+    await user.click(screen.getByRole("tab", { name: "原始 JSON" }));
 
-    expect(screen.getByText("Raw API Response")).toBeVisible();
+    expect(screen.getByText("原始 API 响应")).toBeVisible();
     expect(screen.getByText(/"prompt_id": "support-reply"/)).toBeVisible();
   });
 });

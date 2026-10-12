@@ -25,17 +25,17 @@ describe("PromptEditorHeader", () => {
       />,
     );
     fireEvent.change(screen.getByDisplayValue("welcome"), { target: { value: "greeting" } });
-    fireEvent.click(screen.getByRole("button", { name: "Back" }));
-    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    fireEvent.click(screen.getByRole("button", { name: "返回" }));
+    fireEvent.click(screen.getByRole("button", { name: "保存" }));
     expect(onNameChange).toHaveBeenCalledWith("greeting");
     expect(onBack).toHaveBeenCalledOnce();
     expect(onSave).toHaveBeenCalledOnce();
   });
 
   it.each([
-    ["development", "Development"],
-    ["staging", "Staging"],
-    ["production", "Production"],
+    ["development", "开发"],
+    ["staging", "预发布"],
+    ["production", "生产"],
   ])("shows the %s environment by its human label", (environment, label) => {
     renderWithProviders(
       <PromptEditorHeader
@@ -50,7 +50,7 @@ describe("PromptEditorHeader", () => {
       />,
     );
 
-    expect(screen.getByRole("combobox", { name: "Environment" })).toHaveTextContent(label);
+    expect(screen.getByRole("combobox", { name: "环境" })).toHaveTextContent(label);
     expect(screen.getByRole("button", { name: "Get Code" })).toHaveAttribute("data-environment", environment);
   });
 });

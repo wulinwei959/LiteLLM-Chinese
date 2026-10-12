@@ -27,12 +27,12 @@ describe("ToolsCard", () => {
 
   it("should render the component", () => {
     renderWithProviders(<ToolsCard {...defaultProps} />);
-    expect(screen.getByText("Tools")).toBeInTheDocument();
+    expect(screen.getByText("工具")).toBeInTheDocument();
   });
 
   it("should display no tools message when tools array is empty", () => {
     renderWithProviders(<ToolsCard {...defaultProps} />);
-    expect(screen.getByText("No tools added")).toBeInTheDocument();
+    expect(screen.getByText("尚未添加工具")).toBeInTheDocument();
   });
 
   it("should render tools when provided", () => {
@@ -49,7 +49,7 @@ describe("ToolsCard", () => {
     renderWithProviders(<ToolsCard {...defaultProps} onAddTool={mockOnAddTool} />);
 
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: /add/i }));
+      fireEvent.click(screen.getByRole("button", { name: /添加/ }));
     });
 
     expect(mockOnAddTool).toHaveBeenCalledTimes(1);
@@ -59,7 +59,7 @@ describe("ToolsCard", () => {
     const mockOnEditTool = vi.fn();
     renderWithProviders(<ToolsCard {...defaultProps} tools={mockTools} onEditTool={mockOnEditTool} />);
 
-    const editButtons = screen.getAllByText("Edit");
+    const editButtons = screen.getAllByText("编辑");
     act(() => {
       fireEvent.click(editButtons[0]);
     });
@@ -72,7 +72,7 @@ describe("ToolsCard", () => {
     const mockOnRemoveTool = vi.fn();
     renderWithProviders(<ToolsCard {...defaultProps} tools={mockTools} onRemoveTool={mockOnRemoveTool} />);
 
-    const removeButtons = screen.getAllByRole("button", { name: /remove/i });
+    const removeButtons = screen.getAllByRole("button", { name: /移除/ });
     act(() => {
       fireEvent.click(removeButtons[0]);
     });

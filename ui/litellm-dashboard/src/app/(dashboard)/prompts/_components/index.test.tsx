@@ -91,23 +91,23 @@ describe("PromptsPanel toolbar", () => {
   it("should offer both create actions to a proxy admin", async () => {
     renderPanel("Admin");
 
-    expect(await screen.findByRole("button", { name: /add new prompt/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /upload \.prompt file/i })).toBeEnabled();
+    expect(await screen.findByRole("button", { name: /新增提示词/ })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /上传 \.prompt 文件/ })).toBeEnabled();
   });
 
   it("should hide both create actions from a read-only viewer", async () => {
     renderPanel("Admin Viewer");
 
     expect(await screen.findByText("table-loaded")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /add new prompt/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /upload \.prompt file/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /新增提示词/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /上传 \.prompt 文件/ })).not.toBeInTheDocument();
   });
 
   it("should open the editor view when the add action is used", async () => {
     const user = userEvent.setup();
     renderPanel("Admin");
 
-    await user.click(await screen.findByRole("button", { name: /add new prompt/i }));
+    await user.click(await screen.findByRole("button", { name: /新增提示词/ }));
 
     expect(screen.getByText("prompt-editor-view")).toBeInTheDocument();
     expect(screen.queryByTestId("prompt-table")).not.toBeInTheDocument();
@@ -118,7 +118,7 @@ describe("PromptsPanel toolbar", () => {
     renderPanel("Admin");
 
     expect(screen.queryByText("add-prompt-form")).not.toBeInTheDocument();
-    await user.click(await screen.findByRole("button", { name: /upload \.prompt file/i }));
+    await user.click(await screen.findByRole("button", { name: /上传 \.prompt 文件/ }));
 
     expect(screen.getByText("add-prompt-form")).toBeInTheDocument();
   });
@@ -128,9 +128,9 @@ describe("PromptsPanel toolbar", () => {
     renderPanel("Admin");
     await screen.findByText("table-loaded");
 
-    expect(screen.getByText("All Environments")).toBeInTheDocument();
+    expect(screen.getByText("全部环境")).toBeInTheDocument();
 
-    await chooseSelectOption(user, screen.getByRole("combobox"), "Production");
+    await chooseSelectOption(user, screen.getByRole("combobox"), "生产");
 
     await waitFor(() => expect(mockGetPromptsList).toHaveBeenLastCalledWith("sk-test", "production"));
   });
@@ -142,12 +142,12 @@ describe("PromptsPanel toolbar", () => {
     renderPanel("Admin");
     await screen.findByText("table-loaded");
 
-    await chooseSelectOption(user, screen.getByRole("combobox"), "Production");
-    await waitFor(() => expect(screen.getByRole("combobox")).toHaveTextContent("Production"));
+    await chooseSelectOption(user, screen.getByRole("combobox"), "生产");
+    await waitFor(() => expect(screen.getByRole("combobox")).toHaveTextContent("生产"));
 
-    await chooseSelectOption(user, screen.getByRole("combobox"), "All Environments");
+    await chooseSelectOption(user, screen.getByRole("combobox"), "全部环境");
 
-    await waitFor(() => expect(screen.getByRole("combobox")).toHaveTextContent("All Environments"));
+    await waitFor(() => expect(screen.getByRole("combobox")).toHaveTextContent("全部环境"));
     await waitFor(() => expect(mockGetPromptsList).toHaveBeenLastCalledWith("sk-test", undefined));
   });
 });
@@ -181,11 +181,11 @@ describe("PromptsPanel delete confirmation", () => {
 
     await user.click(await screen.findByRole("button", { name: "row-delete" }));
 
-    expect(await screen.findByText(/the staging copy of prompt: my-prompt/i)).toBeInTheDocument();
-    expect(screen.getByText(/cannot be undone/i)).toBeInTheDocument();
+    expect(await screen.findByText(/确定要删除提示词 my-prompt 的 staging 副本？/)).toBeInTheDocument();
+    expect(screen.getByText(/此操作无法撤销。/)).toBeInTheDocument();
     expect(mockDeletePromptCall).not.toHaveBeenCalled();
 
-    await user.click(screen.getByRole("button", { name: /^delete$/i }));
+    await user.click(screen.getByRole("button", { name: /^删除$/ }));
 
     await waitFor(() => expect(mockDeletePromptCall).toHaveBeenCalledWith("sk-test", "prompt-1", "staging"));
   });
@@ -195,11 +195,11 @@ describe("PromptsPanel delete confirmation", () => {
     renderPanel("Admin");
 
     await user.click(await screen.findByRole("button", { name: "row-delete" }));
-    await screen.findByText(/the staging copy of prompt: my-prompt/i);
+    await screen.findByText(/确定要删除提示词 my-prompt 的 staging 副本？/);
 
-    await user.click(screen.getByRole("button", { name: /cancel/i }));
+    await user.click(screen.getByRole("button", { name: /取消/ }));
 
-    await waitFor(() => expect(screen.queryByText(/the staging copy of prompt: my-prompt/i)).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText(/确定要删除提示词 my-prompt 的 staging 副本？/)).not.toBeInTheDocument());
     expect(mockDeletePromptCall).not.toHaveBeenCalled();
   });
 
@@ -214,14 +214,14 @@ describe("PromptsPanel delete confirmation", () => {
     renderPanel("Admin");
 
     await user.click(await screen.findByRole("button", { name: "row-delete" }));
-    await screen.findByText(/the staging copy of prompt: my-prompt/i);
-    await user.click(screen.getByRole("button", { name: /^delete$/i }));
+    await screen.findByText(/确定要删除提示词 my-prompt 的 staging 副本？/);
+    await user.click(screen.getByRole("button", { name: /^删除$/ }));
     await waitFor(() => expect(mockDeletePromptCall).toHaveBeenCalledWith("sk-test", "prompt-1", "staging"));
 
     await user.keyboard("{Escape}");
-    expect(screen.getByText(/the staging copy of prompt: my-prompt/i)).toBeInTheDocument();
+    expect(screen.getByText(/确定要删除提示词 my-prompt 的 staging 副本？/)).toBeInTheDocument();
 
     finishDelete();
-    await waitFor(() => expect(screen.queryByText(/the staging copy of prompt: my-prompt/i)).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText(/确定要删除提示词 my-prompt 的 staging 副本？/)).not.toBeInTheDocument());
   });
 });

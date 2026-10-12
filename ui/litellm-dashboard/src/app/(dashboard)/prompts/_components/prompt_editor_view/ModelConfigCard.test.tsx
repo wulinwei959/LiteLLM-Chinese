@@ -22,7 +22,7 @@ describe("ModelConfigCard", () => {
         onMaxTokensChange={onMaxTokensChange}
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Parameters" }));
+    fireEvent.click(screen.getByRole("button", { name: "参数" }));
     fireEvent.change(screen.getByDisplayValue("1"), { target: { value: "0.4" } });
     fireEvent.change(screen.getByDisplayValue("1000"), { target: { value: "2048" } });
     expect(onTemperatureChange).toHaveBeenCalledWith(0.4);

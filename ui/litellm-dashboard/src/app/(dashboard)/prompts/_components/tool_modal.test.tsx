@@ -8,12 +8,12 @@ describe("ToolModal", () => {
     const onSave = vi.fn();
     renderWithProviders(<ToolModal visible initialJson="{}" onSave={onSave} onClose={vi.fn()} />);
     expect(await screen.findByRole("dialog")).toHaveClass("max-h-[calc(100dvh-2rem)]", "overflow-y-auto");
-    const editor = await screen.findByPlaceholderText("Paste your tool JSON here...");
+    const editor = await screen.findByPlaceholderText("在此粘贴工具 JSON...");
     fireEvent.change(editor, { target: { value: "invalid" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add" }));
-    expect(screen.getByText(/invalid json format/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "添加" }));
+    expect(screen.getByText(/JSON 格式无效/)).toBeInTheDocument();
     fireEvent.change(editor, { target: { value: '{"type":"function"}' } });
-    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+    fireEvent.click(screen.getByRole("button", { name: "添加" }));
     expect(onSave).toHaveBeenCalledWith('{"type":"function"}');
   });
 });

@@ -51,7 +51,7 @@ describe("PromptTable", () => {
 
   it("should render every column header", () => {
     renderWithProviders(<PromptTable {...defaultProps} />);
-    for (const header of ["Prompt ID", "Model", "Created At", "Updated At", "Environment", "Created By", "Type"]) {
+    for (const header of ["提示词 ID", "模型", "创建时间", "更新时间", "环境", "创建人", "类型"]) {
       expect(screen.getByText(header)).toBeInTheDocument();
     }
   });
@@ -67,7 +67,7 @@ describe("PromptTable", () => {
 
   it("should display the empty state when data is empty", () => {
     renderWithProviders(<PromptTable {...defaultProps} promptsList={[]} />);
-    expect(screen.getByText("No prompts yet")).toBeInTheDocument();
+    expect(screen.getByText("暂无提示词")).toBeInTheDocument();
   });
 
   it("should sort by created date descending by default", () => {

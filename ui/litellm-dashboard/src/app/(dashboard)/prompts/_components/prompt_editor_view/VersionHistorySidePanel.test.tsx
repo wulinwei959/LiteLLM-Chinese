@@ -42,7 +42,7 @@ describe("VersionHistorySidePanel", () => {
   it("should render prompt versions", async () => {
     renderWithProviders(<VersionHistorySidePanel {...props} />);
 
-    expect(await screen.findByRole("dialog", { name: "Version History" })).toBeInTheDocument();
+    expect(await screen.findByRole("dialog", { name: "版本历史" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /v2/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /v1/i })).toBeInTheDocument();
   });
@@ -52,7 +52,7 @@ describe("VersionHistorySidePanel", () => {
 
     renderWithProviders(<VersionHistorySidePanel {...props} />);
 
-    expect(screen.getByRole("status", { name: "Loading version history" })).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "正在加载版本历史" })).toBeInTheDocument();
   });
 
   it("should show the empty state when no versions are available", async () => {
@@ -60,7 +60,7 @@ describe("VersionHistorySidePanel", () => {
 
     renderWithProviders(<VersionHistorySidePanel {...props} />);
 
-    expect(await screen.findByText("No version history available.")).toBeInTheDocument();
+    expect(await screen.findByText("暂无版本历史。")).toBeInTheDocument();
   });
 
   it("should display explicit version numbers", async () => {
@@ -95,21 +95,21 @@ describe("VersionHistorySidePanel", () => {
   it("should label the first version as latest", async () => {
     renderWithProviders(<VersionHistorySidePanel {...props} />);
 
-    expect(await screen.findByText("Latest")).toBeInTheDocument();
+    expect(await screen.findByText("最新")).toBeInTheDocument();
   });
 
   it.each(["welcome.v1", "welcome_v1"])("should mark %s as the active version", async (activeVersionId) => {
     renderWithProviders(<VersionHistorySidePanel {...props} activeVersionId={activeVersionId} />);
 
     const versionOne = await screen.findByRole("button", { name: /v1/i });
-    expect(versionOne).toHaveTextContent("Active");
+    expect(versionOne).toHaveTextContent("活跃");
   });
 
   it("should mark the latest version active when no active version is supplied", async () => {
     renderWithProviders(<VersionHistorySidePanel {...props} activeVersionId={undefined} />);
 
     const latestVersion = await screen.findByRole("button", { name: /v2/i });
-    expect(latestVersion).toHaveTextContent("Active");
+    expect(latestVersion).toHaveTextContent("活跃");
   });
 
   it("should display creation dates", async () => {
@@ -131,8 +131,8 @@ describe("VersionHistorySidePanel", () => {
   it("should identify database and config prompt sources", async () => {
     renderWithProviders(<VersionHistorySidePanel {...props} />);
 
-    expect(await screen.findByText("Saved to Database")).toBeInTheDocument();
-    expect(screen.getByText("Config Prompt")).toBeInTheDocument();
+    expect(await screen.findByText("已保存到数据库")).toBeInTheDocument();
+    expect(screen.getByText("配置提示词")).toBeInTheDocument();
   });
 
   it("should fetch versions using the base prompt identifier", async () => {
@@ -166,7 +166,7 @@ describe("VersionHistorySidePanel", () => {
 
     renderWithProviders(<VersionHistorySidePanel {...props} />);
 
-    expect(await screen.findByText("No version history available.")).toBeInTheDocument();
+    expect(await screen.findByText("暂无版本历史。")).toBeInTheDocument();
     expect(consoleError).toHaveBeenCalledWith("Error fetching prompt versions:", expect.any(Error));
     consoleError.mockRestore();
   });
@@ -184,7 +184,7 @@ describe("VersionHistorySidePanel", () => {
     const user = userEvent.setup();
     renderWithProviders(<VersionHistorySidePanel {...props} />);
 
-    await user.click(screen.getByRole("button", { name: "Close" }));
+    await user.click(screen.getByRole("button", { name: "关闭" }));
 
     expect(props.onClose).toHaveBeenCalledOnce();
   });
@@ -201,7 +201,7 @@ describe("VersionHistorySidePanel", () => {
       </>,
     );
 
-    expect(await screen.findByRole("dialog", { name: "Version History" })).toHaveAttribute("aria-modal", "false");
+    expect(await screen.findByRole("dialog", { name: "版本历史" })).toHaveAttribute("aria-modal", "false");
     await user.click(screen.getByRole("button", { name: "Editor action" }));
 
     expect(onEditorAction).toHaveBeenCalledOnce();

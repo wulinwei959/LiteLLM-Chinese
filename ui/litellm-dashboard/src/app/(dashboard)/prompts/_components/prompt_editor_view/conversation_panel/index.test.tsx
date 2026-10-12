@@ -25,6 +25,6 @@ vi.mock("./useConversation", () => ({
 describe("ConversationPanel", () => {
   it("renders the empty conversation input", () => {
     renderWithProviders(<ConversationPanel prompt={{}} accessToken="token" />);
-    expect(screen.getByPlaceholderText(/type your message/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/输入消息/)).toBeInTheDocument();
   });
 });

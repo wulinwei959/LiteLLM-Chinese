@@ -17,8 +17,8 @@ describe("PublishModal", () => {
         onCancel={vi.fn()}
       />,
     );
-    fireEvent.change(await screen.findByPlaceholderText("Enter prompt name"), { target: { value: "greeting" } });
-    fireEvent.click(screen.getByRole("button", { name: "Publish" }));
+    fireEvent.change(await screen.findByPlaceholderText("输入提示词名称"), { target: { value: "greeting" } });
+    fireEvent.click(screen.getByRole("button", { name: "发布" }));
     expect(onNameChange).toHaveBeenCalledWith("greeting");
     expect(onPublish).toHaveBeenCalledOnce();
   });

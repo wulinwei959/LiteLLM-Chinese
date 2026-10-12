@@ -9,7 +9,7 @@ describe("VariableInput", () => {
     renderWithProviders(
       <VariableInput extractedVariables={["name"]} variables={{ name: "Ada" }} onVariableChange={onVariableChange} />,
     );
-    fireEvent.change(screen.getByPlaceholderText("Enter value for name"), { target: { value: "Grace" } });
+    fireEvent.change(screen.getByPlaceholderText("输入 name 的值"), { target: { value: "Grace" } });
     expect(onVariableChange).toHaveBeenCalledWith("name", "Grace");
   });
 });

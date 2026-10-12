@@ -20,14 +20,14 @@ describe("PromptMessagesCard", () => {
       />,
     );
     expect(screen.getByDisplayValue("Hello")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /add message/i }));
+    fireEvent.click(screen.getByRole("button", { name: /添加消息/ }));
     expect(onAddMessage).toHaveBeenCalledOnce();
   });
 
   it.each([
-    ["user", "User"],
-    ["assistant", "Assistant"],
-    ["system", "System"],
+    ["user", "用户"],
+    ["assistant", "助手"],
+    ["system", "系统"],
   ])("shows the %s role by its human label", (role, label) => {
     renderWithProviders(
       <PromptMessagesCard
@@ -39,6 +39,6 @@ describe("PromptMessagesCard", () => {
       />,
     );
 
-    expect(screen.getByRole("combobox", { name: "Message 1 role" })).toHaveTextContent(label);
+    expect(screen.getByRole("combobox", { name: "消息 1 的角色" })).toHaveTextContent(label);
   });
 });
