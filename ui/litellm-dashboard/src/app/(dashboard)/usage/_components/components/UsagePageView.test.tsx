@@ -422,9 +422,9 @@ describe("UsagePage", () => {
     });
 
     // Check that key metrics are displayed
-    const totalRequestElements = screen.getAllByText("Total Requests");
+    const totalRequestElements = screen.getAllByText("总请求数");
     expect(totalRequestElements.length).toBeGreaterThan(0);
-    const successfulRequestLabelElements = screen.getAllByText("Successful Requests");
+    const successfulRequestLabelElements = screen.getAllByText("成功请求数");
     expect(successfulRequestLabelElements.length).toBeGreaterThan(0);
     await waitFor(() => {
       expect(screen.getAllByText("424,242").length).toBeGreaterThan(0);
@@ -511,18 +511,18 @@ describe("UsagePage", () => {
     });
 
     // Check for usage metrics cards
-    const totalRequestElements = screen.getAllByText("Total Requests");
+    const totalRequestElements = screen.getAllByText("总请求数");
     expect(totalRequestElements.length).toBeGreaterThan(0);
-    const successfulRequestElements = screen.getAllByText("Successful Requests");
+    const successfulRequestElements = screen.getAllByText("成功请求数");
     expect(successfulRequestElements.length).toBeGreaterThan(0);
-    const failedRequestElements = screen.getAllByText("Failed Requests");
+    const failedRequestElements = screen.getAllByText("失败请求数");
     expect(failedRequestElements.length).toBeGreaterThan(0);
-    const totalTokensElements = screen.getAllByText("Total Tokens");
+    const totalTokensElements = screen.getAllByText("总令牌数");
     expect(totalTokensElements.length).toBeGreaterThan(0);
 
     // Check for chart titles (these are in the Cost tab)
-    expect(screen.getByText("Daily Spend")).toBeInTheDocument();
-    expect(screen.getByText("Top Virtual Keys")).toBeInTheDocument();
+    expect(screen.getByText("每日花费")).toBeInTheDocument();
+    expect(screen.getByText("热门虚拟密钥")).toBeInTheDocument();
   });
 
   it("should render the daily spend and top models charts with cyan bars", async () => {
@@ -560,7 +560,7 @@ describe("UsagePage", () => {
     });
 
     // Default view should show Global Usage (for admin)
-    expect(screen.getByText("Daily Spend")).toBeInTheDocument();
+    expect(screen.getByText("每日花费")).toBeInTheDocument();
 
     // Switch to Team Usage view
     const usageSelect = screen.getByTestId("usage-view-select");
@@ -815,7 +815,7 @@ describe("UsagePage", () => {
   describe("admin user selector", () => {
     // Anchored on the field's own label, so it does not depend on which library draws the control.
     const userSelectCombobox = (): HTMLElement => {
-      let node: HTMLElement | null = screen.getByText("Filter by user");
+      let node: HTMLElement | null = screen.getByText("按用户筛选");
       while (node && !node.querySelector('[role="combobox"]')) {
         node = node.parentElement;
       }
@@ -995,7 +995,7 @@ describe("UsagePage", () => {
 
       // The admin case above proves this label is rendered when the selector exists, so its
       // absence here is a live assertion rather than a query that can never match.
-      expect(screen.queryByText("Filter by user")).not.toBeInTheDocument();
+      expect(screen.queryByText("按用户筛选")).not.toBeInTheDocument();
     });
 
     it("should always pass own userId for non-admin users", async () => {
@@ -1149,7 +1149,7 @@ describe("UsagePage", () => {
       });
 
       // The tab list should contain MCP Server Activity
-      expect(screen.getByText("MCP Server Activity")).toBeInTheDocument();
+      expect(screen.getByText("MCP 服务器活动")).toBeInTheDocument();
     });
   });
 
@@ -1216,8 +1216,8 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      // Default should be "groups" view showing "Top Public Model Names"
-      expect(screen.getByText("Top Public Model Names")).toBeInTheDocument();
+      // Default should be "groups" view showing "热门公开模型名"
+      expect(screen.getByText("热门公开模型名")).toBeInTheDocument();
       expect(screen.getAllByText("Public Model Name").length).toBeGreaterThan(0);
       expect(screen.getAllByText("Litellm Model Name").length).toBeGreaterThan(0);
     });
@@ -1235,9 +1235,9 @@ describe("UsagePage", () => {
         fireEvent.click(litellmToggle);
       });
 
-      // Title should change to "Top Litellm Models"
+      // Title should change to "热门 Litellm 模型"
       await waitFor(() => {
-        expect(screen.getByText("Top Litellm Models")).toBeInTheDocument();
+        expect(screen.getByText("热门 Litellm 模型")).toBeInTheDocument();
       });
     });
 
@@ -1255,7 +1255,7 @@ describe("UsagePage", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Top Litellm Models")).toBeInTheDocument();
+        expect(screen.getByText("热门 Litellm 模型")).toBeInTheDocument();
       });
 
       // Switch back to groups
@@ -1265,7 +1265,7 @@ describe("UsagePage", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Top Public Model Names")).toBeInTheDocument();
+        expect(screen.getByText("热门公开模型名")).toBeInTheDocument();
       });
     });
 
@@ -1358,11 +1358,11 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(screen.getByText("Cost")).toBeInTheDocument();
-      expect(screen.getByText("Model Activity")).toBeInTheDocument();
-      expect(screen.getByText("Key Activity")).toBeInTheDocument();
-      expect(screen.getByText("MCP Server Activity")).toBeInTheDocument();
-      expect(screen.getByText("Endpoint Activity")).toBeInTheDocument();
+      expect(screen.getByText("成本")).toBeInTheDocument();
+      expect(screen.getByText("模型活动")).toBeInTheDocument();
+      expect(screen.getByText("密钥活动")).toBeInTheDocument();
+      expect(screen.getByText("MCP 服务器活动")).toBeInTheDocument();
+      expect(screen.getByText("端点活动")).toBeInTheDocument();
     });
   });
 });

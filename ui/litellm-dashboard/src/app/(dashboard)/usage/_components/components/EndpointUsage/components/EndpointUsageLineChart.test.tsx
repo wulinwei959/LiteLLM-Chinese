@@ -50,7 +50,7 @@ describe("EndpointUsageLineChart", () => {
   it("renders the title", () => {
     renderWithProviders(<EndpointUsageLineChart dailyData={dailyData} />);
 
-    expect(screen.getByText("Endpoint Usage Trends")).toBeInTheDocument();
+    expect(screen.getByText("端点用量趋势")).toBeInTheDocument();
   });
 
   it("renders one line per endpoint with the tremor palette strokes", () => {
@@ -97,7 +97,7 @@ describe("EndpointUsageLineChart", () => {
   it("renders an empty chart without lines when dailyData is absent", () => {
     const { container } = renderWithProviders(<EndpointUsageLineChart />);
 
-    expect(screen.getByText("Endpoint Usage Trends")).toBeInTheDocument();
+    expect(screen.getByText("端点用量趋势")).toBeInTheDocument();
     expect(container.querySelectorAll("path.recharts-line-curve")).toHaveLength(0);
   });
 });
