@@ -59,7 +59,7 @@ const renderDashboard = () =>
     <CacheDashboard accessToken="sk-test" token="tok" userRole="Admin" userID="u1" premiumUser={false} />,
   );
 
-const REQUESTS_CHART_TITLE = "Cache Hits vs API Requests";
+const REQUESTS_CHART_TITLE = "缓存命中与 API 请求数";
 const TOKENS_CHART_TITLE = "Cached Completion Tokens vs Generated Completion Tokens";
 
 // Anchored on each chart's own title rather than on a global card count, so
@@ -100,7 +100,7 @@ describe("CacheDashboard cache analytics charts", () => {
   it("renders both chart card titles", async () => {
     renderDashboard();
 
-    expect(await screen.findByText("Cache Hits vs API Requests")).toBeInTheDocument();
+    expect(await screen.findByText("缓存命中与 API 请求数")).toBeInTheDocument();
     expect(screen.getByText("Cached Completion Tokens vs Generated Completion Tokens")).toBeInTheDocument();
   });
 
@@ -207,7 +207,7 @@ describe("CacheDashboard cache analytics charts", () => {
     expect(within(drilldownCard).getAllByText("401").length).toBeGreaterThan(0);
     expect(within(drilldownCard).queryByText("500")).not.toBeInTheDocument();
 
-    fireEvent.click(within(drilldownCard).getByRole("button", { name: "Close error breakdown" }));
+    fireEvent.click(within(drilldownCard).getByRole("button", { name: "关闭错误细分" }));
     expect(screen.queryByText(/Failed requests by error code/)).not.toBeInTheDocument();
   });
 

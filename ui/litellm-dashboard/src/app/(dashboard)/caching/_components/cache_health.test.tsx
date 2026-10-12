@@ -71,8 +71,8 @@ describe("CacheHealthTab", () => {
 
     expect(await screen.findByText("Cache Status: healthy")).toBeInTheDocument();
     expect(screen.getByText("Cache Details")).toBeInTheDocument();
-    expect(screen.getByText("Ping Response")).toBeInTheDocument();
-    expect(screen.getByText("Set Cache Response")).toBeInTheDocument();
+    expect(screen.getByText("Ping 响应")).toBeInTheDocument();
+    expect(screen.getByText("Set Cache 响应")).toBeInTheDocument();
     expect(screen.getByText("success")).toBeInTheDocument();
   });
 
@@ -80,12 +80,12 @@ describe("CacheHealthTab", () => {
     renderTab({ healthCheckResponse: healthyResponse });
 
     expect(await screen.findByText("Redis Details")).toBeInTheDocument();
-    expect(screen.getByText("Redis Host")).toBeInTheDocument();
+    expect(screen.getByText("Redis 主机")).toBeInTheDocument();
     expect(screen.getByText("redis.internal")).toBeInTheDocument();
-    expect(screen.getByText("Redis Port")).toBeInTheDocument();
-    expect(screen.getByText("Redis Version")).toBeInTheDocument();
+    expect(screen.getByText("Redis 端口")).toBeInTheDocument();
+    expect(screen.getByText("Redis 版本")).toBeInTheDocument();
     expect(screen.getByText("7.2.1")).toBeInTheDocument();
-    expect(screen.getByText("Namespace")).toBeInTheDocument();
+    expect(screen.getByText("命名空间")).toBeInTheDocument();
     expect(screen.getByText("litellm-ns")).toBeInTheDocument();
   });
 
@@ -107,9 +107,9 @@ describe("CacheHealthTab", () => {
     renderTab({ healthCheckResponse: errorResponse });
 
     expect(await screen.findByText("Error Details")).toBeInTheDocument();
-    expect(screen.getByText("Error Message")).toBeInTheDocument();
+    expect(screen.getByText("错误信息")).toBeInTheDocument();
     expect(screen.getByText("Connection refused")).toBeInTheDocument();
-    expect(screen.getByText("Traceback")).toBeInTheDocument();
+    expect(screen.getByText("调用栈")).toBeInTheDocument();
     expect(screen.getByText("Cache Status: unhealthy")).toBeInTheDocument();
   });
 
@@ -128,7 +128,7 @@ describe("CacheHealthTab", () => {
       },
     });
 
-    await screen.findByText("Error Message");
+    await screen.findByText("错误信息");
     expect(screen.getByText(`${"M".repeat(50)}...`)).toBeInTheDocument();
     expect(screen.queryByText(longMessage)).not.toBeInTheDocument();
 

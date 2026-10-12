@@ -70,7 +70,7 @@ describe("CacheSettings advanced settings round-trip", () => {
     await screen.findByText("Connection Settings");
     expect(screen.queryByText("SSL Settings")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
+    await user.click(screen.getByRole("button", { name: "高级设置" }));
 
     expect(await screen.findByText("SSL Settings")).toBeInTheDocument();
     expect(screen.getByText("Cache Management")).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe("CacheSettings advanced settings round-trip", () => {
     await waitFor(() => expect(updateCacheSettingsCall).toHaveBeenCalledTimes(1));
     const whileCollapsed = updateCacheSettingsCall.mock.calls[0][1];
 
-    await user.click(screen.getByText("Advanced Settings"));
+    await user.click(screen.getByText("高级设置"));
     await screen.findByLabelText("Namespace");
     await save(user);
 
@@ -99,9 +99,9 @@ describe("CacheSettings advanced settings round-trip", () => {
     renderSettings();
     await screen.findByText("Connection Settings");
 
-    await user.click(screen.getByText("Advanced Settings"));
+    await user.click(screen.getByText("高级设置"));
     fireEvent.change(await screen.findByLabelText("Namespace"), { target: { value: "typed-ns" } });
-    await user.click(screen.getByText("Advanced Settings"));
+    await user.click(screen.getByText("高级设置"));
     await waitFor(() => expect(screen.queryByLabelText("Namespace")).not.toBeInTheDocument());
 
     await save(user);
@@ -116,11 +116,11 @@ describe("CacheSettings advanced settings round-trip", () => {
     renderSettings();
     await screen.findByText("Connection Settings");
 
-    await user.click(screen.getByText("Advanced Settings"));
+    await user.click(screen.getByText("高级设置"));
     fireEvent.change(await screen.findByLabelText("Namespace"), { target: { value: "typed-ns" } });
-    await user.click(screen.getByText("Advanced Settings"));
+    await user.click(screen.getByText("高级设置"));
     await waitFor(() => expect(screen.queryByLabelText("Namespace")).not.toBeInTheDocument());
-    await user.click(screen.getByText("Advanced Settings"));
+    await user.click(screen.getByText("高级设置"));
 
     expect(await screen.findByLabelText("Namespace")).toHaveValue("typed-ns");
   });
@@ -165,9 +165,9 @@ describe("CacheSettings advanced settings round-trip", () => {
     renderSettings();
     await screen.findByText("Connection Settings");
 
-    await user.click(screen.getByText("Advanced Settings"));
+    await user.click(screen.getByText("高级设置"));
     fireEvent.change(await screen.findByLabelText("TTL (seconds)"), { target: { value: "not-a-number" } });
-    await user.click(screen.getByText("Advanced Settings"));
+    await user.click(screen.getByText("高级设置"));
     await waitFor(() => expect(screen.queryByLabelText("TTL (seconds)")).not.toBeInTheDocument());
 
     await save(user);
