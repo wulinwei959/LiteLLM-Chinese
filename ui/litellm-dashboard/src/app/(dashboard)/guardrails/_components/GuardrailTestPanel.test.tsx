@@ -46,7 +46,7 @@ describe("GuardrailTestPanel", () => {
     );
 
     // Find and type in the textarea
-    const textarea = screen.getByPlaceholderText("Enter text to test with guardrails...");
+    const textarea = screen.getByPlaceholderText("输入要用护栏测试的文本...");
     await user.type(textarea, "Test input text");
 
     // Press Enter to submit
@@ -76,14 +76,14 @@ describe("GuardrailTestPanel", () => {
       />,
     );
 
-    const textarea = screen.getByPlaceholderText("Enter text to test with guardrails...");
+    const textarea = screen.getByPlaceholderText("输入要用护栏测试的文本...");
     await user.type(textarea, "Test input text");
 
     const metadataField = screen.getByPlaceholderText('{"forbidden_topics": ["tax", "finance"]}');
     await user.click(metadataField);
     await user.paste('{"forbidden_topics": ["tax"]}');
 
-    await user.click(screen.getByRole("button", { name: /Test 2 guardrails/ }));
+    await user.click(screen.getByRole("button", { name: /测试 2 个护栏/ }));
 
     await waitFor(() => {
       expect(mockOnSubmit).toHaveBeenCalledWith("Test input text", { forbidden_topics: ["tax"] });
@@ -108,17 +108,17 @@ describe("GuardrailTestPanel", () => {
       />,
     );
 
-    const textarea = screen.getByPlaceholderText("Enter text to test with guardrails...");
+    const textarea = screen.getByPlaceholderText("输入要用护栏测试的文本...");
     await user.type(textarea, "Test input text");
 
     const metadataField = screen.getByPlaceholderText('{"forbidden_topics": ["tax", "finance"]}');
     await user.click(metadataField);
     await user.paste("{not json");
 
-    await user.click(screen.getByRole("button", { name: /Test 2 guardrails/ }));
+    await user.click(screen.getByRole("button", { name: /测试 2 个护栏/ }));
 
     await waitFor(() => {
-      expect(screen.getByText("Invalid JSON")).toBeInTheDocument();
+      expect(screen.getByText("JSON 无效")).toBeInTheDocument();
     });
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });

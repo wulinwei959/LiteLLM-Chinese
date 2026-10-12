@@ -68,7 +68,7 @@ describe("GuardrailProviderFields object field", () => {
     fireEvent.blur(textarea);
     fireEvent.click(screen.getByRole("button", { name: "save" }));
 
-    await screen.findByText("detect_secrets_config must be a valid JSON object");
+    await screen.findByText("detect_secrets_config 必须是有效的 JSON 对象");
     expect(onValid).not.toHaveBeenCalled();
     expect(textarea.value).toBe("{not json");
   });
@@ -80,7 +80,7 @@ describe("GuardrailProviderFields object field", () => {
     fireEvent.blur(textarea);
     fireEvent.click(screen.getByRole("button", { name: "save" }));
 
-    await screen.findByText("detect_secrets_config must be a valid JSON object");
+    await screen.findByText("detect_secrets_config 必须是有效的 JSON 对象");
     expect(onValid).not.toHaveBeenCalled();
   });
 

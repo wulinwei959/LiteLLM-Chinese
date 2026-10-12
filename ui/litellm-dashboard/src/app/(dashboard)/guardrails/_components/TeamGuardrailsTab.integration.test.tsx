@@ -46,28 +46,28 @@ const authorized = {
 
 const openSubmitModal = async (user: ReturnType<typeof userEvent.setup>) => {
   renderWithProviders(<TeamGuardrailsTab accessToken="sk-test" />);
-  await user.click(await screen.findByRole("button", { name: /Add Guardrail/ }));
-  await screen.findByText("Submit Guardrail for Review");
+  await user.click(await screen.findByRole("button", { name: /添加护栏/ }));
+  await screen.findByText("提交护栏以供审核");
 };
 
 const fillRequiredFields = async (user: ReturnType<typeof userEvent.setup>, apiBase: string) => {
   await user.type(screen.getByLabelText("team"), "team-1");
-  await user.type(screen.getByPlaceholderText("e.g. pii-detection"), "pii-detection");
+  await user.type(screen.getByPlaceholderText("例如 pii-detection"), "pii-detection");
   await user.type(screen.getByPlaceholderText("https://your-guardrail-api.com/v1/check"), apiBase);
 };
 
 const submit = (user: ReturnType<typeof userEvent.setup>) =>
-  user.click(screen.getByRole("button", { name: "Submit for Review" }));
+  user.click(screen.getByRole("button", { name: "提交审核" }));
 
 const registeredPayload = () => mutateAsync.mock.calls[0][0];
 
 const VALIDATION_MESSAGES = [
-  "Select a team",
-  "Enter a guardrail name",
-  "Enter the API base URL",
-  "Must be a valid URL",
-  "Must be a JSON object",
-  "Invalid JSON",
+  "选择团队",
+  "输入护栏名称",
+  "输入 API base URL",
+  "必须是合法的 URL",
+  "必须是 JSON 对象",
+  "JSON 无效",
 ];
 
 const visibleErrors = () => VALIDATION_MESSAGES.filter((message) => screen.queryByText(message) !== null);
@@ -136,8 +136,8 @@ describe("TeamGuardrailsTab submit payload", () => {
     await openSubmitModal(user);
 
     await fillRequiredFields(user, "https://guard.example.com/v1/check");
-    await user.click(screen.getByRole("combobox", { name: "Mode" }));
-    const options = await screen.findAllByText("During Call");
+    await user.click(screen.getByRole("combobox", { name: "模式" }));
+    const options = await screen.findAllByText("调用中");
     await user.click(options[options.length - 1]);
     await submit(user);
 
@@ -149,13 +149,13 @@ describe("TeamGuardrailsTab submit payload", () => {
     const user = userEvent.setup();
     await openSubmitModal(user);
 
-    const mode = screen.getByRole("combobox", { name: "Mode" });
-    expect(mode).toHaveTextContent("Pre Call");
+    const mode = screen.getByRole("combobox", { name: "模式" });
+    expect(mode).toHaveTextContent("调用前");
 
     await user.click(mode);
-    await user.click(await screen.findByRole("option", { name: "During Call" }));
+    await user.click(await screen.findByRole("option", { name: "调用中" }));
 
-    expect(screen.getByRole("combobox", { name: "Mode" })).toHaveTextContent("During Call");
+    expect(screen.getByRole("combobox", { name: "模式" })).toHaveTextContent("调用中");
   });
 
   it("blocks an empty submit and reports every required field", async () => {
@@ -164,8 +164,8 @@ describe("TeamGuardrailsTab submit payload", () => {
 
     await submit(user);
 
-    expect(await screen.findByText("Enter a guardrail name")).toBeInTheDocument();
-    expect(visibleErrors()).toStrictEqual(["Select a team", "Enter a guardrail name", "Enter the API base URL"]);
+    expect(await screen.findByText("输入护栏名称")).toBeInTheDocument();
+    expect(visibleErrors()).toStrictEqual(["选择团队", "输入护栏名称", "输入 API base URL"]);
     expect(mutateAsync).not.toHaveBeenCalled();
   });
 
@@ -175,15 +175,15 @@ describe("TeamGuardrailsTab submit payload", () => {
 
     await user.type(screen.getByPlaceholderText("https://your-guardrail-api.com/v1/check"), "www.example.com");
     await submit(user);
-    await screen.findByText("Enter a guardrail name");
-    expect(visibleErrors()).toStrictEqual(["Select a team", "Enter a guardrail name"]);
+    await screen.findByText("输入护栏名称");
+    expect(visibleErrors()).toStrictEqual(["选择团队", "输入护栏名称"]);
 
     await user.clear(screen.getByPlaceholderText("https://your-guardrail-api.com/v1/check"));
     await user.type(screen.getByPlaceholderText("https://your-guardrail-api.com/v1/check"), "example.com");
     await submit(user);
 
     await vi.waitFor(() =>
-      expect(visibleErrors()).toStrictEqual(["Select a team", "Enter a guardrail name", "Must be a valid URL"]),
+      expect(visibleErrors()).toStrictEqual(["选择团队", "输入护栏名称", "必须是合法的 URL"]),
     );
     expect(mutateAsync).not.toHaveBeenCalled();
   });
@@ -200,7 +200,7 @@ describe("TeamGuardrailsTab submit payload", () => {
     await user.type(screen.getByPlaceholderText('{"description": "Detects PII in requests"}'), "nope");
     await submit(user);
 
-    await vi.waitFor(() => expect(visibleErrors()).toStrictEqual(["Must be a JSON object", "Invalid JSON"]));
+    await vi.waitFor(() => expect(visibleErrors()).toStrictEqual(["必须是 JSON 对象", "JSON 无效"]));
     expect(mutateAsync).not.toHaveBeenCalled();
   });
 });

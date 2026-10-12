@@ -43,13 +43,13 @@ describe("GuardrailUsageBreakdown", () => {
   it("totals the units and the cost, and says how many units the cost leaves out", () => {
     renderWithProviders(<GuardrailUsageBreakdown detail={detail} />);
 
-    const cost = screen.getByRole("group", { name: "Cost" });
+    const cost = screen.getByRole("group", { name: "成本" });
     expect(cost).toHaveTextContent("$0.1800");
     expect(cost).toHaveTextContent("7 units unpriced");
 
-    const units = screen.getByRole("group", { name: "Usage Units" });
+    const units = screen.getByRole("group", { name: "用量单位" });
     expect(units).toHaveTextContent("1,307");
-    expect(units).toHaveTextContent("3 counters");
+    expect(units).toHaveTextContent("3 个计数器");
   });
 
   it("lists each counter with its units, cost and unpriced share", () => {
@@ -68,15 +68,15 @@ describe("GuardrailUsageBreakdown", () => {
   it("breaks units and cost down by team and by key, flagging the unpriced share of each row", () => {
     renderWithProviders(<GuardrailUsageBreakdown detail={detail} />);
 
-    expect(screen.getByRole("heading", { name: "By team" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "By key" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "按团队" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "按密钥" })).toBeInTheDocument();
     const teamA = rowNamed("team-a");
     expect(within(teamA).getByText("1,200")).toBeInTheDocument();
     expect(within(teamA).getByText("$0.1650")).toBeInTheDocument();
     expect(within(teamA).getByText("—")).toBeInTheDocument();
     expect(within(teamA).queryByText("7")).not.toBeInTheDocument();
 
-    const noTeam = rowNamed("No team");
+    const noTeam = rowNamed("无团队");
     expect(within(noTeam).getByText("107")).toBeInTheDocument();
     expect(within(noTeam).getByText("$0.0150")).toBeInTheDocument();
     expect(within(noTeam).getByText("7", { selector: ".text-warning" })).toBeInTheDocument();
@@ -100,19 +100,19 @@ describe("GuardrailUsageBreakdown", () => {
     renderWithProviders(<GuardrailUsageBreakdown detail={detail} />);
 
     await user.click(
-      within(screen.getByRole("group", { name: "Cost" })).getByRole("button", { name: /How is this calculated/ }),
+      within(screen.getByRole("group", { name: "成本" })).getByRole("button", { name: /如何计算/ }),
     );
 
-    const dialog = await screen.findByRole("dialog", { name: "How this cost is calculated" });
+    const dialog = await screen.findByRole("dialog", { name: "成本如何计算" });
     expect(cellsOf(dialog)).toEqual([
       ["Content Policy", "1,000", "× $0.00015", "= $0.1500"],
       ["Sensitive Information Policy", "300", "× $0.0001", "= $0.0300"],
       ["Some Future Counter", "7", "× —", "= —"],
       ["no known price, left out"],
-      ["Total", "$0.1800"],
+      ["合计", "$0.1800"],
     ]);
-    expect(within(dialog).getByText(/7 units with no known price are left out of the cost/)).toBeInTheDocument();
-    const issueLink = within(dialog).getByRole("link", { name: "Request pricing on GitHub" });
+    expect(within(dialog).getByText(/有 7 个单位无已知价格，未计入成本/)).toBeInTheDocument();
+    const issueLink = within(dialog).getByRole("link", { name: "在 GitHub 上请求定价" });
     expect(issueLink).toHaveAttribute("target", "_blank");
     const issueUrl = new URL(issueLink.getAttribute("href") ?? "");
     expect(issueUrl.searchParams.get("title")).toBe("[Feature]: add Bedrock guardrail pricing to the cost map");
@@ -134,15 +134,15 @@ describe("GuardrailUsageBreakdown", () => {
     );
 
     await user.click(
-      within(screen.getByRole("group", { name: "Cost" })).getByRole("button", { name: /How is this calculated/ }),
+      within(screen.getByRole("group", { name: "成本" })).getByRole("button", { name: /如何计算/ }),
     );
 
-    const dialog = await screen.findByRole("dialog", { name: "How this cost is calculated" });
+    const dialog = await screen.findByRole("dialog", { name: "成本如何计算" });
     expect(cellsOf(dialog)).toEqual([
       ["Content Policy", "1,000", "× $0.00015", "= $0.1500"],
-      ["Total", "$0.1500"],
+      ["合计", "$0.1500"],
     ]);
-    expect(within(dialog).queryByRole("link", { name: "Request pricing on GitHub" })).not.toBeInTheDocument();
+    expect(within(dialog).queryByRole("link", { name: "在 GitHub 上请求定价" })).not.toBeInTheDocument();
   });
 
   it("lays the units sum out per counter", async () => {
@@ -150,17 +150,17 @@ describe("GuardrailUsageBreakdown", () => {
     renderWithProviders(<GuardrailUsageBreakdown detail={detail} />);
 
     await user.click(
-      within(screen.getByRole("group", { name: "Usage Units" })).getByRole("button", {
-        name: /How is this calculated/,
+      within(screen.getByRole("group", { name: "用量单位" })).getByRole("button", {
+        name: /如何计算/,
       }),
     );
 
-    const dialog = await screen.findByRole("dialog", { name: "How usage units add up" });
+    const dialog = await screen.findByRole("dialog", { name: "用量如何累加" });
     expect(cellsOf(dialog)).toEqual([
       ["Content Policy", "1,000"],
       ["Sensitive Information Policy", "300"],
       ["Some Future Counter", "7"],
-      ["Total", "1,307"],
+      ["合计", "1,307"],
     ]);
   });
 
@@ -169,7 +169,7 @@ describe("GuardrailUsageBreakdown", () => {
 
     const rows = screen.getAllByRole("row").map((row) => row.textContent ?? "");
     expect(rows.findIndex((text) => text.includes("team-a"))).toBeLessThan(
-      rows.findIndex((text) => text.includes("No team")),
+      rows.findIndex((text) => text.includes("无团队")),
     );
     expect(rows.findIndex((text) => text.includes("hash-1"))).toBeLessThan(
       rows.findIndex((text) => text.includes("hash-2")),
@@ -195,7 +195,7 @@ describe("GuardrailUsageBreakdown", () => {
       />,
     );
 
-    expect(screen.getByText("No billable usage units were recorded in this period.")).toBeInTheDocument();
+    expect(screen.getByText("该时段未记录计费用量。")).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 });

@@ -613,7 +613,7 @@ function DetailPanel({
                   }}
                   className="text-xs font-medium text-info border border-info/20 bg-info/10 hover:bg-info/15 px-2 py-1.5 rounded-sm transition-colors shrink-0"
                 >
-                  Add
+                  {t("team.add")}
                 </button>
               </div>
             )}
@@ -682,7 +682,7 @@ function DetailPanel({
                   }}
                   className="text-xs font-medium text-info border border-info/20 bg-info/10 hover:bg-info/15 px-2 py-1.5 rounded-sm transition-colors"
                 >
-                  Add
+                  {t("team.add")}
                 </button>
               </div>
             )}
@@ -738,7 +738,7 @@ function DetailPanel({
                 className="flex-1 flex items-center justify-center gap-1.5 bg-success hover:bg-success/80 text-success-foreground text-sm font-medium py-2 rounded-md transition-colors"
               >
                 <CheckIcon className="h-4 w-4" />
-                Approve
+                {t("team.approve")}
               </button>
               <button
                 type="button"
@@ -746,7 +746,7 @@ function DetailPanel({
                 className="flex-1 flex items-center justify-center gap-1.5 border border-destructive/30 text-destructive hover:bg-destructive/10 text-sm font-medium py-2 rounded-md transition-colors"
               >
                 <XIcon className="h-4 w-4" />
-                Reject
+                {t("team.reject")}
               </button>
             </div>
           )}

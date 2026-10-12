@@ -56,7 +56,7 @@ describe("GuardrailTestPlayground", () => {
     );
 
     // Initially, the empty state should be shown
-    expect(screen.getByText("Select Guardrails to Test")).toBeInTheDocument();
+    expect(screen.getByText("选择要测试的护栏")).toBeInTheDocument();
 
     // Click on the guardrail to select it
     const guardrailItem = screen.getByText("test-guardrail");
@@ -64,11 +64,11 @@ describe("GuardrailTestPlayground", () => {
 
     // Verify the test panel is now shown
     await waitFor(() => {
-      expect(screen.getByText("Test Guardrails:")).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("Enter text to test with guardrails...")).toBeInTheDocument();
+      expect(screen.getByText("测试护栏：")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("输入要用护栏测试的文本...")).toBeInTheDocument();
     });
 
     // Verify the selected count
-    expect(screen.getByText("1 of 1 selected")).toBeInTheDocument();
+    expect(screen.getByText("已选择 1 个，共 1 个")).toBeInTheDocument();
   });
 });

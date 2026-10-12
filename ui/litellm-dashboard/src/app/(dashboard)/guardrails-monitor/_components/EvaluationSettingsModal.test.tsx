@@ -33,18 +33,18 @@ describe("EvaluationSettingsModal", () => {
 
   it("should render nothing while closed", () => {
     renderWithProviders(<EvaluationSettingsModal {...defaultProps} open={false} />);
-    expect(screen.queryByText("Evaluation Settings")).not.toBeInTheDocument();
+    expect(screen.queryByText("评估设置")).not.toBeInTheDocument();
   });
 
   it("should show the title and the guardrail-specific description when open", () => {
     renderWithProviders(<EvaluationSettingsModal {...defaultProps} />);
-    expect(screen.getByText("Evaluation Settings")).toBeInTheDocument();
-    expect(screen.getByText("Configure AI evaluation for pii-detector")).toBeInTheDocument();
+    expect(screen.getByText("评估设置")).toBeInTheDocument();
+    expect(screen.getByText("为 pii-detector 配置 AI 评估")).toBeInTheDocument();
   });
 
   it("should fall back to a generic description when no guardrail name is given", () => {
     renderWithProviders(<EvaluationSettingsModal {...defaultProps} guardrailName={undefined} />);
-    expect(screen.getByText("Configure AI evaluation for re-running on logs")).toBeInTheDocument();
+    expect(screen.getByText("配置 AI 评估以在日志上重跑")).toBeInTheDocument();
   });
 
   it("should prefill the prompt and the response schema with their defaults", () => {
@@ -64,7 +64,7 @@ describe("EvaluationSettingsModal", () => {
     fireEvent.change(promptBox, { target: { value: "custom prompt" } });
     expect(screen.getByDisplayValue("custom prompt")).toBeInTheDocument();
 
-    await user.click(screen.getByText("Reset to default"));
+    await user.click(screen.getByText("恢复默认"));
     expect(screen.getByDisplayValue(/Evaluate whether this guardrail's decision was correct/)).toBeInTheDocument();
   });
 
@@ -84,7 +84,7 @@ describe("EvaluationSettingsModal", () => {
     const onClose = vi.fn();
     renderWithProviders(<EvaluationSettingsModal {...defaultProps} onRunEvaluation={onRunEvaluation} onClose={onClose} />);
 
-    await user.click(screen.getByRole("button", { name: /run evaluation/i }));
+    await user.click(screen.getByRole("button", { name: /运行评估/ }));
 
     expect(onRunEvaluation).not.toHaveBeenCalled();
     expect(onClose).not.toHaveBeenCalled();
@@ -98,7 +98,7 @@ describe("EvaluationSettingsModal", () => {
 
     await waitFor(() => expect(mockFetchAvailableModels).toHaveBeenCalled());
     await selectModel(user, "claude-sonnet-5");
-    await user.click(screen.getByRole("button", { name: /run evaluation/i }));
+    await user.click(screen.getByRole("button", { name: /运行评估/ }));
 
     expect(onRunEvaluation).toHaveBeenCalledWith({
       model: "claude-sonnet-5",
@@ -114,7 +114,7 @@ describe("EvaluationSettingsModal", () => {
     const onClose = vi.fn();
     renderWithProviders(<EvaluationSettingsModal {...defaultProps} onRunEvaluation={onRunEvaluation} onClose={onClose} />);
 
-    await user.click(screen.getByRole("button", { name: /cancel/i }));
+    await user.click(screen.getByRole("button", { name: /取消/ }));
 
     expect(onClose).toHaveBeenCalled();
     expect(onRunEvaluation).not.toHaveBeenCalled();

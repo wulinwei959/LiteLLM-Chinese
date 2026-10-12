@@ -76,13 +76,13 @@ const guardrail = (litellmParams: Record<string, unknown>, guardrailInfo?: Recor
 });
 
 const openEditor = async (user: ReturnType<typeof userEvent.setup>) => {
-  await user.click(await screen.findByText("Settings"));
-  await user.click(await screen.findByText("Edit Settings"));
-  await screen.findByLabelText("Guardrail Name");
+  await user.click(await screen.findByText("设置"));
+  await user.click(await screen.findByText("编辑设置"));
+  await screen.findByLabelText("护栏名称");
 };
 
 const saveChanges = async (user: ReturnType<typeof userEvent.setup>) => {
-  await user.click(screen.getByText("Save Changes"));
+  await user.click(screen.getByText("保存更改"));
 };
 
 const renderView = () => renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin />);
@@ -106,7 +106,7 @@ describe("GuardrailInfoView update payload characterization", () => {
     await openEditor(user);
     await saveChanges(user);
 
-    await screen.findByText("Edit Settings");
+    await screen.findByText("编辑设置");
     expect(networking.updateGuardrailCall).not.toHaveBeenCalled();
   });
 
@@ -115,7 +115,7 @@ describe("GuardrailInfoView update payload characterization", () => {
     renderView();
     await openEditor(user);
 
-    const nameInput = screen.getByLabelText("Guardrail Name");
+    const nameInput = screen.getByLabelText("护栏名称");
     await user.clear(nameInput);
     await user.type(nameInput, "Renamed Guardrail");
     await saveChanges(user);
@@ -157,8 +157,8 @@ describe("GuardrailInfoView update payload characterization", () => {
 
     await chooseSelectOption(
       user,
-      screen.getByLabelText("Skip system messages in guardrail"),
-      /exclude from guardrail scan/,
+      screen.getByLabelText("在护栏中跳过系统消息"),
+      /从护栏扫描中排除/,
     );
     await saveChanges(user);
 
@@ -171,7 +171,7 @@ describe("GuardrailInfoView update payload characterization", () => {
     renderView();
     await openEditor(user);
 
-    const infoBox = screen.getByLabelText("Guardrail Information");
+    const infoBox = screen.getByLabelText("护栏信息");
     await user.clear(infoBox);
     await user.type(infoBox, '{{"team":"platform"}');
     await saveChanges(user);
@@ -245,10 +245,10 @@ describe("GuardrailInfoView update payload characterization", () => {
     renderView();
     await openEditor(user);
 
-    await user.clear(screen.getByLabelText("Guardrail Name"));
+    await user.clear(screen.getByLabelText("护栏名称"));
     await saveChanges(user);
 
-    await screen.findByText("Please input a guardrail name");
+    await screen.findByText("请输入护栏名称");
     expect(networking.updateGuardrailCall).not.toHaveBeenCalled();
   });
 
@@ -257,7 +257,7 @@ describe("GuardrailInfoView update payload characterization", () => {
     renderView();
     await openEditor(user);
 
-    const nameInput = screen.getByLabelText("Guardrail Name");
+    const nameInput = screen.getByLabelText("护栏名称");
     await user.clear(nameInput);
     await user.type(nameInput, "Renamed Guardrail{Enter}");
 
@@ -270,7 +270,7 @@ describe("GuardrailInfoView update payload characterization", () => {
     renderView();
     await openEditor(user);
 
-    const nameInput = screen.getByLabelText("Guardrail Name");
+    const nameInput = screen.getByLabelText("护栏名称");
     await user.clear(nameInput);
     await user.type(nameInput, "Renamed Guardrail");
     await user.click(screen.getByText("Stray Action"));
@@ -284,12 +284,12 @@ describe("GuardrailInfoView update payload characterization", () => {
     renderView();
     await openEditor(user);
 
-    const nameInput = screen.getByLabelText("Guardrail Name");
+    const nameInput = screen.getByLabelText("护栏名称");
     await user.clear(nameInput);
     await user.type(nameInput, "Draft Name");
-    await user.click(screen.getByText("Cancel"));
+    await user.click(screen.getByText("取消"));
 
-    await user.click(await screen.findByText("Edit Settings"));
-    expect(await screen.findByLabelText("Guardrail Name")).toHaveValue("Draft Name");
+    await user.click(await screen.findByText("编辑设置"));
+    expect(await screen.findByLabelText("护栏名称")).toHaveValue("Draft Name");
   });
 });

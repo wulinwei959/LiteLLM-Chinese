@@ -33,14 +33,14 @@ describe("CustomCodeModal", () => {
   it("should render the create heading and the editor scaffolding", async () => {
     renderModal();
 
-    expect(await screen.findByText("Create Custom Guardrail")).toBeInTheDocument();
-    expect(screen.getByText("Define custom logic using Python-like syntax")).toBeInTheDocument();
+    expect(await screen.findByText("创建自定义护栏")).toBeInTheDocument();
+    expect(screen.getByText("使用类 Python 语法定义自定义逻辑")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("e.g., block-pii-custom")).toBeInTheDocument();
-    expect(screen.getByText("Guardrail Name")).toBeInTheDocument();
-    expect(screen.getByText("Mode (can select multiple)")).toBeInTheDocument();
-    expect(screen.getByText("Available Primitives")).toBeInTheDocument();
-    expect(screen.getByText("Python Logic")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /save guardrail/i })).toBeInTheDocument();
+    expect(screen.getByText("护栏名称")).toBeInTheDocument();
+    expect(screen.getByText("模式（可多选）")).toBeInTheDocument();
+    expect(screen.getByText("可用原语")).toBeInTheDocument();
+    expect(screen.getByText("Python 逻辑")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /保存护栏/ })).toBeInTheDocument();
   });
 
   it("should seed the editor with the empty template", async () => {
@@ -53,7 +53,7 @@ describe("CustomCodeModal", () => {
   it("should not render its content when not visible", () => {
     renderModal({ visible: false });
 
-    expect(screen.queryByText("Create Custom Guardrail")).not.toBeInTheDocument();
+    expect(screen.queryByText("创建自定义护栏")).not.toBeInTheDocument();
   });
 
   it("should render the edit heading and existing values in edit mode", async () => {
@@ -65,21 +65,21 @@ describe("CustomCodeModal", () => {
       },
     });
 
-    expect(await screen.findByText("Edit Custom Guardrail")).toBeInTheDocument();
+    expect(await screen.findByText("编辑自定义护栏")).toBeInTheDocument();
     expect(screen.getByDisplayValue("existing-guardrail")).toBeInTheDocument();
     expect(screen.getByDisplayValue("def apply_guardrail(): pass")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /update guardrail/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /更新护栏/ })).toBeInTheDocument();
   });
 
   it("should keep save disabled until a guardrail name is entered", async () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.click(await screen.findByRole("button", { name: /save guardrail/i }));
+    await user.click(await screen.findByRole("button", { name: /保存护栏/ }));
     expect(mockCreate).not.toHaveBeenCalled();
 
     await user.type(screen.getByPlaceholderText("e.g., block-pii-custom"), "my-guardrail");
-    await user.click(screen.getByRole("button", { name: /save guardrail/i }));
+    await user.click(screen.getByRole("button", { name: /保存护栏/ }));
 
     await waitFor(() => {
       expect(mockCreate).toHaveBeenCalledTimes(1);
@@ -91,7 +91,7 @@ describe("CustomCodeModal", () => {
     renderModal();
 
     await user.type(await screen.findByPlaceholderText("e.g., block-pii-custom"), "block-pii");
-    await user.click(screen.getByRole("button", { name: /save guardrail/i }));
+    await user.click(screen.getByRole("button", { name: /保存护栏/ }));
 
     await waitFor(() => {
       expect(mockCreate).toHaveBeenCalled();
@@ -116,7 +116,7 @@ describe("CustomCodeModal", () => {
 
     const comboboxes = screen.getAllByRole("combobox");
     await user.click(comboboxes[comboboxes.length - 1]);
-    const options = await screen.findAllByText("Block SSN");
+    const options = await screen.findAllByText("拦截 SSN");
     await user.click(options[options.length - 1]);
 
     expect(await screen.findByDisplayValue(/SSN detected/)).toBeInTheDocument();
@@ -129,7 +129,7 @@ describe("CustomCodeModal", () => {
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.keyboard("mcp");
 
-    expect(await screen.findByText("pre_mcp_call (Before MCP Tool Call)")).toBeInTheDocument();
+    expect(await screen.findByText("pre_mcp_call（MCP 工具调用前）")).toBeInTheDocument();
     expect(screen.queryByText("logging_only")).not.toBeInTheDocument();
   });
 
@@ -138,15 +138,15 @@ describe("CustomCodeModal", () => {
     mockTest.mockResolvedValue({ success: true, result: { action: "allow" } } as never);
     renderModal();
 
-    await user.click(await screen.findByText("Test Your Guardrail"));
+    await user.click(await screen.findByText("测试你的护栏"));
 
-    const runButton = await screen.findByRole("button", { name: /run test/i });
+    const runButton = await screen.findByRole("button", { name: /运行测试/ });
     await user.click(runButton);
 
     await waitFor(() => {
       expect(mockTest).toHaveBeenCalled();
     });
-    expect(await screen.findByText("Allowed")).toBeInTheDocument();
+    expect(await screen.findByText("已放行")).toBeInTheDocument();
   });
 
   it("should surface a backend test error", async () => {
@@ -154,8 +154,8 @@ describe("CustomCodeModal", () => {
     mockTest.mockResolvedValue({ success: false, error: "boom", error_type: "SyntaxError" } as never);
     renderModal();
 
-    await user.click(await screen.findByText("Test Your Guardrail"));
-    await user.click(await screen.findByRole("button", { name: /run test/i }));
+    await user.click(await screen.findByText("测试你的护栏"));
+    await user.click(await screen.findByRole("button", { name: /运行测试/ }));
 
     expect(await screen.findByText("boom")).toBeInTheDocument();
     expect(screen.getByText("[SyntaxError]")).toBeInTheDocument();
@@ -165,7 +165,7 @@ describe("CustomCodeModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.click(await screen.findByRole("button", { name: "Cancel" }));
+    await user.click(await screen.findByRole("button", { name: "取消" }));
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });

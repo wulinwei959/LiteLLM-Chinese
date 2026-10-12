@@ -27,7 +27,7 @@ const makeGuardrail = (overrides: Partial<Guardrail> = {}): Guardrail => ({
 describe("GuardrailTable", () => {
   it("renders every column header", () => {
     renderWithProviders(<GuardrailTable guardrailsList={[]} {...baseProps} />);
-    for (const header of ["Guardrail ID", "Name", "Provider", "Mode", "Default On", "Created At", "Updated At"]) {
+    for (const header of ["护栏 ID", "名称", "提供商", "模式", "默认启用", "创建时间", "更新时间"]) {
       expect(screen.getByText(header)).toBeInTheDocument();
     }
   });

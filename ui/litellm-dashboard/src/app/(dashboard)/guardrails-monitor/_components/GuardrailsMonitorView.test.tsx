@@ -88,7 +88,7 @@ describe("GuardrailsMonitorView", () => {
   it("should render overview and fetch guardrails usage when accessToken is provided", async () => {
     renderWithProviders(<GuardrailsMonitorView accessToken="test-token" />);
 
-    expect(await screen.findByRole("heading", { name: /Guardrails Monitor/i })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /护栏监控/ })).toBeInTheDocument();
     await waitFor(() => {
       expect(mockUseGuardrailsUsageOverview).toHaveBeenCalledWith(
         expect.objectContaining({ accessToken: "test-token", startDate: expect.any(String) }),
@@ -98,7 +98,7 @@ describe("GuardrailsMonitorView", () => {
 
   it("should render without crashing when accessToken is null", async () => {
     renderWithProviders(<GuardrailsMonitorView accessToken={null} />);
-    expect(await screen.findByRole("heading", { name: /Guardrails Monitor/i })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /护栏监控/ })).toBeInTheDocument();
   });
 
   describe("guardrail detail deep link (?guardrail=)", () => {
@@ -110,7 +110,7 @@ describe("GuardrailsMonitorView", () => {
         "gr-pii",
         expect.objectContaining({ accessToken: "test-token", startDate: expect.any(String) }),
       );
-      expect(screen.queryByRole("heading", { name: /Guardrails Monitor/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("heading", { name: /护栏监控/ })).not.toBeInTheDocument();
     });
 
     it("should push ?guardrail= as a new history entry when a guardrail is selected", async () => {
@@ -140,13 +140,13 @@ describe("GuardrailsMonitorView", () => {
         onUrlUpdate,
       });
 
-      await user.click(await screen.findByRole("button", { name: /back to overview/i }));
+      await user.click(await screen.findByRole("button", { name: /返回概览/ }));
 
       await waitFor(() => expect(onUrlUpdate).toHaveBeenCalled());
       const lastUpdate = onUrlUpdate.mock.calls.at(-1)![0];
       expect(lastUpdate.searchParams.has("guardrail")).toBe(false);
       expect(lastUpdate.options.history).toBe("replace");
-      expect(await screen.findByRole("heading", { name: /Guardrails Monitor/i })).toBeInTheDocument();
+      expect(await screen.findByRole("heading", { name: /护栏监控/ })).toBeInTheDocument();
     });
   });
 });

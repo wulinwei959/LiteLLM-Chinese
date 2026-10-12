@@ -16,6 +16,6 @@ describe("PiiConfiguration", () => {
         entityCategories={[]}
       />,
     );
-    expect(screen.getByText("Configure PII Protection")).toBeInTheDocument();
+    expect(screen.getByText("配置 PII 保护")).toBeInTheDocument();
   });
 });

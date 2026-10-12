@@ -8,14 +8,14 @@ describe("CategoryFilter", () => {
   it("should render", () => {
     const emptyCategories: PiiEntityCategory[] = [];
     renderWithProviders(<CategoryFilter categories={emptyCategories} selectedCategories={[]} onChange={() => {}} />);
-    expect(screen.getByText("Filter by category")).toBeInTheDocument();
+    expect(screen.getByText("按类别筛选")).toBeInTheDocument();
   });
 });
 
 describe("QuickActions", () => {
   it("should render", () => {
     renderWithProviders(<QuickActions onSelectAll={() => {}} onUnselectAll={() => {}} hasSelectedEntities={false} />);
-    expect(screen.getByText("Quick Actions")).toBeInTheDocument();
+    expect(screen.getByText("快捷操作")).toBeInTheDocument();
   });
 });
 
@@ -32,6 +32,6 @@ describe("PiiEntityList", () => {
         entityToCategoryMap={new Map()}
       />,
     );
-    expect(screen.getByText("No PII types match your filter criteria")).toBeInTheDocument();
+    expect(screen.getByText("没有符合筛选条件的 PII 类型")).toBeInTheDocument();
   });
 });

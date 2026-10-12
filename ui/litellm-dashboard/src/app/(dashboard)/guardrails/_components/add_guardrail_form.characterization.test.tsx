@@ -50,7 +50,7 @@ const renderForm = () => {
 };
 
 const pickProvider = async (user: ReturnType<typeof userEvent.setup>, label: string) => {
-  await user.click(screen.getByLabelText("Guardrail Provider"));
+  await user.click(screen.getByLabelText("护栏提供商"));
   await user.click(await screen.findByText(label));
 };
 
@@ -69,11 +69,11 @@ describe("AddGuardrailForm create payload characterization", () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "my-bedrock");
+    await user.type(await screen.findByLabelText("护栏名称"), "my-bedrock");
     await pickProvider(user, "Bedrock Guardrail");
     await user.type(await screen.findByPlaceholderText("The guardrail id on Bedrock"), "gr-123");
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(await screen.findByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
+    await user.click(await screen.findByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(networking.createGuardrailCall).toHaveBeenCalledTimes(1));
     expect(payload()).toEqual({
@@ -92,14 +92,14 @@ describe("AddGuardrailForm create payload characterization", () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "my-bedrock");
+    await user.type(await screen.findByLabelText("护栏名称"), "my-bedrock");
     await pickProvider(user, "Bedrock Guardrail");
-    await user.click(screen.getByLabelText("Mode"));
+    await user.click(screen.getByLabelText("模式"));
     const postCallOption = (await screen.findAllByText("post_call")).at(-1) as HTMLElement;
     await user.click(postCallOption);
     await user.type(await screen.findByPlaceholderText("The guardrail id on Bedrock"), "gr-123");
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(await screen.findByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
+    await user.click(await screen.findByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(networking.createGuardrailCall).toHaveBeenCalledTimes(1));
     expect(payload()).toMatchObject({ litellm_params: { mode: ["pre_call", "post_call"] } });
@@ -109,29 +109,29 @@ describe("AddGuardrailForm create payload characterization", () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "my-bedrock");
+    await user.type(await screen.findByLabelText("护栏名称"), "my-bedrock");
     await pickProvider(user, "Bedrock Guardrail");
-    await user.click(screen.getByLabelText("Mode"));
+    await user.click(screen.getByLabelText("模式"));
     const preCallOption = (await screen.findAllByText("pre_call")).at(-1) as HTMLElement;
     await user.click(preCallOption);
     await user.type(await screen.findByPlaceholderText("The guardrail id on Bedrock"), "gr-123");
-    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
 
-    expect(await screen.findByText("Please select a mode")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Create Guardrail" })).not.toBeInTheDocument();
+    expect(await screen.findByText("请选择模式")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "创建护栏" })).not.toBeInTheDocument();
   });
 
   it("copies a value typed in the optional params step up to the top level of litellm_params", async () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "my-bedrock");
+    await user.type(await screen.findByLabelText("护栏名称"), "my-bedrock");
     await pickProvider(user, "Bedrock Guardrail");
     await user.type(await screen.findByPlaceholderText("The guardrail id on Bedrock"), "gr-123");
-    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
 
     await user.type(await screen.findByPlaceholderText("Severity threshold"), "4");
-    await user.click(screen.getByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(networking.createGuardrailCall).toHaveBeenCalledTimes(1));
     expect(payload()).toMatchObject({
@@ -143,11 +143,11 @@ describe("AddGuardrailForm create payload characterization", () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "my-bedrock");
+    await user.type(await screen.findByLabelText("护栏名称"), "my-bedrock");
     await pickProvider(user, "Bedrock Guardrail");
     await user.type(await screen.findByPlaceholderText("The guardrail id on Bedrock"), "gr-123");
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(await screen.findByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
+    await user.click(await screen.findByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(networking.createGuardrailCall).toHaveBeenCalledTimes(1));
     expect(payload()).not.toHaveProperty("litellm_params.api_key");
@@ -158,21 +158,21 @@ describe("AddGuardrailForm create payload characterization", () => {
     renderForm();
 
     await pickProvider(user, "Bedrock Guardrail");
-    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
 
-    expect(await screen.findByText("Please enter a guardrail name")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Create Guardrail" })).not.toBeInTheDocument();
+    expect(await screen.findByText("请输入护栏名称")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "创建护栏" })).not.toBeInTheDocument();
   });
 
   it("creates the guardrail even though a required provider field was left blank", async () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "my-bedrock");
+    await user.type(await screen.findByLabelText("护栏名称"), "my-bedrock");
     await pickProvider(user, "Bedrock Guardrail");
     await screen.findByPlaceholderText("The guardrail id on Bedrock");
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(await screen.findByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
+    await user.click(await screen.findByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(networking.createGuardrailCall).toHaveBeenCalledTimes(1));
     expect(payload()).toEqual({
@@ -186,28 +186,28 @@ describe("AddGuardrailForm create payload characterization", () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "round-trip");
+    await user.type(await screen.findByLabelText("护栏名称"), "round-trip");
     await pickProvider(user, "Bedrock Guardrail");
     await user.type(await screen.findByPlaceholderText("The guardrail id on Bedrock"), "gr-123");
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(await screen.findByRole("button", { name: "Previous" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
+    await user.click(await screen.findByRole("button", { name: "上一步" }));
 
-    expect(await screen.findByLabelText("Guardrail Name")).toHaveValue("round-trip");
+    expect(await screen.findByLabelText("护栏名称")).toHaveValue("round-trip");
   });
 
   it("sends the llm judge criteria with numeric weights and the seeded threshold default", async () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "judge-1");
+    await user.type(await screen.findByLabelText("护栏名称"), "judge-1");
     await pickProvider(user, "LiteLLM LLM as a Judge");
-    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
 
-    await user.type(await screen.findByPlaceholderText("Criterion name (e.g. Policy accuracy)"), "Accuracy");
-    await user.type(screen.getByPlaceholderText("What should the judge check for this criterion?"), "Is it right");
-    await user.click(screen.getByLabelText("Judge Model"));
+    await user.type(await screen.findByPlaceholderText("标准名称（例如 Policy accuracy）"), "Accuracy");
+    await user.type(screen.getByPlaceholderText("评审应针对此标准检查什么？"), "Is it right");
+    await user.click(screen.getByLabelText("评审模型"));
     await user.click(await screen.findByTitle("gpt-5"));
-    await user.click(screen.getByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(networking.createGuardrailCall).toHaveBeenCalledTimes(1));
     expect(payload()).toEqual({
@@ -229,40 +229,40 @@ describe("AddGuardrailForm create payload characterization", () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "judge-2");
+    await user.type(await screen.findByLabelText("护栏名称"), "judge-2");
     await pickProvider(user, "LiteLLM LLM as a Judge");
-    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
 
-    await user.type(await screen.findByPlaceholderText("Criterion name (e.g. Policy accuracy)"), "Accuracy");
-    await user.type(screen.getByPlaceholderText("What should the judge check for this criterion?"), "Is it right");
-    const weight = screen.getByPlaceholderText("e.g. 50");
+    await user.type(await screen.findByPlaceholderText("标准名称（例如 Policy accuracy）"), "Accuracy");
+    await user.type(screen.getByPlaceholderText("评审应针对此标准检查什么？"), "Is it right");
+    const weight = screen.getByPlaceholderText("例如 50");
     await user.clear(weight);
     await user.type(weight, "60");
-    await user.click(screen.getByLabelText("Judge Model"));
+    await user.click(screen.getByLabelText("评审模型"));
     await user.click(await screen.findByTitle("gpt-5"));
-    await user.click(screen.getByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "创建护栏" }));
 
-    await screen.findByText(/Weights total: 60%/);
+    await screen.findByText(/权重总计：60%/);
     expect(networking.createGuardrailCall).not.toHaveBeenCalled();
   });
   it("carries the three step-0 selects to the payload when the user moves each off its default", async () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "my-bedrock");
+    await user.type(await screen.findByLabelText("护栏名称"), "my-bedrock");
     await pickProvider(user, "Bedrock Guardrail");
 
-    await chooseSelectOption(user, screen.getByLabelText("Always On"), "Yes");
+    await chooseSelectOption(user, screen.getByLabelText("始终启用"), "是");
     await chooseSelectOption(
       user,
-      screen.getByLabelText("Skip system messages in guardrail"),
-      /exclude from guardrail scan/,
+      screen.getByLabelText("在护栏中跳过系统消息"),
+      /从护栏扫描中排除/,
     );
-    await chooseSelectOption(user, screen.getByLabelText("Skip tool messages in guardrail"), /always include in scan/);
+    await chooseSelectOption(user, screen.getByLabelText("在护栏中跳过工具消息"), /始终纳入扫描/);
 
     await user.type(await screen.findByPlaceholderText("The guardrail id on Bedrock"), "gr-123");
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(await screen.findByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
+    await user.click(await screen.findByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(networking.createGuardrailCall).toHaveBeenCalledTimes(1));
     expect(payload()).toMatchObject({

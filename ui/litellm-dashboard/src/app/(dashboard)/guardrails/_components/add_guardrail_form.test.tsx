@@ -24,7 +24,7 @@ describe("AddGuardrailForm close behavior", () => {
 
   it("does not close when the user clicks outside the modal on the mask", () => {
     const { onClose } = renderForm();
-    expect(screen.getByText("Create guardrail")).toBeInTheDocument();
+    expect(screen.getByText("创建护栏")).toBeInTheDocument();
 
     const backdrop = document.querySelector('[data-slot="dialog-overlay"]') as HTMLElement;
     expect(backdrop).toBeTruthy();
@@ -49,7 +49,7 @@ describe("AddGuardrailForm provider options", () => {
 
   it("renders provider options with logos from the bundled guardrail logo map", async () => {
     renderForm();
-    fireEvent.mouseDown(screen.getByLabelText("Guardrail Provider"));
+    fireEvent.mouseDown(screen.getByLabelText("护栏提供商"));
 
     const logo = await screen.findByAltText("Presidio PII logo");
     expect(logo).toHaveAttribute("src", expect.stringContaining("microsoft_azure.svg"));

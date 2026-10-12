@@ -72,8 +72,8 @@ describe("TeamGuardrailsTab — approve/reject role gate", () => {
 
     await screen.findByText("test-pending-guardrail");
 
-    expect(screen.queryByRole("button", { name: /approve/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /reject/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /批准/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /拒绝/ })).not.toBeInTheDocument();
   });
 
   it("hides Approve and Reject buttons for an Admin Viewer, whom the backend rejects with 403", async () => {
@@ -82,8 +82,8 @@ describe("TeamGuardrailsTab — approve/reject role gate", () => {
 
     await screen.findByText("test-pending-guardrail");
 
-    expect(screen.queryByRole("button", { name: /approve/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /reject/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /批准/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /拒绝/ })).not.toBeInTheDocument();
   });
 
   it("shows Approve and Reject buttons for an admin on a pending submission", async () => {
@@ -92,8 +92,8 @@ describe("TeamGuardrailsTab — approve/reject role gate", () => {
 
     await screen.findByText("test-pending-guardrail");
 
-    expect(screen.getByRole("button", { name: /approve/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /reject/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /批准/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /拒绝/ })).toBeInTheDocument();
   });
 
   it("hides Approve and Reject buttons when userRole is undefined (defaults to non-admin)", async () => {
@@ -102,8 +102,8 @@ describe("TeamGuardrailsTab — approve/reject role gate", () => {
 
     await screen.findByText("test-pending-guardrail");
 
-    expect(screen.queryByRole("button", { name: /approve/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /reject/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /批准/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /拒绝/ })).not.toBeInTheDocument();
   });
 
   it("disables all admin-only write controls for a non-admin, including the detail panel", async () => {
@@ -113,15 +113,15 @@ describe("TeamGuardrailsTab — approve/reject role gate", () => {
     await screen.findByText("test-pending-guardrail");
     expect(screen.getByRole("switch")).toBeDisabled();
 
-    fireEvent.click(screen.getByRole("button", { name: "Review" }));
-    await screen.findByText("Forward LiteLLM API Key");
+    fireEvent.click(screen.getByRole("button", { name: "审核" }));
+    await screen.findByText("转发 LiteLLM API 密钥");
 
-    expect(screen.queryByRole("button", { name: /approve/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /reject/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /批准/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /拒绝/ })).not.toBeInTheDocument();
     screen.getAllByRole("switch").forEach((toggle) => expect(toggle).toBeDisabled());
-    expect(screen.queryByRole("button", { name: "Add" })).not.toBeInTheDocument();
-    expect(screen.queryByLabelText(/^Remove/)).not.toBeInTheDocument();
-    expect(screen.queryByPlaceholderText("e.g. x-request-id")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "添加" })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/^移除/)).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("例如 x-request-id")).not.toBeInTheDocument();
   });
 
   it("keeps all write controls enabled for an admin in the detail panel", async () => {
@@ -130,13 +130,13 @@ describe("TeamGuardrailsTab — approve/reject role gate", () => {
 
     await screen.findByText("test-pending-guardrail");
 
-    fireEvent.click(screen.getByRole("button", { name: "Review" }));
-    await screen.findByText("Forward LiteLLM API Key");
+    fireEvent.click(screen.getByRole("button", { name: "审核" }));
+    await screen.findByText("转发 LiteLLM API 密钥");
 
-    expect(screen.getAllByRole("button", { name: /approve/i }).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByRole("button", { name: /批准/ }).length).toBeGreaterThanOrEqual(2);
     screen.getAllByRole("switch").forEach((toggle) => expect(toggle).toBeEnabled());
-    expect(screen.getAllByRole("button", { name: "Add" })).toHaveLength(2);
-    expect(screen.getByLabelText("Remove X-API-Key")).toBeInTheDocument();
-    expect(screen.getByLabelText("Remove x-request-id")).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "添加" })).toHaveLength(2);
+    expect(screen.getByLabelText("移除 X-API-Key")).toBeInTheDocument();
+    expect(screen.getByLabelText("移除 x-request-id")).toBeInTheDocument();
   });
 });

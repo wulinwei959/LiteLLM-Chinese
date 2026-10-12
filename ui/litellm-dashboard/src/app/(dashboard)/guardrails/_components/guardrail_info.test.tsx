@@ -77,9 +77,9 @@ describe("Guardrail Info", () => {
     });
 
     // Verify other key elements are present
-    expect(screen.getByText("Back to Guardrails")).toBeInTheDocument();
-    expect(screen.getByText("Overview")).toBeInTheDocument();
-    expect(screen.getByText("Settings")).toBeInTheDocument();
+    expect(screen.getByText("返回护栏列表")).toBeInTheDocument();
+    expect(screen.getByText("概览")).toBeInTheDocument();
+    expect(screen.getByText("设置")).toBeInTheDocument();
   });
 
   it("should render a tag-based mode object rather than crashing the detail view", async () => {
@@ -168,21 +168,21 @@ describe("Guardrail Info", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Settings")).toBeInTheDocument();
+      expect(screen.getByText("设置")).toBeInTheDocument();
     });
 
     // Click the Settings tab
-    fireEvent.click(screen.getByText("Settings"));
+    fireEvent.click(screen.getByText("设置"));
 
     // Wait for the Settings panel to render
     await waitFor(() => {
-      expect(screen.getByText("Guardrail Settings")).toBeInTheDocument();
+      expect(screen.getByText("护栏设置")).toBeInTheDocument();
     });
 
-    await userEvent.hover(within(container).getByRole("img", { name: "Config guardrail details" }));
+    await userEvent.hover(within(container).getByRole("img", { name: "配置文件护栏详情" }));
 
     expect(
-      await screen.findByText("Guardrail is defined in the config file and cannot be edited."),
+      await screen.findByText("此护栏在配置文件中定义，无法编辑。"),
     ).toBeInTheDocument();
   });
 
@@ -217,7 +217,7 @@ describe("Guardrail Info", () => {
     renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
     await waitFor(() => {
-      expect(screen.getByText("PII Entity Configuration")).toBeInTheDocument();
+      expect(screen.getByText("PII 实体配置")).toBeInTheDocument();
     });
   });
   it("should handle content filter updates correctly", async () => {
@@ -250,25 +250,25 @@ describe("Guardrail Info", () => {
     renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Settings")).toBeInTheDocument();
+      expect(screen.getByText("设置")).toBeInTheDocument();
     });
 
     // Go to Settings tab
-    fireEvent.click(screen.getByText("Settings"));
+    fireEvent.click(screen.getByText("设置"));
 
     await waitFor(() => {
-      expect(screen.getByText("Guardrail Settings")).toBeInTheDocument();
+      expect(screen.getByText("护栏设置")).toBeInTheDocument();
     });
 
     // Enter Edit Mode
-    fireEvent.click(screen.getByText("Edit Settings"));
+    fireEvent.click(screen.getByText("编辑设置"));
 
     // Modify Guardrail Name to force an update
-    const nameInput = screen.getByLabelText("Guardrail Name");
+    const nameInput = screen.getByLabelText("护栏名称");
     fireEvent.change(nameInput, { target: { value: "Updated Name" } });
 
     // Save with only name change
-    const saveButton = screen.getByText("Save Changes");
+    const saveButton = screen.getByText("保存更改");
     fireEvent.click(saveButton);
 
     await waitFor(() => {
@@ -294,16 +294,16 @@ describe("Guardrail Info", () => {
 
     // Enter Edit Mode again to make changes
     await waitFor(() => {
-      expect(screen.getByText("Edit Settings")).toBeInTheDocument();
+      expect(screen.getByText("编辑设置")).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByText("Edit Settings"));
+    fireEvent.click(screen.getByText("编辑设置"));
 
     // Now modify the values using the mock button
     const simulateChangeButton = screen.getByText("Simulate Change");
     fireEvent.click(simulateChangeButton);
 
     // Save again
-    fireEvent.click(screen.getByText("Save Changes"));
+    fireEvent.click(screen.getByText("保存更改"));
 
     await waitFor(() => {
       expect(networking.updateGuardrailCall).toHaveBeenCalled();
@@ -335,9 +335,9 @@ describe("Guardrail Info", () => {
 
     renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
-    expect(await screen.findByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: "Settings" })).toHaveAttribute("aria-selected", "false");
-    expect(screen.getByText("Guardrail Settings")).toBeInTheDocument();
+    expect(await screen.findByRole("tab", { name: "概览" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "设置" })).toHaveAttribute("aria-selected", "false");
+    expect(screen.getByText("护栏设置")).toBeInTheDocument();
   });
 });
 
@@ -359,8 +359,8 @@ describe("Guardrail Info when the guardrail cannot be loaded", () => {
 
     renderWithProviders(<GuardrailInfoView guardrailId="stale-id" onClose={onClose} accessToken="123" isAdmin={true} />);
 
-    expect(await screen.findByText("Guardrail not found")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /back to guardrails/i }));
+    expect(await screen.findByText("未找到护栏")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /返回护栏列表/ }));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

@@ -29,15 +29,15 @@ describe("GuardrailGarden", () => {
   it("should render both sections with their descriptions", () => {
     renderGarden();
 
-    expect(screen.getByText("LiteLLM Content Filter")).toBeInTheDocument();
+    expect(screen.getByText("LiteLLM 内容过滤器")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Built-in guardrails powered by LiteLLM. Zero latency, no external dependencies, no additional cost.",
+        "LiteLLM 内置护栏。零延迟，无外部依赖，无额外成本。",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText("Partner Guardrails")).toBeInTheDocument();
+    expect(screen.getByText("合作伙伴护栏")).toBeInTheDocument();
     expect(
-      screen.getByText("Third-party guardrail integrations from leading AI security providers."),
+      screen.getByText("来自领先 AI 安全提供商的第三方护栏集成。"),
     ).toBeInTheDocument();
   });
 
@@ -45,13 +45,13 @@ describe("GuardrailGarden", () => {
     const user = userEvent.setup();
     renderGarden();
 
-    expect(screen.getByText(`Show all (${LITELLM_CARDS.length})`)).toBeInTheDocument();
+    expect(screen.getByText(`显示全部（${LITELLM_CARDS.length}）`)).toBeInTheDocument();
     expect(screen.getByText(LITELLM_CARDS[0].name)).toBeInTheDocument();
     expect(screen.queryByText(LITELLM_CARDS[LITELLM_CARDS.length - 1].name)).not.toBeInTheDocument();
 
-    await user.click(screen.getByText(`Show all (${LITELLM_CARDS.length})`));
+    await user.click(screen.getByText(`显示全部（${LITELLM_CARDS.length}）`));
 
-    expect(screen.getByText("Show less")).toBeInTheDocument();
+    expect(screen.getByText("收起")).toBeInTheDocument();
     expect(screen.getByText(LITELLM_CARDS[LITELLM_CARDS.length - 1].name)).toBeInTheDocument();
   });
 
@@ -68,7 +68,7 @@ describe("GuardrailGarden", () => {
     renderGarden();
 
     const target = PARTNER_CARDS[0];
-    await user.type(screen.getByPlaceholderText("Search guardrails"), target.name);
+    await user.type(screen.getByPlaceholderText("搜索护栏"), target.name);
 
     expect(await screen.findByText(target.name)).toBeInTheDocument();
     const otherPartner = PARTNER_CARDS.find((c) => c.name !== target.name);
@@ -81,9 +81,9 @@ describe("GuardrailGarden", () => {
     const user = userEvent.setup();
     renderGarden();
 
-    await user.type(screen.getByPlaceholderText("Search guardrails"), "zzzzznotaguardrailzzzzz");
+    await user.type(screen.getByPlaceholderText("搜索护栏"), "zzzzznotaguardrailzzzzz");
 
-    expect(screen.getByText("Show all (0)")).toBeInTheDocument();
+    expect(screen.getByText("显示全部（0）")).toBeInTheDocument();
     PARTNER_CARDS.forEach((card) => {
       expect(screen.queryByText(card.name)).not.toBeInTheDocument();
     });
@@ -97,10 +97,10 @@ describe("GuardrailGarden", () => {
     await user.click(screen.getByText(target.name));
 
     expect(await screen.findByText(`Detail for ${target.name}`)).toBeInTheDocument();
-    expect(screen.queryByPlaceholderText("Search guardrails")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("搜索护栏")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Back to garden" }));
 
-    expect(await screen.findByPlaceholderText("Search guardrails")).toBeInTheDocument();
+    expect(await screen.findByPlaceholderText("搜索护栏")).toBeInTheDocument();
   });
 });
