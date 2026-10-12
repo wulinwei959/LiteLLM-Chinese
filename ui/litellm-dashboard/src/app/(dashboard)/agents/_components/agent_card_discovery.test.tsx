@@ -92,7 +92,7 @@ describe("AgentCardDiscovery", () => {
     });
     await vi.advanceTimersByTimeAsync(500);
 
-    expect(await screen.findByText("Upstream card loaded")).toBeInTheDocument();
+    expect(await screen.findByText("已加载上游卡片")).toBeInTheDocument();
     expect(screen.getByText("Search")).toBeInTheDocument();
     expect(screen.getByText("Summarize")).toBeInTheDocument();
     expect(screen.getByText(/^streaming$/i)).toBeInTheDocument();
@@ -110,7 +110,7 @@ describe("AgentCardDiscovery", () => {
     });
     await vi.advanceTimersByTimeAsync(500);
 
-    expect(await screen.findByText("Discovery failed")).toBeInTheDocument();
+    expect(await screen.findByText("发现失败")).toBeInTheDocument();
     expect(screen.getByText(/upstream unreachable/)).toBeInTheDocument();
   });
 
@@ -127,7 +127,7 @@ describe("AgentCardDiscovery", () => {
       target: { value: "https://upstream.example.com" },
     });
     await vi.advanceTimersByTimeAsync(500);
-    await screen.findByText("Upstream card loaded");
+    await screen.findByText("已加载上游卡片");
 
     await waitFor(() => expect(onApply).toHaveBeenCalled());
     const initialSelection = onApply.mock.calls.at(-1)?.[0];
@@ -236,7 +236,7 @@ describe("AgentCardDiscovery", () => {
     );
 
     await vi.advanceTimersByTimeAsync(0);
-    await screen.findByText("Upstream card loaded");
+    await screen.findByText("已加载上游卡片");
 
     await waitFor(() => expect(onApply).toHaveBeenCalled());
     const selection = onApply.mock.calls.at(-1)?.[0];

@@ -99,43 +99,43 @@ describe("AddAgentForm submit payload", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Agent Name"), "support-agent");
-    await user.type(screen.getByLabelText("Display Name"), "Support Agent");
-    await user.type(screen.getByPlaceholderText("Describe what this agent does..."), "answers questions");
+    await user.type(await screen.findByLabelText("智能体名称"), "support-agent");
+    await user.type(screen.getByLabelText("显示名称"), "Support Agent");
+    await user.type(screen.getByPlaceholderText("描述这个智能体的用途..."), "answers questions");
     await user.type(screen.getByLabelText("URL"), "http://localhost:9999/");
-    await user.clear(screen.getByLabelText("Version"));
-    await user.type(screen.getByLabelText("Version"), "2.0.0");
+    await user.clear(screen.getByLabelText("版本"));
+    await user.type(screen.getByLabelText("版本"), "2.0.0");
 
-    await user.click(await panel(/Skills/));
+    await user.click(await panel(/技能/));
     await user.click(screen.getByRole("button", { name: /Add Skill/ }));
     await user.type(await screen.findByLabelText("Skill ID"), "hello");
     await user.type(screen.getByLabelText("Skill Name"), "Hello");
     await user.type(screen.getByPlaceholderText("What this skill does"), "greets");
     await user.type(screen.getByLabelText("Tags"), "greeting,polite");
     await user.type(screen.getByLabelText("Examples"), "say hi");
-    await user.click(screen.getByLabelText("Agent Name"));
+    await user.click(screen.getByLabelText("智能体名称"));
 
-    await user.click(await panel(/Capabilities/));
+    await user.click(await panel(/能力/));
     await user.click(await screen.findByRole("switch", { name: "Streaming" }));
     await user.click(screen.getByRole("switch", { name: "Push Notifications" }));
 
-    await user.click(await panel(/Optional Settings/));
+    await user.click(await panel(/可选设置/));
     await user.type(await screen.findByLabelText("Icon URL"), "https://example.com/icon.png");
 
-    await user.click(await panel(/Cost Configuration/));
+    await user.click(await panel(/成本配置/));
     await user.type(await screen.findByLabelText("Cost Per Query ($)"), "0.25");
     await user.type(screen.getByLabelText("Input Cost Per Token ($)"), "0.000002");
 
-    await user.click(await panel(/LiteLLM Parameters/));
+    await user.click(await panel(/LiteLLM 参数/));
     await user.type(await screen.findByLabelText("Model (Optional)"), "gpt-4o");
     await user.click(screen.getByRole("switch", { name: "Make Public" }));
 
     await user.click(await panel(/Authentication Headers/));
     await user.click(await screen.findByRole("button", { name: /Add Static Header/ }));
-    await user.type(await screen.findByPlaceholderText("Header name (e.g. Authorization)"), "X-Tenant");
-    await user.type(screen.getByPlaceholderText("Value (e.g. Bearer token123)"), "acme");
+    await user.type(await screen.findByPlaceholderText("请求头名称（如 Authorization）"), "X-Tenant");
+    await user.type(screen.getByPlaceholderText("值（如 Bearer token123）"), "acme");
     await user.type(screen.getByLabelText("Forward Client Headers"), "x-api-key,");
-    await user.click(screen.getByLabelText("Agent Name"));
+    await user.click(screen.getByLabelText("智能体名称"));
 
     await goToLastStepAndCreate(user);
 
@@ -176,13 +176,13 @@ describe("AddAgentForm submit payload", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Agent Name"), "collapsed-agent");
-    await user.type(screen.getByLabelText("Display Name"), "Collapsed");
-    await user.type(screen.getByPlaceholderText("Describe what this agent does..."), "d");
+    await user.type(await screen.findByLabelText("智能体名称"), "collapsed-agent");
+    await user.type(screen.getByLabelText("显示名称"), "Collapsed");
+    await user.type(screen.getByPlaceholderText("描述这个智能体的用途..."), "d");
 
-    await user.click(await panel(/Cost Configuration/));
+    await user.click(await panel(/成本配置/));
     await user.type(await screen.findByLabelText("Cost Per Query ($)"), "0.75");
-    await user.click(await panel(/Cost Configuration/));
+    await user.click(await panel(/成本配置/));
 
     await goToLastStepAndCreate(user);
 
@@ -193,10 +193,10 @@ describe("AddAgentForm submit payload", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm();
 
-    await user.click(await panel(/Cost Configuration/));
+    await user.click(await panel(/成本配置/));
     await user.type(await screen.findByLabelText("Cost Per Query ($)"), "0.75");
-    await user.click(await panel(/Cost Configuration/));
-    await user.click(await panel(/Cost Configuration/));
+    await user.click(await panel(/成本配置/));
+    await user.click(await panel(/成本配置/));
 
     expect(await screen.findByLabelText("Cost Per Query ($)")).toHaveValue(0.75);
   });
@@ -205,23 +205,23 @@ describe("AddAgentForm submit payload", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm();
 
-    await screen.findByLabelText("Agent Name");
+    await screen.findByLabelText("智能体名称");
     await user.click(screen.getByRole("button", { name: /^Next/ }));
 
-    expect(await screen.findByText("Please enter a unique agent name")).toBeInTheDocument();
-    expect(screen.getByLabelText("Agent Name")).toBeInTheDocument();
+    expect(await screen.findByText("请输入唯一的智能体名称")).toBeInTheDocument();
+    expect(screen.getByLabelText("智能体名称")).toBeInTheDocument();
   });
 
   it("sends the custom agent shape when the custom type is picked", async () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm();
 
-    await screen.findByLabelText("Agent Name");
+    await screen.findByLabelText("智能体名称");
     await openAgentTypeMenu(user);
-    await user.click(await screen.findByText("Custom / Other"));
+    await user.click(await screen.findByText("自定义 / 其他"));
 
-    await user.type(await screen.findByLabelText("Agent Name"), "my-custom-agent");
-    await user.type(screen.getByPlaceholderText("Describe what this agent does..."), "custom thing");
+    await user.type(await screen.findByLabelText("智能体名称"), "my-custom-agent");
+    await user.type(screen.getByPlaceholderText("描述这个智能体的用途..."), "custom thing");
 
     await goToLastStepAndCreate(user);
 
@@ -245,11 +245,11 @@ describe("AddAgentForm submit payload", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm();
 
-    await screen.findByLabelText("Agent Name");
+    await screen.findByLabelText("智能体名称");
     await selectAgentType(user, "LangGraph");
 
-    await user.type(await screen.findByLabelText("Agent Name"), "lg-agent");
-    await user.type(screen.getByPlaceholderText("Describe what this agent does..."), "graph agent");
+    await user.type(await screen.findByLabelText("智能体名称"), "lg-agent");
+    await user.type(screen.getByPlaceholderText("描述这个智能体的用途..."), "graph agent");
     await user.type(screen.getByLabelText("API Base"), "https://lg.example.com");
     await user.type(screen.getByLabelText("Assistant ID"), "asst_1");
     await user.type(screen.getByLabelText("API Key"), "secret-value");
@@ -290,25 +290,25 @@ describe("AddAgentForm submit payload", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm();
 
-    await screen.findByLabelText("Agent Name");
-    expect(screen.getByLabelText("Version")).toHaveValue("1.0.0");
+    await screen.findByLabelText("智能体名称");
+    expect(screen.getByLabelText("版本")).toHaveValue("1.0.0");
 
     await openAgentTypeMenu(user);
-    await user.click(await screen.findByText("Custom / Other"));
+    await user.click(await screen.findByText("自定义 / 其他"));
     await screen.findByPlaceholderText("e.g. my-custom-agent");
 
     await selectAgentType(user, "A2A Agent");
 
-    expect(await screen.findByLabelText("Version")).toHaveValue("");
+    expect(await screen.findByLabelText("版本")).toHaveValue("");
   });
 
   it("sends entitlements and rate limits gathered on the later steps", async () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Agent Name"), "entitled-agent");
-    await user.type(screen.getByLabelText("Display Name"), "Entitled");
-    await user.type(screen.getByPlaceholderText("Describe what this agent does..."), "d");
+    await user.type(await screen.findByLabelText("智能体名称"), "entitled-agent");
+    await user.type(screen.getByLabelText("显示名称"), "Entitled");
+    await user.type(screen.getByPlaceholderText("描述这个智能体的用途..."), "d");
     await user.click(screen.getByRole("button", { name: /^Next/ }));
 
     await user.type(await screen.findByLabelText("Allowed Models"), "gpt-4o,");
@@ -337,9 +337,9 @@ describe("AddAgentForm submit payload", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Agent Name"), "keyed-agent");
-    await user.type(screen.getByLabelText("Display Name"), "Keyed");
-    await user.type(screen.getByPlaceholderText("Describe what this agent does..."), "d");
+    await user.type(await screen.findByLabelText("智能体名称"), "keyed-agent");
+    await user.type(screen.getByLabelText("显示名称"), "Keyed");
+    await user.type(screen.getByPlaceholderText("描述这个智能体的用途..."), "d");
 
     await goToLastStepAndCreate(user);
 
@@ -360,13 +360,13 @@ describe("AddAgentForm submit payload", () => {
     });
     const user = userEvent.setup();
     renderForm();
-    await user.type(await screen.findByLabelText("Agent Name"), "key-selection-agent");
-    await user.type(screen.getByLabelText("Display Name"), "Key selection");
-    await user.type(screen.getByPlaceholderText("Describe what this agent does..."), "d");
+    await user.type(await screen.findByLabelText("智能体名称"), "key-selection-agent");
+    await user.type(screen.getByLabelText("显示名称"), "Key selection");
+    await user.type(screen.getByPlaceholderText("描述这个智能体的用途..."), "d");
     for (let step = 0; step < 3; step++) {
       await user.click(screen.getByRole("button", { name: /^Next/ }));
     }
-    await user.click(screen.getByRole("radio", { name: "Assign an existing key" }));
+    await user.click(screen.getByRole("radio", { name: "分配现有密钥" }));
     const keySelector = await screen.findByPlaceholderText("Search by key name…");
     await chooseSelectOption(user, keySelector, "Maple key");
     await user.click(screen.getByRole("button", { name: "Clear" }));

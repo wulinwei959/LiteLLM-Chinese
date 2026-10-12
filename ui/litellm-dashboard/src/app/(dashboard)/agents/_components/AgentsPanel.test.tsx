@@ -28,7 +28,7 @@ describe("AgentsPanel", () => {
 
   it("should render the Agents panel title", () => {
     render(<AgentsPanel accessToken="test-token" userRole="Admin" />);
-    expect(screen.getByText("Agents")).toBeInTheDocument();
+    expect(screen.getByText("智能体")).toBeInTheDocument();
   });
 
   it("should show Add New Agent button for admin users", () => {
@@ -53,24 +53,24 @@ describe("AgentsPanel", () => {
 
   it("should show the Actions column for admin role", async () => {
     render(<AgentsPanel accessToken="test-token" userRole="Admin" />);
-    expect(await screen.findByRole("columnheader", { name: /actions/i })).toBeInTheDocument();
+    expect(await screen.findByRole("columnheader", { name: /操作/ })).toBeInTheDocument();
   });
 
   it("should not show the Actions column for internal user role", async () => {
     render(<AgentsPanel accessToken="test-token" userRole="Internal User" />);
     await waitFor(() => {
-      expect(screen.queryByRole("columnheader", { name: /actions/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("columnheader", { name: /操作/ })).not.toBeInTheDocument();
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
   });
 
   it("should render the Health Check toggle for admins and non-admins", () => {
     const { unmount } = render(<AgentsPanel accessToken="test-token" userRole="Admin" />);
-    expect(screen.getByText("Health Check")).toBeInTheDocument();
+    expect(screen.getByText("健康检查")).toBeInTheDocument();
     unmount();
 
     render(<AgentsPanel accessToken="test-token" userRole="Internal User" />);
-    expect(screen.getByText("Health Check")).toBeInTheDocument();
+    expect(screen.getByText("健康检查")).toBeInTheDocument();
   });
 
   it("should call getAgentsList with health_check=false on initial load", async () => {
@@ -104,8 +104,8 @@ describe("AgentsPanel", () => {
 
     const keyedRow = (await screen.findByText("Keyed Agent")).closest("tr")!;
     const keylessRow = screen.getByText("Keyless Agent").closest("tr")!;
-    expect(within(keyedRow).getByText("Active")).toBeInTheDocument();
-    expect(within(keylessRow).getByText("Needs Setup")).toBeInTheDocument();
+    expect(within(keyedRow).getByText("活跃")).toBeInTheDocument();
+    expect(within(keylessRow).getByText("待配置")).toBeInTheDocument();
   });
 
   it("should refetch with health_check=true when the toggle is enabled", async () => {
@@ -141,9 +141,9 @@ describe("AgentsPanel", () => {
     await user.click(await screen.findByTestId("agent-actions-agent-9"));
     await user.click(await screen.findByTestId("agent-action-delete"));
 
-    const confirmPrompt = await screen.findByText(/are you sure you want to delete agent: Doomed Agent\?/i);
+    const confirmPrompt = await screen.findByText(/确定要删除智能体：Doomed Agent/);
     const confirmDialog = confirmPrompt.closest('[role="dialog"],[role="alertdialog"]') as HTMLElement;
-    await user.click(within(confirmDialog).getByRole("button", { name: /^delete$/i }));
+    await user.click(within(confirmDialog).getByRole("button", { name: /^删除$/ }));
 
     await waitFor(() => {
       expect(networking.deleteAgentCall).toHaveBeenCalledWith("test-token", "agent-9");
@@ -167,7 +167,7 @@ describe("AgentsPanel", () => {
     await waitFor(() => {
       expect(screen.queryByTestId("skeleton-row")).not.toBeInTheDocument();
     });
-    expect(screen.getByText("No agents yet")).toBeInTheDocument();
+    expect(screen.getByText("暂无智能体")).toBeInTheDocument();
     expect(networking.getAgentsList).not.toHaveBeenCalled();
   });
 
@@ -219,7 +219,7 @@ describe("AgentsPanel", () => {
     rerender(<AgentsPanel accessToken="token-b" userRole="Admin" />);
 
     await waitFor(() => {
-      expect(screen.getByText("No agents yet")).toBeInTheDocument();
+      expect(screen.getByText("暂无智能体")).toBeInTheDocument();
     });
     expect(screen.queryByText("Stale Agent")).not.toBeInTheDocument();
   });

@@ -208,6 +208,8 @@ const StaticHeadersFieldArray = () => {
 };
 
 const FIELD_TEXT_KEYS: Record<string, string> = {
+  "Agent Name": "agentName",
+  "Unique identifier for the agent": "nameFieldHint",
   "Display Name": "displayName",
   "URL": "url",
   "Version": "version",
@@ -261,8 +263,8 @@ const AgentFormFields: React.FC<AgentFormFieldsProps> = ({ panels, showAgentName
         <FieldGroup className="mb-4">
           <AgentFormField
             name="agent_name"
-            label={labelWithHint("Agent Name", "Unique identifier for the agent")}
-            rules={{ required: "Please enter a unique agent name" }}
+            label={labelWithHint(configText(t, "Agent Name"), configText(t, "Unique identifier for the agent"))}
+            rules={{ required: t("nameRequired") }}
           >
             {({ value, onChange, ref, ...control }) => (
               <Input

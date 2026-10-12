@@ -807,7 +807,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
       <div className="mt-4">
         {agentType === CUSTOM_AGENT_TYPE ? (
           <FieldGroup>
-            <AgentFormField name="agent_name" label="Agent Name" rules={{ required: "Please enter an agent name" }}>
+            <AgentFormField name="agent_name" label={t("agentName")} rules={{ required: t("nameRequired") }}>
               {({ value, onChange, ref, ...control }) => (
                 <Input
                   {...control}

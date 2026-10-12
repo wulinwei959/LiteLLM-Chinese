@@ -29,7 +29,7 @@ const makeAgent = (overrides: Partial<Agent> = {}): Agent => ({
 describe("AgentsTable", () => {
   it("renders every column header", () => {
     render(<AgentsTable agents={[]} {...baseProps} />);
-    for (const header of ["Agent Name", "Agent ID", "Spend (USD)", "Model", "Created", "Status"]) {
+    for (const header of ["智能体名称", "智能体 ID", "消费（美元）", "模型", "创建时间", "状态"]) {
       expect(screen.getByText(header)).toBeInTheDocument();
     }
   });
@@ -59,8 +59,8 @@ describe("AgentsTable", () => {
 
     const keyedRow = screen.getByText("Keyed Agent").closest("tr")!;
     const keylessRow = screen.getByText("Keyless Agent").closest("tr")!;
-    expect(within(keyedRow).getByText("Active")).toBeInTheDocument();
-    expect(within(keylessRow).getByText("Needs Setup")).toBeInTheDocument();
+    expect(within(keyedRow).getByText("活跃")).toBeInTheDocument();
+    expect(within(keylessRow).getByText("待配置")).toBeInTheDocument();
   });
 
   it("deletes an agent through the ⋯ actions menu", async () => {
@@ -91,7 +91,7 @@ describe("AgentsTable", () => {
       />,
     );
 
-    const search = screen.getByPlaceholderText("Search agents by name, ID, or description...");
+    const search = screen.getByPlaceholderText("按名称、ID 或描述搜索智能体...");
     await user.type(search, "billing");
     expect(screen.getByText("Billing Router")).toBeInTheDocument();
     expect(screen.queryByText("Second Agent")).not.toBeInTheDocument();
@@ -114,7 +114,7 @@ describe("AgentsTable", () => {
       />,
     );
 
-    const search = screen.getByPlaceholderText("Search agents by name, ID, or description...");
+    const search = screen.getByPlaceholderText("按名称、ID 或描述搜索智能体...");
     await user.click(search);
     await user.paste("5f3c2a1b-9d8e-4f7a-b6c5-d4e3f2a1b0c9");
     expect(screen.getByText("Billing Router")).toBeInTheDocument();
@@ -124,16 +124,16 @@ describe("AgentsTable", () => {
     await user.paste("ffffffff-0000-4000-8000-000000000000");
     expect(screen.queryByText("Billing Router")).not.toBeInTheDocument();
     expect(screen.queryByText("Second Agent")).not.toBeInTheDocument();
-    expect(screen.getByText("No matching agents")).toBeInTheDocument();
+    expect(screen.getByText("没有匹配的智能体")).toBeInTheDocument();
   });
 
   it("shows the no-match empty state when the search matches nothing", async () => {
     const user = userEvent.setup();
     render(<AgentsTable agents={[makeAgent()]} {...baseProps} />);
 
-    await user.type(screen.getByPlaceholderText("Search agents by name, ID, or description..."), "zzzz");
+    await user.type(screen.getByPlaceholderText("按名称、ID 或描述搜索智能体..."), "zzzz");
     expect(screen.queryByText("Test Agent")).not.toBeInTheDocument();
-    expect(screen.getByText("No matching agents")).toBeInTheDocument();
+    expect(screen.getByText("没有匹配的智能体")).toBeInTheDocument();
   });
 
   it("hides the actions column entirely for non-admins", () => {
@@ -141,13 +141,13 @@ describe("AgentsTable", () => {
     render(<AgentsTable agents={[agent]} {...baseProps} isAdmin={false} />);
 
     expect(screen.queryByTestId("agent-actions-agent-2")).not.toBeInTheDocument();
-    expect(screen.queryByRole("columnheader", { name: /actions/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: /操作/ })).not.toBeInTheDocument();
     expect(screen.getByRole("table")).toBeInTheDocument();
   });
 
   it("shows the actions column for admins", () => {
     render(<AgentsTable agents={[makeAgent({ agent_id: "agent-3" })]} {...baseProps} isAdmin />);
-    expect(screen.getByRole("columnheader", { name: /actions/i })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /操作/ })).toBeInTheDocument();
     expect(screen.getByTestId("agent-actions-agent-3")).toBeInTheDocument();
   });
 
@@ -187,14 +187,14 @@ describe("AgentsTable", () => {
 
   it("shows a rich empty state when there are no agents", () => {
     render(<AgentsTable agents={[]} {...baseProps} />);
-    expect(screen.getByText("No agents yet")).toBeInTheDocument();
+    expect(screen.getByText("暂无智能体")).toBeInTheDocument();
     expect(screen.queryByTestId("skeleton-row")).not.toBeInTheDocument();
   });
 
   it("renders loading skeleton rows on initial load instead of the empty state", () => {
     render(<AgentsTable agents={[]} {...baseProps} isLoading />);
     expect(screen.getAllByTestId("skeleton-row").length).toBeGreaterThan(0);
-    expect(screen.queryByText("No agents yet")).not.toBeInTheDocument();
+    expect(screen.queryByText("暂无智能体")).not.toBeInTheDocument();
   });
 
   it("invokes the health-check toggle from the toolbar", async () => {
@@ -202,7 +202,7 @@ describe("AgentsTable", () => {
     const onHealthCheckToggle = vi.fn();
     render(<AgentsTable agents={[]} {...baseProps} onHealthCheckToggle={onHealthCheckToggle} />);
 
-    expect(screen.getByText("Health Check")).toBeInTheDocument();
+    expect(screen.getByText("健康检查")).toBeInTheDocument();
     await user.click(screen.getByRole("switch"));
     expect(onHealthCheckToggle).toHaveBeenCalledWith(true, expect.anything());
   });

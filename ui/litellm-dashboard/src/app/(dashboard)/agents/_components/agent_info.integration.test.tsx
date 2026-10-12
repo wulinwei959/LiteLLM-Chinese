@@ -134,8 +134,8 @@ const renderView = () => {
 
 const openEditor = async (user: ReturnType<typeof setup>) => {
   await user.click(await screen.findByRole("tab", { name: "Settings" }));
-  await user.click(await screen.findByRole("button", { name: "Edit Settings" }));
-  await screen.findByLabelText("Agent Name");
+  await user.click(await screen.findByRole("button", { name: "编辑设置" }));
+  await screen.findByLabelText("智能体名称");
 };
 
 const patchedPayload = () => vi.mocked(networking.patchAgentCall).mock.calls[0][2] as Record<string, unknown>;
@@ -190,11 +190,11 @@ describe("AgentInfoView update payload", () => {
     renderView();
     await openEditor(user);
 
-    await user.click(screen.getByRole("button", { name: /Skills/ }));
-    await user.click(screen.getByRole("button", { name: /Capabilities/ }));
-    await user.click(screen.getByRole("button", { name: /Optional Settings/ }));
-    await user.click(screen.getByRole("button", { name: /Cost Configuration/ }));
-    await user.click(screen.getByRole("button", { name: /LiteLLM Parameters/ }));
+    await user.click(screen.getByRole("button", { name: /技能/ }));
+    await user.click(screen.getByRole("button", { name: /能力/ }));
+    await user.click(screen.getByRole("button", { name: /可选设置/ }));
+    await user.click(screen.getByRole("button", { name: /成本配置/ }));
+    await user.click(screen.getByRole("button", { name: /LiteLLM 参数/ }));
     await user.click(screen.getByRole("button", { name: /Authentication Headers/ }));
     await screen.findByLabelText("Forward Client Headers");
 
@@ -232,8 +232,8 @@ describe("AgentInfoView update payload", () => {
     renderView();
     await openEditor(user);
 
-    await user.clear(screen.getByLabelText("TPM Limit"));
-    fireEvent.change(screen.getByLabelText("TPM Limit"), { target: { value: "-5" } });
+    await user.clear(screen.getByLabelText("TPM 限制"));
+    fireEvent.change(screen.getByLabelText("TPM 限制"), { target: { value: "-5" } });
     await save(user);
 
     expect(patchedPayload().tpm_limit).toBe(0);
@@ -244,7 +244,7 @@ describe("AgentInfoView update payload", () => {
     renderView();
     await openEditor(user);
 
-    await user.clear(screen.getByLabelText("RPM Limit"));
+    await user.clear(screen.getByLabelText("RPM 限制"));
     await save(user);
 
     expect(patchedPayload()).not.toHaveProperty("rpm_limit");
@@ -255,7 +255,7 @@ describe("AgentInfoView update payload", () => {
     renderView();
     await openEditor(user);
 
-    await user.type(screen.getByLabelText("Agent Name"), "{Enter}");
+    await user.type(screen.getByLabelText("智能体名称"), "{Enter}");
 
     await waitFor(() => expect(networking.patchAgentCall).toHaveBeenCalledTimes(1));
   });
@@ -265,10 +265,10 @@ describe("AgentInfoView update payload", () => {
     renderView();
     await openEditor(user);
 
-    await user.clear(screen.getByLabelText("Agent Name"));
+    await user.clear(screen.getByLabelText("智能体名称"));
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
-    expect(await screen.findByText("Please enter a unique agent name")).toBeInTheDocument();
+    expect(await screen.findByText("请输入唯一的智能体名称")).toBeInTheDocument();
     expect(networking.patchAgentCall).not.toHaveBeenCalled();
   });
 
@@ -397,7 +397,7 @@ describe("AgentInfoView update payload", () => {
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
-    expect(await screen.findByRole("button", { name: "Edit Settings" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     expect(networking.getAgentInfo).toHaveBeenCalledTimes(2);
     expect(networking.patchAgentCall).not.toHaveBeenCalled();
   });

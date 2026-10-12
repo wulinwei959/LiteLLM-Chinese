@@ -88,9 +88,9 @@ describe("AgentInfoView settings", () => {
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
     fireEvent.click(await screen.findByRole("tab", { name: "Settings" }));
-    fireEvent.click(screen.getByRole("button", { name: "Edit Settings" }));
+    fireEvent.click(screen.getByRole("button", { name: "编辑设置" }));
 
-    const tpmLimit = await screen.findByLabelText("TPM Limit");
+    const tpmLimit = await screen.findByLabelText("TPM 限制");
     fireEvent.change(tpmLimit, { target: { value: "42" } });
 
     fireEvent.click(screen.getByRole("button", { name: /Save Changes/ }));
@@ -109,7 +109,7 @@ describe("AgentInfoView settings", () => {
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
     fireEvent.click(await screen.findByRole("tab", { name: "Settings" }));
-    fireEvent.click(screen.getByRole("button", { name: "Edit Settings" }));
+    fireEvent.click(screen.getByRole("button", { name: "编辑设置" }));
     fireEvent.click(await screen.findByRole("button", { name: "Attach ag-1" }));
     expect(screen.getByTestId("selected-access-groups")).toHaveTextContent("ag-1");
 
@@ -125,7 +125,7 @@ describe("AgentInfoView settings", () => {
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
     fireEvent.click(await screen.findByRole("tab", { name: "Settings" }));
-    fireEvent.click(screen.getByRole("button", { name: "Edit Settings" }));
+    fireEvent.click(screen.getByRole("button", { name: "编辑设置" }));
     expect(await screen.findByTestId("selected-access-groups")).toHaveTextContent("ag-1");
 
     fireEvent.click(screen.getByRole("button", { name: "Detach all access groups" }));
@@ -159,7 +159,7 @@ describe("AgentInfoView settings", () => {
   it("shows None when the agent has no access groups attached", async () => {
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
-    expect(await screen.findByText("Access Groups")).toBeInTheDocument();
+    expect(await screen.findByText("访问组")).toBeInTheDocument();
     expect(screen.getByText("None")).toBeInTheDocument();
   });
 

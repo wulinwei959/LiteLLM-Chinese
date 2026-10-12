@@ -94,7 +94,7 @@ describe("AddAgentForm logos", () => {
 
     await screen.findByAltText("A2A Agent logo");
 
-    expect(screen.getByLabelText("Agent Type")).toBe(screen.getByRole("combobox"));
+    expect(screen.getByLabelText("智能体类型")).toBe(screen.getByRole("combobox"));
   });
 
   it("renders the option logo when the agent type dropdown is opened", async () => {
@@ -117,7 +117,7 @@ describe("AddAgentForm logos", () => {
     renderForm();
 
     const titleLogo = await screen.findByAltText("Agent logo");
-    const header = screen.getByText("Add New Agent").parentElement!;
+    const header = screen.getByText("新建智能体").parentElement!;
     fireEvent.error(titleLogo);
 
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("assets/logos/a2a_agent.png"));

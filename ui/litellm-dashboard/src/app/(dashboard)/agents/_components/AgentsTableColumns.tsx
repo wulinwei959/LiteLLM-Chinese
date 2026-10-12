@@ -64,7 +64,7 @@ export const getAgentsTableColumns = ({
     id: "agent_name",
     accessorKey: "agent_name",
     meta: { title: t("colAgentName") },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Agent Name" />,
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colAgentName")} />,
     size: 200,
     enableSorting: true,
     cell: ({ row }) => {
@@ -80,7 +80,7 @@ export const getAgentsTableColumns = ({
     id: "agent_id",
     accessorKey: "agent_id",
     meta: { title: t("colAgentId") },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Agent ID" />,
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colAgentId")} />,
     size: 200,
     enableSorting: true,
     cell: ({ row }) => (
@@ -95,7 +95,7 @@ export const getAgentsTableColumns = ({
     id: "spend",
     accessorKey: "spend",
     meta: { title: t("colSpend") },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Spend (USD)" />,
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colSpend")} />,
     size: 130,
     enableSorting: true,
     cell: ({ row }) => <MoneyCell value={row.original.spend} decimals={4} />,

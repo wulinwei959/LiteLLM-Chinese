@@ -17,12 +17,12 @@ const makeKey = (overrides: Partial<KeyResponse>): KeyResponse =>
 describe("AgentVirtualKeys", () => {
   it("shows the empty state when the agent has no keys", () => {
     renderWithProviders(<AgentVirtualKeys keys={[]} isLoading={false} onKeyClick={vi.fn()} />);
-    expect(screen.getByText("No virtual key assigned to this agent.")).toBeInTheDocument();
+    expect(screen.getByText("此智能体尚未分配虚拟密钥。")).toBeInTheDocument();
   });
 
   it("shows a loading state while keys are fetching", () => {
     renderWithProviders(<AgentVirtualKeys keys={[]} isLoading={true} onKeyClick={vi.fn()} />);
-    expect(screen.getByText("Loading keys...")).toBeInTheDocument();
+    expect(screen.getByText("正在加载密钥...")).toBeInTheDocument();
   });
 
   it("renders each attached key's alias and masked name", () => {

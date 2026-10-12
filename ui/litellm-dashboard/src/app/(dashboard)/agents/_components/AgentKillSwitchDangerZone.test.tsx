@@ -53,7 +53,7 @@ describe("AgentKillSwitchDangerZone", () => {
 
     const region = screen.getByRole("region", { name: "Danger Zone" });
     expect(region).toHaveTextContent("DELETE https://ops.example.com/kill");
-    expect(region).toHaveTextContent("can cause an outage");
+    expect(region).toHaveTextContent("这可能导致服务中断");
     expect(screen.getByRole("button", { name: "Fire Kill Switch" })).toBeEnabled();
   });
 
@@ -70,10 +70,10 @@ describe("AgentKillSwitchDangerZone", () => {
 
     expect(dialogFireButton()).toBeDisabled();
 
-    fireEvent.change(screen.getByLabelText("Confirm agent name"), { target: { value: "support-agen" } });
+    fireEvent.change(screen.getByLabelText("确认智能体名称"), { target: { value: "support-agen" } });
     expect(dialogFireButton()).toBeDisabled();
 
-    fireEvent.change(screen.getByLabelText("Confirm agent name"), { target: { value: "support-agent" } });
+    fireEvent.change(screen.getByLabelText("确认智能体名称"), { target: { value: "support-agent" } });
     expect(dialogFireButton()).toBeEnabled();
     expect(networking.triggerAgentKillSwitchCall).not.toHaveBeenCalled();
   });
@@ -90,7 +90,7 @@ describe("AgentKillSwitchDangerZone", () => {
     renderZone();
     openDialog();
 
-    fireEvent.change(screen.getByLabelText("Confirm agent name"), { target: { value: "support-agent" } });
+    fireEvent.change(screen.getByLabelText("确认智能体名称"), { target: { value: "support-agent" } });
     fireEvent.click(dialogFireButton());
 
     expect(await screen.findByRole("status")).toHaveTextContent('Last result: HTTP 202 {"stopped": true}');
@@ -103,7 +103,7 @@ describe("AgentKillSwitchDangerZone", () => {
     renderZone();
     openDialog();
 
-    fireEvent.change(screen.getByLabelText("Confirm agent name"), { target: { value: "support-agent" } });
+    fireEvent.change(screen.getByLabelText("确认智能体名称"), { target: { value: "support-agent" } });
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(networking.triggerAgentKillSwitchCall).not.toHaveBeenCalled();
@@ -115,7 +115,7 @@ describe("AgentKillSwitchDangerZone", () => {
     renderZone();
     openDialog();
 
-    fireEvent.change(screen.getByLabelText("Confirm agent name"), { target: { value: "support-agent" } });
+    fireEvent.change(screen.getByLabelText("确认智能体名称"), { target: { value: "support-agent" } });
     fireEvent.click(dialogFireButton());
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith("Kill switch webhook returned 500"));

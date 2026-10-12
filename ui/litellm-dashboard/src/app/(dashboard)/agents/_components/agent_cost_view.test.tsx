@@ -26,7 +26,7 @@ describe("AgentCostView", () => {
     };
     renderWithProviders(<AgentCostView agent={makeAgent(fullyPricedParams)} />);
 
-    expect(screen.getByText("Cost Configuration")).toBeInTheDocument();
+    expect(screen.getByText("成本配置")).toBeInTheDocument();
     expect(screen.getByText("Cost Per Query")).toBeInTheDocument();
     expect(screen.getByText("$0.05")).toBeInTheDocument();
     expect(screen.getByText("Input Cost Per Token")).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe("AgentCostView", () => {
   it("still renders a zero cost rather than treating it as unset", () => {
     renderWithProviders(<AgentCostView agent={makeAgent({ model: "gpt-4", cost_per_query: 0 })} />);
 
-    expect(screen.getByText("Cost Configuration")).toBeInTheDocument();
+    expect(screen.getByText("成本配置")).toBeInTheDocument();
     expect(screen.getByText("Cost Per Query")).toBeInTheDocument();
     expect(screen.getByText("$0")).toBeInTheDocument();
   });
