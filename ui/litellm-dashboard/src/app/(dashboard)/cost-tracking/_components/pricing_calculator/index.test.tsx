@@ -63,8 +63,8 @@ describe("PricingCalculator", () => {
 
   it("should render the time period toggle with Per Day and Per Month options", () => {
     renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
-    expect(screen.getByText("Per Day")).toBeInTheDocument();
-    expect(screen.getByText("Per Month")).toBeInTheDocument();
+    expect(screen.getByText("每天")).toBeInTheDocument();
+    expect(screen.getByText("每月")).toBeInTheDocument();
   });
 
   it("should render an Add Another Model button", () => {
@@ -115,7 +115,7 @@ describe("PricingCalculator", () => {
       const user = userEvent.setup();
       renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
 
-      await user.click(screen.getByText("Per Day"));
+      await user.click(screen.getByText("每天"));
 
       expect(screen.getByText("Requests/Day")).toBeInTheDocument();
     });
@@ -124,19 +124,19 @@ describe("PricingCalculator", () => {
       const user = userEvent.setup();
       renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
 
-      await user.click(screen.getByText("Per Day"));
+      await user.click(screen.getByText("每天"));
       expect(screen.getByText("Requests/Day")).toBeInTheDocument();
 
-      await user.click(screen.getByText("Per Month"));
+      await user.click(screen.getByText("每月"));
       expect(screen.getByText("Requests/Month")).toBeInTheDocument();
     });
   });
 
   it("should render column headers for Model, Input Tokens, and Output Tokens", () => {
     renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
-    expect(screen.getByRole("columnheader", { name: "Model" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Input Tokens" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Output Tokens" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "模型" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "输入 Token" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "输出 Token" })).toBeInTheDocument();
   });
 
   it("should render a numeric field for input tokens, output tokens and requests", () => {

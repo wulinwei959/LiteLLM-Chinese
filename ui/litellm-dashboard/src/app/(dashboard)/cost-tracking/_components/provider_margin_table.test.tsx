@@ -91,7 +91,7 @@ describe("ProviderMarginTable", () => {
         onRemoveProvider={onRemoveProvider}
       />,
     );
-    expect(screen.getByText("Global (All Providers)")).toBeInTheDocument();
+    expect(screen.getByText("全局（所有供应商）")).toBeInTheDocument();
   });
 
   it("should sort the global row above provider rows", () => {
@@ -104,7 +104,7 @@ describe("ProviderMarginTable", () => {
     );
     const rows = screen.getAllByRole("row").slice(1);
     expect(rows.map((row) => row.textContent)).toEqual([
-      expect.stringContaining("Global (All Providers)"),
+      expect.stringContaining("全局（所有供应商）"),
       expect.stringContaining("OpenAI"),
     ]);
   });

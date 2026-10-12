@@ -69,10 +69,10 @@ describe("CostTrackingSettings submit paths", () => {
 
   const openDiscountModal = async (user: ReturnType<typeof userEvent.setup>) => {
     renderWithProviders(<CostTrackingSettings {...ADMIN_PROPS} />);
-    const header = screen.getByText("Provider Discounts").closest("button");
+    const header = screen.getByText("供应商折扣").closest("button");
     if (header) await user.click(header);
-    await user.click(await screen.findByRole("button", { name: /add provider discount/i }));
-    await screen.findByRole("dialog", { name: "Add Provider Discount" });
+    await user.click(await screen.findByRole("button", { name: /添加供应商折扣/ }));
+    await screen.findByRole("dialog", { name: "添加供应商折扣" });
   };
 
   const submitDiscount = () =>
@@ -98,10 +98,10 @@ describe("CostTrackingSettings submit paths", () => {
   it("requests the margin exactly once per click", async () => {
     const user = userEvent.setup();
     renderWithProviders(<CostTrackingSettings {...ADMIN_PROPS} />);
-    const header = screen.getByText("Fee/Price Margin").closest("button");
+    const header = screen.getByText("费用/价格加成").closest("button");
     if (header) await user.click(header);
-    await user.click(await screen.findByRole("button", { name: /add provider margin/i }));
-    await screen.findByRole("dialog", { name: "Add Provider Margin" });
+    await user.click(await screen.findByRole("button", { name: /添加供应商加成/ }));
+    await screen.findByRole("dialog", { name: "添加供应商加成" });
 
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.click((await screen.findAllByRole("option"))[0]);
@@ -133,10 +133,10 @@ describe("CostTrackingSettings submit paths", () => {
   it("requests the margin exactly once when Enter is pressed in the percentage field", async () => {
     const user = userEvent.setup();
     renderWithProviders(<CostTrackingSettings {...ADMIN_PROPS} />);
-    const header = screen.getByText("Fee/Price Margin").closest("button");
+    const header = screen.getByText("费用/价格加成").closest("button");
     if (header) await user.click(header);
-    await user.click(await screen.findByRole("button", { name: /add provider margin/i }));
-    await screen.findByRole("dialog", { name: "Add Provider Margin" });
+    await user.click(await screen.findByRole("button", { name: /添加供应商加成/ }));
+    await screen.findByRole("dialog", { name: "添加供应商加成" });
 
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.click((await screen.findAllByRole("option"))[0]);
