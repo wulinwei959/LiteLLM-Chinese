@@ -454,7 +454,7 @@ describe("CreateKey", () => {
       await nameTheKey();
       await openSection(/Optional Settings/i);
       await userEvent.click(await screen.findByLabelText("Reset Budget"));
-      await userEvent.click(await screen.findByRole("option", { name: "daily" }));
+      await userEvent.click(await screen.findByRole("option", { name: "每日" }));
       await submit();
 
       expect((await createdPayload()).budget_duration).toBe("24h");
@@ -465,7 +465,7 @@ describe("CreateKey", () => {
       await nameTheKey();
       await openSection(/Optional Settings/i);
       await userEvent.click(await screen.findByLabelText("Reset Budget"));
-      await userEvent.click(await screen.findByRole("option", { name: /never resets/i }));
+      await userEvent.click(await screen.findByRole("option", { name: "从不重置" }));
       await submit();
 
       const payload = await createdPayload();

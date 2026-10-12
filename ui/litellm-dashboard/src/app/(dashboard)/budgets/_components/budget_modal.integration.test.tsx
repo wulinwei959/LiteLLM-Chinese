@@ -64,7 +64,7 @@ describe("BudgetModal", () => {
     await openOptionalSettings(user);
     fireEvent.change(screen.getByLabelText("Max Budget (USD)"), { target: { value: "42.567" } });
 
-    await chooseSelectOption(user, screen.getByRole("combobox"), "monthly");
+    await chooseSelectOption(user, screen.getByRole("combobox"), "每月");
 
     await create(user);
 
@@ -80,7 +80,7 @@ describe("BudgetModal", () => {
 
     await openOptionalSettings(user);
     fireEvent.change(screen.getByLabelText("Max Budget (USD)"), { target: { value: "42.567" } });
-    await chooseSelectOption(user, screen.getByRole("combobox"), "monthly");
+    await chooseSelectOption(user, screen.getByRole("combobox"), "每月");
 
     await user.click(screen.getByText("Optional Settings"));
     await waitFor(() => expect(screen.queryByLabelText("Max Budget (USD)")).not.toBeInTheDocument());

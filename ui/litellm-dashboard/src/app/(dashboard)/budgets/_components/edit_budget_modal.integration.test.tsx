@@ -76,7 +76,7 @@ describe("EditBudgetModal", () => {
     await user.clear(screen.getByLabelText("Max Budget (USD)"));
     fireEvent.change(screen.getByLabelText("Max Budget (USD)"), { target: { value: "42.567" } });
 
-    await chooseSelectOption(user, screen.getByRole("combobox"), "monthly");
+    await chooseSelectOption(user, screen.getByRole("combobox"), "每月");
 
     await save(user);
 

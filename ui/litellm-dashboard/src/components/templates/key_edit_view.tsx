@@ -460,7 +460,7 @@ export function KeyEditView({
                 id={id}
                 value={value as string | null}
                 onChange={(next) => onChange(next ?? null)}
-                placeholder="Never resets"
+                emptyMeansNeverResets
               />
             )}
           </FormField>

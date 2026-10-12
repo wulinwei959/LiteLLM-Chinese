@@ -57,6 +57,13 @@ const mockTranslations: Record<string, string> = {
     "These are the models that your selected team has access to. Leave empty to grant no models directly, e.g. when the team gets its models from access groups",
   "teams.listMaxBudgetUsd": "Max Budget (USD)",
   "teams.listResetBudget": "Reset Budget",
+  "common.budgetDuration.hourly": "hourly",
+  "common.budgetDuration.daily": "daily",
+  "common.budgetDuration.weekly": "weekly",
+  "common.budgetDuration.monthly": "monthly",
+  "common.budgetDuration.neverResets": "Never resets",
+  "common.budgetDuration.notSet": "Not set",
+  "common.budgetDuration.notAvailable": "n/a",
   "teams.listModelMaxBudgetHint":
     "Cap this team's spend on individual models, each with its own reset window. Every key on the team shares the cap unless the key sets its own budget for that model.",
   "teams.listTpmLimit": "Tokens per minute Limit (TPM)",

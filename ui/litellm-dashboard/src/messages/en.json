@@ -185,7 +185,16 @@
     },
     "empty": "No results",
     "emptyFiltered": "No rows match your search or filters.",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "budgetDuration": {
+      "hourly": "hourly",
+      "daily": "daily",
+      "weekly": "weekly",
+      "monthly": "monthly",
+      "neverResets": "Never resets",
+      "notSet": "Not set",
+      "notAvailable": "n/a"
+    }
   },
   "nav": {
     "aiGateway": "AI Gateway",

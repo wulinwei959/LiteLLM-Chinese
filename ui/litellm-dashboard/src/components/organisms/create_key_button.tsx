@@ -219,6 +219,7 @@ export const fetchUserModels = async (
  */
 const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOpenCreate, prefillData }) => {
   const t = useTranslations("virtualKeys");
+  const tDuration = useTranslations("common.budgetDuration");
   const { accessToken, userId: userID, userRole, premiumUser } = useAuthorized();
   const canEditGuardrails = premiumUser || (userRole != null && rolesWithWriteAccess.includes(userRole));
   const canViewPolicies = useCan("viewPolicies");
@@ -1023,7 +1024,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                             id={control.id}
                             value={control.value as string | null | undefined}
                             showNeverResets
-                            placeholder="Not set"
+                            placeholder={tDuration("notSet")}
                             onChange={(next) => control.onChange(next ?? undefined)}
                           />
                         )}

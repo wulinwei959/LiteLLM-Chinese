@@ -66,7 +66,7 @@ describe("AccessGroupBudgetsPanel", () => {
     expect(await screen.findByText("premium")).toBeInTheDocument();
     expect(screen.getByText("$1.2500")).toBeInTheDocument();
     expect(screen.getByText("of $2.50")).toBeInTheDocument();
-    expect(screen.getByText("monthly")).toBeInTheDocument();
+    expect(screen.getByText("每月")).toBeInTheDocument();
     expect(GET).toHaveBeenCalledWith("/access_group/list");
   });
 

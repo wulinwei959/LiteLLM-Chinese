@@ -185,7 +185,16 @@
     },
     "empty": "暂无结果",
     "emptyFiltered": "没有符合搜索或筛选条件的行。",
-    "saving": "保存中..."
+    "saving": "保存中...",
+    "budgetDuration": {
+      "hourly": "每小时",
+      "daily": "每日",
+      "weekly": "每周",
+      "monthly": "每月",
+      "neverResets": "从不重置",
+      "notSet": "未设置",
+      "notAvailable": "不适用"
+    }
   },
   "nav": {
     "aiGateway": "AI 网关",

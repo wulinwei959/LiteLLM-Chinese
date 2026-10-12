@@ -2,9 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, Trash2, Wallet } from "lucide-react";
-import { useTranslations } from "next-intl";
-
-import { getBudgetDurationLabel } from "@/components/common_components/budget_duration_dropdown";
+import { BudgetDurationText } from "@/components/common_components/budget_duration_dropdown";
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { ModelsCell, SpendBudgetCell } from "@/components/shared/table_cells";
 import { buttonVariants } from "@/components/ui/button";
@@ -161,9 +159,10 @@ export const getAccessGroupBudgetColumns = ({
       size: 110,
       enableSorting: false,
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
-          {getBudgetDurationLabel(row.original.budget?.budget_duration)}
-        </span>
+        <BudgetDurationText
+          value={row.original.budget?.budget_duration}
+          className="text-sm text-muted-foreground"
+        />
       ),
     },
     {

@@ -116,6 +116,7 @@ const DEFAULT_VALUES: SettingsValues = {
 
 const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
   const t = useTranslations("teams");
+  const tDuration = useTranslations("common.budgetDuration");
   const anchor = useComboboxAnchor();
   const [loading, setLoading] = useState<boolean>(true);
   const [values, setValues] = useState<SettingsValues>(DEFAULT_VALUES);
@@ -264,7 +265,11 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
               description={t("sso.budgetDurationDescription")}
               isEditing={isEditing}
               viewContent={
-                values.budget_duration ? <span>{getBudgetDurationLabel(values.budget_duration)}</span> : <NotSet />
+                values.budget_duration ? (
+                  <span>{getBudgetDurationLabel(tDuration, values.budget_duration)}</span>
+                ) : (
+                  <NotSet />
+                )
               }
               editContent={
                 <BudgetDurationDropdown

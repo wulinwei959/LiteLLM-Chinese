@@ -89,7 +89,7 @@ describe("BudgetTable", () => {
     const user = userEvent.setup();
     renderWithProviders(<BudgetTable {...defaultProps} list={makeList()} />);
     await showColumn(user, "budget_duration");
-    expect(screen.getByText("monthly")).toBeInTheDocument();
+    expect(screen.getByText("每月")).toBeInTheDocument();
   });
 
   it("should render 'Not set' when a budget has no reset duration", async () => {
@@ -97,7 +97,7 @@ describe("BudgetTable", () => {
     const list = makeList({ rows: [makeBudget({ budget_duration: null })] });
     renderWithProviders(<BudgetTable {...defaultProps} list={list} />);
     await showColumn(user, "budget_duration");
-    expect(screen.getByText("Not set")).toBeInTheDocument();
+    expect(screen.getByText("未设置")).toBeInTheDocument();
   });
 
   it("should render the budget id in full, with no truncation", () => {

@@ -8,7 +8,7 @@ import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { DateCell, IdCell, MoneyCell } from "@/components/shared/table_cells";
 import type { budgetItem } from "@/app/(dashboard)/hooks/budgets/useBudgets";
 import { buttonVariants } from "@/components/ui/button";
-import { getBudgetDurationLabel } from "@/components/common_components/budget_duration_dropdown";
+import { BudgetDurationText } from "@/components/common_components/budget_duration_dropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,13 +32,6 @@ function RateLimitCell({ value }: { value: number | null | undefined }) {
     return <span className="text-muted-foreground">n/a</span>;
   }
   return <span className="tabular-nums">{value}</span>;
-}
-
-function BudgetDurationCell({ value, t }: { value: string | null | undefined; t: BudgetsTranslator }) {
-  if (!value) {
-    return <span className="text-muted-foreground">{t("notSet")}</span>;
-  }
-  return <span className="whitespace-nowrap">{getBudgetDurationLabel(value)}</span>;
 }
 
 interface BudgetRowActionsProps {
@@ -147,7 +140,7 @@ export const getBudgetTableColumns = ({
     enableSorting: false,
     header: ({ column }) => <DataTableSortHeader column={column} title={t("reset")} />,
     size: 110,
-    cell: ({ row }) => <BudgetDurationCell value={row.original.budget_duration} t={t} />,
+    cell: ({ row }) => <BudgetDurationText value={row.original.budget_duration} />,
   },
   {
     id: "created_at",

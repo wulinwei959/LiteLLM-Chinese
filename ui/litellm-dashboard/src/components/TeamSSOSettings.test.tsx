@@ -38,7 +38,7 @@ vi.mock("./common_components/budget_duration_dropdown", () => {
   BudgetDurationDropdown.displayName = "BudgetDurationDropdown";
   return {
     default: BudgetDurationDropdown,
-    getBudgetDurationLabel: vi.fn((value: string) => {
+    getBudgetDurationLabel: vi.fn((_t: unknown, value: string) => {
       const map: Record<string, string> = { "24h": "daily", "7d": "weekly", "30d": "monthly" };
       return map[value] || value;
     }),

@@ -1018,7 +1018,7 @@ describe("KeyEditView", () => {
       />,
     );
 
-    await chooseSelectOption(userEvent, await screen.findByLabelText("Reset Budget"), "weekly");
+    await chooseSelectOption(userEvent, await screen.findByLabelText("Reset Budget"), "每周");
 
     const submitButton = screen.getByRole("button", { name: /save changes/i });
     await userEvent.click(submitButton);
@@ -1094,10 +1094,10 @@ describe("KeyEditView", () => {
     );
 
     const resetBudget = await screen.findByLabelText("Reset Budget");
-    await chooseSelectOption(userEvent, resetBudget, "Never resets");
+    await chooseSelectOption(userEvent, resetBudget, "从不重置");
 
     await waitFor(() => {
-      expect(resetBudget).toHaveTextContent("Never resets");
+      expect(resetBudget).toHaveTextContent("从不重置");
     });
 
     await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
@@ -1125,7 +1125,7 @@ describe("KeyEditView", () => {
       />,
     );
 
-    await chooseSelectOption(userEvent, await screen.findByLabelText("Reset Budget"), "Never resets");
+    await chooseSelectOption(userEvent, await screen.findByLabelText("Reset Budget"), "从不重置");
 
     await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
 

@@ -30,6 +30,11 @@ function useBudgetsTranslator() {
 }
 export type BudgetsTranslator = ReturnType<typeof useBudgetsTranslator>;
 
+function useBudgetDurationTranslator() {
+  return useTranslations("common.budgetDuration");
+}
+export type BudgetDurationTranslator = ReturnType<typeof useBudgetDurationTranslator>;
+
 function useChangePasswordTranslator() {
   return useTranslations("changePassword");
 }

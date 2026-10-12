@@ -90,6 +90,7 @@ export default function UserInfoView({
   startInEditMode = false,
 }: UserInfoViewProps) {
   const t = useTranslations("users");
+  const tDuration = useTranslations("common.budgetDuration");
   const { premiumUser, userId: signedInUserId } = useAuthorized();
   const canViewAutoRouterUsage = hasProxyWideSpendView(userRole);
   const canViewSavings = canViewAutoRouterUsage || (Boolean(userId.trim()) && userId === signedInUserId);
@@ -690,7 +691,7 @@ export default function UserInfoView({
 
                 <div>
                   <p className="font-medium">{t("infoBudgetReset")}</p>
-                  <p>{getBudgetDurationLabel(userData.budget_duration ?? null)}</p>
+                  <p>{getBudgetDurationLabel(tDuration, userData.budget_duration ?? null)}</p>
                 </div>
 
                 <div>

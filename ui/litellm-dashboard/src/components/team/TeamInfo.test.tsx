@@ -1209,7 +1209,7 @@ describe("TeamInfoView", () => {
       const user = userEvent.setup({ delay: null });
       const resetBudgetSelect = await openSettingsEditorForTeam(user, { budget_duration: null });
 
-      await chooseSelectOption(user, resetBudgetSelect, "weekly");
+      await chooseSelectOption(user, resetBudgetSelect, "每周");
 
       await user.click(screen.getByRole("button", { name: "保存更改" }));
 
@@ -2063,7 +2063,7 @@ describe("TeamInfoView - which team member fields reach the update payload depen
 
     await user.click(screen.getByText("团队成员设置"));
     await screen.findByLabelText("默认预算（USD）");
-    await chooseSelectOption(user, screen.getByLabelText("默认预算周期"), "Never resets");
+    await chooseSelectOption(user, screen.getByLabelText("默认预算周期"), "从不重置");
 
     const payload = await save(user);
 
@@ -2078,7 +2078,7 @@ describe("TeamInfoView - which team member fields reach the update payload depen
 
     await user.click(screen.getByText("团队成员设置"));
 
-    expect(await screen.findByLabelText("默认预算周期")).toHaveTextContent("Never resets");
+    expect(await screen.findByLabelText("默认预算周期")).toHaveTextContent("从不重置");
   });
 
   it("omits team_member_budget_duration when the dropdown is left untouched on a team with no member budget", async () => {
@@ -2088,7 +2088,7 @@ describe("TeamInfoView - which team member fields reach the update payload depen
     await user.click(screen.getByText("团队成员设置"));
     const durationSelect = await screen.findByLabelText("默认预算周期");
     expect(durationSelect).toHaveTextContent("继承团队重置周期");
-    expect(durationSelect).not.toHaveTextContent("Never resets");
+    expect(durationSelect).not.toHaveTextContent("从不重置");
     await user.type(screen.getByLabelText("默认预算（USD）"), "100");
 
     const payload = await save(user);
