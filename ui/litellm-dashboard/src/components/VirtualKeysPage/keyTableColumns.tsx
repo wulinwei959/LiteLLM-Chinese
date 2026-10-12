@@ -273,7 +273,7 @@ export const getKeyTableColumns = ({
   {
     id: "spend",
     accessorKey: "spend",
-    meta: { title: t("columns.spendBudget"), skeleton: "meter" },
+    meta: { title: t("columns.spendBudget"), skeleton: "meter", numeric: true },
     header: ({ table }) => <DataTableMultiSortHeader table={table} fields={SPEND_BUDGET_SORT_FIELDS} />,
     size: 180,
     enableSorting: true,

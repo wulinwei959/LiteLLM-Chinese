@@ -299,10 +299,8 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
       {
         id: "spend",
         accessorKey: "spend",
-        meta: { title: t("keysSpendUsd") },
-        header: ({ column }) => (
-          <DataTableSortHeader column={column} title={t("keysSpendUsd")} variant="header-cycle" />
-        ),
+        meta: { title: t("keysSpendUsd"), numeric: true },
+        header: ({ column }) => <DataTableSortHeader column={column} title={t("keysSpendUsd")} variant="header-cycle" />,
         size: 100,
         enableSorting: true,
         cell: (info) => <MoneyCell value={info.getValue() as number | null} decimals={4} />,
@@ -310,10 +308,8 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
       {
         id: "max_budget",
         accessorKey: "max_budget",
-        meta: { title: t("keysBudgetUsd") },
-        header: ({ column }) => (
-          <DataTableSortHeader column={column} title={t("keysBudgetUsd")} variant="header-cycle" />
-        ),
+        meta: { title: t("keysBudgetUsd"), numeric: true },
+        header: ({ column }) => <DataTableSortHeader column={column} title={t("keysBudgetUsd")} variant="header-cycle" />,
         size: 110,
         enableSorting: true,
         cell: (info) => (

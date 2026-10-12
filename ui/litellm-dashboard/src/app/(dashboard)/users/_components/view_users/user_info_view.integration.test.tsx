@@ -21,7 +21,6 @@ const mockTeamInfoCall = vi.fn();
 const mockUserUpdateUserCall = vi.fn();
 const mockFetchMCPServers = vi.fn();
 const mockListMCPTools = vi.fn();
-const mockUserDailyActivityCall = vi.fn();
 const mockUserDailyActivityAggregatedCall = vi.fn();
 
 const MCP_SERVER = { server_id: "srv-1", server_name: "GitHub MCP", alias: "GitHub MCP" };
@@ -65,8 +64,7 @@ vi.mock("@/components/networking", async (importOriginal) => {
     formatDate: original.formatDate,
     serverRootPath: "/",
     userGetInfoV2: (...args: unknown[]) => mockUserGetInfoV2(...args),
-    userDailyActivityCall: (...args: unknown[]) => mockUserDailyActivityCall(...args),
-    userDailyActivityAggregatedCall: (...args: unknown[]) => mockUserDailyActivityAggregatedCall(...args),
+    dailyActivityAggregatedCall: (...args: unknown[]) => mockUserDailyActivityAggregatedCall(...args),
     userDeleteCall: vi.fn(),
     userUpdateUserCall: (...args: unknown[]) => mockUserUpdateUserCall(...args),
     modelAvailableCall: vi.fn().mockResolvedValue({ data: [] }),
@@ -133,7 +131,7 @@ describe("UserInfoView add-to-team form", () => {
 
   const teamField = () => screen.getAllByRole("combobox")[0];
   const roleField = () => screen.getAllByRole("combobox")[1];
-  const submitButton = () => screen.getByRole("button", { name: /添加到团队|添加中\.\.\./ });
+  const submitButton = () => screen.getByRole("button", { name: /Add to Team|Adding\.\.\./i });
 
   const chooseTeam = async (user: ReturnType<typeof userEvent.setup>, alias: string) => {
     await user.click(teamField());
@@ -147,12 +145,12 @@ describe("UserInfoView add-to-team form", () => {
     // Edit Settings lives on the details tab and is gated on write access.
     const budgetProps = {
       ...defaultProps,
-      userRole: "Admin",
+      userRole: "管理员",
       initialTab: 1,
     };
 
     const openEditor = async (user: ReturnType<typeof userEvent.setup>) => {
-      await user.click(await screen.findByRole("button", { name: /编辑设置/ }));
+      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
       return screen.findByPlaceholderText("Max spend ($)");
     };
 
@@ -169,7 +167,7 @@ describe("UserInfoView add-to-team form", () => {
       render(<UserInfoView {...budgetProps} />);
 
       fireEvent.change(await openEditor(user), { target: { value: "42" } });
-      await user.click(screen.getByRole("button", { name: /保存更改/ }));
+      await user.click(screen.getByRole("button", { name: /save changes/i }));
 
       await waitFor(() => {
         expect(mockUserUpdateUserCall).toHaveBeenCalled();
@@ -187,7 +185,7 @@ describe("UserInfoView add-to-team form", () => {
 
       await openEditor(user);
       await user.click(screen.getByRole("checkbox", { name: "无限制预算" }));
-      await user.click(screen.getByRole("button", { name: /保存更改/ }));
+      await user.click(screen.getByRole("button", { name: /save changes/i }));
 
       await waitFor(() => expect(mockUserUpdateUserCall).toHaveBeenCalled());
       expect(mockUserUpdateUserCall.mock.calls[0][1]).toMatchObject({ max_budget: null });
@@ -200,14 +198,14 @@ describe("UserInfoView add-to-team form", () => {
       render(<UserInfoView {...budgetProps} />);
 
       await openEditor(user);
-      await user.click(screen.getByRole("combobox", { name: "重置预算" }));
+      await user.click(screen.getByRole("combobox", { name: "Reset Budget" }));
       await user.click(await screen.findByRole("option", { name: "不适用" }));
-      await user.click(screen.getByRole("button", { name: /保存更改/ }));
+      await user.click(screen.getByRole("button", { name: /save changes/i }));
 
       await waitFor(() => expect(mockUserUpdateUserCall).toHaveBeenCalled());
       expect(mockUserUpdateUserCall.mock.calls[0][1]).toMatchObject({ budget_duration: null });
       await openEditor(user);
-      expect(screen.getByRole("combobox", { name: "重置预算" })).toHaveTextContent("不适用");
+      expect(screen.getByRole("combobox", { name: "Reset Budget" })).toHaveTextContent("不适用");
     });
   });
 
@@ -438,7 +436,7 @@ describe("UserInfoView auto-router usage", () => {
     const user = userEvent.setup();
     render(<UserInfoView {...props} userId="" />);
     await user.click(await screen.findByRole("tab", { name: "自动路由用量" }));
-    expect(screen.getByRole("alert")).toHaveTextContent("该用户没有 ID");
+    expect(screen.getByRole("alert")).toHaveTextContent("this user has no ID");
     expect(mockFetch).not.toHaveBeenCalled();
   });
 });
@@ -458,7 +456,6 @@ describe("UserInfoView savings", () => {
       Promise.resolve({ ...MOCK_USER_DATA_NO_TEAMS, user_id: userId }),
     );
     mockUserDailyActivityAggregatedCall.mockReset().mockResolvedValue(savingsResponse([]));
-    mockUserDailyActivityCall.mockReset().mockResolvedValue(savingsResponse([]));
   });
 
   afterEach(() => {
@@ -472,17 +469,18 @@ describe("UserInfoView savings", () => {
       const { rerender } = render(<UserInfoView {...props} userId="user-1" userRole={userRole} />);
       await user.click(await screen.findByRole("tab", { name: "节省" }));
       expect(await screen.findByText("该范围无此用户的用量记录。")).toBeInTheDocument();
-      expect(mockUserDailyActivityAggregatedCall.mock.calls[0][3]).toBe("user-1");
+      expect(mockUserDailyActivityAggregatedCall.mock.calls[0]).toEqual([
+        "user",
+        expect.objectContaining({ entityIds: ["user-1"] }),
+      ]);
 
       mockUserDailyActivityAggregatedCall.mockClear();
-      mockUserDailyActivityCall.mockClear();
       rerender(<UserInfoView {...props} userId="another-user" userRole={userRole} />);
       await screen.findAllByText("another-user");
       expect(screen.getByRole("tab", { name: "概览" })).toHaveAttribute("aria-selected", "true");
       expect(screen.queryByRole("tab", { name: "节省" })).not.toBeInTheDocument();
       expect(screen.queryByText("该范围无此用户的用量记录。")).not.toBeInTheDocument();
       expect(mockUserDailyActivityAggregatedCall).not.toHaveBeenCalled();
-      expect(mockUserDailyActivityCall).not.toHaveBeenCalled();
     },
   );
 
@@ -506,27 +504,26 @@ describe("UserInfoView savings", () => {
     render(<UserInfoView {...props} />);
     const savingsTab = await screen.findByRole("tab", { name: "节省" });
     expect(mockUserDailyActivityAggregatedCall).not.toHaveBeenCalled();
-    expect(mockUserDailyActivityCall).not.toHaveBeenCalled();
 
     await user.click(savingsTab);
 
-    expect(await screen.findByTestId("summary-card-累计已记录节省")).toHaveTextContent("-$0.6000");
-    expect(screen.getByTestId("summary-card-压缩节省")).toHaveTextContent("$2.00");
-    expect(screen.getByTestId("summary-card-提示词缓存节省")).toHaveTextContent("$0.4000");
-    expect(screen.getByTestId("summary-card-提示词缓存节省")).toHaveTextContent("$1.00总计");
-    expect(screen.getByTestId("summary-card-自动路由节省")).toHaveTextContent("-$3.00");
+    expect(await screen.findByTestId("summary-card-total-recorded-savings")).toHaveTextContent("-$0.6000");
+    expect(screen.getByTestId("summary-card-compression-savings")).toHaveTextContent("$2.00");
+    expect(screen.getByTestId("summary-card-prompt-caching-savings")).toHaveTextContent("$0.4000");
+    expect(screen.getByTestId("summary-card-prompt-caching-savings")).toHaveTextContent("$1.00Total");
+    expect(screen.getByTestId("summary-card-auto-router-savings")).toHaveTextContent("-$3.00");
     expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledExactlyOnceWith(
-      "admin-token",
-      expect.any(Date),
-      expect.any(Date),
-      "user-123",
-      true,
-      null,
+      "user",
+      expect.objectContaining({
+        accessToken: "admin-token",
+        entityIds: ["user-123"],
+        includeCurrentUtcDay: true,
+      }),
     );
-    expect(screen.getByTestId("user-savings-scope-note")).toHaveTextContent("JWT 鉴权请求");
+    expect(screen.getByTestId("user-savings-scope-note")).toHaveTextContent("JWT-authenticated requests");
     await user.click(screen.getByRole("tab", { name: "每日" }));
     expect(screen.getByRole("tab", { name: "每日" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByTestId("summary-card-累计已记录节省")).toHaveTextContent("-$0.6000");
+    expect(screen.getByTestId("summary-card-total-recorded-savings")).toHaveTextContent("-$0.6000");
   });
 
   it("removes the prior user's savings while the newly selected user's results are loading", async () => {
@@ -537,24 +534,24 @@ describe("UserInfoView savings", () => {
     const user = userEvent.setup();
     const { rerender } = render(<UserInfoView {...props} />);
     await user.click(await screen.findByRole("tab", { name: "节省" }));
-    expect(await screen.findByTestId("summary-card-累计已记录节省")).toHaveTextContent("$42.00");
+    expect(await screen.findByTestId("summary-card-total-recorded-savings")).toHaveTextContent("$42.00");
 
     rerender(<UserInfoView {...props} userId="user-456" />);
 
-    expect(await screen.findByTestId("user-savings-empty")).toHaveTextContent("正在加载节省数据");
-    expect(screen.queryByTestId("summary-card-累计已记录节省")).not.toBeInTheDocument();
+    expect(await screen.findByTestId("user-savings-empty")).toHaveTextContent("Loading savings");
+    expect(screen.queryByTestId("summary-card-total-recorded-savings")).not.toBeInTheDocument();
     expect(mockUserDailyActivityAggregatedCall).toHaveBeenLastCalledWith(
-      "admin-token",
-      expect.any(Date),
-      expect.any(Date),
-      "user-456",
-      true,
-      null,
+      "user",
+      expect.objectContaining({
+        accessToken: "admin-token",
+        entityIds: ["user-456"],
+        includeCurrentUtcDay: true,
+      }),
     );
     await act(async () => {
       nextUser.resolve(savingsResponse([savingsDay("2026-09-19", { autorouter_savings_spend: -7 })]));
     });
-    expect(await screen.findByTestId("summary-card-累计已记录节省")).toHaveTextContent("-$7.00");
+    expect(await screen.findByTestId("summary-card-total-recorded-savings")).toHaveTextContent("-$7.00");
     expect(screen.queryByText("$42.00")).not.toBeInTheDocument();
   });
 
@@ -568,8 +565,8 @@ describe("UserInfoView savings", () => {
       .mockReturnValue(nextRange.promise);
     const committedTotals: Array<string | null> = [];
     const captureNewRange = () => {
-      if (screen.queryByText("累计已节省 · Sep 1 – Sep 2 (UTC)")) {
-        committedTotals.push(screen.queryByTestId("summary-card-累计已记录节省")?.textContent ?? null);
+      if (screen.queryByText("Running total saved · Sep 1 – Sep 2 (UTC)")) {
+        committedTotals.push(screen.queryByTestId("summary-card-total-recorded-savings")?.textContent ?? null);
       }
     };
     const user = userEvent.setup();
@@ -579,47 +576,36 @@ describe("UserInfoView savings", () => {
       </Profiler>,
     );
     await user.click(await screen.findByRole("tab", { name: "节省" }));
-    expect(await screen.findByTestId("summary-card-累计已记录节省")).toHaveTextContent("$42.00");
+    expect(await screen.findByTestId("summary-card-total-recorded-savings")).toHaveTextContent("$42.00");
 
     await user.click(screen.getByRole("button", { name: / - / }));
     const [startDateInput, endDateInput] = screen.getAllByDisplayValue(/^\d{4}-\d{2}-\d{2}$/);
     fireEvent.change(startDateInput, { target: { value: "2026-09-01" } });
     fireEvent.change(endDateInput, { target: { value: "2026-09-02" } });
-    await user.click(screen.getByRole("button", { name: "Apply" }));
+    await user.click(screen.getByRole("button", { name: "应用" }));
 
     expect(committedTotals.length).toBeGreaterThan(0);
     expect(committedTotals.every((total) => total === null)).toBe(true);
-    expect(screen.getByTestId("user-savings-empty")).toHaveTextContent("正在加载节省数据");
+    expect(screen.getByTestId("user-savings-empty")).toHaveTextContent("Loading savings");
     await act(async () => {
       nextRange.resolve(savingsResponse([savingsDay("2026-09-02", { autorouter_savings_spend: -7 })]));
     });
-    expect(await screen.findByTestId("summary-card-累计已记录节省")).toHaveTextContent("-$7.00");
+    expect(await screen.findByTestId("summary-card-total-recorded-savings")).toHaveTextContent("-$7.00");
   });
 
-  it("reports an incomplete paginated read as unavailable instead of displaying a partial savings total", async () => {
+  it("reports a failed read as unavailable instead of displaying a partial savings total", async () => {
     mockUserDailyActivityAggregatedCall.mockRejectedValue(new Error("aggregated unavailable"));
-    mockUserDailyActivityCall
-      .mockResolvedValueOnce({
-        results: [savingsDay("2026-09-19", { compression_savings_spend: 42 })],
-        metadata: { total_pages: 2, has_more: true, page: 1 },
-      })
-      .mockRejectedValueOnce(new Error("next page unavailable"));
     const user = userEvent.setup();
     render(<UserInfoView {...props} />);
     await user.click(await screen.findByRole("tab", { name: "节省" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("该范围无法获取节省数据");
-    expect(mockUserDailyActivityCall).toHaveBeenLastCalledWith(
-      "admin-token",
-      expect.any(Date),
-      expect.any(Date),
-      2,
-      "user-123",
-      true,
-      null,
+    expect(await screen.findByRole("alert")).toHaveTextContent("Savings are unavailable for this range");
+    expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledWith(
+      "user",
+      expect.objectContaining({ entityIds: ["user-123"] }),
     );
-    expect(screen.queryByTestId("summary-card-累计已记录节省")).not.toBeInTheDocument();
-    expect(screen.queryByText(/无此用户的用量记录/)).not.toBeInTheDocument();
+    expect(screen.queryByTestId("summary-card-total-recorded-savings")).not.toBeInTheDocument();
+    expect(screen.queryByText(/No usage recorded/)).not.toBeInTheDocument();
   });
 
   it("distinguishes a user with no usage from an unavailable read", async () => {
@@ -627,8 +613,8 @@ describe("UserInfoView savings", () => {
     render(<UserInfoView {...props} />);
     await user.click(await screen.findByRole("tab", { name: "节省" }));
 
-    expect(await screen.findByTestId("user-savings-empty")).toHaveTextContent("该范围无此用户的用量记录");
-    expect(screen.getByTestId("summary-card-累计已记录节省")).toHaveTextContent("$0.00");
+    expect(await screen.findByTestId("user-savings-empty")).toHaveTextContent("No usage recorded for this user");
+    expect(screen.getByTestId("summary-card-total-recorded-savings")).toHaveTextContent("$0.00");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
@@ -637,8 +623,7 @@ describe("UserInfoView savings", () => {
     render(<UserInfoView {...props} userId={userId} />);
     await user.click(await screen.findByRole("tab", { name: "节省" }));
 
-    expect(screen.getByRole("alert")).toHaveTextContent("该用户没有 ID");
+    expect(screen.getByRole("alert")).toHaveTextContent("this user has no ID");
     expect(mockUserDailyActivityAggregatedCall).not.toHaveBeenCalled();
-    expect(mockUserDailyActivityCall).not.toHaveBeenCalled();
   });
 });

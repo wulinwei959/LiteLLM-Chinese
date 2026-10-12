@@ -125,8 +125,8 @@ const MOCK_AUTHORIZED = {
   accessToken: "mock-access-token",
   userId: "user-123",
   userEmail: "test@example.com",
-  userRole: "Admin",
-  userRoleLabel: "Admin",
+  userRole: "管理员",
+  userRoleLabel: "管理员",
   isViewOnly: false,
   premiumUser: true,
   disabledPersonalKeyCreation: false,
@@ -159,7 +159,7 @@ describe("AllModelsTab", () => {
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
     expect(await screen.findByText("gpt-4")).toBeInTheDocument();
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-50 条，共 137 条");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-50 of 137");
   });
 
   it("does not re-query after the mount-time debounced search settles unchanged", async () => {
@@ -196,10 +196,10 @@ describe("AllModelsTab", () => {
     };
 
     const cases: [string, string, string, "asc" | "desc"][] = [
-      ["Model Information", "model_name", "model_name", "asc"],
+      ["模型信息", "model_name", "model_name", "asc"],
       ["Created By", "model_info_created_by", "created_at", "asc"],
-      ["Updated At", "model_info_updated_at", "updated_at", "asc"],
-      ["Costs", "input_cost", "costs", "desc"],
+      ["更新时间", "model_info_updated_at", "updated_at", "asc"],
+      ["成本", "input_cost", "costs", "desc"],
     ];
 
     it.each(cases)("sorts %s using the server field %s", async (_label, columnId, serverField, firstDirection) => {
@@ -403,6 +403,17 @@ describe("AllModelsTab", () => {
     });
   });
 
+  it("uses All Proxy Models as the public model name filter default", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<AllModelsTab {...defaultProps} />);
+
+    await user.click(screen.getByTestId("datatable-filters-trigger"));
+    await user.click(await screen.findByPlaceholderText("按公开模型名称筛选"));
+
+    expect(await screen.findByRole("option", { name: "所有代理模型" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "All Models" })).not.toBeInTheDocument();
+  });
+
   it("renders every row the server returned for the selected model group so rows match the footer total", () => {
     setModelsInfo([makeRow(), { ...makeRow({ model_info: { id: "model-2" } }), model_name: "claude-opus" }], 2);
     renderWithProviders(<AllModelsTab {...defaultProps} selectedModelGroup="claude-opus" />);
@@ -410,7 +421,7 @@ describe("AllModelsTab", () => {
     const table = screen.getByRole("table");
     expect(within(table).getByText("claude-opus")).toBeInTheDocument();
     expect(within(table).getByText("gpt-4")).toBeInTheDocument();
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-2 条，共 2 条");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-2 of 2");
   });
 
   it("asks the server for wildcard deployments instead of hiding rows client-side", () => {
@@ -419,7 +430,7 @@ describe("AllModelsTab", () => {
 
     expect(lastModelsInfoCall().wildcardOnly).toBe(true);
     expect(within(screen.getByRole("table")).getByText("gpt-4")).toBeInTheDocument();
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-2 条，共 2 条");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-2 of 2");
   });
 
   it("asks the server for the selected access group instead of hiding rows client-side", async () => {
@@ -434,7 +445,7 @@ describe("AllModelsTab", () => {
 
     await waitFor(() => expect(lastModelsInfoCall().accessGroup).toBe("sales-team"));
     expect(within(screen.getByRole("table")).getByText("gpt-4")).toBeInTheDocument();
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-1 条，共 1 条");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 1-1 of 1");
   });
 
   it("asks the server for the exact selected model group so deployments beyond the first page are found", () => {
@@ -567,7 +578,7 @@ describe("AllModelsTab", () => {
       renderWithProviders(<AllModelsTab {...defaultProps} />);
 
       await user.click(screen.getByTestId("models-view-select"));
-      await user.click(await screen.findByRole("option", { name: "所有可用模型" }));
+      await user.click(await screen.findByRole("option", { name: "所有代理模型" }));
 
       await waitFor(() => {
         expect(screen.queryByText(/create a Virtual Key/i)).not.toBeInTheDocument();

@@ -34,6 +34,17 @@ export const ALL_MODEL_GROUPS_VALUE = "all";
 export const WILDCARD_MODEL_GROUP_VALUE = "wildcard";
 
 const MODEL_TABLE_BODY_HEIGHT = 600;
+const ALL_PROXY_MODELS_LABEL = "All Proxy Models";
+
+const FILTER_LABELS: Record<string, string> = {
+  [MODEL_NAME_COLUMN_ID]: t("modelTable.filterLabels.publicModelName"),
+  [ACCESS_GROUPS_COLUMN_ID]: t("modelTable.filterLabels.accessGroup"),
+};
+
+const VIEW_MODE_LABELS: Record<ModelViewMode, string> = {
+  current_team: t("modelTable.viewModes.currentTeam"),
+  all: ALL_PROXY_MODELS_LABEL,
+};
 
 export interface ModelsTableTeamOption {
   value: string;
@@ -150,7 +161,7 @@ export function AllModelsTable({
 
   const modelGroupOptions = useMemo(
     () => [
-      { label: t("modelTable.allModels"), value: ALL_MODEL_GROUPS_VALUE },
+      { label: ALL_PROXY_MODELS_LABEL, value: ALL_MODEL_GROUPS_VALUE },
       { label: t("modelTable.wildcardModels"), value: WILDCARD_MODEL_GROUP_VALUE },
       ...availableModelGroups.map((group) => ({ label: group, value: group })),
     ],

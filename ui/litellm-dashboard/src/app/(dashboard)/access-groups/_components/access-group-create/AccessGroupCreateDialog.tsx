@@ -12,10 +12,10 @@ import { ModelSelect } from "@/components/ModelSelect/ModelSelect";
 import { toast } from "@/lib/toast";
 import { FieldGroup } from "@/components/ui/field";
 import { FormField } from "@/components/shared/form/FormField";
+import { MultiSelect } from "@/components/shared/MultiSelect";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useZodForm } from "@/lib/forms/useZodForm";
@@ -25,53 +25,6 @@ import { buildAccessGroupCreateBody, emptyAccessGroupFormValues, type AccessGrou
 import { buildAccessGroupCreateSchema } from "./schema";
 
 const GENERAL_TAB = "general";
-
-interface MultiSelectOption {
-  value: string;
-  label: string;
-}
-
-interface MultiSelectProps {
-  id: string;
-  value: string[];
-  onChange: (value: string[]) => void;
-  options: MultiSelectOption[];
-  placeholder: string;
-  "aria-invalid": true | undefined;
-  "aria-describedby": string | undefined;
-}
-
-const MultiSelect = ({
-  id,
-  value,
-  onChange,
-  options,
-  placeholder,
-  "aria-invalid": ariaInvalid,
-  "aria-describedby": ariaDescribedBy,
-}: MultiSelectProps) => (
-  <Select multiple items={options} value={value} onValueChange={onChange}>
-    <SelectTrigger id={id} aria-invalid={ariaInvalid} aria-describedby={ariaDescribedBy} className="w-full">
-      <SelectValue placeholder={placeholder}>
-        {(selected: string[]) =>
-          selected.length === 0
-            ? placeholder
-            : options
-                .filter((option) => selected.includes(option.value))
-                .map((option) => option.label)
-                .join(", ")
-        }
-      </SelectValue>
-    </SelectTrigger>
-    <SelectContent>
-      {options.map((option) => (
-        <SelectItem key={option.value} value={option.value}>
-          {option.label}
-        </SelectItem>
-      ))}
-    </SelectContent>
-  </Select>
-);
 
 const defaultCreateAccessGroup = async (body: AccessGroupCreateBody): Promise<unknown> => {
   const { data } = await fetchClient.POST("/v1/access_group", { body });
@@ -189,15 +142,13 @@ export const AccessGroupCreateDialog = ({
 
             <TabsContent value="mcp-servers" className="pt-4">
               <FormField control={form.control} name="mcpServerIds" label={t("allowedMcpServers")}>
-                {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
+                {({ id, value, onChange }) => (
                   <MultiSelect
                     id={id}
                     value={value}
-                    onChange={onChange}
+                    onValueChange={onChange}
                     options={mcpServerOptions}
                     placeholder={t("selectMcpServers")}
-                    aria-invalid={ariaInvalid}
-                    aria-describedby={ariaDescribedBy}
                   />
                 )}
               </FormField>
@@ -205,15 +156,13 @@ export const AccessGroupCreateDialog = ({
 
             <TabsContent value="agents" className="pt-4">
               <FormField control={form.control} name="agentIds" label={t("allowedAgents")}>
-                {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
+                {({ id, value, onChange }) => (
                   <MultiSelect
                     id={id}
                     value={value}
-                    onChange={onChange}
+                    onValueChange={onChange}
                     options={agentOptions}
                     placeholder={t("selectAgents")}
-                    aria-invalid={ariaInvalid}
-                    aria-describedby={ariaDescribedBy}
                   />
                 )}
               </FormField>

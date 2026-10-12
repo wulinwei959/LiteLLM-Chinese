@@ -17,6 +17,7 @@ import { cn } from "@/lib/cva.config";
 import { AUTH_TYPE, MCP_REACHABLE_DESCRIPTION, type MCPServer } from "@/components/mcp_tools/types";
 import { Logo } from "@/components/molecules/logo/Logo";
 import { getMaskedAndFullUrl, getMCPNetworkAccess, networkAccessDescriptionKey, networkAccessLabelKey } from "./utils";
+import { STDIO_DISABLED_MESSAGE } from "./StdioAvailability";
 
 interface MCPServerCardProps {
   server: MCPServer;

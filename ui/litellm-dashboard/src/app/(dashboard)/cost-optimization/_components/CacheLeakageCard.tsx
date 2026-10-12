@@ -9,8 +9,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
-import { CacheLeakageDimension, CacheLeakageRow, computeCacheLeakage, pct, usd } from "./costOptimizationUtils";
+import {
+  CacheLeakageDimension,
+  CacheLeakageRow,
+  computeCacheLeakage,
+  leakageRowsFromKeyRows,
+  netSavingsPerCachedToken,
+  pct,
+  usd,
+} from "./costOptimizationUtils";
 import { DailyActivityRange } from "./useDailyActivityRange";
+import { useCacheLeakageKeys } from "./useCacheLeakageKeys";
 
 interface CacheLeakageCardProps {
   activity: DailyActivityRange;
@@ -83,11 +92,20 @@ const SortableHead = ({
 
 const CacheLeakageCard: React.FC<CacheLeakageCardProps> = ({ activity }) => {
   const t = useTranslations("costOptimization");
-  const { results, loading, isFetchingMore, apiKeyTruncation } = activity;
+  const { results, loading } = activity;
   const [dimension, setDimension] = useState<CacheLeakageDimension>("key");
   const [sort, setSort] = useState<SortState>({ column: "potentialSavings", dir: "desc" });
-  const leakage = useMemo(() => computeCacheLeakage(results, dimension), [results, dimension]);
-  const rows = useMemo(() => [...leakage.rows].sort((a, b) => compareRows(a, b, sort)), [leakage.rows, sort]);
+  const leakageRate = useMemo(() => netSavingsPerCachedToken(results), [results]);
+  const keyLeakage = useCacheLeakageKeys(activity, dimension === "key");
+  const unsortedRows = useMemo(
+    () =>
+      dimension === "key"
+        ? leakageRowsFromKeyRows(keyLeakage.rows, leakageRate)
+        : computeCacheLeakage(results, "model").rows,
+    [dimension, keyLeakage.rows, leakageRate, results],
+  );
+  const rows = useMemo(() => [...unsortedRows].sort((a, b) => compareRows(a, b, sort)), [unsortedRows, sort]);
+  const rowsLoading = dimension === "key" ? keyLeakage.loading : loading;
 
   const onSort = (column: SortColumn) =>
     setSort((prev) =>
@@ -98,10 +116,11 @@ const CacheLeakageCard: React.FC<CacheLeakageCardProps> = ({ activity }) => {
 
   const subject = dimension === "model" ? t("leak.models") : t("leak.keys");
   const firstColumn = dimension === "model" ? t("leak.firstModel") : t("leak.firstKey");
+  const emptyNoun = dimension === "model" ? "model" : "key";
   const emptyMessage =
-    loading || isFetchingMore
-      ? t("overview.loading")
-      : t(dimension === "model" ? "leak.emptyModel" : "leak.emptyKey");
+    dimension === "key" && keyLeakage.failed
+      ? "Could not load key usage for this range."
+      : `No ${emptyNoun} usage in this range.`;
 
   return (
     <TooltipProvider delay={300}>
@@ -123,22 +142,9 @@ const CacheLeakageCard: React.FC<CacheLeakageCardProps> = ({ activity }) => {
           </Tabs>
         </CardHeader>
         <CardContent>
-          {dimension === "key" && apiKeyTruncation !== undefined && (
-            <p className="mb-2 text-sm text-muted-foreground" role="note">
-              {t("leak.truncNote", {
-                limit: apiKeyTruncation.limit.toLocaleString(),
-                total: apiKeyTruncation.total.toLocaleString(),
-              })}
-            </p>
-          )}
-          {rows.length > 0 && isFetchingMore && (
-            <p className="mb-2 text-sm text-muted-foreground">
-              {t("leak.stillLoading")}
-            </p>
-          )}
           {rows.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              {emptyMessage}
+              {rowsLoading ? t("overview.loading") : emptyMessage}
             </p>
           ) : (
             <Table>

@@ -1,5 +1,7 @@
 "use client";
-
+import { AgentIdentityFields } from "./AgentIdentityFields";
+import { AgentIdentityDetails } from "./AgentIdentityDetails";
+import { withAgentIdentity } from "./agent_identity";
 import React, { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { cx } from "@/lib/cva.config";
@@ -239,9 +241,14 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
       const updateData = appliedDiscoveredSelection
         ? overlayDiscoveredCardParams(built, appliedDiscoveredSelection.selected_card)
         : built;
+      const cardEdited =
+        Boolean(appliedDiscoveredSelection) ||
+        [AGENT_FORM_CONFIG.basic, AGENT_FORM_CONFIG.skills, AGENT_FORM_CONFIG.capabilities, AGENT_FORM_CONFIG.optional]
+          .flatMap((section) => section.fields)
+          .some((field) => form.getFieldState(field.name).isDirty);
 
       await patchAgentCall(accessToken, agentId, {
-        ...updateData,
+        ...withAgentIdentity(updateData, values, agent, cardEdited),
         object_permission: buildMcpObjectPermission(values),
         access_group_ids: values.access_group_ids ?? [],
       });
@@ -341,6 +348,12 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
         <div>
           {/* Overview Panel */}
           <TabsContent value="overview" keepMounted>
+            <AgentIdentityDetails
+              agentId={agentId}
+              identity={agent.identity}
+              accessToken={accessToken}
+              isAdmin={isAdmin}
+            />
             <DetailList>
               <DetailItem label={t("agentId")}>{agent.agent_id}</DetailItem>
               <DetailItem label={t("colAgentName")}>{agent.agent_name}</DetailItem>
@@ -508,6 +521,8 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
                         ) : (
                           <AgentFormFields showAgentName={true} panels={panels} />
                         )}
+
+                        <AgentIdentityFields accessToken={accessToken} />
 
                         {discoveryRequest && (
                           <div className="mt-4">

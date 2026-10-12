@@ -2,8 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Copy, Info, Loader2, Pencil, RefreshCw, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import type { ModelsTranslator } from "@/lib/i18n/translators";
 
 import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
 import { ModelData } from "@/components/model_dashboard/types";
@@ -56,15 +54,7 @@ const formatShortDate = (value: string | null | undefined): string | null => {
   return Number.isNaN(date.getTime()) ? null : formatCellDate(date, "date");
 };
 
-function ModelInformationCell({
-  model,
-  displayName,
-  t,
-}: {
-  model: ModelData;
-  displayName: string;
-  t: ModelsTranslator;
-}) {
+function ModelInformationCell({ model, displayName }: { model: ModelData; displayName: string }) {
   const litellmModelName = model.litellm_model_name || "-";
 
   return (
@@ -94,9 +84,7 @@ function ModelInformationCell({
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
             {model.provider ? <ProviderLogo provider={model.provider} className="size-4 shrink-0" /> : null}
-            <span className="truncate text-xs text-muted-foreground">
-              {model.provider || t("modelTable.unknownProvider")}
-            </span>
+            <span className="truncate text-xs text-muted-foreground">{model.provider || t("modelTable.unknownProvider")}</span>
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="text-xs text-muted-foreground">{t("modelTable.publicModelName")}</span>
@@ -105,7 +93,7 @@ function ModelInformationCell({
             </span>
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="text-xs text-muted-foreground">{t("modelTable.litellmModelName")}</span>
+            <span className="text-xs text-muted-foreground">{t("table.litellmModelName")}</span>
             <span className="flex min-w-0 items-center gap-1.5">
               <span className="truncate font-mono text-sm text-foreground" title={litellmModelName}>
                 {litellmModelName}
@@ -127,11 +115,9 @@ function ModelInformationCell({
   );
 }
 
-function CredentialsHeader({ t }: { t: ModelsTranslator }) {
+function CredentialsHeader() {
   return (
-    <span className="flex items-center gap-1">
-      {t("table.credentials")}
-      <HoverCard>
+    <span className="flex items-center gap-1">{t("table.credentials")}<HoverCard>
         <HoverCardTrigger
           render={
             <button
@@ -149,16 +135,12 @@ function CredentialsHeader({ t }: { t: ModelsTranslator }) {
             <span className="text-sm font-medium text-foreground">{t("table.credentialTypes")}</span>
             <div className="flex flex-col gap-1">
               <span className="flex items-center gap-1.5 text-sm font-medium text-info">
-                <RefreshCw className="size-3.5" />
-                {t("table.reusable")}
-              </span>
+                <RefreshCw className="size-3.5" />{t("table.reusable")}</span>
               <span className="text-xs text-muted-foreground">{t("table.reusableDesc")}</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-                <Pencil className="size-3.5" />
-                {t("table.manual")}
-              </span>
+                <Pencil className="size-3.5" />{t("table.manual")}</span>
               <span className="text-xs text-muted-foreground">{t("table.manualDesc")}</span>
             </div>
           </div>
@@ -172,9 +154,7 @@ function CredentialsCell({ credentialName }: { credentialName: string | undefine
   if (!credentialName) {
     return (
       <Badge variant="outline" className="gap-1 font-normal text-muted-foreground">
-        <Pencil className="size-3" />
-        Manual
-      </Badge>
+        <Pencil className="size-3" />{t("table.manual")}</Badge>
     );
   }
 
@@ -186,11 +166,11 @@ function CredentialsCell({ credentialName }: { credentialName: string | undefine
   );
 }
 
-function CreatedByCell({ model, t }: { model: ModelData; t: ModelsTranslator }) {
+function CreatedByCell({ model }: { model: ModelData }) {
   const isConfigModel = !model.model_info?.db_model;
   const createdAt = formatShortDate(model.model_info.created_at);
-  const primary = isConfigModel ? t("modelTable.configModel") : model.model_info.created_by || t("common.unknown");
-  const secondaryForDbModel = formatShortDate(model.model_info.created_at) ?? t("common.unknown");
+  const primary = isConfigModel ? t("modelTable.configModel") : model.model_info.created_by || t("health.unknown");
+  const secondaryForDbModel = createdAt ?? "Unknown date";
 
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
@@ -211,7 +191,7 @@ function CostRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function CostsCell({ model, t }: { model: ModelData; t: ModelsTranslator }) {
+function CostsCell({ model }: { model: ModelData }) {
   const { input_cost: inputCost, output_cost: outputCost, output_cost_per_second: perSecond } = model;
   const hasPerSecond = perSecond != null;
   const showInput = inputCost != null && (!hasPerSecond || Number(inputCost) > 0);
@@ -226,7 +206,7 @@ function CostsCell({ model, t }: { model: ModelData; t: ModelsTranslator }) {
       content={hasPerSecond ? t("table.costTooltipPerSecond") : t("table.costTooltip")}
       trigger={
         <div className="flex flex-col gap-0.5 whitespace-nowrap">
-          {showInput && <CostRow label={t("table.costIn")} value={`$${inputCost}`} />}
+          {showInput && <CostRow label="IN" value={`$${inputCost}`} />}
           {showOutput && <CostRow label={t("table.costOut")} value={`$${outputCost}`} />}
           {hasPerSecond && <CostRow label={t("table.costOut")} value={formatPerSecondCost(perSecond)} />}
         </div>
@@ -235,7 +215,7 @@ function CostsCell({ model, t }: { model: ModelData; t: ModelsTranslator }) {
   );
 }
 
-function AccessGroupsCell({ accessGroups, t }: { accessGroups: string[] | null; t: ModelsTranslator }) {
+function AccessGroupsCell({ accessGroups }: { accessGroups: string[] | null }) {
   if (!accessGroups || accessGroups.length === 0) {
     return <span className="text-sm text-muted-foreground">-</span>;
   }
@@ -258,7 +238,7 @@ function AccessGroupsCell({ accessGroups, t }: { accessGroups: string[] | null; 
           }
           trigger={
             <Badge variant="outline" className="shrink-0 cursor-default font-normal">
-              +{overflow.length} {t("common.more")}
+              +{overflow.length} more
             </Badge>
           }
         />
@@ -275,7 +255,6 @@ interface ModelRowActionsProps {
   isPausing: boolean;
   onDeleteClick?: (modelId: string) => void;
   onTogglePauseClick?: (modelId: string, blocked: boolean) => void | Promise<void>;
-  t: ModelsTranslator;
 }
 
 function ModelRowActions({
@@ -286,7 +265,6 @@ function ModelRowActions({
   isPausing,
   onDeleteClick,
   onTogglePauseClick,
-  t,
 }: ModelRowActionsProps) {
   const modelId = model.model_info?.id;
   const isConfigModel = !model.model_info?.db_model;
@@ -302,10 +280,12 @@ function ModelRowActions({
     if (!isAdmin) {
       return t("modelTable.pauseTooltipAdmin");
     }
-    return isBlocked ? t("modelTable.resumeTooltip") : t("modelTable.pauseTooltip");
+    return isBlocked ? "Resume model — restore normal routing." : "Pause model — stop routing requests until resumed.";
   };
 
-  const deleteTooltip = isConfigModel ? t("modelTable.deleteTooltipConfig") : t("modelTable.deleteTooltip");
+  const deleteTooltip = isConfigModel
+    ? t("modelTable.deleteTooltipConfig")
+    : t("table.delete");
 
   return (
     <div className="flex items-center justify-end gap-1.5">
@@ -324,7 +304,7 @@ function ModelRowActions({
                   size="sm"
                   checked={!isBlocked}
                   disabled={!isPauseToggleable}
-                  aria-label={isBlocked ? t("modelTable.resumeAria") : t("modelTable.pauseAria")}
+                  aria-label={isBlocked ? t("modelTable.resumeTooltip") : t("modelTable.pauseTooltip")}
                   data-testid={`model-pause-toggle-${modelId}`}
                   onCheckedChange={(nextChecked) => {
                     if (isPauseToggleable && onTogglePauseClick && modelId) {
@@ -363,7 +343,7 @@ function ModelRowActions({
   );
 }
 
-interface ModelsTableColumnDeps {
+export interface ModelsTableColumnDeps {
   userRole: string;
   userID: string;
   isViewOnly: boolean;
@@ -372,7 +352,6 @@ interface ModelsTableColumnDeps {
   onDeleteClick?: (modelId: string) => void;
   onTogglePauseClick?: (modelId: string, blocked: boolean) => void | Promise<void>;
   pausingModelId?: string | null;
-  t: ModelsTranslator;
 }
 
 export const getModelsTableColumns = ({
@@ -384,139 +363,135 @@ export const getModelsTableColumns = ({
   onDeleteClick,
   onTogglePauseClick,
   pausingModelId,
-  t,
-}: ModelsTableColumnDeps): ColumnDef<ModelData>[] => {
-  return [
-    {
-      id: MODEL_ID_COLUMN_ID,
-      accessorFn: (row) => row.model_info.id,
-      meta: { title: t("modelTable.modelId") },
-      header: t("modelTable.modelId"),
-      enableSorting: false,
-      size: 140,
-      minSize: 90,
-      cell: ({ row }) => (
-        <IdCell
-          value={row.original.model_info.id}
-          onClick={onModelIdClick}
-          dataTestId={`model-id-${row.original.model_info.id}`}
-        />
+}: ModelsTableColumnDeps): ColumnDef<ModelData>[] => [
+  {
+    id: MODEL_ID_COLUMN_ID,
+    accessorFn: (row) => row.model_info.id,
+    meta: { title: t("table.modelId") },
+    header: t("table.modelId"),
+    enableSorting: false,
+    size: 140,
+    minSize: 90,
+    cell: ({ row }) => (
+      <IdCell
+        value={row.original.model_info.id}
+        onClick={onModelIdClick}
+        dataTestId={`model-id-${row.original.model_info.id}`}
+      />
+    ),
+  },
+  {
+    id: MODEL_NAME_COLUMN_ID,
+    accessorFn: (row) => row.model_name ?? "",
+    meta: { title: t("modelTable.modelInformation"), skeleton: "twoLine" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("modelTable.modelInformation")} />,
+    enableSorting: true,
+    size: 280,
+    minSize: 160,
+    cell: ({ row }) => (
+      <ModelInformationCell model={row.original} displayName={getDisplayModelName(row.original) || "-"} />
+    ),
+  },
+  {
+    id: CREDENTIALS_COLUMN_ID,
+    accessorFn: (row) => row.litellm_params?.litellm_credential_name ?? "",
+    meta: { title: t("table.credentials") },
+    header: () => <CredentialsHeader />,
+    enableSorting: false,
+    size: 180,
+    minSize: 110,
+    cell: ({ row }) => <CredentialsCell credentialName={row.original.litellm_params?.litellm_credential_name} />,
+  },
+  {
+    id: CREATED_BY_COLUMN_ID,
+    accessorFn: (row) => row.model_info.created_by ?? "",
+    meta: { title: t("table.createdBy"), skeleton: "twoLine" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.createdBy")} />,
+    enableSorting: true,
+    size: 180,
+    minSize: 110,
+    cell: ({ row }) => <CreatedByCell model={row.original} />,
+  },
+  {
+    id: UPDATED_AT_COLUMN_ID,
+    accessorFn: (row) => row.model_info.updated_at ?? "",
+    meta: { title: t("table.updatedAt") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.updatedAt")} />,
+    enableSorting: true,
+    size: 140,
+    minSize: 100,
+    cell: ({ row }) => <DateCell value={row.original.model_info.updated_at} precision="date" />,
+  },
+  {
+    id: COSTS_COLUMN_ID,
+    accessorFn: (row) => row.input_cost,
+    meta: { title: t("modelTable.costs"), numeric: true },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("modelTable.costs")} />,
+    enableSorting: true,
+    size: 130,
+    minSize: 90,
+    cell: ({ row }) => <CostsCell model={row.original} />,
+  },
+  {
+    id: TEAM_ID_COLUMN_ID,
+    accessorFn: (row) => row.model_info.team_id ?? "",
+    meta: { title: t("table.teamId") },
+    header: t("table.teamId"),
+    enableSorting: false,
+    size: 140,
+    minSize: 90,
+    cell: ({ row }) => (
+      <IdCell
+        value={row.original.model_info.team_id}
+        onClick={onTeamIdClick}
+        dataTestId={`model-team-id-${row.original.model_info.id}`}
+      />
+    ),
+  },
+  {
+    id: ACCESS_GROUPS_COLUMN_ID,
+    accessorFn: (row) => row.model_info.access_groups ?? [],
+    meta: { title: t("addModel.modelAccessGroup"), skeleton: "chips" },
+    header: t("addModel.modelAccessGroup"),
+    enableSorting: false,
+    size: 200,
+    minSize: 120,
+    cell: ({ row }) => <AccessGroupsCell accessGroups={row.original.model_info.access_groups} />,
+  },
+  {
+    id: STATUS_COLUMN_ID,
+    accessorFn: (row) => row.model_info.db_model,
+    meta: { title: t("modelTable.status"), skeleton: "badge" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("modelTable.status")} />,
+    enableSorting: true,
+    size: 140,
+    minSize: 100,
+    cell: ({ row }) =>
+      row.original.model_info.db_model ? (
+        <StatusBadge tone="info" label={t("modelTable.dbModel")} />
+      ) : (
+        <StatusBadge tone="neutral" label={t("modelTable.configBadge")} />
       ),
-    },
-    {
-      id: MODEL_NAME_COLUMN_ID,
-      accessorFn: (row) => row.model_name ?? "",
-      meta: { title: t("modelTable.modelInformation"), skeleton: "twoLine" },
-      header: ({ column }) => <DataTableSortHeader column={column} title={t("modelTable.modelInformation")} />,
-      enableSorting: true,
-      size: 280,
-      minSize: 160,
-      cell: ({ row }) => (
-        <ModelInformationCell model={row.original} displayName={getDisplayModelName(row.original) || "-"} t={t} />
-      ),
-    },
-    {
-      id: CREDENTIALS_COLUMN_ID,
-      accessorFn: (row) => row.litellm_params?.litellm_credential_name ?? "",
-      meta: { title: t("table.credentials") },
-      header: () => <CredentialsHeader t={t} />,
-      enableSorting: false,
-      size: 180,
-      minSize: 110,
-      cell: ({ row }) => <CredentialsCell credentialName={row.original.litellm_params?.litellm_credential_name} />,
-    },
-    {
-      id: CREATED_BY_COLUMN_ID,
-      accessorFn: (row) => row.model_info.created_by ?? "",
-      meta: { title: t("modelTable.createdBy"), skeleton: "twoLine" },
-      header: ({ column }) => <DataTableSortHeader column={column} title={t("modelTable.createdBy")} />,
-      enableSorting: true,
-      size: 180,
-      minSize: 110,
-      cell: ({ row }) => <CreatedByCell model={row.original} t={t} />,
-    },
-    {
-      id: UPDATED_AT_COLUMN_ID,
-      accessorFn: (row) => row.model_info.updated_at ?? "",
-      meta: { title: t("modelTable.updatedAt") },
-      header: ({ column }) => <DataTableSortHeader column={column} title={t("modelTable.updatedAt")} />,
-      enableSorting: true,
-      size: 140,
-      minSize: 100,
-      cell: ({ row }) => <DateCell value={row.original.model_info.updated_at} precision="date" />,
-    },
-    {
-      id: COSTS_COLUMN_ID,
-      accessorFn: (row) => row.input_cost,
-      meta: { title: t("modelTable.costs") },
-      header: ({ column }) => <DataTableSortHeader column={column} title={t("modelTable.costs")} />,
-      enableSorting: true,
-      size: 130,
-      minSize: 90,
-      cell: ({ row }) => <CostsCell model={row.original} t={t} />,
-    },
-    {
-      id: TEAM_ID_COLUMN_ID,
-      accessorFn: (row) => row.model_info.team_id ?? "",
-      meta: { title: t("modelTable.teamId") },
-      header: t("modelTable.teamId"),
-      enableSorting: false,
-      size: 140,
-      minSize: 90,
-      cell: ({ row }) => (
-        <IdCell
-          value={row.original.model_info.team_id}
-          onClick={onTeamIdClick}
-          dataTestId={`model-team-id-${row.original.model_info.id}`}
-        />
-      ),
-    },
-    {
-      id: ACCESS_GROUPS_COLUMN_ID,
-      accessorFn: (row) => row.model_info.access_groups ?? [],
-      meta: { title: t("modelTable.modelAccessGroup"), skeleton: "chips" },
-      header: t("modelTable.modelAccessGroup"),
-      enableSorting: false,
-      size: 200,
-      minSize: 120,
-      cell: ({ row }) => <AccessGroupsCell accessGroups={row.original.model_info.access_groups} t={t} />,
-    },
-    {
-      id: STATUS_COLUMN_ID,
-      accessorFn: (row) => row.model_info.db_model,
-      meta: { title: t("modelTable.status"), skeleton: "badge" },
-      header: ({ column }) => <DataTableSortHeader column={column} title={t("modelTable.status")} />,
-      enableSorting: true,
-      size: 140,
-      minSize: 100,
-      cell: ({ row }) =>
-        row.original.model_info.db_model ? (
-          <StatusBadge tone="info" label={t("modelTable.dbModel")} />
-        ) : (
-          <StatusBadge tone="neutral" label={t("modelTable.configBadge")} />
-        ),
-    },
-    {
-      id: "actions",
-      meta: { title: t("table.actions"), className: "text-right", headerClassName: "text-right" },
-      header: t("table.actions"),
-      enableSorting: false,
-      enableHiding: false,
-      enableResizing: false,
-      size: 110,
-      minSize: 110,
-      cell: ({ row }) => (
-        <ModelRowActions
-          model={row.original}
-          userRole={userRole}
-          userID={userID}
-          isViewOnly={isViewOnly}
-          isPausing={pausingModelId === row.original.model_info?.id}
-          onDeleteClick={onDeleteClick}
-          onTogglePauseClick={onTogglePauseClick}
-          t={t}
-        />
-      ),
-    },
-  ];
-};
+  },
+  {
+    id: "actions",
+    meta: { title: t("table.actions"), className: "text-right", headerClassName: "text-right" },
+    header: t("table.actions"),
+    enableSorting: false,
+    enableHiding: false,
+    enableResizing: false,
+    size: 110,
+    minSize: 110,
+    cell: ({ row }) => (
+      <ModelRowActions
+        model={row.original}
+        userRole={userRole}
+        userID={userID}
+        isViewOnly={isViewOnly}
+        isPausing={pausingModelId === row.original.model_info?.id}
+        onDeleteClick={onDeleteClick}
+        onTogglePauseClick={onTogglePauseClick}
+      />
+    ),
+  },
+];

@@ -219,7 +219,7 @@ const MCPPermissionManagement: React.FC<MCPPermissionManagementProps> = ({
           <div className="flex items-start justify-between gap-4">
             <div>
               <span className="text-sm font-medium text-foreground flex items-center">
-                {t("permissionMgmt.internalNetworkOnly")}
+                Internal network only
                 <SimpleTooltip content={t("permissionMgmt.internalNetworkTooltip")}>
                   <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
                 </SimpleTooltip>

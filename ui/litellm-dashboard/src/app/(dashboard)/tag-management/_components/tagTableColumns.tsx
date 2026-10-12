@@ -121,6 +121,7 @@ export const getTagTableColumns = ({ onSelectTag, onEdit, onDelete, t }: TagTabl
     header: ({ column }) => <DataTableSortHeader column={column} title={t("tagName")} />,
     size: 260,
     enableSorting: true,
+    filterFn: "includesString",
     cell: ({ row }) => <TagNameCell tag={row.original} onSelectTag={onSelectTag} t={t} />,
   },
   {
@@ -130,6 +131,7 @@ export const getTagTableColumns = ({ onSelectTag, onEdit, onDelete, t }: TagTabl
     header: t("descColumn"),
     size: 300,
     enableSorting: false,
+    filterFn: "includesString",
     cell: ({ row }) => {
       const description = row.original.description;
       return (

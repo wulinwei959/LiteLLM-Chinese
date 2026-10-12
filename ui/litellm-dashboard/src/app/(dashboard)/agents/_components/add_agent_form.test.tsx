@@ -1,6 +1,5 @@
 import React from "react";
-import { screen, fireEvent, within } from "@testing-library/react";
-import { renderWithProviders as render } from "@/../tests/test-utils";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import userEvent, { PointerEventsCheckLevel } from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AddAgentForm from "./add_agent_form";
@@ -84,7 +83,9 @@ describe("AddAgentForm logos", () => {
     expect(titleLogo).toBeInstanceOf(HTMLImageElement);
     expect(titleLogo).toHaveAttribute("src", expect.stringContaining("assets/logos/a2a_agent.png"));
 
-    const selectionLogo = within(await screen.findByRole("combobox")).getByAltText("A2A Agent logo");
+    const selectionLogo = within(await screen.findByRole("combobox", { name: "智能体类型" })).getByAltText(
+      "A2A Agent logo",
+    );
     expect(selectionLogo).toBeInstanceOf(HTMLImageElement);
     expect(selectionLogo).toHaveAttribute("src", expect.stringContaining("assets/logos/a2a_agent.png"));
   });
@@ -94,14 +95,14 @@ describe("AddAgentForm logos", () => {
 
     await screen.findByAltText("A2A Agent logo");
 
-    expect(screen.getByLabelText("智能体类型")).toBe(screen.getByRole("combobox"));
+    expect(screen.getByLabelText("智能体类型")).toBe(screen.getByRole("combobox", { name: "智能体类型" }));
   });
 
   it("renders the option logo when the agent type dropdown is opened", async () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm();
 
-    const trigger = await screen.findByRole("combobox");
+    const trigger = await screen.findByRole("combobox", { name: "智能体类型" });
     await within(trigger).findByAltText("A2A Agent logo");
     await user.click(trigger);
 
@@ -124,7 +125,7 @@ describe("AddAgentForm logos", () => {
     expect(screen.queryByAltText("Agent logo")).not.toBeInTheDocument();
     expect(within(header).getByText("A")).toBeInTheDocument();
 
-    const trigger = screen.getByRole("combobox");
+    const trigger = screen.getByRole("combobox", { name: "智能体类型" });
     fireEvent.error(within(trigger).getByAltText("A2A Agent logo"));
     expect(within(trigger).queryByAltText("A2A Agent logo")).not.toBeInTheDocument();
     expect(warnSpy).toHaveBeenCalledTimes(2);
