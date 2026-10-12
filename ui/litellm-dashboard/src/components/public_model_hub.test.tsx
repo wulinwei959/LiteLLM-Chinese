@@ -5,7 +5,7 @@ import { renderWithProviders } from "../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import PublicModelHub from "./public_model_hub";
-import { getPublicMCPHubColumns, MCPServerData, ModelGroupInfo } from "./PublicModelHubTableColumns";
+import { AgentCard, getPublicMCPHubColumns, MCPServerData, ModelGroupInfo } from "./PublicModelHubTableColumns";
 
 const { apiGetMock } = vi.hoisted(() => ({ apiGetMock: vi.fn() }));
 
@@ -487,5 +487,40 @@ describe("public hub MCP details modal", () => {
     fireEvent.click(screen.getByRole("button", { name: /close/i }));
 
     await waitFor(() => expect(screen.queryByText("Server Overview")).not.toBeInTheDocument());
+  });
+});
+
+const mockAgentCard = (name: string, description: string): AgentCard => ({
+  protocolVersion: "1.0",
+  name,
+  description,
+  url: `https://agents.example.com/${name}`,
+  version: "1.0.0",
+  defaultInputModes: ["text"],
+  defaultOutputModes: ["text"],
+  skills: [],
+});
+
+describe("public hub footers", () => {
+  it("counts the filtered agents and the loaded MCP servers in Chinese", async () => {
+    const networkingModule = await import("./networking");
+    vi.mocked(networkingModule.agentHubPublicModelsCall).mockResolvedValue([
+      mockAgentCard("Billing Router", "routes billing questions"),
+      mockAgentCard("Support Bot", "handles support tickets"),
+    ]);
+    vi.mocked(networkingModule.mcpHubPublicServersCall).mockResolvedValue([mockMcpServer]);
+
+    renderHub();
+
+    fireEvent.click(await screen.findByRole("tab", { name: /Agent Hub/i }));
+    expect(await screen.findByText("已显示 2，共 2 个智能体")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByPlaceholderText("Search agent names or descriptions..."), {
+      target: { value: "zzzz" },
+    });
+    expect(await screen.findByText("已显示 0，共 2 个智能体")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("tab", { name: /MCP Hub/i }));
+    expect(await screen.findByText("已显示 1，共 1 个 MCP 服务器")).toBeInTheDocument();
   });
 });

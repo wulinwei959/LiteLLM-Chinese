@@ -5709,5 +5709,10 @@
     "metadataShort": "Metadata",
     "createdShort": "Created",
     "lastUpdatedShort": "Last Updated"
+  },
+  "modelHub": {
+    "showingModels": "Showing {shown} of {total, plural, one {# model} other {# models}}",
+    "showingAgents": "Showing {shown} of {total, plural, one {# agent} other {# agents}}",
+    "showingMcpServers": "Showing {shown} of {total, plural, one {# MCP server} other {# MCP servers}}"
   }
 }

@@ -32,6 +32,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Copy, Inbox, Search as SearchIcon, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -66,6 +67,7 @@ function HubEmptyState({ title, body }: { title: string; body: string }) {
 }
 
 const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, premiumUser, userRole }) => {
+  const t = useTranslations("modelHub");
   const syntaxTheme = useSyntaxTheme(prism);
   // Admin Viewer follows the read-parity rule: see the AI Hub catalog, but
   // cannot toggle public visibility (write).
@@ -497,7 +499,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
                 <div className="mt-4 text-center space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    Showing {filteredData.length} of {modelHubData?.length || 0} models
+                    {t("showingModels", { shown: filteredData.length, total: modelHubData?.length || 0 })}
                   </p>
                 </div>
               </TabsContent>
@@ -564,7 +566,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
                 <div className="mt-4 text-center space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    Showing {filteredAgentData.length} of {agentHubData?.length || 0} agents
+                    {t("showingAgents", { shown: filteredAgentData.length, total: agentHubData?.length || 0 })}
                   </p>
                 </div>
               </TabsContent>
@@ -607,7 +609,10 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
                 <div className="mt-4 text-center space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    Showing {mcpHubData?.length || 0} MCP server{mcpHubData?.length !== 1 ? "s" : ""}
+                    {t("showingMcpServers", {
+                      shown: mcpHubData?.length || 0,
+                      total: mcpHubData?.length || 0,
+                    })}
                   </p>
                 </div>
               </TabsContent>

@@ -3,6 +3,7 @@ import { ExternalLinkIcon, SearchIcon } from "@heroicons/react/outline";
 import { SortingState } from "@tanstack/react-table";
 import { Copy, Inbox, Info } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -69,6 +70,7 @@ function PublicHubEmptyState({ title, body }: { title: string; body: string }) {
 }
 
 const PublicModelHub: React.FC<PublicModelHubProps> = ({ accessToken, isEmbedded = false }) => {
+  const t = useTranslations("modelHub");
   const anchor = useComboboxAnchor();
   const [proxyConfigured, setProxyConfigured] = useState<boolean>(false);
   const [agentHubData, setAgentHubData] = useState<AgentCard[] | null>(null);
@@ -573,7 +575,7 @@ const PublicModelHub: React.FC<PublicModelHubProps> = ({ accessToken, isEmbedded
 
                     <div className="mt-8 text-center">
                       <p className="text-sm text-muted-foreground">
-                        Showing {filteredAgentData.length} of {agentHubData?.length || 0} agents
+                        {t("showingAgents", { shown: filteredAgentData.length, total: agentHubData?.length || 0 })}
                       </p>
                     </div>
                   </TabsContent>
@@ -640,7 +642,7 @@ const PublicModelHub: React.FC<PublicModelHubProps> = ({ accessToken, isEmbedded
 
                     <div className="mt-8 text-center">
                       <p className="text-sm text-muted-foreground">
-                        Showing {filteredMcpData.length} of {mcpHubData?.length || 0} MCP servers
+                        {t("showingMcpServers", { shown: filteredMcpData.length, total: mcpHubData?.length || 0 })}
                       </p>
                     </div>
                   </TabsContent>

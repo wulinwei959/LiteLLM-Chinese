@@ -5709,5 +5709,10 @@
     "metadataShort": "元数据",
     "createdShort": "创建时间",
     "lastUpdatedShort": "最后更新"
+  },
+  "modelHub": {
+    "showingModels": "已显示 {shown}，共 {total} 个模型",
+    "showingAgents": "已显示 {shown}，共 {total} 个智能体",
+    "showingMcpServers": "已显示 {shown}，共 {total} 个 MCP 服务器"
   }
 }

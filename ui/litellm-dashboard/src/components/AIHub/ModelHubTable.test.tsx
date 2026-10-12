@@ -278,12 +278,12 @@ describe("ModelHubTable", () => {
       await user.type(search, "support tickets");
       expect(screen.queryByText("Billing Router")).not.toBeInTheDocument();
       expect(screen.getByText("Support Bot")).toBeInTheDocument();
-      expect(agentCount("Showing 1 of 2 agents")).toBeInTheDocument();
+      expect(agentCount("已显示 1，共 2 个智能体")).toBeInTheDocument();
 
       await user.clear(search);
       await user.type(search, "zzzz");
       expect(screen.getByText("No matching agents")).toBeInTheDocument();
-      expect(agentCount("Showing 0 of 2 agents")).toBeInTheDocument();
+      expect(agentCount("已显示 0，共 2 个智能体")).toBeInTheDocument();
     });
 
     it("renders the hub strip as underlined tabs rather than a segmented pill", async () => {

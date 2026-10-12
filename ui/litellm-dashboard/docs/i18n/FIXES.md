@@ -216,6 +216,24 @@ const namespaces = NAMESPACES.has(explicitRoot) ? [explicitRoot] : [...scopes];
 
 二是 `total`、`correct`、`falseNegativeLabel`、`falsePositiveLabel` 四处调用传了 `{ count }`，但数字实际由相邻的 span 单独渲染，消息里并不使用这个参数。`next-intl` 会静默忽略多余的 values，所以没有行为问题，但读代码的人会以为数字来自消息。这四处可以去掉多余的参数
 
+## 2026-10-12 构建报错：dd32399 在非测试文件里留下的 22 处类型错误
+
+`dd32399`（翻译大屏合并提交）把 `add_model/cache_control_settings.tsx` 里的英文常量换成 `t()` 调用，顺手删掉了 `CACHE_CONTROL_LABEL` / `CACHE_CONTROL_TOOLTIP` 等五个导出，但没查引用方。`ModelInfoEditForm.tsx`（上游快照带来的未翻译文件）仍在 import 其中两个，生产构建从那时起就是红的，到本次发现已隔 23 个提交。这还没完：修掉缺导出的报错后构建推进到下一层，`Failed to type check` 又停在 `layout.tsx` 的 `Cannot find name 't'`。同一提交在非测试文件里共留下五类错误、22 条、9 个文件
+
+| 类 | 例子 | 修法 |
+| -- | ---- | ---- |
+| 删掉的导出仍被引用 | `ModelInfoEditForm.tsx` 引用 `CACHE_CONTROL_LABEL`/`CACHE_CONTROL_TOOLTIP` | 接入 `models.addModel.cacheControlLabel` 与 `cacheControlTooltipDesc`（后者此前是死键） |
+| `t()` 调用处没有 hook | `layout.tsx` 的 `AgentControlPlaneView`、`MCPToolsetsTab.tsx` 的 `MCPToolList`、`A2AMetrics.tsx` 共 10 条 TS2304 | 补 `useTranslations("nav")` / `("mcpServers")` / `("playground")`；`layout.tsx` 的键名同步从 `t("nav.plugin")` 改回 `t("plugin")` |
+| `keyof typeof` 指向不存在的名字 | `models-and-endpoints/page.tsx` 的 `keyof typeof models.tabs` 里 `models` 未定义 | `import type enMessages from "@/messages/en.json"`，改 `keyof typeof enMessages.models.tabs` |
+| 重复的 interface 声明 | `AccessGroupBudgetColumns.tsx` 残留了导出接口的旧副本，TS2395/TS2339 | 删掉本地重复声明，保留带 `t` 字段的导出版本 |
+| 无意义的解构 | `ui/input.tsx`、`ui/input-group.tsx`、`PasswordInput.tsx` 里 `"data-testid": testId` 解构后原样再传，React 19 的 `ComponentProps` 不认带连字符的键 | 退回上游的 `{...props}` 透传写法；调用点 `data-testid` 本就经 spread 落到 DOM，行为不变 |
+
+三个信号里只有构建能看见这一整类。`npx vitest run` 什么都不报，Vite 对缺失的具名导出解析为 `undefined`，测试照常绿；`npx tsc --noEmit` 会报，但 22 条混在 928 条存量里没人逐条比对；`npm run build` 才会硬失败，且一次只报第一个错（先是 Turbopack 的 `Export CACHE_CONTROL_LABEL doesn't exist in target module`，修完再报 `Failed to type check … layout.tsx:78 Cannot find name 't'`）
+
+修完 22 条后：`tsc` 基线从 928 降到 904 条（82 个文件），**剩下的 904 条全部在 `*.test.tsx` / `*.test.ts` 里**（大头是 vitest 全局类型缺失的 TS2304/TS2582 与测试文件自身的类型债），非测试文件清零。`npm run build` 恢复绿色（退出码 0）。注意 `next.config.mjs` 设了 `useTypeScriptCli: false`，Next 16 自带的类型检查阶段不覆盖测试文件，所以 904 条测试文件错误不拦构建，与它们共存是当前常态；哪天开了这个实验开关，测试文件债会立刻变成构建红灯
+
+教训有三条。删导出前全仓搜引用，搜索范围要包含未翻译的批次 24 长尾文件；改大文件里的 `t()` 之前确认 hook 在作用域里（改前 diff 里看得到 `Cannot find name 't'` 这种低级错误不该进提交）；每批收口跑一次 `npm run build` 并检查退出码，vitest 与 tsc 基线比对都拦不住这一类
+
 ## 批次 24 硬编码英文欠账清单
 
 2026-10-12 修 Provider 批次和 team 批次时实测确认：以下位置的组件仍输出硬编码英文，对应测试断言保留英文原文。批次 24 收口时先把这些字符串接入 `t()`，再把断言同步为中文
@@ -226,7 +244,7 @@ const namespaces = NAMESPACES.has(explicitRoot) ? [explicitRoot] : [...scopes];
 | `team/useMemberBudgetReset.ts` | toast 文案（`Reset N member budgets to the team default`、`... the rest could not be reset`、`Team updated, but member budgets could not be reset`） | 已修 `78024a5` |
 | `shared/ScopedSavingsTab.tsx` | `Loading savings...` 与 `No usage recorded for this ...` 空态文案（路径在 `shared` 下，不是 `templates`） | 已修 `45c7998` |
 | `add_model/cache_control_settings.tsx` | aria-label 拼接 `${label} help`，`label` 已翻译（角色/索引）但 ` help` 后缀是英文，整名混语（"角色 help"） | 已修 `1abc26d` |
-| `public_model_hub` 分页脚 | 实际写死的是 `Showing {n} of {m} agents` 与 `Showing {n} of {m} MCP servers`，与共享表格的"第 X 页，共 Y 页"不一致 | 待办 |
+| `public_model_hub` 分页脚 | 实际写死的是 `Showing {n} of {m} agents` 与 `Showing {n} of {m} MCP servers`，与共享表格的"第 X 页，共 Y 页"不一致 | 已修（本次提交）。`AIHub/ModelHubTable.tsx` 有一份同样的脚注（多一条 models），一并接入 `modelHub` 命名空间 |
 | `templates/key_edit_view.tsx` | budget duration 选择框的 placeholder `Never resets` | 已修 `dfcf2ca`。该文件已接近 800 行上限，改用共享下拉的 `emptyMeansNeverResets` 表达空值，不在这文件里加引词代码 |
 | `components/GuardrailsMonitor/usageUnits.ts` | `unpricedSummary()` 的 `N units unpriced`、`counterLabel()` 由驼峰键派生的计数器名（`Content Policy`）、`counterMathRow()` 的 `no known price, left out` 与 `N unpriced units left out`，中文下仍渲染英文 | 已修（本次提交） |
 | `guardrails-monitor/_components/ScoreChart.tsx` | 图例 `categories={["passed", "blocked"]}` 写死英文 | 已修（本次提交） |
@@ -234,6 +252,8 @@ const namespaces = NAMESPACES.has(explicitRoot) ? [explicitRoot] : [...scopes];
 | `guardrails/_components/TeamGuardrailsTab.tsx` | 提交弹窗的 `https://your-guardrail-api.com/v1/check`、两个 JSON 示例 placeholder 与"等效配置"YAML 片段 | 已修（本次提交）。YAML 注释接入 `t()`；示例 URL 与 JSON 示例值保留英文 |
 
 guardrails 这一轮定了一条翻译边界：面向读者的散文（标签、注释、公式、空态）翻，机器可读的样例不翻。保留英文的四类：`usageUnits.ts` 的 `pricingIssueUrl`（预填 GitHub feature request，`title`/`the-feature` 面向上游维护者）、`TeamGuardrailsTab` 的示例 URL `https://your-guardrail-api.com/v1/check` 与两段 JSON 示例 placeholder、`CustomCodeModal` 的 Python 模板与 `{"texts": [...]}` placeholder、YAML 片段里的配置值（`fail_closed`、`os.environ/...`）。与 `TeamInfo.tsx` 的 `{"gpt-4": 4096}` 同一处理，改动时不要顺手翻
+
+分页脚这一行对应两个文件：公开的 `public_model_hub.tsx` 与登录后的 `AIHub/ModelHubTable.tsx`，`Showing {n} of {m} ...` 各写了一份，改了一处必须搜另一处。三个键进新的 `modelHub` 命名空间，英文侧用 ICU plural（`one {# agent} other {# agents}`），中文侧直接写 `{shown}` 与 `{total}`，不加 plural。注意两个组件其余文案仍是英文，`modelHub` 只覆盖这三条脚注，批次 24 扫到这两个文件之前，这两页是混语状态
 
 翻译会顶破 `max-lines`（800 行，跳过空行与注释）。`CustomCodeModal.tsx` 在 `83899df` 从 782 涨到 805，此后 `npx eslint <该文件>` 一直报 `max-lines` error。`eslint-suppressions.json` 是上游快照带来的批量豁免基线（19 个文件带 `max-lines` 豁免，含 `TeamGuardrailsTab.tsx`），不要往里追加新豁免；修法是抽块，本次把组件内的 `TEST_INPUT_EXAMPLES` 常量挪到 `custom_code/testInputExamples.ts`（89 行），文件回到 780 行。另外 `eslint --stdin` 不套用批量豁免，报出的 error 会比按文件跑多（本例 8 对 1），核对以按文件跑为准
 
