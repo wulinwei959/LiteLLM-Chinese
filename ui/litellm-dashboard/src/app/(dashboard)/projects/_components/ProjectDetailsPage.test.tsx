@@ -113,7 +113,7 @@ describe("ProjectDetail", () => {
 
     it("should display 'Active' for a non-blocked project", () => {
       renderWithProviders(<ProjectDetail projectId="proj-1" onBack={onBack} />);
-      expect(screen.getByText("Active")).toBeInTheDocument();
+      expect(screen.getByText("活跃")).toBeInTheDocument();
     });
 
     it("should display 'Blocked' for a blocked project", () => {
@@ -122,7 +122,7 @@ describe("ProjectDetail", () => {
         isLoading: false,
       });
       renderWithProviders(<ProjectDetail projectId="proj-1" onBack={onBack} />);
-      expect(screen.getByText("Blocked")).toBeInTheDocument();
+      expect(screen.getByText("已封禁")).toBeInTheDocument();
     });
 
     it("should call onBack when the back button is clicked", async () => {

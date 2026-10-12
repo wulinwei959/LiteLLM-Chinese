@@ -80,7 +80,7 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
               </h1>
               <StatusBadge
                 tone={project.blocked ? "error" : "success"}
-                label={project.blocked ? "Blocked" : "Active"}
+                label={project.blocked ? t("statusBlocked") : t("statusActive")}
               />
             </div>
             <div className="flex items-center gap-1 text-sm text-muted-foreground">

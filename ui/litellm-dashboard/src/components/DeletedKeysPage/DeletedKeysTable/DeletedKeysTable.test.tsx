@@ -53,7 +53,7 @@ it("should show the total count in the pagination footer", () => {
   renderWithProviders(<DeletedKeysTable {...defaultProps} totalCount={120} />);
 
   expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-50 条，共 120 条");
-  expect(screen.getByTestId("pagination-page")).toHaveTextContent("Page 1 of 3");
+  expect(screen.getByTestId("pagination-page")).toHaveTextContent("第 1 页，共 3 页");
 });
 
 it("should propagate pagination changes when the next page button is clicked", async () => {
