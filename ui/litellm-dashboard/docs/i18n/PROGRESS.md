@@ -1,6 +1,6 @@
 # 开发进度
 
-数据快照 2026-10-12，仓库 `D:\Qoder-workspace\LiteLLM-Chinese`，分支 `main`，HEAD `ff54aee`（测试统计来自 `6d06b7b` 后的全量运行）
+数据快照 2026-10-12，分支 `main`，HEAD `507e347`。测试统计来自该提交上的全量运行（11306 个用例跑完）
 
 ## 统计口径
 
@@ -60,64 +60,85 @@ mcp-servers 名义上剩 5 个未接入文件，但其中 4 个本来就没有�
 | 指标             | 数值                     |
 | ---------------- | ------------------------ |
 | 用例总数         | 11306                    |
-| 通过             | 10356（91.6%）           |
-| 失败             | 950                      |
-| 有失败的测试文件 | 149                      |
+| 通过             | 10856（96.0%）           |
+| 失败             | 450                      |
+| 有失败的测试文件 | 96                       |
 
-上一次全量为 1323 失败，此后 team 批次（`deab7e7`）消掉 172，Provider 批次（`6d06b7b`）消掉 223 条缺 Provider 加 45 条连带断言。本次运行与 mcp-servers 的一次小改动有时间重叠，mcp-servers 目录单独复测为 20 例 / 2 文件，其余数字未再修正
+起始基线是 1323 失败，此后 team 批次（`deab7e7`）、Provider 批次（`6d06b7b`）、guardrails 与 policies 两族收口累计消掉 873 例
 
 ### 失败的归属
 
 按被测源文件（同目录同名去 `.test`）是否引入 `next-intl` 分类
 
-| 归属               | 文件数 | 失败用例数 |
-| ------------------ | ------ | ---------- |
-| 源文件已接入翻译   | 114    | 666        |
-| 源文件未接入翻译   | 6      | 10         |
-| 同位找不到源文件    | 29     | 274        |
-
-第三类多为跨模块的 integration 测试，一个测试文件测多个组件，不能简单按同位文件判定
+| 归属             | 文件数 | 失败用例数 |
+| ---------------- | ------ | ---------- |
+| 源文件已接入翻译 | 87     | 408        |
+| 源文件未接入翻译 | 9      | 42         |
 
 按错误文本聚合
 
-| 失败用例数 | 错误文本                                          |
-| ---------- | ------------------------------------------------- |
-| 820        | `Unable to find ...` 各类元素找不到                |
-| 59         | `toBeEnabled` / `toBeDisabled` / `toBeChecked`     |
-| 58         | `toHaveTextContent` / `toHaveValue` 等内容断言     |
-| 13         | 其他（数组深比对、`toBeVisible` 等）               |
+| 失败用例数 | 错误文本                                      |
+| ---------- | --------------------------------------------- |
+| 383        | `Unable to find ...` 各类元素找不到            |
+| 32         | `toHaveTextContent` / `toHaveValue` 等内容断言 |
+| 24         | `toBeEnabled` / `toBeDisabled` / `toBeChecked` |
+| 11         | 其他（数组深比对、`toBeVisible`、守卫测试等）   |
 
-223 条缺 `NextIntlClientProvider` 已全部清零。剩下的主力是 820 条"找不到元素"，绝大多数是断言停在英文（第六类），但其中混有与翻译无关的既有失败，处理时要逐文件回 HEAD 基线确认，不要一律当成翻译的账
+223 条缺 `NextIntlClientProvider` 已清零。剩下的主力是 383 条"找不到元素"，绝大多数是断言停在英文（第六类），但其中混有与翻译无关的既有失败，处理时要逐文件回 HEAD 基线确认，不要一律当成翻译的账
 
-上面的数字是 HEAD 快照 `ff54aee` 那一次全量的结果，此后七次提交累计消除 464 例（113 + 85 + 19 + 97 + 68 + 82），剩余按 820 - 464 ≈ 356 估算（guardrails 与 policies 两族均已清零），下一次全量报告出来后再校准
+其他类里有两条不属于 i18n。`mcp_server_edit.test.tsx` 的 `preserves a stored client_id on OAuth-resume restore even when the saved snapshot is token-only` 报 `expected '' to be 'stored-client'`，是取值失败而不是文案断言，已列为既有失败。`tests/fetch-location-rule.test.ts` 报 `STACK_TRACE_ERROR`，这条守卫自 `610473c` 起就没动过，是上游带过来的
 
-失败最集中的目录与文件
+### 全量报告里有并发假失败，核实前要单文件复跑
 
-| 位置                                        | 失败用例数 |
-| ------------------------------------------- | ---------- |
-| `src/app/(dashboard)`                       | 793        |
-| `src/components/edit_auto_router`           | 46         |
-| `src/components/add_model`                  | 28         |
-| `src/components/leftnav.test.tsx`           | 27         |
-| `src/components/view_logs`                  | 15         |
-| 单文件前三：`edit_auto_router_modal.integration`(46)、`users/user_edit_view`(38)、`users/view_users/user_info_view.integration`(28) | |
+上面的 450 是**一次全量运行**的原始结果，它不等于真实失败数，因为重型 integration 测试在高并发下会超时或竞态
+
+已有的例子是 `edit_auto_router_modal.integration.test.tsx`：全量报告里 23 例失败，单独跑 64 例全绿（该文件单跑耗时 54 秒）。所以那 23 例是并发产物，不是缺陷
+
+但不是所有集中失败都是假的。2026-10-12 逐个单文件复跑了失败最多的四个文件，结果与全量一致，都是真失败
+
+| 文件                                                                   | 全量 | 单跑 |
+| ---------------------------------------------------------------------- | ---- | ---- |
+| `cost-tracking/_components/cost_tracking_settings.test.tsx`            | 14   | 14   |
+| `projects/.../EditProjectModal.integration.test.tsx`                   | 13   | 13   |
+| `agents/_components/agent_info.integration.test.tsx`                   | 12   | 12   |
+| `add_pass_through.integration.test.tsx`                                | 12   | 12   |
+
+这四个都是第六类：断言停在 `Save Changes`、`Advanced Settings`、`Project Name`、`Edit Settings` 这些已经变成中文的文案上
+
+结论是处理失败清单前先单文件复跑，别信全量报告里的集中失败，也别因为一例是假的就把其余都当成假的
+
+失败最集中的单文件
+
+| 文件                                                                       | 失败用例数 |
+| -------------------------------------------------------------------------- | ---------- |
+| `src/components/edit_auto_router/edit_auto_router_modal.integration.test.tsx` | 23      |
+| `src/app/(dashboard)/cost-tracking/_components/cost_tracking_settings.test.tsx` | 14    |
+| `src/app/(dashboard)/projects/_components/ProjectsPage.test.tsx`            | 13         |
+| `src/app/(dashboard)/projects/_components/ProjectModals/EditProjectModal.integration.test.tsx` | 13 |
+| `src/components/view_logs/index.test.tsx`                                   | 12         |
+| `src/components/add_pass_through.integration.test.tsx`                      | 12         |
+| `src/app/(dashboard)/agents/_components/agent_info.integration.test.tsx`    | 12         |
+| `src/app/(dashboard)/projects/_components/ProjectModals/CreateProjectModal.integration.test.tsx` | 12 |
+| `src/app/(dashboard)/prompts/_components/prompt_editor_view/VersionHistorySidePanel.test.tsx` | 11 |
+| `src/app/(dashboard)/usage/_components/components/UsagePageView.test.tsx`   | 11         |
 
 ### 各路由的测试状态
 
-| 路由                  | 失败用例 | 失败文件 | 路由                | 失败用例 | 失败文件 |
-| --------------------- | -------- | -------- | ------------------- | -------- | -------- |
-| guardrails            | 120      | 24       | mcp-servers         | 20       | 2        |
-| policies              | 112      | 14       | old-usage           | 20       | 1        |
-| users                 | 91       | 4        | admin-panel         | 19       | 1        |
-| projects              | 82       | 10       | caching             | 18       | 3        |
-| prompts               | 56       | 18       | tag-management      | 11       | 3        |
-| agents                | 55       | 10       | router-settings     | 8        | 1        |
-| usage                 | 45       | 6        | memory              | 7        | 2        |
-| cost-tracking         | 36       | 6        | skills              | 6        | 3        |
-| guardrails-monitor    | 30       | 5        | change-password     | 5        | 1        |
-| playground            | 27       | 9        | budgets             | 21       | 4        |
+| 路由               | 失败用例 | 失败文件 | 路由            | 失败用例 | 失败文件 |
+| ------------------ | -------- | -------- | --------------- | -------- | -------- |
+| projects           | 82       | 10       | tag-management  | 11       | 3        |
+| （非路由）          | 81       | 19       | users           | 9        | 1        |
+| prompts            | 56       | 18       | router-settings | 8        | 1        |
+| agents             | 55       | 10       | memory          | 7        | 2        |
+| cost-tracking      | 36       | 6        | skills          | 6        | 3        |
+| playground         | 27       | 9        | change-password | 5        | 1        |
+| usage              | 27       | 5        | mcp-servers     | 1        | 1        |
+| budgets            | 21       | 4        |                 |          |          |
+| caching            | 18       | 3        |                 |          |          |
 
-models-and-endpoints、cost-optimization、access-groups、organizations、workflows、transform-request、ui-theme 保持零失败
+"（非路由）"指 `src/components` 与 `tests` 下不属于任何 dashboard 路由的测试，其中 `edit_auto_router` 占 23、`view_logs/index` 占 12、`add_pass_through` 占 12
+
+models-and-endpoints、cost-optimization、access-groups、organizations、workflows、transform-request、ui-theme 保持零失败。mcp-servers 从 20 例降到 1 例，是上面那条 `stored client_id` 的取值失败
 
 ### i18n 自身的守卫
 
@@ -175,6 +196,14 @@ i18n 自身的三条守卫也是全绿，16 个用例
 到此，第六类（断言停在英文）排得出名次的目标全部清零，剩下的主力就是批次 24 的共享组件长尾与硬编码收口，欠账清单见 [FIXES.md](./FIXES.md) 的"批次 24 硬编码英文欠账清单"，本轮新增的 guardrails 相关四条也在里面
 
 另外有一件小事不依赖批次顺序，且卡着一个具体失败：`renderWithProviders` 强制 `locale="zh-CN"`，`LanguageSwitcher` 的 2 个失败就是它造成的。判断口径在 `tests/test-utils.tsx` 里留了标记
+
+### 核实后的剩余工作
+
+507e347 上实测的 450 例失败，扣掉 `edit_auto_router_modal.integration` 的 23 例并发假失败，实际约 427 例，分布在 96 个文件里
+
+其中 projects（82）、prompts（56）、agents（55）、cost-tracking（36）四个路由占了 229 例，是接下来最值得动的四块。`src/components` 下的非路由测试（81 例）里，`view_logs/index` 与 `add_pass_through` 各占 12 例
+
+处理顺序建议按失败数从多到少，每处理完一组就单文件复跑确认，不要直接看下一份全量报告
 
 ## 技术债
 

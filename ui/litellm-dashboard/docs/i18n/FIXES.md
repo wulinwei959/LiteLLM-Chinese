@@ -222,12 +222,12 @@ const namespaces = NAMESPACES.has(explicitRoot) ? [explicitRoot] : [...scopes];
 
 | 文件 | 硬编码内容 |
 | ---- | ---------- |
-| `shared/budget_duration_dropdown.tsx` | `Never resets` 与 hourly/daily/weekly/monthly 选项文案 |
-| `team/teamAdminEditAccess.ts` | `TEAM_ADMIN_FIELD_LABELS` 的字段标签 |
+| `common_components/budget_duration_dropdown.tsx` | `Never resets` 与 hourly/daily/weekly/monthly 选项文案（路径在 `common_components` 下，不是 `shared`） |
 | `team/useMemberBudgetReset.ts` | toast 文案（`Reset N member budgets to the team default`、`... the rest could not be reset`、`Team updated, but member budgets could not be reset`） |
-| `templates/ScopedSavingsTab.tsx` | `Loading savings...` 与 `No usage recorded for this ...` 空态文案 |
+| `shared/ScopedSavingsTab.tsx` | `Loading savings...` 与 `No usage recorded for this ...` 空态文案（路径在 `shared` 下，不是 `templates`） |
 | `add_model/cache_control_settings.tsx` | aria-label 拼接 `${label} help`，`label` 已翻译（角色/索引）但 ` help` 后缀是英文，整名混语（"角色 help"） |
-| `public_model_hub` 分页脚 | `Page X of Y` 写死英文，与共享表格的"第 X 页，共 Y 页"不一致 |
+| `public_model_hub` 分页脚 | 实际写死的是 `Showing {n} of {m} agents` 与 `Showing {n} of {m} MCP servers`，与共享表格的"第 X 页，共 Y 页"不一致 |
+| `templates/key_edit_view.tsx` | budget duration 选择框的 placeholder `Never resets` |
 | `components/GuardrailsMonitor/usageUnits.ts` | `unpricedSummary()` 的 `N units unpriced`、`counterLabel()` 由驼峰键派生的计数器名（`Content Policy`）、`counterMathRow()` 的 `no known price, left out` 与 `N unpriced units left out`，中文下仍渲染英文 |
 | `guardrails-monitor/_components/ScoreChart.tsx` | 图例 `categories={["passed", "blocked"]}` 写死英文 |
 | `guardrails/_components/custom_code/CustomCodeModal.tsx` | 名称输入框 placeholder `e.g., block-pii-custom` |
