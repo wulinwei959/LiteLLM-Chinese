@@ -65,15 +65,15 @@ describe("AiSuggestionModal", () => {
   it("renders nothing while closed", () => {
     renderModal({ visible: false });
 
-    expect(screen.queryByText("AI Policy Suggestion")).not.toBeInTheDocument();
+    expect(screen.queryByText("AI 策略推荐")).not.toBeInTheDocument();
   });
 
   it("renders the header and prompt copy when opened", async () => {
     renderModal();
 
-    expect(await screen.findByText("AI Policy Suggestion")).toBeInTheDocument();
+    expect(await screen.findByText("AI 策略推荐")).toBeInTheDocument();
     expect(
-      screen.getByText("Describe what you want to block and we'll suggest the best policy templates"),
+      screen.getByText("描述你想拦截的内容，我们会推荐最合适的策略模板"),
     ).toBeInTheDocument();
   });
 
@@ -89,27 +89,27 @@ describe("AiSuggestionModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await screen.findByText("AI Policy Suggestion");
-    expect(screen.getByRole("button", { name: "Suggest Policies" })).toBeDisabled();
+    await screen.findByText("AI 策略推荐");
+    expect(screen.getByRole("button", { name: "推荐策略" })).toBeDisabled();
 
     fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
-    expect(screen.getByRole("button", { name: "Suggest Policies" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "推荐策略" })).toBeDisabled();
 
     await pickModel(user);
-    expect(screen.getByRole("button", { name: "Suggest Policies" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "推荐策略" })).toBeEnabled();
   });
 
   it("sends the examples, description and model to the suggest API", async () => {
     const user = userEvent.setup();
     renderModal();
 
-    await screen.findByText("AI Policy Suggestion");
+    await screen.findByText("AI 策略推荐");
     fireEvent.change(screen.getByPlaceholderText(/Ignore all previous instructions/), {
       target: { value: "my ssn is 123" },
     });
     fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
     await pickModel(user);
-    await user.click(screen.getByRole("button", { name: "Suggest Policies" }));
+    await user.click(screen.getByRole("button", { name: "推荐策略" }));
 
     await waitFor(() => {
       expect(suggestPolicyTemplates).toHaveBeenCalledWith("sk-test", ["my ssn is 123"], "block PII", "gpt-5.1");
@@ -120,59 +120,59 @@ describe("AiSuggestionModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await screen.findByText("AI Policy Suggestion");
+    await screen.findByText("AI 策略推荐");
     const countExamples = () => screen.getAllByRole("textbox").length;
     const initial = countExamples();
 
-    await user.click(screen.getByRole("button", { name: "+ Add another example" }));
+    await user.click(screen.getByRole("button", { name: "+ 再加一个示例" }));
     expect(countExamples()).toBe(initial + 1);
 
-    await user.click(screen.getByRole("button", { name: "+ Add another example" }));
-    await user.click(screen.getByRole("button", { name: "+ Add another example" }));
+    await user.click(screen.getByRole("button", { name: "+ 再加一个示例" }));
+    await user.click(screen.getByRole("button", { name: "+ 再加一个示例" }));
     expect(countExamples()).toBe(initial + 3);
-    expect(screen.queryByRole("button", { name: "+ Add another example" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "+ 再加一个示例" })).not.toBeInTheDocument();
   });
 
   it("shows each suggested template with the reason it was picked", async () => {
     const user = userEvent.setup();
     renderModal();
 
-    await screen.findByText("AI Policy Suggestion");
+    await screen.findByText("AI 策略推荐");
     fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
     await pickModel(user);
-    await user.click(screen.getByRole("button", { name: "Suggest Policies" }));
+    await user.click(screen.getByRole("button", { name: "推荐策略" }));
 
     expect(await screen.findByText("PII Protection")).toBeInTheDocument();
     expect(screen.getByText("Injection Defense")).toBeInTheDocument();
     expect(screen.getByText("Your examples contain SSNs")).toBeInTheDocument();
     expect(screen.getByText("These two cover both risks you described")).toBeInTheDocument();
-    expect(screen.getByText("2 templates matched your requirements")).toBeInTheDocument();
+    expect(screen.getByText("有 2 个模板符合你的需求")).toBeInTheDocument();
   });
 
   it("preselects every suggestion and reflects the count on the confirm button", async () => {
     const user = userEvent.setup();
     renderModal();
 
-    await screen.findByText("AI Policy Suggestion");
+    await screen.findByText("AI 策略推荐");
     fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
     await pickModel(user);
-    await user.click(screen.getByRole("button", { name: "Suggest Policies" }));
+    await user.click(screen.getByRole("button", { name: "推荐策略" }));
 
-    expect(await screen.findByRole("button", { name: "Use 2 Selected Templates" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "使用 2 个所选模板" })).toBeInTheDocument();
   });
 
   it("deselecting a suggestion lowers the confirm count", async () => {
     const user = userEvent.setup();
     renderModal();
 
-    await screen.findByText("AI Policy Suggestion");
+    await screen.findByText("AI 策略推荐");
     fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
     await pickModel(user);
-    await user.click(screen.getByRole("button", { name: "Suggest Policies" }));
+    await user.click(screen.getByRole("button", { name: "推荐策略" }));
 
     await user.click(await screen.findByText("PII Protection"));
 
-    expect(await screen.findByRole("button", { name: "Use 1 Selected Template" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "使用 1 个所选模板" })).toBeInTheDocument();
   });
 
   it("hands the selected templates back to the caller", async () => {
@@ -180,11 +180,11 @@ describe("AiSuggestionModal", () => {
     const user = userEvent.setup();
     renderModal({ onSelectTemplates });
 
-    await screen.findByText("AI Policy Suggestion");
+    await screen.findByText("AI 策略推荐");
     fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
     await pickModel(user);
-    await user.click(screen.getByRole("button", { name: "Suggest Policies" }));
-    await user.click(await screen.findByRole("button", { name: "Use 2 Selected Templates" }));
+    await user.click(screen.getByRole("button", { name: "推荐策略" }));
+    await user.click(await screen.findByRole("button", { name: "使用 2 个所选模板" }));
 
     expect(onSelectTemplates).toHaveBeenCalledTimes(1);
     expect(onSelectTemplates.mock.calls[0][0].map((t: { id: string }) => t.id)).toEqual(["tpl-pii", "tpl-inj"]);
@@ -194,14 +194,14 @@ describe("AiSuggestionModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await screen.findByText("AI Policy Suggestion");
+    await screen.findByText("AI 策略推荐");
     fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
     await pickModel(user);
-    await user.click(screen.getByRole("button", { name: "Suggest Policies" }));
-    await user.click(await screen.findByRole("button", { name: "Back" }));
+    await user.click(screen.getByRole("button", { name: "推荐策略" }));
+    await user.click(await screen.findByRole("button", { name: "返回" }));
 
     expect(
-      await screen.findByText("Describe what you want to block and we'll suggest the best policy templates"),
+      await screen.findByText("描述你想拦截的内容，我们会推荐最合适的策略模板"),
     ).toBeInTheDocument();
   });
 
@@ -210,13 +210,13 @@ describe("AiSuggestionModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await screen.findByText("AI Policy Suggestion");
+    await screen.findByText("AI 策略推荐");
     fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
     await pickModel(user);
-    await user.click(screen.getByRole("button", { name: "Suggest Policies" }));
+    await user.click(screen.getByRole("button", { name: "推荐策略" }));
 
-    expect(await screen.findByText("No matching templates found")).toBeInTheDocument();
-    expect(screen.getByText("Try adjusting your examples or description.")).toBeInTheDocument();
+    expect(await screen.findByText("没有匹配的模板")).toBeInTheDocument();
+    expect(screen.getByText("试试调整示例或描述。")).toBeInTheDocument();
   });
 
   it("cancels back to the caller", async () => {
@@ -224,8 +224,8 @@ describe("AiSuggestionModal", () => {
     const user = userEvent.setup();
     renderModal({ onCancel });
 
-    await screen.findByText("AI Policy Suggestion");
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await screen.findByText("AI 策略推荐");
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
     expect(onCancel).toHaveBeenCalledTimes(1);
   });

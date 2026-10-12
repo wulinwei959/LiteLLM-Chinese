@@ -33,10 +33,10 @@ describe("PolicyTable", () => {
 
   it("should render column headers", () => {
     renderWithProviders(<PolicyTable {...defaultProps} />);
-    expect(screen.getByText("Name")).toBeInTheDocument();
-    expect(screen.getByText("Description")).toBeInTheDocument();
-    expect(screen.getByText("Guardrails (Add)")).toBeInTheDocument();
-    expect(screen.getByText("Created At")).toBeInTheDocument();
+    expect(screen.getByText("名称")).toBeInTheDocument();
+    expect(screen.getByText("描述")).toBeInTheDocument();
+    expect(screen.getByText("护栏（添加）")).toBeInTheDocument();
+    expect(screen.getByText("创建时间")).toBeInTheDocument();
   });
 
   it("should show skeleton rows when isLoading is true", () => {
@@ -46,7 +46,7 @@ describe("PolicyTable", () => {
 
   it("should show the empty state when there are no policies", () => {
     renderWithProviders(<PolicyTable {...defaultProps} />);
-    expect(screen.getByText("No policies found")).toBeInTheDocument();
+    expect(screen.getByText("未找到策略")).toBeInTheDocument();
   });
 
   it("should render a clickable name cell for each grouped policy", () => {
@@ -117,7 +117,7 @@ describe("PolicyTable", () => {
     };
     const policies = [makePolicy(publishedVersion), makePolicy(productionVersion)];
     renderWithProviders(<PolicyTable {...defaultProps} policies={policies} />);
-    expect(screen.getByText("2 versions")).toBeInTheDocument();
+    expect(screen.getByText("2 个版本")).toBeInTheDocument();
   });
 
   it("should group policies with the same name into a single row", () => {
@@ -163,7 +163,7 @@ describe("PolicyTable", () => {
     const policies = [makePolicy(sameNamedDbDraft), makePolicy(configTwin)];
     renderWithProviders(<PolicyTable {...defaultProps} policies={policies} />);
     expect(screen.getAllByText("config-policy")).toHaveLength(2);
-    expect(screen.getByText("Config")).toBeInTheDocument();
+    expect(screen.getByText("配置")).toBeInTheDocument();
   });
 
   it("should keep a same-named DB draft reachable next to a config policy", async () => {

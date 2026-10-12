@@ -72,7 +72,7 @@ describe("TemplateParameterModal", () => {
     renderModal();
 
     expect(await screen.findByText("Basic Redaction")).toBeInTheDocument();
-    expect(screen.getByText("Configure competitor blocking for your brand")).toBeInTheDocument();
+    expect(screen.getByText("为你的品牌配置竞品拦截")).toBeInTheDocument();
   });
 
   it("renders exactly one labelled field per template parameter", async () => {
@@ -91,11 +91,11 @@ describe("TemplateParameterModal", () => {
     renderModal();
 
     await screen.findByText("Basic Redaction");
-    expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "继续" })).toBeDisabled();
 
     fireEvent.change(screen.getByPlaceholderText("e.g. Contoso"), { target: { value: "Contoso" } });
 
-    expect(screen.getByRole("button", { name: "Continue" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "继续" })).toBeEnabled();
   });
 
   it("hands the entered parameters back to the caller", async () => {
@@ -105,7 +105,7 @@ describe("TemplateParameterModal", () => {
 
     await screen.findByText("Basic Redaction");
     fireEvent.change(screen.getByPlaceholderText("e.g. Contoso"), { target: { value: "Contoso" } });
-    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(screen.getByRole("button", { name: "继续" }));
 
     expect(onConfirm).toHaveBeenCalledTimes(1);
     expect(onConfirm.mock.calls[0][0]).toEqual({ org_name: "Contoso", note: "" });
@@ -117,7 +117,7 @@ describe("TemplateParameterModal", () => {
     renderModal({ onCancel });
 
     await screen.findByText("Basic Redaction");
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
@@ -125,10 +125,10 @@ describe("TemplateParameterModal", () => {
   it("offers AI discovery controls for an enrichment template", async () => {
     renderModal({ template: enrichmentTemplate });
 
-    expect(await screen.findByText("Competitor Discovery")).toBeInTheDocument();
-    expect(screen.getByText("Your Brand Name")).toBeInTheDocument();
-    expect(screen.getByText("Select Model")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Generate Competitor Names/ })).toBeInTheDocument();
+    expect(await screen.findByText("竞品发现")).toBeInTheDocument();
+    expect(screen.getByText("你的品牌名称")).toBeInTheDocument();
+    expect(screen.getByText("选择模型")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /生成竞品名称/ })).toBeInTheDocument();
   });
 
   it("loads the model list for an enrichment template", async () => {
@@ -143,23 +143,23 @@ describe("TemplateParameterModal", () => {
     const user = userEvent.setup();
     renderModal({ template: enrichmentTemplate });
 
-    await screen.findByText("Competitor Discovery");
-    await user.click(screen.getByText("Enter Manually"));
+    await screen.findByText("竞品发现");
+    await user.click(screen.getByText("手动输入"));
 
     await waitFor(() => {
-      expect(screen.queryByText("Select Model")).not.toBeInTheDocument();
+      expect(screen.queryByText("选择模型")).not.toBeInTheDocument();
     });
-    expect(screen.queryByRole("button", { name: /Generate Competitor Names/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /生成竞品名称/ })).not.toBeInTheDocument();
   });
 
   it("keeps Continue disabled for an enrichment template until competitors exist", async () => {
     const user = userEvent.setup();
     renderModal({ template: enrichmentTemplate });
 
-    await screen.findByText("Competitor Discovery");
+    await screen.findByText("竞品发现");
     fireEvent.change(screen.getByPlaceholderText("e.g. Acme Airlines"), { target: { value: "Contoso" } });
 
-    expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "继续" })).toBeDisabled();
   });
 
   it("streams discovered competitor names and enables Continue once they arrive", async () => {
@@ -171,17 +171,17 @@ describe("TemplateParameterModal", () => {
     const user = userEvent.setup();
     renderModal({ template: enrichmentTemplate });
 
-    await screen.findByText("Competitor Discovery");
+    await screen.findByText("竞品发现");
     fireEvent.change(screen.getByPlaceholderText("e.g. Acme Airlines"), { target: { value: "Contoso" } });
     await user.click(screen.getAllByRole("combobox")[0]);
     const options = await screen.findAllByText("gpt-5.1");
     await user.click(options[options.length - 1]);
-    await user.click(screen.getByRole("button", { name: /Generate Competitor Names/ }));
+    await user.click(screen.getByRole("button", { name: /生成竞品名称/ }));
 
     expect(await screen.findByText("Northwind")).toBeInTheDocument();
     expect(screen.getByText("Fabrikam")).toBeInTheDocument();
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Continue" })).toBeEnabled();
+      expect(screen.getByRole("button", { name: "继续" })).toBeEnabled();
     });
   });
 
@@ -194,14 +194,14 @@ describe("TemplateParameterModal", () => {
     const user = userEvent.setup();
     renderModal({ template: enrichmentTemplate, onConfirm });
 
-    await screen.findByText("Competitor Discovery");
+    await screen.findByText("竞品发现");
     fireEvent.change(screen.getByPlaceholderText("e.g. Acme Airlines"), { target: { value: "Contoso" } });
     await user.click(screen.getAllByRole("combobox")[0]);
     const options = await screen.findAllByText("gpt-5.1");
     await user.click(options[options.length - 1]);
-    await user.click(screen.getByRole("button", { name: /Generate Competitor Names/ }));
+    await user.click(screen.getByRole("button", { name: /生成竞品名称/ }));
     await screen.findByText("Northwind");
-    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(screen.getByRole("button", { name: "继续" }));
 
     expect(onConfirm).toHaveBeenCalledWith({ brand_name: "Contoso" }, { competitors: ["Northwind"] });
   });

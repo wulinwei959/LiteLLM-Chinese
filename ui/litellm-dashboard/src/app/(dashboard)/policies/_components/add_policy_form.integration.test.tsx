@@ -67,7 +67,7 @@ describe("AddPolicyForm", () => {
   });
 
   const enterSimpleForm = async (user: ReturnType<typeof userEvent.setup>) => {
-    await user.click(await screen.findByRole("button", { name: "Create Policy" }));
+    await user.click(await screen.findByRole("button", { name: "创建策略" }));
   };
 
   it("should send exactly six keys with empty-to-undefined and empty-to-array defaults on create", async () => {
@@ -75,8 +75,8 @@ describe("AddPolicyForm", () => {
     renderWithProviders(<AddPolicyForm {...defaultProps} />);
     await enterSimpleForm(user);
 
-    fireEvent.change(await screen.findByLabelText("Policy Name"), { target: { value: "brand-new-policy" } });
-    await user.click(screen.getByRole("button", { name: "Create Policy" }));
+    fireEvent.change(await screen.findByLabelText("策略名称"), { target: { value: "brand-new-policy" } });
+    await user.click(screen.getByRole("button", { name: "创建策略" }));
 
     await waitFor(() => {
       expect(createPolicy).toHaveBeenCalled();
@@ -105,11 +105,11 @@ describe("AddPolicyForm", () => {
     renderWithProviders(<AddPolicyForm {...defaultProps} />);
     await enterSimpleForm(user);
 
-    const description = await screen.findByLabelText("Description");
+    const description = await screen.findByLabelText("描述");
     fireEvent.change(description, { target: { value: "x" } });
     await user.clear(description);
-    fireEvent.change(await screen.findByLabelText("Policy Name"), { target: { value: "blank-description" } });
-    await user.click(screen.getByRole("button", { name: "Create Policy" }));
+    fireEvent.change(await screen.findByLabelText("策略名称"), { target: { value: "blank-description" } });
+    await user.click(screen.getByRole("button", { name: "创建策略" }));
 
     await waitFor(() => {
       expect(createPolicy).toHaveBeenCalled();
@@ -121,7 +121,7 @@ describe("AddPolicyForm", () => {
     const user = userEvent.setup();
     renderWithProviders(<AddPolicyForm {...defaultProps} editingPolicy={EXISTING_POLICY} />);
 
-    await user.click(await screen.findByRole("button", { name: "Update Policy" }));
+    await user.click(await screen.findByRole("button", { name: "更新策略" }));
 
     await waitFor(() => {
       expect(updatePolicy).toHaveBeenCalled();
@@ -142,7 +142,7 @@ describe("AddPolicyForm", () => {
   it("should keep the policy name field disabled while editing", async () => {
     renderWithProviders(<AddPolicyForm {...defaultProps} editingPolicy={EXISTING_POLICY} />);
 
-    expect(await screen.findByLabelText("Policy Name")).toBeDisabled();
+    expect(await screen.findByLabelText("策略名称")).toBeDisabled();
   });
 
   it("should block submission and call neither api when the policy name is missing", async () => {
@@ -150,9 +150,9 @@ describe("AddPolicyForm", () => {
     renderWithProviders(<AddPolicyForm {...defaultProps} />);
     await enterSimpleForm(user);
 
-    await user.click(await screen.findByRole("button", { name: "Create Policy" }));
+    await user.click(await screen.findByRole("button", { name: "创建策略" }));
 
-    expect(await screen.findByText("Please enter a policy name")).toBeInTheDocument();
+    expect(await screen.findByText("请输入策略名称")).toBeInTheDocument();
     expect(createPolicy).not.toHaveBeenCalled();
     expect(updatePolicy).not.toHaveBeenCalled();
   });
@@ -162,11 +162,11 @@ describe("AddPolicyForm", () => {
     renderWithProviders(<AddPolicyForm {...defaultProps} />);
     await enterSimpleForm(user);
 
-    fireEvent.change(await screen.findByLabelText("Policy Name"), { target: { value: "not a valid name!" } });
-    await user.click(screen.getByRole("button", { name: "Create Policy" }));
+    fireEvent.change(await screen.findByLabelText("策略名称"), { target: { value: "not a valid name!" } });
+    await user.click(screen.getByRole("button", { name: "创建策略" }));
 
     expect(
-      await screen.findByText("Policy name can only contain letters, numbers, hyphens, and underscores"),
+      await screen.findByText("策略名称只能包含字母、数字、连字符和下划线"),
     ).toBeInTheDocument();
     expect(createPolicy).not.toHaveBeenCalled();
   });
@@ -175,15 +175,15 @@ describe("AddPolicyForm", () => {
     const user = userEvent.setup();
     renderWithProviders(<AddPolicyForm {...defaultProps} editingPolicy={EXISTING_POLICY} />);
 
-    expect(await screen.findByLabelText("Model (Optional)")).toBeInTheDocument();
+    expect(await screen.findByLabelText("模型（可选）")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("radio", { name: "Custom Regex Pattern" }));
+    await user.click(screen.getByRole("radio", { name: "自定义正则模式" }));
 
-    const regexField = await screen.findByLabelText("Regex Pattern (Optional)");
+    const regexField = await screen.findByLabelText("正则模式（可选）");
     expect(regexField).toHaveValue("");
-    expect(screen.queryByLabelText("Model (Optional)")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("模型（可选）")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Update Policy" }));
+    await user.click(screen.getByRole("button", { name: "更新策略" }));
 
     await waitFor(() => {
       expect(updatePolicy).toHaveBeenCalled();
@@ -197,14 +197,14 @@ describe("AddPolicyForm", () => {
     const onOpenFlowBuilder = vi.fn();
     renderWithProviders(<AddPolicyForm {...defaultProps} onClose={onClose} onOpenFlowBuilder={onOpenFlowBuilder} />);
 
-    await user.click(await screen.findByText("Flow Builder"));
+    await user.click(await screen.findByText("流程构建器"));
 
     expect(
-      screen.getByText("You'll be taken to the Flow Builder to design your policy logic visually."),
+      screen.getByText("你将前往流程构建器，可视化设计策略逻辑。"),
     ).toBeInTheDocument();
     expect(screen.queryByText(/full-screen/i)).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Continue to Builder" }));
+    await user.click(screen.getByRole("button", { name: "前往构建器" }));
 
     expect(onOpenFlowBuilder).toHaveBeenCalledTimes(1);
     expect(onClose).toHaveBeenCalledTimes(1);

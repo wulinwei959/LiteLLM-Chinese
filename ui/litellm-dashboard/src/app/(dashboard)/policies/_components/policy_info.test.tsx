@@ -46,7 +46,7 @@ describe("PolicyInfoView", () => {
     defaultProps.getPolicy.mockResolvedValue(null);
     vi.mocked(networking.getResolvedGuardrails).mockResolvedValue({ resolved_guardrails: [] });
     renderWithProviders(<PolicyInfoView {...defaultProps} />);
-    expect(await screen.findByText(/policy not found/i)).toBeInTheDocument();
+    expect(await screen.findByText(/未找到策略/)).toBeInTheDocument();
   });
 
   it("should render the policy name after loading", async () => {
@@ -76,7 +76,7 @@ describe("PolicyInfoView", () => {
     const user = userEvent.setup();
     renderWithProviders(<PolicyInfoView {...defaultProps} />);
     await screen.findByText("My Test Policy");
-    await user.click(screen.getByRole("button", { name: /back to policies/i }));
+    await user.click(screen.getByRole("button", { name: /返回策略列表/ }));
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
 
@@ -86,7 +86,7 @@ describe("PolicyInfoView", () => {
     const user = userEvent.setup();
     renderWithProviders(<PolicyInfoView {...defaultProps} isAdmin />);
     await screen.findByText("My Test Policy");
-    await user.click(screen.getByRole("button", { name: /edit policy/i }));
+    await user.click(screen.getByRole("button", { name: /编辑策略/ }));
     expect(defaultProps.onEdit).toHaveBeenCalledWith(basePolicy);
   });
 
@@ -95,7 +95,7 @@ describe("PolicyInfoView", () => {
     vi.mocked(networking.getResolvedGuardrails).mockResolvedValue({ resolved_guardrails: [] });
     renderWithProviders(<PolicyInfoView {...defaultProps} isAdmin={false} />);
     await screen.findByText("My Test Policy");
-    expect(screen.queryByRole("button", { name: /edit policy/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /编辑策略/ })).not.toBeInTheDocument();
   });
 
   it("should display resolved guardrails when returned from the API", async () => {
@@ -119,7 +119,7 @@ describe("PolicyInfoView", () => {
     defaultProps.getPolicy.mockResolvedValue(basePolicy);
     vi.mocked(networking.getResolvedGuardrails).mockResolvedValue({ resolved_guardrails: [] });
     renderWithProviders(<PolicyInfoView {...defaultProps} />);
-    expect(await screen.findByText(/no model condition/i)).toBeInTheDocument();
+    expect(await screen.findByText(/无模型条件/)).toBeInTheDocument();
   });
 
   it("should show the formatted created_at date", async () => {

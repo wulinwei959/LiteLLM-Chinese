@@ -107,7 +107,7 @@ describe("PoliciesPanel attachment delete", () => {
       expect(networkingMocks.getPolicyAttachmentsList).toHaveBeenCalled();
     });
 
-    await user.click(screen.getByRole("tab", { name: /^attachments$/i }));
+    await user.click(screen.getByRole("tab", { name: /^附件$/ }));
 
     await waitFor(() => {
       expect(screen.getByText("test-policy")).toBeInTheDocument();
@@ -117,7 +117,7 @@ describe("PoliciesPanel attachment delete", () => {
     await user.click(await screen.findByTestId("attachment-action-delete"));
 
     const dialog = await screen.findByRole("dialog", {}, { timeout: 5000 });
-    expect(within(dialog).getByText(/Are you sure you want to delete this attachment/i)).toBeInTheDocument();
+    expect(within(dialog).getByText(/确定要删除此附件吗/)).toBeInTheDocument();
 
     await user.click(within(dialog).getByRole("button", { name: /^delete$/i }));
 
@@ -141,7 +141,7 @@ describe("PoliciesPanel attachment delete", () => {
       expect(networkingMocks.getPolicyAttachmentsList).toHaveBeenCalled();
     });
 
-    await user.click(screen.getByRole("tab", { name: /^attachments$/i }));
+    await user.click(screen.getByRole("tab", { name: /^附件$/ }));
     await waitFor(() => {
       expect(screen.getByText("test-policy")).toBeInTheDocument();
     });
@@ -193,18 +193,18 @@ describe("PoliciesPanel flow builder", () => {
     const user = userEvent.setup();
     renderWithProviders(<PoliciesPanel accessToken="test-token" userRole="Admin" />);
 
-    await user.click(screen.getByRole("tab", { name: /^policies$/i }));
+    await user.click(screen.getByRole("tab", { name: /^策略$/ }));
     await user.click(await screen.findByTestId(`policy-actions-${POLICY_ID}`));
     await user.click(await screen.findByTestId("policy-action-edit"));
 
     expect(await screen.findByRole("button", { name: "Back to policies" })).toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: /^policies$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: /^策略$/ })).not.toBeInTheDocument();
     expect(screen.queryByText("pii-policy")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Back to policies" }));
 
     expect(await screen.findByText("pii-policy")).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /^policies$/i })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: /^策略$/ })).toHaveAttribute("aria-selected", "true");
     expect(screen.queryByRole("button", { name: "Back to policies" })).not.toBeInTheDocument();
   });
 });

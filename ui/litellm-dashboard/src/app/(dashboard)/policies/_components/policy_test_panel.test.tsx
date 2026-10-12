@@ -29,7 +29,7 @@ const pickOption = async (user: ReturnType<typeof userEvent.setup>, label: strin
 };
 
 const simulate = async (user: ReturnType<typeof userEvent.setup>) => {
-  await user.click(screen.getByRole("button", { name: "Simulate" }));
+  await user.click(screen.getByRole("button", { name: "模拟" }));
 };
 
 describe("PolicyTestPanel", () => {
@@ -65,8 +65,8 @@ describe("PolicyTestPanel", () => {
   it("sends only the fields that were filled in", async () => {
     const user = setup();
     await waitFor(() => expect(networking.teamListCall).toHaveBeenCalled());
-    await pickOption(user, "Team Alias", "team-b");
-    await pickOption(user, "Model", "gpt-4");
+    await pickOption(user, "团队别名", "team-b");
+    await pickOption(user, "模型", "gpt-4");
 
     await simulate(user);
 
@@ -79,7 +79,7 @@ describe("PolicyTestPanel", () => {
 
   it("turns each token-separated entry into its own tag", async () => {
     const user = setup();
-    const tags = screen.getByLabelText("Tags");
+    const tags = screen.getByLabelText("标签");
     await user.click(tags);
     await user.type(tags, "prod-us,");
     await user.type(tags, "healthcare ");
@@ -92,7 +92,7 @@ describe("PolicyTestPanel", () => {
 
   it("commits tag text still sitting in the box when the field loses focus", async () => {
     const user = setup();
-    const tags = screen.getByLabelText("Tags");
+    const tags = screen.getByLabelText("标签");
     await user.click(tags);
     await user.type(tags, "prod-us");
 
@@ -104,15 +104,15 @@ describe("PolicyTestPanel", () => {
 
   it("shows the placeholder before the first run, then the results", async () => {
     const user = setup();
-    expect(screen.getByText("No simulation run yet")).toBeInTheDocument();
+    expect(screen.getByText("尚未运行模拟")).toBeInTheDocument();
 
     await simulate(user);
 
-    expect(await screen.findByText("Effective Guardrails")).toBeInTheDocument();
-    expect(screen.getByText("Matched Policies")).toBeInTheDocument();
+    expect(await screen.findByText("生效护栏")).toBeInTheDocument();
+    expect(screen.getByText("匹配的策略")).toBeInTheDocument();
     expect(screen.getByText("policy-alpha")).toBeInTheDocument();
     expect(screen.getByText("team_alias")).toBeInTheDocument();
-    expect(screen.queryByText("No simulation run yet")).not.toBeInTheDocument();
+    expect(screen.queryByText("尚未运行模拟")).not.toBeInTheDocument();
   });
 
   it("reports a failed resolve without results", async () => {
@@ -121,19 +121,19 @@ describe("PolicyTestPanel", () => {
 
     await simulate(user);
 
-    expect(await screen.findByText("Failed to resolve policies. Check the proxy logs.")).toBeInTheDocument();
+    expect(await screen.findByText("解析策略失败，请检查代理日志。")).toBeInTheDocument();
   });
 
   it("clears both the picked context and the results on Reset", async () => {
     const user = setup();
     await waitFor(() => expect(networking.teamListCall).toHaveBeenCalled());
-    await pickOption(user, "Team Alias", "team-a");
+    await pickOption(user, "团队别名", "team-a");
     await simulate(user);
-    await screen.findByText("Effective Guardrails");
+    await screen.findByText("生效护栏");
 
-    await user.click(screen.getByRole("button", { name: "Reset" }));
+    await user.click(screen.getByRole("button", { name: "重置" }));
 
-    expect(screen.getByText("No simulation run yet")).toBeInTheDocument();
+    expect(screen.getByText("尚未运行模拟")).toBeInTheDocument();
     await simulate(user);
     await waitFor(() => expect(networking.resolvePoliciesCall).toHaveBeenCalledTimes(2));
     expect(vi.mocked(networking.resolvePoliciesCall).mock.calls[1][1]).toEqual({});
@@ -143,7 +143,7 @@ describe("PolicyTestPanel", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderWithProviders(<PolicyTestPanel accessToken={null} />);
     expect(networking.teamListCall).not.toHaveBeenCalled();
-    await user.click(screen.getByRole("button", { name: "Simulate" }));
+    await user.click(screen.getByRole("button", { name: "模拟" }));
     expect(networking.resolvePoliciesCall).not.toHaveBeenCalled();
   });
 });

@@ -38,15 +38,15 @@ describe("AttachmentTable", () => {
 
   it("should render column headers", () => {
     renderWithProviders(<AttachmentTable {...defaultProps} />);
-    expect(screen.getByText("Attachment ID")).toBeInTheDocument();
-    expect(screen.getByText("Policy")).toBeInTheDocument();
-    expect(screen.getByText("Scope")).toBeInTheDocument();
-    expect(screen.getByText("Teams")).toBeInTheDocument();
-    expect(screen.getByText("Keys")).toBeInTheDocument();
-    expect(screen.getByText("Models")).toBeInTheDocument();
-    expect(screen.getByText("Tags")).toBeInTheDocument();
-    expect(screen.getByText("Priority")).toBeInTheDocument();
-    expect(screen.getByText("Created At")).toBeInTheDocument();
+    expect(screen.getByText("附件 ID")).toBeInTheDocument();
+    expect(screen.getByText("策略")).toBeInTheDocument();
+    expect(screen.getByText("范围")).toBeInTheDocument();
+    expect(screen.getByText("团队")).toBeInTheDocument();
+    expect(screen.getByText("密钥")).toBeInTheDocument();
+    expect(screen.getByText("模型")).toBeInTheDocument();
+    expect(screen.getByText("标签")).toBeInTheDocument();
+    expect(screen.getByText("优先级")).toBeInTheDocument();
+    expect(screen.getByText("创建时间")).toBeInTheDocument();
   });
 
   it("should show the priority and a dash for attachments without one", () => {
@@ -74,8 +74,8 @@ describe("AttachmentTable", () => {
     const rows = screen.getAllByRole("row").slice(1);
     const fallbackRow = rows.find((row) => within(row).queryByText("fallback"));
     const regularRow = rows.find((row) => within(row).queryByText("regular"));
-    expect(within(fallbackRow!).getByText("Default")).toBeInTheDocument();
-    expect(within(regularRow!).queryByText("Default")).not.toBeInTheDocument();
+    expect(within(fallbackRow!).getByText("默认")).toBeInTheDocument();
+    expect(within(regularRow!).queryByText("默认")).not.toBeInTheDocument();
   });
 
   it("should show skeleton rows when isLoading is true", () => {
@@ -85,7 +85,7 @@ describe("AttachmentTable", () => {
 
   it("should show the empty state when there are no attachments", () => {
     renderWithProviders(<AttachmentTable {...defaultProps} />);
-    expect(screen.getByText("No attachments found")).toBeInTheDocument();
+    expect(screen.getByText("未找到附件")).toBeInTheDocument();
   });
 
   it("should render a row for each attachment", () => {
@@ -112,7 +112,7 @@ describe("AttachmentTable", () => {
   it("should show 'Global (*)' badge when scope is '*'", () => {
     const attachments = [makeAttachment({ scope: "*" })];
     renderWithProviders(<AttachmentTable {...defaultProps} attachments={attachments} />);
-    expect(screen.getByText("Global (*)")).toBeInTheDocument();
+    expect(screen.getByText("全局 (*)")).toBeInTheDocument();
   });
 
   it("should show team chips when the attachment has teams", () => {

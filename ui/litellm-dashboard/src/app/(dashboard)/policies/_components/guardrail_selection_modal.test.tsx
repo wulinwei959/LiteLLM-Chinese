@@ -61,12 +61,12 @@ describe("GuardrailSelectionModal", () => {
       existingGuardrails: new Set(["existing-g"]),
     };
     renderWithProviders(<GuardrailSelectionModal {...props} />);
-    expect(await screen.findByText("Already exists")).toBeInTheDocument();
+    expect(await screen.findByText("已存在")).toBeInTheDocument();
   });
 
   it("should show 'Create N Guardrails & Use Template' on the confirm button when N guardrails are selected", async () => {
     renderWithProviders(<GuardrailSelectionModal {...defaultProps} />);
-    expect(await screen.findByRole("button", { name: /create 2 guardrails & use template/i })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /创建 2 个护栏并使用模板/ })).toBeInTheDocument();
   });
 
   it("should show 'Use Template' on the confirm button when no new guardrails are selected", async () => {
@@ -76,7 +76,7 @@ describe("GuardrailSelectionModal", () => {
       existingGuardrails: new Set(["existing-g"]),
     };
     renderWithProviders(<GuardrailSelectionModal {...props} />);
-    expect(await screen.findByRole("button", { name: /^use template$/i })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /^使用模板$/ })).toBeInTheDocument();
   });
 
   it("should call onConfirm with the definitions of selected guardrails when confirmed", async () => {
@@ -84,7 +84,7 @@ describe("GuardrailSelectionModal", () => {
     const def = makeGuardrailDef("my-guardrail");
     const props = { ...defaultProps, template: makeTemplate([def]) };
     renderWithProviders(<GuardrailSelectionModal {...props} />);
-    await user.click(await screen.findByRole("button", { name: /create 1 guardrail/i }));
+    await user.click(await screen.findByRole("button", { name: /创建 1 个护栏/ }));
     expect(defaultProps.onConfirm).toHaveBeenCalledWith([def]);
   });
 
@@ -92,7 +92,7 @@ describe("GuardrailSelectionModal", () => {
     const user = userEvent.setup();
     renderWithProviders(<GuardrailSelectionModal {...defaultProps} />);
     await screen.findByText("guardrail-new-1");
-    await user.click(screen.getByRole("button", { name: /deselect all/i }));
+    await user.click(screen.getByRole("button", { name: /取消全选/ }));
     screen.getAllByRole("checkbox").forEach((cb) => expect(cb).not.toBeChecked());
   });
 
@@ -100,28 +100,28 @@ describe("GuardrailSelectionModal", () => {
     const user = userEvent.setup();
     renderWithProviders(<GuardrailSelectionModal {...defaultProps} />);
     await screen.findByText("guardrail-new-1");
-    await user.click(screen.getByRole("button", { name: /deselect all/i }));
-    await user.click(screen.getByRole("button", { name: /select all new/i }));
+    await user.click(screen.getByRole("button", { name: /取消全选/ }));
+    await user.click(screen.getByRole("button", { name: /全选新建/ }));
     screen.getAllByRole("checkbox").forEach((cb) => expect(cb).toBeChecked());
   });
 
   it("should show 'No guardrails defined' when the template has no guardrail definitions", async () => {
     const props = { ...defaultProps, template: makeTemplate([]) };
     renderWithProviders(<GuardrailSelectionModal {...props} />);
-    expect(await screen.findByText(/no guardrails defined for this template/i)).toBeInTheDocument();
+    expect(await screen.findByText(/此模板未定义护栏/)).toBeInTheDocument();
   });
 
   it("should show a progress badge when progressInfo is provided", async () => {
     const props = { ...defaultProps, progressInfo: { current: 2, total: 5 } };
     renderWithProviders(<GuardrailSelectionModal {...props} />);
-    expect(await screen.findByText(/template 2 of 5/i)).toBeInTheDocument();
+    expect(await screen.findByText(/模板 2\/5/)).toBeInTheDocument();
   });
 
   it("should call onCancel when the Cancel button is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(<GuardrailSelectionModal {...defaultProps} />);
     await screen.findByText("guardrail-new-1");
-    await user.click(screen.getByRole("button", { name: /^cancel$/i }));
+    await user.click(screen.getByRole("button", { name: /^取消$/ }));
     expect(defaultProps.onCancel).toHaveBeenCalled();
   });
 });

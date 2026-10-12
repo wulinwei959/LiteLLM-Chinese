@@ -29,38 +29,38 @@ describe("PipelineInfoDisplay", () => {
   it("renders the trigger card", () => {
     renderWithProviders(<PipelineInfoDisplay pipeline={pipeline([step()])} />);
 
-    expect(screen.getByText("TRIGGER")).toBeInTheDocument();
-    expect(screen.getByText("Incoming LLM Request")).toBeInTheDocument();
+    expect(screen.getByText("触发器")).toBeInTheDocument();
+    expect(screen.getByText("收到的 LLM 请求")).toBeInTheDocument();
   });
 
   it("renders one numbered card per step, naming its guardrail", () => {
     renderWithProviders(<PipelineInfoDisplay pipeline={pipeline([step(), step({ guardrail: "prompt-injection" })])} />);
 
-    expect(screen.getByText("Step 1")).toBeInTheDocument();
-    expect(screen.getByText("Step 2")).toBeInTheDocument();
+    expect(screen.getByText("步骤 1")).toBeInTheDocument();
+    expect(screen.getByText("步骤 2")).toBeInTheDocument();
     expect(screen.getByText("pii-masker")).toBeInTheDocument();
     expect(screen.getByText("prompt-injection")).toBeInTheDocument();
-    expect(screen.getAllByText("GUARDRAIL")).toHaveLength(2);
+    expect(screen.getAllByText("护栏")).toHaveLength(2);
   });
 
   it("maps raw action values to their human labels", () => {
     renderWithProviders(<PipelineInfoDisplay pipeline={pipeline([step({ on_pass: "next", on_fail: "block" })])} />);
 
-    expect(screen.getByText(/Pass .* Next Step/)).toBeInTheDocument();
-    expect(screen.getByText(/On fail .* Block/)).toBeInTheDocument();
+    expect(screen.getByText(/通过 .* 下一步/)).toBeInTheDocument();
+    expect(screen.getByText(/失败时 .* 拦截/)).toBeInTheDocument();
   });
 
   it("falls back to the on-fail action when no API-failure action is set", () => {
     renderWithProviders(<PipelineInfoDisplay pipeline={pipeline([step({ on_fail: "block", on_error: null })])} />);
 
-    expect(screen.getByText(/On API failure .* Block \(same as on fail\)/)).toBeInTheDocument();
+    expect(screen.getByText(/API 异常时 .* 拦截 \(与失败时相同\)/)).toBeInTheDocument();
   });
 
   it("shows an explicit API-failure action when one is set", () => {
     renderWithProviders(<PipelineInfoDisplay pipeline={pipeline([step({ on_error: "allow" })])} />);
 
-    expect(screen.getByText(/On API failure .* Allow/)).toBeInTheDocument();
-    expect(screen.queryByText(/same as on fail/)).not.toBeInTheDocument();
+    expect(screen.getByText(/API 异常时 .* 允许/)).toBeInTheDocument();
+    expect(screen.queryByText(/与失败时相同/)).not.toBeInTheDocument();
   });
 });
 
@@ -70,9 +70,9 @@ describe("PipelineFlowBuilder", () => {
       <PipelineFlowBuilder pipeline={pipeline([step()])} onChange={vi.fn()} availableGuardrails={guardrails} />,
     );
 
-    expect(screen.getByText("TRIGGER")).toBeInTheDocument();
-    expect(screen.getByText("END")).toBeInTheDocument();
-    expect(screen.getByText("Continue to LLM")).toBeInTheDocument();
+    expect(screen.getByText("触发器")).toBeInTheDocument();
+    expect(screen.getByText("结束")).toBeInTheDocument();
+    expect(screen.getByText("继续到 LLM")).toBeInTheDocument();
   });
 
   it("labels each decision section of a step", () => {
@@ -80,9 +80,9 @@ describe("PipelineFlowBuilder", () => {
       <PipelineFlowBuilder pipeline={pipeline([step()])} onChange={vi.fn()} availableGuardrails={guardrails} />,
     );
 
-    expect(screen.getByText("ON PASS")).toBeInTheDocument();
-    expect(screen.getByText("ON FAIL")).toBeInTheDocument();
-    expect(screen.getByText("ON API FAILURE")).toBeInTheDocument();
+    expect(screen.getByText("通过时")).toBeInTheDocument();
+    expect(screen.getByText("失败时")).toBeInTheDocument();
+    expect(screen.getByText("API 异常时")).toBeInTheDocument();
   });
 
   it("inserts a step at the clicked connector", async () => {
@@ -92,7 +92,7 @@ describe("PipelineFlowBuilder", () => {
       <PipelineFlowBuilder pipeline={pipeline([step()])} onChange={onChange} availableGuardrails={guardrails} />,
     );
 
-    await user.click(screen.getAllByRole("button", { name: "Insert step" })[0]);
+    await user.click(screen.getAllByRole("button", { name: "插入步骤" })[0]);
 
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange.mock.calls[0][0].steps).toHaveLength(2);
@@ -109,7 +109,7 @@ describe("PipelineFlowBuilder", () => {
       />,
     );
 
-    await user.click(screen.getAllByRole("button", { name: "Delete step" })[0]);
+    await user.click(screen.getAllByRole("button", { name: "删除步骤" })[0]);
 
     expect(onChange.mock.calls[0][0].steps).toHaveLength(1);
     expect(onChange.mock.calls[0][0].steps[0].guardrail).toBe("prompt-injection");
@@ -120,14 +120,14 @@ describe("PipelineFlowBuilder", () => {
       <PipelineFlowBuilder pipeline={pipeline([step()])} onChange={vi.fn()} availableGuardrails={guardrails} />,
     );
 
-    expect(screen.getByRole("button", { name: "Delete step" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "删除步骤" })).toBeDisabled();
   });
 
   it("offers a custom response field only when the action is modify_response", () => {
     const { rerender } = renderWithProviders(
       <PipelineFlowBuilder pipeline={pipeline([step()])} onChange={vi.fn()} availableGuardrails={guardrails} />,
     );
-    expect(screen.queryByPlaceholderText("Enter custom response...")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("输入自定义响应...")).not.toBeInTheDocument();
 
     rerender(
       <PipelineFlowBuilder
@@ -137,7 +137,7 @@ describe("PipelineFlowBuilder", () => {
       />,
     );
 
-    expect(screen.getByPlaceholderText("Enter custom response...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("输入自定义响应...")).toBeInTheDocument();
   });
 
   it("reports an edited custom response message", async () => {
@@ -151,7 +151,7 @@ describe("PipelineFlowBuilder", () => {
       />,
     );
 
-    fireEvent.change(screen.getByPlaceholderText("Enter custom response..."), { target: { value: "x" } });
+    fireEvent.change(screen.getByPlaceholderText("输入自定义响应..."), { target: { value: "x" } });
 
     expect(onChange.mock.calls[0][0].steps[0].modify_response_message).toBe("x");
   });
@@ -163,7 +163,7 @@ describe("PipelineFlowBuilder", () => {
 
     // Which control surfaces the selection is a presentation detail; that the step's
     // guardrail is the one displayed is covered by the PipelineInfoDisplay tests above.
-    expect(screen.getByText("Guardrail")).toBeInTheDocument();
+    expect(screen.getAllByText("护栏").length).toBeGreaterThan(0);
     expect(screen.getAllByRole("combobox").length).toBeGreaterThan(0);
   });
 });
@@ -184,7 +184,7 @@ describe("FlowBuilderPage", () => {
     const shell = container.firstElementChild as HTMLElement;
     const shellClasses = shell.className.split(/\s+/);
 
-    expect(shell).toContainElement(screen.getByPlaceholderText("Policy name..."));
+    expect(shell).toContainElement(screen.getByPlaceholderText("策略名称..."));
     expect(shell).not.toHaveStyle({ position: "fixed" });
     expect(shellClasses).not.toContain("fixed");
     expect(window.getComputedStyle(shell).zIndex).not.toMatch(/\d/);

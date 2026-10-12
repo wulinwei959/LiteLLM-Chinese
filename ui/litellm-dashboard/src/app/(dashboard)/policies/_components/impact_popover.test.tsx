@@ -33,7 +33,7 @@ describe("ImpactPopover", () => {
 
   it("should render", () => {
     renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
-    expect(screen.getByRole("button", { name: /view blast radius/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /查看影响范围/ })).toBeInTheDocument();
   });
 
   it("should call estimateAttachmentImpactCall when the popover is opened", async () => {
@@ -46,7 +46,7 @@ describe("ImpactPopover", () => {
     });
     const attachment = makeAttachment({ policy_name: "rate-limit", teams: ["team-a"] });
     renderWithProviders(<ImpactPopover attachment={attachment} accessToken="my-token" />);
-    await user.click(screen.getByRole("button", { name: /view blast radius/i }));
+    await user.click(screen.getByRole("button", { name: /查看影响范围/ }));
     await waitFor(() => {
       expect(networking.estimateAttachmentImpactCall).toHaveBeenCalledWith("my-token", {
         policy_name: "rate-limit",
@@ -62,17 +62,17 @@ describe("ImpactPopover", () => {
   it("should not call the API when accessToken is null", async () => {
     const user = userEvent.setup();
     renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken={null} />);
-    await user.click(screen.getByRole("button", { name: /view blast radius/i }));
+    await user.click(screen.getByRole("button", { name: /查看影响范围/ }));
     expect(networking.estimateAttachmentImpactCall).not.toHaveBeenCalled();
-    expect(screen.getByText(/click to load/i)).toBeInTheDocument();
+    expect(screen.getByText(/点击加载/)).toBeInTheDocument();
   });
 
   it("should show a loading indicator while the impact is being fetched", async () => {
     const user = userEvent.setup();
     vi.mocked(networking.estimateAttachmentImpactCall).mockReturnValue(new Promise(() => {}));
     renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
-    await user.click(screen.getByRole("button", { name: /view blast radius/i }));
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /查看影响范围/ }));
+    expect(screen.getByText(/加载中/)).toBeInTheDocument();
   });
 
   it("should show a global scope warning when affected_keys_count is -1", async () => {
@@ -84,8 +84,8 @@ describe("ImpactPopover", () => {
       sample_teams: [],
     });
     renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
-    await user.click(screen.getByRole("button", { name: /view blast radius/i }));
-    expect(await screen.findByText(/global scope.*affects all keys and teams/i)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /查看影响范围/ }));
+    expect(await screen.findByText(/影响所有密钥和团队/)).toBeInTheDocument();
   });
 
   it("should use singular count labels for one affected key and team", async () => {
@@ -97,9 +97,9 @@ describe("ImpactPopover", () => {
       sample_teams: ["team-x"],
     });
     renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
-    await user.click(screen.getByRole("button", { name: /view blast radius/i }));
+    await user.click(screen.getByRole("button", { name: /查看影响范围/ }));
     expect(
-      await screen.findByText((_, element) => element?.textContent === "1 key, 1 team affected"),
+      await screen.findByText((_, element) => element?.textContent === "1 个密钥, 1 个团队 受影响"),
     ).toBeInTheDocument();
   });
 
@@ -112,7 +112,7 @@ describe("ImpactPopover", () => {
       sample_teams: ["team-one"],
     });
     renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
-    await user.click(screen.getByRole("button", { name: /view blast radius/i }));
+    await user.click(screen.getByRole("button", { name: /查看影响范围/ }));
     expect(await screen.findByText("sk-key-one")).toBeInTheDocument();
     expect(screen.getByText("sk-key-two")).toBeInTheDocument();
     expect(screen.getByText("team-one")).toBeInTheDocument();
@@ -127,8 +127,8 @@ describe("ImpactPopover", () => {
       sample_teams: [],
     });
     renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
-    await user.click(screen.getByRole("button", { name: /view blast radius/i }));
-    expect(await screen.findByText(/no keys or teams currently affected/i)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /查看影响范围/ }));
+    expect(await screen.findByText(/当前没有受影响的密钥或团队/)).toBeInTheDocument();
   });
 
   it("should not call the API a second time when the popover is already loaded", async () => {
@@ -140,7 +140,7 @@ describe("ImpactPopover", () => {
       sample_teams: [],
     });
     renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
-    const trigger = screen.getByRole("button", { name: /view blast radius/i });
+    const trigger = screen.getByRole("button", { name: /查看影响范围/ });
     await user.click(trigger);
     await screen.findByText("sk-abc");
     await user.click(trigger);
@@ -160,9 +160,9 @@ describe("ImpactPopover", () => {
       });
     renderWithProviders(<ImpactPopover attachment={makeAttachment()} accessToken="tok" />);
 
-    const trigger = screen.getByRole("button", { name: /view blast radius/i });
+    const trigger = screen.getByRole("button", { name: /查看影响范围/ });
     await user.click(trigger);
-    expect(await screen.findByText(/click to load/i)).toBeInTheDocument();
+    expect(await screen.findByText(/点击加载/)).toBeInTheDocument();
     await user.click(trigger);
     await user.click(trigger);
 

@@ -53,14 +53,14 @@ describe("PolicyTemplates", () => {
   it("should render the section header after loading", async () => {
     vi.mocked(networking.getPolicyTemplates).mockResolvedValue([]);
     renderWithProviders(<PolicyTemplates {...defaultProps} />);
-    expect(await screen.findByText("Policy Templates")).toBeInTheDocument();
+    expect(await screen.findByText("策略模板")).toBeInTheDocument();
   });
 
   it("should not show the template grid while fetching", () => {
     vi.mocked(networking.getPolicyTemplates).mockReturnValue(new Promise(() => {}));
     renderWithProviders(<PolicyTemplates {...defaultProps} />);
-    expect(screen.queryByText("Policy Templates")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /use ai to find templates/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("策略模板")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /用 AI 找模板/ })).not.toBeInTheDocument();
   });
 
   it("should render a card for each fetched template", async () => {
@@ -88,8 +88,8 @@ describe("PolicyTemplates", () => {
     vi.mocked(networking.getPolicyTemplates).mockResolvedValue([]);
     const user = userEvent.setup();
     renderWithProviders(<PolicyTemplates {...defaultProps} />);
-    await screen.findByText("Policy Templates");
-    await user.click(screen.getByRole("button", { name: /use ai to find templates/i }));
+    await screen.findByText("策略模板");
+    await user.click(screen.getByRole("button", { name: /用 AI 找模板/ }));
     expect(defaultProps.onOpenAiSuggestion).toHaveBeenCalled();
   });
 
@@ -129,7 +129,7 @@ describe("PolicyTemplates", () => {
     await screen.findByText("Alpha Template");
     await user.click(screen.getByRole("checkbox", { name: /alpha/i }));
     await user.click(screen.getByRole("checkbox", { name: /beta/i }));
-    expect(screen.getByText(/no templates match the selected filters/i)).toBeInTheDocument();
+    expect(screen.getByText(/没有匹配所选筛选的模板/)).toBeInTheDocument();
   });
 
   it("should restore all templates when 'Clear all' is clicked", async () => {
@@ -143,7 +143,7 @@ describe("PolicyTemplates", () => {
     await screen.findByText("Alpha Template");
     await user.click(screen.getByRole("checkbox", { name: /alpha/i }));
     expect(screen.queryByText("Beta Template")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /clear all/i }));
+    await user.click(screen.getByRole("button", { name: /全部清除/ }));
     expect(screen.getByText("Beta Template")).toBeInTheDocument();
   });
 

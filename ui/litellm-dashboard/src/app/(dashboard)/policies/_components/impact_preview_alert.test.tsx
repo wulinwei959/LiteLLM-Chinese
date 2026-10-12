@@ -20,25 +20,25 @@ const specificImpact = {
 describe("ImpactPreviewAlert", () => {
   it("should render", () => {
     renderWithProviders(<ImpactPreviewAlert impactResult={specificImpact} />);
-    expect(screen.getByText("Impact Preview")).toBeInTheDocument();
+    expect(screen.getByText("影响预览")).toBeInTheDocument();
   });
 
   describe("when affected_keys_count is -1 (global scope)", () => {
     it("should show a warning about all keys and teams being affected", () => {
       renderWithProviders(<ImpactPreviewAlert impactResult={globalImpact} />);
-      expect(screen.getByText(/all keys and teams/i)).toBeInTheDocument();
+      expect(screen.getByText(/影响所有密钥和团队/)).toBeInTheDocument();
     });
   });
 
   describe("when scope is specific", () => {
     it("should show the number of affected keys", () => {
       renderWithProviders(<ImpactPreviewAlert impactResult={specificImpact} />);
-      expect(screen.getByText(/3 keys/i)).toBeInTheDocument();
+      expect(screen.getByText(/3 个密钥/)).toBeInTheDocument();
     });
 
     it("should show the number of affected teams", () => {
       renderWithProviders(<ImpactPreviewAlert impactResult={specificImpact} />);
-      expect(screen.getByText(/1 team\b/i)).toBeInTheDocument();
+      expect(screen.getByText(/1 个团队/)).toBeInTheDocument();
     });
 
     it("should render sample key tags", () => {
@@ -60,30 +60,30 @@ describe("ImpactPreviewAlert", () => {
         sample_teams: [],
       };
       renderWithProviders(<ImpactPreviewAlert impactResult={manyKeys} />);
-      expect(screen.getByText(/and 5 more/i)).toBeInTheDocument();
+      expect(screen.getByText(/还有 5 个/)).toBeInTheDocument();
     });
 
     it("should use singular 'key' when exactly one key is affected", () => {
       const oneKey = { affected_keys_count: 1, affected_teams_count: 0, sample_keys: ["sk-1"], sample_teams: [] };
       renderWithProviders(<ImpactPreviewAlert impactResult={oneKey} />);
-      expect(screen.getByText(/1 key\b/i)).toBeInTheDocument();
+      expect(screen.getByText(/1 个密钥/)).toBeInTheDocument();
     });
 
     it("should present the counts as an upper bound for a default attachment", () => {
       renderWithProviders(<ImpactPreviewAlert impactResult={specificImpact} isDefault />);
-      expect(screen.getByText(/would affect up to/i)).toBeInTheDocument();
-      expect(screen.getByText(/no non-default attachment matches/i)).toBeInTheDocument();
+      expect(screen.getByText(/至多/)).toBeInTheDocument();
+      expect(screen.getByText(/没有非默认附件匹配/)).toBeInTheDocument();
     });
 
     it("should not qualify the counts for a non-default attachment", () => {
       renderWithProviders(<ImpactPreviewAlert impactResult={specificImpact} />);
-      expect(screen.queryByText(/up to/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/至多/)).not.toBeInTheDocument();
     });
 
     it("should not show a key section when there are no sample keys", () => {
       const noKeys = { affected_keys_count: 0, affected_teams_count: 2, sample_keys: [], sample_teams: ["t1", "t2"] };
       renderWithProviders(<ImpactPreviewAlert impactResult={noKeys} />);
-      expect(screen.queryByText(/^Keys:/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^密钥:/)).not.toBeInTheDocument();
     });
   });
 });
