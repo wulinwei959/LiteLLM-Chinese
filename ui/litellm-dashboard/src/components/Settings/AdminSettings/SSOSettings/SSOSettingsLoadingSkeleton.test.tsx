@@ -14,7 +14,7 @@ describe("SSOSettingsLoadingSkeleton", () => {
   it("should explain which configuration is loading", () => {
     renderWithProviders(<SSOSettingsLoadingSkeleton />);
 
-    expect(screen.getByText("Manage Single Sign-On authentication settings")).toBeInTheDocument();
+    expect(screen.getByText("管理单点登录（SSO）认证设置")).toBeInTheDocument();
   });
 
   it("should render the complete action and configuration skeleton", () => {
