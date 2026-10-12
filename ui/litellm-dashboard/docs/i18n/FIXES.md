@@ -228,6 +228,10 @@ const namespaces = NAMESPACES.has(explicitRoot) ? [explicitRoot] : [...scopes];
 | `templates/ScopedSavingsTab.tsx` | `Loading savings...` 与 `No usage recorded for this ...` 空态文案 |
 | `add_model/cache_control_settings.tsx` | aria-label 拼接 `${label} help`，`label` 已翻译（角色/索引）但 ` help` 后缀是英文，整名混语（"角色 help"） |
 | `public_model_hub` 分页脚 | `Page X of Y` 写死英文，与共享表格的"第 X 页，共 Y 页"不一致 |
+| `components/GuardrailsMonitor/usageUnits.ts` | `unpricedSummary()` 的 `N units unpriced`、`counterLabel()` 由驼峰键派生的计数器名（`Content Policy`）、`counterMathRow()` 的 `no known price, left out` 与 `N unpriced units left out`，中文下仍渲染英文 |
+| `guardrails-monitor/_components/ScoreChart.tsx` | 图例 `categories={["passed", "blocked"]}` 写死英文 |
+| `guardrails/_components/custom_code/CustomCodeModal.tsx` | 名称输入框 placeholder `e.g., block-pii-custom` |
+| `guardrails/_components/TeamGuardrailsTab.tsx` | 提交弹窗的 `https://your-guardrail-api.com/v1/check`、两个 JSON 示例 placeholder 与"等效配置"YAML 片段 |
 
 另有两处结构性注意事项。`templates/KeySavingsTab` 的 SummaryCard testid 由译文经 `slugOf(label)` 派生（如 `summary-card-压缩节省`），testid 随 locale 变化，改译文即改 testid，断言勿按英文 testid 写死。三个测试（`view_logs/RequestLogsPanel`、`organization/organization_view`、`model_info_view`）用自定义 `wrapper` 覆盖 Provider，已在 wrapper 内嵌 `<LocaleProvider locale="zh-CN">` 保住中文渲染，后续改造时不要丢掉这一层
 

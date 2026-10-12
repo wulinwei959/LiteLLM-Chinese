@@ -89,7 +89,7 @@ mcp-servers 名义上剩 5 个未接入文件，但其中 4 个本来就没有�
 
 223 条缺 `NextIntlClientProvider` 已全部清零。剩下的主力是 820 条"找不到元素"，绝大多数是断言停在英文（第六类），但其中混有与翻译无关的既有失败，处理时要逐文件回 HEAD 基线确认，不要一律当成翻译的账
 
-上面的数字是 HEAD 快照 `ff54aee` 那一次全量的结果，此后五次提交累计消除 314 例（113 + 85 + 19 + 97），剩余按 820 - 314 ≈ 506 估算（其中 guardrails 族约 120 例，policies 族已清零），下一次全量报告出来后再校准
+上面的数字是 HEAD 快照 `ff54aee` 那一次全量的结果，此后七次提交累计消除 464 例（113 + 85 + 19 + 97 + 68 + 82），剩余按 820 - 464 ≈ 356 估算（guardrails 与 policies 两族均已清零），下一次全量报告出来后再校准
 
 失败最集中的目录与文件
 
@@ -159,7 +159,7 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 原来的四个优先级里，第一（223 条缺 Provider）、第二（team 172 例）、第三（页面收口）都已完成。此前按失败集中度排出的 1-6 号目标也全部清零：`edit_auto_router_modal.integration` 的 46 例经单文件复跑确认是全量并发造成的假失败（独立运行为 0），其余按 6d06b7b、e2350f6、c109bdb、0e8f5f6 四次提交逐个转绿。中途顺带清掉了未列进表的 `AdminPanel`（19）、`EntityUsage`（18）、`add_attachment_form`（17）、`BulkEditUsers`（16）、`leftnav` 之外的 `user_edit_view` / `user_info_view.integration` / `old-usage`
 
-剩下唯一的主力是第 7 项里的 guardrails 族（24 个文件 120 例）。policies 族（14 个文件 112 例）已在 bdac478 清零，本轮实际消除 97 例（`ai_suggestion_modal` 11、`AttachmentTable` 4、`PolicyTable` 4、`add_policy_form.integration` 8，其余 70 例分布在 impact/选择弹窗/流水线/模拟器/模板/详情/面板），单目录复跑 195 例全绿。清的时候仍按"回 HEAD 基线确认既有失败"区分翻译账和非翻译账，并且先单文件复跑，别信全量报告里的集中失败
+第 7 项已清零。guardrails 族起点 150 例，`d0c3436` 收掉 content_filter 子族的 68 例，本次提交收掉其余 22 个文件的 82 例（起点：`guardrail_info.characterization` 14、`add_guardrail_form.characterization` 11、`GuardrailsOverview` 11、`CustomCodeModal` 9、`GuardrailUsageBreakdown` 7、`TeamGuardrailsTab.integration` 7，加 6/5/4/3 的长尾），`src/app/(dashboard)/guardrails` 目录复跑 272 例全绿。policies 族（14 个文件 112 例）已在 bdac478 清零。清的时候仍按"回 HEAD 基线确认既有失败"区分翻译账和非翻译账，并且先单文件复跑，别信全量报告里的集中失败
 
 几处踩过的坑，写在这里省得再查：
 
@@ -168,8 +168,11 @@ i18n 自身的三条守卫也是全绿，16 个用例
 - 测试自己 mock 出来的 stub 文案与语言无关。`index.test.tsx` 把 `FlowBuilderPage` mock 成一个写着 `Back to policies` 的按钮，改中文会直接查不到元素
 - 英文不同、中文同值的两个键会破坏 `getByText` 的唯一性。`flow.guardrailBadge`（GUARDRAIL）与 `flow.guardrailLabel`（Guardrail）都渲染成"护栏"，`pipeline_flow_builder.test.tsx` 那一处只能改成 `getAllByText(...).length`
 - next-intl 走 ICU 语法，消息里的单引号是转义符而不是字面量。`Microsoft Entra OBO requires a scope, e.g. api://'<app-id>'/.default` 渲染出来是 `api://<app-id>/.default`（引号被吞），断言要按渲染结果写
+- ICU plural 在中文里退化成量词短语，英文整句正则要按中文语序重写。`test.testButton` 的 `Test {count} guardrails` 中文是"测试 {count} 个护栏"，`providerFields.jsonObject` 的 `{field} must be a valid JSON object` 中文把占位符留在前缀（"detect_secrets_config 必须是有效的 JSON 对象"），`eval.descNamed` 更是把 `{name}` 挪到句中（"为 {name} 配置 AI 评估"）
+- 纯逻辑模块拼出来的英文展示串也在页面上，属于批次 24 的账，断言这轮先保持英文。`components/GuardrailsMonitor/usageUnits.ts` 的 `unpricedSummary()`（"250 units unpriced"）、`counterLabel()`（"Content Policy"）与 `counterMathRow()` 的 "no known price, left out" 都是硬编码，`GuardrailsOverview`/`GuardrailUsageBreakdown` 的断言只能跟着留英文
+- 组件里写死的按钮英文会伪装成翻译问题。`TeamGuardrailsTab` 的详情面板把 `Approve` / `Reject` / `Add` 写死，接上 `t("team.approve")` / `t("team.reject")` / `t("team.add")` 之后 `getAllByRole("button", { name: /批准/ })` 的计数才与英文一致，这一处随本次提交一起改掉了
 
-最后才是批次 24 的共享组件长尾与硬编码收口，欠账清单见 [FIXES.md](./FIXES.md) 的"批次 24 硬编码英文欠账清单"
+到此，第六类（断言停在英文）排得出名次的目标全部清零，剩下的主力就是批次 24 的共享组件长尾与硬编码收口，欠账清单见 [FIXES.md](./FIXES.md) 的"批次 24 硬编码英文欠账清单"，本轮新增的 guardrails 相关四条也在里面
 
 另外有一件小事不依赖批次顺序，且卡着一个具体失败：`renderWithProviders` 强制 `locale="zh-CN"`，`LanguageSwitcher` 的 2 个失败就是它造成的。判断口径在 `tests/test-utils.tsx` 里留了标记
 
