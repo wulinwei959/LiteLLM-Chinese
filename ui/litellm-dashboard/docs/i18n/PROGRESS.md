@@ -1,6 +1,6 @@
 # 开发进度
 
-数据快照 2026-10-12，仓库 `D:\Claude\LiteLLM-Chinese`，分支 `main`，HEAD `dd32399`
+数据快照 2026-10-12，仓库 `D:\Qoder-workspace\LiteLLM-Chinese`，分支 `main`，HEAD `ff54aee`（测试统计来自 `6d06b7b` 后的全量运行）
 
 ## 统计口径
 
@@ -15,8 +15,8 @@
 | 项                       | 数值                                                 |
 | ------------------------ | ---------------------------------------------------- |
 | 命名空间                 | 38                                                   |
-| `en.json` 叶子键          | 5175                                                 |
-| `zh-CN.json` 叶子键       | 5175                                                 |
+| `en.json` 叶子键          | 5178                                                 |
+| `zh-CN.json` 叶子键       | 5178                                                 |
 | 键树一致性               | 一致，`messagesParity` 通过                           |
 | 中英文取值完全相同的键    | 71（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
 
@@ -51,7 +51,7 @@
 
 共享 `src` 目录那一行是长尾，也就是批次 24。它贡献了 442 个未接入文件，占全部 563 个未接入文件的绝大多数，不过里面混着大量本来就不含文案的文件（hooks、types、纯逻辑封装），不能直接按这个数字估工作量
 
-mcp-servers 只剩 5 个文件未接入，是完成度最高的页面族。cost-optimization 只剩 1 个
+mcp-servers 名义上剩 5 个未接入文件，但其中 4 个本来就没有面向用户文案（页面壳、re-export、键常量表、测试 harness），校验文案已于 `5c2da87` 接入。cost-optimization 剩的 1 个同样是无文案的页面壳
 
 ## 测试状态
 
@@ -60,65 +60,62 @@ mcp-servers 只剩 5 个文件未接入，是完成度最高的页面族。cost-
 | 指标             | 数值                     |
 | ---------------- | ------------------------ |
 | 用例总数         | 11306                    |
-| 通过             | 9983（88.3%）            |
-| 失败             | 1323                     |
-| 有失败的测试文件 | 186                      |
+| 通过             | 10356（91.6%）           |
+| 失败             | 950                      |
+| 有失败的测试文件 | 149                      |
+
+上一次全量为 1323 失败，此后 team 批次（`deab7e7`）消掉 172，Provider 批次（`6d06b7b`）消掉 223 条缺 Provider 加 45 条连带断言。本次运行与 mcp-servers 的一次小改动有时间重叠，mcp-servers 目录单独复测为 20 例 / 2 文件，其余数字未再修正
 
 ### 失败的归属
 
-按被测源文件是否引入 `next-intl` 分类
+按被测源文件（同目录同名去 `.test`）是否引入 `next-intl` 分类
 
-| 归属             | 文件数 | 失败用例数 |
-| ---------------- | ------ | ---------- |
-| 源文件已接入翻译 | 159    | 1136       |
-| 源文件未接入翻译 | 27     | 187        |
+| 归属               | 文件数 | 失败用例数 |
+| ------------------ | ------ | ---------- |
+| 源文件已接入翻译   | 114    | 666        |
+| 源文件未接入翻译   | 6      | 10         |
+| 同位找不到源文件    | 29     | 274        |
 
-已接入翻译的文件占了 86% 的失败，说明主力工作是"断言还停在英文、组件已经输出中文"，也就是 [FIXES.md](./FIXES.md) 的第六类
+第三类多为跨模块的 integration 测试，一个测试文件测多个组件，不能简单按同位文件判定
 
-按错误文本聚合，前几类
+按错误文本聚合
 
-| 失败用例数 | 错误文本                                                |
-| ---------- | ------------------------------------------------------- |
-| 223        | `context from NextIntlClientProvider was not found`      |
-| 1008       | `Unable to find ...` 各类元素找不到                       |
-| 45         | `toHaveTextContent` / `toHaveValue` 等内容断言不符        |
-| 13         | `toBeEnabled` / `toBeDisabled` 等状态断言不符             |
-| 34         | 其他                                                     |
+| 失败用例数 | 错误文本                                          |
+| ---------- | ------------------------------------------------- |
+| 820        | `Unable to find ...` 各类元素找不到                |
+| 59         | `toBeEnabled` / `toBeDisabled` / `toBeChecked`     |
+| 58         | `toHaveTextContent` / `toHaveValue` 等内容断言     |
+| 13         | 其他（数组深比对、`toBeVisible` 等）               |
 
-223 条缺 `NextIntlClientProvider` 是确定无疑的 i18n 问题，改成 `renderWithProviders` 即可
+223 条缺 `NextIntlClientProvider` 已全部清零。剩下的主力是 820 条"找不到元素"，绝大多数是断言停在英文（第六类），但其中混有与翻译无关的既有失败，处理时要逐文件回 HEAD 基线确认，不要一律当成翻译的账
 
-1008 条"找不到元素"是最需要小心的一类。它们绝大多数是断言停在英文（找不到 `Edit Settings`、`Project Name`、`Save Changes` 这些已变成中文的文本），但其中混有与翻译无关的既有失败。处理时要逐文件用 `git stash` 回基线确认，不要一律当成翻译的账
+失败最集中的目录与文件
 
-失败最集中的目录
-
-| 目录                              | 失败用例数 |
-| --------------------------------- | ---------- |
-| `src/app/(dashboard)`             | 814        |
-| `src/components/team`             | 172        |
-| `src/components/view_logs`        | 38         |
-| `src/components/add_model`        | 29         |
-| `src/components/leftnav.test.tsx` | 27         |
-| `src/components/templates`        | 25         |
-
-`src/components/team` 的 172 个失败是单目录最大的一块，14 个文件已接入翻译，是批次 10 的欠账
+| 位置                                        | 失败用例数 |
+| ------------------------------------------- | ---------- |
+| `src/app/(dashboard)`                       | 793        |
+| `src/components/edit_auto_router`           | 46         |
+| `src/components/add_model`                  | 28         |
+| `src/components/leftnav.test.tsx`           | 27         |
+| `src/components/view_logs`                  | 15         |
+| 单文件前三：`edit_auto_router_modal.integration`(46)、`users/user_edit_view`(38)、`users/view_users/user_info_view.integration`(28) | |
 
 ### 各路由的测试状态
 
-| 路由                  | 失败用例 | 失败文件 |
-| --------------------- | -------- | -------- |
-| models-and-endpoints  | 0        | 0        |
-| cost-optimization     | 0        | 0        |
-| access-groups         | 0        | 0        |
-| organizations         | 0        | 0        |
-| workflows             | 0        | 0        |
-| transform-request     | 0        | 0        |
-| ui-theme              | 0        | 0        |
-| mcp-servers           | 20       | 2        |
-| guardrails-monitor    | 30       | 5        |
-| prompts               | 56       | 18       |
-| policies              | 112      | 14       |
+| 路由                  | 失败用例 | 失败文件 | 路由                | 失败用例 | 失败文件 |
+| --------------------- | -------- | -------- | ------------------- | -------- | -------- |
+| guardrails            | 120      | 24       | mcp-servers         | 20       | 2        |
+| policies              | 112      | 14       | old-usage           | 20       | 1        |
+| users                 | 91       | 4        | admin-panel         | 19       | 1        |
+| projects              | 82       | 10       | caching             | 18       | 3        |
+| prompts               | 56       | 18       | tag-management      | 11       | 3        |
+| agents                | 55       | 10       | router-settings     | 8        | 1        |
+| usage                 | 45       | 6        | memory              | 7        | 2        |
+| cost-tracking         | 36       | 6        | skills              | 6        | 3        |
+| guardrails-monitor    | 30       | 5        | change-password     | 5        | 1        |
+| playground            | 27       | 9        | budgets             | 21       | 4        |
 
-上表前七个模块是零失败，对应 [PLAN.md](./PLAN.md) 里已完成的核心批次
+models-and-endpoints、cost-optimization、access-groups、organizations、workflows、transform-request、ui-theme 保持零失败
 
 ### i18n 自身的守卫
 
@@ -140,6 +137,8 @@ i18n 基础设施完整可用：语言解析、切换器、状态传播、类型
 
 批次 0 到 14 完成。核心管理页面（虚拟密钥、团队、用户、组织、预算、项目、访问组、模型与端点、MCP 服务器、护栏、策略、用量、日志、管理面板）的文案已经接入
 
+2026-10-12 又收掉三块。Provider 批次（`6d06b7b`）：26 个测试文件从裸 `render` 换成 `renderWithProviders`，223 例缺 Provider 清零，附带 45 例断言中文化，其中 3 个自定义 wrapper 场景在 wrapper 内嵌 `<LocaleProvider locale="zh-CN">`。team 批次（`deab7e7`）：12 个测试文件 172 例清零。mcp-servers 校验文案（`5c2da87`）：`utils.tsx` 三个校验器改为调用方传入 `t()` 消息，目录新增 `mcpServers.validation` 三键
+
 七个核心模块的测试全绿，数字来自上面那份全量基线
 
 | 模块                 | 用例数 | 结果      |
@@ -156,21 +155,21 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 ## 下一步优先级
 
-排序的依据是"用户影响 / 工作量"的比值。手上有这些候选，顺序见下一节
+原来的四个优先级里，第一（223 条缺 Provider）、第二（team 172 例）、第三（页面收口）都已完成。mcp-servers 剩余 5 个"未接入"文件里四个本来就没有面向用户文案（页面壳、键常量、测试 harness），校验文案补齐后该页真正剩下的只有 20 例第六类断言过时；cost-optimization 剩的那 1 个文件是无文案的页面壳
 
-第一优先是 223 条缺 `NextIntlClientProvider` 的失败。它们的修法统一（换 `renderWithProviders`），机械且批量，一次能消掉六分之一的失败用例，是所有工作里性价比最高的
+所以下一步就是一件事：按第六类清 820 条"找不到元素"。建议从失败最集中的单文件开始，逐个用"回 HEAD 基线确认既有失败"的办法区分翻译账和非翻译账
 
-第二优先是 `src/components/team` 的 172 个失败。它是单目录最大的一块，且团队管理是核心功能
+| 顺序 | 目标                                                                 | 失败数 |
+| ---- | -------------------------------------------------------------------- | ------ |
+| 1    | `edit_auto_router/edit_auto_router_modal.integration.test.tsx`        | 46     |
+| 2    | `users/user_edit_view.test.tsx`                                       | 38     |
+| 3    | `users/view_users/user_info_view.integration.test.tsx`                | 28     |
+| 4    | `leftnav.test.tsx`                                                    | 27     |
+| 5    | `old-usage/usage.test.tsx`                                            | 20     |
+| 6    | `mcp-servers/CreateMCPServer.integration.test.tsx`（含 1 例 OAuth 既有失败） | 19     |
+| 7    | guardrails 族（24 个文件 120 例）与 policies 族（14 个文件 112 例）    | 232    |
 
-第三优先是补完未接入翻译的页面。mcp-servers、cost-optimization、guardrails、prompts 都只剩个位数文件，收口成本低
-
-最后才是批次 24 的共享组件长尾。它必须等页面批次全部完成后才能一次性收口，早做会让同一个文件被反复改动
-
-### 下一步的批次顺序
-
-上面是按我给出的判断排的。实际的优先级取决于你更在意什么，是先把测试全绿（那么从 223 条 Provider 缺失入手），还是先把某个具体页面在中文下做完整（那么从 mcp-servers 或 cost-optimization 收口），还是先把团队管理这块最大的坑填掉
-
-取舍在于：先修测试能立刻拿到可验证的进展，但修的可能是即将被下一批翻译继续改动的文件；先补翻译则会让测试失败数继续上升，短期内看不到"变好"
+最后才是批次 24 的共享组件长尾与硬编码收口，欠账清单见 [FIXES.md](./FIXES.md) 的"批次 24 硬编码英文欠账清单"
 
 另外有一件小事不依赖批次顺序，且卡着一个具体失败：`renderWithProviders` 强制 `locale="zh-CN"`，`LanguageSwitcher` 的 2 个失败就是它造成的。判断口径在 `tests/test-utils.tsx` 里留了标记
 
@@ -178,7 +177,11 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 `AutoRoutersPanel` 2 个与 `AccessGroupBudgetsPanel` 2 个失败是既有问题，与 i18n 无关，留给对应模块
 
+`mcp_server_edit.test.tsx` 的 "preserves a stored client_id on OAuth-resume restore" 1 例在 HEAD 上即失败（`expected '' to be 'stored-client'`），2026-10-12 用单文件 stash 对照确认与翻译无关
+
 全仓库 `tsc --noEmit` 有 928 条错误，分布在 60 个文件（2026-10-12 实测），都是翻译之前就有的。`TRANSLATION_PLAN.md` 里写的"约 819 条、56 个文件"是更早的一次测量，已过时
+
+比对基线前先确认 `ui/litellm-dashboard/next-env.d.ts` 存在（它被 gitignore，删掉后会虚增 145 条 `assets/logos` 的 TS2307），标准内容就两行 `/// <reference types="next" />` 与 `/// <reference types="next/image-types/global" />`
 
 判断有无新增要逐条比对，不要只看总数，按文件去重会掩盖同一文件内的新增错误。`src/lib/i18n` 目录目前是零错误
 
