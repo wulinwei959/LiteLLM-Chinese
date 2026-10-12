@@ -52,7 +52,7 @@ describe("PatternModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    expect(await screen.findByText("Add prebuilt pattern")).toBeInTheDocument();
+    expect(await screen.findByText("添加预置模式")).toBeInTheDocument();
 
     await user.click(screen.getAllByRole("combobox")[0]);
 
@@ -75,7 +75,7 @@ describe("PatternModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    expect(await screen.findByText("Add prebuilt pattern")).toBeInTheDocument();
+    expect(await screen.findByText("添加预置模式")).toBeInTheDocument();
 
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.keyboard("visa");
@@ -89,7 +89,7 @@ describe("PatternModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    expect(await screen.findByText("Add prebuilt pattern")).toBeInTheDocument();
+    expect(await screen.findByText("添加预置模式")).toBeInTheDocument();
 
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.keyboard("ssn");
@@ -103,10 +103,10 @@ describe("PatternModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    expect(await screen.findByText("Add prebuilt pattern")).toBeInTheDocument();
+    expect(await screen.findByText("添加预置模式")).toBeInTheDocument();
 
     await user.click(screen.getAllByRole("combobox")[1]);
-    const maskOptions = await screen.findAllByText("Mask");
+    const maskOptions = await screen.findAllByText("脱敏");
     await user.click(maskOptions[maskOptions.length - 1]);
 
     expect(mockOnActionChange).toHaveBeenCalled();
@@ -117,12 +117,12 @@ describe("PatternModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    expect(await screen.findByText("Add prebuilt pattern")).toBeInTheDocument();
+    expect(await screen.findByText("添加预置模式")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Add" }));
+    await user.click(screen.getByRole("button", { name: "添加" }));
     expect(mockOnAdd).toHaveBeenCalledTimes(1);
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
     expect(mockOnCancel).toHaveBeenCalledTimes(1);
   });
 
@@ -141,12 +141,12 @@ describe("PatternModal", () => {
       />,
     );
 
-    expect(screen.queryByText("Add prebuilt pattern")).not.toBeInTheDocument();
+    expect(screen.queryByText("添加预置模式")).not.toBeInTheDocument();
   });
 
   it("should not raise the dialog above the portalled popup layer its pattern combobox renders into", async () => {
     renderModal();
-    await screen.findByText("Add prebuilt pattern");
+    await screen.findByText("添加预置模式");
 
     const content = document.querySelector('[data-slot="dialog-content"]');
     expect(content).not.toBeNull();

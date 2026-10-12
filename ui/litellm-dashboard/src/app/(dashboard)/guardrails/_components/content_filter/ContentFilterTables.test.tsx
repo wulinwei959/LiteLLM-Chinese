@@ -26,13 +26,13 @@ describe("content filter tables", () => {
       />,
     );
 
-    expect(screen.getByRole("columnheader", { name: "Category" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Severity Threshold" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "类别" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "严重程度阈值" })).toBeInTheDocument();
     expect(screen.getByRole("table")).toHaveAttribute("data-slot", "table");
     expect(screen.getByText("Self Harm")).toBeInTheDocument();
     expect(screen.getByText("self_harm")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /delete/i }));
+    await user.click(screen.getByRole("button", { name: /删除/ }));
 
     expect(onRemove).toHaveBeenCalledWith("category-1");
   });
@@ -49,13 +49,13 @@ describe("content filter tables", () => {
       />,
     );
 
-    expect(screen.getByRole("columnheader", { name: "Keyword" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Description" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "关键词" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "描述" })).toBeInTheDocument();
     expect(screen.getByRole("table")).toHaveAttribute("data-slot", "table");
     expect(screen.getByText("secret")).toBeInTheDocument();
     expect(screen.getByText("Sensitive term")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /delete/i }));
+    await user.click(screen.getByRole("button", { name: /删除/ }));
 
     expect(onRemove).toHaveBeenCalledWith("keyword-1");
   });
@@ -81,13 +81,13 @@ describe("content filter tables", () => {
       />,
     );
 
-    expect(screen.getByRole("columnheader", { name: "Pattern name" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Regex pattern" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "模式名称" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "正则模式" })).toBeInTheDocument();
     expect(screen.getByRole("table")).toHaveAttribute("data-slot", "table");
     expect(screen.getByText("Email address")).toBeInTheDocument();
     expect(screen.getByText(/\[a-z\]\+@example/)).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /delete/i }));
+    await user.click(screen.getByRole("button", { name: /删除/ }));
 
     expect(onRemove).toHaveBeenCalledWith("pattern-1");
   });
@@ -121,12 +121,12 @@ describe("content filter tables", () => {
       />,
     );
 
-    expect(screen.getByRole("columnheader", { name: "Category" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Severity Threshold" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "类别" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "严重程度阈值" })).toBeInTheDocument();
     expect(screen.getByRole("table")).toHaveAttribute("data-slot", "table");
     expect(screen.getByText("Violent content")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /remove/i }));
+    await user.click(screen.getByRole("button", { name: /移除/ }));
 
     expect(onCategoryRemove).toHaveBeenCalledWith("category-1");
   });
@@ -144,7 +144,7 @@ describe("content filter tables", () => {
     );
 
     await user.click(screen.getByRole("combobox"));
-    const maskOptions = await screen.findAllByText("Mask");
+    const maskOptions = await screen.findAllByText("脱敏");
     await user.click(maskOptions[maskOptions.length - 1]);
 
     expect(onActionChange).toHaveBeenCalledWith("pattern-1", "MASK");
@@ -163,7 +163,7 @@ describe("content filter tables", () => {
     );
 
     await user.click(screen.getByRole("combobox"));
-    const maskOptions = await screen.findAllByText("Mask");
+    const maskOptions = await screen.findAllByText("脱敏");
     await user.click(maskOptions[maskOptions.length - 1]);
 
     expect(onActionChange).toHaveBeenCalledWith("keyword-1", "action", "MASK");
@@ -192,13 +192,13 @@ describe("content filter tables", () => {
     );
 
     await user.click(screen.getAllByRole("combobox")[0]);
-    const lowOptions = await screen.findAllByText("Low");
+    const lowOptions = await screen.findAllByText("低");
     await user.click(lowOptions[lowOptions.length - 1]);
 
     expect(onSeverityChange).toHaveBeenCalledWith("category-1", "low");
 
     await user.click(screen.getAllByRole("combobox")[1]);
-    const maskOptions = await screen.findAllByText("Mask");
+    const maskOptions = await screen.findAllByText("脱敏");
     await user.click(maskOptions[maskOptions.length - 1]);
 
     expect(onActionChange).toHaveBeenCalledWith("category-1", "MASK");

@@ -38,7 +38,7 @@ describe("CustomPatternModal", () => {
 
     // Wait for modal to be visible
     await waitFor(() => {
-      expect(screen.getByText("Add custom regex pattern")).toBeInTheDocument();
+      expect(screen.getByText("添加自定义正则模式")).toBeInTheDocument();
     });
 
     // Find and fill the pattern name input
@@ -55,7 +55,7 @@ describe("CustomPatternModal", () => {
     expect(mockOnRegexChange).toHaveBeenCalled();
 
     // Find and click the Add button
-    const addButton = screen.getByRole("button", { name: /add/i });
+    const addButton = screen.getByRole("button", { name: /添加/ });
     await user.click(addButton);
 
     // Verify onAdd was called

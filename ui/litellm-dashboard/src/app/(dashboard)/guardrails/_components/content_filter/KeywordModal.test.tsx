@@ -23,12 +23,12 @@ describe("KeywordModal", () => {
   it("should render the keyword, action and description fields", async () => {
     renderModal();
 
-    expect(await screen.findByText("Add blocked keyword")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter sensitive keyword or phrase")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Explain why this keyword is sensitive")).toBeInTheDocument();
-    expect(screen.getByText("Description (optional)")).toBeInTheDocument();
+    expect(await screen.findByText("添加屏蔽关键词")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("输入敏感关键词或短语")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("说明此关键词为何敏感")).toBeInTheDocument();
+    expect(screen.getByText("描述（可选）")).toBeInTheDocument();
     expect(
-      screen.getByText("Choose what action the guardrail should take when this keyword is detected"),
+      screen.getByText("选择检测到此关键词时护栏采取的操作"),
     ).toBeInTheDocument();
   });
 
@@ -36,7 +36,7 @@ describe("KeywordModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(await screen.findByPlaceholderText("Enter sensitive keyword or phrase"), {
+    fireEvent.change(await screen.findByPlaceholderText("输入敏感关键词或短语"), {
       target: { value: "s" },
     });
 
@@ -47,7 +47,7 @@ describe("KeywordModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(await screen.findByPlaceholderText("Explain why this keyword is sensitive"), {
+    fireEvent.change(await screen.findByPlaceholderText("说明此关键词为何敏感"), {
       target: { value: "x" },
     });
 
@@ -59,7 +59,7 @@ describe("KeywordModal", () => {
     renderModal();
 
     await user.click(await screen.findByRole("combobox"));
-    const maskOptions = await screen.findAllByText("Mask");
+    const maskOptions = await screen.findAllByText("脱敏");
     await user.click(maskOptions[maskOptions.length - 1]);
 
     expect(handlers.onActionChange).toHaveBeenCalled();
@@ -77,22 +77,22 @@ describe("KeywordModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.click(await screen.findByRole("button", { name: "Add" }));
+    await user.click(await screen.findByRole("button", { name: "添加" }));
     expect(handlers.onAdd).toHaveBeenCalledTimes(1);
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
     expect(handlers.onCancel).toHaveBeenCalledTimes(1);
   });
 
   it("should not render its content when not visible", () => {
     renderModal({ visible: false });
 
-    expect(screen.queryByText("Add blocked keyword")).not.toBeInTheDocument();
+    expect(screen.queryByText("添加屏蔽关键词")).not.toBeInTheDocument();
   });
 
   it("should not raise the dialog above the portalled popup layer its Action select renders into", async () => {
     renderModal();
-    await screen.findByText("Add blocked keyword");
+    await screen.findByText("添加屏蔽关键词");
 
     const content = document.querySelector('[data-slot="dialog-content"]');
     expect(content).not.toBeNull();

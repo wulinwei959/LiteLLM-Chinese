@@ -35,27 +35,27 @@ describe("ContentFilterDisplay", () => {
   it("should render the categories section with a configured count", () => {
     renderWithProviders(<ContentFilterDisplay patterns={[]} blockedWords={[]} categories={[CATEGORY]} />);
 
-    expect(screen.getByText("Content Categories")).toBeInTheDocument();
-    expect(screen.getByText("1 categories configured")).toBeInTheDocument();
+    expect(screen.getByText("内容类别")).toBeInTheDocument();
+    expect(screen.getByText("已配置 1 个类别")).toBeInTheDocument();
     expect(screen.getByText("Self Harm")).toBeInTheDocument();
-    expect(screen.queryByText("Pattern Detection")).not.toBeInTheDocument();
-    expect(screen.queryByText("Blocked Keywords")).not.toBeInTheDocument();
+    expect(screen.queryByText("模式检测")).not.toBeInTheDocument();
+    expect(screen.queryByText("屏蔽关键词")).not.toBeInTheDocument();
   });
 
   it("should render the patterns section with a configured count", () => {
     renderWithProviders(<ContentFilterDisplay patterns={[PATTERN]} blockedWords={[]} categories={[]} />);
 
-    expect(screen.getByText("Pattern Detection")).toBeInTheDocument();
-    expect(screen.getByText("1 patterns configured")).toBeInTheDocument();
+    expect(screen.getByText("模式检测")).toBeInTheDocument();
+    expect(screen.getByText("已配置 1 个模式")).toBeInTheDocument();
     expect(screen.getByText("Email address")).toBeInTheDocument();
-    expect(screen.queryByText("Content Categories")).not.toBeInTheDocument();
+    expect(screen.queryByText("内容类别")).not.toBeInTheDocument();
   });
 
   it("should render the keywords section with a configured count", () => {
     renderWithProviders(<ContentFilterDisplay patterns={[]} blockedWords={[KEYWORD]} categories={[]} />);
 
-    expect(screen.getByText("Blocked Keywords")).toBeInTheDocument();
-    expect(screen.getByText("1 keywords configured")).toBeInTheDocument();
+    expect(screen.getByText("屏蔽关键词")).toBeInTheDocument();
+    expect(screen.getByText("已配置 1 个关键词")).toBeInTheDocument();
     expect(screen.getByText("secret")).toBeInTheDocument();
     expect(screen.getByText("Sensitive term")).toBeInTheDocument();
   });
@@ -63,9 +63,9 @@ describe("ContentFilterDisplay", () => {
   it("should render every section when all three kinds of data are present", () => {
     renderWithProviders(<ContentFilterDisplay patterns={[PATTERN]} blockedWords={[KEYWORD]} categories={[CATEGORY]} />);
 
-    expect(screen.getByText("Content Categories")).toBeInTheDocument();
-    expect(screen.getByText("Pattern Detection")).toBeInTheDocument();
-    expect(screen.getByText("Blocked Keywords")).toBeInTheDocument();
+    expect(screen.getByText("内容类别")).toBeInTheDocument();
+    expect(screen.getByText("模式检测")).toBeInTheDocument();
+    expect(screen.getByText("屏蔽关键词")).toBeInTheDocument();
   });
 
   it("should render category severity and action as static text in read-only mode", () => {
@@ -75,7 +75,7 @@ describe("ContentFilterDisplay", () => {
 
     expect(screen.getByText("HIGH")).toBeInTheDocument();
     expect(screen.getByText("BLOCK")).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /delete/i })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /删除/ })).toHaveLength(2);
   });
 
   it("should render category severity and action as editable controls when not read-only", () => {
@@ -84,6 +84,6 @@ describe("ContentFilterDisplay", () => {
     );
 
     expect(screen.queryByText("HIGH")).not.toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /delete/i })).toHaveLength(3);
+    expect(screen.getAllByRole("button", { name: /删除/ })).toHaveLength(3);
   });
 });

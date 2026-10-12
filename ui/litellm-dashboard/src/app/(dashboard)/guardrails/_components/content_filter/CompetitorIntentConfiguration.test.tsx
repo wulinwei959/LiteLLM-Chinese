@@ -67,18 +67,18 @@ describe("CompetitorIntentConfiguration reported config", () => {
     const user = userEvent.setup();
     renderWithProviders(<Harness />);
 
-    await chooseOption(user, 0, "Generic (specify competitors manually)");
+    await chooseOption(user, 0, "通用（手动指定竞品）");
 
     expect(lastConfig()).toStrictEqual({ ...DEFAULT_CONFIG, competitor_intent_type: "generic" });
-    expect(screen.getByText("Competitors")).toBeInTheDocument();
-    expect(screen.queryByText("Locations (optional)")).not.toBeInTheDocument();
+    expect(screen.getByText("竞品")).toBeInTheDocument();
+    expect(screen.queryByText("地域（可选）")).not.toBeInTheDocument();
   });
 
   it("reports a policy change without dropping the other policy key", async () => {
     const user = userEvent.setup();
     renderWithProviders(<Harness />);
 
-    await chooseOption(user, 3, "Reframe (suggest alternative)");
+    await chooseOption(user, 3, "改写（推荐替代）");
 
     expect(lastConfig()).toStrictEqual({
       ...DEFAULT_CONFIG,
@@ -169,7 +169,7 @@ describe("CompetitorIntentConfiguration reported config", () => {
 
     expect(
       screen.getByText(
-        "Block or reframe competitor comparison questions. When enabled, airline type auto-loads competitors from IATA; generic type requires manual competitor list.",
+        "拦截或改写竞品比较问题。启用后，航空类型从 IATA 自动加载竞品；通用类型需手动提供竞品名单。",
       ),
     ).toBeInTheDocument();
     expect(screen.queryAllByRole("combobox")).toHaveLength(0);
@@ -177,9 +177,9 @@ describe("CompetitorIntentConfiguration reported config", () => {
   });
 
   it.each([
-    ["Type", "Airline (auto-load competitors from IATA)"],
-    ["Policy: Competitor comparison", "Refuse (block request)"],
-    ["Policy: Possible competitor comparison", "Reframe (suggest alternative to backend LLM)"],
+    ["类型", "航空（从 IATA 自动加载竞品）"],
+    ["策略：竞品比较", "拒绝（拦截请求）"],
+    ["策略：疑似竞品比较", "改写（向后端 LLM 推荐替代）"],
   ])("shows the human label on the %s trigger", (name, label) => {
     renderWithProviders(<Harness />);
 
@@ -190,9 +190,9 @@ describe("CompetitorIntentConfiguration reported config", () => {
     const user = userEvent.setup();
     renderWithProviders(<Harness />);
 
-    await user.click(screen.getByRole("combobox", { name: "Type" }));
-    await user.click(await screen.findByRole("option", { name: "Generic (specify competitors manually)" }));
+    await user.click(screen.getByRole("combobox", { name: "类型" }));
+    await user.click(await screen.findByRole("option", { name: "通用（手动指定竞品）" }));
 
-    expect(screen.getByRole("combobox", { name: "Type" })).toHaveTextContent("Generic (specify competitors manually)");
+    expect(screen.getByRole("combobox", { name: "类型" })).toHaveTextContent("通用（手动指定竞品）");
   });
 });

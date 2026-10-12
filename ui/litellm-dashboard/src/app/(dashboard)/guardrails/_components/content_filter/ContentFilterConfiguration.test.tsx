@@ -42,45 +42,45 @@ describe("ContentFilterConfiguration", () => {
   it("should render the pattern and keyword sections", () => {
     renderConfig();
 
-    expect(screen.getByText("Pattern Detection")).toBeInTheDocument();
+    expect(screen.getByText("模式检测")).toBeInTheDocument();
     expect(
-      screen.getByText("Detect sensitive information using regex patterns (SSN, credit cards, API keys, etc.)"),
+      screen.getByText("用正则模式检测敏感信息（SSN、信用卡、API 密钥等）"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Blocked Keywords")).toBeInTheDocument();
-    expect(screen.getByText("Block or mask specific sensitive terms and phrases")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /add prebuilt pattern/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /add custom regex/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /add keyword/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /upload yaml file/i })).toBeInTheDocument();
+    expect(screen.getByText("屏蔽关键词")).toBeInTheDocument();
+    expect(screen.getByText("屏蔽或脱敏特定敏感词句")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /添加预置模式/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /添加自定义正则/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /添加关键词/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /上传 YAML 文件/ })).toBeInTheDocument();
   });
 
   it("should show the empty states for patterns and keywords", () => {
     renderConfig();
 
-    expect(screen.getByText("No patterns added.")).toBeInTheDocument();
-    expect(screen.getByText("No keywords added.")).toBeInTheDocument();
+    expect(screen.getByText("尚未添加模式。")).toBeInTheDocument();
+    expect(screen.getByText("尚未添加关键词。")).toBeInTheDocument();
   });
 
   it("should open the prebuilt pattern modal", async () => {
     const user = userEvent.setup();
     renderConfig();
 
-    expect(screen.queryByText("Pattern type")).not.toBeInTheDocument();
+    expect(screen.queryByText("模式类型")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /add prebuilt pattern/i }));
+    await user.click(screen.getByRole("button", { name: /添加预置模式/ }));
 
-    expect(await screen.findByText("Pattern type")).toBeInTheDocument();
+    expect(await screen.findByText("模式类型")).toBeInTheDocument();
   });
 
   it("should open the custom regex modal", async () => {
     const user = userEvent.setup();
     renderConfig();
 
-    expect(screen.queryByText("Add custom regex pattern")).not.toBeInTheDocument();
+    expect(screen.queryByText("添加自定义正则模式")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /add custom regex/i }));
+    await user.click(screen.getByRole("button", { name: /添加自定义正则/ }));
 
-    expect(await screen.findByText("Add custom regex pattern")).toBeInTheDocument();
+    expect(await screen.findByText("添加自定义正则模式")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("e.g., ID-[0-9]{6}")).toBeInTheDocument();
   });
 
@@ -88,12 +88,12 @@ describe("ContentFilterConfiguration", () => {
     const user = userEvent.setup();
     renderConfig();
 
-    expect(screen.queryByText("Add blocked keyword")).not.toBeInTheDocument();
+    expect(screen.queryByText("添加屏蔽关键词")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /add keyword/i }));
+    await user.click(screen.getByRole("button", { name: /添加关键词/ }));
 
-    expect(await screen.findByText("Add blocked keyword")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter sensitive keyword or phrase")).toBeInTheDocument();
+    expect(await screen.findByText("添加屏蔽关键词")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("输入敏感关键词或短语")).toBeInTheDocument();
   });
 
   it("should list already selected patterns and keywords", () => {
@@ -112,21 +112,21 @@ describe("ContentFilterConfiguration", () => {
 
     expect(screen.getByText("US Social Security Number")).toBeInTheDocument();
     expect(screen.getByText("secret")).toBeInTheDocument();
-    expect(screen.queryByText("No patterns added.")).not.toBeInTheDocument();
-    expect(screen.queryByText("No keywords added.")).not.toBeInTheDocument();
+    expect(screen.queryByText("尚未添加模式。")).not.toBeInTheDocument();
+    expect(screen.queryByText("尚未添加关键词。")).not.toBeInTheDocument();
   });
 
   it("should show only the keyword section when the keywords step is requested", () => {
     renderConfig({ showStep: "keywords" });
 
-    expect(screen.getByText("Blocked Keywords")).toBeInTheDocument();
-    expect(screen.queryByText("Pattern Detection")).not.toBeInTheDocument();
+    expect(screen.getByText("屏蔽关键词")).toBeInTheDocument();
+    expect(screen.queryByText("模式检测")).not.toBeInTheDocument();
   });
 
   it("should show only the pattern section when the patterns step is requested", () => {
     renderConfig({ showStep: "patterns" });
 
-    expect(screen.getByText("Pattern Detection")).toBeInTheDocument();
-    expect(screen.queryByText("Blocked Keywords")).not.toBeInTheDocument();
+    expect(screen.getByText("模式检测")).toBeInTheDocument();
+    expect(screen.queryByText("屏蔽关键词")).not.toBeInTheDocument();
   });
 });

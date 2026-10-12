@@ -85,7 +85,7 @@ vi.mock("./ContentFilterDisplay", () => ({
   ),
 }));
 
-const UNSAVED_CHANGES_TEXT = /You have unsaved changes to patterns or keywords/;
+const UNSAVED_CHANGES_TEXT = /存在未保存的模式或关键词更改/;
 
 describe("ContentFilterManager", () => {
   beforeEach(() => {
@@ -106,7 +106,7 @@ describe("ContentFilterManager", () => {
       expect(screen.getByTestId("content-filter-config")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Content Filter Configuration")).toBeInTheDocument();
+    expect(screen.getByText("内容过滤配置")).toBeInTheDocument();
   });
 
   it("should return null when guardrail is not litellm_content_filter", () => {
@@ -272,7 +272,7 @@ describe("ContentFilterManager", () => {
       expect(screen.getByText(UNSAVED_CHANGES_TEXT)).toBeInTheDocument();
     });
 
-    expect(screen.getByText(UNSAVED_CHANGES_TEXT)).toHaveTextContent(/Save Changes/i);
+    expect(screen.getByText(UNSAVED_CHANGES_TEXT)).toHaveTextContent(/保存更改/);
   });
 
   it("should call onDataChange when patterns or keywords change", async () => {
@@ -360,7 +360,7 @@ describe("ContentFilterManager", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Content Filter Configuration")).toBeInTheDocument();
+      expect(screen.getByText("内容过滤配置")).toBeInTheDocument();
     });
 
     expect(screen.queryByTestId("content-filter-config")).not.toBeInTheDocument();
