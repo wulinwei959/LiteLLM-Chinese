@@ -88,7 +88,7 @@ const AutoRouterConnectionTest: React.FC<AutoRouterConnectionTestProps> = ({
     <div className="space-y-3">
       <p className="mb-2 text-sm text-muted-foreground">{t("connIntro")}</p>
       {jevRequest && (
-        <div role="status" aria-label="Jev connection" className="rounded-lg border p-3 text-sm">
+        <div role="status" aria-label={t("connJevStatusLabel")} className="rounded-lg border p-3 text-sm">
           <strong>{t("connJevHeader")}</strong>
           <p>
             {jevResult.status === "pending" && t("connJevPending")}

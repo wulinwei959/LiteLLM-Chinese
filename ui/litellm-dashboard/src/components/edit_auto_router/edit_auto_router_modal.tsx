@@ -594,7 +594,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
     // Prepare the updated litellm_params
     const updatedLitellmParams = {
       ...modelData.litellm_params,
-      auto_router_config: serializeRouterConfig(routerConfig),
+      auto_router_config: serializeRouterConfig(t, routerConfig),
       auto_router_default_model: values.auto_router_default_model,
       auto_router_embedding_model: values.auto_router_embedding_model || undefined,
     };
@@ -620,7 +620,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
       model_info: updatedModelInfo,
     };
 
-    toast.success("Auto router configuration updated successfully");
+    toast.success(t("editModalSaved"));
     onSuccess(updatedModelData);
     onCancel();
   };

@@ -137,7 +137,7 @@ export const prepareModelAddRequest = async (
               litellmExtraParams = JSON.parse(value);
             } catch (error) {
               toast.fromError(t("failedParseExtraParams", { suffix: `: ${error}` }));
-              throw new Error("Failed to parse litellm_extra_params: " + error);
+              throw new Error(t("failedParseExtraParams", { suffix: `: ${error}` }));
             }
             if ("litellm_credential_name" in litellmExtraParams && formValues.litellm_credential_name) {
               delete litellmExtraParams.litellm_credential_name;
@@ -153,7 +153,7 @@ export const prepareModelAddRequest = async (
               modelInfoParams = JSON.parse(value);
             } catch (error) {
               toast.fromError(t("failedParseExtraParams", { suffix: `: ${error}` }));
-              throw new Error("Failed to parse litellm_extra_params: " + error);
+              throw new Error(t("failedParseExtraParams", { suffix: `: ${error}` }));
             }
             for (const [key, value] of Object.entries(modelInfoParams)) {
               modelInfoObj[key] = value;

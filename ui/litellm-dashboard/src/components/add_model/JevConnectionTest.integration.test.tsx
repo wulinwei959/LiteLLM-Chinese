@@ -107,7 +107,7 @@ describe("JEV network probes", () => {
       expect(JSON.parse(String(routingCall?.[1]?.body))).toEqual(expectedRequest);
       expect(fetchMock).toHaveBeenCalledTimes(5);
       expect(screen.getAllByTestId("test-status-success")).toHaveLength(4);
-      expect(screen.getByRole("status", { name: "Jev connection" })).toHaveTextContent(
+      expect(screen.getByRole("status", { name: "Jev 连接" })).toHaveTextContent(
         cause === "jev_classifier"
           ? "Jev 分类成功"
           : `未能成功访问 Jev（路由原因：${cause}）`,

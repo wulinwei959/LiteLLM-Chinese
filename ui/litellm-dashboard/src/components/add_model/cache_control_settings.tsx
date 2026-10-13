@@ -102,7 +102,7 @@ const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = 
                 <SelectValue placeholder={t("cacheControlSelectRole")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={null}>None</SelectItem>
+                <SelectItem value={null}>{t("cacheControlNone")}</SelectItem>
                 {ROLE_ITEMS.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}

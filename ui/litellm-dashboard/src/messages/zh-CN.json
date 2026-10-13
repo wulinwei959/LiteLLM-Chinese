@@ -524,6 +524,7 @@
       "cacheControlRoleSystem": "系统",
       "cacheControlRoleAssistant": "助手",
       "cacheControlSelectRole": "选择角色",
+      "cacheControlNone": "无",
       "cacheControlIndexPlaceholder": "可选",
       "cacheControlHelpAria": "{label} 帮助",
       "testModeChat": "对话 - /chat/completions",
@@ -1055,6 +1056,7 @@
       "connNothingToTest": "尚未配置任何复杂度层级，因此没有可测试的内容。",
       "connIntro": "“测试连接”会向每个已配置的层级、分类器、默认模型和 embedding 模型发送一个最小请求。分类器探测会包含其推理强度覆盖设置。",
       "connJevHeader": "Jev 分类器",
+      "connJevStatusLabel": "Jev 连接",
       "connJevPending": "正在测试 Jev 分类",
       "connJevSuccess": "Jev 分类成功",
       "connJevNotReached": "未能成功访问 Jev（路由原因：{cause}）",
@@ -1227,7 +1229,8 @@
       "editEmbeddingModelRequired": "Embedding 模型为必填项",
       "autoRouterCreateSuccess": "已成功创建自动路由：{name}",
       "autoRouterCreateFailed": "添加自动路由失败：{error}",
-      "dryRunRejected": "代理拒绝了此自动路由配置"
+      "dryRunRejected": "代理拒绝了此自动路由配置",
+      "routerRouteModelRequired": "请为每条路由选择模型"
     },
     "health": {
       "title": "健康状态",

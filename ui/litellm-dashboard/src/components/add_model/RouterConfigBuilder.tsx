@@ -14,6 +14,8 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
+type AddModelTranslator = ReturnType<typeof useTranslations<"models.addModel">>;
+
 interface Route {
   id: string;
   model: string | null;
@@ -35,9 +37,9 @@ export interface RouterConfig {
   routes?: SavedRoute[];
 }
 
-export function serializeRouterConfig(config: RouterConfig | null): string {
+export function serializeRouterConfig(t: AddModelTranslator, config: RouterConfig | null): string {
   if (config?.routes?.some((route) => !(route.name ?? route.model))) {
-    throw new Error("Please select a model for every route");
+    throw new Error(t("routerRouteModelRequired"));
   }
   return JSON.stringify(config);
 }
