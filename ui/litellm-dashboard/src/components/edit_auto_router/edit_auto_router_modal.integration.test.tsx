@@ -154,7 +154,7 @@ describe("EditAutoRouterModal keyword matching", () => {
       },
     });
     openAutoRouterAdvanced("Classification Method");
-    const threshold = screen.getByRole("textbox", { name: "Success threshold" });
+    const threshold = screen.getByRole("textbox", { name: "成功阈值" });
     expect(threshold).toHaveValue("0.91");
     fireEvent.change(threshold, { target: { value: raw } });
     await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled(), { timeout: 5000 });
@@ -180,13 +180,13 @@ describe("EditAutoRouterModal keyword matching", () => {
       },
     });
     openAutoRouterAdvanced("Classification Method");
-    fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "-0.1" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "-0.1" } });
     expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled();
     expect(modelPatchUpdateCall).not.toHaveBeenCalled();
 
-    fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "0.88" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "0.88" } });
     await selectAutoRouterOption("Heuristic", "Rule-based");
-    expect(screen.queryByRole("textbox", { name: "Success threshold" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: "成功阈值" })).not.toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
@@ -198,11 +198,11 @@ describe("EditAutoRouterModal keyword matching", () => {
     renderModal();
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("Heuristic", "Heuristic v2");
-    fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "1.1" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "1.1" } });
     await selectAutoRouterOption("Heuristic", "Rule-based");
     expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled();
-    await user.click(screen.getByRole("button", { name: "Clear Heuristic v2 threshold" }));
-    expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "清除启发式 v2 阈值" }));
+    expect(screen.queryByRole("region", { name: "未启用的启发式 v2 阈值" })).not.toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());
@@ -469,7 +469,7 @@ describe("EditAutoRouterModal classifier context window", () => {
     renderLlmModal();
 
     openAutoRouterAdvanced("Classification Method");
-    await screen.findByText("Context Window Size");
+    await screen.findByText("上下文窗口大小");
     expect(screen.getByDisplayValue("5")).toBeInTheDocument();
     expect(screen.queryByText("Context Per-Turn Character Limit")).not.toBeInTheDocument();
 
@@ -502,7 +502,7 @@ describe("EditAutoRouterModal classifier context window", () => {
     renderLlmModal();
 
     openAutoRouterAdvanced("Classification Method");
-    const input = await screen.findByLabelText("Context Window Size");
+    const input = await screen.findByLabelText("上下文窗口大小");
     fireEvent.change(input, { target: { value: "8" } });
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
@@ -548,8 +548,8 @@ describe("EditAutoRouterModal assistant turns", () => {
     renderModal();
 
     openAutoRouterAdvanced("Classification Method");
-    await screen.findByText("Include Assistant Turns");
-    expect(screen.getByRole("switch", { name: "Include Assistant Turns" })).toBeChecked();
+    await screen.findByText("包含助手轮次");
+    expect(screen.getByRole("switch", { name: "包含助手轮次" })).toBeChecked();
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -563,8 +563,8 @@ describe("EditAutoRouterModal assistant turns", () => {
     renderModal();
 
     openAutoRouterAdvanced("Classification Method");
-    await screen.findByText("Include Assistant Turns");
-    await user.click(screen.getByRole("switch", { name: "Include Assistant Turns" }));
+    await screen.findByText("包含助手轮次");
+    await user.click(screen.getByRole("switch", { name: "包含助手轮次" }));
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -904,7 +904,7 @@ describe("EditAutoRouterModal custom classifier prompt and fallback", () => {
 
     openAutoRouterAdvanced("Classification Method");
     expect(await screen.findByRole("button", { name: "Edit custom prompt" })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: /Route to the default model/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /路由到默认模型/ })).toBeChecked();
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -920,7 +920,7 @@ describe("EditAutoRouterModal custom classifier prompt and fallback", () => {
     renderCustomModal();
 
     openAutoRouterAdvanced("Classification Method");
-    await user.click(await screen.findByRole("radio", { name: /Score with the heuristic/ }));
+    await user.click(await screen.findByRole("radio", { name: /使用启发式评分/ }));
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 

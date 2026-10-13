@@ -76,22 +76,22 @@ describe("ComplexityRouterConfig", () => {
   it("should display the how classification works section", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByText("How Classification Works")).toBeInTheDocument();
+    expect(screen.getByText("分类如何运作")).toBeInTheDocument();
   });
 
   it("should show score thresholds in the classification section", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByText(/Score < 0.15/)).toBeInTheDocument();
-    expect(screen.getByText(/Score 0.15 - 0.35/)).toBeInTheDocument();
-    expect(screen.getByText(/Score 0.35 - 0.60/)).toBeInTheDocument();
-    expect(screen.getByText(/Score > 0.60/)).toBeInTheDocument();
+    expect(screen.getByText(/分数 < 0.15/)).toBeInTheDocument();
+    expect(screen.getByText(/分数 0.15 - 0.35/)).toBeInTheDocument();
+    expect(screen.getByText(/分数 0.35 - 0.60/)).toBeInTheDocument();
+    expect(screen.getByText(/分数 > 0.60/)).toBeInTheDocument();
   });
 
   it("leaves the score threshold list color to the theme instead of an inline style", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     openAutoRouterAdvanced("Classification Method");
-    const list = screen.getByText(/Score < 0.15/).closest<HTMLUListElement>("ul");
+    const list = screen.getByText(/分数 < 0.15/).closest<HTMLUListElement>("ul");
     expect(list).toBeInTheDocument();
     expect(list).toHaveClass("text-muted-foreground");
     expect(list?.style.color).toBe("");
@@ -211,8 +211,8 @@ describe("ComplexityRouterConfig", () => {
 
     expect(screen.queryByText("评审模型")).not.toBeInTheDocument();
     expect(screen.queryByText("高级评分")).not.toBeInTheDocument();
-    expect(screen.getByText(/estimates success probability for all four tiers/)).toBeInTheDocument();
-    expect(screen.queryByText(/Score < 0.15/)).not.toBeInTheDocument();
+    expect(screen.getByText(/为全部四个层级估计成功概率/)).toBeInTheDocument();
+    expect(screen.queryByText(/分数 < 0.15/)).not.toBeInTheDocument();
   });
 
   it.each<[string, Partial<ComplexityRouterConfigValue>]>([
@@ -236,12 +236,12 @@ describe("ComplexityRouterConfig", () => {
     const value = { ...defaultValue, ...overrides, heuristic_v2_success_threshold: Number.NaN };
     const onChange = vi.fn();
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={value} onChange={onChange} />);
-    const retained = screen.getByRole("region", { name: "Inactive Heuristic v2 threshold" });
-    expect(within(retained).getByRole("status", { name: "Retained Heuristic v2 threshold" })).toHaveTextContent(
-      "Invalid value",
+    const retained = screen.getByRole("region", { name: "未启用的启发式 v2 阈值" });
+    expect(within(retained).getByRole("status", { name: "保留的启发式 v2 阈值" })).toHaveTextContent(
+      "无效值",
     );
     expect(within(retained).getByRole("alert")).toHaveTextContent("Success threshold must be a number between 0 and 1");
-    fireEvent.click(within(retained).getByRole("button", { name: "Clear Heuristic v2 threshold" }));
+    fireEvent.click(within(retained).getByRole("button", { name: "清除启发式 v2 阈值" }));
     expect(onChange).toHaveBeenCalledWith({ ...value, heuristic_v2_success_threshold: undefined });
   });
 
@@ -251,13 +251,13 @@ describe("ComplexityRouterConfig", () => {
     const { rerender } = renderWithProviders(
       <ComplexityRouterConfig {...baseProps} value={value} onChange={onChange} />,
     );
-    expect(screen.getByRole("status", { name: "Retained Heuristic v2 threshold" })).toHaveTextContent("0");
+    expect(screen.getByRole("status", { name: "保留的启发式 v2 阈值" })).toHaveTextContent("0");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
     rerender(<ComplexityRouterConfig {...baseProps} value={{ ...value, classifier_type: "heuristic_v2" }} />);
-    expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "未启用的启发式 v2 阈值" })).not.toBeInTheDocument();
     rerender(<ComplexityRouterConfig {...baseProps} value={defaultValue} />);
-    expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "未启用的启发式 v2 阈值" })).not.toBeInTheDocument();
   });
 
   it("should show classifier fields and use the configured values when classifier_type is llm", async () => {
@@ -273,10 +273,10 @@ describe("ComplexityRouterConfig", () => {
     openAutoRouterAdvanced("Classification Method");
 
     expect(screen.getByText("评审模型")).toBeInTheDocument();
-    expect(screen.getByLabelText("Timeout (ms)")).toHaveValue("750");
+    expect(screen.getByLabelText("超时（毫秒）")).toHaveValue("750");
     expect(screen.getByRole("switch", { name: "Classifier circuit breaker" })).toBeChecked();
     expect(screen.getByLabelText("Circuit breaker cooldown (seconds)")).toHaveValue("30");
-    expect(screen.getByLabelText("Context Window Size")).toHaveValue("5");
+    expect(screen.getByLabelText("上下文窗口大小")).toHaveValue("5");
     expect(screen.queryByText("Context Per-Turn Character Limit")).not.toBeInTheDocument();
   });
 
@@ -309,8 +309,8 @@ describe("ComplexityRouterConfig", () => {
 
     openAutoRouterAdvanced("Classification Method");
 
-    expect(screen.getByLabelText("Context Window Size")).toHaveValue("3");
-    expect(screen.getByLabelText("Context Character Budget")).toHaveValue("8000");
+    expect(screen.getByLabelText("上下文窗口大小")).toHaveValue("3");
+    expect(screen.getByLabelText("上下文字符预算")).toHaveValue("8000");
   });
 
   it("should warn when the budget is too small to quote any turn that does not already fit", async () => {
@@ -324,7 +324,7 @@ describe("ComplexityRouterConfig", () => {
 
     openAutoRouterAdvanced("Classification Method");
 
-    expect(screen.getByText(/no room to quote a turn/i)).toBeInTheDocument();
+    expect(screen.getByText(/已没有空间可引用/)).toBeInTheDocument();
   });
 
   it("should not warn on a budget large enough to quote a turn, nor on a deliberate zero", async () => {
@@ -342,7 +342,7 @@ describe("ComplexityRouterConfig", () => {
         />,
       );
       openAutoRouterAdvanced("Classification Method");
-      expect(screen.queryByText(/no room to quote a turn/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/已没有空间可引用/)).not.toBeInTheDocument();
       unmount();
     }
   });
@@ -358,8 +358,8 @@ describe("ComplexityRouterConfig", () => {
 
     openAutoRouterAdvanced("Classification Method");
 
-    expect(screen.getByText("Include Assistant Turns")).toBeInTheDocument();
-    expect(screen.getByRole("switch", { name: "Include Assistant Turns" })).toBeChecked();
+    expect(screen.getByText("包含助手轮次")).toBeInTheDocument();
+    expect(screen.getByRole("switch", { name: "包含助手轮次" })).toBeChecked();
   });
 
   it("should render the assistant-turns switch off when it is not set", async () => {
@@ -372,13 +372,13 @@ describe("ComplexityRouterConfig", () => {
 
     openAutoRouterAdvanced("Classification Method");
 
-    expect(screen.getByRole("switch", { name: "Include Assistant Turns" })).not.toBeChecked();
+    expect(screen.getByRole("switch", { name: "包含助手轮次" })).not.toBeChecked();
   });
 
   it("should hide the assistant-turns switch when classifier_type is heuristic", async () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={defaultValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.queryByText("Include Assistant Turns")).not.toBeInTheDocument();
+    expect(screen.queryByText("包含助手轮次")).not.toBeInTheDocument();
   });
 
   it("should call onChange when the assistant-turns switch is toggled", async () => {
@@ -391,7 +391,7 @@ describe("ComplexityRouterConfig", () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={llmValue} onChange={onChange} />);
 
     openAutoRouterAdvanced("Classification Method");
-    fireEvent.click(screen.getByRole("switch", { name: "Include Assistant Turns" }));
+    fireEvent.click(screen.getByRole("switch", { name: "包含助手轮次" }));
 
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({ classifier_context_include_assistant_turns: true }),
@@ -401,12 +401,12 @@ describe("ComplexityRouterConfig", () => {
   it("should hide classifier context fields when classifier_type is heuristic", async () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={defaultValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.queryByText("Context Window Size")).not.toBeInTheDocument();
+    expect(screen.queryByText("上下文窗口大小")).not.toBeInTheDocument();
     expect(screen.queryByText("Context Per-Turn Character Limit")).not.toBeInTheDocument();
   });
 
   it.each([
-    ["Timeout (ms)", "7", { classifier_llm_config: { model: "gpt-3.5-turbo", timeout_ms: 7 } }],
+    ["超时（毫秒）", "7", { classifier_llm_config: { model: "gpt-3.5-turbo", timeout_ms: 7 } }],
     [
       "Circuit breaker cooldown (seconds)",
       "45",
@@ -418,8 +418,8 @@ describe("ComplexityRouterConfig", () => {
         },
       },
     ],
-    ["Context Window Size", "0", { classifier_context_window_size: 0 }],
-    ["Context Character Budget", "7", { classifier_context_budget_chars: 7 }],
+    ["上下文窗口大小", "0", { classifier_context_window_size: 0 }],
+    ["上下文字符预算", "7", { classifier_context_budget_chars: 7 }],
   ])("keeps %s empty while it is being edited, then commits %s", (label, replacement, expected) => {
     const onChange = vi.fn();
     const llmValue: ComplexityRouterConfigValue = {
@@ -450,7 +450,7 @@ describe("ComplexityRouterConfig", () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={llmValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
 
-    const input = screen.getByLabelText("Context Window Size");
+    const input = screen.getByLabelText("上下文窗口大小");
     fireEvent.change(input, { target: { value: "" } });
     fireEvent.blur(input);
 
@@ -460,7 +460,7 @@ describe("ComplexityRouterConfig", () => {
   it("should render the custom technical keywords field", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByText("Custom Technical Keywords")).toBeInTheDocument();
+    expect(screen.getByText("自定义技术关键词")).toBeInTheDocument();
   });
 
   it("should display existing custom technical keywords as tags", async () => {
@@ -487,7 +487,7 @@ describe("ComplexityRouterConfig", () => {
       />,
     );
     openAutoRouterAdvanced("Classification Method");
-    const keywordsSection = screen.getByText("Custom Technical Keywords").closest("div")?.parentElement as HTMLElement;
+    const keywordsSection = screen.getByText("自定义技术关键词").closest("div")?.parentElement as HTMLElement;
     await user.type(within(keywordsSection).getByRole("combobox"), "udp");
     await user.click(await screen.findByText('Create "udp"'));
     expect(onCustomTechnicalKeywordsChange).toHaveBeenCalledWith(["udp"]);
@@ -504,7 +504,7 @@ describe("ComplexityRouterConfig", () => {
       />,
     );
     openAutoRouterAdvanced("Classification Method");
-    const keywordsSection = screen.getByText("Custom Technical Keywords").closest("div")?.parentElement as HTMLElement;
+    const keywordsSection = screen.getByText("自定义技术关键词").closest("div")?.parentElement as HTMLElement;
     await user.type(within(keywordsSection).getByRole("combobox"), "udp, kafka ,terraform");
     await user.click(await screen.findByText('Create "udp, kafka ,terraform"'));
     expect(onCustomTechnicalKeywordsChange).toHaveBeenCalledWith(["udp", "kafka", "terraform"]);
@@ -686,14 +686,14 @@ describe("ComplexityRouterConfig classifier fallback", () => {
   it("defaults the fallback to the heuristic, matching the backend field default", async () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={llmValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByRole("radio", { name: /Score with the heuristic/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /使用启发式评分/ })).toBeChecked();
   });
 
   it("records a switch to the default model fallback", async () => {
     const onChange = vi.fn();
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={llmValue} onChange={onChange} />);
     openAutoRouterAdvanced("Classification Method");
-    fireEvent.click(screen.getByRole("radio", { name: /Route to the default model/ }));
+    fireEvent.click(screen.getByRole("radio", { name: /路由到默认模型/ }));
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ classifier_fallback: "default_model" }));
   });
 
@@ -706,13 +706,13 @@ describe("ComplexityRouterConfig classifier fallback", () => {
     };
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={noTiers} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByRole("radio", { name: /Route to the default model/ })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("radio", { name: /路由到默认模型/ })).toHaveAttribute("aria-disabled", "true");
   });
 
   it("hides the fallback choice for the heuristic classifier, which has nothing to fall back from", async () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={defaultValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.queryByText("If the classifier fails")).not.toBeInTheDocument();
+    expect(screen.queryByText("如果分类器失败")).not.toBeInTheDocument();
   });
 
   it("stops describing the heuristic as the fallback once a custom prompt routes failures to the default model", async () => {
@@ -730,7 +730,7 @@ describe("ComplexityRouterConfig classifier fallback", () => {
       />,
     );
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByText(/no longer runs at all/)).toBeInTheDocument();
+    expect(screen.getByText(/不再运行/)).toBeInTheDocument();
   });
 
   it("still describes the heuristic as the fallback when a custom prompt keeps heuristic fallback", async () => {
@@ -745,7 +745,7 @@ describe("ComplexityRouterConfig classifier fallback", () => {
       />,
     );
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByText(/only when the classifier call fails/)).toBeInTheDocument();
+    expect(screen.getByText(/现在仅在分类器调用失败时运行/)).toBeInTheDocument();
   });
 
   it("clears a stored fallback when switching back to the heuristic classifier", async () => {
@@ -1189,7 +1189,7 @@ describe("ComplexityRouterConfig default model", () => {
     };
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={pinnedNoTiers} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByRole("radio", { name: /Route to the default model/ })).not.toHaveAttribute("aria-disabled");
+    expect(screen.getByRole("radio", { name: /路由到默认模型/ })).not.toHaveAttribute("aria-disabled");
   });
 
   it("names the resolved default on the fallback option, so the destination is not a guess", async () => {
@@ -1201,7 +1201,7 @@ describe("ComplexityRouterConfig default model", () => {
     };
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={pinned} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByRole("radio", { name: /Route to the default model \(claude-3-opus\)/ })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /路由到默认模型 \(claude-3-opus\)/ })).toBeInTheDocument();
   });
 });
 
@@ -1516,7 +1516,7 @@ describe("ComplexityRouterConfig custom technical keywords", () => {
     ],
   ])("offers the keywords on a router whose scorer runs: %s", (_label, value) => {
     openClassificationPanel(value);
-    expect(screen.getByText("Custom Technical Keywords")).toBeInTheDocument();
+    expect(screen.getByText("自定义技术关键词")).toBeInTheDocument();
   });
 
   it("hides the keywords when the scorer never runs, so they cannot imply an effect they have none", async () => {
@@ -1527,7 +1527,7 @@ describe("ComplexityRouterConfig custom technical keywords", () => {
       classifier_fallback: "default_model" as const,
     };
     openClassificationPanel(llmWithDefaultFallback);
-    expect(screen.queryByText("Custom Technical Keywords")).not.toBeInTheDocument();
+    expect(screen.queryByText("自定义技术关键词")).not.toBeInTheDocument();
   });
 });
 
@@ -1631,17 +1631,17 @@ describe("ComplexityRouterConfig tier editing", () => {
   it("drops the scorer card entirely once an edited tier set replaces the heuristic", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={customValue} onEditingTiersChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.queryByText("How Classification Works")).not.toBeInTheDocument();
+    expect(screen.queryByText("分类如何运作")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("scores each request across 7 built-in dimensions", { exact: false }),
+      screen.queryByText("路由器会从 7 个内置维度对每个请求评分", { exact: false }),
     ).not.toBeInTheDocument();
   });
 
   it("keeps the scorer card on a built-in router, whose tiers the score still decides", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onEditingTiersChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByText("How Classification Works")).toBeInTheDocument();
-    expect(screen.getByText("scores each request across 7 built-in dimensions", { exact: false })).toBeInTheDocument();
+    expect(screen.getByText("分类如何运作")).toBeInTheDocument();
+    expect(screen.getByText("路由器会从 7 个内置维度对每个请求评分", { exact: false })).toBeInTheDocument();
   });
 
   it("says why a custom row is blocked instead of only reddening its border", async () => {

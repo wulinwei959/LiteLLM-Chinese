@@ -100,7 +100,7 @@ describe("JEV classifier editor", () => {
     renderWithProviders(<Form />);
     expect(screen.getByLabelText("评审模型")).toBeInTheDocument();
     expect(screen.getByText("Reasoning Effort")).toBeInTheDocument();
-    expect(screen.getByText("Classifier Prompt")).toBeInTheDocument();
+    expect(screen.getByText("分类器提示词")).toBeInTheDocument();
     expect(screen.getByRole("switch", { name: "Use images for classification" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("radio", { name: /决策模型/ }));
     expect(screen.getByRole("radio", { name: /^决策模型/ })).toBeChecked();
@@ -108,11 +108,11 @@ describe("JEV classifier editor", () => {
     expect(screen.getByLabelText("Classifier Instructions")).toBeEnabled();
     expect(screen.queryByLabelText("评审模型")).not.toBeInTheDocument();
     expect(screen.queryByText("Reasoning Effort")).not.toBeInTheDocument();
-    expect(screen.queryByText("Classifier Prompt")).not.toBeInTheDocument();
+    expect(screen.queryByText("分类器提示词")).not.toBeInTheDocument();
     expect(screen.queryByRole("switch", { name: "Use images for classification" })).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Classifier Model"), { target: { value: "jev-test" } });
     fireEvent.change(screen.getByLabelText("Classifier Timeout (ms)"), { target: { value: "4200" } });
-    fireEvent.change(screen.getByLabelText("Context Window Size"), { target: { value: "6" } });
+    fireEvent.change(screen.getByLabelText("上下文窗口大小"), { target: { value: "6" } });
     fireEvent.change(screen.getByLabelText("Circuit breaker cooldown (seconds)"), { target: { value: "50" } });
     fireEvent.click(screen.getByRole("switch", { name: "Classifier circuit breaker" }));
     fireEvent.click(screen.getByRole("button", { name: "Customize tiers" }));
@@ -120,7 +120,7 @@ describe("JEV classifier editor", () => {
     expect(screen.getByRole("radio", { name: /决策模型/ })).toBeChecked();
     expect(screen.getByLabelText("Classifier Model")).toHaveValue("jev-test");
     expect(screen.getByLabelText("Classifier Timeout (ms)")).toHaveValue(4200);
-    expect(screen.getByLabelText("Context Window Size")).toHaveValue("6");
+    expect(screen.getByLabelText("上下文窗口大小")).toHaveValue("6");
     expect(screen.getByRole("switch", { name: "Classifier circuit breaker" })).not.toBeChecked();
     fireEvent.click(screen.getByRole("button", { name: "Probe current config" }));
     expect(testAutoRouterRouting).toHaveBeenCalledWith(

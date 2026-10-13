@@ -195,21 +195,21 @@ describe("ClassificationMethodConfig scorer gating", () => {
     const tuned = { ...BASE, tier_boundaries: { simple_medium: 0.22, medium_complex: 0.44, complex_reasoning: 0.66 } };
     renderWithProviders(<ClassificationMethodConfig {...props} value={tuned} />);
 
-    expect(screen.getByText(/Score < 0.22/)).toBeInTheDocument();
-    expect(screen.getByText(/Score 0.44 - 0.66/)).toBeInTheDocument();
+    expect(screen.getByText(/分数 < 0.22/)).toBeInTheDocument();
+    expect(screen.getByText(/分数 0.44 - 0.66/)).toBeInTheDocument();
     expect(screen.queryByText(/0.15/)).not.toBeInTheDocument();
   });
 
   it("states the configured override floor in the reasoning-marker aside, not the boundary", () => {
     renderWithProviders(<ClassificationMethodConfig {...props} value={{ ...BASE, reasoning_override_min_score: 0 }} />);
 
-    expect(screen.getByText(/2\+ reasoning markers with a score of at least 0\.00/)).toBeInTheDocument();
+    expect(screen.getByText(/2 个及以上推理标记，且分数至少为 0\.00/)).toBeInTheDocument();
   });
 
   it("falls back to the Simple to Medium boundary when no override floor is set", () => {
     renderWithProviders(<ClassificationMethodConfig {...props} value={BASE} />);
 
-    expect(screen.getByText(/2\+ reasoning markers with a score of at least 0\.15/)).toBeInTheDocument();
+    expect(screen.getByText(/2 个及以上推理标记，且分数至少为 0\.15/)).toBeInTheDocument();
   });
 
   it("renders a row for every scored dimension", async () => {

@@ -209,7 +209,7 @@ describe("AddAutoRouterTab", () => {
     expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
     await userEvent.click(screen.getByRole("button", { name: "Advanced classifier settings" }));
     fireEvent.change(screen.getByLabelText("Classifier Timeout (ms)"), { target: { value: "4200" } });
-    fireEvent.change(screen.getByLabelText("Context Window Size"), { target: { value: "5" } });
+    fireEvent.change(screen.getByLabelText("上下文窗口大小"), { target: { value: "5" } });
     await selectAutoRouterOption("How often to classify", "Every new user message");
     await userEvent.click(screen.getByRole("button", { name: "Advanced classifier settings" }));
     await userEvent.click(screen.getByRole("button", { name: "高级设置" }));
@@ -1034,7 +1034,7 @@ describe("AddAutoRouterTab", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("Heuristic", "Heuristic v2");
 
-    const threshold = screen.getByRole("textbox", { name: "Success threshold" });
+    const threshold = screen.getByRole("textbox", { name: "成功阈值" });
     expect(threshold).toHaveValue("");
     fireEvent.change(threshold, { target: { value: "invalid" } });
     fireEvent.blur(threshold);
@@ -1046,9 +1046,9 @@ describe("AddAutoRouterTab", () => {
     await selectAutoRouterOption("Heuristic", "Rule-based");
     expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
     await selectAutoRouterOption("Heuristic", "Heuristic v2");
-    fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "1.01" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "1.01" } });
     expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
-    fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "0" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "0" } });
     await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
 
@@ -1067,15 +1067,15 @@ describe("AddAutoRouterTab", () => {
     fireEvent.change(screen.getByLabelText("Auto Router Name"), { target: { value: "reset-threshold-router" } });
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("Heuristic", "Heuristic v2");
-    fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "1.1" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "1.1" } });
     expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
 
     await act(async () => {
       await testQueryClient.refetchQueries({ queryKey: ["availableModels"] });
     });
-    expect(screen.getByRole("textbox", { name: "Success threshold" })).toHaveValue("1.1");
+    expect(screen.getByRole("textbox", { name: "成功阈值" })).toHaveValue("1.1");
     expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
-    fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "" } });
     await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
@@ -1092,11 +1092,11 @@ describe("AddAutoRouterTab", () => {
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("Heuristic", "Heuristic v2");
-    fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "invalid" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "invalid" } });
     await selectAutoRouterOption("Heuristic", "Rule-based");
     expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
-    await user.click(screen.getByRole("button", { name: "Clear Heuristic v2 threshold" }));
-    expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "清除启发式 v2 阈值" }));
+    expect(screen.queryByRole("region", { name: "未启用的启发式 v2 阈值" })).not.toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
