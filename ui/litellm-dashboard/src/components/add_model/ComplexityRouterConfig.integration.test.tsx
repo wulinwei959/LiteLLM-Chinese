@@ -100,7 +100,7 @@ describe("ComplexityRouterConfig", () => {
   it("should default to heuristic and hide classifier model/timeout fields", async () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={defaultValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByText("Classifier tuning")).toBeInTheDocument();
+    expect(screen.getByText("分类器调优")).toBeInTheDocument();
     expect(screen.queryByText("评审模型")).not.toBeInTheDocument();
   });
 
@@ -109,15 +109,15 @@ describe("ComplexityRouterConfig", () => {
 
     openAutoRouterAdvanced("Heuristic Keyword Overrides");
 
-    expect(screen.getByText("Heuristic Keyword Overrides")).toBeInTheDocument();
+    expect(screen.getByText("启发式关键词覆盖")).toBeInTheDocument();
     openAutoRouterAdvanced("Housekeeping Routing");
-    expect(screen.getByText("Housekeeping Routing")).toBeInTheDocument();
+    expect(screen.getByText("内务路由")).toBeInTheDocument();
     openAutoRouterAdvanced("Ignore Custom Tags");
-    expect(screen.getByText("Ignore Custom Tags")).toBeInTheDocument();
+    expect(screen.getByText("忽略自定义标签")).toBeInTheDocument();
 
     const capabilityValue = { ...defaultValue, classifier_type: "capability" as const };
     rerender(<ComplexityRouterConfig {...baseProps} value={capabilityValue} />);
-    expect(screen.queryByText("Heuristic Keyword Overrides")).not.toBeInTheDocument();
+    expect(screen.queryByText("启发式关键词覆盖")).not.toBeInTheDocument();
   });
 
   it.each([
@@ -154,7 +154,7 @@ describe("ComplexityRouterConfig", () => {
       <ComplexityRouterConfig {...baseProps} value={{ ...defaultValue, route_housekeeping_to_cheapest_tier: false }} />,
     );
     openAutoRouterAdvanced("Housekeeping Routing");
-    const sentinelInput = screen.getByRole("combobox", { name: "e.g., conversation title" });
+    const sentinelInput = screen.getByRole("combobox", { name: "例如：conversation title" });
     expect(sentinelInput).toBeDisabled();
   });
 
@@ -164,7 +164,7 @@ describe("ComplexityRouterConfig", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onChange={onChange} />);
 
     openAutoRouterAdvanced("Response Format");
-    await user.click(screen.getByRole("switch", { name: "Return raw model name" }));
+    await user.click(screen.getByRole("switch", { name: "返回原始模型名称" }));
 
     expect(onChange).toHaveBeenCalledWith({
       ...defaultValue,
@@ -666,13 +666,13 @@ describe("ComplexityRouterConfig", () => {
       />,
     );
     openAutoRouterAdvanced("Escalation Keywords");
-    expect(screen.getAllByText("Escalation Keywords")).not.toHaveLength(0);
+    expect(screen.getAllByText("升级关键词")).not.toHaveLength(0);
     expect(screen.getByText("LITELLM ESCALATE")).toBeInTheDocument();
   });
 
   it("hides the escalation keywords section when no handler is provided", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
-    expect(screen.queryByText("Escalation Keywords")).not.toBeInTheDocument();
+    expect(screen.queryByText("升级关键词")).not.toBeInTheDocument();
   });
 });
 
@@ -1012,7 +1012,7 @@ describe("ComplexityRouterConfig modality panel", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onChange={onChange} />);
     openAutoRouterAdvanced("Modality Routing");
 
-    const toggle = screen.getByRole("switch", { name: "Route image requests to vision-capable models" });
+    const toggle = screen.getByRole("switch", { name: "将图片请求路由到支持视觉的模型" });
     expect(toggle).not.toBeChecked();
     fireEvent.click(toggle);
 
@@ -1023,7 +1023,7 @@ describe("ComplexityRouterConfig modality panel", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={{ ...defaultValue, modality_routing: true }} />);
     openAutoRouterAdvanced("Modality Routing");
 
-    expect(screen.getByRole("switch", { name: "Route image requests to vision-capable models" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "将图片请求路由到支持视觉的模型" })).toBeChecked();
   });
 
   // The backend ignores modality_pin_override unless modality_routing is on, so offering it while
@@ -1033,7 +1033,7 @@ describe("ComplexityRouterConfig modality panel", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onChange={onChange} />);
     openAutoRouterAdvanced("Modality Routing");
 
-    const override = screen.getByRole("switch", { name: "Override session pin for image requests" });
+    const override = screen.getByRole("switch", { name: "为图片请求覆盖会话固定" });
     expect(override).toHaveAttribute("aria-disabled", "true");
     fireEvent.click(override);
     expect(onChange).not.toHaveBeenCalled();
@@ -1045,7 +1045,7 @@ describe("ComplexityRouterConfig modality panel", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={value} onChange={onChange} />);
     openAutoRouterAdvanced("Modality Routing");
 
-    const override = screen.getByRole("switch", { name: "Override session pin for image requests" });
+    const override = screen.getByRole("switch", { name: "为图片请求覆盖会话固定" });
     expect(override).not.toBeChecked();
     fireEvent.click(override);
 
@@ -1061,7 +1061,7 @@ describe("ComplexityRouterConfig modality panel", () => {
     );
     openAutoRouterAdvanced("Modality Routing");
 
-    expect(screen.getByRole("switch", { name: "Override session pin for image requests" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "为图片请求覆盖会话固定" })).toBeChecked();
   });
 });
 
@@ -1070,7 +1070,7 @@ describe("ComplexityRouterConfig affinity panel", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     openAutoRouterAdvanced("Affinity");
 
-    expect(screen.getByRole("switch", { name: "Pin one model deployment per tier" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: "每个层级固定一个模型部署" })).toBeChecked();
     expect(screen.queryByRole("switch", { name: "Pin a session to its first model" })).not.toBeInTheDocument();
   });
 
@@ -1079,7 +1079,7 @@ describe("ComplexityRouterConfig affinity panel", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onChange={onChange} />);
     openAutoRouterAdvanced("Affinity");
 
-    fireEvent.click(screen.getByRole("switch", { name: "Pin one model deployment per tier" }));
+    fireEvent.click(screen.getByRole("switch", { name: "每个层级固定一个模型部署" }));
 
     expect(onChange).toHaveBeenCalledWith({ ...defaultValue, deployment_affinity: false });
   });
@@ -1090,7 +1090,7 @@ describe("ComplexityRouterConfig affinity panel", () => {
     );
     openAutoRouterAdvanced("Affinity");
 
-    expect(screen.getByRole("switch", { name: "Pin one model deployment per tier" })).not.toBeChecked();
+    expect(screen.getByRole("switch", { name: "每个层级固定一个模型部署" })).not.toBeChecked();
   });
 
   it("writes an idle TTL on blur and keeps the partial input as a draft while typing", async () => {
@@ -1098,7 +1098,7 @@ describe("ComplexityRouterConfig affinity panel", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onChange={onChange} />);
     openAutoRouterAdvanced("Affinity");
 
-    const ttl = screen.getByLabelText("How long a pin survives idle (seconds)");
+    const ttl = screen.getByLabelText("固定状态在空闲后保留多久（秒）");
     expect(ttl).toHaveAttribute("placeholder", "3600");
     fireEvent.change(ttl, { target: { value: "300" } });
     expect(onChange).not.toHaveBeenCalled();
@@ -1113,7 +1113,7 @@ describe("ComplexityRouterConfig affinity panel", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={value} onChange={onChange} />);
     openAutoRouterAdvanced("Affinity");
 
-    const ttl = screen.getByLabelText("How long a pin survives idle (seconds)");
+    const ttl = screen.getByLabelText("固定状态在空闲后保留多久（秒）");
     expect(ttl).toHaveValue("300");
     fireEvent.change(ttl, { target: { value: "" } });
     fireEvent.blur(ttl);
@@ -1126,7 +1126,7 @@ describe("ComplexityRouterConfig affinity panel", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onChange={onChange} />);
     openAutoRouterAdvanced("Affinity");
 
-    const ttl = screen.getByLabelText("How long a pin survives idle (seconds)");
+    const ttl = screen.getByLabelText("固定状态在空闲后保留多久（秒）");
     fireEvent.change(ttl, { target: { value: "0" } });
     fireEvent.blur(ttl);
 
@@ -1207,7 +1207,7 @@ describe("ComplexityRouterConfig default model", () => {
 
 describe("plan-mode override", () => {
   const openPanel = () => openAutoRouterAdvanced("Plan-Mode Override");
-  const switchName = "Route plan-mode requests to a minimum tier";
+  const switchName = "将计划模式请求路由到最低层级";
 
   it("toggling on floors at the highest tier that has models", async () => {
     const onChange = vi.fn();
@@ -1246,7 +1246,7 @@ describe("plan-mode override", () => {
       />,
     );
     openPanel();
-    await userEvent.click(await screen.findByRole("combobox", { name: "Plan-mode minimum tier" }));
+    await userEvent.click(await screen.findByRole("combobox", { name: "计划模式最低层级" }));
     expect(await screen.findByRole("option", { name: "Medium" })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "Reasoning" })).not.toBeInTheDocument();
   });

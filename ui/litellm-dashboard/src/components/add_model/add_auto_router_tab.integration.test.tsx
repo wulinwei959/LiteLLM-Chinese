@@ -206,13 +206,13 @@ describe("AddAutoRouterTab", () => {
     expect(screen.queryByRole("button", { name: "路由方式" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Choose models for me" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Classifier Timeout (ms)")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Advanced settings" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
     await userEvent.click(screen.getByRole("button", { name: "Advanced classifier settings" }));
     fireEvent.change(screen.getByLabelText("Classifier Timeout (ms)"), { target: { value: "4200" } });
     fireEvent.change(screen.getByLabelText("Context Window Size"), { target: { value: "5" } });
     await selectAutoRouterOption("How often to classify", "Every new user message");
     await userEvent.click(screen.getByRole("button", { name: "Advanced classifier settings" }));
-    await userEvent.click(screen.getByRole("button", { name: "Advanced settings" }));
+    await userEvent.click(screen.getByRole("button", { name: "高级设置" }));
     expect(screen.queryByRole("button", { name: "Classifier tuning" })).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Auto Router Name"), { target: { value: "jev-router" } });
     await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
@@ -497,7 +497,7 @@ describe("AddAutoRouterTab", () => {
       expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent(
         "每条新用户消息",
       );
-      expect(screen.getByRole("button", { name: "Advanced settings" })).toHaveAttribute("aria-expanded", "false");
+      expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
     },
   );
 
@@ -517,9 +517,9 @@ describe("AddAutoRouterTab", () => {
       expect(screen.queryByTestId("template-selector")).not.toBeInTheDocument();
       expect(screen.queryByTestId("configure-automatically-button")).not.toBeInTheDocument();
       expect(screen.queryByTestId("detailed-configuration-toggle")).not.toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Advanced settings" })).toHaveAttribute("aria-expanded", "false");
-      expect(screen.queryByText("Classification Method")).not.toBeInTheDocument();
-      expect(screen.queryByText("Adaptive Routing")).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
+      expect(screen.queryByText("分类方法")).not.toBeInTheDocument();
+      expect(screen.queryByText("自适应路由")).not.toBeInTheDocument();
       const capability = label === "Capability";
       for (const [role, model] of [
         ["Efficient", "efficient"],
@@ -549,16 +549,16 @@ describe("AddAutoRouterTab", () => {
       openAutoRouterAdvanced("Housekeeping Routing");
       openAutoRouterAdvanced("Affinity");
       openAutoRouterAdvanced("Response Format");
-      for (const label of ["Adaptive Routing", "Context Window Escalation", "Escalation Keywords"]) {
+      for (const label of ["自适应路由", "上下文窗口升级", "升级关键词"]) {
         expect(screen.queryByText(`${label}`)).not.toBeInTheDocument();
       }
       openAutoRouterAdvanced("Stalled Task Escalation");
-      expect(screen.getByText("Stalled Task Escalation")).toBeInTheDocument();
+      expect(screen.getByText("停滞任务升级")).toBeInTheDocument();
       openAutoRouterAdvanced("Response Format");
-      expect(screen.getByText("Response Format")).toBeInTheDocument();
-      expect(screen.queryByText("Classification Method")).not.toBeInTheDocument();
+      expect(screen.getByText("响应格式")).toBeInTheDocument();
+      expect(screen.queryByText("分类方法")).not.toBeInTheDocument();
       openAutoRouterAdvanced("Affinity");
-      expect(screen.getByText("Affinity")).toBeInTheDocument();
+      expect(screen.getByText("亲和性")).toBeInTheDocument();
       await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
       await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
       await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledTimes(1));
@@ -586,8 +586,12 @@ describe("AddAutoRouterTab", () => {
     expect(screen.getByTestId("template-selector")).toBeInTheDocument();
     expandDetailedConfiguration();
     expect(screen.getByText("Define your tiers")).toBeInTheDocument();
-    for (const label of ["Adaptive Routing", "Context Window Escalation", "Escalation Keywords"]) {
-      openAutoRouterAdvanced(label);
+    for (const [section, label] of [
+      ["Adaptive Routing", "自适应路由"],
+      ["Context Window Escalation", "上下文窗口升级"],
+      ["Escalation Keywords", "升级关键词"],
+    ] as const) {
+      openAutoRouterAdvanced(section);
       expect(screen.getAllByText(label)).not.toHaveLength(0);
     }
     openAutoRouterAdvanced("Classification Method");
@@ -631,7 +635,7 @@ describe("AddAutoRouterTab", () => {
   it("shows models immediately and keeps advanced settings collapsed", async () => {
     renderWithProviders(<Harness />);
 
-    expect(screen.getByRole("button", { name: "Advanced settings" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
 
     expect(screen.getByText("Define your tiers")).toBeVisible();
 
@@ -693,7 +697,7 @@ describe("AddAutoRouterTab", () => {
     mockFetchAvailableModels.mockResolvedValue([...ALL_FAMILY_MODELS, { model_group: simpleModel, mode: "chat" }]);
     renderWithProviders(<Harness />);
 
-    expect(screen.getByRole("button", { name: "Advanced settings" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
 
     await waitForAutomaticTiers();
 
@@ -795,7 +799,7 @@ describe("AddAutoRouterTab", () => {
     expect(screen.getByPlaceholderText(/smart_router/i)).toHaveValue("my-router");
     await user.selectOptions(screen.getByTestId("team-dropdown"), "team-1");
     expandDetailedConfiguration();
-    expect(screen.queryByText("Compression")).not.toBeInTheDocument();
+    expect(screen.queryByText("压缩")).not.toBeInTheDocument();
     expect(screen.queryByText("Model Access Groups")).not.toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: /add auto router/i }));
@@ -1110,9 +1114,9 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "ctx-window-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Context Window Escalation");
-    const toggle = await screen.findByRole("switch", { name: "Escalate oversized prompts to a tier that fits" });
+    const toggle = await screen.findByRole("switch", { name: "将超长提示升级到容得下的层级" });
     expect(toggle).not.toBeChecked();
-    expect(screen.queryByLabelText("Window fit buffer")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("窗口适配余量")).not.toBeInTheDocument();
     await user.click(toggle);
 
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
@@ -1133,8 +1137,8 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "ctx-buffer-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Context Window Escalation");
-    await user.click(screen.getByRole("switch", { name: "Escalate oversized prompts to a tier that fits" }));
-    const buffer = await screen.findByLabelText("Window fit buffer");
+    await user.click(screen.getByRole("switch", { name: "将超长提示升级到容得下的层级" }));
+    const buffer = await screen.findByLabelText("窗口适配余量");
     fireEvent.change(buffer, { target: { value: "1.5" } });
     fireEvent.blur(buffer, { target: { value: "1.5" } });
 
@@ -1156,8 +1160,8 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "ctx-clear-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Context Window Escalation");
-    await user.click(screen.getByRole("switch", { name: "Escalate oversized prompts to a tier that fits" }));
-    const buffer = await screen.findByLabelText("Window fit buffer");
+    await user.click(screen.getByRole("switch", { name: "将超长提示升级到容得下的层级" }));
+    const buffer = await screen.findByLabelText("窗口适配余量");
     fireEvent.change(buffer, { target: { value: "0.8" } });
     fireEvent.blur(buffer, { target: { value: "0.8" } });
     fireEvent.change(buffer, { target: { value: "" } });
@@ -1200,8 +1204,8 @@ describe("AddAutoRouterTab", () => {
       openAutoRouterAdvanced("Compression");
       await chooseSelectOption(
         user,
-        screen.getByRole("combobox", { name: "Routing decision compression" }),
-        "None (no compression)",
+        screen.getByRole("combobox", { name: "路由决策的压缩" }),
+        "无（不做压缩）",
       );
 
       await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
@@ -1224,11 +1228,11 @@ describe("AddAutoRouterTab", () => {
       openAutoRouterAdvanced("Compression");
       await chooseSelectOption(
         user,
-        screen.getByRole("combobox", { name: "Routing decision compression" }),
-        "None (no compression)",
+        screen.getByRole("combobox", { name: "路由决策的压缩" }),
+        "无（不做压缩）",
       );
-      await user.click(screen.getByText("Use a different compression"));
-      expect(screen.getByRole("combobox", { name: "Model call compression" })).toBeInTheDocument();
+      await user.click(screen.getByText("使用不同的压缩"));
+      expect(screen.getByRole("combobox", { name: "模型调用的压缩" })).toBeInTheDocument();
 
       await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
       await user.click(screen.getByRole("button", { name: /add auto router/i }));
@@ -1275,7 +1279,7 @@ describe("AddAutoRouterTab", () => {
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("How often to classify", "Once per session");
     openAutoRouterAdvanced("Affinity");
-    const ttl = await screen.findByLabelText("How long a pin survives idle (seconds)");
+    const ttl = await screen.findByLabelText("固定状态在空闲后保留多久（秒）");
     fireEvent.change(ttl, { target: { value: "300" } });
     fireEvent.blur(ttl);
 
@@ -1338,7 +1342,7 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "affinity-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Affinity");
-    expect(await screen.findByRole("switch", { name: "Pin one model deployment per tier" })).toBeChecked();
+    expect(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" })).toBeChecked();
 
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: /add auto router/i }));
@@ -1358,7 +1362,7 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "affinity-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Affinity");
-    await user.click(await screen.findByRole("switch", { name: "Pin one model deployment per tier" }));
+    await user.click(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" }));
 
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: /add auto router/i }));
@@ -1396,8 +1400,8 @@ describe("AddAutoRouterTab", () => {
     fireEvent.change(screen.getByPlaceholderText(/smart_router/i), { target: { value: "modality-router" } });
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Modality Routing");
-    await user.click(await screen.findByRole("switch", { name: "Route image requests to vision-capable models" }));
-    await user.click(await screen.findByRole("switch", { name: "Override session pin for image requests" }));
+    await user.click(await screen.findByRole("switch", { name: "将图片请求路由到支持视觉的模型" }));
+    await user.click(await screen.findByRole("switch", { name: "为图片请求覆盖会话固定" }));
 
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: /add auto router/i }));
@@ -1576,7 +1580,7 @@ describe("AddAutoRouterTab", () => {
       renderWithProviders(<Harness />);
       await waitForPresetEnabled("Anthropic Family");
       await selectTemplate("Anthropic Family");
-      expect(screen.getByRole("button", { name: "Advanced settings" })).toHaveAttribute("aria-expanded", "false");
+      expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
       expectTierModel("simple", ANTHROPIC_TIERS.SIMPLE[0]);
       expectTierModel("reasoning", ANTHROPIC_TIERS.REASONING[0]);
     });
@@ -1589,7 +1593,7 @@ describe("AddAutoRouterTab", () => {
 
       openAutoRouterAdvanced("Keyword/Semantic Matching");
 
-      expect(screen.getByText("Keyword/Semantic Matching")).toBeInTheDocument();
+      expect(screen.getByText("关键词/语义匹配")).toBeInTheDocument();
     });
 
     it("lets a caller manually re-expand a detailed configuration a preset just collapsed", async () => {
@@ -1597,13 +1601,13 @@ describe("AddAutoRouterTab", () => {
       renderWithProviders(<Harness />);
       await waitForPresetEnabled("Anthropic Family");
       await selectTemplate("Anthropic Family");
-      expect(screen.queryByText("Keyword/Semantic Matching")).not.toBeInTheDocument();
+      expect(screen.queryByText("关键词/语义匹配")).not.toBeInTheDocument();
 
       expect(screen.getByText("Define your tiers")).toBeVisible();
 
       openAutoRouterAdvanced("Keyword/Semantic Matching");
 
-      expect(screen.getByText("Keyword/Semantic Matching")).toBeInTheDocument();
+      expect(screen.getByText("关键词/语义匹配")).toBeInTheDocument();
     });
 
     // This is the regression test for the whole feature: if handlePresetChange stopped prefilling
@@ -1765,7 +1769,7 @@ describe("AddAutoRouterTab", () => {
       await selectTemplate("Anthropic Family");
       expandDetailedConfiguration();
       openAutoRouterAdvanced("Plan-Mode Override");
-      await user.click(await screen.findByRole("switch", { name: "Route plan-mode requests to a minimum tier" }));
+      await user.click(await screen.findByRole("switch", { name: "将计划模式请求路由到最低层级" }));
 
       await user.type(screen.getByPlaceholderText(/smart_router/i), "plan-router");
       await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
@@ -1831,7 +1835,7 @@ describe("AddAutoRouterTab", () => {
 
       openAutoRouterAdvanced("Keyword/Semantic Matching");
 
-      expect(screen.getByText("Keyword/Semantic Matching")).toBeInTheDocument();
+      expect(screen.getByText("关键词/语义匹配")).toBeInTheDocument();
 
       await user.type(screen.getByPlaceholderText(/smart_router/i), "renamed-router");
       await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());

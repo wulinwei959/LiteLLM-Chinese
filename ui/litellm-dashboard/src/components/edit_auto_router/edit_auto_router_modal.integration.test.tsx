@@ -105,10 +105,10 @@ describe("EditAutoRouterModal keyword matching", () => {
     });
 
     expect(await screen.findByRole("textbox", { name: "Auto Router Name" })).toHaveAttribute("readonly");
-    expect(screen.queryByText("Compression")).not.toBeInTheDocument();
+    expect(screen.queryByText("压缩")).not.toBeInTheDocument();
     expect(screen.queryByText("Model Access Groups")).not.toBeInTheDocument();
     openAutoRouterAdvanced("Affinity");
-    await user.click(await screen.findByRole("switch", { name: "Pin one model deployment per tier" }));
+    await user.click(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" }));
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -134,8 +134,8 @@ describe("EditAutoRouterModal keyword matching", () => {
 
     await screen.findByRole("combobox", { name: "分类频率" });
     openAutoRouterAdvanced("Escalation Keywords");
-    expect(screen.getAllByText(/Escalation Keywords/i)).not.toHaveLength(0);
-    expect(await screen.findByText(/Keyword\/Semantic Matching/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/升级关键词/)).not.toHaveLength(0);
+    expect(await screen.findByText(/关键词\/语义匹配/)).toBeInTheDocument();
   });
 
   it.each(["0", ""])("hydrates the saved threshold and saves an edit to '%s'", async (raw) => {
@@ -386,15 +386,15 @@ describe("EditAutoRouterModal advanced field round trips", () => {
     renderAdvancedModal();
 
     openAutoRouterAdvanced("Housekeeping Routing");
-    expect(screen.getByRole("switch", { name: "Route housekeeping calls to the cheapest tier" })).not.toBeChecked();
-    expect(screen.getByRole("combobox", { name: "e.g., conversation title" })).toHaveValue("");
+    expect(screen.getByRole("switch", { name: "将内务调用路由到成本最低的层级" })).not.toBeChecked();
+    expect(screen.getByRole("combobox", { name: "例如：conversation title" })).toHaveValue("");
 
     openAutoRouterAdvanced("Ignore Custom Tags");
-    expect(screen.getByLabelText("Opening tag")).toHaveValue("<a>");
-    expect(screen.getByLabelText("Closing tag")).toHaveValue("</a>");
+    expect(screen.getByLabelText("开标签")).toHaveValue("<a>");
+    expect(screen.getByLabelText("闭标签")).toHaveValue("</a>");
 
     openAutoRouterAdvanced("Response Format");
-    const maxTokensSwitch = screen.getByRole("switch", { name: "Cap max_tokens at the tier model's output ceiling" });
+    const maxTokensSwitch = screen.getByRole("switch", { name: "按层级模型的输出上限限制 max_tokens" });
     await user.click(maxTokensSwitch);
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -734,7 +734,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     renderWithStoredConfig(STORED_CONFIG);
 
     openAutoRouterAdvanced("Affinity");
-    expect(await screen.findByRole("switch", { name: "Pin one model deployment per tier" })).toBeChecked();
+    expect(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" })).toBeChecked();
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -748,7 +748,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     renderWithStoredConfig({ ...STORED_CONFIG, deployment_affinity: false });
 
     openAutoRouterAdvanced("Affinity");
-    expect(await screen.findByRole("switch", { name: "Pin one model deployment per tier" })).not.toBeChecked();
+    expect(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" })).not.toBeChecked();
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -762,7 +762,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     renderWithStoredConfig(STORED_CONFIG);
 
     openAutoRouterAdvanced("Affinity");
-    await user.click(await screen.findByRole("switch", { name: "Pin one model deployment per tier" }));
+    await user.click(await screen.findByRole("switch", { name: "每个层级固定一个模型部署" }));
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -776,7 +776,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     renderWithStoredConfig({ ...STORED_CONFIG, session_affinity_ttl_seconds: 300 });
 
     openAutoRouterAdvanced("Affinity");
-    expect(await screen.findByLabelText("How long a pin survives idle (seconds)")).toHaveValue("300");
+    expect(await screen.findByLabelText("固定状态在空闲后保留多久（秒）")).toHaveValue("300");
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -790,7 +790,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     renderWithStoredConfig(STORED_CONFIG);
 
     openAutoRouterAdvanced("Affinity");
-    const ttl = await screen.findByLabelText("How long a pin survives idle (seconds)");
+    const ttl = await screen.findByLabelText("固定状态在空闲后保留多久（秒）");
     fireEvent.change(ttl, { target: { value: "300" } });
     fireEvent.blur(ttl);
 
@@ -806,7 +806,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     renderWithStoredConfig({ ...STORED_CONFIG, session_affinity_ttl_seconds: 300 });
 
     openAutoRouterAdvanced("Affinity");
-    const ttl = await screen.findByLabelText("How long a pin survives idle (seconds)");
+    const ttl = await screen.findByLabelText("固定状态在空闲后保留多久（秒）");
     fireEvent.change(ttl, { target: { value: "" } });
     fireEvent.blur(ttl);
 
@@ -824,7 +824,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     renderWithStoredConfig({ ...STORED_CONFIG, modality_routing: true, modality_pin_override: true });
 
     openAutoRouterAdvanced("Modality Routing");
-    expect(await screen.findByRole("switch", { name: "Override session pin for image requests" })).toBeChecked();
+    expect(await screen.findByRole("switch", { name: "为图片请求覆盖会话固定" })).toBeChecked();
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -838,7 +838,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     renderWithStoredConfig({ ...STORED_CONFIG, modality_routing: true });
 
     openAutoRouterAdvanced("Modality Routing");
-    await user.click(await screen.findByRole("switch", { name: "Override session pin for image requests" }));
+    await user.click(await screen.findByRole("switch", { name: "为图片请求覆盖会话固定" }));
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -852,7 +852,7 @@ describe("EditAutoRouterModal deployment affinity", () => {
     renderWithStoredConfig(STORED_CONFIG);
 
     openAutoRouterAdvanced("Modality Routing");
-    expect(await screen.findByRole("switch", { name: "Override session pin for image requests" })).toHaveAttribute(
+    expect(await screen.findByRole("switch", { name: "为图片请求覆盖会话固定" })).toHaveAttribute(
       "aria-disabled",
       "true",
     );
@@ -1170,7 +1170,7 @@ describe("EditAutoRouterModal plan-mode minimum tier", () => {
     const user = userEvent.setup();
     renderWithStoredTier("MEDIUM");
     await openPlanModePanel(user);
-    expect(await screen.findByRole("switch", { name: "Route plan-mode requests to a minimum tier" })).toBeChecked();
+    expect(await screen.findByRole("switch", { name: "将计划模式请求路由到最低层级" })).toBeChecked();
   });
 
   it("preserves a stored tier through an untouched open-and-save", async () => {
@@ -1188,7 +1188,7 @@ describe("EditAutoRouterModal plan-mode minimum tier", () => {
     const user = userEvent.setup();
     renderWithStoredTier("MEDIUM");
     await openPlanModePanel(user);
-    await user.click(await screen.findByRole("switch", { name: "Route plan-mode requests to a minimum tier" }));
+    await user.click(await screen.findByRole("switch", { name: "将计划模式请求路由到最低层级" }));
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -1338,10 +1338,10 @@ describe("EditAutoRouterModal prompt compression", () => {
 
     renderWithStoredCompression(stored);
     openAutoRouterAdvanced("Compression");
-    expect(screen.getByRole("combobox", { name: "Routing decision compression" })).toHaveValue("None (no compression)");
+    expect(screen.getByRole("combobox", { name: "路由决策的压缩" })).toHaveValue("无（不做压缩）");
     await user.click(screen.getAllByRole("button", { name: "Clear" })[0]);
-    await user.click(screen.getByRole("combobox", { name: "Routing decision compression" }));
-    await user.click(screen.getByRole("option", { name: "None (no compression)" }));
+    await user.click(screen.getByRole("combobox", { name: "路由决策的压缩" }));
+    await user.click(screen.getByRole("option", { name: "无（不做压缩）" }));
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
@@ -1391,9 +1391,9 @@ describe("EditAutoRouterModal prompt compression", () => {
 
     openAutoRouterAdvanced("Compression");
 
-    expect(await screen.findByRole("combobox", { name: "Routing decision compression" })).toHaveValue("headroom-a");
-    expect(screen.getByRole("radio", { name: "Use a different compression" })).toBeChecked();
-    expect(screen.getByRole("combobox", { name: "Model call compression" })).toHaveValue("None (no compression)");
+    expect(await screen.findByRole("combobox", { name: "路由决策的压缩" })).toHaveValue("headroom-a");
+    expect(screen.getByRole("radio", { name: "使用不同的压缩" })).toBeChecked();
+    expect(screen.getByRole("combobox", { name: "模型调用的压缩" })).toHaveValue("无（不做压缩）");
   });
 
   it("preserves a stored different-compression choice through an untouched open-and-save", async () => {

@@ -1,20 +1,22 @@
 import userEvent from "@testing-library/user-event";
 import { chooseSelectOption, fireEvent, screen } from "./test-utils";
 
-const groups: Record<string, string> = {
-  "Classification Method": "Classifier tuning",
-  "Heuristic Keyword Overrides": "Classifier tuning",
-  "Ignore Custom Tags": "Classifier tuning",
-  Affinity: "Sessions and efficiency",
-  "Adaptive Routing": "Sessions and efficiency",
-  Compression: "Sessions and efficiency",
-  "Response Format": "Compatibility",
+const ADVANCED_SECTIONS: Record<string, string> = {
+  "Classification Method": "分类器调优",
+  "Heuristic Keyword Overrides": "分类器调优",
+  "Ignore Custom Tags": "分类器调优",
+  Affinity: "会话与效率",
+  "Adaptive Routing": "会话与效率",
+  Compression: "会话与效率",
+  "Response Format": "兼容性",
 };
 
+const DEFAULT_ADVANCED_GROUP = "路由规则与恢复";
+
 export const openAutoRouterAdvanced = (section: string) => {
-  const advanced = screen.getByRole("button", { name: /^Advanced settings/ });
+  const advanced = screen.getByRole("button", { name: /^高级设置/ });
   if (advanced.getAttribute("aria-expanded") !== "true") fireEvent.click(advanced);
-  const group = screen.getByRole("button", { name: groups[section] ?? "Routing rules and recovery" });
+  const group = screen.getByRole("button", { name: ADVANCED_SECTIONS[section] ?? DEFAULT_ADVANCED_GROUP });
   if (group.getAttribute("aria-expanded") !== "true") fireEvent.click(group);
 };
 

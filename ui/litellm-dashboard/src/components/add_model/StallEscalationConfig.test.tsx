@@ -16,19 +16,23 @@ const renderConfig = (value: Partial<ComplexityRouterConfigValue> = {}) => {
   return onChange;
 };
 
-const toggle = () => screen.getByRole("switch", { name: "Escalate a stalled task to a stronger model" });
+const toggle = () => screen.getByRole("switch", { name: "将停滞的任务升级到更强的模型" });
+
+const stubT = ((key: string) => key) as never;
 
 describe("stallEscalationBlockedReason", () => {
   it("blocks on session pinning, which replays a model instead of classifying", () => {
-    expect(stallEscalationBlockedReason({ ...baseValue, session_affinity: true })).toContain("Classification Method");
+    expect(stallEscalationBlockedReason(stubT, { ...baseValue, session_affinity: true })).toBe("stallBlockedBySession");
   });
 
   it("blocks on user-turn classification, which skips the agent-loop turns a stall shows up in", () => {
-    expect(stallEscalationBlockedReason({ ...baseValue, classification_mode: "user_turn" })).toContain("every request");
+    expect(stallEscalationBlockedReason(stubT, { ...baseValue, classification_mode: "user_turn" })).toBe(
+      "stallBlockedByUserTurn",
+    );
   });
 
   it("allows the default every-request router", () => {
-    expect(stallEscalationBlockedReason(baseValue)).toBeNull();
+    expect(stallEscalationBlockedReason(stubT, baseValue)).toBeNull();
   });
 });
 
@@ -36,7 +40,7 @@ describe("StallEscalationConfig", () => {
   it("hides the knobs until the feature is turned on", () => {
     renderConfig();
     expect(toggle()).not.toBeChecked();
-    expect(screen.queryByLabelText("Repeats before escalating")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("升级前的重复次数")).not.toBeInTheDocument();
   });
 
   it("turning it on seeds both knobs so the saved config is explicit rather than half-set", () => {
@@ -73,7 +77,7 @@ describe("StallEscalationConfig", () => {
       stall_escalation_window: 4,
       stall_escalation_repeat_threshold: 3,
     });
-    fireEvent.change(screen.getByLabelText("Repeats before escalating"), { target: { value: "9" } });
+    fireEvent.change(screen.getByLabelText("升级前的重复次数"), { target: { value: "9" } });
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({ stall_escalation_repeat_threshold: 9, stall_escalation_window: 9 }),
     );
@@ -85,25 +89,25 @@ describe("StallEscalationConfig", () => {
       stall_escalation_window: 6,
       stall_escalation_repeat_threshold: 3,
     });
-    fireEvent.change(screen.getByLabelText("Recent calls examined"), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText("考察的近期调用数"), { target: { value: "1" } });
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ stall_escalation_window: 3 }));
   });
 
   it("floors the threshold at 2, below which a single ordinary retry would escalate", () => {
     const onChange = renderConfig({ stall_escalation_enabled: true });
-    fireEvent.change(screen.getByLabelText("Repeats before escalating"), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText("升级前的重复次数"), { target: { value: "1" } });
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ stall_escalation_repeat_threshold: 2 }));
   });
 
   it("disables the toggle and says why when session pinning is on", () => {
     renderConfig({ session_affinity: true });
     expect(toggle()).toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByText(/How often to classify/)).toBeInTheDocument();
+    expect(screen.getByText(/分类频率/)).toBeInTheDocument();
   });
 
   it("hides the knobs when a blocker is switched on under an already-enabled router", () => {
     renderConfig({ stall_escalation_enabled: true, session_affinity: true });
-    expect(screen.queryByLabelText("Repeats before escalating")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("升级前的重复次数")).not.toBeInTheDocument();
   });
 
   it("still lets an already-on router turn it off once a blocker appears, which the save needs", () => {
