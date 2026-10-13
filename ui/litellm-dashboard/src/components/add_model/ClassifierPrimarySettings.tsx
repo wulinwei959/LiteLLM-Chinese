@@ -12,7 +12,7 @@ import {
   type ComplexityRouterConfigValue,
   type ClassificationFrequency,
 } from "./ComplexityRouterConfig";
-import { restrictedBy } from "./TierRestrictions";
+import { restrictionReason, restrictedBy } from "./TierRestrictions";
 
 const FREQUENCY_DESCRIPTION_KEYS = {
   every_request: "frequencyEveryRequestDescription",
@@ -75,7 +75,7 @@ export default function ClassifierPrimarySettings({
               </SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-muted-foreground">{restriction?.reason ?? frequencyDescription}</p>
+          <p className="text-xs text-muted-foreground">{restrictionReason(t, restriction) ?? frequencyDescription}</p>
         </div>
       )}
       {section !== "frequency" && usesJudge && (

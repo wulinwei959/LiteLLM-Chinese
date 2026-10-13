@@ -1,4 +1,6 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
+import zh from "@/messages/zh-CN.json";
 
 import type { ActiveTierRow, CustomTierSet, TierRow } from "./tier_rows";
 import {
@@ -15,6 +17,8 @@ import {
   tierParamsByRowId,
   tierRowByName,
 } from "./tier_rows";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "models.addModel" });
 
 const tiers = { SIMPLE: ["a"], MEDIUM: ["b"], COMPLEX: ["c"], REASONING: ["d"] };
 
@@ -100,7 +104,7 @@ describe("activeTierRows with an edited set", () => {
 
 describe("CUSTOM_TIER_RESTRICTIONS", () => {
   it("gives every restriction a reason, since each one replaces or explains a control", () => {
-    const reasons = Object.values(CUSTOM_TIER_RESTRICTIONS).map((restriction) => restriction.reason);
+    const reasons = Object.values(CUSTOM_TIER_RESTRICTIONS).map((restriction) => t(restriction.reasonKey));
     expect(reasons.every((reason) => reason.length > 0)).toBe(true);
     expect(new Set(reasons).size).toBe(reasons.length);
   });
@@ -118,28 +122,30 @@ describe("CUSTOM_TIER_RESTRICTIONS", () => {
 
 describe("getCustomTierRowsError", () => {
   it("accepts a complete set", () => {
-    expect(getCustomTierRowsError(set([definedRow("CASUAL"), definedRow("AUDIT")]))).toBeNull();
+    expect(getCustomTierRowsError(t, set([definedRow("CASUAL"), definedRow("AUDIT")]))).toBeNull();
   });
 
   it.each([
-    [set([definedRow("CASUAL")]), "A tier set needs 2 to 8 tiers"],
+    [set([definedRow("CASUAL")]), "层级集合需要 2 到 8 个层级"],
     [
       set(Array.from({ length: MAX_TIER_COUNT + 1 }, (_, index) => definedRow(`T${index}`))),
-      "A tier set needs 2 to 8 tiers",
+      "层级集合需要 2 到 8 个层级",
     ],
-    [set([definedRow(""), definedRow("AUDIT")], "audit"), "Name every tier"],
-    [set([definedRow("AUDIT"), { ...definedRow("audit"), id: "second" }]), "Tier names must be unique, ignoring case"],
+    [set([definedRow(""), definedRow("AUDIT")], "audit"), "请为每个层级命名"],
+    [set([definedRow("AUDIT"), { ...definedRow("audit"), id: "second" }]), "层级名称必须唯一（忽略大小写）"],
     [
       set([definedRow("CASUAL"), { ...definedRow("AUDIT"), definition: "  " }]),
-      "Every custom tier needs a definition: it is the rubric the classifier routes on",
+      "每个自定义层级都需要一段定义：它是分类器为其路由时依据的评分标准",
     ],
-    [set([definedRow("CASUAL"), definedRow("AUDIT")], "gone"), "Pick a Fallback Tier for classifier failures"],
+    [set([definedRow("CASUAL"), definedRow("AUDIT")], "gone"), "请为分类器失败选择一个回退层级"],
   ])("reports the row problem the backend would reject", (customTierSet, expected) => {
-    expect(getCustomTierRowsError(customTierSet)).toBe(expected);
+    expect(getCustomTierRowsError(t, customTierSet)).toBe(expected);
   });
 
   it("lets a built-in name inherit its definition, which is the one blank the backend allows", () => {
-    expect(getCustomTierRowsError(set([{ ...definedRow("SIMPLE"), definition: "" }, definedRow("AUDIT")]))).toBeNull();
+    expect(
+      getCustomTierRowsError(t, set([{ ...definedRow("SIMPLE"), definition: "" }, definedRow("AUDIT")])),
+    ).toBeNull();
   });
 });
 

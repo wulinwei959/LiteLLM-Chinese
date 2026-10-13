@@ -25,6 +25,10 @@ import { apiClient, modelCostMap, modelCreateCall, testAutoRouterRouting } from 
 import { ModelGroup } from "@/components/llm_calls/fetch_models";
 import { AutoRouterPreset, getRequiredModelsInPreset } from "@/lib/autorouter_presets";
 import { BUNDLED_PRESETS, LOADED_PRESETS_QUERY, useAutoRouterPresets } from "../../../tests/mocks/autoRouterPresets";
+import { createTranslator } from "next-intl";
+import zh from "@/messages/zh-CN.json";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "models.addModel" });
 vi.mock(
   "@/app/(dashboard)/hooks/autoRouter/useComplexityScorerDefaults",
   async () => await import("../../../tests/mocks/complexityScorerDefaults"),
@@ -928,7 +932,7 @@ describe("AddAutoRouterTab", () => {
     await user.click(screen.getByRole("button", { name: "编辑层级" }));
     await user.click(screen.getByRole("button", { name: "移除COMPLEX层级" }));
 
-    expect(await screen.findByText(/route to a tier this router no longer has/)).toBeInTheDocument();
+    expect(await screen.findByText(/指向的层级已不存在/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
   });
 
@@ -1972,13 +1976,25 @@ describe("getSubmitBlockedReason", () => {
   };
 
   it("lets a complete heuristic router through", async () => {
-    expect(getSubmitBlockedReason({ tiers, classifier_type: "heuristic" }, [], referenced, availability)).toBeNull();
+    expect(
+      getSubmitBlockedReason(t, {
+        config: { tiers, classifier_type: "heuristic" },
+        keywordTierRules: [],
+        referencedModelsParams: referenced,
+        availability,
+      }),
+    ).toBeNull();
   });
 
   it("blocks an LLM classifier with no model, which the button previously left enabled", async () => {
-    expect(getSubmitBlockedReason({ tiers, classifier_type: "llm" }, [], referenced, availability)).toContain(
-      "Please select a classifier model",
-    );
+    expect(
+      getSubmitBlockedReason(t, {
+        config: { tiers, classifier_type: "llm" },
+        keywordTierRules: [],
+        referencedModelsParams: referenced,
+        availability,
+      }),
+    ).toContain("请选择分类器模型");
   });
 
   it("blocks an edited tier set with no classifier model, since the set forces the LLM classifier", async () => {
@@ -1993,16 +2009,26 @@ describe("getSubmitBlockedReason", () => {
         fallback_tier_id: "a",
       },
     };
-    expect(getSubmitBlockedReason(config, [], referenced, availability)).toContain(
-      "an edited tier set routes with the LLM classifier",
-    );
+    expect(
+      getSubmitBlockedReason(t, {
+        config,
+        keywordTierRules: [],
+        referencedModelsParams: referenced,
+        availability,
+      }),
+    ).toContain("编辑过的层级集合使用 LLM 分类器路由");
   });
 
   it("blocks a keyword rule aimed at a tier this router does not have", async () => {
     const rules = [{ id: "r1", keywords: ["audit"], tier: "AUDIT" }];
-    expect(getSubmitBlockedReason({ tiers, classifier_type: "heuristic" }, rules, referenced, availability)).toContain(
-      "no longer has",
-    );
+    expect(
+      getSubmitBlockedReason(t, {
+        config: { tiers, classifier_type: "heuristic" },
+        keywordTierRules: rules,
+        referencedModelsParams: referenced,
+        availability,
+      }),
+    ).toContain("已不存在");
   });
 });
 

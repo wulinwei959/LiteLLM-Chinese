@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { autoRouterListKey, fetchAllModelDeployments } from "@/app/(dashboard)/hooks/models/useModels";
 import DecisionModelSelect from "../add_model/DecisionModelSelect";
@@ -299,6 +300,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
     tiers: { SIMPLE: [], MEDIUM: [], COMPLEX: [], REASONING: [] },
     classifier_type: "heuristic",
   });
+  const t = useTranslations("models.addModel");
   const isComplexityRouterModel = isComplexityRouter(modelData?.litellm_params);
 
   const routerAvailability = useAutoRouterAvailability(
@@ -316,8 +318,8 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
     isVisible && isComplexityRouterModel,
   );
   const schema = useMemo(
-    () => (isComplexityRouterModel ? complexityRouterSchema : semanticRouterSchema),
-    [isComplexityRouterModel],
+    () => (isComplexityRouterModel ? complexityRouterSchema(t) : semanticRouterSchema(t)),
+    [isComplexityRouterModel, t],
   );
   const form = useZodForm(schema, { defaultValues: EMPTY_FORM_VALUES });
 
@@ -327,18 +329,18 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
   const configBlockedReason = !isComplexityRouterModel
     ? null
     : (complexityRouterConfig.custom_tier_set
-        ? getCustomTierRowsError(complexityRouterConfig.custom_tier_set) ??
-          getMissingTiersError(activeTierRows(complexityRouterConfig))
+        ? getCustomTierRowsError(t, complexityRouterConfig.custom_tier_set) ??
+          getMissingTiersError(t, activeTierRows(complexityRouterConfig))
         : (Object.values(complexityRouterConfig.tiers).every((models) => models.length === 0)
-            ? "Please select at least one model for a complexity tier"
-            : null) ?? getTierLabelsError(complexityRouterConfig.tier_labels)) ??
-      getPlanModeTierError(complexityRouterConfig.plan_mode_min_tier, activeTierRows(complexityRouterConfig)) ??
-      getKeywordTierRulesError(keywordTierRules, activeTierRows(complexityRouterConfig)) ??
-      getClassifierModelError(complexityRouterConfig) ??
-      getHeuristicV2SuccessThresholdError(complexityRouterConfig.heuristic_v2_success_threshold) ??
-      getForecastConfigError(complexityRouterConfig) ??
+            ? t("tierModelRequired")
+            : null) ?? getTierLabelsError(t, complexityRouterConfig.tier_labels)) ??
+      getPlanModeTierError(t, complexityRouterConfig.plan_mode_min_tier, activeTierRows(complexityRouterConfig)) ??
+      getKeywordTierRulesError(t, keywordTierRules, activeTierRows(complexityRouterConfig)) ??
+      getClassifierModelError(t, complexityRouterConfig) ??
+      getHeuristicV2SuccessThresholdError(t, complexityRouterConfig.heuristic_v2_success_threshold) ??
+      getForecastConfigError(t, complexityRouterConfig) ??
       (heuristicScoringRole(complexityRouterConfig) === "decides"
-        ? customDimensionsError(complexityRouterConfig.custom_dimensions)
+        ? customDimensionsError(t, complexityRouterConfig.custom_dimensions)
         : null);
 
   const submitBlockedReason = configBlockedReason ?? routerAvailability.saveBlockedReason;
@@ -452,7 +454,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
       form.reset(routerFormValues);
     } catch (error) {
       console.error("Error parsing auto router config:", error);
-      toast.fromError("Error loading auto router configuration");
+      toast.fromError(t("editModalLoadFailed"));
     }
   };
 
@@ -466,31 +468,32 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
       const rows = activeTierRows(complexityRouterConfig);
       const builtInTiersEmpty = Object.values(tiers).every((models) => models.length === 0);
       const tierSetError = custom_tier_set
-        ? getCustomTierRowsError(custom_tier_set) ?? getMissingTiersError(rows)
-        : builtInTiersEmpty && "Please select at least one model for a complexity tier";
+        ? getCustomTierRowsError(t, custom_tier_set) ?? getMissingTiersError(t, rows)
+        : builtInTiersEmpty && t("tierModelRequired");
       if (tierSetError) {
         setShowValidationErrors(true);
         toast.fromError(tierSetError);
         return;
       }
       const classifierError =
-        getClassifierModelError(complexityRouterConfig) ??
-        getHeuristicV2SuccessThresholdError(complexityRouterConfig.heuristic_v2_success_threshold) ??
-        getReminderMarkersError(complexityRouterConfig.reminder_markers) ??
+        getClassifierModelError(t, complexityRouterConfig) ??
+        getHeuristicV2SuccessThresholdError(t, complexityRouterConfig.heuristic_v2_success_threshold) ??
+        getReminderMarkersError(t, complexityRouterConfig.reminder_markers) ??
         getClassifierPluginTimeoutError(
+          t,
           complexityRouterConfig.classifier_type,
           complexityRouterConfig.classifier_plugin_timeout_ms,
         ) ??
-        getForecastConfigError(complexityRouterConfig) ??
+        getForecastConfigError(t, complexityRouterConfig) ??
         (heuristicScoringRole(complexityRouterConfig) === "decides"
-          ? customDimensionsError(complexityRouterConfig.custom_dimensions)
+          ? customDimensionsError(t, complexityRouterConfig.custom_dimensions)
           : null);
       if (classifierError) {
         setShowValidationErrors(true);
         toast.fromError(classifierError);
         return;
       }
-      const classifierEffortError = getClassifierReasoningEffortError(complexityRouterConfig, modelInfo);
+      const classifierEffortError = getClassifierReasoningEffortError(t, complexityRouterConfig, modelInfo);
       if (classifierEffortError) {
         setShowValidationErrors(true);
         toast.fromError(classifierEffortError);
@@ -500,14 +503,14 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
       // keyword rule with no keyword, and semantic_keyword_matching without an embedding model
       // or keyword rules (complexity_router/config.py), so without these a save fails as a raw
       // 400 instead of an inline message.
-      const keywordRulesError = getKeywordTierRulesError(keywordTierRules, rows);
+      const keywordRulesError = getKeywordTierRulesError(t, keywordTierRules, rows);
       if (keywordRulesError) {
         setShowValidationErrors(true);
         toast.fromError(keywordRulesError);
         return;
       }
 
-      const semanticError = getSemanticConfigError({ semanticMatchingEnabled, embeddingModel, keywordTierRules });
+      const semanticError = getSemanticConfigError(t, { semanticMatchingEnabled, embeddingModel, keywordTierRules });
       if (semanticError) {
         setShowValidationErrors(true);
         toast.fromError(semanticError);
@@ -522,9 +525,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
       const defaultModel = resolveComplexityDefaultModel(complexityRouterConfig, complexityRouterConfig.default_model);
       if (!defaultModel) {
         setShowValidationErrors(true);
-        toast.fromError(
-          "Add a model to the Simple or Medium tier, or pin a default model, so requests have somewhere to route.",
-        );
+        toast.fromError(t("editDefaultModelMissing"));
         return;
       }
 
@@ -545,7 +546,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
         keywordMatching,
       );
       const serverVerdict = await validateAutoRouterConfig(accessToken, updatedConfig, modelData?.model_info?.team_id);
-      const dryRunError = dryRunRejection(serverVerdict);
+      const dryRunError = dryRunRejection(t, serverVerdict);
       if (dryRunError) {
         setShowValidationErrors(true);
         toast.fromError(dryRunError);
@@ -578,7 +579,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
         modelData.model_info.id,
       );
 
-      toast.success("Auto router configuration updated successfully");
+      toast.success(t("editModalSaved"));
       const updatedModelData = {
         ...modelData,
         model_name: values.auto_router_name,
@@ -628,7 +629,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
     try {
       setLoading(true);
       await form.handleSubmit(saveValues, () => {
-        toast.fromError("Failed to update auto router configuration");
+        toast.fromError(t("editModalSaveFailed"));
       })();
     } catch (error) {
       console.error("Error updating auto router:", error);
@@ -640,13 +641,13 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
 
   const modelChoices: ModelChoice[] = [
     ...modelInfo.map((model) => ({ value: model.model_group, label: model.model_group })),
-    { value: "custom", label: "Enter custom model name" },
+    { value: "custom", label: t("enterCustomModelName") },
   ];
 
   const routerNameField = (
-    <FormField control={form.control} name="auto_router_name" label="Auto Router Name">
+    <FormField control={form.control} name="auto_router_name" label={t("autoRouterNameLabel")}>
       {({ ref, ...field }) => (
-        <Input {...field} ref={ref} readOnly={isMemberManaged} placeholder="e.g., auto_router_1, smart_routing" />
+        <Input {...field} ref={ref} readOnly={isMemberManaged} placeholder={t("editAutoRouterNamePlaceholder")} />
       )}
     </FormField>
   );
@@ -657,10 +658,8 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
           <TooltipProvider>
             <DialogHeader>
-              <DialogTitle>Edit Auto Router Configuration</DialogTitle>
-              <DialogDescription>
-                Edit the auto router configuration including routing logic, default models, and access settings.
-              </DialogDescription>
+              <DialogTitle>{t("editModalTitle")}</DialogTitle>
+              <DialogDescription>{t("editModalDescription")}</DialogDescription>
             </DialogHeader>
 
             <form onSubmit={(event) => event.preventDefault()} noValidate>
@@ -692,6 +691,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
                         keywordTierRules={keywordTierRules}
                         onKeywordTierRulesChange={setKeywordTierRules}
                         keywordRulesError={getKeywordTierRulesError(
+                          t,
                           keywordTierRules,
                           activeTierRows(complexityRouterConfig),
                         )}
@@ -721,28 +721,28 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
                       />
                     </div>
 
-                    <FormField control={form.control} name="auto_router_default_model" label="Default Model">
+                    <FormField control={form.control} name="auto_router_default_model" label={t("defaultModelHeading")}>
                       {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
                         <ModelChoiceCombobox
                           id={id}
                           value={value}
                           onChange={onChange}
                           choices={modelChoices}
-                          placeholder="Select a default model"
+                          placeholder={t("editSelectDefaultModel")}
                           ariaInvalid={ariaInvalid}
                           ariaDescribedBy={ariaDescribedBy}
                         />
                       )}
                     </FormField>
 
-                    <FormField control={form.control} name="auto_router_embedding_model" label="Embedding Model">
+                    <FormField control={form.control} name="auto_router_embedding_model" label={t("editEmbeddingModelLabel")}>
                       {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
                         <ModelChoiceCombobox
                           id={id}
                           value={value}
                           onChange={onChange}
                           choices={modelChoices}
-                          placeholder="Select an embedding model"
+                          placeholder={t("selectEmbeddingModel")}
                           ariaInvalid={ariaInvalid}
                           ariaDescribedBy={ariaDescribedBy}
                         />
@@ -755,7 +755,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
                   <FormField
                     control={form.control}
                     name="model_access_group"
-                    label={labelWithHint("Model Access Groups", "Control who can access this auto router")}
+                    label={labelWithHint(t("editModelAccessGroupsLabel"), t("editModelAccessGroupsHint"))}
                   >
                     {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
                       <AccessGroupTagsCombobox
@@ -774,19 +774,19 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
 
             <DialogFooter>
               <Button variant="outline" onClick={onCancel}>
-                Cancel
+                {t("cancelLabel")}
               </Button>
               {submitBlockedReason === null ? (
                 <Button disabled={loading} onClick={handleSubmit}>
                   {loading && <UiLoadingSpinner className="size-4" />}
-                  Save Changes
+                  {t("saveChanges")}
                 </Button>
               ) : (
                 <Tooltip>
                   <TooltipTrigger
                     render={
                       <Button disabled onClick={handleSubmit}>
-                        Save Changes
+                        {t("saveChanges")}
                       </Button>
                     }
                   />

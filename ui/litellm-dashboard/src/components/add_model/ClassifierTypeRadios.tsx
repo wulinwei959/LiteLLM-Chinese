@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { SimpleTooltip } from "@/components/ui/tooltip";
 import type { ClassifierType } from "./classifier_types";
 import type { ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
-import { restrictedBy } from "./TierRestrictions";
+import { restrictionReason, restrictedBy } from "./TierRestrictions";
 
 interface ClassifierTypeRadiosProps {
   value: ComplexityRouterConfigValue;
@@ -16,7 +16,7 @@ interface ClassifierTypeRadiosProps {
 const ClassifierTypeRadios: React.FC<ClassifierTypeRadiosProps> = ({ value, classifierType, onTypeChange }) => {
   const t = useTranslations("models.addModel");
   const scorerLocked = Boolean(value.custom_tier_set);
-  const scorerLockedReason = restrictedBy(value, "heuristicClassifier")?.reason;
+  const scorerLockedReason = restrictionReason(t, restrictedBy(value, "heuristicClassifier"));
   return (
     <RadioGroup
       value={classifierType}

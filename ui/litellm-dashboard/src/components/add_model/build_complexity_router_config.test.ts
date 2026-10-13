@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "next-intl";
+import zh from "@/messages/zh-CN.json";
 import {
   buildComplexityRouterConfig,
   getPlanModeTierError,
@@ -18,6 +20,8 @@ import {
   dryRunRejection,
 } from "./build_complexity_router_config";
 import { CUSTOM_TIER_RESTRICTIONS, activeTierRows } from "./tier_rows";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "models.addModel" });
 
 const tiers = {
   SIMPLE: ["gpt-4o-mini"],
@@ -58,7 +62,7 @@ const baseParams: BuildComplexityRouterConfigParams = {
 
 describe("buildComplexityRouterConfig", () => {
   it("accepts built-in JEV defaults without an LLM classifier model", () => {
-    expect(getClassifierModelError({ classifier_type: "jev" })).toBeNull();
+    expect(getClassifierModelError(t, { classifier_type: "jev" })).toBeNull();
   });
 
   it.each([
@@ -71,11 +75,11 @@ describe("buildComplexityRouterConfig", () => {
     { circuit_breaker_cooldown_seconds: Number.POSITIVE_INFINITY },
   ])("rejects invalid JEV settings before saving or testing: %j", (patch) => {
     expect(
-      getClassifierModelError({
+      getClassifierModelError(t, {
         classifier_type: "jev",
         jev_classifier_config: { model: "jev-latest", timeout_ms: 3000, ...patch },
       }),
-    ).toBe("Enter a JEV model, a positive whole-number timeout and a positive cooldown");
+    ).toBe("请输入 JEV 模型、正整数超时和正数冷却时间");
   });
 
   it.each([false, true])("serializes JEV with shared context and no LLM config, custom tiers: %s", (custom) => {
@@ -531,30 +535,30 @@ describe("buildComplexityRouterConfig", () => {
 
 describe("getMissingTiersError", () => {
   it("returns null when all four tiers have a model", () => {
-    expect(getMissingTiersError(activeTierRows({ tiers: tiers }))).toBeNull();
+    expect(getMissingTiersError(t, activeTierRows({ tiers: tiers }))).toBeNull();
   });
 
   it("names the specific missing tier when only one is blank", () => {
-    expect(getMissingTiersError(activeTierRows({ tiers: { ...tiers, REASONING: [] } }))).toBe(
-      "Select a model for the following tier(s): REASONING",
+    expect(getMissingTiersError(t, activeTierRows({ tiers: { ...tiers, REASONING: [] } }))).toBe(
+      "请为以下层级选择模型：REASONING",
     );
   });
 
   it("names multiple missing tiers in SIMPLE/MEDIUM/COMPLEX/REASONING order", () => {
-    expect(getMissingTiersError(activeTierRows({ tiers: { ...tiers, SIMPLE: [], REASONING: [] } }))).toBe(
-      "Select a model for the following tier(s): SIMPLE, REASONING",
+    expect(getMissingTiersError(t, activeTierRows({ tiers: { ...tiers, SIMPLE: [], REASONING: [] } }))).toBe(
+      "请为以下层级选择模型：SIMPLE, REASONING",
     );
   });
 
   it("names all four tiers when none are filled", () => {
     const noTiers = { SIMPLE: [], MEDIUM: [], COMPLEX: [], REASONING: [] };
-    expect(getMissingTiersError(activeTierRows({ tiers: noTiers }))).toBe(
-      "Select a model for the following tier(s): SIMPLE, MEDIUM, COMPLEX, REASONING",
+    expect(getMissingTiersError(t, activeTierRows({ tiers: noTiers }))).toBe(
+      "请为以下层级选择模型：SIMPLE, MEDIUM, COMPLEX, REASONING",
     );
   });
 
   it("treats a tier with more than one model as filled", () => {
-    expect(getMissingTiersError(activeTierRows({ tiers: { ...tiers, SIMPLE: ["gpt-4o-mini", "gpt-4o"] } }))).toBeNull();
+    expect(getMissingTiersError(t, activeTierRows({ tiers: { ...tiers, SIMPLE: ["gpt-4o-mini", "gpt-4o"] } }))).toBeNull();
   });
 });
 
@@ -563,25 +567,25 @@ describe("getSemanticConfigError", () => {
 
   it("returns null when semantic matching is disabled (even with gaps)", () => {
     expect(
-      getSemanticConfigError({ semanticMatchingEnabled: false, embeddingModel: undefined, keywordTierRules: [] }),
+      getSemanticConfigError(t, { semanticMatchingEnabled: false, embeddingModel: undefined, keywordTierRules: [] }),
     ).toBeNull();
   });
 
   it("errors when enabled without an embedding model", () => {
     expect(
-      getSemanticConfigError({ semanticMatchingEnabled: true, embeddingModel: undefined, keywordTierRules: [rule] }),
-    ).toMatch(/embedding model/i);
+      getSemanticConfigError(t, { semanticMatchingEnabled: true, embeddingModel: undefined, keywordTierRules: [rule] }),
+    ).toMatch(/embedding 模型/);
   });
 
   it("errors when enabled with an embedding model but no keyword tier rules", () => {
     expect(
-      getSemanticConfigError({ semanticMatchingEnabled: true, embeddingModel: "voyage-3-5", keywordTierRules: [] }),
-    ).toMatch(/keyword tier rule/i);
+      getSemanticConfigError(t, { semanticMatchingEnabled: true, embeddingModel: "voyage-3-5", keywordTierRules: [] }),
+    ).toMatch(/关键词层级规则/);
   });
 
   it("returns null when enabled with both an embedding model and rules", () => {
     expect(
-      getSemanticConfigError({ semanticMatchingEnabled: true, embeddingModel: "voyage-3-5", keywordTierRules: [rule] }),
+      getSemanticConfigError(t, { semanticMatchingEnabled: true, embeddingModel: "voyage-3-5", keywordTierRules: [rule] }),
     ).toBeNull();
   });
 });
@@ -589,7 +593,7 @@ describe("getSemanticConfigError", () => {
 describe("getKeywordTierRulesError", () => {
   it("returns null when every rule carries a keyword", () => {
     expect(
-      getKeywordTierRulesError(
+      getKeywordTierRulesError(t, 
         [
           { id: "r1", keywords: ["invoice"], tier: "MEDIUM" },
           { id: "r2", keywords: ["deploy to k8s"], tier: "REASONING" },
@@ -600,14 +604,14 @@ describe("getKeywordTierRulesError", () => {
   });
 
   it("returns null when there are no rules at all, since the section is optional", () => {
-    expect(getKeywordTierRulesError([], activeTierRows({ tiers }))).toBeNull();
+    expect(getKeywordTierRulesError(t, [], activeTierRows({ tiers }))).toBeNull();
   });
 
   // The whole point of the ticket: the semantic toggle is off by default, and an unfilled row
   // used to be discarded silently on an otherwise successful create.
   it("rejects a row left empty while semantic matching is off", () => {
-    expect(getKeywordTierRulesError([{ id: "r1", keywords: [], tier: "COMPLEX" }], activeTierRows({ tiers }))).toBe(
-      "Add at least one keyword to keyword rule(s): 1",
+    expect(getKeywordTierRulesError(t, [{ id: "r1", keywords: [], tier: "COMPLEX" }], activeTierRows({ tiers }))).toBe(
+      "请为以下关键词规则添加至少一个关键词：1",
     );
   });
 
@@ -615,26 +619,26 @@ describe("getKeywordTierRulesError", () => {
     ["whitespace only", ["   "]],
     ["blank strings, as an unfilled row between filled ones leaves behind", ["", " ", ""]],
   ])("treats %s as empty rather than as a keyword", (_label, keywords) => {
-    expect(getKeywordTierRulesError([{ id: "r1", keywords, tier: "SIMPLE" }], activeTierRows({ tiers }))).toMatch(
-      /keyword rule\(s\): 1/,
+    expect(getKeywordTierRulesError(t, [{ id: "r1", keywords, tier: "SIMPLE" }], activeTierRows({ tiers }))).toMatch(
+      /关键词：1/,
     );
   });
 
   // Row numbers have to survive rules that are fine, or the message points at the wrong input.
   it("names each offending row by its position among all rules", () => {
     expect(
-      getKeywordTierRulesError([
+      getKeywordTierRulesError(t, [
         { id: "r1", keywords: ["invoice"], tier: "MEDIUM" },
         { id: "r2", keywords: [], tier: "COMPLEX" },
         { id: "r3", keywords: ["billing"], tier: "SIMPLE" },
         { id: "r4", keywords: ["  "], tier: "REASONING" },
       ]),
-    ).toBe("Add at least one keyword to keyword rule(s): 2, 4");
+    ).toBe("请为以下关键词规则添加至少一个关键词：2, 4");
   });
 
   it("keeps a keyword whose surrounding whitespace is the only thing trimmed", () => {
     expect(
-      getKeywordTierRulesError([{ id: "r1", keywords: ["  invoice  "], tier: "MEDIUM" }], activeTierRows({ tiers })),
+      getKeywordTierRulesError(t, [{ id: "r1", keywords: ["  invoice  "], tier: "MEDIUM" }], activeTierRows({ tiers })),
     ).toBeNull();
   });
 });
@@ -810,32 +814,32 @@ describe("tier labels", () => {
 
 describe("getTierLabelsError", () => {
   it("accepts an unrenamed router", () => {
-    expect(getTierLabelsError(undefined)).toBeNull();
+    expect(getTierLabelsError(t, undefined)).toBeNull();
   });
 
   it("accepts a full distinct rename", () => {
     const fullRename = { SIMPLE: "Cheap", MEDIUM: "Standard", COMPLEX: "Premium", REASONING: "Deep" };
-    expect(getTierLabelsError(fullRename)).toBeNull();
+    expect(getTierLabelsError(t, fullRename)).toBeNull();
   });
 
   it("rejects two tiers sharing a name, which would be ambiguous in the logs", () => {
-    expect(getTierLabelsError({ SIMPLE: "Cheap", MEDIUM: "Cheap" })).toMatch(/unique/i);
+    expect(getTierLabelsError(t, { SIMPLE: "Cheap", MEDIUM: "Cheap" })).toMatch(/唯一/);
   });
 
   it("rejects names that differ only by case, since the logs would not tell them apart", () => {
-    expect(getTierLabelsError({ SIMPLE: "Cheap", MEDIUM: "cheap" })).toMatch(/unique/i);
+    expect(getTierLabelsError(t, { SIMPLE: "Cheap", MEDIUM: "cheap" })).toMatch(/唯一/);
   });
 
   it("rejects a rename that collides with an untouched tier's name", () => {
-    expect(getTierLabelsError({ SIMPLE: "Medium" })).toMatch(/another tier's name/i);
+    expect(getTierLabelsError(t, { SIMPLE: "Medium" })).toMatch(/不能与另一个层级同名/);
   });
 
   it("rejects a label that is another tier's canonical name", () => {
-    expect(getTierLabelsError({ SIMPLE: "COMPLEX" })).toMatch(/another tier's name/i);
+    expect(getTierLabelsError(t, { SIMPLE: "COMPLEX" })).toMatch(/不能与另一个层级同名/);
   });
 
   it("allows a label equal to that tier's own canonical name, which is a no-op", () => {
-    expect(getTierLabelsError({ SIMPLE: "SIMPLE" })).toBeNull();
+    expect(getTierLabelsError(t, { SIMPLE: "SIMPLE" })).toBeNull();
   });
 });
 
@@ -974,15 +978,15 @@ describe("getPlanModeTierError", () => {
   const tiersWithEmptyComplex = { SIMPLE: ["m1"], MEDIUM: ["m1"], COMPLEX: [], REASONING: [] };
 
   it("passes when the override is off", () => {
-    expect(getPlanModeTierError(undefined, activeTierRows({ tiers: tiersWithEmptyComplex }))).toBeNull();
+    expect(getPlanModeTierError(t, undefined, activeTierRows({ tiers: tiersWithEmptyComplex }))).toBeNull();
   });
 
   it("passes when the named tier has models", () => {
-    expect(getPlanModeTierError("MEDIUM", activeTierRows({ tiers: tiersWithEmptyComplex }))).toBeNull();
+    expect(getPlanModeTierError(t, "MEDIUM", activeTierRows({ tiers: tiersWithEmptyComplex }))).toBeNull();
   });
 
   it("blocks a tier whose models were removed, which the backend would reject with a 400", () => {
-    expect(getPlanModeTierError("COMPLEX", activeTierRows({ tiers: tiersWithEmptyComplex }))).toContain("COMPLEX");
+    expect(getPlanModeTierError(t, "COMPLEX", activeTierRows({ tiers: tiersWithEmptyComplex }))).toContain("COMPLEX");
   });
 });
 
@@ -1005,29 +1009,29 @@ describe("buildComplexityRouterConfig tier model params", () => {
 
 describe("getHeuristicV2SuccessThresholdError", () => {
   it.each([undefined, 0, 0.95, 1])("accepts the optional probability %s", (threshold) => {
-    expect(getHeuristicV2SuccessThresholdError(threshold)).toBeNull();
+    expect(getHeuristicV2SuccessThresholdError(t, threshold)).toBeNull();
   });
 
   it.each([-0.01, 1.01, Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY])(
     "rejects invalid success threshold %s",
     (threshold) => {
-      expect(getHeuristicV2SuccessThresholdError(threshold)).toBe("Success threshold must be a number between 0 and 1");
+      expect(getHeuristicV2SuccessThresholdError(t, threshold)).toBe("成功率阈值必须是 0 到 1 之间的数字");
     },
   );
 });
 
 describe("getClassifierModelError", () => {
   it("stays quiet for a heuristic router, which needs no classifier model", () => {
-    expect(getClassifierModelError({ classifier_type: "heuristic" })).toBeNull();
+    expect(getClassifierModelError(t, { classifier_type: "heuristic" })).toBeNull();
   });
 
   it("stays quiet for a heuristic v2 router, which runs locally", () => {
-    expect(getClassifierModelError({ classifier_type: "heuristic_v2" })).toBeNull();
+    expect(getClassifierModelError(t, { classifier_type: "heuristic_v2" })).toBeNull();
   });
 
   it("blocks an LLM classifier with no model, which the router cannot start without", () => {
-    expect(getClassifierModelError({ classifier_type: "llm" })).toBe(
-      "Please select a classifier model, or switch back to Heuristic",
+    expect(getClassifierModelError(t, { classifier_type: "llm" })).toBe(
+      "请选择分类器模型，或切换回启发式",
     );
   });
 
@@ -1039,14 +1043,14 @@ describe("getClassifierModelError", () => {
       ],
       fallback_tier_id: "a",
     };
-    expect(getClassifierModelError({ classifier_type: "heuristic", custom_tier_set: customSet })).toContain(
-      "an edited tier set routes with the LLM classifier",
+    expect(getClassifierModelError(t, { classifier_type: "heuristic", custom_tier_set: customSet })).toContain(
+      "编辑过的层级集合使用 LLM 分类器路由",
     );
   });
 
   it("stays quiet once a model is chosen", () => {
     expect(
-      getClassifierModelError({ classifier_type: "llm", classifier_llm_config: { model: "m", timeout_ms: 3000 } }),
+      getClassifierModelError(t, { classifier_type: "llm", classifier_llm_config: { model: "m", timeout_ms: 3000 } }),
     ).toBeNull();
   });
 });
@@ -1059,11 +1063,11 @@ describe("getClassifierReasoningEffortError", () => {
 
   it.each([
     [["low", "medium"], null],
-    [["medium", "high"], "low reasoning effort is not supported"],
+    [["medium", "high"], "low 推理强度"],
     [null, null],
     [undefined, null],
   ])("validates capability levels %o", (supportedReasoningEfforts, expectedError) => {
-    const error = getClassifierReasoningEffortError(classifier, [
+    const error = getClassifierReasoningEffortError(t, classifier, [
       { model_group: "classifier", supported_reasoning_efforts: supportedReasoningEfforts },
     ]);
     if (expectedError) expect(error).toContain(expectedError);
@@ -1075,24 +1079,24 @@ describe("getKeywordTierRulesError orphaned tiers", () => {
   const rows = activeTierRows({ tiers });
 
   it("accepts a rule naming a tier the router has", () => {
-    expect(getKeywordTierRulesError([{ id: "r1", keywords: ["k"], tier: "COMPLEX" }], rows)).toBeNull();
+    expect(getKeywordTierRulesError(t, [{ id: "r1", keywords: ["k"], tier: "COMPLEX" }], rows)).toBeNull();
   });
 
   it("names the rule pointing at a tier this router does not have", () => {
-    expect(getKeywordTierRulesError([{ id: "r1", keywords: ["k"], tier: "AUDIT" }], rows)).toBe(
-      "Keyword rule(s) 1 route to a tier this router no longer has",
+    expect(getKeywordTierRulesError(t, [{ id: "r1", keywords: ["k"], tier: "AUDIT" }], rows)).toBe(
+      "关键词规则 1 指向的层级已不存在",
     );
   });
 
   it("rejects a differently cased tier, because _validate_keyword_rule_tiers matches exactly", () => {
-    expect(getKeywordTierRulesError([{ id: "r1", keywords: ["k"], tier: "complex" }], rows)).toBe(
-      "Keyword rule(s) 1 route to a tier this router no longer has",
+    expect(getKeywordTierRulesError(t, [{ id: "r1", keywords: ["k"], tier: "complex" }], rows)).toBe(
+      "关键词规则 1 指向的层级已不存在",
     );
   });
 
   it("reports an empty keyword row before an orphaned tier, since that is the nearer problem", () => {
-    expect(getKeywordTierRulesError([{ id: "r1", keywords: [], tier: "AUDIT" }], rows)).toContain(
-      "Add at least one keyword",
+    expect(getKeywordTierRulesError(t, [{ id: "r1", keywords: [], tier: "AUDIT" }], rows)).toContain(
+      "添加至少一个关键词",
     );
   });
 });
@@ -1430,20 +1434,20 @@ describe("buildComplexityRouterConfig stall escalation", () => {
 
 describe("dryRunRejection", () => {
   it("blocks the save on a rejection whose message is missing, which the write would return as a raw 400", () => {
-    expect(dryRunRejection({ valid: false })).toBe("The proxy rejected this auto-router configuration");
-    expect(dryRunRejection({ valid: false, error: null })).toBe("The proxy rejected this auto-router configuration");
-    expect(dryRunRejection({ valid: false, error: "   " })).toBe("The proxy rejected this auto-router configuration");
+    expect(dryRunRejection(t, { valid: false })).toBe("代理拒绝了此自动路由配置");
+    expect(dryRunRejection(t, { valid: false, error: null })).toBe("代理拒绝了此自动路由配置");
+    expect(dryRunRejection(t, { valid: false, error: "   " })).toBe("代理拒绝了此自动路由配置");
   });
 
   it("surfaces the backend's own message when it sent one", () => {
-    expect(dryRunRejection({ valid: false, error: "session_affinity cannot be combined with tier_definitions" })).toBe(
+    expect(dryRunRejection(t, { valid: false, error: "session_affinity cannot be combined with tier_definitions" })).toBe(
       "session_affinity cannot be combined with tier_definitions",
     );
   });
 
   it("lets a valid verdict through, including the fail-open one a transport failure returns", () => {
-    expect(dryRunRejection({ valid: true })).toBeNull();
-    expect(dryRunRejection({ valid: true, error: null })).toBeNull();
+    expect(dryRunRejection(t, { valid: true })).toBeNull();
+    expect(dryRunRejection(t, { valid: true, error: null })).toBeNull();
   });
 });
 
@@ -1545,11 +1549,11 @@ describe("advanced complexity router fields", () => {
   });
 
   it("validates marker pairs and custom classifier timeout", () => {
-    expect(getReminderMarkersError([{ open: " <X> ", close: " <x> " }])).toContain("different");
-    expect(getReminderMarkersError([{ open: "", close: "</x>" }])).toContain("needs both");
-    expect(getReminderMarkersError([{ open: "<x>", close: "</x>" }])).toBeNull();
-    expect(getClassifierPluginTimeoutError("custom", 0)).toContain("whole number");
-    expect(getClassifierPluginTimeoutError("custom", 3000)).toBeNull();
-    expect(getClassifierPluginTimeoutError("heuristic", 0)).toBeNull();
+    expect(getReminderMarkersError(t, [{ open: " <X> ", close: " <x> " }])).toContain("不同");
+    expect(getReminderMarkersError(t, [{ open: "", close: "</x>" }])).toContain("需要同时提供");
+    expect(getReminderMarkersError(t, [{ open: "<x>", close: "</x>" }])).toBeNull();
+    expect(getClassifierPluginTimeoutError(t, "custom", 0)).toContain("整数");
+    expect(getClassifierPluginTimeoutError(t, "custom", 3000)).toBeNull();
+    expect(getClassifierPluginTimeoutError(t, "heuristic", 0)).toBeNull();
   });
 });

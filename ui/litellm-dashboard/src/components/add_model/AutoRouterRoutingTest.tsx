@@ -33,7 +33,7 @@ const AutoRouterRoutingTest: React.FC<AutoRouterRoutingTestProps> = ({
   const t = useTranslations("models.addModel");
   const [prompt, setPrompt] = React.useState<string>("");
   const [state, setState] = React.useState<TestState>({ status: "idle" });
-  const configError = getHeuristicV2SuccessThresholdError(config.heuristic_v2_success_threshold);
+  const configError = getHeuristicV2SuccessThresholdError(t, config.heuristic_v2_success_threshold);
 
   const send = async () => {
     if (configError) return;

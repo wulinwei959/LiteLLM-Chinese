@@ -9,6 +9,10 @@ import ForecastClassifierConfig from "./ForecastClassifierConfig";
 import type { ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
 import { getForecastConfigError, isForecastClassifier } from "./forecast_classifier_config";
 import { buildUpdatedComplexityRouterConfig } from "../edit_auto_router/edit_auto_router_modal";
+import { createTranslator } from "next-intl";
+import zh from "@/messages/zh-CN.json";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "models.addModel" });
 
 vi.mock("@/components/networking", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/components/networking")>()),
@@ -109,7 +113,7 @@ function Form({ initialValue = initial }: { initialValue?: ComplexityRouterConfi
         )}
       </AutoRouterClassifierTabs>
       <button
-        disabled={Boolean(getForecastConfigError(value))}
+        disabled={Boolean(getForecastConfigError(t, value))}
         onClick={() => setSaved(JSON.stringify(buildUpdatedComplexityRouterConfig({}, value)))}
       >
         Save configuration

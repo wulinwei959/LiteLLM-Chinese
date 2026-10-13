@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "next-intl";
+import zh from "@/messages/zh-CN.json";
 import type { ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
 import {
   fuseProfileFields,
@@ -14,6 +16,8 @@ import {
   buildUpdatedComplexityRouterConfig,
   hydrateComplexityRouterConfig,
 } from "../edit_auto_router/edit_auto_router_modal";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "models.addModel" });
 
 const capability: ComplexityRouterConfigValue = {
   classifier_type: "capability",
@@ -76,7 +80,7 @@ describe("Fuse profile presets", () => {
     const stored = { ...fuse, llm_v2_config: settings };
     const hydrated = hydrateComplexityRouterConfig(stored, undefined);
     expect(hydrated.llm_v2_config).toEqual(settings);
-    expect(getForecastConfigError(hydrated)).toBeNull();
+    expect(getForecastConfigError(t, hydrated)).toBeNull();
     const saved = buildUpdatedComplexityRouterConfig(stored, {
       ...hydrated,
       tiers: { ...hydrated.tiers, SIMPLE: ["arbitrary-new-group"] },
@@ -105,30 +109,30 @@ describe("forecast classifier configuration", () => {
       ...capability,
       capability_classifier_config: { ...capability.capability_classifier_config!, calibration },
     };
-    expect(getForecastConfigError(value)).toContain("calibration");
+    expect(getForecastConfigError(t, value)).toContain("校准");
   });
 
   it.each([capability, fuse])("accepts a complete $classifier_type configuration", (value) => {
-    expect(getForecastConfigError(value)).toBeNull();
+    expect(getForecastConfigError(t, value)).toBeNull();
   });
 
   it("requires both solvers without requiring unused middle tiers", () => {
-    expect(getForecastConfigError({ ...capability, tiers: { ...capability.tiers, REASONING: [] } })).toContain("both");
-    expect(getForecastConfigError(capability)).toBeNull();
+    expect(getForecastConfigError(t, { ...capability, tiers: { ...capability.tiers, REASONING: [] } })).toContain("两个");
+    expect(getForecastConfigError(t, capability)).toBeNull();
   });
 
   it("rejects a stepped threshold that exceeds one", () => {
     expect(
-      getForecastConfigError({
+      getForecastConfigError(t, {
         ...capability,
         capability_classifier_config: { ...capability.capability_classifier_config!, threshold_step: 0.2 },
       }),
-    ).toContain("twice");
+    ).toContain("两倍");
   });
 
   it.each([Number.NaN, -0.1, 1.1])("rejects an invalid probability %s", (base_threshold) => {
     expect(
-      getForecastConfigError({
+      getForecastConfigError(t, {
         ...capability,
         capability_classifier_config: { ...capability.capability_classifier_config!, base_threshold },
       }),
@@ -136,15 +140,15 @@ describe("forecast classifier configuration", () => {
   });
 
   it.each(["efficient_profile", "capable_profile", "harness"] as const)("requires %s for Fuse", (field) => {
-    expect(getForecastConfigError({ ...fuse, llm_v2_config: { ...fuse.llm_v2_config!, [field]: " " } })).not.toBeNull();
+    expect(getForecastConfigError(t, { ...fuse, llm_v2_config: { ...fuse.llm_v2_config!, [field]: " " } })).not.toBeNull();
   });
 
   it("requires distinct single model groups and disables adaptive selection", () => {
-    expect(getForecastConfigError({ ...fuse, tiers: { ...fuse.tiers, SIMPLE: ["capable"] } })).toContain("distinct");
-    expect(getForecastConfigError({ ...fuse, tiers: { ...fuse.tiers, SIMPLE: ["efficient", "second"] } })).toContain(
-      "distinct",
+    expect(getForecastConfigError(t, { ...fuse, tiers: { ...fuse.tiers, SIMPLE: ["capable"] } })).toContain("不同");
+    expect(getForecastConfigError(t, { ...fuse, tiers: { ...fuse.tiers, SIMPLE: ["efficient", "second"] } })).toContain(
+      "不同",
     );
-    expect(getForecastConfigError({ ...fuse, adaptive: true })).toContain("adaptive");
+    expect(getForecastConfigError(t, { ...fuse, adaptive: true })).toContain("自适应");
   });
 
   it("removes incompatible prompt and tier settings when switching to Fuse", () => {
@@ -164,7 +168,7 @@ describe("forecast classifier configuration", () => {
     };
     const next = prepareForecastClassifier(previous);
     const saved = buildUpdatedComplexityRouterConfig({}, next);
-    expect(getForecastConfigError(next)).toBeNull();
+    expect(getForecastConfigError(t, next)).toBeNull();
     expect(saved.adaptive).toBe(false);
     expect(saved.tiers).toEqual({ SIMPLE: ["efficient"], REASONING: ["capable"] });
     expect(saved.classifier_llm_config).toEqual({ model: "judge", timeout_ms: 20000 });
@@ -222,13 +226,13 @@ describe("forecast classifier configuration", () => {
       });
       expect(next.adaptive).toBe(preservesPools);
       expect(next.plan_mode_min_tier).toBeUndefined();
-      expect(getForecastConfigError(next)).toBeNull();
+      expect(getForecastConfigError(t, next)).toBeNull();
       expect(activeTierRows(next).map((row) => row.name)).toEqual(["SIMPLE", "REASONING"]);
       expect(
-        getKeywordTierRulesError([{ id: "old-middle", keywords: ["invoice"], tier: "MEDIUM" }], activeTierRows(next)),
-      ).toContain("no longer has");
+        getKeywordTierRulesError(t, [{ id: "old-middle", keywords: ["invoice"], tier: "MEDIUM" }], activeTierRows(next)),
+      ).toContain("已不存在");
       expect(
-        getKeywordTierRulesError([{ id: "solver", keywords: ["audit"], tier: "REASONING" }], activeTierRows(next)),
+        getKeywordTierRulesError(t, [{ id: "solver", keywords: ["audit"], tier: "REASONING" }], activeTierRows(next)),
       ).toBeNull();
       const saved = buildUpdatedComplexityRouterConfig(previous, next);
       expect(saved.tiers).toEqual({ SIMPLE: expectedTiers.SIMPLE, REASONING: expectedTiers.REASONING });
@@ -283,7 +287,7 @@ describe("forecast classifier configuration", () => {
       },
       tiers: { SIMPLE: [], MEDIUM: ["efficient"], COMPLEX: ["capable"], REASONING: [] },
     };
-    expect(getForecastConfigError(value)).toBeNull();
+    expect(getForecastConfigError(t, value)).toBeNull();
     expect(buildUpdatedComplexityRouterConfig({}, value).capability_classifier_config).toEqual(
       value.capability_classifier_config,
     );
@@ -319,7 +323,7 @@ describe("forecast classifier configuration", () => {
     expect(hydrated.plan_mode_min_tier).toBe("MEDIUM");
     expect(activeTierRows(hydrated).map((row) => row.name)).toEqual(["SIMPLE", "MEDIUM", "REASONING"]);
     expect(
-      getKeywordTierRulesError([{ id: "kept", keywords: ["invoice"], tier: "MEDIUM" }], activeTierRows(hydrated)),
+      getKeywordTierRulesError(t, [{ id: "kept", keywords: ["invoice"], tier: "MEDIUM" }], activeTierRows(hydrated)),
     ).toBeNull();
     const saved = buildUpdatedComplexityRouterConfig(stored, {
       ...hydrated,
@@ -335,7 +339,7 @@ describe("forecast classifier configuration", () => {
     const standard: ComplexityRouterConfigValue = { ...capability, classifier_type: "llm" };
     expect(activeTierRows(standard).map((row) => row.name)).toEqual(["SIMPLE", "MEDIUM", "COMPLEX", "REASONING"]);
     expect(
-      getKeywordTierRulesError([{ id: "middle", keywords: ["invoice"], tier: "MEDIUM" }], activeTierRows(standard)),
+      getKeywordTierRulesError(t, [{ id: "middle", keywords: ["invoice"], tier: "MEDIUM" }], activeTierRows(standard)),
     ).toBeNull();
   });
 

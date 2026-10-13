@@ -609,7 +609,7 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
   const tierHeading = creationFlow ? t("tierHeadingDefine") : t("tierHeadingModels");
   const customTierSet = value.custom_tier_set;
   const tierRows = activeTierRows(value);
-  const tierRowsError = customTierSet ? getCustomTierRowsError(customTierSet) : null;
+  const tierRowsError = customTierSet ? getCustomTierRowsError(t, customTierSet) : null;
 
   const planModeRows = tierRows.filter((row) => row.models.length > 0);
   const planModeTierOptions = planModeRows.map((row) => ({

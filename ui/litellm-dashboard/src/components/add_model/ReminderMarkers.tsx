@@ -24,7 +24,7 @@ const ReminderMarkers: React.FC<{
     const next = markers.filter((_, markerIndex) => markerIndex !== index);
     onChange({ ...value, reminder_markers: next.length > 0 ? next : undefined });
   };
-  const error = getReminderMarkersError(value.reminder_markers);
+  const error = getReminderMarkersError(t, value.reminder_markers);
   return (
     <div>
       <p className="mb-4 text-sm text-muted-foreground">

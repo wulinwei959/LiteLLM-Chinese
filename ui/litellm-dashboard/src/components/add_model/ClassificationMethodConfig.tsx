@@ -16,7 +16,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import ClassifierPromptEditor from "./ClassifierPromptEditor";
 import OpeningPromptEditor, { type OpeningPromptSelection } from "./OpeningPromptEditor";
-import { RestrictedSection, restrictedBy } from "./TierRestrictions";
+import { RestrictedSection, restrictedBy, restrictionReason } from "./TierRestrictions";
 import HeuristicScoringConfig from "./HeuristicScoringConfig";
 import ClassifierReasoningEffortSelect from "./ClassifierReasoningEffortSelect";
 import ClassifierCircuitBreakerConfig from "./ClassifierCircuitBreakerConfig";
@@ -168,7 +168,7 @@ export const InactiveHeuristicV2Threshold: React.FC<Pick<ClassificationMethodCon
   const t = useTranslations("models.addModel");
   const threshold = value.heuristic_v2_success_threshold;
   if (effectiveClassifierType(value) === "heuristic_v2" || threshold === undefined) return null;
-  const error = getHeuristicV2SuccessThresholdError(threshold);
+  const error = getHeuristicV2SuccessThresholdError(t, threshold);
   return (
     <section aria-label={t("inactiveHeuristicV2RegionAria")} className="mb-4 space-y-2 rounded-md border p-3">
       <p className="text-sm font-medium">
@@ -218,7 +218,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
   const classifierModel = value.classifier_llm_config?.model ?? "";
   const classifierReasoningEffort = value.classifier_llm_config?.reasoning_effort;
   const explicitlySupportedClassifierEfforts = effortOptionsByModel[classifierModel];
-  const successThresholdError = getHeuristicV2SuccessThresholdError(value.heuristic_v2_success_threshold);
+  const successThresholdError = getHeuristicV2SuccessThresholdError(t, value.heuristic_v2_success_threshold);
   const successThresholdDraft =
     draft?.id === HEURISTIC_V2_SUCCESS_THRESHOLD_ID &&
     Object.is(value.heuristic_v2_success_threshold, draft.raw.trim() === "" ? undefined : Number(draft.raw))
@@ -551,7 +551,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
                         kind: "builtIn",
                         tierLabels: value.tier_labels,
                         classificationRubric,
-                        rubricRestriction: restrictedBy(value, "classificationRubric")?.reason,
+                        rubricRestriction: restrictionReason(t, restrictedBy(value, "classificationRubric")),
                       }
                 }
                 contextWindowSize={value.classifier_context_window_size ?? DEFAULT_CLASSIFIER_CONTEXT_WINDOW_SIZE}

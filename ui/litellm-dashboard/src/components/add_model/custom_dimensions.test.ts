@@ -1,5 +1,9 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
+import zh from "@/messages/zh-CN.json";
 import { customDimensionsError, hydrateCustomDimensions, serializeCustomDimensions } from "./custom_dimensions";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "models.addModel" });
 
 describe("custom dimension drafts", () => {
   it.each([
@@ -17,7 +21,7 @@ describe("custom dimension drafts", () => {
     expect(hydrateCustomDimensions(undefined)).toBeUndefined();
     const rows = hydrateCustomDimensions([{ name: "domain", weight: 0.2, keywords: ["a"] }])!;
     expect(rows[0].scoring_mode).toBeUndefined();
-    expect(customDimensionsError(rows)).toBeNull();
+    expect(customDimensionsError(t, rows)).toBeNull();
   });
 
   it.each([
@@ -29,13 +33,13 @@ describe("custom dimension drafts", () => {
     { name: "domain", weight: 0.2, keywords: [" "] },
     { name: "domain", weight: 0.2, keywords: ["a".repeat(257)] },
   ])("rejects an invalid draft %j", (row) => {
-    expect(customDimensionsError([{ ...row, id: "draft" }])).not.toBeNull();
+    expect(customDimensionsError(t, [{ ...row, id: "draft" }])).not.toBeNull();
   });
 
   it("rejects duplicate names and aggregate matcher limits", () => {
     const row = { id: "a", name: "domain", weight: 0.2, keywords: ["a"] };
-    expect(customDimensionsError([row, { ...row, id: "b", name: "DOMAIN" }])).not.toBeNull();
-    expect(customDimensionsError([{ ...row, keywords: Array(33).fill("a") }])).not.toBeNull();
-    expect(customDimensionsError([{ ...row, keywords: Array(32).fill("a".repeat(256)) }])).not.toBeNull();
+    expect(customDimensionsError(t, [row, { ...row, id: "b", name: "DOMAIN" }])).not.toBeNull();
+    expect(customDimensionsError(t, [{ ...row, keywords: Array(33).fill("a") }])).not.toBeNull();
+    expect(customDimensionsError(t, [{ ...row, keywords: Array(32).fill("a".repeat(256)) }])).not.toBeNull();
   });
 });

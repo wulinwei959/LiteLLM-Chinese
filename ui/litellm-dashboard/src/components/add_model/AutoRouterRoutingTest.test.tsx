@@ -75,7 +75,7 @@ describe("AutoRouterRoutingTest", () => {
     );
     fireEvent.change(screen.getByTestId("auto-router-routing-test-prompt"), { target: { value: "hello" } });
     expect(screen.getByTestId("auto-router-routing-test-send")).toBeDisabled();
-    expect(screen.getByText("Success threshold must be a number between 0 and 1")).toBeVisible();
+    expect(screen.getByText("成功率阈值必须是 0 到 1 之间的数字")).toBeVisible();
     expect(testAutoRouterRouting).not.toHaveBeenCalled();
   });
 

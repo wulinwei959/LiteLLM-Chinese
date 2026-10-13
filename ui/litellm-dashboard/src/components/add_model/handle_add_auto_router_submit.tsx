@@ -1,7 +1,10 @@
+import type { useTranslations } from "next-intl";
 import { modelCreateCall } from "../networking";
 import { toast } from "@/lib/toast";
 import type { ComplexityRouterConfigPayload } from "./build_complexity_router_config";
 import type { AutoRouterCompressionLitellmParams } from "./buildAutoRouterCompression";
+
+type AddModelTranslator = ReturnType<typeof useTranslations<"models.addModel">>;
 
 export interface AddAutoRouterValues extends AutoRouterCompressionLitellmParams {
   auto_router_name: string;
@@ -12,11 +15,16 @@ export interface AddAutoRouterValues extends AutoRouterCompressionLitellmParams 
   model_access_group?: string[];
 }
 
+export interface AddAutoRouterCallbacks {
+  resetForm: () => void;
+  onSuccess?: () => void;
+}
+
 export const handleAddAutoRouterSubmit = async (
   values: AddAutoRouterValues,
   accessToken: string,
-  resetForm: () => void,
-  callback?: () => void,
+  callbacks: AddAutoRouterCallbacks,
+  t: AddModelTranslator,
 ) => {
   try {
     const autoRouterConfig = {
@@ -44,15 +52,15 @@ export const handleAddAutoRouterSubmit = async (
 
     await modelCreateCall(accessToken, autoRouterConfig);
 
-    toast.success(`Successfully created Auto Router: ${values.auto_router_name}`);
+    toast.success(t("autoRouterCreateSuccess", { name: values.auto_router_name }));
 
-    resetForm();
+    callbacks.resetForm();
 
-    if (callback) {
-      callback();
+    if (callbacks.onSuccess) {
+      callbacks.onSuccess();
     }
   } catch (error) {
     console.error("Failed to add auto router:", error);
-    toast.fromError("Failed to add auto router: " + error);
+    toast.fromError(t("autoRouterCreateFailed", { error: String(error) }));
   }
 };

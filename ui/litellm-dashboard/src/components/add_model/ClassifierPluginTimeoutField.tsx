@@ -19,7 +19,7 @@ const ClassifierPluginTimeoutField: React.FC<ClassifierPluginTimeoutFieldProps> 
   showValidationErrors = false,
 }) => {
   const t = useTranslations("models.addModel");
-  const error = getClassifierPluginTimeoutError("custom", value.classifier_plugin_timeout_ms);
+  const error = getClassifierPluginTimeoutError(t, "custom", value.classifier_plugin_timeout_ms);
   return (
     <div className="mt-4 space-y-2">
       <p className="text-sm text-muted-foreground">{t("pluginTimeoutIntro")}</p>

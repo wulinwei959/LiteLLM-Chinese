@@ -129,31 +129,34 @@ const NO_PRESETS: AutoRouterPreset[] = [];
 // itself and to say what is missing, so the two can never give different answers. Checks the
 // config actually being built, not which preset (if any) it came from: a preset only ever
 // prefills once (handlePresetChange), and everything after that is edited exactly like Custom.
-export const getSubmitBlockedReason = (
-  config: ComplexityRouterConfigValue,
-  keywordTierRules: KeywordTierRule[],
-  referencedModelsParams: Parameters<typeof getReferencedModelsError>[0],
-  ...capabilities: [availability: ModelAvailability, modelInfo?: readonly ModelGroup[]]
-): string | null => {
-  const [availability, modelInfo = []] = capabilities;
+export interface SubmitBlockedInputs {
+  config: ComplexityRouterConfigValue;
+  keywordTierRules: KeywordTierRule[];
+  referencedModelsParams: Parameters<typeof getReferencedModelsError>[0];
+  availability: ModelAvailability;
+  modelInfo?: readonly ModelGroup[];
+}
+
+export const getSubmitBlockedReason = (t: AddModelTranslator, inputs: SubmitBlockedInputs): string | null => {
+  const { config, keywordTierRules, referencedModelsParams, availability, modelInfo = [] } = inputs;
   return (
     (config.custom_tier_set
-      ? getCustomTierRowsError(config.custom_tier_set)
-      : getTierLabelsError(config.tier_labels)) ??
+      ? getCustomTierRowsError(t, config.custom_tier_set)
+      : getTierLabelsError(t, config.tier_labels)) ??
     (isForecastClassifier(config.classifier_type)
-      ? getForecastConfigError(config)
-      : getMissingTiersError(activeTierRows(config))) ??
-    getPlanModeTierError(config.plan_mode_min_tier, activeTierRows(config)) ??
-    getKeywordTierRulesError(keywordTierRules, activeTierRows(config)) ??
+      ? getForecastConfigError(t, config)
+      : getMissingTiersError(t, activeTierRows(config))) ??
+    getPlanModeTierError(t, config.plan_mode_min_tier, activeTierRows(config)) ??
+    getKeywordTierRulesError(t, keywordTierRules, activeTierRows(config)) ??
     (effectiveClassifierType(config) === "jev" && !config.jev_classifier_config?.deployment_name
-      ? "Please select a decision model"
+      ? t("selectDecisionModelRequired")
       : null) ??
-    getClassifierModelError(config) ??
-    getHeuristicV2SuccessThresholdError(config.heuristic_v2_success_threshold) ??
-    getReminderMarkersError(config.reminder_markers) ??
-    getClassifierPluginTimeoutError(config.classifier_type, config.classifier_plugin_timeout_ms) ??
-    (heuristicScoringRole(config) === "decides" ? customDimensionsError(config.custom_dimensions) : null) ??
-    getClassifierReasoningEffortError(config, modelInfo) ??
+    getClassifierModelError(t, config) ??
+    getHeuristicV2SuccessThresholdError(t, config.heuristic_v2_success_threshold) ??
+    getReminderMarkersError(t, config.reminder_markers) ??
+    getClassifierPluginTimeoutError(t, config.classifier_type, config.classifier_plugin_timeout_ms) ??
+    (heuristicScoringRole(config) === "decides" ? customDimensionsError(t, config.custom_dimensions) : null) ??
+    getClassifierReasoningEffortError(t, config, modelInfo) ??
     getReferencedModelsError(referencedModelsParams, availability)
   );
 };
@@ -391,13 +394,14 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
     defaultModel: complexityRouterConfig.default_model,
   };
 
-  const submitBlockedReason = getSubmitBlockedReason(
-    complexityRouterConfig,
+  const submitBlockedInputs: SubmitBlockedInputs = {
+    config: complexityRouterConfig,
     keywordTierRules,
     referencedModelsParams,
-    groupsOnlyAvailability,
+    availability: groupsOnlyAvailability,
     modelInfo,
-  );
+  };
+  const submitBlockedReason = getSubmitBlockedReason(t, submitBlockedInputs);
 
   const complexityRouterConfigParams: BuildComplexityRouterConfigParams = {
     ...builderParamsFromValue(complexityRouterConfig),
@@ -440,14 +444,8 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
     // regardless of the button's disabled state.
     const blockedReason =
       saveBlockedReason ??
-      getSubmitBlockedReason(
-        complexityRouterConfig,
-        keywordTierRules,
-        referencedModelsParams,
-        groupsOnlyAvailability,
-        modelInfo,
-      ) ??
-      getSemanticConfigError({ semanticMatchingEnabled, embeddingModel, keywordTierRules });
+      getSubmitBlockedReason(t, submitBlockedInputs) ??
+      getSemanticConfigError(t, { semanticMatchingEnabled, embeddingModel, keywordTierRules });
     if (blockedReason) {
       setShowValidationErrors(true);
       toast.fromError(blockedReason);
@@ -474,7 +472,7 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
       complexityRouterConfigPayload as unknown as Record<string, unknown>,
       requiresTeamScope ? form.getValues("team_id") ?? undefined : undefined,
     );
-    const dryRunError = dryRunRejection(serverVerdict);
+    const dryRunError = dryRunRejection(t, serverVerdict);
     if (dryRunError) {
       setShowValidationErrors(true);
       toast.fromError(dryRunError);
@@ -495,7 +493,10 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
           }),
     };
 
-    await handleAddAutoRouterSubmit(submitValues, accessToken, () => form.reset(EMPTY_FORM_VALUES), handleOk);
+    await handleAddAutoRouterSubmit(submitValues, accessToken, {
+      resetForm: () => form.reset(EMPTY_FORM_VALUES),
+      onSuccess: handleOk,
+    }, t);
   };
 
   const handleAutoRouterSubmit = async () => {
@@ -618,7 +619,7 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
       onCustomTechnicalKeywordsChange={setCustomTechnicalKeywords}
       keywordTierRules={keywordTierRules}
       onKeywordTierRulesChange={setKeywordTierRules}
-      keywordRulesError={getKeywordTierRulesError(keywordTierRules, activeTierRows(complexityRouterConfig))}
+      keywordRulesError={getKeywordTierRulesError(t, keywordTierRules, activeTierRows(complexityRouterConfig))}
       semanticMatchingEnabled={semanticMatchingEnabled}
       onSemanticMatchingEnabledChange={setSemanticMatchingEnabled}
       embeddingModel={embeddingModel}

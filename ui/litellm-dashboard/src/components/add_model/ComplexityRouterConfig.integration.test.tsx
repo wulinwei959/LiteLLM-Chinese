@@ -141,7 +141,7 @@ describe("ComplexityRouterConfig", () => {
       <ComplexityRouterConfig {...baseProps} value={value} showValidationErrors={showValidationErrors} />,
     );
     openAutoRouterAdvanced("Ignore Custom Tags");
-    const validation = screen.queryByText(/needs both/i);
+    const validation = screen.queryByText(/需要同时提供/);
     if (showValidationErrors) {
       expect(validation).toBeInTheDocument();
     } else {
@@ -240,7 +240,7 @@ describe("ComplexityRouterConfig", () => {
     expect(within(retained).getByRole("status", { name: "保留的启发式 v2 阈值" })).toHaveTextContent(
       "无效值",
     );
-    expect(within(retained).getByRole("alert")).toHaveTextContent("Success threshold must be a number between 0 and 1");
+    expect(within(retained).getByRole("alert")).toHaveTextContent("成功率阈值必须是 0 到 1 之间的数字");
     fireEvent.click(within(retained).getByRole("button", { name: "清除启发式 v2 阈值" }));
     expect(onChange).toHaveBeenCalledWith({ ...value, heuristic_v2_success_threshold: undefined });
   });
@@ -1569,9 +1569,9 @@ describe("ComplexityRouterConfig tier editing", () => {
   });
 
   it("surfaces the caller's orphaned-rule verdict while editing, so Done is not a silent exit", async () => {
-    renderEditor(customValue, { keywordRulesError: "Keyword rule(s) 1 route to a tier this router no longer has" });
+    renderEditor(customValue, { keywordRulesError: "关键词规则 1 指向的层级已不存在" });
     expect(
-      screen.getByText("Keyword rule(s) 1 route to a tier this router no longer has", { exact: false }),
+      screen.getByText("关键词规则 1 指向的层级已不存在", { exact: false }),
     ).toBeInTheDocument();
   });
 
@@ -1581,10 +1581,10 @@ describe("ComplexityRouterConfig tier editing", () => {
         {...baseProps}
         value={customValue}
         onEditingTiersChange={vi.fn()}
-        keywordRulesError="Keyword rule(s) 1 route to a tier this router no longer has"
+        keywordRulesError="关键词规则 1 指向的层级已不存在"
       />,
     );
-    expect(screen.queryByText("route to a tier this router no longer has", { exact: false })).not.toBeInTheDocument();
+    expect(screen.queryByText("指向的层级已不存在", { exact: false })).not.toBeInTheDocument();
   });
 
   it("renders the four built-in tiers before any edit, unchanged", async () => {
@@ -1738,7 +1738,7 @@ describe("ComplexityRouterConfig tier editing", () => {
   it("replaces the display-name inputs with the reason an edited tier set forbids them", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={customValue} onEditingTiersChange={vi.fn()} />);
     expect(screen.queryByLabelText("简单层级的显示名称")).not.toBeInTheDocument();
-    expect(screen.getByText("Display names rename the built-in tiers", { exact: false })).toBeInTheDocument();
+    expect(screen.getByText("显示名称用于重命名内置层级", { exact: false })).toBeInTheDocument();
     expect(screen.getByLabelText("回退层级")).toBeInTheDocument();
   });
 
@@ -1756,7 +1756,7 @@ describe("ComplexityRouterConfig tier editing", () => {
     expect(sessionOption).toHaveAttribute("aria-disabled", "true");
     expect(sessionOption).not.toBeChecked();
     expect(
-      screen.getByText("Session pinning escalates along the built-in tier ladder", { exact: false }),
+      screen.getByText("会话固定沿内置层级阶梯升级", { exact: false }),
     ).toBeInTheDocument();
   });
 
@@ -1802,7 +1802,7 @@ describe("ComplexityRouterConfig tier editing", () => {
   it("leaves built-in routers with their display-name inputs and no restriction copy", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onEditingTiersChange={vi.fn()} />);
     expect(screen.getByLabelText("简单层级的显示名称")).toBeInTheDocument();
-    expect(screen.queryByText("Display names rename the built-in tiers", { exact: false })).not.toBeInTheDocument();
+    expect(screen.queryByText("显示名称用于重命名内置层级", { exact: false })).not.toBeInTheDocument();
   });
 });
 

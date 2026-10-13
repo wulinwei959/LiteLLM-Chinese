@@ -209,7 +209,7 @@ const ForecastClassifierConfig = ({ value, onChange, modelOptions, effortOptions
       updateCapability({ ...capability, calibration: { ...capability.calibration, version } });
     if (!isCapability && fuse.calibration) updateFuse({ ...fuse, calibration: { ...fuse.calibration, version } });
   };
-  const error = getForecastConfigError(value);
+  const error = getForecastConfigError(t, value);
   return (
     <div className="mt-4 space-y-4">
       <p className="text-sm text-muted-foreground">

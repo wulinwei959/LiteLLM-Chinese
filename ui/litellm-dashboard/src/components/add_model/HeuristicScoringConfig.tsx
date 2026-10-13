@@ -100,7 +100,7 @@ const HeuristicScoringConfig: React.FC<HeuristicScoringConfigProps> = ({ value, 
   const customEnabled = heuristicScoringRole(value) === "decides";
   const customRows = customEnabled ? value.custom_dimensions : undefined;
   const [weightError, setWeightError] = useState<WeightErrorKey | null>(null);
-  const rowError = customDimensionsError(customRows);
+  const rowError = customDimensionsError(t, customRows);
   const changeWeights = (edit: WeightEdit) => {
     const result = rebalanceDimensionWeights(defaults?.dimension_weights, value.dimension_weights, customRows, edit);
     if (!result.ok) {

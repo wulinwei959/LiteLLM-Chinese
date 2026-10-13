@@ -1,12 +1,15 @@
 import { z } from "zod/v4";
+import type { useTranslations } from "next-intl";
 
-const sharedShape = {
-  auto_router_name: z.string().min(1, "Auto router name is required"),
+type AddModelTranslator = ReturnType<typeof useTranslations<"models.addModel">>;
+
+const sharedShape = (t: AddModelTranslator) => ({
+  auto_router_name: z.string().min(1, t("autoRouterNameRequired")),
   model_access_group: z.array(z.string()),
-};
+});
 
-const complexityRouterShape = {
-  ...sharedShape,
+const complexityRouterShape = (t: AddModelTranslator) => ({
+  ...sharedShape(t),
   auto_router_default_model: z
     .string()
     .nullable()
@@ -15,26 +18,26 @@ const complexityRouterShape = {
     .string()
     .nullable()
     .transform((value) => value ?? ""),
-};
+});
 
-const semanticRouterShape = {
-  ...sharedShape,
+const semanticRouterShape = (t: AddModelTranslator) => ({
+  ...sharedShape(t),
   auto_router_default_model: z
     .string()
     .nullable()
-    .pipe(z.string({ error: "Default model is required" }).min(1, "Default model is required")),
+    .pipe(z.string({ error: t("editDefaultModelRequired") }).min(1, t("editDefaultModelRequired"))),
   auto_router_embedding_model: z
     .string()
     .nullable()
-    .pipe(z.string({ error: "Embedding model is required" }).min(1, "Embedding model is required")),
-};
+    .pipe(z.string({ error: t("editEmbeddingModelRequired") }).min(1, t("editEmbeddingModelRequired"))),
+});
 
-export const complexityRouterSchema = z.object(complexityRouterShape);
-export const semanticRouterSchema = z.object(semanticRouterShape);
+export const complexityRouterSchema = (t: AddModelTranslator) => z.object(complexityRouterShape(t));
+export const semanticRouterSchema = (t: AddModelTranslator) => z.object(semanticRouterShape(t));
 
-export type EditAutoRouterFormValues = z.infer<typeof semanticRouterSchema>;
+export type EditAutoRouterFormValues = z.infer<ReturnType<typeof semanticRouterSchema>>;
 
-export const EMPTY_FORM_VALUES: z.input<typeof semanticRouterSchema> = {
+export const EMPTY_FORM_VALUES: z.input<ReturnType<typeof semanticRouterSchema>> = {
   auto_router_name: "",
   auto_router_default_model: null,
   auto_router_embedding_model: null,
