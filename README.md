@@ -41,3 +41,29 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 ## 上游
 
 基于 [BerriAI/litellm](https://github.com/BerriAI/litellm) 的 `ui/litellm-dashboard` 展开
+
+## 当前状态 (2026-10-13)
+
+| 项目 | 状态 |
+|---|---|
+| **分支** | `main` (已同步上游 v1.105.0) |
+| **汉化完成度** | 核心管理页面完成，批次 24 (共享组件长尾) 进行中 |
+| **测试** | 11308 用例，11307 通过 (99.99%)，1 失败 (上游既有缺陷 `mcp_server_edit`) |
+| **类型检查** | 非测试文件 0 错误，`npm run build` 绿色 |
+| **i18n 守卫** | 3 条全部通过 (16 用例) |
+| **Lint** | 36 个预存错误 (代码库原有，非新增) |
+| **Docker 构建** | ✅ 修复完成 (`"use client"` 指令位置) |
+
+### 已修复的关键问题
+
+1. **Docker 构建阻断**：`ModelsTableColumns.tsx` 的 `"use client"` 指令位置错误 → 已修复并合并至 `main`
+2. **构建时类型错误**：`dd32399` 遗留的 22 处非测试文件类型错误 → 全部修复，非测试文件清零
+3. **缺 Provider 测试失败**：223 例 → 全部修复
+4. **缺键**：47 条真实缺失 (被 `missingKeys` 守卫拦截) → 全部补齐
+5. **断言过时**：第六类失败 (断言停在英文) → 在观测范围内归零
+
+### 剩余工作
+
+- **批次 24 共享组件长尾**：`components/add_model` (43 文件)、`components/Settings` (27 文件)、`components/view_logs` (22 文件)、`components/chat` (10 文件)、`components/AIHub` (9 文件) 等含用户可见英文且未接入翻译的文件
+- **技术债**：`mcp_server_edit.test.tsx` 1 例稳定失败 (OAuth 恢复取值失败，与翻译无关)，`AutoRoutersPanel` 2 例、`AccessGroupBudgetsPanel` 2 例 (既有问题)
+- **测试文件类型债**：904 条错误全部在测试文件中 (vitest 全局类型缺失等)，不阻塞构建

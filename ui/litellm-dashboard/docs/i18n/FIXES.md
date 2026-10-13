@@ -269,7 +269,27 @@ projects（82）、prompts（56）、agents（55）、cost-tracking（36）四�
 - 批量改断言时把消息值从 `zh-CN.json` 读出来生成替换串，不要手抄。"请求头名称（如 Authorization）"的全角括号、"移除中…"的省略号、ICU 里的 `{name}` 占位符，手抄一次错一次；用脚本取值替换，一步到位
 - `findByLabelText` / `getByLabelText` 前缀不同，替换模式写 `getByLabelText(...)` 会漏掉 `findByLabelText(...)` 的那些行。替换后按 `ByLabelText(` 之类的后缀再扫一遍兜底
 
-## 批次 24 硬编码英文欠账清单
+## 2026-10-13 同步上游 v1.105.0 后的修复
+
+### `"use client"` 指令位置错误导致 Docker 构建失败
+
+**症状**：Docker 多阶段构建在 `ui-builder` 阶段报错 `Module build failed: "use client" must be placed before any import statements`
+
+**根因**：`src/app/(dashboard)/models-and-endpoints/components/ModelsTableColumns.tsx` 里 `"use client"` 指令写在 import 语句之后（第 6 行），Next.js App Router 要求 `"use client"` 必须是文件的第一行（注释除外）
+
+**修法**：将 `"use client"` 移至文件第 1 行，所有 import 之前
+
+```diff
+- import type { ModelsTranslator } from "@/lib/i18n/translators";
+- import { useTranslations } from "next-intl";
+- "use client";
++ "use client";
++
++ import type { ModelsTranslator } from "@/lib/i18n/translators";
++ import { useTranslations } from "next-intl";
+```
+
+**验证**：`docker compose build --no-cache` 通过，容器正常启动
 
 2026-10-12 修 Provider 批次和 team 批次时实测确认：以下位置的组件仍输出硬编码英文，对应测试断言保留英文原文。批次 24 收口时先把这些字符串接入 `t()`，再把断言同步为中文
 
