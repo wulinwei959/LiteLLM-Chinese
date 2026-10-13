@@ -861,8 +861,8 @@ describe("ComplexityRouterConfig classifier rubric", () => {
     // operator their traffic is graded by examples the classifier never receives, and saving the form
     // unchanged would then move its tier decisions.
     openClassificationPanel(llmValue);
-    expect(screen.getByText("Legacy (uncalibrated) rubric")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Customize prompt" })).toBeInTheDocument();
+    expect(screen.getByText("旧版（未校准） 评分标准")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "自定义提示词" })).toBeInTheDocument();
   });
 
   it("stamps the calibrated preset on a classifier being switched on for the first time", async () => {
@@ -882,19 +882,19 @@ describe("ComplexityRouterConfig classifier rubric", () => {
       ...llmValue,
       classifier_llm_config: { model: "gpt-3.5-turbo", timeout_ms: 3000, classification_rubric: "agentic" },
     });
-    expect(screen.getByText("Agentic rubric")).toBeInTheDocument();
+    expect(screen.getByText("Agentic 评分标准")).toBeInTheDocument();
   });
 
   it("records the chat preset the operator picks inside the prompt editor", async () => {
     // The rubric now lives with the prompt it supplies, so picking one is an edit to the same control.
     const onChange = openClassificationPanel(llmValue);
-    await userEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
-    await userEvent.click(await screen.findByRole("combobox", { name: "Base rubric" }));
-    await userEvent.click(await screen.findByRole("option", { name: "Chat" }));
+    await userEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
+    await userEvent.click(await screen.findByRole("combobox", { name: "基础评分标准" }));
+    await userEvent.click(await screen.findByRole("option", { name: "对话" }));
     // The pick is a draft until Save, so Cancel cannot leave a preset the operator only previewed.
     expect(onChange).not.toHaveBeenCalled();
 
-    await userEvent.click(screen.getByRole("button", { name: "Save prompt" }));
+    await userEvent.click(screen.getByRole("button", { name: "保存提示词" }));
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({ classifier_llm_config: expect.objectContaining({ classification_rubric: "chat" }) }),
     );
@@ -905,16 +905,16 @@ describe("ComplexityRouterConfig classifier rubric", () => {
       ...llmValue,
       classifier_llm_config: { model: "gpt-3.5-turbo", timeout_ms: 3000, classification_rubric: "chat" },
     });
-    await userEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
-    expect(await screen.findByText(/only conversational traffic/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
+    expect(await screen.findByText(/只服务对话流量/)).toBeInTheDocument();
   });
 
   it("records the business preset the operator picks inside the prompt editor", async () => {
     const onChange = openClassificationPanel(llmValue);
-    await userEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
-    await userEvent.click(await screen.findByRole("combobox", { name: "Base rubric" }));
-    await userEvent.click(await screen.findByRole("option", { name: "Business" }));
-    await userEvent.click(screen.getByRole("button", { name: "Save prompt" }));
+    await userEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
+    await userEvent.click(await screen.findByRole("combobox", { name: "基础评分标准" }));
+    await userEvent.click(await screen.findByRole("option", { name: "商务" }));
+    await userEvent.click(screen.getByRole("button", { name: "保存提示词" }));
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         classifier_llm_config: expect.objectContaining({ classification_rubric: "business" }),
@@ -928,13 +928,13 @@ describe("ComplexityRouterConfig classifier rubric", () => {
       ...llmValue,
       classifier_llm_config: { model: "gpt-3.5-turbo", timeout_ms: 3000, system_prompt: "Grade data sensitivity" },
     });
-    expect(screen.getByRole("button", { name: "Edit custom prompt" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Customize prompt" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "编辑自定义提示词" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "自定义提示词" })).not.toBeInTheDocument();
   });
 
   it("hides the prompt control for the heuristic classifier, which sends no prompt at all", async () => {
     openClassificationPanel(defaultValue);
-    expect(screen.queryByRole("button", { name: "Customize prompt" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "自定义提示词" })).not.toBeInTheDocument();
   });
 });
 
@@ -1763,8 +1763,8 @@ describe("ComplexityRouterConfig tier editing", () => {
   it("lets an edited tier set write its own opening instructions instead of refusing a prompt outright", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={customValue} onEditingTiersChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByText("your own calibration examples", { exact: false })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Customize prompt" })).toBeInTheDocument();
+    expect(screen.getByText("编写开场指令和你自己的校准示例", { exact: false })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "自定义提示词" })).toBeInTheDocument();
     expect(screen.queryByText("A replacement prompt drops the tier bullets", { exact: false })).not.toBeInTheDocument();
   });
 
@@ -1777,9 +1777,9 @@ describe("ComplexityRouterConfig tier editing", () => {
       />,
     );
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByText("The base rubric supplies", { exact: false })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Customize prompt" })).toBeInTheDocument();
-    expect(screen.queryByText("Replace the built-in complexity rubric", { exact: false })).not.toBeInTheDocument();
+    expect(screen.getByText("开场指令和校准示例由基础评分标准提供", { exact: false })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "自定义提示词" })).toBeInTheDocument();
+    expect(screen.queryByText("替换内置的复杂度评分标准", { exact: false })).not.toBeInTheDocument();
   });
 
   it("keeps the legacy whole-prompt editor only on a router that already stored a replacement prompt", async () => {
@@ -1795,8 +1795,8 @@ describe("ComplexityRouterConfig tier editing", () => {
       />,
     );
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByRole("button", { name: "Edit custom prompt" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Customize prompt" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "编辑自定义提示词" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "自定义提示词" })).not.toBeInTheDocument();
   });
 
   it("leaves built-in routers with their display-name inputs and no restriction copy", async () => {

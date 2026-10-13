@@ -48,8 +48,8 @@ const openEditor = async ({
       classificationRubric={classificationRubric}
     />,
   );
-  await userEvent.click(screen.getByRole("button", { name: /prompt/i }));
-  expect(await screen.findByLabelText("Classifier system prompt")).toBeInTheDocument();
+  await userEvent.click(screen.getByRole("button", { name: /提示词/ }));
+  expect(await screen.findByLabelText("分类器系统提示词")).toBeInTheDocument();
   return onChange;
 };
 
@@ -59,7 +59,7 @@ describe("ClassifierPromptEditor", () => {
     // Prefilling from the backend rather than a frontend copy is the whole point: a copy would
     // drift the moment the rubric is edited.
     expect(getDefaultPrompt).toHaveBeenCalledWith("sk-test", 7, undefined, "agentic");
-    expect(screen.getByLabelText("Classifier system prompt")).toHaveValue(DEFAULT_PROMPT);
+    expect(screen.getByLabelText("分类器系统提示词")).toHaveValue(DEFAULT_PROMPT);
   });
 
   it("prefills the preset the router is on, not always the default one", async () => {
@@ -79,30 +79,30 @@ describe("ClassifierPromptEditor", () => {
 
   it("warns that the prompt replaces the injection-defense text", async () => {
     await openEditor();
-    expect(screen.getByText("Proceed with caution")).toBeInTheDocument();
-    expect(screen.getByText(/entire system role/)).toBeInTheDocument();
+    expect(screen.getByText("请谨慎操作")).toBeInTheDocument();
+    expect(screen.getByText(/整个系统角色/)).toBeInTheDocument();
   });
 
   it("warns that this mode freezes the tier definitions into the operator's text", async () => {
     // The whole point of the derived prompt is that a tier rename reaches the classifier. An
     // operator staying on this editor has to be told their text will not follow one.
     await openEditor({ systemPrompt: "Grade data sensitivity" });
-    expect(screen.getByText(/legacy whole-prompt mode/)).toBeInTheDocument();
-    expect(screen.getByText(/renaming a tier or changing the rubric will not update it/)).toBeInTheDocument();
+    expect(screen.getByText(/整体提示词模式/)).toBeInTheDocument();
+    expect(screen.getByText(/重命名层级或更改评分标准都不会更新它/)).toBeInTheDocument();
   });
 
   it("saves an edited prompt as an override", async () => {
     const onChange = await openEditor();
-    const textarea = screen.getByLabelText("Classifier system prompt");
+    const textarea = screen.getByLabelText("分类器系统提示词");
     await userEvent.clear(textarea);
     fireEvent.change(textarea, { target: { value: "Grade data sensitivity" } });
-    await userEvent.click(screen.getByRole("button", { name: "Save prompt" }));
+    await userEvent.click(screen.getByRole("button", { name: "保存提示词" }));
     expect(onChange).toHaveBeenCalledWith("Grade data sensitivity");
   });
 
   it("saves an untouched prompt as no override at all", async () => {
     const onChange = await openEditor();
-    await userEvent.click(screen.getByRole("button", { name: "Save prompt" }));
+    await userEvent.click(screen.getByRole("button", { name: "保存提示词" }));
     expect(onChange).toHaveBeenCalledWith(undefined);
   });
 
@@ -116,13 +116,13 @@ describe("ClassifierPromptEditor", () => {
         classificationRubric="agentic"
       />,
     );
-    expect(screen.getByRole("button", { name: "Edit custom prompt" })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Reset to default" }));
+    expect(screen.getByRole("button", { name: "编辑自定义提示词" })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "重置为默认" }));
     expect(onChange).toHaveBeenCalledWith(undefined);
   });
 
   it("seeds the editor from the stored override, not the default", async () => {
     await openEditor({ systemPrompt: "Grade data sensitivity" });
-    expect(screen.getByLabelText("Classifier system prompt")).toHaveValue("Grade data sensitivity");
+    expect(screen.getByLabelText("分类器系统提示词")).toHaveValue("Grade data sensitivity");
   });
 });

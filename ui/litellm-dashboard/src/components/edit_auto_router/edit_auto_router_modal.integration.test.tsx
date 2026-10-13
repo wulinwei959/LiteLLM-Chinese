@@ -491,9 +491,9 @@ describe("EditAutoRouterModal classifier context window", () => {
     const { baseElement } = renderLlmModal();
 
     openAutoRouterAdvanced("Classification Method");
-    await user.click(await screen.findByRole("button", { name: /prompt/i }));
+    await user.click(await screen.findByRole("button", { name: /提示词/ }));
 
-    expect(await screen.findByLabelText("Classification instructions")).toBeInTheDocument();
+    expect(await screen.findByLabelText("分类指令")).toBeInTheDocument();
     expect(baseElement.querySelectorAll('[data-slot="dialog-content"]')).toHaveLength(2);
   });
 
@@ -903,7 +903,7 @@ describe("EditAutoRouterModal custom classifier prompt and fallback", () => {
     renderCustomModal();
 
     openAutoRouterAdvanced("Classification Method");
-    expect(await screen.findByRole("button", { name: "Edit custom prompt" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "编辑自定义提示词" })).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: /路由到默认模型/ })).toBeChecked();
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
@@ -933,7 +933,7 @@ describe("EditAutoRouterModal custom classifier prompt and fallback", () => {
     renderCustomModal();
 
     openAutoRouterAdvanced("Classification Method");
-    await user.click(await screen.findByRole("button", { name: "Reset to default" }));
+    await user.click(await screen.findByRole("button", { name: "重置为默认" }));
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 

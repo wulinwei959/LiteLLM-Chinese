@@ -43,19 +43,19 @@ beforeEach(() => {
 describe("OpeningPromptEditor with an edited tier set", () => {
   it("shows the prompt the proxy assembled rather than one rebuilt in the browser", async () => {
     renderEditor();
-    fireEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
+    fireEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
 
     // The blank SIMPLE row inherits criteria that live only in the backend, so a preview built here
     // could not show them. Asserting the rendered text comes from the response is what pins that.
-    expect(await screen.findByLabelText("Assembled classifier prompt")).toHaveTextContent(
+    expect(await screen.findByLabelText("拼接后的分类器提示词")).toHaveTextContent(
       "- SIMPLE: greetings, chitchat",
     );
   });
 
   it("sends a blank built-in definition as an absent description, which is what inherits the criteria", async () => {
     renderEditor();
-    fireEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
-    await screen.findByLabelText("Assembled classifier prompt");
+    fireEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
+    await screen.findByLabelText("拼接后的分类器提示词");
 
     expect(getAutoRouterAssembledPromptCall).toHaveBeenCalledWith(
       "sk-test",
@@ -67,10 +67,10 @@ describe("OpeningPromptEditor with an edited tier set", () => {
 
   it("previews the draft being typed, not only the saved prompt", async () => {
     renderEditor("saved opening");
-    fireEvent.click(screen.getByRole("button", { name: "Edit custom prompt" }));
-    await screen.findByLabelText("Assembled classifier prompt");
+    fireEvent.click(screen.getByRole("button", { name: "编辑自定义提示词" }));
+    await screen.findByLabelText("拼接后的分类器提示词");
 
-    fireEvent.change(screen.getByLabelText("Classification instructions"), {
+    fireEvent.change(screen.getByLabelText("分类指令"), {
       target: { value: "edited opening" },
     });
 
@@ -93,44 +93,44 @@ describe("OpeningPromptEditor with an edited tier set", () => {
       )
       .mockResolvedValueOnce("assembled from the edited draft");
     renderEditor();
-    fireEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
+    fireEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
     await vi.waitFor(() => expect(getAutoRouterAssembledPromptCall).toHaveBeenCalledTimes(1));
 
-    fireEvent.change(screen.getByLabelText("Classification instructions"), {
+    fireEvent.change(screen.getByLabelText("分类指令"), {
       target: { value: "edited" },
     });
-    expect(await screen.findByLabelText("Assembled classifier prompt")).toHaveTextContent(
+    expect(await screen.findByLabelText("拼接后的分类器提示词")).toHaveTextContent(
       "assembled from the edited draft",
     );
 
     resolveFirst("assembled from the stale draft");
     await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(screen.getByLabelText("Assembled classifier prompt")).toHaveTextContent("assembled from the edited draft");
+    expect(screen.getByLabelText("拼接后的分类器提示词")).toHaveTextContent("assembled from the edited draft");
   });
 
   it("keeps the editor usable when the preview cannot be fetched", async () => {
     getAutoRouterAssembledPromptCall.mockRejectedValue(new Error("boom"));
     renderEditor();
-    fireEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
+    fireEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
 
-    expect(await screen.findByRole("button", { name: "Save prompt" })).toBeEnabled();
-    expect(screen.queryByLabelText("Assembled classifier prompt")).not.toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "保存提示词" })).toBeEnabled();
+    expect(screen.queryByLabelText("拼接后的分类器提示词")).not.toBeInTheDocument();
   });
 
   it("saves the draft as the router's opening instructions", () => {
     const onChange = renderEditor();
-    fireEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
-    fireEvent.change(screen.getByLabelText("Classification instructions"), {
+    fireEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
+    fireEvent.change(screen.getByLabelText("分类指令"), {
       target: { value: "  my rubric  " },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Save prompt" }));
+    fireEvent.click(screen.getByRole("button", { name: "保存提示词" }));
 
     expect(onChange).toHaveBeenCalledWith({ classificationPrompt: "my rubric", classificationExamples: undefined });
   });
 
   it("clears the prompt rather than saving whitespace, so the router keeps the built-in opening", () => {
     const onChange = renderEditor("saved opening");
-    fireEvent.click(screen.getByRole("button", { name: "Reset to default" }));
+    fireEvent.click(screen.getByRole("button", { name: "重置为默认" }));
 
     expect(onChange).toHaveBeenCalledWith({ classificationPrompt: undefined, classificationExamples: undefined });
   });
@@ -147,8 +147,8 @@ describe("OpeningPromptEditor on a built-in tier set", () => {
     // A built-in router has no tier_definitions to send: its bullets come from the four criteria the
     // backend owns, named by the operator's labels, so the request must carry those two instead.
     renderEditor(undefined, builtInSource);
-    fireEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
-    await screen.findByLabelText("Assembled classifier prompt");
+    fireEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
+    await screen.findByLabelText("拼接后的分类器提示词");
 
     expect(getAutoRouterAssembledPromptCall).toHaveBeenCalledWith(
       "sk-test",
@@ -160,21 +160,21 @@ describe("OpeningPromptEditor on a built-in tier set", () => {
 
   it("names the base rubric outside the editor and explains how to customize the sections", () => {
     renderEditor(undefined, builtInSource);
-    expect(screen.getByText("Agentic rubric")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Customize prompt" })).toBeInTheDocument();
-    expect(screen.getByText("The base rubric supplies", { exact: false })).toBeInTheDocument();
+    expect(screen.getByText("Agentic 评分标准")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "自定义提示词" })).toBeInTheDocument();
+    expect(screen.getByText("开场指令和校准示例由基础评分标准提供", { exact: false })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
-    expect(screen.getByRole("combobox", { name: "Base rubric" })).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: "Classification instructions" })).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: "Calibration examples" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
+    expect(screen.getByRole("combobox", { name: "基础评分标准" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "分类指令" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "校准示例" })).toBeInTheDocument();
   });
 
   it("locks the base rubric when the tier set restricts it, rather than offering a pick the save rejects", () => {
     renderEditor(undefined, { ...builtInSource, rubricRestriction: "An edited tier set replaces the rubric" });
-    fireEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
+    fireEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
 
-    expect(screen.getByRole("combobox", { name: "Base rubric" })).toBeDisabled();
+    expect(screen.getByRole("combobox", { name: "基础评分标准" })).toBeDisabled();
     expect(screen.getByText("An edited tier set replaces the rubric")).toBeInTheDocument();
   });
 
@@ -182,38 +182,38 @@ describe("OpeningPromptEditor on a built-in tier set", () => {
   // selection untouched and would make either assertion below pass without exercising the pick.
   const pickRubric = async (name: string) => {
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "Customize prompt" }));
-    await user.click(await screen.findByRole("combobox", { name: "Base rubric" }));
+    await user.click(screen.getByRole("button", { name: "自定义提示词" }));
+    await user.click(await screen.findByRole("combobox", { name: "基础评分标准" }));
     await user.click(await screen.findByRole("option", { name }));
     return user;
   };
 
   it("cancels a rubric change without writing it through to the form", async () => {
     const onChange = renderEditor(undefined, builtInSource);
-    const user = await pickRubric("Chat");
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    const user = await pickRubric("对话");
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
     expect(onChange).not.toHaveBeenCalled();
-    expect(screen.getByText("Agentic rubric")).toBeInTheDocument();
+    expect(screen.getByText("Agentic 评分标准")).toBeInTheDocument();
   });
 
   it("describes the rubric being previewed, not the one still saved", async () => {
     renderEditor(undefined, builtInSource);
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "Customize prompt" }));
-    expect(screen.getByText("Anchors routine installs", { exact: false })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "自定义提示词" }));
+    expect(screen.getByText("把常规安装、构建、多文件编辑和标准调试锚定在 Medium", { exact: false })).toBeInTheDocument();
 
-    await user.click(await screen.findByRole("combobox", { name: "Base rubric" }));
-    await user.click(await screen.findByRole("option", { name: "Chat" }));
+    await user.click(await screen.findByRole("combobox", { name: "基础评分标准" }));
+    await user.click(await screen.findByRole("option", { name: "对话" }));
 
-    expect(screen.getByText("Drops the engineering examples", { exact: false })).toBeInTheDocument();
-    expect(screen.queryByText("Anchors routine installs", { exact: false })).not.toBeInTheDocument();
+    expect(screen.getByText("去掉工程类示例", { exact: false })).toBeInTheDocument();
+    expect(screen.queryByText("把常规安装、构建、多文件编辑和标准调试锚定在 Medium", { exact: false })).not.toBeInTheDocument();
   });
 
   it("commits a selected rubric with the section drafts on Save", async () => {
     const onChange = renderEditor(undefined, builtInSource);
-    const user = await pickRubric("Chat");
-    await user.click(screen.getByRole("button", { name: "Save prompt" }));
+    const user = await pickRubric("对话");
+    await user.click(screen.getByRole("button", { name: "保存提示词" }));
 
     expect(onChange).toHaveBeenCalledWith({
       classificationRubric: "chat",
@@ -224,17 +224,17 @@ describe("OpeningPromptEditor on a built-in tier set", () => {
 
   it("labels the trigger as an edit once the operator has written a prompt", () => {
     renderEditor("my opening", builtInSource);
-    expect(screen.getByRole("button", { name: "Edit custom prompt" })).toBeInTheDocument();
-    expect(screen.getByText("Custom opening on the Agentic rubric")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "编辑自定义提示词" })).toBeInTheDocument();
+    expect(screen.getByText("在 Agentic 评分标准上使用自定义开场")).toBeInTheDocument();
   });
 
   it("saves the draft as the router's opening instructions", () => {
     const onChange = renderEditor(undefined, builtInSource);
-    fireEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
-    fireEvent.change(screen.getByLabelText("Classification instructions"), {
+    fireEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
+    fireEvent.change(screen.getByLabelText("分类指令"), {
       target: { value: "  grade difficulty  " },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Save prompt" }));
+    fireEvent.click(screen.getByRole("button", { name: "保存提示词" }));
 
     expect(onChange).toHaveBeenCalledWith({
       classificationRubric: "agentic",
@@ -245,11 +245,11 @@ describe("OpeningPromptEditor on a built-in tier set", () => {
 
   it("clears the prompt rather than saving whitespace, so the router keeps the built-in rubric", () => {
     const onChange = renderEditor(undefined, builtInSource);
-    fireEvent.click(screen.getByRole("button", { name: "Customize prompt" }));
-    fireEvent.change(screen.getByLabelText("Classification instructions"), {
+    fireEvent.click(screen.getByRole("button", { name: "自定义提示词" }));
+    fireEvent.change(screen.getByLabelText("分类指令"), {
       target: { value: "   \n " },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Save prompt" }));
+    fireEvent.click(screen.getByRole("button", { name: "保存提示词" }));
 
     expect(onChange).toHaveBeenCalledWith({
       classificationRubric: "agentic",
