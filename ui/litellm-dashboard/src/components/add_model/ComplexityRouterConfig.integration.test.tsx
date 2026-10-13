@@ -129,9 +129,9 @@ describe("ComplexityRouterConfig", () => {
     );
     openAutoRouterAdvanced("Classification Method");
     if (visible) {
-      expect(screen.getByLabelText("Classifier plugin timeout (ms)")).toBeInTheDocument();
+      expect(screen.getByLabelText("分类器插件超时（毫秒）")).toBeInTheDocument();
     } else {
-      expect(screen.queryByLabelText("Classifier plugin timeout (ms)")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("分类器插件超时（毫秒）")).not.toBeInTheDocument();
     }
   });
 
@@ -274,8 +274,8 @@ describe("ComplexityRouterConfig", () => {
 
     expect(screen.getByText("评审模型")).toBeInTheDocument();
     expect(screen.getByLabelText("超时（毫秒）")).toHaveValue("750");
-    expect(screen.getByRole("switch", { name: "Classifier circuit breaker" })).toBeChecked();
-    expect(screen.getByLabelText("Circuit breaker cooldown (seconds)")).toHaveValue("30");
+    expect(screen.getByRole("switch", { name: "分类器熔断器" })).toBeChecked();
+    expect(screen.getByLabelText("熔断器冷却时间（秒）")).toHaveValue("30");
     expect(screen.getByLabelText("上下文窗口大小")).toHaveValue("5");
     expect(screen.queryByText("Context Per-Turn Character Limit")).not.toBeInTheDocument();
   });
@@ -290,7 +290,7 @@ describe("ComplexityRouterConfig", () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={llmValue} onChange={onChange} />);
     openAutoRouterAdvanced("Classification Method");
 
-    fireEvent.click(screen.getByRole("switch", { name: "Classifier circuit breaker" }));
+    fireEvent.click(screen.getByRole("switch", { name: "分类器熔断器" }));
 
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -408,7 +408,7 @@ describe("ComplexityRouterConfig", () => {
   it.each([
     ["超时（毫秒）", "7", { classifier_llm_config: { model: "gpt-3.5-turbo", timeout_ms: 7 } }],
     [
-      "Circuit breaker cooldown (seconds)",
+      "熔断器冷却时间（秒）",
       "45",
       {
         classifier_llm_config: {
@@ -1325,11 +1325,11 @@ describe("ComplexityRouterConfig classifier reasoning effort", () => {
   it("defaults to the classifier provider setting and offers only supported efforts", async () => {
     renderClassifier();
     const user = userEvent.setup();
-    const select = screen.getByRole("combobox", { name: "Reasoning effort for classifier model gpt-4" });
-    expect(select).toHaveTextContent("Default");
+    const select = screen.getByRole("combobox", { name: "分类器模型 gpt-4 的推理强度" });
+    expect(select).toHaveTextContent("默认");
     await user.click(select);
     expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual([
-      "Default",
+      "默认",
       "medium",
       "high",
       "xhigh",
@@ -1339,7 +1339,7 @@ describe("ComplexityRouterConfig classifier reasoning effort", () => {
   it("stores an explicit effort on the classifier config", async () => {
     const onChange = renderClassifier();
     const user = userEvent.setup();
-    await user.click(screen.getByRole("combobox", { name: "Reasoning effort for classifier model gpt-4" }));
+    await user.click(screen.getByRole("combobox", { name: "分类器模型 gpt-4 的推理强度" }));
     await user.click(await screen.findByRole("option", { name: "high" }));
     expect(onChange).toHaveBeenCalledWith({
       ...llmValue,
@@ -1353,8 +1353,8 @@ describe("ComplexityRouterConfig classifier reasoning effort", () => {
       classifier_llm_config: { model: "gpt-4", timeout_ms: 3000, reasoning_effort: "high" },
     });
     const user = userEvent.setup();
-    await user.click(screen.getByRole("combobox", { name: "Reasoning effort for classifier model gpt-4" }));
-    await user.click(await screen.findByRole("option", { name: "Default" }));
+    await user.click(screen.getByRole("combobox", { name: "分类器模型 gpt-4 的推理强度" }));
+    await user.click(await screen.findByRole("option", { name: "默认" }));
     expect(onChange).toHaveBeenCalledWith(llmValue);
   });
 
@@ -1388,14 +1388,14 @@ describe("ComplexityRouterConfig classifier reasoning effort", () => {
   );
 
   it.each([
-    ["gpt-4", "max", "max (unsupported)", /not supported by every deployment/],
-    ["claude-3-opus", "low", "low (unverified)", /cannot be verified/],
+    ["gpt-4", "max", "max（不支持）", /每个部署并非都支持/],
+    ["claude-3-opus", "low", "low（未验证）", /无法为所选模型验证/],
   ])("keeps a saved exceptional value visible for %s", (model, effort, label, warning) => {
     renderClassifier({
       ...llmValue,
       classifier_llm_config: { model, timeout_ms: 3000, reasoning_effort: effort },
     });
-    expect(screen.getByRole("combobox", { name: `Reasoning effort for classifier model ${model}` })).toHaveTextContent(
+    expect(screen.getByRole("combobox", { name: `分类器模型 ${model} 的推理强度` })).toHaveTextContent(
       label,
     );
     expect(screen.getByText(warning)).toBeInTheDocument();
@@ -1407,7 +1407,7 @@ describe("ComplexityRouterConfig classifier reasoning effort", () => {
       classifier_llm_config: { model, timeout_ms: 3000 },
     });
     expect(
-      screen.queryByRole("combobox", { name: `Reasoning effort for classifier model ${model}` }),
+      screen.queryByRole("combobox", { name: `分类器模型 ${model} 的推理强度` }),
     ).not.toBeInTheDocument();
   });
 });
@@ -1831,13 +1831,13 @@ describe("classifier vision settings", () => {
     renderWithProviders(<VisionFixture />);
     openAutoRouterAdvanced("Classification Method");
 
-    const vision = screen.getByRole("switch", { name: "Use images for classification" });
+    const vision = screen.getByRole("switch", { name: "使用图片进行分类" });
     expect(vision).not.toBeChecked();
-    expect(screen.queryByLabelText("Maximum images per request")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("每次请求的最大图片数")).not.toBeInTheDocument();
 
     fireEvent.click(vision);
 
-    expect(screen.getByLabelText("Maximum images per request")).toHaveValue("1");
+    expect(screen.getByLabelText("每次请求的最大图片数")).toHaveValue("1");
   });
 
   it("writes the switch and a clamped image cap into the classifier config", async () => {
@@ -1845,13 +1845,13 @@ describe("classifier vision settings", () => {
     renderWithProviders(<VisionFixture onChange={onChange} />);
     openAutoRouterAdvanced("Classification Method");
 
-    fireEvent.click(screen.getByRole("switch", { name: "Use images for classification" }));
+    fireEvent.click(screen.getByRole("switch", { name: "使用图片进行分类" }));
     expect(onChange).toHaveBeenLastCalledWith({
       ...llmValue,
       classifier_llm_config: { ...llmValue.classifier_llm_config, vision: { enabled: true, max_images: 1 } },
     });
 
-    fireEvent.change(screen.getByLabelText("Maximum images per request"), { target: { value: "1.7" } });
+    fireEvent.change(screen.getByLabelText("每次请求的最大图片数"), { target: { value: "1.7" } });
     expect(onChange).toHaveBeenLastCalledWith({
       ...llmValue,
       classifier_llm_config: { ...llmValue.classifier_llm_config, vision: { enabled: true, max_images: 2 } },
@@ -1862,10 +1862,10 @@ describe("classifier vision settings", () => {
     const onChange = vi.fn();
     renderWithProviders(<VisionFixture onChange={onChange} />);
     openAutoRouterAdvanced("Classification Method");
-    fireEvent.click(screen.getByRole("switch", { name: "Use images for classification" }));
+    fireEvent.click(screen.getByRole("switch", { name: "使用图片进行分类" }));
     onChange.mockClear();
 
-    const input = screen.getByLabelText("Maximum images per request");
+    const input = screen.getByLabelText("每次请求的最大图片数");
     fireEvent.change(input, { target: { value: "" } });
 
     expect(input).toHaveValue("");
@@ -1882,6 +1882,6 @@ describe("classifier vision settings", () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={defaultValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
 
-    expect(screen.queryByText("Use images for classification")).not.toBeInTheDocument();
+    expect(screen.queryByText("使用图片进行分类")).not.toBeInTheDocument();
   });
 });

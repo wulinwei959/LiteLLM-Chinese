@@ -983,7 +983,22 @@
       "jevAllowanceLabel": "自定义指令共用自定义层级配额",
       "jevInstructionsPlaceholder": "留空则使用内置指令",
       "jevRestoreInstructions": "恢复内置指令",
-      "jevBuiltInNote": "内置决策模型分类无需许可证即可使用，并采用随版本发布的层级判定标准"
+      "jevBuiltInNote": "内置决策模型分类无需许可证即可使用，并采用随版本发布的层级判定标准",
+      "classifierEffortHint": "仅发送给分类器调用。选择默认则不改变分类器部署或提供方的设置。",
+      "effortUnsupportedOption": "{effort}（不支持）",
+      "effortUnverifiedOption": "{effort}（未验证）",
+      "classifierEffortAria": "分类器模型 {model} 的推理强度",
+      "effortUnverifiedWarning": "无法为所选模型验证已保存的该推理强度。除非你已确认提供方支持，否则请选择默认。",
+      "effortUnsupportedWarning": "所选模型组中的每个部署并非都支持已保存的该推理强度。保存前请选择默认或受支持的值。",
+      "visionToggleLabel": "使用图片进行分类",
+      "visionHelp": "将内联图片数据发送给分类器，使其能根据图片内容选择层级。",
+      "visionMaxImagesLabel": "每次请求的最大图片数",
+      "circuitBreakerLabel": "分类器熔断器",
+      "circuitBreakerHelp": "分类器一旦超时，此后每个会话都立即使用回退，直到恢复探测成功为止。默认启用。",
+      "circuitBreakerCooldownLabel": "熔断器冷却时间（秒）",
+      "pluginTimeoutIntro": "此路由器使用了在 config.yaml 中设置的自定义分类器插件。请在下方选择一个分类器来替换它。",
+      "pluginTimeoutLabel": "分类器插件超时（毫秒）",
+      "pluginTimeoutHelp": "插件调用的时间预算。超时后由回退路径决定层级。"
     },
     "health": {
       "title": "健康状态",

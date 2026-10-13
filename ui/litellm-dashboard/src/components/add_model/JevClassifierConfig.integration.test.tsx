@@ -99,29 +99,29 @@ describe("JEV classifier editor", () => {
   it("uses built-in JEV without a license and preserves custom tiers and context through reload", () => {
     renderWithProviders(<Form />);
     expect(screen.getByLabelText("评审模型")).toBeInTheDocument();
-    expect(screen.getByText("Reasoning Effort")).toBeInTheDocument();
+    expect(screen.getByText("推理强度")).toBeInTheDocument();
     expect(screen.getByText("分类器提示词")).toBeInTheDocument();
-    expect(screen.getByRole("switch", { name: "Use images for classification" })).toBeInTheDocument();
+    expect(screen.getByRole("switch", { name: "使用图片进行分类" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("radio", { name: /决策模型/ }));
     expect(screen.getByRole("radio", { name: /^决策模型/ })).toBeChecked();
     expect(screen.getByLabelText("分类器模型")).toHaveValue("jev-latest");
     expect(screen.getByLabelText("分类器指令")).toBeEnabled();
     expect(screen.queryByLabelText("评审模型")).not.toBeInTheDocument();
-    expect(screen.queryByText("Reasoning Effort")).not.toBeInTheDocument();
+    expect(screen.queryByText("推理强度")).not.toBeInTheDocument();
     expect(screen.queryByText("分类器提示词")).not.toBeInTheDocument();
-    expect(screen.queryByRole("switch", { name: "Use images for classification" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("switch", { name: "使用图片进行分类" })).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("分类器模型"), { target: { value: "jev-test" } });
     fireEvent.change(screen.getByLabelText("分类器超时（毫秒）"), { target: { value: "4200" } });
     fireEvent.change(screen.getByLabelText("上下文窗口大小"), { target: { value: "6" } });
-    fireEvent.change(screen.getByLabelText("Circuit breaker cooldown (seconds)"), { target: { value: "50" } });
-    fireEvent.click(screen.getByRole("switch", { name: "Classifier circuit breaker" }));
+    fireEvent.change(screen.getByLabelText("熔断器冷却时间（秒）"), { target: { value: "50" } });
+    fireEvent.click(screen.getByRole("switch", { name: "分类器熔断器" }));
     fireEvent.click(screen.getByRole("button", { name: "Customize tiers" }));
     fireEvent.click(screen.getByRole("button", { name: "Save and reload" }));
     expect(screen.getByRole("radio", { name: /决策模型/ })).toBeChecked();
     expect(screen.getByLabelText("分类器模型")).toHaveValue("jev-test");
     expect(screen.getByLabelText("分类器超时（毫秒）")).toHaveValue(4200);
     expect(screen.getByLabelText("上下文窗口大小")).toHaveValue("6");
-    expect(screen.getByRole("switch", { name: "Classifier circuit breaker" })).not.toBeChecked();
+    expect(screen.getByRole("switch", { name: "分类器熔断器" })).not.toBeChecked();
     fireEvent.click(screen.getByRole("button", { name: "Probe current config" }));
     expect(testAutoRouterRouting).toHaveBeenCalledWith(
       "token",

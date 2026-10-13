@@ -1447,8 +1447,8 @@ describe("EditAutoRouterModal classifier vision", () => {
     renderModal();
 
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByRole("switch", { name: "Use images for classification" })).toBeChecked();
-    expect(screen.getByLabelText("Maximum images per request")).toHaveValue("2");
+    expect(screen.getByRole("switch", { name: "使用图片进行分类" })).toBeChecked();
+    expect(screen.getByLabelText("每次请求的最大图片数")).toHaveValue("2");
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -1462,7 +1462,7 @@ describe("EditAutoRouterModal classifier vision", () => {
     renderModal();
 
     openAutoRouterAdvanced("Classification Method");
-    await user.click(screen.getByRole("switch", { name: "Use images for classification" }));
+    await user.click(screen.getByRole("switch", { name: "使用图片进行分类" }));
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 

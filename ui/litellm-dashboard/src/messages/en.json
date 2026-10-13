@@ -983,7 +983,22 @@
       "jevAllowanceLabel": "Custom instructions share the custom-tier allowance",
       "jevInstructionsPlaceholder": "Leave blank to use the built-in instructions",
       "jevRestoreInstructions": "Restore built-in instructions",
-      "jevBuiltInNote": "Built-in decision model classification is available without a license and uses the shipped tier criteria"
+      "jevBuiltInNote": "Built-in decision model classification is available without a license and uses the shipped tier criteria",
+      "classifierEffortHint": "Sent only to the classifier call. Default leaves the classifier deployment or provider setting unchanged.",
+      "effortUnsupportedOption": "{effort} (unsupported)",
+      "effortUnverifiedOption": "{effort} (unverified)",
+      "classifierEffortAria": "Reasoning effort for classifier model {model}",
+      "effortUnverifiedWarning": "This saved effort cannot be verified for the selected model. Choose Default unless you have confirmed provider support.",
+      "effortUnsupportedWarning": "This saved effort is not supported by every deployment in the selected model group. Choose Default or a supported value before saving.",
+      "visionToggleLabel": "Use images for classification",
+      "visionHelp": "Send inline image data to the classifier so it can choose a tier from what the image shows.",
+      "visionMaxImagesLabel": "Maximum images per request",
+      "circuitBreakerLabel": "Classifier circuit breaker",
+      "circuitBreakerHelp": "After one classifier timeout, use the fallback immediately for every session until a recovery probe succeeds. Enabled by default.",
+      "circuitBreakerCooldownLabel": "Circuit breaker cooldown (seconds)",
+      "pluginTimeoutIntro": "This router uses a custom classifier plugin set in config.yaml. Pick a classifier below to replace it.",
+      "pluginTimeoutLabel": "Classifier plugin timeout (ms)",
+      "pluginTimeoutHelp": "Time budget for the plugin call. On expiry the fallback path decides the tier."
     },
     "health": {
       "title": "Health Status",
