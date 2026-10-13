@@ -98,15 +98,15 @@ describe("JEV classifier editor", () => {
   afterEach(() => vi.mocked(useAuthorized).mockReset());
   it("uses built-in JEV without a license and preserves custom tiers and context through reload", () => {
     renderWithProviders(<Form />);
-    expect(screen.getByLabelText("Judge model")).toBeInTheDocument();
+    expect(screen.getByLabelText("评审模型")).toBeInTheDocument();
     expect(screen.getByText("Reasoning Effort")).toBeInTheDocument();
     expect(screen.getByText("Classifier Prompt")).toBeInTheDocument();
     expect(screen.getByRole("switch", { name: "Use images for classification" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("radio", { name: /Decisions Model/ }));
-    expect(screen.getByRole("radio", { name: /^Decisions Model/ })).toBeChecked();
+    fireEvent.click(screen.getByRole("radio", { name: /决策模型/ }));
+    expect(screen.getByRole("radio", { name: /^决策模型/ })).toBeChecked();
     expect(screen.getByLabelText("Classifier Model")).toHaveValue("jev-latest");
     expect(screen.getByLabelText("Classifier Instructions")).toBeEnabled();
-    expect(screen.queryByLabelText("Judge model")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("评审模型")).not.toBeInTheDocument();
     expect(screen.queryByText("Reasoning Effort")).not.toBeInTheDocument();
     expect(screen.queryByText("Classifier Prompt")).not.toBeInTheDocument();
     expect(screen.queryByRole("switch", { name: "Use images for classification" })).not.toBeInTheDocument();
@@ -117,7 +117,7 @@ describe("JEV classifier editor", () => {
     fireEvent.click(screen.getByRole("switch", { name: "Classifier circuit breaker" }));
     fireEvent.click(screen.getByRole("button", { name: "Customize tiers" }));
     fireEvent.click(screen.getByRole("button", { name: "Save and reload" }));
-    expect(screen.getByRole("radio", { name: /Decisions Model/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /决策模型/ })).toBeChecked();
     expect(screen.getByLabelText("Classifier Model")).toHaveValue("jev-test");
     expect(screen.getByLabelText("Classifier Timeout (ms)")).toHaveValue(4200);
     expect(screen.getByLabelText("Context Window Size")).toHaveValue("6");

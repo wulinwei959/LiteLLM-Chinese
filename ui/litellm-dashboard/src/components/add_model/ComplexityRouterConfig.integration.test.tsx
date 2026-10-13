@@ -101,7 +101,7 @@ describe("ComplexityRouterConfig", () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={defaultValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
     expect(screen.getByText("Classifier tuning")).toBeInTheDocument();
-    expect(screen.queryByText("Judge model")).not.toBeInTheDocument();
+    expect(screen.queryByText("评审模型")).not.toBeInTheDocument();
   });
 
   it("shows heuristic advanced sections and hides keyword overrides for capability classifiers", async () => {
@@ -197,7 +197,7 @@ describe("ComplexityRouterConfig", () => {
     );
 
     openAutoRouterAdvanced("Classification Method");
-    await selectAutoRouterOption("Heuristic", "Heuristic v2");
+    await selectAutoRouterOption("启发式", "启发式 v2");
 
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -209,7 +209,7 @@ describe("ComplexityRouterConfig", () => {
     const heuristicV2Value: ComplexityRouterConfigValue = { ...defaultValue, classifier_type: "heuristic_v2" };
     rerender(<ComplexityRouterConfig modelInfo={mockModelInfo} value={heuristicV2Value} onChange={onChange} />);
 
-    expect(screen.queryByText("Judge model")).not.toBeInTheDocument();
+    expect(screen.queryByText("评审模型")).not.toBeInTheDocument();
     expect(screen.queryByText("Advanced scoring")).not.toBeInTheDocument();
     expect(screen.getByText(/estimates success probability for all four tiers/)).toBeInTheDocument();
     expect(screen.queryByText(/Score < 0.15/)).not.toBeInTheDocument();
@@ -272,7 +272,7 @@ describe("ComplexityRouterConfig", () => {
 
     openAutoRouterAdvanced("Classification Method");
 
-    expect(screen.getByText("Judge model")).toBeInTheDocument();
+    expect(screen.getByText("评审模型")).toBeInTheDocument();
     expect(screen.getByLabelText("Timeout (ms)")).toHaveValue("750");
     expect(screen.getByRole("switch", { name: "Classifier circuit breaker" })).toBeChecked();
     expect(screen.getByLabelText("Circuit breaker cooldown (seconds)")).toHaveValue("30");
@@ -631,7 +631,7 @@ describe("ComplexityRouterConfig", () => {
     };
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={llmValue} showValidationErrors={true} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByText("A judge model is required")).toBeInTheDocument();
+    expect(screen.getByText("必须选择评审模型")).toBeInTheDocument();
   });
 
   it("does not show the classifier model error once a classifier model is set", async () => {
@@ -642,7 +642,7 @@ describe("ComplexityRouterConfig", () => {
     };
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={llmValue} showValidationErrors={true} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.queryByText("A judge model is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("必须选择评审模型")).not.toBeInTheDocument();
   });
 
   it("shows a validation error only under unfilled tiers when showValidationErrors is true", async () => {
@@ -758,7 +758,7 @@ describe("ComplexityRouterConfig classifier fallback", () => {
       />,
     );
     openAutoRouterAdvanced("Classification Method");
-    fireEvent.click(screen.getByRole("radio", { name: /^Heuristics$/ }));
+    fireEvent.click(screen.getByRole("radio", { name: /^启发式$/ }));
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ classifier_fallback: undefined }));
   });
 });
@@ -773,18 +773,18 @@ describe("ComplexityRouterConfig classification frequency", () => {
   it("defaults to every request, matching both backend field defaults", async () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={llmValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByRole("combobox", { name: "How often to classify" })).toHaveTextContent("Every request");
-    expect(screen.getByRole("combobox", { name: "How often to classify" })).not.toHaveTextContent(
-      "Every new user message",
+    expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent("每个请求");
+    expect(screen.getByRole("combobox", { name: "分类频率" })).not.toHaveTextContent(
+      "每条新用户消息",
     );
-    expect(screen.getByRole("combobox", { name: "How often to classify" })).not.toHaveTextContent("Once per session");
+    expect(screen.getByRole("combobox", { name: "分类频率" })).not.toHaveTextContent("每个会话一次");
   });
 
   it("writes both wire fields when the frequency moves to every new user message", async () => {
     const onChange = vi.fn();
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={llmValue} onChange={onChange} />);
     openAutoRouterAdvanced("Classification Method");
-    await selectAutoRouterOption("How often to classify", "Every new user message");
+    await selectAutoRouterOption("分类频率", "每条新用户消息");
     expect(onChange).toHaveBeenCalledWith({
       ...llmValue,
       classification_mode: "user_turn",
@@ -796,7 +796,7 @@ describe("ComplexityRouterConfig classification frequency", () => {
     const onChange = vi.fn();
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={llmValue} onChange={onChange} />);
     openAutoRouterAdvanced("Classification Method");
-    await selectAutoRouterOption("How often to classify", "Once per session");
+    await selectAutoRouterOption("分类频率", "每个会话一次");
     expect(onChange).toHaveBeenCalledWith({
       ...llmValue,
       classification_mode: "every_request",
@@ -813,9 +813,9 @@ describe("ComplexityRouterConfig classification frequency", () => {
       />,
     );
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByRole("combobox", { name: "How often to classify" })).toHaveTextContent("Once per session");
-    expect(screen.getByRole("combobox", { name: "How often to classify" })).not.toHaveTextContent(
-      "Every new user message",
+    expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent("每个会话一次");
+    expect(screen.getByRole("combobox", { name: "分类频率" })).not.toHaveTextContent(
+      "每条新用户消息",
     );
   });
 
@@ -829,8 +829,8 @@ describe("ComplexityRouterConfig classification frequency", () => {
       />,
     );
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByRole("combobox", { name: "How often to classify" })).toHaveTextContent("Every new user message");
-    await selectAutoRouterOption("How often to classify", "Every request");
+    expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent("每条新用户消息");
+    await selectAutoRouterOption("分类频率", "每个请求");
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ classification_mode: "every_request" }));
   });
 
@@ -839,7 +839,7 @@ describe("ComplexityRouterConfig classification frequency", () => {
     // mid tool loop is fixed by this control too.
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={defaultValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByRole("combobox", { name: "How often to classify" })).toBeVisible();
+    expect(screen.getByRole("combobox", { name: "分类频率" })).toBeVisible();
   });
 });
 
@@ -1135,11 +1135,11 @@ describe("ComplexityRouterConfig affinity panel", () => {
 });
 
 describe("ComplexityRouterConfig default model", () => {
-  const getDefaultModelSelect = () => screen.getByRole("combobox", { name: "Default model" });
+  const getDefaultModelSelect = () => screen.getByRole("combobox", { name: "默认模型" });
 
   it("shows what the tiers currently imply, so an untouched router still names its default", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
-    expect(getDefaultModelSelect()).toHaveAttribute("placeholder", "Derived from tiers: gpt-3.5-turbo");
+    expect(getDefaultModelSelect()).toHaveAttribute("placeholder", "从层级推导：gpt-3.5-turbo");
   });
 
   it("asks for a model rather than naming a derived one when no tier holds one", async () => {
@@ -1148,7 +1148,7 @@ describe("ComplexityRouterConfig default model", () => {
       tiers: { SIMPLE: [], MEDIUM: [], COMPLEX: [], REASONING: [] },
     };
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={noTiers} />);
-    expect(getDefaultModelSelect()).toHaveAttribute("placeholder", "Add a model to the Simple or Medium tier");
+    expect(getDefaultModelSelect()).toHaveAttribute("placeholder", "为 Simple 或 Medium 层级添加一个模型");
   });
 
   it("records a pinned model", async () => {
@@ -1266,8 +1266,8 @@ describe("plan-mode override", () => {
 describe("ComplexityRouterConfig per-model reasoning effort", () => {
   it("renders one effort select per selected model, defaulting to Default", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
-    const select = screen.getByRole("combobox", { name: "Reasoning effort for gpt-4 in the Complex tier" });
-    expect(select).toHaveTextContent("Default");
+    const select = screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" });
+    expect(select).toHaveTextContent("默认");
   });
 
   it("shows the hydrated effort for a model that has one stored", async () => {
@@ -1277,7 +1277,7 @@ describe("ComplexityRouterConfig per-model reasoning effort", () => {
         value={{ ...defaultValue, tier_model_params: { COMPLEX: { "gpt-4": { reasoning_effort: "high" } } } }}
       />,
     );
-    const select = screen.getByRole("combobox", { name: "Reasoning effort for gpt-4 in the Complex tier" });
+    const select = screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" });
     expect(select).toHaveTextContent("high");
   });
 
@@ -1285,7 +1285,7 @@ describe("ComplexityRouterConfig per-model reasoning effort", () => {
     const onChange = vi.fn();
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onChange={onChange} />);
     const user = userEvent.setup();
-    await user.click(screen.getByRole("combobox", { name: "Reasoning effort for gpt-4 in the Complex tier" }));
+    await user.click(screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" }));
     await user.click(await screen.findByRole("option", { name: "high" }));
     expect(onChange).toHaveBeenCalledWith({
       ...defaultValue,
@@ -1303,8 +1303,8 @@ describe("ComplexityRouterConfig per-model reasoning effort", () => {
       />,
     );
     const user = userEvent.setup();
-    await user.click(screen.getByRole("combobox", { name: "Reasoning effort for gpt-4 in the Complex tier" }));
-    await user.click(await screen.findByRole("option", { name: "Default" }));
+    await user.click(screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" }));
+    await user.click(await screen.findByRole("option", { name: "默认" }));
     expect(onChange).toHaveBeenCalledWith({ ...defaultValue, tier_model_params: undefined });
   });
 });
@@ -1364,7 +1364,7 @@ describe("ComplexityRouterConfig classifier reasoning effort", () => {
       classifier_llm_config: { model: "gpt-4", timeout_ms: 3000, reasoning_effort: "high" },
     });
     const user = userEvent.setup();
-    await user.click(screen.getByRole("combobox", { name: "Judge model" }));
+    await user.click(screen.getByRole("combobox", { name: "评审模型" }));
     await user.click(await screen.findByRole("option", { name: "gpt-3.5-turbo" }));
     expect(onChange).toHaveBeenCalledWith({
       ...llmValue,
@@ -1380,7 +1380,7 @@ describe("ComplexityRouterConfig classifier reasoning effort", () => {
         classifier_llm_config: { model: "gpt-4", timeout_ms: 3000, reasoning_effort: "high" },
       });
       const user = userEvent.setup();
-      await user.click(screen.getByRole("combobox", { name: "Judge model" }));
+      await user.click(screen.getByRole("combobox", { name: "评审模型" }));
       if (action === "click") await user.click(await screen.findByRole("option", { name: "gpt-4" }));
       else await user.keyboard("{Enter}");
       expect(onChange).not.toHaveBeenCalled();
@@ -1416,7 +1416,7 @@ describe("ComplexityRouterConfig reasoning effort gating", () => {
   it("offers no effort select for a model group without reasoning support", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     expect(
-      screen.queryByRole("combobox", { name: "Reasoning effort for gpt-3.5-turbo in the Simple tier" }),
+      screen.queryByRole("combobox", { name: "Simple 层级中 gpt-3.5-turbo 的推理强度" }),
     ).not.toBeInTheDocument();
   });
 
@@ -1430,7 +1430,7 @@ describe("ComplexityRouterConfig reasoning effort gating", () => {
       />,
     );
     expect(
-      screen.getByRole("combobox", { name: "Reasoning effort for gpt-3.5-turbo in the Simple tier" }),
+      screen.getByRole("combobox", { name: "Simple 层级中 gpt-3.5-turbo 的推理强度" }),
     ).toHaveTextContent("low");
   });
 });
@@ -1439,19 +1439,19 @@ describe("ComplexityRouterConfig per-model effort filtering", () => {
   it("offers only the efforts the model group supports", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     const user = userEvent.setup();
-    await user.click(screen.getByRole("combobox", { name: "Reasoning effort for gpt-4 in the Complex tier" }));
+    await user.click(screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" }));
     const options = (await screen.findAllByRole("option")).map((option) => option.textContent);
-    expect(options).toEqual(["Default", "medium", "high", "xhigh"]);
+    expect(options).toEqual(["默认", "medium", "high", "xhigh"]);
   });
 
   it("falls back to every effort when the group only reports supports_reasoning", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     const user = userEvent.setup();
     await user.click(
-      screen.getByRole("combobox", { name: "Reasoning effort for claude-3-opus in the Reasoning tier" }),
+      screen.getByRole("combobox", { name: "Reasoning 层级中 claude-3-opus 的推理强度" }),
     );
     const options = (await screen.findAllByRole("option")).map((option) => option.textContent);
-    expect(options).toEqual(["Default", "none", "minimal", "low", "medium", "high", "xhigh"]);
+    expect(options).toEqual(["默认", "none", "minimal", "low", "medium", "high", "xhigh"]);
   });
 
   // An empty list is the group's own answer that its deployments share no level, which is different
@@ -1467,7 +1467,7 @@ describe("ComplexityRouterConfig per-model effort filtering", () => {
       />,
     );
     expect(
-      screen.queryByRole("combobox", { name: "Reasoning effort for claude-3-opus in the Reasoning tier" }),
+      screen.queryByRole("combobox", { name: "Reasoning 层级中 claude-3-opus 的推理强度" }),
     ).not.toBeInTheDocument();
   });
 
@@ -1480,7 +1480,7 @@ describe("ComplexityRouterConfig per-model effort filtering", () => {
         value={{ ...defaultValue, tier_model_params: { COMPLEX: { "gpt-4": { reasoning_effort: "max" } } } }}
       />,
     );
-    expect(screen.getByRole("combobox", { name: "Reasoning effort for gpt-4 in the Complex tier" })).toHaveTextContent(
+    expect(screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" })).toHaveTextContent(
       "max",
     );
   });
@@ -1751,8 +1751,8 @@ describe("ComplexityRouterConfig tier editing", () => {
       />,
     );
     openAutoRouterAdvanced("Classification Method");
-    fireEvent.click(screen.getByRole("combobox", { name: "How often to classify" }));
-    const sessionOption = screen.getByRole("option", { name: "Once per session" });
+    fireEvent.click(screen.getByRole("combobox", { name: "分类频率" }));
+    const sessionOption = screen.getByRole("option", { name: "每个会话一次" });
     expect(sessionOption).toHaveAttribute("aria-disabled", "true");
     expect(sessionOption).not.toBeChecked();
     expect(

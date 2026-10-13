@@ -132,7 +132,7 @@ describe("EditAutoRouterModal keyword matching", () => {
   it("renders the advanced sections the create form offers", async () => {
     renderModal();
 
-    await screen.findByRole("combobox", { name: "How often to classify" });
+    await screen.findByRole("combobox", { name: "分类频率" });
     openAutoRouterAdvanced("Escalation Keywords");
     expect(screen.getAllByText(/Escalation Keywords/i)).not.toHaveLength(0);
     expect(await screen.findByText(/Keyword\/Semantic Matching/i)).toBeInTheDocument();
@@ -216,7 +216,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await screen.findByRole("combobox", { name: "How often to classify" });
+    await screen.findByRole("combobox", { name: "分类频率" });
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
@@ -240,7 +240,7 @@ describe("EditAutoRouterModal keyword matching", () => {
     });
 
     renderModal();
-    await screen.findByRole("combobox", { name: "How often to classify" });
+    await screen.findByRole("combobox", { name: "分类频率" });
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
@@ -275,7 +275,7 @@ describe("EditAutoRouterModal keyword matching", () => {
       />,
     );
 
-    await screen.findByRole("combobox", { name: "How often to classify" });
+    await screen.findByRole("combobox", { name: "分类频率" });
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
@@ -309,7 +309,7 @@ describe("EditAutoRouterModal keyword matching", () => {
       />,
     );
 
-    await screen.findByRole("combobox", { name: "How often to classify" });
+    await screen.findByRole("combobox", { name: "分类频率" });
     openAutoRouterAdvanced("Keyword/Semantic Matching");
     await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
 
@@ -343,7 +343,7 @@ describe("EditAutoRouterModal keyword matching", () => {
       />,
     );
 
-    await screen.findByRole("combobox", { name: "How often to classify" });
+    await screen.findByRole("combobox", { name: "分类频率" });
     openAutoRouterAdvanced("Keyword/Semantic Matching");
     await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
     expect(screen.getByRole("button", { name: /save changes/i })).toBeDisabled();
@@ -599,7 +599,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     renderWithStoredConfig(STORED_CONFIG);
 
     openAutoRouterAdvanced("Classification Method");
-    expect(await screen.findByRole("combobox", { name: "How often to classify" })).toHaveTextContent("Every request");
+    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent("每个请求");
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -613,8 +613,8 @@ describe("EditAutoRouterModal classification frequency", () => {
     renderWithStoredConfig({ ...STORED_CONFIG, session_affinity: true });
 
     openAutoRouterAdvanced("Classification Method");
-    expect(await screen.findByRole("combobox", { name: "How often to classify" })).toHaveTextContent(
-      "Once per session",
+    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent(
+      "每个会话一次",
     );
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
@@ -672,8 +672,8 @@ describe("EditAutoRouterModal classification frequency", () => {
     renderWithStoredConfig({ ...STORED_CONFIG, classification_mode: "user_turn" });
 
     openAutoRouterAdvanced("Classification Method");
-    expect(await screen.findByRole("combobox", { name: "How often to classify" })).toHaveTextContent(
-      "Every new user message",
+    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent(
+      "每条新用户消息",
     );
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
@@ -1006,7 +1006,7 @@ describe("EditAutoRouterModal default model", () => {
   it("shows a stored pin as the selection, so the saved value is not a hidden one", async () => {
     renderWithStoredPin("out-of-band-default");
 
-    const select = await screen.findByRole("combobox", { name: "Default model" });
+    const select = await screen.findByRole("combobox", { name: "默认模型" });
     expect(select).toHaveValue("out-of-band-default");
   });
 
@@ -1016,7 +1016,7 @@ describe("EditAutoRouterModal default model", () => {
     const user = userEvent.setup();
     renderWithStoredPin(STORED_CONFIG.tiers.MEDIUM[0]);
 
-    const select = await screen.findByRole("combobox", { name: "Default model" });
+    const select = await screen.findByRole("combobox", { name: "默认模型" });
     expect(select).toHaveValue(STORED_CONFIG.tiers.MEDIUM[0]);
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
@@ -1033,7 +1033,7 @@ describe("EditAutoRouterModal default model", () => {
     const user = userEvent.setup();
     renderWithLitellmParamsDefaultOnly(STORED_CONFIG.tiers.MEDIUM[0]);
 
-    const select = await screen.findByRole("combobox", { name: "Default model" });
+    const select = await screen.findByRole("combobox", { name: "默认模型" });
     expect(select).toHaveValue("");
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
@@ -1051,7 +1051,7 @@ describe("EditAutoRouterModal default model", () => {
     const user = userEvent.setup();
     renderWithLitellmParamsDefaultOnly("claude-sonnet-4");
 
-    const select = await screen.findByRole("combobox", { name: "Default model" });
+    const select = await screen.findByRole("combobox", { name: "默认模型" });
     expect(select).toHaveValue("claude-sonnet-4");
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
@@ -1084,7 +1084,7 @@ describe("EditAutoRouterModal default model", () => {
       />,
     );
 
-    const select = await screen.findByRole("combobox", { name: "Default model" });
+    const select = await screen.findByRole("combobox", { name: "默认模型" });
     expect(select).toHaveValue("blob-pin");
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
@@ -1128,7 +1128,7 @@ describe("EditAutoRouterModal default model", () => {
     const user = userEvent.setup();
     renderWithStoredPin();
 
-    const select = await screen.findByRole("combobox", { name: "Default model" });
+    const select = await screen.findByRole("combobox", { name: "默认模型" });
     expect(select).toHaveValue("");
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });

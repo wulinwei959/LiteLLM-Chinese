@@ -63,12 +63,12 @@ describe("Auto-router classifier selection", () => {
         </AutoRouterClassifierTabs>,
       );
       const family = {
-        heuristic: "Heuristics",
-        heuristic_v2: "Heuristics",
+        heuristic: "启发式",
+        heuristic_v2: "启发式",
         llm: "LLM",
         heuristic_first: "LLM",
         hybrid: "LLM",
-        jev: "Decisions Model",
+        jev: "决策模型",
       }[classifier_type];
       expect(screen.getByRole("radio", { name: new RegExp(`^${family}$`) })).toBeChecked();
       fireEvent.click(screen.getByRole("radio", { name: new RegExp(`^${family}$`) }));
@@ -77,14 +77,14 @@ describe("Auto-router classifier selection", () => {
   );
 
   it.each([
-    ["capability", "Capability"],
+    ["capability", "能力"],
     ["llm_v2", "Fuse v2"],
   ] as const)(
     "opens saved %s and retains the LLM family when switching to Complexity",
     async (classifier_type, label) => {
       renderWithProviders(<Form initialValue={{ ...initial, classifier_type }} />);
-      expect(screen.getByRole("button", { name: "Routing approach" })).toHaveTextContent(label);
-      await selectAutoRouterOption("Routing approach", "Complexity");
+      expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent(label);
+      await selectAutoRouterOption("路由方式", "复杂度");
       expect(screen.getByRole("status", { name: "Classifier type" })).toHaveTextContent("llm");
     },
   );
@@ -94,11 +94,11 @@ describe("Auto-router classifier selection", () => {
     [0, "heuristic"],
   ])("defaults to Rule-based when %s v2 slots remain", async (remaining, classifier) => {
     renderWithProviders(<Form remaining={Number(remaining)} />);
-    fireEvent.click(screen.getByRole("radio", { name: /^Heuristics$/ }));
+    fireEvent.click(screen.getByRole("radio", { name: /^启发式$/ }));
     expect(screen.getByRole("status", { name: "Classifier type" })).toHaveTextContent(String(classifier));
-    fireEvent.click(screen.getByRole("button", { name: "Heuristic" }));
-    expect(screen.getByRole("menuitemradio", { name: /^Heuristic v2/ })).toHaveTextContent(
-      `${remaining} of 1 available`,
+    fireEvent.click(screen.getByRole("button", { name: "启发式" }));
+    expect(screen.getByRole("menuitemradio", { name: /^启发式 v2/ })).toHaveTextContent(
+      `可用 ${remaining}/1`,
     );
   });
 
@@ -111,29 +111,29 @@ describe("Auto-router classifier selection", () => {
     { data: { allowances: [{ key: "heuristic_v2", limit: 1, remaining: null, available: false }], error: null } },
   ])("uses Rule-based when v2 availability is unverified: %j", async (availabilityState) => {
     renderWithProviders(<Form availabilityState={availabilityState} />);
-    fireEvent.click(screen.getByRole("radio", { name: "Heuristics" }));
+    fireEvent.click(screen.getByRole("radio", { name: "启发式" }));
     expect(screen.getByRole("status", { name: "Classifier type" })).toHaveTextContent(/^heuristic$/);
   });
 
   it("does not present Rule-based as having a classifier quota", () => {
     renderWithProviders(<Form initialValue={{ ...initial, classifier_type: "heuristic" }} remaining={0} />);
-    expect(screen.getByRole("button", { name: "Heuristic" })).toHaveTextContent(/^Rule-based/);
-    fireEvent.click(screen.getByRole("button", { name: "Heuristic" }));
-    expect(screen.getAllByRole("menuitemradio")[0]).toHaveTextContent(/^Rule-based/);
-    expect(screen.getByRole("menuitemradio", { name: /^Rule-based/ })).not.toHaveTextContent("of 1 available");
-    expect(screen.getByRole("menuitemradio", { name: /^Heuristic v2/ })).toHaveTextContent("0 of 1 available");
+    expect(screen.getByRole("button", { name: "启发式" })).toHaveTextContent(/^基于规则/);
+    fireEvent.click(screen.getByRole("button", { name: "启发式" }));
+    expect(screen.getAllByRole("menuitemradio")[0]).toHaveTextContent(/^基于规则/);
+    expect(screen.getByRole("menuitemradio", { name: /^基于规则/ })).not.toHaveTextContent("可用");
+    expect(screen.getByRole("menuitemradio", { name: /^启发式 v2/ })).toHaveTextContent("可用 0/1");
   });
 
   it("omits allowance labels with an unlimited entitlement", async () => {
     renderWithProviders(<Form initialValue={{ ...initial, classifier_type: "heuristic_v2" }} limit={null} />);
-    fireEvent.click(screen.getByRole("button", { name: "Heuristic" }));
-    expect(screen.getByRole("menuitemradio", { name: /^Heuristic v2/ })).not.toHaveTextContent("available");
+    fireEvent.click(screen.getByRole("button", { name: "启发式" }));
+    expect(screen.getByRole("menuitemradio", { name: /^启发式 v2/ })).not.toHaveTextContent("可用");
   });
 
   it.each([
-    ["heuristic", "Heuristic", "Heuristic v2"],
-    ["llm", "Routing approach", "Capability"],
-    ["llm", "Routing approach", "Fuse v2"],
+    ["heuristic", "启发式", "启发式 v2"],
+    ["llm", "路由方式", "能力"],
+    ["llm", "路由方式", "Fuse v2"],
   ] as const)("blocks exhausted %s options: %s / %s", (classifier_type, field, option) => {
     renderWithProviders(<Form initialValue={{ ...initial, classifier_type }} remaining={0} />);
     fireEvent.click(screen.getByRole("button", { name: field }));
@@ -144,14 +144,14 @@ describe("Auto-router classifier selection", () => {
   });
 
   it.each([
-    ["heuristic_v2", "heuristic", "Heuristic", "Heuristic v2"],
-    ["capability", "llm", "Routing approach", "Capability"],
-    ["llm_v2", "llm", "Routing approach", "Fuse v2"],
+    ["heuristic_v2", "heuristic", "启发式", "启发式 v2"],
+    ["capability", "llm", "路由方式", "能力"],
+    ["llm_v2", "llm", "路由方式", "Fuse v2"],
   ] as const)("lets a saved router reselect its own %s allowance", async (feature, classifier_type, field, option) => {
     renderWithProviders(<Form initialValue={{ ...initial, classifier_type }} remaining={0} ownedFeature={feature} />);
     await selectAutoRouterOption(field, option);
     expect(screen.getByRole("status", { name: "Classifier type" })).toHaveTextContent(feature);
-    expect(screen.getByRole("button", { name: field })).toHaveTextContent("Used by this router");
+    expect(screen.getByRole("button", { name: field })).toHaveTextContent("此路由器已使用");
   });
 
   it("omits Jev's redundant routing approach without changing saved configuration", () => {
@@ -161,7 +161,7 @@ describe("Auto-router classifier selection", () => {
         Existing settings
       </AutoRouterClassifierTabs>,
     );
-    expect(screen.queryByRole("button", { name: "Routing approach" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "路由方式" })).not.toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
   });
 
@@ -177,9 +177,9 @@ describe("Auto-router classifier selection", () => {
         }}
       />,
     );
-    expect(screen.getByRole("radio", { name: /^Heuristics$/ })).toHaveAttribute("aria-disabled", "true");
-    fireEvent.click(screen.getByRole("button", { name: "Routing approach" }));
-    for (const name of ["Capability", "Fuse v2"]) {
+    expect(screen.getByRole("radio", { name: /^启发式$/ })).toHaveAttribute("aria-disabled", "true");
+    fireEvent.click(screen.getByRole("button", { name: "路由方式" }));
+    for (const name of ["能力", "Fuse v2"]) {
       expect(screen.getByRole("menuitemradio", { name: new RegExp(`^${name}`) })).toHaveAttribute(
         "aria-disabled",
         "true",
@@ -192,9 +192,9 @@ describe("Auto-router classifier selection", () => {
 describe("Gated routing contact action", () => {
   it("offers a pricing discussion in View limits", async () => {
     renderWithProviders(<Form remaining={0} />);
-    expect(screen.queryByRole("link", { name: "Talk to our team" })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "View limits" }));
-    const link = within(screen.getByRole("dialog")).getByRole("link", { name: "Talk to our team" });
+    expect(screen.queryByRole("link", { name: "联系我们的团队" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "查看限额" }));
+    const link = within(screen.getByRole("dialog")).getByRole("link", { name: "联系我们的团队" });
     await waitFor(() => expect(link).toBeVisible());
     expect(link).toHaveAttribute("href", "https://calendly.com/tin-berri/litellm-auto-router-pricing-discussion");
     expect(link).toHaveAttribute("target", "_blank");
@@ -202,17 +202,17 @@ describe("Gated routing contact action", () => {
   });
 
   it.each([
-    ["heuristic", "Heuristic", "Heuristic v2"],
-    ["llm", "Routing approach", "Capability"],
+    ["heuristic", "启发式", "启发式 v2"],
+    ["llm", "路由方式", "能力"],
   ] as const)(
     "keeps the contact action available beside the disabled %s choice",
     async (classifier_type, field, option) => {
       renderWithProviders(<Form initialValue={{ ...initial, classifier_type }} remaining={0} />);
-      expect(screen.queryByText(/Need more/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/需要更高/)).not.toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", { name: field }));
       const disabled = screen.getByRole("menuitemradio", { name: new RegExp(`^${option}`) });
       expect(disabled).toHaveAttribute("aria-disabled", "true");
-      const link = screen.getByRole("menuitem", { name: `Talk to our team about ${option}` });
+      const link = screen.getByRole("menuitem", { name: `联系我们的团队了解 ${option}` });
       await waitFor(() => expect(link).toBeVisible());
       expect(link).toHaveAttribute("href", "https://calendly.com/tin-berri/litellm-auto-router-pricing-discussion");
       expect(link).toHaveAttribute("target", "_blank");
@@ -229,16 +229,16 @@ describe("Gated routing contact action", () => {
     { remaining: 0, availabilityState: { isChecking: true } },
   ])("does not pitch an upgrade for a free or unverified option: %j", (props) => {
     renderWithProviders(<Form {...props} />);
-    fireEvent.click(screen.getByRole("button", { name: "Routing approach" }));
-    expect(screen.queryByRole("menuitem", { name: /Talk to our team/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "路由方式" }));
+    expect(screen.queryByRole("menuitem", { name: /联系我们的团队/ })).not.toBeInTheDocument();
   });
 
   it("does not pitch an upgrade for the saved heuristic's own slot", () => {
     renderWithProviders(
       <Form initialValue={{ ...initial, classifier_type: "heuristic_v2" }} remaining={0} ownedFeature="heuristic_v2" />,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Heuristic" }));
-    expect(screen.queryByRole("menuitem", { name: /Talk to our team/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "启发式" }));
+    expect(screen.queryByRole("menuitem", { name: /联系我们的团队/ })).not.toBeInTheDocument();
   });
 
   it("includes the sales action beside customization limits and blocked changes", () => {
@@ -255,7 +255,7 @@ describe("Gated routing contact action", () => {
         </AutoRouterClassifierTabs>
       </AutoRouterAvailabilityContext.Provider>,
     );
-    expect(screen.getByText(/Custom tiers: 0 of 1 available/)).toHaveTextContent("Talk to our team");
-    expect(within(screen.getByRole("alert")).getByRole("link", { name: "Talk to our team" })).toBeVisible();
+    expect(screen.getByText(/Custom tiers: 可用 0\/1/)).toHaveTextContent("联系我们的团队");
+    expect(within(screen.getByRole("alert")).getByRole("link", { name: "联系我们的团队" })).toBeVisible();
   });
 });

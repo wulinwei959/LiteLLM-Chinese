@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Combobox,
   ComboboxChip,
@@ -32,6 +33,7 @@ const AccessGroupTagsCombobox: React.FC<AccessGroupTagsComboboxProps> = ({
   ariaDescribedBy,
 }) => {
   const anchor = useComboboxAnchor();
+  const t = useTranslations("models.addModel");
   const [query, setQuery] = useState("");
   const selected = value ?? [];
   const trimmedQuery = query.trim();
@@ -79,14 +81,14 @@ const AccessGroupTagsCombobox: React.FC<AccessGroupTagsComboboxProps> = ({
                 id={id}
                 aria-invalid={ariaInvalid}
                 aria-describedby={ariaDescribedBy}
-                placeholder="Select existing groups or type to create new ones"
+                placeholder={t("accessGroupsPlaceholder")}
               />
             </>
           )}
         </ComboboxValue>
       </ComboboxChips>
       <ComboboxContent anchor={anchor}>
-        <ComboboxEmpty>No access groups found</ComboboxEmpty>
+        <ComboboxEmpty>{t("noAccessGroupsFound")}</ComboboxEmpty>
         <ComboboxList>
           {(group: string) => (
             <ComboboxItem key={group} value={group}>

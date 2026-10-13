@@ -198,12 +198,12 @@ describe("AddAutoRouterTab", () => {
     ]);
     renderWithProviders(<Harness />);
     await waitForAutomaticTiers();
-    await userEvent.click(screen.getByRole("radio", { name: "Decisions Model" }));
+    await userEvent.click(screen.getByRole("radio", { name: "决策模型" }));
     expect(screen.queryByLabelText("Classifier Model")).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("combobox", { name: "Decision model" }));
+    await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
     expect(screen.queryByRole("option", { name: ALL_FAMILY_MODELS[0].model_group })).not.toBeInTheDocument();
     await userEvent.click(await screen.findByRole("option", { name: "my-decision" }));
-    expect(screen.queryByRole("button", { name: "Routing approach" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "路由方式" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Choose models for me" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Classifier Timeout (ms)")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Advanced settings" })).toHaveAttribute("aria-expanded", "false");
@@ -251,8 +251,8 @@ describe("AddAutoRouterTab", () => {
     ]);
     renderWithProviders(<Harness />);
     await waitForAutomaticTiers();
-    await userEvent.click(screen.getByRole("radio", { name: "Decisions Model" }));
-    await userEvent.click(screen.getByRole("combobox", { name: "Decision model" }));
+    await userEvent.click(screen.getByRole("radio", { name: "决策模型" }));
+    await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
     const option = await screen.findByRole("option", { name: alias });
     expect(screen.getAllByRole("option")).toHaveLength(1);
     await userEvent.click(option);
@@ -270,8 +270,8 @@ describe("AddAutoRouterTab", () => {
     mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
     renderWithProviders(<Harness />);
     await waitForAutomaticTiers();
-    await userEvent.click(screen.getByRole("radio", { name: "Decisions Model" }));
-    await userEvent.click(screen.getByRole("combobox", { name: "Decision model" }));
+    await userEvent.click(screen.getByRole("radio", { name: "决策模型" }));
+    await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
     expect(await screen.findByText("No results")).toBeVisible();
     await userEvent.keyboard("{Escape}");
     expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
@@ -294,7 +294,7 @@ describe("AddAutoRouterTab", () => {
       error: null,
     });
     renderWithProviders(<Harness />);
-    await waitFor(() => expect(screen.getByRole("button", { name: "Heuristic" })).toHaveTextContent("Rule-based"));
+    await waitFor(() => expect(screen.getByRole("button", { name: "启发式" })).toHaveTextContent("基于规则"));
   });
 
   it("does not show a tuning rejection for an incomplete Rule-based draft", async () => {
@@ -305,7 +305,7 @@ describe("AddAutoRouterTab", () => {
         : null,
     }));
     renderWithProviders(<Harness />);
-    await waitFor(() => expect(screen.getByRole("button", { name: "Heuristic" })).toHaveTextContent("Rule-based"));
+    await waitFor(() => expect(screen.getByRole("button", { name: "启发式" })).toHaveTextContent("基于规则"));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
   });
@@ -319,7 +319,7 @@ describe("AddAutoRouterTab", () => {
       error: null,
     });
     renderWithProviders(<Harness />);
-    await waitFor(() => expect(screen.getByRole("button", { name: "Heuristic" })).toHaveTextContent("Rule-based"));
+    await waitFor(() => expect(screen.getByRole("button", { name: "启发式" })).toHaveTextContent("基于规则"));
   });
 
   it.each(["exhausted", "available", "failed"])(
@@ -330,9 +330,9 @@ describe("AddAutoRouterTab", () => {
         error: null,
       });
       renderWithProviders(<Harness />);
-      fireEvent.click(screen.getByRole("button", { name: "Heuristic" }));
-      const option = screen.getByRole("menuitemradio", { name: /^Heuristic v2/ });
-      await waitFor(() => expect(option).toHaveTextContent("0 of 1 available"));
+      fireEvent.click(screen.getByRole("button", { name: "启发式" }));
+      const option = screen.getByRole("menuitemradio", { name: /^启发式 v2/ });
+      await waitFor(() => expect(option).toHaveTextContent("可用 0/1"));
       expect(option).toHaveAttribute("aria-disabled", "true");
       let complete: (() => void) | undefined;
       vi.mocked(apiClient.post).mockImplementationOnce(
@@ -352,16 +352,16 @@ describe("AddAutoRouterTab", () => {
       await act(async () => {
         void testQueryClient.refetchQueries({ queryKey: ["autoRouterAvailability"] });
       });
-      await waitFor(() => expect(option).toHaveTextContent("Checking availability"));
+      await waitFor(() => expect(option).toHaveTextContent("正在检查可用性"));
       expect(option).toHaveAttribute("aria-disabled", "true");
       fireEvent.click(option);
-      expect(screen.getByRole("button", { name: "Heuristic" })).toHaveTextContent("Rule-based");
+      expect(screen.getByRole("button", { name: "启发式" })).toHaveTextContent("基于规则");
       await act(async () => complete?.());
-      await waitFor(() => expect(option).not.toHaveTextContent("Checking availability"));
+      await waitFor(() => expect(option).not.toHaveTextContent("正在检查可用性"));
       if (result === "available") {
         expect(option).not.toHaveAttribute("aria-disabled", "true");
         fireEvent.click(option);
-        expect(screen.getByRole("button", { name: "Heuristic" })).toHaveTextContent("Heuristic v2");
+        expect(screen.getByRole("button", { name: "启发式" })).toHaveTextContent("启发式 v2");
       } else {
         expect(option).toHaveAttribute("aria-disabled", "true");
       }
@@ -384,8 +384,8 @@ describe("AddAutoRouterTab", () => {
     ]);
     renderWithProviders(<Harness />);
     await waitForAutomaticTiers();
-    await user.click(screen.getByRole("radio", { name: "Decisions Model" }));
-    await userEvent.click(screen.getByRole("combobox", { name: "Decision model" }));
+    await user.click(screen.getByRole("radio", { name: "决策模型" }));
+    await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
     await userEvent.click(await screen.findByRole("option", { name: "my-decision" }));
     await waitFor(() =>
       expect(apiClient.post).toHaveBeenLastCalledWith(
@@ -410,10 +410,10 @@ describe("AddAutoRouterTab", () => {
     fireEvent.change(screen.getByLabelText("Definition for tier 1"), { target: { value: "Only short requests" } });
     expect(await screen.findByRole("alert")).toHaveTextContent(blocked);
     expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
-    expect(within(screen.getByRole("alert")).getByRole("link", { name: "Talk to our team" })).toBeVisible();
+    expect(within(screen.getByRole("alert")).getByRole("link", { name: "联系我们的团队" })).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Restore defaults" }));
     await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
-    expect(screen.getByRole("radio", { name: "Decisions Model" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "决策模型" })).toBeChecked();
     await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalled());
@@ -432,8 +432,8 @@ describe("AddAutoRouterTab", () => {
     ]);
     renderWithProviders(<Harness />);
     await waitForAutomaticTiers();
-    await user.click(screen.getByRole("radio", { name: "Decisions Model" }));
-    await userEvent.click(screen.getByRole("combobox", { name: "Decision model" }));
+    await user.click(screen.getByRole("radio", { name: "决策模型" }));
+    await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
     await userEvent.click(await screen.findByRole("option", { name: "my-decision" }));
     fireEvent.change(screen.getByLabelText("Auto Router Name"), { target: { value: "checked-router" } });
     await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
@@ -471,12 +471,15 @@ describe("AddAutoRouterTab", () => {
     await userEvent.click(screen.getByRole("radio", { name: "LLM" }));
     complete?.({ allowances: [{ key: "heuristic_v2", limit: 1, remaining: 0, available: true }], error: null });
     await waitFor(() => expect(screen.getByRole("radio", { name: "LLM" })).toBeChecked());
-    expect(screen.getByRole("button", { name: "Routing approach" })).toHaveTextContent("Complexity");
+    expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent("复杂度");
   });
 
-  it.each(["LLM", "Decisions Model"])(
+  it.each([
+    ["LLM", "LLM"],
+    ["Decisions Model", "决策模型"],
+  ] as const)(
     "keeps %s and the frequency selected before automatic models finish loading",
-    async (family) => {
+    async (_familyLabel, family) => {
       let complete: ((models: ModelGroup[]) => void) | undefined;
       mockFetchAvailableModels.mockReturnValue(
         new Promise<ModelGroup[]>((resolve) => {
@@ -491,8 +494,8 @@ describe("AddAutoRouterTab", () => {
       });
       await waitForAutomaticTiers();
       expect(screen.getByRole("radio", { name: family })).toBeChecked();
-      expect(screen.getByRole("combobox", { name: "How often to classify" })).toHaveTextContent(
-        "Every new user message",
+      expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent(
+        "每条新用户消息",
       );
       expect(screen.getByRole("button", { name: "Advanced settings" })).toHaveAttribute("aria-expanded", "false");
     },
@@ -530,7 +533,7 @@ describe("AddAutoRouterTab", () => {
         await user.click(await screen.findByRole("option", { name: model, exact: true }));
         if (capability) await user.keyboard("{Escape}");
       }
-      await user.click(screen.getByRole("combobox", { name: "Judge model" }));
+      await user.click(screen.getByRole("combobox", { name: "评审模型" }));
       await user.click(await screen.findByRole("option", { name: "judge", exact: true }));
       expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
       if (capability) {
@@ -590,7 +593,7 @@ describe("AddAutoRouterTab", () => {
     openAutoRouterAdvanced("Classification Method");
     expect(screen.queryByRole("radio", { name: /^Capability/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("radio", { name: /^Fuse v2/ })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Routing approach" })).toHaveTextContent("Complexity");
+    expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent("复杂度");
   });
 
   it.each(["Capability", "Fuse v2"])(
@@ -614,10 +617,10 @@ describe("AddAutoRouterTab", () => {
       expect(screen.queryByTestId("template-selector")).not.toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: "Retry", exact: true }));
       await waitFor(() => expect(screen.queryByText("Could not load available models.")).not.toBeInTheDocument());
-      expect(screen.getByRole("button", { name: "Routing approach" })).toHaveTextContent(label);
+      expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent(capability ? "能力" : "Fuse v2");
       expect(screen.getByLabelText("Auto Router Name")).toHaveValue("forecast-retry");
       expect(screen.getByLabelText(policyField)).toHaveValue(capability ? 0.7 : "Small solver");
-      await user.click(screen.getByRole("combobox", { name: "Judge model" }));
+      await user.click(screen.getByRole("combobox", { name: "评审模型" }));
       expect(await screen.findByRole("option", { name: "judge", exact: true })).toBeVisible();
       expect(mockFetchAvailableModels).toHaveBeenCalledTimes(2);
     },
@@ -1005,8 +1008,8 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "affinity-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Classification Method");
-    expect(await screen.findByRole("combobox", { name: "How often to classify" })).not.toHaveTextContent(
-      "Once per session",
+    expect(await screen.findByRole("combobox", { name: "分类频率" })).not.toHaveTextContent(
+      "每个会话一次",
     );
 
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
@@ -1315,7 +1318,7 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "default-timing-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Classification Method");
-    expect(await screen.findByRole("combobox", { name: "How often to classify" })).toHaveTextContent("Every request");
+    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent("每个请求");
 
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: /add auto router/i }));
@@ -1683,7 +1686,7 @@ describe("AddAutoRouterTab", () => {
 
       // Applying a preset collapses Detailed Configuration, so the default model row is behind it.
       expandDetailedConfiguration();
-      const defaultModel = screen.getByRole("combobox", { name: "Default model" });
+      const defaultModel = screen.getByRole("combobox", { name: "默认模型" });
       await user.click(defaultModel);
       await user.type(defaultModel, PINNED_MODEL);
       await user.click(await screen.findByRole("option", { name: PINNED_MODEL }));
@@ -2026,7 +2029,7 @@ describe("preset catalog fetch states", () => {
     renderWithProviders(<Harness />);
     await waitForPresetEnabled("Bounded JEV");
     await selectTemplate("Bounded JEV");
-    await userEvent.click(screen.getByRole("combobox", { name: "Decision model" }));
+    await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
     await userEvent.click(await screen.findByRole("option", { name: "my-decision" }));
     fireEvent.change(screen.getByLabelText("Auto Router Name"), { target: { value: "bounded-router" } });
     await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());

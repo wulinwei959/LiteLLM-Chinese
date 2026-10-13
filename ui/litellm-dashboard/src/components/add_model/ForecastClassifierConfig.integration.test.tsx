@@ -394,18 +394,18 @@ describe("forecast classifier form", () => {
   });
 
   it.each([
-    ["capability", "LLM Classifier"],
-    ["capability", "Heuristic first"],
-    ["capability", "Hybrid"],
-    ["llm_v2", "LLM Classifier"],
-    ["llm_v2", "Heuristic first"],
-    ["llm_v2", "Hybrid"],
+    ["capability", "LLM 分类器"],
+    ["capability", "启发式优先"],
+    ["capability", "混合"],
+    ["llm_v2", "LLM 分类器"],
+    ["llm_v2", "启发式优先"],
+    ["llm_v2", "混合"],
   ] as const)("restores the current rubric when switching %s through Complexity to %s", async (source, target) => {
     const user = userEvent.setup();
     renderWithProviders(<Form initialValue={source === "capability" ? initial : fuseInitial} />);
     await selectAutoRouterApproach("Complexity");
     fireEvent.click(screen.getByRole("radio", { name: new RegExp(`^${target}`) }));
-    await user.click(screen.getByRole("combobox", { name: "Judge model" }));
+    await user.click(screen.getByRole("combobox", { name: "评审模型" }));
     await user.click(screen.getByRole("option", { name: "judge" }));
     fireEvent.click(screen.getByRole("button", { name: "Save configuration" }));
     const output = screen.getByRole("status", { name: "Saved configuration" });

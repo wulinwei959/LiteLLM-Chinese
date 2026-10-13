@@ -50,12 +50,12 @@ it.each([false, true])("edits and round-trips independent model settings with cu
     <ComplexityRouterConfig modelInfo={modelInfo} value={value} onChange={onChange} />
   );
   const view = renderWithProviders(editor(initial));
-  const fast = () => screen.getByRole("switch", { name: `Fast mode for primary in the ${label} tier` });
+  const fast = () => screen.getByRole("switch", { name: `${label} 层级中 primary 的快速模式` });
 
-  expect(screen.getAllByRole("switch", { name: /^Fast mode for/ })).toHaveLength(4);
-  expect(screen.queryByRole("switch", { name: /^Fast mode for missing/ })).not.toBeInTheDocument();
-  expect(screen.queryByRole("combobox", { name: /^Reasoning effort for secondary/ })).not.toBeInTheDocument();
-  expect(screen.getByRole("switch", { name: `Fast mode for secondary in the ${label} tier` })).toBeChecked();
+  expect(screen.getAllByRole("switch", { name: /的快速模式/ })).toHaveLength(4);
+  expect(screen.queryByRole("switch", { name: /missing 的快速模式/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("combobox", { name: /secondary 的推理强度/ })).not.toBeInTheDocument();
+  expect(screen.getByRole("switch", { name: `${label} 层级中 secondary 的快速模式` })).toBeChecked();
   expect(fast()).not.toBeChecked();
   expect(onChange).not.toHaveBeenCalled();
 
@@ -84,7 +84,7 @@ it.each([false, true])("edits and round-trips independent model settings with cu
   view.rerender(editor(reopened));
   expect(fast()).toBeChecked();
 
-  await user.click(screen.getByRole("combobox", { name: `Reasoning effort for primary in the ${label} tier` }));
+  await user.click(screen.getByRole("combobox", { name: `${label} 层级中 primary 的推理强度` }));
   await user.click(await screen.findByRole("option", { name: "low" }));
   const effortChanged = onChange.mock.lastCall![0];
   expect(effortChanged.tier_model_params?.[reopenedTier].primary).toEqual({
@@ -115,15 +115,15 @@ it.each([false, true])("edits and round-trips independent model settings with cu
     blocked: { speed: "fast" },
   });
   view.rerender(editor(deselected));
-  expect(screen.queryByRole("switch", { name: `Fast mode for primary in the ${label} tier` })).not.toBeInTheDocument();
+  expect(screen.queryByRole("switch", { name: `${label} 层级中 primary 的快速模式` })).not.toBeInTheDocument();
   await user.click(picker());
   await user.click(await screen.findByRole("option", { name: "primary" }));
   await user.keyboard("{Escape}");
   const reselected = onChange.mock.lastCall![0];
   view.rerender(editor(reselected));
   expect(fast()).not.toBeChecked();
-  expect(screen.getByRole("combobox", { name: `Reasoning effort for primary in the ${label} tier` })).toHaveTextContent(
-    "Default",
+  expect(screen.getByRole("combobox", { name: `${label} 层级中 primary 的推理强度` })).toHaveTextContent(
+    "默认",
   );
 });
 
@@ -147,8 +147,8 @@ it.each(["capability", "llm_v2"] as const)("preserves Fast mode controls for %s 
     <ComplexityRouterConfig modelInfo={modelInfo} value={value} onChange={onChange} />
   );
   const view = renderWithProviders(editor(initial));
-  const fast = () => screen.getByRole("switch", { name: "Fast mode for primary in the Efficient solver tier" });
-  expect(screen.getAllByRole("switch", { name: /^Fast mode for/ })).toHaveLength(1);
+  const fast = () => screen.getByRole("switch", { name: "Efficient solver 层级中 primary 的快速模式" });
+  expect(screen.getAllByRole("switch", { name: /的快速模式/ })).toHaveLength(1);
   expect(fast()).not.toBeChecked();
   await user.click(fast());
   const enabled = onChange.mock.lastCall![0];
@@ -185,7 +185,7 @@ describe("Fast mode metadata", () => {
         <ComplexityRouterConfig modelInfo={info} value={current} onChange={onChange} />
       );
       const view = renderWithProviders(editor(value, []));
-      const fast = () => screen.getByRole("switch", { name: /^Fast mode for primary/ });
+      const fast = () => screen.getByRole("switch", { name: /primary 的快速模式/ });
       expect(fast()).toBeChecked();
       expect(onChange).not.toHaveBeenCalled();
       view.rerender(editor(value, [{ model_group: "primary", supports_fast_mode: false }]));
@@ -198,7 +198,7 @@ describe("Fast mode metadata", () => {
         SIMPLE: [{ model_name: "primary", litellm_params: { max_tokens: 512 } }],
       });
       view.rerender(editor(hydrateComplexityRouterConfig(saved, undefined), []));
-      expect(screen.queryByRole("switch", { name: /^Fast mode for primary/ })).not.toBeInTheDocument();
+      expect(screen.queryByRole("switch", { name: /primary 的快速模式/ })).not.toBeInTheDocument();
       view.rerender(editor(cleared, modelInfo));
       expect(fast()).not.toBeChecked();
     },
@@ -217,7 +217,7 @@ it.each(["MEDIUM", "REASONING"])("clears a legacy Capability pool while reconcil
   const onChange = vi.fn<(value: ComplexityRouterConfigValue) => void>();
   renderWithProviders(<ComplexityRouterConfig modelInfo={modelInfo} value={value} onChange={onChange} />);
   openAutoRouterAdvanced("Keyword/Semantic Matching");
-  expect(screen.getByRole("switch", { name: "Fast mode for secondary in the Medium routing pool tier" })).toBeChecked();
+  expect(screen.getByRole("switch", { name: "Medium routing pool 层级中 secondary 的快速模式" })).toBeChecked();
   expect(onChange).not.toHaveBeenCalled();
   await user.click(screen.getByRole("combobox", { name: "Select medium routing pool models" }));
   await user.click(await screen.findByRole("option", { name: "secondary" }));
@@ -247,7 +247,7 @@ it.each(["capability", "llm_v2"] as const)(
     );
     const view = renderWithProviders(editor(hydrateComplexityRouterConfig(stored, undefined)));
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    const select = () => screen.getByRole("combobox", { name: "Default model" });
+    const select = () => screen.getByRole("combobox", { name: "默认模型" });
     expect(select()).toHaveValue("legacy-default");
     expect(onChange).not.toHaveBeenCalled();
     await user.click(select());
@@ -256,7 +256,7 @@ it.each(["capability", "llm_v2"] as const)(
     expect(buildUpdatedComplexityRouterConfig(stored, changed).default_model).toBe("blocked");
     view.rerender(editor(changed));
     await user.click(
-      within(screen.getByRole("group", { name: "Default model configuration" })).getByRole("button", { name: "Clear" }),
+      within(screen.getByRole("group", { name: "默认模型配置" })).getByRole("button", { name: "Clear" }),
     );
     const cleared = onChange.mock.lastCall![0];
     expect(cleared.default_model).toBeUndefined();

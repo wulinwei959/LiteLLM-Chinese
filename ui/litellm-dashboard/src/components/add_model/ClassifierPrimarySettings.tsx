@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { SearchSelect } from "@/components/shared/SearchSelect";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,6 +13,12 @@ import {
   type ClassificationFrequency,
 } from "./ComplexityRouterConfig";
 import { restrictedBy } from "./TierRestrictions";
+
+const FREQUENCY_DESCRIPTION_KEYS = {
+  every_request: "frequencyEveryRequestDescription",
+  user_turn: "frequencyUserTurnDescription",
+  session: "frequencySessionDescription",
+} as const;
 
 export default function ClassifierPrimarySettings({
   value,
@@ -27,13 +34,10 @@ export default function ClassifierPrimarySettings({
   section?: "all" | "judge" | "frequency";
 }) {
   const id = React.useId();
+  const t = useTranslations("models.addModel");
   const restriction = restrictedBy(value, "sessionAffinity");
   const frequency = classificationFrequency(value);
-  const frequencyDescription = {
-    every_request: "Choose a model again for every request",
-    user_turn: "Reclassify when the user sends a new message",
-    session: "Keep the same tier for the session. Requires a client session ID",
-  }[frequency];
+  const frequencyDescription = t(FREQUENCY_DESCRIPTION_KEYS[frequency]);
   const usesJudge = usesLlmClassifier(effectiveClassifierType(value));
   const missingJudge = showValidationErrors && usesJudge && !value.classifier_llm_config?.model;
   return (
@@ -48,12 +52,12 @@ export default function ClassifierPrimarySettings({
     >
       {section !== "judge" && (
         <div className="space-y-2">
-          <Label htmlFor={`${id}-frequency`}>How often to classify</Label>
+          <Label htmlFor={`${id}-frequency`}>{t("howOftenToClassify")}</Label>
           <Select
             items={[
-              { value: "every_request", label: "Every request" },
-              { value: "user_turn", label: "Every new user message" },
-              { value: "session", label: "Once per session" },
+              { value: "every_request", label: t("frequencyEveryRequest") },
+              { value: "user_turn", label: t("frequencyUserTurn") },
+              { value: "session", label: t("frequencySession") },
             ]}
             value={frequency}
             onValueChange={(frequency) => {
@@ -64,10 +68,10 @@ export default function ClassifierPrimarySettings({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="every_request">Every request</SelectItem>
-              <SelectItem value="user_turn">Every new user message</SelectItem>
+              <SelectItem value="every_request">{t("frequencyEveryRequest")}</SelectItem>
+              <SelectItem value="user_turn">{t("frequencyUserTurn")}</SelectItem>
               <SelectItem value="session" disabled={Boolean(restriction)}>
-                Once per session
+                {t("frequencySession")}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -76,13 +80,13 @@ export default function ClassifierPrimarySettings({
       )}
       {section !== "frequency" && usesJudge && (
         <div className="space-y-2">
-          <Label htmlFor={`${id}-judge`}>Judge model</Label>
+          <Label htmlFor={`${id}-judge`}>{t("judgeModel")}</Label>
           <SearchSelect
             inputId={`${id}-judge`}
-            aria-label="Judge model"
+            aria-label={t("judgeModel")}
             options={modelOptions}
             value={value.classifier_llm_config?.model ?? ""}
-            placeholder="Select the judge model"
+            placeholder={t("selectJudgeModel")}
             allowClear={false}
             className={missingJudge ? "border-destructive" : undefined}
             onValueChange={(model) => {
@@ -100,7 +104,7 @@ export default function ClassifierPrimarySettings({
           />
           {missingJudge && (
             <p role="alert" className="text-xs text-destructive">
-              A judge model is required
+              {t("judgeModelRequired")}
             </p>
           )}
         </div>
