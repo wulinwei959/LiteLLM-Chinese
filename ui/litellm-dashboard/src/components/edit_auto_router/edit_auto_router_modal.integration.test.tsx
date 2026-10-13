@@ -311,11 +311,11 @@ describe("EditAutoRouterModal keyword matching", () => {
 
     await screen.findByRole("combobox", { name: "分类频率" });
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
+    await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
 
     // The modal renders the same controls as the create form, so it owes the same treatment:
     // the row says what is missing and the save is not offered while it is.
-    expect(await screen.findByText("At least one keyword is required")).toBeInTheDocument();
+    expect(await screen.findByText("至少需要一个关键词")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /save changes/i })).toBeDisabled();
     expect(modelPatchUpdateCall).not.toHaveBeenCalled();
   });
@@ -345,17 +345,17 @@ describe("EditAutoRouterModal keyword matching", () => {
 
     await screen.findByRole("combobox", { name: "分类频率" });
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
+    await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
     expect(screen.getByRole("button", { name: /save changes/i })).toBeDisabled();
 
     await user.type(
-      within(screen.getByText("Keywords 2").closest("div") as HTMLElement).getByRole("combobox"),
+      within(screen.getByText("关键词 2").closest("div") as HTMLElement).getByRole("combobox"),
       "chargeback",
     );
     await user.click(await screen.findByText('Create "chargeback"'));
 
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
-    expect(screen.queryByText("At least one keyword is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("至少需要一个关键词")).not.toBeInTheDocument();
   });
 });
 

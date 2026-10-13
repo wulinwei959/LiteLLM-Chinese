@@ -210,7 +210,7 @@ describe("ComplexityRouterConfig", () => {
     rerender(<ComplexityRouterConfig modelInfo={mockModelInfo} value={heuristicV2Value} onChange={onChange} />);
 
     expect(screen.queryByText("评审模型")).not.toBeInTheDocument();
-    expect(screen.queryByText("Advanced scoring")).not.toBeInTheDocument();
+    expect(screen.queryByText("高级评分")).not.toBeInTheDocument();
     expect(screen.getByText(/estimates success probability for all four tiers/)).toBeInTheDocument();
     expect(screen.queryByText(/Score < 0.15/)).not.toBeInTheDocument();
   });
@@ -513,16 +513,16 @@ describe("ComplexityRouterConfig", () => {
   it("should render an empty state when no keyword tier rules exist", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    expect(screen.getByText("Keyword Tier Overrides")).toBeInTheDocument();
-    expect(screen.getByText("No keyword tier overrides configured")).toBeInTheDocument();
+    expect(screen.getByText("关键词层级覆盖")).toBeInTheDocument();
+    expect(screen.getByText("尚未配置任何关键词层级覆盖")).toBeInTheDocument();
   });
 
   it("hides the keyword-tier and semantic sections when their change handlers are absent (edit modal)", async () => {
     // The edit-auto-router modal renders ComplexityRouterConfig without these handlers;
     // the sections must stay hidden rather than render interactive-but-dead controls.
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={defaultValue} onChange={vi.fn()} />);
-    expect(screen.queryByText("Keyword Tier Overrides")).not.toBeInTheDocument();
-    expect(screen.queryByText("Semantic keyword matching")).not.toBeInTheDocument();
+    expect(screen.queryByText("关键词层级覆盖")).not.toBeInTheDocument();
+    expect(screen.queryByText("语义关键词匹配")).not.toBeInTheDocument();
     // Core tier config still renders.
     expect(screen.getByText("Models by tier")).toBeInTheDocument();
   });
@@ -532,7 +532,7 @@ describe("ComplexityRouterConfig", () => {
     const onKeywordTierRulesChange = vi.fn();
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onKeywordTierRulesChange={onKeywordTierRulesChange} />);
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
+    await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
     expect(onKeywordTierRulesChange).toHaveBeenCalledTimes(1);
     const newRules = onKeywordTierRulesChange.mock.calls[0][0];
     expect(newRules).toHaveLength(1);
@@ -551,7 +551,7 @@ describe("ComplexityRouterConfig", () => {
     );
     openAutoRouterAdvanced("Keyword/Semantic Matching");
 
-    const field = screen.getByText("Keywords 1").closest("div") as HTMLElement;
+    const field = screen.getByText("关键词 1").closest("div") as HTMLElement;
     await user.type(within(field).getByRole("combobox"), "invoice");
     await user.click(await screen.findByText('Create "invoice"'));
 
@@ -572,23 +572,23 @@ describe("ComplexityRouterConfig", () => {
     expect(screen.getByText("invoice")).toBeInTheDocument();
     expect(screen.getByText("refund")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /remove keyword rule 1/i }));
+    await user.click(screen.getByRole("button", { name: /删除关键词规则 1/ }));
     expect(onKeywordTierRulesChange).toHaveBeenCalledWith([]);
   });
 
   it("should not show embedding model or match score fields when semantic matching is disabled", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} semanticMatchingEnabled={false} />);
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    expect(screen.getByText("Semantic keyword matching")).toBeInTheDocument();
-    expect(screen.queryByText("Embedding model")).not.toBeInTheDocument();
-    expect(screen.queryByText("Minimum match score")).not.toBeInTheDocument();
+    expect(screen.getByText("语义关键词匹配")).toBeInTheDocument();
+    expect(screen.queryByText("Embedding 模型")).not.toBeInTheDocument();
+    expect(screen.queryByText("最低匹配分数")).not.toBeInTheDocument();
   });
 
   it("should show embedding model and match score fields when semantic matching is enabled", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} semanticMatchingEnabled={true} />);
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    expect(screen.getByText("Embedding model")).toBeInTheDocument();
-    expect(screen.getByText("Minimum match score")).toBeInTheDocument();
+    expect(screen.getByText("Embedding 模型")).toBeInTheDocument();
+    expect(screen.getByText("最低匹配分数")).toBeInTheDocument();
   });
 
   it("should call onSemanticMatchingEnabledChange when the semantic matching switch is toggled", async () => {
@@ -602,7 +602,7 @@ describe("ComplexityRouterConfig", () => {
       />,
     );
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    await user.click(screen.getByRole("switch", { name: "Semantic keyword matching" }));
+    await user.click(screen.getByRole("switch", { name: "语义关键词匹配" }));
     expect(onSemanticMatchingEnabledChange).toHaveBeenCalledWith(true, expect.anything());
   });
 
@@ -1002,7 +1002,7 @@ describe("ComplexityRouterConfig tier labels", () => {
       />,
     );
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    expect(screen.getByRole("combobox", { name: "Route keyword rule 1 to tier" })).toHaveTextContent("Deep");
+    expect(screen.getByRole("combobox", { name: "将关键词规则 1 路由到层级" })).toHaveTextContent("Deep");
   });
 });
 

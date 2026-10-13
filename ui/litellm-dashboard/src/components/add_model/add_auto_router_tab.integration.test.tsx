@@ -884,11 +884,11 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "keyword-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
+    await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
 
     expect(screen.getByRole("button", { name: /add auto router/i })).toBeDisabled();
     // The row says so on its own; there is no failed submit left to surface it.
-    expect(await screen.findByText("At least one keyword is required")).toBeInTheDocument();
+    expect(await screen.findByText("至少需要一个关键词")).toBeInTheDocument();
     expect(handleAddAutoRouterSubmit).not.toHaveBeenCalled();
   });
 
@@ -901,13 +901,13 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "keyword-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
+    await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
     expect(screen.getByRole("button", { name: /add auto router/i })).toBeDisabled();
 
-    await addKeyword(user, screen.getByText("Keywords 1").closest("div") as HTMLElement, "invoice");
+    await addKeyword(user, screen.getByText("关键词 1").closest("div") as HTMLElement, "invoice");
 
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
-    expect(screen.queryByText("At least one keyword is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("至少需要一个关键词")).not.toBeInTheDocument();
   });
 
   it("shows the orphaned-rule reason in the tier editor when a rule's tier is removed", async () => {
@@ -919,8 +919,8 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "orphan-rule-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
-    await addKeyword(user, screen.getByText("Keywords 1").closest("div") as HTMLElement, "invoice");
+    await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
+    await addKeyword(user, screen.getByText("关键词 1").closest("div") as HTMLElement, "invoice");
 
     await user.click(screen.getByRole("button", { name: "Edit tiers" }));
     await user.click(screen.getByRole("button", { name: "Remove the COMPLEX tier" }));
@@ -938,11 +938,11 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "keyword-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
-    await addKeyword(user, screen.getByText("Keywords 1").closest("div") as HTMLElement, "invoice");
-    await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
+    await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
+    await addKeyword(user, screen.getByText("关键词 1").closest("div") as HTMLElement, "invoice");
+    await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
 
-    expect(await screen.findAllByText("At least one keyword is required")).toHaveLength(1);
+    expect(await screen.findAllByText("至少需要一个关键词")).toHaveLength(1);
     expect(screen.getByRole("button", { name: /add auto router/i })).toBeDisabled();
   });
 
@@ -955,8 +955,8 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "keyword-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Keyword/Semantic Matching");
-    await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
-    const keywordsField = screen.getByText("Keywords 1").closest("div") as HTMLElement;
+    await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
+    const keywordsField = screen.getByText("关键词 1").closest("div") as HTMLElement;
     await addKeyword(user, keywordsField, "invoice");
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: /add auto router/i }));
@@ -1256,8 +1256,8 @@ describe("AddAutoRouterTab", () => {
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("Heuristic", "Rule-based");
-    await user.click(await screen.findByText("Advanced scoring"));
-    fireEvent.change(await screen.findByLabelText("Minimum score"), { target: { value: "0" } });
+    await user.click(await screen.findByText("高级评分"));
+    fireEvent.change(await screen.findByLabelText("最低分数"), { target: { value: "0" } });
 
     await waitFor(() => expect(screen.getByRole("button", { name: /add auto router/i })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: /add auto router/i }));
@@ -1459,8 +1459,8 @@ describe("AddAutoRouterTab", () => {
       await user.type(screen.getByPlaceholderText(/smart_router/i), "keyword-router");
       expandDetailedConfiguration();
       openAutoRouterAdvanced("Keyword/Semantic Matching");
-      await user.click(screen.getByRole("button", { name: /add keyword rule/i }));
-      const keywordsField = screen.getByText("Keywords 1").closest("div") as HTMLElement;
+      await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
+      const keywordsField = screen.getByText("关键词 1").closest("div") as HTMLElement;
       await addKeyword(user, keywordsField, "invoice");
 
       await user.click(screen.getByTestId("auto-router-test-routing-btn"));

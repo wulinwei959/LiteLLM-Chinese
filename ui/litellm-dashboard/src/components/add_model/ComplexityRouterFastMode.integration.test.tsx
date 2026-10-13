@@ -287,10 +287,10 @@ it.each(["capability", "llm_v2"] as const)("offers only populated keyword target
   const view = renderWithProviders(editor([]));
   openAutoRouterAdvanced("Keyword/Semantic Matching");
   openAutoRouterAdvanced("Keyword/Semantic Matching");
-  await user.click(screen.getByRole("button", { name: "Add keyword rule" }));
+  await user.click(screen.getByRole("button", { name: "添加关键词规则" }));
   const rules = onRulesChange.mock.lastCall![0];
   expect(rules[0].tier).toBe("SIMPLE");
   view.rerender(editor(rules));
-  await user.click(screen.getByRole("combobox", { name: "Route keyword rule 1 to tier" }));
+  await user.click(screen.getByRole("combobox", { name: "将关键词规则 1 路由到层级" }));
   expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual(["Simple", "Reasoning"]);
 });

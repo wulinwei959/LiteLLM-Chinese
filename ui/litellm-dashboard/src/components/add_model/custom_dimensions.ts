@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DIMENSION_LABELS } from "./heuristic_scoring_knobs";
+import { DIMENSION_LABEL_KEYS } from "./heuristic_scoring_knobs";
 
 const customDimensionShape = {
   name: z.string(),
@@ -24,7 +24,7 @@ export const serializeCustomDimensions = (rows: CustomDimensionRow[]): CustomDim
 
 export const customDimensionsError = (
   rows: CustomDimensionRow[] | undefined,
-  builtinNames: string[] = Object.keys(DIMENSION_LABELS),
+  builtinNames: string[] = Object.keys(DIMENSION_LABEL_KEYS),
 ): string | null => {
   if (!rows) return null;
   if (rows.length > 16) return "A router can have at most 16 custom dimensions";

@@ -36,18 +36,18 @@ describe("SemanticKeywordMatching", () => {
 
   it("does not show a validation error by default", () => {
     renderWithProviders(<SemanticKeywordMatching {...baseProps} showValidationErrors={false} />);
-    expect(screen.queryByText("An embedding model is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("必须选择一个 embedding 模型")).not.toBeInTheDocument();
   });
 
   it("shows a validation error when showValidationErrors is true and no embedding model is set", () => {
     renderWithProviders(<SemanticKeywordMatching {...baseProps} showValidationErrors={true} />);
-    expect(screen.getByText("An embedding model is required")).toBeInTheDocument();
+    expect(screen.getByText("必须选择一个 embedding 模型")).toBeInTheDocument();
   });
 
   it("hides the validation error once an embedding model is set", () => {
     renderWithProviders(
       <SemanticKeywordMatching {...baseProps} showValidationErrors={true} embeddingModel="voyage-3-5" />,
     );
-    expect(screen.queryByText("An embedding model is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("必须选择一个 embedding 模型")).not.toBeInTheDocument();
   });
 });

@@ -5,7 +5,6 @@ import { useComplexityScorerDefaults } from "@/app/(dashboard)/hooks/autoRouter/
 import ClassificationMethodConfig from "./ClassificationMethodConfig";
 import HeuristicScoringConfig from "./HeuristicScoringConfig";
 import { ClassifierFallback, ClassifierType, ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
-import { DIMENSION_LABELS } from "./heuristic_scoring_knobs";
 import { LOADED_SCORER_DEFAULTS_QUERY, SHIPPED_SCORER_DEFAULTS } from "../../../tests/mocks/complexityScorerDefaults";
 
 vi.mock(
@@ -18,9 +17,19 @@ const BASE: ComplexityRouterConfigValue = {
   classifier_type: "heuristic",
 };
 
+const DIMENSION_ZH: Record<string, string> = {
+  codePresence: "代码存在",
+  reasoningMarkers: "推理标记",
+  technicalTerms: "技术术语",
+  tokenCount: "Token 数量",
+  simpleIndicators: "简单指标",
+  multiStepPatterns: "多步骤模式",
+  questionComplexity: "问题复杂度",
+};
+
 const render = async (value: ComplexityRouterConfigValue, onChange = vi.fn()) => {
   renderWithProviders(<HeuristicScoringConfig value={value} onChange={onChange} />);
-  await userEvent.click(screen.getByText("Advanced scoring"));
+  await userEvent.click(screen.getByText("高级评分"));
   return onChange;
 };
 
@@ -35,21 +44,21 @@ describe("HeuristicScoringConfig", () => {
     const tuned = { ...BASE, token_thresholds: { simple: 25, complex: 900 } };
     renderWithProviders(<HeuristicScoringConfig value={tuned} onChange={vi.fn()} />);
 
-    expect(screen.getByTestId("advanced-scoring-override-count")).toHaveTextContent("1 override");
+    expect(screen.getByTestId("advanced-scoring-override-count")).toHaveTextContent("1 项覆盖");
   });
 
   it("prefills the shipped defaults", async () => {
     await render(BASE);
 
-    expect(screen.getByLabelText("Simple to Medium")).toHaveValue("0.15");
-    expect(screen.getByLabelText("Long above")).toHaveValue("400");
-    expect(screen.getByTestId("dimension-weight-total")).toHaveTextContent("total 1.00");
+    expect(screen.getByLabelText("Simple 到 Medium")).toHaveValue("0.15");
+    expect(screen.getByLabelText("长于")).toHaveValue("400");
+    expect(screen.getByTestId("dimension-weight-total")).toHaveTextContent("总计 1.00");
   });
 
   it("writes a whole dict, and keeps the decimal point typeable", async () => {
     // A plain controlled number input renders Number("0.") as "0", so "0.22" would be untypeable.
     const onChange = await render(BASE);
-    const field = screen.getByLabelText("Simple to Medium");
+    const field = screen.getByLabelText("Simple 到 Medium");
 
     fireEvent.change(field, { target: { value: "0." } });
     expect(field).toHaveValue("0.");
@@ -64,32 +73,32 @@ describe("HeuristicScoringConfig", () => {
 
   it("commits nothing for an emptied field, rather than NaN", async () => {
     const onChange = await render(BASE);
-    fireEvent.change(screen.getByLabelText("Short below"), { target: { value: "" } });
+    fireEvent.change(screen.getByLabelText("短于"), { target: { value: "" } });
 
     expect(onChange).not.toHaveBeenCalled();
   });
 
   it.each(["999", "-2"])("rejects an invalid weight %s instead of silently clamping", async (raw) => {
-    expect(await commit("Code presence", raw)).toBeUndefined();
-    expect(screen.getByRole("alert")).toHaveTextContent("Use a weight from 0 to 1");
+    expect(await commit("代码存在", raw)).toBeUndefined();
+    expect(screen.getByRole("alert")).toHaveTextContent("请使用 0 到 1 之间的权重");
   });
 
-  it.each([["Long above", "100000", 100000]])("clamps %s = %s to %s", async (label, raw, expected) => {
+  it.each([["长于", "100000", 100000]])("clamps %s = %s to %s", async (label, raw, expected) => {
     const next = await commit(label, raw);
     expect(
-      { ...next?.dimension_weights, ...next?.token_thresholds }[label === "Long above" ? "complex" : "codePresence"],
+      { ...next?.dimension_weights, ...next?.token_thresholds }[label === "长于" ? "complex" : "codePresence"],
     ).toBe(expected);
   });
 
   it.each(["Infinity", "1e999"])("refuses to commit %s", async (raw) => {
-    expect((await commit("Simple to Medium", raw))?.tier_boundaries).toBeUndefined();
+    expect((await commit("Simple 到 Medium", raw))?.tier_boundaries).toBeUndefined();
   });
 
   it("resets a group back to undefined so it tracks the backend defaults again", async () => {
     const tuned = { ...BASE, token_thresholds: { simple: 25, complex: 900 } };
     const onChange = await render(tuned);
 
-    await userEvent.click(screen.getByRole("button", { name: "Reset to defaults" }));
+    await userEvent.click(screen.getByRole("button", { name: "重置为默认值" }));
 
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ token_thresholds: undefined }));
   });
@@ -97,7 +106,7 @@ describe("HeuristicScoringConfig", () => {
   it("shows the boundary an untouched override floor tracks, rather than a fixed number", async () => {
     await render(BASE);
 
-    const field = screen.getByLabelText("Minimum score");
+    const field = screen.getByLabelText("最低分数");
     expect(field).toHaveValue("");
     expect(field).toHaveAttribute("placeholder", SHIPPED_SCORER_DEFAULTS.tier_boundaries.simple_medium.toFixed(2));
   });
@@ -105,13 +114,13 @@ describe("HeuristicScoringConfig", () => {
   it("tracks the operator's own Simple to Medium override, not the shipped boundary", async () => {
     await render({ ...BASE, tier_boundaries: { simple_medium: 0.42, medium_complex: 0.5, complex_reasoning: 0.7 } });
 
-    expect(screen.getByLabelText("Minimum score")).toHaveAttribute("placeholder", "0.42");
+    expect(screen.getByLabelText("最低分数")).toHaveAttribute("placeholder", "0.42");
   });
 
   // 0 restores an unconditional override, so it has to reach the config as 0 rather than as "untouched".
   it("commits an explicit 0 override floor", async () => {
     const onChange = await render(BASE);
-    fireEvent.change(screen.getByLabelText("Minimum score"), { target: { value: "0" } });
+    fireEvent.change(screen.getByLabelText("最低分数"), { target: { value: "0" } });
 
     expect(onChange.mock.calls.at(-1)?.[0]).toMatchObject({ reasoning_override_min_score: 0 });
   });
@@ -119,7 +128,7 @@ describe("HeuristicScoringConfig", () => {
   it("renders a stored 0 as 0 rather than as an untouched field", async () => {
     await render({ ...BASE, reasoning_override_min_score: 0 });
 
-    expect(screen.getByLabelText("Minimum score")).toHaveValue("0");
+    expect(screen.getByLabelText("最低分数")).toHaveValue("0");
   });
 
   it("counts a set override floor among the overrides", () => {
@@ -127,12 +136,12 @@ describe("HeuristicScoringConfig", () => {
       <HeuristicScoringConfig value={{ ...BASE, reasoning_override_min_score: 0 }} onChange={vi.fn()} />,
     );
 
-    expect(screen.getByTestId("advanced-scoring-override-count")).toHaveTextContent("1 override");
+    expect(screen.getByTestId("advanced-scoring-override-count")).toHaveTextContent("1 项覆盖");
   });
 
   it("clamps the override floor to the score range", async () => {
     const onChange = await render(BASE);
-    fireEvent.change(screen.getByLabelText("Minimum score"), { target: { value: "9" } });
+    fireEvent.change(screen.getByLabelText("最低分数"), { target: { value: "9" } });
 
     expect(onChange.mock.calls.at(-1)?.[0]).toMatchObject({ reasoning_override_min_score: 1 });
   });
@@ -140,7 +149,7 @@ describe("HeuristicScoringConfig", () => {
   it("resets the override floor back to tracking the boundary", async () => {
     const onChange = await render({ ...BASE, reasoning_override_min_score: 0 });
 
-    await userEvent.click(screen.getAllByRole("button", { name: "Reset to defaults" }).at(-1)!);
+    await userEvent.click(screen.getAllByRole("button", { name: "重置为默认值" }).at(-1)!);
 
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ reasoning_override_min_score: undefined }));
   });
@@ -149,7 +158,7 @@ describe("HeuristicScoringConfig", () => {
     const bad = { ...BASE, tier_boundaries: { simple_medium: 0.5, medium_complex: 0.2, complex_reasoning: 0.6 } };
     await render(bad);
 
-    expect(screen.getByRole("alert")).toHaveTextContent(/unreachable/);
+    expect(screen.getByRole("alert")).toHaveTextContent(/无法到达/);
   });
 });
 
@@ -179,7 +188,7 @@ describe("ClassificationMethodConfig scorer gating", () => {
   ])("offers the knobs when %s: %s", async (_case, type, fallback, expected) => {
     renderWithProviders(<ClassificationMethodConfig {...props} value={withClassifier(type, fallback)} />);
 
-    expect(screen.queryByText("Advanced scoring") !== null).toBe(expected);
+    expect(screen.queryByText("高级评分") !== null).toBe(expected);
   });
 
   it("describes the tier ranges from the configured boundaries, not the shipped numbers", () => {
@@ -207,7 +216,7 @@ describe("ClassificationMethodConfig scorer gating", () => {
     await render(BASE);
 
     for (const key of Object.keys(SHIPPED_SCORER_DEFAULTS.dimension_weights)) {
-      expect(screen.getByLabelText(DIMENSION_LABELS[key])).toBeInTheDocument();
+      expect(screen.getByLabelText(DIMENSION_ZH[key])).toBeInTheDocument();
     }
   });
 });
@@ -219,7 +228,7 @@ describe("HeuristicScoringConfig when the defaults request fails", () => {
   const renderWithQuery = async (query: unknown, value: ComplexityRouterConfigValue) => {
     vi.mocked(useComplexityScorerDefaults).mockReturnValue(query as never);
     renderWithProviders(<HeuristicScoringConfig value={value} onChange={vi.fn()} />);
-    await userEvent.click(screen.getByText("Advanced scoring"));
+    await userEvent.click(screen.getByText("高级评分"));
   };
 
   afterEach(() => vi.mocked(useComplexityScorerDefaults).mockReturnValue(LOADED_SCORER_DEFAULTS_QUERY));
@@ -227,22 +236,22 @@ describe("HeuristicScoringConfig when the defaults request fails", () => {
   it("says so instead of claiming to still be loading", async () => {
     await renderWithQuery(failing, BASE);
 
-    expect(screen.queryByText(/Loading the shipped defaults/)).not.toBeInTheDocument();
-    expect(screen.getByRole("alert")).toHaveTextContent(/Could not load the shipped defaults/);
-    expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
+    expect(screen.queryByText(/正在加载随版本发布的默认值/)).not.toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent(/无法加载随版本发布的默认值/);
+    expect(screen.getByRole("button", { name: "重试" })).toBeInTheDocument();
   });
 
   it("still shows and edits the values this router already overrides", async () => {
     await renderWithQuery(failing, { ...BASE, token_thresholds: { simple: 25, complex: 900 } });
 
-    expect(screen.getByLabelText("Short below")).toHaveValue("25");
-    expect(screen.getByLabelText("Long above")).toHaveValue("900");
+    expect(screen.getByLabelText("短于")).toHaveValue("25");
+    expect(screen.getByLabelText("长于")).toHaveValue("900");
   });
 
   it("keeps saying loading while the request is genuinely in flight", async () => {
     await renderWithQuery(pending, BASE);
 
-    expect(screen.getByText(/Loading the shipped defaults/)).toBeInTheDocument();
+    expect(screen.getByText(/正在加载随版本发布的默认值/)).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });
@@ -260,10 +269,10 @@ describe("HeuristicScoringConfig degraded states", () => {
     renderWithProviders(
       <HeuristicScoringConfig value={{ ...BASE, dimension_weights: { codePresence: 0.5 } }} onChange={vi.fn()} />,
     );
-    await userEvent.click(screen.getByText("Advanced scoring"));
+    await userEvent.click(screen.getByText("高级评分"));
 
-    expect(screen.getByLabelText("Code presence")).toHaveValue("0.5");
-    expect(screen.getByLabelText("Code presence")).toBeDisabled();
+    expect(screen.getByLabelText("代码存在")).toHaveValue("0.5");
+    expect(screen.getByLabelText("代码存在")).toBeDisabled();
     expect(screen.queryByTestId("dimension-weight-total")).not.toBeInTheDocument();
   });
 });

@@ -33,26 +33,26 @@ describe("combined heuristic editor", () => {
   it("adds and edits a graded dimension, rebalances builtins, preserves matcher-only edits, and removes it", async () => {
     const user = userEvent.setup();
     renderWithProviders(<Editor />);
-    await user.click(screen.getByText("Advanced scoring"));
-    expect(await screen.findByRole("button", { name: "Restore default weights" })).toBeDisabled();
-    await user.click(screen.getByRole("button", { name: "Add custom dimension" }));
-    expect(screen.getByRole("button", { name: "Restore default weights" })).toBeEnabled();
+    await user.click(screen.getByText("高级评分"));
+    expect(await screen.findByRole("button", { name: "恢复默认权重" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "添加自定义维度" }));
+    expect(screen.getByRole("button", { name: "恢复默认权重" })).toBeEnabled();
     expect(draft().dimension_weights?.codePresence).toBeCloseTo(0.27, 12);
     expect(draft().custom_dimensions?.[0].scoring_mode).toBe("match_count");
-    expect(screen.getByRole("group", { name: "Custom dimension 1" })).toContainElement(
-      screen.getByLabelText("Name", { exact: true }),
+    expect(screen.getByRole("group", { name: "自定义维度 1" })).toContainElement(
+      screen.getByLabelText("名称", { exact: true }),
     );
-    fireEvent.change(screen.getByLabelText("Name", { exact: true }), { target: { value: "domain" } });
-    fireEvent.change(screen.getByLabelText("Keywords (one per line)"), { target: { value: "orbitmesh\nfluxgate" } });
-    fireEvent.change(screen.getByLabelText("Weight", { exact: true }), { target: { value: "0.2" } });
-    expect(screen.getByLabelText("Code presence", { exact: true })).toHaveValue("0.24");
-    expect(screen.getByTestId("dimension-weight-total")).toHaveTextContent("total 1.00");
+    fireEvent.change(screen.getByLabelText("名称", { exact: true }), { target: { value: "domain" } });
+    fireEvent.change(screen.getByLabelText("关键词（每行一个）"), { target: { value: "orbitmesh\nfluxgate" } });
+    fireEvent.change(screen.getByLabelText("权重", { exact: true }), { target: { value: "0.2" } });
+    expect(screen.getByLabelText("代码存在", { exact: true })).toHaveValue("0.24");
+    expect(screen.getByTestId("dimension-weight-total")).toHaveTextContent("总计 1.00");
     const beforeMatchers = draft().dimension_weights;
-    fireEvent.change(screen.getByLabelText("Regex patterns (one per line)"), { target: { value: "abc" } });
-    await chooseSelectOption(user, screen.getByLabelText("Scoring"), "Binary");
+    fireEvent.change(screen.getByLabelText("正则表达式（每行一个）"), { target: { value: "abc" } });
+    await chooseSelectOption(user, screen.getByLabelText("评分方式"), "二值");
     expect(draft().dimension_weights).toEqual(beforeMatchers);
     expect(draft().custom_dimensions?.[0].scoring_mode).toBe("binary");
-    await user.click(screen.getByRole("button", { name: "Remove custom dimension 1" }));
+    await user.click(screen.getByRole("button", { name: "删除自定义维度 1" }));
     expect(draft().custom_dimensions).toBeUndefined();
     expect(draft().dimension_weights?.codePresence).toBeCloseTo(0.3, 12);
   });
@@ -64,11 +64,11 @@ describe("combined heuristic editor", () => {
       custom_dimensions: [{ id: "stored-0", name: "domain", weight: 0.7, keywords: ["a"] }],
     };
     renderWithProviders(<Editor initial={legacy} />);
-    await userEvent.click(screen.getByText("Advanced scoring"));
-    expect(await screen.findByTestId("dimension-weight-total")).toHaveTextContent("total 1.10");
+    await userEvent.click(screen.getByText("高级评分"));
+    expect(await screen.findByTestId("dimension-weight-total")).toHaveTextContent("总计 1.10");
     expect(draft()).toEqual(legacy);
-    expect(screen.getByLabelText("Token count", { exact: true })).toHaveValue("0");
-    await userEvent.click(screen.getByRole("button", { name: "Restore default weights" }));
+    expect(screen.getByLabelText("Token 数量", { exact: true })).toHaveValue("0");
+    await userEvent.click(screen.getByRole("button", { name: "恢复默认权重" }));
     expect(draft().custom_dimensions).toBeUndefined();
     expect(draft().dimension_weights).toBeUndefined();
   });
@@ -81,10 +81,10 @@ describe("combined heuristic editor", () => {
       custom_dimensions: [{ id: "a", name: "domain", weight: 0.7, keywords: ["a"] }],
     };
     renderWithProviders(<Editor initial={initial} />);
-    await userEvent.click(screen.getByText("Advanced scoring"));
-    fireEvent.change(await screen.findByLabelText("Code presence", { exact: true }), { target: { value: "0.5" } });
+    await userEvent.click(screen.getByText("高级评分"));
+    fireEvent.change(await screen.findByLabelText("代码存在", { exact: true }), { target: { value: "0.5" } });
     expect(draft().custom_dimensions).toBeUndefined();
     expect(Object.values(draft().dimension_weights!).reduce((sum, weight) => sum + weight, 0)).toBeCloseTo(1, 12);
-    expect(screen.queryByRole("button", { name: "Add custom dimension" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "添加自定义维度" })).not.toBeInTheDocument();
   });
 });

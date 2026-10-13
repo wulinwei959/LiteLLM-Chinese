@@ -1,3 +1,4 @@
+import type { useTranslations } from "next-intl";
 import type { CustomDimensionRow } from "./custom_dimensions";
 
 export type TierBoundaries = Record<string, number>;
@@ -6,22 +7,25 @@ export type TokenThresholds = Record<string, number>;
 
 export type DimensionWeights = Record<string, number>;
 
+export type AddModelTranslator = ReturnType<typeof useTranslations<"models.addModel">>;
+
 /**
- * Display names for the scorer's dimensions. Only the wording lives here; the dimension set and its
+ * Message keys for the scorer's dimensions. Only the wording lives here; the dimension set and its
  * shipped weights come from the proxy (GET /public/complexity_router/scorer_defaults), so a dimension
  * added backend-side still renders, under its raw key until it is given a label here.
  */
-export const DIMENSION_LABELS: Record<string, string> = {
-  codePresence: "Code presence",
-  reasoningMarkers: "Reasoning markers",
-  technicalTerms: "Technical terms",
-  tokenCount: "Token count",
-  simpleIndicators: "Simple indicators",
-  multiStepPatterns: "Multi-step patterns",
-  questionComplexity: "Question complexity",
-};
+export const DIMENSION_LABEL_KEYS = {
+  codePresence: "dimensionCodePresence",
+  reasoningMarkers: "dimensionReasoningMarkers",
+  technicalTerms: "dimensionTechnicalTerms",
+  tokenCount: "dimensionTokenCount",
+  simpleIndicators: "dimensionSimpleIndicators",
+  multiStepPatterns: "dimensionMultiStepPatterns",
+  questionComplexity: "dimensionQuestionComplexity",
+} as const;
 
-export const dimensionLabel = (key: string): string => DIMENSION_LABELS[key] ?? key;
+export const dimensionLabel = (t: AddModelTranslator, key: string): string =>
+  key in DIMENSION_LABEL_KEYS ? t(DIMENSION_LABEL_KEYS[key as keyof typeof DIMENSION_LABEL_KEYS]) : key;
 
 const asRecord = (raw: unknown): Record<string, unknown> | undefined =>
   typeof raw === "object" && raw !== null && !Array.isArray(raw) ? (raw as Record<string, unknown>) : undefined;
@@ -73,9 +77,16 @@ export type WeightEdit =
   | { type: "set"; target: WeightTarget; weight: number }
   | { type: "add"; row: CustomDimensionRow }
   | { type: "remove"; id: string };
+export type WeightErrorKey =
+  | "rebalanceNeedDefaults"
+  | "rebalanceInvalidStored"
+  | "rebalanceDimensionGone"
+  | "rebalanceWeightRange"
+  | "rebalanceTooLarge"
+  | "rebalanceNoShare";
 type WeightResult =
   | { ok: true; dimension_weights: DimensionWeights; custom_dimensions: CustomDimensionRow[] | undefined }
-  | { ok: false; error: string };
+  | { ok: false; error: WeightErrorKey };
 
 export const rebalanceDimensionWeights = (
   defaults: DimensionWeights | undefined,
@@ -84,7 +95,7 @@ export const rebalanceDimensionWeights = (
   edit: WeightEdit,
 ): WeightResult => {
   if (!defaults || !Object.keys(defaults).length)
-    return { ok: false, error: "Load the shipped defaults before changing weights" };
+    return { ok: false, error: "rebalanceNeedDefaults" };
   const builtin = effectiveDimensionWeights(defaults, stored);
   const rows =
     edit.type === "add"
@@ -97,24 +108,24 @@ export const rebalanceDimensionWeights = (
   if (!vector.every(weightValid))
     return {
       ok: false,
-      error: "Existing weights must be finite and nonnegative; custom weights must be greater than 0 and at most 1",
+      error: "rebalanceInvalidStored",
     };
   const target = edit.type === "set" ? edit.target : undefined;
   const pinned = (entry: WeightTarget) =>
     edit.type === "add"
       ? entry.kind === "custom" && entry.id === edit.row.id
       : entry.kind === target?.kind && entry.id === target.id;
-  if (edit.type === "set" && !vector.some(pinned)) return { ok: false, error: "The dimension is no longer available" };
+  if (edit.type === "set" && !vector.some(pinned)) return { ok: false, error: "rebalanceDimensionGone" };
   const requestedWeight = (): number => {
     if (edit.type === "set") return edit.weight;
     return edit.type === "add" ? edit.row.weight : 0;
   };
   const weight = requestedWeight();
   if (!weightValid({ kind: target?.kind ?? "builtin", weight }))
-    return { ok: false, error: "Use a weight from 0 to 1; custom dimensions must stay greater than 0" };
+    return { ok: false, error: "rebalanceWeightRange" };
   const others = vector.filter((entry) => !pinned(entry));
   const total = others.reduce((sum, entry) => sum + entry.weight, 0);
-  if (!Number.isFinite(total)) return { ok: false, error: "Existing weights are too large to rebalance" };
+  if (!Number.isFinite(total)) return { ok: false, error: "rebalanceTooLarge" };
   const remainder = 1 - weight;
   const builtinCount = others.filter((entry) => entry.kind === "builtin").length;
   const redistributed = (entry: WeightTarget & { weight: number }): number => {
@@ -132,7 +143,7 @@ export const rebalanceDimensionWeights = (
   );
   const offBudget = Math.abs(corrected.reduce((sum, entry) => sum + entry.weight, 0) - 1) > 1e-12;
   if (!corrected.every(weightValid) || offBudget)
-    return { ok: false, error: "Leave a positive share for every custom dimension, or remove it first" };
+    return { ok: false, error: "rebalanceNoShare" };
   const weights = Object.fromEntries(
     corrected.filter((entry) => entry.kind === "builtin").map(({ id, weight }) => [id, weight]),
   );

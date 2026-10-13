@@ -1,4 +1,5 @@
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { SimpleTooltip } from "@/components/ui/tooltip";
 import { SearchSelect } from "@/components/shared/SearchSelect";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,7 @@ const SemanticKeywordMatching: React.FC<SemanticKeywordMatchingProps> = ({
   modelInfo,
   showValidationErrors = false,
 }) => {
+  const t = useTranslations("models.addModel");
   const embeddingModels = modelInfo.filter((model) => model.mode === "embedding");
   const modelOptions = Array.from(new Set(embeddingModels.map((model) => model.model_group))).map((model_group) => ({
     value: model_group,
@@ -41,39 +43,42 @@ const SemanticKeywordMatching: React.FC<SemanticKeywordMatchingProps> = ({
       <div className="flex items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-medium">Semantic keyword matching</span>
-            <SimpleTooltip content="Recognize related phrasing beyond exact keyword matches by comparing embeddings instead of plain text. Overrides direct keyword matching">
+            <span className="font-medium">{t("semanticKeywordHeading")}</span>
+            <SimpleTooltip content={t("semanticKeywordTooltip")}>
               <Info className="size-4 text-muted-foreground" />
             </SimpleTooltip>
           </div>
-          <span className="text-muted-foreground text-sm">
-            Uses same keyword-tier pairs as above and overrides direct keyword matching. Adds latency based on embedding
-            model network request.
-          </span>
+          <span className="text-muted-foreground text-sm">{t("semanticKeywordHelp")}</span>
         </div>
-        <Switch checked={enabled} onCheckedChange={onEnabledChange} aria-label="Semantic keyword matching" />
+        <Switch
+          checked={enabled}
+          onCheckedChange={onEnabledChange}
+          aria-label={t("semanticKeywordHeading")}
+        />
       </div>
 
       {enabled && (
         <div className="grid gap-4 md:grid-cols-2 mt-4 pt-4 border-t border-border">
           <div>
-            <span className="mb-1 block text-sm font-medium">Embedding model</span>
+            <span className="mb-1 block text-sm font-medium">{t("embeddingModelLabel")}</span>
             <SearchSelect
               options={modelOptions}
               value={embeddingModel ?? ""}
               onValueChange={(model) => {
                 if (model !== null) onEmbeddingModelChange(model);
               }}
-              placeholder="Select an embedding model"
-              emptyText="No embedding models found"
-              aria-label="Embedding model"
+              placeholder={t("selectEmbeddingModel")}
+              emptyText={t("noEmbeddingModels")}
+              aria-label={t("embeddingModelLabel")}
               allowClear={false}
               className={embeddingModelMissing ? "border-destructive" : undefined}
             />
-            {embeddingModelMissing && <span className="text-xs text-destructive">An embedding model is required</span>}
+            {embeddingModelMissing && (
+              <span className="text-xs text-destructive">{t("embeddingModelRequired")}</span>
+            )}
           </div>
           <div>
-            <span className="mb-1 block text-sm font-medium">Minimum match score</span>
+            <span className="mb-1 block text-sm font-medium">{t("minMatchScore")}</span>
             <Input
               type="number"
               value={matchThreshold}
@@ -85,9 +90,7 @@ const SemanticKeywordMatching: React.FC<SemanticKeywordMatchingProps> = ({
               step={0.05}
               className="w-full"
             />
-            <span className="mt-1 block text-xs text-muted-foreground">
-              Match only at or above this similarity score.
-            </span>
+            <span className="mt-1 block text-xs text-muted-foreground">{t("minMatchScoreHelp")}</span>
           </div>
         </div>
       )}

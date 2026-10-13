@@ -64,9 +64,10 @@ describe("hydrating the scorer knobs", () => {
     expect(hydrateReasoningOverrideMinScore(0.42)).toBe(0.42);
   });
 
-  it("falls back to the raw key when a dimension has no label yet", () => {
-    expect(dimensionLabel("codePresence")).toBe("Code presence");
-    expect(dimensionLabel("somethingNew")).toBe("somethingNew");
+  it("translates a known dimension through its label key and falls back to the raw key", () => {
+    const t = ((key: string) => `translated:${key}`) as never;
+    expect(dimensionLabel(t, "codePresence")).toBe("translated:dimensionCodePresence");
+    expect(dimensionLabel(t, "somethingNew")).toBe("somethingNew");
   });
 });
 
