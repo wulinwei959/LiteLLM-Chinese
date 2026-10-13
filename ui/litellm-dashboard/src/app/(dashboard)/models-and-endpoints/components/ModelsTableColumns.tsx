@@ -1,6 +1,7 @@
+"use client";
+
 import type { ModelsTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
-"use client";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Copy, Info, Loader2, Pencil, RefreshCw, Trash2 } from "lucide-react";
