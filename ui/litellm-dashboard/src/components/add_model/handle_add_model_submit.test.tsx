@@ -5,6 +5,8 @@ vi.mock("../networking", () => ({
   modelCreateCall: vi.fn(),
 }));
 
+const stubT = ((key: string) => key) as never;
+
 describe("prepareModelAddRequest", () => {
   it("returns deployment data for the most basic form", async () => {
     const formValues = {
@@ -22,7 +24,7 @@ describe("prepareModelAddRequest", () => {
       output_cost_per_token: "1000000",
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null, stubT);
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;
@@ -47,7 +49,7 @@ describe("prepareModelAddRequest", () => {
       custom_llm_provider: "Petals",
     };
 
-    const deployments = await prepareModelAddRequest({ ...fallbackValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...fallbackValues }, "token", null, stubT);
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;
@@ -70,7 +72,7 @@ describe("prepareModelAddRequest", () => {
       }),
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null, stubT);
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;
@@ -94,7 +96,7 @@ describe("prepareModelAddRequest", () => {
       litellm_credential_name: null,
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null, stubT);
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;
@@ -113,7 +115,7 @@ describe("prepareModelAddRequest", () => {
       custom_llm_provider,
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null, stubT);
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;

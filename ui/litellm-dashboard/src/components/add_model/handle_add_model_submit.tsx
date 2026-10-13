@@ -1,9 +1,17 @@
 import { toast } from "@/lib/toast";
+import { useTranslations } from "next-intl";
 import { Model, modelCreateCall } from "../networking";
 import { provider_map } from "../provider_info_helpers";
 import { ptuPickerToUtcIso } from "../../utils/ptuDatetime";
 
-export const prepareModelAddRequest = async (formValues: Record<string, any>, accessToken: string, form: any) => {
+type AddModelTranslator = ReturnType<typeof useTranslations<"models.addModel">>;
+
+export const prepareModelAddRequest = async (
+  formValues: Record<string, any>,
+  accessToken: string,
+  form: any,
+  t: AddModelTranslator,
+) => {
   try {
     // Get model mappings and safely remove from formValues
     const modelMappings = formValues["model_mappings"] || [];
@@ -128,7 +136,7 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
             try {
               litellmExtraParams = JSON.parse(value);
             } catch (error) {
-              toast.fromError("Failed to parse LiteLLM Extra Params: " + error);
+              toast.fromError(t("failedParseExtraParams", { suffix: `: ${error}` }));
               throw new Error("Failed to parse litellm_extra_params: " + error);
             }
             if ("litellm_credential_name" in litellmExtraParams && formValues.litellm_credential_name) {
@@ -144,7 +152,7 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
             try {
               modelInfoParams = JSON.parse(value);
             } catch (error) {
-              toast.fromError("Failed to parse LiteLLM Extra Params: " + error);
+              toast.fromError(t("failedParseExtraParams", { suffix: `: ${error}` }));
               throw new Error("Failed to parse litellm_extra_params: " + error);
             }
             for (const [key, value] of Object.entries(modelInfoParams)) {
@@ -196,13 +204,18 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
 
     return deployments;
   } catch (error) {
-    toast.fromError("Failed to create model: " + error);
+    toast.fromError(t("failedToCreateModel", { suffix: `: ${error}` }));
   }
 };
 
-export const handleAddModelSubmit = async (values: any, accessToken: string, form: any, callback?: () => void) => {
+export const handleAddModelSubmit = async (
+  values: any,
+  accessToken: string,
+  t: AddModelTranslator,
+  hooks: { form?: any; callback?: () => void } = {},
+) => {
   try {
-    const deployments = await prepareModelAddRequest(values, accessToken, form);
+    const deployments = await prepareModelAddRequest(values, accessToken, hooks.form, t);
 
     if (!deployments || deployments.length === 0) {
       return; // Exit if preparation failed or no deployments
@@ -221,9 +234,9 @@ export const handleAddModelSubmit = async (values: any, accessToken: string, for
       await modelCreateCall(accessToken, new_model);
     }
 
-    callback && callback();
-    form.resetFields();
+    hooks.callback && hooks.callback();
+    hooks.form?.resetFields();
   } catch (error) {
-    toast.fromError("Failed to add model: " + error);
+    toast.fromError(t("failedToAddModel", { suffix: `: ${error}` }));
   }
 };

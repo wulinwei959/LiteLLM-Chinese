@@ -49,7 +49,7 @@ describe("AdvancedSettings", () => {
       fireEvent.click(screen.getByText("高级设置"));
     });
     await waitFor(() => {
-      expect(screen.getByText("LiteLLM Params")).toBeInTheDocument();
+      expect(screen.getByText("LiteLLM 参数")).toBeInTheDocument();
     });
   });
 

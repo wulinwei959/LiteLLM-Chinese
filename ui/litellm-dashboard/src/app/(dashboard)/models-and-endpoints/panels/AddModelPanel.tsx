@@ -21,6 +21,7 @@ const INITIAL_VALUES: MountedFormValues = { litellm_credential_name: null };
 
 export default function AddModelPanel() {
   const t = useTranslations("models");
+  const addModelT = useTranslations("models.addModel");
   const { accessToken } = useAuthorized();
   const form = useForm<MountedFormValues>({ mode: "onChange", defaultValues: INITIAL_VALUES });
   const registry = useMountRegistry();
@@ -44,8 +45,8 @@ export default function AddModelPanel() {
     await handleAddModelSubmit(
       mountedValues(),
       accessToken,
-      { resetFields: () => form.reset(INITIAL_VALUES) },
-      refresh,
+      addModelT,
+      { form: { resetFields: () => form.reset(INITIAL_VALUES) }, callback: refresh },
     );
     return true;
   };

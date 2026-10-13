@@ -53,20 +53,22 @@ const USAGE_COST_FIELDS = [
 
 const REVALIDATED_WHEN_PTU_COUNT_CHANGES = [PTU_RATE_FIELD, PTU_START_FIELD, ...USAGE_COST_FIELDS];
 
-const validateNumber = (_: unknown, value: unknown) => {
+type AdvancedSettingsTranslator = ReturnType<typeof useTranslations<"models.addModel">>;
+
+const validateNumber = (t: AdvancedSettingsTranslator) => (_: unknown, value: unknown) => {
   if (!value) {
     return Promise.resolve();
   }
   if (isNaN(Number(value)) || Number(value) < 0) {
-    return Promise.reject("Please enter a valid positive number");
+    return Promise.reject(t("validPositiveNumber"));
   }
   return Promise.resolve();
 };
 
-const usageCostRules = {
+const usageCostRules = (t: AdvancedSettingsTranslator) => ({
   deps: [PTU_COUNT_FIELD],
-  validate: validatorRules({ validator: validateNumber }, ptuNoUsageCostRule(PTU_COUNT_FIELD)),
-};
+  validate: validatorRules({ validator: validateNumber(t) }, ptuNoUsageCostRule(PTU_COUNT_FIELD)),
+});
 
 const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
   showAdvancedSettings,
@@ -123,7 +125,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
               label={
                 <span>
                   {t("attachedKnowledgeBases")}
-                  <SimpleTooltip content="Vector stores to use for RAG. Every request to this model will automatically retrieve context from these knowledge bases.">
+                  <SimpleTooltip content={t("vectorStoreTooltip")}>
                     <a
                       href="https://docs.litellm.ai/docs/completion/knowledgebase"
                       target="_blank"
@@ -136,14 +138,14 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 </span>
               }
               className="mt-4"
-              help="Select vector stores to attach. Requests to this model will automatically use these for RAG. Set up vector stores in Tools > Vector Stores."
+              help={t("vectorStoreHelp")}
             >
               {(control) => (
                 <VectorStoreSelector
                   onChange={control.onChange}
                   value={control.value as string[] | undefined}
                   accessToken={accessToken}
-                  placeholder="Select knowledge bases (optional)"
+                  placeholder={t("selectKnowledgeBasesPlaceholder")}
                 />
               )}
             </MountedFormField>
@@ -153,7 +155,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
               label={
                 <span>
                   {t("guardrails")}
-                  <SimpleTooltip content="Apply safety guardrails to this key to filter content or enforce policies">
+                  <SimpleTooltip content={t("guardrailsTooltip")}>
                     <a
                       href="https://docs.litellm.ai/docs/proxy/guardrails/quick_start"
                       target="_blank"
@@ -166,13 +168,13 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 </span>
               }
               className="mt-4"
-              help="Select existing guardrails. Go to 'Guardrails' tab to create new guardrails."
+              help={t("guardrailsHelp")}
             >
               {(control) => (
                 <MultiSelect
                   id={control.id}
-                  placeholder="Select or enter guardrails"
-                  emptyText="Type to add a guardrail"
+                  placeholder={t("selectOrEnterGuardrails")}
+                  emptyText={t("typeToAddGuardrail")}
                   value={(control.value as string[] | undefined) ?? []}
                   onValueChange={control.onChange}
                   options={guardrailsList.map((name) => ({ value: name, label: name }))}
@@ -185,8 +187,8 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
               {(control) => (
                 <MultiSelect
                   id={control.id}
-                  placeholder="Select or enter tags"
-                  emptyText="Type to add a tag"
+                  placeholder={t("selectOrEnterTags")}
+                  emptyText={t("typeToAddTag")}
                   value={(control.value as string[] | undefined) ?? []}
                   onValueChange={control.onChange}
                   options={Object.values(tagsList).map((tag) => ({
@@ -210,7 +212,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                   rules={{
                     deps: REVALIDATED_WHEN_PTU_COUNT_CHANGES,
                     validate: validatorRules(
-                      { validator: validateNumber },
+                      { validator: validateNumber(t) },
                       ...ptuCountRules,
                       ptuPairRule(PTU_RATE_FIELD),
                     ),
@@ -223,7 +225,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                       value={(control.value as string | undefined) ?? ""}
                       onChange={control.onChange}
                       onBlur={control.onBlur}
-                      placeholder="e.g. 15"
+                      placeholder={t("ptuCountPlaceholder")}
                     />
                   )}
                 </MountedFormField>
@@ -237,7 +239,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                   rules={{
                     deps: [PTU_COUNT_FIELD],
                     validate: validatorRules(
-                      { validator: validateNumber },
+                      { validator: validateNumber(t) },
                       ...ptuRateRules,
                       ptuPairRule(PTU_COUNT_FIELD),
                     ),
@@ -250,7 +252,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                       value={(control.value as string | undefined) ?? ""}
                       onChange={control.onChange}
                       onBlur={control.onBlur}
-                      placeholder="e.g. 2.00"
+                      placeholder={t("ptuRatePlaceholder")}
                     />
                   )}
                 </MountedFormField>
@@ -332,7 +334,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                     <MountedFormField
                       name="input_cost_per_token"
                       label={t("inputCostPerToken")}
-                      rules={usageCostRules}
+                      rules={usageCostRules(t)}
                       className="mb-4"
                     >
                       {(control) => (
@@ -347,7 +349,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                     <MountedFormField
                       name="output_cost_per_token"
                       label={t("outputCostPerToken")}
-                      rules={usageCostRules}
+                      rules={usageCostRules(t)}
                       className="mb-4"
                     >
                       {(control) => (
@@ -361,8 +363,8 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                     </MountedFormField>
                     <MountedFormField
                       name="cache_read_input_token_cost"
-                      label={labelWithHint(t("cacheReadCostPerToken"), "If left blank, defaults to Input Cost.")}
-                      rules={usageCostRules}
+                      label={labelWithHint(t("cacheReadCostPerToken"), t("cacheReadHint"))}
+                      rules={usageCostRules(t)}
                       className="mb-4"
                     >
                       {(control) => (
@@ -371,17 +373,14 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                           value={(control.value as string | undefined) ?? ""}
                           onChange={control.onChange}
                           onBlur={control.onBlur}
-                          placeholder="Defaults to Input Cost if blank"
+                          placeholder={t("defaultsToInputCost")}
                         />
                       )}
                     </MountedFormField>
                     <MountedFormField
                       name="cache_creation_input_token_cost"
-                      label={labelWithHint(
-                        t("cacheWriteCostPerToken"),
-                        "If left blank, defaults to Input Cost (the backend falls back to input_cost_per_token when no cache-write rate is set).",
-                      )}
-                      rules={usageCostRules}
+                      label={labelWithHint(t("cacheWriteCostPerToken"), t("cacheWriteHint"))}
+                      rules={usageCostRules(t)}
                       className="mb-4"
                     >
                       {(control) => (
@@ -390,7 +389,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                           value={(control.value as string | undefined) ?? ""}
                           onChange={control.onChange}
                           onBlur={control.onBlur}
-                          placeholder="Defaults to Input Cost if blank"
+                          placeholder={t("defaultsToInputCost")}
                         />
                       )}
                     </MountedFormField>
@@ -399,7 +398,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                   <MountedFormField
                     name="input_cost_per_second"
                     label={t("inputCostPerSecond")}
-                    rules={usageCostRules}
+                    rules={usageCostRules(t)}
                     className="mb-4"
                   >
                     {(control) => (
@@ -420,14 +419,14 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
               label={labelWithHint(
                 t("useInPassThrough"),
                 <span>
-                  Allow using these credentials in pass through routes.{" "}
+                  {t("passThroughAllow")}{" "}
                   <a
                     href="https://docs.litellm.ai/docs/pass_through/vertex_ai"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary underline-offset-4 hover:underline"
                   >
-                    Learn more
+                    {t("learnMore")}
                   </a>
                 </span>,
               )}
@@ -467,10 +466,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
             )}
             <MountedFormField
               name="litellm_extra_params"
-              label={labelWithHint(
-                "LiteLLM Params",
-                "Optional litellm params used for making a litellm.completion() call.",
-              )}
+              label={labelWithHint(t("litellmParamsLabel"), t("litellmParamsHint"))}
               className="mb-4 mt-4"
               rules={{ validate: validatorRules({ validator: formItemValidateJSON }) }}
             >
@@ -491,23 +487,20 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
             </MountedFormField>
             <div className="grid grid-cols-24 mb-4">
               <p className="col-start-11 col-span-10 text-muted-foreground text-sm">
-                Pass JSON of litellm supported params{" "}
+                {t("passJsonHint")}{" "}
                 <a
                   href="https://docs.litellm.ai/docs/completion/input"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary underline-offset-4 hover:underline"
                 >
-                  litellm.completion() call
+                  {t("litellmCompletionCall")}
                 </a>
               </p>
             </div>
             <MountedFormField
               name="model_info_params"
-              label={labelWithHint(
-                "Model Info",
-                "Optional model info params. Returned when calling `/model/info` endpoint.",
-              )}
+              label={labelWithHint(t("modelInfoLabel"), t("modelInfoHint"))}
               className="mb-0"
               rules={{ validate: validatorRules({ validator: formItemValidateJSON }) }}
             >

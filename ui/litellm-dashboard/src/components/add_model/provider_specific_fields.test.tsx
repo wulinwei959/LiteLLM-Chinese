@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { useFormContext } from "react-hook-form";
 import { Providers } from "../provider_info_helpers";
@@ -147,7 +148,7 @@ const VertexCredentialsProbe = () => {
 describe("ProviderSpecificFields", () => {
   it("reads a picked service-account file into the vertex credentials field", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={"Vertex_AI" as Providers} />
@@ -167,7 +168,7 @@ describe("ProviderSpecificFields", () => {
 
   it("ignores a picked file that is not JSON", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={"Vertex_AI" as Providers} />
@@ -187,7 +188,7 @@ describe("ProviderSpecificFields", () => {
 
   it("should render", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={Providers.OpenAI} />
@@ -202,7 +203,7 @@ describe("ProviderSpecificFields", () => {
 
   it("should render the provider specific fields for OpenAI", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={Providers.OpenAI} />
@@ -223,7 +224,7 @@ describe("ProviderSpecificFields", () => {
 
   it("should let the user reveal a secret field", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={Providers.OpenAI} />
@@ -243,7 +244,7 @@ describe("ProviderSpecificFields", () => {
 
   it("should render the provider specific fields for vLLM", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={"Hosted_Vllm" as Providers} />
@@ -261,7 +262,7 @@ describe("ProviderSpecificFields", () => {
 
   it("should render the provider specific fields for Azure", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={Providers.Azure} />
@@ -292,7 +293,7 @@ describe("ProviderSpecificFields", () => {
 
   it("sets Azure API version from the API base query parameter", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={Providers.Azure} />
@@ -317,7 +318,7 @@ describe("ProviderSpecificFields", () => {
 
   it("sets Azure API version from the hyphenated API base query parameter", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={Providers.Azure} />
@@ -342,7 +343,7 @@ describe("ProviderSpecificFields", () => {
 
   it("clears an inferred Azure API version when the API base has no version parameter", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={Providers.Azure} />
@@ -377,7 +378,7 @@ describe("ProviderSpecificFields", () => {
 
   it("preserves a manually edited Azure API version when the API base has no version parameter", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={Providers.Azure} />

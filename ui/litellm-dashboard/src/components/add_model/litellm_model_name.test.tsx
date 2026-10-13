@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { describe, expect, it } from "vitest";
 import { getPlaceholder, Providers } from "../provider_info_helpers";
 import { MountedFormHost } from "../../../tests/mounted-form-host";
@@ -6,7 +7,7 @@ import LiteLLMModelNameField from "./litellm_model_name";
 
 describe("LitellmModelNameField", () => {
   it("should render", () => {
-    render(
+    renderWithProviders(
       <MountedFormHost>
         <LiteLLMModelNameField
           selectedProvider={Providers.OpenAI}
@@ -15,11 +16,11 @@ describe("LitellmModelNameField", () => {
         />
       </MountedFormHost>,
     );
-    expect(screen.getByText("LiteLLM Model Name(s)")).toBeInTheDocument();
+    expect(screen.getByText("LiteLLM 模型名称")).toBeInTheDocument();
   });
 
   it("should show Azure placeholder as 'my-deployment'", () => {
-    render(
+    renderWithProviders(
       <MountedFormHost>
         <LiteLLMModelNameField selectedProvider={Providers.Azure} providerModels={[]} getPlaceholder={getPlaceholder} />
       </MountedFormHost>,

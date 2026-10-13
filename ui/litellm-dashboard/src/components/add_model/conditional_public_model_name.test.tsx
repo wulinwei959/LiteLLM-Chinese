@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import React, { useEffect, useRef } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -26,7 +27,7 @@ const LoopGuard: React.FC = () => {
 
 describe("ConditionalPublicModelName", () => {
   it("should render", () => {
-    render(
+    renderWithProviders(
       <MountedFormHost
         defaultValues={{
           model: ["gpt-4"],
@@ -42,13 +43,13 @@ describe("ConditionalPublicModelName", () => {
       </MountedFormHost>,
     );
 
-    expect(screen.getByText("Model Mappings")).toBeInTheDocument();
-    expect(screen.getByText("Public Model Name")).toBeInTheDocument();
-    expect(screen.getByText("LiteLLM Model Name")).toBeInTheDocument();
+    expect(screen.getByText("模型映射")).toBeInTheDocument();
+    expect(screen.getByText("公开模型名称")).toBeInTheDocument();
+    expect(screen.getByText("LiteLLM 模型名称")).toBeInTheDocument();
   });
 
   it("settles after rewriting the custom placeholder mapping to the entered model name", () => {
-    render(
+    renderWithProviders(
       <MountedFormHost
         defaultValues={{
           model: ["custom"],
@@ -73,7 +74,7 @@ describe("ConditionalPublicModelName", () => {
 
   it("keeps the public name input focused across keystrokes", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <MountedFormHost
         defaultValues={{
           model: ["gpt-4"],

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useFormContext, useWatch } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { DataTable } from "@/components/shared/DataTable";
 import { Input } from "@/components/ui/input";
 import { SimpleTooltip } from "@/components/ui/tooltip";
@@ -20,38 +21,44 @@ const sameMappings = (left: readonly ModelMapping[], right: readonly ModelMappin
       mapping.public_name === right[index].public_name && mapping.litellm_model === right[index].litellm_model,
   );
 
-const modelMappingsRule = {
+const modelMappingsRule = (t: ReturnType<typeof useTranslations<"models.addModel">>) => ({
   validator: async (_: unknown, value: unknown) => {
     if (!value || (value as ModelMapping[]).length === 0) {
-      throw new Error("At least one model mapping is required");
+      throw new Error(t("mappingRequired"));
     }
     const invalidMappings = (value as ModelMapping[]).filter(
       (mapping) => !mapping.public_name || mapping.public_name.trim() === "",
     );
     if (invalidMappings.length > 0) {
-      throw new Error("All model mappings must have valid public names");
+      throw new Error(t("mappingPublicNamesRequired"));
     }
   },
-};
+});
 
 const tooltipCodeClassName = "rounded-sm bg-background/20 px-1 py-0.5 font-mono text-xs";
 
 const ANTHROPIC_1M_HEADERS = JSON.stringify({ extra_headers: { "anthropic-beta": "context-1m-2025-08-07" } }, null, 2);
 
-const publicNameTooltipContent = (
+const publicNameTooltipContent = (t: ReturnType<typeof useTranslations<"models.addModel">>) => (
   <div className="flex flex-col gap-2 text-left font-normal">
-    <div>The name you specify in your API calls to LiteLLM Proxy</div>
+    <div>{t("publicNameTooltipIntro")}</div>
     <div>
-      <strong>Example:</strong> If you name your public model <code className={tooltipCodeClassName}>example-name</code>
-      , and choose <code className={tooltipCodeClassName}>openai/qwen-plus-latest</code> as the LiteLLM model
+      {t.rich("publicNameTooltipExample", {
+        strong: (chunks) => <strong>{chunks}</strong>,
+        code: (chunks) => <code className={tooltipCodeClassName}>{chunks}</code>,
+      })}
     </div>
     <div>
-      <strong>Usage:</strong> You make an API call to the LiteLLM proxy with{" "}
-      <code className={tooltipCodeClassName}>model = &quot;example-name&quot;</code>
+      {t.rich("publicNameTooltipUsage", {
+        strong: (chunks) => <strong>{chunks}</strong>,
+        code: (chunks) => <code className={tooltipCodeClassName}>{chunks}</code>,
+      })}
     </div>
     <div>
-      <strong>Result:</strong> LiteLLM sends <code className={tooltipCodeClassName}>qwen-plus-latest</code> to the
-      provider
+      {t.rich("publicNameTooltipResult", {
+        strong: (chunks) => <strong>{chunks}</strong>,
+        code: (chunks) => <code className={tooltipCodeClassName}>{chunks}</code>,
+      })}
     </div>
   </div>
 );
@@ -84,18 +91,21 @@ const PublicNameInput: React.FC<{ readonly index: number; readonly value: string
 };
 
 /**
- * Module-level so the header and cell renderers keep a stable identity: React treats a renderer
- * declared inside the component as a new element type on every render and remounts the input,
- * which drops focus after each keystroke.
+ * Module-level factory so the header and cell renderers keep a stable identity: React treats a
+ * renderer declared inside the component as a new element type on every render and remounts the
+ * input, which drops focus after each keystroke.
  */
-const columns: ColumnDef<ModelMapping>[] = [
+const buildColumns = (
+  t: ReturnType<typeof useTranslations<"models.addModel">>,
+  tooltip: React.ReactNode,
+): ColumnDef<ModelMapping>[] => [
   {
     id: "public_name",
     accessorKey: "public_name",
     header: () => (
       <span className="flex items-center">
-        Public Model Name
-        <SimpleTooltip content={publicNameTooltipContent} width="500px" />
+        {t("publicModelNameHeader")}
+        <SimpleTooltip content={tooltip} width="500px" />
       </span>
     ),
     cell: ({ row }) => <PublicNameInput index={row.index} value={row.original.public_name} />,
@@ -105,8 +115,8 @@ const columns: ColumnDef<ModelMapping>[] = [
     accessorKey: "litellm_model",
     header: () => (
       <span className="flex items-center">
-        LiteLLM Model Name
-        <SimpleTooltip content={<div>The model name LiteLLM will send to the LLM API</div>} width="360px" />
+        {t("litellmModelNameHeader")}
+        <SimpleTooltip content={<div>{t("litellmModelNameHint")}</div>} width="360px" />
       </span>
     ),
   },
@@ -114,6 +124,7 @@ const columns: ColumnDef<ModelMapping>[] = [
 
 const ConditionalPublicModelName: React.FC = () => {
   const form = useFormContext<MountedFormValues>();
+  const t = useTranslations("models.addModel");
 
   const modelValue = useWatch({ control: form.control, name: "model" }) || [];
   const selectionKey = JSON.stringify(Array.isArray(modelValue) ? modelValue : [modelValue]);
@@ -121,6 +132,8 @@ const ConditionalPublicModelName: React.FC = () => {
   const customModelName = useWatch({ control: form.control, name: "custom_model_name" }) as string | undefined;
   const showPublicModelName = !selectedModels.includes("all-wildcard");
   const selectedProvider = useWatch({ control: form.control, name: "custom_llm_provider" });
+
+  const columns = useMemo(() => buildColumns(t, publicNameTooltipContent(t)), [t]);
 
   useEffect(() => {
     if (customModelName && selectedModels.includes("custom")) {
@@ -205,12 +218,12 @@ const ConditionalPublicModelName: React.FC = () => {
       name="model_mappings"
       label={
         <span className="flex items-center">
-          Model Mappings
-          <SimpleTooltip content="Map public model names to LiteLLM model names for load balancing" />
+          {t("modelMappings")}
+          <SimpleTooltip content={t("modelMappingsHint")} />
         </span>
       }
       required
-      rules={{ validate: validatorRules(modelMappingsRule) }}
+      rules={{ validate: validatorRules(modelMappingsRule(t)) }}
       className="mb-4"
     >
       {(control) => (

@@ -1,18 +1,18 @@
 // Define the available test modes
 export const TEST_MODES = [
-  { value: "chat", label: "Chat - /chat/completions" },
-  { value: "completion", label: "Completion - /completions" },
-  { value: "embedding", label: "Embedding - /embeddings" },
-  { value: "audio_speech", label: "Audio Speech - /audio/speech" },
-  { value: "audio_transcription", label: "Audio Transcription - /audio/transcriptions" },
-  { value: "image_generation", label: "Image Generation - /images/generations" },
-  { value: "image_edit", label: "Image Edit - /images/edits" },
-  { value: "video_generation", label: "Video Generation - /videos" },
-  { value: "rerank", label: "Rerank - /rerank" },
-  { value: "realtime", label: "Realtime - /realtime" },
-  { value: "batch", label: "Batch - /batch" },
-  { value: "ocr", label: "OCR - /ocr" },
-];
+  { value: "chat", labelKey: "testModeChat" },
+  { value: "completion", labelKey: "testModeCompletion" },
+  { value: "embedding", labelKey: "testModeEmbedding" },
+  { value: "audio_speech", labelKey: "testModeAudioSpeech" },
+  { value: "audio_transcription", labelKey: "testModeAudioTranscription" },
+  { value: "image_generation", labelKey: "testModeImageGeneration" },
+  { value: "image_edit", labelKey: "testModeImageEdit" },
+  { value: "video_generation", labelKey: "testModeVideoGeneration" },
+  { value: "rerank", labelKey: "testModeRerank" },
+  { value: "realtime", labelKey: "testModeRealtime" },
+  { value: "batch", labelKey: "testModeBatch" },
+  { value: "ocr", labelKey: "testModeOcr" },
+] as const;
 
 // Define the available auto router routing strategies
 export const AUTO_ROUTER_MODES = [

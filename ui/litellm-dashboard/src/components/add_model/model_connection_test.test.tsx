@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { toast } from "@/lib/toast";
@@ -32,7 +33,7 @@ describe("ModelConnectionTest", () => {
     const onTestComplete = vi.fn();
     vi.mocked(testConnectionRequest).mockResolvedValue({ status: "success" } as never);
 
-    render(
+    renderWithProviders(
       <ModelConnectionTest
         formValues={{ model: "gpt-4o-mini" }}
         accessToken="sk-test"
@@ -42,18 +43,18 @@ describe("ModelConnectionTest", () => {
       />,
     );
 
-    expect(screen.getByText("Testing connection to GPT-4o mini...")).toBeInTheDocument();
+    expect(screen.getByText("正在测试与 GPT-4o mini 的连接...")).toBeInTheDocument();
     await finishConnectionTest();
 
-    expect(prepareModelAddRequest).toHaveBeenCalledWith({ model: "gpt-4o-mini" }, "sk-test", null);
+    expect(prepareModelAddRequest).toHaveBeenCalledWith({ model: "gpt-4o-mini" }, "sk-test", null, expect.anything());
     expect(testConnectionRequest).toHaveBeenCalledWith(
       "sk-test",
       { model: "openai/gpt-4o-mini" },
       { mode: "chat" },
       "chat",
     );
-    expect(screen.getByTestId("connection-success-msg")).toHaveTextContent("Connection to GPT-4o mini successful!");
-    expect(toast.success).toHaveBeenCalledWith("Connection test successful!");
+    expect(screen.getByTestId("connection-success-msg")).toHaveTextContent("已成功连接到 GPT-4o mini！");
+    expect(toast.success).toHaveBeenCalledWith("连接测试成功！");
     expect(onTestComplete).toHaveBeenCalledTimes(1);
   });
 
@@ -72,7 +73,7 @@ describe("ModelConnectionTest", () => {
       },
     } as never);
 
-    render(
+    renderWithProviders(
       <ModelConnectionTest
         formValues={{ model: "gpt-4o-mini" }}
         accessToken="sk-test"
@@ -82,24 +83,24 @@ describe("ModelConnectionTest", () => {
     );
     await finishConnectionTest();
 
-    expect(screen.getByTestId("connection-failure-msg")).toHaveTextContent("Connection to GPT-4o mini failed");
+    expect(screen.getByTestId("connection-failure-msg")).toHaveTextContent("连接到 GPT-4o mini 失败");
     expect(screen.getByText("invalid api key")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Show Details" }));
-    expect(screen.getByText("Troubleshooting Details")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /Copy to Clipboard/ }));
+    fireEvent.click(screen.getByRole("button", { name: "显示详情" }));
+    expect(screen.getByText("故障排查详情")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /复制到剪贴板/ }));
 
     expect(writeText).toHaveBeenCalledWith(expect.stringContaining("https://api.example.test/v1/chat/completions"));
-    expect(toast.success).toHaveBeenCalledWith("Copied to clipboard");
+    expect(toast.success).toHaveBeenCalledWith("已复制到剪贴板");
   });
 
   it("shows a preparation failure without sending a connection request", async () => {
     vi.mocked(prepareModelAddRequest).mockResolvedValue(null as never);
 
-    render(<ModelConnectionTest formValues={{}} accessToken="sk-test" testMode="chat" />);
+    renderWithProviders(<ModelConnectionTest formValues={{}} accessToken="sk-test" testMode="chat" />);
     await finishConnectionTest();
 
-    expect(screen.getByText("Failed to prepare model data. Please check your form inputs.")).toBeInTheDocument();
+    expect(screen.getByText("无法准备模型数据。请检查表单输入。")).toBeInTheDocument();
     expect(testConnectionRequest).not.toHaveBeenCalled();
   });
 });

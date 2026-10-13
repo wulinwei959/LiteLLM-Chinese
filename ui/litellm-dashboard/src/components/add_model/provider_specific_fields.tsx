@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Upload as UploadIcon } from "lucide-react";
 import React from "react";
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { requiredRule } from "../common_components/formRules";
 import {
   MountedFormField,
@@ -83,6 +84,7 @@ const providerFieldsByDisplayName: Record<string, ProviderCredentialField[]> = {
 const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selectedProvider }) => {
   const selectedProviderEnum = Providers[selectedProvider as keyof typeof Providers] as Providers;
   const form = useFormContext<MountedFormValues>();
+  const t = useTranslations("models.addModel");
   const credentialsFileRef = React.useRef<HTMLInputElement>(null);
   const pickCredentialsFile =
     (onLoaded: (contents: string) => void) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -216,7 +218,7 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
         <>
           <Button type="button" variant="outline" className="w-fit" onClick={() => credentialsFileRef.current?.click()}>
             <UploadIcon />
-            Click to Upload
+            {t("clickToUpload")}
           </Button>
           <input
             ref={credentialsFileRef}
@@ -279,10 +281,10 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
 
   return (
     <>
-      {isLoading && allFields.length === 0 && <p className="text-sm mb-2">Loading provider fields...</p>}
+      {isLoading && allFields.length === 0 && <p className="text-sm mb-2">{t("loadingProviderFields")}</p>}
       {loadError && allFields.length === 0 && (
         <p className="text-sm mb-2 text-destructive">
-          {loadError instanceof Error ? loadError.message : "Failed to load provider credential fields"}
+          {loadError instanceof Error ? loadError.message : t("failedToLoadProviderFields")}
         </p>
       )}
       {allFields.map((field) => (
@@ -299,21 +301,21 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
 
           {/* Special case for Vertex Credentials help text */}
           {field.key === "vertex_credentials" && (
-            <p className="text-sm mb-3 mt-1">Give a gcp service account(.json file)</p>
+            <p className="text-sm mb-3 mt-1">{t("gcpServiceAccountHint")}</p>
           )}
 
           {/* Special case for Azure Base Model help text */}
           {field.key === "base_model" && (
             <div className="grid grid-cols-24">
               <p className="col-start-11 col-span-10 text-sm mb-2">
-                The actual model your azure deployment uses. Used for accurate cost tracking. Select name from{" "}
+                {t("azureBaseModelHint")}{" "}
                 <a
                   href="https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary underline-offset-4 hover:underline"
                 >
-                  here
+                  {t("azureBaseModelLink")}
                 </a>
               </p>
             </div>
