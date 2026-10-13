@@ -1,6 +1,7 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../tests/test-utils";
 import RouterConfigBuilder from "./RouterConfigBuilder";
 
 const MOCK_MODEL_INFO = [
@@ -11,38 +12,38 @@ const MOCK_MODEL_INFO = [
 
 describe("RouterConfigBuilder", () => {
   it("should render", () => {
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
 
-    expect(screen.getByText("Routes Configuration")).toBeInTheDocument();
+    expect(screen.getByText("路由配置")).toBeInTheDocument();
   });
 
   it("should display Add Route button", () => {
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
 
-    expect(screen.getByRole("button", { name: /add route/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加路由" })).toBeInTheDocument();
   });
 
   it("should show empty state when no routes are configured", () => {
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
 
-    expect(screen.getByText(/no routes configured/i)).toBeInTheDocument();
+    expect(screen.getByText(/尚未配置任何路由/)).toBeInTheDocument();
   });
 
   it("should add a route when Add Route is clicked", async () => {
     const user = userEvent.setup();
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
 
-    await user.click(screen.getByRole("button", { name: /add route/i }));
+    await user.click(screen.getByRole("button", { name: "添加路由" }));
 
-    expect(screen.getByText("Route 1: Unnamed")).toBeInTheDocument();
+    expect(screen.getByText("路由 1：未命名")).toBeInTheDocument();
   });
 
   it("should call onChange when a route is added", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} onChange={onChange} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} onChange={onChange} />);
 
-    await user.click(screen.getByRole("button", { name: /add route/i }));
+    await user.click(screen.getByRole("button", { name: "添加路由" }));
 
     expect(onChange).toHaveBeenCalledWith({
       routes: [
@@ -67,10 +68,10 @@ describe("RouterConfigBuilder", () => {
         },
       ],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Route 1: gpt-4")).toBeInTheDocument();
+      expect(screen.getByText("路由 1：gpt-4")).toBeInTheDocument();
     });
   });
 
@@ -78,10 +79,10 @@ describe("RouterConfigBuilder", () => {
     const value = {
       routes: [{ model: "gpt-3.5-turbo", utterances: [], description: "", score_threshold: 0.5 }],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Route 1: gpt-3.5-turbo")).toBeInTheDocument();
+      expect(screen.getByText("路由 1：gpt-3.5-turbo")).toBeInTheDocument();
     });
   });
 
@@ -97,18 +98,18 @@ describe("RouterConfigBuilder", () => {
         },
       ],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Route 1: gpt-4")).toBeInTheDocument();
+      expect(screen.getByText("路由 1：gpt-4")).toBeInTheDocument();
     });
 
-    const deleteButton = screen.getByRole("button", { name: "delete" });
+    const deleteButton = screen.getByRole("button", { name: "删除" });
     await user.click(deleteButton);
 
     await waitFor(() => {
-      expect(screen.queryByText("Route 1: gpt-4")).not.toBeInTheDocument();
-      expect(screen.getByText(/no routes configured/i)).toBeInTheDocument();
+      expect(screen.queryByText("路由 1：gpt-4")).not.toBeInTheDocument();
+      expect(screen.getByText(/尚未配置任何路由/)).toBeInTheDocument();
     });
   });
 
@@ -125,13 +126,13 @@ describe("RouterConfigBuilder", () => {
         },
       ],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Route 1: gpt-4")).toBeInTheDocument();
+      expect(screen.getByText("路由 1：gpt-4")).toBeInTheDocument();
     });
 
-    const deleteButton = screen.getByRole("button", { name: "delete" });
+    const deleteButton = screen.getByRole("button", { name: "删除" });
     await user.click(deleteButton);
 
     await waitFor(() => {
@@ -152,13 +153,13 @@ describe("RouterConfigBuilder", () => {
         },
       ],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Route 1: gpt-4")).toBeInTheDocument();
+      expect(screen.getByText("路由 1：gpt-4")).toBeInTheDocument();
     });
 
-    const descriptionInput = screen.getByPlaceholderText("Describe when this route should be used...");
+    const descriptionInput = screen.getByPlaceholderText("描述何时应使用此路由……");
     fireEvent.change(descriptionInput, { target: { value: "For code generation" } });
 
     await waitFor(() => {
@@ -179,10 +180,10 @@ describe("RouterConfigBuilder", () => {
         },
       ],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Route 1: gpt-4")).toBeInTheDocument();
+      expect(screen.getByText("路由 1：gpt-4")).toBeInTheDocument();
     });
 
     const scoreInput = screen.getByRole("spinbutton");
@@ -200,9 +201,9 @@ describe("RouterConfigBuilder", () => {
     const value = {
       routes: [{ name: "gpt-4", utterances: [], description: "", score_threshold: 0.5 }],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
 
-    const utteranceInput = await screen.findByRole("textbox", { name: "Example Utterances" });
+    const utteranceInput = await screen.findByRole("textbox", { name: "示例语句" });
     await user.type(utteranceInput, "Compare Paris, France{Enter}");
 
     await waitFor(() => {
@@ -216,9 +217,9 @@ describe("RouterConfigBuilder", () => {
     const value = {
       routes: [{ name: "gpt-4", utterances: ["hello"], description: "", score_threshold: 0.5 }],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} onChange={onChange} />);
 
-    const utteranceInput = await screen.findByRole("textbox", { name: "Example Utterances" });
+    const utteranceInput = await screen.findByRole("textbox", { name: "示例语句" });
     fireEvent.paste(utteranceInput, {
       clipboardData: { getData: () => "hello\nworld\nworld" },
     });
@@ -231,37 +232,37 @@ describe("RouterConfigBuilder", () => {
 
   it("should add multiple routes", async () => {
     const user = userEvent.setup();
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
 
-    await user.click(screen.getByRole("button", { name: /add route/i }));
-    await user.click(screen.getByRole("button", { name: /add route/i }));
+    await user.click(screen.getByRole("button", { name: "添加路由" }));
+    await user.click(screen.getByRole("button", { name: "添加路由" }));
 
-    expect(screen.getByText("Route 1: Unnamed")).toBeInTheDocument();
-    expect(screen.getByText("Route 2: Unnamed")).toBeInTheDocument();
+    expect(screen.getByText("路由 1：未命名")).toBeInTheDocument();
+    expect(screen.getByText("路由 2：未命名")).toBeInTheDocument();
   });
 
   it("should toggle JSON preview visibility", async () => {
     const user = userEvent.setup();
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} />);
 
-    expect(screen.getByText("JSON Preview")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Show" })).toBeInTheDocument();
+    expect(screen.getByText("JSON 预览")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "显示" })).toBeInTheDocument();
     expect(screen.queryByText(/"routes":/)).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Show" }));
+    await user.click(screen.getByRole("button", { name: "显示" }));
 
-    expect(screen.getByRole("button", { name: "Hide" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "隐藏" })).toBeInTheDocument();
     expect(screen.getByText(/"routes":/)).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Hide" }));
+    await user.click(screen.getByRole("button", { name: "隐藏" }));
 
-    expect(screen.getByRole("button", { name: "Show" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "显示" })).toBeInTheDocument();
     expect(screen.queryByText(/"routes":/)).not.toBeInTheDocument();
   });
 
   it("should display JSON preview with route data when routes exist", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <RouterConfigBuilder
         modelInfo={MOCK_MODEL_INFO}
         value={{
@@ -271,10 +272,10 @@ describe("RouterConfigBuilder", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Route 1: gpt-4")).toBeInTheDocument();
+      expect(screen.getByText("路由 1：gpt-4")).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: "Show" }));
+    await user.click(screen.getByRole("button", { name: "显示" }));
 
     const preview = screen.getByText(/"name": "gpt-4"/);
     expect(preview).toHaveTextContent('"utterances": [ "hello" ]');
@@ -285,13 +286,13 @@ describe("RouterConfigBuilder", () => {
     const value = {
       routes: [{ name: "", utterances: [], description: "", score_threshold: 0.5 }],
     };
-    render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
+    renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Route 1: Unnamed")).toBeInTheDocument();
+      expect(screen.getByText("路由 1：未命名")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Model")).toBeInTheDocument();
+    expect(screen.getByText("模型")).toBeInTheDocument();
     const comboboxes = screen.getAllByRole("combobox");
     expect(comboboxes.length).toBeGreaterThan(0);
   });
@@ -307,16 +308,16 @@ describe("RouterConfigBuilder", () => {
         },
       ],
     };
-    const { rerender } = render(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
+    const { rerender } = renderWithProviders(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={value} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Route 1: gpt-4")).toBeInTheDocument();
+      expect(screen.getByText("路由 1：gpt-4")).toBeInTheDocument();
     });
 
     rerender(<RouterConfigBuilder modelInfo={MOCK_MODEL_INFO} value={{ routes: [] }} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/no routes configured/i)).toBeInTheDocument();
+      expect(screen.getByText(/尚未配置任何路由/)).toBeInTheDocument();
     });
   });
 });
