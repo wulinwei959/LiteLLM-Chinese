@@ -11,7 +11,7 @@ import {
   type ComplexityTierLabels,
   type ComplexityTiers,
 } from "@/components/add_model/ComplexityRouterConfig";
-import { normalizeTierModels } from "@/components/add_model/complexity_router_tiers";
+import { normalizeTierModels, type AddModelTranslator } from "@/components/add_model/complexity_router_tiers";
 import { chartColorValue, DEFAULT_COLOR_CYCLE, DonutChart } from "@/components/shared/charts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -35,8 +35,11 @@ const asRecord = (value: unknown): Record<string, unknown> => {
 const isComplexityTier = (tier: string): tier is keyof ComplexityTiers =>
   (TIER_KEYS as readonly string[]).includes(tier);
 
-export const tierDisplayLabel = (tier: string, tierLabels: ComplexityTierLabels | undefined): string =>
-  isComplexityTier(tier) ? effectiveTierLabel(tier, tierLabels) : tier;
+export const tierDisplayLabel = (
+  t: AddModelTranslator,
+  tier: string,
+  tierLabels: ComplexityTierLabels | undefined,
+): string => (isComplexityTier(tier) ? effectiveTierLabel(t, tier, tierLabels) : tier);
 
 const CONFIG_KEY_BY_ROUTER_TYPE: Record<string, keyof NonNullable<AutoRouterDeployment["litellm_params"]>> = {
   complexity: "complexity_router_config",
@@ -86,6 +89,7 @@ interface TierTurnsChartProps {
 
 const TierTurnsChart: React.FC<TierTurnsChartProps> = ({ view, autoRouters }) => {
   const t = useTranslations("costOptimization");
+  const tierT = useTranslations("models.addModel");
   const group = viewGroup(view);
   const entries = Object.entries(group?.tier_turns ?? {}).filter(([, turns]) => turns > 0);
   if (!group || entries.length === 0) return null;
@@ -93,7 +97,7 @@ const TierTurnsChart: React.FC<TierTurnsChartProps> = ({ view, autoRouters }) =>
   const tierLabels = tierLabelsFor(group.router_name, group.router_type, autoRouters);
   const total = entries.reduce((sum, [, turns]) => sum + turns, 0);
   const slices = entries.map(([tier, turns]) => ({
-    tier: tierDisplayLabel(tier, tierLabels),
+    tier: tierDisplayLabel(tierT, tier, tierLabels),
     turns,
     models: tierModelsFor(tier, group.router_name, group.router_type, autoRouters),
   }));

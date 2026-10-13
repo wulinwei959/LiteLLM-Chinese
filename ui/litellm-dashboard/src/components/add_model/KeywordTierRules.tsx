@@ -100,7 +100,7 @@ const KeywordTierRules: React.FC<KeywordTierRulesProps> = ({ rules, onChange, ti
                   <div style={{ width: 220 }}>
                     <strong className="mb-2 block font-semibold">{t("routeToTier")}</strong>
                     <Select
-                      items={tierOptions(tierLabels, tierNames)}
+                      items={tierOptions(tierLabels, tierNames, t)}
                       value={rule.tier}
                       onValueChange={(tier: string | null) => tier && updateRule(rule.id, { tier })}
                     >
@@ -111,7 +111,7 @@ const KeywordTierRules: React.FC<KeywordTierRulesProps> = ({ rules, onChange, ti
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {tierOptions(tierLabels, tierNames).map((option) => (
+                        {tierOptions(tierLabels, tierNames, t).map((option) => (
                           <SelectItem key={option.value} value={option.value}>
                             {option.label}
                           </SelectItem>

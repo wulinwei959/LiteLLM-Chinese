@@ -260,20 +260,23 @@ describe("pruneTierModelParams", () => {
 });
 
 describe("tierRowLabel", () => {
+  const enLabels = ((key: string) =>
+    (({ tierLabelComplex: "Complex", tierLabelNewRow: "New" }) as Record<string, string>)[key] ?? key) as never;
+
   it("shows a built-in row's display label while it is untouched", () => {
-    expect(tierRowLabel({ id: "COMPLEX", name: "COMPLEX" })).toBe("Complex");
-    expect(tierRowLabel({ id: "COMPLEX", name: "COMPLEX" }, { COMPLEX: "Deep" })).toBe("Deep");
+    expect(tierRowLabel({ id: "COMPLEX", name: "COMPLEX" }, undefined, enLabels)).toBe("Complex");
+    expect(tierRowLabel({ id: "COMPLEX", name: "COMPLEX" }, { COMPLEX: "Deep" }, enLabels)).toBe("Deep");
   });
 
   it("shows the operator's name once a built-in row is renamed, since the id stays canonical", () => {
-    expect(tierRowLabel({ id: "COMPLEX", name: "SECURITY_REVIEW" })).toBe("SECURITY_REVIEW");
+    expect(tierRowLabel({ id: "COMPLEX", name: "SECURITY_REVIEW" }, undefined, enLabels)).toBe("SECURITY_REVIEW");
   });
 
   it("shows a custom row's name", () => {
-    expect(tierRowLabel({ id: "stored-1", name: "AUDIT" })).toBe("AUDIT");
+    expect(tierRowLabel({ id: "stored-1", name: "AUDIT" }, undefined, enLabels)).toBe("AUDIT");
   });
 
   it("calls an unnamed new row New rather than rendering an empty label", () => {
-    expect(tierRowLabel({ id: "uuid", name: "  " })).toBe("New");
+    expect(tierRowLabel({ id: "uuid", name: "  " }, undefined, enLabels)).toBe("New");
   });
 });

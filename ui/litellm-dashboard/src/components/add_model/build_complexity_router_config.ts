@@ -46,7 +46,6 @@ import {
   TIER_DESCRIPTIONS,
   TierBoundaries,
   TokenThresholds,
-  effectiveTierLabel,
   heuristicScoringRoleFor,
   usesLlmClassifier,
   usesClassifierContext,
@@ -364,7 +363,9 @@ export const getTierLabelsError = (tierLabels: ComplexityTierLabels | undefined)
   if (shadowing.length > 0) {
     return `A tier's display name can't be another tier's name: ${shadowing.join(", ")}`;
   }
-  const labels = TIER_KEYS.map((tier) => effectiveTierLabel(tier, tierLabels).toLowerCase());
+  const labels = TIER_KEYS.map((tier) =>
+    (tierLabels?.[tier]?.trim() || TIER_DESCRIPTIONS[tier].label).toLowerCase(),
+  );
   const duplicates = Array.from(new Set(labels.filter((label, index) => labels.indexOf(label) !== index)));
   if (duplicates.length > 0) {
     return `Tier display names must be unique. Repeated: ${duplicates.join(", ")}`;

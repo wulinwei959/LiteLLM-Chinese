@@ -1236,15 +1236,15 @@ describe("EditAutoRouterModal with a stored custom tier set", () => {
 
   it("shows the stored tier names rather than the built-in four", async () => {
     renderCustomModal();
-    expect(await screen.findByText("SECURITY_REVIEW Tier")).toBeInTheDocument();
-    expect(screen.queryByText("Simple Tier")).not.toBeInTheDocument();
+    expect(await screen.findByText("SECURITY_REVIEW层级")).toBeInTheDocument();
+    expect(screen.queryByText("简单层级")).not.toBeInTheDocument();
   });
 
   it("saves an untouched custom-tier router back byte-identically, tier set and floor included", async () => {
     const user = userEvent.setup();
     renderCustomModal();
 
-    await screen.findByText("SECURITY_REVIEW Tier");
+    await screen.findByText("SECURITY_REVIEW层级");
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1262,7 +1262,7 @@ describe("EditAutoRouterModal with a stored custom tier set", () => {
     const user = userEvent.setup();
     renderCustomModal();
 
-    await screen.findByText("SECURITY_REVIEW Tier");
+    await screen.findByText("SECURITY_REVIEW层级");
     await waitFor(() => expect(screen.getByRole("button", { name: /save changes/i })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
@@ -1486,8 +1486,8 @@ describe("EditAutoRouterModal availability checks", () => {
           complete = resolve;
         }),
     );
-    await user.click(screen.getByRole("button", { name: "Edit tiers" }));
-    fireEvent.change(screen.getByLabelText("Definition for tier 1"), { target: { value: "Custom definition" } });
+    await user.click(screen.getByRole("button", { name: "编辑层级" }));
+    fireEvent.change(screen.getByLabelText("第 1 个层级的定义"), { target: { value: "Custom definition" } });
     expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
     await waitFor(() => expect(complete).toBeDefined());
@@ -1496,7 +1496,7 @@ describe("EditAutoRouterModal availability checks", () => {
     await act(async () => complete?.({ allowances: [], error: "Custom tiers have no available allowance" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Custom tiers have no available allowance");
     expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled();
-    await user.click(screen.getByRole("button", { name: "Restore defaults" }));
+    await user.click(screen.getByRole("button", { name: "恢复默认值" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());

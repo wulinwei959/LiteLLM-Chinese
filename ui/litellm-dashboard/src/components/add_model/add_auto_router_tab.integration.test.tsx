@@ -54,7 +54,7 @@ const openTemplateDropdown = (): void => {
 };
 
 const expandDetailedConfiguration = (): void => {
-  expect(screen.getByText("Define your tiers")).toBeVisible();
+  expect(screen.getByText("定义你的层级")).toBeVisible();
 };
 
 const visibleOptions = (): HTMLElement[] => screen.queryAllByRole("option");
@@ -64,8 +64,13 @@ const optionByLabel = (label: string): HTMLElement | undefined =>
 
 const isOptionDisabled = (option: HTMLElement): boolean => option.getAttribute("aria-disabled") === "true";
 
+const TIER_ZH: Record<string, string> = { Simple: "简单", Medium: "中等", Complex: "复杂", Reasoning: "推理" };
+
+const tierZh = (tier: string): string =>
+  TIER_ZH[tier] ?? TIER_ZH[tier.charAt(0).toUpperCase() + tier.slice(1)] ?? tier;
+
 const tierChips = (tier: string): HTMLElement => {
-  const placeholder = `Select model(s) for ${tier.toLowerCase()} queries`;
+  const placeholder = `为${tierZh(tier)}层级选择模型`;
   const chips = screen
     .getAllByRole("toolbar")
     .find((candidate) => within(candidate).queryByLabelText(placeholder) !== null);
@@ -207,11 +212,11 @@ describe("AddAutoRouterTab", () => {
     expect(screen.queryByRole("button", { name: "Choose models for me" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("分类器超时（毫秒）")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
-    await userEvent.click(screen.getByRole("button", { name: "Advanced classifier settings" }));
+    await userEvent.click(screen.getByRole("button", { name: "高级分类器设置" }));
     fireEvent.change(screen.getByLabelText("分类器超时（毫秒）"), { target: { value: "4200" } });
     fireEvent.change(screen.getByLabelText("上下文窗口大小"), { target: { value: "5" } });
     await selectAutoRouterOption("How often to classify", "Every new user message");
-    await userEvent.click(screen.getByRole("button", { name: "Advanced classifier settings" }));
+    await userEvent.click(screen.getByRole("button", { name: "高级分类器设置" }));
     await userEvent.click(screen.getByRole("button", { name: "高级设置" }));
     expect(screen.queryByRole("button", { name: "Classifier tuning" })).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "jev-router" } });
@@ -401,17 +406,17 @@ describe("AddAutoRouterTab", () => {
       complexity_router_config: { tiers: Record<string, string[]> };
     };
     fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "restored-router" } });
-    await user.click(screen.getByRole("button", { name: "Edit tiers" }));
-    await user.click(screen.getByRole("button", { name: "Add tier" }));
-    expect(screen.getByLabelText("Name for tier 5")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "编辑层级" }));
+    await user.click(screen.getByRole("button", { name: "添加层级" }));
+    expect(screen.getByLabelText("第 5 个层级的名称")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
-    await user.click(screen.getByRole("button", { name: "Restore defaults" }));
-    expect(screen.queryByLabelText("Name for tier 5")).not.toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("Definition for tier 1"), { target: { value: "Only short requests" } });
+    await user.click(screen.getByRole("button", { name: "恢复默认值" }));
+    expect(screen.queryByLabelText("第 5 个层级的名称")).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("第 1 个层级的定义"), { target: { value: "Only short requests" } });
     expect(await screen.findByRole("alert")).toHaveTextContent(blocked);
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
     expect(within(screen.getByRole("alert")).getByRole("link", { name: "联系我们的团队" })).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "Restore defaults" }));
+    await user.click(screen.getByRole("button", { name: "恢复默认值" }));
     await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
     expect(screen.getByRole("radio", { name: "决策模型" })).toBeChecked();
     await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
@@ -444,8 +449,8 @@ describe("AddAutoRouterTab", () => {
           complete = resolve;
         }),
     );
-    await user.click(screen.getByRole("button", { name: "Edit tiers" }));
-    fireEvent.change(screen.getByLabelText("Definition for tier 1"), { target: { value: "Custom definition" } });
+    await user.click(screen.getByRole("button", { name: "编辑层级" }));
+    fireEvent.change(screen.getByLabelText("第 1 个层级的定义"), { target: { value: "Custom definition" } });
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
     fireEvent.submit(screen.getByLabelText("自动路由名称").closest("form")!);
     await waitFor(() => expect(complete).toBeDefined());
@@ -454,7 +459,7 @@ describe("AddAutoRouterTab", () => {
     await act(async () => complete?.({ allowances: [], error: "Custom tiers have no available allowance" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Custom tiers have no available allowance");
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
-    await user.click(screen.getByRole("button", { name: "Restore defaults" }));
+    await user.click(screen.getByRole("button", { name: "恢复默认值" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "添加自动路由" }));
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
@@ -583,7 +588,7 @@ describe("AddAutoRouterTab", () => {
     expect(screen.queryByTestId("configure-automatically-button")).not.toBeInTheDocument();
     expect(screen.getByTestId("template-selector")).toBeInTheDocument();
     expandDetailedConfiguration();
-    expect(screen.getByText("Define your tiers")).toBeInTheDocument();
+    expect(screen.getByText("定义你的层级")).toBeInTheDocument();
     for (const [section, label] of [
       ["Adaptive Routing", "自适应路由"],
       ["Context Window Escalation", "上下文窗口升级"],
@@ -635,9 +640,9 @@ describe("AddAutoRouterTab", () => {
 
     expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
 
-    expect(screen.getByText("Define your tiers")).toBeVisible();
+    expect(screen.getByText("定义你的层级")).toBeVisible();
 
-    expect(screen.getByText("Define your tiers")).toBeInTheDocument();
+    expect(screen.getByText("定义你的层级")).toBeInTheDocument();
   });
 
   it("hides automatic setup when no available model is recommended", async () => {
@@ -699,7 +704,7 @@ describe("AddAutoRouterTab", () => {
 
     await waitForAutomaticTiers();
 
-    expect(screen.getByText("Define your tiers")).toBeInTheDocument();
+    expect(screen.getByText("定义你的层级")).toBeInTheDocument();
     expectTierModel("Simple", simpleModel);
   });
 
@@ -920,8 +925,8 @@ describe("AddAutoRouterTab", () => {
     await user.click(screen.getByRole("button", { name: /添加关键词规则/ }));
     await addKeyword(user, screen.getByText("关键词 1").closest("div") as HTMLElement, "invoice");
 
-    await user.click(screen.getByRole("button", { name: "Edit tiers" }));
-    await user.click(screen.getByRole("button", { name: "Remove the COMPLEX tier" }));
+    await user.click(screen.getByRole("button", { name: "编辑层级" }));
+    await user.click(screen.getByRole("button", { name: "移除COMPLEX层级" }));
 
     expect(await screen.findByText(/route to a tier this router no longer has/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
@@ -1601,7 +1606,7 @@ describe("AddAutoRouterTab", () => {
       await selectTemplate("Anthropic Family");
       expect(screen.queryByText("关键词/语义匹配")).not.toBeInTheDocument();
 
-      expect(screen.getByText("Define your tiers")).toBeVisible();
+      expect(screen.getByText("定义你的层级")).toBeVisible();
 
       openAutoRouterAdvanced("Keyword/Semantic Matching");
 

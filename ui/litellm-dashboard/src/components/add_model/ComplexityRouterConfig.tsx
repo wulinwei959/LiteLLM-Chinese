@@ -36,6 +36,7 @@ import {
   resolveComplexityDefaultModel,
 } from "./tier_rows";
 import React from "react";
+import { useTranslations } from "next-intl";
 import { ModelGroup } from "@/components/llm_calls/fetch_models";
 import ClassificationMethodConfig, { InactiveHeuristicV2Threshold } from "./ClassificationMethodConfig";
 import ComplexityRouterAdvancedSections from "./ComplexityRouterAdvancedSections";
@@ -49,6 +50,7 @@ import {
   tierEffortOptionsForModels,
   tierRowLabel,
 } from "./complexity_router_tiers";
+import type { AddModelTranslator } from "./complexity_router_tiers";
 import TierModelEffortRows from "./TierModelEffortRows";
 import { KeywordTierRule } from "./KeywordTierRules";
 import { type DimensionWeights, type TierBoundaries, type TokenThresholds } from "./heuristic_scoring_knobs";
@@ -157,12 +159,12 @@ export const effectiveClassifierType = (
   value: Pick<ComplexityRouterConfigValue, "custom_tier_set" | "classifier_type">,
 ): ClassifierType => (value.custom_tier_set && value.classifier_type !== "jev" ? "llm" : value.classifier_type);
 
-const rowOrigin = (row: TierRow, editing: boolean): string => {
+const rowOrigin = (row: TierRow, editing: boolean, t: AddModelTranslator): string => {
   if (!editing) return row.id;
-  return isBuiltInTierName(row.name) ? "built-in" : "custom";
+  return isBuiltInTierName(row.name) ? t("tierOriginBuiltIn") : t("tierOriginCustom");
 };
 
-const builtInTierInfo = (rowId: string): { label: string; description: string; examples: string } | undefined => {
+const builtInTierInfo = (rowId: string) => {
   const builtIn = ALL_BUILT_IN_TIERS.find((tier) => tier === rowId);
   return builtIn ? TIER_DESCRIPTIONS[builtIn] : undefined;
 };
@@ -176,75 +178,75 @@ const TierSetToolbar: React.FC<{
   onEditingChange: ((editing: boolean) => void) | undefined;
   onAdd: () => void;
   onRestore: () => void;
-}> = ({ editing, isCustomSet, rowCount, rowsError, keywordRulesError, onEditingChange, onAdd, onRestore }) => (
-  <>
-    <div className="mt-4 flex flex-wrap items-center gap-2">
-      {editing ? (
-        <>
-          <Button variant="outline" onClick={onAdd} disabled={rowCount >= MAX_TIER_COUNT}>
-            <Plus />
-            Add tier
-          </Button>
-          <SimpleTooltip content={rowsError || undefined}>
-            <Button variant="outline" disabled={Boolean(rowsError)} onClick={() => onEditingChange?.(false)}>
-              Done
+}> = ({ editing, isCustomSet, rowCount, rowsError, keywordRulesError, onEditingChange, onAdd, onRestore }) => {
+  const t = useTranslations("models.addModel");
+  return (
+    <>
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        {editing ? (
+          <>
+            <Button variant="outline" onClick={onAdd} disabled={rowCount >= MAX_TIER_COUNT}>
+              <Plus />
+              {t("tierAdd")}
             </Button>
-          </SimpleTooltip>
-          {isCustomSet && (
-            <Button variant="outline" size="sm" onClick={onRestore}>
-              Restore defaults
+            <SimpleTooltip content={rowsError || undefined}>
+              <Button variant="outline" disabled={Boolean(rowsError)} onClick={() => onEditingChange?.(false)}>
+                {t("tierDone")}
+              </Button>
+            </SimpleTooltip>
+            {isCustomSet && (
+              <Button variant="outline" size="sm" onClick={onRestore}>
+                {t("tierRestoreDefaults")}
+              </Button>
+            )}
+          </>
+        ) : (
+          onEditingChange && (
+            <Button variant="outline" onClick={() => onEditingChange(true)}>
+              {t("tierEdit")}
             </Button>
-          )}
-        </>
-      ) : (
-        onEditingChange && (
-          <Button variant="outline" onClick={() => onEditingChange(true)}>
-            Edit tiers
-          </Button>
-        )
+          )
+        )}
+      </div>
+      {editing && (
+        <AutoRouterAllowanceNote feature="tier_or_classifier_prompt" label={t("tierAllowanceLabel")} />
       )}
-    </div>
-    {editing && (
-      <AutoRouterAllowanceNote
-        feature="tier_or_classifier_prompt"
-        label="Custom tiers and written prompts share this allowance"
-      />
-    )}
-    {editing && (
-      <span className="block mt-1 text-xs text-muted-foreground">
-        Add or remove tiers to define your own set. Every custom tier needs a definition the classifier routes on, and
-        an edited set requires the LLM or Jev classification method
-      </span>
-    )}
-    {editing && keywordRulesError && (
-      <span className="block mt-1 text-xs text-destructive">
-        {keywordRulesError}. Edit the rules under Advanced: Keyword/Semantic Matching, or bring the tier back
-      </span>
-    )}
-  </>
-);
+      {editing && (
+        <span className="block mt-1 text-xs text-muted-foreground">{t("tierEditingHint")}</span>
+      )}
+      {editing && keywordRulesError && (
+        <span className="block mt-1 text-xs text-destructive">
+          {t("tierKeywordRuleError", { error: keywordRulesError })}
+        </span>
+      )}
+    </>
+  );
+};
 
 const FallbackTierField: React.FC<{
   rows: readonly TierRow[];
   fallbackTierId: string;
   onValueChange: (rowId: string) => void;
-}> = ({ rows, fallbackTierId, onValueChange }) => (
-  <div className="mt-4">
-    <div className="flex items-center gap-2 mb-2">
-      <strong className="text-base font-semibold">Fallback Tier</strong>
-      <SimpleTooltip content="Where requests route when the classifier errors, times out, or returns an unparseable reply. Required for an edited tier set: the heuristic scorer cannot produce your tiers">
-        <Info className="size-4 text-muted-foreground" />
-      </SimpleTooltip>
+}> = ({ rows, fallbackTierId, onValueChange }) => {
+  const t = useTranslations("models.addModel");
+  return (
+    <div className="mt-4">
+      <div className="flex items-center gap-2 mb-2">
+        <strong className="text-base font-semibold">{t("tierFallbackHeading")}</strong>
+        <SimpleTooltip content={t("tierFallbackHelp")}>
+          <Info className="size-4 text-muted-foreground" />
+        </SimpleTooltip>
+      </div>
+      <TierRowSelect
+        label={t("tierFallbackLabel")}
+        options={rows.filter((row) => activeTierName(row)).map((row) => ({ value: row.id, label: activeTierName(row) }))}
+        value={fallbackTierId || null}
+        onValueChange={onValueChange}
+        placeholder={t("tierFallbackPlaceholder")}
+      />
     </div>
-    <TierRowSelect
-      label="Fallback tier"
-      options={rows.filter((row) => activeTierName(row)).map((row) => ({ value: row.id, label: activeTierName(row) }))}
-      value={fallbackTierId || null}
-      onValueChange={onValueChange}
-      placeholder="Pick the tier classifier failures route to"
-    />
-  </div>
-);
+  );
+};
 
 const TierRowHeader: React.FC<{
   row: TierRow;
@@ -255,72 +257,70 @@ const TierRowHeader: React.FC<{
   editing: boolean;
   isCustomSet: boolean;
   onRemove: () => void;
-}> = ({ row, index, rowCount, label, description, editing, isCustomSet, onRemove }) => (
-  <div className="flex items-center gap-2 mb-2">
-    <strong className="text-base font-semibold">{label} Tier</strong>
-    <SimpleTooltip
-      content={
-        row.definition.trim() ||
-        description ||
-        "A tier you defined. The classifier routes requests matching its definition here."
-      }
-    >
-      <Info className="size-4 text-muted-foreground" />
-    </SimpleTooltip>
-    <span className="text-xs text-muted-foreground">
-      Tier {index + 1} of {rowCount} &middot; {rowOrigin(row, isCustomSet)}
-    </span>
-    {editing && (
-      <Button
-        variant="ghost"
-        size="sm"
-        className="text-destructive hover:text-destructive/80"
-        aria-label={`Remove the ${activeTierName(row) || `tier ${index + 1}`} tier`}
-        disabled={rowCount <= MIN_TIER_COUNT}
-        onClick={onRemove}
-      >
-        <Trash2 />
-        Remove
-      </Button>
-    )}
-  </div>
-);
+}> = ({ row, index, rowCount, label, description, editing, isCustomSet, onRemove }) => {
+  const t = useTranslations("models.addModel");
+  return (
+    <div className="flex items-center gap-2 mb-2">
+      <strong className="text-base font-semibold">{t("tierRowHeading", { label })}</strong>
+      <SimpleTooltip content={row.definition.trim() || description || t("tierCustomFallbackHelp")}>
+        <Info className="size-4 text-muted-foreground" />
+      </SimpleTooltip>
+      <span className="text-xs text-muted-foreground">
+        {t("tierPosition", { index: index + 1, count: rowCount })} &middot; {rowOrigin(row, isCustomSet, t)}
+      </span>
+      {editing && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-destructive hover:text-destructive/80"
+          aria-label={t("tierRemoveAria", { name: activeTierName(row) || `${index + 1}` })}
+          disabled={rowCount <= MIN_TIER_COUNT}
+          onClick={onRemove}
+        >
+          <Trash2 />
+          {t("removeLabel")}
+        </Button>
+      )}
+    </div>
+  );
+};
 
 const TierRowEditFields: React.FC<{
   row: TierRow;
   index: number;
   definitionMissing: boolean;
   onPatch: (patch: Partial<Omit<TierRow, "id">>) => void;
-}> = ({ row, index, definitionMissing, onPatch }) => (
-  <>
-    <Input
-      value={row.name}
-      onChange={(event) => onPatch({ name: event.target.value })}
-      placeholder="Tier name, e.g. SECURITY_REVIEW"
-      aria-label={`Name for tier ${index + 1}`}
-      maxLength={MAX_TIER_NAME_CHARS}
-      className="mb-2"
-    />
-    <Textarea
-      value={row.definition}
-      onChange={(event) => onPatch({ definition: event.target.value.replace(/[\r\n]+/g, " ") })}
-      placeholder={
-        isBuiltInTierName(row.name)
-          ? "Leave blank to keep the built-in definition"
-          : "What belongs in this tier, e.g. requests asking for a security audit"
-      }
-      aria-label={`Definition for tier ${index + 1}`}
-      maxLength={MAX_TIER_DEFINITION_CHARS}
-      rows={2}
-      className={definitionMissing ? "mb-2 border-destructive" : "mb-2"}
-    />
-    {definitionMissing && (
-      <span className="mb-2 block text-xs text-destructive">
-        A definition is required: it is the rubric the classifier routes on for this tier
-      </span>
-    )}
-  </>
-);
+}> = ({ row, index, definitionMissing, onPatch }) => {
+  const t = useTranslations("models.addModel");
+  return (
+    <>
+      <Input
+        value={row.name}
+        onChange={(event) => onPatch({ name: event.target.value })}
+        placeholder={t("tierNamePlaceholder")}
+        aria-label={t("tierNameAria", { index: index + 1 })}
+        maxLength={MAX_TIER_NAME_CHARS}
+        className="mb-2"
+      />
+      <Textarea
+        value={row.definition}
+        onChange={(event) => onPatch({ definition: event.target.value.replace(/[\r\n]+/g, " ") })}
+        placeholder={
+          isBuiltInTierName(row.name)
+            ? t("tierBuiltInDefinitionPlaceholder")
+            : t("tierCustomDefinitionPlaceholder")
+        }
+        aria-label={t("tierDefinitionAria", { index: index + 1 })}
+        maxLength={MAX_TIER_DEFINITION_CHARS}
+        rows={2}
+        className={definitionMissing ? "mb-2 border-destructive" : "mb-2"}
+      />
+      {definitionMissing && (
+        <span className="mb-2 block text-xs text-destructive">{t("tierDefinitionRequired")}</span>
+      )}
+    </>
+  );
+};
 
 export type AdaptiveEligible = "all" | "classified_tier";
 
@@ -463,41 +463,49 @@ interface ComplexityRouterConfigProps {
   showValidationErrors?: boolean;
 }
 
-export const TIER_DESCRIPTIONS: Record<
-  keyof ComplexityTiers,
-  { label: string; description: string; examples: string }
-> = {
+export const TIER_DESCRIPTIONS = {
   NON_REASONING: {
     label: "Non-reasoning",
-    description: "Operational relay work: passing information along with no judgment about it",
-    examples: '"Reformat this tool output", "Acknowledge the write succeeded"',
+    labelKey: "tierLabelNonReasoning",
+    descriptionKey: "tierDescriptionNonReasoning",
+    examplesKey: "tierExamplesNonReasoning",
   },
   SIMPLE: {
     label: "Simple",
-    description: "Basic questions, greetings, simple factual queries",
-    examples: '"Hello!", "What is Python?", "Thanks!"',
+    labelKey: "tierLabelSimple",
+    descriptionKey: "tierDescriptionSimple",
+    examplesKey: "tierExamplesSimple",
   },
   MEDIUM: {
     label: "Medium",
-    description: "Standard queries requiring some reasoning or explanation",
-    examples: '"Explain how REST APIs work", "Debug this error"',
+    labelKey: "tierLabelMedium",
+    descriptionKey: "tierDescriptionMedium",
+    examplesKey: "tierExamplesMedium",
   },
   COMPLEX: {
     label: "Complex",
-    description: "Technical, multi-part requests requiring deep knowledge",
-    examples: '"Design a microservices architecture", "Implement a rate limiter"',
+    labelKey: "tierLabelComplex",
+    descriptionKey: "tierDescriptionComplex",
+    examplesKey: "tierExamplesComplex",
   },
   REASONING: {
     label: "Reasoning",
-    description: "Chain-of-thought, analysis, explicit reasoning requests",
-    examples: '"Think step by step...", "Analyze the pros and cons..."',
+    labelKey: "tierLabelReasoning",
+    descriptionKey: "tierDescriptionReasoning",
+    examplesKey: "tierExamplesReasoning",
   },
-};
+} as const satisfies Record<
+  keyof ComplexityTiers,
+  { label: string; labelKey: string; descriptionKey: string; examplesKey: string }
+>;
 
 export const TIER_KEYS = Object.keys(TIER_DESCRIPTIONS) as Array<keyof ComplexityTiers>;
 
-export const effectiveTierLabel = (tier: keyof ComplexityTiers, tierLabels: ComplexityTierLabels | undefined): string =>
-  tierLabels?.[tier]?.trim() || TIER_DESCRIPTIONS[tier].label;
+export const effectiveTierLabel = (
+  t: AddModelTranslator,
+  tier: keyof ComplexityTiers,
+  tierLabels: ComplexityTierLabels | undefined,
+): string => tierLabels?.[tier]?.trim() || t(TIER_DESCRIPTIONS[tier].labelKey);
 
 export const DEFAULT_HEURISTIC_FIRST_MAX_TIER = "SIMPLE";
 
@@ -509,6 +517,16 @@ export const DEFAULT_HYBRID_BOUNDARY_MARGIN = 0.03;
  * circuit every request and leave the classifier unreachable, which the backend rejects.
  */
 export const HEURISTIC_FIRST_MAX_TIER_KEYS = TIER_ORDER.slice(0, -1);
+
+const ROUTING_SUMMARY_KEYS = {
+  hybrid: "summaryHybridEnabled",
+  heuristic_first: "summaryHeuristicFirstEnabled",
+} as const;
+
+const routingSummary = (t: AddModelTranslator, classifierType: ClassifierType): string | undefined => {
+  const key = ROUTING_SUMMARY_KEYS[classifierType as keyof typeof ROUTING_SUMMARY_KEYS];
+  return key && t(key);
+};
 
 const isJevCreation = (value: ComplexityRouterConfigValue, creationFlow: boolean | undefined) =>
   creationFlow && effectiveClassifierType(value) === "jev";
@@ -528,6 +546,7 @@ const CreationClassifierSettings = ({
   defaultModel: string | undefined;
   showValidationErrors: boolean;
 }) => {
+  const t = useTranslations("models.addModel");
   const jevCreation = isJevCreation(value, creationFlow);
   return (
     <>
@@ -540,7 +559,7 @@ const CreationClassifierSettings = ({
       />
       {jevCreation && (
         <div className="mb-6">
-          <RoutingOptions label="Advanced classifier settings" showValidationErrors={showValidationErrors}>
+          <RoutingOptions label={t("advancedClassifierSettings")} showValidationErrors={showValidationErrors}>
             <div className="px-4 pb-4">
               <ClassificationMethodConfig
                 advancedOnly
@@ -585,8 +604,9 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
   onAutoRouterCompressionChange,
   showValidationErrors = false,
 }) => {
+  const t = useTranslations("models.addModel");
   const forecast = isForecastClassifier(value.classifier_type);
-  const tierHeading = creationFlow ? "Define your tiers" : "Models by tier";
+  const tierHeading = creationFlow ? t("tierHeadingDefine") : t("tierHeadingModels");
   const customTierSet = value.custom_tier_set;
   const tierRows = activeTierRows(value);
   const tierRowsError = customTierSet ? getCustomTierRowsError(customTierSet) : null;
@@ -594,7 +614,7 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
   const planModeRows = tierRows.filter((row) => row.models.length > 0);
   const planModeTierOptions = planModeRows.map((row) => ({
     value: row.id,
-    label: tierRowLabel(row, value.tier_labels),
+    label: tierRowLabel(row, value.tier_labels, t),
   }));
   const defaultModel = resolveComplexityDefaultModel(value, value.default_model);
 
@@ -647,9 +667,11 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
       {creationFlow && <Separator className="my-6" />}
       <div className="mb-4">
         <div className="inline-flex items-center gap-2">
-          <h4 className="m-0 text-xl font-semibold text-foreground">{forecast ? "Solver models" : tierHeading}</h4>
+          <h4 className="m-0 text-xl font-semibold text-foreground">
+            {forecast ? t("solverModelsHeading") : tierHeading}
+          </h4>
           {!forecast && (
-            <SimpleTooltip content="Map each complexity tier to one or more models. Simple queries use cheaper/faster models, complex queries use more capable models.">
+            <SimpleTooltip content={t("tierModelsHelp")}>
               <Info className="size-4 text-muted-foreground" />
             </SimpleTooltip>
           )}
@@ -683,7 +705,7 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
             <CardContent>
               {tierRows.map((row, index) => {
                 const tierInfo = builtInTierInfo(row.id);
-                const label = tierRowLabel(row, value.tier_labels);
+                const label = tierRowLabel(row, value.tier_labels, t);
                 const tierMissing = showValidationErrors && row.models.length === 0;
                 const needsDefinition =
                   Boolean(customTierSet) && !row.definition.trim() && !isBuiltInTierName(row.name);
@@ -698,13 +720,15 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
                         index={index}
                         rowCount={tierRows.length}
                         label={label}
-                        description={tierInfo?.description}
+                        description={tierInfo && t(tierInfo.descriptionKey)}
                         editing={editingTiers}
                         isCustomSet={Boolean(customTierSet)}
                         onRemove={() => removeTierRow(row.id)}
                       />
                       {tierInfo && !customTierSet && (
-                        <span className="block mb-2 text-xs text-muted-foreground">Examples: {tierInfo.examples}</span>
+                        <span className="block mb-2 text-xs text-muted-foreground">
+                          {t("tierExamplesPrefix", { examples: t(tierInfo.examplesKey) })}
+                        </span>
                       )}
                       {editingTiers && (
                         <TierRowEditFields
@@ -721,14 +745,14 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
                             onChange={(event) =>
                               handleTierLabelChange(row.id as keyof ComplexityTiers, event.target.value)
                             }
-                            placeholder={`Display name (default: ${tierInfo.label})`}
-                            aria-label={`Display name for the ${tierInfo.label} tier`}
+                            placeholder={t("tierDisplayNamePlaceholder", { label: t(tierInfo.labelKey) })}
+                            aria-label={t("tierDisplayNameAria", { label: t(tierInfo.labelKey) })}
                           />
                           {value.tier_labels?.[row.id as keyof ComplexityTiers] && (
                             <InputGroupAddon align="inline-end">
                               <InputGroupButton
                                 size="icon-xs"
-                                aria-label={`Clear display name for the ${tierInfo.label} tier`}
+                                aria-label={t("tierClearDisplayNameAria", { label: t(tierInfo.labelKey) })}
                                 onClick={() => handleTierLabelChange(row.id as keyof ComplexityTiers, "")}
                               >
                                 <X />
@@ -741,8 +765,8 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
                         options={modelOptions}
                         value={row.models}
                         onValueChange={(models: string[]) => setRowModels(row, models)}
-                        placeholder={`Select model(s) for ${label.toLowerCase()} queries`}
-                        emptyText="No models found"
+                        placeholder={t("tierModelsPlaceholder", { label })}
+                        emptyText={t("noModelsFound")}
                         className={tierMissing ? "w-full border-destructive" : "w-full"}
                       />
                       <TierModelEffortRows
@@ -759,12 +783,11 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
                         }
                       />
                       {row.models.length > 1 && (
-                        <span className="text-xs text-muted-foreground">
-                          Multiple models selected: the router randomly picks among them per request (or
-                          Thompson-samples within the pool when adaptive routing is on).
-                        </span>
+                        <span className="text-xs text-muted-foreground">{t("tierMultipleModelsHint")}</span>
                       )}
-                      {tierMissing && <span className="text-xs text-destructive">The {label} tier is required</span>}
+                      {tierMissing && (
+                        <span className="text-xs text-destructive">{t("tierRequired", { label })}</span>
+                      )}
                     </div>
                   </div>
                 );
@@ -804,11 +827,7 @@ const ComplexityRouterConfig: React.FC<ComplexityRouterConfigProps> = ({
 
       <RoutingOptions
         showValidationErrors={showValidationErrors}
-        summary={
-          { hybrid: "Hybrid local checks enabled", heuristic_first: "Heuristic first enabled" }[
-            value.classifier_type as "hybrid" | "heuristic_first"
-          ]
-        }
+        summary={routingSummary(t, value.classifier_type)}
       >
         {forecast && (
           <>

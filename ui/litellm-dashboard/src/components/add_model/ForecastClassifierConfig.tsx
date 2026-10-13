@@ -90,7 +90,7 @@ export const ForecastSolverModels = ({
     value.classifier_type === "capability"
       ? activeTierRows(value)
           .filter((row) => !names.includes(row.id) && row.models.length > 0)
-          .map((row) => ({ tier: row.id, label: t("solverRoutingPool", { tier: tierRowLabel(row, value.tier_labels) }) }))
+          .map((row) => ({ tier: row.id, label: t("solverRoutingPool", { tier: tierRowLabel(row, value.tier_labels, t) }) }))
       : [];
   const rows = additionalPoolsOnly
     ? additionalRows

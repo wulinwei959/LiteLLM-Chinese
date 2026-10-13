@@ -59,18 +59,21 @@ const deployment = (config: unknown): AutoRouterDeployment => ({
   litellm_params: { model: "auto_router/claude-auto", complexity_router_config: config },
 });
 
+const zhTierT = ((key: string) =>
+  (({ tierLabelComplex: "复杂", tierLabelReasoning: "推理", tierLabelSimple: "简单" }) as Record<string, string>)[key] ?? key) as never;
+
 describe("tierDisplayLabel", () => {
   it("prefers the admin's custom label for a canonical complexity tier", () => {
-    expect(tierDisplayLabel("SIMPLE", { SIMPLE: "Cheap" })).toBe("Cheap");
+    expect(tierDisplayLabel(zhTierT, "SIMPLE", { SIMPLE: "Cheap" })).toBe("Cheap");
   });
 
   it("falls back to the canonical name when that tier has no custom label", () => {
-    expect(tierDisplayLabel("COMPLEX", { SIMPLE: "Cheap" })).toBe("Complex");
-    expect(tierDisplayLabel("REASONING", undefined)).toBe("Reasoning");
+    expect(tierDisplayLabel(zhTierT, "COMPLEX", { SIMPLE: "Cheap" })).toBe("复杂");
+    expect(tierDisplayLabel(zhTierT, "REASONING", undefined)).toBe("推理");
   });
 
   it("shows a non-complexity tier verbatim, since no label map covers a quality router's tier", () => {
-    expect(tierDisplayLabel("3", { SIMPLE: "Cheap" })).toBe("3");
+    expect(tierDisplayLabel(zhTierT, "3", { SIMPLE: "Cheap" })).toBe("3");
   });
 });
 
@@ -79,7 +82,7 @@ describe("TierTurnsChart", () => {
     render(<TierTurnsChart view={groupView()} autoRouters={[deployment({ tier_labels: { SIMPLE: "Cheap" } })]} />);
 
     expect(screen.getByText("Cheap 75%")).toBeInTheDocument();
-    expect(screen.getByText("Complex 25%")).toBeInTheDocument();
+    expect(screen.getByText("复杂 25%")).toBeInTheDocument();
     expect(screen.getByTestId("donut")).toHaveTextContent("4 total turns");
   });
 
@@ -93,8 +96,8 @@ describe("TierTurnsChart", () => {
   it("uses canonical names when the router is not in the deployment list", () => {
     render(<TierTurnsChart view={groupView()} autoRouters={[]} />);
 
-    expect(screen.getByText("Simple 75%")).toBeInTheDocument();
-    expect(screen.getByText("Complex 25%")).toBeInTheDocument();
+    expect(screen.getByText("简单 75%")).toBeInTheDocument();
+    expect(screen.getByText("复杂 25%")).toBeInTheDocument();
   });
 
   it("lists each tier's assigned models below its name and share", () => {
@@ -131,7 +134,7 @@ describe("TierTurnsChart", () => {
   it("omits the model line for a tier with no configured models", () => {
     render(<TierTurnsChart view={groupView()} autoRouters={[deployment({ tiers: { SIMPLE: [] } })]} />);
 
-    expect(screen.getByText("Simple 75%")).toBeInTheDocument();
+    expect(screen.getByText("简单 75%")).toBeInTheDocument();
   });
 
   it("shows no models for a quality router's numeric tier, which has no per-tier model list", () => {
@@ -160,7 +163,7 @@ describe("TierTurnsChart", () => {
       />,
     );
 
-    expect(screen.getByText("Simple 75%")).toBeInTheDocument();
+    expect(screen.getByText("简单 75%")).toBeInTheDocument();
     expect(screen.queryByText("gpt-4o")).not.toBeInTheDocument();
   });
 

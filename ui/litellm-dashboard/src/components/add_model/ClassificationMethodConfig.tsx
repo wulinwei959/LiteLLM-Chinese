@@ -115,22 +115,22 @@ const HowClassificationWorks: React.FC<{ value: ComplexityRouterConfigValue }> =
         {scorerRuns && ranges && (
           <ul className="mt-2 pl-5 text-[13px] text-muted-foreground">
             <li>
-              <strong>{effectiveTierLabel("SIMPLE", value.tier_labels)}</strong>
+              <strong>{effectiveTierLabel(t, "SIMPLE", value.tier_labels)}</strong>
               {": "}
               {t("scoreBelow", { boundary: ranges.simpleMedium })}
             </li>
             <li>
-              <strong>{effectiveTierLabel("MEDIUM", value.tier_labels)}</strong>
+              <strong>{effectiveTierLabel(t, "MEDIUM", value.tier_labels)}</strong>
               {": "}
               {t("scoreBetween", { lower: ranges.simpleMedium, upper: ranges.mediumComplex })}
             </li>
             <li>
-              <strong>{effectiveTierLabel("COMPLEX", value.tier_labels)}</strong>
+              <strong>{effectiveTierLabel(t, "COMPLEX", value.tier_labels)}</strong>
               {": "}
               {t("scoreBetween", { lower: ranges.mediumComplex, upper: ranges.complexReasoning })}
             </li>
             <li>
-              <strong>{effectiveTierLabel("REASONING", value.tier_labels)}</strong>
+              <strong>{effectiveTierLabel(t, "REASONING", value.tier_labels)}</strong>
               {": "}
               {t("scoreAboveWithMarkers", {
                 boundary: ranges.complexReasoning,
@@ -448,7 +448,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
             <SelectContent>
               {HEURISTIC_FIRST_MAX_TIER_KEYS.map((tier) => (
                 <SelectItem key={tier} value={tier}>
-                  {effectiveTierLabel(tier, value.tier_labels)}
+                  {effectiveTierLabel(t, tier, value.tier_labels)}
                 </SelectItem>
               ))}
             </SelectContent>

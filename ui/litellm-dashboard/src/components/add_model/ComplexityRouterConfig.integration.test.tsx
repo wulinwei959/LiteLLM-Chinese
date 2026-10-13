@@ -54,23 +54,23 @@ const baseProps = {
 describe("ComplexityRouterConfig", () => {
   it("should render", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
-    expect(screen.getByText("Models by tier")).toBeInTheDocument();
+    expect(screen.getByText("按层级划分的模型")).toBeInTheDocument();
   });
 
   it("should display all four tier labels", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
-    expect(screen.getByText("Simple Tier")).toBeInTheDocument();
-    expect(screen.getByText("Medium Tier")).toBeInTheDocument();
-    expect(screen.getByText("Complex Tier")).toBeInTheDocument();
-    expect(screen.getByText("Reasoning Tier")).toBeInTheDocument();
+    expect(screen.getByText("简单层级")).toBeInTheDocument();
+    expect(screen.getByText("中等层级")).toBeInTheDocument();
+    expect(screen.getByText("复杂层级")).toBeInTheDocument();
+    expect(screen.getByText("推理层级")).toBeInTheDocument();
   });
 
   it("should show example queries for each tier", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
-    expect(screen.getByText(/Hello!/)).toBeInTheDocument();
-    expect(screen.getByText(/Explain how REST APIs work/)).toBeInTheDocument();
-    expect(screen.getByText(/Design a microservices architecture/)).toBeInTheDocument();
-    expect(screen.getByText(/Think step by step/)).toBeInTheDocument();
+    expect(screen.getByText(/你好！/)).toBeInTheDocument();
+    expect(screen.getByText(/解释 REST API 的工作原理/)).toBeInTheDocument();
+    expect(screen.getByText(/设计一个微服务架构/)).toBeInTheDocument();
+    expect(screen.getByText(/一步一步地思考/)).toBeInTheDocument();
   });
 
   it("should display the how classification works section", async () => {
@@ -524,7 +524,7 @@ describe("ComplexityRouterConfig", () => {
     expect(screen.queryByText("关键词层级覆盖")).not.toBeInTheDocument();
     expect(screen.queryByText("语义关键词匹配")).not.toBeInTheDocument();
     // Core tier config still renders.
-    expect(screen.getByText("Models by tier")).toBeInTheDocument();
+    expect(screen.getByText("按层级划分的模型")).toBeInTheDocument();
   });
 
   it("should call onKeywordTierRulesChange with a new rule when 'Add keyword rule' is clicked", async () => {
@@ -610,8 +610,8 @@ describe("ComplexityRouterConfig", () => {
     const user = userEvent.setup();
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
 
-    const simpleTierSection = screen.getByText("Simple Tier").closest(".mb-4") as HTMLElement;
-    const combobox = within(simpleTierSection).getByRole("combobox", { name: "Select model(s) for simple queries" });
+    const simpleTierSection = screen.getByText("简单层级").closest(".mb-4") as HTMLElement;
+    const combobox = within(simpleTierSection).getByRole("combobox", { name: "为简单层级选择模型" });
     await user.click(combobox);
 
     expect((await screen.findAllByText("gpt-3.5-turbo")).length).toBeGreaterThan(0);
@@ -620,7 +620,7 @@ describe("ComplexityRouterConfig", () => {
 
   it("does not show tier validation errors by default", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
-    expect(screen.queryByText("This tier is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("简单层级为必填项")).not.toBeInTheDocument();
   });
 
   it("shows an inline error on the classifier model select when llm is selected without a model", async () => {
@@ -653,8 +653,8 @@ describe("ComplexityRouterConfig", () => {
         showValidationErrors={true}
       />,
     );
-    expect(screen.getByText("The Reasoning tier is required")).toBeInTheDocument();
-    expect(screen.getAllByText(/tier is required/)).toHaveLength(1);
+    expect(screen.getByText("推理层级为必填项")).toBeInTheDocument();
+    expect(screen.getAllByText(/层级为必填项/)).toHaveLength(1);
   });
 
   it("renders the escalation keywords section with current keywords when the handler is provided", async () => {
@@ -946,16 +946,16 @@ describe("ComplexityRouterConfig tier labels", () => {
 
   it("shows the operator's names in the tier headers instead of the defaults", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={renamedValue} />);
-    expect(screen.getByText("Cheap Tier")).toBeInTheDocument();
-    expect(screen.getByText("Deep Tier")).toBeInTheDocument();
-    expect(screen.queryByText("Simple Tier")).not.toBeInTheDocument();
-    expect(screen.queryByText("Reasoning Tier")).not.toBeInTheDocument();
+    expect(screen.getByText("Cheap层级")).toBeInTheDocument();
+    expect(screen.getByText("Deep层级")).toBeInTheDocument();
+    expect(screen.queryByText("简单层级")).not.toBeInTheDocument();
+    expect(screen.queryByText("推理层级")).not.toBeInTheDocument();
   });
 
   it("keeps the rung ordinal and canonical name visible under a rename", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={renamedValue} />);
-    expect(screen.getByText(/Tier 1 of 4/)).toHaveTextContent("Tier 1 of 4 · SIMPLE");
-    expect(screen.getByText(/Tier 4 of 4/)).toHaveTextContent("Tier 4 of 4 · REASONING");
+    expect(screen.getByText(/第 1 个层级，共 4 个/)).toHaveTextContent("第 1 个层级，共 4 个 · SIMPLE");
+    expect(screen.getByText(/第 4 个层级，共 4 个/)).toHaveTextContent("第 4 个层级，共 4 个 · REASONING");
   });
 
   it("names the renamed tier in the required-field error", async () => {
@@ -966,24 +966,24 @@ describe("ComplexityRouterConfig tier labels", () => {
         showValidationErrors={true}
       />,
     );
-    expect(screen.getByText("The Deep tier is required")).toBeInTheDocument();
+    expect(screen.getByText("Deep层级为必填项")).toBeInTheDocument();
   });
 
   it("reports a typed label back to the caller under its canonical tier key", async () => {
     const onChange = vi.fn();
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onChange={onChange} />);
-    fireEvent.change(screen.getByLabelText("Display name for the Simple tier"), { target: { value: "Cheap" } });
+    fireEvent.change(screen.getByLabelText("简单层级的显示名称"), { target: { value: "Cheap" } });
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ tier_labels: { SIMPLE: "Cheap" } }));
   });
 
   it("shows a stored label in its input so an edit round-trips", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={renamedValue} />);
-    expect(screen.getByLabelText("Display name for the Reasoning tier")).toHaveValue("Deep");
+    expect(screen.getByLabelText("推理层级的显示名称")).toHaveValue("Deep");
   });
 
   it("leaves the label inputs empty when nothing was renamed", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
-    expect(screen.getByLabelText("Display name for the Simple tier")).toHaveValue("");
+    expect(screen.getByLabelText("简单层级的显示名称")).toHaveValue("");
   });
 
   it("uses the operator's names in the classification score table", async () => {
@@ -1247,8 +1247,8 @@ describe("plan-mode override", () => {
     );
     openPanel();
     await userEvent.click(await screen.findByRole("combobox", { name: "计划模式最低层级" }));
-    expect(await screen.findByRole("option", { name: "Medium" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "Reasoning" })).not.toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "中等" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "推理" })).not.toBeInTheDocument();
   });
 
   it("disables the toggle until some tier has models", async () => {
@@ -1266,7 +1266,7 @@ describe("plan-mode override", () => {
 describe("ComplexityRouterConfig per-model reasoning effort", () => {
   it("renders one effort select per selected model, defaulting to Default", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
-    const select = screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" });
+    const select = screen.getByRole("combobox", { name: "复杂 层级中 gpt-4 的推理强度" });
     expect(select).toHaveTextContent("默认");
   });
 
@@ -1277,7 +1277,7 @@ describe("ComplexityRouterConfig per-model reasoning effort", () => {
         value={{ ...defaultValue, tier_model_params: { COMPLEX: { "gpt-4": { reasoning_effort: "high" } } } }}
       />,
     );
-    const select = screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" });
+    const select = screen.getByRole("combobox", { name: "复杂 层级中 gpt-4 的推理强度" });
     expect(select).toHaveTextContent("high");
   });
 
@@ -1285,7 +1285,7 @@ describe("ComplexityRouterConfig per-model reasoning effort", () => {
     const onChange = vi.fn();
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onChange={onChange} />);
     const user = userEvent.setup();
-    await user.click(screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" }));
+    await user.click(screen.getByRole("combobox", { name: "复杂 层级中 gpt-4 的推理强度" }));
     await user.click(await screen.findByRole("option", { name: "high" }));
     expect(onChange).toHaveBeenCalledWith({
       ...defaultValue,
@@ -1303,7 +1303,7 @@ describe("ComplexityRouterConfig per-model reasoning effort", () => {
       />,
     );
     const user = userEvent.setup();
-    await user.click(screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" }));
+    await user.click(screen.getByRole("combobox", { name: "复杂 层级中 gpt-4 的推理强度" }));
     await user.click(await screen.findByRole("option", { name: "默认" }));
     expect(onChange).toHaveBeenCalledWith({ ...defaultValue, tier_model_params: undefined });
   });
@@ -1416,7 +1416,7 @@ describe("ComplexityRouterConfig reasoning effort gating", () => {
   it("offers no effort select for a model group without reasoning support", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     expect(
-      screen.queryByRole("combobox", { name: "Simple 层级中 gpt-3.5-turbo 的推理强度" }),
+      screen.queryByRole("combobox", { name: "简单 层级中 gpt-3.5-turbo 的推理强度" }),
     ).not.toBeInTheDocument();
   });
 
@@ -1430,7 +1430,7 @@ describe("ComplexityRouterConfig reasoning effort gating", () => {
       />,
     );
     expect(
-      screen.getByRole("combobox", { name: "Simple 层级中 gpt-3.5-turbo 的推理强度" }),
+      screen.getByRole("combobox", { name: "简单 层级中 gpt-3.5-turbo 的推理强度" }),
     ).toHaveTextContent("low");
   });
 });
@@ -1439,7 +1439,7 @@ describe("ComplexityRouterConfig per-model effort filtering", () => {
   it("offers only the efforts the model group supports", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     const user = userEvent.setup();
-    await user.click(screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" }));
+    await user.click(screen.getByRole("combobox", { name: "复杂 层级中 gpt-4 的推理强度" }));
     const options = (await screen.findAllByRole("option")).map((option) => option.textContent);
     expect(options).toEqual(["默认", "medium", "high", "xhigh"]);
   });
@@ -1448,7 +1448,7 @@ describe("ComplexityRouterConfig per-model effort filtering", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     const user = userEvent.setup();
     await user.click(
-      screen.getByRole("combobox", { name: "Reasoning 层级中 claude-3-opus 的推理强度" }),
+      screen.getByRole("combobox", { name: "推理 层级中 claude-3-opus 的推理强度" }),
     );
     const options = (await screen.findAllByRole("option")).map((option) => option.textContent);
     expect(options).toEqual(["默认", "none", "minimal", "low", "medium", "high", "xhigh"]);
@@ -1467,7 +1467,7 @@ describe("ComplexityRouterConfig per-model effort filtering", () => {
       />,
     );
     expect(
-      screen.queryByRole("combobox", { name: "Reasoning 层级中 claude-3-opus 的推理强度" }),
+      screen.queryByRole("combobox", { name: "推理 层级中 claude-3-opus 的推理强度" }),
     ).not.toBeInTheDocument();
   });
 
@@ -1480,7 +1480,7 @@ describe("ComplexityRouterConfig per-model effort filtering", () => {
         value={{ ...defaultValue, tier_model_params: { COMPLEX: { "gpt-4": { reasoning_effort: "max" } } } }}
       />,
     );
-    expect(screen.getByRole("combobox", { name: "Complex 层级中 gpt-4 的推理强度" })).toHaveTextContent(
+    expect(screen.getByRole("combobox", { name: "复杂 层级中 gpt-4 的推理强度" })).toHaveTextContent(
       "max",
     );
   });
@@ -1565,7 +1565,7 @@ describe("ComplexityRouterConfig tier editing", () => {
 
   it("offers Edit tiers only when the parent owns the editor flag", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
-    expect(screen.queryByRole("button", { name: "Edit tiers" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "编辑层级" })).not.toBeInTheDocument();
   });
 
   it("surfaces the caller's orphaned-rule verdict while editing, so Done is not a silent exit", async () => {
@@ -1589,13 +1589,13 @@ describe("ComplexityRouterConfig tier editing", () => {
 
   it("renders the four built-in tiers before any edit, unchanged", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onEditingTiersChange={vi.fn()} />);
-    expect(screen.getByRole("button", { name: "Edit tiers" })).toBeInTheDocument();
-    expect(screen.getByText("Tier 1 of 4", { exact: false })).toHaveTextContent("SIMPLE");
+    expect(screen.getByRole("button", { name: "编辑层级" })).toBeInTheDocument();
+    expect(screen.getByText("第 1 个层级，共 4 个", { exact: false })).toHaveTextContent("SIMPLE");
   });
 
   it("adds a row and moves the form into an edited tier set, which the built-in record never leaves", async () => {
     const { committed } = renderEditor();
-    fireEvent.click(screen.getByRole("button", { name: "Add tier" }));
+    fireEvent.click(screen.getByRole("button", { name: "添加层级" }));
     const next = committed();
     expect(next.custom_tier_set?.tiers).toHaveLength(5);
     expect(next.tiers).toEqual(defaultValue.tiers);
@@ -1603,7 +1603,7 @@ describe("ComplexityRouterConfig tier editing", () => {
 
   it("renames a built-in tier straight from the editor, which is what makes the set custom", async () => {
     const { committed } = renderEditor();
-    fireEvent.change(screen.getByLabelText("Name for tier 3"), { target: { value: "SECURITY_REVIEW" } });
+    fireEvent.change(screen.getByLabelText("第 3 个层级的名称"), { target: { value: "SECURITY_REVIEW" } });
     const next = committed();
     expect(next.custom_tier_set?.tiers.map((row) => row.name)).toEqual([
       "SIMPLE",
@@ -1616,16 +1616,16 @@ describe("ComplexityRouterConfig tier editing", () => {
 
   it("opening the editor and changing nothing leaves the router on the built-in tiers", async () => {
     const { onChange } = renderEditor();
-    expect(screen.getByRole("button", { name: "Done" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "完成" })).toBeEnabled();
     expect(onChange).not.toHaveBeenCalled();
   });
 
   it("swaps the display-name field for the tier-name field while the editor is open", async () => {
     const { rerender } = renderWithProviders(<ComplexityRouterConfig {...baseProps} onEditingTiersChange={vi.fn()} />);
-    expect(screen.getByLabelText("Display name for the Simple tier")).toBeInTheDocument();
+    expect(screen.getByLabelText("简单层级的显示名称")).toBeInTheDocument();
     rerender(<ComplexityRouterConfig {...baseProps} editingTiers onEditingTiersChange={vi.fn()} />);
-    expect(screen.queryByLabelText("Display name for the Simple tier")).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Name for tier 1")).toBeInTheDocument();
+    expect(screen.queryByLabelText("简单层级的显示名称")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("第 1 个层级的名称")).toBeInTheDocument();
   });
 
   it("drops the scorer card entirely once an edited tier set replaces the heuristic", async () => {
@@ -1653,7 +1653,7 @@ describe("ComplexityRouterConfig tier editing", () => {
       },
     };
     renderEditor(missingDefinition, { showValidationErrors: true });
-    expect(screen.getByText("A definition is required", { exact: false })).toBeInTheDocument();
+    expect(screen.getByText("必须提供定义", { exact: false })).toBeInTheDocument();
   });
 
   it("keeps Done disabled while a row is incomplete and says what is missing", async () => {
@@ -1665,22 +1665,22 @@ describe("ComplexityRouterConfig tier editing", () => {
       },
     };
     renderEditor(incomplete);
-    expect(screen.getByRole("button", { name: "Done" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "完成" })).toBeDisabled();
   });
 
   it("enables Done once every row carries a name, a definition and a model", async () => {
     renderEditor(customValue);
-    expect(screen.getByRole("button", { name: "Done" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "完成" })).toBeEnabled();
   });
 
   it("refuses to remove a row that would take the set below the backend's minimum", async () => {
     renderEditor(customValue);
-    expect(screen.getByRole("button", { name: "Remove the CASUAL tier" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "移除CASUAL层级" })).toBeDisabled();
   });
 
   it("keeps a definition on one line, because the backend rejects a newline in it", async () => {
     const { committed } = renderEditor(customValue);
-    fireEvent.change(screen.getByLabelText("Definition for tier 2"), { target: { value: "audits\nand reviews" } });
+    fireEvent.change(screen.getByLabelText("第 2 个层级的定义"), { target: { value: "audits\nand reviews" } });
     const next = committed();
     expect(next.custom_tier_set?.tiers[1].definition).toBe("audits and reviews");
   });
@@ -1697,7 +1697,7 @@ describe("ComplexityRouterConfig tier editing", () => {
         onEditingTiersChange={vi.fn()}
       />,
     );
-    fireEvent.change(screen.getByLabelText("Name for tier 2"), { target: { value: "AUDIT" } });
+    fireEvent.change(screen.getByLabelText("第 2 个层级的名称"), { target: { value: "AUDIT" } });
     expect(onKeywordTierRulesChange).toHaveBeenCalledWith([{ id: "r1", keywords: ["audit"], tier: "AUDIT" }]);
   });
 
@@ -1713,7 +1713,7 @@ describe("ComplexityRouterConfig tier editing", () => {
       },
     };
     const { committed } = renderEditor(threeRows);
-    fireEvent.click(screen.getByRole("button", { name: "Remove the SECURITY_REVIEW tier" }));
+    fireEvent.click(screen.getByRole("button", { name: "移除SECURITY_REVIEW层级" }));
     const next = committed();
     expect(next.custom_tier_set?.tiers.some((row) => row.id === next.custom_tier_set?.fallback_tier_id)).toBe(true);
   });
@@ -1731,15 +1731,15 @@ describe("ComplexityRouterConfig tier editing", () => {
       },
     };
     const { committed } = renderEditor(withFloor);
-    fireEvent.click(screen.getByRole("button", { name: "Remove the SECURITY_REVIEW tier" }));
+    fireEvent.click(screen.getByRole("button", { name: "移除SECURITY_REVIEW层级" }));
     expect(committed().plan_mode_min_tier).toBeUndefined();
   });
 
   it("replaces the display-name inputs with the reason an edited tier set forbids them", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={customValue} onEditingTiersChange={vi.fn()} />);
-    expect(screen.queryByLabelText("Display name for the Simple tier")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("简单层级的显示名称")).not.toBeInTheDocument();
     expect(screen.getByText("Display names rename the built-in tiers", { exact: false })).toBeInTheDocument();
-    expect(screen.getByLabelText("Fallback tier")).toBeInTheDocument();
+    expect(screen.getByLabelText("回退层级")).toBeInTheDocument();
   });
 
   it("disables the once-per-session frequency and says why, rather than letting a stripped value look saved", async () => {
@@ -1801,7 +1801,7 @@ describe("ComplexityRouterConfig tier editing", () => {
 
   it("leaves built-in routers with their display-name inputs and no restriction copy", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} onEditingTiersChange={vi.fn()} />);
-    expect(screen.getByLabelText("Display name for the Simple tier")).toBeInTheDocument();
+    expect(screen.getByLabelText("简单层级的显示名称")).toBeInTheDocument();
     expect(screen.queryByText("Display names rename the built-in tiers", { exact: false })).not.toBeInTheDocument();
   });
 });

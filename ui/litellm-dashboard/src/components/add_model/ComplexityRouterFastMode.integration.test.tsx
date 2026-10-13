@@ -22,7 +22,7 @@ it.each([false, true])("edits and round-trips independent model settings with cu
   const user = userEvent.setup();
   const tier = custom ? "custom-a" : "COMPLEX";
   const otherTier = custom ? "custom-b" : "REASONING";
-  const label = custom ? "Interactive" : "Complex";
+  const label = custom ? "Interactive" : "复杂";
   const models = ["primary", "secondary", "blocked", "missing"];
   const initial: ComplexityRouterConfigValue = {
     tiers: { SIMPLE: [], MEDIUM: [], COMPLEX: models, REASONING: ["primary"] },
@@ -105,7 +105,7 @@ it.each([false, true])("edits and round-trips independent model settings with cu
   view.rerender(editor(disabled));
   expect(fast()).not.toBeChecked();
 
-  const picker = () => screen.getByRole("combobox", { name: `Select model(s) for ${label.toLowerCase()} queries` });
+  const picker = () => screen.getByRole("combobox", { name: `为${label}层级选择模型` });
   await user.click(picker());
   await user.click(await screen.findByRole("option", { name: "primary" }));
   await user.keyboard("{Escape}");
@@ -217,9 +217,9 @@ it.each(["MEDIUM", "REASONING"])("clears a legacy Capability pool while reconcil
   const onChange = vi.fn<(value: ComplexityRouterConfigValue) => void>();
   renderWithProviders(<ComplexityRouterConfig modelInfo={modelInfo} value={value} onChange={onChange} />);
   openAutoRouterAdvanced("Keyword/Semantic Matching");
-  expect(screen.getByRole("switch", { name: "Medium路由池 层级中 secondary 的快速模式" })).toBeChecked();
+  expect(screen.getByRole("switch", { name: "中等路由池 层级中 secondary 的快速模式" })).toBeChecked();
   expect(onChange).not.toHaveBeenCalled();
-  await user.click(screen.getByRole("combobox", { name: "选择Medium路由池模型" }));
+  await user.click(screen.getByRole("combobox", { name: "选择中等路由池模型" }));
   await user.click(await screen.findByRole("option", { name: "secondary" }));
   await user.keyboard("{Escape}");
   const cleared = onChange.mock.lastCall![0];
@@ -292,5 +292,5 @@ it.each(["capability", "llm_v2"] as const)("offers only populated keyword target
   expect(rules[0].tier).toBe("SIMPLE");
   view.rerender(editor(rules));
   await user.click(screen.getByRole("combobox", { name: "将关键词规则 1 路由到层级" }));
-  expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual(["Simple", "Reasoning"]);
+  expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual(["简单", "推理"]);
 });
