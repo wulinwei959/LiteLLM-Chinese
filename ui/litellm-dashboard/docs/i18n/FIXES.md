@@ -306,6 +306,18 @@ projects（82）、prompts（56）、agents（55）、cost-tracking（36）四�
 | `guardrails/_components/custom_code/CustomCodeModal.tsx` | 名称输入框 placeholder `e.g., block-pii-custom` | 已修（本次提交） |
 | `guardrails/_components/TeamGuardrailsTab.tsx` | 提交弹窗的 `https://your-guardrail-api.com/v1/check`、两个 JSON 示例 placeholder 与"等效配置"YAML 片段 | 已修（本次提交）。YAML 注释接入 `t()`；示例 URL 与 JSON 示例值保留英文 |
 
+批次 24 扫 `add_model` / `edit_auto_router` 时又实测到五处残留硬编码英文，均已在 `63c381eb` 接入 `t()` 并把断言同步中文
+
+| 文件 | 硬编码内容 | 状态 |
+| ---- | ---------- | ---- |
+| `add_model/RouterConfigBuilder.tsx` | `serializeRouterConfig` 在路由缺模型时 `throw new Error("Please select a model for every route")`，经 `edit_auto_router_modal` 的 `handleSubmit` catch 走 `toast.fromError`，英文直接进弹窗 | 已修 `63c381eb`。`serializeRouterConfig(t, config)` 首参翻译器，键 `routerRouteModelRequired` |
+| `edit_auto_router/edit_auto_router_modal.tsx` | 第二处保存成功 `toast.success("Auto router configuration updated successfully")` 漏改（同文件另一处已接 `editModalSaved`） | 已修 `63c381eb` |
+| `add_model/auto_router_connection_test.tsx` | `role="status"` 的 `aria-label="Jev connection"` | 已修 `63c381eb`，键 `connJevStatusLabel` |
+| `add_model/cache_control_settings.tsx` | 角色下拉的 `<SelectItem value={null}>None</SelectItem>` | 已修 `63c381eb`，键 `cacheControlNone` |
+| `add_model/handle_add_model_submit.tsx` | 两处 JSON 解析失败 `throw new Error("Failed to parse litellm_extra_params: " + error)`，内层 toast 已翻，但外层 catch 的 `{ suffix: 占位 error}` 会把英文再拼进 toast | 已修 `63c381eb`，改用 `failedParseExtraParams` |
+
+`serializeRouterConfig` 是纯函数，调用点只有 `edit_auto_router_modal` 一处，加首参翻译器即可，注意它的单测 `RouterConfigBuilder.test.ts` 同步改 `serializeRouterConfig(t, ...)` 与中文断言。`handle_add_model_submit` 那条要注意双 toast：139/155 行先 `toast.fromError(t("failedParseExtraParams", ...))` 再 throw，外层 catch 又 `t("failedToCreateModel", { suffix: 占位 error })`；把 throw 的文案也换成 `failedParseExtraParams` 后两条 toast 才都全中文
+
 guardrails 这一轮定了一条翻译边界：面向读者的散文（标签、注释、公式、空态）翻，机器可读的样例不翻。保留英文的四类：`usageUnits.ts` 的 `pricingIssueUrl`（预填 GitHub feature request，`title`/`the-feature` 面向上游维护者）、`TeamGuardrailsTab` 的示例 URL `https://your-guardrail-api.com/v1/check` 与两段 JSON 示例 placeholder、`CustomCodeModal` 的 Python 模板与 `{"texts": [...]}` placeholder、YAML 片段里的配置值（`fail_closed`、`os.environ/...`）。与 `TeamInfo.tsx` 的 `{"gpt-4": 4096}` 同一处理，改动时不要顺手翻
 
 分页脚这一行对应两个文件：公开的 `public_model_hub.tsx` 与登录后的 `AIHub/ModelHubTable.tsx`，`Showing {n} of {m} ...` 各写了一份，改了一处必须搜另一处。三个键进新的 `modelHub` 命名空间，英文侧用 ICU plural（`one {# agent} other {# agents}`），中文侧直接写 `{shown}` 与 `{total}`，不加 plural。注意两个组件其余文案仍是英文，`modelHub` 只覆盖这三条脚注，批次 24 扫到这两个文件之前，这两页是混语状态
