@@ -147,7 +147,7 @@ it.each(["capability", "llm_v2"] as const)("preserves Fast mode controls for %s 
     <ComplexityRouterConfig modelInfo={modelInfo} value={value} onChange={onChange} />
   );
   const view = renderWithProviders(editor(initial));
-  const fast = () => screen.getByRole("switch", { name: "Efficient solver 层级中 primary 的快速模式" });
+  const fast = () => screen.getByRole("switch", { name: "高效求解器 层级中 primary 的快速模式" });
   expect(screen.getAllByRole("switch", { name: /的快速模式/ })).toHaveLength(1);
   expect(fast()).not.toBeChecked();
   await user.click(fast());
@@ -217,9 +217,9 @@ it.each(["MEDIUM", "REASONING"])("clears a legacy Capability pool while reconcil
   const onChange = vi.fn<(value: ComplexityRouterConfigValue) => void>();
   renderWithProviders(<ComplexityRouterConfig modelInfo={modelInfo} value={value} onChange={onChange} />);
   openAutoRouterAdvanced("Keyword/Semantic Matching");
-  expect(screen.getByRole("switch", { name: "Medium routing pool 层级中 secondary 的快速模式" })).toBeChecked();
+  expect(screen.getByRole("switch", { name: "Medium路由池 层级中 secondary 的快速模式" })).toBeChecked();
   expect(onChange).not.toHaveBeenCalled();
-  await user.click(screen.getByRole("combobox", { name: "Select medium routing pool models" }));
+  await user.click(screen.getByRole("combobox", { name: "选择Medium路由池模型" }));
   await user.click(await screen.findByRole("option", { name: "secondary" }));
   await user.keyboard("{Escape}");
   const cleared = onChange.mock.lastCall![0];

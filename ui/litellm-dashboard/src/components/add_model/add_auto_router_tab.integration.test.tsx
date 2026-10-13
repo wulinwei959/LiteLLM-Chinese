@@ -199,16 +199,16 @@ describe("AddAutoRouterTab", () => {
     renderWithProviders(<Harness />);
     await waitForAutomaticTiers();
     await userEvent.click(screen.getByRole("radio", { name: "决策模型" }));
-    expect(screen.queryByLabelText("Classifier Model")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("分类器模型")).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
     expect(screen.queryByRole("option", { name: ALL_FAMILY_MODELS[0].model_group })).not.toBeInTheDocument();
     await userEvent.click(await screen.findByRole("option", { name: "my-decision" }));
     expect(screen.queryByRole("button", { name: "路由方式" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Choose models for me" })).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Classifier Timeout (ms)")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("分类器超时（毫秒）")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
     await userEvent.click(screen.getByRole("button", { name: "Advanced classifier settings" }));
-    fireEvent.change(screen.getByLabelText("Classifier Timeout (ms)"), { target: { value: "4200" } });
+    fireEvent.change(screen.getByLabelText("分类器超时（毫秒）"), { target: { value: "4200" } });
     fireEvent.change(screen.getByLabelText("上下文窗口大小"), { target: { value: "5" } });
     await selectAutoRouterOption("How often to classify", "Every new user message");
     await userEvent.click(screen.getByRole("button", { name: "Advanced classifier settings" }));
@@ -521,14 +521,12 @@ describe("AddAutoRouterTab", () => {
       expect(screen.queryByText("分类方法")).not.toBeInTheDocument();
       expect(screen.queryByText("自适应路由")).not.toBeInTheDocument();
       const capability = label === "Capability";
-      for (const [role, model] of [
-        ["Efficient", "efficient"],
-        ["Capable", "capable"],
+      for (const [model, solverLabel] of [
+        ["efficient", "高效求解器"],
+        ["capable", "能力求解器"],
       ]) {
         await user.click(
-          screen.getByRole("combobox", {
-            name: capability ? `Select ${role.toLowerCase()} solver models` : `${role} solver`,
-          }),
+          screen.getByRole("combobox", { name: capability ? `选择${solverLabel}模型` : solverLabel }),
         );
         await user.click(await screen.findByRole("option", { name: model, exact: true }));
         if (capability) await user.keyboard("{Escape}");
@@ -537,12 +535,12 @@ describe("AddAutoRouterTab", () => {
       await user.click(await screen.findByRole("option", { name: "judge", exact: true }));
       expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeDisabled();
       if (capability) {
-        fireEvent.change(screen.getByLabelText("Solve probability threshold"), { target: { value: "0.7" } });
+        fireEvent.change(screen.getByLabelText("求解成功概率阈值"), { target: { value: "0.7" } });
       } else {
-        fireEvent.change(screen.getByLabelText("Efficient solver profile"), { target: { value: "Small solver" } });
-        fireEvent.change(screen.getByLabelText("Capable solver profile"), { target: { value: "Large solver" } });
-        fireEvent.change(screen.getByLabelText("Harness and budget"), { target: { value: "One attempt" } });
-        fireEvent.change(screen.getByLabelText("Maximum quality gap"), { target: { value: "0.05" } });
+        fireEvent.change(screen.getByLabelText("高效求解器配置档案"), { target: { value: "Small solver" } });
+        fireEvent.change(screen.getByLabelText("能力求解器配置档案"), { target: { value: "Large solver" } });
+        fireEvent.change(screen.getByLabelText("Harness 与预算"), { target: { value: "One attempt" } });
+        fireEvent.change(screen.getByLabelText("最大质量差距"), { target: { value: "0.05" } });
       }
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
       await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
@@ -613,7 +611,7 @@ describe("AddAutoRouterTab", () => {
       await selectAutoRouterApproach(label);
       await user.type(screen.getByLabelText("Auto Router Name"), "forecast-retry");
       const capability = label === "Capability";
-      const policyField = capability ? "Solve probability threshold" : "Efficient solver profile";
+      const policyField = capability ? "求解成功概率阈值" : "高效求解器配置档案";
       fireEvent.change(screen.getByLabelText(policyField), {
         target: { value: capability ? "0.7" : "Small solver" },
       });

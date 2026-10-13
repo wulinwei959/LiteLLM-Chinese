@@ -1,4 +1,5 @@
 import React, { useId } from "react";
+import { useTranslations } from "next-intl";
 import { AutoRouterAllowanceNote } from "./AutoRouterAvailability";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ export default function JevClassifierConfig({
   onChange: (value: ComplexityRouterConfigValue) => void;
   section?: "all" | "model" | "advanced";
 }) {
+  const t = useTranslations("models.addModel");
   const id = useId();
   const config = value.jev_classifier_config ?? defaultJevClassifierConfig();
   const update = (patch: Partial<typeof config>) =>
@@ -26,11 +28,9 @@ export default function JevClassifierConfig({
     <div className={section === "model" ? "space-y-3" : "mt-4 space-y-3"}>
       {section !== "advanced" && !config.deployment_name && (
         <>
-          <p className="text-sm text-muted-foreground">
-            Uses TypeSafe System One Choice evaluation with your configured tiers
-          </p>
+          <p className="text-sm text-muted-foreground">{t("jevIntro")}</p>
           <div className="space-y-2">
-            <Label htmlFor={`${id}-model`}>Classifier Model</Label>
+            <Label htmlFor={`${id}-model`}>{t("jevClassifierModelLabel")}</Label>
             <Input
               id={`${id}-model`}
               value={config.model}
@@ -42,7 +42,7 @@ export default function JevClassifierConfig({
       {section !== "model" && (
         <>
           <div className="space-y-2">
-            <Label htmlFor={`${id}-timeout`}>Classifier Timeout (ms)</Label>
+            <Label htmlFor={`${id}-timeout`}>{t("jevClassifierTimeoutLabel")}</Label>
             <Input
               id={`${id}-timeout`}
               type="number"
@@ -62,25 +62,23 @@ export default function JevClassifierConfig({
             }
           />
           <div className="space-y-2">
-            <Label htmlFor={`${id}-instructions`}>Classifier Instructions</Label>
+            <Label htmlFor={`${id}-instructions`}>{t("jevInstructionsLabel")}</Label>
             <AutoRouterAllowanceNote
               feature="tier_or_classifier_prompt"
-              label="Custom instructions share the custom-tier allowance"
+              label={t("jevAllowanceLabel")}
             />
             <Textarea
               id={`${id}-instructions`}
               value={config.instructions ?? ""}
-              placeholder="Leave blank to use the built-in instructions"
+              placeholder={t("jevInstructionsPlaceholder")}
               onChange={(event) => update({ instructions: event.target.value || undefined })}
             />
             {config.instructions && (
               <Button variant="outline" type="button" onClick={() => update({ instructions: undefined })}>
-                Restore built-in instructions
+                {t("jevRestoreInstructions")}
               </Button>
             )}
-            <p className="text-xs text-muted-foreground">
-              Built-in decision model classification is available without a license and uses the shipped tier criteria
-            </p>
+            <p className="text-xs text-muted-foreground">{t("jevBuiltInNote")}</p>
           </div>
         </>
       )}

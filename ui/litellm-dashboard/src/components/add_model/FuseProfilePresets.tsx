@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { $api } from "@/lib/http/api";
 import { SearchSelect } from "@/components/shared/SearchSelect";
 import { Button } from "@/components/ui/button";
@@ -20,11 +21,11 @@ const catalogQueryOptions = {
   refetchOnReconnect: false,
 };
 
-const profileLabels: Readonly<Record<FuseProfileField, string>> = {
-  efficient_profile: "Efficient solver profile",
-  capable_profile: "Capable solver profile",
-  harness: "Harness and budget",
-};
+const PROFILE_LABEL_KEYS = {
+  efficient_profile: "efficientSolverProfile",
+  capable_profile: "capableSolverProfile",
+  harness: "harnessProfile",
+} as const;
 
 type FusePresetEntry = {
   id: string;
@@ -45,10 +46,14 @@ type FieldProps = {
   setCustomWithoutPreview: React.Dispatch<React.SetStateAction<ReadonlySet<FuseProfileField>>>;
 };
 
-const profileSelectionLabel = (awaitingCustomText: boolean, custom: boolean): string => {
-  if (awaitingCustomText) return "Saved preset remains active until replacement text is entered";
-  if (custom) return "Custom text overrides preset";
-  return "Preset";
+const profileSelectionLabel = (
+  t: ReturnType<typeof useTranslations<"models.addModel">>,
+  awaitingCustomText: boolean,
+  custom: boolean,
+): string => {
+  if (awaitingCustomText) return t("fuseProfileSelectionAwaiting");
+  if (custom) return t("fuseProfileSelectionCustom");
+  return t("fuseProfileSelectionPreset");
 };
 
 function FuseProfilePresetField({
@@ -61,13 +66,14 @@ function FuseProfilePresetField({
   customWithoutPreview,
   setCustomWithoutPreview,
 }: FieldProps) {
-  const label = profileLabels[field];
+  const t = useTranslations("models.addModel");
+  const label = t(PROFILE_LABEL_KEYS[field]);
   const presetId = value[`${field}_preset`];
   const preset = presets?.find((entry) => entry.id === presetId);
   const awaitingCustomText = customWithoutPreview.has(field) && value[field] == null && presetId != null;
   const custom = value[field] != null || presetId == null || awaitingCustomText;
   const effectiveText = value[field] ?? preset?.text ?? "";
-  const selectionLabel = profileSelectionLabel(awaitingCustomText, custom);
+  const selectionLabel = profileSelectionLabel(t, awaitingCustomText, custom);
   const chooseProfile = (selected: string | null) => {
     if (!selected) return;
     const missingPreview = presetId != null && preset == null && value[field] == null;
@@ -91,21 +97,18 @@ function FuseProfilePresetField({
     setCustomWithoutPreview((fields) => new Set([...fields].filter((entry) => entry !== field)));
     onChange(selectFuseProfile(value, field, presetId, ""));
   };
-  const placeholder =
-    field === "harness"
-      ? "Tools, execution environment, verification, and budget available to each solver"
-      : "Describe this solver's strengths, limitations, and settings";
+  const placeholder = field === "harness" ? t("fusePlaceholderHarness") : t("fusePlaceholderSolver");
 
   return (
     <div className="space-y-2 min-w-0">
-      <Label htmlFor={`${id}-${field}-preset`}>{label} preset</Label>
+      <Label htmlFor={`${id}-${field}-preset`}>{t("fuseProfilePreset", { label })}</Label>
       <SearchSelect
         inputId={`${id}-${field}-preset`}
-        aria-label={`${label} preset`}
+        aria-label={t("fuseProfilePreset", { label })}
         value={custom ? "custom" : presetId}
         allowClear={false}
         options={[
-          { value: "custom", label: "Custom" },
+          { value: "custom", label: t("fuseCustomOption") },
           ...(presets ?? []).map((entry) => ({ value: entry.id, label: entry.label, sublabel: entry.id })),
         ]}
         onValueChange={chooseProfile}
@@ -124,10 +127,10 @@ function FuseProfilePresetField({
           type="button"
           variant="outline"
           size="sm"
-          aria-label={`Keep saved ${label.toLowerCase()} preset`}
+          aria-label={t("keepSavedPresetAria", { label: label.toLowerCase() })}
           onClick={keepSavedPreset}
         >
-          Keep saved preset
+          {t("keepSavedPreset")}
         </Button>
       )}
       {presetId && (
@@ -137,18 +140,18 @@ function FuseProfilePresetField({
           </p>
           {preset ? (
             <>
-              <p>Catalog version: {catalogVersion}</p>
-              {preset.model && <p>Model: {preset.model}</p>}
+              <p>{t("catalogVersionLabel", { version: catalogVersion ?? "" })}</p>
+              {preset.model && <p>{t("fuseModelLabel", { model: preset.model })}</p>}
               <div className="flex flex-wrap gap-x-3 gap-y-1">
                 {preset.sources.map((source, index) => (
                   <a key={source} href={source} target="_blank" rel="noopener noreferrer" className="underline">
-                    Source {index + 1}
+                    {t("fuseSourceLink", { index: index + 1 })}
                   </a>
                 ))}
               </div>
             </>
           ) : (
-            <p>Preset preview unavailable. The saved reference is preserved</p>
+            <p>{t("presetPreviewUnavailable")}</p>
           )}
         </div>
       )}
@@ -163,6 +166,7 @@ export default function FuseProfilePresets({
   value: FuseSettings;
   onChange: (value: FuseSettings) => void;
 }) {
+  const t = useTranslations("models.addModel");
   const id = React.useId();
   const [customWithoutPreview, setCustomWithoutPreview] = React.useState<ReadonlySet<FuseProfileField>>(
     () => new Set(),
@@ -175,20 +179,12 @@ export default function FuseProfilePresets({
   );
   return (
     <div className="space-y-4 min-w-0">
-      <p className="text-xs text-muted-foreground">
-        Choose profiles that match every deployment in each solver group and its actual settings. Profile selection is
-        independent of routing model names. Presets describe the solvers and runtime; they do not set a quality gap or
-        calibration. Validate those separately for your workload, judge, and exact profile versions.
-      </p>
+      <p className="text-xs text-muted-foreground">{t("fuseProfileHelp")}</p>
       {isPending && (
-        <p role="status" className="text-xs text-muted-foreground">
-          Loading profile presets. Custom editing is available
-        </p>
+        <p role="status" className="text-xs text-muted-foreground">{t("loadingProfilePresets")}</p>
       )}
       {isError && (
-        <p role="status" className="text-xs text-muted-foreground">
-          Profile presets could not be loaded. Saved references are preserved and Custom editing is available
-        </p>
+        <p role="status" className="text-xs text-muted-foreground">{t("profilePresetsLoadFailed")}</p>
       )}
       {fuseProfileFields.map((field) => (
         <FuseProfilePresetField
