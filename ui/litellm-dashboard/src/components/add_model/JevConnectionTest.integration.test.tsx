@@ -109,8 +109,8 @@ describe("JEV network probes", () => {
       expect(screen.getAllByTestId("test-status-success")).toHaveLength(4);
       expect(screen.getByRole("status", { name: "Jev connection" })).toHaveTextContent(
         cause === "jev_classifier"
-          ? "Jev classification succeeded"
-          : `Jev was not reached successfully (routing cause: ${cause})`,
+          ? "Jev 分类成功"
+          : `未能成功访问 Jev（路由原因：${cause}）`,
       );
     },
   );
