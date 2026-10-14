@@ -1,7 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import OrganizationDropdown from "./OrganizationDropdown";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 const MOCK_ORGS = [
   {
@@ -32,13 +33,13 @@ const MOCK_ORGS = [
 
 describe("OrganizationDropdown", () => {
   it("should render", () => {
-    render(<OrganizationDropdown organizations={MOCK_ORGS} />);
+    renderWithProviders(<OrganizationDropdown organizations={MOCK_ORGS} />);
     expect(screen.getByRole("combobox")).toBeInTheDocument();
   });
 
   it("should display organization options when opened", async () => {
     const user = userEvent.setup();
-    render(<OrganizationDropdown organizations={MOCK_ORGS} />);
+    renderWithProviders(<OrganizationDropdown organizations={MOCK_ORGS} />);
 
     await user.click(screen.getByRole("combobox"));
 
@@ -49,7 +50,7 @@ describe("OrganizationDropdown", () => {
   it("should call onChange with the org id when an organization is selected", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    render(<OrganizationDropdown organizations={MOCK_ORGS} onChange={onChange} />);
+    renderWithProviders(<OrganizationDropdown organizations={MOCK_ORGS} onChange={onChange} />);
 
     await user.click(screen.getByRole("combobox"));
     await user.click(await screen.findByText("Engineering"));
@@ -61,7 +62,7 @@ describe("OrganizationDropdown", () => {
   it("emits null, never the empty string, when the selection is cleared", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    render(<OrganizationDropdown organizations={MOCK_ORGS} value="org-1" onChange={onChange} />);
+    renderWithProviders(<OrganizationDropdown organizations={MOCK_ORGS} value="org-1" onChange={onChange} />);
 
     await user.click(screen.getByRole("button", { name: "Clear" }));
 
@@ -71,7 +72,7 @@ describe("OrganizationDropdown", () => {
 
   it("should filter options by organization id", async () => {
     const user = userEvent.setup();
-    render(<OrganizationDropdown organizations={MOCK_ORGS} />);
+    renderWithProviders(<OrganizationDropdown organizations={MOCK_ORGS} />);
 
     await user.click(screen.getByRole("combobox"));
     fireEvent.change(screen.getByRole("combobox"), { target: { value: "org-2" } });
@@ -82,7 +83,7 @@ describe("OrganizationDropdown", () => {
 
   it("should not open the option list when disabled prop is true", async () => {
     const user = userEvent.setup();
-    render(<OrganizationDropdown organizations={MOCK_ORGS} disabled={true} />);
+    renderWithProviders(<OrganizationDropdown organizations={MOCK_ORGS} disabled={true} />);
 
     await user.click(screen.getByRole("combobox"));
 
@@ -90,7 +91,7 @@ describe("OrganizationDropdown", () => {
   });
 
   it("should render with empty organizations list", () => {
-    render(<OrganizationDropdown organizations={[]} />);
+    renderWithProviders(<OrganizationDropdown organizations={[]} />);
     expect(screen.getByRole("combobox")).toBeInTheDocument();
   });
 });

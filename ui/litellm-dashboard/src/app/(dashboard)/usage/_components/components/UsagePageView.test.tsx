@@ -891,7 +891,7 @@ describe("UsagePage", () => {
       });
 
       expect(userSelectCombobox()).toBeInTheDocument();
-      expect(promptsWith("Search users by email…")).toBe(true);
+      expect(promptsWith("按邮箱搜索用户…")).toBe(true);
     });
 
     it("should format user options with alias when available", async () => {

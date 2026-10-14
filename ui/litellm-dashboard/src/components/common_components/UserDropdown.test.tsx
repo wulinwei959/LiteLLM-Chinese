@@ -1,9 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useInfiniteUsers, useUserLookup } from "@/app/(dashboard)/hooks/users/useUsers";
 import type { UserInfo } from "@/components/networking";
 import UserDropdown, { userOptionLabel } from "./UserDropdown";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 vi.mock("@/app/(dashboard)/hooks/users/useUsers", () => ({
   useInfiniteUsers: vi.fn(),
@@ -63,20 +64,20 @@ describe("UserDropdown", () => {
   const combobox = () => screen.getByRole("combobox");
 
   it("queries the first page of users with no search term", () => {
-    render(<UserDropdown onChange={vi.fn()} />);
+    renderWithProviders(<UserDropdown onChange={vi.fn()} />);
 
     expect(mockUseInfiniteUsers).toHaveBeenCalledWith(50, undefined);
   });
 
   it("forwards the pageSize prop to the users query", () => {
-    render(<UserDropdown onChange={vi.fn()} pageSize={25} />);
+    renderWithProviders(<UserDropdown onChange={vi.fn()} pageSize={25} />);
 
     expect(mockUseInfiniteUsers).toHaveBeenCalledWith(25, undefined);
   });
 
   it("sends the typed query to the server instead of narrowing the loaded page", async () => {
     const user = userEvent.setup();
-    render(<UserDropdown onChange={vi.fn()} />);
+    renderWithProviders(<UserDropdown onChange={vi.fn()} />);
 
     await user.click(combobox());
     fireEvent.change(combobox(), { target: { value: "alice" } });
@@ -87,7 +88,7 @@ describe("UserDropdown", () => {
 
   it("labels a user by alias, falling back to email and then the bare id", async () => {
     const user = userEvent.setup();
-    render(<UserDropdown onChange={vi.fn()} />);
+    renderWithProviders(<UserDropdown onChange={vi.fn()} />);
 
     await user.click(combobox());
 
@@ -103,7 +104,7 @@ describe("UserDropdown", () => {
       }),
     );
     const user = userEvent.setup();
-    render(<UserDropdown onChange={vi.fn()} />);
+    renderWithProviders(<UserDropdown onChange={vi.fn()} />);
 
     await user.click(combobox());
 
@@ -115,7 +116,7 @@ describe("UserDropdown", () => {
     const fetchNextPage = vi.fn();
     mockUseInfiniteUsers.mockReturnValue(mockUsersResult({ fetchNextPage, hasNextPage: true }));
     const user = userEvent.setup();
-    render(<UserDropdown onChange={vi.fn()} />);
+    renderWithProviders(<UserDropdown onChange={vi.fn()} />);
 
     await user.click(combobox());
     const list = await screen.findByTestId("paginated-search-select-list");
@@ -133,7 +134,7 @@ describe("UserDropdown", () => {
     const fetchNextPage = vi.fn();
     mockUseInfiniteUsers.mockReturnValue(mockUsersResult({ fetchNextPage, hasNextPage: false }));
     const user = userEvent.setup();
-    const { unmount } = render(<UserDropdown onChange={vi.fn()} />);
+    const { unmount } = renderWithProviders(<UserDropdown onChange={vi.fn()} />);
 
     await user.click(combobox());
     setListMetrics(await screen.findByTestId("paginated-search-select-list"), {
@@ -148,7 +149,7 @@ describe("UserDropdown", () => {
     mockUseInfiniteUsers.mockReturnValue(
       mockUsersResult({ fetchNextPage, hasNextPage: true, isFetchingNextPage: true }),
     );
-    render(<UserDropdown onChange={vi.fn()} />);
+    renderWithProviders(<UserDropdown onChange={vi.fn()} />);
 
     await user.click(combobox());
     setListMetrics(await screen.findByTestId("paginated-search-select-list"), {
@@ -163,7 +164,7 @@ describe("UserDropdown", () => {
   it("reports the picked user id to onChange", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    render(<UserDropdown onChange={onChange} />);
+    renderWithProviders(<UserDropdown onChange={onChange} />);
 
     await user.click(combobox());
     await user.click(screen.getByText("bob@example.com (user-2)"));
@@ -175,7 +176,7 @@ describe("UserDropdown", () => {
   it("reports null to onChange when the selection is cleared", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    render(<UserDropdown onChange={onChange} value="user-1" />);
+    renderWithProviders(<UserDropdown onChange={onChange} value="user-1" />);
 
     await user.click(document.querySelector('[data-slot="combobox-clear"]') as HTMLElement);
 
@@ -183,7 +184,7 @@ describe("UserDropdown", () => {
   });
 
   it("shows the label of the user passed in value", () => {
-    render(<UserDropdown onChange={vi.fn()} value="user-1" />);
+    renderWithProviders(<UserDropdown onChange={vi.fn()} value="user-1" />);
 
     expect(combobox()).toHaveValue("Alice Admin (user-1)");
     expect(mockUseUserLookup).toHaveBeenLastCalledWith(null);
@@ -192,14 +193,14 @@ describe("UserDropdown", () => {
   it("looks up a selected user that is not on the loaded page so its label still shows", () => {
     const OFF_PAGE = userRow("user-99", { user_alias: "Zed Offpage" });
     mockUseUserLookup.mockReturnValue(mockLookupResult(OFF_PAGE));
-    render(<UserDropdown onChange={vi.fn()} value="user-99" />);
+    renderWithProviders(<UserDropdown onChange={vi.fn()} value="user-99" />);
 
     expect(mockUseUserLookup).toHaveBeenLastCalledWith("user-99");
     expect(combobox()).toHaveValue("Zed Offpage (user-99)");
   });
 
   it("falls back to the bare id while the off-page lookup has not resolved", () => {
-    render(<UserDropdown onChange={vi.fn()} value="user-99" />);
+    renderWithProviders(<UserDropdown onChange={vi.fn()} value="user-99" />);
 
     expect(combobox()).toHaveValue("user-99");
   });

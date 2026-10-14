@@ -1372,7 +1372,7 @@ describe("EntityUsage", () => {
     it("offers a user filter even when the caller preloaded no user page", async () => {
       await renderUserUsage();
 
-      expect(userCombobox()).toHaveAttribute("placeholder", "Search users by email…");
+      expect(userCombobox()).toHaveAttribute("placeholder", "按邮箱搜索用户…");
     });
 
     it("searches every user on the server rather than a preloaded page", async () => {
