@@ -646,24 +646,24 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
       <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
           <DialogHeader>
-            <DialogTitle>{selectedModel?.model_group || "Model Details"}</DialogTitle>
+            <DialogTitle>{selectedModel?.model_group || t("modelDetailsTitle")}</DialogTitle>
           </DialogHeader>
           {selectedModel && (
             <div className="space-y-6">
               {/* Model Overview */}
               <div>
-                <p className="text-lg font-semibold mb-4">Model Overview</p>
+                <p className="text-lg font-semibold mb-4">{t("secModelOverview")}</p>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
-                    <p className="font-medium">Model Group:</p>
+                    <p className="font-medium">{t("lblModelGroup")}</p>
                     <p>{selectedModel.model_group}</p>
                   </div>
                   <div>
-                    <p className="font-medium">Mode:</p>
-                    <p>{selectedModel.mode || "Not specified"}</p>
+                    <p className="font-medium">{t("lblMode")}</p>
+                    <p>{selectedModel.mode || t("notSpecified")}</p>
                   </div>
                   <div>
-                    <p className="font-medium">Providers:</p>
+                    <p className="font-medium">{t("lblProviders")}</p>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {selectedModel.providers.map((provider) => (
                         <Badge key={provider} variant="secondary">
@@ -677,30 +677,30 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
               {/* Token and Cost Information */}
               <div>
-                <p className="text-lg font-semibold mb-4">Token & Cost Information</p>
+                <p className="text-lg font-semibold mb-4">{t("secTokenCost")}</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="font-medium">Max Input Tokens:</p>
-                    <p>{selectedModel.max_input_tokens?.toLocaleString() || "Not specified"}</p>
+                    <p className="font-medium">{t("lblMaxInputTokens")}</p>
+                    <p>{selectedModel.max_input_tokens?.toLocaleString() || t("notSpecified")}</p>
                   </div>
                   <div>
-                    <p className="font-medium">Max Output Tokens:</p>
-                    <p>{selectedModel.max_output_tokens?.toLocaleString() || "Not specified"}</p>
+                    <p className="font-medium">{t("lblMaxOutputTokens")}</p>
+                    <p>{selectedModel.max_output_tokens?.toLocaleString() || t("notSpecified")}</p>
                   </div>
                   <div>
-                    <p className="font-medium">Input Cost per 1M Tokens:</p>
+                    <p className="font-medium">{t("lblInputCostPer1M")}</p>
                     <p>
                       {selectedModel.input_cost_per_token
                         ? formatCost(selectedModel.input_cost_per_token)
-                        : "Not specified"}
+                        : t("notSpecified")}
                     </p>
                   </div>
                   <div>
-                    <p className="font-medium">Output Cost per 1M Tokens:</p>
+                    <p className="font-medium">{t("lblOutputCostPer1M")}</p>
                     <p>
                       {selectedModel.output_cost_per_token
                         ? formatCost(selectedModel.output_cost_per_token)
-                        : "Not specified"}
+                        : t("notSpecified")}
                     </p>
                   </div>
                 </div>
@@ -708,14 +708,14 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
               {/* Capabilities */}
               <div>
-                <p className="text-lg font-semibold mb-4">Capabilities</p>
+                <p className="text-lg font-semibold mb-4">{t("secCapabilities")}</p>
                 <div className="flex flex-wrap gap-2">
                   {(() => {
                     const capabilities = getModelCapabilities(selectedModel);
                     const colors = ["green", "blue", "purple", "orange", "red", "yellow"];
 
                     if (capabilities.length === 0) {
-                      return <p className="text-muted-foreground">No special capabilities listed</p>;
+                      return <p className="text-muted-foreground">{t("noCapabilitiesListed")}</p>;
                     }
 
                     return capabilities.map((capability, index) => (
@@ -730,17 +730,17 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
               {/* Rate Limits */}
               {(selectedModel.tpm || selectedModel.rpm) && (
                 <div>
-                  <p className="text-lg font-semibold mb-4">Rate Limits</p>
+                  <p className="text-lg font-semibold mb-4">{t("secRateLimits")}</p>
                   <div className="grid grid-cols-2 gap-4">
                     {selectedModel.tpm && (
                       <div>
-                        <p className="font-medium">Tokens per Minute:</p>
+                        <p className="font-medium">{t("lblTokensPerMinute")}</p>
                         <p>{selectedModel.tpm.toLocaleString()}</p>
                       </div>
                     )}
                     {selectedModel.rpm && (
                       <div>
-                        <p className="font-medium">Requests per Minute:</p>
+                        <p className="font-medium">{t("lblRequestsPerMinute")}</p>
                         <p>{selectedModel.rpm.toLocaleString()}</p>
                       </div>
                     )}
@@ -751,7 +751,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
               {/* Supported OpenAI Parameters */}
               {selectedModel.supported_openai_params && (
                 <div>
-                  <p className="text-lg font-semibold mb-4">Supported OpenAI Parameters</p>
+                  <p className="text-lg font-semibold mb-4">{t("secSupportedParams")}</p>
                   <div className="flex flex-wrap gap-2">
                     {selectedModel.supported_openai_params.map((param) => (
                       <Badge key={param} variant="default">
@@ -764,7 +764,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
               {/* Usage Example */}
               <div>
-                <p className="text-lg font-semibold mb-4">Usage Example</p>
+                <p className="text-lg font-semibold mb-4">{t("secUsageExample")}</p>
                 <SyntaxHighlighter language="python" className="text-sm" style={syntaxTheme}>
                   {`import openai
 
@@ -795,28 +795,28 @@ print(response.choices[0].message.content)`}
       <Dialog open={isAgentModalVisible} onOpenChange={(open) => !open && handleCancel()}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
           <DialogHeader>
-            <DialogTitle>{selectedAgent?.name || "Agent Details"}</DialogTitle>
+            <DialogTitle>{selectedAgent?.name || t("agentDetailsTitle")}</DialogTitle>
           </DialogHeader>
           {selectedAgent && (
             <div className="space-y-6">
               {/* Agent Overview */}
               <div>
-                <p className="text-lg font-semibold mb-4">Agent Overview</p>
+                <p className="text-lg font-semibold mb-4">{t("secAgentOverview")}</p>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
-                    <p className="font-medium">Name:</p>
+                    <p className="font-medium">{t("lblName")}</p>
                     <p>{selectedAgent.name}</p>
                   </div>
                   <div>
-                    <p className="font-medium">Version:</p>
+                    <p className="font-medium">{t("lblVersion")}</p>
                     <Badge variant="secondary">v{selectedAgent.version}</Badge>
                   </div>
                   <div>
-                    <p className="font-medium">Protocol Version:</p>
+                    <p className="font-medium">{t("lblProtocolVersion")}</p>
                     <p>{selectedAgent.protocolVersion}</p>
                   </div>
                   <div>
-                    <p className="font-medium">URL:</p>
+                    <p className="font-medium">{t("lblUrl")}</p>
                     <div className="flex items-center space-x-2">
                       <p className="truncate min-w-0">{selectedAgent.url}</p>
                       <Copy
@@ -827,7 +827,7 @@ print(response.choices[0].message.content)`}
                   </div>
                 </div>
                 <div>
-                  <p className="font-medium">Description:</p>
+                  <p className="font-medium">{t("lblDescription")}</p>
                   <p className="mt-1">{selectedAgent.description}</p>
                 </div>
               </div>
@@ -835,7 +835,7 @@ print(response.choices[0].message.content)`}
               {/* Capabilities */}
               {selectedAgent.capabilities && Object.keys(selectedAgent.capabilities).length > 0 && (
                 <div>
-                  <p className="text-lg font-semibold mb-4">Capabilities</p>
+                  <p className="text-lg font-semibold mb-4">{t("secCapabilities")}</p>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(selectedAgent.capabilities)
                       .filter(([_, value]) => value === true)
@@ -850,26 +850,26 @@ print(response.choices[0].message.content)`}
 
               {/* Input/Output Modes */}
               <div>
-                <p className="text-lg font-semibold mb-4">Input/Output Modes</p>
+                <p className="text-lg font-semibold mb-4">{t("secIOModes")}</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="font-medium">Input Modes:</p>
+                    <p className="font-medium">{t("lblInputModes")}</p>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {selectedAgent.defaultInputModes?.map((mode) => (
                         <Badge key={mode} variant="secondary">
                           {mode}
                         </Badge>
-                      )) || <p>Not specified</p>}
+                      )) || <p>{t("notSpecified")}</p>}
                     </div>
                   </div>
                   <div>
-                    <p className="font-medium">Output Modes:</p>
+                    <p className="font-medium">{t("lblOutputModes")}</p>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {selectedAgent.defaultOutputModes?.map((mode) => (
                         <Badge key={mode} variant="outline">
                           {mode}
                         </Badge>
-                      )) || <p>Not specified</p>}
+                      )) || <p>{t("notSpecified")}</p>}
                     </div>
                   </div>
                 </div>
@@ -878,7 +878,7 @@ print(response.choices[0].message.content)`}
               {/* Skills */}
               {selectedAgent.skills && selectedAgent.skills.length > 0 && (
                 <div>
-                  <p className="text-lg font-semibold mb-4">Skills</p>
+                  <p className="text-lg font-semibold mb-4">{t("secSkills")}</p>
                   <div className="space-y-4">
                     {selectedAgent.skills.map((skill) => (
                       <div key={skill.id} className="border border-border rounded-sm p-4">
@@ -900,7 +900,7 @@ print(response.choices[0].message.content)`}
                         <p className="text-sm mb-2">{skill.description}</p>
                         {skill.examples && skill.examples.length > 0 && (
                           <div>
-                            <p className="text-xs font-medium text-foreground">Examples:</p>
+                            <p className="text-xs font-medium text-foreground">{t("lblExamples")}</p>
                             <div className="flex flex-wrap gap-1 mt-1">
                               {skill.examples.map((example, idx) => (
                                 <Badge key={idx} variant="outline">
@@ -919,8 +919,8 @@ print(response.choices[0].message.content)`}
               {/* Additional Properties */}
               {selectedAgent.supportsAuthenticatedExtendedCard && (
                 <div>
-                  <p className="text-lg font-semibold mb-4">Additional Features</p>
-                  <Badge variant="default">Supports Authenticated Extended Card</Badge>
+                  <p className="text-lg font-semibold mb-4">{t("secAdditionalFeatures")}</p>
+                  <Badge variant="default">{t("supportsAuthExtendedCard")}</Badge>
                 </div>
               )}
             </div>
@@ -932,20 +932,20 @@ print(response.choices[0].message.content)`}
       <Dialog open={isMcpModalVisible} onOpenChange={(open) => !open && handleCancel()}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
           <DialogHeader>
-            <DialogTitle>{selectedMcpServer?.server_name || "MCP Server Details"}</DialogTitle>
+            <DialogTitle>{selectedMcpServer?.server_name || t("mcpServerDetailsTitle")}</DialogTitle>
           </DialogHeader>
           {selectedMcpServer && (
             <div className="space-y-6">
               {/* Server Overview */}
               <div>
-                <p className="text-lg font-semibold mb-4">Server Overview</p>
+                <p className="text-lg font-semibold mb-4">{t("secServerOverview")}</p>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
-                    <p className="font-medium">Server Name:</p>
+                    <p className="font-medium">{t("lblServerName")}</p>
                     <p>{selectedMcpServer.server_name}</p>
                   </div>
                   <div>
-                    <p className="font-medium">Server ID:</p>
+                    <p className="font-medium">{t("lblServerId")}</p>
                     <div className="flex items-center space-x-2">
                       <p className="text-xs truncate min-w-0">{selectedMcpServer.server_id}</p>
                       <Copy
@@ -956,22 +956,22 @@ print(response.choices[0].message.content)`}
                   </div>
                   {selectedMcpServer.alias && (
                     <div>
-                      <p className="font-medium">Alias:</p>
+                      <p className="font-medium">{t("lblAlias")}</p>
                       <p>{selectedMcpServer.alias}</p>
                     </div>
                   )}
                   <div>
-                    <p className="font-medium">Transport:</p>
+                    <p className="font-medium">{t("lblTransport")}</p>
                     <Badge variant="secondary">{selectedMcpServer.transport}</Badge>
                   </div>
                   <div>
-                    <p className="font-medium">Auth Type:</p>
+                    <p className="font-medium">{t("lblAuthType")}</p>
                     <Badge variant={selectedMcpServer.auth_type === "none" ? "outline" : "default"}>
                       {selectedMcpServer.auth_type}
                     </Badge>
                   </div>
                   <div>
-                    <p className="font-medium">Status:</p>
+                    <p className="font-medium">{t("lblStatus")}</p>
                     <Badge
                       variant={
                         selectedMcpServer.status === "active" || selectedMcpServer.status === "healthy"
@@ -981,13 +981,13 @@ print(response.choices[0].message.content)`}
                             : "outline"
                       }
                     >
-                      {selectedMcpServer.status || "unknown"}
+                      {selectedMcpServer.status || t("unknownStatus")}
                     </Badge>
                   </div>
                 </div>
                 {selectedMcpServer.description && (
                   <div className="mt-2">
-                    <p className="font-medium">Description:</p>
+                    <p className="font-medium">{t("lblDescription")}</p>
                     <p className="mt-1">{selectedMcpServer.description}</p>
                   </div>
                 )}
@@ -995,11 +995,11 @@ print(response.choices[0].message.content)`}
 
               {/* Connection Details */}
               <div>
-                <p className="text-lg font-semibold mb-4">Connection Details</p>
+                <p className="text-lg font-semibold mb-4">{t("secConnectionDetails")}</p>
                 <div className="space-y-2">
                   {selectedMcpServer.command && (
                     <div>
-                      <p className="font-medium">Command:</p>
+                      <p className="font-medium">{t("lblCommand")}</p>
                       <p className="text-sm bg-muted p-2 rounded-sm mt-1 font-mono">{selectedMcpServer.command}</p>
                     </div>
                   )}
@@ -1009,7 +1009,7 @@ print(response.choices[0].message.content)`}
               {/* Tools */}
               {selectedMcpServer.allowed_tools && selectedMcpServer.allowed_tools.length > 0 && (
                 <div>
-                  <p className="text-lg font-semibold mb-4">Allowed Tools</p>
+                  <p className="text-lg font-semibold mb-4">{t("secAllowedTools")}</p>
                   <div className="flex flex-wrap gap-2">
                     {selectedMcpServer.allowed_tools.map((tool, idx) => (
                       <Badge key={idx} variant="outline">
@@ -1023,7 +1023,7 @@ print(response.choices[0].message.content)`}
               {/* Teams */}
               {selectedMcpServer.teams && selectedMcpServer.teams.length > 0 && (
                 <div>
-                  <p className="text-lg font-semibold mb-4">Teams</p>
+                  <p className="text-lg font-semibold mb-4">{t("secTeams")}</p>
                   <div className="flex flex-wrap gap-2">
                     {selectedMcpServer.teams.map((team, idx) => (
                       <Badge key={idx} variant="secondary">
@@ -1037,7 +1037,7 @@ print(response.choices[0].message.content)`}
               {/* Access Groups */}
               {selectedMcpServer.mcp_access_groups && selectedMcpServer.mcp_access_groups.length > 0 && (
                 <div>
-                  <p className="text-lg font-semibold mb-4">Access Groups</p>
+                  <p className="text-lg font-semibold mb-4">{t("secAccessGroups")}</p>
                   <div className="flex flex-wrap gap-2">
                     {selectedMcpServer.mcp_access_groups.map((group, idx) => (
                       <Badge key={idx} variant="default">
@@ -1050,34 +1050,34 @@ print(response.choices[0].message.content)`}
 
               {/* Metadata */}
               <div>
-                <p className="text-lg font-semibold mb-4">Metadata</p>
+                <p className="text-lg font-semibold mb-4">{t("secMetadata")}</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="font-medium">Created By:</p>
+                    <p className="font-medium">{t("lblCreatedBy")}</p>
                     <p>{selectedMcpServer.created_by}</p>
                   </div>
                   <div>
-                    <p className="font-medium">Updated By:</p>
+                    <p className="font-medium">{t("lblUpdatedBy")}</p>
                     <p>{selectedMcpServer.updated_by}</p>
                   </div>
                   <div>
-                    <p className="font-medium">Created At:</p>
+                    <p className="font-medium">{t("lblCreatedAt")}</p>
                     <p className="text-sm">{new Date(selectedMcpServer.created_at).toLocaleString()}</p>
                   </div>
                   <div>
-                    <p className="font-medium">Updated At:</p>
+                    <p className="font-medium">{t("lblUpdatedAt")}</p>
                     <p className="text-sm">{new Date(selectedMcpServer.updated_at).toLocaleString()}</p>
                   </div>
                   {selectedMcpServer.last_health_check && (
                     <div>
-                      <p className="font-medium">Last Health Check:</p>
+                      <p className="font-medium">{t("lblLastHealthCheck")}</p>
                       <p className="text-sm">{new Date(selectedMcpServer.last_health_check).toLocaleString()}</p>
                     </div>
                   )}
                 </div>
                 {selectedMcpServer.health_check_error && (
                   <div className="mt-2 p-2 bg-destructive/10 rounded-sm">
-                    <p className="font-medium text-destructive">Health Check Error:</p>
+                    <p className="font-medium text-destructive">{t("lblHealthCheckError")}</p>
                     <p className="text-sm text-destructive mt-1">{selectedMcpServer.health_check_error}</p>
                   </div>
                 )}
@@ -1085,7 +1085,7 @@ print(response.choices[0].message.content)`}
 
               {/* Usage Example */}
               <div>
-                <p className="text-lg font-semibold mb-4">Usage Example</p>
+                <p className="text-lg font-semibold mb-4">{t("secUsageExample")}</p>
                 <SyntaxHighlighter language="python" className="text-sm" style={syntaxTheme}>
                   {`from fastmcp import Client
 import asyncio

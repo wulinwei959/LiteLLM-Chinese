@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { act } from "@testing-library/react";
 import type { MCPServerData } from "./MCPHubTableColumns";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../../tests/test-utils";
+import { renderWithProviders, screen, waitFor, within } from "../../../tests/test-utils";
 import ModelHubTable from "./ModelHubTable";
 
 const mockUseUISettings = vi.hoisted(() => vi.fn());
@@ -290,6 +290,25 @@ describe("ModelHubTable", () => {
       await renderHub();
 
       expect(screen.getByRole("tablist")).toHaveAttribute("data-variant", "line");
+    });
+
+    it("localizes the model details modal headings, labels and fallbacks", async () => {
+      const { user } = await renderHub();
+
+      await user.click(screen.getByRole("button", { name: "打开模型操作菜单" }));
+      const detailsItem = await screen.findByTestId("model-hub-action-details");
+      await user.click(detailsItem);
+
+      const dialog = await screen.findByRole("dialog");
+      expect(within(dialog).getByText("模型概览")).toBeInTheDocument();
+      expect(within(dialog).getByText("模型组：")).toBeInTheDocument();
+      expect(within(dialog).getByText("Token 与成本信息")).toBeInTheDocument();
+      expect(within(dialog).getByText("最大输入 Token 数：")).toBeInTheDocument();
+      expect(within(dialog).queryByText("支持的 OpenAI 参数")).not.toBeInTheDocument();
+      expect(within(dialog).getByText("能力")).toBeInTheDocument();
+      expect(within(dialog).getByText("未列出特殊能力")).toBeInTheDocument();
+      expect(within(dialog).getByText("使用示例")).toBeInTheDocument();
+      expect(within(dialog).getAllByText("未指定")).toHaveLength(4);
     });
   });
 
