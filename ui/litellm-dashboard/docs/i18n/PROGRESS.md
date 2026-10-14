@@ -1,6 +1,19 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 55 簇后的一次全量（886 文件 11577 例、27 失败 + 9 例预期失败，27 例落在 12 个测试文件上：19 例是已汉化组件的英文断言欠账、已在随后的清扫里改绿，8 例经与上游快照比对确认不是汉化欠账，明细见"## 2026-10-15 第 55 簇后的全量快照"与"## 2026-10-15 断言欠账清扫"），上一次全量是第 53 簇后（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），再上一次是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 56 簇后（非测试 `.tsx` 912 个接入 440 个、48.2%，目录叶子 7065、中英同值 87）。最新的测试统计是第 55 簇后的一次全量（886 文件 11577 例、27 失败 + 9 例预期失败，27 例落在 12 个测试文件上：19 例是已汉化组件的英文断言欠账、已在随后的清扫里改绿，8 例经与上游快照比对确认不是汉化欠账，明细见"## 2026-10-15 第 55 簇后的全量快照"与"## 2026-10-15 断言欠账清扫"），上一次全量是第 53 簇后（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），再上一次是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 56 簇更新
+
+批次 24 第 56 簇：`common_components/team_dropdown.tsx`（109 行，+6/−4）与 `common_components/team_multi_select.tsx`（71 行，+7/−5）这一对团队选择器接入 `teams`，两个消息目录各 +4/−0 行。这对文件是全库被引用最多的选择器之一：单选那台被 `CreateUserButton`、`add_model/AddModelForm` 与 `add_auto_router_tab`、`organisms/create_key_button`、`ToolDetail`、`agents/add_agent_form`、`guardrails/TeamGuardrailsTab` 七处使用，多选那台在 `usage/EntityUsage` 与 `cost-optimization/ShadowEvalStartForm`。改动全落在传给 `PaginatedSearchSelect` / `PaginatedMultiSelect` 的四个展示 props 上，选项 `label`/`sublabel` 是团队别名与 `team_id`，属数据，不动
+
+- 复用两条已有键：`teams.noTeams`（No teams found/未找到团队）与多选那台的 `teams.loading`（正在加载团队...），同一个 `useTranslations("teams")` 作用域里取顶层键，不算跨组借
+- 新开 4 键：`dropdownSearch`（Search or select a team/搜索或选择团队）、`dropdownLoading`、`multiSelectSearch`（Search teams by alias.../按别名搜索团队...）、`multiSelectClearAll`（Clear all teams/清空全部团队）。`dropdownLoading` 必须单开：单选那台写的是 `Loading teams…`（U+2026），与 `teams.loading` 的三点式不同字节，沿用第 52 簇"省略号形态不同值就另开"的口径，两边渲染都保持原样
+- `team_multi_select` 的占位符原来是**默认参数值** `placeholder = "Search teams by alias..."`。默认参数在 hook 之前求值，只能改成 `placeholder` 无默认 + 渲染处 `placeholder ?? t("multiSelectSearch")`；`ShadowEvalStartForm` 本来就自带 `costOptimization.shadowEval.searchTeams` 的占位符传进来，走 `??` 左侧不受影响，只有 `EntityUsage` 吃到新的中文兜底
+- 单选那台里 `teams.find((t) => t.team_id === teamId)` 的参数与新加的翻译器 `t` 重名，改成 `(team) =>`，避免遮蔽
+
+测试侧：两份自身测试都是裸 `render`，接入后必须有 provider，11 处 `render(` 换成 `renderWithProviders(`（`rerender` 与 `view.rerender` 不动，靠正则 `(?<![A-Za-z])render\(` 区分）；`team_multi_select.test.tsx` 的 `/No teams found/` 换成 `/未找到团队/`，而它自己传入的 `"Search teams by alias..."` 是消费者 props，两处断言保持英文。7 个消费者文件与 `add_model`、`agents`、`guardrails`、`usage`、`cost-optimization`、`organisms` 整目录一起复跑 **100 文件 1874 例全绿**（1 例预期失败），说明这轮的连带成本只在 provider，不在断言——消费者测试里没有任何一条查这三句英文
+
+其余门禁：`src/lib/i18n` 守卫 3 文件 16 例全过；`npx tsc --noEmit -p .` 总 880、非测试 0，与清扫簇同数；`npx eslint` 4 个文件 0 error / 3 warning，与 HEAD 版同数（备份 /tmp → `git checkout HEAD --` → 复跑 → 还原）；prettier 四个文件 HEAD 与改后都干净，不跑 `--write`；`npm run build` exit 0；覆盖率复测非测试 `.tsx` 912 个接入 438 到 440 个、48.0% 到 48.2%，目录叶子 7061 到 7065，中英同值 87 不变
 
 ## 2026-10-15 第 55 簇后的全量快照
 
