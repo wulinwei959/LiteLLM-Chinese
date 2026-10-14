@@ -309,8 +309,8 @@ describe("GuardrailViewer", () => {
     // Expand the card
     await user.click(screen.getByText("pii-rail"));
     // No Presidio or Bedrock sections
-    expect(screen.queryByText(/Detected Entities/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Raw Bedrock Guardrail Response/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/检出实体/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/原始 Bedrock 护栏响应/)).not.toBeInTheDocument();
   });
 
   it("renders without crashing when guardrail_mode is null", () => {
@@ -361,7 +361,7 @@ describe("GuardrailViewer", () => {
     await user.click(screen.getByText("pii-rail"));
 
     // Bedrock summary bits
-    expect(screen.getByText("Outputs")).toBeInTheDocument();
+    expect(screen.getByText("输出")).toBeInTheDocument();
     expect(screen.getByText("ok")).toBeInTheDocument();
   });
 });
