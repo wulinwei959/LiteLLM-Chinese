@@ -1,6 +1,29 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 46 簇更新
+
+批次 24 第 46 簇：`components/AIHub/AgentHubTableColumns.tsx`（234 行，接入后 241，+37/−30）的智能体中心列定义接入 `agents`，新开 9 键，两个消息目录各 +10/−1 行（−1 是 `agents.pleaseEnter` 补逗号）。列工厂按第 45 簇同一形状改造，`ModelHubTable.tsx`（1178 行，+5/−1）作为真实消费者补上 `const agentsT = useTranslations("agents")` 并把 `agentsT` 传进 `getAgentHubTableColumns` 的 `useMemo`
+
+改造形态：
+
+- 平铺命名空间内按概念复用已有键（第 45 簇记下的口径）：`agents` 命名空间没有分组（176 个键全是叶子），本簇七个列标题与徽标、操作菜单全走已有键——`colAgentName`、`description`、`version`、`skills`、`capabilities`、`yes`/`no`、`actions`，另有 `openAgentActions`（`Open agent actions`，与本文件 HEAD 的 aria-label 逐字节相同，它是 `app/(dashboard)/agents` 一侧的键，平铺命名空间内跨文件复用正是第 45 簇记下的口径）。九个新键里三个是列标题、三个是表格内容、三个是菜单项
+- 新列标题跟着命名空间自己的 `col*` 构词法走：`colProtocol`、`colPublic`、`colIoModes`。`agents.protocolVersion` 早已存在且取值是 `Protocol Version`，与本列标题 `Protocol` 不是同一个短语，不能借；`agents.public` 没有，`colPublic` 承担，而行内的是 `yes`/`no` 徽标（`Public` 这一列展示的是布尔，不是状态名）
+- `skillsCount` 写成 `{count, plural, one {# skill} other {# skills}}` / `{count, number} 个技能`：第 43 簇那条规则的又一次兑现，多词分支必须用 `#`，数字由复数分支自己渲染。node + `intl-messageformat` 实测 `1` → `1 skill`、`2` → `2 skills`、`1234` → `1,234 skills`，与 HEAD 的 `{skills.length} skill{…}` 逐字节相同
+- io_modes 那两行的 `<span className="font-medium">In:</span> {modes}` 是 `t.rich`：本簇第一次写成 `<label>In:</label> {modes}`，parity 守卫的富文本标签白名单（`messagesParity.test.ts:157` 的 `RICH_TAGS` = `strong, b, i, em, link, code, br, claude, codex`）立刻把两条键判为 offender——守卫查的是消息串里所有 `<...>`，`<label>` 不在允许集合内。改成 `<strong>` 承载、渲染器写回 `<span className="font-medium">{chunks}</span>`，加粗范围与类名都和旧 JSX 一致，EN 实测渲染 `In: text, image` / `Out: text, image`，与旧模板串逐字节相同
+- 数据留原文：`v{row.original.version}`、`+{skills.length - 2}` 的溢出计数、`skill.name` 与 `capability` 的取值、`row.original.protocolVersion` 的单元格值（A2A 协议版本号，接口数据）、空值占位 `-` 与 `inputModes.join(", ") || "-"` 的哨兵、`data-testid`、`Object.entries(capabilities)` 筛 `true` 的键名
+
+测试侧同步：
+
+- `AgentHubTableColumns.test.tsx`（127 行，接入后 146，+35/−16）与第 45 簇同法改造：删掉裸 `render`，新增 `AgentHubTableHarness` 在组件内 `useTranslations("agents")` + `useMemo` 组列，`renderTable` 改走 `renderWithProviders`。15 例数量与含义未增删
+- 断言换语言：`3 skills`→`3 个技能`、`1 skill`→`1 个技能`、`Yes`/`No`→`是`/`否`；io_modes 那条改为 `getByText("输入：")` + `parentElement?.textContent` 断 `"输入：text"`，`getByText` 命中富文本渲染出的那个 `<span>`，与标签名无关，所以 `<label>`→`<strong>` 的重写不需要动测试
+- 操作菜单的两条用例各补一个文本断言：详情那条顺带把触发按钮的定位从 `getByTestId("agent-hub-actions-agent-1")` 换成 `getByRole("button", { name: "打开智能体操作" })`，让本簇接上的 aria-label 有用例覆盖；复制那条仍用 testid 定位、只补 `toHaveTextContent("复制智能体名称")`，与第 45 簇补 `查看详情`/`复制技能名称` 的动机一致
+- `ModelHubTable.test.tsx` 不用改：它断言的是自己尚未接入的触发按钮与空态文案（`No matching agents` 等），智能体表格的列标题它没有断言，并入范围跑仍全绿
+
+验证：定向 `npx vitest run src/lib/i18n src/components/AIHub/AgentHubTableColumns.test.tsx` → 4 文件 31 例全绿（parity 守卫在首跑里抓出上面那条 `<label>` 标签问题，改标签后转绿）；全量复跑 `npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin src/components/AIHub` → 79 文件 978 例全绿，`Type Errors no errors`（用例未增删），prettier 改写后复跑仍 978 全绿；`npx tsc --noEmit -p .` 总 883、非测试 0，且 `AIHub` 一条错误都没有；`npx eslint` 三个改动文件 0 error / 5 warning，与 HEAD 版逐条相同（`AgentHubTableColumns.tsx` 两条 `no-explicit-any` 在 `[key: string]: any` 那两行，`ModelHubTable.tsx` 一条 `complexity 89` 与两条 `no-explicit-any`），只有行号位移；HEAD 对照的做法是 `git show "HEAD:<path>"` 落到临时文件会被 eslint 判"outside of base path"，改为临时覆盖工作树文件跑完再原样写回（不 stash，共享工作树口径）；prettier 先证 HEAD 三个 `.tsx` 干净，改动后对 `.tsx` 执行 `--write`（工厂签名换行、harness 的类型参数换行由此而来，`ModelHubTable.tsx` 报 unchanged）；`npm run build` exit 0
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 432 不变、47.4%——本簇新接入的工厂走 props 收 `t`（指标脚本判"未接入"），消费者 `ModelHubTable.tsx` 本来就带 `useTranslations`，所以两个可计数文件都没进增量；这正说明该指标只统计出现 `useTranslations`/`getTranslations` 字面量的文件，列工厂簇天然不计。键数 6859 到 6868（`agents` 命名空间 167 到 176，`common` 189 不变），中英同值 86 不变
 
 ## 2026-10-15 第 45 簇更新
 
