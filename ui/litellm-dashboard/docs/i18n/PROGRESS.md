@@ -1,6 +1,25 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 39 簇更新
+
+批次 24 第 39 簇：`components/chat/MCPCredentialsTab.tsx`（232 行，接入后 239）接入 `chat`，新开 `chat.credentialsPanel.*` 16 键；同时把第 36 簇放在 `chat.keysPanel` 的 4 个相对时间键上收到 `common`，净 +16，两个消息目录各 +24/−6 行
+
+改造形态：
+
+- `chat.keysPanel.{justNow,minutesAgo,hoursAgo,daysAgo}` 挪进 `common`：`MCPCredentialsTab` 里有一份与 `KeysPanel` 逐分支取值相同的 `relativeTime`（`just now`、`{n}m ago`、`{n}h ago`、`{n}d ago`），概念同为"多久以前"，按"概念与取值都相同才复用"该共用，而跨命名空间借 `chat.keysPanel` 又要把整棵密钥面板挂进第二个翻译器，所以按第 35 簇把 `chat.appsPanel.back` 收进 `common.back` 的口径上收到共享命名空间。`KeysPanel` 的 helper 形参从 `ChatTranslator` 换成 `CommonTranslator`，调用点传 `commonT`
+- 两个模块级纯函数沿用"首参传 `t`"的写法（第 36、37 簇）：`relativeTime(commonT, iso)`、`expiryLabel(t, iso)`。`expiryLabel` 返回 `{ text, variant }`，只有 `text` 接键，`variant` 仍是数据判断
+- 4 个表头在骨架表与真表各写一遍，两处同步改成 `credentialsPanel.colApp`/`.colConnected` 加 `common.status`/`common.actions`（`Status`/`状态`、`Actions`/`操作` 逐字节相同）。`colConnected` 的中文取 `连接时间`而不是字面的"已连接"：那一列放的是连接发生的时间点，与 `mcpServers.userCredentials.columnConnected` 同一列同一取法保持一致
+- 空态提示走 `t.rich`：原 JSX 是 `Go to <span className="font-medium">Integrations</span> and click{" "}<span className="font-medium">Connect</span> to authorize an MCP server`，消息取值写成 `Go to <b>Integrations</b> and click <b>Connect</b> to authorize an MCP server`，渲染函数 `b: (chunks) => <span className="font-medium">{chunks}</span>` 保住原 DOM 与 `font-medium`。`messagesParity` 的 `RICH_TAGS` 认得 `b`，而 `missingKeys` 只匹配 `\bt\(\s*"`，`t.rich` 的键名不在它眼里，键是否存在靠 `next-intl.d.ts` 的键 union 与 tsc 兜住
+- `revokeDescription` 带 `{name}`（`displayName(cred)` 的结果，数据不接键）。EN 值里的 `You'll` 是词中撇号，ICU 只在 `'` 后紧跟 `{`/`}`/`#`/`|`/`<`/`'` 时才当转义，实测渲染原样保留。没借 `mcpServers.userCredentials.revokeBody`：那边说"下一次 MCP 请求会失败"，本句说"重新连接才能在聊天中继续使用"，概念不同。中文用"吊销"，与同目录 `revoke`/`couldNotRevoke` 的既有译法一致，没有另起"撤销"
+- 状态徽标的 `doesNotExpire`、`expired` 与 `expiresInDays`/`Hours`/`Minutes` 留在本命名空间：目录里 `Expired` 早已按作用域各开一键（`virtualKeys.status.expired`、`chat.keysPanel.expired`），`common` 只有 `sessionExpired`，没有裸 `expired`。三条 `expiresIn*` 用 `{count, number}`，与 `chat.logsPanel.requestsCount` 那批同样经 node + `intl-messageformat` 实测过渲染串与旧模板字符串逐字节相同
+
+测试侧无断言可同步：`MCPCredentialsTab` 与 `KeysPanel` 都没有测试文件，`src/components/chat/*.test.tsx` 里 grep `just now|m ago|h ago|d ago|分钟前|小时前|天前` 也没有命中，上收 4 个键不影响任何断言
+
+验证：`npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin` → 70 文件 861 例全绿，`Type Errors no errors`（第 35 簇起的复跑范围，本簇未增删用例）；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 两个改动文件 0 error / 3 warning，3 条全在 `KeysPanel.tsx`（`complexity` 与两条 `no-large-inline-object-arg`），与第 36 簇记录的 `KeysPanel` 基线逐条相同，`MCPCredentialsTab.tsx` 本身 0 条；`npm run build` exit 0；prettier 先证 HEAD 两个文件干净再 `--write`，只动 `.tsx`，两个消息目录没跑 prettier
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 425 到 426，46.7%；`components/chat` 11 个非测试文件接入 8 个，剩 3 个按大小排是 `UsagePanel.tsx`（212）、`ChatShell.tsx`（149）、`ConnectFlowSurface.tsx`（59，无自有文案）。键数 6748 到 6764（`chat` 命名空间 116 到 128，`common` 183 到 187），中英同值 86 不变
 
 ## 2026-10-15 第 38 簇更新
 
