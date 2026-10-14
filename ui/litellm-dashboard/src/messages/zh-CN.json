@@ -3720,6 +3720,17 @@
     }
   },
   "logs": {
+    "backToLogs": "返回日志",
+    "table": {
+      "loadingMessage": "正在加载请求日志…",
+      "searchPlaceholder": "按 ID 搜索日志…",
+      "filtersTitle": "筛选",
+      "filtersDescription": "缩小请求日志范围",
+      "empty": "暂无请求",
+      "emptyDesc": "经 LiteLLM 代理的请求会显示在这里。",
+      "emptyFiltered": "没有匹配的请求",
+      "emptyFilteredDesc": "当前时间范围内没有符合筛选条件的请求。"
+    },
     "title": "日志",
     "tabs": {
       "requestLogs": "请求日志",
@@ -3765,6 +3776,7 @@
       "last30Days": "最近 30 天"
     },
     "filters": {
+      "search": "搜索",
       "teamId": "团队 ID",
       "spanType": "调用类型",
       "cache": "缓存",

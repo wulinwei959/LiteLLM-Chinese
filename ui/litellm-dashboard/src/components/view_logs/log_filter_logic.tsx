@@ -38,22 +38,39 @@ export const LOG_FILTER_IDS = {
   SEARCH: "search",
 } as const;
 
-export const LOG_FILTER_LABELS: Record<string, string> = {
-  [LOG_FILTER_IDS.TEAM_ID]: "Team ID",
-  [LOG_FILTER_IDS.SPAN_TYPE]: "Span Type",
-  [LOG_FILTER_IDS.STATUS]: "Status",
-  [LOG_FILTER_IDS.CACHE_STATUS]: "Cache",
-  [LOG_FILTER_IDS.CREDENTIAL]: "Credential",
-  [LOG_FILTER_IDS.KEY_ALIAS]: "Key Alias",
-  [LOG_FILTER_IDS.USER_ID]: "User ID",
-  [LOG_FILTER_IDS.END_USER]: "End User",
-  [LOG_FILTER_IDS.ERROR_CODE]: "Error Code",
-  [LOG_FILTER_IDS.ERROR_MESSAGE]: "Error Message",
-  [LOG_FILTER_IDS.KEY_HASH]: "Key Hash",
-  [LOG_FILTER_IDS.SESSION_ID]: "Session ID",
-  [LOG_FILTER_IDS.MODEL_ID]: "Model",
-  [LOG_FILTER_IDS.PUBLIC_MODEL_OR_SEARCH_TOOL]: "Public model / search tool",
-  [LOG_FILTER_IDS.SEARCH]: "Search",
+export type LogsFilterLabelKey =
+  | "filters.teamId"
+  | "filters.spanType"
+  | "status"
+  | "filters.cache"
+  | "filters.credential"
+  | "filters.keyAlias"
+  | "filters.userId"
+  | "filters.endUser"
+  | "filters.errorCode"
+  | "filters.errorMessage"
+  | "filters.keyHash"
+  | "filters.sessionId"
+  | "model"
+  | "filters.publicModelOrSearchTool"
+  | "filters.search";
+
+export const LOG_FILTER_LABEL_KEYS: Record<string, LogsFilterLabelKey> = {
+  [LOG_FILTER_IDS.TEAM_ID]: "filters.teamId",
+  [LOG_FILTER_IDS.SPAN_TYPE]: "filters.spanType",
+  [LOG_FILTER_IDS.STATUS]: "status",
+  [LOG_FILTER_IDS.CACHE_STATUS]: "filters.cache",
+  [LOG_FILTER_IDS.CREDENTIAL]: "filters.credential",
+  [LOG_FILTER_IDS.KEY_ALIAS]: "filters.keyAlias",
+  [LOG_FILTER_IDS.USER_ID]: "filters.userId",
+  [LOG_FILTER_IDS.END_USER]: "filters.endUser",
+  [LOG_FILTER_IDS.ERROR_CODE]: "filters.errorCode",
+  [LOG_FILTER_IDS.ERROR_MESSAGE]: "filters.errorMessage",
+  [LOG_FILTER_IDS.KEY_HASH]: "filters.keyHash",
+  [LOG_FILTER_IDS.SESSION_ID]: "filters.sessionId",
+  [LOG_FILTER_IDS.MODEL_ID]: "model",
+  [LOG_FILTER_IDS.PUBLIC_MODEL_OR_SEARCH_TOOL]: "filters.publicModelOrSearchTool",
+  [LOG_FILTER_IDS.SEARCH]: "filters.search",
 };
 
 export interface LogsWindow {

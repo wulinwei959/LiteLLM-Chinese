@@ -3720,6 +3720,17 @@
     }
   },
   "logs": {
+    "backToLogs": "Back to Logs",
+    "table": {
+      "loadingMessage": "Loading request logs…",
+      "searchPlaceholder": "Search logs by ID…",
+      "filtersTitle": "Filters",
+      "filtersDescription": "Narrow down request logs",
+      "empty": "No requests yet",
+      "emptyDesc": "Requests proxied through LiteLLM will appear here.",
+      "emptyFiltered": "No matching requests",
+      "emptyFilteredDesc": "No requests match your filters for this time range."
+    },
     "title": "Logs",
     "tabs": {
       "requestLogs": "Request Logs",
@@ -3765,6 +3776,7 @@
       "last30Days": "Last 30 Days"
     },
     "filters": {
+      "search": "Search",
       "teamId": "Team ID",
       "spanType": "Span Type",
       "cache": "Cache",

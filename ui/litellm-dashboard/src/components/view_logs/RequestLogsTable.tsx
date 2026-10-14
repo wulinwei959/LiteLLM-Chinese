@@ -12,7 +12,7 @@ import type { LogsTranslator } from "@/lib/i18n/translators";
 import type { Team } from "../key_team_helpers/key_list";
 import type { LogEntry } from "./columns";
 import { CREDENTIAL_LABEL_KEYS, SPAN_TYPE_LABEL_KEYS } from "./constants";
-import { LOG_FILTER_IDS, LOG_FILTER_LABELS, type LogsWindow } from "./log_filter_logic";
+import { LOG_FILTER_IDS, LOG_FILTER_LABEL_KEYS, type LogsWindow } from "./log_filter_logic";
 import { RequestLogsFilters } from "./RequestLogsFilters";
 import { getRequestLogsTableColumns } from "./RequestLogsTableColumns";
 
@@ -51,16 +51,17 @@ const formatFilterValue = (t: LogsTranslator, columnId: string, value: unknown):
 };
 
 function RequestLogsEmptyState({ filtered }: { filtered: boolean }) {
+  const t = useTranslations("logs");
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <ScrollText className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">{filtered ? "No matching requests" : "No requests yet"}</div>
+      <div className="text-sm font-medium text-foreground">
+        {filtered ? t("table.emptyFiltered") : t("table.empty")}
+      </div>
       <div className="max-w-xs text-center text-sm text-muted-foreground">
-        {filtered
-          ? "No requests match your filters for this time range."
-          : "Requests proxied through LiteLLM will appear here."}
+        {filtered ? t("table.emptyFilteredDesc") : t("table.emptyDesc")}
       </div>
     </div>
   );
@@ -99,6 +100,12 @@ export function RequestLogsTable({
     return getRequestLogsTableColumns(deps);
   }, [onKeyHashClick, onSessionClick, emailByUserId, t]);
 
+  const filterLabels = useMemo(
+    () =>
+      Object.fromEntries(Object.entries(LOG_FILTER_LABEL_KEYS).map(([columnId, labelKey]) => [columnId, t(labelKey)])),
+    [t],
+  );
+
   const isFiltered = columnFilters.length > 0 || searchValue !== "";
 
   return (
@@ -118,7 +125,7 @@ export function RequestLogsTable({
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       isLoading={isLoading}
-      loadingMessage="Loading request logs…"
+      loadingMessage={t("table.loadingMessage")}
       noDataMessage={<RequestLogsEmptyState filtered={isFiltered} />}
       size="compact"
       onRowClick={onRowClick}
@@ -128,11 +135,11 @@ export function RequestLogsTable({
             table={table}
             searchValue={searchValue}
             onSearchChange={onSearchChange}
-            searchPlaceholder="Search logs by ID…"
+            searchPlaceholder={t("table.searchPlaceholder")}
             onRefresh={onRefresh}
             isRefreshing={isRefreshing}
             onOpenFilters={() => setFiltersOpen(true)}
-            filterLabels={LOG_FILTER_LABELS}
+            filterLabels={filterLabels}
             formatFilterValue={(columnId, value) => formatFilterValue(t, columnId, value)}
             showViewOptions={false}
           >
@@ -142,8 +149,8 @@ export function RequestLogsTable({
             table={table}
             open={filtersOpen}
             onOpenChange={setFiltersOpen}
-            title="Filters"
-            description="Narrow down request logs"
+            title={t("table.filtersTitle")}
+            description={t("table.filtersDescription")}
           >
             {({ get, set }) => <RequestLogsFilters get={get} set={set} teams={teams} logsWindow={logsWindow} />}
           </DataTableFilterDrawer>

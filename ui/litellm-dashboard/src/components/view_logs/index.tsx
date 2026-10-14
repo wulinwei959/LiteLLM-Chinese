@@ -20,13 +20,19 @@ type LogsTabId = "request logs" | "audit logs" | "deleted keys" | "deleted teams
 
 export default function SpendLogsTable({ accessToken, token, userRole, userID, premiumUser }: SpendLogsTableProps) {
   const t = useTranslations("logs.tabs");
+  const logsT = useTranslations("logs");
   const [activeTab, setActiveTab] = useState<LogsTabId>("request logs");
   const canViewAuditLogs = useCan("viewAuditLogs");
   const canViewDeletedTeams = useCan("viewDeletedTeams");
 
   if (!accessToken || !token || !userRole || !userID) {
     return (
-      <div role="status" aria-busy="true" aria-label="Loading" className="flex h-64 items-center justify-center">
+      <div
+        role="status"
+        aria-busy="true"
+        aria-label={logsT("loading")}
+        className="flex h-64 items-center justify-center"
+      >
         <UiLoadingSpinner className="size-8 text-primary" />
       </div>
     );
