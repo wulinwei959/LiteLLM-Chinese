@@ -124,10 +124,10 @@ describe("AddAgentForm submit payload", () => {
     const clientId = "22222222-2222-4222-8222-222222222222";
     vi.mocked(networking.apiClient.get).mockResolvedValue([`https://login.microsoftonline.com/${tenant}/v2.0`]);
     renderForm();
-    fireEvent.change(await screen.findByLabelText("Agent Name"), { target: { value: "Readable agent" } });
+    fireEvent.change(await screen.findByLabelText("智能体名称"), { target: { value: "Readable agent" } });
     fireEvent.change(screen.getByLabelText("URL"), { target: { value: "https://runtime.example/a2a" } });
-    fireEvent.change(screen.getByLabelText("Display Name"), { target: { value: "Readable agent" } });
-    fireEvent.change(screen.getByPlaceholderText("Describe what this agent does..."), {
+    fireEvent.change(screen.getByLabelText("显示名称"), { target: { value: "Readable agent" } });
+    fireEvent.change(screen.getByPlaceholderText("描述这个智能体的用途..."), {
       target: { value: "Test agent" },
     });
     await user.click(screen.getByLabelText("Identity Provider"));

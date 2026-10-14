@@ -1353,7 +1353,7 @@ describe("KeyInfoView", () => {
 
       const confirmInput = await screen.findByPlaceholderText(MOCK_KEY_DATA.key_alias);
       await userEvent.type(confirmInput, MOCK_KEY_DATA.key_alias);
-      await userEvent.click(screen.getByRole("button", { name: /^delete$/i }));
+      await userEvent.click(screen.getByRole("button", { name: "删除" }));
 
       await waitFor(() => {
         expect(keyDeleteCall).toHaveBeenCalledWith("test-token", MOCK_KEY_DATA.token);

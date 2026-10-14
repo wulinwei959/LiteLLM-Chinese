@@ -159,7 +159,7 @@ const CHARLIE_ALICE_BOB: Person[] = [person("c", "Charlie"), person("a", "Alice"
 
 describe("DataTable numeric columns", () => {
   it("right-aligns the header and cells of a numeric column only", () => {
-    render(<DataTable data={[person("a", "Alice")]} columns={numericColumns} sortingMode="client" />);
+    renderWithProviders(<DataTable data={[person("a", "Alice")]} columns={numericColumns} sortingMode="client" />);
 
     expect(screen.getByRole("columnheader", { name: "Spend" })).toHaveClass("text-right", "tabular-nums");
     expect(screen.getByRole("cell", { name: "$1.50" })).toHaveClass("text-right", "tabular-nums");

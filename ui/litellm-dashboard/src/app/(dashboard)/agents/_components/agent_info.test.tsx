@@ -120,9 +120,9 @@ describe("AgentInfoView settings", () => {
     vi.mocked(networking.getAgentInfo).mockResolvedValue({ ...agent, agent_card_params: card });
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
     fireEvent.click(await screen.findByRole("tab", { name: "Settings" }));
-    fireEvent.click(screen.getByRole("button", { name: "Edit Settings" }));
-    expect(await screen.findByLabelText("Description")).toHaveValue("");
-    fireEvent.change(screen.getByLabelText("TPM Limit"), { target: { value: "42" } });
+    fireEvent.click(screen.getByRole("button", { name: "编辑设置" }));
+    expect(await screen.findByLabelText("描述")).toHaveValue("");
+    fireEvent.change(screen.getByLabelText("TPM 限制"), { target: { value: "42" } });
     fireEvent.click(screen.getByRole("button", { name: /Save Changes/ }));
     await waitFor(() => expect(networking.patchAgentCall).toHaveBeenCalledOnce());
     const [, , payload] = vi.mocked(networking.patchAgentCall).mock.calls[0];

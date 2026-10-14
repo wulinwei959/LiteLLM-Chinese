@@ -192,9 +192,9 @@ describe("AgentInfoView update payload", () => {
     expect(screen.getByRole("combobox", { name: "Identity Provider" })).toHaveTextContent("Microsoft Entra ID");
     expect(screen.getByRole("combobox", { name: "Execution Mode" })).toHaveTextContent("Autonomous");
     expect(screen.getByRole("combobox", { name: /^Execution$/ })).toHaveTextContent("Enabled");
-    fireEvent.change(screen.getByLabelText("Agent Name"), { target: { value: "Renamed agent" } });
+    fireEvent.change(screen.getByLabelText("智能体名称"), { target: { value: "Renamed agent" } });
     if (editCard) {
-      fireEvent.change(screen.getByLabelText("Display Name"), { target: { value: "Configured runtime" } });
+      fireEvent.change(screen.getByLabelText("显示名称"), { target: { value: "Configured runtime" } });
       fireEvent.change(screen.getByLabelText("URL"), { target: { value: "https://runtime.example/a2a" } });
     }
     await save(user);

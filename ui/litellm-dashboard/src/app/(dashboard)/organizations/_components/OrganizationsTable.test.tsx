@@ -84,10 +84,10 @@ describe("OrganizationsTable", () => {
 
   it("right-aligns the money and count columns only", () => {
     renderWithProviders(<OrganizationsTable {...baseProps} organizations={[]} />);
-    for (const header of ["Spend (USD)", "Budget (USD)", "Members"]) {
+    for (const header of ["花费 (USD)", "预算 (USD)", "成员"]) {
       expect(screen.getByRole("columnheader", { name: header })).toHaveClass("text-right");
     }
-    for (const header of ["Organization Name", "TPM / RPM Limits"]) {
+    for (const header of ["组织名称", "TPM / RPM 限制"]) {
       expect(screen.getByRole("columnheader", { name: header })).not.toHaveClass("text-right");
     }
   });

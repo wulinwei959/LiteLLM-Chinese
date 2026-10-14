@@ -174,7 +174,7 @@ describe("AccessGroupEditModal submit payload", () => {
     renderModal();
     await screen.findByDisplayValue("Engineering");
 
-    await user.click(screen.getByRole("tab", { name: /MCP Servers/ }));
+    await user.click(screen.getByRole("tab", { name: /MCP 服务器/ }));
     const chip = await screen.findByLabelText("Files");
     expect(chip).toHaveAttribute("data-slot", "combobox-chip");
     expect(screen.queryByText("srv-1")).not.toBeInTheDocument();
@@ -191,7 +191,7 @@ describe("AccessGroupEditModal submit payload", () => {
     renderModal({ ...accessGroup, access_mcp_server_ids: manyServers.map((s) => s.server_id) });
     await screen.findByDisplayValue("Engineering");
 
-    await user.click(screen.getByRole("tab", { name: /MCP Servers/ }));
+    await user.click(screen.getByRole("tab", { name: /MCP 服务器/ }));
     await screen.findByLabelText("Server 20");
     const chips = screen.getAllByLabelText(/^(Files|Server \d+)$/);
     expect(chips).toHaveLength(20);

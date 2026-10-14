@@ -98,18 +98,18 @@ describe("AccessGroupCreateDialog", () => {
     const user = userEvent.setup();
     const { createAccessGroup } = renderDialog();
 
-    await user.type(screen.getByLabelText("Group Name"), "mcp-group");
-    await user.click(screen.getByRole("tab", { name: "MCP Servers" }));
-    await user.click(screen.getByLabelText("Allowed MCP Servers"));
+    await user.type(screen.getByLabelText("访问组名称"), "mcp-group");
+    await user.click(screen.getByRole("tab", { name: "MCP 服务器" }));
+    await user.click(screen.getByLabelText("可用 MCP 服务器"));
     await user.click(await screen.findByRole("option", { name: "GitHub MCP" }));
     expect(screen.getByLabelText("GitHub MCP")).toHaveAttribute("data-slot", "combobox-chip");
     await user.keyboard("{Escape}");
 
-    await user.click(screen.getByRole("tab", { name: "Agents" }));
-    await user.click(screen.getByLabelText("Allowed Agents"));
+    await user.click(screen.getByRole("tab", { name: "代理" }));
+    await user.click(screen.getByLabelText("可用代理"));
     await user.click(await screen.findByRole("option", { name: "Support Agent" }));
     await user.keyboard("{Escape}");
-    await user.click(screen.getByRole("button", { name: "Create Group" }));
+    await user.click(screen.getByRole("button", { name: "创建访问组" }));
 
     await waitFor(() => expect(createAccessGroup).toHaveBeenCalledTimes(1));
     expect(createAccessGroup.mock.calls[0][0]).toStrictEqual({

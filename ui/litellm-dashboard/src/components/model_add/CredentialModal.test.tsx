@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { Providers } from "../provider_info_helpers";
 import { CredentialItem } from "../networking";
 import CredentialModal from "./CredentialModal";
@@ -71,9 +72,11 @@ const mockCredential: CredentialItem = {
 
 const renderModal = (props: Partial<React.ComponentProps<typeof CredentialModal>> = {}) =>
   render(
-    <QueryClientProvider client={createQueryClient()}>
-      <CredentialModal open={true} mode="add" onCancel={vi.fn()} onSubmit={vi.fn()} {...props} />
-    </QueryClientProvider>,
+    <LocaleProvider locale="zh-CN">
+      <QueryClientProvider client={createQueryClient()}>
+        <CredentialModal open={true} mode="add" onCancel={vi.fn()} onSubmit={vi.fn()} {...props} />
+      </QueryClientProvider>
+    </LocaleProvider>,
   );
 
 describe("CredentialModal", () => {
