@@ -105,7 +105,7 @@ describe("AgentTracesSection", () => {
     expect(screen.getByText(`无法加载运行记录：${message}`)).toBeVisible();
     expect(screen.queryByText(/Private token details/)).not.toBeInTheDocument();
     expect(agentTraceListCall).toHaveBeenCalledOnce();
-    expect(screen.getByTestId("runs-footer")).toHaveTextContent("Update failed");
+    expect(screen.getByTestId("runs-footer")).toHaveTextContent("更新失败");
   });
 
   it("renders the setup snippet when the proxy answers 501", async () => {
@@ -153,7 +153,7 @@ describe("AgentTracesSection", () => {
     vi.mocked(agentTraceListCall).mockResolvedValue(traceList as TracePage);
     fireEvent.click(screen.getByRole("button", { name: "Check for traces" }));
     expect(await screen.findAllByTestId("agent-trace-row")).toHaveLength(runs.length);
-    expect(screen.getByText("Traces received. Select a run to inspect it.")).toBeVisible();
+    expect(screen.getByText("已收到调用链。选择一个运行记录查看详情。")).toBeVisible();
     expect(screen.queryByTestId("tracing-setup-card")).not.toBeInTheDocument();
   });
 
@@ -185,7 +185,7 @@ describe("AgentTracesSection", () => {
     fireEvent.click(checkSetup);
     const rows = await screen.findAllByTestId("agent-trace-row");
     fireEvent.click(rows[0]);
-    const drawer = screen.getByRole("complementary", { name: "Trace details" });
+    const drawer = screen.getByRole("complementary", { name: "调用链详情" });
 
     let finishRefresh: (page: TracePage) => void = () => {};
     vi.mocked(agentTraceListCall).mockImplementationOnce(
@@ -197,9 +197,9 @@ describe("AgentTracesSection", () => {
     await act(async () => {
       void testQueryClient.invalidateQueries({ queryKey: ["agentTraces"] });
     });
-    expect(await screen.findByText("Updating…")).toBeVisible();
+    expect(await screen.findByText("正在更新…")).toBeVisible();
     expect(screen.getAllByTestId("agent-trace-row")).toHaveLength(runs.length);
-    expect(screen.getByRole("complementary", { name: "Trace details" })).toBe(drawer);
+    expect(screen.getByRole("complementary", { name: "调用链详情" })).toBe(drawer);
     expect(screen.queryByTestId("tracing-setup-card")).not.toBeInTheDocument();
     await act(async () => finishRefresh(traceList as TracePage));
   });
@@ -208,12 +208,12 @@ describe("AgentTracesSection", () => {
     vi.mocked(agentTraceListCall).mockResolvedValue({ ...(traceList as TracePage), data: [] });
     vi.mocked(apiClient.get).mockRejectedValue(new ApiError("History unavailable", 503, {}));
     renderSection();
-    expect(await screen.findByRole("alert")).toHaveTextContent("Could not check earlier traces. History unavailable");
+    expect(await screen.findByRole("alert")).toHaveTextContent("无法检查更早的调用链。History unavailable");
     expect(screen.getByText("没有符合这些筛选条件的运行记录。")).toBeVisible();
     expect(screen.queryByText(/无法加载运行记录/)).not.toBeInTheDocument();
 
     vi.mocked(apiClient.get).mockResolvedValue(traceList);
-    fireEvent.click(screen.getByRole("button", { name: "Retry trace check" }));
+    fireEvent.click(screen.getByRole("button", { name: "重试调用链检查" }));
     await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
     expect(screen.getByText("没有符合这些筛选条件的运行记录。")).toBeVisible();
     expect(agentTraceListCall).toHaveBeenCalledTimes(1);
@@ -238,7 +238,7 @@ describe("AgentTracesSection", () => {
     expect(lead).toBeDefined();
     const failed = rows.find((row) => row.textContent?.includes("acme-404")) as HTMLElement;
     expect(within(failed).getByLabelText("2 个错误")).toBeInTheDocument();
-    expect(screen.getByText(`${runs.length} runs`)).toBeInTheDocument();
+    expect(screen.getByText(`${runs.length} 次运行`)).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "成本" })).toBeInTheDocument();
     expect(within(failed).getByText("—")).toBeInTheDocument();
   });
@@ -307,13 +307,13 @@ describe("AgentTracesSection", () => {
     const rows = await screen.findAllByTestId("agent-trace-row");
 
     fireEvent.click(rows[0]);
-    const drawer = screen.getByRole("complementary", { name: "Trace details" });
+    const drawer = screen.getByRole("complementary", { name: "调用链详情" });
     expect(within(drawer).getByTestId("run-view")).toHaveTextContent(`run ${runs[0].trace_id}`);
     expect(screen.getByTestId("runs-table")).toBeInTheDocument();
     expect(rows[0]).toHaveAttribute("aria-selected", "true");
 
     fireEvent.click(rows[1]);
-    expect(screen.getByRole("complementary", { name: "Trace details" })).toBe(drawer);
+    expect(screen.getByRole("complementary", { name: "调用链详情" })).toBe(drawer);
     expect(within(drawer).getByTestId("run-view")).toHaveTextContent(`run ${runs[1].trace_id}`);
     expect(rows[1]).toHaveAttribute("aria-selected", "true");
     expect(rows[0]).toHaveAttribute("aria-selected", "false");
@@ -343,8 +343,8 @@ describe("AgentTracesSection", () => {
     expect(screen.getByTestId("run-view")).toHaveTextContent(`run ${runs[1].trace_id}`);
     fireEvent.keyDown(window, { key: "k" });
     expect(screen.getByTestId("run-view")).toHaveTextContent(`run ${runs[0].trace_id}`);
-    expect(screen.getByRole("button", { name: "Previous trace (K)" })).toBeDisabled();
-    fireEvent.click(screen.getByRole("button", { name: "Next trace (J)" }));
+    expect(screen.getByRole("button", { name: "上一个调用链（K）" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "下一个调用链（J）" }));
     expect(screen.getByTestId("run-view")).toHaveTextContent(`run ${runs[1].trace_id}`);
   });
 

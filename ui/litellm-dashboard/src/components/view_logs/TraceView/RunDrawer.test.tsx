@@ -61,9 +61,9 @@ describe("RunDrawer", () => {
     const { rerender } = renderWithProviders(
       <RunDrawer trace={runs[0]} runs={runs} accessToken="sk" onSelect={vi.fn()} />,
     );
-    expect(screen.getByRole("complementary", { name: "Trace details" })).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "调用链详情" })).toBeInTheDocument();
     rerender(<RunDrawer trace={null} runs={runs} accessToken="sk" onSelect={vi.fn()} />);
-    expect(screen.queryByRole("complementary", { name: "Trace details" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("complementary", { name: "调用链详情" })).not.toBeInTheDocument();
   });
 
   it("plays the exit animation before unmounting when motion is allowed", () => {
@@ -73,6 +73,6 @@ describe("RunDrawer", () => {
       <RunDrawer trace={runs[0]} runs={runs} accessToken="sk" onSelect={vi.fn()} />,
     );
     rerender(<RunDrawer trace={null} runs={runs} accessToken="sk" onSelect={vi.fn()} />);
-    expect(screen.getByRole("complementary", { name: "Trace details" })).toHaveClass("animate-trace-drawer-out");
+    expect(screen.getByRole("complementary", { name: "调用链详情" })).toHaveClass("animate-trace-drawer-out");
   });
 });
