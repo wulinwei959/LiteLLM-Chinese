@@ -1681,7 +1681,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
       />,
     );
 
-    const clientIdField = await screen.findByPlaceholderText(/留空则保留当前已保存的密钥|留空以保留当前已保存的应用/);
+    const clientIdField = await screen.findByPlaceholderText("留空则保留当前已保存的应用（若有）");
     await waitFor(() => expect((clientIdField as HTMLInputElement).value).toBe("stored-client"));
     // The leftover minted token must not have rehydrated anywhere.
     expect(document.body.innerHTML).not.toContain("leftover-token");
