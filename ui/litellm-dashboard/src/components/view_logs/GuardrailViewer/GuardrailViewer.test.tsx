@@ -78,11 +78,11 @@ describe("GuardrailViewer", () => {
     const data = makeGuardrailInformation({ duration: 1.23456, guardrail_status: "success" });
     renderWithProviders(<GuardrailViewer data={data} />);
 
-    expect(screen.getByText("Guardrails & Policy Compliance")).toBeInTheDocument();
+    expect(screen.getByText("护栏与策略合规")).toBeInTheDocument();
     // header shows passed count
-    expect(screen.getByText(/1 Passed/)).toBeInTheDocument();
+    expect(screen.getByText(/通过 1/)).toBeInTheDocument();
     // The PASSED badge in the evaluation card
-    expect(screen.getByText("PASSED")).toBeInTheDocument();
+    expect(screen.getByText("通过")).toBeInTheDocument();
 
     // duration displays in ms format: Math.round(1.23456 * 1000) = 1235
     expect(screen.getByText("1235ms")).toBeInTheDocument();
@@ -96,12 +96,12 @@ describe("GuardrailViewer", () => {
     });
     renderWithProviders(<GuardrailViewer data={data} />);
 
-    expect(screen.getByText(/0 Passed/)).toBeInTheDocument();
-    expect(screen.getByText(/1 Flagged/)).toBeInTheDocument();
-    const badges = screen.getAllByText("FLAGGED");
+    expect(screen.getByText(/通过 0/)).toBeInTheDocument();
+    expect(screen.getByText(/标记 1/)).toBeInTheDocument();
+    const badges = screen.getAllByText("已标记");
     expect(badges.length).toBeGreaterThan(0);
     expect(badges[0]).toHaveClass("text-warning");
-    expect(screen.queryByText("FAILED")).not.toBeInTheDocument();
+    expect(screen.queryByText("失败")).not.toBeInTheDocument();
   });
 
   it("renders not_run as NOT RUN (muted) and keeps it out of the evaluated and passed counts", async () => {
@@ -109,12 +109,12 @@ describe("GuardrailViewer", () => {
     const data = makeGuardrailInformation(skippedPreCall);
     renderWithProviders(<GuardrailViewer data={data} />);
 
-    expect(screen.getByText(/0 guardrails evaluated/)).toBeInTheDocument();
-    expect(screen.getByText(/0 Passed/)).toHaveClass("text-muted-foreground");
-    expect(screen.getByText(/1 Not run/)).toBeInTheDocument();
-    const badge = screen.getByText("NOT RUN");
+    expect(screen.getByText(/已评估 0 个护栏/)).toBeInTheDocument();
+    expect(screen.getByText(/通过 0/)).toHaveClass("text-muted-foreground");
+    expect(screen.getByText(/未执行 1/)).toBeInTheDocument();
+    const badge = screen.getByText("未执行");
     expect(badge).toHaveClass("text-muted-foreground");
-    expect(screen.queryByText("FAILED")).not.toBeInTheDocument();
+    expect(screen.queryByText("失败")).not.toBeInTheDocument();
     expect(screen.queryByText(/^T\+/)).not.toBeInTheDocument();
 
     await user.click(screen.getByText("pii-rail"));
@@ -126,21 +126,21 @@ describe("GuardrailViewer", () => {
     const ran = makeGuardrailInformation(ranPostCall);
     renderWithProviders(<GuardrailViewer data={[skipped, ran]} />);
 
-    expect(screen.getByText(/1 guardrail evaluated/)).toBeInTheDocument();
-    expect(screen.getByText("Request received").parentElement).toHaveTextContent("T+0ms");
-    expect(screen.getByText(/Post-call guardrail: ran-rail/).parentElement).toHaveTextContent("T+250ms");
-    expect(screen.getByText("Response returned").parentElement).toHaveTextContent("T+251ms");
-    expect(screen.queryByText(/Pre-call guardrail: skipped-rail/)).not.toBeInTheDocument();
+    expect(screen.getByText(/已评估 1 个护栏/)).toBeInTheDocument();
+    expect(screen.getByText("收到请求").parentElement).toHaveTextContent("T+0ms");
+    expect(screen.getByText(/调用后护栏：ran-rail/).parentElement).toHaveTextContent("T+250ms");
+    expect(screen.getByText("返回响应").parentElement).toHaveTextContent("T+251ms");
+    expect(screen.queryByText(/调用前护栏：skipped-rail/)).not.toBeInTheDocument();
     expect(screen.getByText("—")).toBeInTheDocument();
   });
 
   it("keeps a guardrail that ran without any timing on the lifecycle", () => {
     renderWithProviders(<GuardrailViewer data={makeGuardrailInformation(untimedPreCall)} />);
 
-    expect(screen.getByText("Request received")).toBeInTheDocument();
-    expect(screen.getByText(/Pre-call guardrail: conduct/)).toBeInTheDocument();
-    expect(screen.getByText("LLM call")).toBeInTheDocument();
-    expect(screen.getByText("Response returned")).toBeInTheDocument();
+    expect(screen.getByText("收到请求")).toBeInTheDocument();
+    expect(screen.getByText(/调用前护栏：conduct/)).toBeInTheDocument();
+    expect(screen.getByText("LLM 调用")).toBeInTheDocument();
+    expect(screen.getByText("返回响应")).toBeInTheDocument();
     expect(screen.queryByText(/^T\+/)).not.toBeInTheDocument();
   });
 
@@ -151,8 +151,8 @@ describe("GuardrailViewer", () => {
 
     const rows = screen.getAllByTestId("lifecycle-row");
     const rowIndex = (label: RegExp): number => rows.findIndex((r) => within(r).queryByText(label) !== null);
-    const untimedIndex = rowIndex(/Pre-call guardrail: conduct/);
-    const timedIndex = rowIndex(/Pre-call guardrail: timed-pre-rail/);
+    const untimedIndex = rowIndex(/调用前护栏：conduct/);
+    const timedIndex = rowIndex(/调用前护栏：timed-pre-rail/);
 
     expect(untimedIndex).toBeGreaterThanOrEqual(0);
     expect(timedIndex).toBeGreaterThanOrEqual(0);
@@ -167,8 +167,8 @@ describe("GuardrailViewer", () => {
 
     const rows = screen.getAllByTestId("lifecycle-row");
     const rowIndex = (label: RegExp): number => rows.findIndex((r) => within(r).queryByText(label) !== null);
-    const untimedIndex = rowIndex(/Post-call guardrail: untimed-post-rail/);
-    const earlyIndex = rowIndex(/Post-call guardrail: ran-rail/);
+    const untimedIndex = rowIndex(/调用后护栏：untimed-post-rail/);
+    const earlyIndex = rowIndex(/调用后护栏：ran-rail/);
 
     expect(untimedIndex).toBeGreaterThanOrEqual(0);
     expect(earlyIndex).toBeGreaterThanOrEqual(0);
@@ -186,11 +186,11 @@ describe("GuardrailViewer", () => {
       return row;
     };
 
-    expect(within(lifecycleRow("Request received")).getByText("T+0ms")).toBeInTheDocument();
-    expect(within(lifecycleRow(/Post-call guardrail: ran-rail/)).getByText("T+250ms")).toBeInTheDocument();
-    expect(within(lifecycleRow("Response returned")).getByText("T+251ms")).toBeInTheDocument();
+    expect(within(lifecycleRow("收到请求")).getByText("T+0ms")).toBeInTheDocument();
+    expect(within(lifecycleRow(/调用后护栏：ran-rail/)).getByText("T+250ms")).toBeInTheDocument();
+    expect(within(lifecycleRow("返回响应")).getByText("T+251ms")).toBeInTheDocument();
 
-    const untimedRow = within(lifecycleRow(/Pre-call guardrail: conduct/));
+    const untimedRow = within(lifecycleRow(/调用前护栏：conduct/));
     expect(untimedRow.getByText("—")).toBeInTheDocument();
     expect(untimedRow.queryByText(/^T\+/)).not.toBeInTheDocument();
   });
@@ -203,7 +203,7 @@ describe("GuardrailViewer", () => {
     renderWithProviders(<GuardrailViewer data={data} />);
 
     // In collapsed state, the match count badge is visible
-    expect(screen.getByText("3 matched")).toBeInTheDocument();
+    expect(screen.getByText("命中 3")).toBeInTheDocument();
 
     // Expand the evaluation card to see entity details
     await user.click(screen.getByText("pii-rail"));
@@ -216,7 +216,7 @@ describe("GuardrailViewer", () => {
     const data = makeGuardrailInformation({ masked_entity_count: {} });
     renderWithProviders(<GuardrailViewer data={data} />);
 
-    expect(screen.queryByText(/matched/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/命中/)).not.toBeInTheDocument();
   });
 
   it("toggles evaluation card open/closed on click", async () => {
@@ -304,7 +304,7 @@ describe("GuardrailViewer", () => {
     });
     renderWithProviders(<GuardrailViewer data={data} />);
     // Header still present
-    expect(screen.getByText("Guardrails & Policy Compliance")).toBeInTheDocument();
+    expect(screen.getByText("护栏与策略合规")).toBeInTheDocument();
 
     // Expand the card
     await user.click(screen.getByText("pii-rail"));
@@ -317,7 +317,7 @@ describe("GuardrailViewer", () => {
     const data = makeGuardrailInformation({ guardrail_mode: null });
     renderWithProviders(<GuardrailViewer data={data} />);
 
-    expect(screen.getByText("Guardrails & Policy Compliance")).toBeInTheDocument();
+    expect(screen.getByText("护栏与策略合规")).toBeInTheDocument();
     // Null mode should display as dash
     expect(screen.getByText("—")).toBeInTheDocument();
   });
@@ -328,8 +328,8 @@ describe("GuardrailViewer", () => {
     });
     renderWithProviders(<GuardrailViewer data={data} />);
 
-    expect(screen.getByText("Guardrails & Policy Compliance")).toBeInTheDocument();
-    expect(screen.getByText("PRE-CALL")).toBeInTheDocument();
+    expect(screen.getByText("护栏与策略合规")).toBeInTheDocument();
+    expect(screen.getByText("调用前")).toBeInTheDocument();
   });
 
   it("renders without crashing when guardrail_mode is an array and shows in both timeline buckets", () => {
@@ -338,12 +338,12 @@ describe("GuardrailViewer", () => {
     });
     renderWithProviders(<GuardrailViewer data={data} />);
 
-    expect(screen.getByText("Guardrails & Policy Compliance")).toBeInTheDocument();
+    expect(screen.getByText("护栏与策略合规")).toBeInTheDocument();
     // Mode badge shows first element formatted
-    expect(screen.getByText("PRE-CALL")).toBeInTheDocument();
+    expect(screen.getByText("调用前")).toBeInTheDocument();
     // Entry should appear in both pre-call and post-call timeline sections
-    expect(screen.getByText(/Pre-call guardrail:/)).toBeInTheDocument();
-    expect(screen.getByText(/Post-call guardrail:/)).toBeInTheDocument();
+    expect(screen.getByText(/调用前护栏：/)).toBeInTheDocument();
+    expect(screen.getByText(/调用后护栏：/)).toBeInTheDocument();
   });
 
   it("integration: renders with real Bedrock details without mocks", async () => {
