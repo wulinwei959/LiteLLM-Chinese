@@ -418,25 +418,21 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
           {/* Header with Title, Description and URL */}
           <div className="flex justify-between items-center mb-6">
             <div className="flex flex-col items-start">
-              <h2 className="text-center text-xl font-semibold">AI Hub</h2>
+              <h2 className="text-center text-xl font-semibold">{t("hubTitle")}</h2>
               {isAdminRole(userRole || "") ? (
-                <p className="text-sm text-muted-foreground">
-                  Make models, agents, and MCP servers public for developers to know what&apos;s available.
-                </p>
+                <p className="text-sm text-muted-foreground">{t("hubAdminDescription")}</p>
               ) : (
-                <p className="text-sm text-muted-foreground">
-                  A list of all public model names personally available to you.
-                </p>
+                <p className="text-sm text-muted-foreground">{t("hubUserDescription")}</p>
               )}
             </div>
             <div className="flex items-center space-x-4">
-              <p>Model Hub URL:</p>
+              <p>{t("modelHubUrlLabel")}</p>
               <div className="flex items-center bg-border px-2 py-1 rounded-sm">
                 <p className="mr-2">{`${getProxyBaseUrl()}/ui/model_hub_table`}</p>
                 <button
                   onClick={() => void copyToClipboard(`${getProxyBaseUrl()}/ui/model_hub_table`)}
                   className="p-1 hover:bg-accent rounded-sm transition-colors"
-                  title="Copy URL"
+                  title={t("copyUrl")}
                 >
                   <Copy size={16} className="text-muted-foreground" />
                 </button>
@@ -455,16 +451,16 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
           <Tabs defaultValue="models">
             <TabsList variant="line" className="mb-4 h-auto w-full justify-start rounded-none border-b p-0">
               <TabsTrigger value="models" className="flex-none rounded-none px-4 py-2">
-                Model Hub
+                {t("tabModels")}
               </TabsTrigger>
               <TabsTrigger value="agents" className="flex-none rounded-none px-4 py-2">
-                Agent Hub
+                {t("tabAgents")}
               </TabsTrigger>
               <TabsTrigger value="mcp" className="flex-none rounded-none px-4 py-2">
-                MCP Hub
+                {t("tabMcp")}
               </TabsTrigger>
               <TabsTrigger value="skills" className="flex-none rounded-none px-4 py-2">
-                Skill Hub
+                {t("tabSkills")}
               </TabsTrigger>
             </TabsList>
 
@@ -476,7 +472,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                   {/* Header with Make Public Button */}
                   {publicPage == false && canModify && (
                     <div className="flex justify-end mb-4">
-                      <Button onClick={() => handleMakePublicPage()}>Select Models to Make Public</Button>
+                      <Button onClick={() => handleMakePublicPage()}>{t("selectModelsToMakePublic")}</Button>
                     </div>
                   )}
 
@@ -493,15 +489,11 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                     sorting={modelSorting}
                     onSortingChange={setModelSorting}
                     isLoading={loading}
-                    loadingMessage="Loading models…"
+                    loadingMessage={t("loadingModels")}
                     noDataMessage={
                       <HubEmptyState
-                        title={modelHubData?.length ? "No matching models" : "No models yet"}
-                        body={
-                          modelHubData?.length
-                            ? "Adjust the filters to see more models."
-                            : "Models added to this proxy will appear here."
-                        }
+                        title={modelHubData?.length ? t("noMatchingModels") : t("noModelsYet")}
+                        body={modelHubData?.length ? t("modelsFilterHint") : t("modelsEmptyHint")}
                       />
                     }
                     size="compact"
@@ -521,18 +513,18 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                   {/* Header with Make Public Button */}
                   {publicPage == false && canModify && (
                     <div className="flex justify-end mb-4">
-                      <Button onClick={() => handleMakeAgentPublicPage()}>Select Agents to Make Public</Button>
+                      <Button onClick={() => handleMakeAgentPublicPage()}>{t("selectAgentsToMakePublic")}</Button>
                     </div>
                   )}
 
                   <div className="mb-4">
-                    <p className="text-sm font-medium mb-2">Search Agents:</p>
+                    <p className="text-sm font-medium mb-2">{t("searchAgentsLabel")}</p>
                     <InputGroup className="max-w-sm">
                       <InputGroupAddon>
                         <SearchIcon className="size-4 text-muted-foreground" />
                       </InputGroupAddon>
                       <InputGroupInput
-                        placeholder="Search agent names or descriptions..."
+                        placeholder={t("searchAgentsPlaceholder")}
                         value={agentSearchTerm}
                         onChange={(e) => setAgentSearchTerm(e.target.value)}
                       />
@@ -540,7 +532,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                         <InputGroupAddon align="inline-end">
                           <InputGroupButton
                             size="icon-xs"
-                            aria-label="Clear search"
+                            aria-label={t("clearSearch")}
                             onClick={() => setAgentSearchTerm("")}
                           >
                             <X />
@@ -560,15 +552,11 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                     sorting={agentSorting}
                     onSortingChange={setAgentSorting}
                     isLoading={agentLoading}
-                    loadingMessage="Loading agents…"
+                    loadingMessage={t("loadingAgents")}
                     noDataMessage={
                       <HubEmptyState
-                        title={agentHubData?.length ? "No matching agents" : "No agents yet"}
-                        body={
-                          agentHubData?.length
-                            ? "Adjust the search to see more agents."
-                            : "Agents added to this proxy will appear here."
-                        }
+                        title={agentHubData?.length ? t("noMatchingAgents") : t("noAgentsYet")}
+                        body={agentHubData?.length ? t("agentsSearchHint") : t("agentsEmptyHint")}
                       />
                     }
                     size="compact"
@@ -592,7 +580,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                         onClick={() => handleMakeMcpPublicPage()}
                         disabled={isMCPHubVisibilityDisabled(mcpLoading, mcpHubData)}
                       >
-                        Manage MCP Hub Visibility
+                        {t("manageMcpHubVisibility")}
                       </Button>
                     </div>
                   )}
@@ -607,13 +595,8 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                     sorting={mcpSorting}
                     onSortingChange={setMcpSorting}
                     isLoading={mcpLoading}
-                    loadingMessage="Loading MCP servers…"
-                    noDataMessage={
-                      <HubEmptyState
-                        title="No MCP servers yet"
-                        body="MCP servers added to this proxy will appear here."
-                      />
-                    }
+                    loadingMessage={t("loadingMcpServers")}
+                    noDataMessage={<HubEmptyState title={t("noMcpServersYet")} body={t("mcpServersEmptyHint")} />}
                     size="compact"
                   />
                 </Card>
@@ -632,7 +615,9 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
               <TabsContent value="skills" keepMounted>
                 {publicPage == false && canModify && (
                   <div className="flex justify-end mb-4">
-                    <Button onClick={() => setIsMakeSkillPublicModalVisible(true)}>Select Skills to Make Public</Button>
+                    <Button onClick={() => setIsMakeSkillPublicModalVisible(true)}>
+                      {t("selectSkillsToMakePublic")}
+                    </Button>
                   </div>
                 )}
                 <SkillHubDashboard
@@ -652,10 +637,8 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
         </div>
       ) : (
         <Card className="mx-auto max-w-xl mt-10 px-6">
-          <p className="text-xl text-center mb-2 text-foreground">Public Model Hub not enabled.</p>
-          <p className="text-base text-center text-foreground">
-            Ask your proxy admin to enable this on their Admin UI.
-          </p>
+          <p className="text-xl text-center mb-2 text-foreground">{t("publicHubNotEnabled")}</p>
+          <p className="text-base text-center text-foreground">{t("publicHubNotEnabledHint")}</p>
         </Card>
       )}
 

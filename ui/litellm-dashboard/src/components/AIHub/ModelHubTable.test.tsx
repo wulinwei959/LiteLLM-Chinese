@@ -152,7 +152,7 @@ describe("ModelHubTable", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("AI Hub")).toBeInTheDocument();
+      expect(screen.getByText("AI 中心")).toBeInTheDocument();
     });
   });
 
@@ -167,7 +167,7 @@ describe("ModelHubTable", () => {
 
     renderWithProviders(<ModelHubTable accessToken={null} publicPage={false} premiumUser={false} userRole={null} />);
 
-    expect(await screen.findByText("No models yet")).toBeInTheDocument();
+    expect(await screen.findByText("暂无模型")).toBeInTheDocument();
     expect(networking.modelHubCall).not.toHaveBeenCalled();
   });
 
@@ -225,9 +225,9 @@ describe("ModelHubTable", () => {
     it("requires a fresh MCP publication list before and after saving", async () => {
       const servers = Promise.withResolvers<MCPServerData[]>();
       const { user } = await renderHub([], servers.promise);
-      await user.click(screen.getByRole("tab", { name: "MCP Hub" }));
+      await user.click(screen.getByRole("tab", { name: "MCP 中心" }));
 
-      const manageVisibility = screen.getByRole("button", { name: "Manage MCP Hub Visibility" });
+      const manageVisibility = screen.getByRole("button", { name: "管理 MCP 中心的可见性" });
       expect(manageVisibility).toBeDisabled();
       await act(async () => servers.resolve([]));
       expect(manageVisibility).toBeEnabled();
@@ -249,8 +249,8 @@ describe("ModelHubTable", () => {
       const { user, search } = await renderHub();
 
       await user.type(search, "opus");
-      await user.click(screen.getByRole("tab", { name: "Agent Hub" }));
-      await user.click(screen.getByRole("tab", { name: "Model Hub" }));
+      await user.click(screen.getByRole("tab", { name: "智能体中心" }));
+      await user.click(screen.getByRole("tab", { name: "模型中心" }));
 
       expect(await screen.findByPlaceholderText("Search model names...")).toHaveValue("opus");
     });
@@ -271,10 +271,10 @@ describe("ModelHubTable", () => {
       const agentCount = (expected: string) =>
         screen.getByText((_, el) => el?.tagName === "P" && el.textContent === expected);
 
-      await user.click(screen.getByRole("tab", { name: "Agent Hub" }));
+      await user.click(screen.getByRole("tab", { name: "智能体中心" }));
       expect(await screen.findByText("Billing Router")).toBeInTheDocument();
 
-      const search = screen.getByPlaceholderText("Search agent names or descriptions...");
+      const search = screen.getByPlaceholderText("搜索智能体名称或描述...");
       await user.type(search, "support tickets");
       expect(screen.queryByText("Billing Router")).not.toBeInTheDocument();
       expect(screen.getByText("Support Bot")).toBeInTheDocument();
@@ -282,7 +282,7 @@ describe("ModelHubTable", () => {
 
       await user.clear(search);
       await user.type(search, "zzzz");
-      expect(screen.getByText("No matching agents")).toBeInTheDocument();
+      expect(screen.getByText("没有匹配的智能体")).toBeInTheDocument();
       expect(agentCount("已显示 0，共 2 个智能体")).toBeInTheDocument();
     });
 
