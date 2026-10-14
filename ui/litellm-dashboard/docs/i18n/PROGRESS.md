@@ -1,6 +1,26 @@
 # 开发进度
 
-数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 35 簇更新
+
+批次 24 第 35 簇：`components/chat/ChatMessages.tsx`（473 行，接入后 486 行）接入 `chat`，新开 `chat.messages.*` 11 键。同簇把第 34 簇的 `chat.appsPanel.back` 收进 `common.back`——概念与取值都逐字节相同（`Back` / `返回`），没必要两处各存一份。两个消息目录各 +13 行、-1 行：新增 11 个键加组壳与逗号，删掉那 1 个重复键，除此之外仍是纯插不删
+
+改造形态：
+
+- 4 个只在文件内部使用的组件（`OmittedImage`、`ThinkingPlaceholder`、`CopyButton`、`ToolCard`）各自 `useTranslations("chat")`，不传 `t` prop（沿用第 31、32、34 簇）。`markdownWithoutImages` 的 `img` 分支原来是内联 `<span>{alt || "Image omitted"}</span>`，内联箭头函数在模块级常量里，挂不了 hook，所以换成 `<OmittedImage alt={alt} />`——`components` 那个对象保持模块级，不用 `useMemo` 重建，也不会让 react-markdown 每次渲染都换组件类型
+- `Cancel`、`Copy` 复用 `common.cancel` / `common.copy`，走 `commonT = useTranslations("common")`（先例 `VirtualKeysPage/VirtualKeysTable.tsx:95-96`）。`missingKeys` 守卫只看 `\bt(`，看不到 `commonT(...)`，但 `AppConfig.Messages` 把键 union 绑到了命名空间，写错作用域是 tsc 报错，不会漏
+- `Copied!` 没有复用 `common.copied`（那是 `Copied` / `已复制`，差一个感叹号），按"概念与取值都相同才复用"另开 `chat.messages.copied`
+- `[stopped]` 是 `app/chat/page.tsx:233` 追加进消息正文的中断标记，属于数据不是文案：本簇只翻渲染时回显的那一段（`chat.messages.stopped`，EN 取值逐字节还是 `[stopped]`，ZH 为 `已停止`），剥离用的 `endsWith("[stopped]")` 不动，历史会话里已存好的正文照样能剥
+- 3 处 `aria-label`（编辑框、编辑按钮、复制按钮）都接了键，可及名跟着 locale 走；`Edit message` 的 tooltip 与两处 `aria-label` 共用 `chat.messages.editMessage`
+
+测试侧断言一处没改：`chat` / `liteadmin` / `app/chat` 三个目录 grep 过，`ChatMessages` 的文案此前没进过任何断言。要改的是 provider——`src/app/chat/page.integration.test.tsx` 原来两处都是裸 `render(<ChatConversationPage />)`，接入后子树里的 hook 找不到 `NextIntlClientProvider` 会直接抛，补成 `<LocaleProvider locale="zh-CN">`（同文件剩下的 `How can I help you today?`、`Send`、存储横幅仍断言英文，它们来自本簇没动的 `ChatShell.tsx`）。`LiteAdminConversation.tsx:43` 也渲染 `ChatMessageContent`，但 `LiteAdmin.integration.test.tsx` 的 `tree()` 本来就包了 `LocaleProvider`，不用动
+
+验证：`npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin` → 70 文件 861 例全绿，`Type Errors no errors`；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 三个改动文件 0 error / 5 warning（都是既有告警：`no-large-inline-object-arg`、`testing-library/no-node-access`）；`npm run build` exit 0；prettier 先证 HEAD 干净再跑，三个文件 unchanged
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 421 到 422，46.3%；`components/chat` 11 个非测试文件接入 4 个，剩 7 个按大小排是 `KeysPanel.tsx`（399）、`LogsPanel.tsx`（344）、`ConversationList.tsx`（332）、`MCPCredentialsTab.tsx`（232）、`UsagePanel.tsx`（212）、`ChatShell.tsx`（149）、`ConnectFlowSurface.tsx`（59，无自有文案）。键数 6675 到 6685（`chat` 命名空间 43 到 53），中英同值 86 不变
+
+本簇新记的欠账：`formatTimestamp` 输出的是手写 `HH:MM`（`padStart` 拼串，没走 `Intl.DateTimeFormat`），与第 23、24 簇的时序格式同一口径，归"## 技术债"里的日期/数字欠账。`redactSensitiveValues` 打的 `[redacted]` 判为占位值不译，它进的是参数快照的展示与复制文本，跟 `logs` 侧那批哨兵值同类
 
 ## 2026-10-14 第 34 簇更新
 
@@ -520,9 +540,9 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 | 项                       | 数值                                                 |
 | ------------------------ | ---------------------------------------------------- |
-| 命名空间                 | 39                                                   |
-| `en.json` 叶子键          | 6675（2026-10-14 第 34 簇；6646 是第 33 簇后，6632 是第 32 簇后，6584 是第 31 簇后，6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后）|
-| `zh-CN.json` 叶子键       | 6675                                                 |
+| 命名空间                 | 40（此前记 39 是数错，`en.json` 顶层键实际一直是 40 个）|
+| `en.json` 叶子键          | 6685（2026-10-15 第 35 簇；6675 是第 34 簇后，6646 是第 33 簇后，6632 是第 32 簇后，6584 是第 31 簇后，6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后）|
+| `zh-CN.json` 叶子键       | 6685                                                 |
 | 键树一致性               | 一致，`messagesParity` 通过                           |
 | 中英文取值完全相同的键    | 86（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
 
@@ -530,7 +550,7 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 ## 文件覆盖率
 
-`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%），第 30 簇后 912 / 417（45.7%），第 31 簇后 912 / 418（45.8%），第 32 簇后 912 / 418（45.8%，本簇文件此前已接入，比率不变），第 33 簇后 912 / 420（46.1%），第 34 簇后 912 / 421（46.2%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
+`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%），第 30 簇后 912 / 417（45.7%），第 31 簇后 912 / 418（45.8%），第 32 簇后 912 / 418（45.8%，本簇文件此前已接入，比率不变），第 33 簇后 912 / 420（46.1%），第 34 簇后 912 / 421（46.2%），第 35 簇后 912 / 422（46.3%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
 
 ## 按路由的进度
 
