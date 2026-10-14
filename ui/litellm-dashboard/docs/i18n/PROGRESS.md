@@ -1,6 +1,32 @@
 # 开发进度
 
-数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 27 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 28 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-14 第 28 簇更新
+
+批次 24 第 28 簇：`components/view_logs/` 根目录的 4 个查看器 `ConfigInfoMessage.tsx`、`CostBreakdownViewer.tsx`、`EvalViewer/EvalViewer.tsx`、`VectorStoreViewer.tsx` 接入 `logs`，新增 `logs.configInfo.*` 3 键、`logs.costBreakdown.*` 17 键、`logs.eval.*` 17 键、`logs.vectorStore.*` 11 键，共 48 键；两个消息目录各 +56 行，纯增不删
+
+改造形态：
+
+- `ConfigInfoMessage` 的正文段是 `t.rich`，`<code>` 包 `proxy_config.yaml`、`<strong>` 包 `Admin Settings → Logging Settings`，两个处理器各接 `chunks`
+- hook 一律早于早退：`ConfigInfoMessage` 的 `t` 在 `if (!show) return null;` 之前，`VectorStoreViewer` 在两个 `useState` 之后、`if (!data || data.length === 0)` 之前；`EvalViewer` 与私有子组件 `EvalEntryCard` 各调一次，不做 props 透传
+- `CostBreakdownViewer` 的三处 token 计数从模板串抽成带占位符的消息（`tokensCount` / `promptTokensCount` / `completionTokensCount`），数字仍在组件里 `toLocaleString()`；折扣与利润加成的百分比括注同理收进 `discountPct` / `marginPct`，`formatPercent` 的结果走 `{percent}`
+- `eval.scoreValue` 的值 `"{score} / 100"` 是纯数字加分隔符，中英一致，这就是同值键从 85 到 86 的那一个
+- `vectorStore.logoAlt` 沿用 `mcpServers.tools.serverLogoAlt` 的既有口径：英文 `"{name} logo"`、中文 `"{name} Logo"`，Logo 属产品词不译
+- 通过/未通过徽标走三元键名 `t(passed ? "eval.passed" : "eval.failed")`，与前面几簇同一写法
+
+不译：
+
+- `general_settings:` 那段 YAML 是要复制进配置文件的代码块，`<pre>` 里的三行照旧
+- `additional_costs` 的键名（`Azure Model Router Flat Cost`、`Routing Fee` 等）是后端返回的数据值，连渲染时补的那个 ASCII 冒号一起留在 `.tsx` 里
+- `vectorStore` 的 `formatTime` 用 `date.toLocaleString()`、耗时是 `${duration.toFixed(2)}ms`，两者都归"## 技术债"里的日期/数字格式欠账，本簇不动
+- `Admin Settings → Logging Settings` 是菜单路径，中文值里按前面几簇的口径保留英文原文
+
+测试同步：`ConfigInfoMessage.test.tsx` 从裸 `render` 换成 `renderWithProviders`（固定 zh-CN），标题断言改 `请求/响应数据不可用`；`CostBreakdownViewer.test.tsx` 改 17 处（`成本明细` 3、`输入成本：` / `输出成本：` / `最终计算成本：` 各 2、`提示缓存读取成本：` / `提示缓存写入成本：` 各 1、`/500 个输入令牌/`、`/200 个输出令牌/`、`/（已缓存）/`、`/折扣（10\.00%）/`、`/利润加成（15\.00%）/`）；`LogDetailContent.integration.test.tsx` 改 3 处（`请求/响应数据不可用` 2、`向量存储请求` 1）。`additional_costs` 的 5 条数据键断言、`should reference Admin Settings → Logging Settings` 那条正则、`/prompt tokens \+ .* completion tokens/` 的负断言与 `Start Time` / `End Time` / `Provider` 这些 `LogDetailContent` 自己的描述项标签都不动。用例数不增不减
+
+验证：`src/components/view_logs` + `src/lib/i18n` 52 文件 671 例全绿；`tsc --noEmit -p .` 仍 883 条、非测试文件 0 条；这 7 个文件 `eslint` 0 错误、6 条 warning 全在既有行（`CostBreakdownViewer` 的 5 条 `complexity` / 条件链与 `VectorStoreViewer` 的 1 条 `<img>`，用 `git show HEAD:… | eslint --stdin` 复测 HEAD 同样是这 5 条）；`npm run build` 退出 0；prettier 只 `--write` 了 3 个查看器 tsx，两个 messages JSON 继续不做整文件重排，`git diff --numstat` 各 56 增 0 删；`PLAN.md` 与 `PROGRESS.md` 在 HEAD 上就不是 prettier 干净（表格会被整体重排），同样不 `--write`
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 408 到 412，45.2%；`components/view_logs` 71 个里接入 54 个，剩 17 个里 4 个是 `TraceView` 的无文案文件，其余为 `GuardrailViewer/` 5 个与根目录的 `columns.tsx` / `AuditLogsTableColumns.tsx` / `logs_utils.tsx` / `log_filter_logic.tsx` / `RequestLogsPanel.tsx` / `ToolsSection/JsonToolView.tsx` / `LogDetailsDrawer/` 的 2 个消息块。键数 6416 到 6464，中英同值 85 到 86
 
 ## 2026-10-14 第 27 簇更新
 
@@ -357,16 +383,16 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 | 项                       | 数值                                                 |
 | ------------------------ | ---------------------------------------------------- |
 | 命名空间                 | 39                                                   |
-| `en.json` 叶子键          | 6416（2026-10-14 第 27 簇；6365 是第 26 簇后，6351 是第 25 簇后，6320 是第 24 簇后，6212 是第 23 簇后）|
-| `zh-CN.json` 叶子键       | 6416                                                 |
+| `en.json` 叶子键          | 6464（2026-10-14 第 28 簇；6416 是第 27 簇后，6365 是第 26 簇后，6351 是第 25 簇后，6320 是第 24 簇后）|
+| `zh-CN.json` 叶子键       | 6464                                                 |
 | 键树一致性               | 一致，`messagesParity` 通过                           |
-| 中英文取值完全相同的键    | 85（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
+| 中英文取值完全相同的键    | 86（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
 
-中英文取值相同的那 85 个不是漏翻。产品名、缩写、`CSV` 这类不需要翻译的词保留英文是刻意的，`GLOSSARY.md` 里有对应条目
+中英文取值相同的那 86 个不是漏翻。产品名、缩写、`CSV` 这类不需要翻译的词保留英文是刻意的，`GLOSSARY.md` 里有对应条目
 
 ## 文件覆盖率
 
-`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
+`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
 
 ## 按路由的进度
 
