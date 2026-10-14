@@ -2,6 +2,7 @@ import React from "react";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useChatHistory } from "@/components/chat/useChatHistory";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import ChatConversationPage from "./page";
 
 const { mockMakeOpenAIResponsesRequest, shellState } = vi.hoisted(() => ({
@@ -69,7 +70,11 @@ const ON_USAGE_DATA_INDEX = 8;
 const ON_TOTAL_LATENCY_INDEX = 24;
 
 async function sendOneMessage(): Promise<void> {
-  render(<ChatConversationPage />);
+  render(
+    <LocaleProvider locale="zh-CN">
+      <ChatConversationPage />
+    </LocaleProvider>,
+  );
   expect(await screen.findByRole("button", { name: /gpt-5\.4-mini/ })).toBeInTheDocument();
   fireEvent.change(screen.getByPlaceholderText("How can I help you today?"), {
     target: { value: "How much did this cost?" },
@@ -141,7 +146,11 @@ describe("/ui/chat storage banner", () => {
   });
 
   it("keeps the dismiss control amber on hover instead of the ghost variant's foreground", async () => {
-    render(<ChatConversationPage />);
+    render(
+      <LocaleProvider locale="zh-CN">
+        <ChatConversationPage />
+      </LocaleProvider>,
+    );
 
     const banner = await screen.findByText("Chat history won't be saved in this browser session");
     const dismiss = within(banner.parentElement!).getByRole("button");
