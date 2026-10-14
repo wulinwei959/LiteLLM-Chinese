@@ -3811,7 +3811,10 @@
         "enterErrorMessage": "Enter error message…",
         "enterKeyHash": "Enter key hash…",
         "enterSessionId": "Enter session ID…",
-        "enterPublicModel": "Enter public model or search tool…"
+        "enterPublicModel": "Enter public model or search tool…",
+        "enterObjectId": "Enter object ID…",
+        "enterUserId": "Enter user ID…",
+        "enterTeamId": "Enter team ID…"
       },
       "empty": {
         "teams": "No teams found",
@@ -4021,6 +4024,58 @@
       "parameters": "Parameters",
       "parameterName": "Parameter",
       "calledWith": "Called With"
+    },
+    "auditLogs": {
+      "filters": "Filters",
+      "filtersDesc": "Narrow down audit log entries",
+      "searchPlaceholder": "Search audit logs by ID…",
+      "loading": "Loading audit logs…",
+      "empty": "No audit logs yet",
+      "emptyDesc": "Administrative changes to keys, teams, users, and models will appear here.",
+      "emptyFiltered": "No matching audit logs",
+      "emptyFilteredDesc": "No audit log entries match your filters.",
+      "enterpriseTitle": "✨ Enterprise Feature.",
+      "enterpriseDesc": "This is a LiteLLM Enterprise feature, and requires a valid key to use.",
+      "enterprisePreview": "Here's a preview of what Audit Logs offer:",
+      "previewAlt": "Audit Logs Preview",
+      "allActions": "All Actions",
+      "allTables": "All Tables",
+      "columns": {
+        "timestamp": "Timestamp",
+        "action": "Action",
+        "table": "Table",
+        "objectId": "Object ID",
+        "changedBy": "Changed By",
+        "apiKeyHash": "API Key (Hash)"
+      },
+      "actions": {
+        "created": "Created",
+        "updated": "Updated",
+        "deleted": "Deleted",
+        "rotated": "Rotated",
+        "killSwitchFired": "Kill switch fired"
+      },
+      "tables": {
+        "keys": "Keys",
+        "teams": "Teams",
+        "users": "Users",
+        "organizations": "Organizations",
+        "models": "Models",
+        "agents": "Agents"
+      },
+      "drawer": {
+        "title": "Audit log details",
+        "before": "Before",
+        "after": "After",
+        "copyJson": "Copy JSON",
+        "notApplicable": "N/A",
+        "noDiff": "No differing fields detected",
+        "tokenLabel": "Token: ",
+        "spendLabel": "Spend: ",
+        "maxBudgetLabel": "Max Budget: ",
+        "copyObjectId": "Copy object ID",
+        "copyKeyHash": "Copy API key hash"
+      }
     }
   },
   "projects": {

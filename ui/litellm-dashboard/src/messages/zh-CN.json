@@ -3811,7 +3811,10 @@
         "enterErrorMessage": "输入错误信息…",
         "enterKeyHash": "输入密钥哈希…",
         "enterSessionId": "输入会话 ID…",
-        "enterPublicModel": "输入公开模型或搜索工具…"
+        "enterPublicModel": "输入公开模型或搜索工具…",
+        "enterObjectId": "输入对象 ID…",
+        "enterUserId": "输入用户 ID…",
+        "enterTeamId": "输入团队 ID…"
       },
       "empty": {
         "teams": "未找到团队",
@@ -4021,6 +4024,58 @@
       "parameters": "参数",
       "parameterName": "参数名",
       "calledWith": "调用入参"
+    },
+    "auditLogs": {
+      "filters": "筛选",
+      "filtersDesc": "缩小审计日志的范围",
+      "searchPlaceholder": "按 ID 搜索审计日志…",
+      "loading": "正在加载审计日志…",
+      "empty": "暂无审计日志",
+      "emptyDesc": "密钥、团队、用户与模型的后台变更会显示在这里",
+      "emptyFiltered": "没有匹配的审计日志",
+      "emptyFilteredDesc": "没有符合筛选条件的审计日志条目",
+      "enterpriseTitle": "✨ 企业版功能",
+      "enterpriseDesc": "这是 LiteLLM 企业版功能，需要有效的企业版密钥才能使用",
+      "enterprisePreview": "下面是审计日志能提供的内容预览",
+      "previewAlt": "审计日志预览",
+      "allActions": "全部操作",
+      "allTables": "全部数据表",
+      "columns": {
+        "timestamp": "时间戳",
+        "action": "操作",
+        "table": "数据表",
+        "objectId": "对象 ID",
+        "changedBy": "变更者",
+        "apiKeyHash": "API 密钥（哈希）"
+      },
+      "actions": {
+        "created": "已创建",
+        "updated": "已更新",
+        "deleted": "已删除",
+        "rotated": "已轮换",
+        "killSwitchFired": "熔断触发"
+      },
+      "tables": {
+        "keys": "密钥",
+        "teams": "团队",
+        "users": "用户",
+        "organizations": "组织",
+        "models": "模型",
+        "agents": "智能体"
+      },
+      "drawer": {
+        "title": "审计日志详情",
+        "before": "变更前",
+        "after": "变更后",
+        "copyJson": "复制 JSON",
+        "notApplicable": "无",
+        "noDiff": "未检测到有差异的字段",
+        "tokenLabel": "令牌：",
+        "spendLabel": "花费：",
+        "maxBudgetLabel": "最大预算：",
+        "copyObjectId": "复制对象 ID",
+        "copyKeyHash": "复制 API 密钥哈希"
+      }
     }
   },
   "projects": {

@@ -1,7 +1,8 @@
 import { Check, Copy } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState, useCallback } from "react";
 import moment from "moment";
-import { AuditLogEntry, AUDIT_TABLE_NAME_DISPLAY } from "../AuditLogsTableColumns";
+import { AuditLogEntry, auditActionLabel, auditTableNameLabel } from "../AuditLogsTableColumns";
 import DefaultProxyAdminTag from "../../common_components/DefaultProxyAdminTag";
 import CopyButton from "@/components/shared/CopyButton";
 import { StatusBadge, type StatusTone } from "@/components/shared/table_cells/status_badge";
@@ -24,6 +25,7 @@ const ACTION_TONE: Record<string, StatusTone> = {
 };
 
 function CopyableJsonBlock({ label, value }: { label: string; value: Record<string, any> }) {
+  const t = useTranslations("logs");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -53,7 +55,13 @@ function CopyableJsonBlock({ label, value }: { label: string; value: Record<stri
     <div className="overflow-hidden rounded-sm border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border bg-muted px-3 py-2">
         <span className="text-xs font-semibold text-muted-foreground">{label}</span>
-        <Button variant="ghost" size="icon-xs" onClick={handleCopy} title="Copy JSON" aria-label="Copy JSON">
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          onClick={handleCopy}
+          title={t("auditLogs.drawer.copyJson")}
+          aria-label={t("auditLogs.drawer.copyJson")}
+        >
           {copied ? <Check className="text-success" /> : <Copy />}
         </Button>
       </div>
@@ -74,6 +82,7 @@ function MetadataRow({ label, value }: { label: string; value: React.ReactNode }
 }
 
 function DiffSection({ log }: { log: AuditLogEntry }) {
+  const t = useTranslations("logs");
   const { action, table_name, before_value, updated_values } = log;
   const isKeyTable = table_name === "LiteLLM_VerificationToken";
   const isUpdateAction = action === "updated" || action === "rotated";
@@ -111,8 +120,9 @@ function DiffSection({ log }: { log: AuditLogEntry }) {
       }
     });
 
-    displayBefore = Object.keys(changedBefore).length > 0 ? changedBefore : { note: "No differing fields detected" };
-    displayAfter = Object.keys(changedAfter).length > 0 ? changedAfter : { note: "No differing fields detected" };
+    const note = t("auditLogs.drawer.noDiff");
+    displayBefore = Object.keys(changedBefore).length > 0 ? changedBefore : { note };
+    displayAfter = Object.keys(changedAfter).length > 0 ? changedAfter : { note };
   }
 
   const renderValue = (label: string, value: Record<string, any> | null | undefined) => {
@@ -122,7 +132,7 @@ function DiffSection({ log }: { log: AuditLogEntry }) {
           <div className="flex items-center border-b border-border bg-muted px-3 py-2">
             <span className="text-xs font-semibold text-muted-foreground">{label}</span>
           </div>
-          <p className="m-0 px-3 py-3 text-xs text-muted-foreground italic">N/A</p>
+          <p className="m-0 px-3 py-3 text-xs text-muted-foreground italic">{t("auditLogs.drawer.notApplicable")}</p>
         </div>
       );
     }
@@ -140,17 +150,20 @@ function DiffSection({ log }: { log: AuditLogEntry }) {
             <div className="space-y-1 px-3 py-3 text-xs">
               {value.token !== undefined && (
                 <p>
-                  <span className="text-muted-foreground">Token:</span> {value.token ?? "N/A"}
+                  <span className="text-muted-foreground">{t("auditLogs.drawer.tokenLabel")}</span>
+                  {value.token ?? t("auditLogs.drawer.notApplicable")}
                 </p>
               )}
               {value.spend !== undefined && (
                 <p>
-                  <span className="text-muted-foreground">Spend:</span> ${Number(value.spend).toFixed(6)}
+                  <span className="text-muted-foreground">{t("auditLogs.drawer.spendLabel")}</span>$
+                  {Number(value.spend).toFixed(6)}
                 </p>
               )}
               {value.max_budget !== undefined && (
                 <p>
-                  <span className="text-muted-foreground">Max Budget:</span> ${Number(value.max_budget).toFixed(6)}
+                  <span className="text-muted-foreground">{t("auditLogs.drawer.maxBudgetLabel")}</span>$
+                  {Number(value.max_budget).toFixed(6)}
                 </p>
               )}
             </div>
@@ -164,24 +177,25 @@ function DiffSection({ log }: { log: AuditLogEntry }) {
 
   return (
     <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-      {renderValue("Before", displayBefore)}
-      {renderValue("After", displayAfter)}
+      {renderValue(t("auditLogs.drawer.before"), displayBefore)}
+      {renderValue(t("auditLogs.drawer.after"), displayAfter)}
     </div>
   );
 }
 
 export function AuditLogDrawer({ open, onClose, log }: AuditLogDrawerProps) {
+  const t = useTranslations("logs");
   if (!log) return null;
 
-  const tableDisplay = AUDIT_TABLE_NAME_DISPLAY[log.table_name] ?? log.table_name;
+  const tableDisplay = auditTableNameLabel(t, log.table_name);
 
   return (
     <Sheet open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
       <ResizableSheetContent storageKey="litellm:auditLogDrawerWidth" className="gap-0 p-0">
-        <SheetTitle className="sr-only">Audit log details</SheetTitle>
+        <SheetTitle className="sr-only">{t("auditLogs.drawer.title")}</SheetTitle>
 
         <div className="flex shrink-0 items-center gap-3 border-b border-border bg-card px-6 py-4">
-          <StatusBadge tone={ACTION_TONE[log.action] ?? "neutral"} label={log.action} />
+          <StatusBadge tone={ACTION_TONE[log.action] ?? "neutral"} label={auditActionLabel(t, log.action)} />
           <span className="text-sm text-muted-foreground">
             {moment.utc(log.updated_at).local().format("MMM D, YYYY HH:mm:ss")}
           </span>
@@ -189,25 +203,28 @@ export function AuditLogDrawer({ open, onClose, log }: AuditLogDrawerProps) {
 
         <div className="px-6 py-5">
           <div className="mb-5 rounded-lg border border-border bg-muted p-4">
-            <p className="mb-2 text-xs font-semibold tracking-wide text-foreground uppercase">Details</p>
-            <MetadataRow label="Table" value={tableDisplay} />
+            <p className="mb-2 text-xs font-semibold tracking-wide text-foreground uppercase">{t("details")}</p>
+            <MetadataRow label={t("auditLogs.columns.table")} value={tableDisplay} />
             <MetadataRow
-              label="Object ID"
+              label={t("auditLogs.columns.objectId")}
               value={
                 <span className="inline-flex items-center gap-1 font-mono text-xs">
                   {log.object_id}
-                  <CopyButton value={log.object_id} label="Copy object ID" />
+                  <CopyButton value={log.object_id} label={t("auditLogs.drawer.copyObjectId")} />
                 </span>
               }
             />
-            <MetadataRow label="Changed By" value={<DefaultProxyAdminTag userId={log.changed_by} />} />
             <MetadataRow
-              label="API Key (Hash)"
+              label={t("auditLogs.columns.changedBy")}
+              value={<DefaultProxyAdminTag userId={log.changed_by} />}
+            />
+            <MetadataRow
+              label={t("auditLogs.columns.apiKeyHash")}
               value={
                 log.changed_by_api_key ? (
                   <span className="inline-flex items-center gap-1 font-mono text-xs break-all">
                     {log.changed_by_api_key}
-                    <CopyButton value={log.changed_by_api_key} label="Copy API key hash" />
+                    <CopyButton value={log.changed_by_api_key} label={t("auditLogs.drawer.copyKeyHash")} />
                   </span>
                 ) : (
                   "—"

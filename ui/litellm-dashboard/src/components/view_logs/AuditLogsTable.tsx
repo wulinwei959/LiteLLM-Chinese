@@ -2,6 +2,7 @@
 
 import { ColumnFiltersState, OnChangeFn, PaginationState } from "@tanstack/react-table";
 import { ScrollText } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 import {
@@ -12,8 +13,14 @@ import {
 } from "@/components/shared/DataTable";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { LogsTranslator } from "@/lib/i18n/translators";
 
-import { AUDIT_TABLE_NAME_DISPLAY, AuditLogEntry, getAuditLogsTableColumns } from "./AuditLogsTableColumns";
+import {
+  AuditLogEntry,
+  auditActionLabel,
+  auditTableNameLabel,
+  getAuditLogsTableColumns,
+} from "./AuditLogsTableColumns";
 
 interface AuditLogsTableProps {
   data: AuditLogEntry[];
@@ -32,66 +39,41 @@ interface AuditLogsTableProps {
 
 const ALL_VALUE = "all";
 
-const ACTION_OPTIONS = [
-  { label: "Created", value: "created" },
-  { label: "Updated", value: "updated" },
-  { label: "Deleted", value: "deleted" },
-  { label: "Rotated", value: "rotated" },
-  { label: "Kill switch fired", value: "kill_switch_fired" },
-] as const;
+/** Raw `action`/`table_name` values the proxy filters on; only their labels are translated. */
+const ACTION_VALUES = ["created", "updated", "deleted", "rotated", "kill_switch_fired"];
 
-const TABLE_OPTIONS = [
-  { label: "Keys", value: "LiteLLM_VerificationToken" },
-  { label: "Teams", value: "LiteLLM_TeamTable" },
-  { label: "Users", value: "LiteLLM_UserTable" },
-  { label: "Organizations", value: "LiteLLM_OrganizationTable" },
-  { label: "Models", value: "LiteLLM_ProxyModelTable" },
-  { label: "Agents", value: "LiteLLM_AgentsTable" },
-] as const;
-
-const ACTION_FILTER_ITEMS = [
-  { value: ALL_VALUE, label: "All Actions" },
-  ...ACTION_OPTIONS.map((option) => ({ value: option.value, label: option.label })),
+const TABLE_VALUES = [
+  "LiteLLM_VerificationToken",
+  "LiteLLM_TeamTable",
+  "LiteLLM_UserTable",
+  "LiteLLM_OrganizationTable",
+  "LiteLLM_ProxyModelTable",
+  "LiteLLM_AgentsTable",
 ];
 
-const TABLE_FILTER_ITEMS = [
-  { value: ALL_VALUE, label: "All Tables" },
-  ...TABLE_OPTIONS.map((option) => ({ value: option.value, label: option.label })),
-];
-
-const FILTER_LABELS: Record<string, string> = {
-  object_id: "Object ID",
-  changed_by: "Changed By",
-  team_id: "Team ID",
-  key_hash: "Key Hash",
-  action: "Action",
-  table_name: "Table",
-};
-
-const formatFilterValue = (columnId: string, value: unknown): string => {
+const formatFilterValue = (t: LogsTranslator, columnId: string, value: unknown): string => {
   const raw = String(value);
   if (columnId === "action") {
-    return ACTION_OPTIONS.find((option) => option.value === raw)?.label ?? raw;
+    return auditActionLabel(t, raw);
   }
   if (columnId === "table_name") {
-    return AUDIT_TABLE_NAME_DISPLAY[raw] ?? raw;
+    return auditTableNameLabel(t, raw);
   }
   return raw;
 };
 
 function AuditLogsEmptyState({ filtered }: { filtered: boolean }) {
+  const t = useTranslations("logs");
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <ScrollText className="size-5 text-muted-foreground" />
       </div>
       <div className="text-sm font-medium text-foreground">
-        {filtered ? "No matching audit logs" : "No audit logs yet"}
+        {filtered ? t("auditLogs.emptyFiltered") : t("auditLogs.empty")}
       </div>
       <div className="max-w-xs text-center text-sm text-muted-foreground">
-        {filtered
-          ? "No audit log entries match your filters."
-          : "Administrative changes to keys, teams, users, and models will appear here."}
+        {filtered ? t("auditLogs.emptyFilteredDesc") : t("auditLogs.emptyDesc")}
       </div>
     </div>
   );
@@ -111,9 +93,23 @@ export function AuditLogsTable({
   onRefresh,
   onViewLog,
 }: AuditLogsTableProps) {
+  const t = useTranslations("logs");
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const columns = useMemo(() => getAuditLogsTableColumns({ onViewLog }), [onViewLog]);
+  const columns = useMemo(() => getAuditLogsTableColumns({ onViewLog, t }), [onViewLog, t]);
   const hasActiveSearch = Boolean(searchValue?.trim());
+
+  const actionOptions = ACTION_VALUES.map((value) => ({ value, label: auditActionLabel(t, value) }));
+  const tableOptions = TABLE_VALUES.map((value) => ({ value, label: auditTableNameLabel(t, value) }));
+  const actionFilterItems = [{ value: ALL_VALUE, label: t("auditLogs.allActions") }, ...actionOptions];
+  const tableFilterItems = [{ value: ALL_VALUE, label: t("auditLogs.allTables") }, ...tableOptions];
+  const filterLabels: Record<string, string> = {
+    object_id: t("auditLogs.columns.objectId"),
+    changed_by: t("auditLogs.columns.changedBy"),
+    team_id: t("filters.teamId"),
+    key_hash: t("filters.keyHash"),
+    action: t("auditLogs.columns.action"),
+    table_name: t("auditLogs.columns.table"),
+  };
 
   return (
     <DataTable
@@ -128,7 +124,7 @@ export function AuditLogsTable({
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       isLoading={isLoading}
-      loadingMessage="Loading audit logs…"
+      loadingMessage={t("auditLogs.loading")}
       noDataMessage={<AuditLogsEmptyState filtered={columnFilters.length > 0 || hasActiveSearch} />}
       size="compact"
       toolbar={(table) => (
@@ -137,63 +133,63 @@ export function AuditLogsTable({
             table={table}
             searchValue={searchValue}
             onSearchChange={onSearchChange}
-            searchPlaceholder="Search audit logs by ID…"
+            searchPlaceholder={t("auditLogs.searchPlaceholder")}
             onRefresh={onRefresh}
             isRefreshing={isRefreshing}
             onOpenFilters={() => setFiltersOpen(true)}
-            filterLabels={FILTER_LABELS}
-            formatFilterValue={formatFilterValue}
+            filterLabels={filterLabels}
+            formatFilterValue={(columnId, value) => formatFilterValue(t, columnId, value)}
             showViewOptions={false}
           />
           <DataTableFilterDrawer
             table={table}
             open={filtersOpen}
             onOpenChange={setFiltersOpen}
-            title="Filters"
-            description="Narrow down audit log entries"
+            title={t("auditLogs.filters")}
+            description={t("auditLogs.filtersDesc")}
           >
             {({ get, set }) => (
               <>
-                <DataTableFilterField label="Object ID">
+                <DataTableFilterField label={filterLabels.object_id}>
                   <Input
                     value={(get("object_id") as string) ?? ""}
                     onChange={(event) => set("object_id", event.target.value)}
-                    placeholder="Enter object ID…"
+                    placeholder={t("filters.placeholders.enterObjectId")}
                   />
                 </DataTableFilterField>
-                <DataTableFilterField label="Changed By">
+                <DataTableFilterField label={filterLabels.changed_by}>
                   <Input
                     value={(get("changed_by") as string) ?? ""}
                     onChange={(event) => set("changed_by", event.target.value)}
-                    placeholder="Enter user ID…"
+                    placeholder={t("filters.placeholders.enterUserId")}
                   />
                 </DataTableFilterField>
-                <DataTableFilterField label="Team ID">
+                <DataTableFilterField label={filterLabels.team_id}>
                   <Input
                     value={(get("team_id") as string) ?? ""}
                     onChange={(event) => set("team_id", event.target.value)}
-                    placeholder="Enter team ID…"
+                    placeholder={t("filters.placeholders.enterTeamId")}
                   />
                 </DataTableFilterField>
-                <DataTableFilterField label="Key Hash">
+                <DataTableFilterField label={filterLabels.key_hash}>
                   <Input
                     value={(get("key_hash") as string) ?? ""}
                     onChange={(event) => set("key_hash", event.target.value)}
-                    placeholder="Enter key hash…"
+                    placeholder={t("filters.placeholders.enterKeyHash")}
                   />
                 </DataTableFilterField>
-                <DataTableFilterField label="Action">
+                <DataTableFilterField label={filterLabels.action}>
                   <Select
-                    items={ACTION_FILTER_ITEMS}
+                    items={actionFilterItems}
                     value={(get("action") as string) ?? ALL_VALUE}
                     onValueChange={(value) => set("action", value === ALL_VALUE ? undefined : value)}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="All Actions" />
+                      <SelectValue placeholder={t("auditLogs.allActions")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={ALL_VALUE}>All Actions</SelectItem>
-                      {ACTION_OPTIONS.map((option) => (
+                      <SelectItem value={ALL_VALUE}>{t("auditLogs.allActions")}</SelectItem>
+                      {actionOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -201,18 +197,18 @@ export function AuditLogsTable({
                     </SelectContent>
                   </Select>
                 </DataTableFilterField>
-                <DataTableFilterField label="Table">
+                <DataTableFilterField label={filterLabels.table_name}>
                   <Select
-                    items={TABLE_FILTER_ITEMS}
+                    items={tableFilterItems}
                     value={(get("table_name") as string) ?? ALL_VALUE}
                     onValueChange={(value) => set("table_name", value === ALL_VALUE ? undefined : value)}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="All Tables" />
+                      <SelectValue placeholder={t("auditLogs.allTables")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={ALL_VALUE}>All Tables</SelectItem>
-                      {TABLE_OPTIONS.map((option) => (
+                      <SelectItem value={ALL_VALUE}>{t("auditLogs.allTables")}</SelectItem>
+                      {tableOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
