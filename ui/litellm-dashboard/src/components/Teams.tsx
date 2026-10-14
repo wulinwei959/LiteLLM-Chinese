@@ -30,7 +30,7 @@ import { parseAsString, useQueryState } from "nuqs";
 import { TeamsTable } from "./TeamsPage/TeamsTable";
 import AccessGroupSelector from "./common_components/AccessGroupSelector";
 import MetadataKeyValueFields, {
-  metadataPairsSchema,
+  buildMetadataPairsSchema,
   metadataPairsToObject,
 } from "./common_components/MetadataKeyValueFields";
 import { useTeamMetadataSchema } from "@/app/(dashboard)/hooks/teams/useTeamMetadataSchema";
@@ -83,7 +83,7 @@ const createTeamFieldsSchema = (t: TeamsTranslator) =>
     tpm_limit: numericInputSchema,
     rpm_limit: numericInputSchema,
     tpd_limit: numericInputSchema,
-    metadata: metadataPairsSchema.optional(),
+    metadata: buildMetadataPairsSchema(t).optional(),
     team_id: z.string().optional(),
     team_member_budget: z.number().optional(),
     team_member_key_duration: z.string().optional(),

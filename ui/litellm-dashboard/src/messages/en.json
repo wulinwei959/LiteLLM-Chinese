@@ -374,6 +374,17 @@
     },
     "filters": "Filters",
     "filtersDescription": "Narrow down virtual keys",
+    "rateLimitType": {
+      "label": "{type} Rate Limit Type",
+      "tooltip": "Select 'guaranteed_throughput' to prevent overallocating {type} limit when the key belongs to a Team with specific {type} limits.",
+      "selectPlaceholder": "Select rate limit type",
+      "bestEffort": "Best effort throughput",
+      "guaranteed": "Guaranteed throughput",
+      "dynamic": "Dynamic",
+      "bestEffortDescription": "Best effort throughput - no error if we're overallocating {lower} (Team/Key Limits checked at runtime).",
+      "guaranteedDescription": "Guaranteed throughput - raise an error if we're overallocating {lower} (also checks model-specific limits)",
+      "dynamicDescription": "If the key has a set {upper} (e.g. 2 {upper}) and there are no 429 errors, it can dynamically exceed the limit when the model being called is not erroring."
+    },
     "placeholder": {
       "keyId": "Enter Key ID…",
       "organization": "Select an organization…",
@@ -1740,6 +1751,14 @@
     "infoMcpUnresolvableSaveError": "Cannot save MCP tool permissions because {reason}. Retry once the page has finished loading",
     "infoMetadata": "Metadata",
     "infoMetadataDescription": "Values are saved as text. Enter JSON for typed values, e.g. 3, true, or {example}.",
+    "metadata": {
+      "key": "Key",
+      "value": "Value",
+      "removePair": "Remove key-value pair",
+      "addPair": "Add Key-Value Pair",
+      "missingKey": "Missing key",
+      "duplicateKey": "Duplicate key"
+    },
     "infoMissingModel": "Missing model",
     "infoModelAliases": "Model Aliases",
     "infoModelAliasesHint": "Map a custom alias to an underlying model. Team members can call the alias in API requests instead of the real model name.",

@@ -77,8 +77,8 @@ import {
 } from "./teamModelAccess";
 import { computeInheritedGrants } from "../permissions/inheritedGrants";
 import MetadataKeyValueFields, {
+  buildMetadataPairsSchema,
   metadataObjectToPairs,
-  metadataPairsSchema,
   metadataPairsToObject,
 } from "../common_components/MetadataKeyValueFields";
 import { useTeamMetadataSchema } from "@/app/(dashboard)/hooks/teams/useTeamMetadataSchema";
@@ -427,7 +427,7 @@ const buildTeamUpdateFieldsSchema = (t: TeamsTranslator) =>
   organization_id: z.string().nullish(),
   logging_settings: z.array(z.unknown()).optional(),
   secret_manager_settings: z.string().optional(),
-  metadata: metadataPairsSchema.optional(),
+  metadata: buildMetadataPairsSchema(t).optional(),
 });
 
 type TeamUpdateFormValues = z.infer<ReturnType<typeof buildTeamUpdateFieldsSchema>>;

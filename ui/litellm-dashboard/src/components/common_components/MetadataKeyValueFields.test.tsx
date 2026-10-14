@@ -1,14 +1,16 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import React from "react";
+import { useTranslations } from "next-intl";
+import React, { useMemo } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod/v4";
 import { TeamMetadataField } from "@/app/(dashboard)/hooks/teams/useTeamMetadataSchema";
 import { useZodForm } from "@/lib/forms/useZodForm";
+import { renderWithProviders } from "../../../tests/test-utils";
 import MetadataKeyValueFields, {
+  buildMetadataPairsSchema,
   MetadataPair,
   metadataObjectToPairs,
-  metadataPairsSchema,
   metadataPairsToObject,
 } from "./MetadataKeyValueFields";
 
@@ -97,9 +99,9 @@ interface HarnessProps {
   schemaLoading?: boolean;
 }
 
-const harnessSchema = z.object({ metadata: metadataPairsSchema });
-
 const Harness: React.FC<HarnessProps> = ({ onFinish, initialMetadata, schemaFields, schemaLoading }) => {
+  const t = useTranslations("teams");
+  const harnessSchema = useMemo(() => z.object({ metadata: buildMetadataPairsSchema(t) }), [t]);
   const form = useZodForm(harnessSchema, { defaultValues: { metadata: initialMetadata ?? [] } });
   return (
     <form onSubmit={form.handleSubmit((values) => onFinish(values))}>
@@ -117,7 +119,7 @@ const Harness: React.FC<HarnessProps> = ({ onFinish, initialMetadata, schemaFiel
 
 describe("MetadataKeyValueFields", () => {
   it("renders one row per existing pair", () => {
-    render(
+    renderWithProviders(
       <Harness
         onFinish={vi.fn()}
         initialMetadata={[
@@ -127,8 +129,8 @@ describe("MetadataKeyValueFields", () => {
       />,
     );
 
-    const keyInputs = screen.getAllByPlaceholderText("Key");
-    const valueInputs = screen.getAllByPlaceholderText("Value");
+    const keyInputs = screen.getAllByPlaceholderText("键");
+    const valueInputs = screen.getAllByPlaceholderText("值");
     expect(keyInputs.map((input) => (input as HTMLInputElement).value)).toEqual(["department", "tier"]);
     expect(valueInputs.map((input) => (input as HTMLInputElement).value)).toEqual(["research", "3"]);
   });
@@ -136,11 +138,11 @@ describe("MetadataKeyValueFields", () => {
   it("adds a row and submits the entered pair", async () => {
     const user = userEvent.setup();
     const onFinish = vi.fn();
-    render(<Harness onFinish={onFinish} />);
+    renderWithProviders(<Harness onFinish={onFinish} />);
 
-    await user.click(screen.getByRole("button", { name: /add key-value pair/i }));
-    fireEvent.change(screen.getByPlaceholderText("Key"), { target: { value: "cost_center" } });
-    fireEvent.change(screen.getByPlaceholderText("Value"), { target: { value: "eng-1" } });
+    await user.click(screen.getByRole("button", { name: "添加键值对" }));
+    fireEvent.change(screen.getByPlaceholderText("键"), { target: { value: "cost_center" } });
+    fireEvent.change(screen.getByPlaceholderText("值"), { target: { value: "eng-1" } });
     await user.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() => {
@@ -151,7 +153,7 @@ describe("MetadataKeyValueFields", () => {
   it("removes a row when its remove icon is clicked", async () => {
     const user = userEvent.setup();
     const onFinish = vi.fn();
-    render(
+    renderWithProviders(
       <Harness
         onFinish={onFinish}
         initialMetadata={[
@@ -161,7 +163,7 @@ describe("MetadataKeyValueFields", () => {
       />,
     );
 
-    await user.click(screen.getAllByLabelText("Remove key-value pair")[0]);
+    await user.click(screen.getAllByLabelText("删除键值对")[0]);
     await user.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() => {
@@ -172,7 +174,7 @@ describe("MetadataKeyValueFields", () => {
   it("blocks submission on duplicate keys", async () => {
     const user = userEvent.setup();
     const onFinish = vi.fn();
-    render(
+    renderWithProviders(
       <Harness
         onFinish={onFinish}
         initialMetadata={[
@@ -185,7 +187,7 @@ describe("MetadataKeyValueFields", () => {
     await user.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() => {
-      expect(screen.getAllByText("Duplicate key").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("键名重复").length).toBeGreaterThan(0);
     });
     expect(onFinish).not.toHaveBeenCalled();
   });
@@ -193,14 +195,14 @@ describe("MetadataKeyValueFields", () => {
   it("blocks submission when a row is missing its key", async () => {
     const user = userEvent.setup();
     const onFinish = vi.fn();
-    render(<Harness onFinish={onFinish} />);
+    renderWithProviders(<Harness onFinish={onFinish} />);
 
-    await user.click(screen.getByRole("button", { name: /add key-value pair/i }));
-    fireEvent.change(screen.getByPlaceholderText("Value"), { target: { value: "orphan" } });
+    await user.click(screen.getByRole("button", { name: "添加键值对" }));
+    fireEvent.change(screen.getByPlaceholderText("值"), { target: { value: "orphan" } });
     await user.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() => {
-      expect(screen.getByText("Missing key")).toBeInTheDocument();
+      expect(screen.getByText("缺少键名")).toBeInTheDocument();
     });
     expect(onFinish).not.toHaveBeenCalled();
   });
@@ -213,24 +215,24 @@ describe("MetadataKeyValueFields with a declared schema", () => {
   ];
 
   it("should prepopulate one ordinary editable pair row per declared key", async () => {
-    render(<Harness onFinish={vi.fn()} schemaFields={schema} />);
+    renderWithProviders(<Harness onFinish={vi.fn()} schemaFields={schema} />);
 
     await waitFor(() => {
-      expect(screen.getAllByPlaceholderText("Key").map((input) => (input as HTMLInputElement).value)).toEqual([
+      expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
         "cost_center",
         "app_name",
       ]);
     });
-    screen.getAllByPlaceholderText("Key").forEach((input) => expect(input).toBeEnabled());
-    expect(screen.getAllByLabelText("Remove key-value pair")).toHaveLength(2);
+    screen.getAllByPlaceholderText("键").forEach((input) => expect(input).toBeEnabled());
+    expect(screen.getAllByLabelText("删除键值对")).toHaveLength(2);
   });
 
   it("should submit a prepopulated key with its typed value", async () => {
     const user = userEvent.setup();
     const onFinish = vi.fn();
-    render(<Harness onFinish={onFinish} schemaFields={[{ key: "cost_center", label: "Cost Center" }]} />);
+    renderWithProviders(<Harness onFinish={onFinish} schemaFields={[{ key: "cost_center", label: "Cost Center" }]} />);
 
-    fireEvent.change(await screen.findByPlaceholderText("Value"), { target: { value: "CC-1001" } });
+    fireEvent.change(await screen.findByPlaceholderText("值"), { target: { value: "CC-1001" } });
     await user.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() => {
@@ -239,17 +241,17 @@ describe("MetadataKeyValueFields with a declared schema", () => {
   });
 
   it("should not add a second row for keys already present in the form", async () => {
-    render(
+    renderWithProviders(
       <Harness onFinish={vi.fn()} schemaFields={schema} initialMetadata={[{ key: "cost_center", value: "CC-1001" }]} />,
     );
 
     await waitFor(() => {
-      expect(screen.getAllByPlaceholderText("Key").map((input) => (input as HTMLInputElement).value)).toEqual([
+      expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
         "cost_center",
         "app_name",
       ]);
     });
-    expect(screen.getAllByPlaceholderText("Value").map((input) => (input as HTMLInputElement).value)).toEqual([
+    expect(screen.getAllByPlaceholderText("值").map((input) => (input as HTMLInputElement).value)).toEqual([
       "CC-1001",
       "",
     ]);
@@ -257,33 +259,33 @@ describe("MetadataKeyValueFields with a declared schema", () => {
 
   it("should let the user remove a prepopulated row", async () => {
     const user = userEvent.setup();
-    render(<Harness onFinish={vi.fn()} schemaFields={schema} />);
+    renderWithProviders(<Harness onFinish={vi.fn()} schemaFields={schema} />);
 
-    await screen.findAllByPlaceholderText("Key");
-    await user.click(screen.getAllByLabelText("Remove key-value pair")[0]);
+    await screen.findAllByPlaceholderText("键");
+    await user.click(screen.getAllByLabelText("删除键值对")[0]);
 
     await waitFor(() => {
-      expect(screen.getAllByPlaceholderText("Key").map((input) => (input as HTMLInputElement).value)).toEqual([
+      expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
         "app_name",
       ]);
     });
   });
 
   it("should show a skeleton instead of the editor while the schema is loading", () => {
-    render(<Harness onFinish={vi.fn()} schemaLoading />);
+    renderWithProviders(<Harness onFinish={vi.fn()} schemaLoading />);
 
     expect(screen.getByTestId("metadata-schema-skeleton")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /add key-value pair/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "添加键值对" })).not.toBeInTheDocument();
   });
 
   it("should seed rows when the schema arrives after an initial loading state", async () => {
     const onFinish = vi.fn();
-    const { rerender } = render(<Harness onFinish={onFinish} schemaLoading />);
+    const { rerender } = renderWithProviders(<Harness onFinish={onFinish} schemaLoading />);
 
     rerender(<Harness onFinish={onFinish} schemaFields={schema} schemaLoading={false} />);
 
     await waitFor(() => {
-      expect(screen.getAllByPlaceholderText("Key").map((input) => (input as HTMLInputElement).value)).toEqual([
+      expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
         "cost_center",
         "app_name",
       ]);

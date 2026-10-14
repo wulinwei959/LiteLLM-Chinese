@@ -417,8 +417,8 @@ describe("CreateKey", () => {
       await openModal();
       await nameTheKey();
       await openSection(/Optional Settings/i);
-      await userEvent.click(await screen.findByLabelText(/TPM Rate Limit Type/));
-      await userEvent.click(await screen.findByRole("option", { name: /Guaranteed throughput/ }));
+      await userEvent.click(await screen.findByLabelText(/TPM 速率限制类型/));
+      await userEvent.click(await screen.findByRole("option", { name: /保证吞吐/ }));
       await submit();
 
       const payload = await createdPayload();

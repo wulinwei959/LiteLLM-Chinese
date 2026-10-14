@@ -1,4 +1,5 @@
 import { CircleMinus, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useRef } from "react";
 import {
   useFieldArray,
@@ -15,21 +16,23 @@ import { FormField } from "@/components/shared/form/FormField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 
 export interface MetadataPair {
   key: string;
   value: string;
 }
 
-export const metadataPairsSchema = z
-  .array(z.object({ key: z.string().min(1, "Missing key"), value: z.string().optional() }))
-  .superRefine((pairs, ctx) => {
-    pairs.forEach((pair, index) => {
-      if (pair.key && pairs.filter((other) => other.key === pair.key).length > 1) {
-        ctx.addIssue({ code: "custom", message: "Duplicate key", path: [index, "key"] });
-      }
+export const buildMetadataPairsSchema = (t: TeamsTranslator) =>
+  z
+    .array(z.object({ key: z.string().min(1, t("metadata.missingKey")), value: z.string().optional() }))
+    .superRefine((pairs, ctx) => {
+      pairs.forEach((pair, index) => {
+        if (pair.key && pairs.filter((other) => other.key === pair.key).length > 1) {
+          ctx.addIssue({ code: "custom", message: t("metadata.duplicateKey"), path: [index, "key"] });
+        }
+      });
     });
-  });
 
 function formatMetadataValue(value: unknown): string {
   if (typeof value !== "string") {
@@ -85,6 +88,7 @@ const MetadataKeyValueFields = <TFieldValues extends FieldValues>({
   schemaFields = [],
   schemaLoading = false,
 }: MetadataKeyValueFieldsProps<TFieldValues>) => {
+  const t = useTranslations("teams");
   const { fields, append, remove } = useFieldArray({ control, name });
   const seededRef = useRef(false);
 
@@ -118,18 +122,18 @@ const MetadataKeyValueFields = <TFieldValues extends FieldValues>({
         <div key={field.id} className="mb-2 flex items-start gap-2">
           <FormField control={control} name={`${name}.${index}.key` as FieldPath<TFieldValues>}>
             {({ ref, value, ...rest }) => (
-              <Input {...rest} ref={ref} value={(value as string) ?? ""} placeholder="Key" />
+              <Input {...rest} ref={ref} value={(value as string) ?? ""} placeholder={t("metadata.key")} />
             )}
           </FormField>
           <FormField control={control} name={`${name}.${index}.value` as FieldPath<TFieldValues>}>
             {({ ref, value, ...rest }) => (
-              <Input {...rest} ref={ref} value={(value as string) ?? ""} placeholder="Value" />
+              <Input {...rest} ref={ref} value={(value as string) ?? ""} placeholder={t("metadata.value")} />
             )}
           </FormField>
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Remove key-value pair"
+            aria-label={t("metadata.removePair")}
             className="mt-1 text-destructive"
             onClick={() => remove(index)}
           >
@@ -143,7 +147,7 @@ const MetadataKeyValueFields = <TFieldValues extends FieldValues>({
         onClick={() => append({ key: "", value: "" } as never, { shouldFocus: false })}
       >
         <Plus className="size-4" />
-        Add Key-Value Pair
+        {t("metadata.addPair")}
       </Button>
     </>
   );

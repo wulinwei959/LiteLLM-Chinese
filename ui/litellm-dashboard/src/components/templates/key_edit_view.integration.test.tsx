@@ -2191,7 +2191,7 @@ describe("KeyEditView", () => {
       await userEvent.clear(duration);
       await userEvent.type(duration, "45d");
 
-      await chooseSelectOption(userEvent, screen.getByLabelText(/TPM Rate Limit Type/), /^Guaranteed throughput/);
+      await chooseSelectOption(userEvent, screen.getByLabelText(/TPM 速率限制类型/), /^保证吞吐/);
 
       await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
 
@@ -2373,7 +2373,7 @@ describe("KeyEditView", () => {
       renderForPayload(onSubmitMock);
       await screen.findByRole("button", { name: /save changes/i });
 
-      await chooseSelectOption(userEvent, screen.getByLabelText(/RPM Rate Limit Type/), /^Guaranteed throughput/);
+      await chooseSelectOption(userEvent, screen.getByLabelText(/RPM 速率限制类型/), /^保证吞吐/);
 
       await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
 

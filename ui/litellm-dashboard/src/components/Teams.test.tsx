@@ -142,6 +142,12 @@ const mockTranslations: Record<string, string> = {
   "teams.listAllowedSkillsPlaceholder": "Select skills (optional)",
   "teams.listLoggingSettings": "Logging Settings",
   "teams.listRouterSettings": "Router Settings",
+  "teams.metadata.key": "Key",
+  "teams.metadata.value": "Value",
+  "teams.metadata.removePair": "Remove key-value pair",
+  "teams.metadata.addPair": "Add Key-Value Pair",
+  "teams.metadata.missingKey": "Missing key",
+  "teams.metadata.duplicateKey": "Duplicate key",
   "teams.listModelAliases": "Model Aliases",
   "teams.listModelAliasesDescription":
     "Create custom aliases for models that can be used by team members in API calls. This allows you to create shortcuts for specific models.",

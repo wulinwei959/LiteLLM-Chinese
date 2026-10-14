@@ -1264,9 +1264,9 @@ describe("TeamInfoView", () => {
       renderWithProviders(<TeamInfoView {...defaultProps} />);
       await openSettingsEditor(user);
 
-      const keyValues = screen.getAllByPlaceholderText("Key").map((input) => (input as HTMLInputElement).value);
+      const keyValues = screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value);
       expect(keyValues).toEqual(["department", "tier", "beta", "config"]);
-      const valueValues = screen.getAllByPlaceholderText("Value").map((input) => (input as HTMLInputElement).value);
+      const valueValues = screen.getAllByPlaceholderText("值").map((input) => (input as HTMLInputElement).value);
       expect(valueValues).toEqual(["research", "3", "true", '{"region":"us"}']);
 
       await user.click(screen.getByRole("button", { name: "保存更改" }));
@@ -1306,7 +1306,7 @@ describe("TeamInfoView", () => {
 
       expect(screen.getByLabelText("预估输出 Token")).toHaveValue(512);
       expect(screen.getByLabelText("每个模型的预估输出 Token")).toHaveValue('{"gpt-4":4096}');
-      const keyValues = screen.queryAllByPlaceholderText("Key").map((input) => (input as HTMLInputElement).value);
+      const keyValues = screen.queryAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value);
       expect(keyValues).toEqual(["department"]);
 
       fireEvent.change(screen.getByLabelText("预估输出 Token"), { target: { value: "999" } });
@@ -1408,16 +1408,16 @@ describe("TeamInfoView", () => {
       await openSettingsEditor(user);
 
       await waitFor(() => {
-        expect(screen.getAllByPlaceholderText("Key").map((input) => (input as HTMLInputElement).value)).toEqual([
+        expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
           "cost_center",
           "department",
           "app_name",
         ]);
       });
-      expect(screen.getAllByPlaceholderText("Value")[0]).toHaveValue("CC-OLD");
+      expect(screen.getAllByPlaceholderText("值")[0]).toHaveValue("CC-OLD");
 
-      await user.clear(screen.getAllByPlaceholderText("Value")[0]);
-      fireEvent.change(screen.getAllByPlaceholderText("Value")[0], { target: { value: "CC-NEW" } });
+      await user.clear(screen.getAllByPlaceholderText("值")[0]);
+      fireEvent.change(screen.getAllByPlaceholderText("值")[0], { target: { value: "CC-NEW" } });
       await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => {

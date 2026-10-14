@@ -374,6 +374,17 @@
     },
     "filters": "筛选",
     "filtersDescription": "缩小虚拟密钥的范围",
+    "rateLimitType": {
+      "label": "{type} 速率限制类型",
+      "tooltip": "当密钥所属团队设有具体的 {type} 限制时，选择 guaranteed_throughput 可防止超配 {type} 限额。",
+      "selectPlaceholder": "选择速率限制类型",
+      "bestEffort": "尽力而为吞吐",
+      "guaranteed": "保证吞吐",
+      "dynamic": "动态",
+      "bestEffortDescription": "尽力而为吞吐：超配 {lower} 时不报错（运行时才校验团队与密钥限制）。",
+      "guaranteedDescription": "保证吞吐：超配 {lower} 时报错（同时校验模型专属限制）",
+      "dynamicDescription": "若密钥设置了 {upper}（例如 2 {upper}）且没有 429 错误，当所调用的模型未报错时可动态突破该限制。"
+    },
     "placeholder": {
       "keyId": "输入密钥 ID...",
       "organization": "选择组织...",
@@ -1740,6 +1751,14 @@
     "infoMcpUnresolvableSaveError": "无法保存 MCP 工具权限，因为{reason}。请在页面加载完成后重试",
     "infoMetadata": "元数据",
     "infoMetadataDescription": "值以文本形式保存。输入 JSON 以表示带类型的值，例如 3、true 或 {example}。",
+    "metadata": {
+      "key": "键",
+      "value": "值",
+      "removePair": "删除键值对",
+      "addPair": "添加键值对",
+      "missingKey": "缺少键名",
+      "duplicateKey": "键名重复"
+    },
     "infoMissingModel": "缺少模型",
     "infoModelAliases": "模型别名",
     "infoModelAliasesHint": "将自定义别名映射到底层模型。团队成员可以在 API 请求中使用该别名，而无需使用真实模型名称。",
