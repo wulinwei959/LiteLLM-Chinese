@@ -108,9 +108,7 @@ describe("JEV network probes", () => {
       expect(fetchMock).toHaveBeenCalledTimes(5);
       expect(screen.getAllByTestId("test-status-success")).toHaveLength(4);
       expect(screen.getByRole("status", { name: "Jev 连接" })).toHaveTextContent(
-        cause === "jev_classifier"
-          ? "Jev 分类成功"
-          : `未能成功访问 Jev（路由原因：${cause}）`,
+        cause === "jev_classifier" ? "Jev 分类成功" : `未能成功访问 Jev（路由原因：${cause}）`,
       );
     },
   );
@@ -131,7 +129,7 @@ describe("JEV network probes", () => {
     );
     fireEvent.change(screen.getByTestId("auto-router-routing-test-prompt"), { target: { value: "Hello" } });
     fireEvent.click(screen.getByTestId("auto-router-routing-test-send"));
-    expect(await screen.findByText("JEV classifier")).toBeInTheDocument();
+    expect(await screen.findByText("JEV 分类器")).toBeInTheDocument();
     expect(screen.getByText("jev-latest")).toBeInTheDocument();
     expect(screen.getByText("80.0%")).toBeInTheDocument();
     expect(screen.getByText("SIMPLE: 80.0%")).toBeInTheDocument();
