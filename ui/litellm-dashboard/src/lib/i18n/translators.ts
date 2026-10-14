@@ -40,6 +40,11 @@ function useChangePasswordTranslator() {
 }
 export type ChangePasswordTranslator = ReturnType<typeof useChangePasswordTranslator>;
 
+function useChatTranslator() {
+  return useTranslations("chat");
+}
+export type ChatTranslator = ReturnType<typeof useChatTranslator>;
+
 function useCommonTranslator() {
   return useTranslations("common");
 }

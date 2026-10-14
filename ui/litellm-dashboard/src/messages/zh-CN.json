@@ -6107,6 +6107,26 @@
       "sameRequestsDesc": "每个路由看到相同的抽样请求，并基于相同的实时响应进行评判"
     }
   },
+  "chat": {
+    "connectFlow": {
+      "fallbackClient": "该应用",
+      "fallbackServer": "所请求的 MCP 服务器",
+      "failedTitle": "无法继续连接",
+      "failedBody": "网关无法验证此次连接。取消即可返回{client}。",
+      "unscopedTitle": "将你的 MCP 服务器连接到{client}",
+      "unscopedBody": "在下方授权你要使用的服务器，然后点击“完成连接”即可返回{client}。",
+      "allowTitle": "允许{client}使用{server}",
+      "interactiveBody": "在下方授权{server}以继续，或点击取消让{client}离开。",
+      "readyBody": "点击“完成连接”，以你的身份让{client}获得访问{server}的权限。",
+      "finish": "完成连接",
+      "cancel": "取消",
+      "remoteClient": "我的客户端在远程或 SSH 机器上"
+    },
+    "connectPicker": {
+      "loadToolsFailed": "无法加载{server}的工具，本次消息将不包含它。",
+      "empty": "未配置 MCP 服务器"
+    }
+  },
   "playground": {
     "title": "游乐场",
     "subtitle": "测试和体验模型与端点",

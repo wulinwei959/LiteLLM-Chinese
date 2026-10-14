@@ -6107,6 +6107,26 @@
       "sameRequestsDesc": "Every router sees the same sampled requests, judged against the same live responses"
     }
   },
+  "chat": {
+    "connectFlow": {
+      "fallbackClient": "the application",
+      "fallbackServer": "the requested MCP server",
+      "failedTitle": "The connection cannot continue",
+      "failedBody": "The gateway could not validate this connection. Cancel to return to {client}.",
+      "unscopedTitle": "Connect your MCP servers to {client}",
+      "unscopedBody": "Authorize the servers you want to use below, then click Finish connecting to return to {client}.",
+      "allowTitle": "Allow {client} to use {server}",
+      "interactiveBody": "Authorize {server} below to continue, or cancel to send {client} away.",
+      "readyBody": "Click Finish connecting to give {client} access to {server} as you.",
+      "finish": "Finish connecting",
+      "cancel": "Cancel",
+      "remoteClient": "My client is on a remote or SSH machine"
+    },
+    "connectPicker": {
+      "loadToolsFailed": "Could not load tools for {server} \u2014 it will be excluded from this message.",
+      "empty": "No MCP servers configured"
+    }
+  },
   "playground": {
     "title": "Playground",
     "subtitle": "Test and experiment with models and endpoints",
