@@ -1,6 +1,26 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，本簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 42 簇更新
+
+批次 24 第 42 簇：`components/AIHub/forms/MakeAgentPublicForm.tsx`（311 行，接入后 318）接入 `modelHub`，新开 `modelHub.makeAgentPublic.*` 16 键，另把 `Select All` 直接落在 `common.selectAll`，两个消息目录各 +21/−2 行（−2 是 `common.tokensInAndOut` 与 `modelHub.showingMcpServers` 两行补逗号）
+
+改造形态：
+
+- `Select All` 一步就进 `common`：这个标签在本簇之外还有三个已知消费者——同目录的 `MakeModelPublicForm.tsx` 与 `MakeMCPPublicForm.tsx`、以及 `claude_code_plugins/MakeSkillPublicForm.tsx`，四处取值逐字节相同，先放 `modelHub.makeAgentPublic` 再上收只会多一次改动。已有的 `playground.compliance.selectAll` 与 `guardrails.pii.selectAllMask` 一族跨命名空间且不通用，不借
+- `STEP_TITLES` 从模块级常量改成组件内 `[t("…stepSelect"), t("…stepConfirm")]`：常量在模块顶层取不到 hook，而这两项只在渲染时用。`stepConfirm` 取自己的键而不是 `common.confirm`——向导步骤名是名词标签，`common.confirm` 是动作按钮，概念不同
+- 步骤按钮复用 `common`：`common.cancel` / `common.previous` / `common.next`（取消、上一步、下一步）取值与概念都对得上，且这三个键本已被向导与分页用着
+- 计数与富文本三处用 `t.rich`：`selectedInfo`、`totalInfo`、`confirmWarning`。ICU 的复数分支里不能嵌标签——parity 守卫按 `\{([^}]*)\}` 取到的第二段是 `other {<strong>#</strong> agents selected}` 之类"既不是 `# 空格`、也不是标识符、又不含逗号"的残片，会被判成裸花括号，所以写成 `<strong>{count}</strong> {count, plural, one {agent} other {agents}} selected`，标签留在复数外面，加粗范围与旧 JSX 一致
+- toast 的成功文案由 `agent(s)` 改成真正的复数：`toastSuccess` EN `Successfully made {count} {count, plural, one {agent} other {agents}} public!`，node + `intl-messageformat` 实测 `count=2` 渲染为 `Successfully made 2 agents public!`，与旧的模板串在同一取值上只差 `(s)`；中文为"已成功公开 {count, number} 个智能体！"，两侧参数名同为 `count`，复数在中文里退化成量词
+- `Select All {n > 0 && \`(${n})\`}` 的括号计数留作数据：与第 39 簇的 `Connected (${n})` 同一口径，JSX 里 `{t} {' '}{cond}` 保住原来那个空格，accessible name 仍是 `全选 (2)`
+- `console.error("Error making agents public:", error)` 与 `Badge` 里的 `v{agent.version}` 不动，前者是开发日志、后者是版本号数据
+
+测试侧同步：`MakeAgentPublicForm.test.tsx` 用裸 `render` 的 15 处全部换成 `renderWithProviders`（默认钉 `zh-CN`），断言串同步为中文——`Make Agents Public`→将智能体设为公开、`Select Agents to Make Public`→选择要公开的智能体、`Confirm Making Agents Public`→确认公开这些智能体、`Next`→下一步、`Previous`→上一步、`Cancel`→取消、`Make Public`→公开、`Select All (2)`→全选 (2)、`No agents available.`→暂无可公开的智能体。、`+2 more`→还有 2 个。`getByRole` 的 `name` 是整串匹配，"公开"只命中提交按钮，不会误取"将智能体设为公开"（那是 `getByText` 的标题）。步骤二的用例会一路点进来，`confirmWarning` 与 `totalInfo` 两条 `t.rich` 因此在测试里真实渲染过
+
+验证：`npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin src/components/AIHub` → 79 文件 978 例全绿，`Type Errors no errors`（复跑范围自本簇起并入 `components/AIHub`，用例未增删）；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 两个改动文件 0 error / 1 warning，那条 `no-explicit-any` 在 HEAD 的 `resolvePromise: (value: any)` 上就有，本簇未新增；prettier 先证 HEAD 两个文件干净、改动后 `--check` 仍干净，未执行 `--write`；`npm run build` exit 0
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 428 到 429，47.0%。键数 6783 到 6800（`modelHub` 命名空间 3 到 19，`common` 188 到 189），中英同值 86 不变
 
 ## 2026-10-15 第 41 簇更新
 
