@@ -2,6 +2,14 @@
 
 数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计见"批次 24：add_model 与 edit_auto_router"一节（11576 例、54 失败），"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
 
+## 2026-10-14 第 16 簇更新
+
+批次 24 第 16 簇：`view_logs/constants.ts` 的 `ERROR_CODE_OPTIONS` 从 `{ label, value }` 改成 `{ labelKey, value }`，类型收成 `LogsErrorCodeKey` 联合，新增 `logs.filters.errorCodes.code400` 到 `code529` 共 11 键。中文值保留 `429 - ` 这样的数字前缀，只翻译后半个词，这样 `ErrorCodeFilterField` 里按 `option.label.toLowerCase()` 做子串过滤的逻辑一行都不用改——用户输 `429` 在两种语言下都能命中
+
+`RequestLogsFilters.tsx` 的 `ErrorCodeFilterField` 先用 `useMemo` 把键表铺成 `SearchSelectOption`（`localizedOptions`），过滤、已知码判断与 `selected` 回显都改读这张表；自定义码分支（`filters.useCustomCode`）本来就是中文，不变。本簇没有新增接入 `next-intl` 的文件
+
+验证：`src/components/view_logs` 49 文件 655 例全绿（`RequestLogsFilters.test.tsx` 39 例，两条选项名断言改 `429 - 触发限流`，`ERROR_CODE_OPTIONS.length` 那条照旧成立），i18n 三条守卫 16 例通过；`tsc --noEmit -p .` 仍 883 条、全在测试文件，非测试 0 条；`npx eslint` 改动文件 0 错误；`npm run build` 退出 0。全量分片未跑。覆盖率 912 / 364（39.9%）不变
+
 ## 2026-10-14 第 15 簇更新
 
 批次 24 第 15 簇：`TypeBadges.tsx` 四个徽标改用 `useTranslations("logs")` 读第 13 簇的 `logs.filters.options.llm` / `.agent` / `.mcp` / `.batch`，没有新增键。`RequestLogsTable.tsx` 的 `formatFilterValue` 改成首参翻译器（照 `BudgetTable.tsx` 的写法），`LogDetailContent.tsx` 的凭据行同批接上 `filters.options.clientOAuthToken` / `.configuredKey`。`constants.ts` 里两张英文表 `SPAN_TYPE_LABELS` 与 `CREDENTIAL_LABELS` 删除，换成 `SPAN_TYPE_LABEL_KEYS` 与 `CREDENTIAL_LABEL_KEYS` 两个键表（`Readonly<Record<string, 键联合类型>>`），全仓无残留引用
@@ -306,7 +314,7 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 ## 下一步优先级
 
-`components/view_logs` 是眼下最密的目录（71 个非测试 `.tsx`，第 15 簇后接入 7 个：`index.tsx`、`RequestLogsFilters.tsx`、`LogsTableToolbar.tsx`、`logs_utils.tsx`、`TypeBadges.tsx`、`RequestLogsTable.tsx`、`LogDetailContent.tsx`）。剩下的按依赖排：第 16 簇 `ERROR_CODE_OPTIONS`（11 条 `400 - Bad Request` 型标签），这一簇会碰到真实行为改动：`ErrorCodeFilterField` 是按 `option.label.toLowerCase()` 做子串过滤的，标签进目录之后搜索命中的是中文，得决定按值搜还是按标签搜，并且 `RequestLogsFilters.test.tsx` 有两条用例直接断言 `429 - Rate Limited` 这类标签。此后 `view_logs` 的余量集中在 `RequestLogsTable.tsx` 的空态与抽屉文案、`RequestLogsTableColumns.tsx` 的列头，以及 `LogDetailsDrawer/` 其余十几个子组件
+`components/view_logs` 是眼下最密的目录（71 个非测试 `.tsx`，第 15 簇后接入 7 个：`index.tsx`、`RequestLogsFilters.tsx`、`LogsTableToolbar.tsx`、`logs_utils.tsx`、`TypeBadges.tsx`、`RequestLogsTable.tsx`、`LogDetailContent.tsx`）。第 16 簇已经把 `ERROR_CODE_OPTIONS` 收进目录，搜索改成"先铺成中文标签再子串匹配"，靠中文值保留 `429 - ` 数字前缀让两种语言都能命中，`RequestLogsFilters.test.tsx` 那两条标签断言随之改中文。此后 `view_logs` 的余量集中在 `RequestLogsTable.tsx` 的空态与抽屉文案、`RequestLogsTableColumns.tsx` 的列头，以及 `LogDetailsDrawer/` 其余十几个子组件
 
 原来的四个优先级里，第一（223 条缺 Provider）、第二（team 172 例）、第三（页面收口）都已完成。此前按失败集中度排出的 1-6 号目标也全部清零：`edit_auto_router_modal.integration` 的 46 例经单文件复跑确认是全量并发造成的假失败（独立运行为 0），其余按 6d06b7b、e2350f6、c109bdb、0e8f5f6 四次提交逐个转绿。中途顺带清掉了未列进表的 `AdminPanel`（19）、`EntityUsage`（18）、`add_attachment_form`（17）、`BulkEditUsers`（16）、`leftnav` 之外的 `user_edit_view` / `user_info_view.integration` / `old-usage`
 
