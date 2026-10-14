@@ -1,8 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { describe, expect, it, vi } from "vitest";
 import { DataTable } from "@/components/shared/DataTable";
 import { Plugin } from "@/components/claude_code_plugins/types";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { getSkillHubTableColumns } from "./SkillHubTableColumns";
 
 const mockSkill: Plugin = {
@@ -15,16 +18,23 @@ const mockSkill: Plugin = {
   enabled: true,
 };
 
-function renderTable(data: Plugin[], onSkillClick = vi.fn()) {
-  render(
+function SkillHubTableHarness({ data, onSkillClick }: { data: Plugin[]; onSkillClick: (skill: Plugin) => void }) {
+  const t = useTranslations("skills");
+  const commonT = useTranslations("common");
+  const columns = useMemo(() => getSkillHubTableColumns({ onSkillClick, t, commonT }), [onSkillClick, t, commonT]);
+  return (
     <DataTable
       data={data}
-      columns={getSkillHubTableColumns({ onSkillClick })}
+      columns={columns}
       getRowId={(skill, index) => skill.id || String(index)}
       sortingMode="client"
       size="compact"
-    />,
+    />
   );
+}
+
+function renderTable(data: Plugin[], onSkillClick = vi.fn()) {
+  renderWithProviders(<SkillHubTableHarness data={data} onSkillClick={onSkillClick} />);
   return onSkillClick;
 }
 
@@ -44,8 +54,8 @@ describe("getSkillHubTableColumns", () => {
 
   it("shows Public for enabled skills and Draft for disabled ones", () => {
     renderTable([mockSkill, { ...mockSkill, id: "skill-2", name: "draft-skill", enabled: false }]);
-    expect(screen.getByText("Public")).toBeInTheDocument();
-    expect(screen.getByText("Draft")).toBeInTheDocument();
+    expect(screen.getByText("公开")).toBeInTheDocument();
+    expect(screen.getByText("草稿")).toBeInTheDocument();
   });
 
   it("opens the skill detail when the name is clicked", async () => {
@@ -59,7 +69,9 @@ describe("getSkillHubTableColumns", () => {
     const user = userEvent.setup();
     const onSkillClick = renderTable([mockSkill]);
     await user.click(screen.getByTestId("skill-hub-actions-skill-1"));
-    await user.click(await screen.findByTestId("skill-hub-action-details"));
+    const detailsItem = await screen.findByTestId("skill-hub-action-details");
+    expect(detailsItem).toHaveTextContent("查看详情");
+    await user.click(detailsItem);
     expect(onSkillClick).toHaveBeenCalledWith(mockSkill);
   });
 
@@ -67,7 +79,9 @@ describe("getSkillHubTableColumns", () => {
     const user = userEvent.setup();
     renderTable([mockSkill]);
     await user.click(screen.getByTestId("skill-hub-actions-skill-1"));
-    await user.click(await screen.findByTestId("skill-hub-action-copy"));
+    const copyItem = await screen.findByTestId("skill-hub-action-copy");
+    expect(copyItem).toHaveTextContent("复制技能名称");
+    await user.click(copyItem);
     expect(await window.navigator.clipboard.readText()).toBe("pdf-tools");
   });
 });
