@@ -1,6 +1,76 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 53 簇后的一次全量（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），上一次全量是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 55 簇后的一次全量（886 文件 11577 例、27 失败 + 9 例预期失败，27 例落在 12 个测试文件上：19 例是已汉化组件的英文断言欠账、已在随后的清扫里改绿，8 例经与上游快照比对确认不是汉化欠账，明细见"## 2026-10-15 第 55 簇后的全量快照"与"## 2026-10-15 断言欠账清扫"），上一次全量是第 53 簇后（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），再上一次是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 55 簇后的全量快照
+
+批次 24 第 53 到 55 簇之后做一次全量：`npx vitest run --shard=k/4` 四片串行，得 **886 文件 11577 例、27 失败 + 9 例预期失败**、`Type Errors no errors`。比第 53 簇那次的 56 失败少 29 例，几乎全部来自第 54 簇修掉的决策模型集成测试。27 例逐个归因如下（按失败数降序）：
+
+| 文件 | 例 | 归因 |
+| --- | --- | --- |
+| `cost-tracking/_components/cost_tracking_settings.test.tsx` | 7 | 上游既有失败，非汉化欠账（下方单列） |
+| `components/model_add/CredentialModal.test.tsx` | 5 | 断言欠账：`useTranslations` 缺 `NextIntlClientProvider` 上下文 |
+| `organizations/_components/OrganizationsTable.test.tsx` | 3 | 断言欠账 + **组件残留 2 处**（下方单列） |
+| `agents/_components/agent_info.integration.test.tsx` | 3 | 断言欠账：`Agent Name`、`Display Name` |
+| `access-groups/…/AccessGroupEditModal.integration.test.tsx` | 2 | 断言欠账：选项卡名 `/MCP Servers/` |
+| `components/templates/key_info_view.test.tsx` | 1 | 断言欠账：第 53 簇 `DeleteResourceModal` 11 个消费者里漏掉的一个 `/^delete$/i` |
+| `components/shared/DataTable/DataTable.test.tsx` | 1 | 早前迁 `renderWithProviders` 时漏改的裸 `render`（同第 54 簇 `guardrail_info` 那一类） |
+| `lens/_components/LensSetup.integration.test.tsx` | 1 | 上游断言与格式化函数对不上，非汉化欠账（下方单列） |
+| `agents/_components/agent_info.test.tsx` | 1 | 断言欠账：`Edit Settings`、`Description`、`TPM Limit` |
+| `agents/_components/add_agent_form.integration.test.tsx` | 1 | 断言欠账：`Agent Name`、`Display Name`、描述占位符 |
+| `agents/_components/AgentsTable.test.tsx` | 1 | 断言欠账：表头「消费（美元）」「智能体名称」 |
+| `access-groups/…/AccessGroupCreateDialog.test.tsx` | 1 | 断言欠账：名称、MCP/代理选项卡、创建按钮 |
+
+上表 12 个文件已全部在本次清扫中改绿；第 53 簇记下的 `mcp_server_edit` 那 1 例这次没有复现。清扫与门禁明细见"## 2026-10-15 断言欠账清扫"。
+
+两条**不是**汉化欠账的判定过程，记下来避免以后重复排查：
+
+- `cost_tracking_settings.test.tsx` 的 7 例。一开始以为是本长尾的欠账，但 DOM 里只有 4 个按钮、`TabsContent` 没展开，不像文案问题。把同一文件在导入快照 `610473cb` 上跑一遍（`git worktree add -f /tmp/up_base 610473cb` + 软链 `node_modules`），结果同为 7 失败 / 12 通过，失败用例名逐行 `diff` 相同——判定为上游既有失败，文件保持原样。教训是基线必须用**未改动的组件**跑：拿英文测试配我们改过一半的组件（`eb8394dc^` 那次）会得到 14 失败的污染基线
+- `LensSetup.integration.test.tsx:119` 的 `expect(screen.getByText(/2026-09-30/))`。被断言的时间由 `lensData.runTime` → `utils/activityTimestamp.formatActivityTimestamp` 输出，后者是 `toLocaleString(undefined, …)`，实机渲染为 `Sep 30, 2026, 6:00:00 PM GMT+8`，`2026-09-30` 这种 ISO 形态在任何 locale 下都匹配不上；且 `src/app/(dashboard)/lens` 与 `src/utils/activityTimestamp.ts` 自上游同步 `f8786efb` 以来 `git diff` 为空。判定为上游测试自身的缺陷（且依赖 runner 时区），不动
+
+`OrganizationsTable` 的 3 例是这次唯一牵出**组件残留**的：断言早就写着中文，红的原因是 `OrganizationsTableColumns.tsx` 里 `Created` 表头和 `{n} Members` 单元格漏接入。补完两处后同向变绿——这是"测试期望中文、组件还给英文"这一类失败的标准解释路径，不要反过来把断言改回英文。`Members` 那处新开 `organizations.membersCount`，英文 `{count, plural, other {# Members}}`、中文 `{count, number} 成员`：裸 `#` 在 ICU 里会原样输出，必须走 `other {}` 分支。
+
+度量口径修正一条：`view_logs` 其实已经全量接入。度量脚本仍在 71 个文件里列出 9 个"未接入"（`PrettyMessagesView`、`SimpleMessageBlock`、`JsonToolView`、`columns.tsx`、`SpanIcon`、`Collapse`、`AgentTracesPage`、`ActiveDot`、`AuditLogsTableColumns`），逐个读下来要么没有任何面向用户的文案，要么通过 props 收翻译器（`LogsTranslator`）。脚本按"文件里有没有 `useTranslations`"计数，因此该目录的剩余量长期**高报**，看长尾规模时按 0 处理。
+
+## 2026-10-15 断言欠账清扫
+
+批次 24 第 55 簇后的定向清扫，不动任何文案键的语义（除上面那条 `membersCount`），只把已汉化组件的测试断言对齐：11 个测试文件 + `OrganizationsTableColumns.tsx` + 两个消息目录，共 69 行插入 / 36 行删除。
+
+- `CredentialModal.test.tsx` 沿用第 53 簇 `CloudZero` 的做法：测试自带 `createQueryClient()`，不换 `renderWithProviders`，在树内补一层 `<LocaleProvider locale="zh-CN">`
+- `DataTable.test.tsx` 第 162 行的裸 `render` 换成 `renderWithProviders`（同文件另外 11 处早已是后者）
+- `agents` 三个文件的字段名走 `agent_form_fields.tsx` 的 `configText` + `FIELD_TEXT_KEYS` 表：`Agent Name`→智能体名称、`Display Name`→显示名称、`Describe what this agent does...`（占位符）→描述这个智能体的用途...、`TPM Limit`→`agents.tpmLimit` 的 TPM 限制。同文件里 `URL` 中英同值、`Save Changes` 与 `Settings` 选项卡仍属未接入部分，断言原样保留
+- `AccessGroupCreateDialog.test.tsx` 只换查询里的文案，mock 数据名（`GitHub MCP`、`Support Agent`、`srv-1`）不动——它们是接口数据
+- 判定"是组件残留还是断言欠账"靠改前改后各跑一遍：`add_agent_form.integration.test.tsx:390` 的 `getByLabelText("TPM Limit")` 在清扫后仍通过，说明那条走的是另一处未接入的表单，不在本簇范围
+
+门禁：`src/lib/i18n` 守卫 3 文件 16 例全过；清扫范围与既有簇范围合并复跑（`view_logs`、`chat`、`app/chat`、`app/connect`、`agents`、`organizations`、`access-groups`、`model_add`、`shared/DataTable`、`templates`、`liteadmin`、`AIHub`、`guardrails`）→ **109 文件 1282 例全绿**、2 例预期失败；`npx tsc --noEmit -p .` 总 880、非测试 0（比第 54 簇的 881 少 1）；`npx eslint` 11 个改动文件 0 error / 39 warning，与 HEAD 版同数（备份 /tmp → `git checkout HEAD --` → 复跑 → 还原）；prettier 4 个文件（含 `PLAN.md`、`PROGRESS.md`）**HEAD 本就不干净**，按口径不跑 `--write`；`npm run build` exit 0；覆盖率复测非测试 `.tsx` 912 个接入 438 个、48.0%，目录叶子 7060 到 7061，中英同值 87 不变。
+
+## 2026-10-15 第 55 簇更新
+
+批次 24 第 55 簇：`guardrails/_components/guardrail_garden_detail.tsx`（+9/−9）里的护栏分类标签接入 `guardrails.garden`，两个消息目录各 +3/−0 行。触发点是第 54 簇复跑 `guardrails` 目录时剩下的 2 例：详情页的表头、选项卡、按钮在早前几簇已经汉化，唯独分类这一行的**值**还是模块级常量 `CATEGORY_LABELS` 里写死的英文，同一行中英混杂（`提供商` / `Decision Model`），`getByRole("row", { name: … })` 的可访问名因此对不上
+
+- 六个标签里有四个能逐字节复用同组已有键：`garden.litellmTitle`、`garden.typeContent`、`garden.providerPartner`、`garden.typePartner`。`providerPartner`/`typeContent`/`typePartner` 三个建组时还没有调用点（死键没有守卫，只能这样人工发现），本簇正好接上，不开新键
+- 决策模型一栏没有现成键，新开 `providerDecisionModel`、`typeDecisionModel` 与 `costDecisionModel`。前两个的英文与 `guardrails.decisionModel.modelLabel` 同值，但按"分组命名空间内不跨组借"的口径留在 `garden` 里，与上面四个同组键对齐；这条重复记账，攒够第三次再上收
+- `$0 / request`、`<1ms`、评测表里的 `"0"` 与 `{precision}%` 都是数据/格式，不动
+- 测试侧把两条行名与一条 `getAllByText`、一条 `getByText` 换成中文，`/^Cost/` 换成 `/^费用/`
+
+## 2026-10-15 第 54 簇更新
+
+批次 24 第 54 簇：`guardrails/_components/decision_model/` 整个目录接入 `guardrails`，新开 `decisionModel` 分组 46 键，两个消息目录各 +49/−0 行。这是批次 24 里少见的"一个特性一套目录"的簇：`DecisionModelFields.tsx`（262 行，+49/−40）、`DecisionTestSection.tsx`（165 行，+22/−22）、`DecisionModelDetails.tsx`（56 行，+25/−21）、`buildDecisionModelParams.ts`（60 行，+9/−4），加上 `add_guardrail_form.tsx` 的两处调用点（+2/−2），改完目录内已无硬编码英文
+
+改造形态：
+
+- `guardrails` 是分组命名空间，新组落在 `judge` 与 `perm` 之间，与页面上"决策模型"这一档的位置对应。46 个键覆盖横幅、模型选择、问题列表、试跑区、只读详情五块；`<strong>Decision Model</strong>` 那句走 `t.rich`，`strong` 在富文本白名单内
+- 动作下拉的 `ACTION_ITEMS` 是模块级常量，标签要跟着 `t()` 走只能整体搬进组件成为 `actionItems`
+- `decisionChecksProblem()` 是纯函数校验器，不在 React 树里，取首参约定之外的第二种形态：**收翻译器**（`t: GuardrailsTranslator`）。`src/lib/i18n/translators.ts` 里的命名空间翻译器类型不是 `(key: string) => string`，next-intl 的 `t` 可以直接传，而 stub 必须先 `as unknown as GuardrailsTranslator`。`tests/i18nStub.ts` 为此从固定 `mcpServers` 作用域重构成 `enMessagesFor(namespace)`，旧的 `enMessages` 保持原语义
+- 数据/格式债照旧不翻：`runTestShortcutLabel()` 的 `⌘/Ctrl+Enter`、`check.action ?? "block"` 的枚举值、provider 显示名来自 `getProviderLogoAndName`
+
+测试同步是三份文件，也是本簇的主要成本：
+
+- `add_guardrail_form.decision_model.integration.test.tsx`（+90/−94）22 例此前**全红**——它在第 53 簇的全量快照里独占约 20 例失败。第一处 `findByLabelText("Guardrail Name")` 就查不到，整条链路后续都走不到。逐条换成中文后全绿。模型提供商名（`Decision Model`、`Presidio PII`、`LiteLLM LLM as a Judge`）来自 `getGuardrailProviderSpecificParams` 的 mock `ui_friendly_name`，是接口数据，继续按英文断言；`queryByLabelText("Decision Provider")` 是断言"这个字段不存在"，中英都不存在，留着不误导
+- `guardrail_info.test.tsx`（+8/−8）有两处裸 `render()` 是上一轮迁 `renderWithProviders` 时漏改的，`ReferenceError: render is not defined`，被误记成 i18n 失败。这两例正是决策模型详情的用例，一并修掉，顺带少了 2 条 `tsc` 错误
+- `buildDecisionModelParams.test.ts`（+9/−5）5 个调用点补上翻译器，断言仍走 `enMessagesFor("guardrails")` 查真实英文文案
+
+其余门禁：`src/app/(dashboard)/guardrails` + `src/lib/i18n` 复跑 44 文件 348 例全绿（目录本身 41 文件 332 例）；`npx tsc --noEmit -p .` 总 881、非测试 0，比第 53 簇的 883 少 2 条，就是上面那两个裸 `render`；`npx eslint` 11 个改动文件 0 error / 35 warning，与 HEAD 版逐文件同数（备份到 /tmp → `git checkout HEAD --` → 复跑 → 还原）；prettier 六个文件因本簇改动引入格式漂移（HEAD 版都干净），`--write` 后 `--check` 全过；`npm run build` exit 0；覆盖率复测非测试 `.tsx` 912 个接入 438 个、48.0%，目录叶子 7060、中英同值 87
 
 ## 2026-10-15 第 53 簇更新
 
@@ -851,7 +921,7 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 - **已合并至 `main`**：同步上游 v1.105.0 的 UI 交集文件，包含中文汉化完成的代码
 - **修复构建阻断**：`ModelsTableColumns.tsx` 的 `"use client"` 指令移至文件顶部（Next.js App Router 要求），修复 Docker 构建编译错误
-- **测试状态**：下面这条是 `507e347` 附近的旧快照（11308 个用例，11307 通过，1 失败）；批次 24 收口后实测为 11576 用例、11513 通过、54 失败，失败清单与归类见"批次 24：add_model 与 edit_auto_router"一节。唯一的非 i18n 既有失败仍是 `mcp_server_edit.test.tsx` 的 OAuth 恢复用例
+- **测试状态**：下面这条是 `507e347` 附近的旧快照（11308 个用例，11307 通过，1 失败）；批次 24 收口后实测为 11576 用例、11513 通过、54 失败，失败清单与归类见"批次 24：add_model 与 edit_auto_router"一节。唯一的非 i18n 既有失败仍是 `mcp_server_edit.test.tsx` 的 OAuth 恢复用例——该定性已在 2026-10-15 推翻，它是测试中文文案写错，`f3b21f32` 修掉，见"## 技术债"
 - **类型检查**：非测试文件 0 错误，`npm run build` 绿色
 - **i18n 守卫**：三条全部通过（16 个用例）
 - **Lint**：36 个预存错误（全部为代码库原有，非新增）
@@ -983,7 +1053,7 @@ mcp-servers 名义上剩 5 个未接入文件，但其中 4 个本来就没有�
 
 223 条缺 `NextIntlClientProvider` 已清零。剩下的主力是 383 条"找不到元素"，绝大多数是断言停在英文（第六类），但其中混有与翻译无关的既有失败，处理时要逐文件回 HEAD 基线确认，不要一律当成翻译的账
 
-其他类里有两条不属于 i18n。`mcp_server_edit.test.tsx` 的 `preserves a stored client_id on OAuth-resume restore even when the saved snapshot is token-only` 报 `expected '' to be 'stored-client'`，是取值失败而不是文案断言，已列为既有失败。`tests/fetch-location-rule.test.ts` 报 `STACK_TRACE_ERROR`，这条守卫自 `610473c` 起就没动过，是上游带过来的
+其他类里有两条不属于 i18n。`mcp_server_edit.test.tsx` 的 `preserves a stored client_id on OAuth-resume restore even when the saved snapshot is token-only` 报 `expected '' to be 'stored-client'`，当时判为取值失败而不是文案断言，已列为既有失败（2026-10-15 复查：是测试中文占位符正则写错，`f3b21f32` 修掉）。`tests/fetch-location-rule.test.ts` 报 `STACK_TRACE_ERROR`，这条守卫自 `610473c` 起就没动过，是上游带过来的
 
 ### 全量报告里有并发假失败，核实前要单文件复跑
 
@@ -1100,6 +1170,8 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 `components/view_logs` 是眼下最密的目录（71 个非测试 `.tsx`，第 20 簇后按 `useTranslations(`/`getTranslations(` 的 grep 口径接入 22 个，另有 `logs_utils.tsx` 走首参翻译器、grep 抓不到）。第 16 簇把 `ERROR_CODE_OPTIONS` 收进目录，搜索改成"先铺成中文标签再子串匹配"，靠中文值保留 `429 - ` 数字前缀让两种语言都能命中；第 17 簇把请求日志表的列头与单元格文案收干净，表头这一层已经没有硬编码英文；第 18 簇收了抽屉外壳与侧栏、抽屉头部和 9 个叶子组件；第 19 簇收了抽屉卡片层的 `InputCard.tsx`、`OutputCard.tsx`、`SimpleToolCallBlock.tsx`、`ClassifierAuditView.tsx`；第 20 簇收了抽屉的 `RoutingDecisionCard.tsx` 路由决策卡；第 21 簇收了抽屉的 `RealtimePrettyView.tsx` 实时会话视图，抽屉目录的展示文案到此清零，只剩 `PrettyMessagesView.tsx` 与 `SimpleMessageBlock.tsx` 两个没有可展示文件计在"未接入"里；第 22 簇收了 `ToolsSection/` 的四个有文案的文件（`JsonToolView.tsx` 只渲染 JSON 数据，不算文案）；第 23 簇收了审计日志族——`AuditLogsPanel.tsx`、`AuditLogsTable.tsx`、`AuditLogsTableColumns.tsx` 与 `AuditLogDrawer/AuditLogDrawer.tsx`。此后 `view_logs` 的余量按大小排是 `TraceView/` 子目录（23 个非测试 `.tsx`）、`RequestLogsTable.tsx` 与 `RequestLogsPanel.tsx` 的空态和筛选文案、`GuardrailViewer/` 一族（`BedrockGuardrailDetails`、`CompliancePanel`、`ContentFilterDetails`、`PresidioDetectedEntities`、`GuardrailViewer`）、`EvalViewer` / `CostBreakdownViewer` / `VectorStoreViewer` / `ConfigInfoMessage` 四个根文件，外加 `columns.tsx`、`log_filter_logic.tsx` 这类没有展示文案、只是扫描口径算作未接入的文件
 
+这一行到 2026-10-15 已整体过时：第 13 到 32 簇把 `view_logs` 逐目录推到文案清零，清扫簇又逐个读完度量脚本仍列为"未接入"的 9 个文件（`PrettyMessagesView`、`SimpleMessageBlock`、`JsonToolView`、`columns.tsx`、`SpanIcon`、`Collapse`、`AgentTracesPage`、`ActiveDot`、`AuditLogsTableColumns`），要么没有面向用户的文案，要么从 props 收 `LogsTranslator`。**`components/view_logs` 到此没有剩余账**，脚本的"71 接入 60"要按"接入 71"读
+
 原来的四个优先级里，第一（223 条缺 Provider）、第二（team 172 例）、第三（页面收口）都已完成。此前按失败集中度排出的 1-6 号目标也全部清零：`edit_auto_router_modal.integration` 的 46 例经单文件复跑确认是全量并发造成的假失败（独立运行为 0），其余按 6d06b7b、e2350f6、c109bdb、0e8f5f6 四次提交逐个转绿。中途顺带清掉了未列进表的 `AdminPanel`（19）、`EntityUsage`（18）、`add_attachment_form`（17）、`BulkEditUsers`（16）、`leftnav` 之外的 `user_edit_view` / `user_info_view.integration` / `old-usage`
 
 第 7 项已清零。guardrails 族起点 150 例，`d0c3436` 收掉 content_filter 子族的 68 例，本次提交收掉其余 22 个文件的 82 例（起点：`guardrail_info.characterization` 14、`add_guardrail_form.characterization` 11、`GuardrailsOverview` 11、`CustomCodeModal` 9、`GuardrailUsageBreakdown` 7、`TeamGuardrailsTab.integration` 7，加 6/5/4/3 的长尾），`src/app/(dashboard)/guardrails` 目录复跑 272 例全绿。policies 族（14 个文件 112 例）已在 bdac478 清零。清的时候仍按"回 HEAD 基线确认既有失败"区分翻译账和非翻译账，并且先单文件复跑，别信全量报告里的集中失败
@@ -1151,11 +1223,15 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 ## 技术债
 
-`AutoRoutersPanel` 2 个与 `AccessGroupBudgetsPanel` 2 个失败是既有问题，与 i18n 无关，留给对应模块
+`AutoRoutersPanel` 2 个与 `AccessGroupBudgetsPanel` 2 个失败此前记为"既有问题，与 i18n 无关"。2026-10-15 复测：两个文件单跑两次全绿，放进 `models-and-endpoints` 子树（16 个文件）也全绿，最近一次全量快照的失败清单里没有它们。口径改为并发下的时序假红，不再当作待修项挂在账上；哪天在全量里重现，按第 53 簇记的分片复跑流程重新定性
 
-`mcp_server_edit.test.tsx` 的 "preserves a stored client_id on OAuth-resume restore" 1 例是**稳定失败**，不是偶发。2026-10-13 用 `-t` 只跑该用例（其余 80 例 skip）仍然失败，`waitFor` 超时后字段值停在 `''`，这就排除了并发竞态。此前记的"单跑会通过、分片下偶发"与本机实测不符，已按实测更正
+`mcp_server_edit.test.tsx` 的 "preserves a stored client_id on OAuth-resume restore" 已在 `f3b21f32` 修掉，本条从技术债转为已清。真正的病灶是测试里那条占位符正则写错了：`/留空则保留当前已保存的密钥|留空以保留当前已保存的应用/`，前半句是 client_secret 的文案、后半句把"则"错写成"以"，`findByPlaceholderText` 因此一直抓到密钥框而不是应用框，`waitFor` 超时后值停在 `''`。改成上游那一句的精确中文（`留空则保留当前已保存的应用（若有）`）后 81 例全绿。2026-10-15 第 55 簇后的全量里它也没有复现
 
-判定与翻译无关的依据是逻辑本身：该用例走 `mcp_server_edit.tsx` 的 OAuth 恢复 effect，那段"服务器凭据与快照合并后再剥 token"的代码与 `610473c` 上游版本逐行一致，翻译只动了文案。上游快照里这个测试就存在，所以它要么是上游带来的既有缺陷，要么依赖某些环境条件。定级为待查，本轮没动手改，因为修它要先判断期望行为该由组件还是测试承担
+两条**永久挂在上游名下**的失败，已从汉化账里摘出，别再重复排查（判定过程见"## 2026-10-15 第 55 簇后的全量快照"）：`cost_tracking_settings.test.tsx` 7 例在导入快照 `610473cb` 上失败用例名逐行相同；`LensSetup.integration.test.tsx:119` 断言 `/2026-09-30/`，而被断言的字符串出自 `toLocaleString(undefined, …)`，任何 locale 下都渲染成 `Sep 30, 2026, …`，且 `lens/` 目录自上游同步以来零改动
+
+度量脚本对 `view_logs` 长期高报：它按"文件里有没有 `useTranslations`"计数，而该目录剩余 9 个文件要么没有面向用户的文案、要么从 props 收翻译器。看该目录长尾时按 0 计
+
+所以上面那段"判定与翻译无关的依据是逻辑本身"以及 2026-10-13 的"稳定失败、排除并发竞态"结论都只说对了一半：失败确实稳定、确实与组件逻辑无关，但它恰恰是翻译账——错在测试同步的中文文案上，不在组件里。教训是"逻辑与上游逐行一致"只能排除组件，不能排除测试自己的文案断言；这类用例要先按 `findByPlaceholderText`/`getByLabelText` 的字面量与目录逐条比对，再决定往哪边修
 
 全仓库 `tsc --noEmit` 有 904 条错误（去重后，原始输出 905 行），分布在 56 个文件（2026-10-13 实测），**全部位于 `*.test.tsx` / `*.test.ts`**，大头是 vitest 全局类型缺失的 TS2304/TS2582 与测试文件自身的类型债。此前记的 928 条里有 24 条是翻译引入的，全部在非测试文件（`dd32399` 的五个错误类，9 个文件 22 条 + `ModelInfoEditForm.tsx` 引用缺导出的 2 条），本次修完后降到 904，**非测试文件清零**，`npm run build` 恢复绿色。注意 `next.config.mjs` 设了 `useTypeScriptCli: false`，Next 16 自带的类型检查阶段不扫测试文件，所以这 904 条与绿色构建共存；哪天开了这个实验开关，测试文件债会立刻变成构建红灯。`TRANSLATION_PLAN.md` 里写的"约 819 条、56 个文件"是更早的一次测量，已过时。基线比对之后要区分"非测试文件 0 错误"与"测试文件存量债"两件事
 
@@ -1163,7 +1239,7 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 判断有无新增要逐条比对，不要只看总数，按文件去重会掩盖同一文件内的新增错误。`src/lib/i18n` 目录目前是零错误
 
-`ui/litellm-dashboard/tsconfig.tsbuildinfo` 是构建产物，不应随翻译提交。2026-10-14 第 24 簇已收：加进根 `.gitignore` 并 `git rm --cached` 脱离跟踪，本地文件保留，`tsc` 与 `npm run build` 不再脏工作树
+`ui/litellm-dashboard/tsconfig.tsbuildinfo` 是构建产物，不应随翻译提交。2026-10-14 第 24 簇已收（`e6a72717`）：加进根 `.gitignore`（第 149 行）并 `git rm --cached` 脱离跟踪，本地文件保留，`tsc` 与 `npm run build` 不再脏工作树。2026-10-15 复核：`git ls-files` 查无此文件，本条闭环
 
 目前所有批次直接提交到 `main`。若后续要开 PR，按仓库约定从默认分支切出 `litellm_` 前缀分支
 
