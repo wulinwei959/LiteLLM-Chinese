@@ -2303,6 +2303,7 @@
     "organizationID": "Organization ID",
     "organizationAlias": "Organization Name",
     "members": "Members",
+    "membersCount": "{count, plural, other {# Members}}",
     "budget": "Budget (USD)",
     "models": "Models",
     "settings": "Settings",

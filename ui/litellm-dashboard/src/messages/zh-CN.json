@@ -2303,6 +2303,7 @@
     "organizationID": "组织 ID",
     "organizationAlias": "组织名称",
     "members": "成员",
+    "membersCount": "{count, number} 成员",
     "budget": "预算 (USD)",
     "models": "模型",
     "settings": "设置",
