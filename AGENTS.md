@@ -107,6 +107,8 @@ Follow these coding conventions for new/updated code (a three-line fix in a lega
 
 Follow conventional commits for commit names and PR titles
 
+Commit messages pushed to the LAN Gitea (both the `type(scope): subject` title and the body) must be written in Simplified Chinese. Keep the conventional-commit type/scope prefixes in English.
+
 ## Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs**
