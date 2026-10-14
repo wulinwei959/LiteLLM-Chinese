@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/cva.config";
-import type { ChatTranslator } from "@/lib/i18n/translators";
+import type { CommonTranslator } from "@/lib/i18n/translators";
 import { toast } from "@/lib/toast";
 import { keyListCall, regenerateKeyCall } from "../networking";
 import { KeyResponse } from "../key_team_helpers/key_list";
@@ -43,18 +43,18 @@ function maskKey(keyName: string | undefined): string {
   return keyName.slice(0, 7) + "..." + keyName.slice(-4);
 }
 
-function relativeTime(t: ChatTranslator, isoString: string | null | undefined): string {
+function relativeTime(commonT: CommonTranslator, isoString: string | null | undefined): string {
   if (!isoString) return "";
   try {
     const date = new Date(isoString);
     const diffMs = Date.now() - date.getTime();
     const diffSec = Math.floor(diffMs / 1000);
-    if (diffSec < 60) return t("keysPanel.justNow");
+    if (diffSec < 60) return commonT("justNow");
     const diffMin = Math.floor(diffSec / 60);
-    if (diffMin < 60) return t("keysPanel.minutesAgo", { count: diffMin });
+    if (diffMin < 60) return commonT("minutesAgo", { count: diffMin });
     const diffHr = Math.floor(diffMin / 60);
-    if (diffHr < 24) return t("keysPanel.hoursAgo", { count: diffHr });
-    return t("keysPanel.daysAgo", { count: Math.floor(diffHr / 24) });
+    if (diffHr < 24) return commonT("hoursAgo", { count: diffHr });
+    return commonT("daysAgo", { count: Math.floor(diffHr / 24) });
   } catch {
     return "";
   }
@@ -277,7 +277,7 @@ const KeysPanel: React.FC<Props> = ({ accessToken, userId, premiumUser }) => {
                       )}
                     </TableCell>
                     <TableCell className="text-muted-foreground text-[13px]">
-                      {relativeTime(t, record.created_at)}
+                      {relativeTime(commonT, record.created_at)}
                     </TableCell>
                     {premiumUser && (
                       <TableCell className="text-right">

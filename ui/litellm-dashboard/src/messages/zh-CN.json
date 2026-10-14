@@ -194,7 +194,11 @@
       "neverResets": "从不重置",
       "notSet": "未设置",
       "notAvailable": "不适用"
-    }
+    },
+    "justNow": "刚刚",
+    "minutesAgo": "{count, number} 分钟前",
+    "hoursAgo": "{count, number} 小时前",
+    "daysAgo": "{count, number} 天前"
   },
   "nav": {
     "aiGateway": "AI 网关",
@@ -6199,11 +6203,7 @@
       "errDurationRequired": "已过期的密钥必须填写过期时长",
       "errGraceFormat": "请填写形如 24h、2d 的时长",
       "toastRotated": "密钥轮换成功",
-      "toastRotateFailed": "密钥轮换失败",
-      "justNow": "刚刚",
-      "minutesAgo": "{count, number} 分钟前",
-      "hoursAgo": "{count, number} 小时前",
-      "daysAgo": "{count, number} 天前"
+      "toastRotateFailed": "密钥轮换失败"
     },
     "logsPanel": {
       "title": "你的日志",
@@ -6239,6 +6239,24 @@
       "noSearchResults": "未找到会话",
       "empty": "还没有会话",
       "emptyHint": "在上方开始新对话"
+    },
+    "credentialsPanel": {
+      "title": "应用凭证",
+      "subtitle": "已保存的 OAuth 连接，聊天时会自动使用",
+      "colApp": "应用",
+      "colConnected": "连接时间",
+      "emptyTitle": "还没有连接",
+      "emptyHint": "前往 <b>集成</b> 并点击 <b>连接</b>，即可授权 MCP 服务器",
+      "revokeTooltip": "吊销连接",
+      "revokeTitle": "确定吊销连接吗？",
+      "revokeDescription": "这将移除 {name} 已保存的 OAuth 凭证，你需要重新连接才能在聊天中继续使用。",
+      "revoke": "吊销",
+      "toastRevokeFailed": "吊销连接失败，请重试。",
+      "doesNotExpire": "永不过期",
+      "expired": "已过期",
+      "expiresInDays": "{count, number} 天后过期",
+      "expiresInHours": "{count, number} 小时后过期",
+      "expiresInMinutes": "{count, number} 分钟后过期"
     }
   },
   "playground": {

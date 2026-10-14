@@ -194,7 +194,11 @@
       "neverResets": "Never resets",
       "notSet": "Not set",
       "notAvailable": "n/a"
-    }
+    },
+    "justNow": "just now",
+    "minutesAgo": "{count, number}m ago",
+    "hoursAgo": "{count, number}h ago",
+    "daysAgo": "{count, number}d ago"
   },
   "nav": {
     "aiGateway": "AI Gateway",
@@ -6199,11 +6203,7 @@
       "errDurationRequired": "Expiration is required for expired keys",
       "errGraceFormat": "Must be a duration like 24h, 2d",
       "toastRotated": "Key rotated successfully",
-      "toastRotateFailed": "Failed to rotate key",
-      "justNow": "just now",
-      "minutesAgo": "{count, number}m ago",
-      "hoursAgo": "{count, number}h ago",
-      "daysAgo": "{count, number}d ago"
+      "toastRotateFailed": "Failed to rotate key"
     },
     "logsPanel": {
       "title": "Your Logs",
@@ -6239,6 +6239,24 @@
       "noSearchResults": "No conversations found",
       "empty": "No conversations yet",
       "emptyHint": "Start a new chat above"
+    },
+    "credentialsPanel": {
+      "title": "App Credentials",
+      "subtitle": "Your stored OAuth connections; used automatically in chat",
+      "colApp": "App",
+      "colConnected": "Connected",
+      "emptyTitle": "No connections yet",
+      "emptyHint": "Go to <b>Integrations</b> and click <b>Connect</b> to authorize an MCP server",
+      "revokeTooltip": "Revoke connection",
+      "revokeTitle": "Revoke connection?",
+      "revokeDescription": "This removes the stored OAuth credential for {name}. You'll need to reconnect to use it in chat again.",
+      "revoke": "Revoke",
+      "toastRevokeFailed": "Failed to revoke connection. Please try again.",
+      "doesNotExpire": "Does not expire",
+      "expired": "Expired",
+      "expiresInDays": "Expires in {count, number}d",
+      "expiresInHours": "Expires in {count, number}h",
+      "expiresInMinutes": "Expires in {count, number}m"
     }
   },
   "playground": {
