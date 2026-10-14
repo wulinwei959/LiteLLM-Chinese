@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { PaginatedMultiSelect } from "@/components/shared/PaginatedMultiSelect";
 import type { SearchSelectOption } from "@/components/shared/SearchSelect";
 import { useInfiniteTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
@@ -18,9 +19,10 @@ const TeamMultiSelect: React.FC<TeamMultiSelectProps> = ({
   disabled,
   organizationId,
   pageSize = 20,
-  placeholder = "Search teams by alias...",
+  placeholder,
 }) => {
   const [search, setSearch] = useState("");
+  const t = useTranslations("teams");
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteTeams(
     pageSize,
@@ -56,10 +58,10 @@ const TeamMultiSelect: React.FC<TeamMultiSelectProps> = ({
       hasNextPage={hasNextPage}
       isLoading={isLoading}
       isFetchingNextPage={isFetchingNextPage}
-      placeholder={placeholder}
-      emptyText="No teams found"
-      loadingText="Loading teams..."
-      clearAllLabel="Clear all teams"
+      placeholder={placeholder ?? t("multiSelectSearch")}
+      emptyText={t("noTeams")}
+      loadingText={t("loading")}
+      clearAllLabel={t("multiSelectClearAll")}
       disabled={disabled}
     />
   );

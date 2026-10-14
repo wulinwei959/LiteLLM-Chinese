@@ -1,8 +1,9 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useInfiniteTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
+import { renderWithProviders } from "../../../tests/test-utils";
 import TeamMultiSelect from "./team_multi_select";
 
 vi.mock("@/app/(dashboard)/hooks/teams/useTeams", () => ({
@@ -46,7 +47,7 @@ describe("TeamMultiSelect", () => {
     screen.queryAllByText(text).length + screen.queryAllByPlaceholderText(text).length > 0;
 
   it("renders a search control with the given placeholder", () => {
-    render(<TeamMultiSelect placeholder="Search teams by alias..." />);
+    renderWithProviders(<TeamMultiSelect placeholder="Search teams by alias..." />);
 
     expect(combobox()).toBeInTheDocument();
     expect(promptsWith("Search teams by alias...")).toBe(true);
@@ -54,7 +55,7 @@ describe("TeamMultiSelect", () => {
 
   it("offers every loaded team by alias and id", async () => {
     const user = userEvent.setup();
-    render(<TeamMultiSelect />);
+    renderWithProviders(<TeamMultiSelect />);
 
     await user.click(combobox());
 
@@ -74,7 +75,7 @@ describe("TeamMultiSelect", () => {
       }) as never,
     );
     const user = userEvent.setup();
-    render(<TeamMultiSelect />);
+    renderWithProviders(<TeamMultiSelect />);
 
     await user.click(combobox());
 
@@ -85,7 +86,7 @@ describe("TeamMultiSelect", () => {
   it("reports the picked team id to onChange", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    render(<TeamMultiSelect onChange={onChange} />);
+    renderWithProviders(<TeamMultiSelect onChange={onChange} />);
 
     await user.click(combobox());
     const matches = screen.getAllByText("Beta Team");
@@ -98,7 +99,7 @@ describe("TeamMultiSelect", () => {
   it("does not report a selection while disabled", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    render(<TeamMultiSelect onChange={onChange} disabled />);
+    renderWithProviders(<TeamMultiSelect onChange={onChange} disabled />);
 
     await user.click(combobox());
 
@@ -109,12 +110,12 @@ describe("TeamMultiSelect", () => {
   it("tells the user when there are no teams to pick", async () => {
     mockUseInfiniteTeams.mockReturnValue(mockTeamsResult({ pages: [{ teams: [] }] }) as never);
     const user = userEvent.setup();
-    render(<TeamMultiSelect />);
+    renderWithProviders(<TeamMultiSelect />);
 
     await user.click(combobox());
 
     // Substring match because one library appends an invisible word joiner for its live region.
-    expect(screen.getByText(/No teams found/)).toBeInTheDocument();
+    expect(screen.getByText(/未找到团队/)).toBeInTheDocument();
   });
 
   it("keeps a picked team's alias on its chip once a later search drops it from the loaded page", async () => {
@@ -124,7 +125,7 @@ describe("TeamMultiSelect", () => {
       const [value, setValue] = useState<string[]>([]);
       return <TeamMultiSelect value={value} onChange={setValue} />;
     }
-    const { rerender } = render(<Controlled />);
+    const { rerender } = renderWithProviders(<Controlled />);
 
     await user.click(combobox());
     const matches = screen.getAllByText("Beta Team");
@@ -141,7 +142,7 @@ describe("TeamMultiSelect", () => {
   });
 
   it("passes the page size and organization filter through to the teams query", () => {
-    render(<TeamMultiSelect pageSize={25} organizationId="org-7" />);
+    renderWithProviders(<TeamMultiSelect pageSize={25} organizationId="org-7" />);
 
     expect(mockUseInfiniteTeams).toHaveBeenCalledWith(25, undefined, "org-7");
   });

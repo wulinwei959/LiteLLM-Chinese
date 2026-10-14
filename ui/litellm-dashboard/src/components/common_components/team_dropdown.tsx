@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { PaginatedSearchSelect } from "@/components/shared/PaginatedSearchSelect";
 import { useInfiniteTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { Team } from "../key_team_helpers/key_list";
@@ -27,6 +28,7 @@ const TeamDropdown: React.FC<TeamDropdownProps> = ({
   filterTeam,
 }) => {
   const [search, setSearch] = useState("");
+  const t = useTranslations("teams");
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } = useInfiniteTeams(
     pageSize,
@@ -76,7 +78,7 @@ const TeamDropdown: React.FC<TeamDropdownProps> = ({
   const handleChange = (teamId: string | null) => {
     onChange?.(teamId);
     if (onTeamSelect) {
-      onTeamSelect(teamId ? teams.find((t) => t.team_id === teamId) ?? null : null);
+      onTeamSelect(teamId ? teams.find((team) => team.team_id === teamId) ?? null : null);
     }
   };
 
@@ -95,9 +97,9 @@ const TeamDropdown: React.FC<TeamDropdownProps> = ({
         hasNextPage={hasNextPage}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
-        placeholder="Search or select a team"
-        emptyText="No teams found"
-        loadingText="Loading teams…"
+        placeholder={t("dropdownSearch")}
+        emptyText={t("noTeams")}
+        loadingText={t("dropdownLoading")}
         disabled={disabled}
         inputId={id}
       />

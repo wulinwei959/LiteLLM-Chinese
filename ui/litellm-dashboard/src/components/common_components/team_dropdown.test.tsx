@@ -1,8 +1,8 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { chooseSelectOption } from "../../../tests/test-utils";
+import { chooseSelectOption, renderWithProviders } from "../../../tests/test-utils";
 import type { Team } from "../key_team_helpers/key_list";
 import TeamDropdown from "./team_dropdown";
 
@@ -36,7 +36,7 @@ describe("TeamDropdown", () => {
       data: { pages: [{ teams: [TEAMS[0]] }] },
       hasNextPage: true,
     });
-    const view = render(<TeamDropdown filterTeam={filterTeam} onChange={onChange} />);
+    const view = renderWithProviders(<TeamDropdown filterTeam={filterTeam} onChange={onChange} />);
     await waitFor(() => expect(teamQuery.fetchNextPage).toHaveBeenCalledOnce());
     mockUseInfiniteTeams.mockReturnValue(teamQuery);
     view.rerender(<TeamDropdown filterTeam={filterTeam} onChange={onChange} />);
@@ -51,7 +51,7 @@ describe("TeamDropdown", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     const onTeamSelect = vi.fn();
-    render(<TeamDropdown onChange={onChange} onTeamSelect={onTeamSelect} />);
+    renderWithProviders(<TeamDropdown onChange={onChange} onTeamSelect={onTeamSelect} />);
 
     await chooseSelectOption(user, screen.getByRole("combobox"), /^Beta Team/);
 
@@ -63,7 +63,7 @@ describe("TeamDropdown", () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     const onTeamSelect = vi.fn();
-    render(<TeamDropdown value="team-1" onChange={onChange} onTeamSelect={onTeamSelect} />);
+    renderWithProviders(<TeamDropdown value="team-1" onChange={onChange} onTeamSelect={onTeamSelect} />);
 
     await user.click(screen.getByRole("button", { name: "Clear" }));
 
