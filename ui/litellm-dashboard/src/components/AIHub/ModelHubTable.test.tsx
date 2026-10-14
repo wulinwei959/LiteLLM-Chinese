@@ -219,7 +219,7 @@ describe("ModelHubTable", () => {
       renderWithProviders(
         <ModelHubTable accessToken="test-token" publicPage={false} premiumUser={false} userRole="Admin" />,
       );
-      return { user, search: await screen.findByPlaceholderText("Search model names...") };
+      return { user, search: await screen.findByPlaceholderText("搜索模型名称...") };
     };
 
     it("requires a fresh MCP publication list before and after saving", async () => {
@@ -252,7 +252,7 @@ describe("ModelHubTable", () => {
       await user.click(screen.getByRole("tab", { name: "智能体中心" }));
       await user.click(screen.getByRole("tab", { name: "模型中心" }));
 
-      expect(await screen.findByPlaceholderText("Search model names...")).toHaveValue("opus");
+      expect(await screen.findByPlaceholderText("搜索模型名称...")).toHaveValue("opus");
     });
 
     it("filters the Agent Hub table by name or description and shows the no-match state", async () => {
