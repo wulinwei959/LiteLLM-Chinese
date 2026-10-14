@@ -1,6 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 52 簇更新
+
+批次 24 第 52 簇：`components/model_filters.tsx`（214 行，接入后 216，+11/−9）的模型筛选条接入 `modelHub`，新开 8 键、复用本命名空间已有的 `lblMode`，两个消息目录各 +8/−0 行；`ModelHubTable.test.tsx`（+2/−2）把两处 `findByPlaceholderText("Search model names...")` 换成中文。本文件被 AI Hub 整页（`ModelHubTable.tsx` 第 480 行）与公开模型向导（`forms/MakeModelPublicForm.tsx` 第 161 行）共用，后者测试里是 `vi.mock` 掉的，不受影响
+
+改造形态：
+
+- 8 个键落 `modelHub` 平铺层：`searchModelsLabel`/`searchModelsPlaceholder` 与第 49 簇的 `searchAgentsLabel`/`searchAgentsPlaceholder` 成对，`lblProvider`/`lblFeatures` 延用 `lbl*`、`allProviders`/`allModes`/`allFeatures` 延用第 47 簇 `allTools` 的下拉首项形态，`clearFilters` 是四个筛选都有值时才出现的链接按钮
+- 一次同命名空间复用：`lblMode` = `Mode:`/模式： 与本文件逐字节相同、概念同为"模式字段标签"，直接借用而不另开 `searchModeLabel`。这是第 48 簇 `viewDetails` 之后平铺层内跨文件复用的第二次兑现
+- `"Provider:"` 至此在全库有三处：`logs.vectorStore.provider`、`vectorStores.providerLabel` 与本簇 `modelHub.lblProvider`，跨命名空间不借，按口径新开并记账。`lblProvider` 的中文"提供商："与 `lblProviders`（Providers:）同形，是第 50 簇那批冒号重复的延续；`models.modelTable.searchPlaceholder` 是 `"Search model names…"`（U+2026 一个字符），与本文件的 `"Search model names..."`（三个点）不同值，故 `searchModelsPlaceholder` 也新开
+- `clearFilters` 与 `chat` 域已有的 `clearFilters`（"Clear all filters"）只差值，键名撞车属正常的跨命名空间重名，沿用第 51 簇"重复攒够再上收"的口径不动其他命名空间
+- 数据与格式留原文：三个 `<select>` 里由 `getUniqueProviders`/`getUniqueModes`/`getUniqueFeatures` 推出的 `<option>` 取值本身，尤其是 `supports_*` 键名首字母拼接出的特性名（与第 48 簇 `formatCapabilityName` 同一类数据债）
+
+测试侧同步只有 `ModelHubTable.test.tsx` 两处占位符断言，用例数不变（14 例）。`public_model_hub.tsx` 第 396、409 行有一套同文的搜索标签，那个文件已挂 `modelHub` 却仍写着英文常量，等接入公开模型中心整页时可直接复用本簇这两个键，另带一个 `aria-label="Search model names"` 要一起处理
+
+验证：定向 `npx vitest run src/components/AIHub/ src/lib/i18n` → 12 文件全绿；相邻的 `public_model_hub.test.tsx` + `AIHub/forms` 4 文件 82 例全绿；复跑 7 个范围 → 79 文件 979 例全绿，`Type Errors no errors`；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 两个改动文件 0 error / 5 warning，与 `git show HEAD` 覆盖后的基线逐条相同（源文件一条 `any` 加两条 `no-long-condition-chain`，行号只随新增 import 位移 1 到 2 行；测试文件 92/178 行两条 `no-large-inline-object-arg` 未动）；prettier 对两个 `.tsx` `--check` 直接通过；`npm run build` exit 0
+
+覆盖率复测：非测试 `.tsx` 912 个，已接入 433 到 434、47.5% 到 47.6%。键数 7001 到 7009（`modelHub` 命名空间叶子 191 到 199），中英同值 87 不变
 
 ## 2026-10-15 第 51 簇更新
 
