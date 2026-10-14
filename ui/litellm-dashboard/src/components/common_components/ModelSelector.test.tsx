@@ -1,8 +1,8 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import ModelSelector from "./ModelSelector";
-import { chooseSelectOption } from "../../../tests/test-utils";
+import { chooseSelectOption, renderWithProviders } from "../../../tests/test-utils";
 
 vi.mock("@/components/llm_calls/fetch_models", () => ({
   fetchAvailableModels: vi.fn().mockResolvedValue([]),
@@ -10,8 +10,8 @@ vi.mock("@/components/llm_calls/fetch_models", () => ({
 
 const openCustomModelInput = async () => {
   const user = userEvent.setup();
-  await chooseSelectOption(user, screen.getByRole("combobox"), "Enter custom model");
-  return screen.getByPlaceholderText("Enter custom model name");
+  await chooseSelectOption(user, screen.getByRole("combobox"), "输入自定义模型");
+  return screen.getByPlaceholderText("输入自定义模型名称");
 };
 
 describe("ModelSelector custom model debounce", () => {
@@ -24,7 +24,7 @@ describe("ModelSelector custom model debounce", () => {
 
   it("does not call onChange before the debounce wait elapses", async () => {
     const onChange = vi.fn();
-    render(<ModelSelector accessToken="test-token" onChange={onChange} />);
+    renderWithProviders(<ModelSelector accessToken="test-token" onChange={onChange} />);
 
     const input = await openCustomModelInput();
     vi.useFakeTimers();
@@ -44,7 +44,7 @@ describe("ModelSelector custom model debounce", () => {
 
   it("calls onChange exactly once with the last typed value after the wait", async () => {
     const onChange = vi.fn();
-    render(<ModelSelector accessToken="test-token" onChange={onChange} />);
+    renderWithProviders(<ModelSelector accessToken="test-token" onChange={onChange} />);
 
     const input = await openCustomModelInput();
     vi.useFakeTimers();
@@ -67,7 +67,7 @@ describe("ModelSelector custom model debounce", () => {
 
   it("does not call onChange when unmounted mid-wait", async () => {
     const onChange = vi.fn();
-    const { unmount } = render(<ModelSelector accessToken="test-token" onChange={onChange} />);
+    const { unmount } = renderWithProviders(<ModelSelector accessToken="test-token" onChange={onChange} />);
 
     const input = await openCustomModelInput();
     vi.useFakeTimers();

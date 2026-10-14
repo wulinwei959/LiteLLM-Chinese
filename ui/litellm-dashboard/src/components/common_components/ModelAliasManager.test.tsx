@@ -1,11 +1,12 @@
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import ModelAliasManager from "./ModelAliasManager";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 vi.mock("./ModelSelector", () => ({
   default: ({ value, onChange }: { value?: string; onChange?: (v: string) => void }) => (
@@ -26,7 +27,7 @@ const SEMANTIC_TOKEN =
 const NO_ALIASES: Record<string, string> = {};
 
 const renderInForm = (onSubmit = vi.fn(), onAliasUpdate = vi.fn()) => {
-  render(
+  renderWithProviders(
     <form
       onSubmit={(event) => {
         event.preventDefault();
@@ -41,14 +42,14 @@ const renderInForm = (onSubmit = vi.fn(), onAliasUpdate = vi.fn()) => {
       />
       <button type="submit">Save team</button>
     </form>,
-  );
+    );
   return { onSubmit, onAliasUpdate, user: userEvent.setup() };
 };
 
 const addAlias = async (user: ReturnType<typeof userEvent.setup>, name: string, model: string) => {
-  await user.type(screen.getByLabelText("Alias Name"), name);
+  await user.type(screen.getByLabelText("别名名称"), name);
   await user.type(screen.getByLabelText("target model"), model);
-  await user.click(screen.getByRole("button", { name: /add alias/i }));
+  await user.click(screen.getByRole("button", { name: "添加别名" }));
 };
 
 describe("ModelAliasManager dark-mode tokens", () => {
@@ -56,7 +57,7 @@ describe("ModelAliasManager dark-mode tokens", () => {
 
   it("reads the component source it is asserting about", () => {
     expect(source.length).toBeGreaterThan(0);
-    expect(source).toContain("Manage Existing Aliases");
+    expect(source).toContain("ModelAliasManagerProps");
   });
 
   it("uses semantic colour tokens and no hardcoded palette classes", () => {
@@ -77,10 +78,10 @@ describe("ModelAliasManager", () => {
 
   it("keeps Add Alias disabled until both fields have a value", async () => {
     const { onAliasUpdate, user } = renderInForm();
-    const addButton = screen.getByRole("button", { name: /add alias/i });
+    const addButton = screen.getByRole("button", { name: "添加别名" });
 
     expect(addButton).toBeDisabled();
-    await user.type(screen.getByLabelText("Alias Name"), "fast-model");
+    await user.type(screen.getByLabelText("别名名称"), "fast-model");
     expect(addButton).toBeDisabled();
 
     await user.type(screen.getByLabelText("target model"), "gpt-4o");
@@ -93,11 +94,11 @@ describe("ModelAliasManager", () => {
     const { onAliasUpdate, user } = renderInForm();
     await addAlias(user, "fast-model", "gpt-4o");
 
-    await user.click(screen.getByRole("button", { name: "Edit fast-model" }));
-    const rowInput = screen.getByLabelText("Edit alias name");
+    await user.click(screen.getByRole("button", { name: "编辑 fast-model" }));
+    const rowInput = screen.getByLabelText("编辑别名名称");
     await user.clear(rowInput);
     await user.type(rowInput, "renamed-model");
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(screen.getByRole("button", { name: "保存" }));
 
     expect(onAliasUpdate).toHaveBeenLastCalledWith({ "renamed-model": "gpt-4o" });
   });
@@ -106,10 +107,10 @@ describe("ModelAliasManager", () => {
     const { onAliasUpdate, user } = renderInForm();
     await addAlias(user, "fast-model", "gpt-4o");
 
-    await user.click(screen.getByRole("button", { name: "Delete fast-model" }));
+    await user.click(screen.getByRole("button", { name: "删除 fast-model" }));
 
     expect(onAliasUpdate).toHaveBeenLastCalledWith({});
-    expect(screen.getByText("No aliases added yet. Add a new alias above.")).toBeInTheDocument();
+    expect(screen.getByText("尚未添加别名，请在上方添加新别名。")).toBeInTheDocument();
   });
 
   it("does not submit the surrounding form when its own controls are used", async () => {
@@ -120,9 +121,9 @@ describe("ModelAliasManager", () => {
 
     await addAlias(user, "fast-model", "gpt-4o");
     const row = screen.getByText("fast-model").closest("tr") as HTMLElement;
-    await user.click(within(row).getByRole("button", { name: "Edit fast-model" }));
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
-    await user.click(screen.getByRole("button", { name: "Delete fast-model" }));
+    await user.click(within(row).getByRole("button", { name: "编辑 fast-model" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
+    await user.click(screen.getByRole("button", { name: "删除 fast-model" }));
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
   });

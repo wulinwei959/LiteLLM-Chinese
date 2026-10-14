@@ -1319,6 +1319,30 @@
       "alias": "别名",
       "targetModel": "目标模型"
     },
+    "selector": {
+      "label": "选择模型",
+      "placeholder": "请选择模型",
+      "customOption": "输入自定义模型",
+      "customPlaceholder": "输入自定义模型名称"
+    },
+    "aliasManager": {
+      "addNew": "添加新别名",
+      "aliasName": "别名名称",
+      "aliasNamePlaceholder": "例如 gpt-4o",
+      "selectTargetModel": "选择目标模型",
+      "manageExisting": "管理已有别名",
+      "editAliasName": "编辑别名名称",
+      "editAlias": "编辑 {name}",
+      "deleteAlias": "删除 {name}",
+      "emptyList": "尚未添加别名，请在上方添加新别名。",
+      "configExample": "配置示例",
+      "configExampleHint": "以下是当前别名在配置中的写法：",
+      "needBothFields": "请同时填写别名名称和目标模型",
+      "duplicateAlias": "已存在同名别名",
+      "added": "别名添加成功",
+      "updated": "别名更新成功",
+      "deleted": "别名删除成功"
+    },
     "accessGroupBudgets": {
       "description": "模型访问组可以携带一个预算，所有通过名称获得该组权限的密钥都共同从中消耗。通过通配符或所有代理模型访问该组模型的密钥不会计入其中。",
       "loading": "正在加载模型访问组…",

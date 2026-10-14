@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Bot } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useDebouncedCallback } from "@tanstack/react-pacer/debouncer";
 import { Input } from "@/components/ui/input";
 import { SearchSelect } from "@/components/shared/SearchSelect";
@@ -22,14 +23,15 @@ interface ModelSelectorProps {
 const ModelSelector: React.FC<ModelSelectorProps> = ({
   accessToken,
   value,
-  placeholder = "Select a Model",
+  placeholder,
   onChange,
   disabled = false,
   style,
   className,
   showLabel = true,
-  labelText = "Select Model",
+  labelText,
 }) => {
+  const t = useTranslations("models");
   const [selectedModel, setSelectedModel] = useState<string | null>(value ?? null);
   const [showCustomModelInput, setShowCustomModelInput] = useState<boolean>(false);
   const [modelInfo, setModelInfo] = useState<ModelGroup[]>([]);
@@ -81,7 +83,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
     <div>
       {showLabel && (
         <p className="font-medium block mb-2 text-foreground flex items-center">
-          <Bot className="mr-2 size-3.5" /> {labelText}
+          <Bot className="mr-2 size-3.5" /> {labelText ?? t("selector.label")}
         </p>
       )}
       <div style={{ width: "100%", ...style }} className={`rounded-md ${className || ""}`}>
@@ -91,10 +93,10 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
               value: model_group,
               label: model_group,
             })),
-            { value: "custom", label: "Enter custom model" },
+            { value: "custom", label: t("selector.customOption") },
           ]}
           value={selectedModel}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t("selector.placeholder")}
           onValueChange={onModelChange}
           disabled={disabled}
         />
@@ -102,7 +104,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
       {showCustomModelInput && (
         <Input
           className="mt-2"
-          placeholder="Enter custom model name"
+          placeholder={t("selector.customPlaceholder")}
           onChange={(e) => debouncedSelect(e.target.value)}
           disabled={disabled}
         />

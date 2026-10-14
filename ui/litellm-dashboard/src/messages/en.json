@@ -1319,6 +1319,30 @@
       "alias": "Alias",
       "targetModel": "Target Model"
     },
+    "selector": {
+      "label": "Select Model",
+      "placeholder": "Select a Model",
+      "customOption": "Enter custom model",
+      "customPlaceholder": "Enter custom model name"
+    },
+    "aliasManager": {
+      "addNew": "Add New Alias",
+      "aliasName": "Alias Name",
+      "aliasNamePlaceholder": "e.g., gpt-4o",
+      "selectTargetModel": "Select target model",
+      "manageExisting": "Manage Existing Aliases",
+      "editAliasName": "Edit alias name",
+      "editAlias": "Edit {name}",
+      "deleteAlias": "Delete {name}",
+      "emptyList": "No aliases added yet. Add a new alias above.",
+      "configExample": "Configuration Example",
+      "configExampleHint": "Here's how your current aliases would look in the config:",
+      "needBothFields": "Please provide both alias name and target model",
+      "duplicateAlias": "An alias with this name already exists",
+      "added": "Alias added successfully",
+      "updated": "Alias updated successfully",
+      "deleted": "Alias deleted successfully"
+    },
     "accessGroupBudgets": {
       "description": "A model access group can carry one budget that every key granted the group by name draws from together. Keys that reach the group's models through a wildcard or all-proxy-models are not charged against it.",
       "loading": "Loading model access groups…",
