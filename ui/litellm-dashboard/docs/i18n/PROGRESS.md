@@ -1,6 +1,35 @@
 # 开发进度
 
-数据快照 2026-10-13，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计见"### 修复后的复核"（11308 个用例、1 失败），而 `## 测试状态` 的表格是 `507e347` 的旧快照，保留用于对照起点
+数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计见"批次 24：add_model 与 edit_auto_router"一节（11576 例、54 失败），"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-14 更新
+
+批次 24 第 13 簇：`src/components/view_logs/RequestLogsFilters.tsx`（请求日志筛选面板的 14 个筛选字段）接入 `logs` 命名空间，新增 41 个 `logs.filters.*` 键，同时复用已有的 `logs.status`、`logs.model`、`logs.allStatuses`、`logs.success`、`logs.failure`。没有借其他命名空间的同名键，`ARCHITECTURE.md` 记着跨命名空间借键是历史 bug 族
+
+四个模块作用域的标签表（`STATUS_FILTER_ITEMS`、`CACHE_FILTER_ITEMS`、`CREDENTIAL_FILTER_ITEMS`、`SPAN_TYPE_FILTER_ITEMS`）改成组件内的 `useMemo`，依赖数组带 `t`，与 `VirtualKeysTable.tsx` 的既有写法一致。`CREDENTIAL_FILTER_ITEMS` 原本从 `constants.ts` 的 `CREDENTIAL_LABELS` 展开，现在直接写 `"true"` / `"false"` 两个字面量值，`CREDENTIAL_LABELS` 只剩 `LogDetailContent.tsx` 一个消费方，那一簇改完就可以删
+
+翻译边界：Span Type 的四个取值按散文翻（`Agent` 智能体、`Batch` 批处理），`LLM` 与 `MCP` 是缩写、两侧同值。这与第 12 簇"连通性测试对话框的前缀标签按标识符保留"不冲突，那条是紧邻模型名的诊断输出，这条是筛选下拉里给人点的选项。同一批词在 `TypeBadges.tsx` 与 `SPAN_TYPE_LABELS` 里必须沿用同一套键，否则筛选下拉写"智能体"而表格徽标写"Agent"
+
+测试同步：`RequestLogsFilters.test.tsx` 39 例的标签、占位符与选项断言改中文。顺带清掉了"批次 24"那张 16 文件失败表里的 `view_logs/index.test.tsx`（第 75 行还停在 `Request Logs`，同文件上面几行早已中文化），该文件 14 例全绿
+
+e2e 侧有 8 处按 placeholder 文本或 combobox 可访问名寻址这些筛选器，分布在 3 个 spec，已同步中文：`logs.spec.ts` 1 处、`logsFilters.spec.ts` 5 处、`logsPagination.spec.ts` 2 处。这 8 处**没有跑过**，Playwright 需要活代理与真实数据，本机只做了字符串替换
+
+验证：i18n 三条守卫 16 例通过；`RequestLogsFilters.test.tsx` 加 `src/lib/i18n/` 共 55 例通过；view_logs 相邻 6 个文件 149 例通过，合计 204 例全绿。`npx tsc --noEmit -p .` 883 条错误、58 个文件，非测试文件 0 条，本簇文件 0 条。`npx eslint` 对改动的 `.tsx` 无输出。`npm run build` 退出 0。没有跑全量分片，54 例基线失败里只有 `view_logs/index.test.tsx` 这 1 例被清，其余 53 例本簇未触碰
+
+### 复测的三个数字
+
+覆盖率命令（在 `ui/litellm-dashboard` 下执行）
+
+```
+find src -name "*.tsx" -not -name "*.test.tsx" | wc -l
+grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\.test\.tsx" | wc -l
+```
+
+2026-10-14 实测：非测试 `.tsx` 共 912 个，已接入 360 个，覆盖率 39.5%。此前记的 861 / 305 复现不出来，那条没写命令，两个数都对不上今天这个口径，所以并列记录，不要拿 39.5% 减 35.4% 当进度
+
+目录规模同步复测：命名空间 39 个不变，两侧叶子键各 5978（10-13 记的 5228 是第 5 到 12 簇补键之前的数），中英文取值完全相同的键 78 个，本簇贡献其中 2 个（`logs.filters.options.llm` / `.mcp`）
+
+启发式扫描的非测试源文件基数也变了：`.tsx` 加 `.ts` 共 1302 个（10-13 记 1232），差的是上游 v1.105.0 同步带进来的文件
 
 ## 2026-10-13 更新
 
@@ -39,7 +68,7 @@
 | `access-groups/.../AccessGroupEditModal.integration.test.tsx` | 找不到 tab `/MCP Servers/` | 第六类 |
 | `access-groups/.../AccessGroupCreateDialog.test.tsx` | 找不到标签 `Group Name` | 第六类 |
 | `model_add/CredentialModal.test.tsx` | `useTranslations` 上下文缺失 | 第一类，测试缺 `NextIntlClientProvider` |
-| `view_logs/index.test.tsx` | 找不到 tab `Request Logs` | 第六类 |
+| `view_logs/index.test.tsx` | 找不到 tab `Request Logs` | 第六类，2026-10-14 第 13 簇已修 |
 | `organizations/_components/OrganizationsTable.test.tsx` | 找不到文本 `创建时间` | 需复查：断言已中文化但组件未渲染中文表头，或渲染路径不同 |
 | `shared/DataTable/DataTable.test.tsx` | `render is not defined` | 非 i18n，测试缺 import |
 | `mcp-servers/_components/mcp_server_edit.test.tsx` | 取值失败 | 非 i18n，既有技术债（见 `FIXES.md`） |
@@ -61,16 +90,16 @@
 | 项                       | 数值                                                 |
 | ------------------------ | ---------------------------------------------------- |
 | 命名空间                 | 39                                                   |
-| `en.json` 叶子键          | 5228                                                 |
-| `zh-CN.json` 叶子键       | 5228                                                 |
+| `en.json` 叶子键          | 5978（2026-10-14；10-13 记的 5228 是第 5 到 12 簇补键之前）|
+| `zh-CN.json` 叶子键       | 5978                                                 |
 | 键树一致性               | 一致，`messagesParity` 通过                           |
-| 中英文取值完全相同的键    | 71（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
+| 中英文取值完全相同的键    | 78（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
 
-中英文取值相同的那 71 个不是漏翻。产品名、缩写、`CSV` 这类不需要翻译的词保留英文是刻意的，`GLOSSARY.md` 里有对应条目
+中英文取值相同的那 78 个不是漏翻。产品名、缩写、`CSV` 这类不需要翻译的词保留英文是刻意的，`GLOSSARY.md` 里有对应条目
 
 ## 文件覆盖率
 
-`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%
+`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
 
 ## 按路由的进度
 
@@ -245,11 +274,15 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 按目录看，前几名是 `components/add_model`（43 文件 / 171 处）、`components/Settings`（27 / 89）、`components/view_logs`（22 / 42）、`components/chat`（10 / 39）、`components/AIHub`（9 / 36）
 
+`components/add_model` 这一行在 2026-10-14 已经过时：批次 24 第 1 到 12 簇把这 43 个文件基本扫完了，实测该目录 56 个非测试 `.tsx` 里 52 个已接入，剩下 4 个不产生可见英文（见"批次 24：add_model 与 edit_auto_router"一节）。同一命令下 `components/view_logs` 是 71 个非测试 `.tsx` 接入 2 个，是现在最密的目标。命令与口径见"## 2026-10-14 更新"
+
 这正是 [PLAN.md](./PLAN.md) 里批次 24 的账。需要区分的是：[FIXES.md](./FIXES.md) 记的"批次 24 硬编码英文欠账清单"只是 2026-10-12 修 Provider 与 team 批次时顺手记下的 10 条已知欠账，那份清单清空不等于批次 24 完成
 
 扫描是启发式的，会漏掉模板字符串里拼接的文案、常量表里的标签、以及非 JSX 位置渲染的字符串，也会把少量技术标识误判成文案。所以 232 是量级估计，不是可直接施工的精确清单；真要收口，得逐文件读一遍
 
 ## 下一步优先级
+
+`components/view_logs` 是眼下最密的目录（71 个非测试 `.tsx`，第 13 簇后接入 2 个）。剩下的按依赖排：第 14 簇 `LogsTableToolbar.tsx` 加 `constants.ts` 的 `QUICK_SELECT_OPTIONS`（6 条时间区间标签）与 `LiveTailBanner`；第 15 簇 `TypeBadges.tsx` 加 `SPAN_TYPE_LABELS`，必须沿用第 13 簇的 `logs.filters.options.*` 那四个词，不要另起一套键；第 16 簇 `ERROR_CODE_OPTIONS`（11 条 `400 - Bad Request` 型标签），这一簇会碰到真实行为改动：`ErrorCodeFilterField` 是按 `option.label.toLowerCase()` 做子串过滤的，标签进目录之后搜索命中的是中文，得决定按值搜还是按标签搜，并且 `RequestLogsFilters.test.tsx` 有两条用例直接断言 `429 - Rate Limited` 这类标签。同一簇里还有 `constants.ts` 的 `CREDENTIAL_LABELS`，消费方只剩 `LogDetailContent.tsx`，接完就能删，键已在 `logs.filters.options.clientOAuthToken` 与 `.configuredKey`
 
 原来的四个优先级里，第一（223 条缺 Provider）、第二（team 172 例）、第三（页面收口）都已完成。此前按失败集中度排出的 1-6 号目标也全部清零：`edit_auto_router_modal.integration` 的 46 例经单文件复跑确认是全量并发造成的假失败（独立运行为 0），其余按 6d06b7b、e2350f6、c109bdb、0e8f5f6 四次提交逐个转绿。中途顺带清掉了未列进表的 `AdminPanel`（19）、`EntityUsage`（18）、`add_attachment_form`（17）、`BulkEditUsers`（16）、`leftnav` 之外的 `user_edit_view` / `user_info_view.integration` / `old-usage`
 

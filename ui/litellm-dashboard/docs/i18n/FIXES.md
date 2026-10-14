@@ -77,7 +77,9 @@ git diff -U0 610473c HEAD -- <相对当前目录的路径>
 
 脚本打印"写入成功"不等于成功。JSON 被覆盖后要**重新读回来**，逐条核对键存在、值非空、两侧键树一致。有过连续两次被同一种假成功骗到的记录
 
-`en.json` 与 `zh-CN.json` 是 **CRLF** 行尾。`JSON.stringify(x, null, 2)` 输出的是 LF，直接写会让整个文件显示为全部改动，几百行的真实改动淹没在几千行的行尾噪音里。写之前先探测行尾再拼回去
+行尾要先探测，别照抄任何文档里的结论，包括这一条。`JSON.stringify(x, null, 2)` 输出 LF，如果文件实际是 CRLF 而直接写回，整个文件会显示为全部改动，几十行真实改动淹没在几千行行尾噪音里。2026-10-14 在本机 checkout 实测：`en.json`、`zh-CN.json` 与 `src` 下的 `.tsx` 全是 LF，CR 字节数为 0，仓库也没设 `core.autocrlf`。早先这里写的是"这两个目录是 CRLF"，那是另一台机器上 Windows checkout 的状态，照它拼 `\r\n` 反而会把行尾改脏。探测一条命令：`node -e "const s=require('fs').readFileSync(f,'latin1');console.log((s.match(/\r/g)||[]).length)"`，为 0 就按 LF 写
+
+写回的核对方式也别只看 `git diff --stat` 的行数：`git diff` 默认会把行尾差异算进改动行。用脚本把写入后的文件读回来，逐条比对键路径与值，比任何 diff 统计都可靠
 
 ## 键树不一致（第三类）
 
@@ -325,6 +327,16 @@ guardrails 这一轮定了一条翻译边界：面向读者的散文（标签、
 翻译会顶破 `max-lines`（800 行，跳过空行与注释）。`CustomCodeModal.tsx` 在 `83899df` 从 782 涨到 805，此后 `npx eslint <该文件>` 一直报 `max-lines` error。`eslint-suppressions.json` 是上游快照带来的批量豁免基线（19 个文件带 `max-lines` 豁免，含 `TeamGuardrailsTab.tsx`），不要往里追加新豁免；修法是抽块，本次把组件内的 `TEST_INPUT_EXAMPLES` 常量挪到 `custom_code/testInputExamples.ts`（89 行），文件回到 780 行。另外 `eslint --stdin` 不套用批量豁免，报出的 error 会比按文件跑多（本例 8 对 1），核对以按文件跑为准
 
 另有两处结构性注意事项。`templates/KeySavingsTab` 的 SummaryCard testid 由译文经 `slugOf(label)` 派生（如 `summary-card-压缩节省`），testid 随 locale 变化，改译文即改 testid，断言勿按英文 testid 写死。三个测试（`view_logs/RequestLogsPanel`、`organization/organization_view`、`model_info_view`）用自定义 `wrapper` 覆盖 Provider，已在 wrapper 内嵌 `<LocaleProvider locale="zh-CN">` 保住中文渲染，后续改造时不要丢掉这一层
+
+## 2026-10-14 第 13 簇（view_logs 筛选面板）踩到的四条
+
+`prettier --check` 对消息目录、e2e spec 和 `docs/i18n/*.md` **本来就不是绿的**。`src/messages/en.json`、`src/messages/zh-CN.json` 与 `tests/e2e/ui/tests/logs/` 下三个 spec 在 HEAD 上就报格式差异（用 `--stdin-filepath` 按各自真实路径复测，差异行数分别是 18、24、114、186、96），`PROGRESS.md` / `FIXES.md` / `PLAN.md` 同样如此（202、96、74 行，主要是表格竖线对齐）。也就是说 `npm run format:check` 不是这些文件的门禁，`npm run lint` 走的是 `eslint-config-prettier`，只关掉格式规则。改完千万不要顺手 `prettier --write` 这几个文件，那会把 50 行的真实改动放大成整文件重写，正好踩上一条里说的坑。`.tsx` 组件与测试文件是按 prettier 写的，那几个可以也应该跑
+
+组件模块作用域里的标签表（`STATUS_FILTER_ITEMS` 这类 `as const`）不能直接调 `t`，`t` 是 hook 返回值。改法是在组件内 `useMemo` 重建，并把 `t` 写进依赖数组；`VirtualKeysTable.tsx` 里 `statusFilterItems` 就是这个写法，别自己发明。同一条规则适用于 `useMemo` 内已有的模板字符串（`Model ID: ${id}` 变 `t("filters.modelIdLabel", { modelId })`），依赖数组同样要加 `t`
+
+批量把测试里的英文标签换成中文时，`it.each([["success", "成功"]])` 这类数组只有第二项是可渲染文案，第一项是筛选器发给后端的值，翻了就直接查不到数据。用带引号的字面量做整串替换（`"Status"` 而不是 `Status`）能天然避开它，但 `["", "All Statuses"]` 这种首元素是空串的组要单独看一眼。同一次替换还会顺带命中 `it()` 标题之外的地方，跑完必须逐条看替换计数，`MISS` 和数量异常的都要回查
+
+e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的（`getByRole("combobox", { name: "Search a key alias" })`、`getByPlaceholder("Enter session ID…")`），所以字段标签换语言不影响 e2e，placeholder 换语言一定影响。本簇 3 个 spec 共 8 处：`logs.spec.ts` 的 `Search an end user`，`logsFilters.spec.ts` 的 `Search a key alias` 三处加 `All Statuses` 与 `Failure`，`logsPagination.spec.ts` 的 `Search a key alias` 与 `Enter session ID…`。`logsFilters.spec.ts:111` 那条注释提醒的是另一件事：Status 字段只标了分组、没标到 trigger 上，所以那个 combobox 只能按它当前显示的值定位。Playwright 需要活代理与真实请求数据，这 8 处改完只是字符串替换，没有跑过，别把它当成已验证
 
 ## 回归守卫
 
