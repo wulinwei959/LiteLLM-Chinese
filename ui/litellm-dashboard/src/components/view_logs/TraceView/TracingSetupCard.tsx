@@ -1,9 +1,11 @@
 "use client";
 
 import { ArrowRight, ArrowUpRight, Check, Copy, KeyRound, Loader2, Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { cn } from "@/lib/cva.config";
+import type { LogsTranslator } from "@/lib/i18n/translators";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { copyToClipboard } from "@/utils/dataUtils";
@@ -221,11 +223,11 @@ export const codingAgentCommand = (agent: CodingAgent, prompt: string): string =
 export const maskSecret = (secret: string): string =>
   secret.length > 10 ? `${secret.slice(0, 5)}${"•".repeat(16)}${secret.slice(-4)}` : "•".repeat(secret.length);
 
-export const otlpEndpoints = (proxyUrl: string): readonly (readonly [string, string, boolean])[] => [
-  ["Traces endpoint (POST)", `${proxyUrl}/v1/traces`, true],
+export const otlpEndpoints = (t: LogsTranslator, proxyUrl: string): readonly (readonly [string, string, boolean])[] => [
+  [t("traceSetup.endpointTraces"), `${proxyUrl}/v1/traces`, true],
   ["OTEL_EXPORTER_OTLP_ENDPOINT", proxyUrl, true],
-  ["Auth header", "Authorization: Bearer <LiteLLM virtual key>", true],
-  ["Protocol", "OTLP/HTTP, protobuf or JSON (gRPC not supported)", false],
+  [t("traceSetup.endpointAuth"), "Authorization: Bearer <LiteLLM virtual key>", true],
+  [t("traceSetup.endpointProtocol"), "OTLP/HTTP, protobuf or JSON (gRPC not supported)", false],
 ];
 
 export const PROXY_CONFIG_SNIPPET = [
@@ -247,6 +249,7 @@ function CodeBlock({
   tabs?: React.ReactNode;
   wrap?: boolean;
 }) {
+  const t = useTranslations("logs");
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     if (await copyToClipboard(code)) {
@@ -261,7 +264,7 @@ function CodeBlock({
         <button
           type="button"
           onClick={() => void copy()}
-          aria-label="Copy"
+          aria-label={t("drawer.copy")}
           className="ml-auto text-muted-foreground hover:text-foreground"
         >
           {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
@@ -334,11 +337,13 @@ type SendState =
   | { kind: "ready"; trace: TraceSummary }
   | { kind: "failed"; message: string };
 
-const SEND_LABEL: Record<Exclude<SendState["kind"], "ready">, string> = {
-  idle: "Send a test trace",
-  sending: "Sending…",
-  waiting: "Waiting for it to arrive…",
-  failed: "Send a test trace",
+type SendLabelKey = "traceSetup.sendTest" | "traceSetup.sending" | "traceSetup.waitingToArrive";
+
+const SEND_LABEL: Record<Exclude<SendState["kind"], "ready">, SendLabelKey> = {
+  idle: "traceSetup.sendTest",
+  sending: "traceSetup.sending",
+  waiting: "traceSetup.waitingToArrive",
+  failed: "traceSetup.sendTest",
 };
 
 const delay = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -361,6 +366,7 @@ function SendTestTrace({
   accessToken: string;
   onOpenTrace: (trace: TraceSummary) => void;
 }) {
+  const t = useTranslations("logs");
   const [state, setState] = useState<SendState>({ kind: "idle" });
   const send = async () => {
     setState({ kind: "sending" });
@@ -368,25 +374,21 @@ function SendTestTrace({
     try {
       await sendOtlpTraceCall(accessToken, sample.body);
     } catch {
-      setState({ kind: "failed", message: "Could not send the test trace." });
+      setState({ kind: "failed", message: t("traceSetup.sendFailed") });
       return;
     }
     setState({ kind: "waiting" });
     const trace = await waitForTrace(accessToken, sample.traceId);
-    setState(
-      trace
-        ? { kind: "ready", trace }
-        : { kind: "failed", message: "Sent, but it has not shown up yet. Check again in a moment." },
-    );
+    setState(trace ? { kind: "ready", trace } : { kind: "failed", message: t("traceSetup.sendNotArrived") });
   };
   if (state.kind === "ready") {
     return (
       <div className="flex flex-wrap items-center gap-3">
         <span role="status" className="inline-flex items-center gap-1 text-sm text-emerald-700 dark:text-emerald-400">
-          <Check aria-hidden="true" className="size-4" /> Test trace received
+          <Check aria-hidden="true" className="size-4" /> {t("traceSetup.testTraceReceived")}
         </span>
         <Button onClick={() => onOpenTrace(state.trace)}>
-          View trace <ArrowRight aria-hidden="true" className="size-4" />
+          {t("traceSetup.viewTrace")} <ArrowRight aria-hidden="true" className="size-4" />
         </Button>
       </div>
     );
@@ -400,7 +402,7 @@ function SendTestTrace({
         ) : (
           <Send aria-hidden="true" className="size-4" />
         )}
-        {SEND_LABEL[state.kind]}
+        {t(SEND_LABEL[state.kind])}
       </Button>
       {state.kind === "failed" && <p className="text-sm text-destructive">{state.message}</p>}
     </div>
@@ -418,28 +420,24 @@ function TraceReceipt({
   checking: boolean;
   onCheck: () => void;
 }) {
+  const t = useTranslations("logs");
   const missingAfterCheck = checked && !checking && !connected;
   return (
-    <Step title="Run your agent once">
-      <p className="text-sm leading-6 text-muted-foreground">
-        Keep this page open. Your runs will appear here when LiteLLM receives them.
-      </p>
+    <Step title={t("traceSetup.stepRunOnce")}>
+      <p className="text-sm leading-6 text-muted-foreground">{t("traceSetup.runOnceBody")}</p>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <Button variant="outline" onClick={onCheck} disabled={checking}>
           {checking && <Loader2 aria-hidden="true" className="size-4 animate-spin" />}
-          {checking ? "Checking…" : "Check for traces"}
+          {checking ? t("traceSetup.checking") : t("traceSetup.checkForTraces")}
         </Button>
         {!connected && (
           <p role="status" className="text-sm text-muted-foreground">
-            Waiting for your first trace
+            {t("traceSetup.waitingFirstTrace")}
           </p>
         )}
       </div>
       {missingAfterCheck && (
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          No traces received yet. Check the exporter URL and LiteLLM key in your agent’s environment, then check its
-          logs for export errors.
-        </p>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">{t("traceSetup.noTracesYet")}</p>
       )}
     </Step>
   );
@@ -454,6 +452,7 @@ function TracingKey({
   tracingKey: string | null;
   onCreated: (key: string) => void;
 }) {
+  const t = useTranslations("logs");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
   const create = async () => {
@@ -464,10 +463,10 @@ function TracingKey({
         accessToken,
         body: TRACING_KEY_REQUEST,
       });
-      if (!result.key) throw new Error("The proxy did not return the new key");
+      if (!result.key) throw new Error(t("traceSetup.keyMissingError"));
       onCreated(result.key);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Could not create a key");
+      setError(cause instanceof Error ? cause.message : t("traceSetup.keyCreateError"));
     } finally {
       setCreating(false);
     }
@@ -475,12 +474,12 @@ function TracingKey({
   if (tracingKey) {
     return (
       <div className="space-y-2">
-        <CodeBlock code={tracingKey} display={maskSecret(tracingKey)} tabs={<FileLabel>Your tracing key</FileLabel>} />
-        <p className="text-sm text-muted-foreground">
-          Hidden for safety. Copy copies the full key, and the environment step below includes it. This key can only
-          send traces, so your agent still needs its own key for model calls. Manage it under Virtual Keys as
-          &quot;Agent tracing&quot;.
-        </p>
+        <CodeBlock
+          code={tracingKey}
+          display={maskSecret(tracingKey)}
+          tabs={<FileLabel>{t("traceSetup.yourTracingKey")}</FileLabel>}
+        />
+        <p className="text-sm text-muted-foreground">{t("traceSetup.tracingKeyBody")}</p>
       </div>
     );
   }
@@ -492,15 +491,16 @@ function TracingKey({
         ) : (
           <KeyRound aria-hidden="true" className="size-4" />
         )}
-        Generate tracing key
+        {t("traceSetup.generateKey")}
       </Button>
-      <span className="text-sm text-muted-foreground">Or use any existing LiteLLM virtual key.</span>
+      <span className="text-sm text-muted-foreground">{t("traceSetup.existingKeyHint")}</span>
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   );
 }
 
 function EndpointValue({ value }: { value: string }) {
+  const t = useTranslations("logs");
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     if (await copyToClipboard(value)) {
@@ -512,7 +512,7 @@ function EndpointValue({ value }: { value: string }) {
     <button
       type="button"
       onClick={() => void copy()}
-      aria-label={`Copy ${value}`}
+      aria-label={t("drawer.copyLabel", { label: value })}
       className="group inline-flex min-w-0 items-center gap-2 text-left font-mono text-[12.5px] text-foreground"
     >
       <span className="break-all">{value}</span>
@@ -526,17 +526,16 @@ function EndpointValue({ value }: { value: string }) {
 }
 
 function Endpoints({ proxyUrl }: { proxyUrl: string }) {
+  const t = useTranslations("logs");
   return (
     <section className="mt-6" aria-labelledby="otel-endpoints">
       <h3 id="otel-endpoints" className="inline-flex items-center gap-2 text-sm font-medium">
         <img src={otelLogo.src} alt="" className="size-5" />
-        OpenTelemetry (OTEL) endpoints
+        {t("traceSetup.otelEndpoints")}
       </h3>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Point any OpenTelemetry exporter here. The framework guides below set these for you.
-      </p>
+      <p className="mt-1 text-sm text-muted-foreground">{t("traceSetup.otelEndpointsBody")}</p>
       <dl className="mt-3 grid gap-x-8 gap-y-3 rounded-md border border-l-2 border-border border-l-trace-brand bg-muted/30 px-4 py-3 md:grid-cols-2">
-        {otlpEndpoints(proxyUrl).map(([label, value, copyable]) => (
+        {otlpEndpoints(t, proxyUrl).map(([label, value, copyable]) => (
           <div key={label} className="min-w-0">
             <dt className="text-[12px] text-muted-foreground">{label}</dt>
             <dd className="mt-0.5">
@@ -554,9 +553,9 @@ const CODING_AGENT_LOGOS: Record<CodingAgent, string> = {
   Codex: openaiLogo.src,
 };
 
-function setupTitle(enabled: boolean, connected: boolean) {
-  if (!enabled) return "Enable tracing";
-  return connected ? "Connect another agent" : "Connect your agent";
+function setupTitle(t: LogsTranslator, enabled: boolean, connected: boolean) {
+  if (!enabled) return t("traceSetup.titleEnable");
+  return connected ? t("traceSetup.titleConnectAnother") : t("traceSetup.titleConnect");
 }
 
 interface ConnectAgentProps {
@@ -571,13 +570,11 @@ interface ConnectAgentProps {
 }
 
 function EnableTracing({ checked, checking, onCheck }: { checked: boolean; checking: boolean; onCheck: () => void }) {
+  const t = useTranslations("logs");
   return (
     <>
-      <Step title="Enable tracing on the proxy">
-        <p className="mb-3 text-sm leading-6 text-muted-foreground">
-          Set your ClickHouse writer and read-only reader URLs, add this to config.yaml, then restart the proxy. Ask
-          your proxy administrator if you don’t manage this deployment.
-        </p>
+      <Step title={t("traceSetup.stepEnableOnProxy")}>
+        <p className="mb-3 text-sm leading-6 text-muted-foreground">{t("traceSetup.enableOnProxyBody")}</p>
         <CodeBlock code={PROXY_CONFIG_SNIPPET} tabs={<FileLabel>config.yaml</FileLabel>} />
         <a
           className="mt-3 inline-flex items-center gap-1 text-sm underline underline-offset-4"
@@ -585,17 +582,13 @@ function EnableTracing({ checked, checking, onCheck }: { checked: boolean; check
           target="_blank"
           rel="noreferrer"
         >
-          ClickHouse and proxy setup <ArrowUpRight aria-hidden="true" className="size-3.5" />
+          {t("traceSetup.clickhouseDocs")} <ArrowUpRight aria-hidden="true" className="size-3.5" />
         </a>
       </Step>
-      {checked && !checking && (
-        <p className="mt-4 text-sm text-muted-foreground">
-          Tracing is still unavailable. Check that the configuration was applied to this proxy and it has restarted.
-        </p>
-      )}
+      {checked && !checking && <p className="mt-4 text-sm text-muted-foreground">{t("traceSetup.stillUnavailable")}</p>}
       <Button className="mt-6" onClick={onCheck} disabled={checking}>
         {checking && <Loader2 aria-hidden="true" className="size-4 animate-spin" />}
-        {checking ? "Checking…" : "Check setup"}
+        {checking ? t("traceSetup.checking") : t("traceSetup.checkSetup")}
       </Button>
     </>
   );
@@ -611,6 +604,7 @@ function ConnectAgent({
   readOnly,
   canMintTracingKey,
 }: ConnectAgentProps) {
+  const t = useTranslations("logs");
   const proxyUrl = getProxyBaseUrl().replace(/\/$/, "");
   const [framework, setFramework] = useState(FRAMEWORKS[0].id);
   const [installer, setInstaller] = useState<Installer>("pip");
@@ -623,10 +617,8 @@ function ConnectAgent({
   return (
     <>
       {!readOnly && (
-        <Step title="See it work in one click">
-          <p className="mb-3 text-sm leading-6 text-muted-foreground">
-            Send a small sample run (an agent, an LLM call and a tool call) to confirm tracing works end to end.
-          </p>
+        <Step title={t("traceSetup.stepOneClick")}>
+          <p className="mb-3 text-sm leading-6 text-muted-foreground">{t("traceSetup.oneClickBody")}</p>
           <SendTestTrace accessToken={accessToken} onOpenTrace={onOpenTrace} />
         </Step>
       )}
@@ -635,7 +627,7 @@ function ConnectAgent({
 
       <div className="mt-6 space-y-2">
         <label id="tracing-framework" className="text-sm font-medium">
-          Your agent framework
+          {t("traceSetup.frameworkLabel")}
         </label>
         <Select
           value={framework}
@@ -660,28 +652,25 @@ function ConnectAgent({
         </Select>
       </div>
 
-      <Step title="Get a LiteLLM key">
+      <Step title={t("traceSetup.stepGetKey")}>
         {canMintTracingKey && !readOnly ? (
           <TracingKey accessToken={accessToken} tracingKey={tracingKey} onCreated={setTracingKey} />
         ) : (
-          <p className="text-sm text-muted-foreground">
-            Use any LiteLLM virtual key you already have, or ask a proxy admin for one.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("traceSetup.getKeyBody")}</p>
         )}
       </Step>
 
       <Step
         title={
           <span className="inline-flex items-center gap-1.5">
-            Let <img src={anthropicLogo.src} alt="" className="size-3.5" /> Claude Code or
-            <img src={openaiLogo.src} alt="" className="size-3.5" /> Codex connect it
+            {t.rich("traceSetup.stepCodingAgent", {
+              claude: () => <img src={anthropicLogo.src} alt="" className="size-3.5" />,
+              codex: () => <img src={openaiLogo.src} alt="" className="size-3.5" />,
+            })}
           </span>
         }
       >
-        <p className="mb-3 text-sm leading-6 text-muted-foreground">
-          Run this in your agent’s project. It starts your coding agent with the setup task and reads the key from
-          LITELLM_API_KEY.
-        </p>
+        <p className="mb-3 text-sm leading-6 text-muted-foreground">{t("traceSetup.codingAgentBody")}</p>
         <CodeBlock
           code={codingAgentCommand(codingAgent, codingAgentPrompt(proxyUrl, guide))}
           wrap
@@ -697,8 +686,8 @@ function ConnectAgent({
       </Step>
 
       <details className="mt-6 border-y py-4">
-        <summary className="cursor-pointer text-sm font-medium">Set up manually</summary>
-        <Step title="Install dependencies">
+        <summary className="cursor-pointer text-sm font-medium">{t("traceSetup.setUpManually")}</summary>
+        <Step title={t("traceSetup.stepInstall")}>
           <CodeBlock
             code={install}
             tabs={
@@ -710,17 +699,15 @@ function ConnectAgent({
             }
           />
         </Step>
-        <Step title="Configure environment">
+        <Step title={t("traceSetup.stepConfigureEnv")}>
           <CodeBlock
             code={tracingEnvSnippet(proxyUrl, tracingKey)}
             display={tracingEnvSnippet(proxyUrl, tracingKey && maskSecret(tracingKey))}
             tabs={<FileLabel>Shell</FileLabel>}
           />
         </Step>
-        <Step title="Run your agent">
-          <p className="mb-2 text-sm text-muted-foreground">
-            Replace the example model with a model configured on your proxy.
-          </p>
+        <Step title={t("traceSetup.stepRunAgent")}>
+          <p className="mb-2 text-sm text-muted-foreground">{t("traceSetup.runAgentBody")}</p>
           <CodeBlock
             code={guide.typescript ? quickstart : `import os\n\n${quickstart}`}
             tabs={<FileLabel>{guide.typescript ? "my_agent.ts" : "my_agent.py"}</FileLabel>}
@@ -736,7 +723,8 @@ function ConnectAgent({
       {!connected && (
         <section className="mt-6">
           <h3 className="mb-2 text-sm font-medium">
-            Example run <span className="font-normal text-muted-foreground">(sample data, not your runs)</span>
+            {t("traceSetup.exampleRun")}{" "}
+            <span className="font-normal text-muted-foreground">{t("traceSetup.exampleRunNote")}</span>
           </h3>
           <TracePreview />
         </section>
@@ -764,6 +752,7 @@ export function TracingSetupCard({
   readOnly?: boolean;
   canMintTracingKey?: boolean;
 }) {
+  const t = useTranslations("logs");
   const [checked, setChecked] = useState(false);
   const enabled = detail === null;
   const check = () => {
@@ -774,24 +763,22 @@ export function TracingSetupCard({
   return (
     <div className="w-full py-6 pb-12" data-testid="tracing-setup-card">
       <div className="flex items-start gap-4">
-        <h2 className="text-xl font-semibold tracking-tight">{setupTitle(enabled, connected)}</h2>
+        <h2 className="text-xl font-semibold tracking-tight">{setupTitle(t, enabled, connected)}</h2>
         <a
           className="ml-auto inline-flex shrink-0 items-center gap-1 text-sm underline underline-offset-4"
           href={DOCS_URL}
           target="_blank"
           rel="noreferrer"
         >
-          Docs <ArrowUpRight aria-hidden="true" className="size-3.5" />
+          {t("traceSetup.docs")} <ArrowUpRight aria-hidden="true" className="size-3.5" />
         </a>
       </div>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        {enabled
-          ? "Send your agent’s runs to LiteLLM to see its inputs, outputs, and tool calls."
-          : "Tracing needs ClickHouse and a small update to your LiteLLM proxy configuration."}
+        {t(enabled ? "traceSetup.subtitleEnabled" : "traceSetup.subtitleDisabled")}
       </p>
       <p role="status" className="mt-4 flex items-center gap-2 text-sm">
         {enabled && <ActiveDot />}
-        {enabled ? "Tracing enabled" : "Tracing is not enabled"}
+        {t(enabled ? "traceSetup.tracingEnabled" : "traceSetup.tracingNotEnabled")}
       </p>
       {enabled ? (
         <ConnectAgent
