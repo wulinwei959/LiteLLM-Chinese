@@ -102,7 +102,7 @@ describe("AgentTracesSection", () => {
     await act(async () => {
       await vi.advanceTimersByTimeAsync(60_000);
     });
-    expect(screen.getByText(`Could not load runs: ${message}`)).toBeVisible();
+    expect(screen.getByText(`无法加载运行记录：${message}`)).toBeVisible();
     expect(screen.queryByText(/Private token details/)).not.toBeInTheDocument();
     expect(agentTraceListCall).toHaveBeenCalledOnce();
     expect(screen.getByTestId("runs-footer")).toHaveTextContent("Update failed");
@@ -137,7 +137,7 @@ describe("AgentTracesSection", () => {
     vi.mocked(agentTraceListCall).mockResolvedValue({ ...(traceList as TracePage), data: [] });
     vi.mocked(apiClient.get).mockResolvedValue(traceList);
     renderSection();
-    expect(await screen.findByText("No runs match these filters.")).toBeVisible();
+    expect(await screen.findByText("没有符合这些筛选条件的运行记录。")).toBeVisible();
     expect(screen.queryByTestId("tracing-setup-card")).not.toBeInTheDocument();
     expect(apiClient.get).toHaveBeenCalledWith("/v1/traces", { accessToken: "sk-test", query: { start_ms: 0 } });
   });
@@ -209,13 +209,13 @@ describe("AgentTracesSection", () => {
     vi.mocked(apiClient.get).mockRejectedValue(new ApiError("History unavailable", 503, {}));
     renderSection();
     expect(await screen.findByRole("alert")).toHaveTextContent("Could not check earlier traces. History unavailable");
-    expect(screen.getByText("No runs match these filters.")).toBeVisible();
-    expect(screen.queryByText(/Could not load runs/)).not.toBeInTheDocument();
+    expect(screen.getByText("没有符合这些筛选条件的运行记录。")).toBeVisible();
+    expect(screen.queryByText(/无法加载运行记录/)).not.toBeInTheDocument();
 
     vi.mocked(apiClient.get).mockResolvedValue(traceList);
     fireEvent.click(screen.getByRole("button", { name: "Retry trace check" }));
     await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
-    expect(screen.getByText("No runs match these filters.")).toBeVisible();
+    expect(screen.getByText("没有符合这些筛选条件的运行记录。")).toBeVisible();
     expect(agentTraceListCall).toHaveBeenCalledTimes(1);
   });
 
@@ -237,9 +237,9 @@ describe("AgentTracesSection", () => {
     const lead = rows.find((row) => row.textContent?.includes("Should we store OTEL agent spans"));
     expect(lead).toBeDefined();
     const failed = rows.find((row) => row.textContent?.includes("acme-404")) as HTMLElement;
-    expect(within(failed).getByLabelText("2 errors")).toBeInTheDocument();
+    expect(within(failed).getByLabelText("2 个错误")).toBeInTheDocument();
     expect(screen.getByText(`${runs.length} runs`)).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Cost" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "成本" })).toBeInTheDocument();
     expect(within(failed).getByText("—")).toBeInTheDocument();
   });
 
@@ -259,7 +259,7 @@ describe("AgentTracesSection", () => {
     renderSection();
     await screen.findAllByTestId("agent-trace-row");
 
-    const search = screen.getByLabelText("Search runs");
+    const search = screen.getByLabelText("搜索运行记录");
     fireEvent.change(search, { target: { value: "acme-404" } });
     expect(screen.getAllByTestId("agent-trace-row")).toHaveLength(1);
 
@@ -279,16 +279,16 @@ describe("AgentTracesSection", () => {
     renderSection();
     await screen.findAllByTestId("agent-trace-row");
 
-    expect(screen.getByRole("columnheader", { name: "Agent" })).toBeInTheDocument();
-    const agentFilter = screen.getByRole("combobox", { name: "Filter by agent" });
-    expect(agentFilter).toHaveTextContent("All agents");
+    expect(screen.getByRole("columnheader", { name: "智能体" })).toBeInTheDocument();
+    const agentFilter = screen.getByRole("combobox", { name: "按智能体筛选" });
+    expect(agentFilter).toHaveTextContent("全部智能体");
 
     await chooseSelectOption(user, agentFilter, "billing-agent");
     const rows = screen.getAllByTestId("agent-trace-row");
     expect(rows).toHaveLength(1);
     expect(rows[0]).toHaveTextContent("billing-agent");
 
-    await chooseSelectOption(user, agentFilter, "All agents");
+    await chooseSelectOption(user, agentFilter, "全部智能体");
     expect(screen.getAllByTestId("agent-trace-row")).toHaveLength(runs.length);
   });
 
@@ -407,21 +407,21 @@ describe("AgentTracesPage", () => {
     renderWithProviders(<AgentTracesPage accessToken="sk-test" />);
     await screen.findByTestId("runs-table");
 
-    const trigger = screen.getByRole("button", { name: "Time range" });
-    expect(trigger).toHaveTextContent(/ to /);
-    expect(screen.getByTestId("traces-timeline")).toHaveTextContent("Total 1d");
+    const trigger = screen.getByRole("button", { name: "时间范围" });
+    expect(trigger).toHaveTextContent(/ 至 /);
+    expect(screen.getByTestId("traces-timeline")).toHaveTextContent("总计 1 天");
 
     fireEvent.click(trigger);
-    fireEvent.click(await screen.findByRole("menuitemradio", { name: "Last 7 days" }));
-    expect(await screen.findByText("Total 7d")).toBeInTheDocument();
+    fireEvent.click(await screen.findByRole("menuitemradio", { name: "最近 7 天" }));
+    expect(await screen.findByText("总计 7 天")).toBeInTheDocument();
     const last = vi.mocked(agentTraceListCall).mock.calls.at(-1)?.[0];
     expect((last?.endMs ?? 0) - (last?.startMs ?? 0)).toBeGreaterThanOrEqual(7 * 24 * 3600 * 1000 - 60_000);
 
-    const live = screen.getByRole("button", { name: "Live" });
+    const live = screen.getByRole("button", { name: "实时" });
     expect(live).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(live);
     expect(live).toHaveAttribute("aria-pressed", "false");
-    expect(screen.getByRole("button", { name: "Reset zoom" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "重置缩放" })).toBeDisabled();
   });
 
   it("keeps the time controls on an empty range the user picked, instead of showing onboarding", async () => {
@@ -430,11 +430,11 @@ describe("AgentTracesPage", () => {
     await screen.findByTestId("runs-table");
 
     vi.mocked(agentTraceListCall).mockResolvedValue({ ...(traceList as TracePage), data: [] });
-    fireEvent.click(screen.getByRole("button", { name: "Time range" }));
-    fireEvent.click(await screen.findByRole("menuitemradio", { name: "Last hour" }));
+    fireEvent.click(screen.getByRole("button", { name: "时间范围" }));
+    fireEvent.click(await screen.findByRole("menuitemradio", { name: "最近 1 小时" }));
 
-    expect(await screen.findByText("No runs match these filters.")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Time range" })).toBeInTheDocument();
+    expect(await screen.findByText("没有符合这些筛选条件的运行记录。")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "时间范围" })).toBeInTheDocument();
     expect(screen.queryByTestId("tracing-setup-card")).not.toBeInTheDocument();
   });
 

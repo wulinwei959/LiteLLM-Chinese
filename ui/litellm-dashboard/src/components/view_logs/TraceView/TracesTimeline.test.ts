@@ -1,7 +1,11 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
+import zh from "@/messages/zh-CN.json";
 import { bandForWindow, bucketRuns, dragUpdate, formatSpan } from "./TracesTimeline";
 import type { TraceSummary } from "./traceTypes";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "logs" });
 
 const HOUR = 3600 * 1000;
 const START = Date.UTC(2026, 8, 30, 0, 0, 0);
@@ -44,11 +48,11 @@ describe("bucketRuns", () => {
 
 describe("formatSpan", () => {
   it("prints the largest two units, dropping zero parts", () => {
-    expect(formatSpan(45 * 60 * 1000)).toBe("45m");
-    expect(formatSpan(6 * HOUR + 12 * 60 * 1000)).toBe("6h 12m");
-    expect(formatSpan(24 * HOUR)).toBe("1d");
-    expect(formatSpan(152 * 24 * HOUR + 23 * HOUR)).toBe("152d 23h");
-    expect(formatSpan(-5)).toBe("0m");
+    expect(formatSpan(t, 45 * 60 * 1000)).toBe("45 分钟");
+    expect(formatSpan(t, 6 * HOUR + 12 * 60 * 1000)).toBe("6 小时 12 分钟");
+    expect(formatSpan(t, 24 * HOUR)).toBe("1 天");
+    expect(formatSpan(t, 152 * 24 * HOUR + 23 * HOUR)).toBe("152 天 23 小时");
+    expect(formatSpan(t, -5)).toBe("0 分钟");
   });
 });
 
