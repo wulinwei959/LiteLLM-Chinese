@@ -146,6 +146,7 @@ crash.*.log
 .coverage
 
 ui/litellm-dashboard/out/
+ui/litellm-dashboard/tsconfig.tsbuildinfo
 litellm.log
 
 .coverage-rust
