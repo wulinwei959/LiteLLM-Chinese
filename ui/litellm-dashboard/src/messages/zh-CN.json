@@ -6204,6 +6204,27 @@
       "minutesAgo": "{count, number} 分钟前",
       "hoursAgo": "{count, number} 小时前",
       "daysAgo": "{count, number} 天前"
+    },
+    "logsPanel": {
+      "title": "你的日志",
+      "subtitle": "仅显示你账号的请求日志",
+      "colTime": "时间",
+      "colModel": "模型",
+      "colTokens": "Token 数",
+      "colDuration": "耗时",
+      "colCost": "费用",
+      "failure": "失败",
+      "notAvailable": "暂无内容",
+      "empty": "该时间段没有日志",
+      "loadFailed": "加载你的日志失败",
+      "requestDetails": "请求详情",
+      "tokensInAndOut": "输入 {prompt} / 输出 {completion}",
+      "sectionRequest": "请求",
+      "sectionResponse": "响应",
+      "requestsCount": "{count, number} 次请求",
+      "pageOf": " · 第 {page} 页，共 {totalPages} 页",
+      "previousPage": "上一页",
+      "nextPage": "下一页"
     }
   },
   "playground": {

@@ -6204,6 +6204,27 @@
       "minutesAgo": "{count, number}m ago",
       "hoursAgo": "{count, number}h ago",
       "daysAgo": "{count, number}d ago"
+    },
+    "logsPanel": {
+      "title": "Your Logs",
+      "subtitle": "Request logs for your account only",
+      "colTime": "Time",
+      "colModel": "Model",
+      "colTokens": "Tokens",
+      "colDuration": "Duration",
+      "colCost": "Cost",
+      "failure": "Failure",
+      "notAvailable": "Not available",
+      "empty": "No logs for this period",
+      "loadFailed": "Failed to load your logs",
+      "requestDetails": "Request details",
+      "tokensInAndOut": "{prompt} in / {completion} out",
+      "sectionRequest": "Request",
+      "sectionResponse": "Response",
+      "requestsCount": "{count, plural, one {# request} other {# requests}}",
+      "pageOf": " · Page {page} of {totalPages}",
+      "previousPage": "Previous",
+      "nextPage": "Next"
     }
   },
   "playground": {
