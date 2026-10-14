@@ -1,6 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 40 簇更新
+
+批次 24 第 40 簇：`components/chat/UsagePanel.tsx`（212 行，接入后 221）接入 `chat`，新开 `chat.usagePanel.*` 11 键；`chat.logsPanel.tokensInAndOut` 上收进 `common.tokensInAndOut`，`logsPanel` 由 19 键减到 18 键，净 +11，两个消息目录各 +15/−2 行
+
+改造形态：
+
+- 4 张统计卡的标签、`N/A` 兜底与"输入 X / 输出 Y"的副行都从 `meta` 的模板字符串里拆出来：标签走键，`$${spend.toFixed(2)}`、`formatNumber` 的 `K`/`M` 后缀与 `${pct}%` 留作数据（沿用既有货币与数字缩写欠账的口径）。`sub` 与 `value` 的三元判断没动，只把字符串换成键取值
+- `tokensInAndOut` 上收的理由与第 39 簇那 4 个相对时间键相同：UsagePanel 的 token 副行与 LogsPanel 详情卡的 "{prompt} in / {completion} out" 概念与取值逐字节相同，`chat` 下两个面板各留一份是重复，借 `chat.logsPanel` 又让用量面板依赖日志面板的分组，所以放进 `common`。`LogsPanel.tsx` 的 `LogDetailDialog` 新增 `commonT`，`chat` 侧调用点不变；第 37 簇加的 `1,500 (输入 1,000 / 输出 500)` 断言没改值也照样绿，正好证明上收没改渲染
+- `usagePanel.na` 取 `N/A` / `无`，与 `agents.na`、`logs.auditLogs.drawer.notApplicable` 同法；没有复用它们是因为那两处跨命名空间，借要挂第二个翻译器（第 29、33、36、38 簇口径）
+- `dailySpend` 的中文取 `每日花费`，与 `usage.dailySpend` 一致（同目录 `usage.entity.dailySpend` 译作"每日消费"，取更贴近图表标签的那一支）；`tokensUsed` 译作 `Token 用量`，跟本命名空间 `logsPanel.colTokens` 的"Token 数"一样保留 Token 不译，没有跟 `usage.totalTokens` 的"总令牌数"混用
+- 时间范围按钮的 `7d`/`30d`/`90d` 没接键：与第 37 簇 `LogsPanel` 的 `24h`/`7d`/`30d` 同一处理，属"时间范围缩写"那笔数据/格式欠账
+
+测试侧无断言可同步：`UsagePanel` 没有测试文件，唯一消费者是 `src/app/chat/usage/page.tsx`；`chat` 目录内的用例没有一处断言 `Total Spend`/`Success Rate`/`Daily Spend`/`N/A` 这些串
+
+验证：`npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin` → 70 文件 861 例全绿，`Type Errors no errors`（第 35 簇起的复跑范围，本簇未增删用例）；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 两个改动文件 0 error / 0 warning；`npm run build` exit 0；prettier 先证 HEAD 两个文件干净再 `--write`，只动 `.tsx`，`LogsPanel.tsx` unchanged；`chat.usagePanel.failedCount` 与上收后的 `common.tokensInAndOut` 都用 node + `intl-messageformat` 实测过渲染串与旧模板字符串逐字节相同
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 426 到 427，46.8%；`components/chat` 11 个非测试文件接入 9 个，剩 2 个是 `ChatShell.tsx`（149）与 `ConnectFlowSurface.tsx`（59，无自有文案）。键数 6764 到 6775（`chat` 命名空间 128 到 138，`common` 187 到 188），中英同值 86 不变
 
 ## 2026-10-15 第 39 簇更新
 
