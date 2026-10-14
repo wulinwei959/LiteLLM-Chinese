@@ -1,6 +1,28 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 44 簇更新
+
+批次 24 第 44 簇：`components/AIHub/forms/MakeMCPPublicForm.tsx`（376 行，接入后 380）接入 `modelHub`，新开 `modelHub.makeMcpPublic.*` 24 键，两个消息目录各 +26/−0 行。这是三个公开向导里文案最密的一个——除两步向导本体，还有遗留模式说明、YAML 折叠配置区、缺元数据的 alert 与"加载中"状态
+
+改造形态：
+
+- `common` 复用第四次兑现：`Select All`、`Cancel`、`Previous`、`Next` 全走第 42 簇落好的四个键，本簇一个新共享键都没加
+- `aria-label={`Publish ${server.server_name}`}` 接成带参数的 `publishAria`（`Publish {name}` / 公开 `{name}`）：屏幕阅读器读的也是界面文案，属于要翻的那一类，`{name}` 留作数据；测试里 `{ name: "Publish Test Server 1" }` 因此同步为 `公开 Test Server 1`
+- `server.status || "unknown"` 的兜底接 `unknownStatus`（未知），而 `server.status`、`server.transport` 的取值本身仍是接口数据，与第 42 簇的 `v{version}` 同一口径。两处状态徽标共用这一个键（同组件内，不是跨命名空间借）
+- `toolsMore` 与第 42 簇 `makeAgentPublic.skillsMore` 的 EN 取值逐字节相同（`+{count, number} more`），但一个数的是 allowed_tools、一个数的是 skills，而且"同一命名空间内跨分组借"本就不是项目口径（第 29、33、36、38、39、41、42、43 簇），所以各留一份；等 `MCPHubTableColumns.tsx` 这类第三个消费者出现再按第 39、40 簇的方式上收
+- 两条计数 chip 的复数分支写成正面情形：`<strong>{count}</strong> MCP {count, plural, one {server} other {servers}} selected`——分支体是单个标识符，parity 守卫的花括号合法性判断放过（第 43 簇那条 `#` 限制只在多词分支才需要），加粗范围与旧 JSX 一致；`saveInfo` 同理
+- 配置字面量全部留原文：`public_mcp_hub_strict_whitelist`、`litellm_settings.public_mcp_servers`、`server_id`、`mcp_servers` 与 `publicationYaml` 生成的 YAML 代码块内容；`console.error("Error making MCP servers public:", error)` 是开发日志；`toast.fromError(error)` 本来就传的是错误对象
+
+测试侧同步：
+
+- `MakeMCPPublicForm.test.tsx` 的 19 处 `render` 换成 `renderWithProviders`，两处 `rerender(...)` 调用不动（`const { rerender }` 来自 provider 包裹后的返回值）；断言串同步为中文——`Manage MCP Hub Visibility`→管理 MCP 中心的可见性、`Select MCP Servers for the Hub`→选择要在中心展示的 MCP 服务器、`Confirm MCP Hub Publication`→确认 MCP 中心的公开列表、`Next`→下一步、`Previous`→上一步、`Cancel`→取消、`Save Publication List`→保存公开列表、`Select All (2)`→全选 (2)、`No MCP servers available.`→暂无可用的 MCP 服务器。、`Listed by legacy mode`→由遗留模式列出、`Configure in YAML`→在 YAML 中配置、`+2 more`→还有 2 个；`toHaveTextContent("explicit publication status")` 改成 alert 中文文案里的片段"明确的公开状态"。25 例数量未增删
+- 连带改 `ModelHubTable.test.tsx` 的 "requires a fresh MCP publication list before and after saving"：这条用例会真的点进本簇的向导，两步按钮改成 下一步 / 保存公开列表。它断言的 `Manage MCP Hub Visibility` 是 `ModelHubTable.tsx` 自己的触发按钮，尚未接入，保持英文——所以 MCP 测试单跑绿、并进范围跑时还差这一条，改完才全绿
+
+验证：定向 `npx vitest run src/lib/i18n src/components/AIHub/forms/MakeMCPPublicForm.test.tsx` → 4 文件 41 例全绿；全量复跑 `npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin src/components/AIHub` → 79 文件 978 例全绿，`Type Errors no errors`（用例未增删）；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 三个改动文件 0 error / 3 warning，`ModelHubTable.test.tsx` 92、178 行的两条 `local/no-large-inline-object-arg` 与 MCP 测试 `resolvePromise: (value: any)` 那条 `no-explicit-any` 都是 HEAD 既有；prettier 先证 HEAD 三个文件干净，改动后只有 `.tsx` 组件报 style，对其单跑 `--write`（+45/−41 里含这次换行重排），两个测试文件未执行；`npm run build` exit 0；node + `intl-messageformat` 实测 `publishAria` 渲染 `Publish Test Server 1`、`toolsMore` 渲染 `+2 more`，与旧模板串逐字节相同
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 430 到 431，47.3%。键数 6815 到 6839（`modelHub` 命名空间 34 到 58），中英同值 86 不变
 
 ## 2026-10-15 第 43 簇更新
 
