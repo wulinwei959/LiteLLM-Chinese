@@ -1,6 +1,22 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 41 簇更新
+
+批次 24 第 41 簇：`components/chat/ChatShell.tsx`（149 行，接入后 153）接入 `chat`，新开 `chat.shell.*` 8 键——顶部 pre-v0 提示、`New Chat` 按钮与 6 个侧栏导航项，两个消息目录各 +10/−0 行
+
+改造形态：
+
+- pre-v0 提示是一条带链接的整句，改成 `t.rich("shell.betaWarning", { link: (chunks) => <a …>{chunks}</a> })`。原文在 JSX 里是"正文 + `{' '}` + 链接 + `.`"三段拼接，中文语序要把链接挪到句中（"欢迎在<link>这里</link>分享反馈。"），只有 rich 标签能做到；英文取值去掉标签后与旧渲染逐字节相同，含 `here` 前那个空格。`link` 在 parity 守卫的 `RICH_TAGS` 白名单里，中英两侧都必须闭合；守卫只扫 `t("…")` 字面量，`t.rich` 的键名靠 `next-intl.d.ts` 的类型绑定兜住，写错作用域直接是 tsc 错误
+- 6 个导航项的 `label` 是字符串 prop，取值放在调用点，`NavItem` 不调 hook，保持纯展示。`navIntegrations` 取 `集成`，与第 39 簇 `chat.credentialsPanel.emptyHint` 的"前往 <b>集成</b>"对齐；`navCredentials` 取 `凭证`、`navApiKeys` 取 `API 密钥`，分别跟 `chat.credentialsPanel.title`（应用凭证）、`chat.keysPanel.title`（你的 API 密钥）同词
+- 没有借 `nav` 命名空间：`nav.usage` / `nav.logs` 与 `chat.shell.navUsage` / `chat.shell.navLogs` 的中英取值相同（`Usage`/用量、`Logs`/日志），但那是主控制台侧栏的页面项，跟聊天侧栏不是同一个概念位；按第 29、33、36、38、39、40 簇"跨命名空间借用要挂第二个翻译器，宁可开自己的键"的口径留在 `chat.shell`，中文取值仍与 `nav` 一致，不产生术语分叉
+
+测试侧同步：`ChatShell.test.tsx` 原先用裸 `render`，组件接 `useTranslations` 之后整树必须有 provider，改为 `renderWithProviders`（默认钉 `zh-CN`），5 个用例的 `getByRole("button", { name })` 从 `Chats`/`API Keys`/`Integrations`/`Usage`/`Logs` 换成 对话/API 密钥/集成/用量/日志。`name` 是整串匹配，"对话"不会撞上"新建对话"按钮。同目录的 `ChatShell.serverRootPath.test.ts` 只 `import("./ChatShell")` 取 `getChatRoutes()`、不渲染，因此不需要 provider，2 例照旧绿
+
+验证：`npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin` → 70 文件 861 例全绿，`Type Errors no errors`（第 35 簇起的复跑范围，本簇未增删用例）；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 两个改动文件 0 error / 0 warning；`npm run build` exit 0；prettier 先证 HEAD 两个文件干净，改动后 `--check` 仍干净，未动 `.tsx` 之外任何文件（两个消息目录的 JSON 在 HEAD 上本来就不符合 prettier，不参与格式化）
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 427 到 428，46.9%；`components/chat` 11 个非测试文件接入 10 个，只剩 `ConnectFlowSurface.tsx`（59，无自有文案）。键数 6775 到 6783（`chat` 命名空间 138 到 146，`common` 188 不变），中英同值 86 不变
 
 ## 2026-10-15 第 40 簇更新
 
