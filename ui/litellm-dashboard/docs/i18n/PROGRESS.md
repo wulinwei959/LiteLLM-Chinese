@@ -1,6 +1,35 @@
 # 开发进度
 
-数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 28 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 29 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-14 第 29 簇更新
+
+批次 24 第 29 簇：`components/view_logs/GuardrailViewer/` 的 4 个展示组件 `PresidioDetectedEntities.tsx`、`ContentFilterDetails.tsx`、`CompliancePanel.tsx`、`BedrockGuardrailDetails.tsx` 接入 `logs`，新增 `logs.guardrail.*` 71 键，两个消息目录各 +73 行（71 个键 + `"guardrail": {` 一行 + `vectorStore` 闭括号补逗号另起一行），纯增不删。目录里只剩 851 行的 `GuardrailViewer.tsx` 留给下一簇
+
+改造形态：
+
+- 四个组件共用一个 `guardrail` 组。护栏术语（detected / masked / blocked / coverage / usage / assessment）在本目录反复出现，键名靠语义前后缀区分（`blockedChip` 对 `colBlockedResponse`、`textGuardedChip` 对 `textCoverageChip`），不再按组件拆组
+- `boolPill(b)` 是模块级 helper，按首参翻译器约定改成 `boolPill(t, b)`，调用点同步。`BedrockGuardrailDetails.tsx` 因此 `import type { LogsTranslator }`，而不是裸 `ReturnType<typeof useTranslations>`——后者会把键联合放宽到整个 `logs` 命名空间，写错键名检查不出来（`src/lib/i18n/translators.ts` 的注释就是这条）
+- `assess.topicPolicy.topics.map((t, i) => …)` 的形参会遮蔽翻译器，改名 `topic`。这类遮蔽 tsc 未必报错（`t` 恰好也是可调用值），但渲染期就坏，接线时每个 map 形参都要过一遍
+- 计数 chip 从模板串抽成带 `{count}` 的消息（`blockedChip`、`maskedChip`、`patternsChip`、`keywordsChip`、`categoriesChip`、`detectedEntities`）；覆盖率 chip 带 `{guarded}` / `{total}` 两个占位，调用度量区另配 `textCoverageChip` / `imagesCoverageChip`，因为中文里两处语序不同
+- 合规徽标走三元键名 `t(data.compliant ? "guardrail.compliantBadge" : "guardrail.nonCompliantBadge")`
+- `CompliancePanel` 的 hook 在私有子组件 `ComplianceCard` 与主组件各调一次，不做 props 透传。两条 `.catch` 里 `err.message ||` 右侧的兜底文案（`euAiActCheckFailed` / `gdprCheckFailed`）落在渲染路径上，一并接 `t`，`useEffect` 依赖数组随之加 `t`
+- 两张表（词表/内容策略、上下文落地）的同名表头复用 `thType` / `thAction` / `thDetected` 各两次；`Section` 标题、`<h6>` 小节名与 `<KV label>` 冒标签各自成键，中英的冒号与全角括号都收在消息值里
+
+不译：
+
+- 法规与产品名 `EU AI Act`、`GDPR`、`PII`、`Bedrock`，以及 AWS 风格的 kebab 动作标签 `word` / `content` / `topic` / `sensitive-info` / `contextual-grounding` / `automated-reasoning`
+- usage pill 渲染的是 `{k}: {v}`，`k` 取自后端 `response.usage` 的键名（`contentPolicyUnits` 等），属数据值；`BedrockGuardrailDetails` 底部折叠区的 JSON 原文同样只有标题译了
+- `ComplianceCard` 展开体的 `check.check_name` / `check.article` / `check.detail` 全部来自合规接口
+- 哨兵值 `—`、`N/A`、`unknown`、`regex`、`topic` 与动作码 `BLOCK` / `GUARDRAIL_INTERVENED` 照旧
+
+测试同步：`PresidioDetectedEntities.test.tsx` 改 8 处（`得分：0.92`、`位置：10-20`、`实体类型：`、`第 10-20 个字符`、`置信度：`、`识别器：`、`说明：`、`第 0-0 个字符`）；`BedrockGuardrailDetails.test.tsx` 改 20 处（`处置：`、`文本已防护 27/100`、`图片已防护 1/3`、`输出`、`评估 #1` 2 处、`词策略`、`自定义词`、`托管词表`、`上下文落地`、`getAllByText("得分")`、`getAllByText("阈值")`、`敏感信息`、`PII 实体`、`自定义正则`、`话题策略`、`调用度量`、`原始 Bedrock 护栏响应`、`（非文本输出）`）；`GuardrailViewer.test.tsx` 改 3 处（`/检出实体/`、`/原始 Bedrock 护栏响应/` 两条负断言与 `输出`）。`contentPolicyUnits: 7`、`wordPolicyUnits: 1`、`"weapons"`、`"Policy violation"`、`"[blocked]"` 这些数据值断言不动；`GuardrailViewer.tsx` 自己的 `Guardrails & Policy Compliance`、`PRE-CALL`、`/Pre-call guardrail:/`、`pii-rail` 还是英文，随下一簇处理。`ContentFilterDetails.tsx` 与 `CompliancePanel.tsx` 没有对应测试文件。用例数不增不减
+
+验证：`src/components/view_logs` + `src/lib/i18n` 52 文件 671 例全绿；`tsc --noEmit -p .` 仍 883 条、非测试文件 0 条；`GuardrailViewer/` 整目录 `eslint` 0 错误、25 条 warning，全是既有代码形态（`complexity`、`no-nested-ternary`、`no-explicit-any`、`no-large-inline-object-arg`），本簇没新增告警类别；`npm run build` 退出 0；prettier 只 `--write` 本簇 3 个 tsx，两个 messages JSON 各 73 增 0 删
+
+顺带记一条方法债：本簇用 `git show HEAD:… | eslint --stdin` 复测 HEAD 时，同一批文件在 HEAD 报出了当前树里并不存在的 error（`no-nested-ternary`、`react-hooks` 的 setState 告警升级为 error）。这个目录靠 `--stdin` 复测不可信，缺 `.tsx` 上下文与类型信息时会换一套规则结果，以当前树的 `npx eslint <目录>` 为准，本簇结论按这条口径写
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 412 到 416，45.6%；`components/view_logs` 71 个里接入 58 个，剩 13 个里 4 个是 `TraceView` 的无文案文件，其余为 `GuardrailViewer/GuardrailViewer.tsx` 与根目录的 `columns.tsx` / `AuditLogsTableColumns.tsx` / `logs_utils.tsx` / `log_filter_logic.tsx` / `RequestLogsPanel.tsx` / `ToolsSection/JsonToolView.tsx` / `LogDetailsDrawer/` 的 2 个消息块。键数 6464 到 6535，中英同值 86 不变
 
 ## 2026-10-14 第 28 簇更新
 
@@ -383,8 +412,8 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 | 项                       | 数值                                                 |
 | ------------------------ | ---------------------------------------------------- |
 | 命名空间                 | 39                                                   |
-| `en.json` 叶子键          | 6464（2026-10-14 第 28 簇；6416 是第 27 簇后，6365 是第 26 簇后，6351 是第 25 簇后，6320 是第 24 簇后）|
-| `zh-CN.json` 叶子键       | 6464                                                 |
+| `en.json` 叶子键          | 6535（2026-10-14 第 29 簇；6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后，6351 是第 25 簇后）|
+| `zh-CN.json` 叶子键       | 6535                                                 |
 | 键树一致性               | 一致，`messagesParity` 通过                           |
 | 中英文取值完全相同的键    | 86（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
 
@@ -392,7 +421,7 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 ## 文件覆盖率
 
-`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
+`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
 
 ## 按路由的进度
 
