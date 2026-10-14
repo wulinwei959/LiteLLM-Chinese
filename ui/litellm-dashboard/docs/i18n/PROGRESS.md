@@ -1,6 +1,29 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 48 簇更新
+
+批次 24 第 48 簇：`components/AIHub/ModelHubTableColumns.tsx`（243 行，接入后 251，+32/−24）的模型中心列定义接入 `modelHub`，新开 8 键、复用 `common` 五键与本命名空间已有的 `viewDetails`，两个消息目录各 +8/−0 行；消费者 `ModelHubTable.tsx`（1189 行，+4/−1）把 `modelColumns` 的 `useMemo` 改为传入 `t` 与 `commonT`。至此 AIHub 三个中心表的列定义（技能、智能体、MCP 服务器、模型）全部接入，该目录只剩整页文件 `UsefulLinksManagement.tsx` 与 `ModelHubTable.tsx` 自身的页签外壳文案
+
+改造形态：
+
+- 列标题继续走第 47 簇定下的 `col*` 构词法：`colPublicModelName`、`colTokens`、`colCostPerMillion`、`colFeatures`、`colPublic`，另加操作菜单三项 `openModelActions`/`copyModelName`/`modelNameCopied`。`viewDetails` 是第 47 簇为 MCP 菜单开的键，EN `View details` 与本文件逐字节相同、概念同为"打开详情弹窗"，按口径直接复用而不另开 `modelHub.viewModelDetails`——这是平铺命名空间内跨文件复用的又一次兑现
+- 四个泛型标签落 `common`：`provider`（Provider/提供商）、`mode`（Mode/模式）、`yes`/`no`（是/否，公开列的徽标）与 `actions`（操作，sr-only 表头）。`models.modelTable.provider` 等同名键属于模型管理页，跨命名空间不借
+- `colPublicModelName` 的中文取"公共模型名称"，与 `models.modelTable.publicModelName` 同词——EN 在 `models.*` 有四个同串键，但跨命名空间借不是口径，本簇另开键、只对齐术语
+- `colTokens` 取"Token 数"（同第 37 簇 `chat.logsPanel.colTokens`），不用 `logs.tokens` 的"令牌"；`colCostPerMillion` 取"成本/1M"，列宽 110px，装不下 `models.addModel.inputCostPerToken` 那种"输入成本（每百万 Token）"的长写法
+- `colFeatures` 与第 46 簇的 `agents.capabilities`（Capabilities/能力）不是同一个短语，HEAD 这里写的是 `Features`，所以另开 `colFeatures`（功能）而不是借近义键
+- 数据与格式留原文：`formatCapabilityName` 从 `supports_*` 键名推出的徽章文本（`Vision`、`Function Calling`）、`formatCost` 的 `$` + `toFixed(2)`、`formatTokens` 的 K/M、`+{providers.length - 2}` 溢出计数、`providers` 与 `mode` 的接口取值、空值占位 `-`、`data-testid`。前两处与第 46、47 簇记下的同类账一起（能力值/数字格式），要接得连着模型管理页那套同名词一起做
+
+测试侧同步：
+
+- `ModelHubTableColumns.test.tsx`（94 行，接入后 122，+38/−10）与第 45、46、47 簇同法改造：新增 `ModelHubTableHarness` 在组件内 `useTranslations("modelHub")` / `("common")` + `useMemo` 组列，`renderTable` 改走 `renderWithProviders`。8 例数量与含义未增删
+- 断言换语言：`Yes`/`No`→`是`/`否`；列标题断言并入"renders the model row"一例（公共模型名称/提供商/模式/Token 数/成本/1M/公开，外加原有的"没有 URL 列"），未新开用例
+- 一条踩坑记下来：Base UI 的下拉菜单项在 `user.click(item)` 之后随弹窗卸载，先点再 `getByTestId` 会报"Unable to find"。改成 `findByTestId` 拿到元素、先断文本、再点击——`AgentHubTableColumns.test.tsx` 早就是这个写法，本簇照做即可
+
+验证：定向 `npx vitest run src/components/AIHub/` → 9 文件全绿；全量复跑 `npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin src/components/AIHub` → 79 文件 978 例全绿，`Type Errors no errors`；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 三个改动文件 0 error / 4 warning，与 HEAD 版逐条相同（`ModelHubTableColumns.tsx` 一条 `no-explicit-any` 只是从 34 行移到 35 行，`ModelHubTable.tsx` 的 `complexity 89` 与两条 `any` 未动）；prettier `--check` 只有测试文件不干净（harness 的 props 类型一行超 printWidth），`--write` 后两个源文件报 unchanged；`npm run build` exit 0
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 432 不变、47.4%（同第 46、47 簇的理由——工厂走 props 收 `t`）。键数 6883 到 6891（`modelHub` 平铺层 73 到 81，`common` 189 不变），中英同值 86 不变
 
 ## 2026-10-15 第 47 簇更新
 
