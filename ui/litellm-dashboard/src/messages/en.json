@@ -3823,6 +3823,29 @@
       },
       "modelIdLabel": "Model ID: {modelId}",
       "useCustomCode": "Use custom code: {code}"
+    },
+    "columns": {
+      "time": "Time",
+      "type": "Type",
+      "requestId": "Request ID",
+      "durationSeconds": "Duration (s)",
+      "ttftSeconds": "TTFT (s)",
+      "teamName": "Team Name",
+      "internalUser": "Internal User",
+      "tags": "Tags"
+    },
+    "cells": {
+      "copyCallId": "Copy x-litellm-call-id",
+      "batchIdTooltip": "Batch {batchId} (row: {requestId})",
+      "batchCost": "batch cost",
+      "sessionTotal": "session total",
+      "mcpSpendIncluded": "incl. {spend} from {count} MCP",
+      "succeeded": "{successful}/{total} succeeded",
+      "batchRequestsFailed": "{failed} of {total} batch requests failed",
+      "sessionSummaryLlm": "{count} LLM",
+      "sessionSummaryAgent": "{count} Agent",
+      "sessionSummaryMcp": "{count} MCP",
+      "sessionSummaryCacheHit": "{count} cache hit"
     }
   },
   "projects": {

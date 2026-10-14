@@ -95,8 +95,9 @@ export function RequestLogsTable({
 
   const columns = useMemo(() => {
     const resolveUserEmail = (userId: string) => emailByUserId?.[userId];
-    return getRequestLogsTableColumns({ onKeyHashClick, onSessionClick, resolveUserEmail });
-  }, [onKeyHashClick, onSessionClick, emailByUserId]);
+    const deps = { onKeyHashClick, onSessionClick, resolveUserEmail, t };
+    return getRequestLogsTableColumns(deps);
+  }, [onKeyHashClick, onSessionClick, emailByUserId, t]);
 
   const isFiltered = columnFilters.length > 0 || searchValue !== "";
 

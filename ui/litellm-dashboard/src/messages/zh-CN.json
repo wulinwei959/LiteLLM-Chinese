@@ -3823,6 +3823,29 @@
       },
       "modelIdLabel": "模型 ID：{modelId}",
       "useCustomCode": "使用自定义错误码：{code}"
+    },
+    "columns": {
+      "time": "时间",
+      "type": "类型",
+      "requestId": "请求 ID",
+      "durationSeconds": "耗时（秒）",
+      "ttftSeconds": "首字延迟（秒）",
+      "teamName": "团队名称",
+      "internalUser": "内部用户",
+      "tags": "标签"
+    },
+    "cells": {
+      "copyCallId": "复制 x-litellm-call-id",
+      "batchIdTooltip": "批次 {batchId}（行：{requestId}）",
+      "batchCost": "批处理成本",
+      "sessionTotal": "会话合计",
+      "mcpSpendIncluded": "其中 {spend} 来自 {count} 次 MCP",
+      "succeeded": "{successful}/{total} 成功",
+      "batchRequestsFailed": "{total} 个批处理请求中 {failed} 个失败",
+      "sessionSummaryLlm": "{count} LLM",
+      "sessionSummaryAgent": "{count} 智能体",
+      "sessionSummaryMcp": "{count} MCP",
+      "sessionSummaryCacheHit": "{count} 次缓存命中"
     }
   },
   "projects": {
