@@ -4009,6 +4009,18 @@
         "turnDetection": "Turn Detection",
         "tools": "Tools"
       }
+    },
+    "tools": {
+      "title": "Tools",
+      "summary": "{provided} provided, {called} called",
+      "called": "called",
+      "notCalled": "not called",
+      "description": "Description",
+      "formatted": "Formatted",
+      "json": "JSON",
+      "parameters": "Parameters",
+      "parameterName": "Parameter",
+      "calledWith": "Called With"
     }
   },
   "projects": {

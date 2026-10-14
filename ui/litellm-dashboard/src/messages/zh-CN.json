@@ -4009,6 +4009,18 @@
         "turnDetection": "轮次检测",
         "tools": "工具"
       }
+    },
+    "tools": {
+      "title": "工具",
+      "summary": "提供 {provided} 个，调用 {called} 个",
+      "called": "已调用",
+      "notCalled": "未调用",
+      "description": "描述",
+      "formatted": "格式化",
+      "json": "JSON",
+      "parameters": "参数",
+      "parameterName": "参数名",
+      "calledWith": "调用入参"
     }
   },
   "projects": {
