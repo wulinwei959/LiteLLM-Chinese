@@ -8,12 +8,6 @@ import { Logo } from "@/components/molecules/logo/Logo";
 import { GUARDRAIL_PRESETS } from "./guardrail_garden_configs";
 import { GuardrailCardInfo } from "./guardrail_garden_data";
 
-const CATEGORY_LABELS: Record<GuardrailCardInfo["category"], { provider: string; type: string }> = {
-  litellm: { provider: "LiteLLM Content Filter", type: "Content Filter" },
-  decision_model: { provider: "Decision Model", type: "Decision Model" },
-  partner: { provider: "Partner Guardrail", type: "Partner" },
-};
-
 interface GuardrailDetailViewProps {
   card: GuardrailCardInfo;
   onBack: () => void;
@@ -26,11 +20,17 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
   const [activeTab, setActiveTab] = useState("overview");
   const t = useTranslations("guardrails");
 
+  const categoryLabels: Record<GuardrailCardInfo["category"], { provider: string; type: string }> = {
+    litellm: { provider: t("garden.litellmTitle"), type: t("garden.typeContent") },
+    decision_model: { provider: t("garden.providerDecisionModel"), type: t("garden.typeDecisionModel") },
+    partner: { provider: t("garden.providerPartner"), type: t("garden.typePartner") },
+  };
+
   const detailRows = [
-    { property: t("info.provider"), value: CATEGORY_LABELS[card.category].provider },
+    { property: t("info.provider"), value: categoryLabels[card.category].provider },
     ...(card.subcategory ? [{ property: t("garden.rowSubcategory"), value: card.subcategory }] : []),
     ...(card.category === "decision_model"
-      ? [{ property: t("garden.rowCost"), value: "Billed per call by the decision model provider" }]
+      ? [{ property: t("garden.rowCost"), value: t("garden.costDecisionModel") }]
       : []),
     ...(card.category === "litellm" ? [{ property: t("garden.rowCost"), value: "$0 / request" }] : []),
     ...(card.category === "litellm" ? [{ property: t("garden.rowExtDeps"), value: t("garden.none") }] : []),
@@ -140,7 +140,7 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
             {/* Type */}
             <div className="mb-7">
               <div className="mb-1 text-xs text-muted-foreground">{t("test.typeLabel")}</div>
-              <div className="text-[13px] text-foreground">{CATEGORY_LABELS[card.category].type}</div>
+              <div className="text-[13px] text-foreground">{categoryLabels[card.category].type}</div>
             </div>
 
             {/* Tags — pill style like Vertex */}

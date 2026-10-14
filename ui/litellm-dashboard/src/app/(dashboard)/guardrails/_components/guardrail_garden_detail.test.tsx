@@ -17,7 +17,9 @@ const makeCard = (overrides: Partial<GuardrailCardInfo> = {}): GuardrailCardInfo
 });
 
 const renderDetail = (card: GuardrailCardInfo) =>
-  renderWithProviders(<GuardrailDetailView card={card} onBack={vi.fn()} accessToken={null} onGuardrailCreated={vi.fn()} />);
+  renderWithProviders(
+    <GuardrailDetailView card={card} onBack={vi.fn()} accessToken={null} onGuardrailCreated={vi.fn()} />,
+  );
 
 describe("GuardrailDetailView logo", () => {
   it("renders the card logo through the shared Logo component with the bundled src", () => {
@@ -36,18 +38,16 @@ describe("GuardrailDetailView decision model card", () => {
   it("labels a decision model card as a billed Decision Model guardrail", () => {
     renderDetail(makeCard({ id: "dm_perplexity", name: "Perplexity Decision", category: "decision_model" }));
 
-    expect(screen.getByRole("row", { name: "Provider Decision Model" })).toBeInTheDocument();
-    expect(
-      screen.getByRole("row", { name: "Cost Billed per call by the decision model provider" }),
-    ).toBeInTheDocument();
-    expect(screen.getAllByText("Decision Model")).toHaveLength(2);
+    expect(screen.getByRole("row", { name: "提供商 决策模型" })).toBeInTheDocument();
+    expect(screen.getByRole("row", { name: "费用 由决策模型提供商按每次调用计费" })).toBeInTheDocument();
+    expect(screen.getAllByText("决策模型")).toHaveLength(2);
   });
 
   it("keeps the partner labels and no cost row on a partner card", () => {
     renderDetail(makeCard());
 
-    expect(screen.getByRole("row", { name: "Provider Partner Guardrail" })).toBeInTheDocument();
-    expect(screen.queryByRole("row", { name: /^Cost/ })).not.toBeInTheDocument();
-    expect(screen.getByText("Partner")).toBeInTheDocument();
+    expect(screen.getByRole("row", { name: "提供商 合作伙伴护栏" })).toBeInTheDocument();
+    expect(screen.queryByRole("row", { name: /^费用/ })).not.toBeInTheDocument();
+    expect(screen.getByText("合作伙伴")).toBeInTheDocument();
   });
 });
