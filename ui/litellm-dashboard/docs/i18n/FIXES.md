@@ -338,6 +338,18 @@ guardrails 这一轮定了一条翻译边界：面向读者的散文（标签、
 
 e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的（`getByRole("combobox", { name: "Search a key alias" })`、`getByPlaceholder("Enter session ID…")`），所以字段标签换语言不影响 e2e，placeholder 换语言一定影响。本簇 3 个 spec 共 8 处：`logs.spec.ts` 的 `Search an end user`，`logsFilters.spec.ts` 的 `Search a key alias` 三处加 `All Statuses` 与 `Failure`，`logsPagination.spec.ts` 的 `Search a key alias` 与 `Enter session ID…`。`logsFilters.spec.ts:111` 那条注释提醒的是另一件事：Status 字段只标了分组、没标到 trigger 上，所以那个 combobox 只能按它当前显示的值定位。Playwright 需要活代理与真实请求数据，这 8 处改完只是字符串替换，没有跑过，别把它当成已验证
 
+## 2026-10-15 标题复用正文键：一类守卫抓不到的缺陷
+
+`mcp_connect.tsx` 的 `StepCard` 上游是两个文案位：`title="Add Configuration"` 加一段带 `<code>` 快捷键的正文。整批翻译（`dd323992`）为了少建键，把 `title` 改成 `titleKey` 并直接复用正文的键，于是同一句话既当标题又当正文，还留下三类后果
+
+- `t(titleKey)` 是**动态键**，`missingKeys` 守卫只解析字面量 `t("a.b")`，所以它一条不报；`messagesParity` 只看两侧键树，也看不见调用点少传参数
+- 正文 `copyConfig` 带 `{mac}`/`{windows}`，标题这次调用没传参，运行期抛 `FORMATTING_ERROR`，next-intl 走兜底，页面标题直接显示 `{mac}` 原样串。全量日志里这一条重复了 162 次，是当时唯一的 `FORMATTING_ERROR`
+- 反过来 `openSettings` 本身没有占位符，正文那次 `t("openSettings", { mac, windows })` 的多余参数被静默丢弃，快捷键那半句话在两种语言里都消失了
+
+修法是回到上游的文案位数量：标题三个键（`openSettings` 与新开 `navigateToMcpTools`/`addConfiguration`），正文三个键（新开 `openSettingsShortcut` 带两个参数，正文用已有 `goToMcpTools`/`copyConfig`），两侧目录各 +3 行，并补 1 例断言标题与插值后的快捷键、且面板里不再出现裸 `{mac}`
+
+给后续簇留的规矩：**同一个键别同时当标题和正文**。若源码里 `t(变量)` 的变量取值带 ICU 参数，调用点不传参就一定会炸，改的时候要么把标题拆成独立无参键，要么把参数一路带到标题调用处
+
 ## 回归守卫
 
 改完之后这几条必须一起跑
