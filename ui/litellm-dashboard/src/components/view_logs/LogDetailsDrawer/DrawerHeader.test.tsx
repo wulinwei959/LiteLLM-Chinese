@@ -1,7 +1,7 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { render } from "../../../../tests/test-utils";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import type { LogEntry } from "../columns";
 import { DrawerHeader } from "./DrawerHeader";
 
@@ -27,7 +27,7 @@ const logEntry = (overrides: Partial<LogEntry>): LogEntry =>
   }) as LogEntry;
 
 const renderHeader = (log: LogEntry, isSidebarCollapsed: boolean) =>
-  render(
+  renderWithProviders(
     <DrawerHeader
       log={log}
       onClose={vi.fn()}
@@ -41,14 +41,14 @@ const renderHeader = (log: LogEntry, isSidebarCollapsed: boolean) =>
     />,
   );
 
-const expandToggle = () => screen.getByLabelText("Expand trace sidebar");
+const expandToggle = () => screen.getByLabelText("展开调用链侧栏");
 
 describe("DrawerHeader sidebar toggle", () => {
   it("stays out of the header while the sidebar owns it", () => {
     renderHeader(logEntry({}), false);
 
-    expect(screen.queryByLabelText("Expand trace sidebar")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Collapse trace sidebar")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("展开调用链侧栏")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("收起调用链侧栏")).not.toBeInTheDocument();
   });
 
   it("shares the model row once the sidebar is collapsed", () => {
@@ -64,15 +64,15 @@ describe("DrawerHeader sidebar toggle", () => {
     expect(screen.getByText("chatcmpl-h")).toBeInTheDocument();
     expect(screen.getByText("call-h")).toBeInTheDocument();
     expect(screen.getByText("x-litellm-call-id:")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Copy Request ID" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Copy x-litellm-call-id" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "复制 请求 ID" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "复制 x-litellm-call-id" })).toBeInTheDocument();
   });
 
   it("omits the x-litellm-call-id line and button when the ids match", () => {
     renderHeader(logEntry({ request_id: "same-h", litellm_call_id: "same-h" }), false);
 
     expect(screen.queryByText("x-litellm-call-id:")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Copy x-litellm-call-id" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "复制 x-litellm-call-id" })).not.toBeInTheDocument();
   });
 
   it("falls back to the request id row when the log names no model", () => {

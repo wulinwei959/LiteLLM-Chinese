@@ -1,5 +1,6 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { RealtimePrettyView, isRealtimeResponse } from "./RealtimePrettyView";
@@ -154,30 +155,30 @@ describe("RealtimePrettyView", () => {
   });
 
   it("should render the component successfully", () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
     expect(screen.getByText("Session")).toBeInTheDocument();
   });
 
   it("should display the session model name", () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
     const modelElements = screen.getAllByText("gpt-4o-mini-realtime-preview");
     expect(modelElements.length).toBeGreaterThanOrEqual(1);
   });
 
   it("should display the session voice tag", () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
     const voiceElements = screen.getAllByText("alloy");
     expect(voiceElements.length).toBeGreaterThanOrEqual(1);
   });
 
   it("should display modality tags", () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
     expect(screen.getByText("audio")).toBeInTheDocument();
     expect(screen.getByText("text")).toBeInTheDocument();
   });
 
   it("should display the turn count in session header", () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
     expect(screen.getByText("2 turns")).toBeInTheDocument();
   });
 
@@ -210,41 +211,41 @@ describe("RealtimePrettyView", () => {
         },
       ],
     };
-    render(<RealtimePrettyView response={singleTurnResponse} />);
+    renderWithProviders(<RealtimePrettyView response={singleTurnResponse} />);
     expect(screen.getByText("1 turn")).toBeInTheDocument();
   });
 
   it("should display the turn count in the output section header", () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
-    expect(screen.getByText("Turns: 2")).toBeInTheDocument();
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    expect(screen.getByText("轮次：2")).toBeInTheDocument();
   });
 
   it("should display the Output section header", () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
-    expect(screen.getByText("Output")).toBeInTheDocument();
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    expect(screen.getByText("输出")).toBeInTheDocument();
   });
 
   it("should display transcript text from response turns", () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
     expect(screen.getByText("Hello! How's your day going?")).toBeInTheDocument();
     expect(screen.getByText("I'm here to help with information and general questions.")).toBeInTheDocument();
   });
 
   it("should display completed status tags for response turns", () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
     const completedTags = screen.getAllByText("completed");
     expect(completedTags.length).toBe(2);
   });
 
   it("should display token usage per turn", () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
     expect(screen.getByText("116 in / 46 out tokens")).toBeInTheDocument();
     expect(screen.getByText("178 in / 247 out tokens")).toBeInTheDocument();
   });
 
   it("should expand session details when session header is clicked", async () => {
     const user = userEvent.setup();
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
 
     await user.click(screen.getByText("Session"));
 
@@ -255,7 +256,7 @@ describe("RealtimePrettyView", () => {
 
   it("should display session instructions when expanded", async () => {
     const user = userEvent.setup();
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
 
     await user.click(screen.getByText("Session"));
 
@@ -267,7 +268,7 @@ describe("RealtimePrettyView", () => {
 
   it("should display session audio format when expanded", async () => {
     const user = userEvent.setup();
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
 
     await user.click(screen.getByText("Session"));
 
@@ -278,7 +279,7 @@ describe("RealtimePrettyView", () => {
   });
 
   it("should display ASSISTANT label for output messages", () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
     const assistantLabels = screen.getAllByText("ASSISTANT");
     expect(assistantLabels.length).toBe(2);
   });
@@ -287,7 +288,7 @@ describe("RealtimePrettyView", () => {
     const emptyResponse = {
       results: [{ type: "unknown.event" }],
     };
-    render(<RealtimePrettyView response={emptyResponse} />);
+    renderWithProviders(<RealtimePrettyView response={emptyResponse} />);
     expect(screen.getByText("No recognized realtime events found")).toBeInTheDocument();
   });
 
@@ -304,26 +305,26 @@ describe("RealtimePrettyView", () => {
         },
       ],
     };
-    render(<RealtimePrettyView response={noOutputResponse} />);
+    renderWithProviders(<RealtimePrettyView response={noOutputResponse} />);
     expect(screen.getByText("completed")).toBeInTheDocument();
   });
 
   it("should display metrics tokens when provided", () => {
-    render(
+    renderWithProviders(
       <RealtimePrettyView response={sampleRealtimeResponse} metrics={{ completion_tokens: 500, output_cost: 0.005 }} />,
     );
-    expect(screen.getByText(/Tokens: 500/)).toBeInTheDocument();
-    expect(screen.getByText(/Cost: \$0\.005000/)).toBeInTheDocument();
+    expect(screen.getByText(/令牌：500/)).toBeInTheDocument();
+    expect(screen.getByText(/成本：\$0\.005000/)).toBeInTheDocument();
   });
 
   it("should toggle output section collapse when header is clicked", async () => {
     const user = userEvent.setup();
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
 
     const transcript = screen.getByText("Hello! How's your day going?");
     expect(transcript).toBeVisible();
 
-    const outputHeader = screen.getByText("Output").closest("div");
+    const outputHeader = screen.getByText("输出").closest("div");
     if (outputHeader) {
       await user.click(outputHeader);
       await waitFor(() => {
@@ -333,7 +334,7 @@ describe("RealtimePrettyView", () => {
   });
 
   it("should display token breakdown tags when input_token_details are present", async () => {
-    render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+    renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
     expect(screen.getByText(/Text Tokens: 116/)).toBeInTheDocument();
   });
 
@@ -362,7 +363,7 @@ describe("RealtimePrettyView", () => {
         },
       ],
     };
-    render(<RealtimePrettyView response={textResponse} />);
+    renderWithProviders(<RealtimePrettyView response={textResponse} />);
     expect(screen.getByText("This is a text response")).toBeInTheDocument();
   });
 });

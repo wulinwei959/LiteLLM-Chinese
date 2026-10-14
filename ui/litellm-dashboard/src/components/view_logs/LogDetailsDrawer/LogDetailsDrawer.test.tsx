@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import { LogDetailsDrawer } from "./LogDetailsDrawer";
 import { sessionSpendLogsCall } from "../../networking";
@@ -88,7 +89,7 @@ const renderSessionDrawer = () => {
       <LogDetailsDrawer open={open} onClose={() => {}} logEntry={null} sessionId="session-1" accessToken="token" />
     </QueryClientProvider>
   );
-  const { rerender } = render(drawer(true));
+  const { rerender } = renderWithProviders(drawer(true));
   return { rerender, drawer };
 };
 
@@ -106,11 +107,11 @@ describe("LogDetailsDrawer session sidebar sorting", () => {
     renderSessionDrawer();
     await waitFor(() => expect(sidebarEventNames()).toHaveLength(4));
 
-    fireEvent.click(screen.getByText("Start time"));
+    fireEvent.click(screen.getByText("开始时间"));
 
     await waitFor(() => expect(sidebarEventNames()).toEqual(["llm-early", "tool-early", "llm-late", "tool-late"]));
 
-    fireEvent.click(screen.getByText("Duration"));
+    fireEvent.click(screen.getByText("耗时"));
 
     await waitFor(() => expect(sidebarEventNames()).toEqual(["tool-early", "llm-late", "llm-early", "tool-late"]));
   });
@@ -119,7 +120,7 @@ describe("LogDetailsDrawer session sidebar sorting", () => {
     const { rerender, drawer } = renderSessionDrawer();
     await waitFor(() => expect(sidebarEventNames()).toHaveLength(4));
 
-    fireEvent.click(screen.getByText("Start time"));
+    fireEvent.click(screen.getByText("开始时间"));
     await waitFor(() => expect(sidebarEventNames()).toEqual(["llm-early", "tool-early", "llm-late", "tool-late"]));
 
     rerender(drawer(false));
@@ -132,7 +133,7 @@ describe("LogDetailsDrawer session sidebar sorting", () => {
 describe("LogDetailsDrawer internal user email", () => {
   const renderSingleLog = (user: string | undefined) => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    return render(
+    return renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <LogDetailsDrawer
           open
@@ -170,7 +171,7 @@ describe("LogDetailsDrawer session sidebar auto-router icon", () => {
   const renderRoutedSession = () => {
     vi.mocked(sessionSpendLogsCall).mockResolvedValue({ data: routedSessionLogs, total: 2, total_pages: 1 });
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    return render(
+    return renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <AutoRouterModelGroupsProvider>
           <LogDetailsDrawer open onClose={() => {}} logEntry={null} sessionId="session-1" accessToken="token" />

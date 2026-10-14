@@ -1,5 +1,6 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import { describe, it, expect } from "vitest";
 import { PrettyMessagesView } from "./PrettyMessagesView";
 
@@ -12,7 +13,7 @@ describe("PrettyMessagesView", () => {
       choices: [{ message: { role: "assistant", content: "Hi there!" } }],
     };
 
-    render(<PrettyMessagesView request={request} response={response} />);
+    renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("Hello")).toBeInTheDocument();
     expect(screen.getByText("Hi there!")).toBeInTheDocument();
   });
@@ -23,7 +24,7 @@ describe("PrettyMessagesView", () => {
       choices: [{ message: { role: "assistant", content: "A quiet moment." } }],
     };
 
-    render(<PrettyMessagesView request={request} response={response} />);
+    renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("Write me a poem")).toBeInTheDocument();
     expect(screen.getByText("A quiet moment.")).toBeInTheDocument();
   });
@@ -59,7 +60,7 @@ describe("PrettyMessagesView", () => {
       ],
     };
 
-    render(<PrettyMessagesView request={request} response={response} />);
+    renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("Session")).toBeInTheDocument();
     expect(screen.getByText("Hello from realtime!")).toBeInTheDocument();
     const modelElements = screen.getAllByText("gpt-4o-mini-realtime-preview");
@@ -83,7 +84,7 @@ describe("PrettyMessagesView", () => {
       ],
     };
 
-    render(<PrettyMessagesView request={request} response={response} />);
+    renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("Reply with exactly: hello from responses api")).toBeInTheDocument();
     expect(screen.getByText("hello from responses api")).toBeInTheDocument();
     expect(screen.queryByText("No response data available")).not.toBeInTheDocument();
@@ -107,7 +108,7 @@ describe("PrettyMessagesView", () => {
       ],
     };
 
-    render(<PrettyMessagesView request={request} response={response} />);
+    renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("What is the weather in San Francisco? Use the tool.")).toBeInTheDocument();
     expect(screen.getByText("get_weather")).toBeInTheDocument();
     expect(screen.queryByText("No response data available")).not.toBeInTheDocument();
@@ -119,7 +120,7 @@ describe("PrettyMessagesView", () => {
       output: [{ type: "message", role: "assistant", content: [{ type: "output_text", text: "A" }] }],
     };
 
-    render(<PrettyMessagesView request={request} response={response} />);
+    renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("You are terse.")).toBeInTheDocument();
     expect(screen.getByText("Say A")).toBeInTheDocument();
     expect(screen.getByText("A")).toBeInTheDocument();
@@ -134,7 +135,7 @@ describe("PrettyMessagesView", () => {
       ],
     };
 
-    render(<PrettyMessagesView request={request} response={response} />);
+    renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("answered")).toBeInTheDocument();
     expect(screen.queryByText("No response data available")).not.toBeInTheDocument();
   });
@@ -156,7 +157,7 @@ describe("PrettyMessagesView", () => {
       output: [{ type: "message", role: "assistant", content: [{ type: "output_text", text: "It is 18 degrees." }] }],
     };
 
-    render(<PrettyMessagesView request={request} response={response} />);
+    renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("It is 18 degrees.")).toBeInTheDocument();
     expect(screen.getByText('{"temp":18}')).toBeInTheDocument();
     expect(screen.getByText("TOOL")).toBeInTheDocument();
@@ -172,7 +173,7 @@ describe("PrettyMessagesView", () => {
     };
     const response = { choices: [{ message: { role: "assistant", content: "18 degrees." } }] };
 
-    render(<PrettyMessagesView request={request} response={response} />);
+    renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("Stay terse.")).toBeInTheDocument();
     expect(screen.getByText("TOOL")).toBeInTheDocument();
     expect(screen.queryByText("FUNCTION")).not.toBeInTheDocument();
@@ -181,7 +182,7 @@ describe("PrettyMessagesView", () => {
   it("still reports missing output when a Responses API log has an empty output array", () => {
     const request = { input: [{ role: "user", content: "Hello" }] };
 
-    render(<PrettyMessagesView request={request} response={{ output: [] }} />);
+    renderWithProviders(<PrettyMessagesView request={request} response={{ output: [] }} />);
     expect(screen.getByText("Hello")).toBeInTheDocument();
     expect(screen.getByText("No response data available")).toBeInTheDocument();
   });
@@ -195,7 +196,7 @@ describe("PrettyMessagesView", () => {
       choices: [{ message: { role: "assistant", content: "Reply" } }],
     };
 
-    render(<PrettyMessagesView request={request} response={response} />);
+    renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("Test")).toBeInTheDocument();
     expect(screen.getByText("Reply")).toBeInTheDocument();
   });

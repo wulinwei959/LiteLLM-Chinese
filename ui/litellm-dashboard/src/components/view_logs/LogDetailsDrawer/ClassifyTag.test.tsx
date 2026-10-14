@@ -1,20 +1,21 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import { describe, expect, it } from "vitest";
 import { ClassifyTag } from "./ClassifyTag";
 
 describe("ClassifyTag", () => {
   it("renders for an auto-router classifier row", () => {
-    render(<ClassifyTag origin="autorouter_classifier" />);
-    expect(screen.getByText("Classify")).toBeInTheDocument();
+    renderWithProviders(<ClassifyTag origin="autorouter_classifier" />);
+    expect(screen.getByText("分类")).toBeInTheDocument();
   });
 
   it("renders nothing for ordinary traffic, which is what makes the tag meaningful", () => {
-    const { container } = render(<ClassifyTag origin={undefined} />);
+    const { container } = renderWithProviders(<ClassifyTag origin={undefined} />);
     expect(container).toBeEmptyDOMElement();
   });
 
   it("renders nothing for an unrecognized origin rather than labelling it as a classifier call", () => {
-    const { container } = render(<ClassifyTag origin="something_else" />);
+    const { container } = renderWithProviders(<ClassifyTag origin="something_else" />);
     expect(container).toBeEmptyDOMElement();
   });
 });

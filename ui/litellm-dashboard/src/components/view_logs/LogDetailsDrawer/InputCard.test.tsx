@@ -1,5 +1,6 @@
 import React from "react";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
+import { screen, waitFor, fireEvent, act } from "@testing-library/react";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { InputCard } from "./InputCard";
@@ -26,12 +27,12 @@ describe("InputCard", () => {
   });
 
   it("should render the InputCard component", () => {
-    render(<InputCard messages={mockMessages} />);
-    expect(screen.getByText("Input")).toBeInTheDocument();
+    renderWithProviders(<InputCard messages={mockMessages} />);
+    expect(screen.getByText("输入")).toBeInTheDocument();
   });
 
   it("should return null when messages array is empty", () => {
-    const { container } = render(<InputCard messages={[]} />);
+    const { container } = renderWithProviders(<InputCard messages={[]} />);
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -46,7 +47,7 @@ describe("InputCard", () => {
         content: "Hello",
       },
     ];
-    render(<InputCard messages={messagesWithSystem} />);
+    renderWithProviders(<InputCard messages={messagesWithSystem} />);
     expect(screen.getByText("SYSTEM")).toBeInTheDocument();
     expect(screen.getByText("You are a helpful assistant")).toBeInTheDocument();
   });
@@ -66,7 +67,7 @@ describe("InputCard", () => {
         content: "Last message",
       },
     ];
-    render(<InputCard messages={messagesWithHistory} />);
+    renderWithProviders(<InputCard messages={messagesWithHistory} />);
     expect(screen.getByText("Last message")).toBeInTheDocument();
   });
 
@@ -77,18 +78,18 @@ describe("InputCard", () => {
         content: "What is the weather?",
       },
     ];
-    render(<InputCard messages={messages} />);
+    renderWithProviders(<InputCard messages={messages} />);
     expect(screen.getByText("What is the weather?")).toBeInTheDocument();
   });
 
   it("should display token count when provided", () => {
-    render(<InputCard messages={mockMessages} promptTokens={150} />);
-    expect(screen.getByText(/Tokens: 150/)).toBeInTheDocument();
+    renderWithProviders(<InputCard messages={mockMessages} promptTokens={150} />);
+    expect(screen.getByText(/令牌：150/)).toBeInTheDocument();
   });
 
   it("should display cost when provided", () => {
-    render(<InputCard messages={mockMessages} inputCost={0.0015} />);
-    expect(screen.getByText(/Cost: \$0\.001500/)).toBeInTheDocument();
+    renderWithProviders(<InputCard messages={mockMessages} inputCost={0.0015} />);
+    expect(screen.getByText(/成本：\$0\.001500/)).toBeInTheDocument();
   });
 
   it("should copy last message content when copy button is clicked", async () => {
@@ -99,9 +100,9 @@ describe("InputCard", () => {
       },
     ];
 
-    render(<InputCard messages={messages} />);
+    renderWithProviders(<InputCard messages={messages} />);
 
-    const copyButton = screen.getByRole("button", { name: /copy/i });
+    const copyButton = screen.getByRole("button", { name: "复制输入" });
 
     expect(copyButton).toBeInTheDocument();
 
@@ -116,9 +117,9 @@ describe("InputCard", () => {
 
   it("should toggle collapse state when header is clicked", async () => {
     const user = userEvent.setup();
-    render(<InputCard messages={mockMessages} />);
+    renderWithProviders(<InputCard messages={mockMessages} />);
 
-    const header = screen.getByText("Input").closest("div");
+    const header = screen.getByText("输入").closest("div");
     expect(header).toBeInTheDocument();
 
     const content = screen.getByText("Hello, how are you?");
@@ -140,7 +141,7 @@ describe("InputCard", () => {
         content: "User message only",
       },
     ];
-    render(<InputCard messages={messages} />);
+    renderWithProviders(<InputCard messages={messages} />);
     expect(screen.queryByText("SYSTEM")).not.toBeInTheDocument();
     expect(screen.getByText("User message only")).toBeInTheDocument();
   });
@@ -152,7 +153,7 @@ describe("InputCard", () => {
         content: "System only",
       },
     ];
-    render(<InputCard messages={messages} />);
+    renderWithProviders(<InputCard messages={messages} />);
     expect(screen.getByText("SYSTEM")).toBeInTheDocument();
     expect(screen.getByText("System only")).toBeInTheDocument();
   });
@@ -164,7 +165,7 @@ describe("InputCard", () => {
         content: "Assistant response",
       },
     ];
-    render(<InputCard messages={messages} />);
+    renderWithProviders(<InputCard messages={messages} />);
     expect(screen.getByText("ASSISTANT")).toBeInTheDocument();
     expect(screen.getByText("Assistant response")).toBeInTheDocument();
   });
@@ -183,7 +184,7 @@ describe("InputCard", () => {
         ],
       },
     ];
-    render(<InputCard messages={messages} />);
+    renderWithProviders(<InputCard messages={messages} />);
     expect(screen.getByText("Call a function")).toBeInTheDocument();
   });
 
@@ -194,8 +195,8 @@ describe("InputCard", () => {
         content: "",
       },
     ];
-    render(<InputCard messages={messages} />);
-    const copyButton = screen.getByRole("button", { name: /copy/i });
+    renderWithProviders(<InputCard messages={messages} />);
+    const copyButton = screen.getByRole("button", { name: "复制输入" });
     expect(copyButton).toBeInTheDocument();
   });
 });
