@@ -3743,7 +3743,56 @@
     "success": "成功",
     "failure": "失败",
     "details": "详情",
-    "close": "关闭"
+    "close": "关闭",
+    "filters": {
+      "teamId": "团队 ID",
+      "spanType": "调用类型",
+      "cache": "缓存",
+      "credential": "凭据",
+      "keyAlias": "密钥别名",
+      "userId": "用户 ID",
+      "endUser": "终端用户",
+      "errorCode": "错误码",
+      "errorMessage": "错误信息",
+      "keyHash": "密钥哈希",
+      "sessionId": "会话 ID",
+      "publicModelOrSearchTool": "公开模型 / 搜索工具",
+      "options": {
+        "allRequests": "全部请求",
+        "cacheHit": "缓存命中",
+        "cacheMiss": "缓存未命中",
+        "allCredentials": "全部凭据",
+        "clientOAuthToken": "客户端 OAuth 令牌",
+        "configuredKey": "配置密钥",
+        "allTypes": "全部类型",
+        "llm": "LLM",
+        "agent": "智能体",
+        "mcp": "MCP",
+        "batch": "批处理"
+      },
+      "placeholders": {
+        "searchTeam": "搜索或选择团队",
+        "searchKeyAlias": "搜索密钥别名",
+        "searchModel": "搜索模型",
+        "searchUser": "搜索内部用户",
+        "searchEndUser": "搜索终端用户",
+        "selectErrorCode": "选择或输入错误码",
+        "enterErrorMessage": "输入错误信息…",
+        "enterKeyHash": "输入密钥哈希…",
+        "enterSessionId": "输入会话 ID…",
+        "enterPublicModel": "输入公开模型或搜索工具…"
+      },
+      "empty": {
+        "teams": "未找到团队",
+        "keyAliases": "未找到密钥别名",
+        "models": "未找到模型",
+        "users": "未找到用户",
+        "endUsers": "该时间范围内没有终端用户",
+        "errorCodes": "未找到错误码"
+      },
+      "modelIdLabel": "模型 ID：{modelId}",
+      "useCustomCode": "使用自定义错误码：{code}"
+    }
   },
   "projects": {
     "title": "项目",

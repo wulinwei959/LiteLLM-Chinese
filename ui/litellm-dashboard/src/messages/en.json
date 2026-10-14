@@ -3743,7 +3743,56 @@
     "success": "Success",
     "failure": "Failure",
     "details": "Details",
-    "close": "Close"
+    "close": "Close",
+    "filters": {
+      "teamId": "Team ID",
+      "spanType": "Span Type",
+      "cache": "Cache",
+      "credential": "Credential",
+      "keyAlias": "Key Alias",
+      "userId": "User ID",
+      "endUser": "End User",
+      "errorCode": "Error Code",
+      "errorMessage": "Error Message",
+      "keyHash": "Key Hash",
+      "sessionId": "Session ID",
+      "publicModelOrSearchTool": "Public model / search tool",
+      "options": {
+        "allRequests": "All Requests",
+        "cacheHit": "Cache Hit",
+        "cacheMiss": "Cache Miss",
+        "allCredentials": "All Credentials",
+        "clientOAuthToken": "Client OAuth token",
+        "configuredKey": "Configured key",
+        "allTypes": "All Types",
+        "llm": "LLM",
+        "agent": "Agent",
+        "mcp": "MCP",
+        "batch": "Batch"
+      },
+      "placeholders": {
+        "searchTeam": "Search or select a team",
+        "searchKeyAlias": "Search a key alias",
+        "searchModel": "Search a model",
+        "searchUser": "Search an internal user",
+        "searchEndUser": "Search an end user",
+        "selectErrorCode": "Select or type an error code",
+        "enterErrorMessage": "Enter error message…",
+        "enterKeyHash": "Enter key hash…",
+        "enterSessionId": "Enter session ID…",
+        "enterPublicModel": "Enter public model or search tool…"
+      },
+      "empty": {
+        "teams": "No teams found",
+        "keyAliases": "No key aliases found",
+        "models": "No models found",
+        "users": "No users found",
+        "endUsers": "No end users in this time range",
+        "errorCodes": "No error codes found"
+      },
+      "modelIdLabel": "Model ID: {modelId}",
+      "useCustomCode": "Use custom code: {code}"
+    }
   },
   "projects": {
     "title": "Projects",
