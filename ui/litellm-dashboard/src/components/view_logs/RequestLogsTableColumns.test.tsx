@@ -1,8 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import { DataTable } from "@/components/shared/DataTable";
+
+import { renderWithProviders } from "../../../tests/test-utils";
 
 import type { LogEntry } from "./columns";
 import { getRequestLogsTableColumns } from "./RequestLogsTableColumns";
@@ -36,7 +38,7 @@ const logEntry = (overrides: Partial<LogEntry>): LogEntry => ({
 const noopDeps = { onKeyHashClick: vi.fn(), onSessionClick: vi.fn() };
 
 function renderRows(rows: LogEntry[], deps = noopDeps) {
-  render(
+  renderWithProviders(
     <DataTable
       data={rows}
       columns={getRequestLogsTableColumns(deps)}
@@ -217,7 +219,7 @@ describe("Type column", () => {
   it("marks a batch cost row with the Batch badge instead of LLM", () => {
     renderRows([logEntry({ request_id: "batch_1_batch_cost", call_type: "aretrieve_batch" })]);
 
-    expect(screen.getByText("Batch")).toBeInTheDocument();
+    expect(screen.getByText("批处理")).toBeInTheDocument();
     expect(screen.queryByText("LLM")).not.toBeInTheDocument();
   });
 
@@ -230,7 +232,7 @@ describe("Type column", () => {
     };
     renderRows([logEntry(groupedCostRow)]);
 
-    expect(screen.getByText("Batch")).toBeInTheDocument();
+    expect(screen.getByText("批处理")).toBeInTheDocument();
     expect(screen.queryByText("2")).not.toBeInTheDocument();
   });
 });
@@ -296,7 +298,7 @@ describe("Request ID column", () => {
   it("copies the x-litellm-call-id from the tooltip without opening the row", async () => {
     const user = userEvent.setup();
     const onRowClick = vi.fn();
-    render(
+    renderWithProviders(
       <DataTable
         data={[logEntry({ request_id: "chatcmpl-9", litellm_call_id: "call-uuid-9" })]}
         columns={getRequestLogsTableColumns(noopDeps)}

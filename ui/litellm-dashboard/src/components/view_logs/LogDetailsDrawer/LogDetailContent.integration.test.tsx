@@ -1,6 +1,8 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+
+import { renderWithProviders } from "../../../../tests/test-utils";
 import { GuardrailJumpLink, LogDetailContent } from "./LogDetailContent";
 import type { LogEntry } from "../columns";
 
@@ -35,13 +37,13 @@ const createLogEntry = (overrides: Partial<LogEntry> = {}): LogEntry =>
 
 describe("LogDetailContent", () => {
   it("should render the component successfully", () => {
-    render(<LogDetailContent logEntry={createLogEntry()} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry()} />);
 
     expect(screen.getByText("Request Details")).toBeInTheDocument();
   });
 
   it("should display Request Details with model, provider, and call type", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           model: "gpt-4o",
@@ -57,7 +59,7 @@ describe("LogDetailContent", () => {
   });
 
   it("shows the requesting user's email and id in Request Details when the email is resolved", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent logEntry={createLogEntry({ user: "106514937785257944828" })} userEmail="alice@example.com" />,
     );
 
@@ -67,20 +69,20 @@ describe("LogDetailContent", () => {
   });
 
   it("falls back to the user id in Request Details when no email is resolved", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ user: "106514937785257944828" })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ user: "106514937785257944828" })} />);
 
     expect(screen.getByText("User")).toBeInTheDocument();
     expect(screen.getByText("106514937785257944828")).toBeInTheDocument();
   });
 
   it("omits the User row when the log has no internal user", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ user: undefined })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ user: undefined })} />);
 
     expect(screen.queryByText("User")).not.toBeInTheDocument();
   });
 
   it("should display error alert when request has failed", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           metadata: {
@@ -101,7 +103,7 @@ describe("LogDetailContent", () => {
   });
 
   it("should display tags section when request_tags has entries", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           request_tags: { env: "prod", version: "1.0" },
@@ -115,13 +117,13 @@ describe("LogDetailContent", () => {
   });
 
   it("should not display tags section when request_tags is empty", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ request_tags: {} })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ request_tags: {} })} />);
 
     expect(screen.queryByText("Tags")).not.toBeInTheDocument();
   });
 
   it("should display Metrics section with tokens and cost", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           prompt_tokens: 100,
@@ -137,7 +139,7 @@ describe("LogDetailContent", () => {
   });
 
   it("shows reasoning tokens in Metrics when the usage breakout carries them", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           metadata: {
@@ -153,7 +155,7 @@ describe("LogDetailContent", () => {
   });
 
   it("hides the reasoning metric when the breakout is absent or zero", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           metadata: {
@@ -176,7 +178,7 @@ describe("LogDetailContent", () => {
       });
 
     it("renders batch id, per-request outcome counts, and batch models for a batch cost row", () => {
-      render(
+      renderWithProviders(
         <LogDetailContent
           logEntry={batchCostEntry({
             batch_models: ["gemini-2.5-flash"],
@@ -196,7 +198,7 @@ describe("LogDetailContent", () => {
     });
 
     it("still renders the batch id when a legacy row carries no counts", () => {
-      render(<LogDetailContent logEntry={batchCostEntry({})} />);
+      renderWithProviders(<LogDetailContent logEntry={batchCostEntry({})} />);
 
       expect(screen.getByText("Batch Results")).toBeInTheDocument();
       expect(screen.getByText("batch_abc123")).toBeInTheDocument();
@@ -204,7 +206,7 @@ describe("LogDetailContent", () => {
     });
 
     it("never renders for a non-batch call type", () => {
-      render(
+      renderWithProviders(
         <LogDetailContent
           logEntry={createLogEntry({
             metadata: { status: "success", batch_successful_requests: 2, batch_failed_requests: 1 },
@@ -217,7 +219,7 @@ describe("LogDetailContent", () => {
   });
 
   it("should show Input Tokens and Output Tokens for anthropic_messages when uncached text_tokens exist", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           call_type: "anthropic_messages",
@@ -246,7 +248,7 @@ describe("LogDetailContent", () => {
   });
 
   it("should display ConfigInfoMessage when no messages, response, or error and not loading", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           messages: [],
@@ -260,7 +262,7 @@ describe("LogDetailContent", () => {
   });
 
   it("should not display ConfigInfoMessage when isLoadingDetails is true even without data", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           messages: [],
@@ -275,14 +277,14 @@ describe("LogDetailContent", () => {
   });
 
   it("should display loading state when isLoadingDetails is true", () => {
-    render(<LogDetailContent logEntry={createLogEntry()} isLoadingDetails={true} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry()} isLoadingDetails={true} />);
 
     expect(screen.getByText("Loading request & response data...")).toBeInTheDocument();
   });
 
   it("should switch the Request & Response body between the Pretty and JSON view modes", async () => {
     const user = userEvent.setup();
-    render(<LogDetailContent logEntry={createLogEntry()} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry()} />);
 
     expect(screen.getByText("Request & Response")).toBeInTheDocument();
     expect(screen.getByText("Pretty")).toBeInTheDocument();
@@ -312,7 +314,7 @@ describe("LogDetailContent", () => {
         proxy_server_request: shape === "messages only" ? undefined : storedRequest,
         metadata: { status: "success", internal_call_origin: "autorouter_classifier" },
       };
-      render(<LogDetailContent logEntry={createLogEntry(logEntry)} />);
+      renderWithProviders(<LogDetailContent logEntry={createLogEntry(logEntry)} />);
 
       expect(screen.getByText("legacy classifier prompt")).toBeInTheDocument();
       expect(screen.queryByRole("region", { name: "Classifier input" })).not.toBeInTheDocument();
@@ -330,7 +332,7 @@ describe("LogDetailContent", () => {
     ["classifier_input", "aresponses"],
     ["originating_request_masked", "responses"],
   ])("shows partial classifier audits when only %s is captured for %s", (field, callType) => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           call_type: callType,
@@ -350,7 +352,7 @@ describe("LogDetailContent", () => {
 
   it("should display Request and Response tabs when JSON view is selected", async () => {
     const user = userEvent.setup();
-    render(<LogDetailContent logEntry={createLogEntry()} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry()} />);
 
     await user.click(screen.getByText("JSON"));
 
@@ -360,7 +362,7 @@ describe("LogDetailContent", () => {
 
   it("should display response not available message when no response and Response tab is selected", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           response: {},
@@ -376,7 +378,7 @@ describe("LogDetailContent", () => {
   });
 
   it("should display Metadata section when metadata has keys", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           metadata: { status: "success", custom_key: "value" },
@@ -388,7 +390,7 @@ describe("LogDetailContent", () => {
   });
 
   it("should display IP address when requester_ip_address is present", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           requester_ip_address: "192.168.1.1",
@@ -400,39 +402,39 @@ describe("LogDetailContent", () => {
   });
 
   it("shows Client OAuth token as the credential when the client's OAuth token was forwarded upstream", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({ metadata: { status: "success", used_client_oauth_token: true } })}
       />,
     );
 
     expect(screen.getByText("Credential")).toBeInTheDocument();
-    expect(screen.getByText("Client OAuth token")).toBeInTheDocument();
-    expect(screen.queryByText("Configured key")).not.toBeInTheDocument();
+    expect(screen.getByText("客户端 OAuth 令牌")).toBeInTheDocument();
+    expect(screen.queryByText("配置密钥")).not.toBeInTheDocument();
   });
 
   it("shows Configured key as the credential when the deployment's own API key was used", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({ metadata: { status: "success", used_client_oauth_token: false } })}
       />,
     );
 
     expect(screen.getByText("Credential")).toBeInTheDocument();
-    expect(screen.getByText("Configured key")).toBeInTheDocument();
-    expect(screen.queryByText("Client OAuth token")).not.toBeInTheDocument();
+    expect(screen.getByText("配置密钥")).toBeInTheDocument();
+    expect(screen.queryByText("客户端 OAuth 令牌")).not.toBeInTheDocument();
   });
 
   it("omits the Credential row for a log written before the credential was recorded", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success" } })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success" } })} />);
 
     expect(screen.queryByText("Credential")).not.toBeInTheDocument();
-    expect(screen.queryByText("Client OAuth token")).not.toBeInTheDocument();
-    expect(screen.queryByText("Configured key")).not.toBeInTheDocument();
+    expect(screen.queryByText("客户端 OAuth 令牌")).not.toBeInTheDocument();
+    expect(screen.queryByText("配置密钥")).not.toBeInTheDocument();
   });
 
   it("should display guardrail label when guardrail data exists", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           metadata: {
@@ -451,14 +453,14 @@ describe("LogDetailContent", () => {
   });
 
   it("should display a Response Cache 'Hit' tag when the response cache served the request", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ cache_hit: "True" })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "True" })} />);
 
     expect(screen.getByText("Response Cache")).toBeInTheDocument();
     expect(screen.getByText("Hit")).toBeInTheDocument();
   });
 
   it("should show prompt cache tokens and no response-cache hit when only provider prompt caching occurred", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           cache_hit: "False",
@@ -482,7 +484,7 @@ describe("LogDetailContent", () => {
   });
 
   it("should display Prompt Cache Creation Tokens even when there are no cache read tokens", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           cache_hit: "None",
@@ -503,7 +505,7 @@ describe("LogDetailContent", () => {
 
   it("should link the Response Cache tooltip to the response caching docs", async () => {
     const user = userEvent.setup();
-    render(<LogDetailContent logEntry={createLogEntry({ cache_hit: "True" })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "True" })} />);
 
     expect(screen.getByText("Response Cache")).toBeInTheDocument();
     const infoIcons = screen.getAllByRole("img", { name: /info/i });
@@ -518,7 +520,7 @@ describe("LogDetailContent", () => {
 
   it("should link the prompt cache tooltips to the prompt caching docs", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           cache_hit: "None",
@@ -542,20 +544,20 @@ describe("LogDetailContent", () => {
   });
 
   it("should hide the Response Cache row when cache_hit is not a true/false value", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ cache_hit: "None" })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "None" })} />);
 
     expect(screen.queryByText("Response Cache")).not.toBeInTheDocument();
   });
 
   it("should display the Cache Key next to the Response Cache result", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ cache_hit: "True", cache_key: "abc123cachekey" })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "True", cache_key: "abc123cachekey" })} />);
 
     expect(screen.getByText("Cache Key")).toBeInTheDocument();
     expect(screen.getByText("abc123cachekey")).toBeInTheDocument();
   });
 
   it("should display a cache miss and Cache Key for the request that populates the response cache", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ cache_hit: "None", cache_key: "abc123cachekey" })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "None", cache_key: "abc123cachekey" })} />);
 
     expect(screen.getByText("Response Cache")).toBeInTheDocument();
     expect(screen.getByText("Miss")).toBeInTheDocument();
@@ -564,21 +566,21 @@ describe("LogDetailContent", () => {
   });
 
   it("should hide the Cache Key row when caching is off", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ cache_hit: "False", cache_key: "Cache OFF" })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "False", cache_key: "Cache OFF" })} />);
 
     expect(screen.getByText("Response Cache")).toBeInTheDocument();
     expect(screen.queryByText("Cache Key")).not.toBeInTheDocument();
   });
 
   it("should hide response cache metadata when caching is off and cache_hit is None", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ cache_hit: "None", cache_key: "Cache OFF" })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "None", cache_key: "Cache OFF" })} />);
 
     expect(screen.queryByText("Response Cache")).not.toBeInTheDocument();
     expect(screen.queryByText("Cache Key")).not.toBeInTheDocument();
   });
 
   it("should display LiteLLM Overhead when litellm_overhead_time_ms is in metadata", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           metadata: {
@@ -594,7 +596,7 @@ describe("LogDetailContent", () => {
   });
 
   it("should not display LiteLLM Overhead when litellm_overhead_time_ms is absent from metadata", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success" } })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success" } })} />);
 
     expect(screen.queryByText("LiteLLM Overhead")).not.toBeInTheDocument();
   });
@@ -602,7 +604,7 @@ describe("LogDetailContent", () => {
   const retriesItem = () => screen.getByText("Retries").parentElement as HTMLElement;
 
   it("should display attempted_retries / max_retries for Retries when attempted_retries > 0", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({ metadata: { status: "success", attempted_retries: 2, max_retries: 3 } })}
       />,
@@ -612,19 +614,19 @@ describe("LogDetailContent", () => {
   });
 
   it("should display a 'None' tag for Retries when attempted_retries is 0", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success", attempted_retries: 0 } })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success", attempted_retries: 0 } })} />);
 
     expect(within(retriesItem()).getByText("None")).toBeInTheDocument();
   });
 
   it("should display '-' for Retries when attempted_retries is absent from metadata", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success" } })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success" } })} />);
 
     expect(within(retriesItem()).getByText("-")).toBeInTheDocument();
   });
 
   it("should display start and end time in ISO format", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           startTime: "2025-11-14T12:00:00.000Z",
@@ -640,7 +642,7 @@ describe("LogDetailContent", () => {
   });
 
   it("should display Vector Store Requests when vector store data exists", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           metadata: {
@@ -664,7 +666,7 @@ describe("LogDetailContent", () => {
   });
 
   it("should display provider as dash when custom_llm_provider is absent", () => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           custom_llm_provider: undefined,
@@ -684,7 +686,7 @@ describe("GuardrailJumpLink", () => {
     [["success", "guardrail_flagged"], "text-warning", "\u26A0"],
     [["guardrail_flagged", "guardrail_intervened"], "text-destructive", "\u2717"],
   ])("styles %j as %s", (statuses, expectedClass, glyph) => {
-    render(<GuardrailJumpLink guardrailEntries={statuses.map((s) => ({ guardrail_status: s }))} />);
+    renderWithProviders(<GuardrailJumpLink guardrailEntries={statuses.map((s) => ({ guardrail_status: s }))} />);
 
     const pill = screen.getByText(/2 guardrails evaluated/);
     expect(pill).toHaveClass(expectedClass);
@@ -695,7 +697,7 @@ describe("GuardrailJumpLink", () => {
     [["success", "not_run"], "text-success", "\u2713"],
     [["guardrail_intervened", "not_run"], "text-destructive", "\u2717"],
   ])("ignores not_run when styling %j as %s", (statuses, expectedClass, glyph) => {
-    render(<GuardrailJumpLink guardrailEntries={statuses.map((s) => ({ guardrail_status: s }))} />);
+    renderWithProviders(<GuardrailJumpLink guardrailEntries={statuses.map((s) => ({ guardrail_status: s }))} />);
 
     const pill = screen.getByText(/1 guardrail evaluated, 1 not run/);
     expect(pill).toHaveClass(expectedClass);
@@ -703,7 +705,7 @@ describe("GuardrailJumpLink", () => {
   });
 
   it("renders an all not_run request as neutral rather than passed", () => {
-    render(<GuardrailJumpLink guardrailEntries={[{ guardrail_status: "not_run" }]} />);
+    renderWithProviders(<GuardrailJumpLink guardrailEntries={[{ guardrail_status: "not_run" }]} />);
 
     const pill = screen.getByText(/0 guardrails evaluated, 1 not run/);
     expect(pill).toHaveClass("text-muted-foreground");
