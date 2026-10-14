@@ -4286,6 +4286,62 @@
       "runAgentBody": "Replace the example model with a model configured on your proxy.",
       "exampleRun": "Example run",
       "exampleRunNote": "(sample data, not your runs)"
+    },
+    "configInfo": {
+      "title": "Request/Response Data Not Available",
+      "body": "To view request and response details, enable prompt storage in your LiteLLM configuration by adding the following to your <code>proxy_config.yaml</code> file, or toggle the setting in <strong>Admin Settings → Logging Settings</strong>.",
+      "note": "Note: This will only affect new requests after the configuration change."
+    },
+    "costBreakdown": {
+      "title": "Cost Breakdown",
+      "totalLabel": "Total:",
+      "cached": " (Cached)",
+      "inputCost": "Input Cost:",
+      "cacheReadCost": "Prompt Cache Read Cost:",
+      "cacheWriteCost": "Prompt Cache Write Cost:",
+      "outputCost": "Output Cost:",
+      "toolUsageCost": "Tool Usage Cost:",
+      "originalCost": "Original LLM Cost:",
+      "discountPct": "Discount ({percent}):",
+      "discountAmount": "Discount Amount:",
+      "marginPct": "Margin ({percent}):",
+      "marginFixed": "Margin:",
+      "finalCost": "Final Calculated Cost:",
+      "tokensCount": "({count} tokens)",
+      "promptTokensCount": "({count} prompt tokens)",
+      "completionTokensCount": "({count} completion tokens)"
+    },
+    "eval": {
+      "title": "LLM Judge Results",
+      "passed": "PASSED",
+      "failed": "FAILED",
+      "scoreValue": "{score} / 100",
+      "threshold": " (threshold: {threshold})",
+      "scoreTip": "Weighted average of all criterion scores. Each criterion has a weight (%) set when the eval was created — higher-weight criteria count more toward the final score.",
+      "judge": "Judge: {model}",
+      "iteration": "Iter: {index}",
+      "judgeError": "Judge error: {message}",
+      "colCriterion": "Criterion",
+      "colWeight": "Weight",
+      "colScore": "Score",
+      "colWeighted": "Weighted",
+      "weightedTip": "Score × Weight — how much each criterion contributes to the final score",
+      "colComment": "Comment",
+      "total": "Total",
+      "scoreNoBreakdown": "Score: {score} — no per-criterion breakdown available."
+    },
+    "vectorStore": {
+      "title": "Vector Store Requests",
+      "query": "Query:",
+      "storeId": "Vector Store ID:",
+      "provider": "Provider:",
+      "logoAlt": "{name} logo",
+      "startTime": "Start Time:",
+      "endTime": "End Time:",
+      "duration": "Duration:",
+      "searchResults": "Search Results",
+      "resultItem": "Result {index}",
+      "score": "Score:"
     }
   },
   "projects": {

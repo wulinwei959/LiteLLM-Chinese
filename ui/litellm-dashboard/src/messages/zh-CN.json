@@ -4286,6 +4286,62 @@
       "runAgentBody": "把示例里的模型换成你自己代理上已配置的模型。",
       "exampleRun": "示例运行",
       "exampleRunNote": "（示例数据，不是你的运行记录）"
+    },
+    "configInfo": {
+      "title": "请求/响应数据不可用",
+      "body": "如需查看请求与响应的详情，请在 LiteLLM 配置里开启提示词存储：把下面这段加进 <code>proxy_config.yaml</code>，或者在 <strong>Admin Settings → Logging Settings</strong> 里打开这个设置。",
+      "note": "注意：配置改动只会影响之后的新请求。"
+    },
+    "costBreakdown": {
+      "title": "成本明细",
+      "totalLabel": "合计：",
+      "cached": "（已缓存）",
+      "inputCost": "输入成本：",
+      "cacheReadCost": "提示缓存读取成本：",
+      "cacheWriteCost": "提示缓存写入成本：",
+      "outputCost": "输出成本：",
+      "toolUsageCost": "工具调用成本：",
+      "originalCost": "原始 LLM 成本：",
+      "discountPct": "折扣（{percent}）：",
+      "discountAmount": "折扣金额：",
+      "marginPct": "利润加成（{percent}）：",
+      "marginFixed": "利润加成：",
+      "finalCost": "最终计算成本：",
+      "tokensCount": "（{count} 个令牌）",
+      "promptTokensCount": "（{count} 个输入令牌）",
+      "completionTokensCount": "（{count} 个输出令牌）"
+    },
+    "eval": {
+      "title": "LLM 评审结果",
+      "passed": "通过",
+      "failed": "未通过",
+      "scoreValue": "{score} / 100",
+      "threshold": "（阈值 {threshold}）",
+      "scoreTip": "各项评审标准得分的加权平均值。每条标准的权重（%）在创建评审时设定，权重越高，对最终得分的影响越大。",
+      "judge": "评审模型：{model}",
+      "iteration": "第 {index} 次",
+      "judgeError": "评审出错：{message}",
+      "colCriterion": "评审标准",
+      "colWeight": "权重",
+      "colScore": "得分",
+      "colWeighted": "加权分",
+      "weightedTip": "得分 × 权重，即每条标准对最终得分的贡献",
+      "colComment": "评语",
+      "total": "合计",
+      "scoreNoBreakdown": "得分：{score}，没有逐项得分明细。"
+    },
+    "vectorStore": {
+      "title": "向量存储请求",
+      "query": "查询：",
+      "storeId": "向量存储 ID：",
+      "provider": "提供商：",
+      "logoAlt": "{name} Logo",
+      "startTime": "开始时间：",
+      "endTime": "结束时间：",
+      "duration": "耗时：",
+      "searchResults": "搜索结果",
+      "resultItem": "结果 {index}",
+      "score": "得分："
     }
   },
   "projects": {
