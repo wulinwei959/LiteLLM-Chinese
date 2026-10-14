@@ -1,6 +1,7 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, it, expect, vi, afterEach } from "vitest";
+import { renderWithProviders } from "../../../tests/test-utils";
 import MCPConnectPicker from "./MCPConnectPicker";
 import { fetchMCPServers } from "../networking";
 import type { MCPServer } from "../mcp_tools/types";
@@ -37,7 +38,7 @@ describe("MCPConnectPicker logos", () => {
     setServerRootPath("/litellm");
     vi.mocked(fetchMCPServers).mockResolvedValue(servers);
 
-    render(<MCPConnectPicker accessToken="tok" selectedServers={[]} onChange={vi.fn()} />);
+    renderWithProviders(<MCPConnectPicker accessToken="tok" selectedServers={[]} onChange={vi.fn()} />);
 
     expect(await screen.findByText("external_logo")).toBeInTheDocument();
     expect(screen.getByAltText("external_logo logo")).toHaveAttribute("src", "https://cdn.example.com/ext.png");
@@ -47,7 +48,7 @@ describe("MCPConnectPicker logos", () => {
   it("renders no logo at all for servers without logo_url", async () => {
     vi.mocked(fetchMCPServers).mockResolvedValue(servers);
 
-    render(<MCPConnectPicker accessToken="tok" selectedServers={[]} onChange={vi.fn()} />);
+    renderWithProviders(<MCPConnectPicker accessToken="tok" selectedServers={[]} onChange={vi.fn()} />);
 
     expect(await screen.findByText("no_logo")).toBeInTheDocument();
     expect(screen.queryByAltText("no_logo logo")).not.toBeInTheDocument();

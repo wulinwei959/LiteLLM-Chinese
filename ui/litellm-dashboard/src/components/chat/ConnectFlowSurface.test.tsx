@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import ConnectFlowSurface from "./ConnectFlowSurface";
 import { fetchConnectFlow } from "@/components/networking";
 
@@ -43,7 +44,9 @@ const flow = (state: "unscoped" | "interactive" | "m2m" | "stale", connected: bo
 const renderSurface = () =>
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-      <ConnectFlowSurface accessToken="token-123" selectedServers={[]} onChange={vi.fn()} />
+      <LocaleProvider locale="zh-CN">
+        <ConnectFlowSurface accessToken="token-123" selectedServers={[]} onChange={vi.fn()} />
+      </LocaleProvider>
     </QueryClientProvider>,
   );
 
@@ -69,11 +72,11 @@ describe("ConnectFlowSurface", () => {
       vi.mocked(fetchConnectFlow).mockResolvedValue(result);
       renderSurface();
 
-      await screen.findByRole("button", { name: /finish connecting|cancel|connect/i });
+      await screen.findByRole("button", { name: /完成连接|取消|connect/i });
       await waitFor(() => expect(startOAuthFlow).toHaveBeenCalledTimes(oauthStarts));
       expect(screen.queryByTestId("mcp-apps-panel") !== null).toBe(grid);
-      expect(screen.queryByRole("button", { name: /finish connecting/i }) !== null).toBe(finish);
-      expect(screen.queryByRole("button", { name: "Cancel" }) !== null).toBe(cancel);
+      expect(screen.queryByRole("button", { name: /完成连接/ }) !== null).toBe(finish);
+      expect(screen.queryByRole("button", { name: "取消" }) !== null).toBe(cancel);
     },
   );
 
@@ -83,8 +86,8 @@ describe("ConnectFlowSurface", () => {
     renderSurface();
 
     expect(screen.queryByTestId("mcp-apps-panel")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /finish connecting/i })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cancel" })).toHaveAttribute("value", "deny");
+    expect(screen.queryByRole("button", { name: /完成连接/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toHaveAttribute("value", "deny");
   });
 
   it("keeps the grid and Finish hidden when flow validation fails", async () => {
@@ -92,9 +95,9 @@ describe("ConnectFlowSurface", () => {
     vi.mocked(fetchConnectFlow).mockRejectedValue(new Error("invalid flow"));
     renderSurface();
 
-    await screen.findByRole("button", { name: "Cancel" });
+    await screen.findByRole("button", { name: "取消" });
     expect(screen.queryByTestId("mcp-apps-panel")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /finish connecting/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /完成连接/ })).not.toBeInTheDocument();
   });
 
   it("refetches the sealed flow after the vendor connection completes", async () => {
@@ -107,7 +110,7 @@ describe("ConnectFlowSurface", () => {
     await waitFor(() => expect(startOAuthFlow).toHaveBeenCalledOnce());
     await act(async () => onSuccess.current?.());
 
-    await screen.findByRole("button", { name: /finish connecting/i });
+    await screen.findByRole("button", { name: /完成连接/ });
   });
 
   it("renders the ordinary panel without a flow handle", () => {

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import type { ConnectFlowStatus } from "@/components/networking";
+import { renderWithProviders } from "../../../tests/test-utils";
 import ConnectFlowBanner, { isLoopbackOrigin } from "./ConnectFlowBanner";
 
 vi.mock("@/components/networking", () => ({
@@ -24,7 +25,7 @@ const unscoped = (client_origin: string): ConnectFlowStatus => ({
 });
 
 const renderBanner = (clientOrigin: string) =>
-  render(
+  renderWithProviders(
     <ConnectFlowBanner
       flowHandle="flow-handle-123"
       flow={unscoped(clientOrigin)}
@@ -43,8 +44,8 @@ describe("ConnectFlowBanner", () => {
     expect(form).toHaveAttribute("action", "https://gateway.example.com/authorize/complete");
     expect(screen.getByDisplayValue("flow-handle-123")).toHaveAttribute("name", "flow");
     expect(form.innerHTML).not.toContain("token");
-    expect(screen.getByRole("button", { name: /finish connecting/i })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /完成连接/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "取消" })).not.toBeInTheDocument();
   });
 
   it("offers manual delivery only for a loopback client, posted only when checked", () => {
