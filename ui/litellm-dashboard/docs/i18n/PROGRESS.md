@@ -1,6 +1,29 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 45 簇更新
+
+批次 24 第 45 簇：`components/AIHub/SkillHubTableColumns.tsx`（172 行，接入后 180，+29/−21）与它的唯一真实消费者 `components/AIHub/SkillHubDashboard.tsx`（186 行，接入后 188，+19/−17）一起接入，新开 `skills` 20 键 + `common` 借 1 键，两个消息目录各 +21/−1 行（−1 是 `skills.createdAt` 补逗号）。表头列与页面外壳本来就是一对，列工厂要 `t` 就得由外壳的 `useTranslations` 提供，所以不做半截接入
+
+改造形态：
+
+- 列工厂按 `RequestLogsTableColumns.tsx` / `keyTableColumns.tsx` 的既有口径接 `*ColumnsDeps`：`SkillHubTableColumnsDeps` 增加 `t: SkillsTranslator` 与 `commonT: CommonTranslator`，`SkillHubRowActions` 也从同一次 `t` 里取，不在列单元里调 hook（工厂在组件外被调用，那时没有渲染上下文）。`translators.ts` 第 153 行的 `SkillsTranslator` 别名直接复用，没有新开别名
+- 复用兑现最多的一簇：七个列标题里五个走已有键——`skills.skillName`（技能名称）、`skills.description`（描述）、`skills.category`（分类）、`skills.public`（公开）、`skills.actions`（操作），这些正是 `app/(dashboard)/skills/_components/PluginTableColumns.tsx` 已在用的同名同值键（列标题这一概念在两处是同一个），再加 `common.status`（状态）承担第六个，`skills.loadingSkills` 承担表格加载语。本簇真正的新键只有 `domain`、`source`、`draft`、`openActions`、`viewDetails`、`copySkillName`、`skillNameCopied` 七个表格项，加上外壳十三个
+- 外壳的空态组件 `SkillsEmptyState` 自己调 `useTranslations`，不靠 props 传 `t`：它是渲染树里的真组件，Hook 可用，而 `filtered` 那个布尔分支（`noMatchingSkills`/`noSkillsYet` 与其两条说明）中英两条路径都要翻，包在自己身上最省事。新键名跟着已有的 `noSkills` / `noSkillsDesc` 一对的构词法走（`noMatchingSkills` + `noMatchingSkillsDesc`、`noSkillsYet` + `noSkillsYetDesc`）
+- 标题的 `All {publicPage ? "Public " : ""}Skills` 拆成两个键而不是插值：`allSkills`（全部技能）/ `allPublicSkills`（全部公开技能）。英文靠拼 `"Public "` 这种半截词的做法进 ICU 会变成中英各自断词，两个完整短语反而两侧都干净
+- `showingCount` 保留 HEAD 的一个怪写法：原串是 `Showing {filteredSkills.length} of {totalSkills} skill{totalSkills !== 1 ? "s" : ""}`——复数跟着**总数**变而非跟着显示数变。键里写成 `Showing {shown} of {total} {total, plural, one {skill} other {skills}}`，参数名换成 `shown`/`total` 但复数仍取 `total`，与旧渲染逐字节相同（node + `intl-messageformat` 实测 `{shown:3,total:5}` → `Showing 3 of 5 skills`、`{1,1}` → `Showing 1 of 1 skill`）；中文不分复数，写"显示 {shown} 条，共 {total} 条技能"。这条也是第 44 簇那条"分支体是单个标识符就放过"的再一次兑现
+- 数据留原文：`getSkillSourceLink()` 由 `source.repo`/`url`/`path` 拼出的链接与显示串、`domain` 与 `category` 的取值、空值占位 `-`、筛选里 `s.domain || "General"` 的比对哨兵（它不参与渲染，下拉项只由真实 `domain` 生成）；`data-testid` 与 `href` 同理
+- 顺带记下发现的旧账：同形状的 `PluginTableColumns.tsx` 虽然已经把 `t` 传进 `PluginRowActions`，但该组件里 `aria-label="Open skill actions"`、`Copy skill ID`、`Skill ID copied`、`Delete` 以及 `Yes`/`No`、`N/A`、`No description`、`Uncategorized` 仍写死英文——本簇的 `skills.openActions` 取值与那句 aria-label 逐字节相同，后续接它时可直接复用，不必再开键
+
+测试侧同步：
+
+- `SkillHubTableColumns.test.tsx` 原来是"测试里直接调工厂 + 裸 `render`"，接 `t` 后这样调就绕过了渲染上下文。改成 `SkillHubTableHarness` 组件：在里面 `useTranslations("skills")` / `("common")`，`useMemo` 组列，再交给 `DataTable`——与真实外壳 `SkillHubDashboard.tsx` 的写法同形，测试因此仍走真实调用路径。6 例数量与含义未增删，`Public`/`Draft` 断言换成 公开/草稿，另外给操作菜单的两条用例补了 `查看详情` / `复制技能名称` 的文本断言（菜单项本来靠 `data-testid` 定位，补断言是为了让这四个新键有用例覆盖）
+- `SkillHubDashboard.tsx` 没有自己的测试文件，外壳文案靠构建与手工核对；`ModelHubTable.tsx` 的 skills 页签用 `keepMounted`，所以 `ModelHubTable.test.tsx` 会把外壳挂进树，本簇并入范围跑后仍全绿
+
+验证：定向 `npx vitest run src/lib/i18n src/components/AIHub/SkillHubTableColumns.test.tsx` → 4 文件 22 例全绿；全量复跑 `npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin src/components/AIHub` → 79 文件 978 例全绿，`Type Errors no errors`（用例未增删）；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 三个改动文件 0 error / 1 warning，那条 `local/no-long-condition-chain` 在 `SkillHubDashboard.tsx` 搜索过滤的 5 条件布尔表达式上，HEAD 既有、本簇未动该逻辑；prettier 先证 HEAD 三个 `.tsx` 干净（两个消息目录在 HEAD 就已被 `--check` 判为不合规，属既有状态，按口径不跑 `--write`），改动后对三个 `.tsx` 执行 `--write`（工厂签名与徽标行的换行由此而来）；`npm run build` exit 0
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 431 到 432，47.4%——`SkillHubTableColumns.tsx` 走 props 收 `t`、自身没有 `useTranslations` 字面量，指标脚本不计它（就是技术债一节说的"props 传 `t` 的调用点无法静态判定"），所以两文件改动只 +1。键数 6839 到 6859（`skills` 命名空间 44 到 64，`common` 189 不变），中英同值 86 不变
 
 ## 2026-10-15 第 44 簇更新
 
