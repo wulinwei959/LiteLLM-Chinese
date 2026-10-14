@@ -116,6 +116,7 @@ const TOOLS_FETCH_CONCURRENCY = 5;
 
 const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange, connectMode }) => {
   const t = useTranslations("chat");
+  const commonT = useTranslations("common");
   const [servers, setServers] = useState<MCPServer[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -418,7 +419,7 @@ const MCPAppsPanel: React.FC<Props> = ({ accessToken, selectedServers, onChange,
           className="-ml-3 mb-5 gap-1.5 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-3 w-3" />
-          {t("appsPanel.back")}
+          {commonT("back")}
         </Button>
 
         <div className="flex items-start gap-5 mb-7">

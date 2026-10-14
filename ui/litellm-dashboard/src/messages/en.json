@@ -6141,7 +6141,6 @@
       "connecting": "Connecting…",
       "disconnect": "Disconnect",
       "authorized": "Authorized",
-      "back": "Back",
       "notSupportedOnConnection": "Not supported on this connection",
       "loadToolsFailed": "Could not load tools for {server}",
       "information": "Information",
@@ -6156,6 +6155,19 @@
       "emptyUnconfigured": "No MCP servers configured. Add servers in Tools -> MCP Servers.",
       "emptyNoConnections": "No servers connected yet.",
       "emptyNoSearchMatches": "No servers match your search."
+    },
+    "messages": {
+      "imageOmitted": "Image omitted",
+      "editMessage": "Edit message",
+      "saveAndSend": "Save & Send",
+      "copyMessage": "Copy message",
+      "copiedMessage": "Copied message",
+      "copied": "Copied!",
+      "thinking": "Thinking...",
+      "stopped": "[stopped]",
+      "toolCall": "Tool call",
+      "arguments": "Arguments",
+      "result": "Result"
     }
   },
   "playground": {

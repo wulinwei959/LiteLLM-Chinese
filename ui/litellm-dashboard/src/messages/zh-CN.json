@@ -6141,7 +6141,6 @@
       "connecting": "正在连接…",
       "disconnect": "断开连接",
       "authorized": "已授权",
-      "back": "返回",
       "notSupportedOnConnection": "该连接不支持",
       "loadToolsFailed": "无法加载{server}的工具",
       "information": "信息",
@@ -6156,6 +6155,19 @@
       "emptyUnconfigured": "未配置 MCP 服务器，请在“工具 -> MCP 服务器”中添加。",
       "emptyNoConnections": "还没有已连接的服务器。",
       "emptyNoSearchMatches": "没有匹配的服务器。"
+    },
+    "messages": {
+      "imageOmitted": "图片已省略",
+      "editMessage": "编辑消息",
+      "saveAndSend": "保存并发送",
+      "copyMessage": "复制消息",
+      "copiedMessage": "已复制消息",
+      "copied": "已复制！",
+      "thinking": "正在思考...",
+      "stopped": "已停止",
+      "toolCall": "工具调用",
+      "arguments": "参数",
+      "result": "结果"
     }
   },
   "playground": {
