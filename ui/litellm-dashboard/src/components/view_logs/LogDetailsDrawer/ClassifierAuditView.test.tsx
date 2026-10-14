@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { ClassifierAuditView } from "./ClassifierAuditView";
@@ -11,33 +12,33 @@ describe("ClassifierAuditView", () => {
   it("separates and copies the provider input, source request, and returned verdict", async () => {
     const user = userEvent.setup();
     const input = { system: "classification rubric", messages: [{ role: "user", content: "classify this" }] };
-    render(
+    renderWithProviders(
       <ClassifierAuditView
         request={{ classifier_input: input, originating_request_masked: { input: "source-only", api_key: "REDACTED" } }}
         response={{ tier: "SIMPLE", reason: "a greeting" }}
       />,
     );
-    const classifier = within(screen.getByRole("region", { name: "Classifier input" }));
+    const classifier = within(screen.getByRole("region", { name: "分类器输入" }));
     expect(classifier.getByText(/classification rubric/)).toBeInTheDocument();
     expect(classifier.queryByText(/source-only/)).not.toBeInTheDocument();
     expect(
-      within(screen.getByRole("region", { name: "Originating request, credentials masked" })).getByText(/source-only/),
+      within(screen.getByRole("region", { name: "原始请求（凭据已脱敏）" })).getByText(/source-only/),
     ).toBeInTheDocument();
-    expect(
-      within(screen.getByRole("region", { name: "Classifier response" })).getByText(/a greeting/),
-    ).toBeInTheDocument();
-    await user.click(classifier.getByRole("button", { name: "Copy Classifier input" }));
+    expect(within(screen.getByRole("region", { name: "分类器响应" })).getByText(/a greeting/)).toBeInTheDocument();
+    await user.click(classifier.getByRole("button", { name: "复制 分类器输入" }));
     expect(await navigator.clipboard.readText()).toBe(JSON.stringify(input, null, 2));
   });
 
   it("does not present legacy source messages as captured classifier input", () => {
-    render(<ClassifierAuditView request={{ messages: [{ content: "legacy source" }] }} response={undefined} />);
-    expect(screen.getAllByText("Not captured or message logging disabled")).toHaveLength(3);
-    expect(screen.queryByRole("button", { name: "Copy Classifier input" })).not.toBeInTheDocument();
+    renderWithProviders(
+      <ClassifierAuditView request={{ messages: [{ content: "legacy source" }] }} response={undefined} />,
+    );
+    expect(screen.getAllByText("未留档，或消息日志已关闭")).toHaveLength(3);
+    expect(screen.queryByRole("button", { name: "复制 分类器输入" })).not.toBeInTheDocument();
   });
 
   it("labels truncated input without marking a complete source request as truncated", () => {
-    render(
+    renderWithProviders(
       <ClassifierAuditView
         request={{
           classifier_input: { system: "partial rubric...litellm_truncated" },
@@ -46,11 +47,11 @@ describe("ClassifierAuditView", () => {
         response={{ tier: "SIMPLE" }}
       />,
     );
-    expect(within(screen.getByRole("region", { name: "Classifier input" })).getByRole("status")).toHaveTextContent(
-      "This stored copy is truncated",
+    expect(within(screen.getByRole("region", { name: "分类器输入" })).getByRole("status")).toHaveTextContent(
+      "这里存的是截断副本",
     );
     expect(
-      within(screen.getByRole("region", { name: "Originating request, credentials masked" })).queryByRole("status"),
+      within(screen.getByRole("region", { name: "原始请求（凭据已脱敏）" })).queryByRole("status"),
     ).not.toBeInTheDocument();
   });
 });

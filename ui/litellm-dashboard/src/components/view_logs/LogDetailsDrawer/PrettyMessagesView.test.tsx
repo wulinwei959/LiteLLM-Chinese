@@ -87,7 +87,7 @@ describe("PrettyMessagesView", () => {
     renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("Reply with exactly: hello from responses api")).toBeInTheDocument();
     expect(screen.getByText("hello from responses api")).toBeInTheDocument();
-    expect(screen.queryByText("No response data available")).not.toBeInTheDocument();
+    expect(screen.queryByText("暂无响应数据")).not.toBeInTheDocument();
   });
 
   it("renders a Responses API tool call, whose output item is a function_call", () => {
@@ -111,7 +111,7 @@ describe("PrettyMessagesView", () => {
     renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("What is the weather in San Francisco? Use the tool.")).toBeInTheDocument();
     expect(screen.getByText("get_weather")).toBeInTheDocument();
-    expect(screen.queryByText("No response data available")).not.toBeInTheDocument();
+    expect(screen.queryByText("暂无响应数据")).not.toBeInTheDocument();
   });
 
   it("renders instructions as the system turn and a bare string input", () => {
@@ -137,7 +137,7 @@ describe("PrettyMessagesView", () => {
 
     renderWithProviders(<PrettyMessagesView request={request} response={response} />);
     expect(screen.getByText("answered")).toBeInTheDocument();
-    expect(screen.queryByText("No response data available")).not.toBeInTheDocument();
+    expect(screen.queryByText("暂无响应数据")).not.toBeInTheDocument();
   });
 
   it("renders a Responses API follow-up turn carrying a prior function_call and its output", () => {
@@ -184,7 +184,7 @@ describe("PrettyMessagesView", () => {
 
     renderWithProviders(<PrettyMessagesView request={request} response={{ output: [] }} />);
     expect(screen.getByText("Hello")).toBeInTheDocument();
-    expect(screen.getByText("No response data available")).toBeInTheDocument();
+    expect(screen.getByText("暂无响应数据")).toBeInTheDocument();
   });
 
   it("should render standard view when response has results but no realtime events", () => {

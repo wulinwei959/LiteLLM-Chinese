@@ -29,9 +29,9 @@ describe("OutputCard", () => {
     expect(screen.getByText("输出")).toBeInTheDocument();
   });
 
-  it("should display 'No response data available' when message is null", () => {
+  it("should display the no-response placeholder when message is null", () => {
     renderWithProviders(<OutputCard message={null} />);
-    expect(screen.getByText("No response data available")).toBeInTheDocument();
+    expect(screen.getByText("暂无响应数据")).toBeInTheDocument();
   });
 
   it("should display message content when message is present", () => {
@@ -142,7 +142,7 @@ describe("OutputCard", () => {
     const header = screen.getByText("输出").closest("div");
     expect(header).toBeInTheDocument();
 
-    const noDataText = screen.getByText("No response data available");
+    const noDataText = screen.getByText("暂无响应数据");
     expect(noDataText).toBeInTheDocument();
     expect(noDataText).toBeVisible();
 

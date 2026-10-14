@@ -317,7 +317,7 @@ describe("LogDetailContent", () => {
       renderWithProviders(<LogDetailContent logEntry={createLogEntry(logEntry)} />);
 
       expect(screen.getByText("legacy classifier prompt")).toBeInTheDocument();
-      expect(screen.queryByRole("region", { name: "Classifier input" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "分类器输入" })).not.toBeInTheDocument();
       await user.click(screen.getByRole("tab", { name: "JSON", exact: true }));
       await user.click(screen.getByRole("button", { name: "Copy JSON", exact: true }));
       expect(await navigator.clipboard.readText()).toBe(
@@ -344,9 +344,9 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByRole("region", { name: "Classifier input" })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "Originating request, credentials masked" })).toBeInTheDocument();
-    expect(screen.getByText("Not captured or message logging disabled")).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "分类器输入" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "原始请求（凭据已脱敏）" })).toBeInTheDocument();
+    expect(screen.getByText("未留档，或消息日志已关闭")).toBeInTheDocument();
     expect(screen.queryByText("Request & Response")).not.toBeInTheDocument();
   });
 
@@ -550,14 +550,18 @@ describe("LogDetailContent", () => {
   });
 
   it("should display the Cache Key next to the Response Cache result", () => {
-    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "True", cache_key: "abc123cachekey" })} />);
+    renderWithProviders(
+      <LogDetailContent logEntry={createLogEntry({ cache_hit: "True", cache_key: "abc123cachekey" })} />,
+    );
 
     expect(screen.getByText("Cache Key")).toBeInTheDocument();
     expect(screen.getByText("abc123cachekey")).toBeInTheDocument();
   });
 
   it("should display a cache miss and Cache Key for the request that populates the response cache", () => {
-    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "None", cache_key: "abc123cachekey" })} />);
+    renderWithProviders(
+      <LogDetailContent logEntry={createLogEntry({ cache_hit: "None", cache_key: "abc123cachekey" })} />,
+    );
 
     expect(screen.getByText("Response Cache")).toBeInTheDocument();
     expect(screen.getByText("Miss")).toBeInTheDocument();
@@ -614,7 +618,9 @@ describe("LogDetailContent", () => {
   });
 
   it("should display a 'None' tag for Retries when attempted_retries is 0", () => {
-    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success", attempted_retries: 0 } })} />);
+    renderWithProviders(
+      <LogDetailContent logEntry={createLogEntry({ metadata: { status: "success", attempted_retries: 0 } })} />,
+    );
 
     expect(within(retriesItem()).getByText("None")).toBeInTheDocument();
   });
