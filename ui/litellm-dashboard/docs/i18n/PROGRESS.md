@@ -1,6 +1,27 @@
 # 开发进度
 
-数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 31 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-14 第 32 簇更新
+
+批次 24 第 32 簇：`components/view_logs/LogDetailsDrawer/LogDetailContent.tsx`（819 行，`view_logs` 目录最后一个仍带自有硬编码文案的文件）接入 `logs`，新增 `logs.detail.*` 47 键与 `logs.guardrail.notRunSuffix`，两个消息目录各 +50 行、纯增不删。`components/view_logs` 整目录的展示文案到此清零
+
+改造形态：
+
+- 文件里 12 个区块组件与两个小助手（`MetricLabel`、`CopyButton`）各自 `useTranslations("logs")`，沿用第 31 簇空态的写法，不给它们加 `t` prop；只有顶层 `LogDetailContent` 的 `t` 是原本就有的
+- `CopyButton` 的 `label` 是 `string` prop，翻不动，所以调用点显式传 `detail.copyJson` / `detail.copyMetadata`；`MetricLabel` 的 `{label} info` 可及名收进 `detail.infoAria`，由组件内部解析
+- 删掉两个模块级常量 `RESPONSE_CACHE_TOOLTIP`、`CACHE_KEY_TOOLTIP`，英文原值逐字节搬进消息目录，`MetricsSection` 取回来存 4 个局部变量再传给 `MetricLabel`（tooltip 是 `string` prop，不能传 key）。`@/utils/promptCacheUsage` 的 `PROMPT_CACHE_{READ,CREATION}_TOOLTIP` 本簇停止 import 但文件留着——`chat_ui/ResponseMetrics.tsx` 还在用，收编它的那一簇会一并处理，期间英文说明在 util 与目录里并存，属有意重复
+- 7 处复用已有键：`requestDetails`、`model`、`tokens`、`cost` 四个顶层通用标量，加 `columns.tags`、`drawer.provider`、`filters.credential` 三个同目录既有键；其余 41 个是新键
+- 新键插在 `"logs": {` 之后开新组，`notRunSuffix` 插在 `"guardrail": {` 之后，两处都是纯增不删
+- 单复数交给 ICU：跳转徽标的 `${n} guardrail${n !== 1 ? "s" : ""} evaluated` 改 `t("guardrail.guardrailsEvaluated", { count })`（第 30 簇已定形的键，此处直接复用），`, ${n} not run` 拆成独立的 `notRunSuffix`，中文用全角逗号把衔接写进消息值
+
+判为数据、不译：`errorInfo.error_message || "An error occurred"` 是合成的错误载荷，进 `JsonViewer` 也进复制文本，不是界面标签；`"Cache OFF"` 是判断哨兵；`custom_llm_provider || "-"`、`JSON` 页签名、`SYSTEM` / `ASSISTANT` 角色 chip（`InputCard.tsx` / `OutputCard.tsx` / `RealtimePrettyView.tsx`，协议角色名）、`SIMPLE` / `MEDIUM` / `COMPLEX` / `REASONING` 分级 chip（`RoutingDecisionCard.tsx`，沿第 20 簇"四个等级名固定不译"的先例）。moment 的 `"YYYY-MM-DDTHH:mm:ss.SSS[Z]"`、`-` / `s` / `ms` / `2 / 3` / `42.50 ms` 这类时序与数字格式仍归"## 技术债"的日期/数字欠账
+
+测试同步：`LogDetailContent.integration.test.tsx` 改 41 处文本断言加 2 处 `getAllByRole("img", { name: /info/i })` 到 `{ name: /信息/ }`；`gpt-4o`、`anthropic`、`batch_abc123`、`abc123cachekey`、`PII Filter`、`42.50 ms`、`2 / 3`、`JSON` 这些后端值与不译项不动，`queryByText("Cache Hit")` 的负断言照旧成立；用例数不增不减
+
+验证：`src/components/view_logs` + `src/lib/i18n` 52 文件 671 例全绿；`tsc --noEmit -p .` 仍 883 条、非测试文件 0 条；`LogDetailContent.tsx` `eslint` 0 错误、11 条 warning 与改前同样数量（全是既有 `no-explicit-any`）；`npm run build` 退出 0；prettier 只 `--write` 本簇 2 个 tsx，改前均合规；两个 messages JSON 各 50 增 0 删
+
+覆盖率复测：非测试 `.tsx` 912 个、已接入 418 个都不变（本文件此前已接入，只是还留英文），45.8%；`components/view_logs` 71 个里接入 60 个也不变，剩下 11 个是第 31 簇核实过的无文案文件。键数 6584 到 6632，中英同值 86 不变
 
 ## 2026-10-14 第 31 簇更新
 
@@ -456,8 +477,8 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 | 项                       | 数值                                                 |
 | ------------------------ | ---------------------------------------------------- |
 | 命名空间                 | 39                                                   |
-| `en.json` 叶子键          | 6584（2026-10-14 第 31 簇；6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后）|
-| `zh-CN.json` 叶子键       | 6584                                                 |
+| `en.json` 叶子键          | 6632（2026-10-14 第 32 簇；6584 是第 31 簇后，6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后）|
+| `zh-CN.json` 叶子键       | 6632                                                 |
 | 键树一致性               | 一致，`messagesParity` 通过                           |
 | 中英文取值完全相同的键    | 86（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
 
@@ -465,7 +486,7 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 ## 文件覆盖率
 
-`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%），第 30 簇后 912 / 417（45.7%），第 31 簇后 912 / 418（45.8%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
+`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%），第 30 簇后 912 / 417（45.7%），第 31 簇后 912 / 418（45.8%），第 32 簇后 912 / 418（45.8%，本簇文件此前已接入，比率不变）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
 
 ## 按路由的进度
 
