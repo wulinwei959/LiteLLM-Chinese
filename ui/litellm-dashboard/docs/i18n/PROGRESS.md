@@ -1,6 +1,31 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 53 簇后的一次全量（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），上一次全量是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 53 簇更新
+
+批次 24 第 53 簇：`common_components/DeleteResourceModal.tsx`（112 行，接入后 117，+8/−3）接入 `common`，新开 2 键、复用 `common` 的 cancel/delete，两个消息目录各 +2/−0 行。这是批次 24 里第一个"共享组件本体只有两句话、消费者却铺满全库"的文件：它被 20 个页面用作删除确认弹窗，改动落到 13 个 `.tsx`（1 个源文件 + 1 个自身测试 + 11 个消费者测试），共 51 行插入 / 45 行删除
+
+改造形态：
+
+- `common.deleting` = `Deleting...`/删除中...，与 `mcpServers.deleting`、`playground.agentBuilder.deleting` 是同一句的第三次出现，本簇把新键放在共享之家 `common` 而没有另立，也没去动那两个已有键（第 51 簇的"重复攒够再上收"口径）
+- `common.typeNameToConfirmDeletion` = `Type <strong>{name}</strong> to confirm deletion:` / 输入 `<strong>{name}</strong>` 以确认删除：。原 DOM 是文本 + 一个 `font-semibold text-destructive` 的 `<span>`，改走 `t.rich`，`strong` 渲染器仍产出同样的 `<span className="font-semibold text-destructive">`，`<label>` 不在守卫的富文本标签白名单里、`<strong>` 在（第 46 簇已验证）
+- `common.cancel`/`common.delete` 逐字节相同直接复用；`value ?? "-"` 的破折号沿用第 46 簇的既有写法留作格式债，不另开键
+
+测试侧四类连带改动，正是共享组件接入的固定成本：
+
+- 把本组件 `vi.mock` 掉的测试不受影响，`Fallbacks.test.tsx` 与 `MakeModelPublicForm.test.tsx` 都在 mock 里自己画 Cancel/Delete 按钮，一度怀疑受牵连、按 HEAD 复跑确认无关
+- 自己 mock `next-intl` 的测试会撞 `t.rich is not a function`——`Teams.test.tsx` 的 mock 只返回一个函数。改成 `Object.assign(translate, { rich: … })`，`rich` 走同一条查表路径再把 `<strong>`/`</strong>` 去掉，保持该文件"断言读真实英文文案"的原意
+- 裸 `render` 且真挂到本组件的测试会撞 `Failed to call useTranslations because the context from NextIntlClientProvider was not found`。`CloudZeroIntegrationSettings.test.tsx` 与 `DeleteSSOSettingsModal.test.tsx` 自带 `QueryClientProvider`（有自己的 queryClient），所以不换成 `renderWithProviders`，改为在其内部再套一层 `<LocaleProvider locale="zh-CN">`
+- 已经用 `renderWithProviders` 的 8 个测试只需把按钮名换成中文：`"Cancel"`→取消、`"Delete"`→删除、`/delete/i` 与 `/^delete$/i`→/删除/ 与 /^删除$/、`/deleting/i`→/删除中/。`policies/_components/index.test.tsx` 的 `/deleting/i` 是同一条弹窗按钮的第二次断言，容易漏
+
+`AccessGroupsPage.test.tsx` 与 `AutoRoutersPanel.test.tsx` 换完正则后行长变化，prettier 做了 2 次收拢（5 行减成 3 行、2 行各自重排），本簇按口径只对 `.tsx` 跑 `--write`
+
+验证方法补记：接入前不知道消费者测试有多少会红，做法是先把改动过的 15 个文件备份到 /tmp、`git checkout HEAD --` 回退（共享工作区不做 stash）、跑一遍受影响的 27 个测试文件记下每个文件的失败数，再恢复改动跑同一批，逐文件比对失败画像。本簇结果是两边同为 15 个文件失败、同一组测试失败，即无新增；随后全量复跑 `npx vitest run` 得 886 文件 11577 例、56 失败、9 例预期失败，`Type Errors no errors`；这一份是当前最新的全量快照，比第 18 簇那次（11576 例 / 57 失败）新，可与它对照。56 例里 `mcp_server_edit` 1 例是计划内已记的欠账，`AutoRoutersPanel` 与 `AccessGroupBudgetsPanel` 只在并发下偶发、单跑全绿，`cost_tracking_settings` 7 例与 `CredentialModal` 5 例、`OrganizationsTable` 3 例是长尾里的既有失败，与本簇无关
+
+其余门禁：定向 7 个范围复跑 → 79 文件 979 例全绿；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 13 个改动 `.tsx` 0 error / 41 warning，与 HEAD 版逐条同规则（先 `git show HEAD` 覆盖再比对）；prettier 最终 `--check` 全过；`npm run build` exit 0
+
+覆盖率复测：非测试 `.tsx` 912 个，已接入 434 到 435、47.6% 到 47.7%。键数 7009 到 7011，`common` 命名空间叶子 189 到 191，中英同值 87 不变
 
 ## 2026-10-15 第 52 簇更新
 
