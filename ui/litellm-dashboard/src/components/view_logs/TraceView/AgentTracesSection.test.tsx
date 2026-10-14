@@ -115,12 +115,12 @@ describe("AgentTracesSection", () => {
     renderSection();
 
     const card = await screen.findByTestId("tracing-setup-card");
-    expect(card).toHaveTextContent("Tracing is not enabled");
+    expect(card).toHaveTextContent("未启用调用链");
     expect(card).toHaveTextContent("store: clickhouse");
-    expect(screen.getByRole("button", { name: "Check setup" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "检查配置" })).toBeEnabled();
     expect(card).not.toHaveTextContent(/langsmith/i);
-    expect(card).toHaveTextContent("ClickHouse and proxy setup");
-    expect(card).toHaveTextContent("Ask your proxy administrator");
+    expect(card).toHaveTextContent("ClickHouse 与代理配置");
+    expect(card).toHaveTextContent("请联系你的代理管理员");
   });
 
   it("shows the waiting guide when tracing is on but no runs have arrived", async () => {
@@ -128,8 +128,8 @@ describe("AgentTracesSection", () => {
     renderSection();
 
     const card = await screen.findByTestId("tracing-setup-card");
-    expect(card).toHaveTextContent("Connect your agent");
-    expect(card).toHaveTextContent("Waiting for your first trace");
+    expect(card).toHaveTextContent("连接你的智能体");
+    expect(card).toHaveTextContent("等待你的第一条调用链");
     expect(card).not.toHaveTextContent("store: clickhouse");
   });
 
@@ -145,13 +145,13 @@ describe("AgentTracesSection", () => {
   it("checks proxy readiness, waits for an agent, and confirms receipt using actual query results", async () => {
     vi.mocked(agentTraceListCall).mockRejectedValue(new ApiError("Tracing is not enabled", 501, {}));
     renderSection();
-    const checkSetup = await screen.findByRole("button", { name: "Check setup" });
+    const checkSetup = await screen.findByRole("button", { name: "检查配置" });
     vi.mocked(agentTraceListCall).mockResolvedValue({ ...(traceList as TracePage), data: [] });
     fireEvent.click(checkSetup);
-    expect(await screen.findByRole("heading", { name: "Connect your agent" })).toBeVisible();
-    expect(screen.getByText("Waiting for your first trace")).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "连接你的智能体" })).toBeVisible();
+    expect(screen.getByText("等待你的第一条调用链")).toBeVisible();
     vi.mocked(agentTraceListCall).mockResolvedValue(traceList as TracePage);
-    fireEvent.click(screen.getByRole("button", { name: "Check for traces" }));
+    fireEvent.click(screen.getByRole("button", { name: "检查调用链" }));
     expect(await screen.findAllByTestId("agent-trace-row")).toHaveLength(runs.length);
     expect(screen.getByText("已收到调用链。选择一个运行记录查看详情。")).toBeVisible();
     expect(screen.queryByTestId("tracing-setup-card")).not.toBeInTheDocument();
@@ -161,7 +161,7 @@ describe("AgentTracesSection", () => {
     const failure = new ApiError("Tracing is not enabled", 501, {});
     vi.mocked(agentTraceListCall).mockRejectedValue(failure);
     renderSection();
-    const checkSetup = await screen.findByRole("button", { name: "Check setup" });
+    const checkSetup = await screen.findByRole("button", { name: "检查配置" });
     let rejectCheck: (error: Error) => void = () => {};
     vi.mocked(agentTraceListCall).mockImplementationOnce(
       () =>
@@ -170,17 +170,17 @@ describe("AgentTracesSection", () => {
         }),
     );
     fireEvent.click(checkSetup);
-    expect(await screen.findByRole("button", { name: "Checking…" })).toBeDisabled();
-    expect(screen.getByRole("heading", { name: "Enable tracing" })).toBeVisible();
+    expect(await screen.findByRole("button", { name: "正在检查…" })).toBeDisabled();
+    expect(screen.getByRole("heading", { name: "启用调用链" })).toBeVisible();
     await act(async () => rejectCheck(failure));
-    expect(await screen.findByText(/Tracing is still unavailable/)).toBeVisible();
-    expect(screen.getByRole("button", { name: "Check setup" })).toBeEnabled();
+    expect(await screen.findByText(/调用链仍不可用/)).toBeVisible();
+    expect(screen.getByRole("button", { name: "检查配置" })).toBeEnabled();
   });
 
   it("keeps received traces and the open drawer visible during subsequent fetches", async () => {
     vi.mocked(agentTraceListCall).mockRejectedValue(new ApiError("Tracing is not enabled", 501, {}));
     renderSection();
-    const checkSetup = await screen.findByRole("button", { name: "Check setup" });
+    const checkSetup = await screen.findByRole("button", { name: "检查配置" });
     vi.mocked(agentTraceListCall).mockResolvedValue(traceList as TracePage);
     fireEvent.click(checkSetup);
     const rows = await screen.findAllByTestId("agent-trace-row");
@@ -224,7 +224,7 @@ describe("AgentTracesSection", () => {
     renderSection();
 
     const card = await screen.findByTestId("tracing-setup-card");
-    expect(card).toHaveTextContent("Tracing is not enabled");
+    expect(card).toHaveTextContent("未启用调用链");
     expect(card).toHaveTextContent("CLICKHOUSE_READER_URL");
   });
 

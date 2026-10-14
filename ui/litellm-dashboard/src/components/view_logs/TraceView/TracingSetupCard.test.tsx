@@ -54,13 +54,13 @@ describe("TracingSetupCard", () => {
   it("shows agent connection guidance and labels the example run as sample data", async () => {
     const user = userEvent.setup();
     const { card } = renderCard();
-    expect(screen.getByRole("heading", { name: "Connect your agent" })).toBeVisible();
-    expect(screen.getByText("Tracing enabled")).toBeVisible();
-    expect(screen.getByText("Waiting for your first trace")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "连接你的智能体" })).toBeVisible();
+    expect(screen.getByText("已启用调用链")).toBeVisible();
+    expect(screen.getByText("等待你的第一条调用链")).toBeVisible();
     expect(screen.getByTestId("trace-preview")).toBeVisible();
-    expect(card).toHaveTextContent("sample data, not your runs");
+    expect(card).toHaveTextContent("示例数据，不是你的运行记录");
     expect(card).not.toHaveTextContent("store: clickhouse");
-    await user.click(screen.getByText("Set up manually"));
+    await user.click(screen.getByText("手动配置"));
     expect(screen.getByText(/^export OTEL_EXPORTER_OTLP_ENDPOINT=http:\/\/proxy.test/)).toBeVisible();
     expect(card).not.toHaveTextContent(/langsmith/i);
   });
@@ -69,21 +69,21 @@ describe("TracingSetupCard", () => {
     const user = userEvent.setup();
     const { card } = renderCard();
     const text = card.textContent ?? "";
-    expect(text.indexOf("OpenTelemetry (OTEL) endpoints")).toBeLessThan(text.indexOf("Your agent framework"));
-    await user.click(screen.getByRole("button", { name: "Copy http://proxy.test/v1/traces" }));
+    expect(text.indexOf("OpenTelemetry（OTEL）接收端点")).toBeLessThan(text.indexOf("你的智能体框架"));
+    await user.click(screen.getByRole("button", { name: "复制 http://proxy.test/v1/traces" }));
     expect(copyToClipboard).toHaveBeenLastCalledWith("http://proxy.test/v1/traces");
   });
 
   it("hides the sample preview once traces are arriving", () => {
     renderCard({ connected: true });
-    expect(screen.getByRole("heading", { name: "Connect another agent" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "连接另一个智能体" })).toBeVisible();
     expect(screen.queryByTestId("trace-preview")).not.toBeInTheDocument();
   });
 
   it("builds the coding agent command for the selected framework and keeps both manual installers", async () => {
     const user = userEvent.setup();
     renderCard();
-    await chooseSelectOption(user, screen.getByRole("combobox", { name: "Your agent framework" }), "CrewAI");
+    await chooseSelectOption(user, screen.getByRole("combobox", { name: "你的智能体框架" }), "CrewAI");
     const prompt = codingAgentPrompt("http://proxy.test", {
       label: "CrewAI",
       packages: "crewai openinference-instrumentation-crewai",
@@ -93,7 +93,7 @@ describe("TracingSetupCard", () => {
     await user.click(screen.getByRole("tab", { name: "Codex" }));
     expect(commandText()).toBe(codingAgentCommand("Codex", prompt));
 
-    await user.click(screen.getByText("Set up manually"));
+    await user.click(screen.getByText("手动配置"));
     expect(screen.getByText(/pip install -U opentelemetry-distro/)).toHaveTextContent(
       "crewai openinference-instrumentation-crewai",
     );
@@ -106,8 +106,8 @@ describe("TracingSetupCard", () => {
   it("uses npm and a CommonJS-safe TypeScript entrypoint for the Vercel AI SDK", async () => {
     const user = userEvent.setup();
     const { card } = renderCard();
-    await chooseSelectOption(user, screen.getByRole("combobox", { name: "Your agent framework" }), "Vercel AI SDK");
-    await user.click(screen.getByText("Set up manually"));
+    await chooseSelectOption(user, screen.getByRole("combobox", { name: "你的智能体框架" }), "Vercel AI SDK");
+    await user.click(screen.getByText("手动配置"));
     expect(card).toHaveTextContent("npm install ai @ai-sdk/openai-compatible @vercel/otel");
     expect(card).toHaveTextContent("my_agent.ts");
     expect(card).not.toHaveTextContent("opentelemetry-instrument python");
@@ -118,17 +118,17 @@ describe("TracingSetupCard", () => {
 
   it("hides the actions a read-only viewer cannot perform", () => {
     const { card } = renderCard({ readOnly: true });
-    expect(screen.queryByRole("button", { name: "Send a test trace" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Generate tracing key" })).not.toBeInTheDocument();
-    expect(card).toHaveTextContent("ask a proxy admin for one");
-    expect(card).toHaveTextContent("OpenTelemetry (OTEL) endpoints");
+    expect(screen.queryByRole("button", { name: "发送测试调用链" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "生成调用链密钥" })).not.toBeInTheDocument();
+    expect(card).toHaveTextContent("向代理管理员要一个");
+    expect(card).toHaveTextContent("OpenTelemetry（OTEL）接收端点");
   });
 
   it("offers a scoped tracing key only to callers allowed to set key routes", () => {
     const { card } = renderCard({ canMintTracingKey: false });
-    expect(screen.queryByRole("button", { name: "Generate tracing key" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Send a test trace" })).toBeVisible();
-    expect(card).toHaveTextContent("Use any LiteLLM virtual key you already have");
+    expect(screen.queryByRole("button", { name: "生成调用链密钥" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "发送测试调用链" })).toBeVisible();
+    expect(card).toHaveTextContent("直接使用你已有的任意 LiteLLM 虚拟密钥");
   });
 
   it("generates a tracing key that stays masked on screen but copies in full", async () => {
@@ -136,9 +136,9 @@ describe("TracingSetupCard", () => {
     vi.mocked(apiClient.post).mockResolvedValue({ key: SECRET });
     const { card } = renderCard();
 
-    await user.click(screen.getByRole("button", { name: "Generate tracing key" }));
+    await user.click(screen.getByRole("button", { name: "生成调用链密钥" }));
 
-    expect(await screen.findByText("Your tracing key")).toBeVisible();
+    expect(await screen.findByText("你的调用链密钥")).toBeVisible();
     expect(apiClient.post).toHaveBeenCalledWith("/key/generate", {
       accessToken: "sk-admin",
       body: TRACING_KEY_REQUEST,
@@ -146,7 +146,7 @@ describe("TracingSetupCard", () => {
     expect(TRACING_KEY_REQUEST.allowed_routes).toEqual(["/v1/traces"]);
     expect(card).not.toHaveTextContent(SECRET);
     expect(card).toHaveTextContent(maskSecret(SECRET));
-    await user.click(screen.getAllByRole("button", { name: "Copy" })[0]);
+    await user.click(screen.getAllByRole("button", { name: "复制" })[0]);
     expect(copyToClipboard).toHaveBeenLastCalledWith(SECRET);
   });
 
@@ -157,8 +157,8 @@ describe("TracingSetupCard", () => {
     vi.mocked(agentTraceCall).mockResolvedValue({ summary, agents: [], spans: [] } as unknown as Trace);
     const { onOpenTrace } = renderCard();
 
-    await user.click(screen.getByRole("button", { name: "Send a test trace" }));
-    await user.click(await screen.findByRole("button", { name: /View trace/ }));
+    await user.click(screen.getByRole("button", { name: "发送测试调用链" }));
+    await user.click(await screen.findByRole("button", { name: /查看调用链/ }));
 
     expect(sendOtlpTraceCall).toHaveBeenCalledOnce();
     expect(vi.mocked(agentTraceCall).mock.calls[0][1]).toMatch(/^[0-9a-f]{32}$/);
@@ -170,24 +170,24 @@ describe("TracingSetupCard", () => {
     vi.mocked(sendOtlpTraceCall).mockRejectedValue(new Error("boom"));
     renderCard();
 
-    await user.click(screen.getByRole("button", { name: "Send a test trace" }));
+    await user.click(screen.getByRole("button", { name: "发送测试调用链" }));
 
-    expect(await screen.findByText("Could not send the test trace.")).toBeVisible();
+    expect(await screen.findByText("无法发送测试调用链。")).toBeVisible();
     expect(agentTraceCall).not.toHaveBeenCalled();
-    expect(screen.queryByRole("button", { name: /View trace/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /查看调用链/ })).not.toBeInTheDocument();
   });
 
   it("guides proxy setup before agent setup and allows checking readiness", async () => {
     const user = userEvent.setup();
     const onCheck = vi.fn();
     const { card } = renderCard({ detail: "Agent tracing is not enabled", onCheck });
-    expect(screen.getByRole("heading", { name: "Enable tracing" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "启用调用链" })).toBeVisible();
     expect(card).toHaveTextContent("store: clickhouse");
-    expect(screen.queryByRole("combobox", { name: "Your agent framework" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Send a test trace" })).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Check setup" }));
+    expect(screen.queryByRole("combobox", { name: "你的智能体框架" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "发送测试调用链" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "检查配置" }));
     expect(onCheck).toHaveBeenCalledOnce();
-    expect(screen.getByText(/Tracing is still unavailable/)).toBeVisible();
+    expect(screen.getByText(/调用链仍不可用/)).toBeVisible();
   });
 });
 

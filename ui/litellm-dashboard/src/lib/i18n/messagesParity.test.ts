@@ -154,7 +154,7 @@ describe("message syntax", () => {
   // render time. The brackets have to be quoted ('<app-id>') to render literally.
   // A <...> already inside a quoted span is literal to ICU, so it needs no help,
   // and a message rendered through t.rich is allowed to keep its real tags.
-  const RICH_TAGS = new Set(["strong", "b", "i", "em", "link", "code", "br"]);
+  const RICH_TAGS = new Set(["strong", "b", "i", "em", "link", "code", "br", "claude", "codex"]);
   const pairs = [...collectEntries(en, ""), ...collectEntries(zhCN, "")];
 
   /** Drops ICU-quoted spans; a possessive like "caller's" stays literal. */
