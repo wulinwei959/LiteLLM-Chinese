@@ -185,7 +185,7 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
 
   const StepCard: React.FC<{
     step: number;
-    titleKey: "mcpConnect.openSettings" | "mcpConnect.goToMcpTools" | "mcpConnect.copyConfig";
+    titleKey: "mcpConnect.openSettings" | "mcpConnect.navigateToMcpTools" | "mcpConnect.addConfiguration";
     children: React.ReactNode;
   }> = ({ step, titleKey, children }) => (
     <div className="flex gap-4">
@@ -370,15 +370,15 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
           <div className="flex w-full flex-col gap-6">
             <StepCard step={1} titleKey="mcpConnect.openSettings">
               <span className="text-muted-foreground">
-                {t("mcpConnect.openSettings", { mac: "⇧+⌘+J", windows: "Ctrl+Shift+J" })}
+                {t("mcpConnect.openSettingsShortcut", { mac: "⇧+⌘+J", windows: "Ctrl+Shift+J" })}
               </span>
             </StepCard>
 
-            <StepCard step={2} titleKey="mcpConnect.goToMcpTools">
+            <StepCard step={2} titleKey="mcpConnect.navigateToMcpTools">
               <span className="text-muted-foreground">{t("mcpConnect.goToMcpTools")}</span>
             </StepCard>
 
-            <StepCard step={3} titleKey="mcpConnect.copyConfig">
+            <StepCard step={3} titleKey="mcpConnect.addConfiguration">
               <span className="mb-3 text-muted-foreground">
                 {t("mcpConnect.copyConfig", { mac: "Cmd+S", windows: "Ctrl+S" })}
               </span>

@@ -27,4 +27,18 @@ describe("MCPConnect (tab mount contract)", () => {
     expect(screen.getByRole("switch")).toBeChecked();
     expect(within(activePanel()).getByText(/"x-mcp-servers": "Zapier_MCP,dev-group"/)).toBeInTheDocument();
   });
+
+  it("renders the Cursor steps with their shortcut values interpolated", async () => {
+    render(<MCPConnect />);
+
+    await userEvent.click(screen.getByRole("tab", { name: "Cursor" }));
+
+    expect(within(activePanel()).getByText("打开 Cursor 设置")).toBeInTheDocument();
+    expect(within(activePanel()).getByText("前往 MCP 工具标签页")).toBeInTheDocument();
+    expect(within(activePanel()).getByText("添加配置")).toBeInTheDocument();
+    expect(
+      within(activePanel()).getByText("使用快捷键 ⇧+⌘+J（Mac）或 Ctrl+Shift+J（Windows/Linux）"),
+    ).toBeInTheDocument();
+    expect(within(activePanel()).queryByText(/\{mac\}/)).not.toBeInTheDocument();
+  });
 });
