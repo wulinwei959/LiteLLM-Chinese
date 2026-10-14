@@ -2,6 +2,16 @@
 
 数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计见"批次 24：add_model 与 edit_auto_router"一节（11576 例、54 失败），"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
 
+## 2026-10-14 第 15 簇更新
+
+批次 24 第 15 簇：`TypeBadges.tsx` 四个徽标改用 `useTranslations("logs")` 读第 13 簇的 `logs.filters.options.llm` / `.agent` / `.mcp` / `.batch`，没有新增键。`RequestLogsTable.tsx` 的 `formatFilterValue` 改成首参翻译器（照 `BudgetTable.tsx` 的写法），`LogDetailContent.tsx` 的凭据行同批接上 `filters.options.clientOAuthToken` / `.configuredKey`。`constants.ts` 里两张英文表 `SPAN_TYPE_LABELS` 与 `CREDENTIAL_LABELS` 删除，换成 `SPAN_TYPE_LABEL_KEYS` 与 `CREDENTIAL_LABEL_KEYS` 两个键表（`Readonly<Record<string, 键联合类型>>`），全仓无残留引用
+
+徽标接了 hook，`TypeBadges.test.tsx`、`RequestLogsTableColumns.test.tsx` 的裸 `render` 换成 `renderWithProviders`，`LogDetailContent.integration.test.tsx` 50 处同换；`Agent` / `Batch` 与凭据两条断言改中文（`LLM` 与 `MCP` 是缩写，中英同值，断言不动）
+
+验证：`src/components/view_logs` 49 文件 655 例全绿，i18n 守卫 16 例通过；`tsc --noEmit -p .` 仍 883 条、全在测试文件（其中 `LogDetailContent.integration.test.tsx` 321/322 两条 `TS2769` 是既有行，不是本簇引入），非测试文件 0 条；`npx eslint` 改动文件 0 错误；`npm run build` 退出 0。全量分片未跑
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 361 到 364（本簇 +3），覆盖率 39.9%。`components/view_logs` 71 个非测试 `.tsx` 里接入 7 个
+
 ## 2026-10-14 第 14 簇更新
 
 批次 24 第 14 簇：`src/components/view_logs/LogsTableToolbar.tsx` 加同文件的 `LiveTailBanner` 接入 `logs` 命名空间，新增 `logs.toolbar.*` 7 键与 `logs.timeRange.*` 7 键
@@ -39,7 +49,7 @@ find src -name "*.tsx" -not -name "*.test.tsx" | wc -l
 grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\.test\.tsx" | wc -l
 ```
 
-2026-10-14 第 14 簇后实测：非测试 `.tsx` 共 912 个，已接入 361 个，覆盖率 39.6%。同日第 13 簇后是 912 / 360（39.5%），此前记的 861 / 305 复现不出来，那条没写命令，两个数都对不上今天这个口径，所以并列记录，不要拿 39.6% 减 35.4% 当进度
+2026-10-14 第 15 簇后实测：非测试 `.tsx` 共 912 个，已接入 364 个，覆盖率 39.9%。同日第 14 簇后是 912 / 361（39.6%）、第 13 簇后 912 / 360（39.5%），此前记的 861 / 305 复现不出来，那条没写命令，两个数都对不上今天这个口径，所以并列记录，不要拿 39.9% 减 35.4% 当进度
 
 目录规模同步复测：命名空间 39 个不变，两侧叶子键各 5992（第 13 簇后是 5978，本簇加 14 键；10-13 记的 5228 是第 5 到 12 簇补键之前的数），中英文取值完全相同的键 78 个，第 13 簇贡献 `logs.filters.options.llm` 与 `.mcp` 两个，本簇的 `timeRange.lastMinute` 与 `.lastOneMinute` 中文同值但英文不同，不计入
 
@@ -296,7 +306,7 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 ## 下一步优先级
 
-`components/view_logs` 是眼下最密的目录（71 个非测试 `.tsx`，第 14 簇后接入 4 个：`index.tsx`、`RequestLogsFilters.tsx`、`LogsTableToolbar.tsx`、`logs_utils.tsx`）。剩下的按依赖排：第 15 簇 `TypeBadges.tsx` 加 `SPAN_TYPE_LABELS`，必须沿用第 13 簇的 `logs.filters.options.*` 那四个词，不要另起一套键；同一簇里把 `RequestLogsTable.tsx:44` 对 `CREDENTIAL_LABELS` 的引用换成第 13 簇已有的 `logs.filters.options.clientOAuthToken` 与 `.configuredKey`，两个表都迁完才能删 `constants.ts` 里那两条。第 16 簇 `ERROR_CODE_OPTIONS`（11 条 `400 - Bad Request` 型标签），这一簇会碰到真实行为改动：`ErrorCodeFilterField` 是按 `option.label.toLowerCase()` 做子串过滤的，标签进目录之后搜索命中的是中文，得决定按值搜还是按标签搜，并且 `RequestLogsFilters.test.tsx` 有两条用例直接断言 `429 - Rate Limited` 这类标签
+`components/view_logs` 是眼下最密的目录（71 个非测试 `.tsx`，第 15 簇后接入 7 个：`index.tsx`、`RequestLogsFilters.tsx`、`LogsTableToolbar.tsx`、`logs_utils.tsx`、`TypeBadges.tsx`、`RequestLogsTable.tsx`、`LogDetailContent.tsx`）。剩下的按依赖排：第 16 簇 `ERROR_CODE_OPTIONS`（11 条 `400 - Bad Request` 型标签），这一簇会碰到真实行为改动：`ErrorCodeFilterField` 是按 `option.label.toLowerCase()` 做子串过滤的，标签进目录之后搜索命中的是中文，得决定按值搜还是按标签搜，并且 `RequestLogsFilters.test.tsx` 有两条用例直接断言 `429 - Rate Limited` 这类标签。此后 `view_logs` 的余量集中在 `RequestLogsTable.tsx` 的空态与抽屉文案、`RequestLogsTableColumns.tsx` 的列头，以及 `LogDetailsDrawer/` 其余十几个子组件
 
 原来的四个优先级里，第一（223 条缺 Provider）、第二（team 172 例）、第三（页面收口）都已完成。此前按失败集中度排出的 1-6 号目标也全部清零：`edit_auto_router_modal.integration` 的 46 例经单文件复跑确认是全量并发造成的假失败（独立运行为 0），其余按 6d06b7b、e2350f6、c109bdb、0e8f5f6 四次提交逐个转绿。中途顺带清掉了未列进表的 `AdminPanel`（19）、`EntityUsage`（18）、`add_attachment_form`（17）、`BulkEditUsers`（16）、`leftnav` 之外的 `user_edit_view` / `user_info_view.integration` / `old-usage`
 
