@@ -3880,6 +3880,22 @@
       "sortDuration": "Duration",
       "sortStartTime": "Start time",
       "tokCount": "{count} tok"
+    },
+    "cards": {
+      "inputCopied": "Input copied",
+      "outputCopied": "Output copied",
+      "noResponseData": "No response data available",
+      "functionBadge": "function"
+    },
+    "classifierAudit": {
+      "inputTitle": "Classifier input",
+      "inputDesc": "Provider request payload. A cached call or disabled message logging may have no capture.",
+      "originatingTitle": "Originating request, credentials masked",
+      "originatingDesc": "Comparison only. This source request was not appended to the classifier input.",
+      "responseTitle": "Classifier response",
+      "responseDesc": "The returned verdict and any explanation supplied by the classifier. Later routing rules may change the tier.",
+      "truncated": "This stored copy is truncated. The complete payload is unavailable from the configured log storage.",
+      "notCaptured": "Not captured or message logging disabled"
     }
   },
   "projects": {

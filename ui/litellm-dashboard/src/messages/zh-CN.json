@@ -3880,6 +3880,22 @@
       "sortDuration": "耗时",
       "sortStartTime": "开始时间",
       "tokCount": "{count} 令牌"
+    },
+    "cards": {
+      "inputCopied": "输入已复制",
+      "outputCopied": "输出已复制",
+      "noResponseData": "暂无响应数据",
+      "functionBadge": "函数"
+    },
+    "classifierAudit": {
+      "inputTitle": "分类器输入",
+      "inputDesc": "提供商的请求载荷。命中缓存的调用或已关闭消息日志时，可能没有留档。",
+      "originatingTitle": "原始请求（凭据已脱敏）",
+      "originatingDesc": "仅用于比对。这条源请求并没有追加到分类器输入里。",
+      "responseTitle": "分类器响应",
+      "responseDesc": "分类器返回的判定以及它给出的说明。后续的路由规则仍可能改变档位。",
+      "truncated": "这里存的是截断副本，完整载荷在已配置的日志存储中取不到。",
+      "notCaptured": "未留档，或消息日志已关闭"
     }
   },
   "projects": {
