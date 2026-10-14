@@ -1,6 +1,28 @@
 # 开发进度
 
-数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 30 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 31 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-14 第 31 簇更新
+
+批次 24 第 31 簇：`components/view_logs/` 根目录的收尾——`log_filter_logic.tsx`、`RequestLogsTable.tsx`、`RequestLogsPanel.tsx`、`index.tsx` 四个文件，新增 10 键，两个消息目录各 +12 行（10 个键 + `"table": {` 与闭括号）。根目录的展示文案到此清零，剩下的硬编码集中在 `LogDetailsDrawer/`，归下一簇
+
+改造形态：
+
+- `LOG_FILTER_LABELS: Record<string, string>` 改为 `LOG_FILTER_LABEL_KEYS: Record<string, LogsFilterLabelKey>`，15 个筛选标签只存键名，翻译落在消费点 `RequestLogsTable.tsx`，按 `VirtualKeysPage/VirtualKeysTable.tsx` 的口径用 `useMemo` 把 `Object.entries` 映射成 `Record<string, string>` 再交给 `DataTableToolbar` 的 `filterLabels`。该表只有一个消费者，没有别的调用点要跟着改
+- 15 个标签里 13 个复用已有键：12 个走 `logs.filters.*`，`Status` 与 `Model` 用顶层的 `logs.status` / `logs.model`（取值逐字节相同，概念也一样）。新建的只有 `logs.filters.search`。它没有改用 `common.search`，是因为同一张表的键必须落在同一命名空间：`LogsFilterLabelKey` 的键取自 `LogsTranslator` 的键 union，掺进 `common` 就得在同一个 `useMemo` 里挂第二个翻译器。`VirtualKeysTable` 能直接用 `common`，是因为它整张表都在 `common`
+- `RequestLogsEmptyState` 内部自己 `useTranslations("logs")`，与同目录 `AuditLogsEmptyState` 写法一致，不给组件加 `t` prop。`AuditLogsTable` 的空态四键（`empty` / `emptyDesc` / `emptyFiltered` / `emptyFilteredDesc`）也是新组 `logs.table.*` 的命名依据
+- `logs.backToLogs` 按 `teams.infoBackToTeams` / `users.infoBackToUsers` 的既有命名排；面板标题不新开键，复用 `logs.tabs.requestLogs`
+- `index.tsx` 的 `aria-label="Loading"` 接 `logs.loading`。那个组件已有的 `t` 绑在 `logs.tabs` 上，所以另起一个 `logsT = useTranslations("logs")`，不去改前者的命名空间（tabs 的键全是 `t("requestLogs")` 这种短路径，换绑要动 4 处）
+
+判为数据、不译：`RequestLogsTableColumns.tsx:154` 的 `"Success"` 是 `status` 字段的兜底值，只参与 `status.toLowerCase() !== "failure"` 判断，渲染走 `t("success")` / `t("failure")`；`AuditLogDrawer.tsx:50` 的 `console.error("Copy failed:", e)` 不是用户可见文案。这两条此前被记在漏网清单里，本簇核实后划掉
+
+共享组件欠账（本簇绕开、没在原地修）：`DataTableToolbar.tsx:78` 的 `aria-label={\`Remove ${label} filter\`}` 模板本身是英文，标签翻完之后按钮可及名成了 `Remove 搜索 filter`；`DataTableFilterDrawer.tsx:49` 的默认 `title = "Filters"` 同理。后者本簇在调用点显式传 `logs.table.filtersTitle`，前者留给 `common_components` 长尾，改它要先决定模板进哪个命名空间
+
+测试同步：`RequestLogsPanel.test.tsx` 改 2 处（chip 文本 `搜索:sess-42` 与上面的按钮名），用例数不增不减。`log_filter_logic.test.tsx` 与 `RequestLogsTable` 没有测试依赖 `LOG_FILTER_LABELS`（该目录不存在 `RequestLogsTable.test.tsx`，面板测试走的是渲染结果）
+
+验证：`src/components/view_logs` + `src/lib/i18n` 52 文件 671 例全绿；`tsc --noEmit -p .` 仍 883 条、非测试文件 0 条；本簇 4 个文件 `eslint` 0 错误、6 条 warning 全在既有代码行（新增块没触发规则）；`npm run build` 退出 0；prettier 只 `--write` 本簇 4 个 tsx，其中 2 个改前就合规；两个 messages JSON 各 12 增 0 删
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 417 到 418，45.8%；`components/view_logs` 71 个里接入 60 个，剩 11 个经核实全部没有自有文案——`columns.tsx`（类型与排序映射）、`logs_utils.tsx` 与 `AuditLogsTableColumns.tsx` 与 `log_filter_logic.tsx`（本簇起改为接收/只存键名）、`ToolsSection/JsonToolView.tsx` 与 `LogDetailsDrawer/` 的 `SimpleMessageBlock.tsx` / `PrettyMessagesView.tsx`（标签来自 props）、`TraceView/` 的 `SpanIcon` / `Collapse` / `ActiveDot` / `AgentTracesPage`。键数 6574 到 6584，中英同值 86 不变
 
 ## 2026-10-14 第 30 簇更新
 
@@ -434,8 +456,8 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 | 项                       | 数值                                                 |
 | ------------------------ | ---------------------------------------------------- |
 | 命名空间                 | 39                                                   |
-| `en.json` 叶子键          | 6574（2026-10-14 第 30 簇；6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后）|
-| `zh-CN.json` 叶子键       | 6574                                                 |
+| `en.json` 叶子键          | 6584（2026-10-14 第 31 簇；6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后）|
+| `zh-CN.json` 叶子键       | 6584                                                 |
 | 键树一致性               | 一致，`messagesParity` 通过                           |
 | 中英文取值完全相同的键    | 86（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
 
@@ -443,7 +465,7 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 ## 文件覆盖率
 
-`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%），第 30 簇后 912 / 417（45.7%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
+`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%），第 30 簇后 912 / 417（45.7%），第 31 簇后 912 / 418（45.8%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
 
 ## 按路由的进度
 
