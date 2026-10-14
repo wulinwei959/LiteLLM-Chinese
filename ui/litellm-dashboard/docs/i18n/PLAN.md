@@ -74,7 +74,7 @@
 | 21   | 向量库、搜索工具、记忆、技能            | 基本完成                                    |
 | 22   | 缓存、标签、代理                        | 缓存与代理仍有余量                          |
 | 23   | 收尾页面（api-keys、workflows 等）      | 基本完成                                    |
-| 24   | 共享组件清扫（长尾，约 460 个 `.tsx`）  | 进行中。已完成 `components/add_model` 与 `components/edit_auto_router` 两个目录，`components/view_logs` 从第 13 簇起按文件推进（已收 `RequestLogsFilters.tsx`（含第 16 簇的错误码下拉表）、`LogsTableToolbar.tsx` 与 `logs_utils.tsx`、`TypeBadges.tsx` 与 `RequestLogsTable.tsx` 与 `LogDetailContent.tsx` 的类型徽标和凭据行、`RequestLogsTableColumns.tsx` 的列头与单元格（第 17 簇）、`LogDetailsDrawer/` 的抽屉外壳与 10 个头部/叶子组件（第 18 簇）） |
+| 24   | 共享组件清扫（长尾，约 460 个 `.tsx`）  | 进行中。已完成 `components/add_model` 与 `components/edit_auto_router` 两个目录，`components/view_logs` 从第 13 簇起按文件推进（已收 `RequestLogsFilters.tsx`（含第 16 簇的错误码下拉表）、`LogsTableToolbar.tsx` 与 `logs_utils.tsx`、`TypeBadges.tsx` 与 `RequestLogsTable.tsx` 与 `LogDetailContent.tsx` 的类型徽标和凭据行、`RequestLogsTableColumns.tsx` 的列头与单元格（第 17 簇）、`LogDetailsDrawer/` 的抽屉外壳与 10 个头部/叶子组件（第 18 簇）、`LogDetailsDrawer/` 卡片层的输入卡、输出卡、工具调用块与分类器留档视图（第 19 簇）） |
 
 批次 24 是唯一一个必须等前面全部做完才能收口的批次。它扫的是 `src/components` 下的共享组件，这些组件被多个页面复用，早做会导致同一个文件被反复改动。策略是在页面批次里顺手翻译碰到的那几个，最后统一扫一遍
 
