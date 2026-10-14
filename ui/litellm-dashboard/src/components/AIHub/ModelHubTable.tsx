@@ -69,6 +69,7 @@ function HubEmptyState({ title, body }: { title: string; body: string }) {
 const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, premiumUser, userRole }) => {
   const t = useTranslations("modelHub");
   const agentsT = useTranslations("agents");
+  const commonT = useTranslations("common");
   const syntaxTheme = useSyntaxTheme(prism);
   // Admin Viewer follows the read-parity rule: see the AI Hub catalog, but
   // cannot toggle public visibility (write).
@@ -397,7 +398,10 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
     () => filterBySearchTerm(agentHubData ?? [], agentSearchTerm, (agent) => [agent.name, agent.description]),
     [agentHubData, agentSearchTerm],
   );
-  const mcpColumns = useMemo(() => getMCPHubTableColumns({ onServerClick: showMcpModal }), [showMcpModal]);
+  const mcpColumns = useMemo(
+    () => getMCPHubTableColumns({ onServerClick: showMcpModal, t, commonT }),
+    [showMcpModal, t, commonT],
+  );
 
   // If this is a public page, use the dedicated PublicModelHub component
   if (publicPage && publicPageAllowed) {
