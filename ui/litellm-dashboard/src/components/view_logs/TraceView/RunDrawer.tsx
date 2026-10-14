@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, ChevronsRight, ChevronUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
 import { cn } from "@/lib/cva.config";
@@ -65,6 +66,7 @@ function useDrawerWidth() {
 }
 
 function ResizeHandle({ width, onResize }: { width: number; onResize: (width: number) => void }) {
+  const t = useTranslations("logs");
   const [dragging, setDragging] = useState(false);
 
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -87,7 +89,7 @@ function ResizeHandle({ width, onResize }: { width: number; onResize: (width: nu
     <div
       role="separator"
       aria-orientation="vertical"
-      aria-label="Resize trace panel"
+      aria-label={t("drawer.resizePanel")}
       aria-valuenow={width}
       aria-valuemin={MIN_WIDTH}
       tabIndex={0}
@@ -144,6 +146,7 @@ const runKey = (run: TraceSummary): string => run.trace_ref || run.trace_id;
 
 /** Right-side drawer over the runs list: resizable, keeps the list clickable, swaps runs in place. */
 export function RunDrawer({ trace, runs, accessToken, onSelect }: RunDrawerProps) {
+  const t = useTranslations("logs");
   const [width, setWidth] = useDrawerWidth();
   const [lastShown, setLastShown] = useState<TraceSummary | null>(trace);
   const [exitedKey, setExitedKey] = useState<string | null>(null);
@@ -185,7 +188,7 @@ export function RunDrawer({ trace, runs, accessToken, onSelect }: RunDrawerProps
   if (shown === null || (closing && exitedKey === runKey(shown))) return null;
   return (
     <aside
-      aria-label="Trace details"
+      aria-label={t("drawer.traceDetails")}
       data-testid="run-drawer"
       style={{ width }}
       onAnimationEnd={(event) => {
@@ -198,14 +201,18 @@ export function RunDrawer({ trace, runs, accessToken, onSelect }: RunDrawerProps
     >
       <ResizeHandle width={width} onResize={setWidth} />
       <div className="flex h-[37px] shrink-0 items-center gap-1 border-b border-trace-line px-2">
-        <HeaderButton label="Close (Esc)" onClick={() => onSelect(null)}>
+        <HeaderButton label={t("drawer.closeEsc")} onClick={() => onSelect(null)}>
           <ChevronsRight className="size-4" />
         </HeaderButton>
         <span className="mx-1 h-4 w-px bg-trace-line" />
-        <HeaderButton label="Next trace (J)" disabled={index < 0 || index >= runs.length - 1} onClick={() => step(1)}>
+        <HeaderButton
+          label={t("drawer.nextTrace")}
+          disabled={index < 0 || index >= runs.length - 1}
+          onClick={() => step(1)}
+        >
           <ChevronDown className="size-4" />
         </HeaderButton>
-        <HeaderButton label="Previous trace (K)" disabled={index <= 0} onClick={() => step(-1)}>
+        <HeaderButton label={t("drawer.prevTrace")} disabled={index <= 0} onClick={() => step(-1)}>
           <ChevronUp className="size-4" />
         </HeaderButton>
         {index >= 0 && (

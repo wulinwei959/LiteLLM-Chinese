@@ -3884,7 +3884,12 @@
       "showingMostRecent": "Showing most recent {shown} of {total}",
       "sortDuration": "Duration",
       "sortStartTime": "Start time",
-      "tokCount": "{count} tok"
+      "tokCount": "{count} tok",
+      "resizePanel": "Resize trace panel",
+      "traceDetails": "Trace details",
+      "closeEsc": "Close (Esc)",
+      "nextTrace": "Next trace (J)",
+      "prevTrace": "Previous trace (K)"
     },
     "cards": {
       "inputCopied": "Input copied",
@@ -4218,7 +4223,16 @@
       "failedCount": ", {count} failed",
       "dragToZoom": "drag to zoom",
       "errorCount": "{count, plural, one {# error} other {# errors}}",
-      "stepsWithDuration": "{count} steps · {duration}"
+      "stepsWithDuration": "{count} steps · {duration}",
+      "historyCheckError": "Could not check earlier traces. {message}",
+      "retryHistoryCheck": "Retry trace check",
+      "backToTraces": "← Back to traces",
+      "tracesReceived": "Traces received. Select a run to inspect it.",
+      "setUpTracing": "Set up tracing",
+      "updateFailed": "Update failed",
+      "updatedJustNow": "Updated just now",
+      "updating": "Updating…",
+      "clearZoomAria": "Clear time zoom"
     }
   },
   "projects": {

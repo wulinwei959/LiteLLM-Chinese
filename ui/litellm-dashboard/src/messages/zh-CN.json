@@ -3884,7 +3884,12 @@
       "showingMostRecent": "仅显示最近 {shown} 条，共 {total} 条",
       "sortDuration": "耗时",
       "sortStartTime": "开始时间",
-      "tokCount": "{count} 令牌"
+      "tokCount": "{count} 令牌",
+      "resizePanel": "调整调用链面板宽度",
+      "traceDetails": "调用链详情",
+      "closeEsc": "关闭（Esc）",
+      "nextTrace": "下一个调用链（J）",
+      "prevTrace": "上一个调用链（K）"
     },
     "cards": {
       "inputCopied": "输入已复制",
@@ -4218,7 +4223,16 @@
       "failedCount": "，失败 {count} 次",
       "dragToZoom": "拖拽缩放",
       "errorCount": "{count} 个错误",
-      "stepsWithDuration": "{count} 步 · {duration}"
+      "stepsWithDuration": "{count} 步 · {duration}",
+      "historyCheckError": "无法检查更早的调用链。{message}",
+      "retryHistoryCheck": "重试调用链检查",
+      "backToTraces": "← 返回调用链",
+      "tracesReceived": "已收到调用链。选择一个运行记录查看详情。",
+      "setUpTracing": "配置调用链",
+      "updateFailed": "更新失败",
+      "updatedJustNow": "刚刚更新",
+      "updating": "正在更新…",
+      "clearZoomAria": "清除时间缩放"
     }
   },
   "projects": {

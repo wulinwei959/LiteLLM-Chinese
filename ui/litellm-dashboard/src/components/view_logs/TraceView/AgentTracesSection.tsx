@@ -1,6 +1,7 @@
 "use client";
 
 import moment from "moment";
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -79,12 +80,13 @@ function useTracingSetup(traces: AgentTracesResult, isActive: boolean, rangeChan
 }
 
 function TraceHistoryError({ history }: { history: ReturnType<typeof useTraceAvailability> }) {
+  const t = useTranslations("logs");
   if (!history.error) return null;
   return (
     <div role="alert" className="flex items-center justify-between gap-4 border-b px-3 py-3 text-sm">
-      <p>Could not check earlier traces. {history.error.message}</p>
+      <p>{t("traceList.historyCheckError", { message: history.error.message })}</p>
       <Button variant="outline" size="sm" disabled={history.isFetching} onClick={() => void history.refetch()}>
-        Retry trace check
+        {t("traceList.retryHistoryCheck")}
       </Button>
     </div>
   );
@@ -103,6 +105,7 @@ export function AgentTracesSection({
   readOnly = false,
   canMintTracingKey = false,
 }: AgentTracesSectionProps) {
+  const t = useTranslations("logs");
   const [openTrace, setOpenTrace] = useState<TraceSummary | null>(null);
   const [query, setQuery] = useState("");
   const [agent, setAgent] = useState(ALL_AGENTS);
@@ -172,7 +175,7 @@ export function AgentTracesSection({
           onClick={() => setShowSetup(false)}
           className="mb-3 text-[13px] text-muted-foreground hover:text-foreground"
         >
-          ← Back to traces
+          {t("traceList.backToTraces")}
         </button>
         <TracingSetupCard detail={null} connected {...setupProps} />
       </div>
@@ -187,7 +190,7 @@ export function AgentTracesSection({
       {checkHistory && <TraceHistoryError history={history} />}
       {setup.received && (
         <p role="status" className="border-b px-3 py-3 text-sm text-emerald-700 dark:text-emerald-400">
-          Traces received. Select a run to inspect it.
+          {t("traceList.tracesReceived")}
         </p>
       )}
       <RunDrawer trace={openTrace} runs={runs} accessToken={accessToken} onSelect={openRun} />
@@ -202,7 +205,7 @@ export function AgentTracesSection({
       >
         <Button variant="outline" size="sm" onClick={() => setShowSetup(true)} className="shrink-0 gap-1.5">
           <ActiveDot />
-          Set up tracing
+          {t("traceList.setUpTracing")}
         </Button>
         {timeControls && (
           <TimeRangeControls
@@ -250,22 +253,26 @@ function RunsFooter({
   failed: boolean;
   onResetZoom: () => void;
 }) {
-  const settled = failed ? "Update failed" : "Updated just now";
-  const status = isFetching ? "Updating…" : settled;
+  const t = useTranslations("logs");
+  const settled = failed ? t("traceList.updateFailed") : t("traceList.updatedJustNow");
+  const status = isFetching ? t("traceList.updating") : settled;
   return (
     <footer
       data-testid="runs-footer"
       className="flex h-8 shrink-0 items-center border-t border-border bg-muted/40 px-3 font-mono text-[11px] text-muted-foreground"
     >
-      {count} {count === 1 ? "run" : "runs"}
+      {t("traceList.runCount", { count })}
       {zoom && (
         <button
           type="button"
           onClick={() => onResetZoom()}
-          aria-label="Clear time zoom"
+          aria-label={t("traceList.clearZoomAria")}
           className="ml-3 rounded border border-info/40 bg-info/10 px-1.5 text-info hover:bg-info/20"
         >
-          {moment(zoom.startMs).format("MMM DD, HH:mm")} to {moment(zoom.endMs).format("MMM DD, HH:mm")} ×
+          {`${t("traceList.rangeTo", {
+            start: moment(zoom.startMs).format("MMM DD, HH:mm"),
+            end: moment(zoom.endMs).format("MMM DD, HH:mm"),
+          })} ×`}
         </button>
       )}
       <span className="ml-auto">{status}</span>
