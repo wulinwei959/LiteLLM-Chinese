@@ -2,7 +2,8 @@
  * Core tests for Tools section
  */
 
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect } from "vitest";
 import { parseToolsFromLog } from "./utils";
@@ -156,46 +157,46 @@ const isShown = (text: string) => screen.queryAllByText(text).some((el) => el.cl
 
 describe("ToolsSection rendering", () => {
   it("summarises how many tools were provided and called", () => {
-    render(<ToolsSection log={logWithTools(["get_weather", "search_web"], "get_weather")} />);
+    renderWithProviders(<ToolsSection log={logWithTools(["get_weather", "search_web"], "get_weather")} />);
 
-    expect(screen.getByText("Tools")).toBeInTheDocument();
-    expect(screen.getByText("2 provided, 1 called")).toBeInTheDocument();
+    expect(screen.getByText("工具")).toBeInTheDocument();
+    expect(screen.getByText("提供 2 个，调用 1 个")).toBeInTheDocument();
   });
 
   it("previews the first two tool names", () => {
-    render(<ToolsSection log={logWithTools(["alpha", "beta", "gamma"])} />);
+    renderWithProviders(<ToolsSection log={logWithTools(["alpha", "beta", "gamma"])} />);
 
     expect(screen.getByText(/alpha, beta/)).toBeInTheDocument();
   });
 
   it("renders nothing when the log has no tools", () => {
-    const { container } = render(<ToolsSection log={logWithTools([])} />);
+    const { container } = renderWithProviders(<ToolsSection log={logWithTools([])} />);
 
     expect(container).toBeEmptyDOMElement();
   });
 
   it("reveals the tool list only after the section is expanded", async () => {
-    render(<ToolsSection log={logWithTools(["get_weather", "search_web"], "get_weather")} />);
+    renderWithProviders(<ToolsSection log={logWithTools(["get_weather", "search_web"], "get_weather")} />);
 
-    expect(isShown("called")).toBe(false);
-    expect(isShown("not called")).toBe(false);
+    expect(isShown("已调用")).toBe(false);
+    expect(isShown("未调用")).toBe(false);
 
-    await userEvent.click(screen.getByText("Tools"));
+    await userEvent.click(screen.getByText("工具"));
 
-    await waitFor(() => expect(isShown("called")).toBe(true));
-    expect(isShown("not called")).toBe(true);
+    await waitFor(() => expect(isShown("已调用")).toBe(true));
+    expect(isShown("未调用")).toBe(true);
   });
 
   it("keeps a tool's expanded detail across a close and reopen", async () => {
-    render(<ToolsSection log={logWithTools(["get_weather", "search_web"], "get_weather")} />);
+    renderWithProviders(<ToolsSection log={logWithTools(["get_weather", "search_web"], "get_weather")} />);
 
-    await userEvent.click(screen.getByText("Tools"));
+    await userEvent.click(screen.getByText("工具"));
     await userEvent.click(await screen.findByText(/1\. get_weather/));
-    expect(isShown("Description")).toBe(true);
+    expect(isShown("描述")).toBe(true);
 
-    await userEvent.click(screen.getByText("Tools"));
-    await userEvent.click(screen.getByText("Tools"));
+    await userEvent.click(screen.getByText("工具"));
+    await userEvent.click(screen.getByText("工具"));
 
-    await waitFor(() => expect(isShown("Description")).toBe(true));
+    await waitFor(() => expect(isShown("描述")).toBe(true));
   });
 });
