@@ -3744,6 +3744,24 @@
     "failure": "失败",
     "details": "详情",
     "close": "关闭",
+    "toolbar": {
+      "customRange": "自定义区间",
+      "rangeTo": "至",
+      "liveTail": "实时追踪",
+      "hideHealthChecks": "隐藏健康检查",
+      "resetFilters": "重置筛选",
+      "liveTailNote": "每 15 秒自动刷新",
+      "stop": "停止"
+    },
+    "timeRange": {
+      "lastMinute": "最近 1 分钟",
+      "lastOneMinute": "最近 1 分钟",
+      "last15Minutes": "最近 15 分钟",
+      "lastHour": "最近 1 小时",
+      "last4Hours": "最近 4 小时",
+      "last24Hours": "最近 24 小时",
+      "last7Days": "最近 7 天"
+    },
     "filters": {
       "teamId": "团队 ID",
       "spanType": "调用类型",

@@ -1,3 +1,12 @@
+export type LogsTimeRangeKey =
+  | "timeRange.lastMinute"
+  | "timeRange.lastOneMinute"
+  | "timeRange.last15Minutes"
+  | "timeRange.lastHour"
+  | "timeRange.last4Hours"
+  | "timeRange.last24Hours"
+  | "timeRange.last7Days";
+
 export const ERROR_CODE_OPTIONS: { label: string; value: string }[] = [
   { label: "400 - Bad Request", value: "400" },
   { label: "401 - Invalid Authentication", value: "401" },
@@ -33,11 +42,17 @@ export const CREDENTIAL_LABELS: Record<string, string> = {
   false: "Configured key",
 };
 
-export const QUICK_SELECT_OPTIONS: { label: string; value: number; unit: string }[] = [
-  { label: "Last Minute", value: 1, unit: "minutes" },
-  { label: "Last 15 Minutes", value: 15, unit: "minutes" },
-  { label: "Last Hour", value: 1, unit: "hours" },
-  { label: "Last 4 Hours", value: 4, unit: "hours" },
-  { label: "Last 24 Hours", value: 24, unit: "hours" },
-  { label: "Last 7 Days", value: 7, unit: "days" },
+export type QuickSelectOption = {
+  readonly labelKey: LogsTimeRangeKey;
+  readonly value: number;
+  readonly unit: string;
+};
+
+export const QUICK_SELECT_OPTIONS: readonly QuickSelectOption[] = [
+  { labelKey: "timeRange.lastMinute", value: 1, unit: "minutes" },
+  { labelKey: "timeRange.last15Minutes", value: 15, unit: "minutes" },
+  { labelKey: "timeRange.lastHour", value: 1, unit: "hours" },
+  { labelKey: "timeRange.last4Hours", value: 4, unit: "hours" },
+  { labelKey: "timeRange.last24Hours", value: 24, unit: "hours" },
+  { labelKey: "timeRange.last7Days", value: 7, unit: "days" },
 ];

@@ -3744,6 +3744,24 @@
     "failure": "Failure",
     "details": "Details",
     "close": "Close",
+    "toolbar": {
+      "customRange": "Custom Range",
+      "rangeTo": "to",
+      "liveTail": "Live Tail",
+      "hideHealthChecks": "Hide Health Checks",
+      "resetFilters": "Reset Filters",
+      "liveTailNote": "Auto-refreshing every 15 seconds",
+      "stop": "Stop"
+    },
+    "timeRange": {
+      "lastMinute": "Last Minute",
+      "lastOneMinute": "Last 1 Minute",
+      "last15Minutes": "Last 15 Minutes",
+      "lastHour": "Last Hour",
+      "last4Hours": "Last 4 Hours",
+      "last24Hours": "Last 24 Hours",
+      "last7Days": "Last 7 Days"
+    },
     "filters": {
       "teamId": "Team ID",
       "spanType": "Span Type",
