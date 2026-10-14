@@ -3896,6 +3896,99 @@
       "responseDesc": "The returned verdict and any explanation supplied by the classifier. Later routing rules may change the tier.",
       "truncated": "This stored copy is truncated. The complete payload is unavailable from the configured log storage.",
       "notCaptured": "Not captured or message logging disabled"
+    },
+    "routing": {
+      "title": "Routing",
+      "routerTypes": {
+        "complexity": "Auto-Router v2",
+        "adaptive": "Adaptive router",
+        "quality": "Quality router"
+      },
+      "bands": {
+        "below": "below {bound}",
+        "between": "{from} to {to}",
+        "atOrAbove": "at or above {bound}"
+      },
+      "bandWithTier": "{band}, {tier}",
+      "rows": {
+        "tier": "Tier",
+        "requestType": "Request type",
+        "decidedBy": "Decided by",
+        "classifierModel": "Classifier model",
+        "confidence": "Confidence",
+        "probabilities": "Probabilities",
+        "classifierCost": "Classifier cost",
+        "score": "Score",
+        "routedTo": "Routed to",
+        "escalated": "Escalated",
+        "signals": "Signals",
+        "threshold": "Threshold",
+        "predictedTier": "Predicted tier",
+        "successByTier": "Success by tier",
+        "boundary": "Boundary",
+        "rule": "Rule",
+        "calibration": "Calibration",
+        "raw": "Raw",
+        "calibrated": "Calibrated",
+        "efficientRaw": "Efficient (raw)",
+        "capableRaw": "Capable (raw)",
+        "efficientCalibrated": "Efficient (calibrated)",
+        "capableCalibrated": "Capable (calibrated)",
+        "appliedGap": "Applied gap",
+        "allowedGap": "Allowed gap"
+      },
+      "sections": {
+        "capability": "Capability estimates",
+        "capabilityHint": "Efficient model solve chance",
+        "fuseV2": "FUSE v2 estimates",
+        "heuristicV2": "Heuristic v2 estimates"
+      },
+      "gapUnit": " percentage points",
+      "causes": {
+        "heuristicScorer": "Heuristic scorer",
+        "heuristicV2": "Heuristic v2",
+        "capabilityClassifier": "Capability",
+        "capabilityClassifierFallback": "Capable tier, Capability classifier failed",
+        "llmV2Classifier": "FUSE v2",
+        "llmV2Fallback": "Capable tier, FUSE v2 classifier failed",
+        "heuristicFirstShortCircuit": "Heuristic scorer, classifier skipped",
+        "hybridShortCircuit": "Heuristic scorer, score clear of every boundary",
+        "classifierPlugin": "Custom classifier plugin",
+        "semanticKeywordMatch": "Semantic keyword match",
+        "sessionAffinityPin": "Pinned to session",
+        "sessionAffinityEscalation": "Escalated from session pin",
+        "userTurnContinuation": "Continuation turn, classifier skipped",
+        "modalityEscalation": "Escalated for image input",
+        "modalityPinOverride": "Overrode session pin for image input",
+        "qualityTier": "Quality tier mapping",
+        "bandit": "Adaptive bandit",
+        "defaultFallback": "Default model, no route matched",
+        "classifierFallback": "Fallback tier, classifier failed",
+        "defaultModelFallback": "Default model, classifier failed",
+        "unknown": "Unknown",
+        "llmClassifier": "LLM classifier",
+        "llmClassifierWithModel": "LLM classifier ({model})",
+        "jevClassifier": "JEV classifier",
+        "keywordMatch": "Keyword match",
+        "keywordMatchWithKeyword": "Keyword match: \"{keyword}\""
+      },
+      "planMode": {
+        "exitTool": "Plan-mode floor (exit_plan_mode tool)",
+        "withKeyword": "Plan-mode floor: \"{keyword}\"",
+        "plain": "Plan-mode floor"
+      },
+      "housekeeping": {
+        "withKeyword": "Client housekeeping call: \"{keyword}\"",
+        "plain": "Client housekeeping call, classifier skipped"
+      },
+      "overrideFloorBoundary": "the Simple to Medium boundary",
+      "reasoningOverride": "Heuristic, {tier} override (2 or more reasoning markers, score of at least {floor})",
+      "escalation": {
+        "yes": "Yes",
+        "yesWithKeyword": "Yes, keyword \"{keyword}\"",
+        "ceiling": "Requested; already at the highest tier",
+        "ceilingWithKeyword": "Requested via \"{keyword}\"; already at the highest tier"
+      }
     }
   },
   "projects": {

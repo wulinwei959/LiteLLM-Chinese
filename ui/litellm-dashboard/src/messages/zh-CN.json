@@ -3896,6 +3896,99 @@
       "responseDesc": "分类器返回的判定以及它给出的说明。后续的路由规则仍可能改变档位。",
       "truncated": "这里存的是截断副本，完整载荷在已配置的日志存储中取不到。",
       "notCaptured": "未留档，或消息日志已关闭"
+    },
+    "routing": {
+      "title": "路由",
+      "routerTypes": {
+        "complexity": "Auto-Router v2",
+        "adaptive": "自适应路由器",
+        "quality": "质量路由器"
+      },
+      "bands": {
+        "below": "低于 {bound}",
+        "between": "{from} 到 {to}",
+        "atOrAbove": "达到或超过 {bound}"
+      },
+      "bandWithTier": "{band}，{tier}",
+      "rows": {
+        "tier": "档位",
+        "requestType": "请求类型",
+        "decidedBy": "决策依据",
+        "classifierModel": "分类器模型",
+        "confidence": "置信度",
+        "probabilities": "概率分布",
+        "classifierCost": "分类器成本",
+        "score": "得分",
+        "routedTo": "路由目标",
+        "escalated": "是否升级",
+        "signals": "命中信号",
+        "threshold": "阈值",
+        "predictedTier": "预测档位",
+        "successByTier": "各档位成功率",
+        "boundary": "能力边界",
+        "rule": "命中规则",
+        "calibration": "校准版本",
+        "raw": "原始值",
+        "calibrated": "校准后",
+        "efficientRaw": "高效模型（原始）",
+        "capableRaw": "强模型（原始）",
+        "efficientCalibrated": "高效模型（校准后）",
+        "capableCalibrated": "强模型（校准后）",
+        "appliedGap": "实际差距",
+        "allowedGap": "允许差距"
+      },
+      "sections": {
+        "capability": "能力估计",
+        "capabilityHint": "高效模型解出该请求的概率",
+        "fuseV2": "FUSE v2 估计",
+        "heuristicV2": "启发式 v2 估计"
+      },
+      "gapUnit": "个百分点",
+      "causes": {
+        "heuristicScorer": "启发式打分器",
+        "heuristicV2": "启发式 v2",
+        "capabilityClassifier": "能力分类器",
+        "capabilityClassifierFallback": "落到强模型档位，能力分类器失败",
+        "llmV2Classifier": "FUSE v2",
+        "llmV2Fallback": "落到强模型档位，FUSE v2 分类器失败",
+        "heuristicFirstShortCircuit": "启发式打分器，跳过分类器",
+        "hybridShortCircuit": "启发式打分器，得分远离所有分界",
+        "classifierPlugin": "自定义分类器插件",
+        "semanticKeywordMatch": "语义关键词命中",
+        "sessionAffinityPin": "会话锁定",
+        "sessionAffinityEscalation": "从会话锁定升级",
+        "userTurnContinuation": "续聊轮次，跳过分类器",
+        "modalityEscalation": "因图片输入升级",
+        "modalityPinOverride": "因图片输入覆盖会话锁定",
+        "qualityTier": "质量档位映射",
+        "bandit": "自适应 bandit",
+        "defaultFallback": "默认模型，未命中任何路由",
+        "classifierFallback": "兜底档位，分类器失败",
+        "defaultModelFallback": "默认模型，分类器失败",
+        "unknown": "未知",
+        "llmClassifier": "LLM 分类器",
+        "llmClassifierWithModel": "LLM 分类器（{model}）",
+        "jevClassifier": "JEV 分类器",
+        "keywordMatch": "关键词命中",
+        "keywordMatchWithKeyword": "关键词命中：\"{keyword}\""
+      },
+      "planMode": {
+        "exitTool": "规划模式保底（exit_plan_mode 工具）",
+        "withKeyword": "规划模式保底：\"{keyword}\"",
+        "plain": "规划模式保底"
+      },
+      "housekeeping": {
+        "withKeyword": "客户端例行调用：\"{keyword}\"",
+        "plain": "客户端例行调用，跳过分类器"
+      },
+      "overrideFloorBoundary": "简单档与中等档的分界",
+      "reasoningOverride": "启发式，{tier} 覆盖（命中 2 个以上推理标记，得分不低于{floor}）",
+      "escalation": {
+        "yes": "是",
+        "yesWithKeyword": "是，关键词 \"{keyword}\"",
+        "ceiling": "已请求升级，但当前已是最高档位",
+        "ceilingWithKeyword": "已通过 \"{keyword}\" 请求升级，但当前已是最高档位"
+      }
     }
   },
   "projects": {
