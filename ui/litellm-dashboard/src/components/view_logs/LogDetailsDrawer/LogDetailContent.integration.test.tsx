@@ -39,7 +39,7 @@ describe("LogDetailContent", () => {
   it("should render the component successfully", () => {
     renderWithProviders(<LogDetailContent logEntry={createLogEntry()} />);
 
-    expect(screen.getByText("Request Details")).toBeInTheDocument();
+    expect(screen.getByText("请求详情")).toBeInTheDocument();
   });
 
   it("should display Request Details with model, provider, and call type", () => {
@@ -63,7 +63,7 @@ describe("LogDetailContent", () => {
       <LogDetailContent logEntry={createLogEntry({ user: "106514937785257944828" })} userEmail="alice@example.com" />,
     );
 
-    expect(screen.getByText("User")).toBeInTheDocument();
+    expect(screen.getByText("用户")).toBeInTheDocument();
     expect(screen.getByText("alice@example.com")).toBeInTheDocument();
     expect(screen.getByText("106514937785257944828")).toBeInTheDocument();
   });
@@ -71,7 +71,7 @@ describe("LogDetailContent", () => {
   it("falls back to the user id in Request Details when no email is resolved", () => {
     renderWithProviders(<LogDetailContent logEntry={createLogEntry({ user: "106514937785257944828" })} />);
 
-    expect(screen.getByText("User")).toBeInTheDocument();
+    expect(screen.getByText("用户")).toBeInTheDocument();
     expect(screen.getByText("106514937785257944828")).toBeInTheDocument();
   });
 
@@ -97,7 +97,7 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Request Failed")).toBeInTheDocument();
+    expect(screen.getByText("请求失败")).toBeInTheDocument();
     expect(screen.getByText("rate_limit")).toBeInTheDocument();
     expect(screen.getByText("Too many requests")).toBeInTheDocument();
   });
@@ -111,7 +111,7 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Tags")).toBeInTheDocument();
+    expect(screen.getByText("标签")).toBeInTheDocument();
     expect(screen.getByText("env: prod")).toBeInTheDocument();
     expect(screen.getByText("version: 1.0")).toBeInTheDocument();
   });
@@ -134,7 +134,7 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Metrics")).toBeInTheDocument();
+    expect(screen.getByText("指标")).toBeInTheDocument();
     expect(screen.getAllByText("$0.00200000").length).toBeGreaterThanOrEqual(1);
   });
 
@@ -150,7 +150,7 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Reasoning Tokens")).toBeInTheDocument();
+    expect(screen.getByText("推理令牌")).toBeInTheDocument();
     expect(screen.getByText("224")).toBeInTheDocument();
   });
 
@@ -188,11 +188,11 @@ describe("LogDetailContent", () => {
         />,
       );
 
-      expect(screen.getByText("Batch Results")).toBeInTheDocument();
+      expect(screen.getByText("批处理结果")).toBeInTheDocument();
       expect(screen.getByText("batch_abc123")).toBeInTheDocument();
-      expect(screen.getByText("Successful Requests")).toBeInTheDocument();
+      expect(screen.getByText("成功请求数")).toBeInTheDocument();
       expect(screen.getByText("2")).toBeInTheDocument();
-      expect(screen.getByText("Failed Requests")).toBeInTheDocument();
+      expect(screen.getByText("失败请求数")).toBeInTheDocument();
       expect(screen.getByText("1")).toBeInTheDocument();
       expect(screen.getByText("gemini-2.5-flash")).toBeInTheDocument();
     });
@@ -200,7 +200,7 @@ describe("LogDetailContent", () => {
     it("still renders the batch id when a legacy row carries no counts", () => {
       renderWithProviders(<LogDetailContent logEntry={batchCostEntry({})} />);
 
-      expect(screen.getByText("Batch Results")).toBeInTheDocument();
+      expect(screen.getByText("批处理结果")).toBeInTheDocument();
       expect(screen.getByText("batch_abc123")).toBeInTheDocument();
       expect(screen.queryByText("Successful Requests")).not.toBeInTheDocument();
     });
@@ -239,8 +239,8 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Input Tokens")).toBeInTheDocument();
-    expect(screen.getByText("Output Tokens")).toBeInTheDocument();
+    expect(screen.getByText("输入令牌")).toBeInTheDocument();
+    expect(screen.getByText("输出令牌")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
     expect(screen.getByText("28")).toBeInTheDocument();
     // Combined TokenFlow line should not appear (would include "prompt tokens")
@@ -279,22 +279,22 @@ describe("LogDetailContent", () => {
   it("should display loading state when isLoadingDetails is true", () => {
     renderWithProviders(<LogDetailContent logEntry={createLogEntry()} isLoadingDetails={true} />);
 
-    expect(screen.getByText("Loading request & response data...")).toBeInTheDocument();
+    expect(screen.getByText("正在加载请求与响应数据...")).toBeInTheDocument();
   });
 
   it("should switch the Request & Response body between the Pretty and JSON view modes", async () => {
     const user = userEvent.setup();
     renderWithProviders(<LogDetailContent logEntry={createLogEntry()} />);
 
-    expect(screen.getByText("Request & Response")).toBeInTheDocument();
-    expect(screen.getByText("Pretty")).toBeInTheDocument();
+    expect(screen.getByText("请求与响应")).toBeInTheDocument();
+    expect(screen.getByText("美化")).toBeInTheDocument();
     expect(screen.getByText("JSON")).toBeInTheDocument();
 
     await user.click(screen.getByText("JSON"));
-    expect(screen.getByRole("tab", { name: "Request" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "请求" })).toBeInTheDocument();
 
-    await user.click(screen.getByText("Pretty"));
-    expect(screen.queryByRole("tab", { name: "Request" })).not.toBeInTheDocument();
+    await user.click(screen.getByText("美化"));
+    expect(screen.queryByRole("tab", { name: "请求" })).not.toBeInTheDocument();
   });
 
   it.each(["object", "serialized", "messages only", "null captures"])(
@@ -319,7 +319,7 @@ describe("LogDetailContent", () => {
       expect(screen.getByText("legacy classifier prompt")).toBeInTheDocument();
       expect(screen.queryByRole("region", { name: "分类器输入" })).not.toBeInTheDocument();
       await user.click(screen.getByRole("tab", { name: "JSON", exact: true }));
-      await user.click(screen.getByRole("button", { name: "Copy JSON", exact: true }));
+      await user.click(screen.getByRole("button", { name: "复制 JSON", exact: true }));
       expect(await navigator.clipboard.readText()).toBe(
         JSON.stringify(shape === "messages only" ? messages : request, null, 2),
       );
@@ -356,8 +356,8 @@ describe("LogDetailContent", () => {
 
     await user.click(screen.getByText("JSON"));
 
-    expect(screen.getByRole("tab", { name: "Request" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Response" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "请求" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "响应" })).toBeInTheDocument();
   });
 
   it("should display response not available message when no response and Response tab is selected", async () => {
@@ -372,9 +372,9 @@ describe("LogDetailContent", () => {
     );
 
     await user.click(screen.getByText("JSON"));
-    await user.click(screen.getByRole("tab", { name: "Response" }));
+    await user.click(screen.getByRole("tab", { name: "响应" }));
 
-    expect(screen.getByText("Response data not available")).toBeInTheDocument();
+    expect(screen.getByText("暂无响应数据")).toBeInTheDocument();
   });
 
   it("should display Metadata section when metadata has keys", () => {
@@ -386,7 +386,7 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Metadata")).toBeInTheDocument();
+    expect(screen.getByText("元数据")).toBeInTheDocument();
   });
 
   it("should display IP address when requester_ip_address is present", () => {
@@ -408,7 +408,7 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Credential")).toBeInTheDocument();
+    expect(screen.getByText("凭据")).toBeInTheDocument();
     expect(screen.getByText("客户端 OAuth 令牌")).toBeInTheDocument();
     expect(screen.queryByText("配置密钥")).not.toBeInTheDocument();
   });
@@ -420,7 +420,7 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Credential")).toBeInTheDocument();
+    expect(screen.getByText("凭据")).toBeInTheDocument();
     expect(screen.getByText("配置密钥")).toBeInTheDocument();
     expect(screen.queryByText("客户端 OAuth 令牌")).not.toBeInTheDocument();
   });
@@ -449,14 +449,14 @@ describe("LogDetailContent", () => {
     );
 
     expect(screen.getByText("PII Filter")).toBeInTheDocument();
-    expect(screen.getByText("2 masked")).toBeInTheDocument();
+    expect(screen.getByText("2 项已脱敏")).toBeInTheDocument();
   });
 
   it("should display a Response Cache 'Hit' tag when the response cache served the request", () => {
     renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "True" })} />);
 
-    expect(screen.getByText("Response Cache")).toBeInTheDocument();
-    expect(screen.getByText("Hit")).toBeInTheDocument();
+    expect(screen.getByText("响应缓存")).toBeInTheDocument();
+    expect(screen.getByText("命中")).toBeInTheDocument();
   });
 
   it("should show prompt cache tokens and no response-cache hit when only provider prompt caching occurred", () => {
@@ -475,11 +475,11 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Prompt Cache Read Tokens")).toBeInTheDocument();
+    expect(screen.getByText("提示缓存读取令牌")).toBeInTheDocument();
     expect(screen.getByText("34,462")).toBeInTheDocument();
-    expect(screen.getByText("Prompt Cache Creation Tokens")).toBeInTheDocument();
+    expect(screen.getByText("提示缓存写入令牌")).toBeInTheDocument();
     expect(screen.getByText("83")).toBeInTheDocument();
-    expect(screen.getByText("Miss")).toBeInTheDocument();
+    expect(screen.getByText("未命中")).toBeInTheDocument();
     expect(screen.queryByText("Cache Hit")).not.toBeInTheDocument();
   });
 
@@ -499,7 +499,7 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Prompt Cache Creation Tokens")).toBeInTheDocument();
+    expect(screen.getByText("提示缓存写入令牌")).toBeInTheDocument();
     expect(screen.getByText("83")).toBeInTheDocument();
   });
 
@@ -507,12 +507,12 @@ describe("LogDetailContent", () => {
     const user = userEvent.setup();
     renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "True" })} />);
 
-    expect(screen.getByText("Response Cache")).toBeInTheDocument();
-    const infoIcons = screen.getAllByRole("img", { name: /info/i });
+    expect(screen.getByText("响应缓存")).toBeInTheDocument();
+    const infoIcons = screen.getAllByRole("img", { name: /信息/ });
     expect(infoIcons).toHaveLength(1);
     await user.hover(infoIcons[0]);
 
-    expect(await screen.findByRole("link", { name: "Docs" })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: "文档" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/proxy/caching",
     );
@@ -532,12 +532,12 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Prompt Cache Read Tokens")).toBeInTheDocument();
-    const infoIcons = screen.getAllByRole("img", { name: /info/i });
+    expect(screen.getByText("提示缓存读取令牌")).toBeInTheDocument();
+    const infoIcons = screen.getAllByRole("img", { name: /信息/ });
     expect(infoIcons).toHaveLength(1);
     await user.hover(infoIcons[0]);
 
-    expect(await screen.findByRole("link", { name: "Docs" })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: "文档" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/completion/prompt_caching",
     );
@@ -554,7 +554,7 @@ describe("LogDetailContent", () => {
       <LogDetailContent logEntry={createLogEntry({ cache_hit: "True", cache_key: "abc123cachekey" })} />,
     );
 
-    expect(screen.getByText("Cache Key")).toBeInTheDocument();
+    expect(screen.getByText("缓存键")).toBeInTheDocument();
     expect(screen.getByText("abc123cachekey")).toBeInTheDocument();
   });
 
@@ -563,16 +563,16 @@ describe("LogDetailContent", () => {
       <LogDetailContent logEntry={createLogEntry({ cache_hit: "None", cache_key: "abc123cachekey" })} />,
     );
 
-    expect(screen.getByText("Response Cache")).toBeInTheDocument();
-    expect(screen.getByText("Miss")).toBeInTheDocument();
-    expect(screen.getByText("Cache Key")).toBeInTheDocument();
+    expect(screen.getByText("响应缓存")).toBeInTheDocument();
+    expect(screen.getByText("未命中")).toBeInTheDocument();
+    expect(screen.getByText("缓存键")).toBeInTheDocument();
     expect(screen.getByText("abc123cachekey")).toBeInTheDocument();
   });
 
   it("should hide the Cache Key row when caching is off", () => {
     renderWithProviders(<LogDetailContent logEntry={createLogEntry({ cache_hit: "False", cache_key: "Cache OFF" })} />);
 
-    expect(screen.getByText("Response Cache")).toBeInTheDocument();
+    expect(screen.getByText("响应缓存")).toBeInTheDocument();
     expect(screen.queryByText("Cache Key")).not.toBeInTheDocument();
   });
 
@@ -595,7 +595,7 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("LiteLLM Overhead")).toBeInTheDocument();
+    expect(screen.getByText("LiteLLM 额外开销")).toBeInTheDocument();
     expect(screen.getByText("42.50 ms")).toBeInTheDocument();
   });
 
@@ -605,7 +605,7 @@ describe("LogDetailContent", () => {
     expect(screen.queryByText("LiteLLM Overhead")).not.toBeInTheDocument();
   });
 
-  const retriesItem = () => screen.getByText("Retries").parentElement as HTMLElement;
+  const retriesItem = () => screen.getByText("重试").parentElement as HTMLElement;
 
   it("should display attempted_retries / max_retries for Retries when attempted_retries > 0", () => {
     renderWithProviders(
@@ -622,7 +622,7 @@ describe("LogDetailContent", () => {
       <LogDetailContent logEntry={createLogEntry({ metadata: { status: "success", attempted_retries: 0 } })} />,
     );
 
-    expect(within(retriesItem()).getByText("None")).toBeInTheDocument();
+    expect(within(retriesItem()).getByText("无")).toBeInTheDocument();
   });
 
   it("should display '-' for Retries when attempted_retries is absent from metadata", () => {
@@ -641,8 +641,8 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    expect(screen.getByText("Start Time")).toBeInTheDocument();
-    expect(screen.getByText("End Time")).toBeInTheDocument();
+    expect(screen.getByText("开始时间")).toBeInTheDocument();
+    expect(screen.getByText("结束时间")).toBeInTheDocument();
     const dateElements = screen.getAllByText((content) => content.includes("2025-11-14"));
     expect(dateElements.length).toBeGreaterThanOrEqual(2);
   });
@@ -680,7 +680,7 @@ describe("LogDetailContent", () => {
       />,
     );
 
-    const descriptions = screen.getByText("Provider").parentElement as HTMLElement;
+    const descriptions = screen.getByText("提供商").parentElement as HTMLElement;
     expect(descriptions).toBeInTheDocument();
     expect(within(descriptions).getByText("-")).toBeInTheDocument();
   });
@@ -694,7 +694,7 @@ describe("GuardrailJumpLink", () => {
   ])("styles %j as %s", (statuses, expectedClass, glyph) => {
     renderWithProviders(<GuardrailJumpLink guardrailEntries={statuses.map((s) => ({ guardrail_status: s }))} />);
 
-    const pill = screen.getByText(/2 guardrails evaluated/);
+    const pill = screen.getByText(/已评估 2 个护栏/);
     expect(pill).toHaveClass(expectedClass);
     expect(pill).toHaveTextContent(glyph);
   });
@@ -705,7 +705,7 @@ describe("GuardrailJumpLink", () => {
   ])("ignores not_run when styling %j as %s", (statuses, expectedClass, glyph) => {
     renderWithProviders(<GuardrailJumpLink guardrailEntries={statuses.map((s) => ({ guardrail_status: s }))} />);
 
-    const pill = screen.getByText(/1 guardrail evaluated, 1 not run/);
+    const pill = screen.getByText(/已评估 1 个护栏，未执行 1 个/);
     expect(pill).toHaveClass(expectedClass);
     expect(pill).toHaveTextContent(glyph);
   });
@@ -713,7 +713,7 @@ describe("GuardrailJumpLink", () => {
   it("renders an all not_run request as neutral rather than passed", () => {
     renderWithProviders(<GuardrailJumpLink guardrailEntries={[{ guardrail_status: "not_run" }]} />);
 
-    const pill = screen.getByText(/0 guardrails evaluated, 1 not run/);
+    const pill = screen.getByText(/已评估 0 个护栏，未执行 1 个/);
     expect(pill).toHaveClass("text-muted-foreground");
     expect(pill).not.toHaveTextContent("\u2713");
   });
