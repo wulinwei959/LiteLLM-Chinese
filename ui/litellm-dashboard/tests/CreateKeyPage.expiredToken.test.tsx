@@ -138,6 +138,9 @@ vi.mock("@/components/organisms/create_key_button", () => ({ fetchUserModels: vi
 vi.mock("@/components/ui/ui-loading-spinner", () => ({
   UiLoadingSpinner: stub("spinner"),
 }));
+vi.mock("@/components/common_components/LoadingScreen", () => ({
+  default: stub("loading-screen"),
+}));
 vi.mock("@/contexts/ThemeContext", () => {
   const React = require("react");
   return {

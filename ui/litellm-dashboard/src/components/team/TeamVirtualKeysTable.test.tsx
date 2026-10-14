@@ -449,11 +449,11 @@ describe("TeamVirtualKeysTable", () => {
         created_by_user: placeholder,
       };
       const row = await renderRow(createMockKey(ownedAndCreatedByPlaceholder));
-      expect(within(row).getByText("Default Proxy Admin")).toBeInTheDocument();
+      expect(within(row).getByText("默认代理管理员")).toBeInTheDocument();
       expect(within(row).getByText("Proxy Admin")).toBeInTheDocument();
       expect(within(row).queryByRole("link", { name: "Proxy Admin" })).not.toBeInTheDocument();
       expect(within(row).queryByRole("link", { name: placeholder.user_email })).not.toBeInTheDocument();
-      expect(within(row).queryByRole("link", { name: "Default Proxy Admin" })).not.toBeInTheDocument();
+      expect(within(row).queryByRole("link", { name: "默认代理管理员" })).not.toBeInTheDocument();
     });
   });
 });

@@ -1,10 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
+import { renderWithProviders } from "../../../tests/test-utils";
 import LoadingScreen from "./LoadingScreen";
 
 describe("LoadingScreen", () => {
   it("should render", () => {
-    render(<LoadingScreen />);
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    renderWithProviders(<LoadingScreen />);
+    expect(screen.getByText("加载中...")).toBeInTheDocument();
   });
 });

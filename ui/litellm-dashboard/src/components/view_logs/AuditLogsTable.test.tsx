@@ -63,7 +63,7 @@ describe("AuditLogsTable", () => {
     expect(screen.getByText("团队")).toBeInTheDocument();
     expect(screen.getByText("用户")).toBeInTheDocument();
     // Changed By -> DefaultProxyAdminTag (default_user_id becomes a labeled tag; other ids stay raw)
-    expect(screen.getByText("Default Proxy Admin")).toBeInTheDocument();
+    expect(screen.getByText("默认代理管理员")).toBeInTheDocument();
     expect(screen.getByText("user-42")).toBeInTheDocument();
     // Object ID + API key hash
     expect(screen.getByText("team-obj-123")).toBeInTheDocument();

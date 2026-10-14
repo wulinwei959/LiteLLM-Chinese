@@ -1,6 +1,8 @@
 {
   "common": {
     "language": "Language",
+    "defaultProxyAdmin": "Default Proxy Admin",
+    "adminOnlyNotice": "{pageTitle} is only available to admin users.",
     "loading": "Loading...",
     "login": "Login",
     "logout": "Logout",

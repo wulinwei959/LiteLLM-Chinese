@@ -1,6 +1,8 @@
 {
   "common": {
     "language": "语言",
+    "defaultProxyAdmin": "默认代理管理员",
+    "adminOnlyNotice": "{pageTitle}仅管理员可用。",
     "loading": "加载中...",
     "login": "登录",
     "logout": "退出登录",

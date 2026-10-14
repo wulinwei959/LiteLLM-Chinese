@@ -1,5 +1,5 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import LoginPage from "./LoginPage";
@@ -56,14 +56,7 @@ import { switchToWorkerUrl } from "@/components/networking";
 
 let WORKERS: { worker_id: string; name: string; url: string }[] = [];
 
-const renderLoginPage = () => {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <LoginPage />
-    </QueryClientProvider>,
-  );
-};
+const renderLoginPage = () => renderWithProviders(<LoginPage />);
 
 const setSearch = (search: string) => {
   Object.defineProperty(window, "location", {

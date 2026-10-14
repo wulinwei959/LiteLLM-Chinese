@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import LoginPage from "./LoginPage";
 
 const mockPush = vi.fn();
@@ -57,16 +57,6 @@ import { useUIConfig } from "@/app/(dashboard)/hooks/uiConfig/useUIConfig";
 import { getCookieFromDocument } from "@/utils/cookieUtils";
 import { isJwtExpired } from "@/utils/jwtUtils";
 
-const createQueryClient = () =>
-  new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        gcTime: 0,
-      },
-    },
-  });
-
 describe("LoginPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -86,12 +76,7 @@ describe("LoginPage", () => {
     });
     (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue(null);
 
-    const queryClient = createQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <LoginPage />
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<LoginPage />);
 
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
@@ -112,12 +97,7 @@ describe("LoginPage", () => {
     (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue(validToken);
     (isJwtExpired as ReturnType<typeof vi.fn>).mockReturnValue(false);
 
-    const queryClient = createQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <LoginPage />
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<LoginPage />);
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith("/ui");
@@ -138,12 +118,7 @@ describe("LoginPage", () => {
     (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue(invalidToken);
     (isJwtExpired as ReturnType<typeof vi.fn>).mockReturnValue(true);
 
-    const queryClient = createQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <LoginPage />
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<LoginPage />);
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith("http://localhost:4000/sso/key/generate");
@@ -164,12 +139,7 @@ describe("LoginPage", () => {
     (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue(invalidToken);
     (isJwtExpired as ReturnType<typeof vi.fn>).mockReturnValue(true);
 
-    const queryClient = createQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <LoginPage />
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<LoginPage />);
 
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
@@ -193,12 +163,7 @@ describe("LoginPage", () => {
     (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue(validToken);
     (isJwtExpired as ReturnType<typeof vi.fn>).mockReturnValue(false);
 
-    const queryClient = createQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <LoginPage />
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<LoginPage />);
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith("/ui");
@@ -219,12 +184,7 @@ describe("LoginPage", () => {
     });
     (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue(null);
 
-    const queryClient = createQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <LoginPage />
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<LoginPage />);
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();
@@ -248,12 +208,7 @@ describe("LoginPage", () => {
     (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue(null);
     (isJwtExpired as ReturnType<typeof vi.fn>).mockReturnValue(true);
 
-    const queryClient = createQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <LoginPage />
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<LoginPage />);
 
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
@@ -275,12 +230,7 @@ describe("LoginPage", () => {
     (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue(null);
     (isJwtExpired as ReturnType<typeof vi.fn>).mockReturnValue(true);
 
-    const queryClient = createQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <LoginPage />
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<LoginPage />);
 
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
@@ -327,12 +277,7 @@ describe("LoginPage", () => {
       (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue(null);
       (isJwtExpired as ReturnType<typeof vi.fn>).mockReturnValue(false);
 
-      const queryClient = createQueryClient();
-      render(
-        <QueryClientProvider client={queryClient}>
-          <LoginPage />
-        </QueryClientProvider>,
-      );
+      renderWithProviders(<LoginPage />);
 
       await waitFor(() => {
         expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
@@ -355,12 +300,7 @@ describe("LoginPage", () => {
       (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue("legitimate-session-jwt");
       (isJwtExpired as ReturnType<typeof vi.fn>).mockReturnValue(false);
 
-      const queryClient = createQueryClient();
-      render(
-        <QueryClientProvider client={queryClient}>
-          <LoginPage />
-        </QueryClientProvider>,
-      );
+      renderWithProviders(<LoginPage />);
 
       await waitFor(() => {
         expect(mockReplace).toHaveBeenCalledWith("/ui");
