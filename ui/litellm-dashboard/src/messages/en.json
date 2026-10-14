@@ -199,7 +199,8 @@
     "minutesAgo": "{count, number}m ago",
     "hoursAgo": "{count, number}h ago",
     "daysAgo": "{count, number}d ago",
-    "tokensInAndOut": "{prompt} in / {completion} out"
+    "tokensInAndOut": "{prompt} in / {completion} out",
+    "selectAll": "Select All"
   },
   "nav": {
     "aiGateway": "AI Gateway",
@@ -7370,6 +7371,24 @@
   "modelHub": {
     "showingModels": "Showing {shown} of {total, plural, one {# model} other {# models}}",
     "showingAgents": "Showing {shown} of {total, plural, one {# agent} other {# agents}}",
-    "showingMcpServers": "Showing {shown} of {total, plural, one {# MCP server} other {# MCP servers}}"
+    "showingMcpServers": "Showing {shown} of {total, plural, one {# MCP server} other {# MCP servers}}",
+    "makeAgentPublic": {
+      "dialogTitle": "Make Agents Public",
+      "stepSelect": "Select Agents",
+      "stepConfirm": "Confirm",
+      "selectTitle": "Select Agents to Make Public",
+      "selectHint": "Select the agents you want to be visible on the public model hub. Users will still require a valid Virtual Key to use these agents.",
+      "empty": "No agents available.",
+      "skillsMore": "+{count, number} more",
+      "selectedInfo": "<strong>{count}</strong> {count, plural, one {agent} other {agents}} selected",
+      "confirmTitle": "Confirm Making Agents Public",
+      "confirmWarning": "<strong>Warning:</strong> Once you make these agents public, anyone who can go to the <code>/ui/model_hub_table</code> will be able to know they exist on the proxy.",
+      "confirmListTitle": "Agents to be made public:",
+      "totalInfo": "Total: <strong>{count}</strong> {count, plural, one {agent} other {agents}} will be made public",
+      "makePublic": "Make Public",
+      "toastNeedSelection": "Please select at least one agent to make public",
+      "toastSuccess": "Successfully made {count} {count, plural, one {agent} other {agents}} public!",
+      "toastFailed": "Failed to make agents public. Please try again."
+    }
   }
 }

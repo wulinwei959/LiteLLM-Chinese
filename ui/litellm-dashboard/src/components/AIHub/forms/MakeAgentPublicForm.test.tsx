@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
+import { screen, fireEvent, act, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import MakeAgentPublicForm from "./MakeAgentPublicForm";
 import { AgentHubData } from "@/components/AIHub/AgentHubTableColumns";
+import { renderWithProviders } from "../../../../tests/test-utils";
 
 // Mock the networking function
 vi.mock("../../networking", () => ({
@@ -55,42 +56,42 @@ describe("MakeAgentPublicForm", () => {
   });
 
   it("should render the component", () => {
-    render(<MakeAgentPublicForm {...mockProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mockProps} />);
 
-    expect(screen.getByText("Make Agents Public")).toBeInTheDocument();
-    expect(screen.getByText("Select Agents to Make Public")).toBeInTheDocument();
+    expect(screen.getByText("将智能体设为公开")).toBeInTheDocument();
+    expect(screen.getByText("选择要公开的智能体")).toBeInTheDocument();
   });
 
   it("should initialize with correct state", () => {
-    render(<MakeAgentPublicForm {...mockProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mockProps} />);
 
     // Check that the component renders with the correct title and content
-    expect(screen.getByText("Make Agents Public")).toBeInTheDocument();
-    expect(screen.getByText("Select Agents to Make Public")).toBeInTheDocument();
+    expect(screen.getByText("将智能体设为公开")).toBeInTheDocument();
+    expect(screen.getByText("选择要公开的智能体")).toBeInTheDocument();
 
     // Check that all agent checkboxes are present
     const checkboxes = screen.getAllByRole("checkbox");
     expect(checkboxes).toHaveLength(3); // Select all + 2 agents
 
     // Check that the Next button is enabled (agents are preselected)
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     expect(nextButton).toBeEnabled();
   });
 
   it("should handle agent selection and navigation", async () => {
-    render(<MakeAgentPublicForm {...mockProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mockProps} />);
 
     // Initially on step 1
-    expect(screen.getByText("Select Agents to Make Public")).toBeInTheDocument();
+    expect(screen.getByText("选择要公开的智能体")).toBeInTheDocument();
 
     // Select all agents using the select all checkbox
-    const selectAllCheckbox = screen.getByRole("checkbox", { name: "Select All (2)" });
+    const selectAllCheckbox = screen.getByRole("checkbox", { name: "全选 (2)" });
     await act(async () => {
       fireEvent.click(selectAllCheckbox);
     });
 
     // Verify Next button is enabled
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     expect(nextButton).toBeEnabled();
 
     // Click Next
@@ -100,32 +101,32 @@ describe("MakeAgentPublicForm", () => {
 
     // Should move to step 2
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Agents Public")).toBeInTheDocument();
+      expect(screen.getByText("确认公开这些智能体")).toBeInTheDocument();
     });
   });
 
   it("should submit selected agents successfully", async () => {
     mockMakeAgentsPublicCall.mockResolvedValueOnce({});
 
-    render(<MakeAgentPublicForm {...mockProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mockProps} />);
 
     // Select all agents
-    const selectAllCheckbox = screen.getByRole("checkbox", { name: "Select All (2)" });
+    const selectAllCheckbox = screen.getByRole("checkbox", { name: "全选 (2)" });
     await act(async () => {
       fireEvent.click(selectAllCheckbox);
     });
 
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     await act(async () => {
       fireEvent.click(nextButton);
     });
 
     // Wait for navigation to complete
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Agents Public")).toBeInTheDocument();
+      expect(screen.getByText("确认公开这些智能体")).toBeInTheDocument();
     });
 
-    const submitButton = screen.getByRole("button", { name: "Make Public" });
+    const submitButton = screen.getByRole("button", { name: "公开" });
     await act(async () => {
       fireEvent.click(submitButton);
     });
@@ -138,7 +139,7 @@ describe("MakeAgentPublicForm", () => {
   });
 
   it("should handle select all functionality", async () => {
-    render(<MakeAgentPublicForm {...mockProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mockProps} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
     const selectAllCheckbox = checkboxes[0];
@@ -165,7 +166,7 @@ describe("MakeAgentPublicForm", () => {
   });
 
   it("should show error when no agents selected", async () => {
-    render(<MakeAgentPublicForm {...mockProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mockProps} />);
 
     // Deselect all agents first
     const checkboxes = screen.getAllByRole("checkbox");
@@ -177,13 +178,13 @@ describe("MakeAgentPublicForm", () => {
     });
 
     // Try to go to next step
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     await act(async () => {
       fireEvent.click(nextButton);
     });
 
     // Should stay on same step
-    expect(screen.getByText("Select Agents to Make Public")).toBeInTheDocument();
+    expect(screen.getByText("选择要公开的智能体")).toBeInTheDocument();
   });
 
   it("should display empty state when no agents are available", () => {
@@ -192,24 +193,24 @@ describe("MakeAgentPublicForm", () => {
       agentHubData: [] as AgentHubData[],
     };
 
-    render(<MakeAgentPublicForm {...emptyProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...emptyProps} />);
 
-    expect(screen.getByText("No agents available.")).toBeInTheDocument();
+    expect(screen.getByText("暂无可公开的智能体。")).toBeInTheDocument();
 
     // Select All checkbox should be disabled
-    const selectAllCheckbox = screen.getByRole("checkbox", { name: "Select All" });
+    const selectAllCheckbox = screen.getByRole("checkbox", { name: "全选" });
     expectDisabledControl(selectAllCheckbox);
 
     // Next button should be disabled
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     expect(nextButton).toBeDisabled();
   });
 
   it("should handle Cancel button functionality", async () => {
-    render(<MakeAgentPublicForm {...mockProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mockProps} />);
 
     // Click Cancel button
-    const cancelButton = screen.getByRole("button", { name: "Cancel" });
+    const cancelButton = screen.getByRole("button", { name: "取消" });
     await act(async () => {
       fireEvent.click(cancelButton);
     });
@@ -219,31 +220,31 @@ describe("MakeAgentPublicForm", () => {
   });
 
   it("should handle Previous button functionality", async () => {
-    render(<MakeAgentPublicForm {...mockProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mockProps} />);
 
     // Navigate to step 1
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     await act(async () => {
       fireEvent.click(nextButton);
     });
 
     // Verify we're on step 1
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Agents Public")).toBeInTheDocument();
+      expect(screen.getByText("确认公开这些智能体")).toBeInTheDocument();
     });
 
     // Click Previous button
-    const previousButton = screen.getByRole("button", { name: "Previous" });
+    const previousButton = screen.getByRole("button", { name: "上一步" });
     await act(async () => {
       fireEvent.click(previousButton);
     });
 
     // Should go back to step 0
-    expect(screen.getByText("Select Agents to Make Public")).toBeInTheDocument();
+    expect(screen.getByText("选择要公开的智能体")).toBeInTheDocument();
   });
 
   it("should handle individual agent selection", async () => {
-    render(<MakeAgentPublicForm {...mockProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mockProps} />);
 
     // Get all checkboxes (select all + individual agents)
     const checkboxes = screen.getAllByRole("checkbox");
@@ -293,33 +294,33 @@ describe("MakeAgentPublicForm", () => {
       agentHubData: [agentWithManySkills],
     };
 
-    render(<MakeAgentPublicForm {...propsWithManySkills} />);
+    renderWithProviders(<MakeAgentPublicForm {...propsWithManySkills} />);
 
     // Should show first 3 skills as badges
     expect(screen.getByText("Skill 1")).toBeInTheDocument();
     expect(screen.getByText("Skill 2")).toBeInTheDocument();
     expect(screen.getByText("Skill 3")).toBeInTheDocument();
 
-    // Should show "+2 more" text for the remaining skills
-    expect(screen.getByText("+2 more")).toBeInTheDocument();
+    // Should show "还有 2 个" text for the remaining skills
+    expect(screen.getByText("还有 2 个")).toBeInTheDocument();
   });
 
   it("should handle submit error properly", async () => {
     const errorMessage = "Network error";
     mockMakeAgentsPublicCall.mockRejectedValueOnce(new Error(errorMessage));
 
-    render(<MakeAgentPublicForm {...mockProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mockProps} />);
 
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     await act(async () => {
       fireEvent.click(nextButton);
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Agents Public")).toBeInTheDocument();
+      expect(screen.getByText("确认公开这些智能体")).toBeInTheDocument();
     });
 
-    const submitButton = screen.getByRole("button", { name: "Make Public" });
+    const submitButton = screen.getByRole("button", { name: "公开" });
     await act(async () => {
       fireEvent.click(submitButton);
     });
@@ -341,18 +342,18 @@ describe("MakeAgentPublicForm", () => {
     });
     mockMakeAgentsPublicCall.mockReturnValueOnce(pendingPromise);
 
-    render(<MakeAgentPublicForm {...mockProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mockProps} />);
 
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     await act(async () => {
       fireEvent.click(nextButton);
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Confirm Making Agents Public")).toBeInTheDocument();
+      expect(screen.getByText("确认公开这些智能体")).toBeInTheDocument();
     });
 
-    const submitButton = screen.getByRole("button", { name: "Make Public" });
+    const submitButton = screen.getByRole("button", { name: "公开" });
     await act(async () => {
       fireEvent.click(submitButton);
     });
@@ -364,7 +365,7 @@ describe("MakeAgentPublicForm", () => {
     expect(mockMakeAgentsPublicCall).toHaveBeenCalledTimes(1);
     expect(mockProps.onSuccess).not.toHaveBeenCalled();
     expect(mockProps.onClose).not.toHaveBeenCalled();
-    expect(screen.getByText("Confirm Making Agents Public")).toBeInTheDocument();
+    expect(screen.getByText("确认公开这些智能体")).toBeInTheDocument();
 
     resolvePromise({});
     await waitFor(() => {
@@ -379,11 +380,11 @@ describe("MakeAgentPublicForm", () => {
       visible: false,
     };
 
-    render(<MakeAgentPublicForm {...invisibleProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...invisibleProps} />);
 
     // Modal should not be rendered
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.queryByText("Make Agents Public")).not.toBeInTheDocument();
+    expect(screen.queryByText("将智能体设为公开")).not.toBeInTheDocument();
   });
 
   it("should preselect already public agents when modal opens", () => {
@@ -424,7 +425,7 @@ describe("MakeAgentPublicForm", () => {
       ] as AgentHubData[],
     };
 
-    render(<MakeAgentPublicForm {...mixedPublicProps} />);
+    renderWithProviders(<MakeAgentPublicForm {...mixedPublicProps} />);
 
     // Check that the correct checkboxes are selected
     const checkboxes = screen.getAllByRole("checkbox");

@@ -199,7 +199,8 @@
     "minutesAgo": "{count, number} 分钟前",
     "hoursAgo": "{count, number} 小时前",
     "daysAgo": "{count, number} 天前",
-    "tokensInAndOut": "输入 {prompt} / 输出 {completion}"
+    "tokensInAndOut": "输入 {prompt} / 输出 {completion}",
+    "selectAll": "全选"
   },
   "nav": {
     "aiGateway": "AI 网关",
@@ -7370,6 +7371,24 @@
   "modelHub": {
     "showingModels": "已显示 {shown}，共 {total} 个模型",
     "showingAgents": "已显示 {shown}，共 {total} 个智能体",
-    "showingMcpServers": "已显示 {shown}，共 {total} 个 MCP 服务器"
+    "showingMcpServers": "已显示 {shown}，共 {total} 个 MCP 服务器",
+    "makeAgentPublic": {
+      "dialogTitle": "将智能体设为公开",
+      "stepSelect": "选择智能体",
+      "stepConfirm": "确认",
+      "selectTitle": "选择要公开的智能体",
+      "selectHint": "勾选你希望在公开模型中心展示的智能体。用户使用这些智能体时仍需有效的虚拟密钥。",
+      "empty": "暂无可公开的智能体。",
+      "skillsMore": "还有 {count, number} 个",
+      "selectedInfo": "已选择 <strong>{count}</strong> 个智能体",
+      "confirmTitle": "确认公开这些智能体",
+      "confirmWarning": "<strong>警告：</strong>智能体一旦公开，任何能访问 <code>/ui/model_hub_table</code> 的人都会知道这个代理上有它们。",
+      "confirmListTitle": "将被公开的智能体：",
+      "totalInfo": "共计 <strong>{count}</strong> 个智能体将被公开",
+      "makePublic": "公开",
+      "toastNeedSelection": "请至少选择一个要公开的智能体",
+      "toastSuccess": "已成功公开 {count, number} 个智能体！",
+      "toastFailed": "公开智能体失败，请重试。"
+    }
   }
 }
