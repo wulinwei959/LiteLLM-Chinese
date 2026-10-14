@@ -185,7 +185,7 @@ describe("AutoRoutersPanel", () => {
     await screen.findByText("adaptive-router");
     await user.click(screen.getByTestId("auto-router-actions-auto-3"));
     await user.click(await screen.findByTestId("auto-router-action-delete"));
-    await user.click(await screen.findByRole("button", { name: /^delete$/i }));
+    await user.click(await screen.findByRole("button", { name: /^删除$/ }));
 
     await waitFor(() => expect(modelDeleteCall).toHaveBeenCalledWith("token", "auto-3"));
   });

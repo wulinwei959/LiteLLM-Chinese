@@ -9,6 +9,8 @@
     "submit": "Submit",
     "confirm": "Confirm",
     "delete": "Delete",
+    "deleting": "Deleting...",
+    "typeNameToConfirmDeletion": "Type <strong>{name}</strong> to confirm deletion:",
     "edit": "Edit",
     "view": "View",
     "create": "Create",

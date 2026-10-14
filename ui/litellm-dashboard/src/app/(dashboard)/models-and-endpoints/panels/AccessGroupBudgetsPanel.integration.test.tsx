@@ -152,7 +152,7 @@ describe("AccessGroupBudgetsPanel", () => {
 
     expect(DELETE).not.toHaveBeenCalled();
 
-    await userEvent.click(await screen.findByRole("button", { name: /^delete$/i }));
+    await userEvent.click(await screen.findByRole("button", { name: /^删除$/ }));
 
     await waitFor(() =>
       expect(DELETE).toHaveBeenCalledWith("/access_group/{access_group}/budget", {

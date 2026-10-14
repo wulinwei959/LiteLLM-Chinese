@@ -151,8 +151,13 @@ const mockInterpolate = (template: string, values?: Record<string, unknown>) =>
   values ? template.replace(/\{(\w+)\}/g, (_match, name: string) => String(values[name] ?? `{${name}}`)) : template;
 
 vi.mock("next-intl", () => ({
-  useTranslations: (namespace: string) => (key: string, values?: Record<string, unknown>) =>
-    mockInterpolate(mockTranslations[`${namespace}.${key}`] ?? mockTranslations[key] ?? key, values),
+  useTranslations: (namespace: string) => {
+    const translate = (key: string, values?: Record<string, unknown>) =>
+      mockInterpolate(mockTranslations[`${namespace}.${key}`] ?? mockTranslations[key] ?? key, values);
+    return Object.assign(translate, {
+      rich: (key: string, values?: Record<string, unknown>) => translate(key, values).replace(/<\/?strong>/g, ""),
+    });
+  },
 }));
 
 vi.mock("./mcp_server_management/MCPServerSelector", () => ({

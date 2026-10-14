@@ -119,7 +119,7 @@ describe("PoliciesPanel attachment delete", () => {
     const dialog = await screen.findByRole("dialog", {}, { timeout: 5000 });
     expect(within(dialog).getByText(/确定要删除此附件吗/)).toBeInTheDocument();
 
-    await user.click(within(dialog).getByRole("button", { name: /^delete$/i }));
+    await user.click(within(dialog).getByRole("button", { name: /^删除$/ }));
 
     await waitFor(() => {
       expect(networkingMocks.deletePolicyAttachmentCall).toHaveBeenCalledTimes(1);
@@ -150,11 +150,11 @@ describe("PoliciesPanel attachment delete", () => {
     await user.click(await screen.findByTestId("attachment-action-delete"));
     const dialog = await screen.findByRole("dialog", {}, { timeout: 5000 });
 
-    const deleteButton = within(dialog).getByRole("button", { name: /^delete$/i });
+    const deleteButton = within(dialog).getByRole("button", { name: /^删除$/ });
     await user.click(deleteButton);
 
     await waitFor(() => {
-      expect(within(dialog).getByRole("button", { name: /deleting/i })).toBeDisabled();
+      expect(within(dialog).getByRole("button", { name: /删除中/ })).toBeDisabled();
     });
 
     resolveDelete?.();

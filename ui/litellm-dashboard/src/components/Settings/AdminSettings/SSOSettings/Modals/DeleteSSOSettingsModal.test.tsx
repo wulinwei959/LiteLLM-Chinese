@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import DeleteSSOSettingsModal from "./DeleteSSOSettingsModal";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 vi.mock("@/app/(dashboard)/hooks/sso/useSSOSettings", () => ({
   useSSOSettings: vi.fn(() => ({
@@ -46,7 +47,9 @@ describe("DeleteSSOSettingsModal", () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <DeleteSSOSettingsModal isVisible={true} onCancel={onCancel} onSuccess={onSuccess} />
+        <LocaleProvider locale="zh-CN">
+          <DeleteSSOSettingsModal isVisible={true} onCancel={onCancel} onSuccess={onSuccess} />
+        </LocaleProvider>
       </QueryClientProvider>,
     );
 

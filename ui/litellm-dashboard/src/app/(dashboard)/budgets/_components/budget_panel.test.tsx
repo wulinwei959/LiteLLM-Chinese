@@ -235,7 +235,7 @@ describe("Budget Panel", () => {
     await user.click(screen.getByTestId("budget-actions-ecc1869c-6231-4380-a56d-1a0be457477d"));
     await user.click(await screen.findByTestId("budget-action-delete"));
     await screen.findByText("删除预算？");
-    await user.click(screen.getByRole("button", { name: /^delete$/i }));
+    await user.click(screen.getByRole("button", { name: /^删除$/ }));
 
     await waitFor(() =>
       expect(budgetDeleteMock).toHaveBeenCalledWith("sk-test", "ecc1869c-6231-4380-a56d-1a0be457477d"),
@@ -252,7 +252,7 @@ describe("Budget Panel", () => {
     await user.click(screen.getByTestId("budget-actions-ecc1869c-6231-4380-a56d-1a0be457477d"));
     await user.click(await screen.findByTestId("budget-action-delete"));
     await screen.findByText("删除预算？");
-    await user.click(screen.getByRole("button", { name: /^delete$/i }));
+    await user.click(screen.getByRole("button", { name: /^删除$/ }));
 
     await waitFor(() => expect(getMock.mock.calls.length).toBeGreaterThan(before));
   });

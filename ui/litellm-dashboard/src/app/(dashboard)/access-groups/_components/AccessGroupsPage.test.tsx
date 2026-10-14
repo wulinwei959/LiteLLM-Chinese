@@ -219,9 +219,7 @@ describe("AccessGroupsPage", () => {
     renderWithProviders(<AccessGroupsPage />);
     await user.click(await openRowMenu(user, "ag-1"));
     const dialog = screen.getByRole("dialog", { name: "删除访问组" });
-    expect(
-      within(dialog).getByText("确定要删除此访问组吗?此操作无法撤销。"),
-    ).toBeInTheDocument();
+    expect(within(dialog).getByText("确定要删除此访问组吗?此操作无法撤销。")).toBeInTheDocument();
     expect(within(dialog).getByText("访问组信息")).toBeInTheDocument();
     expect(within(dialog).getByText("ag-1")).toBeInTheDocument();
     expect(within(dialog).getByText("Admin Group")).toBeInTheDocument();
@@ -232,7 +230,7 @@ describe("AccessGroupsPage", () => {
     renderWithProviders(<AccessGroupsPage />);
     await user.click(await openRowMenu(user, "ag-1"));
     const dialog = screen.getByRole("dialog", { name: "删除访问组" });
-    await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
+    await user.click(within(dialog).getByRole("button", { name: "取消" }));
     await waitFor(() => {
       expect(screen.queryByRole("dialog", { name: "删除访问组" })).not.toBeInTheDocument();
     });
@@ -247,7 +245,7 @@ describe("AccessGroupsPage", () => {
     renderWithProviders(<AccessGroupsPage />);
     await user.click(await openRowMenu(user, "ag-1"));
     const dialog = screen.getByRole("dialog", { name: "删除访问组" });
-    await user.click(within(dialog).getByRole("button", { name: /delete/i }));
+    await user.click(within(dialog).getByRole("button", { name: /删除/ }));
     expect(mockMutate).toHaveBeenCalledWith("ag-1", expect.any(Object));
   });
 

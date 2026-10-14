@@ -483,7 +483,7 @@ describe("AllModelsTab", () => {
     await user.click(await screen.findByTestId("model-delete-model-1"));
     expect(await screen.findByText("Delete Model")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /^delete$/i }));
+    await user.click(screen.getByRole("button", { name: /^删除$/ }));
 
     await waitFor(() => {
       expect(mockModelDeleteCall).toHaveBeenCalledWith("mock-access-token", "model-1");
