@@ -236,8 +236,8 @@ describe("ModelHubTable", () => {
       vi.mocked(networking.makeMCPPublicCall).mockResolvedValueOnce({});
       vi.mocked(networking.fetchMCPServers).mockReturnValueOnce(refresh.promise);
       await user.click(manageVisibility);
-      await user.click(screen.getByRole("button", { name: "Next" }));
-      await user.click(screen.getByRole("button", { name: "Save Publication List" }));
+      await user.click(screen.getByRole("button", { name: "下一步" }));
+      await user.click(screen.getByRole("button", { name: "保存公开列表" }));
 
       expect(networking.makeMCPPublicCall).toHaveBeenCalledWith("test-token", []);
       expect(manageVisibility).toBeDisabled();

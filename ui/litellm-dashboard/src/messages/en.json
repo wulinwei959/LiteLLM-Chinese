@@ -7406,6 +7406,32 @@
       "toastNeedSelection": "Please select at least one model to make public",
       "toastSuccess": "Successfully made {count, plural, one {# model group} other {# model groups}} public!",
       "toastFailed": "Failed to make model groups public. Please try again."
+    },
+    "makeMcpPublic": {
+      "dialogTitle": "Manage MCP Hub Visibility",
+      "stepSelect": "Select Servers",
+      "stepConfirm": "Confirm",
+      "selectTitle": "Select MCP Servers for the Hub",
+      "selectHint": "Select the complete list of MCP servers to publish on the public hub. Uncheck a server to remove it from this list, or uncheck all to clear it. Authentication and access permissions still apply",
+      "legacyNote": "Legacy mode also lists servers with public IP access enabled. Set public_mcp_hub_strict_whitelist to true in your configuration to use only the publication list",
+      "empty": "No MCP servers available.",
+      "publishAria": "Publish {name}",
+      "listedLegacy": "Listed by legacy mode",
+      "listed": "Listed",
+      "unknownStatus": "unknown",
+      "toolsMore": "+{count, number} more",
+      "yamlSummary": "Configure in YAML",
+      "yamlHint": "Merge these settings into your proxy configuration and reload it. Entries use the server IDs shown above, not names or aliases. For servers defined in YAML, pin server_id in each existing mcp_servers entry so the publication list stays stable",
+      "selectedInfo": "<strong>{count}</strong> MCP {count, plural, one {server} other {servers}} selected",
+      "confirmTitle": "Confirm MCP Hub Publication",
+      "confirmWarning": "Anyone who can open <code>/ui/model_hub_table</code> can discover published servers. Explicitly published server IDs also allow requests from public IPs. Authentication and access permissions still apply",
+      "confirmListTitle": "MCP servers in the publication list:",
+      "emptyPublication": "No explicitly published servers",
+      "saveInfo": "Saving replaces the publication list with <strong>{count}</strong> MCP {count, plural, one {server} other {servers}}. Legacy mode may still list servers with public IP access enabled",
+      "saveList": "Save Publication List",
+      "toastSuccess": "MCP Hub publication list updated",
+      "missingMetadata": "This proxy does not provide explicit publication status for every MCP server. Update the proxy to manage visibility here, or edit litellm_settings.public_mcp_servers in its existing configuration",
+      "loading": "Loading publication settings"
     }
   }
 }

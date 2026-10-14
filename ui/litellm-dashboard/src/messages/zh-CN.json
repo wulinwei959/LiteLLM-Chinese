@@ -7406,6 +7406,32 @@
       "toastNeedSelection": "请至少选择一个要公开的模型",
       "toastSuccess": "已成功公开 {count, number} 个模型组！",
       "toastFailed": "公开模型组失败，请重试。"
+    },
+    "makeMcpPublic": {
+      "dialogTitle": "管理 MCP 中心的可见性",
+      "stepSelect": "选择服务器",
+      "stepConfirm": "确认",
+      "selectTitle": "选择要在中心展示的 MCP 服务器",
+      "selectHint": "勾选要在公开中心完整展示的 MCP 服务器。取消某个服务器即把它从这份列表移除，全部取消则清空列表。身份认证与访问权限仍然生效",
+      "legacyNote": "遗留模式还会列出开启了公网 IP 访问的服务器。在配置里把 public_mcp_hub_strict_whitelist 设为 true，就只按这份公开列表展示",
+      "empty": "暂无可用的 MCP 服务器。",
+      "publishAria": "公开 {name}",
+      "listedLegacy": "由遗留模式列出",
+      "listed": "已列出",
+      "unknownStatus": "未知",
+      "toolsMore": "还有 {count, number} 个",
+      "yamlSummary": "在 YAML 中配置",
+      "yamlHint": "把这些设置合并进代理配置并重载。条目用的是上面展示的服务器 ID，不是名称或别名。对写在 YAML 里的服务器，请在每个已有的 mcp_servers 条目上固定 server_id，公开列表才会稳定",
+      "selectedInfo": "已选择 <strong>{count}</strong> 个 MCP 服务器",
+      "confirmTitle": "确认 MCP 中心的公开列表",
+      "confirmWarning": "任何能打开 <code>/ui/model_hub_table</code> 的人都能发现已公开的服务器。显式公开的服务器 ID 同时允许来自公网 IP 的请求。身份认证与访问权限仍然生效",
+      "confirmListTitle": "公开列表中的 MCP 服务器：",
+      "emptyPublication": "没有显式公开的服务器",
+      "saveInfo": "保存会用 <strong>{count}</strong> 个 MCP 服务器替换整份公开列表。遗留模式仍可能列出开启了公网 IP 访问的服务器",
+      "saveList": "保存公开列表",
+      "toastSuccess": "MCP 中心的公开列表已更新",
+      "missingMetadata": "这个代理没有为每个 MCP 服务器提供明确的公开状态。请升级代理后在这里管理可见性，或修改它现有配置里的 litellm_settings.public_mcp_servers",
+      "loading": "正在加载公开设置"
     }
   }
 }

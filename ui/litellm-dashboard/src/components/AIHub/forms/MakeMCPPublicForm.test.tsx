@@ -1,6 +1,7 @@
-import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
+import { screen, fireEvent, act, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import MakeMCPPublicForm from "./MakeMCPPublicForm";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { toast } from "@/lib/toast";
 import { MCPServerData } from "@/components/AIHub/MCPHubTableColumns";
@@ -84,42 +85,42 @@ describe("MakeMCPPublicForm", () => {
   });
 
   it("should render the component", () => {
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
-    expect(screen.getByText("Manage MCP Hub Visibility")).toBeInTheDocument();
-    expect(screen.getByText("Select MCP Servers for the Hub")).toBeInTheDocument();
+    expect(screen.getByText("管理 MCP 中心的可见性")).toBeInTheDocument();
+    expect(screen.getByText("选择要在中心展示的 MCP 服务器")).toBeInTheDocument();
   });
 
   it("should initialize with correct state", () => {
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
     // Check that the component renders with the correct title and content
-    expect(screen.getByText("Manage MCP Hub Visibility")).toBeInTheDocument();
-    expect(screen.getByText("Select MCP Servers for the Hub")).toBeInTheDocument();
+    expect(screen.getByText("管理 MCP 中心的可见性")).toBeInTheDocument();
+    expect(screen.getByText("选择要在中心展示的 MCP 服务器")).toBeInTheDocument();
 
     // Check that all server checkboxes are present
     const checkboxes = screen.getAllByRole("checkbox");
     expect(checkboxes).toHaveLength(3); // Select all + 2 servers
 
     // Check that the Next button is enabled (servers are preselected)
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     expect(nextButton).toBeEnabled();
   });
 
   it("should handle server selection and navigation", async () => {
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
     // Initially on step 1
-    expect(screen.getByText("Select MCP Servers for the Hub")).toBeInTheDocument();
+    expect(screen.getByText("选择要在中心展示的 MCP 服务器")).toBeInTheDocument();
 
     // Select all servers using the select all checkbox
-    const selectAllCheckbox = screen.getByRole("checkbox", { name: "Select All (2)" });
+    const selectAllCheckbox = screen.getByRole("checkbox", { name: "全选 (2)" });
     await act(async () => {
       fireEvent.click(selectAllCheckbox);
     });
 
     // Verify Next button is enabled
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     expect(nextButton).toBeEnabled();
 
     // Click Next
@@ -129,32 +130,32 @@ describe("MakeMCPPublicForm", () => {
 
     // Should move to step 2
     await waitFor(() => {
-      expect(screen.getByText("Confirm MCP Hub Publication")).toBeInTheDocument();
+      expect(screen.getByText("确认 MCP 中心的公开列表")).toBeInTheDocument();
     });
   });
 
   it("should submit selected servers successfully", async () => {
     mockMakeMCPPublicCall.mockResolvedValueOnce({});
 
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
     // Select all servers
-    const selectAllCheckbox = screen.getByRole("checkbox", { name: "Select All (2)" });
+    const selectAllCheckbox = screen.getByRole("checkbox", { name: "全选 (2)" });
     await act(async () => {
       fireEvent.click(selectAllCheckbox);
     });
 
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     await act(async () => {
       fireEvent.click(nextButton);
     });
 
     // Wait for navigation to complete
     await waitFor(() => {
-      expect(screen.getByText("Confirm MCP Hub Publication")).toBeInTheDocument();
+      expect(screen.getByText("确认 MCP 中心的公开列表")).toBeInTheDocument();
     });
 
-    const submitButton = screen.getByRole("button", { name: "Save Publication List" });
+    const submitButton = screen.getByRole("button", { name: "保存公开列表" });
     await act(async () => {
       fireEvent.click(submitButton);
     });
@@ -167,7 +168,7 @@ describe("MakeMCPPublicForm", () => {
   });
 
   it("should handle select all functionality", async () => {
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
     const selectAllCheckbox = checkboxes[0];
@@ -195,19 +196,19 @@ describe("MakeMCPPublicForm", () => {
 
   it("submits an empty publication list after the last server is deselected", async () => {
     mockMakeMCPPublicCall.mockResolvedValueOnce({});
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
     fireEvent.click(screen.getAllByRole("checkbox")[2]);
-    expect(screen.getByRole("button", { name: "Next" })).toBeEnabled();
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
-    fireEvent.click(screen.getByRole("button", { name: "Save Publication List" }));
+    expect(screen.getByRole("button", { name: "下一步" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "下一步" }));
+    fireEvent.click(screen.getByRole("button", { name: "保存公开列表" }));
 
     await waitFor(() => expect(mockMakeMCPPublicCall).toHaveBeenCalledWith("test-token", []));
     expect(mockProps.onSuccess).toHaveBeenCalled();
   });
 
   it("keeps legacy listings separate from explicitly published selections", () => {
-    render(
+    renderWithProviders(
       <MakeMCPPublicForm
         {...mockProps}
         mcpHubData={[
@@ -219,7 +220,7 @@ describe("MakeMCPPublicForm", () => {
 
     expect(screen.getAllByRole("checkbox")[1]).not.toBeChecked();
     expect(screen.getAllByRole("checkbox")[2]).toBeChecked();
-    expect(screen.getByText("Listed by legacy mode")).toBeInTheDocument();
+    expect(screen.getByText("由遗留模式列出")).toBeInTheDocument();
   });
 
   it.each([
@@ -232,30 +233,30 @@ describe("MakeMCPPublicForm", () => {
   ])("blocks unknown explicit publication metadata: $mode", ({ info, mixed }) => {
     const unknownServer = { ...mockProps.mcpHubData[0], mcp_info: info };
     const catalog = mixed ? [unknownServer, mockProps.mcpHubData[1]] : [unknownServer];
-    render(<MakeMCPPublicForm {...mockProps} mcpHubData={catalog} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} mcpHubData={catalog} />);
 
-    expect(screen.getByRole("alert")).toHaveTextContent("explicit publication status");
+    expect(screen.getByRole("alert")).toHaveTextContent("明确的公开状态");
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(screen.queryByText("Configure in YAML")).not.toBeInTheDocument();
+    expect(screen.queryByText("在 YAML 中配置")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Copy code" })).not.toBeInTheDocument();
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     expect(nextButton).toBeDisabled();
     fireEvent.click(nextButton);
-    expect(screen.queryByText("Confirm MCP Hub Publication")).not.toBeInTheDocument();
+    expect(screen.queryByText("确认 MCP 中心的公开列表")).not.toBeInTheDocument();
     expect(mockMakeMCPPublicCall).not.toHaveBeenCalled();
   });
 
   it.each([true, false])("blocks confirmation when explicit metadata disappears with stale listing %s", (listed) => {
-    const { rerender } = render(<MakeMCPPublicForm {...mockProps} />);
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
-    expect(screen.getByRole("button", { name: "Save Publication List" })).toBeEnabled();
+    const { rerender } = renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
+    fireEvent.click(screen.getByRole("button", { name: "下一步" }));
+    expect(screen.getByRole("button", { name: "保存公开列表" })).toBeEnabled();
 
     const catalog = [{ ...mockProps.mcpHubData[0], mcp_info: { is_public: listed } }, mockProps.mcpHubData[1]];
     rerender(<MakeMCPPublicForm {...mockProps} mcpHubData={catalog} />);
 
-    expect(screen.getByRole("alert")).toHaveTextContent("explicit publication status");
-    expect(screen.queryByText("Confirm MCP Hub Publication")).not.toBeInTheDocument();
-    const saveButton = screen.getByRole("button", { name: "Save Publication List" });
+    expect(screen.getByRole("alert")).toHaveTextContent("明确的公开状态");
+    expect(screen.queryByText("确认 MCP 中心的公开列表")).not.toBeInTheDocument();
+    const saveButton = screen.getByRole("button", { name: "保存公开列表" });
     expect(saveButton).toBeDisabled();
     fireEvent.click(saveButton);
     expect(mockMakeMCPPublicCall).not.toHaveBeenCalled();
@@ -267,23 +268,23 @@ describe("MakeMCPPublicForm", () => {
     ];
     rerender(<MakeMCPPublicForm {...mockProps} mcpHubData={refreshedCatalog} />);
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Next" })).toBeEnabled();
-    expect(screen.getByRole("checkbox", { name: "Publish Test Server 1" })).toBeChecked();
-    expect(screen.getByRole("checkbox", { name: "Publish Test Server 2" })).not.toBeChecked();
+    expect(screen.getByRole("button", { name: "下一步" })).toBeEnabled();
+    expect(screen.getByRole("checkbox", { name: "公开 Test Server 1" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "公开 Test Server 2" })).not.toBeChecked();
   });
 
   it("copies publication YAML using the selected server IDs", async () => {
     const user = userEvent.setup();
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
-    await user.click(screen.getByText("Configure in YAML"));
+    await user.click(screen.getByText("在 YAML 中配置"));
     await user.click(screen.getByRole("button", { name: "Copy code" }));
 
     expect(await navigator.clipboard.readText()).toBe(
       'litellm_settings:\n  public_mcp_hub_strict_whitelist: true\n  public_mcp_servers:\n    - "server-2"',
     );
 
-    await user.click(screen.getByRole("checkbox", { name: "Publish Test Server 2" }));
+    await user.click(screen.getByRole("checkbox", { name: "公开 Test Server 2" }));
     await user.click(screen.getByRole("button", { name: "Copy code" }));
     expect(await navigator.clipboard.readText()).toBe(
       "litellm_settings:\n  public_mcp_hub_strict_whitelist: true\n  public_mcp_servers: []",
@@ -297,28 +298,28 @@ describe("MakeMCPPublicForm", () => {
       mcpHubData: [] as MCPServerData[],
     };
 
-    render(<MakeMCPPublicForm {...emptyProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...emptyProps} />);
 
-    expect(screen.getByText("No MCP servers available.")).toBeInTheDocument();
+    expect(screen.getByText("暂无可用的 MCP 服务器。")).toBeInTheDocument();
 
     // Select All checkbox should be disabled
-    const selectAllCheckbox = screen.getByRole("checkbox", { name: "Select All" });
+    const selectAllCheckbox = screen.getByRole("checkbox", { name: "全选" });
     expectDisabledControl(selectAllCheckbox);
 
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     expect(nextButton).toBeEnabled();
     fireEvent.click(nextButton);
-    fireEvent.click(screen.getByRole("button", { name: "Save Publication List" }));
+    fireEvent.click(screen.getByRole("button", { name: "保存公开列表" }));
 
     await waitFor(() => expect(mockMakeMCPPublicCall).toHaveBeenCalledWith("test-token", []));
     expect(mockProps.onSuccess).toHaveBeenCalled();
   });
 
   it("should handle Cancel button functionality", async () => {
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
     // Click Cancel button
-    const cancelButton = screen.getByRole("button", { name: "Cancel" });
+    const cancelButton = screen.getByRole("button", { name: "取消" });
     await act(async () => {
       fireEvent.click(cancelButton);
     });
@@ -328,31 +329,31 @@ describe("MakeMCPPublicForm", () => {
   });
 
   it("should handle Previous button functionality", async () => {
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
     // Navigate to step 1
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     await act(async () => {
       fireEvent.click(nextButton);
     });
 
     // Verify we're on step 1
     await waitFor(() => {
-      expect(screen.getByText("Confirm MCP Hub Publication")).toBeInTheDocument();
+      expect(screen.getByText("确认 MCP 中心的公开列表")).toBeInTheDocument();
     });
 
     // Click Previous button
-    const previousButton = screen.getByRole("button", { name: "Previous" });
+    const previousButton = screen.getByRole("button", { name: "上一步" });
     await act(async () => {
       fireEvent.click(previousButton);
     });
 
     // Should go back to step 0
-    expect(screen.getByText("Select MCP Servers for the Hub")).toBeInTheDocument();
+    expect(screen.getByText("选择要在中心展示的 MCP 服务器")).toBeInTheDocument();
   });
 
   it("should handle individual server selection", async () => {
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
     // Get all checkboxes (select all + individual servers)
     const checkboxes = screen.getAllByRole("checkbox");
@@ -396,7 +397,7 @@ describe("MakeMCPPublicForm", () => {
       mcpHubData: [serverWithManyTools],
     };
 
-    render(<MakeMCPPublicForm {...propsWithManyTools} />);
+    renderWithProviders(<MakeMCPPublicForm {...propsWithManyTools} />);
 
     // Should show first 3 tools as badges
     expect(screen.getByText("tool-1")).toBeInTheDocument();
@@ -404,25 +405,25 @@ describe("MakeMCPPublicForm", () => {
     expect(screen.getByText("tool-3")).toBeInTheDocument();
 
     // Should show "+2 more" text for the remaining tools
-    expect(screen.getByText("+2 more")).toBeInTheDocument();
+    expect(screen.getByText("还有 2 个")).toBeInTheDocument();
   });
 
   it("should handle submit error properly", async () => {
     const error = new Error("Update litellm_settings.public_mcp_servers in your YAML configuration");
     mockMakeMCPPublicCall.mockRejectedValueOnce(error);
 
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     await act(async () => {
       fireEvent.click(nextButton);
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Confirm MCP Hub Publication")).toBeInTheDocument();
+      expect(screen.getByText("确认 MCP 中心的公开列表")).toBeInTheDocument();
     });
 
-    const submitButton = screen.getByRole("button", { name: "Save Publication List" });
+    const submitButton = screen.getByRole("button", { name: "保存公开列表" });
     await act(async () => {
       fireEvent.click(submitButton);
     });
@@ -446,18 +447,18 @@ describe("MakeMCPPublicForm", () => {
     });
     mockMakeMCPPublicCall.mockReturnValueOnce(pendingPromise);
 
-    render(<MakeMCPPublicForm {...mockProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
-    const nextButton = screen.getByRole("button", { name: "Next" });
+    const nextButton = screen.getByRole("button", { name: "下一步" });
     await act(async () => {
       fireEvent.click(nextButton);
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Confirm MCP Hub Publication")).toBeInTheDocument();
+      expect(screen.getByText("确认 MCP 中心的公开列表")).toBeInTheDocument();
     });
 
-    const submitButton = screen.getByRole("button", { name: "Save Publication List" });
+    const submitButton = screen.getByRole("button", { name: "保存公开列表" });
     await act(async () => {
       fireEvent.click(submitButton);
     });
@@ -469,7 +470,7 @@ describe("MakeMCPPublicForm", () => {
     expect(mockMakeMCPPublicCall).toHaveBeenCalledTimes(1);
     expect(mockProps.onSuccess).not.toHaveBeenCalled();
     expect(mockProps.onClose).not.toHaveBeenCalled();
-    expect(screen.getByText("Confirm MCP Hub Publication")).toBeInTheDocument();
+    expect(screen.getByText("确认 MCP 中心的公开列表")).toBeInTheDocument();
 
     resolvePromise({});
     await waitFor(() => {
@@ -484,11 +485,11 @@ describe("MakeMCPPublicForm", () => {
       visible: false,
     };
 
-    render(<MakeMCPPublicForm {...invisibleProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...invisibleProps} />);
 
     // Modal should not be rendered
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.queryByText("Manage MCP Hub Visibility")).not.toBeInTheDocument();
+    expect(screen.queryByText("管理 MCP 中心的可见性")).not.toBeInTheDocument();
   });
 
   it("should preselect already public servers when modal opens", () => {
@@ -565,7 +566,7 @@ describe("MakeMCPPublicForm", () => {
       ] as MCPServerData[],
     };
 
-    render(<MakeMCPPublicForm {...mixedPublicProps} />);
+    renderWithProviders(<MakeMCPPublicForm {...mixedPublicProps} />);
 
     // Check that the correct checkboxes are selected
     const checkboxes = screen.getAllByRole("checkbox");
