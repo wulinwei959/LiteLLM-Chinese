@@ -3989,6 +3989,26 @@
         "ceiling": "Requested; already at the highest tier",
         "ceilingWithKeyword": "Requested via \"{keyword}\"; already at the highest tier"
       }
+    },
+    "realtime": {
+      "noEvents": "No recognized realtime events found",
+      "turnCount": "{count, plural, one {# turn} other {# turns}}",
+      "instructions": "Instructions",
+      "toolsCount": "{count} tool(s)",
+      "tokenUsage": "{input} in / {output} out tokens",
+      "conversationPrefix": "conv: {id}...",
+      "inputTokenBreakdown": "Input Token Breakdown",
+      "outputTokenBreakdown": "Output Token Breakdown",
+      "configRows": {
+        "model": "Model",
+        "voice": "Voice",
+        "temperature": "Temperature",
+        "maxOutputTokens": "Max Output Tokens",
+        "inputAudioFormat": "Input Audio Format",
+        "outputAudioFormat": "Output Audio Format",
+        "turnDetection": "Turn Detection",
+        "tools": "Tools"
+      }
     }
   },
   "projects": {

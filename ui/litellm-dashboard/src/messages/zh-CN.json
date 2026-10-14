@@ -3989,6 +3989,26 @@
         "ceiling": "已请求升级，但当前已是最高档位",
         "ceilingWithKeyword": "已通过 \"{keyword}\" 请求升级，但当前已是最高档位"
       }
+    },
+    "realtime": {
+      "noEvents": "未发现可识别的实时事件",
+      "turnCount": "{count} 轮",
+      "instructions": "指令",
+      "toolsCount": "{count} 个工具",
+      "tokenUsage": "输入 {input} / 输出 {output} 令牌",
+      "conversationPrefix": "会话：{id}...",
+      "inputTokenBreakdown": "输入令牌明细",
+      "outputTokenBreakdown": "输出令牌明细",
+      "configRows": {
+        "model": "模型",
+        "voice": "语音",
+        "temperature": "温度",
+        "maxOutputTokens": "最大输出令牌",
+        "inputAudioFormat": "输入音频格式",
+        "outputAudioFormat": "输出音频格式",
+        "turnDetection": "轮次检测",
+        "tools": "工具"
+      }
     }
   },
   "projects": {
