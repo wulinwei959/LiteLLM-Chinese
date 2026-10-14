@@ -371,7 +371,7 @@ describe("RequestLogsFilters", () => {
     const { set } = renderFilters();
 
     await user.click(await screen.findByPlaceholderText("选择或输入错误码"));
-    await user.click(await screen.findByRole("option", { name: "429 - Rate Limited" }));
+    await user.click(await screen.findByRole("option", { name: "429 - 触发限流" }));
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.ERROR_CODE, "429");
   });
@@ -382,7 +382,7 @@ describe("RequestLogsFilters", () => {
 
     const input = await screen.findByPlaceholderText("选择或输入错误码");
     await user.click(input);
-    await user.click(await screen.findByRole("option", { name: "429 - Rate Limited" }));
+    await user.click(await screen.findByRole("option", { name: "429 - 触发限流" }));
     await user.click(input);
 
     const list = await screen.findByTestId("error-code-filter-list");
