@@ -1,8 +1,10 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { createTranslator } from "next-intl";
 import { describe, expect, it, vi } from "vitest";
 
 import { DataTable } from "@/components/shared/DataTable";
+import zh from "@/messages/zh-CN.json";
 
 import { renderWithProviders } from "../../../tests/test-utils";
 
@@ -35,7 +37,9 @@ const logEntry = (overrides: Partial<LogEntry>): LogEntry => ({
   ...overrides,
 });
 
-const noopDeps = { onKeyHashClick: vi.fn(), onSessionClick: vi.fn() };
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "logs" });
+
+const noopDeps = { onKeyHashClick: vi.fn(), onSessionClick: vi.fn(), t };
 
 function renderRows(rows: LogEntry[], deps = noopDeps) {
   renderWithProviders(
@@ -80,7 +84,7 @@ describe("Cost column", () => {
 
     expect(screen.getByText("$0.060000")).toBeInTheDocument();
     expect(screen.queryByText("$0.010000")).not.toBeInTheDocument();
-    expect(screen.getByText("session total")).toBeInTheDocument();
+    expect(screen.getByText("会话合计")).toBeInTheDocument();
   });
 
   it("does not label the per-call spend a session total when the aggregate is unavailable", () => {
@@ -93,7 +97,7 @@ describe("Cost column", () => {
     renderRows([logEntry(rowWithoutAggregate)]);
 
     expect(screen.getByText("$0.010000")).toBeInTheDocument();
-    expect(screen.queryByText("session total")).not.toBeInTheDocument();
+    expect(screen.queryByText("会话合计")).not.toBeInTheDocument();
   });
 });
 
@@ -111,14 +115,14 @@ describe("Duration column", () => {
 
     expect(screen.getByText("5.40")).toBeInTheDocument();
     expect(screen.queryByText("1.20")).not.toBeInTheDocument();
-    expect(screen.getByText("session total")).toBeInTheDocument();
+    expect(screen.getByText("会话合计")).toBeInTheDocument();
   });
 
   it("does not label the per-call duration a session total when the aggregate is unavailable", () => {
     renderRows([logEntry(sessionRow)]);
 
     expect(screen.getByText("1.20")).toBeInTheDocument();
-    expect(screen.queryByText("session total")).not.toBeInTheDocument();
+    expect(screen.queryByText("会话合计")).not.toBeInTheDocument();
   });
 
   it("shows the call's own duration for a single-call session", () => {
@@ -177,7 +181,7 @@ describe("Tokens column", () => {
 
     const tokensCell = screen.getByRole("cell", { name: /\(42\+18\)/ });
     expect(tokensCell).toHaveTextContent("60");
-    expect(tokensCell).toHaveTextContent("session total");
+    expect(tokensCell).toHaveTextContent("会话合计");
     expect(screen.queryByText("10")).not.toBeInTheDocument();
     expect(screen.queryByText("(7+3)")).not.toBeInTheDocument();
   });
@@ -187,7 +191,7 @@ describe("Tokens column", () => {
 
     const tokensCell = screen.getByRole("cell", { name: /\(7\+3\)/ });
     expect(tokensCell).toHaveTextContent("10");
-    expect(tokensCell).not.toHaveTextContent("session total");
+    expect(tokensCell).not.toHaveTextContent("会话合计");
   });
 });
 
@@ -249,22 +253,22 @@ describe("batch rows", () => {
     const user = userEvent.setup();
     renderRows([batchRow({ metadata: { batch_successful_requests: 2, batch_failed_requests: 1 } })]);
 
-    expect(screen.queryByText("Success")).not.toBeInTheDocument();
-    await user.hover(screen.getByText("2/3 succeeded"));
-    expect(await screen.findByText("1 of 3 batch requests failed")).toBeInTheDocument();
+    expect(screen.queryByText("成功")).not.toBeInTheDocument();
+    await user.hover(screen.getByText("2/3 成功"));
+    expect(await screen.findByText("3 个批处理请求中 1 个失败")).toBeInTheDocument();
   });
 
   it("keeps the Success badge when every batch request succeeded", () => {
     renderRows([batchRow({ metadata: { batch_successful_requests: 3, batch_failed_requests: 0 } })]);
 
-    expect(screen.getByText("Success")).toBeInTheDocument();
+    expect(screen.getByText("成功")).toBeInTheDocument();
   });
 
   it("keeps the Failure badge when the batch row itself failed, whatever the counts say", () => {
     renderRows([batchRow({ metadata: { status: "failure", batch_successful_requests: 2, batch_failed_requests: 1 } })]);
 
-    expect(screen.getByText("Failure")).toBeInTheDocument();
-    expect(screen.queryByText("2/3 succeeded")).not.toBeInTheDocument();
+    expect(screen.getByText("失败")).toBeInTheDocument();
+    expect(screen.queryByText("2/3 成功")).not.toBeInTheDocument();
   });
 
   it("shows the provider batch id, not the synthetic _batch_cost request id", () => {
@@ -272,14 +276,14 @@ describe("batch rows", () => {
 
     expect(screen.getByText("batch_abc123")).toBeInTheDocument();
     expect(screen.queryByText("batch_abc123_batch_cost")).not.toBeInTheDocument();
-    expect(screen.getByText("batch cost")).toBeInTheDocument();
+    expect(screen.getByText("批处理成本")).toBeInTheDocument();
   });
 
   it("leaves ordinary request ids untouched", () => {
     renderRows([logEntry({ request_id: "chatcmpl-42", litellm_call_id: "chatcmpl-42" })]);
 
     expect(screen.getByText("chatcmpl-42")).toBeInTheDocument();
-    expect(screen.queryByText("batch cost")).not.toBeInTheDocument();
+    expect(screen.queryByText("批处理成本")).not.toBeInTheDocument();
   });
 });
 
@@ -309,7 +313,7 @@ describe("Request ID column", () => {
     );
 
     await user.hover(screen.getByText("chatcmpl-9"));
-    fireEvent.click(await screen.findByRole("button", { name: "Copy x-litellm-call-id" }));
+    fireEvent.click(await screen.findByRole("button", { name: "复制 x-litellm-call-id" }));
 
     expect(copyToClipboardMock).toHaveBeenCalledWith("call-uuid-9");
     expect(onRowClick).not.toHaveBeenCalled();
@@ -373,7 +377,7 @@ describe("Model column", () => {
 describe("row action cells", () => {
   it("reports the key hash through the injected dependency rather than a row field", async () => {
     const user = userEvent.setup();
-    const deps = { onKeyHashClick: vi.fn(), onSessionClick: vi.fn() };
+    const deps = { ...noopDeps, onKeyHashClick: vi.fn(), onSessionClick: vi.fn() };
     renderRows([logEntry({ request_id: "req-key", metadata: { user_api_key: "sk-hash-9" } })], deps);
 
     await user.click(screen.getByText("sk-hash-9"));
@@ -382,7 +386,7 @@ describe("row action cells", () => {
 
   it("reports the clicked row from the session cell, so two rows sharing a session id stay distinguishable", async () => {
     const user = userEvent.setup();
-    const deps = { onKeyHashClick: vi.fn(), onSessionClick: vi.fn() };
+    const deps = { ...noopDeps, onKeyHashClick: vi.fn(), onSessionClick: vi.fn() };
     renderRows(
       [
         logEntry({ request_id: "req-key-a", session_id: "sess-42", api_key: "key-a" }),
@@ -439,13 +443,13 @@ describe("TTFT column", () => {
 describe("Request outcome", () => {
   it("shows a failed agent outcome even when metadata has no status", () => {
     renderRows([logEntry({ call_type: "asend_message", status: "failure", session_total_count: 4 })]);
-    expect(screen.getByText("Failure")).toBeInTheDocument();
-    expect(screen.queryByText("Success")).not.toBeInTheDocument();
+    expect(screen.getByText("失败")).toBeInTheDocument();
+    expect(screen.queryByText("成功")).not.toBeInTheDocument();
   });
 
   it("prefers the recorded outcome over stale metadata", () => {
     renderRows([logEntry({ status: "success", metadata: { status: "failure" } })]);
-    expect(screen.getByText("Success")).toBeInTheDocument();
-    expect(screen.queryByText("Failure")).not.toBeInTheDocument();
+    expect(screen.getByText("成功")).toBeInTheDocument();
+    expect(screen.queryByText("失败")).not.toBeInTheDocument();
   });
 });
