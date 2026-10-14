@@ -1,7 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { describe, expect, it, vi } from "vitest";
 import { DataTable } from "@/components/shared/DataTable";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { getAgentHubTableColumns, AgentHubData } from "./AgentHubTableColumns";
 
 const mockAgent: AgentHubData = {
@@ -22,16 +25,28 @@ const mockAgent: AgentHubData = {
   is_public: true,
 };
 
-function renderTable(data: AgentHubData[], onAgentClick = vi.fn()) {
-  render(
+function AgentHubTableHarness({
+  data,
+  onAgentClick,
+}: {
+  data: AgentHubData[];
+  onAgentClick: (agent: AgentHubData) => void;
+}) {
+  const t = useTranslations("agents");
+  const columns = useMemo(() => getAgentHubTableColumns({ onAgentClick, t }), [onAgentClick, t]);
+  return (
     <DataTable
       data={data}
-      columns={getAgentHubTableColumns({ onAgentClick })}
+      columns={columns}
       getRowId={(agent, index) => agent.agent_id || String(index)}
       sortingMode="client"
       size="compact"
-    />,
+    />
   );
+}
+
+function renderTable(data: AgentHubData[], onAgentClick = vi.fn()) {
+  renderWithProviders(<AgentHubTableHarness data={data} onAgentClick={onAgentClick} />);
   return onAgentClick;
 }
 
@@ -58,7 +73,7 @@ describe("getAgentHubTableColumns", () => {
 
   it("should show skill count with correct pluralization", () => {
     renderTable([mockAgent]);
-    expect(screen.getByText("3 skills")).toBeInTheDocument();
+    expect(screen.getByText("3 个技能")).toBeInTheDocument();
   });
 
   it("should show first two skills and '+1' for overflow", () => {
@@ -76,20 +91,20 @@ describe("getAgentHubTableColumns", () => {
 
   it("should display I/O modes", () => {
     renderTable([mockAgent]);
-    const inLabel = screen.getByText("In:");
-    expect(inLabel.parentElement?.textContent).toBe("In: text");
-    const outLabel = screen.getByText("Out:");
-    expect(outLabel.parentElement?.textContent).toBe("Out: text, image");
+    const inLabel = screen.getByText("输入：");
+    expect(inLabel.parentElement?.textContent).toBe("输入：text");
+    const outLabel = screen.getByText("输出：");
+    expect(outLabel.parentElement?.textContent).toBe("输出：text, image");
   });
 
   it("should display 'Yes' badge for public agents", () => {
     renderTable([mockAgent]);
-    expect(screen.getByText("Yes")).toBeInTheDocument();
+    expect(screen.getByText("是")).toBeInTheDocument();
   });
 
   it("should display 'No' badge for non-public agents", () => {
     renderTable([{ ...mockAgent, is_public: false }]);
-    expect(screen.getByText("No")).toBeInTheDocument();
+    expect(screen.getByText("否")).toBeInTheDocument();
   });
 
   it("should open the agent details when the name is clicked", async () => {
@@ -102,8 +117,10 @@ describe("getAgentHubTableColumns", () => {
   it("should open the agent details from the actions menu", async () => {
     const user = userEvent.setup();
     const onAgentClick = renderTable([mockAgent]);
-    await user.click(screen.getByTestId("agent-hub-actions-agent-1"));
-    await user.click(await screen.findByTestId("agent-hub-action-details"));
+    await user.click(screen.getByRole("button", { name: "打开智能体操作" }));
+    const detailsItem = await screen.findByTestId("agent-hub-action-details");
+    expect(detailsItem).toHaveTextContent("查看详情");
+    await user.click(detailsItem);
     expect(onAgentClick).toHaveBeenCalledWith(mockAgent);
   });
 
@@ -111,7 +128,9 @@ describe("getAgentHubTableColumns", () => {
     const user = userEvent.setup();
     renderTable([mockAgent]);
     await user.click(screen.getByTestId("agent-hub-actions-agent-1"));
-    await user.click(await screen.findByTestId("agent-hub-action-copy"));
+    const copyItem = await screen.findByTestId("agent-hub-action-copy");
+    expect(copyItem).toHaveTextContent("复制智能体名称");
+    await user.click(copyItem);
     expect(await window.navigator.clipboard.readText()).toBe("Test Agent");
   });
 
@@ -122,6 +141,6 @@ describe("getAgentHubTableColumns", () => {
 
   it("should show singular 'skill' for one skill", () => {
     renderTable([{ ...mockAgent, skills: [{ id: "s1", name: "Only Skill", description: "One" }] }]);
-    expect(screen.getByText("1 skill")).toBeInTheDocument();
+    expect(screen.getByText("1 个技能")).toBeInTheDocument();
   });
 });

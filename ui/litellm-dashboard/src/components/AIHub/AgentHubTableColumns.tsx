@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { AgentsTranslator } from "@/lib/i18n/translators";
 import { Copy, Info, MoreHorizontal } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -43,15 +44,16 @@ export interface AgentHubData {
 }
 
 interface AgentHubRowActionsProps {
+  t: AgentsTranslator;
   agent: AgentHubData;
   onAgentClick: (agent: AgentHubData) => void;
 }
 
-function AgentHubRowActions({ agent, onAgentClick }: AgentHubRowActionsProps) {
+function AgentHubRowActions({ t, agent, onAgentClick }: AgentHubRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open agent actions"
+        aria-label={t("openAgentActions")}
         data-testid={`agent-hub-actions-${agent.agent_id || agent.name}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -60,14 +62,14 @@ function AgentHubRowActions({ agent, onAgentClick }: AgentHubRowActionsProps) {
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem data-testid="agent-hub-action-details" onClick={() => onAgentClick(agent)}>
           <Info />
-          View details
+          {t("viewDetails")}
         </DropdownMenuItem>
         <DropdownMenuItem
           data-testid="agent-hub-action-copy"
-          onClick={() => void copyToClipboard(agent.name, "Agent name copied")}
+          onClick={() => void copyToClipboard(agent.name, t("agentNameCopied"))}
         >
           <Copy />
-          Copy agent name
+          {t("copyAgentName")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -76,14 +78,15 @@ function AgentHubRowActions({ agent, onAgentClick }: AgentHubRowActionsProps) {
 
 interface AgentHubTableColumnsDeps {
   onAgentClick: (agent: AgentHubData) => void;
+  t: AgentsTranslator;
 }
 
-export const getAgentHubTableColumns = ({ onAgentClick }: AgentHubTableColumnsDeps): ColumnDef<AgentHubData>[] => [
+export const getAgentHubTableColumns = ({ onAgentClick, t }: AgentHubTableColumnsDeps): ColumnDef<AgentHubData>[] => [
   {
     id: "name",
     accessorKey: "name",
-    meta: { title: "Agent Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Agent Name" />,
+    meta: { title: t("colAgentName") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colAgentName")} />,
     size: 200,
     enableSorting: true,
     sortingFn: "alphanumeric",
@@ -94,8 +97,8 @@ export const getAgentHubTableColumns = ({ onAgentClick }: AgentHubTableColumnsDe
   {
     id: "description",
     accessorKey: "description",
-    meta: { title: "Description", className: "hidden md:table-cell" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Description" />,
+    meta: { title: t("description"), className: "hidden md:table-cell" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("description")} />,
     size: 240,
     enableSorting: true,
     sortingFn: "alphanumeric",
@@ -108,8 +111,8 @@ export const getAgentHubTableColumns = ({ onAgentClick }: AgentHubTableColumnsDe
   {
     id: "version",
     accessorKey: "version",
-    meta: { title: "Version", skeleton: "badge", className: "hidden lg:table-cell" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Version" />,
+    meta: { title: t("version"), skeleton: "badge", className: "hidden lg:table-cell" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("version")} />,
     size: 100,
     enableSorting: true,
     sortingFn: "alphanumeric",
@@ -122,8 +125,8 @@ export const getAgentHubTableColumns = ({ onAgentClick }: AgentHubTableColumnsDe
   {
     id: "protocolVersion",
     accessorKey: "protocolVersion",
-    meta: { title: "Protocol", className: "hidden lg:table-cell" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Protocol" />,
+    meta: { title: t("colProtocol"), className: "hidden lg:table-cell" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colProtocol")} />,
     size: 100,
     enableSorting: true,
     sortingFn: "alphanumeric",
@@ -131,17 +134,15 @@ export const getAgentHubTableColumns = ({ onAgentClick }: AgentHubTableColumnsDe
   },
   {
     id: "skills",
-    meta: { title: "Skills", skeleton: "chips" },
-    header: "Skills",
+    meta: { title: t("skills"), skeleton: "chips" },
+    header: t("skills"),
     size: 180,
     enableSorting: false,
     cell: ({ row }) => {
       const skills = row.original.skills || [];
       return (
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium">
-            {skills.length} skill{skills.length !== 1 ? "s" : ""}
-          </span>
+          <span className="text-xs font-medium">{t("skillsCount", { count: skills.length })}</span>
           {skills.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {skills.slice(0, 2).map((skill) => (
@@ -158,8 +159,8 @@ export const getAgentHubTableColumns = ({ onAgentClick }: AgentHubTableColumnsDe
   },
   {
     id: "capabilities",
-    meta: { title: "Capabilities", skeleton: "chips" },
-    header: "Capabilities",
+    meta: { title: t("capabilities"), skeleton: "chips" },
+    header: t("capabilities"),
     size: 160,
     enableSorting: false,
     cell: ({ row }) => {
@@ -182,8 +183,8 @@ export const getAgentHubTableColumns = ({ onAgentClick }: AgentHubTableColumnsDe
   },
   {
     id: "io_modes",
-    meta: { title: "I/O Modes", skeleton: "twoLine", className: "hidden xl:table-cell" },
-    header: "I/O Modes",
+    meta: { title: t("colIoModes"), skeleton: "twoLine", className: "hidden xl:table-cell" },
+    header: t("colIoModes"),
     size: 150,
     enableSorting: false,
     cell: ({ row }) => {
@@ -192,10 +193,16 @@ export const getAgentHubTableColumns = ({ onAgentClick }: AgentHubTableColumnsDe
       return (
         <div className="flex flex-col gap-0.5 text-xs">
           <span>
-            <span className="font-medium">In:</span> {inputModes.join(", ") || "-"}
+            {t.rich("ioInputModes", {
+              modes: inputModes.join(", ") || "-",
+              strong: (chunks) => <span className="font-medium">{chunks}</span>,
+            })}
           </span>
           <span>
-            <span className="font-medium">Out:</span> {outputModes.join(", ") || "-"}
+            {t.rich("ioOutputModes", {
+              modes: outputModes.join(", ") || "-",
+              strong: (chunks) => <span className="font-medium">{chunks}</span>,
+            })}
           </span>
         </div>
       );
@@ -204,8 +211,8 @@ export const getAgentHubTableColumns = ({ onAgentClick }: AgentHubTableColumnsDe
   {
     id: "is_public",
     accessorKey: "is_public",
-    meta: { title: "Public", skeleton: "badge", className: "hidden md:table-cell" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Public" />,
+    meta: { title: t("colPublic"), skeleton: "badge", className: "hidden md:table-cell" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colPublic")} />,
     size: 100,
     enableSorting: true,
     sortingFn: (rowA, rowB) => {
@@ -215,19 +222,19 @@ export const getAgentHubTableColumns = ({ onAgentClick }: AgentHubTableColumnsDe
     },
     cell: ({ row }) => {
       const isPublic = row.original.is_public === true;
-      return <StatusBadge tone={isPublic ? "success" : "neutral"} label={isPublic ? "Yes" : "No"} />;
+      return <StatusBadge tone={isPublic ? "success" : "neutral"} label={isPublic ? t("yes") : t("no")} />;
     },
   },
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <AgentHubRowActions agent={row.original} onAgentClick={onAgentClick} />
+        <AgentHubRowActions t={t} agent={row.original} onAgentClick={onAgentClick} />
       </div>
     ),
   },

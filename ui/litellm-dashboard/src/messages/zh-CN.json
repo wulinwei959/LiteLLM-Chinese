@@ -7145,7 +7145,16 @@
     "requiredSuffix": "（必填）",
     "panelTracingTitle": "追踪",
     "costConfigTitle": "成本配置",
-    "pleaseEnter": "请输入{field}"
+    "pleaseEnter": "请输入{field}",
+    "colProtocol": "协议",
+    "colPublic": "公开",
+    "colIoModes": "输入输出模式",
+    "skillsCount": "{count, number} 个技能",
+    "ioInputModes": "<strong>输入：</strong>{modes}",
+    "ioOutputModes": "<strong>输出：</strong>{modes}",
+    "viewDetails": "查看详情",
+    "copyAgentName": "复制智能体名称",
+    "agentNameCopied": "智能体名称已复制"
   },
   "costTracking": {
     "globalAll": "全局（所有供应商）",

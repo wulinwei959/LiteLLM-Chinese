@@ -7145,7 +7145,16 @@
     "requiredSuffix": "(Required)",
     "panelTracingTitle": "Tracing",
     "costConfigTitle": "Cost Configuration",
-    "pleaseEnter": "Please enter {field}"
+    "pleaseEnter": "Please enter {field}",
+    "colProtocol": "Protocol",
+    "colPublic": "Public",
+    "colIoModes": "I/O Modes",
+    "skillsCount": "{count, plural, one {# skill} other {# skills}}",
+    "ioInputModes": "<strong>In:</strong> {modes}",
+    "ioOutputModes": "<strong>Out:</strong> {modes}",
+    "viewDetails": "View details",
+    "copyAgentName": "Copy agent name",
+    "agentNameCopied": "Agent name copied"
   },
   "costTracking": {
     "globalAll": "Global (All Providers)",
