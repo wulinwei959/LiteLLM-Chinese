@@ -6270,6 +6270,16 @@
       "empty": "该时间段没有用量数据",
       "dailySpend": "每日花费",
       "dailyRequests": "每日请求"
+    },
+    "shell": {
+      "betaWarning": "这是 pre-v0 阶段的功能，请勿在生产环境使用，它可能随时变化。欢迎在<link>这里</link>分享反馈。",
+      "newChat": "新建对话",
+      "navChats": "对话",
+      "navIntegrations": "集成",
+      "navCredentials": "凭证",
+      "navApiKeys": "API 密钥",
+      "navLogs": "日志",
+      "navUsage": "用量"
     }
   },
   "playground": {

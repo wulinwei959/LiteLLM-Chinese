@@ -6270,6 +6270,16 @@
       "empty": "No usage data for this period",
       "dailySpend": "Daily Spend",
       "dailyRequests": "Daily Requests"
+    },
+    "shell": {
+      "betaWarning": "This is a pre-v0 feature. Do not use in production, it may change unexpectedly. Please share feedback <link>here</link>.",
+      "newChat": "New Chat",
+      "navChats": "Chats",
+      "navIntegrations": "Integrations",
+      "navCredentials": "Credentials",
+      "navApiKeys": "API Keys",
+      "navLogs": "Logs",
+      "navUsage": "Usage"
     }
   },
   "playground": {
