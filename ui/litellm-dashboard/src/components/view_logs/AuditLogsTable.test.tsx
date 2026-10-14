@@ -56,12 +56,12 @@ describe("AuditLogsTable", () => {
   it("renders each audit column with the migrated shared cells", () => {
     renderTable();
 
-    // Action -> StatusBadge with a capitalized label
-    expect(screen.getByText("Created")).toBeInTheDocument();
-    expect(screen.getByText("Deleted")).toBeInTheDocument();
+    // Action -> StatusBadge with a translated label
+    expect(screen.getByText("已创建")).toBeInTheDocument();
+    expect(screen.getByText("已删除")).toBeInTheDocument();
     // Table name -> display mapping
-    expect(screen.getByText("Teams")).toBeInTheDocument();
-    expect(screen.getByText("Users")).toBeInTheDocument();
+    expect(screen.getByText("团队")).toBeInTheDocument();
+    expect(screen.getByText("用户")).toBeInTheDocument();
     // Changed By -> DefaultProxyAdminTag (default_user_id becomes a labeled tag; other ids stay raw)
     expect(screen.getByText("Default Proxy Admin")).toBeInTheDocument();
     expect(screen.getByText("user-42")).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe("AuditLogsTable", () => {
     renderTable({ isLoading: true, data: [] });
 
     expect(screen.getAllByTestId("skeleton-row").length).toBeGreaterThan(0);
-    expect(screen.queryByText("No audit logs yet")).not.toBeInTheDocument();
+    expect(screen.queryByText("暂无审计日志")).not.toBeInTheDocument();
   });
 
   it("uses a distinct empty state for unfiltered vs filtered-empty results", () => {
@@ -114,18 +114,18 @@ describe("AuditLogsTable", () => {
         onViewLog={vi.fn()}
       />,
     );
-    expect(screen.getByText("No audit logs yet")).toBeInTheDocument();
+    expect(screen.getByText("暂无审计日志")).toBeInTheDocument();
     unmount();
 
     renderTable({ data: [], rowCount: 0, columnFilters: [{ id: "action", value: "created" }] });
-    expect(screen.getByText("No matching audit logs")).toBeInTheDocument();
+    expect(screen.getByText("没有匹配的审计日志")).toBeInTheDocument();
   });
 
   it("renders the toolbar search box from the search props and forwards typed input", () => {
     const onSearchChange = vi.fn();
     renderTable({ searchValue: "team-", onSearchChange });
 
-    const input = screen.getByPlaceholderText("Search audit logs by ID…");
+    const input = screen.getByPlaceholderText("按 ID 搜索审计日志…");
     expect(input).toHaveValue("team-");
 
     fireEvent.change(input, { target: { value: "team-7" } });
@@ -136,7 +136,7 @@ describe("AuditLogsTable", () => {
     const emptySearchResult = { data: [], rowCount: 0, searchValue: "zzz", onSearchChange: vi.fn() };
     renderTable(emptySearchResult);
 
-    expect(screen.getByText("No matching audit logs")).toBeInTheDocument();
+    expect(screen.getByText("没有匹配的审计日志")).toBeInTheDocument();
   });
 
   it("renders active filter chips with human-readable labels", () => {
@@ -144,8 +144,8 @@ describe("AuditLogsTable", () => {
     renderTable({ columnFilters: filters });
 
     const chip = screen.getByTestId("filter-chip-action");
-    expect(chip).toHaveTextContent("Action:");
-    expect(chip).toHaveTextContent("Created");
+    expect(chip).toHaveTextContent("操作");
+    expect(chip).toHaveTextContent("已创建");
   });
 
   it("commits a text filter through the filter drawer and reports it to the parent", async () => {
@@ -154,7 +154,7 @@ describe("AuditLogsTable", () => {
     renderTable({ onColumnFiltersChange });
 
     await user.click(screen.getByTestId("datatable-filters-trigger"));
-    fireEvent.change(await screen.findByPlaceholderText("Enter object ID…"), { target: { value: "obj-9" } });
+    fireEvent.change(await screen.findByPlaceholderText("输入对象 ID…"), { target: { value: "obj-9" } });
     await user.click(screen.getByTestId("filter-drawer-apply"));
 
     expect(onColumnFiltersChange).toHaveBeenCalledTimes(1);
@@ -170,8 +170,8 @@ describe("AuditLogsTable", () => {
     await user.click(screen.getByTestId("datatable-filters-trigger"));
     const [action, table] = await screen.findAllByRole("combobox");
 
-    expect(action).toHaveTextContent("All Actions");
-    expect(table).toHaveTextContent("All Tables");
+    expect(action).toHaveTextContent("全部操作");
+    expect(table).toHaveTextContent("全部数据表");
   });
 
   it("shows the human label on the filter triggers for an applied filter", async () => {
@@ -186,7 +186,7 @@ describe("AuditLogsTable", () => {
     await user.click(screen.getByTestId("datatable-filters-trigger"));
     const [action, table] = await screen.findAllByRole("combobox");
 
-    expect(action).toHaveTextContent("Created");
-    expect(table).toHaveTextContent("Teams");
+    expect(action).toHaveTextContent("已创建");
+    expect(table).toHaveTextContent("团队");
   });
 });
