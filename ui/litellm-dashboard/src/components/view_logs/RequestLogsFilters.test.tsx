@@ -83,20 +83,20 @@ describe("RequestLogsFilters", () => {
     renderFilters();
 
     for (const label of [
-      "Team ID",
-      "Span Type",
-      "Status",
-      "Cache",
-      "Credential",
-      "Key Alias",
-      "User ID",
-      "End User",
-      "Error Code",
-      "Error Message",
-      "Key Hash",
-      "Session ID",
-      "Model",
-      "Public model / search tool",
+      "团队 ID",
+      "调用类型",
+      "状态",
+      "缓存",
+      "凭据",
+      "密钥别名",
+      "用户 ID",
+      "终端用户",
+      "错误码",
+      "错误信息",
+      "密钥哈希",
+      "会话 ID",
+      "模型",
+      "公开模型 / 搜索工具",
     ]) {
       expect(await screen.findByText(label)).toBeInTheDocument();
     }
@@ -105,7 +105,7 @@ describe("RequestLogsFilters", () => {
   it("places User ID between Key Alias and End User", async () => {
     renderFilters();
 
-    const labels = ["Key Alias", "User ID", "End User"].map((label) => screen.getByText(label));
+    const labels = ["密钥别名", "用户 ID", "终端用户"].map((label) => screen.getByText(label));
     expect(labels[0].compareDocumentPosition(labels[1]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(labels[1].compareDocumentPosition(labels[2]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
@@ -127,7 +127,7 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     const { set } = renderFilters();
 
-    await chooseSelectOption(user, await screen.findByPlaceholderText("Search an internal user"), "alice@example.com");
+    await chooseSelectOption(user, await screen.findByPlaceholderText("搜索内部用户"), "alice@example.com");
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.USER_ID, "alice@example.com");
   });
@@ -136,7 +136,7 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     renderFilters();
 
-    const input = await screen.findByPlaceholderText("Search an internal user");
+    const input = await screen.findByPlaceholderText("搜索内部用户");
     await user.click(input);
     fireEvent.change(input, { target: { value: "alice@example.com" } });
 
@@ -163,7 +163,7 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     renderFilters();
 
-    await user.click(await screen.findByPlaceholderText("Search an internal user"));
+    await user.click(await screen.findByPlaceholderText("搜索内部用户"));
     const list = await screen.findByTestId("paginated-search-select-list");
     Object.defineProperty(list, "scrollTop", { value: 90, configurable: true });
     Object.defineProperty(list, "clientHeight", { value: 10, configurable: true });
@@ -205,7 +205,7 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     renderFilters();
 
-    const input = await screen.findByPlaceholderText("Search an end user");
+    const input = await screen.findByPlaceholderText("搜索终端用户");
     await user.click(input);
     fireEvent.change(input, { target: { value: "acme" } });
 
@@ -229,7 +229,7 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     renderFilters();
 
-    await user.click(await screen.findByPlaceholderText("Search an end user"));
+    await user.click(await screen.findByPlaceholderText("搜索终端用户"));
 
     expect(await screen.findByText("cust-a")).toBeInTheDocument();
     expect(screen.getByText("cust-b")).toBeInTheDocument();
@@ -251,7 +251,7 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     renderFilters();
 
-    await user.click(await screen.findByPlaceholderText("Search an end user"));
+    await user.click(await screen.findByPlaceholderText("搜索终端用户"));
     const list = await screen.findByTestId("paginated-search-select-list");
     Object.defineProperty(list, "scrollTop", { value: 90, configurable: true });
     Object.defineProperty(list, "clientHeight", { value: 10, configurable: true });
@@ -269,9 +269,9 @@ describe("RequestLogsFilters", () => {
   });
 
   it.each([
-    ["", "All Statuses"],
-    ["success", "Success"],
-    ["failure", "Failure"],
+    ["", "所有状态"],
+    ["success", "成功"],
+    ["failure", "失败"],
   ])("shows the human label on the Status trigger for %s", async (status, label) => {
     renderFilters(status === "" ? {} : { [LOG_FILTER_IDS.STATUS]: status });
 
@@ -279,9 +279,9 @@ describe("RequestLogsFilters", () => {
   });
 
   it.each([
-    ["", "All Requests"],
-    ["hit", "Cache Hit"],
-    ["miss", "Cache Miss"],
+    ["", "全部请求"],
+    ["hit", "缓存命中"],
+    ["miss", "缓存未命中"],
   ])("shows the human label on the Cache trigger for %s", async (cacheState, label) => {
     renderFilters(cacheState === "" ? {} : { [LOG_FILTER_IDS.CACHE_STATUS]: cacheState });
 
@@ -289,9 +289,9 @@ describe("RequestLogsFilters", () => {
   });
 
   it.each([
-    ["", "All Credentials"],
-    ["true", "Client OAuth token"],
-    ["false", "Configured key"],
+    ["", "全部凭据"],
+    ["true", "客户端 OAuth 令牌"],
+    ["false", "配置密钥"],
   ])("shows the human label on the Credential trigger for %s", async (credential, label) => {
     renderFilters(credential === "" ? {} : { [LOG_FILTER_IDS.CREDENTIAL]: credential });
 
@@ -299,11 +299,11 @@ describe("RequestLogsFilters", () => {
   });
 
   it.each([
-    ["", "All Types"],
+    ["", "全部类型"],
     ["llm", "LLM"],
-    ["agent", "Agent"],
+    ["agent", "智能体"],
     ["mcp", "MCP"],
-    ["batch", "Batch"],
+    ["batch", "批处理"],
   ])("shows the human label on the Span Type trigger for %s", async (spanType, label) => {
     renderFilters(spanType === "" ? {} : { [LOG_FILTER_IDS.SPAN_TYPE]: spanType });
 
@@ -314,8 +314,8 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     const { set } = renderFilters();
 
-    await user.click(await screen.findByText("All Types"));
-    await user.click(await screen.findByRole("option", { name: "Batch" }));
+    await user.click(await screen.findByText("全部类型"));
+    await user.click(await screen.findByRole("option", { name: "批处理" }));
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.SPAN_TYPE, "batch");
   });
@@ -324,33 +324,33 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     const { set } = renderFilters({ [LOG_FILTER_IDS.SPAN_TYPE]: "batch" });
 
-    await user.click(await screen.findByText("Batch"));
-    await user.click(await screen.findByRole("option", { name: "All Types" }));
+    await user.click(await screen.findByText("批处理"));
+    await user.click(await screen.findByRole("option", { name: "全部类型" }));
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.SPAN_TYPE, undefined);
   });
 
   it.each([
-    ["Cache Hit", "hit"],
-    ["Cache Miss", "miss"],
+    ["缓存命中", "hit"],
+    ["缓存未命中", "miss"],
   ])("selecting %s sets the cache filter to %s", async (label, expected) => {
     const user = userEvent.setup();
     const { set } = renderFilters();
 
-    await user.click(await screen.findByText("All Requests"));
+    await user.click(await screen.findByText("全部请求"));
     await user.click(await screen.findByRole("option", { name: label }));
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.CACHE_STATUS, expected);
   });
 
   it.each([
-    ["Client OAuth token", "true"],
-    ["Configured key", "false"],
+    ["客户端 OAuth 令牌", "true"],
+    ["配置密钥", "false"],
   ])("selecting %s sets the credential filter to %s", async (label, expected) => {
     const user = userEvent.setup();
     const { set } = renderFilters();
 
-    await user.click(await screen.findByText("All Credentials"));
+    await user.click(await screen.findByText("全部凭据"));
     await user.click(await screen.findByRole("option", { name: label }));
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.CREDENTIAL, expected);
@@ -360,8 +360,8 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     const { set } = renderFilters({ [LOG_FILTER_IDS.CREDENTIAL]: "true" });
 
-    await user.click(await screen.findByText("Client OAuth token"));
-    await user.click(await screen.findByRole("option", { name: "All Credentials" }));
+    await user.click(await screen.findByText("客户端 OAuth 令牌"));
+    await user.click(await screen.findByRole("option", { name: "全部凭据" }));
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.CREDENTIAL, undefined);
   });
@@ -370,7 +370,7 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     const { set } = renderFilters();
 
-    await user.click(await screen.findByPlaceholderText("Select or type an error code"));
+    await user.click(await screen.findByPlaceholderText("选择或输入错误码"));
     await user.click(await screen.findByRole("option", { name: "429 - Rate Limited" }));
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.ERROR_CODE, "429");
@@ -380,24 +380,24 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     renderWithProviders(<StatefulFilters />);
 
-    const input = await screen.findByPlaceholderText("Select or type an error code");
+    const input = await screen.findByPlaceholderText("选择或输入错误码");
     await user.click(input);
     await user.click(await screen.findByRole("option", { name: "429 - Rate Limited" }));
     await user.click(input);
 
     const list = await screen.findByTestId("error-code-filter-list");
     expect(within(list).getAllByRole("option")).toHaveLength(ERROR_CODE_OPTIONS.length);
-    expect(within(list).queryByText(/^Use custom code:/)).not.toBeInTheDocument();
+    expect(within(list).queryByText(/^使用自定义错误码：/)).not.toBeInTheDocument();
   });
 
   it("filters by an error code the list does not offer", async () => {
     const user = userEvent.setup();
     const { set } = renderFilters();
 
-    const input = await screen.findByPlaceholderText("Select or type an error code");
+    const input = await screen.findByPlaceholderText("选择或输入错误码");
     await user.click(input);
     await user.type(input, "418");
-    await user.click(await screen.findByRole("option", { name: "Use custom code: 418" }));
+    await user.click(await screen.findByRole("option", { name: "使用自定义错误码：418" }));
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.ERROR_CODE, "418");
   });
@@ -406,8 +406,8 @@ describe("RequestLogsFilters", () => {
     const user = userEvent.setup();
     const { set } = renderFilters({ [LOG_FILTER_IDS.CACHE_STATUS]: "hit" });
 
-    await user.click(await screen.findByText("Cache Hit"));
-    await user.click(await screen.findByRole("option", { name: "All Requests" }));
+    await user.click(await screen.findByText("缓存命中"));
+    await user.click(await screen.findByRole("option", { name: "全部请求" }));
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.CACHE_STATUS, undefined);
   });
@@ -415,7 +415,7 @@ describe("RequestLogsFilters", () => {
   it("clears the raw Error Code combobox through the undefined filter contract", async () => {
     const user = userEvent.setup();
     const { set } = renderFilters({ [LOG_FILTER_IDS.ERROR_CODE]: "429" });
-    const input = await screen.findByPlaceholderText("Select or type an error code");
+    const input = await screen.findByPlaceholderText("选择或输入错误码");
 
     await user.click(input);
     await user.click(screen.getByRole("button", { name: "Clear", hidden: true }));

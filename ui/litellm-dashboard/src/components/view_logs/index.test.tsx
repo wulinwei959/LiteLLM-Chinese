@@ -72,7 +72,7 @@ describe("SpendLogsTable", () => {
       expect(screen.getByRole("tab", { name: label })).toBeInTheDocument();
     }
     expect(screen.queryByRole("tab", { name: /Agent Traces/ })).not.toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Request Logs" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "请求日志" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("marks only the visible tab's panel active so background tabs do not query", async () => {

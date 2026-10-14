@@ -33,7 +33,7 @@ async function openFilterDrawer(page: PlaywrightPage): Promise<Locator> {
 }
 
 async function applyKeyAliasFilter(page: PlaywrightPage, drawer: Locator, alias: string): Promise<void> {
-  await drawer.getByRole("combobox", { name: "Search a key alias" }).click();
+  await drawer.getByRole("combobox", { name: "搜索密钥别名" }).click();
   await page.keyboard.type(alias);
   await page.getByRole("option", { name: alias, exact: true }).first().click();
   await drawer.getByRole("button", { name: "Apply Filters" }).click();
@@ -131,7 +131,7 @@ test.describe("Logs page session-grouped pagination", () => {
 
     await openLogs(page);
     const drawer = await openFilterDrawer(page);
-    await drawer.getByPlaceholder("Enter session ID…").fill(sharedSession);
+    await drawer.getByPlaceholder("输入会话 ID…").fill(sharedSession);
     await drawer.getByRole("button", { name: "Apply Filters" }).click();
     await expect(drawer).not.toBeVisible({ timeout: 10_000 });
 

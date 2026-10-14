@@ -296,7 +296,7 @@ test.describe("Logs page", () => {
     const filters = page.getByRole("dialog").filter({ hasText: "Narrow down request logs" });
     await expect(filters).toBeVisible({ timeout: 10_000 });
 
-    const endUserInput = filters.getByPlaceholder("Search an end user");
+    const endUserInput = filters.getByPlaceholder("搜索终端用户");
     await endUserInput.click();
     await endUserInput.fill(endUser);
     // The combobox popup is portaled to the body, so it is outside the filter

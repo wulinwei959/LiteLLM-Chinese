@@ -83,7 +83,7 @@ test.describe("Logs page filters", () => {
 
     await openLogs(page);
     const drawer = await openFilterDrawer(page);
-    await applyComboboxFilter(page, drawer, "Search a key alias", mine.alias!);
+    await applyComboboxFilter(page, drawer, "搜索密钥别名", mine.alias!);
 
     await expect(requestLogsRows(page).filter({ hasText: myRequestId })).toHaveCount(1, { timeout: 30_000 });
     // The filter is only doing its job if the other key's request is gone, not merely if ours is present.
@@ -105,12 +105,12 @@ test.describe("Logs page filters", () => {
 
     await openLogs(page);
     const drawer = await openFilterDrawer(page);
-    await drawer.getByRole("combobox", { name: "Search a key alias" }).click();
+    await drawer.getByRole("combobox", { name: "搜索密钥别名" }).click();
     await page.keyboard.type(alias);
     await page.getByRole("option", { name: alias, exact: true }).first().click();
     // The Status field labels its group, not the trigger, so it is addressed by the value it shows.
-    await drawer.getByRole("combobox").filter({ hasText: "All Statuses" }).click();
-    await page.getByRole("option", { name: "Failure", exact: true }).click();
+    await drawer.getByRole("combobox").filter({ hasText: "所有状态" }).click();
+    await page.getByRole("option", { name: "失败", exact: true }).click();
     await drawer.getByRole("button", { name: "Apply Filters" }).click();
     await expect(drawer).not.toBeVisible({ timeout: 10_000 });
 
@@ -140,7 +140,7 @@ test.describe("Logs page filters", () => {
 
     await openLogs(page);
     const drawer = await openFilterDrawer(page);
-    await applyComboboxFilter(page, drawer, "Search a key alias", mine.alias!);
+    await applyComboboxFilter(page, drawer, "搜索密钥别名", mine.alias!);
     await expect(requestLogsRows(page).filter({ hasText: theirRequestId })).toHaveCount(0, { timeout: 30_000 });
 
     // A filter you cannot clear is a page that looks empty forever, which is how it reads to a user.
