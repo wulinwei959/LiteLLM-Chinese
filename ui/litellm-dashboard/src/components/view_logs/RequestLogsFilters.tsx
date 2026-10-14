@@ -248,21 +248,26 @@ function ErrorCodeFilterField({ value, onChange }: { value: string; onChange: (v
   const t = useTranslations("logs");
   const [query, setQuery] = useState("");
 
+  const localizedOptions = useMemo<SearchSelectOption[]>(
+    () => ERROR_CODE_OPTIONS.map((option) => ({ label: t(option.labelKey), value: option.value })),
+    [t],
+  );
+
   const options = useMemo<SearchSelectOption[]>(() => {
     const trimmed = query.trim();
     const lowered = trimmed.toLowerCase();
-    const matches = ERROR_CODE_OPTIONS.filter((option) => option.label.toLowerCase().includes(lowered));
-    const isKnownCode = ERROR_CODE_OPTIONS.some(
+    const matches = localizedOptions.filter((option) => option.label.toLowerCase().includes(lowered));
+    const isKnownCode = localizedOptions.some(
       (option) => option.value === trimmed || option.label.toLowerCase() === lowered,
     );
     if (trimmed === "" || isKnownCode) return matches;
     return [...matches, { label: t("filters.useCustomCode", { code: trimmed }), value: trimmed }];
-  }, [query, t]);
+  }, [localizedOptions, query, t]);
 
   const selected = useMemo<SearchSelectOption | null>(() => {
     if (value === "") return null;
-    return ERROR_CODE_OPTIONS.find((option) => option.value === value) ?? { label: value, value };
-  }, [value]);
+    return localizedOptions.find((option) => option.value === value) ?? { label: value, value };
+  }, [localizedOptions, value]);
 
   const items = useMemo<SearchSelectOption[]>(() => {
     if (selected === null) return options;

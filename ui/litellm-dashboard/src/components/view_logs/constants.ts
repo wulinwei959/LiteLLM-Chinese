@@ -7,18 +7,36 @@ export type LogsTimeRangeKey =
   | "timeRange.last24Hours"
   | "timeRange.last7Days";
 
-export const ERROR_CODE_OPTIONS: { label: string; value: string }[] = [
-  { label: "400 - Bad Request", value: "400" },
-  { label: "401 - Invalid Authentication", value: "401" },
-  { label: "403 - Permission Denied", value: "403" },
-  { label: "404 - Not Found", value: "404" },
-  { label: "408 - Request Timeout", value: "408" },
-  { label: "422 - Unprocessable Entity", value: "422" },
-  { label: "429 - Rate Limited", value: "429" },
-  { label: "500 - Internal Server Error", value: "500" },
-  { label: "502 - Bad Gateway", value: "502" },
-  { label: "503 - Service Unavailable", value: "503" },
-  { label: "529 - Overloaded", value: "529" },
+export type LogsErrorCodeKey =
+  | "filters.errorCodes.code400"
+  | "filters.errorCodes.code401"
+  | "filters.errorCodes.code403"
+  | "filters.errorCodes.code404"
+  | "filters.errorCodes.code408"
+  | "filters.errorCodes.code422"
+  | "filters.errorCodes.code429"
+  | "filters.errorCodes.code500"
+  | "filters.errorCodes.code502"
+  | "filters.errorCodes.code503"
+  | "filters.errorCodes.code529";
+
+export type ErrorCodeOption = {
+  readonly labelKey: LogsErrorCodeKey;
+  readonly value: string;
+};
+
+export const ERROR_CODE_OPTIONS: readonly ErrorCodeOption[] = [
+  { labelKey: "filters.errorCodes.code400", value: "400" },
+  { labelKey: "filters.errorCodes.code401", value: "401" },
+  { labelKey: "filters.errorCodes.code403", value: "403" },
+  { labelKey: "filters.errorCodes.code404", value: "404" },
+  { labelKey: "filters.errorCodes.code408", value: "408" },
+  { labelKey: "filters.errorCodes.code422", value: "422" },
+  { labelKey: "filters.errorCodes.code429", value: "429" },
+  { labelKey: "filters.errorCodes.code500", value: "500" },
+  { labelKey: "filters.errorCodes.code502", value: "502" },
+  { labelKey: "filters.errorCodes.code503", value: "503" },
+  { labelKey: "filters.errorCodes.code529", value: "529" },
 ];
 
 /** Call types that represent MCP tool invocations (shared across columns, index, drawer). */
