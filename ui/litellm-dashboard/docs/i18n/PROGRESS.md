@@ -1,6 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 49 簇更新
+
+批次 24 第 49 簇：`components/AIHub/ModelHubTable.tsx`（1189 行，接入后 1172，+28/−45）的 AI Hub 页签外壳接入 `modelHub`，新开 31 键，两个消息目录各 +31/−0 行；`ModelHubTable.test.tsx`（341 行，+9/−9）同步断言。本簇只管页面骨架——标题与描述、URL 复制条、四个页签、四个公开入口按钮、三张表的加载提示与空态、智能体搜索框、公开页未启用卡片；三个详情弹窗（模型 / 智能体 / MCP 服务器）的分组小标题与字段标签留给下一簇
+
+改造形态：
+
+- 31 个键全落 `modelHub` 平铺层（与 `showing*`、`col*` 同层）：`hubTitle`、`hubAdminDescription`/`hubUserDescription`、`modelHubUrlLabel`、`copyUrl`、`tabModels`/`tabAgents`/`tabMcp`/`tabSkills`、四个公开入口按钮、`loadingModels`/`loadingAgents`/`loadingMcpServers`、九个空态文本、`searchAgentsLabel`/`searchAgentsPlaceholder`/`clearSearch`、`publicHubNotEnabled`/`publicHubNotEnabledHint`
+- 术语对齐已有键的中文，但键一律新开：`hubTitle` 取"AI 中心"（同 `nav.aiHub`，那是侧栏导航命名空间）、`clearSearch` 取"清除搜索"（`skills`/`agents`/`projects`/`access-groups` 已有四个同名键）、`loadingModels` 取"正在加载模型…"（同 `usage.aiChat.loadingModels`）、`noAgentsYet`/`noMatchingAgents` 取"暂无智能体"/"没有匹配的智能体"（同 `agents.noneYet`/`agents.noMatching`）
+- 由此留下 `clearSearch` 的第五个同名键。第 47 簇记下的口径是"重复攒够了再上收"，本簇按同一处理只记账不动其他四个命名空间；`selectModelsToMakePublic`/`selectAgentsToMakePublic`/`manageMcpHubVisibility` 与第 42、43、44 簇三个向导的 `dialogTitle`/`selectTitle` 也是同一类重复——页面上的入口按钮与弹窗自己的标题分属分组层与平铺层，跨分组不借
+- 富文本无需 `t.rich`：`what&apos;s available.` 在 JSX 里是实体，消息串里直接写 `'`，渲染结果逐字节相同；`Loading models…` 的省略号是 U+2026 一个字符，照抄进消息串
+- 数据与格式留原文：`${getProxyBaseUrl()}/ui/model_hub_table` 的地址串、`console.error` 的 8 条日志文本（第 144、158、195、219、240、337、358、375 行）
+
+测试侧同步：`ModelHubTable.test.tsx` 只换语言不改含义，9 处——`AI Hub`→AI 中心、`No models yet`→暂无模型、三个页签名 `MCP Hub`/`Agent Hub`/`Model Hub`→MCP 中心/智能体中心/模型中心、`Manage MCP Hub Visibility`→管理 MCP 中心的可见性、`No matching agents`→没有匹配的智能体、搜索框 `getByPlaceholderText("Search agent names or descriptions...")`→搜索智能体名称或描述...。单文件实测 13 例，数量未增删
+
+验证：定向 `npx vitest run src/components/AIHub/ src/lib/i18n` → 12 文件全绿；全量复跑 7 个范围的 `npx vitest run` → 79 文件 978 例全绿，`Type Errors no errors`；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 两个改动文件 0 error / 5 warning，与 HEAD 版逐条相同（测试文件两条 `no-large-inline-object-arg` 在未改动的 92/178 行，源文件 `complexity 89` 与两条 `any` 行号未动）；prettier 对本簇改动的多行三元做了 17 行收拢；`npm run build` exit 0
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 432 不变（本文件早已带 `useTranslations`）、47.4%。键数 6891 到 6922（`modelHub` 平铺层 81 到 112，`common` 189 不变），中英同值 86 不变
 
 ## 2026-10-15 第 48 簇更新
 
