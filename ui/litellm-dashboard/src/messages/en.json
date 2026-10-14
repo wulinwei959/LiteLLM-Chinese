@@ -7389,6 +7389,23 @@
       "toastNeedSelection": "Please select at least one agent to make public",
       "toastSuccess": "Successfully made {count} {count, plural, one {agent} other {agents}} public!",
       "toastFailed": "Failed to make agents public. Please try again."
+    },
+    "makeModelPublic": {
+      "dialogTitle": "Make Models Public",
+      "stepSelect": "Select Models",
+      "stepConfirm": "Confirm",
+      "selectTitle": "Select Models to Make Public",
+      "selectHint": "Select the models you want to be visible on the public model hub. Users will still require a valid Virtual Key to use these models.",
+      "emptyFiltered": "No models match the current filters.",
+      "selectedInfo": "<strong>{count}</strong> {count, plural, one {model} other {models}} selected",
+      "confirmTitle": "Confirm Making Models Public",
+      "confirmWarning": "<strong>Warning:</strong> Once you make these models public, anyone who can go to the <code>/ui/model_hub_table</code> will be able to know they exist on the proxy.",
+      "confirmListTitle": "Models to be made public:",
+      "totalInfo": "Total: <strong>{count}</strong> {count, plural, one {model} other {models}} will be made public",
+      "makePublic": "Make Public",
+      "toastNeedSelection": "Please select at least one model to make public",
+      "toastSuccess": "Successfully made {count, plural, one {# model group} other {# model groups}} public!",
+      "toastFailed": "Failed to make model groups public. Please try again."
     }
   }
 }

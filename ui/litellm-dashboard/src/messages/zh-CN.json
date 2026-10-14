@@ -7389,6 +7389,23 @@
       "toastNeedSelection": "请至少选择一个要公开的智能体",
       "toastSuccess": "已成功公开 {count, number} 个智能体！",
       "toastFailed": "公开智能体失败，请重试。"
+    },
+    "makeModelPublic": {
+      "dialogTitle": "将模型设为公开",
+      "stepSelect": "选择模型",
+      "stepConfirm": "确认",
+      "selectTitle": "选择要公开的模型",
+      "selectHint": "勾选你希望在公开模型中心展示的模型。用户使用这些模型时仍需有效的虚拟密钥。",
+      "emptyFiltered": "没有符合当前筛选条件的模型。",
+      "selectedInfo": "已选择 <strong>{count}</strong> 个模型",
+      "confirmTitle": "确认公开这些模型",
+      "confirmWarning": "<strong>警告：</strong>模型一旦公开，任何能访问 <code>/ui/model_hub_table</code> 的人都会知道这个代理上有它们。",
+      "confirmListTitle": "将被公开的模型：",
+      "totalInfo": "共计 <strong>{count}</strong> 个模型将被公开",
+      "makePublic": "公开",
+      "toastNeedSelection": "请至少选择一个要公开的模型",
+      "toastSuccess": "已成功公开 {count, number} 个模型组！",
+      "toastFailed": "公开模型组失败，请重试。"
     }
   }
 }
