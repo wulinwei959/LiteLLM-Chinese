@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Pencil, Trash2, Search, MessageSquare } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -20,6 +21,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ScrollArea } from "@/components/ui/scroll-area";
 import dayjs from "dayjs";
 import { Conversation } from "./types";
+import type { ChatTranslator } from "@/lib/i18n/translators";
 
 interface Props {
   conversations: Conversation[];
@@ -41,6 +43,21 @@ const getDateGroup = (timestamp: number): DateGroup => {
 };
 
 const DATE_GROUP_ORDER: DateGroup[] = ["Recents", "Yesterday", "Last 7 Days", "Older"];
+
+// The DateGroup strings are internal bucket ids (they key the map and fix the
+// order); only this label step turns them into user-facing copy.
+const dateGroupLabel = (t: ChatTranslator, group: DateGroup): string => {
+  switch (group) {
+    case "Recents":
+      return t("conversationList.dateGroup.recents");
+    case "Yesterday":
+      return t("conversationList.dateGroup.yesterday");
+    case "Last 7 Days":
+      return t("conversationList.dateGroup.last7Days");
+    default:
+      return t("conversationList.dateGroup.older");
+  }
+};
 
 interface GroupedConversations {
   group: DateGroup;
@@ -69,6 +86,8 @@ interface ConversationRowProps {
 }
 
 const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSelect, onDelete, onRename }) => {
+  const t = useTranslations("chat");
+  const commonT = useTranslations("common");
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(conv.title);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -153,7 +172,7 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
                   }
                 />
                 <TooltipContent side="bottom">
-                  <p>Rename</p>
+                  <p>{commonT("rename")}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -177,22 +196,22 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
                     }
                   />
                   <TooltipContent side="bottom">
-                    <p>Delete</p>
+                    <p>{commonT("delete")}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete this conversation?</AlertDialogTitle>
-                  <AlertDialogDescription>This action cannot be undone</AlertDialogDescription>
+                  <AlertDialogTitle>{t("conversationList.deleteTitle")}</AlertDialogTitle>
+                  <AlertDialogDescription>{t("conversationList.deleteDescription")}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>{commonT("cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => onDelete(conv.id)}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
-                    Delete
+                    {commonT("delete")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -212,6 +231,7 @@ interface SearchModalProps {
 }
 
 const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect, onClose }) => {
+  const t = useTranslations("chat");
   const [query, setQuery] = useState("");
   const [wasOpen, setWasOpen] = useState(open);
 
@@ -236,7 +256,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             autoFocus
-            placeholder="Search conversations\u2026"
+            placeholder={t("conversationList.searchPlaceholder")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="pl-9"
@@ -245,7 +265,9 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect
 
         <ScrollArea className="max-h-[320px]">
           {filtered.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground text-sm">No conversations found</div>
+            <div className="text-center py-6 text-muted-foreground text-sm">
+              {t("conversationList.noSearchResults")}
+            </div>
           ) : (
             filtered.map((conv) => {
               const truncated = conv.title.length > 55 ? conv.title.slice(0, 55) + "\u2026" : conv.title;
@@ -271,6 +293,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect
 };
 
 const ConversationList: React.FC<Props> = ({ conversations, activeConversationId, onSelect, onDelete, onRename }) => {
+  const t = useTranslations("chat");
   const [searchModalOpen, setSearchModalOpen] = useState(false);
 
   const handleGlobalKeyDown = useCallback((e: KeyboardEvent) => {
@@ -293,15 +316,15 @@ const ConversationList: React.FC<Props> = ({ conversations, activeConversationId
         <ScrollArea className="flex-1 h-0 px-1.5 pt-2">
           {grouped.length === 0 ? (
             <div className="text-center text-muted-foreground/60 text-xs mt-8 px-3">
-              No conversations yet
+              {t("conversationList.empty")}
               <br />
-              Start a new chat above
+              {t("conversationList.emptyHint")}
             </div>
           ) : (
             grouped.map(({ group, items }) => (
               <div key={group} className="mb-2">
                 <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 pt-2 pb-1">
-                  {group}
+                  {dateGroupLabel(t, group)}
                 </div>
                 {items.map((conv) => (
                   <ConversationRow

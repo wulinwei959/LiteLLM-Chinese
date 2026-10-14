@@ -6225,6 +6225,20 @@
       "pageOf": " · 第 {page} 页，共 {totalPages} 页",
       "previousPage": "上一页",
       "nextPage": "下一页"
+    },
+    "conversationList": {
+      "dateGroup": {
+        "recents": "最近",
+        "yesterday": "昨天",
+        "last7Days": "近 7 天",
+        "older": "更早"
+      },
+      "deleteTitle": "确定删除此会话吗？",
+      "deleteDescription": "此操作无法撤销",
+      "searchPlaceholder": "搜索会话…",
+      "noSearchResults": "未找到会话",
+      "empty": "还没有会话",
+      "emptyHint": "在上方开始新对话"
     }
   },
   "playground": {

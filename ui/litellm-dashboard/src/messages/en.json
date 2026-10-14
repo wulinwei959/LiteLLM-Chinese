@@ -6225,6 +6225,20 @@
       "pageOf": " · Page {page} of {totalPages}",
       "previousPage": "Previous",
       "nextPage": "Next"
+    },
+    "conversationList": {
+      "dateGroup": {
+        "recents": "Recents",
+        "yesterday": "Yesterday",
+        "last7Days": "Last 7 Days",
+        "older": "Older"
+      },
+      "deleteTitle": "Delete this conversation?",
+      "deleteDescription": "This action cannot be undone",
+      "searchPlaceholder": "Search conversations…",
+      "noSearchResults": "No conversations found",
+      "empty": "No conversations yet",
+      "emptyHint": "Start a new chat above"
     }
   },
   "playground": {
