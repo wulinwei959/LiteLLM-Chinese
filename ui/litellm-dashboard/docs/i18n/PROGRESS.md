@@ -1,6 +1,31 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 47 簇更新
+
+批次 24 第 47 簇：`components/AIHub/MCPHubTableColumns.tsx`（233 行，接入后 241，+35/−27）的 MCP 服务器列定义接入 `modelHub`，新开 15 键、复用 `common` 三键，两个消息目录各 +15/−0 行；真实消费者 `ModelHubTable.tsx`（1178 行，+5/−1）补 `commonT`；`src/lib/i18n/translators.ts`（+5/−0）新增 `ModelHubTranslator` 别名。至此 AIHub 三个中心表只剩 `ModelHubTableColumns.tsx`（另有整页文件 `UsefulLinksManagement.tsx` 未接入）
+
+改造形态：
+
+- 新键落在 `modelHub` 的平铺层（与三个 `showing*` 同层），列标题沿用第 46 簇记下的 `col*` 构词法：`colServerName`、`colTransport`、`colAuthType`、`colCreated`、`colTools`、`colHubListing`。既不借 `mcpServers.view.*`（跨命名空间，那些是 MCP 服务器管理页的详情面板标签），也不借 `modelHub.makeMcpPublic.*`（分组命名空间内跨分组借不是口径，第 29、33、36、38、39、41、42、43、44 簇）；由此留下三处 EN 逐字节重复——`serverName`/`mcpServers.view.serverName`、`copyServerName`/`mcpServers.view.copyServerName`、`unknownStatus`/`makeMcpPublic.unknownStatus`，按第 39、40 簇的方式记为待第三个消费者出现时上收，本簇不动 `mcpServers`
+- `common` 复用：`description`（描述）、`status`（状态）、`actions`（操作，sr-only 表头）三个泛型标签直接走共享层，本簇不新开同名键
+- `unknownStatus` 的取值是小写 `unknown`：HEAD 的兜底字面量是 `row.original.status || "unknown"`，而 `common.unknown` 是 `Unknown`（首字母大写），概念同但取值不同一项不借，另开键——与第 44 簇 `makeMcpPublic.unknownStatus` 同判据
+- `toolsCount` 用 `#` 复数：`{count, plural, one {# tool} other {# tools}}` / `{count, number} 个工具`，node + `intl-messageformat` 实测 `1` → `1 tool`、`2` → `2 tools`，与旧模板串逐字节相同。旧代码的 `tools.length > 0 ?` 三元让 0 这一支渲染成 `All tools`，所以 `0 tools` 实际不出现，键与分支都按原样保留
+- `ModelHubTranslator` 别名新增：`modelHub` 此前只在组件里 `useTranslations`，没有跨文件传递的需求；列工厂要按 `*ColumnsDeps` 口径收一个命名空间绑定的 `t`，裸 `ReturnType<typeof useTranslations>` 会让键联合超出可检查范围（`translators.ts` 开头那段说明），所以补别名而不是让工厂收裸类型
+- 数据留原文：`STATUS_TONES` 的键、`row.original.status`/`transport`/`auth_type` 的取值、`+{tools.length - 2}` 溢出计数、空值占位 `-`、`data-testid`
+- 顺带记下的旧账：状态徽标的 tooltip 走 `MCP_REACHABLE_DESCRIPTION`（`mcp_tools/types.tsx` 的模块级常量，与 `app/(dashboard)/mcp-servers/_components/MCPServerCard.tsx` 共用），它的英文原文在 `mcp_server_view.test.tsx` 与本簇测试里都按整串断言，接键要连着那两个消费者一起做，留给 `mcp_tools` 一簇
+
+测试侧同步：
+
+- `MCPHubTableColumns.test.tsx`（117 行，接入后 148，+48/−17）与第 45、46 簇同法改造：`MCPHubTableHarness` 组件内 `useTranslations("modelHub")` / `("common")` + `useMemo` 组列，`renderTable` 走 `renderWithProviders`。9 例数量与含义未增删
+- "does not expose a URL column" 一例原本在 React 之外直接调工厂拿列定义，接 `t` 后没有渲染上下文就拿不到翻译器。改成让 harness 把建好的列写进调用方传入的 `columnsRef`，断言内容不变（仍是"没有标题为 URL 的列"）。第一版在渲染函数体里直接 `columnsRef.current = columns`，被 `react-hooks/refs` 判为 error（"Cannot update ref during render"），改到 `useEffect` 里——`renderWithProviders` 在 `act` 内渲染，effect 同步刷完，断言无需 await
+- 断言换语言：`Server Name`→服务器名称、`Transport`→传输方式、`Auth Type`→认证类型、`Hub listing`→中心列表、`Listed`/`Unlisted`→已列出/未列出；操作菜单详情一例改用 `getByRole("button", { name: "打开 MCP 服务器操作菜单" })` 定位触发器（覆盖本簇接上的 aria-label），并补 `查看详情` / `复制服务器名称` 两条文本断言，与第 45、46 簇一致
+- reachable tooltip 一例不动：`MCP_REACHABLE_DESCRIPTION` 未接入，徽标文本 `reachable` 是接口数据，hover 定位仍用英文取值
+
+验证：定向 `npx vitest run src/lib/i18n src/components/AIHub/MCPHubTableColumns.test.tsx` → 4 文件 25 例全绿；全量复跑 `npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin src/components/AIHub` → 79 文件 978 例全绿，`Type Errors no errors`（用例未增删）；`npx tsc --noEmit -p .` 总 883、非测试 0，`AIHub` 与 `i18n/translators` 均无错误；`npx eslint` 四个改动文件 0 error / 9 warning，与 HEAD 版逐条相同（`MCPHubTableColumns.tsx` 六条 `no-explicit-any` 全在 `MCPServerData` 的 `any` 字段上，`ModelHubTable.tsx` 的 `complexity 89` 与两条 `any`），只有行号位移；prettier 先证 HEAD 四个文件干净，改动后 `--check` 仍干净、`--write` 报四个 unchanged（工厂签名与 harness 的换行是手写时就按 printWidth 排的）；`npm run build` exit 0
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 432 不变、47.4%——同第 46 簇的理由（工厂走 props 收 `t`，消费者本就带 `useTranslations`）。键数 6868 到 6883（`modelHub` 命名空间 58 到 73，`common` 189 不变），中英同值 86 不变
 
 ## 2026-10-15 第 46 簇更新
 
