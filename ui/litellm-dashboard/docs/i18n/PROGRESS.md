@@ -1,6 +1,31 @@
 # 开发进度
 
-数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 26 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 27 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-14 第 27 簇更新
+
+批次 24 第 27 簇：`components/view_logs/TraceView/TracingSetupCard.tsx` 接入 `logs`，新增 `logs.traceSetup.*` 51 键，两个消息目录各 +53 行（组的开合括号 2 行、`traceList` 末键补逗号 1 行），纯增不删。`TraceView` 目录的展示文案到此清零，24 个非测试 `.tsx` 里 20 个接入 `next-intl`，另外 4 个（`ActiveDot` / `Collapse` / `SpanIcon` / `AgentTracesPage`）本就没有文案
+
+改造形态：
+
+- `otlpEndpoints(proxyUrl)` 按首参翻译器约定改成 `otlpEndpoints(t, proxyUrl)`，返回类型不变；`setupTitle(enabled, connected)` 同样补首参 `t`。两者都是文件内私有，`otlpEndpoints` 虽是 `export`，测试没有直接调用它
+- `SEND_LABEL` 从 `Record<kind, string>` 改成 `Record<Exclude<SendState["kind"], "ready">, SendLabelKey>`，值为键名联合类型，渲染处 `t(SEND_LABEL[state.kind])`。`idle` 与 `failed` 共用 `traceSetup.sendTest`
+- 标题里的两枚品牌 logo 是本簇唯一的富文本：`traceSetup.stepCodingAgent` 用 `t.rich` 加 `<claude></claude>` / `<codex></codex>` 成对标签，处理器各返回一个 `<img>`。实测 `t.rich` 不替换自闭合标签（`<claude />` 原样输出），只认成对写法
+- `messagesParity.test.ts` 的 `RICH_TAGS` 白名单同步加 `claude`、`codex`。这条守卫允许 `t.rich` 的消息保留真标签，不加就会被"尖括号必须属于富文本标签"那条拦下
+- 复用已有键不新开：`drawer.copy`（`CodeBlock` 的 `aria-label="Copy"`）、`drawer.copyLabel`（`EndpointValue` 的 `aria-label={`Copy ${value}`}`，值走 `{label}` 占位）
+- 长段落整段收进消息值：`enableOnProxyBody` / `tracingKeyBody` / `noTracesYet` / `codingAgentBody` 等，英文值与原 JSX 逐字一致，换行折回来的空格差异因此不存在；`exampleRun` 与 `exampleRunNote` 拆两键，JSX 用 `{" "}` 保留两个 `<span>` 之间那个空格
+
+不译与一处取舍：
+
+- 代码与环境变量都不译：`FRAMEWORKS` 的 `label` / `packages` / `quickstart`、`tracingEnvSnippet`、`codingAgentPrompt`（这是要贴给 Claude Code / Codex 的英文任务描述）、`codingAgentCommand`、`PROXY_CONFIG_SNIPPET`、`TRACING_KEY_REQUEST`（`key_alias: "Agent tracing"` 会落进虚拟密钥列表，属数据值）、`FileLabel` 的 `config.yaml` / `npm` / `Shell` / `my_agent.py`、`LineTabs` 的 `["Claude Code", "Codex"]` / `["pip", "uv"]`、端点值 `OTEL_EXPORTER_OTLP_ENDPOINT` 与 `Authorization: Bearer <LiteLLM virtual key>`、`OTLP/HTTP, protobuf or JSON (gRPC not supported)`、`DOCS_URL`
+- 端点值的 `<LiteLLM virtual key>` 带尖括号但不进目录，所以不用 ICU 转义，这是它留在 `.tsx` 里的一个附带好处
+- `stepCodingAgent` 的英文原文里 `or` 与第二枚 logo 之间没有空格（JSX 换行接 `<img>`），消息值同样写成 `or<codex></codex>`，中英文各自保留自己语言需要的空格
+
+测试同步：`TracingSetupCard.test.tsx` 改 32 行断言、共 33 处替换（标题、状态行、按钮名、`OpenTelemetry（OTEL）接收端点` 与 `你的智能体框架` 的先后顺序、`复制 http://proxy.test/v1/traces` 这条 aria、`无法发送测试调用链。`、`/调用链仍不可用/`），`AgentTracesSection.test.tsx` 改 17 处对 setup 卡的断言（`未启用调用链`、`检查配置`、`正在检查…`、`启用调用链`、`ClickHouse 与代理配置`、`请联系你的代理管理员`、`连接你的智能体`、`等待你的第一条调用链`、`检查调用链`、`/调用链仍不可用/`）。两个文件的 `detail` 入参 `"Agent tracing is not enabled"`、`store: clickhouse` 与"setup snippets"那个 describe 块都是纯函数断言，输入输出全在英文代码串层面，照旧不动。用例数不增不减
+
+验证：`src/components/view_logs` + `src/lib/i18n` 52 文件 671 例全绿；`tsc --noEmit -p .` 仍 883 条、非测试文件 0 条；`npx eslint src/components/view_logs/TraceView src/lib/i18n` 0 错误（9 条 warning：`TracingSetupCard` 的 6 条 `<img>` 与 `messagesParity` 的 3 条既有行）；`npm run build` 退出 0；prettier 只 `--write` 了 `TracingSetupCard.tsx`（HEAD 上干净），两个 messages JSON 继续不做整文件重排，`git diff --numstat` 各 53 增 0 删
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 407 到 408，44.7%；`components/view_logs` 71 个里接入 50 个；`TraceView` 24 个里接入 20 个。键数 6365 到 6416，中英同值 85 不变
 
 ## 2026-10-14 第 26 簇更新
 
@@ -332,8 +357,8 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 | 项                       | 数值                                                 |
 | ------------------------ | ---------------------------------------------------- |
 | 命名空间                 | 39                                                   |
-| `en.json` 叶子键          | 6365（2026-10-14 第 26 簇；6351 是第 25 簇后，6320 是第 24 簇后，6212 是第 23 簇后，6141 那条是第 20 簇后的旧快照）|
-| `zh-CN.json` 叶子键       | 6365                                                 |
+| `en.json` 叶子键          | 6416（2026-10-14 第 27 簇；6365 是第 26 簇后，6351 是第 25 簇后，6320 是第 24 簇后，6212 是第 23 簇后）|
+| `zh-CN.json` 叶子键       | 6416                                                 |
 | 键树一致性               | 一致，`messagesParity` 通过                           |
 | 中英文取值完全相同的键    | 85（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
 
@@ -341,7 +366,7 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 ## 文件覆盖率
 
-`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
+`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
 
 ## 按路由的进度
 
