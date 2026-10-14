@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { CommonTranslator, ModelHubTranslator } from "@/lib/i18n/translators";
 import { Copy, Info, MoreHorizontal } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -55,15 +56,16 @@ const formatTokens = (tokens: number) => {
 };
 
 interface ModelHubRowActionsProps {
+  t: ModelHubTranslator;
   model: ModelHubData;
   onModelClick: (model: ModelHubData) => void;
 }
 
-function ModelHubRowActions({ model, onModelClick }: ModelHubRowActionsProps) {
+function ModelHubRowActions({ t, model, onModelClick }: ModelHubRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open model actions"
+        aria-label={t("openModelActions")}
         data-testid={`model-hub-actions-${model.model_group}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -72,14 +74,14 @@ function ModelHubRowActions({ model, onModelClick }: ModelHubRowActionsProps) {
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem data-testid="model-hub-action-details" onClick={() => onModelClick(model)}>
           <Info />
-          View details
+          {t("viewDetails")}
         </DropdownMenuItem>
         <DropdownMenuItem
           data-testid="model-hub-action-copy"
-          onClick={() => void copyToClipboard(model.model_group, "Model name copied")}
+          onClick={() => void copyToClipboard(model.model_group, t("modelNameCopied"))}
         >
           <Copy />
-          Copy model name
+          {t("copyModelName")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -88,14 +90,20 @@ function ModelHubRowActions({ model, onModelClick }: ModelHubRowActionsProps) {
 
 interface ModelHubTableColumnsDeps {
   onModelClick: (model: ModelHubData) => void;
+  t: ModelHubTranslator;
+  commonT: CommonTranslator;
 }
 
-export const getModelHubTableColumns = ({ onModelClick }: ModelHubTableColumnsDeps): ColumnDef<ModelHubData>[] => [
+export const getModelHubTableColumns = ({
+  onModelClick,
+  t,
+  commonT,
+}: ModelHubTableColumnsDeps): ColumnDef<ModelHubData>[] => [
   {
     id: "model_group",
     accessorKey: "model_group",
-    meta: { title: "Public Model Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Public Model Name" />,
+    meta: { title: t("colPublicModelName") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colPublicModelName")} />,
     size: 220,
     enableSorting: true,
     sortingFn: "alphanumeric",
@@ -106,8 +114,8 @@ export const getModelHubTableColumns = ({ onModelClick }: ModelHubTableColumnsDe
   {
     id: "providers",
     accessorKey: "providers",
-    meta: { title: "Provider", skeleton: "chips", className: "hidden md:table-cell" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Provider" />,
+    meta: { title: commonT("provider"), skeleton: "chips", className: "hidden md:table-cell" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={commonT("provider")} />,
     size: 150,
     enableSorting: true,
     sortingFn: (rowA, rowB) => rowA.original.providers.join(", ").localeCompare(rowB.original.providers.join(", ")),
@@ -128,8 +136,8 @@ export const getModelHubTableColumns = ({ onModelClick }: ModelHubTableColumnsDe
   {
     id: "mode",
     accessorKey: "mode",
-    meta: { title: "Mode", className: "hidden lg:table-cell" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Mode" />,
+    meta: { title: commonT("mode"), className: "hidden lg:table-cell" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={commonT("mode")} />,
     size: 110,
     enableSorting: true,
     sortingFn: "alphanumeric",
@@ -143,8 +151,8 @@ export const getModelHubTableColumns = ({ onModelClick }: ModelHubTableColumnsDe
   {
     id: "max_input_tokens",
     accessorKey: "max_input_tokens",
-    meta: { title: "Tokens", className: "hidden lg:table-cell", numeric: true },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Tokens" />,
+    meta: { title: t("colTokens"), className: "hidden lg:table-cell", numeric: true },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colTokens")} />,
     size: 110,
     enableSorting: true,
     sortingFn: (rowA, rowB) => {
@@ -165,8 +173,8 @@ export const getModelHubTableColumns = ({ onModelClick }: ModelHubTableColumnsDe
   {
     id: "input_cost_per_token",
     accessorKey: "input_cost_per_token",
-    meta: { title: "Cost/1M", skeleton: "twoLine", numeric: true },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Cost/1M" />,
+    meta: { title: t("colCostPerMillion"), skeleton: "twoLine", numeric: true },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colCostPerMillion")} />,
     size: 110,
     enableSorting: true,
     sortingFn: (rowA, rowB) => {
@@ -188,8 +196,8 @@ export const getModelHubTableColumns = ({ onModelClick }: ModelHubTableColumnsDe
   },
   {
     id: "capabilities",
-    meta: { title: "Features", skeleton: "chips" },
-    header: "Features",
+    meta: { title: t("colFeatures"), skeleton: "chips" },
+    header: t("colFeatures"),
     size: 220,
     enableSorting: false,
     cell: ({ row }) => {
@@ -211,8 +219,8 @@ export const getModelHubTableColumns = ({ onModelClick }: ModelHubTableColumnsDe
   {
     id: "is_public_model_group",
     accessorKey: "is_public_model_group",
-    meta: { title: "Public", skeleton: "badge", className: "hidden md:table-cell" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Public" />,
+    meta: { title: t("colPublic"), skeleton: "badge", className: "hidden md:table-cell" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colPublic")} />,
     size: 100,
     enableSorting: true,
     sortingFn: (rowA, rowB) => {
@@ -222,21 +230,21 @@ export const getModelHubTableColumns = ({ onModelClick }: ModelHubTableColumnsDe
     },
     cell: ({ row }) =>
       row.original.is_public_model_group === true ? (
-        <StatusBadge tone="success" label="Yes" />
+        <StatusBadge tone="success" label={commonT("yes")} />
       ) : (
-        <StatusBadge tone="neutral" label="No" />
+        <StatusBadge tone="neutral" label={commonT("no")} />
       ),
   },
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{commonT("actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <ModelHubRowActions model={row.original} onModelClick={onModelClick} />
+        <ModelHubRowActions t={t} model={row.original} onModelClick={onModelClick} />
       </div>
     ),
   },

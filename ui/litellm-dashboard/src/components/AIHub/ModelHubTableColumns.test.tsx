@@ -1,7 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { describe, expect, it, vi } from "vitest";
 import { DataTable } from "@/components/shared/DataTable";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { getModelHubTableColumns, ModelHubData } from "./ModelHubTableColumns";
 
 const mockModel: ModelHubData = {
@@ -18,16 +21,29 @@ const mockModel: ModelHubData = {
   is_public_model_group: true,
 };
 
-function renderTable(data: ModelHubData[], onModelClick = vi.fn()) {
-  render(
+function ModelHubTableHarness({
+  data,
+  onModelClick,
+}: {
+  data: ModelHubData[];
+  onModelClick: (m: ModelHubData) => void;
+}) {
+  const t = useTranslations("modelHub");
+  const commonT = useTranslations("common");
+  const columns = useMemo(() => getModelHubTableColumns({ onModelClick, t, commonT }), [onModelClick, t, commonT]);
+  return (
     <DataTable
       data={data}
-      columns={getModelHubTableColumns({ onModelClick })}
+      columns={columns}
       getRowId={(model, index) => model.model_group || String(index)}
       sortingMode="client"
       size="compact"
-    />,
+    />
   );
+}
+
+function renderTable(data: ModelHubData[], onModelClick = vi.fn()) {
+  renderWithProviders(<ModelHubTableHarness data={data} onModelClick={onModelClick} />);
   return onModelClick;
 }
 
@@ -35,6 +51,13 @@ describe("getModelHubTableColumns", () => {
   it("renders the model row", () => {
     renderTable([mockModel]);
     expect(screen.getByText("gpt-4o")).toBeInTheDocument();
+    expect(screen.getByText("公共模型名称")).toBeInTheDocument();
+    expect(screen.getByText("提供商")).toBeInTheDocument();
+    expect(screen.getByText("模式")).toBeInTheDocument();
+    expect(screen.getByText("Token 数")).toBeInTheDocument();
+    expect(screen.getByText("成本/1M")).toBeInTheDocument();
+    expect(screen.getByText("公开")).toBeInTheDocument();
+    expect(screen.queryByText("URL")).not.toBeInTheDocument();
   });
 
   it("shows the first two providers and '+1' for overflow", () => {
@@ -57,6 +80,7 @@ describe("getModelHubTableColumns", () => {
 
   it("shows capability badges only for supported features", () => {
     renderTable([mockModel]);
+    expect(screen.getByText("功能")).toBeInTheDocument();
     expect(screen.getByText("Vision")).toBeInTheDocument();
     expect(screen.getByText("Function Calling")).toBeInTheDocument();
     expect(screen.queryByText("Parallel Function Calling")).not.toBeInTheDocument();
@@ -64,9 +88,9 @@ describe("getModelHubTableColumns", () => {
 
   it("shows the public status badge", () => {
     renderTable([mockModel]);
-    expect(screen.getByText("Yes")).toBeInTheDocument();
+    expect(screen.getByText("是")).toBeInTheDocument();
     renderTable([{ ...mockModel, model_group: "private-model", is_public_model_group: false }]);
-    expect(screen.getByText("No")).toBeInTheDocument();
+    expect(screen.getByText("否")).toBeInTheDocument();
   });
 
   it("opens the model details when the name is clicked", async () => {
@@ -79,8 +103,10 @@ describe("getModelHubTableColumns", () => {
   it("opens the model details from the actions menu", async () => {
     const user = userEvent.setup();
     const onModelClick = renderTable([mockModel]);
-    await user.click(screen.getByTestId("model-hub-actions-gpt-4o"));
-    await user.click(await screen.findByTestId("model-hub-action-details"));
+    await user.click(screen.getByRole("button", { name: "打开模型操作菜单" }));
+    const detailsItem = await screen.findByTestId("model-hub-action-details");
+    expect(detailsItem).toHaveTextContent("查看详情");
+    await user.click(detailsItem);
     expect(onModelClick).toHaveBeenCalledWith(mockModel);
   });
 
@@ -88,7 +114,9 @@ describe("getModelHubTableColumns", () => {
     const user = userEvent.setup();
     renderTable([mockModel]);
     await user.click(screen.getByTestId("model-hub-actions-gpt-4o"));
-    await user.click(await screen.findByTestId("model-hub-action-copy"));
+    const copyItem = await screen.findByTestId("model-hub-action-copy");
+    expect(copyItem).toHaveTextContent("复制模型名称");
+    await user.click(copyItem);
     expect(await window.navigator.clipboard.readText()).toBe("gpt-4o");
   });
 });

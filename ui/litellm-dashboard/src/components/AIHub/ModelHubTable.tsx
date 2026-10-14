@@ -389,7 +389,10 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
   const [agentSorting, setAgentSorting] = useState<SortingState>([{ id: "name", desc: false }]);
   const [mcpSorting, setMcpSorting] = useState<SortingState>([{ id: "server_name", desc: false }]);
 
-  const modelColumns = useMemo(() => getModelHubTableColumns({ onModelClick: showModal }), [showModal]);
+  const modelColumns = useMemo(
+    () => getModelHubTableColumns({ onModelClick: showModal, t, commonT }),
+    [showModal, t, commonT],
+  );
   const agentColumns = useMemo(
     () => getAgentHubTableColumns({ onAgentClick: showAgentModal, t: agentsT }),
     [showAgentModal, agentsT],
