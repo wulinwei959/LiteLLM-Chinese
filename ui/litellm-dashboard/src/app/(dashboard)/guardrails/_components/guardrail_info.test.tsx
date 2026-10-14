@@ -141,7 +141,7 @@ describe("Guardrail Info", () => {
     });
     vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
 
-    render(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
+    renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
     expect(await screen.findByText("jev-latest")).toBeInTheDocument();
     const injection = screen.getByText("prompt injection").parentElement as HTMLElement;
@@ -169,7 +169,7 @@ describe("Guardrail Info", () => {
     });
     vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
 
-    render(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
+    renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
     expect(await screen.findAllByText("Bedrock Guard")).not.toHaveLength(0);
     expect(screen.queryByText("jev-latest")).not.toBeInTheDocument();
@@ -246,9 +246,7 @@ describe("Guardrail Info", () => {
 
     await userEvent.hover(within(container).getByRole("img", { name: "配置文件护栏详情" }));
 
-    expect(
-      await screen.findByText("此护栏在配置文件中定义，无法编辑。"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("此护栏在配置文件中定义，无法编辑。")).toBeInTheDocument();
   });
 
   it("should render the guardrail info", async () => {
@@ -422,7 +420,9 @@ describe("Guardrail Info when the guardrail cannot be loaded", () => {
     vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({});
     const onClose = vi.fn();
 
-    renderWithProviders(<GuardrailInfoView guardrailId="stale-id" onClose={onClose} accessToken="123" isAdmin={true} />);
+    renderWithProviders(
+      <GuardrailInfoView guardrailId="stale-id" onClose={onClose} accessToken="123" isAdmin={true} />,
+    );
 
     expect(await screen.findByText("未找到护栏")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /返回护栏列表/ }));

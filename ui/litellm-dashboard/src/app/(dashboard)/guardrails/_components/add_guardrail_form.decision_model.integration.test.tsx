@@ -56,22 +56,22 @@ describe("AddGuardrailForm decision model questions", () => {
     renderWithProviders(
       <AddGuardrailForm visible={true} onClose={vi.fn()} accessToken="test-token" onSuccess={vi.fn()} />,
     );
-    fireEvent.change(await screen.findByLabelText("Guardrail Name"), { target: { value: "dm-1" } });
-    await user.click(screen.getByLabelText("Guardrail Provider"));
+    fireEvent.change(await screen.findByLabelText("护栏名称"), { target: { value: "dm-1" } });
+    await user.click(screen.getByLabelText("护栏提供商"));
     await user.click(await screen.findByText("Decision Model"));
-    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
   };
 
   const pickTypesafeModel = async (user: ReturnType<typeof userEvent.setup>) => {
-    await user.click(await screen.findByLabelText("Decision Model"));
+    await user.click(await screen.findByLabelText("决策模型"));
     await user.click(await screen.findByTitle("jev-latest"));
   };
 
   const addQuestion = async (name: string, instructions: string) => {
-    fireEvent.click(await screen.findByRole("button", { name: "Add question" }));
-    const nameInputs = screen.getAllByLabelText(/^Question \d+ name$/);
+    fireEvent.click(await screen.findByRole("button", { name: "添加问题" }));
+    const nameInputs = screen.getAllByLabelText(/^第 \d+ 个问题的名称$/);
     fireEvent.change(nameInputs[nameInputs.length - 1], { target: { value: name } });
-    fireEvent.change(screen.getByLabelText(`Question ${nameInputs.length}`), { target: { value: instructions } });
+    fireEvent.change(screen.getByLabelText(`第 ${nameInputs.length} 个问题`), { target: { value: instructions } });
   };
 
   it("lists every decision model on the proxy with its provider logo and no provider picker", async () => {
@@ -85,15 +85,15 @@ describe("AddGuardrailForm decision model questions", () => {
     });
     await renderDecisionModel(user);
 
-    await user.click(await screen.findByLabelText("Decision Model"));
+    await user.click(await screen.findByLabelText("决策模型"));
     const jev = await screen.findByTitle("jev-latest");
     expect(within(screen.getByTitle("gpt-5")).getByRole("img", { name: "OpenAI logo" })).toBeInTheDocument();
     expect(screen.queryByTitle("gpt-4o-mini")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Decision Provider")).not.toBeInTheDocument();
-    expect(screen.queryByRole("note", { name: "No decision models" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("note", { name: "无决策模型" })).not.toBeInTheDocument();
 
     await user.click(jev);
-    expect(screen.getByLabelText("Decision Model")).toHaveValue("jev-latest");
+    expect(screen.getByLabelText("决策模型")).toHaveValue("jev-latest");
   });
 
   it("prompts to add a model when the proxy has no decision models", async () => {
@@ -103,13 +103,13 @@ describe("AddGuardrailForm decision model questions", () => {
     });
     await renderDecisionModel(user);
 
-    const note = await screen.findByRole("note", { name: "No decision models" });
-    expect(note).toHaveTextContent("Add a decision model to use this guardrail");
-    expect(within(note).getByRole("link", { name: "Add a model" })).toHaveAttribute(
+    const note = await screen.findByRole("note", { name: "无决策模型" });
+    expect(note).toHaveTextContent("添加一个决策模型才能使用此护栏");
+    expect(within(note).getByRole("link", { name: "添加模型" })).toHaveAttribute(
       "href",
       expect.stringMatching(/\/models-and-endpoints$/),
     );
-    expect(screen.getByLabelText("Decision Model")).toHaveAttribute("placeholder", "No decision models yet");
+    expect(screen.getByLabelText("决策模型")).toHaveAttribute("placeholder", "暂无决策模型");
   });
 
   const renderFromCard = (visible: boolean, accessToken = "test-token") => (
@@ -132,11 +132,11 @@ describe("AddGuardrailForm decision model questions", () => {
       ],
     });
     renderWithProviders(renderFromCard(true));
-    await waitFor(() => expect(screen.getByLabelText("Guardrail Name")).toHaveValue("TypeSafe Jev"));
-    await user.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() => expect(screen.getByLabelText("护栏名称")).toHaveValue("TypeSafe Jev"));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
 
-    expect(await screen.findByLabelText("Decision Model")).toHaveValue("jev-latest");
-    await user.click(screen.getByLabelText("Decision Model"));
+    expect(await screen.findByLabelText("决策模型")).toHaveValue("jev-latest");
+    await user.click(screen.getByLabelText("决策模型"));
     expect(await screen.findByTitle("jev-preview")).toBeInTheDocument();
     expect(screen.queryByTitle("gpt-5")).not.toBeInTheDocument();
   });
@@ -144,17 +144,17 @@ describe("AddGuardrailForm decision model questions", () => {
   it("prefills the card's provider model again after the form is closed and reopened", async () => {
     const user = userEvent.setup({ delay: null, pointerEventsCheck: 0 });
     const { rerender } = renderWithProviders(renderFromCard(true));
-    await waitFor(() => expect(screen.getByLabelText("Guardrail Name")).toHaveValue("TypeSafe Jev"));
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    expect(await screen.findByLabelText("Decision Model")).toHaveValue("jev-latest");
+    await waitFor(() => expect(screen.getByLabelText("护栏名称")).toHaveValue("TypeSafe Jev"));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
+    expect(await screen.findByLabelText("决策模型")).toHaveValue("jev-latest");
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
     rerender(renderFromCard(false));
     rerender(renderFromCard(true));
-    await waitFor(() => expect(screen.getByLabelText("Guardrail Name")).toHaveValue("TypeSafe Jev"));
-    await user.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() => expect(screen.getByLabelText("护栏名称")).toHaveValue("TypeSafe Jev"));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
 
-    expect(await screen.findByLabelText("Decision Model")).toHaveValue("jev-latest");
+    expect(await screen.findByLabelText("决策模型")).toHaveValue("jev-latest");
   });
 
   it("keeps a model the user picked when the model list reloads", async () => {
@@ -166,10 +166,10 @@ describe("AddGuardrailForm decision model questions", () => {
       ],
     });
     const { rerender } = renderWithProviders(renderFromCard(true));
-    await waitFor(() => expect(screen.getByLabelText("Guardrail Name")).toHaveValue("TypeSafe Jev"));
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    expect(await screen.findByLabelText("Decision Model")).toHaveValue("jev-latest");
-    await user.click(screen.getByLabelText("Decision Model"));
+    await waitFor(() => expect(screen.getByLabelText("护栏名称")).toHaveValue("TypeSafe Jev"));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
+    expect(await screen.findByLabelText("决策模型")).toHaveValue("jev-latest");
+    await user.click(screen.getByLabelText("决策模型"));
     await user.click(await screen.findByTitle("jev-preview"));
 
     vi.mocked(modelHubCall).mockResolvedValue({
@@ -180,16 +180,16 @@ describe("AddGuardrailForm decision model questions", () => {
       ],
     });
     rerender(renderFromCard(true, "refreshed-token"));
-    await user.click(screen.getByLabelText("Decision Model"));
+    await user.click(screen.getByLabelText("决策模型"));
     expect(await screen.findByTitle("jev-1.13.0")).toBeInTheDocument();
-    expect(screen.getByLabelText("Decision Model")).toHaveValue("jev-preview");
+    expect(screen.getByLabelText("决策模型")).toHaveValue("jev-preview");
   });
 
   it("leaves the model empty when the form is not opened from a card", async () => {
     const user = userEvent.setup({ delay: null, pointerEventsCheck: 0 });
     await renderDecisionModel(user);
 
-    expect(await screen.findByLabelText("Decision Model")).toHaveValue("");
+    expect(await screen.findByLabelText("决策模型")).toHaveValue("");
   });
 
   it("names the card's provider when it has no decision models", async () => {
@@ -203,11 +203,11 @@ describe("AddGuardrailForm decision model questions", () => {
         preset={GUARDRAIL_PRESETS.dm_databricks}
       />,
     );
-    await waitFor(() => expect(screen.getByLabelText("Guardrail Name")).toHaveValue("Databricks Decision Model"));
-    await user.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() => expect(screen.getByLabelText("护栏名称")).toHaveValue("Databricks Decision Model"));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
 
-    expect(await screen.findByRole("note", { name: "No decision models" })).toHaveTextContent(
-      "Add a decision model from the Databricks (Qwen API) provider to use this guardrail",
+    expect(await screen.findByRole("note", { name: "无决策模型" })).toHaveTextContent(
+      "添加一个决策模型（来自 Databricks (Qwen API) 提供商）才能使用此护栏",
     );
   });
 
@@ -216,15 +216,15 @@ describe("AddGuardrailForm decision model questions", () => {
     await renderDecisionModel(user);
     await pickTypesafeModel(user);
 
-    expect(screen.queryByLabelText(/^Question \d+ name$/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/^第 \d+ 个问题的名称$/)).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Add question" }));
-    expect(screen.getByLabelText("Question 1 name")).toHaveValue("");
-    expect(screen.getByLabelText("Question 1")).toHaveValue("");
+    fireEvent.click(screen.getByRole("button", { name: "添加问题" }));
+    expect(screen.getByLabelText("第 1 个问题的名称")).toHaveValue("");
+    expect(screen.getByLabelText("第 1 个问题")).toHaveValue("");
     expect(screen.getByText("0.70")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Add question" }));
-    expect(screen.getByLabelText("Question 2 name")).toHaveValue("");
+    fireEvent.click(screen.getByRole("button", { name: "添加问题" }));
+    expect(screen.getByLabelText("第 2 个问题的名称")).toHaveValue("");
   });
 
   it("submits a question with the chosen action and the default threshold", async () => {
@@ -233,10 +233,10 @@ describe("AddGuardrailForm decision model questions", () => {
     await pickTypesafeModel(user);
     await addQuestion("invoice_policy", "Does the text ask about invoices?");
 
-    await user.click(screen.getByLabelText("Question 1 action"));
-    await user.click(await screen.findByText("Log only"));
+    await user.click(screen.getByLabelText("第 1 个问题的操作"));
+    await user.click(await screen.findByText("仅记录"));
 
-    fireEvent.click(screen.getByRole("button", { name: "Create Guardrail" }));
+    fireEvent.click(screen.getByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(vi.mocked(createGuardrailCall)).toHaveBeenCalled());
     const submitted = vi.mocked(createGuardrailCall).mock.calls[0][1];
@@ -257,9 +257,9 @@ describe("AddGuardrailForm decision model questions", () => {
     await addQuestion("invoice_policy", "Does the text ask about invoices?");
     await addQuestion("refund_policy", "Is this about refunds?");
 
-    fireEvent.change(screen.getByLabelText("Question 1 name"), { target: { value: "billing_policy" } });
-    fireEvent.change(screen.getByLabelText("Question 1"), { target: { value: "Is this about billing?" } });
-    fireEvent.click(screen.getByRole("button", { name: "Create Guardrail" }));
+    fireEvent.change(screen.getByLabelText("第 1 个问题的名称"), { target: { value: "billing_policy" } });
+    fireEvent.change(screen.getByLabelText("第 1 个问题"), { target: { value: "Is this about billing?" } });
+    fireEvent.click(screen.getByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(vi.mocked(createGuardrailCall)).toHaveBeenCalled());
     const submitted = vi.mocked(createGuardrailCall).mock.calls[0][1];
@@ -278,12 +278,10 @@ describe("AddGuardrailForm decision model questions", () => {
     await addQuestion("invoice_policy", "Does the text ask about invoices?");
     await addQuestion("invoice_policy", "Duplicate name");
 
-    expect(screen.getAllByText("Another question already uses this name")).toHaveLength(2);
+    expect(screen.getAllByText("已有其他问题使用该名称")).toHaveLength(2);
 
-    fireEvent.click(screen.getByRole("button", { name: "Create Guardrail" }));
-    await waitFor(() =>
-      expect(vi.mocked(toast.fromError)).toHaveBeenCalledWith("Each question needs a different name"),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "创建护栏" }));
+    await waitFor(() => expect(vi.mocked(toast.fromError)).toHaveBeenCalledWith("每个问题需要使用不同的名称"));
     expect(vi.mocked(createGuardrailCall)).not.toHaveBeenCalled();
   });
 
@@ -292,14 +290,12 @@ describe("AddGuardrailForm decision model questions", () => {
     await renderDecisionModel(user);
     await pickTypesafeModel(user);
     await addQuestion("invoice_policy", "Does the text ask about invoices?");
-    fireEvent.click(screen.getByRole("button", { name: "Add question" }));
-    fireEvent.change(screen.getByLabelText("Question 2 name"), { target: { value: "refund_policy" } });
+    fireEvent.click(screen.getByRole("button", { name: "添加问题" }));
+    fireEvent.change(screen.getByLabelText("第 2 个问题的名称"), { target: { value: "refund_policy" } });
 
-    fireEvent.click(screen.getByRole("button", { name: "Create Guardrail" }));
+    fireEvent.click(screen.getByRole("button", { name: "创建护栏" }));
     await waitFor(() =>
-      expect(vi.mocked(toast.fromError)).toHaveBeenCalledWith(
-        "Give every question a name and a question, or remove it",
-      ),
+      expect(vi.mocked(toast.fromError)).toHaveBeenCalledWith("请为每个问题填写名称和问题内容，或将其移除"),
     );
     expect(vi.mocked(createGuardrailCall)).not.toHaveBeenCalled();
   });
@@ -311,9 +307,9 @@ describe("AddGuardrailForm decision model questions", () => {
     await addQuestion("invoice_policy", "Does the text ask about invoices?");
     await addQuestion("refund_policy", "Is this about refunds?");
 
-    fireEvent.click(screen.getByLabelText("Remove question 1"));
-    expect(screen.getAllByLabelText(/^Question \d+ name$/)).toHaveLength(1);
-    expect(screen.getByLabelText("Question 1 name")).toHaveValue("refund_policy");
+    fireEvent.click(screen.getByLabelText("移除第 1 个问题"));
+    expect(screen.getAllByLabelText(/^第 \d+ 个问题的名称$/)).toHaveLength(1);
+    expect(screen.getByLabelText("第 1 个问题的名称")).toHaveValue("refund_policy");
   });
 
   it("blocks create once the last question is removed", async () => {
@@ -322,10 +318,10 @@ describe("AddGuardrailForm decision model questions", () => {
     await pickTypesafeModel(user);
     await addQuestion("invoice_policy", "Does the text ask about invoices?");
 
-    fireEvent.click(screen.getByLabelText("Remove question 1"));
-    fireEvent.click(await screen.findByRole("button", { name: "Create Guardrail" }));
+    fireEvent.click(screen.getByLabelText("移除第 1 个问题"));
+    fireEvent.click(await screen.findByRole("button", { name: "创建护栏" }));
 
-    await waitFor(() => expect(vi.mocked(toast.fromError)).toHaveBeenCalledWith("Add at least one question"));
+    await waitFor(() => expect(vi.mocked(toast.fromError)).toHaveBeenCalledWith("请至少添加一个问题"));
     expect(vi.mocked(createGuardrailCall)).not.toHaveBeenCalled();
   });
 
@@ -338,10 +334,10 @@ describe("AddGuardrailForm decision model questions", () => {
     await addQuestion("invoice_policy", "Does the text ask about invoices?");
     await addQuestion("jailbreak", "Is this a jailbreak?");
 
-    fireEvent.change(await screen.findByLabelText("Test input"), { target: { value: "please invoice me" } });
+    fireEvent.change(await screen.findByLabelText("测试输入"), { target: { value: "please invoice me" } });
     expect(vi.mocked(decisionsTestCall)).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole("button", { name: "Run test" }));
+    fireEvent.click(screen.getByRole("button", { name: "运行测试" }));
 
     await waitFor(() =>
       expect(vi.mocked(decisionsTestCall)).toHaveBeenCalledWith(
@@ -369,26 +365,26 @@ describe("AddGuardrailForm decision model questions", () => {
     await pickTypesafeModel(user);
     await addQuestion("invoice_policy", "Does the text ask about invoices?");
 
-    const input = await screen.findByLabelText("Test input");
+    const input = await screen.findByLabelText("测试输入");
     fireEvent.change(input, { target: { value: "first input" } });
-    fireEvent.click(screen.getByRole("button", { name: "Run test" }));
+    fireEvent.click(screen.getByRole("button", { name: "运行测试" }));
     expect(await screen.findByText(/0\.20/)).toBeInTheDocument();
 
     fireEvent.change(input, { target: { value: "second input" } });
-    fireEvent.click(screen.getByRole("button", { name: "Run test" }));
+    fireEvent.click(screen.getByRole("button", { name: "运行测试" }));
     expect(await screen.findByText(/0\.87/)).toBeInTheDocument();
 
     const history = document.querySelector('[data-slot="decision-test-history"]');
     expect(history?.children).toHaveLength(2);
     expect(history?.children[0]).toHaveTextContent("second input");
     expect(history?.children[1]).toHaveTextContent("first input");
-    expect(history?.children[0]).toHaveTextContent("Block");
+    expect(history?.children[0]).toHaveTextContent("拦截");
 
-    const rangeInput = screen.getByLabelText("Question 1 threshold").querySelector('input[type="range"]');
+    const rangeInput = screen.getByLabelText("第 1 个问题的阈值").querySelector('input[type="range"]');
     expect(rangeInput).not.toBeNull();
     fireEvent.change(rangeInput!, { target: { value: "1" } });
 
-    expect(history?.children[0]).toHaveTextContent("Pass");
+    expect(history?.children[0]).toHaveTextContent("放行");
     expect(vi.mocked(decisionsTestCall)).toHaveBeenCalledTimes(2);
   });
 
@@ -400,10 +396,10 @@ describe("AddGuardrailForm decision model questions", () => {
     await pickTypesafeModel(user);
     await addQuestion("invoice_policy", "Does the text ask about invoices?");
 
-    fireEvent.change(await screen.findByLabelText("Test input"), { target: { value: "x" } });
-    fireEvent.click(screen.getByRole("button", { name: "Run test" }));
+    fireEvent.change(await screen.findByLabelText("测试输入"), { target: { value: "x" } });
+    fireEvent.click(screen.getByRole("button", { name: "运行测试" }));
 
-    expect(await screen.findByText(/No answer/)).toBeInTheDocument();
+    expect(await screen.findByText(/无回答/)).toBeInTheDocument();
   });
 });
 
@@ -421,7 +417,7 @@ describe("AddGuardrailForm provider search", () => {
       <AddGuardrailForm visible={true} onClose={vi.fn()} accessToken="test-token" onSuccess={vi.fn()} />,
     );
 
-    const provider = await screen.findByLabelText("Guardrail Provider");
+    const provider = await screen.findByLabelText("护栏提供商");
     await user.click(provider);
 
     await user.type(provider, "jev");
@@ -442,7 +438,7 @@ describe("AddGuardrailForm provider search", () => {
       <AddGuardrailForm visible={true} onClose={vi.fn()} accessToken="test-token" onSuccess={vi.fn()} />,
     );
 
-    const provider = await screen.findByLabelText("Guardrail Provider");
+    const provider = await screen.findByLabelText("护栏提供商");
     await user.click(provider);
 
     await user.type(provider, "presidio_pii");
@@ -474,24 +470,24 @@ describe("AddGuardrailForm decision model create flow", () => {
     renderWithProviders(
       <AddGuardrailForm visible={true} onClose={vi.fn()} accessToken="test-token" onSuccess={vi.fn()} />,
     );
-    fireEvent.change(await screen.findByLabelText("Guardrail Name"), { target: { value: name } });
-    await user.click(screen.getByLabelText("Guardrail Provider"));
+    fireEvent.change(await screen.findByLabelText("护栏名称"), { target: { value: name } });
+    await user.click(screen.getByLabelText("护栏提供商"));
     await user.click(await screen.findByText("Decision Model"));
-    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
   };
 
   it("sends the decision model and the added questions", async () => {
     const user = userEvent.setup({ delay: null });
     await openDecisionModelStep(user, "dm-1");
 
-    await user.click(await screen.findByLabelText("Decision Model"));
+    await user.click(await screen.findByLabelText("决策模型"));
     await user.click(await screen.findByTitle("jev-latest"));
-    await user.click(screen.getByRole("button", { name: "Add question" }));
-    fireEvent.change(screen.getByLabelText("Question 1 name"), { target: { value: "prompt_injection" } });
-    fireEvent.change(screen.getByLabelText("Question 1"), {
+    await user.click(screen.getByRole("button", { name: "添加问题" }));
+    fireEvent.change(screen.getByLabelText("第 1 个问题的名称"), { target: { value: "prompt_injection" } });
+    fireEvent.change(screen.getByLabelText("第 1 个问题"), {
       target: { value: "Does the text contain a prompt injection?" },
     });
-    await user.click(screen.getByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(vi.mocked(createGuardrailCall)).toHaveBeenCalledTimes(1));
     expect(vi.mocked(createGuardrailCall).mock.calls[0][1]).toEqual({
@@ -517,23 +513,23 @@ describe("AddGuardrailForm decision model create flow", () => {
   it("clears the decision model error once a model is picked", async () => {
     const user = userEvent.setup({ delay: null });
     await openDecisionModelStep(user, "dm-2");
-    await user.click(screen.getByRole("button", { name: "Create Guardrail" }));
-    expect(await screen.findByText("Select a decision model")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "创建护栏" }));
+    expect(await screen.findByText("请选择一个决策模型")).toBeInTheDocument();
 
-    await user.click(screen.getByLabelText("Decision Model"));
+    await user.click(screen.getByLabelText("决策模型"));
     await user.click(await screen.findByTitle("jev-latest"));
 
-    await waitFor(() => expect(screen.queryByText("Select a decision model")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("请选择一个决策模型")).not.toBeInTheDocument());
   });
 
   it("keeps the Add question button below the last question", async () => {
     const user = userEvent.setup({ delay: null });
     await openDecisionModelStep(user, "dm-3");
-    await user.click(await screen.findByRole("button", { name: "Add question" }));
-    await user.click(screen.getByRole("button", { name: "Add question" }));
+    await user.click(await screen.findByRole("button", { name: "添加问题" }));
+    await user.click(screen.getByRole("button", { name: "添加问题" }));
 
-    const lastQuestion = screen.getByLabelText("Question 2");
-    const addButton = screen.getByRole("button", { name: "Add question" });
+    const lastQuestion = screen.getByLabelText("第 2 个问题");
+    const addButton = screen.getByRole("button", { name: "添加问题" });
     expect(lastQuestion.compareDocumentPosition(addButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });

@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
+import type { GuardrailsTranslator } from "@/lib/i18n/translators";
+import { enMessagesFor } from "../../../../../../tests/i18nStub";
 import {
   buildDecisionModelParams,
   decisionChecksProblem,
   duplicateDecisionCheckNames,
   type DecisionModelCheckDraft,
 } from "./buildDecisionModelParams";
+
+const t = enMessagesFor("guardrails") as unknown as GuardrailsTranslator;
 
 const draft = (overrides: Partial<DecisionModelCheckDraft>): DecisionModelCheckDraft => ({
   id: "1",
@@ -65,23 +69,23 @@ describe("buildDecisionModelParams", () => {
 
 describe("decisionChecksProblem", () => {
   it("accepts complete questions with different names", () => {
-    expect(decisionChecksProblem([draft({}), draft({ id: "2", name: "refund_policy" })])).toBeNull();
+    expect(decisionChecksProblem([draft({}), draft({ id: "2", name: "refund_policy" })], t)).toBeNull();
   });
 
   it("asks for a question when there is none", () => {
-    expect(decisionChecksProblem([])).toBe("Add at least one question");
+    expect(decisionChecksProblem([], t)).toBe("Add at least one question");
   });
 
   it("rejects a question with a blank name or question", () => {
     const message = "Give every question a name and a question, or remove it";
-    expect(decisionChecksProblem([draft({ name: "  " })])).toBe(message);
-    expect(decisionChecksProblem([draft({}), draft({ id: "2", name: "refund_policy", instructions: "" })])).toBe(
+    expect(decisionChecksProblem([draft({ name: "  " })], t)).toBe(message);
+    expect(decisionChecksProblem([draft({}), draft({ id: "2", name: "refund_policy", instructions: "" })], t)).toBe(
       message,
     );
   });
 
   it("rejects two questions with the same name", () => {
-    expect(decisionChecksProblem([draft({}), draft({ id: "2", name: " invoice_policy" })])).toBe(
+    expect(decisionChecksProblem([draft({}), draft({ id: "2", name: " invoice_policy" })], t)).toBe(
       "Each question needs a different name",
     );
   });

@@ -438,7 +438,7 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
         if (!(await form.trigger(["decision_model"]))) {
           return;
         }
-        const questionsProblem = decisionChecksProblem(decisionChecks);
+        const questionsProblem = decisionChecksProblem(decisionChecks, t);
         if (questionsProblem) {
           toast.fromError(questionsProblem);
           return;
@@ -630,7 +630,7 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
       }
 
       if (guardrailProvider === "decision_model") {
-        const questionsProblem = decisionChecksProblem(decisionChecks);
+        const questionsProblem = decisionChecksProblem(decisionChecks, t);
         if (questionsProblem) {
           toast.fromError(questionsProblem);
           setLoading(false);
