@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Copy } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -19,13 +20,10 @@ interface CopyButtonProps {
 }
 
 /** Copy → check for a moment. `iconOnly` renders a bare icon button with a tooltip. */
-export function CopyButton({
-  value,
-  label = "Copy",
-  copiedLabel = "Copied",
-  iconOnly = false,
-  className,
-}: CopyButtonProps) {
+export function CopyButton({ value, label, copiedLabel, iconOnly = false, className }: CopyButtonProps) {
+  const t = useTranslations("logs");
+  const copyLabel = label ?? t("trace.copy");
+  const copiedText = copiedLabel ?? t("trace.copied");
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -43,11 +41,11 @@ export function CopyButton({
         !iconOnly && "gap-1.5",
         className,
       )}
-      onClick={async () => setCopied(await copyToClipboard(value, copiedLabel))}
-      aria-label={label}
+      onClick={async () => setCopied(await copyToClipboard(value, copiedText))}
+      aria-label={copyLabel}
     >
       {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-      {!iconOnly && <span>{copied ? copiedLabel : label}</span>}
+      {!iconOnly && <span>{copied ? copiedText : copyLabel}</span>}
     </Button>
   );
 
@@ -56,7 +54,7 @@ export function CopyButton({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger render={button} />
-        <TooltipContent>{copied ? copiedLabel : label}</TooltipContent>
+        <TooltipContent>{copied ? copiedText : copyLabel}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

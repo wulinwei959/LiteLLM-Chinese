@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { type KeyValue, KeyValueRows } from "./KeyValueRows";
 import { Card } from "./MessageCard";
 import type { Span } from "./traceTypes";
@@ -22,6 +24,7 @@ export function DetailGroup({ title, children }: { title: string; children: Reac
 
 /** Ids, then the raw OTEL attributes, as dot-bulleted key / value rows. */
 export function AttributesDetail({ traceId, span, attributes, isLoading }: AttributesDetailProps) {
+  const t = useTranslations("logs");
   const ids: KeyValue[] = [
     ["trace_id", traceId],
     ["span_id", span.span_id],
@@ -30,15 +33,15 @@ export function AttributesDetail({ traceId, span, attributes, isLoading }: Attri
   const attributeEntries: KeyValue[] = Object.entries(attributes ?? {}).sort(([a], [b]) => a.localeCompare(b));
   return (
     <div className="flex flex-col gap-4 px-7 pt-1 pb-4">
-      <DetailGroup title="Identifiers">
+      <DetailGroup title={t("trace.identifiers")}>
         <KeyValueRows entries={ids} mono />
       </DetailGroup>
       {attributeEntries.length > 0 && (
-        <DetailGroup title="Attributes">
+        <DetailGroup title={t("trace.attributes")}>
           <KeyValueRows entries={attributeEntries} />
         </DetailGroup>
       )}
-      {isLoading && <div className="text-[13px] text-trace-duration">Loading attributes…</div>}
+      {isLoading && <div className="text-[13px] text-trace-duration">{t("trace.loadingAttributes")}</div>}
     </div>
   );
 }

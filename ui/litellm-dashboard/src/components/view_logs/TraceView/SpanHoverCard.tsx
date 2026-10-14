@@ -1,6 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
@@ -14,12 +15,19 @@ import { fmtMs, fmtTok } from "./traceUtils";
 export const HOVER_OPEN_DELAY_MS = 300;
 const HOVER_CLOSE_DELAY_MS = 100;
 
-const TYPE_LABEL: Record<SpanType, string> = {
-  agent: "Agent",
-  llm: "LLM",
-  tool: "Tool",
-  chain: "Chain",
-  framework: "Framework",
+type SpanTypeLabelKey =
+  | "trace.typeAgent"
+  | "trace.typeLlm"
+  | "trace.typeTool"
+  | "trace.typeChain"
+  | "trace.typeFramework";
+
+const TYPE_LABEL_KEYS: Record<SpanType, SpanTypeLabelKey> = {
+  agent: "trace.typeAgent",
+  llm: "trace.typeLlm",
+  tool: "trace.typeTool",
+  chain: "trace.typeChain",
+  framework: "trace.typeFramework",
 };
 
 const ABSOLUTE_TIME_OPTIONS: Intl.DateTimeFormatOptions = {
@@ -100,6 +108,7 @@ function FactSection({ title, children }: { title: string; children: React.React
 }
 
 function HoverCardBody({ facts, traceStartMs }: { facts: HoverFacts; traceStartMs: number }) {
+  const t = useTranslations("logs");
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-start gap-2">
@@ -112,35 +121,35 @@ function HoverCardBody({ facts, traceStartMs }: { facts: HoverFacts; traceStartM
             {!facts.failed && (
               <span
                 className="grid size-4 shrink-0 place-items-center rounded-full bg-trace-ok p-0.5"
-                aria-label="Success"
+                aria-label={t("success")}
               >
                 <Check className="size-3 text-trace-ok-glyph" strokeWidth={2.5} />
               </span>
             )}
           </div>
           <span className="text-[12px] text-trace-duration">
-            {TYPE_LABEL[facts.type]}
+            {t(TYPE_LABEL_KEYS[facts.type])}
             {facts.model ? ` · ${facts.model}` : ""}
           </span>
         </div>
       </div>
-      <FactSection title="Time">
+      <FactSection title={t("trace.sectionTime")}>
         <dl className="flex flex-col gap-1.5">
-          <Fact label="Start" value={absoluteTime(traceStartMs, facts.startMs)} />
-          <Fact label="End" value={absoluteTime(traceStartMs, facts.startMs + facts.durationMs)} />
-          <Fact label="Duration" value={fmtMs(facts.durationMs)} />
+          <Fact label={t("trace.factStart")} value={absoluteTime(traceStartMs, facts.startMs)} />
+          <Fact label={t("trace.factEnd")} value={absoluteTime(traceStartMs, facts.startMs + facts.durationMs)} />
+          <Fact label={t("trace.factDuration")} value={fmtMs(facts.durationMs)} />
         </dl>
       </FactSection>
       {(facts.tokens > 0 || facts.spend != null) && (
-        <FactSection title="Usage">
+        <FactSection title={t("trace.sectionUsage")}>
           <dl className="flex flex-col gap-1.5">
-            {facts.tokens > 0 && <Fact label="Tokens" value={fmtTok(facts.tokens)} />}
-            {facts.spend != null && <Fact label="Cost" value={formatCost(facts.spend)} />}
+            {facts.tokens > 0 && <Fact label={t("tokens")} value={fmtTok(facts.tokens)} />}
+            {facts.spend != null && <Fact label={t("cost")} value={formatCost(facts.spend)} />}
           </dl>
         </FactSection>
       )}
       {facts.tags.length > 0 && (
-        <FactSection title="Tags">
+        <FactSection title={t("trace.sectionTags")}>
           <ul className="flex flex-wrap gap-1">
             {facts.tags.map((tag) => (
               <li key={tag} className="rounded-[3px] bg-trace-tag px-1 py-0.5 text-trace-duration">

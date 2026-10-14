@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
 
@@ -14,7 +15,11 @@ import type { ErrorSource } from "./traceTree";
 import type { Span, SpanDetail, SpanErrorPage, TraceMessage, UIContent, UIMessage } from "./traceTypes";
 import { errorSource, parseJson, parseMessages, prettyPayload } from "./traceUtils";
 
-const ERROR_SOURCE_LABEL: Record<ErrorSource, string> = { tool: "Tool", model: "Model", litellm: "LiteLLM" };
+type ErrorSourceLabelKey = "trace.errorSourceTool" | "trace.errorSourceModel";
+const ERROR_SOURCE_KEYS: Partial<Record<ErrorSource, ErrorSourceLabelKey>> = {
+  tool: "trace.errorSourceTool",
+  model: "trace.errorSourceModel",
+};
 const TRACEBACK_MARKER = "Traceback (most recent call last):";
 const STATUS_TEXT = "px-5 py-2 text-[13px] tracking-[-0.26px] text-trace-duration";
 const PAYLOAD_PRE =
@@ -39,17 +44,19 @@ export function useSpanDetail(accessToken: string, traceId: string, spanId: stri
 }
 
 export function ErrorBlock({ span }: { span: Span }) {
+  const t = useTranslations("logs");
   const source = errorSource(span);
   if (!source) return null;
-  const headline = errorHeadline(span.error ?? "") || "Span reported an error status.";
+  const headline = errorHeadline(span.error ?? "") || t("trace.spanErrorFallback");
+  const sourceKey = ERROR_SOURCE_KEYS[source];
   return (
     <section
-      aria-label="Error"
+      aria-label={t("trace.errorSection")}
       className="mx-5 mb-2 rounded-[4px] border-[0.67px] border-destructive/40 bg-destructive/5 px-3 py-2.5"
     >
       <div className="flex items-center gap-2 text-[13px] leading-[1.2] font-medium tracking-[-0.26px] text-destructive">
         <AlertTriangle className="size-3.5" />
-        {ERROR_SOURCE_LABEL[source]} · {errorReason(headline)}
+        {sourceKey === undefined ? "LiteLLM" : t(sourceKey)} · {errorReason(headline)}
       </div>
       <pre className={cn("mt-2", PAYLOAD_PRE)}>{headline}</pre>
     </section>
@@ -146,6 +153,7 @@ interface DetailContentProps {
 }
 
 function DiagnosticContent({ accessToken, traceId, traceRef, span }: DetailContentProps) {
+  const t = useTranslations("logs");
   const [opened, setOpened] = useState(false);
   const [cursor, setCursor] = useState<string | null>(null);
   const queryOptions: UseQueryOptions<SpanErrorPage, Error> = {
@@ -158,19 +166,19 @@ function DiagnosticContent({ accessToken, traceId, traceRef, span }: DetailConte
   };
   const query = useQuery(queryOptions);
   return (
-    <section aria-label="Stored diagnostic" className="mx-5 mb-2 space-y-2">
-      {span.error_truncated && <p className="text-xs text-muted-foreground">Error preview truncated</p>}
+    <section aria-label={t("trace.storedDiagnostic")} className="mx-5 mb-2 space-y-2">
+      {span.error_truncated && <p className="text-xs text-muted-foreground">{t("trace.errorTruncated")}</p>}
       {!opened && (
         <Button variant="outline" size="sm" onClick={() => setOpened(true)}>
-          View stored diagnostic
+          {t("trace.viewStoredDiagnostic")}
         </Button>
       )}
-      {opened && query.isPending && <p role="status">Loading diagnostic…</p>}
+      {opened && query.isPending && <p role="status">{t("trace.loadingDiagnostic")}</p>}
       {opened && query.isError && (
         <div role="alert">
-          Could not load diagnostic: {query.error.message}
+          {t("trace.couldNotLoadDiagnostic", { message: query.error.message })}
           <Button variant="outline" size="sm" onClick={() => query.refetch()}>
-            Retry
+            {t("trace.retry")}
           </Button>
         </div>
       )}
@@ -178,17 +186,18 @@ function DiagnosticContent({ accessToken, traceId, traceRef, span }: DetailConte
         <>
           <TextCard text={query.data.message} />
           <p className="text-xs text-muted-foreground">
-            {cursor ? "Continuation" : "Beginning"} of stored diagnostic ({query.data.total_chars.toLocaleString()}{" "}
-            characters)
+            {t(cursor ? "trace.diagnosticContinuation" : "trace.diagnosticBeginning", {
+              count: query.data.total_chars.toLocaleString(),
+            })}
           </p>
           {query.data.next_cursor && (
             <Button variant="outline" size="sm" onClick={() => setCursor(query.data.next_cursor)}>
-              Next section
+              {t("trace.nextSection")}
             </Button>
           )}
           {cursor && (
             <Button variant="outline" size="sm" onClick={() => setCursor(null)}>
-              Back to beginning
+              {t("trace.backToBeginning")}
             </Button>
           )}
         </>
@@ -199,6 +208,7 @@ function DiagnosticContent({ accessToken, traceId, traceRef, span }: DetailConte
 
 /** Content tab: the error first (if any), then collapsible Input and Output rendered as chat cards. */
 export function DetailContent({ accessToken, traceId, traceRef, span }: DetailContentProps) {
+  const t = useTranslations("logs");
   const detailQuery = useSpanDetail(accessToken, traceId, span.span_id, traceRef);
   const detail = detailQuery.data;
   const empty = detail && !detail.input && !detail.output;
@@ -215,21 +225,23 @@ export function DetailContent({ accessToken, traceId, traceRef, span }: DetailCo
           span={span}
         />
       )}
-      {detailQuery.isLoading && <div className={STATUS_TEXT}>Loading span…</div>}
-      {detailQuery.isError && <div className={STATUS_TEXT}>Could not load span: {detailQuery.error.message}</div>}
+      {detailQuery.isLoading && <div className={STATUS_TEXT}>{t("trace.loadingSpan")}</div>}
+      {detailQuery.isError && (
+        <div className={STATUS_TEXT}>{t("trace.couldNotLoadSpan", { message: detailQuery.error.message })}</div>
+      )}
       {detail?.input ? (
-        <Section title="Input">
+        <Section title={t("drawer.input")}>
           <SpanPayload value={detail.input} content={detail.input_ui} span={span} role="input" />
         </Section>
       ) : null}
       {detail?.output ? (
-        <Section title="Output">
+        <Section title={t("drawer.output")}>
           <SpanPayload value={detail.output} content={detail.output_ui} span={span} role="output" />
         </Section>
       ) : null}
       {empty && span.status !== "error" && (
         <div className="py-12 text-center text-[13px] tracking-[-0.26px] text-trace-duration">
-          No content recorded for this span.
+          {t("trace.noSpanContent")}
         </div>
       )}
     </div>

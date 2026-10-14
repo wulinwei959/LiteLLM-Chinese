@@ -1,12 +1,14 @@
 "use client";
 
 import { Bot, ScrollText, UserRound, Wrench } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { Logo } from "@/components/molecules/logo/Logo";
 import { cn } from "@/lib/cva.config";
+import type { LogsTranslator } from "@/lib/i18n/translators";
 
 import { FoldChevron } from "./Collapse";
 import { CopyButton } from "./CopyButton";
@@ -14,9 +16,26 @@ import { displayValue, type KeyValue, KeyValueRows, objectEntries } from "./KeyV
 import { useSpanProvider } from "./spanProvider";
 import type { TraceMessage, TraceToolCall } from "./traceTypes";
 
-const ROLE_LABEL: Record<string, string> = { user: "User", system: "System", assistant: "AI", tool: "Tool" };
+type RoleLabelKey = "trace.roleUser" | "trace.roleSystem" | "trace.roleAssistant" | "trace.roleTool";
+
+const ROLE_LABEL_KEYS: Record<string, RoleLabelKey> = {
+  user: "trace.roleUser",
+  system: "trace.roleSystem",
+  assistant: "trace.roleAssistant",
+  tool: "trace.roleTool",
+};
+
+const roleLabel = (t: LogsTranslator, role: string): string => {
+  const key = ROLE_LABEL_KEYS[role];
+  return key === undefined ? role : t(key);
+};
 
 const BLOCK_GAP = "mb-[1lh] last:mb-0";
+
+function MarkdownImage({ alt }: { alt?: string }) {
+  const t = useTranslations("logs");
+  return <span>{alt || t("trace.imageOmitted")}</span>;
+}
 
 const markdownComponents: Components = {
   p: ({ node, ...props }) => <p className={BLOCK_GAP} {...props} />,
@@ -40,7 +59,7 @@ const markdownComponents: Components = {
   ),
   code: ({ node, className, ...props }) => <code className={cn("font-mono", className)} {...props} />,
   a: ({ node, ...props }) => <a className="text-trace-brand underline" target="_blank" rel="noreferrer" {...props} />,
-  img: ({ alt }) => <span>{alt || "Image omitted"}</span>,
+  img: ({ alt }) => <MarkdownImage alt={alt} />,
 };
 
 export function Markdown({ text }: { text: string }) {
@@ -108,11 +127,12 @@ function FoldTile({
   onToggle: () => void;
 }) {
   const provider = useSpanProvider(role === "assistant" ? model : null);
+  const t = useTranslations("logs");
   return (
     <button
       type="button"
       aria-expanded={open}
-      aria-label={`${open ? "Collapse" : "Expand"} ${label}`}
+      aria-label={t(open ? "trace.collapseAria" : "trace.expandAria", { name: label })}
       onClick={onToggle}
       className={cn(
         TILE,
@@ -139,6 +159,7 @@ const CARD_COPY =
 const INLINE_COPY = "size-4 shrink-0 rounded-[3px] text-trace-duration";
 
 function ToolCallBlock({ call }: { call: TraceToolCall }) {
+  const t = useTranslations("logs");
   const raw: KeyValue[] = [
     ["arguments", displayValue(call.args)],
     ["name", call.name],
@@ -153,7 +174,12 @@ function ToolCallBlock({ call }: { call: TraceToolCall }) {
           <span className="truncate text-[13px] leading-[1.2] font-medium tracking-[-0.26px] text-trace-text">
             {call.name}
           </span>
-          <CopyButton value={call.name} label={`Copy ${call.name} name`} iconOnly className={INLINE_COPY} />
+          <CopyButton
+            value={call.name}
+            label={t("trace.copyNameAria", { name: call.name })}
+            iconOnly
+            className={INLINE_COPY}
+          />
         </span>
       </div>
       {argEntries && argEntries.length > 0 && <KeyValueRows entries={argEntries} className="pl-10" />}
@@ -163,8 +189,9 @@ function ToolCallBlock({ call }: { call: TraceToolCall }) {
 
 /** One chat message as a card with a sticky header; hovering the role tile turns it into a fold chevron. */
 export function MessageCard({ message, model }: { message: TraceMessage; model: string | null }) {
+  const t = useTranslations("logs");
   const [open, setOpen] = useState(true);
-  const label = message.role === "tool" ? message.name ?? "Tool" : ROLE_LABEL[message.role] ?? message.role;
+  const label = message.role === "tool" ? message.name ?? t("trace.roleTool") : roleLabel(t, message.role);
   if (message.role === "tool") return <ToolResultCard name={label} result={message.content} />;
   const calls = message.tool_calls ?? [];
   const copyValue = message.content || calls.map((c) => `${c.name}(${displayValue(c.args)})`).join("\n");
@@ -175,7 +202,7 @@ export function MessageCard({ message, model }: { message: TraceMessage; model: 
       <div className={cn(HEADER, "sticky top-10 z-sticky", expanded ? "rounded-t-[4px] border-b-0" : "rounded-[4px]")}>
         <FoldTile role={message.role} model={model} label={label} open={open} onToggle={() => setOpen((v) => !v)} />
         <span className={LABEL}>{label}</span>
-        <CopyButton value={copyValue} label={`Copy ${label}`} iconOnly className={CARD_COPY} />
+        <CopyButton value={copyValue} label={t("trace.copyAria", { name: label })} iconOnly className={CARD_COPY} />
       </div>
       {expanded && (
         <div
@@ -198,6 +225,7 @@ const LONG_RESULT_CHARS = 120;
 
 /** Tool result card: one line by default; long or multiline results expand in place. Red when the tool failed. */
 export function ToolResultCard({ name, result, failed = false }: { name: string; result: string; failed?: boolean }) {
+  const t = useTranslations("logs");
   const [open, setOpen] = useState(false);
   const expandable = result.length > LONG_RESULT_CHARS || result.includes("\n");
   const tone = failed ? "text-destructive" : "text-trace-duration";
@@ -209,13 +237,13 @@ export function ToolResultCard({ name, result, failed = false }: { name: string;
         <RoleTile role="tool" failed={failed} />
         <span className="flex shrink-0 items-center gap-1.5">
           <span className={cn(LABEL, failed && "text-destructive")}>{name}</span>
-          <CopyButton value={name} label={`Copy ${name} name`} iconOnly className={INLINE_COPY} />
+          <CopyButton value={name} label={t("trace.copyNameAria", { name })} iconOnly className={INLINE_COPY} />
         </span>
         {expandable ? (
           <button
             type="button"
             aria-expanded={open}
-            aria-label={`${open ? "Collapse" : "Expand"} ${name} result`}
+            aria-label={t(open ? "trace.collapseResultAria" : "trace.expandResultAria", { name })}
             onClick={() => setOpen((prev) => !prev)}
             className={cn("flex min-w-0 cursor-pointer items-center gap-1 text-left", tone)}
           >
@@ -224,10 +252,10 @@ export function ToolResultCard({ name, result, failed = false }: { name: string;
           </button>
         ) : (
           <span className={cn("min-w-0 truncate text-[13px] leading-[1.2] tracking-[-0.26px]", tone)}>
-            {result || "No output"}
+            {result || t("trace.noOutput")}
           </span>
         )}
-        <CopyButton value={result} label={`Copy ${name} result`} iconOnly className={CARD_COPY} />
+        <CopyButton value={result} label={t("trace.copyResultAria", { name })} iconOnly className={CARD_COPY} />
       </div>
       {open && (
         <pre

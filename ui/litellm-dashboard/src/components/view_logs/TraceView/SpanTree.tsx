@@ -1,6 +1,7 @@
 "use client";
 
 import { BarChart3, Clock, Coins, ListTree, MoreHorizontal, Timer } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef } from "react";
 
 import { Switch } from "@/components/ui/switch";
@@ -52,6 +53,7 @@ function Stat({ icon: Icon, children }: { icon: typeof Clock; children: React.Re
 const Slash = () => <span className="text-trace-key">/</span>;
 
 function Summary({ summary }: { summary: TraceSummary }) {
+  const t = useTranslations("logs");
   const tokens = summary.input_tokens + summary.output_tokens;
   return (
     <div className="flex flex-wrap items-center gap-2 px-4 py-2 transition-colors duration-150 hover:bg-trace-turn motion-reduce:transition-none">
@@ -59,10 +61,10 @@ function Summary({ summary }: { summary: TraceSummary }) {
         <span className="grid size-5 place-items-center rounded-[4px] bg-trace-row-selected text-[var(--trace-summary-glyph,#0d3d77)]">
           <BarChart3 className="size-3" strokeWidth={1.5} />
         </span>
-        Summary
+        {t("trace.summary")}
       </span>
       <span className="flex basis-full flex-wrap items-center gap-x-2 pl-6 font-mono text-[11.5px] leading-[13.8px] text-trace-text-secondary tabular-nums">
-        <Stat icon={ListTree}>{`${summary.span_count.toLocaleString()} spans`}</Stat>
+        <Stat icon={ListTree}>{t("trace.spansCount", { count: summary.span_count.toLocaleString() })}</Stat>
         <Slash />
         <Stat icon={Timer}>{fmtMs(summary.duration_ms)}</Stat>
         {tokens > 0 && (
@@ -183,13 +185,18 @@ function SpanRow({
   onSelect,
   onToggleSpan,
 }: RowProps & { row: SpanRowData }) {
+  const t = useTranslations("logs");
   const { span } = row;
   const failed = span.status === "error";
   const tokens = span.input_tokens + span.output_tokens;
   const isLlm = span.type === "llm";
   const duration = <span className={cn(META, "shrink-0")}>{fmtMs(span.duration_ms)}</span>;
   const caret = row.hasChildren && (
-    <Caret open={!row.collapsed} label={row.collapsed ? "Expand" : "Collapse"} onToggle={() => onToggleSpan(row.id)} />
+    <Caret
+      open={!row.collapsed}
+      label={row.collapsed ? t("trace.expand") : t("trace.collapse")}
+      onToggle={() => onToggleSpan(row.id)}
+    />
   );
   const leafDuration = !row.hasChildren && !isLlm && <span className="flex min-h-5 items-center">{duration}</span>;
   return (
@@ -219,7 +226,12 @@ function SpanRow({
               </span>
             )}
             {(row.hasChildren || isLlm) && duration}
-            {isLlm && tokens > 0 && <span className={META}>{fmtTok(tokens)} tok</span>}
+            {isLlm && tokens > 0 && (
+              <span className={META}>
+                {fmtTok(tokens)}
+                {t("trace.tokSuffix")}
+              </span>
+            )}
           </span>
           <Waterfall
             startMs={span.start_offset_ms}
@@ -242,6 +254,7 @@ function GroupRow({
   onSelect,
   onToggleGroup,
 }: RowProps & { row: GroupRowData }) {
+  const t = useTranslations("logs");
   const groupStart = Math.min(...row.members.map((m) => m.start_offset_ms));
   const groupEnd = Math.max(...row.members.map((m) => m.start_offset_ms + m.duration_ms));
   return (
@@ -267,7 +280,7 @@ function GroupRow({
           trailing={
             <Caret
               open={row.expanded}
-              label={row.expanded ? "Collapse" : "Expand"}
+              label={row.expanded ? t("trace.collapse") : t("trace.expand")}
               onToggle={() => onToggleGroup(row.id)}
             />
           }
@@ -283,7 +296,9 @@ function GroupRow({
             </span>
             <span className={META}>×{row.members.length}</span>
             <span className={META}>p50 {fmtMs(row.p50Duration)}</span>
-            {row.failedCount > 0 && <span className={cn(META, "text-destructive")}>{row.failedCount} failed</span>}
+            {row.failedCount > 0 && (
+              <span className={cn(META, "text-destructive")}>{t("trace.failedCount", { count: row.failedCount })}</span>
+            )}
           </span>
           <Waterfall
             startMs={groupStart}
@@ -310,6 +325,7 @@ export function SpanTree({
   onLoadMore,
   embedded = false,
 }: SpanTreeProps) {
+  const t = useTranslations("logs");
   const scrollRef = useRef<HTMLDivElement>(null);
   const guides = useMemo(() => treeGuides(rows.map((row) => row.depth)), [rows]);
   const traceStartMs = Date.parse(summary.start_time);
@@ -321,22 +337,27 @@ export function SpanTree({
   }, [selectedId]);
 
   return (
-    <section className="flex h-full min-h-0 min-w-0 flex-col border-r border-border bg-card" aria-label="Run spans">
+    <section
+      className="flex h-full min-h-0 min-w-0 flex-col border-r border-border bg-card"
+      aria-label={t("trace.runSpans")}
+    >
       <div className="mt-3.5 mr-2 mb-2 ml-4 flex h-8 shrink-0 items-center gap-1">
-        <span className="text-[13px] leading-[15.6px] font-semibold tracking-[-0.26px] text-trace-key">Spans</span>
+        <span className="text-[13px] leading-[15.6px] font-semibold tracking-[-0.26px] text-trace-key">
+          {t("trace.spansHeading")}
+        </span>
         <label className="ml-auto flex shrink-0 cursor-pointer items-center gap-2 text-[12px] text-muted-foreground">
-          Hide framework
+          {t("trace.hideFramework")}
           <Switch
             size="sm"
             checked={hideFramework}
             onCheckedChange={(checked) => onToggleHideFramework(checked)}
-            aria-label="Hide framework spans"
+            aria-label={t("trace.hideFrameworkSpans")}
           />
         </label>
       </div>
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto pb-4">
         <Summary summary={summary} />
-        <div role="tree" aria-label="Spans in time order">
+        <div role="tree" aria-label={t("trace.spansByTime")}>
           {rows.map((row, i) => {
             if (row.kind === "load-more") {
               return (
@@ -348,8 +369,8 @@ export function SpanTree({
                 >
                   <Gutters depth={row.depth} guide={guides[i]} />
                   <span className="ml-0.5 flex items-center gap-2">
-                    <MoreHorizontal className="relative z-raised size-3.5" /> Load 20 more
-                    <span className="text-trace-duration">({row.remaining} remaining)</span>
+                    <MoreHorizontal className="relative z-raised size-3.5" /> {t("trace.loadMore")}
+                    <span className="text-trace-duration">{t("trace.remaining", { count: row.remaining })}</span>
                   </span>
                 </button>
               );
@@ -375,22 +396,27 @@ export function SpanTree({
         {embedded ? (
           <>
             <span>
-              <Kbd>↑</Kbd>/<Kbd>↓</Kbd> step
+              <Kbd>↑</Kbd>/<Kbd>↓</Kbd>
+              {t("trace.kbdStep")}
             </span>
             <span>
-              <Kbd>J</Kbd>/<Kbd>K</Kbd> trace
+              <Kbd>J</Kbd>/<Kbd>K</Kbd>
+              {t("trace.kbdTrace")}
             </span>
           </>
         ) : (
           <span>
-            <Kbd>J</Kbd>/<Kbd>K</Kbd> move
+            <Kbd>J</Kbd>/<Kbd>K</Kbd>
+            {t("trace.kbdMove")}
           </span>
         )}
         <span>
-          <Kbd>←</Kbd>/<Kbd>→</Kbd> fold
+          <Kbd>←</Kbd>/<Kbd>→</Kbd>
+          {t("trace.kbdFold")}
         </span>
         <span>
-          <Kbd>Esc</Kbd> close
+          <Kbd>Esc</Kbd>
+          {t("trace.kbdClose")}
         </span>
       </div>
     </section>

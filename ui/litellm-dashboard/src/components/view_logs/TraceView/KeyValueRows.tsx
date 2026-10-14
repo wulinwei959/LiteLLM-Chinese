@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { cn } from "@/lib/cva.config";
@@ -32,6 +33,7 @@ function Lead({ children }: { children: React.ReactNode }) {
 }
 
 function KeyValueRow({ entry, mono }: { entry: KeyValue; mono: boolean }) {
+  const t = useTranslations("logs");
   const [key, value] = entry;
   const [open, setOpen] = useState(false);
   const valueClass = cn(
@@ -64,7 +66,7 @@ function KeyValueRow({ entry, mono }: { entry: KeyValue; mono: boolean }) {
   const toggle = {
     type: "button",
     "aria-expanded": open,
-    "aria-label": `${open ? "Collapse" : "Expand"} ${key}`,
+    "aria-label": t(open ? "trace.collapseAria" : "trace.expandAria", { name: key }),
     onClick: () => setOpen((prev) => !prev),
   } as const;
 

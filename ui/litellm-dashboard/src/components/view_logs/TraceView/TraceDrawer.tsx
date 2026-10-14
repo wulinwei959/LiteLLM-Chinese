@@ -2,11 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Check, Copy } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { cn } from "@/lib/cva.config";
+import type { LogsTranslator } from "@/lib/i18n/translators";
 import { copyToClipboard } from "@/utils/dataUtils";
 
 import { agentTraceCall, getProxyBaseUrl } from "../../networking";
@@ -29,10 +31,14 @@ import {
 } from "./traceUtils";
 
 /** What "Copy for agent" puts on the clipboard: a one-liner Claude Code / Codex can run. */
-export const agentHandoffText = (traceId: string, spanId?: string | null, traceRef?: string): string => {
+export const agentHandoffText = (
+  t: LogsTranslator,
+  traceId: string,
+  spanId?: string | null,
+  traceRef?: string,
+): string => {
   const url = `${getProxyBaseUrl().replace(/\/$/, "")}/v1/traces/${traceId}?format=md${spanId ? `&span_id=${spanId}` : ""}${traceRef ? `&trace_ref=${traceRef}` : ""}`;
-  const what = spanId ? "this step of a LiteLLM agent trace" : "this LiteLLM agent trace";
-  return `Read ${what} and explain what happened and why it failed:\ncurl -s -H "Authorization: Bearer $LITELLM_API_KEY" "${url}"`;
+  return `${t(spanId ? "trace.handoffSpan" : "trace.handoffTrace")}\ncurl -s -H "Authorization: Bearer $LITELLM_API_KEY" "${url}"`;
 };
 
 const INITIAL_STATE: SpanTreeState = {
@@ -72,6 +78,7 @@ const toggle = (set: ReadonlySet<string>, id: string): Set<string> => {
 };
 
 function CopyForAgent({ traceId, traceRef }: { traceId: string; traceRef?: string }) {
+  const t = useTranslations("logs");
   const [copied, setCopied] = useState(false);
   useEffect(() => {
     if (!copied) return;
@@ -84,11 +91,11 @@ function CopyForAgent({ traceId, traceRef }: { traceId: string; traceRef?: strin
       size="xs"
       className="h-7 shrink-0 gap-1.5 rounded-md text-[12px] shadow-none"
       onClick={async () =>
-        setCopied(await copyToClipboard(agentHandoffText(traceId, null, traceRef), "Command copied"))
+        setCopied(await copyToClipboard(agentHandoffText(t, traceId, null, traceRef), t("trace.commandCopied")))
       }
     >
       {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-      {copied ? "Command copied" : "Copy for agent"}
+      {copied ? t("trace.commandCopied") : t("trace.copyForAgent")}
     </Button>
   );
 }
@@ -108,6 +115,7 @@ function Stat({ label, value, error = false }: { label: string; value: string; e
 }
 
 function RunHeader({ trace, onBack, embedded }: { trace: Trace; onBack: () => void; embedded: boolean }) {
+  const t = useTranslations("logs");
   const { summary } = trace;
   const failed = summary.error_count > 0;
   return (
@@ -118,7 +126,7 @@ function RunHeader({ trace, onBack, embedded }: { trace: Trace; onBack: () => vo
             type="button"
             onClick={onBack}
             className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-            aria-label="Back to runs"
+            aria-label={t("trace.backToRuns")}
           >
             <ArrowLeft className="size-4" />
           </button>
@@ -127,12 +135,12 @@ function RunHeader({ trace, onBack, embedded }: { trace: Trace; onBack: () => vo
       )}
       <SpanIcon type="agent" error={failed} size="lg" />
       <h1 className="min-w-0 truncate text-[14px] font-medium text-foreground">{traceDisplayName(summary)}</h1>
-      <IdChip value={summary.trace_id} label="Copy trace ID" showValue />
+      <IdChip value={summary.trace_id} label={t("drawer.copyTraceId")} showValue />
       <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-        <Stat label="duration" value={fmtMs(summary.duration_ms)} />
-        <Stat label="steps" value={summary.span_count.toLocaleString()} />
-        <Stat label="cost" value={summary.spend == null ? "—" : formatCost(summary.spend)} />
-        {failed && <Stat label="failed" value={summary.error_count.toLocaleString()} error />}
+        <Stat label={t("trace.statDuration")} value={fmtMs(summary.duration_ms)} />
+        <Stat label={t("trace.statSteps")} value={summary.span_count.toLocaleString()} />
+        <Stat label={t("trace.statCost")} value={summary.spend == null ? "—" : formatCost(summary.spend)} />
+        {failed && <Stat label={t("trace.statFailed")} value={summary.error_count.toLocaleString()} error />}
       </div>
       <div className="ml-auto">
         <CopyForAgent traceId={summary.trace_id} traceRef={summary.trace_ref} />
@@ -259,6 +267,7 @@ interface RunViewProps {
 
 /** One agent run: header with totals and "Copy for agent", span tree on the left, span details on the right. */
 export function RunView({ traceId, traceRef, initialSpanId, accessToken, onBack, embedded = false }: RunViewProps) {
+  const t = useTranslations("logs");
   const traceQuery = useQuery({
     queryKey: ["agentTrace", traceId, traceRef, accessToken],
     queryFn: () => agentTraceCall(accessToken, traceId, traceRef),
@@ -270,7 +279,7 @@ export function RunView({ traceId, traceRef, initialSpanId, accessToken, onBack,
     return (
       <div
         role="status"
-        aria-label="Loading trace"
+        aria-label={t("trace.loadingTrace")}
         className={embedded ? "flex flex-col gap-3 p-4" : "flex h-[60vh] items-center justify-center"}
       >
         {embedded ? (
@@ -291,10 +300,10 @@ export function RunView({ traceId, traceRef, initialSpanId, accessToken, onBack,
           onClick={onBack}
           className="mb-4 inline-flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="size-3.5" /> Back to traces
+          <ArrowLeft className="size-3.5" /> {t("trace.backToTraces")}
         </button>
-        <h1 className="mb-2 text-[13px] font-medium">Could not load trace</h1>
-        <span className="text-muted-foreground">{traceQuery.error?.message ?? "Unknown error"}</span>
+        <h1 className="mb-2 text-[13px] font-medium">{t("trace.couldNotLoadTrace")}</h1>
+        <span className="text-muted-foreground">{traceQuery.error?.message ?? t("trace.unknownError")}</span>
       </div>
     );
   }
