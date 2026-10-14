@@ -1,7 +1,9 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { createTranslator } from "next-intl";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import zh from "@/messages/zh-CN.json";
 import { renderWithProviders, testQueryClient } from "../../../../tests/test-utils";
 import researchTrace from "./__fixtures__/research_trace.json";
 import swarmTrace from "./__fixtures__/swarm_trace.json";
@@ -35,6 +37,7 @@ import { agentTraceCall } from "../../networking";
 
 const swarm = swarmTrace as Trace;
 const research = researchTrace as Trace;
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "logs" });
 
 const renderRun = (trace: Trace) => {
   vi.mocked(agentTraceCall).mockResolvedValue(trace);
@@ -55,17 +58,17 @@ describe("RunView", () => {
     const header = await screen.findByRole("banner");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(traceDisplayName(research.summary));
     expect(header).toHaveTextContent(research.summary.trace_id);
-    expect(header).toHaveTextContent("duration 40.20s");
-    expect(header).toHaveTextContent(`steps ${research.summary.span_count}`);
-    expect(header).not.toHaveTextContent("failed");
+    expect(header).toHaveTextContent("时长 40.20s");
+    expect(header).toHaveTextContent(`步数 ${research.summary.span_count}`);
+    expect(header).not.toHaveTextContent("失败");
   });
 
   it("folds researcher ×12 in the span tree", async () => {
     renderRun(swarm);
 
-    const tree = await screen.findByRole("tree", { name: "Spans in time order" });
+    const tree = await screen.findByRole("tree", { name: "按时间排序的 Span" });
     expect(tree).toHaveTextContent("researcher×12");
-    expect(screen.getByRole("banner")).toHaveTextContent(`failed ${swarm.summary.error_count}`);
+    expect(screen.getByRole("banner")).toHaveTextContent(`失败 ${swarm.summary.error_count}`);
   });
 
   it("opens a failed run on its first failed span", async () => {
@@ -96,7 +99,7 @@ describe("RunView", () => {
     expect(screen.getByTestId("detail-pane")).toHaveAttribute("data-row-id", root);
     await user.keyboard("{ArrowDown}");
     expect(screen.getByTestId("detail-pane").getAttribute("data-row-id")).not.toBe(root);
-    expect(screen.queryByRole("button", { name: "Back to runs" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "返回运行列表" })).not.toBeInTheDocument();
   });
 
   it("moves the selection with J / K and closes the detail pane with Esc", async () => {
@@ -121,7 +124,7 @@ describe("RunView", () => {
     renderWithProviders(<RunView traceId="big" accessToken="sk-test" onBack={onBack} />);
 
     expect(await screen.findByText("trace exceeds the 1000 span read limit")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /back to traces/i }));
+    await user.click(screen.getByRole("button", { name: "返回调用链列表" }));
     expect(onBack).toHaveBeenCalledTimes(1);
   });
 
@@ -129,10 +132,10 @@ describe("RunView", () => {
     const user = userEvent.setup();
     renderRun(research);
 
-    await user.click(await screen.findByRole("button", { name: /copy for agent/i }));
-    expect(copyToClipboard).toHaveBeenCalledWith(agentHandoffText(research.summary.trace_id), "Command copied");
-    expect(agentHandoffText("t1")).toContain('"http://proxy.test/v1/traces/t1?format=md"');
-    expect(agentHandoffText("t1", "s1")).toContain("&span_id=s1");
+    await user.click(await screen.findByRole("button", { name: "复制给智能体" }));
+    expect(copyToClipboard).toHaveBeenCalledWith(agentHandoffText(t, research.summary.trace_id), "命令已复制");
+    expect(agentHandoffText(t, "t1")).toContain('"http://proxy.test/v1/traces/t1?format=md"');
+    expect(agentHandoffText(t, "t1", "s1")).toContain("&span_id=s1");
   });
 });
 

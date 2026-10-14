@@ -161,9 +161,9 @@ describe("DetailPane", () => {
 
   it("renders the span tabs and the fetched LLM conversation with its tool call", async () => {
     renderPane(spanRow(llm));
-    expect(screen.getByRole("tab", { name: "Content" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Request" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Attributes" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "内容" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "请求" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "属性" })).toBeInTheDocument();
     expect(await screen.findByText("You are a LiteLLM support agent.")).toBeInTheDocument();
     expect(screen.getAllByText("get_customer_plan").length).toBeGreaterThan(0);
     expect(vi.mocked(agentTraceSpanCall)).toHaveBeenCalledWith("sk-test", "t1", "llm1", undefined);
@@ -171,11 +171,11 @@ describe("DetailPane", () => {
 
   it("shows a tool failure as 'Tool · <reason>' with the exception line and no traceback", async () => {
     renderPane(spanRow(failedTool));
-    const error = screen.getByRole("region", { name: "Error" });
-    expect(error).toHaveTextContent("Tool · ValueError");
+    const error = screen.getByRole("region", { name: "错误" });
+    expect(error).toHaveTextContent("工具 · ValueError");
     expect(error).toHaveTextContent("ValueError('customer acme-404 not found in billing DB')");
     expect(error).not.toHaveTextContent("Traceback");
-    const input = await screen.findByRole("region", { name: "Input" });
+    const input = await screen.findByRole("region", { name: "输入" });
     expect(input).toHaveTextContent("customer_id");
     expect(input).toHaveTextContent("acme-404");
   });
@@ -183,10 +183,10 @@ describe("DetailPane", () => {
   it("shows the LiteLLM request facts on the Request tab", async () => {
     const user = userEvent.setup();
     renderPane(spanRow(llm));
-    await user.click(screen.getByRole("tab", { name: "Request" }));
+    await user.click(screen.getByRole("tab", { name: "请求" }));
     expect(await screen.findByText("chatcmpl-abc")).toBeInTheDocument();
     expect(screen.getByText("659")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Open request log/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /打开请求日志/ })).toBeInTheDocument();
   });
 
   it("summarizes a ×N group with its failure pattern", () => {
@@ -214,10 +214,10 @@ describe("DetailPane", () => {
       expanded: false,
     };
     renderPane(groupRow);
-    const pane = screen.getByRole("complementary", { name: "Group details" });
+    const pane = screen.getByRole("complementary", { name: "分组详情" });
     expect(pane).toHaveTextContent("lookup_benchmark ×12");
-    expect(pane).toHaveTextContent("Invocations12");
-    expect(pane).toHaveTextContent("Failed12");
+    expect(pane).toHaveTextContent("调用次数12");
+    expect(pane).toHaveTextContent("失败次数12");
     expect(pane).toHaveTextContent("TimeoutError('slow')");
   });
 
@@ -226,7 +226,7 @@ describe("DetailPane", () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
     renderPane(spanRow(llm));
-    await user.click(screen.getByRole("button", { name: "Copy step" }));
+    await user.click(screen.getByRole("button", { name: "复制此步骤" }));
     await waitFor(() => expect(writeText).toHaveBeenCalled());
     expect(writeText.mock.calls[0][0]).toContain("http://proxy.test/v1/traces/t1?format=md&span_id=llm1");
   });
@@ -234,40 +234,37 @@ describe("DetailPane", () => {
   it("renders the AI tool call as a card and expands a long argument on click", async () => {
     const user = userEvent.setup();
     renderPane(spanRow(llm));
-    const output = await screen.findByRole("region", { name: "Output" });
+    const output = await screen.findByRole("region", { name: "输出" });
     expect(output).toHaveTextContent("AI");
     expect(output).toHaveTextContent("get_customer_plan");
-    const expand = within(output).getAllByRole("button", { name: "Expand note" })[0];
+    const expand = within(output).getAllByRole("button", { name: "展开 note" })[0];
     expect(within(output).queryAllByText(LONG_NOTE, { selector: "pre", ignore: "[inert] *" })).toHaveLength(0);
     await user.click(expand);
-    expect(within(output).getAllByRole("button", { name: "Collapse note" })[0]).toHaveAttribute(
-      "aria-expanded",
-      "true",
-    );
+    expect(within(output).getAllByRole("button", { name: "折叠 note" })[0]).toHaveAttribute("aria-expanded", "true");
     expect(within(output).getAllByText(LONG_NOTE, { selector: "pre", ignore: "[inert] *" })).not.toHaveLength(0);
   });
 
   it("collapses the Input section without touching Output", async () => {
     const user = userEvent.setup();
     renderPane(spanRow(llm));
-    const input = await screen.findByRole("region", { name: "Input" });
+    const input = await screen.findByRole("region", { name: "输入" });
     const systemText = "You are a LiteLLM support agent.";
     expect(within(input).getByText(systemText, { ignore: "[inert] *" })).toBeInTheDocument();
-    await user.click(within(input).getByRole("button", { name: "Input" }));
-    expect(within(input).getByRole("button", { name: "Input" })).toHaveAttribute("aria-expanded", "false");
+    await user.click(within(input).getByRole("button", { name: "输入" }));
+    expect(within(input).getByRole("button", { name: "输入" })).toHaveAttribute("aria-expanded", "false");
     expect(within(input).queryByText(systemText, { ignore: "[inert] *" })).not.toBeInTheDocument();
-    const output = screen.getByRole("region", { name: "Output" });
+    const output = screen.getByRole("region", { name: "输出" });
     expect(within(output).getAllByText("get_customer_plan", { ignore: "[inert] *" })).not.toHaveLength(0);
   });
 
   it("renders the standard input_ui / output_ui instead of re-parsing the raw payload", async () => {
     vi.mocked(agentTraceSpanCall).mockResolvedValue(standardDetail);
     renderPane(spanRow(llm));
-    const input = await screen.findByRole("region", { name: "Input" });
+    const input = await screen.findByRole("region", { name: "输入" });
     expect(input).toHaveTextContent("ticket_id");
     expect(input).toHaveTextContent("T-981");
     expect(input).not.toHaveTextContent("raw input left unparsed");
-    const output = screen.getByRole("region", { name: "Output" });
+    const output = screen.getByRole("region", { name: "输出" });
     expect(output).toHaveTextContent("AI");
     expect(output).toHaveTextContent("Refund approved for T-981.");
     expect(output).toHaveTextContent("issue_refund");
@@ -278,7 +275,7 @@ describe("DetailPane", () => {
   it("keeps the failed-tool styling when a tool's output arrives as a single message", async () => {
     vi.mocked(agentTraceSpanCall).mockResolvedValue(failedToolMessageDetail);
     renderPane(spanRow(failedTool));
-    const output = await screen.findByRole("region", { name: "Output" });
+    const output = await screen.findByRole("region", { name: "输出" });
     const result = within(output).getByText("permission denied: /etc/shadow");
     expect(result).toHaveClass("text-destructive");
     expect(output).not.toHaveTextContent("AI");
@@ -287,7 +284,7 @@ describe("DetailPane", () => {
   it("shows a text output_ui as its plain text", async () => {
     vi.mocked(agentTraceSpanCall).mockResolvedValue(textDetail);
     renderPane(spanRow(llm));
-    const output = await screen.findByRole("region", { name: "Output" });
+    const output = await screen.findByRole("region", { name: "输出" });
     expect(within(output).getByText("all done", { selector: "pre" })).toBeInTheDocument();
     expect(output).not.toHaveTextContent("answer");
   });
@@ -295,11 +292,11 @@ describe("DetailPane", () => {
   it("groups ids and OTEL attributes into separate key / value sections on the Attributes tab", async () => {
     const user = userEvent.setup();
     renderPane(spanRow(llm));
-    await user.click(screen.getByRole("tab", { name: "Attributes" }));
-    const ids = screen.getByRole("region", { name: "Identifiers" });
+    await user.click(screen.getByRole("tab", { name: "属性" }));
+    const ids = screen.getByRole("region", { name: "标识符" });
     expect(ids).toHaveTextContent("span_idllm1");
     expect(ids).toHaveTextContent("parent_span_idroot");
-    const attributes = await screen.findByRole("region", { name: "Attributes" });
+    const attributes = await screen.findByRole("region", { name: "属性" });
     expect(attributes).toHaveTextContent("gen_ai.request.model");
     expect(attributes).not.toHaveTextContent("span_id");
   });
@@ -318,10 +315,10 @@ describe("SpanHoverCard", () => {
     expect(screen.queryByTestId("span-hover-card")).not.toBeInTheDocument();
     await user.hover(screen.getByRole("button", { name: "row" }));
     const card = await screen.findByTestId("span-hover-card", {}, { timeout: 2000 });
-    const time = within(card).getByRole("region", { name: "Time" });
-    expect(time).toHaveTextContent(`Start${absoluteTime(traceStartMs, 2000)}`);
-    expect(time).toHaveTextContent(`End${absoluteTime(traceStartMs, 5000)}`);
-    expect(within(card).getByRole("region", { name: "Tags" })).toHaveTextContent("agent:support_triage_agent");
+    const time = within(card).getByRole("region", { name: "时间" });
+    expect(time).toHaveTextContent(`开始${absoluteTime(traceStartMs, 2000)}`);
+    expect(time).toHaveTextContent(`结束${absoluteTime(traceStartMs, 5000)}`);
+    expect(within(card).getByRole("region", { name: "标签" })).toHaveTextContent("agent:support_triage_agent");
   });
 });
 
@@ -340,13 +337,13 @@ it("retrieves the retained diagnostic one section at a time", async () => {
   };
   vi.mocked(agentTraceSpanErrorCall).mockResolvedValueOnce(firstPage).mockResolvedValueOnce(lastPage);
   renderPane(spanRow({ ...failedTool, error_truncated: true }));
-  expect(screen.getByText("Error preview truncated")).toBeInTheDocument();
-  await userEvent.click(screen.getByRole("button", { name: "View stored diagnostic" }));
+  expect(screen.getByText("错误预览已截断")).toBeInTheDocument();
+  await userEvent.click(screen.getByRole("button", { name: "查看已存储的诊断信息" }));
   expect(await screen.findByText("First diagnostic section")).toBeInTheDocument();
-  await userEvent.click(screen.getByRole("button", { name: "Next section" }));
+  await userEvent.click(screen.getByRole("button", { name: "下一段" }));
   expect(await screen.findByText("Last diagnostic section")).toBeInTheDocument();
   expect(screen.queryByText("First diagnostic section")).not.toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: "Next section" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "下一段" })).not.toBeInTheDocument();
   expect(agentTraceSpanErrorCall).toHaveBeenLastCalledWith("sk-test", "t1", "tool1", {
     traceRef: undefined,
     cursor: "next-section",
