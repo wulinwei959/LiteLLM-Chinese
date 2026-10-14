@@ -2,14 +2,16 @@
 
 import type { ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
 import { ScrollText } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useMemo, useState, type ReactNode } from "react";
 
 import { useUserEmailLookup } from "@/app/(dashboard)/hooks/users/useUsers";
 import { DataTable, DataTableFilterDrawer, DataTableToolbar } from "@/components/shared/DataTable";
+import type { LogsTranslator } from "@/lib/i18n/translators";
 
 import type { Team } from "../key_team_helpers/key_list";
 import type { LogEntry } from "./columns";
-import { CREDENTIAL_LABELS, SPAN_TYPE_LABELS } from "./constants";
+import { CREDENTIAL_LABEL_KEYS, SPAN_TYPE_LABEL_KEYS } from "./constants";
 import { LOG_FILTER_IDS, LOG_FILTER_LABELS, type LogsWindow } from "./log_filter_logic";
 import { RequestLogsFilters } from "./RequestLogsFilters";
 import { getRequestLogsTableColumns } from "./RequestLogsTableColumns";
@@ -36,12 +38,14 @@ interface RequestLogsTableProps {
   toolbarChildren?: ReactNode;
 }
 
-const formatFilterValue = (columnId: string, value: unknown): string => {
+const formatFilterValue = (t: LogsTranslator, columnId: string, value: unknown): string => {
   if (columnId === LOG_FILTER_IDS.SPAN_TYPE) {
-    return SPAN_TYPE_LABELS[String(value)] ?? String(value);
+    const spanTypeKey = SPAN_TYPE_LABEL_KEYS[String(value)];
+    return spanTypeKey === undefined ? String(value) : t(spanTypeKey);
   }
   if (columnId === LOG_FILTER_IDS.CREDENTIAL) {
-    return CREDENTIAL_LABELS[String(value)] ?? String(value);
+    const credentialKey = CREDENTIAL_LABEL_KEYS[String(value)];
+    return credentialKey === undefined ? String(value) : t(credentialKey);
   }
   return Array.isArray(value) ? value.join(", ") : String(value);
 };
@@ -83,6 +87,7 @@ export function RequestLogsTable({
   logsWindow,
   toolbarChildren,
 }: RequestLogsTableProps) {
+  const t = useTranslations("logs");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const userIds = useMemo(() => data.flatMap((log) => (log.user ? [log.user] : [])), [data]);
@@ -127,7 +132,7 @@ export function RequestLogsTable({
             isRefreshing={isRefreshing}
             onOpenFilters={() => setFiltersOpen(true)}
             filterLabels={LOG_FILTER_LABELS}
-            formatFilterValue={formatFilterValue}
+            formatFilterValue={(columnId, value) => formatFilterValue(t, columnId, value)}
             showViewOptions={false}
           >
             {toolbarChildren}

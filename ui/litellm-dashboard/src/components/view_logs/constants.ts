@@ -30,16 +30,24 @@ export const AGENT_CALL_TYPES = ["asend_message"];
 /** Call types that represent Batch API operations (creation and retrieval, sync and async). */
 export const BATCH_CALL_TYPES = ["acreate_batch", "create_batch", "aretrieve_batch", "retrieve_batch"];
 
-export const SPAN_TYPE_LABELS: Record<string, string> = {
-  llm: "LLM",
-  agent: "Agent",
-  mcp: "MCP",
-  batch: "Batch",
+export type LogsSpanTypeKey =
+  | "filters.options.llm"
+  | "filters.options.agent"
+  | "filters.options.mcp"
+  | "filters.options.batch";
+
+export type LogsCredentialKey = "filters.options.clientOAuthToken" | "filters.options.configuredKey";
+
+export const SPAN_TYPE_LABEL_KEYS: Readonly<Record<string, LogsSpanTypeKey>> = {
+  llm: "filters.options.llm",
+  agent: "filters.options.agent",
+  mcp: "filters.options.mcp",
+  batch: "filters.options.batch",
 };
 
-export const CREDENTIAL_LABELS: Record<string, string> = {
-  true: "Client OAuth token",
-  false: "Configured key",
+export const CREDENTIAL_LABEL_KEYS: Readonly<Record<string, LogsCredentialKey>> = {
+  true: "filters.options.clientOAuthToken",
+  false: "filters.options.configuredKey",
 };
 
 export type QuickSelectOption = {
