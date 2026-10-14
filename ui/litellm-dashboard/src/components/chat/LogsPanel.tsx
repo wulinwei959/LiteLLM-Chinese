@@ -207,6 +207,7 @@ function LogDetailDialog({
   onClose: () => void;
 }) {
   const t = useTranslations("chat");
+  const commonT = useTranslations("common");
   return (
     <Dialog open={!!log} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-2xl">
@@ -229,7 +230,7 @@ function LogDetailDialog({
                 <div className="mb-0.5 text-xs text-muted-foreground">{t("logsPanel.colTokens")}</div>
                 <div className="text-sm text-foreground">
                   {formatTokens(log.total_tokens)} (
-                  {t("logsPanel.tokensInAndOut", {
+                  {commonT("tokensInAndOut", {
                     prompt: formatTokens(log.prompt_tokens),
                     completion: formatTokens(log.completion_tokens),
                   })}

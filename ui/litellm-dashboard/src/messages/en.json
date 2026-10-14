@@ -198,7 +198,8 @@
     "justNow": "just now",
     "minutesAgo": "{count, number}m ago",
     "hoursAgo": "{count, number}h ago",
-    "daysAgo": "{count, number}d ago"
+    "daysAgo": "{count, number}d ago",
+    "tokensInAndOut": "{prompt} in / {completion} out"
   },
   "nav": {
     "aiGateway": "AI Gateway",
@@ -6218,7 +6219,6 @@
       "empty": "No logs for this period",
       "loadFailed": "Failed to load your logs",
       "requestDetails": "Request details",
-      "tokensInAndOut": "{prompt} in / {completion} out",
       "sectionRequest": "Request",
       "sectionResponse": "Response",
       "requestsCount": "{count, plural, one {# request} other {# requests}}",
@@ -6257,6 +6257,19 @@
       "expiresInDays": "Expires in {count, number}d",
       "expiresInHours": "Expires in {count, number}h",
       "expiresInMinutes": "Expires in {count, number}m"
+    },
+    "usagePanel": {
+      "title": "Your Usage",
+      "subtitle": "Spend and request activity",
+      "totalSpend": "Total Spend",
+      "apiRequests": "API Requests",
+      "tokensUsed": "Tokens Used",
+      "successRate": "Success Rate",
+      "na": "N/A",
+      "failedCount": "{count, number} failed",
+      "empty": "No usage data for this period",
+      "dailySpend": "Daily Spend",
+      "dailyRequests": "Daily Requests"
     }
   },
   "playground": {
