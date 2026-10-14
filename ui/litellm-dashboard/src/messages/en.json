@@ -6125,6 +6125,37 @@
     "connectPicker": {
       "loadToolsFailed": "Could not load tools for {server} \u2014 it will be excluded from this message.",
       "empty": "No MCP servers configured"
+    },
+    "appsPanel": {
+      "title": "MCP Servers",
+      "beta": "Beta",
+      "connectModeHint": "Click a server to see its tools and connect",
+      "browseHint": "Browse tools, authenticate once, use in chat",
+      "loadingTools": "Loading tools...",
+      "toolsAvailable": "{count, plural, one {# tool available} other {# tools available}}",
+      "searchPlaceholder": "Search servers...",
+      "tabAll": "All",
+      "tabConnected": "Connected",
+      "defaultDescription": "MCP server",
+      "connect": "Connect",
+      "connecting": "Connecting…",
+      "disconnect": "Disconnect",
+      "authorized": "Authorized",
+      "back": "Back",
+      "notSupportedOnConnection": "Not supported on this connection",
+      "loadToolsFailed": "Could not load tools for {server}",
+      "information": "Information",
+      "serverId": "Server ID",
+      "transport": "Transport",
+      "status": "Status",
+      "statusConnected": "Connected",
+      "statusNotConnected": "Not connected",
+      "availableTools": "Available Tools",
+      "noTools": "No tools available",
+      "emptyConnectMode": "No MCP servers are available to this connection yet. Ask an admin to grant your user or team access.",
+      "emptyUnconfigured": "No MCP servers configured. Add servers in Tools -> MCP Servers.",
+      "emptyNoConnections": "No servers connected yet.",
+      "emptyNoSearchMatches": "No servers match your search."
     }
   },
   "playground": {
