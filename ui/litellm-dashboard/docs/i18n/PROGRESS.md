@@ -1,6 +1,27 @@
 # 开发进度
 
-数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-14 第 33 簇更新
+
+批次 24 第 33 簇：转入 `components/chat/`，先收网关连接流的 2 个文件 `ConnectFlowBanner.tsx`（119 行）与 `MCPConnectPicker.tsx`（133 行），新开顶层 `chat` 命名空间共 14 键（`chat.connectFlow.*` 12 键 + `chat.connectPicker.*` 2 键），两个消息目录各 +20 行、纯增不删
+
+改造形态：
+
+- `chat` 是这批目录的第一个新命名空间。顶层键在文件里按加入顺序排（`logs` 在 3722 行、`playground` 在 6110 行，都不是字母序），本簇把 `"chat": {` 插在 `"playground": {` 之前——既挨着同类界面，又是纯插不删；插在文件尾就要给上一个命名空间的闭括号补逗号
+- 命名空间与 `playground` 分开，是因为 `playground` 整组属于 `app/(dashboard)/playground/components/chat_ui/`，两套界面的文案不能共键
+- 模块级纯助手 `copyFor(flow, failed)` 改成 `copyFor(t, flow, failed)`，首参类型用新加的 `ChatTranslator`（`src/lib/i18n/translators.ts` 里按 `useChangePasswordTranslator` 之后的位置插入），不用裸 `ReturnType<typeof useTranslations>`
+- 四个网关状态各有一条标题与说明，原本用模板串拼 `${clientLabel}` / `${serverLabel}`，现在整句进消息、变量交给 ICU 的 `{client}` / `{server}`。两条兜底标签 `"the application"` / `"the requested MCP server"` 也跟着成为键（`fallbackClient` / `fallbackServer`），因为中文里它们要嵌进句子，不能留着英文原串
+- `allowTitle` 被 interactive 与 m2m 两个分支共用（原代码两处模板串逐字相同），所以只开一个键
+- picker 的 toast 文案在 `result?.error` 与 `catch` 两个分支重复，原代码本就重复，翻完仍保留两处 `t(...)` 调用，不提前抽变量
+
+测试同步：这 2 个组件此前都在裸 `render()` 下测，接入 `next-intl` 后没有 provider 会直接抛，所以 `ConnectFlowBanner.test.tsx` 与 `MCPConnectPicker.test.tsx` 改用 `renderWithProviders`（默认钉 `zh-CN`）。`ConnectFlowSurface.test.tsx` 不用 `renderWithProviders`——它自带一个每次新建的 `QueryClient` 并 mock 掉 `next/navigation`，改成共用测试客户端会牵动它自己的重试与缓存假设，所以在原 wrapper 里只补一层 `<LocaleProvider locale="zh-CN">`。断言改 8 处：`/finish connecting/i`（4）与合并式 `/finish connecting|cancel|connect/i`（1）转中文，`"Cancel"`（3）转 `"取消"`；合并式里保留 `connect` 这一段，因为 OAuth 按钮的文案在 `MCPAppsPanel.tsx`，本簇没动它
+
+判为数据、不译：表单 `action` 与 `name="flow"` / `name="decision"` / `value="deny"` / `value="manual"` 是提交给网关的协议字段；`client_origin`、`server_name`、`logo_url` 与 `external_logo logo` 这类 alt 文本取自后端；`MCPAppsPanel.tsx` 的 267/275 行 `Could not load tools for ${serverName}` 与 343 行 `No MCP servers configured. Add servers in Tools -> MCP Servers.` 看着和 picker 的两键同形，英文值却不一样（少了后半句、多了导航路径），不共键，留给 `chat` 的下一簇
+
+验证：`chat` + `app/chat` + `app/connect` + `view_logs` + `src/lib/i18n` 67 文件 749 例全绿；`tsc --noEmit -p .` 仍 883 条、非测试文件 0 条；本簇 6 个文件 `eslint` 0 错误、8 条 warning 全在 `ConnectFlowSurface.test.tsx` 的既有 container/node 访问上；`npm run build` 退出 0；prettier 只 `--write` 本簇 6 个 tsx，改前全部合规；两个 messages JSON 各 20 增 0 删
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 418 到 420，46.1%；`components/chat` 11 个非测试文件接入 2 个，`ConnectFlowSurface.tsx` 经核实没有自有文案（只有 JSDoc 注释），不进接入清单。键数 6632 到 6646，中英同值 86 不变
 
 ## 2026-10-14 第 32 簇更新
 
@@ -477,8 +498,8 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 | 项                       | 数值                                                 |
 | ------------------------ | ---------------------------------------------------- |
 | 命名空间                 | 39                                                   |
-| `en.json` 叶子键          | 6632（2026-10-14 第 32 簇；6584 是第 31 簇后，6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后）|
-| `zh-CN.json` 叶子键       | 6632                                                 |
+| `en.json` 叶子键          | 6646（2026-10-14 第 33 簇；6632 是第 32 簇后，6584 是第 31 簇后，6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后）|
+| `zh-CN.json` 叶子键       | 6646                                                 |
 | 键树一致性               | 一致，`messagesParity` 通过                           |
 | 中英文取值完全相同的键    | 86（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
 
@@ -486,7 +507,7 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 ## 文件覆盖率
 
-`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%），第 30 簇后 912 / 417（45.7%），第 31 簇后 912 / 418（45.8%），第 32 簇后 912 / 418（45.8%，本簇文件此前已接入，比率不变）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
+`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%），第 30 簇后 912 / 417（45.7%），第 31 簇后 912 / 418（45.8%），第 32 簇后 912 / 418（45.8%，本簇文件此前已接入，比率不变），第 33 簇后 912 / 420（46.1%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
 
 ## 按路由的进度
 
