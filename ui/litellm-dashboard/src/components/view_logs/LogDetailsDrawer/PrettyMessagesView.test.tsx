@@ -61,7 +61,7 @@ describe("PrettyMessagesView", () => {
     };
 
     renderWithProviders(<PrettyMessagesView request={request} response={response} />);
-    expect(screen.getByText("Session")).toBeInTheDocument();
+    expect(screen.getByText("会话")).toBeInTheDocument();
     expect(screen.getByText("Hello from realtime!")).toBeInTheDocument();
     const modelElements = screen.getAllByText("gpt-4o-mini-realtime-preview");
     expect(modelElements.length).toBeGreaterThanOrEqual(1);

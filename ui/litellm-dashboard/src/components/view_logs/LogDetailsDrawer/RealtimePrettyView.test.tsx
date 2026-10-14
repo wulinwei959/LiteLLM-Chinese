@@ -156,7 +156,7 @@ describe("RealtimePrettyView", () => {
 
   it("should render the component successfully", () => {
     renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
-    expect(screen.getByText("Session")).toBeInTheDocument();
+    expect(screen.getByText("会话")).toBeInTheDocument();
   });
 
   it("should display the session model name", () => {
@@ -179,7 +179,7 @@ describe("RealtimePrettyView", () => {
 
   it("should display the turn count in session header", () => {
     renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
-    expect(screen.getByText("2 turns")).toBeInTheDocument();
+    expect(screen.getByText("2 轮")).toBeInTheDocument();
   });
 
   it("should display singular 'turn' for a single response event", () => {
@@ -212,7 +212,7 @@ describe("RealtimePrettyView", () => {
       ],
     };
     renderWithProviders(<RealtimePrettyView response={singleTurnResponse} />);
-    expect(screen.getByText("1 turn")).toBeInTheDocument();
+    expect(screen.getByText("1 轮")).toBeInTheDocument();
   });
 
   it("should display the turn count in the output section header", () => {
@@ -239,18 +239,18 @@ describe("RealtimePrettyView", () => {
 
   it("should display token usage per turn", () => {
     renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
-    expect(screen.getByText("116 in / 46 out tokens")).toBeInTheDocument();
-    expect(screen.getByText("178 in / 247 out tokens")).toBeInTheDocument();
+    expect(screen.getByText("输入 116 / 输出 46 令牌")).toBeInTheDocument();
+    expect(screen.getByText("输入 178 / 输出 247 令牌")).toBeInTheDocument();
   });
 
   it("should expand session details when session header is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
 
-    await user.click(screen.getByText("Session"));
+    await user.click(screen.getByText("会话"));
 
     await waitFor(() => {
-      expect(screen.getByText("Temperature")).toBeInTheDocument();
+      expect(screen.getByText("温度")).toBeInTheDocument();
     });
   });
 
@@ -258,10 +258,10 @@ describe("RealtimePrettyView", () => {
     const user = userEvent.setup();
     renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
 
-    await user.click(screen.getByText("Session"));
+    await user.click(screen.getByText("会话"));
 
     await waitFor(() => {
-      expect(screen.getByText("Instructions")).toBeInTheDocument();
+      expect(screen.getByText("指令")).toBeInTheDocument();
       expect(screen.getByText("You are a helpful assistant.")).toBeInTheDocument();
     });
   });
@@ -270,10 +270,10 @@ describe("RealtimePrettyView", () => {
     const user = userEvent.setup();
     renderWithProviders(<RealtimePrettyView response={sampleRealtimeResponse} />);
 
-    await user.click(screen.getByText("Session"));
+    await user.click(screen.getByText("会话"));
 
     await waitFor(() => {
-      expect(screen.getByText("Input Audio Format")).toBeInTheDocument();
+      expect(screen.getByText("输入音频格式")).toBeInTheDocument();
       expect(screen.getAllByText("pcm16").length).toBeGreaterThanOrEqual(1);
     });
   });
@@ -289,7 +289,7 @@ describe("RealtimePrettyView", () => {
       results: [{ type: "unknown.event" }],
     };
     renderWithProviders(<RealtimePrettyView response={emptyResponse} />);
-    expect(screen.getByText("No recognized realtime events found")).toBeInTheDocument();
+    expect(screen.getByText("未发现可识别的实时事件")).toBeInTheDocument();
   });
 
   it("should handle response with no output items gracefully", () => {
