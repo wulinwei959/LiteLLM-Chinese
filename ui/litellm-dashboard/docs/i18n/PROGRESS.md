@@ -1,6 +1,27 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 51 簇更新
+
+批次 24 第 51 簇：`components/AIHub/UsefulLinksManagement.tsx`（455 行，接入后 456，+38/−37）的链接管理卡片接入 `modelHub`，新开 27 键、复用 `common` 的 cancel/save/actions，两个消息目录各 +27/−0 行；`UsefulLinksManagement.test.tsx`（248 行，+29/−28）从裸 `render` 换成 `renderWithProviders` 并同步 9 处断言。至此 AIHub 目录 10 个非测试 `.tsx` 全部接线（6 个自带 `useTranslations`，4 个列定义由 props 接收 `t`），该目录不再有未接线文件
+
+改造形态：
+
+- 27 个键落 `modelHub` 平铺层，沿用第 50 簇定下的构词法：卡片标题 `linksTitle`/`linksDescription`、分组 `addNewLink`/`manageExistingLinks`、列标题兼表单标签 `colDisplayName`/`colUrl`、按钮 `addLink`/`rearrangeOrder`/`saveOrder`/`publicModelHub`、`title` 与 tooltip 七项 `moveUp`/`moveDown`/`alreadyAtTop`/`alreadyAtBottom`/`openLink`/`editLink`/`deleteLink`、空态 `noLinksYet`、七条 toast。表头与标签同键：两处都在说同一个字段名，概念一致
+- 三个泛型动作复用 `common`：`cancel`（两处取消按钮）、`save`（行内保存）、`actions`（操作表头），与第 48 簇同一口径；`Display Name`/`URL` 在 `agents`、`mcpServers` 里已有同名键，跨命名空间不借，本命名空间另开
+- `colUrl` 是 EN 与 ZH 逐字节同为 `URL` 的键，中英同值从 86 到 87，与 `common.disable` 那批既有同值键同类，不算漏译
+- 带参 toast：`Failed to save links - ${error}` 改写成 `toastSaveFailed` = `Failed to save links - {error}`，中文"保存链接失败 - {error}"。catch 里的 `error` 是 `unknown`，模板字符串能拼、消息参数字段类型不行，tsc 报 `Type 'unknown' is not assignable to type 'string | number | Date'`，显式 `String(error)` 收口，渲染结果与原串逐字节相同
+- 引号照 `common` 那批既有中文的写法用弯引号：EN 的 `under 'Useful Links'` 在 JSX 里是 `&apos;` 实体，中文写作"公开模型中心“常用链接”下方展示的链接"；`Useful Links` 这个分区名在全库没有对应键，本簇按公开页的叫法译作"常用链接"，若日后公开页接入再对齐
+- 数据与格式留原文：`placeholder="https://example.com"`、链接本身的 `displayName`/`url` 值、`dataTestId` 拼接、3 条 `console.error` 日志文本
+
+测试侧：这个文件是 AIHub 里最后一个还在用裸 `render` 的测试，组件一旦调用 `useTranslations` 就整个抛错，9 例全红。改成 `renderWithProviders`（`tests/test-utils` 里已把 locale 钉在 zh-CN），断言同步：链接管理、便于识别的名称、添加链接、调整顺序、保存顺序、公开模型中心、保存、取消、管理已有链接，以及三条 toast 文案。用例数 9 例不变
+
+踩到的坑：往消息目录插键时锚点不唯一。`"supportsAuthExtendedCard"` 在 `agents`（第 43 簇）和 `modelHub`（第 50 簇）各有一份，脚本的 `findIndex` 命中的是靠前那份，27 个键先整体落进了 `agents`。中英两个目录错得一模一样，parity 守卫自然全绿——它只比较结构，不校验键该属于哪个命名空间；`missingKeys` 守卫也查不出，因为它按 `t("key")` 的字面量在源文件里找，找不到命名空间归属。真正的信号是测试：`renderWithProviders` 把键名原样渲染成 `modelHub.linksTitle`。口径补充：脚本插键要么用锚点所在行的行号范围，要么先确认锚点在目标命名空间内唯一，改完必须验证一次 `en.<namespace>.<key>` 读得到
+
+验证：定向 `npx vitest run src/components/AIHub/ src/lib/i18n` → 12 文件全绿；复跑 7 个范围 → 79 文件 979 例全绿，`Type Errors no errors`；`npx tsc --noEmit -p .` 总 883、非测试 0（本簇一度因 `{error}` 传 `unknown` 多出一条，已按上面的 `String(error)` 收口）；`npx eslint` 两个改动文件 0 error / 10 warning，源文件 4 条（三条 `any` + 一条 `exhaustive-deps`）与测试文件 6 条（`no-large-inline-object-arg`）都用 `git show HEAD` 覆盖工作区复跑过，逐条同规则、行号只差插入的 import 行；prettier 对两个 `.tsx` `--check` 直接通过；`npm run build` exit 0
+
+覆盖率复测：非测试 `.tsx` 912 个，已接入 432 到 433（本文件此前未接线）、47.4% 到 47.5%。键数 6974 到 7001（`modelHub` 命名空间叶子 164 到 191），中英同值 86 到 87
 
 ## 2026-10-15 第 50 簇更新
 
@@ -18,7 +39,7 @@
 
 验证：定向 `npx vitest run src/components/AIHub/ src/lib/i18n` → 12 文件 133 例全绿；复跑 7 个范围 → 79 文件 979 例全绿，`Type Errors no errors`；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 两个改动文件 0 error / 5 warning，与 HEAD 版逐条相同（源文件 `complexity 89` 与两条 `any`，测试文件 92/178 行两条 `no-large-inline-object-arg`，均未随本簇改动位移）；prettier 对两个 `.tsx` `--check` 直接通过，未做二次格式化；`npm run build` exit 0
 
-覆盖率复测：非测试 `.tsx` 912 个不变，已接入 432 不变（本文件早已带 `useTranslations`）、47.4%。键数 6922 到 6974（`modelHub` 平铺层 112 到 164，`common` 189 不变），中英同值 86 不变
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 432 不变（本文件早已带 `useTranslations`）、47.4%。键数 6922 到 6974（`modelHub` 命名空间叶子 112 到 164，`common` 189 不变），中英同值 86 不变
 
 ## 2026-10-15 第 49 簇更新
 
@@ -36,7 +57,7 @@
 
 验证：定向 `npx vitest run src/components/AIHub/ src/lib/i18n` → 12 文件全绿；全量复跑 7 个范围的 `npx vitest run` → 79 文件 978 例全绿，`Type Errors no errors`；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 两个改动文件 0 error / 5 warning，与 HEAD 版逐条相同（测试文件两条 `no-large-inline-object-arg` 在未改动的 92/178 行，源文件 `complexity 89` 与两条 `any` 行号未动）；prettier 对本簇改动的多行三元做了 17 行收拢；`npm run build` exit 0
 
-覆盖率复测：非测试 `.tsx` 912 个不变，已接入 432 不变（本文件早已带 `useTranslations`）、47.4%。键数 6891 到 6922（`modelHub` 平铺层 81 到 112，`common` 189 不变），中英同值 86 不变
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 432 不变（本文件早已带 `useTranslations`）、47.4%。键数 6891 到 6922（`modelHub` 命名空间叶子 81 到 112，`common` 189 不变），中英同值 86 不变
 
 ## 2026-10-15 第 48 簇更新
 
@@ -59,7 +80,7 @@
 
 验证：定向 `npx vitest run src/components/AIHub/` → 9 文件全绿；全量复跑 `npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin src/components/AIHub` → 79 文件 978 例全绿，`Type Errors no errors`；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 三个改动文件 0 error / 4 warning，与 HEAD 版逐条相同（`ModelHubTableColumns.tsx` 一条 `no-explicit-any` 只是从 34 行移到 35 行，`ModelHubTable.tsx` 的 `complexity 89` 与两条 `any` 未动）；prettier `--check` 只有测试文件不干净（harness 的 props 类型一行超 printWidth），`--write` 后两个源文件报 unchanged；`npm run build` exit 0
 
-覆盖率复测：非测试 `.tsx` 912 个不变，已接入 432 不变、47.4%（同第 46、47 簇的理由——工厂走 props 收 `t`）。键数 6883 到 6891（`modelHub` 平铺层 73 到 81，`common` 189 不变），中英同值 86 不变
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 432 不变、47.4%（同第 46、47 簇的理由——工厂走 props 收 `t`）。键数 6883 到 6891（`modelHub` 命名空间叶子 73 到 81，`common` 189 不变），中英同值 86 不变
 
 ## 2026-10-15 第 47 簇更新
 
