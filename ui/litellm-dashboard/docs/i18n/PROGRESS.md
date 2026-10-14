@@ -1,6 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 50 簇更新
+
+批次 24 第 50 簇：`components/AIHub/ModelHubTable.tsx`（1172 行，+62/−62 全部原地替换，行数不变）的三个详情弹窗（模型 / 智能体 / MCP 服务器）接入 `modelHub`，新开 52 键、复用本命名空间已有的 `unknownStatus`，两个消息目录各 +52/−0 行；`ModelHubTable.test.tsx`（341 行到 360 行）新增 1 例覆盖模型弹窗。本簇之后 `ModelHubTable.tsx` 只剩两处 python 代码示例与 8 条 `console.error`，AIHub 目录里四个中心表列定义都已由 props 接收 `t`，只剩整页文件 `UsefulLinksManagement.tsx`（455 行）既没有 `useTranslations` 也没有 `t` 注入
+
+改造形态：
+
+- 键一律落 `modelHub` 平铺层，本簇起新增两组构词法：分组小标题用 `sec*`（`secModelOverview`、`secTokenCost`、`secCapabilities`、`secRateLimits`、`secSupportedParams`、`secUsageExample`、`secAgentOverview`、`secIOModes`、`secSkills`、`secAdditionalFeatures`、`secServerOverview`、`secConnectionDetails`、`secAllowedTools`、`secTeams`、`secAccessGroups`、`secMetadata`），字段标签用 `lbl*` 且冒号写进消息串（`lblModelGroup`、`lblCreatedBy`、`lblHealthCheckError` 等 30 个），与第 49 簇的 `modelHubUrlLabel`、`searchAgentsLabel` 同一口径；弹窗标题兜底用 `*DetailsTitle` 三项
+- 唯一一次复用是 `unknownStatus`：MCP 弹窗状态徽标的 `status || "unknown"` 与第 47 簇列定义里的小写 `unknown`/未知逐字节相同、概念同为"状态未知"，直接复用
+- 术语沿用目录里已有的既定译法，不做新译：Capabilities→能力（同 `agents.capabilities`）、Rate Limits→速率限制、Access Groups→访问组、Metadata→元数据、Allowed Tools→允许的工具、Supports Authenticated Extended Card→支持认证扩展卡片；"能力"与第 48 簇的 Features→功能（`colFeatures`）是两个词，模型表的功能列与弹窗的能力分组各用各的
+- 由此攒下一批带冒号的重复记账：`lblName`/`lblDescription`/`lblStatus`/`lblVersion`/`lblTransport`/`lblAuthType`/`lblServerName`/`lblCreatedBy` 与 `common` 的 name/description/status/version、本命名空间的 `colTransport`/`colAuthType`/`colServerName`/`colCreated` 只差一个冒号；`lblDescription` 还是全库 `"Description:"` 的第四例（前有 `logs.guardrail.colDescription`、`agents.descriptionLabel`、`vectorStores.descriptionLabel`）。冒号算进逐字节比较，故一律新开；等这批 `*Label:` 攒出统一形态再考虑上收
+- 数据与格式留原文：两个 `SyntaxHighlighter` 里的 python 示例（含 `# Your LiteLLM Proxy URL` 注释行，代码不译）、技能条目的 `ID: {skill.id}`、徽标上的 `v{version}`、`formatCapabilityName` 推出的能力徽章名、智能体 `capabilities` 的原始键名、transport/auth_type/status 的取值本身、`toLocaleString()` 的数字与日期
+
+测试侧：`ModelHubTable.test.tsx` 加一例"localizes the model details modal headings, labels and fallbacks"，走列定义的操作菜单进模型弹窗。首个断言 `getByText("能力")` 撞到两个元素——弹窗外还有智能体中心表格的"能力"列头（`agents.capabilities`），页签是 `keepMounted` 的，隐藏的表格也在文档里；改成就 `within(dialog)` 包住全部断言，这也是本文件第一次用 `screen.findByRole("dialog")` 划定作用域。"未指定"用 `getAllByText` 断言 4 处（输入/输出上限与输入/输出成本，`mode` 有值故不计）。该文件 13 例到 14 例，复跑范围 978 例到 979 例
+
+验证：定向 `npx vitest run src/components/AIHub/ src/lib/i18n` → 12 文件 133 例全绿；复跑 7 个范围 → 79 文件 979 例全绿，`Type Errors no errors`；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 两个改动文件 0 error / 5 warning，与 HEAD 版逐条相同（源文件 `complexity 89` 与两条 `any`，测试文件 92/178 行两条 `no-large-inline-object-arg`，均未随本簇改动位移）；prettier 对两个 `.tsx` `--check` 直接通过，未做二次格式化；`npm run build` exit 0
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 432 不变（本文件早已带 `useTranslations`）、47.4%。键数 6922 到 6974（`modelHub` 平铺层 112 到 164，`common` 189 不变），中英同值 86 不变
 
 ## 2026-10-15 第 49 簇更新
 
