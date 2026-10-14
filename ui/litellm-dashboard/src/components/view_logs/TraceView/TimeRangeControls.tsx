@@ -2,6 +2,7 @@
 
 import { ChevronDown, Pause, Play, RotateCcw } from "lucide-react";
 import moment from "moment";
+import { useTranslations } from "next-intl";
 
 import {
   DropdownMenu,
@@ -11,21 +12,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/cva.config";
+import type { LogsTranslator } from "@/lib/i18n/translators";
 
 import type { TimeWindow } from "./TracesTimeline";
 
-export const RANGE_PRESETS = [
-  { hours: 1, label: "Last hour" },
-  { hours: 6, label: "Last 6 hours" },
-  { hours: 24, label: "Last 24 hours" },
-  { hours: 168, label: "Last 7 days" },
-  { hours: 720, label: "Last 30 days" },
-] as const;
+type RangeLabelKey =
+  | "timeRange.lastHour"
+  | "timeRange.last6Hours"
+  | "timeRange.last24Hours"
+  | "timeRange.last7Days"
+  | "timeRange.last30Days";
+
+export const RANGE_PRESETS: { hours: number; labelKey: RangeLabelKey }[] = [
+  { hours: 1, labelKey: "timeRange.lastHour" },
+  { hours: 6, labelKey: "timeRange.last6Hours" },
+  { hours: 24, labelKey: "timeRange.last24Hours" },
+  { hours: 168, labelKey: "timeRange.last7Days" },
+  { hours: 720, labelKey: "timeRange.last30Days" },
+];
 
 const RANGE_LABEL_FORMAT = "MMM D, h:mm A";
 
-export const rangeLabel = (range: TimeWindow): string =>
-  `${moment(range.startMs).format(RANGE_LABEL_FORMAT)} to ${moment(range.endMs).format(RANGE_LABEL_FORMAT)}`;
+export const rangeLabel = (t: LogsTranslator, range: TimeWindow): string =>
+  t("traceList.rangeTo", {
+    start: moment(range.startMs).format(RANGE_LABEL_FORMAT),
+    end: moment(range.endMs).format(RANGE_LABEL_FORMAT),
+  });
 
 const SEGMENT = "inline-flex h-7 items-center gap-1.5 px-2.5 text-[13px] outline-none focus-visible:bg-accent";
 
@@ -49,13 +61,14 @@ export function TimeRangeControls({
   zoomed,
   onResetZoom,
 }: TimeRangeControlsProps) {
+  const t = useTranslations("logs");
   return (
     <div className="flex items-center gap-1.5">
       <button
         type="button"
         onClick={onResetZoom}
         disabled={!zoomed}
-        aria-label="Reset zoom"
+        aria-label={t("traceList.resetZoomAria")}
         className="inline-flex size-7 items-center justify-center rounded-md border border-border text-info hover:bg-info/10 disabled:text-muted-foreground disabled:opacity-40 disabled:hover:bg-transparent"
       >
         <RotateCcw className="size-3.5" />
@@ -63,11 +76,11 @@ export function TimeRangeControls({
       <div className="flex items-center divide-x divide-border overflow-hidden rounded-md border border-border bg-card">
         <DropdownMenu>
           <DropdownMenuTrigger
-            aria-label="Time range"
+            aria-label={t("traceList.timeRangeAria")}
             className={cn(SEGMENT, "text-foreground hover:bg-muted/60")}
             data-testid="time-range-trigger"
           >
-            <span className="tabular-nums">{rangeLabel(range)}</span>
+            <span className="tabular-nums">{rangeLabel(t, range)}</span>
             <ChevronDown className="size-3.5 text-muted-foreground" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-auto min-w-44">
@@ -77,7 +90,7 @@ export function TimeRangeControls({
             >
               {RANGE_PRESETS.map((preset) => (
                 <DropdownMenuRadioItem key={preset.hours} value={String(preset.hours)} className="text-[13px]">
-                  {preset.label}
+                  {t(preset.labelKey)}
                 </DropdownMenuRadioItem>
               ))}
             </DropdownMenuRadioGroup>
@@ -93,7 +106,7 @@ export function TimeRangeControls({
           )}
         >
           {live ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
-          Live
+          {t("traceList.live")}
         </button>
       </div>
     </div>

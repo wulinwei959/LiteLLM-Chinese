@@ -1,9 +1,11 @@
 "use client";
 
 import moment from "moment";
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { cn } from "@/lib/cva.config";
+import type { LogsTranslator } from "@/lib/i18n/translators";
 
 import type { TraceSummary } from "./traceTypes";
 
@@ -45,14 +47,18 @@ export function bucketRuns(runs: readonly TraceSummary[], range: TimeWindow, buc
 }
 
 /** Compact window length, Logfire-style: "45m", "6h 12m", "7d", "152d 23h". */
-export function formatSpan(ms: number): string {
+export function formatSpan(t: LogsTranslator, ms: number): string {
   const totalMinutes = Math.max(0, Math.round(ms / MINUTE_MS));
   const days = Math.floor(totalMinutes / (24 * 60));
   const hours = Math.floor((totalMinutes % (24 * 60)) / 60);
   const minutes = totalMinutes % 60;
-  if (days > 0) return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
-  if (hours > 0) return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
-  return `${minutes}m`;
+  if (days > 0)
+    return hours > 0 ? t("traceList.spanDaysHours", { d: days, h: hours }) : t("traceList.spanDays", { d: days });
+  if (hours > 0)
+    return minutes > 0
+      ? t("traceList.spanHoursMinutes", { h: hours, m: minutes })
+      : t("traceList.spanHours", { h: hours });
+  return t("traceList.spanMinutes", { m: minutes });
 }
 
 const tickFormat = (range: TimeWindow): string => (range.endMs - range.startMs > 2 * DAY_MS ? EDGE_FORMAT : "HH:mm");
@@ -112,6 +118,7 @@ function BucketBar({
 }
 
 function BucketTooltip({ bucket, index }: { bucket: Bucket; index: number }) {
+  const t = useTranslations("logs");
   return (
     <div
       className="pointer-events-none absolute top-full z-floating mt-1 rounded-md border border-border bg-popover px-2.5 py-1.5 font-mono text-[11px] text-popover-foreground shadow-md"
@@ -119,13 +126,16 @@ function BucketTooltip({ bucket, index }: { bucket: Bucket; index: number }) {
       role="tooltip"
     >
       <div>
-        {moment(bucket.startMs).format(EDGE_FORMAT)} to {moment(bucket.endMs).format("HH:mm")}
+        {t("traceList.rangeTo", {
+          start: moment(bucket.startMs).format(EDGE_FORMAT),
+          end: moment(bucket.endMs).format("HH:mm"),
+        })}
       </div>
       <div>
-        {bucket.runs} {bucket.runs === 1 ? "run" : "runs"}
-        {bucket.failed > 0 && `, ${bucket.failed} failed`}
+        {t("traceList.runCount", { count: bucket.runs })}
+        {bucket.failed > 0 && t("traceList.failedCount", { count: bucket.failed })}
       </div>
-      <div className="text-info">drag to zoom</div>
+      <div className="text-info">{t("traceList.dragToZoom")}</div>
     </div>
   );
 }
@@ -182,6 +192,7 @@ function SelectionBracket({
   stripWidth: number;
   onHandleDown: (mode: DragMode) => (e: React.PointerEvent) => void;
 }) {
+  const t = useTranslations("logs");
   const leftFrac = band.lo / BUCKETS;
   const rightFrac = (band.hi + 1) / BUCKETS;
   const widthPx = (rightFrac - leftFrac) * stripWidth;
@@ -208,7 +219,7 @@ function SelectionBracket({
         />
         {widthPx >= MIN_DURATION_LABEL_PX && (
           <span className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center font-mono text-[11px] font-medium text-info">
-            {formatSpan(window.endMs - window.startMs)}
+            {formatSpan(t, window.endMs - window.startMs)}
           </span>
         )}
       </div>
@@ -250,6 +261,7 @@ function TickAxis({ range }: { range: TimeWindow }) {
 
 /** Histogram of runs over the window. Drag to select; drag the bracket or its edges to adjust; Esc clears. */
 export function TracesTimeline({ runs, range, selection, onSelect }: TracesTimelineProps) {
+  const t = useTranslations("logs");
   const buckets = useMemo(() => bucketRuns(runs, range), [runs, range]);
   const max = Math.max(1, ...buckets.map((b) => b.runs));
   const [hover, setHover] = useState<number | null>(null);
@@ -324,7 +336,7 @@ export function TracesTimeline({ runs, range, selection, onSelect }: TracesTimel
     >
       <div className="mb-4 flex items-center">
         <span className="rounded border border-border bg-muted/50 px-1.5 py-px font-mono text-[10px] text-muted-foreground">
-          Total {formatSpan(range.endMs - range.startMs)}
+          {t("traceList.totalSpan", { span: formatSpan(t, range.endMs - range.startMs) })}
         </span>
       </div>
       <div

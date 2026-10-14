@@ -1,6 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,10 +22,12 @@ interface RunsToolbarProps {
   children?: React.ReactNode;
 }
 
-const STATUS_ITEMS: { value: RunStatusFilter; label: string }[] = [
-  { value: "all", label: "All status" },
-  { value: "ok", label: "Succeeded" },
-  { value: "error", label: "Failed" },
+type StatusLabelKey = "allStatuses" | "traceList.statusSucceeded" | "traceList.failed";
+
+const STATUS_ITEMS: { value: RunStatusFilter; labelKey: StatusLabelKey }[] = [
+  { value: "all", labelKey: "allStatuses" },
+  { value: "ok", labelKey: "traceList.statusSucceeded" },
+  { value: "error", labelKey: "traceList.failed" },
 ];
 
 /** Search + agent / status filters for the Runs table. Filtering is client-side over the loaded page. */
@@ -38,7 +41,12 @@ export function RunsToolbar({
   onStatusChange,
   children,
 }: RunsToolbarProps) {
-  const agentItems = [{ value: ALL_AGENTS, label: "All agents" }, ...agents.map((s) => ({ value: s, label: s }))];
+  const t = useTranslations("logs");
+  const statusItems = STATUS_ITEMS.map((item) => ({ value: item.value, label: t(item.labelKey) }));
+  const agentItems = [
+    { value: ALL_AGENTS, label: t("traceList.agentAll") },
+    ...agents.map((s) => ({ value: s, label: s })),
+  ];
   return (
     <div className="flex min-h-11 shrink-0 flex-wrap items-center gap-2 border-b border-border bg-card px-3 py-2">
       <div className="relative w-full max-w-[380px]">
@@ -46,8 +54,8 @@ export function RunsToolbar({
         <Input
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
-          placeholder="Search input or trace ID"
-          aria-label="Search runs"
+          placeholder={t("traceList.searchPlaceholder")}
+          aria-label={t("traceList.searchRunsAria")}
           className="h-7 pl-8 text-[12px]"
         />
       </div>
@@ -56,7 +64,11 @@ export function RunsToolbar({
         value={agent}
         onValueChange={(value: string | null) => value !== null && onAgentChange(value)}
       >
-        <SelectTrigger size="sm" className="h-7 min-w-[130px] text-[12px]" aria-label="Filter by agent">
+        <SelectTrigger
+          size="sm"
+          className="h-7 min-w-[130px] text-[12px]"
+          aria-label={t("traceList.filterByAgentAria")}
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -68,15 +80,15 @@ export function RunsToolbar({
         </SelectContent>
       </Select>
       <Select
-        items={STATUS_ITEMS}
+        items={statusItems}
         value={status}
         onValueChange={(value: RunStatusFilter | null) => value !== null && onStatusChange(value)}
       >
-        <SelectTrigger size="sm" className="h-7 min-w-[110px] text-[12px]" aria-label="Filter by status">
+        <SelectTrigger size="sm" className="h-7 min-w-[110px] text-[12px]" aria-label={t("filterByStatus")}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {STATUS_ITEMS.map((item) => (
+          {statusItems.map((item) => (
             <SelectItem key={item.value} value={item.value}>
               {item.label}
             </SelectItem>

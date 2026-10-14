@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { cn } from "@/lib/cva.config";
 
 import previewTrace from "./previewTrace.json";
@@ -27,6 +29,7 @@ const preview = previewTrace as {
 };
 
 export function TracePreview() {
+  const t = useTranslations("logs");
   const total = preview.duration_ms;
   return (
     <div
@@ -39,7 +42,7 @@ export function TracePreview() {
         <span className="text-[13px] font-medium text-foreground">{preview.name}</span>
         <span className="truncate text-[12px] text-muted-foreground">{preview.input_preview}</span>
         <span className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground">
-          {preview.span_count} steps · {fmtMs(total)}
+          {t("traceList.stepsWithDuration", { count: preview.span_count, duration: fmtMs(total) })}
         </span>
       </div>
       <div className="relative">

@@ -3759,8 +3759,10 @@
       "last15Minutes": "最近 15 分钟",
       "lastHour": "最近 1 小时",
       "last4Hours": "最近 4 小时",
+      "last6Hours": "最近 6 小时",
       "last24Hours": "最近 24 小时",
-      "last7Days": "最近 7 天"
+      "last7Days": "最近 7 天",
+      "last30Days": "最近 30 天"
     },
     "filters": {
       "teamId": "团队 ID",
@@ -4186,6 +4188,37 @@
       "idCopied": "ID 已复制",
       "copy": "复制",
       "copied": "已复制"
+    },
+    "traceList": {
+      "colAgent": "智能体",
+      "colAgents": "智能体数",
+      "colSteps": "步数",
+      "failed": "失败",
+      "runsAria": "智能体运行列表",
+      "loadingRuns": "正在加载运行记录…",
+      "loadRunsError": "无法加载运行记录：{message}",
+      "noRunsMatch": "没有符合这些筛选条件的运行记录。",
+      "loadMore": "加载更多",
+      "statusSucceeded": "成功",
+      "agentAll": "全部智能体",
+      "searchPlaceholder": "搜索输入内容或 trace ID",
+      "searchRunsAria": "搜索运行记录",
+      "filterByAgentAria": "按智能体筛选",
+      "resetZoomAria": "重置缩放",
+      "timeRangeAria": "时间范围",
+      "live": "实时",
+      "rangeTo": "{start} 至 {end}",
+      "totalSpan": "总计 {span}",
+      "spanMinutes": "{m} 分钟",
+      "spanHours": "{h} 小时",
+      "spanHoursMinutes": "{h} 小时 {m} 分钟",
+      "spanDays": "{d} 天",
+      "spanDaysHours": "{d} 天 {h} 小时",
+      "runCount": "{count} 次运行",
+      "failedCount": "，失败 {count} 次",
+      "dragToZoom": "拖拽缩放",
+      "errorCount": "{count} 个错误",
+      "stepsWithDuration": "{count} 步 · {duration}"
     }
   },
   "projects": {

@@ -3759,8 +3759,10 @@
       "last15Minutes": "Last 15 Minutes",
       "lastHour": "Last Hour",
       "last4Hours": "Last 4 Hours",
+      "last6Hours": "Last 6 Hours",
       "last24Hours": "Last 24 Hours",
-      "last7Days": "Last 7 Days"
+      "last7Days": "Last 7 Days",
+      "last30Days": "Last 30 Days"
     },
     "filters": {
       "teamId": "Team ID",
@@ -4186,6 +4188,37 @@
       "idCopied": "ID copied",
       "copy": "Copy",
       "copied": "Copied"
+    },
+    "traceList": {
+      "colAgent": "Agent",
+      "colAgents": "Agents",
+      "colSteps": "Steps",
+      "failed": "Failed",
+      "runsAria": "Agent runs",
+      "loadingRuns": "Loading runs…",
+      "loadRunsError": "Could not load runs: {message}",
+      "noRunsMatch": "No runs match these filters.",
+      "loadMore": "Load more",
+      "statusSucceeded": "Succeeded",
+      "agentAll": "All agents",
+      "searchPlaceholder": "Search input or trace ID",
+      "searchRunsAria": "Search runs",
+      "filterByAgentAria": "Filter by agent",
+      "resetZoomAria": "Reset zoom",
+      "timeRangeAria": "Time range",
+      "live": "Live",
+      "rangeTo": "{start} to {end}",
+      "totalSpan": "Total {span}",
+      "spanMinutes": "{m}m",
+      "spanHours": "{h}h",
+      "spanHoursMinutes": "{h}h {m}m",
+      "spanDays": "{d}d",
+      "spanDaysHours": "{d}d {h}h",
+      "runCount": "{count, plural, one {# run} other {# runs}}",
+      "failedCount": ", {count} failed",
+      "dragToZoom": "drag to zoom",
+      "errorCount": "{count, plural, one {# error} other {# errors}}",
+      "stepsWithDuration": "{count} steps · {duration}"
     }
   },
   "projects": {

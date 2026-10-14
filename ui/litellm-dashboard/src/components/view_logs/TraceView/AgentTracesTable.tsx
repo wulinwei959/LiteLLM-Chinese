@@ -1,10 +1,11 @@
 "use client";
 
 import { ArrowDown, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { formatActivityTimestamp } from "@/utils/activityTimestamp";
 import { cn } from "@/lib/cva.config";
+import { formatActivityTimestamp } from "@/utils/activityTimestamp";
 
 import { StatusMark } from "./StatusMark";
 import type { TraceSummary } from "./traceTypes";
@@ -42,24 +43,28 @@ export function AgentTracesTable({
   onOpenTrace,
   selectedKey = null,
 }: AgentTracesTableProps) {
+  const t = useTranslations("logs");
   const isEmpty = !isLoading && !error && traces.length === 0;
   return (
     <div className="min-h-0 flex-1 overflow-auto" data-testid="runs-table">
-      <table aria-label="Agent runs" className="w-full min-w-[900px] table-fixed border-collapse text-left">
+      <table
+        aria-label={t("traceList.runsAria")}
+        className="w-full min-w-[900px] table-fixed border-collapse text-left"
+      >
         <thead className="sticky top-0 z-sticky bg-muted/40 backdrop-blur">
           <tr className="h-8 border-b border-border text-[10px] tracking-[0.08em] text-muted-foreground uppercase">
             <th className={`w-[190px] ${TH}`}>
               <span className="inline-flex items-center gap-1">
-                Time <ArrowDown className="size-2.5" />
+                {t("columns.time")} <ArrowDown className="size-2.5" />
               </span>
             </th>
-            <th className={`w-[160px] ${TH}`}>Agent</th>
-            <th className={TH}>Input</th>
-            <th className={`w-[72px] ${TH_NUM}`}>Agents</th>
-            <th className={`w-[74px] ${TH_NUM}`}>Steps</th>
-            <th className={`w-[86px] ${TH_NUM}`}>Duration</th>
-            <th className={`w-[80px] ${TH_NUM}`}>Cost</th>
-            <th className={`w-[72px] ${TH_NUM}`}>Failed</th>
+            <th className={`w-[160px] ${TH}`}>{t("traceList.colAgent")}</th>
+            <th className={TH}>{t("drawer.input")}</th>
+            <th className={`w-[72px] ${TH_NUM}`}>{t("traceList.colAgents")}</th>
+            <th className={`w-[74px] ${TH_NUM}`}>{t("traceList.colSteps")}</th>
+            <th className={`w-[86px] ${TH_NUM}`}>{t("trace.factDuration")}</th>
+            <th className={`w-[80px] ${TH_NUM}`}>{t("cost")}</th>
+            <th className={`w-[72px] ${TH_NUM}`}>{t("traceList.failed")}</th>
             <th className="w-8" />
           </tr>
         </thead>
@@ -117,17 +122,21 @@ export function AgentTracesTable({
           ))}
         </tbody>
       </table>
-      {isLoading && <div className="py-16 text-center text-[12px] text-muted-foreground">Loading runs…</div>}
+      {isLoading && (
+        <div className="py-16 text-center text-[12px] text-muted-foreground">{t("traceList.loadingRuns")}</div>
+      )}
       {error && (
-        <div className="py-16 text-center text-[12px] text-muted-foreground">Could not load runs: {error.message}</div>
+        <div className="py-16 text-center text-[12px] text-muted-foreground">
+          {t("traceList.loadRunsError", { message: error.message })}
+        </div>
       )}
       {isEmpty && (
-        <div className="py-16 text-center text-[12px] text-muted-foreground">No runs match these filters.</div>
+        <div className="py-16 text-center text-[12px] text-muted-foreground">{t("traceList.noRunsMatch")}</div>
       )}
       {hasMore && (
         <div className="border-t border-border/60 px-3 py-2">
           <Button size="xs" variant="ghost" onClick={onLoadMore}>
-            Load more
+            {t("traceList.loadMore")}
           </Button>
         </div>
       )}
