@@ -1,6 +1,26 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，本簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 43 簇更新
+
+批次 24 第 43 簇：`components/AIHub/forms/MakeModelPublicForm.tsx`（341 行，接入后 346）接入 `modelHub`，新开 `modelHub.makeModelPublic.*` 15 键，两个消息目录各 +17/−0 行
+
+改造形态：
+
+- 与第 42 簇同形的第二步：`STEP_TITLES` 模块级常量删掉、换成组件内 `[t("…stepSelect"), t("…stepConfirm")]`，`DialogTitle`、两步的 `h3`、提示段、三条 `t.rich`（`selectedInfo` / `confirmWarning` / `totalInfo`）、列表标题、四条 toast、三个步骤按钮全部走键。`Select All`、`Cancel`、`Previous`、`Next` 直接复用第 42 簇落好的 `common.selectAll` / `cancel` / `previous` / `next`——这正是那一簇"一步就进 `common`"的理由，本簇四个消费点一个都不用新键
+- 空态不借智能体向导的 `empty`：这里的空态跟着 `ModelFilters` 的筛选结果走（`filteredData.length === 0`），HEAD 的串是 `No models match the current filters.`，说的是"没有符合筛选条件的模型"，与 `makeAgentPublic.empty`（`No agents available.`，压根没有可选项）概念不同，所以新开 `emptyFiltered`（没有符合当前筛选条件的模型。）。`ModelFilters` 自己是未接入的长尾文件，本簇不碰它也不借它的文案
+- 复数分支的多词取值改用 `#`：`toastSuccess` 一开始按第 42 簇的写法写成 `Successfully made {count} {count, plural, one {model group} other {model groups}} public!`，parity 守卫立刻报 `modelHub.makeModelPublic.toastSuccess: {model groups}`——花括号合法性判断只放过 `# 空格`、标识符、`/标识符` 或含逗号四种，`model groups` 带空格又不含逗号就落在四种之外。目录里 `#` 形态早有先例（`node` 递归数下来 33 个键在用，例如 `guardrails.test.testButton`、`guardrails.pii.selected`、`models.addModel.overrideCount`），于是整条改成 `{count, plural, one {# model group} other {# model groups}}`，数字由复数分支自己渲染；node + `intl-messageformat` 实测 `count=2` → `Successfully made 2 model groups public!`，中文仍是"已成功公开 {count, number} 个模型组！"，两侧参数名同为 `count`。`selectedInfo` 与 `totalInfo` 的分支是单词 `model` / `models`，不必改，标签也仍留在复数外面（第 42 簇那条规则不变）
+- 术语分层：toast 沿用 HEAD 的 `model groups` → 模型组（一次 API 调用改的是 model group 的公开位），选择与确认文案用"模型"（UI 列表里 `model_group` 就以模型名直接展示）
+- 不动的：`(${filteredData.length})` 计数、`console.error("Error making model groups public:", error)`、`Badge` 里的 `mode` 与 `providers` 取值，口径同第 42 簇
+
+测试侧同步：`MakeModelPublicForm.test.tsx` 的 17 处裸 `render` 全部换成 `renderWithProviders`，断言串同步为中文——`Make Models Public`→将模型设为公开、`Select Models to Make Public`→选择要公开的模型、`Confirm Making Models Public`→确认公开这些模型、`Next`→下一步、`Previous`→上一步、`Cancel`→取消、`Make Public`→公开、`Select All (2)`→全选 (2)、`No models match the current filters.`→没有符合当前筛选条件的模型。
+- 选中计数那条断言换了写法：原来是 `getByText("model selected")` + `toHaveTextContent("1 model selected")`。`getByText` 比较的是元素的**直接文本子节点**拼接（`getNodeText` 不含子元素），英文 JSX 里 `<strong>{n}</strong> model selected` 的 `<p>` 恰好有一个 `" model selected"` 文本节点，归一化后就是那个匹配串；中文把量词放在数字后面（`已选择 <strong>1</strong> 个模型`），`<p>` 的直接文本变成"已选择 "与" 个模型"两段，整串再也不是任何元素的直接文本，于是改成 `getByText(/个模型/)` 定位、`toHaveTextContent("已选择 1 个模型")` 断言完整渲染值。步骤二里另有"共计 …个模型将被公开"，但那条用例停在步骤一，正则不冲突
+- `/Warning:/` 改 `/警告/`，仍能命中 `<strong>`；`/model_hub_table/` 不动，仍命中 `<code>`；17 例数量与含义未增删，只换语言
+
+验证：定向跑 `npx vitest run src/lib/i18n src/components/AIHub/forms/MakeModelPublicForm.test.tsx` → 4 文件 33 例全绿（parity 守卫先在这一跑里抓住并修掉了上面那条花括号问题）；全量复跑 `npx vitest run src/lib/i18n src/components/chat src/app/chat src/app/connect src/components/view_logs src/components/liteadmin src/components/AIHub` → 79 文件 978 例全绿，`Type Errors no errors`（用例未增删）；`npx tsc --noEmit -p .` 总 883、非测试 0；`npx eslint` 两个改动文件 0 error / 4 warning，全是 HEAD 已有的 `no-explicit-any`（组件 `[key: string]: any` 一处，测试里 `ModelFilters` mock 与 `resolvePromise: (value: any)` 三处），行号只随本簇改动位移；prettier 先证 HEAD 两个文件干净、改动后 `--check` 仍干净，未执行 `--write`；`npm run build` exit 0
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 429 到 430，47.1%。键数 6800 到 6815（`modelHub` 命名空间 19 到 34，`common` 与 `chat` 不变），中英同值 86 不变
 
 ## 2026-10-15 第 42 簇更新
 
