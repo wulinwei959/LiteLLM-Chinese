@@ -471,9 +471,9 @@ describe("RequestLogsPanel", () => {
       fireEvent.change(screen.getByTestId("datatable-search"), { target: { value: "sess-42" } });
       await waitFor(() => expect(row("req-sess")).not.toBeNull());
       expect(row("req-initial")).toBeNull();
-      expect(screen.getByTestId("filter-chip-search")).toHaveTextContent("Search:sess-42");
+      expect(screen.getByTestId("filter-chip-search")).toHaveTextContent("搜索:sess-42");
 
-      await user.click(screen.getByRole("button", { name: "Remove Search filter" }));
+      await user.click(screen.getByRole("button", { name: "Remove 搜索 filter" }));
 
       expect(screen.getByTestId("datatable-search")).toHaveValue("");
       await waitFor(() => expect(row("req-initial")).not.toBeNull());
