@@ -1,6 +1,29 @@
 # 开发进度
 
-数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-14，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。最新的测试统计是第 18 簇后的一次全量（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-14 第 34 簇更新
+
+批次 24 第 34 簇：`components/chat/MCPAppsPanel.tsx`（626 行，接入后 634，`chat` 目录最大的一个文件）接入 `chat`，新开 `chat.appsPanel.*` 29 键，两个消息目录各 +31 行、纯增不删（插在 `chat.connectPicker` 之后，命名空间内仍按簇的加入顺序排）
+
+改造形态：
+
+- 导出的助手组件 `OAuth2ConnectButton` 自己 `useTranslations("chat")`，不加 `t` prop（沿用第 31、32 簇的写法）；badge 与 button 两种形态共用 `connect` / `connecting` 两键
+- `connectUnavailabilityLabel` 是 `useCallback`，`t` 进依赖数组（全仓 `.tsx` 已有 15 处 `, t]` 先例）。next-intl 的 `t` 按 locale memo，只有切换语言才换引用，不会让依赖它的 `oauthConnected` effect 反复重跑
+- Information 三行原本是 `[["Server ID", v], ["Transport", v], ["Status", v]]` 且 `key={label}`，接 `t()` 后 key 会变成译文，给每行补一个稳定的首元 `rowKey`（`serverId` / `transport` / `status`），label 只管显示
+- `{totalTools} tool{s} available` 交给 ICU：EN `{count, plural, one {# tool available} other {# tools available}}`，ZH 退化成 `{count, number} 个工具可用`。目录里 `{count, number}` 已有 5 处、`plural, other` 2 处，取多数写法；`{count, number}` 才带千分位（第 29 簇那条）
+- 第 33 簇记下的尾巴收掉：本面板的 toast `Could not load tools for ${serverName}` 与 `connectPicker.loadToolsFailed` 英文值不同（少了后半句），仍不共键，另开 `appsPanel.loadToolsFailed`；`result?.error` 与 `catch` 两个分支照旧各留一次 `t(...)` 调用
+- `detailServer.description ?? "MCP server"` 与卡片行 `server.description ?? "MCP server"` 同值同概念，共用一个 `defaultDescription`；它和标题键 `title` 的中文同为 `MCP 服务器`，英文单复数不同，不合并
+- Beta 徽标开 `appsPanel.beta`，没有复用 `common.beta`：`common.beta`（`Beta` / `Beta 版`）此刻是死键，它该服务的是共享组件 `components/BetaBadge.tsx`（仍写死 `Beta`），留给共享组件那一簇接入；本面板的徽标是内联 markup，文案归 `chat` 这组。中文取值与 `common.beta` 对齐，`uppercase` 样式把它显示成 `BETA 版`，属样式不属文案
+- 页签的 `Connected (${connectedCount})` 只把 `Connected` 收进 `tabConnected`，括号里的裸计数留在 `.tsx`，归"## 技术债"的日期/数字欠账
+
+测试同步：`MCPAppsPanel.test.tsx` 的 3 个 render 点（`renderPanel`、`renderConnectPanel`、内联 `ConnectPanel`）各自新建 `QueryClient`，其中两处还要把同一个 client 传给 `rerender`，换 `renderWithProviders` 会共用测试客户端、动它的缓存与重试假设，所以沿用第 33 簇 `ConnectFlowSurface.test.tsx` 的办法，在原 wrapper 里补一层 `<LocaleProvider locale="zh-CN">`。断言改 10 处：`Connected (1)` / `Connected (2)` → `已连接 (1)` / `已连接 (2)`，`{ name: "Connect" }` → `{ name: "连接" }`（5 处，含 2 处 `fireEvent.click`），`queryByText("Connect", { exact: true })` → `"连接"`，`Not supported on this connection` → `该连接不支持`，`getByText("Connected", { exact: false })` 与它的 `toHaveTextContent` → `已连接`。`已连接` 与页签的 `tabConnected` 同值，那一处仍只有页签命中，不需要改 `getAllByText`
+
+判为数据、不译：`handleTransport(...)` 返回的 `http` / `sse` / `stdio` / `openapi` 是 `TRANSPORT` 常量里的协议 id，只显示在"传输方式"的值位——`mcpServers.transport.*` 那 4 个键虽然存在，值是建服务器表单的选项文案（带"（推荐）""（SSE）"这类限定语），概念不同不能共键；`server_id`、`server_name` / `alias`、`tool.name` 与 `tool.description`（MCP 工具自述）、`logo_url` 与 alt 文本、首字母头像的 `N` 都取自后端；`queryByText("Not available to connected apps")` 那条负断言留着英文——组件从来没有这个字符串，断言的是"它不渲染"
+
+验证：`chat` + `app/chat` + `app/connect` + `view_logs` + `src/lib/i18n` 67 文件 749 例全绿，未增删用例；`tsc --noEmit -p .` 仍 883 条、非测试文件 0 条；本簇 2 个文件 `eslint` 0 错误，1 条 warning 是 `useUserMcpOAuthFlow({ accessToken, serverId, serverAlias, onSuccess })` 的内联对象，`git show HEAD` 复跑 lint 得到同一位置的同一条，属既有；`npm run build` 退出 0；prettier 只 `--write` 本簇 2 个 tsx，改前均合规；两个 messages JSON 各 31 增 0 删
+
+覆盖率复测：非测试 `.tsx` 912 个不变，已接入 420 到 421，46.2%；`components/chat` 11 个非测试文件接入 3 个，剩余 8 个里 `ConnectFlowSurface.tsx`（60 行）无自有文案，其余按大小排是 `ChatMessages.tsx`（473 行）、`KeysPanel.tsx`（399）、`LogsPanel.tsx`（344）、`ConversationList.tsx`（332）、`MCPCredentialsTab.tsx`（232）、`UsagePanel.tsx`（212）、`ChatShell.tsx`（149）。键数 6646 到 6675（`chat` 命名空间 14 到 43），中英同值 86 不变
 
 ## 2026-10-14 第 33 簇更新
 
@@ -498,8 +521,8 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 | 项                       | 数值                                                 |
 | ------------------------ | ---------------------------------------------------- |
 | 命名空间                 | 39                                                   |
-| `en.json` 叶子键          | 6646（2026-10-14 第 33 簇；6632 是第 32 簇后，6584 是第 31 簇后，6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后）|
-| `zh-CN.json` 叶子键       | 6646                                                 |
+| `en.json` 叶子键          | 6675（2026-10-14 第 34 簇；6646 是第 33 簇后，6632 是第 32 簇后，6584 是第 31 簇后，6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后）|
+| `zh-CN.json` 叶子键       | 6675                                                 |
 | 键树一致性               | 一致，`messagesParity` 通过                           |
 | 中英文取值完全相同的键    | 86（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
 
@@ -507,7 +530,7 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 ## 文件覆盖率
 
-`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%），第 30 簇后 912 / 417（45.7%），第 31 簇后 912 / 418（45.8%），第 32 簇后 912 / 418（45.8%，本簇文件此前已接入，比率不变），第 33 簇后 912 / 420（46.1%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
+`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%），第 30 簇后 912 / 417（45.7%），第 31 簇后 912 / 418（45.8%），第 32 簇后 912 / 418（45.8%，本簇文件此前已接入，比率不变），第 33 簇后 912 / 420（46.1%），第 34 簇后 912 / 421（46.2%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
 
 ## 按路由的进度
 
