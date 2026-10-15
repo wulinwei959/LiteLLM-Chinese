@@ -4189,7 +4189,18 @@
       "idpMetadataUrl": "IdP Metadata URL",
       "idpMetadataXml": "IdP Metadata XML",
       "spEntityId": "SP Entity ID",
-      "allowUnsolicited": "Allow IdP-initiated (unsolicited) responses"
+      "allowUnsolicited": "Allow IdP-initiated (unsolicited) responses",
+      "addModalTitle": "Add SSO",
+      "addingButton": "Adding...",
+      "addSuccessToast": "SSO settings added successfully",
+      "saveFailedToast": "Failed to save SSO settings: {error}",
+      "deleteConfirmTitle": "Confirm Clear SSO Settings",
+      "cannotUndo": "This action cannot be undone.",
+      "deleteConfirmBody": "Are you sure you want to clear all SSO settings? Users will no longer be able to login using SSO after this change.",
+      "deleteResourceTitle": "SSO Settings",
+      "providerGenericFallback": "Generic",
+      "clearSuccessToast": "SSO settings cleared successfully",
+      "clearFailedToast": "Failed to clear SSO settings: {error}"
     }
   },
   "usage": {

@@ -53,11 +53,7 @@ describe("DeleteSSOSettingsModal", () => {
       </QueryClientProvider>,
     );
 
-    expect(screen.getByText("Confirm Clear SSO Settings")).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Are you sure you want to clear all SSO settings? Users will no longer be able to login using SSO after this change.",
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByText("确认清除 SSO 设置")).toBeInTheDocument();
+    expect(screen.getByText("确定要清除所有 SSO 设置吗？更改后用户将无法再通过 SSO 登录。")).toBeInTheDocument();
   });
 });

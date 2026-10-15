@@ -3,6 +3,7 @@
 import { toast } from "@/lib/toast";
 import { parseErrorMessage } from "@/components/shared/errorUtils";
 import React from "react";
+import { useTranslations } from "next-intl";
 import BaseSSOSettingsForm, {
   emptySSOSettingsFormValues,
   submitMountedSSOValues,
@@ -22,6 +23,8 @@ interface AddSSOSettingsModalProps {
 }
 
 const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({ isVisible, onCancel, onSuccess }) => {
+  const t = useTranslations("adminPanel");
+  const tc = useTranslations("common");
   const form = useSSOSettingsForm("sso-settings");
   const { mutateAsync, isPending } = useEditSSOSettings();
 
@@ -30,11 +33,11 @@ const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({ isVisible, on
 
     await mutateAsync(payload, {
       onSuccess: () => {
-        toast.success("SSO settings added successfully");
+        toast.success(t("ssoSettings.addSuccessToast"));
         onSuccess();
       },
       onError: (error) => {
-        toast.fromError("Failed to save SSO settings: " + parseErrorMessage(error));
+        toast.fromError(t("ssoSettings.saveFailedToast", { error: parseErrorMessage(error) }));
       },
     });
   };
@@ -48,13 +51,13 @@ const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({ isVisible, on
     <Dialog open={isVisible} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>Add SSO</DialogTitle>
+          <DialogTitle>{t("ssoSettings.addModalTitle")}</DialogTitle>
         </DialogHeader>
         <BaseSSOSettingsForm form={form} onFormSubmit={handleFormSubmit} />
         <DialogFooter>
           <div className="flex items-center justify-end gap-2">
             <Button type="button" variant="outline" onClick={handleCancel} disabled={isPending}>
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button
               type="button"
@@ -62,7 +65,7 @@ const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({ isVisible, on
               onClick={submitMountedSSOValues(form, "sso-settings", handleFormSubmit)}
             >
               {isPending && <UiLoadingSpinner className="size-4 mr-1" />}
-              {isPending ? "Adding..." : "Add SSO"}
+              {isPending ? t("ssoSettings.addingButton") : t("ssoSettings.addModalTitle")}
             </Button>
           </div>
         </DialogFooter>
