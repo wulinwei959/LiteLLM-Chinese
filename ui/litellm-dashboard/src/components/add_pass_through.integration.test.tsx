@@ -30,8 +30,8 @@ const renderForm = (premiumUser = true) =>
   );
 
 const openModal = async (user: User) => {
-  await user.click(screen.getByRole("button", { name: "+ Add Pass-Through Endpoint" }));
-  await screen.findByText("Route Configuration");
+  await user.click(screen.getByRole("button", { name: "+ 添加直通端点" }));
+  await screen.findByText("路由配置");
 };
 
 interface RequiredFieldValues {
@@ -64,7 +64,7 @@ const addQueryParam = async (user: User, name: string, value: string) => {
   fireEvent.change(screen.getByPlaceholderText("Parameter Value (e.g., v1)"), { target: { value } });
 };
 
-const submit = async (user: User) => user.click(screen.getByRole("button", { name: "Add Pass-Through Endpoint" }));
+const submit = async (user: User) => user.click(screen.getByRole("button", { name: "添加直通端点" }));
 
 const lastPayload = () => createPassThroughEndpoint.mock.calls.at(-1)?.[1] as Record<string, unknown>;
 
@@ -153,7 +153,7 @@ describe("add_pass_through submit payload", () => {
     await openModal(user);
     await fillRequiredFields(user);
 
-    await chooseSelectOption(user, screen.getByLabelText(/HTTP Methods/), "POST");
+    await chooseSelectOption(user, screen.getByLabelText(/HTTP 方法/), "POST");
 
     await submit(user);
 
@@ -210,9 +210,9 @@ describe("add_pass_through submit payload", () => {
 
     await submit(user);
 
-    expect(await screen.findByText("Path is required")).toBeInTheDocument();
-    expect(screen.getByText("Target URL is required")).toBeInTheDocument();
-    expect(screen.getByText("Please configure the headers")).toBeInTheDocument();
+    expect(await screen.findByText("路径为必填项")).toBeInTheDocument();
+    expect(screen.getByText("目标 URL 为必填项")).toBeInTheDocument();
+    expect(screen.getByText("请配置请求头")).toBeInTheDocument();
     expect(createPassThroughEndpoint).not.toHaveBeenCalled();
   });
 
@@ -229,7 +229,7 @@ describe("add_pass_through submit payload", () => {
 
     await submit(user);
 
-    expect(await screen.findByText("Please enter a valid URL")).toBeInTheDocument();
+    expect(await screen.findByText("请输入有效的 URL")).toBeInTheDocument();
     expect(createPassThroughEndpoint).not.toHaveBeenCalled();
   });
 
@@ -252,7 +252,7 @@ describe("add_pass_through submit payload", () => {
     await openModal(user);
     await fillRequiredFields(user);
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
     expect(createPassThroughEndpoint).not.toHaveBeenCalled();
   });
@@ -264,7 +264,7 @@ describe("add_pass_through submit payload", () => {
     await fillRequiredFields(user);
     await addQueryParam(user, "version", "v1");
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
     await openModal(user);
 
     expect(screen.queryByPlaceholderText("请求头名称")).not.toBeInTheDocument();
@@ -277,14 +277,14 @@ describe("add_pass_through submit payload", () => {
     await openModal(user);
     await fillRequiredFields(user);
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
     await openModal(user);
     await fillRequiredFields(user, reopenedFields);
 
     await submit(user);
 
     await waitFor(() => expect(createPassThroughEndpoint).toHaveBeenCalled());
-    expect(screen.queryByText("Please configure the headers")).not.toBeInTheDocument();
+    expect(screen.queryByText("请配置请求头")).not.toBeInTheDocument();
     expect(lastPayload()).toStrictEqual(reopenedPayload);
   });
 });

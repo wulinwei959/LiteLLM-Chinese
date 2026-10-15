@@ -43,12 +43,12 @@ const renderView = (premiumUser = true, data = endpoint) =>
   );
 
 const openEditForm = async (user: User) => {
-  await user.click(screen.getByRole("tab", { name: "Settings" }));
-  await user.click(await screen.findByRole("button", { name: "Edit Settings" }));
-  await screen.findByLabelText("Target URL");
+  await user.click(screen.getByRole("tab", { name: "设置" }));
+  await user.click(await screen.findByRole("button", { name: "编辑设置" }));
+  await screen.findByLabelText("目标 URL");
 };
 
-const save = async (user: User) => user.click(screen.getByRole("button", { name: "Save Changes" }));
+const save = async (user: User) => user.click(screen.getByRole("button", { name: "保存更改" }));
 
 const lastPayload = () => updatePassThroughEndpoint.mock.calls.at(-1)?.[2] as Record<string, unknown>;
 
@@ -100,8 +100,8 @@ describe("pass_through_info update payload", () => {
     renderView();
     await openEditForm(user);
 
-    await user.clear(screen.getByLabelText("Target URL"));
-    await user.type(screen.getByLabelText("Target URL"), "https://new.example.com");
+    await user.clear(screen.getByLabelText("目标 URL"));
+    await user.type(screen.getByLabelText("目标 URL"), "https://new.example.com");
     await save(user);
 
     await waitFor(() => expect(updatePassThroughEndpoint).toHaveBeenCalled());
@@ -114,8 +114,8 @@ describe("pass_through_info update payload", () => {
     renderView();
     await openEditForm(user);
 
-    await user.clear(screen.getByLabelText("Headers (JSON)"));
-    await user.type(screen.getByLabelText("Headers (JSON)"), '{{"x-api-key": "k"}');
+    await user.clear(screen.getByLabelText("请求头（JSON）"));
+    await user.type(screen.getByLabelText("请求头（JSON）"), '{{"x-api-key": "k"}');
     await save(user);
 
     await waitFor(() => expect(updatePassThroughEndpoint).toHaveBeenCalled());
@@ -149,8 +149,8 @@ describe("pass_through_info update payload", () => {
     renderView();
     await openEditForm(user);
 
-    await user.clear(screen.getByLabelText("Cost per Request"));
-    await user.type(screen.getByLabelText("Cost per Request"), "1.239");
+    await user.clear(screen.getByLabelText("单次请求成本"));
+    await user.type(screen.getByLabelText("单次请求成本"), "1.239");
     await save(user);
 
     await waitFor(() => expect(updatePassThroughEndpoint).toHaveBeenCalled());
@@ -162,10 +162,10 @@ describe("pass_through_info update payload", () => {
     renderView();
     await openEditForm(user);
 
-    await user.clear(screen.getByLabelText("Target URL"));
+    await user.clear(screen.getByLabelText("目标 URL"));
     await save(user);
 
-    expect(await screen.findByText("Please input a target URL")).toBeInTheDocument();
+    expect(await screen.findByText("请输入目标 URL")).toBeInTheDocument();
     expect(updatePassThroughEndpoint).not.toHaveBeenCalled();
   });
 
@@ -174,7 +174,7 @@ describe("pass_through_info update payload", () => {
     renderView();
     await openEditForm(user);
 
-    await user.type(screen.getByLabelText("Target URL"), "{Enter}");
+    await user.type(screen.getByLabelText("目标 URL"), "{Enter}");
 
     await waitFor(() => expect(updatePassThroughEndpoint).toHaveBeenCalled());
     expect(updatePassThroughEndpoint).toHaveBeenCalledTimes(1);
