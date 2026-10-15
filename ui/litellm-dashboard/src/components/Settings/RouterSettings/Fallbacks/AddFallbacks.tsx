@@ -5,6 +5,7 @@
  */
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { toast } from "@/lib/toast";
@@ -23,6 +24,8 @@ interface AddFallbacksProps {
 }
 
 export default function AddFallbacks({ accessToken, value = [], onChange }: AddFallbacksProps) {
+  const t = useTranslations("routerSettings.fallbacks");
+  const commonT = useTranslations("common");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modelInfo, setModelInfo] = useState<ModelGroup[]>([]);
   const [modalKey, setModalKey] = useState(0); // Key to force remount of form when modal opens
@@ -81,7 +84,7 @@ export default function AddFallbacks({ accessToken, value = [], onChange }: AddF
     // Validation
     const invalidGroups = groups.filter((g) => !g.primaryModel || g.fallbackModels.length === 0);
     if (invalidGroups.length > 0) {
-      toast.error(`Please complete configuration for all groups. ${invalidGroups.length} group(s) incomplete.`);
+      toast.error(t("incompleteGroupsToast", { invalid: invalidGroups.length }));
       return;
     }
 
@@ -101,7 +104,7 @@ export default function AddFallbacks({ accessToken, value = [], onChange }: AddF
       setIsSaving(true);
       try {
         await onChange(updatedFallbacks);
-        toast.success(`${groups.length} fallback configuration(s) added successfully!`);
+        toast.success(t("addedCountToast", { added: groups.length }));
         handleCancel();
       } catch (error) {
         // Error handling is done in handleFallbacksChange, so we don't need to show another notification here
@@ -110,7 +113,7 @@ export default function AddFallbacks({ accessToken, value = [], onChange }: AddF
         setIsSaving(false);
       }
     } else {
-      toast.fromError("onChange callback not provided");
+      toast.fromError(t("onChangeMissingToast"));
     }
   };
 
@@ -118,7 +121,7 @@ export default function AddFallbacks({ accessToken, value = [], onChange }: AddF
     <div>
       <Button className="mx-auto" onClick={() => setIsModalVisible(true)}>
         <span>+</span>
-        Add Fallbacks
+        {t("addFallbacks")}
       </Button>
       <AddFallbacksModal open={isModalVisible} onCancel={handleCancel}>
         <FallbackSelectionForm
@@ -133,11 +136,11 @@ export default function AddFallbacks({ accessToken, value = [], onChange }: AddF
         {groups.length > 0 && (
           <div className="flex items-center justify-end space-x-3 pt-6 mt-6 border-t border-border">
             <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
-              Cancel
+              {commonT("cancel")}
             </Button>
             <Button variant="outline" onClick={handleSaveAll} disabled={groups.length === 0 || isSaving}>
               {isSaving && <UiLoadingSpinner className="size-4" />}
-              {isSaving ? "Saving Configuration..." : "Save All Configurations"}
+              {isSaving ? t("savingConfiguration") : t("saveAllConfigurations")}
             </Button>
           </div>
         )}

@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import Fallbacks from "./Fallbacks";
 import * as networkingModule from "../../../networking";
 import * as fetchModelsModule from "@/components/llm_calls/fetch_models";
@@ -99,7 +100,11 @@ describe("Fallbacks", () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
-    return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <LocaleProvider locale="zh-CN">{ui}</LocaleProvider>
+      </QueryClientProvider>,
+    );
   };
 
   beforeEach(() => {
@@ -171,7 +176,7 @@ describe("Fallbacks", () => {
     await user.click(editButtons[0]);
 
     await waitFor(() => {
-      expect(screen.getByText("Configure Model Fallbacks")).toBeInTheDocument();
+      expect(screen.getByText("配置模型回退")).toBeInTheDocument();
     });
   });
 

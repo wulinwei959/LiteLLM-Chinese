@@ -1,5 +1,6 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { FallbackSelectionForm } from "./FallbackSelectionForm";
 import type { FallbackGroup } from "./FallbackGroupConfig";
@@ -15,26 +16,26 @@ describe("FallbackSelectionForm", () => {
   });
 
   it("should render the component", () => {
-    render(
+    renderWithProviders(
       <FallbackSelectionForm groups={[]} onGroupsChange={mockOnGroupsChange} availableModels={AVAILABLE_MODELS} />,
     );
-    expect(screen.getByText(/no fallback groups configured/i)).toBeInTheDocument();
+    expect(screen.getByText(/尚未配置回退组/)).toBeInTheDocument();
   });
 
   it("should show Create First Group button when no groups exist", () => {
-    render(
+    renderWithProviders(
       <FallbackSelectionForm groups={[]} onGroupsChange={mockOnGroupsChange} availableModels={AVAILABLE_MODELS} />,
     );
-    expect(screen.getByRole("button", { name: /create first group/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "创建第一组" })).toBeInTheDocument();
   });
 
   it("should call onGroupsChange when Create First Group is clicked", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <FallbackSelectionForm groups={[]} onGroupsChange={mockOnGroupsChange} availableModels={AVAILABLE_MODELS} />,
     );
 
-    await user.click(screen.getByRole("button", { name: /create first group/i }));
+    await user.click(screen.getByRole("button", { name: "创建第一组" }));
 
     expect(mockOnGroupsChange).toHaveBeenCalledTimes(1);
     const [newGroups] = mockOnGroupsChange.mock.calls[0];
@@ -48,15 +49,15 @@ describe("FallbackSelectionForm", () => {
 
   it("should display tabs when groups exist", () => {
     const groups: FallbackGroup[] = [{ id: "1", primaryModel: null, fallbackModels: [] }];
-    render(
+    renderWithProviders(
       <FallbackSelectionForm groups={groups} onGroupsChange={mockOnGroupsChange} availableModels={AVAILABLE_MODELS} />,
     );
-    expect(screen.getByRole("tab", { name: /group 1/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "第 1 组" })).toBeInTheDocument();
   });
 
   it("should display primary model as tab label when set", () => {
     const groups: FallbackGroup[] = [{ id: "1", primaryModel: "gpt-4", fallbackModels: [] }];
-    render(
+    renderWithProviders(
       <FallbackSelectionForm groups={groups} onGroupsChange={mockOnGroupsChange} availableModels={AVAILABLE_MODELS} />,
     );
     expect(screen.getByRole("tab", { name: "gpt-4" })).toBeInTheDocument();
@@ -65,11 +66,11 @@ describe("FallbackSelectionForm", () => {
   it("should call onGroupsChange when add tab button is clicked", async () => {
     const user = userEvent.setup();
     const groups: FallbackGroup[] = [{ id: "1", primaryModel: null, fallbackModels: [] }];
-    render(
+    renderWithProviders(
       <FallbackSelectionForm groups={groups} onGroupsChange={mockOnGroupsChange} availableModels={AVAILABLE_MODELS} />,
     );
 
-    const addTabButton = screen.getByRole("button", { name: /add fallback group/i });
+    const addTabButton = screen.getByRole("button", { name: "添加回退组" });
     await user.click(addTabButton);
 
     expect(mockOnGroupsChange).toHaveBeenCalledTimes(1);
@@ -90,7 +91,7 @@ describe("FallbackSelectionForm", () => {
       { id: "4", primaryModel: null, fallbackModels: [] },
       { id: "5", primaryModel: null, fallbackModels: [] },
     ];
-    render(
+    renderWithProviders(
       <FallbackSelectionForm
         groups={groups}
         onGroupsChange={mockOnGroupsChange}
@@ -98,12 +99,12 @@ describe("FallbackSelectionForm", () => {
         maxGroups={5}
       />,
     );
-    expect(screen.queryByRole("button", { name: /add fallback group/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "添加回退组" })).not.toBeInTheDocument();
   });
 
   it("should show add tab button when below maxGroups with custom maxGroups", () => {
     const groups: FallbackGroup[] = [{ id: "1", primaryModel: null, fallbackModels: [] }];
-    render(
+    renderWithProviders(
       <FallbackSelectionForm
         groups={groups}
         onGroupsChange={mockOnGroupsChange}
@@ -111,7 +112,7 @@ describe("FallbackSelectionForm", () => {
         maxGroups={3}
       />,
     );
-    expect(screen.getByRole("button", { name: /add fallback group/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加回退组" })).toBeInTheDocument();
   });
 
   it("should call onGroupsChange when a group is removed", async () => {
@@ -120,11 +121,11 @@ describe("FallbackSelectionForm", () => {
       { id: "1", primaryModel: "gpt-4", fallbackModels: [] },
       { id: "2", primaryModel: "gpt-3.5-turbo", fallbackModels: [] },
     ];
-    render(
+    renderWithProviders(
       <FallbackSelectionForm groups={groups} onGroupsChange={mockOnGroupsChange} availableModels={AVAILABLE_MODELS} />,
     );
 
-    const removeButtons = screen.getAllByRole("button", { name: /^remove /i });
+    const removeButtons = screen.getAllByRole("button", { name: /^移除 / });
     expect(removeButtons).toHaveLength(2);
     await user.click(removeButtons[0]);
 
@@ -137,21 +138,21 @@ describe("FallbackSelectionForm", () => {
 
   it("should render FallbackGroupConfig for each group", () => {
     const groups: FallbackGroup[] = [{ id: "1", primaryModel: null, fallbackModels: [] }];
-    render(
+    renderWithProviders(
       <FallbackSelectionForm groups={groups} onGroupsChange={mockOnGroupsChange} availableModels={AVAILABLE_MODELS} />,
     );
-    expect(screen.getByRole("combobox", { name: /primary model/i })).toHaveValue("");
-    expect(screen.getByText("Primary Model")).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: /主模型/ })).toHaveValue("");
+    expect(screen.getByText("主模型")).toBeInTheDocument();
   });
 
   it("should display group with primary and fallback models in FallbackGroupConfig", () => {
     const groups: FallbackGroup[] = [{ id: "1", primaryModel: "gpt-4", fallbackModels: ["gpt-3.5-turbo"] }];
-    render(
+    renderWithProviders(
       <FallbackSelectionForm groups={groups} onGroupsChange={mockOnGroupsChange} availableModels={AVAILABLE_MODELS} />,
     );
     expect(screen.getByRole("tab", { name: "gpt-4" })).toBeInTheDocument();
     expect(screen.getAllByText("gpt-4").length).toBeGreaterThan(0);
-    const chain = screen.getByRole("list", { name: "Fallback chain" });
+    const chain = screen.getByRole("list", { name: "回退链" });
     expect(within(chain).getByText("gpt-3.5-turbo")).toBeInTheDocument();
   });
 
@@ -161,7 +162,7 @@ describe("FallbackSelectionForm", () => {
       primaryModel: null,
       fallbackModels: [] as string[],
     }));
-    render(
+    renderWithProviders(
       <FallbackSelectionForm
         groups={groups}
         onGroupsChange={mockOnGroupsChange}
@@ -170,7 +171,7 @@ describe("FallbackSelectionForm", () => {
       />,
     );
 
-    expect(screen.queryByRole("button", { name: /add fallback group/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "添加回退组" })).not.toBeInTheDocument();
     expect(mockOnGroupsChange).not.toHaveBeenCalled();
   });
 });
