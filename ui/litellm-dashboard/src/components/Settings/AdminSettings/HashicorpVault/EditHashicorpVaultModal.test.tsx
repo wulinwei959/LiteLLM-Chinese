@@ -62,7 +62,7 @@ const renderModal = (onSuccess = vi.fn(), onCancel = vi.fn()) =>
   renderWithProviders(<EditHashicorpVaultModal isVisible={true} onCancel={onCancel} onSuccess={onSuccess} />);
 
 const save = async (user: ReturnType<typeof userEvent.setup>) =>
-  user.click(screen.getByRole("button", { name: "Save" }));
+  user.click(screen.getByRole("button", { name: "保存" }));
 
 describe("EditHashicorpVaultModal", () => {
   beforeEach(() => {
@@ -106,7 +106,7 @@ describe("EditHashicorpVaultModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(screen.getByLabelText("Token"), { target: { value: "rotated-token" } });
+    fireEvent.change(screen.getByLabelText("令牌"), { target: { value: "rotated-token" } });
     await save(user);
 
     await waitFor(() => {
@@ -120,8 +120,8 @@ describe("EditHashicorpVaultModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(screen.getByLabelText("Login Namespace"), { target: { value: "root" } });
-    fireEvent.change(screen.getByLabelText("Secret Namespace"), { target: { value: "teams/team-a" } });
+    fireEvent.change(screen.getByLabelText("登录命名空间"), { target: { value: "root" } });
+    fireEvent.change(screen.getByLabelText("密钥命名空间"), { target: { value: "teams/team-a" } });
     await save(user);
 
     await waitFor(() => {
@@ -138,8 +138,8 @@ describe("EditHashicorpVaultModal", () => {
     setup({ values: { vault_token: "super-secret-token", approle_secret_id: "super-secret-id" } });
     renderModal();
 
-    expect(screen.getByLabelText("Token")).toHaveValue("");
-    expect(screen.getByLabelText("Secret ID")).toHaveValue("");
+    expect(screen.getByLabelText("令牌")).toHaveValue("");
+    expect(screen.getByLabelText("密钥 ID")).toHaveValue("");
   });
 
   it("renders only the fields the schema declares, and sends only those", async () => {
@@ -147,8 +147,8 @@ describe("EditHashicorpVaultModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    expect(screen.queryByLabelText("Namespace")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Role ID")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("命名空间")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("角色 ID")).not.toBeInTheDocument();
 
     await save(user);
 
@@ -163,10 +163,10 @@ describe("EditHashicorpVaultModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(screen.getByLabelText("Vault Address"), { target: { value: "vault.example.com" } });
+    fireEvent.change(screen.getByLabelText("Vault 地址"), { target: { value: "vault.example.com" } });
     await save(user);
 
-    expect(await screen.findByText("Must start with http:// or https://")).toBeInTheDocument();
+    expect(await screen.findByText("必须以 http:// 或 https:// 开头")).toBeInTheDocument();
     expect(mutate).not.toHaveBeenCalled();
   });
 
@@ -187,17 +187,14 @@ describe("EditHashicorpVaultModal", () => {
     setup({ values: { vault_token: "super-secret-token" } });
     renderModal();
 
-    expect(screen.getByLabelText("Token")).toHaveAttribute(
-      "placeholder",
-      "Leave blank to keep existing (super-secret-token)",
-    );
+    expect(screen.getByLabelText("令牌")).toHaveAttribute("placeholder", "留空则保留现有值（super-secret-token）");
   });
 
   it("falls back to the schema description when no secret is stored yet", () => {
     setup({ values: {} });
     renderModal();
 
-    expect(screen.getByLabelText("Token")).toHaveAttribute("placeholder", "vault_token description");
+    expect(screen.getByLabelText("令牌")).toHaveAttribute("placeholder", "vault_token description");
   });
 
   it("closes without saving when cancelled", async () => {
@@ -206,7 +203,7 @@ describe("EditHashicorpVaultModal", () => {
     const user = userEvent.setup();
     renderModal(vi.fn(), onCancel);
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
     expect(onCancel).toHaveBeenCalledTimes(1);
     expect(mutate).not.toHaveBeenCalled();

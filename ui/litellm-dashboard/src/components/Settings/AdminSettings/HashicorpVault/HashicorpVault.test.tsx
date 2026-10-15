@@ -53,7 +53,7 @@ describe("HashicorpVault", () => {
     const user = userEvent.setup();
     renderWithProviders(<HashicorpVault />);
 
-    await user.click(screen.getByRole("button", { name: /configure vault/i }));
+    await user.click(screen.getByRole("button", { name: /配置 vault/i }));
 
     expect(screen.getByText("Edit Vault Configuration")).toBeInTheDocument();
   });
@@ -69,6 +69,6 @@ describe("HashicorpVault", () => {
     renderWithProviders(<HashicorpVault />);
 
     expect(screen.getByText("https://vault.example.com")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /test connection/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /测试连接/i })).toBeInTheDocument();
   });
 });

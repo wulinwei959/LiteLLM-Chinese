@@ -54,7 +54,7 @@ describe("CyberArk", () => {
     const user = userEvent.setup();
     renderWithProviders(<CyberArk />);
 
-    await user.click(screen.getByRole("button", { name: /configure cyberark/i }));
+    await user.click(screen.getByRole("button", { name: /配置 cyberark/i }));
 
     expect(screen.getByText("Edit CyberArk Configuration")).toBeInTheDocument();
   });
@@ -71,8 +71,8 @@ describe("CyberArk", () => {
     renderWithProviders(<CyberArk />);
 
     expect(screen.getByText("https://conjur.example.com")).toBeInTheDocument();
-    expect(screen.getByText("Auth Method")).toBeInTheDocument();
-    expect(screen.getAllByText("API Key")).toHaveLength(2);
-    expect(screen.getByRole("button", { name: /test connection/i })).toBeInTheDocument();
+    expect(screen.getByText("认证方式")).toBeInTheDocument();
+    expect(screen.getAllByText("API 密钥")).toHaveLength(2);
+    expect(screen.getByRole("button", { name: /测试连接/i })).toBeInTheDocument();
   });
 });

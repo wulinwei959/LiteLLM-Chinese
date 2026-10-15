@@ -57,7 +57,7 @@ const renderModal = (onSuccess = vi.fn(), onCancel = vi.fn()) =>
   renderWithProviders(<EditCyberArkModal isVisible={true} onCancel={onCancel} onSuccess={onSuccess} />);
 
 const save = async (user: ReturnType<typeof userEvent.setup>) =>
-  user.click(screen.getByRole("button", { name: "Save" }));
+  user.click(screen.getByRole("button", { name: "保存" }));
 
 describe("EditCyberArkModal", () => {
   beforeEach(() => {
@@ -97,7 +97,7 @@ describe("EditCyberArkModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(screen.getByLabelText("API Key"), { target: { value: "rotated-key" } });
+    fireEvent.change(screen.getByLabelText("API 密钥"), { target: { value: "rotated-key" } });
     await save(user);
 
     await waitFor(() => {
@@ -110,8 +110,8 @@ describe("EditCyberArkModal", () => {
     setup({ values: { cyberark_api_key: "super-secret-key", client_key: "super-secret-pem" } });
     renderModal();
 
-    expect(screen.getByLabelText("API Key")).toHaveValue("");
-    expect(screen.getByLabelText("Client Key")).toHaveValue("");
+    expect(screen.getByLabelText("API 密钥")).toHaveValue("");
+    expect(screen.getByLabelText("客户端密钥")).toHaveValue("");
   });
 
   it("renders only the fields the schema declares, and sends only those", async () => {
@@ -122,8 +122,8 @@ describe("EditCyberArkModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    expect(screen.queryByLabelText("Account")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Client Key")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("账户")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("客户端密钥")).not.toBeInTheDocument();
 
     await save(user);
 
@@ -138,10 +138,10 @@ describe("EditCyberArkModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(screen.getByLabelText("Conjur Server URL"), { target: { value: "conjur.example.com" } });
+    fireEvent.change(screen.getByLabelText("Conjur 服务器地址"), { target: { value: "conjur.example.com" } });
     await save(user);
 
-    expect(await screen.findByText("Must start with http:// or https://")).toBeInTheDocument();
+    expect(await screen.findByText("必须以 http:// 或 https:// 开头")).toBeInTheDocument();
     expect(mutate).not.toHaveBeenCalled();
   });
 
@@ -149,17 +149,14 @@ describe("EditCyberArkModal", () => {
     setup({ values: { cyberark_api_key: "super-secret-key" } });
     renderModal();
 
-    expect(screen.getByLabelText("API Key")).toHaveAttribute(
-      "placeholder",
-      "Leave blank to keep existing (super-secret-key)",
-    );
+    expect(screen.getByLabelText("API 密钥")).toHaveAttribute("placeholder", "留空则保留现有值（super-secret-key）");
   });
 
   it("falls back to the schema description when no secret is stored yet", () => {
     setup({ values: {} });
     renderModal();
 
-    expect(screen.getByLabelText("API Key")).toHaveAttribute("placeholder", "cyberark_api_key description");
+    expect(screen.getByLabelText("API 密钥")).toHaveAttribute("placeholder", "cyberark_api_key description");
   });
 
   it("closes without saving when cancelled", async () => {
@@ -168,7 +165,7 @@ describe("EditCyberArkModal", () => {
     const user = userEvent.setup();
     renderModal(vi.fn(), onCancel);
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
     expect(onCancel).toHaveBeenCalledTimes(1);
     expect(mutate).not.toHaveBeenCalled();

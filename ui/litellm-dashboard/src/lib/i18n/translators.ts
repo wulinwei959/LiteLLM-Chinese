@@ -194,3 +194,8 @@ function useRouterSettingsFallbacksTranslator() {
   return useTranslations("routerSettings.fallbacks");
 }
 export type RouterSettingsFallbacksTranslator = ReturnType<typeof useRouterSettingsFallbacksTranslator>;
+
+function useSecretManagerTranslator() {
+  return useTranslations("secretManager");
+}
+export type SecretManagerTranslator = ReturnType<typeof useSecretManagerTranslator>;
