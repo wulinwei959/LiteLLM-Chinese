@@ -371,6 +371,15 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 
 守卫侧不受影响：`missingKeys` 只解析同文件里的 `useTranslations("<ns>")` 与字面量 `t("a.b")`，`t(变量)` 一律跳过，所以键表本身不会被静态检查证伪，类型检查是唯一防线。
 
+## 2026-10-15 接线脚本的两条锚点/依赖规矩
+
+第 71 簇给两个直通端点组件做批量替换时，两条踩坑值得固化：
+
+- **锚点必须带前导换行**。`src.count(old)` 里 `old` 若以若干空格开头，短缩进行是长缩进行的子串——同一个 `Headers` 段在 18 空格处出现一次、在 22 空格处又作为子串出现一次，断言数就变成 2，替换也会连带改到不该改的行。规矩是把所有以空格开头的锚点前缀 `"\n"`，让缩进从行首算起
+- **别为省一次重建就把对象塞进 `useMemo`**。`add_pass_through.tsx` 的表单 schema 依赖一份 `formMessages`（内含 `t("...")` 结果）。写成 `useMemo(() => passThroughFormSchemaFor(formMessages), [formMessages])` 会触发 `react-hooks/exhaustive-deps`——`formMessages` 是组件体内每个渲染都新建的对象字面量，当 dep 不稳定。直接让 `const schema = passThroughFormSchemaFor(formMessages)` 每渲染重建一次即可：`useZodForm(schema, …)` 只在初始化时把 schema 交给 `zodResolver`，后续渲染换不换对象都无影响。这样 eslint 警告数回到与 HEAD 一致的 8 条
+
+另一处非直觉点：`useTranslations` 是 hook，`translators.ts` 里那些给模块级纯函数用的 `*Translator` 别名只能从组件把 `t` 往下传，别在模块顶层调用 hook。第 71 簇两个 schema 工厂本身不碰 `t`，只收已算好的 `messages`，所以可以安全地留在模块级。
+
 ## 回归守卫
 
 改完之后这几条必须一起跑
