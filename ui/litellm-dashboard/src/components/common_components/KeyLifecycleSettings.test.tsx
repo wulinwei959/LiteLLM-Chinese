@@ -5,8 +5,8 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import { chooseSelectOption, fireEvent, renderWithProviders, screen, waitFor } from "../../../tests/test-utils";
 import KeyLifecycleSettings from "./KeyLifecycleSettings";
 
-const CREATE_PLACEHOLDER = "e.g., 30d or leave empty to never expire";
-const EDIT_PLACEHOLDER = "e.g., 30d";
+const CREATE_PLACEHOLDER = "例如 30d，或留空表示永不过期";
+const EDIT_PLACEHOLDER = "例如 30d";
 
 interface HarnessProps {
   isCreateMode?: boolean;
@@ -60,15 +60,15 @@ describe("KeyLifecycleSettings", () => {
 
   it("renders the expiry and auto-rotation sections", () => {
     renderWithProviders(<Harness />);
-    expect(screen.getByText("Key Expiry Settings")).toBeInTheDocument();
-    expect(screen.getByText("Auto-Rotation Settings")).toBeInTheDocument();
+    expect(screen.getByText("密钥有效期设置")).toBeInTheDocument();
+    expect(screen.getByText("自动轮换设置")).toBeInTheDocument();
     expect(getDurationInput()).toBeInTheDocument();
   });
 
   it("gives the duration input and the Never Expire checkbox their own labels", () => {
     renderWithProviders(<Harness isCreateMode={false} />);
-    expect(screen.getByLabelText("Expire Key")).toBe(getDurationInput(false));
-    expect(screen.getByRole("checkbox", { name: "Never Expire" })).toBeInTheDocument();
+    expect(screen.getByLabelText("密钥过期时间")).toBe(getDurationInput(false));
+    expect(screen.getByRole("checkbox", { name: "永不过期" })).toBeInTheDocument();
   });
 
   it("uses the create-mode placeholder in create mode", () => {
@@ -138,7 +138,7 @@ describe("KeyLifecycleSettings", () => {
       fireEvent.change(getDurationInput(false), { target: { value: "30d" } });
       expect(getDurationInput(false).value).toBe("30d");
 
-      await user.click(screen.getByRole("checkbox", { name: /never expire/i }));
+      await user.click(screen.getByRole("checkbox", { name: "永不过期" }));
 
       await waitFor(() => expect(getDurationInput(false).value).toBe(""));
       expect(getDurationInput(false)).toBeDisabled();
@@ -154,10 +154,10 @@ describe("KeyLifecycleSettings", () => {
       const user = userEvent.setup();
       renderWithProviders(<Harness />);
 
-      expect(screen.queryByText("Rotation Interval")).not.toBeInTheDocument();
+      expect(screen.queryByText("轮换周期")).not.toBeInTheDocument();
       await user.click(screen.getByRole("switch"));
 
-      expect(await screen.findByText("Rotation Interval")).toBeInTheDocument();
+      expect(await screen.findByText("轮换周期")).toBeInTheDocument();
     });
 
     it("propagates a selected predefined interval", async () => {
@@ -165,11 +165,11 @@ describe("KeyLifecycleSettings", () => {
       renderWithProviders(<Harness />);
 
       await user.click(screen.getByRole("switch"));
-      expect(await screen.findByText("Rotation Interval")).toBeInTheDocument();
+      expect(await screen.findByText("轮换周期")).toBeInTheDocument();
 
-      await chooseSelectOption(user, screen.getByRole("combobox"), "90 days");
+      await chooseSelectOption(user, screen.getByRole("combobox"), "90 天");
 
-      await waitFor(() => expect(screen.getAllByTitle("90 days").some(isRenderedSelection)).toBe(true));
+      await waitFor(() => expect(screen.getAllByTitle("90 天").some(isRenderedSelection)).toBe(true));
       expect(screen.getByTestId("rotation-interval-value")).toHaveTextContent("90d");
     });
 
@@ -178,12 +178,12 @@ describe("KeyLifecycleSettings", () => {
       renderWithProviders(<Harness />);
 
       await user.click(screen.getByRole("switch"));
-      expect(await screen.findByText("Rotation Interval")).toBeInTheDocument();
+      expect(await screen.findByText("轮换周期")).toBeInTheDocument();
 
-      await chooseSelectOption(user, screen.getByRole("combobox"), "Custom interval");
+      await chooseSelectOption(user, screen.getByRole("combobox"), "自定义周期");
 
-      expect(await screen.findByPlaceholderText("e.g., 1s, 5m, 2h, 14d")).toBeInTheDocument();
-      expect(screen.getByText("Supported formats: seconds (s), minutes (m), hours (h), days (d)")).toBeInTheDocument();
+      expect(await screen.findByPlaceholderText("例如 1s、5m、2h、14d")).toBeInTheDocument();
+      expect(screen.getByText("支持的单位：秒（s）、分钟（m）、小时（h）、天（d）")).toBeInTheDocument();
       expect(screen.getByTestId("rotation-interval-value")).toHaveTextContent("");
     });
 
@@ -192,11 +192,11 @@ describe("KeyLifecycleSettings", () => {
       renderWithProviders(<Harness />);
 
       await user.click(screen.getByRole("switch"));
-      expect(await screen.findByText("Rotation Interval")).toBeInTheDocument();
+      expect(await screen.findByText("轮换周期")).toBeInTheDocument();
 
-      await chooseSelectOption(user, screen.getByRole("combobox"), "Custom interval");
+      await chooseSelectOption(user, screen.getByRole("combobox"), "自定义周期");
 
-      const customInput = await screen.findByPlaceholderText("e.g., 1s, 5m, 2h, 14d");
+      const customInput = await screen.findByPlaceholderText("例如 1s、5m、2h、14d");
       fireEvent.change(customInput, { target: { value: "14d" } });
 
       await waitFor(() => expect(screen.getByTestId("rotation-interval-value")).toHaveTextContent("14d"));
@@ -208,17 +208,17 @@ describe("KeyLifecycleSettings", () => {
       renderWithProviders(<Harness />);
 
       await user.click(screen.getByRole("switch"));
-      expect(await screen.findByText("Rotation Interval")).toBeInTheDocument();
+      expect(await screen.findByText("轮换周期")).toBeInTheDocument();
 
-      await chooseSelectOption(user, screen.getByRole("combobox"), "Custom interval");
-      const customInput = await screen.findByPlaceholderText("e.g., 1s, 5m, 2h, 14d");
+      await chooseSelectOption(user, screen.getByRole("combobox"), "自定义周期");
+      const customInput = await screen.findByPlaceholderText("例如 1s、5m、2h、14d");
       fireEvent.change(customInput, { target: { value: "14d" } });
       await waitFor(() => expect(screen.getByTestId("rotation-interval-value")).toHaveTextContent("14d"));
 
-      await chooseSelectOption(user, screen.getByRole("combobox"), "7 days");
+      await chooseSelectOption(user, screen.getByRole("combobox"), "7 天");
 
       await waitFor(() => expect(screen.getByTestId("rotation-interval-value")).toHaveTextContent("7d"));
-      expect(screen.queryByPlaceholderText("e.g., 1s, 5m, 2h, 14d")).not.toBeInTheDocument();
+      expect(screen.queryByPlaceholderText("例如 1s、5m、2h、14d")).not.toBeInTheDocument();
     });
   });
 });

@@ -431,7 +431,7 @@ describe("CreateKey", () => {
       await nameTheKey();
       await openSection(/Optional Settings/i);
       await openSection(SECTIONS.lifecycle);
-      await userEvent.type(await screen.findByLabelText("Expire Key"), "45d");
+      await userEvent.type(await screen.findByLabelText("密钥过期时间"), "45d");
       await submit();
 
       expect((await createdPayload()).duration).toBe("45d");
@@ -442,7 +442,7 @@ describe("CreateKey", () => {
       await nameTheKey();
       await openSection(/Optional Settings/i);
       await openSection(SECTIONS.lifecycle);
-      await userEvent.type(await screen.findByLabelText("Expire Key"), "45d");
+      await userEvent.type(await screen.findByLabelText("密钥过期时间"), "45d");
       await openSection(SECTIONS.lifecycle);
       await submit();
 

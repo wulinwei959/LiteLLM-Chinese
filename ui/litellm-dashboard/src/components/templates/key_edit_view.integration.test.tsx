@@ -2187,7 +2187,7 @@ describe("KeyEditView", () => {
       renderForPayload(onSubmitMock);
       await screen.findByRole("button", { name: /save changes/i });
 
-      const duration = screen.getByPlaceholderText("e.g., 30d");
+      const duration = screen.getByPlaceholderText("例如 30d");
       await userEvent.clear(duration);
       await userEvent.type(duration, "45d");
 
@@ -2209,7 +2209,7 @@ describe("KeyEditView", () => {
       renderForPayload(onSubmitMock, { ...MOCK_KEY_DATA, expires: "2026-01-01T00:00:00Z" });
       await screen.findByRole("button", { name: /save changes/i });
 
-      await userEvent.click(screen.getByRole("checkbox", { name: /never expire/i }));
+      await userEvent.click(screen.getByRole("checkbox", { name: "永不过期" }));
       await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
 
       await waitFor(() => {
