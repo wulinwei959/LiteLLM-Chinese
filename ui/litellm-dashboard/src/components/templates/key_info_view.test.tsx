@@ -198,7 +198,7 @@ describe("KeyInfoView", () => {
   };
 
   const openMoreKeyActions = async () => {
-    await userEvent.click(await screen.findByRole("button", { name: /more key actions/i }));
+    await userEvent.click(await screen.findByRole("button", { name: "更多密钥操作" }));
   };
 
   it("shows key-scoped auto-router usage as its own admin tab", async () => {
@@ -254,7 +254,7 @@ describe("KeyInfoView", () => {
     };
 
     const findLastUpdatedText = async () => {
-      const label = await screen.findByText("Last Updated");
+      const label = await screen.findByText("最后更新");
       return label.closest("div")?.parentElement?.parentElement?.textContent ?? "";
     };
 
@@ -358,7 +358,7 @@ describe("KeyInfoView", () => {
     expect(await screen.findByText("Router Settings")).toBeInTheDocument();
     expect(screen.getByText("gpt-4")).toBeInTheDocument();
     expect(screen.getByText("gpt-4o")).toBeInTheDocument();
-    expect(screen.getByText("Number of Retries: 2")).toBeInTheDocument();
+    expect(screen.getByText("重试次数：2")).toBeInTheDocument();
   });
 
   it("should render tags", async () => {
@@ -452,10 +452,10 @@ describe("KeyInfoView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Regenerate Key")).toBeInTheDocument();
+      expect(screen.getByText("重新生成密钥")).toBeInTheDocument();
     });
     await openMoreKeyActions();
-    expect(await screen.findByRole("menuitem", { name: /delete key/i })).toBeInTheDocument();
+    expect(await screen.findByRole("menuitem", { name: "删除密钥" })).toBeInTheDocument();
   });
 
   it("should allow team admin to modify key", async () => {
@@ -498,10 +498,10 @@ describe("KeyInfoView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Regenerate Key")).toBeInTheDocument();
+      expect(screen.getByText("重新生成密钥")).toBeInTheDocument();
     });
     await openMoreKeyActions();
-    expect(await screen.findByRole("menuitem", { name: /delete key/i })).toBeInTheDocument();
+    expect(await screen.findByRole("menuitem", { name: "删除密钥" })).toBeInTheDocument();
   });
 
   it("should allow owner to modify their own key", async () => {
@@ -523,10 +523,10 @@ describe("KeyInfoView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Regenerate Key")).toBeInTheDocument();
+      expect(screen.getByText("重新生成密钥")).toBeInTheDocument();
     });
     await openMoreKeyActions();
-    expect(await screen.findByRole("menuitem", { name: /delete key/i })).toBeInTheDocument();
+    expect(await screen.findByRole("menuitem", { name: "删除密钥" })).toBeInTheDocument();
   });
 
   it("should not allow other user to modify key", async () => {
@@ -547,8 +547,8 @@ describe("KeyInfoView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryByText("Regenerate Key")).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /more key actions/i })).not.toBeInTheDocument();
+      expect(screen.queryByText("重新生成密钥")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "更多密钥操作" })).not.toBeInTheDocument();
     });
   });
 
@@ -571,8 +571,8 @@ describe("KeyInfoView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryByText("Regenerate Key")).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /more key actions/i })).not.toBeInTheDocument();
+      expect(screen.queryByText("重新生成密钥")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "更多密钥操作" })).not.toBeInTheDocument();
     });
   });
 
@@ -615,8 +615,8 @@ describe("KeyInfoView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryByText("Regenerate Key")).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /more key actions/i })).not.toBeInTheDocument();
+      expect(screen.queryByText("重新生成密钥")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "更多密钥操作" })).not.toBeInTheDocument();
     });
   });
 
@@ -724,7 +724,7 @@ describe("KeyInfoView", () => {
         />,
       );
 
-      await screen.findByText("Team");
+      await screen.findByText("团队");
       expect(screen.queryByRole("link", { name: /team/i })).not.toBeInTheDocument();
     });
   });
@@ -936,7 +936,7 @@ describe("KeyInfoView", () => {
       );
 
       await openMoreKeyActions();
-      expect(await screen.findByRole("menuitem", { name: /reset spend/i })).toBeInTheDocument();
+      expect(await screen.findByRole("menuitem", { name: "重置支出" })).toBeInTheDocument();
     });
 
     it("should show Reset Spend button for team admin of key's team", async () => {
@@ -976,7 +976,7 @@ describe("KeyInfoView", () => {
       );
 
       await openMoreKeyActions();
-      expect(await screen.findByRole("menuitem", { name: /reset spend/i })).toBeInTheDocument();
+      expect(await screen.findByRole("menuitem", { name: "重置支出" })).toBeInTheDocument();
     });
 
     it("should not show Reset Spend button for regular key owner", async () => {
@@ -999,8 +999,8 @@ describe("KeyInfoView", () => {
       );
 
       await openMoreKeyActions();
-      expect(await screen.findByRole("menuitem", { name: /delete key/i })).toBeInTheDocument();
-      expect(screen.queryByRole("menuitem", { name: /reset spend/i })).not.toBeInTheDocument();
+      expect(await screen.findByRole("menuitem", { name: "删除密钥" })).toBeInTheDocument();
+      expect(screen.queryByRole("menuitem", { name: "重置支出" })).not.toBeInTheDocument();
     });
   });
 
@@ -1024,7 +1024,7 @@ describe("KeyInfoView", () => {
       );
 
       await openMoreKeyActions();
-      await userEvent.click(await screen.findByRole("menuitem", { name: /reset spend/i }));
+      await userEvent.click(await screen.findByRole("menuitem", { name: "重置支出" }));
 
       await waitFor(() => {
         expect(screen.getByText("Reset Key Spend")).toBeInTheDocument();
@@ -1052,7 +1052,7 @@ describe("KeyInfoView", () => {
       );
 
       await openMoreKeyActions();
-      await userEvent.click(await screen.findByRole("menuitem", { name: /reset spend/i }));
+      await userEvent.click(await screen.findByRole("menuitem", { name: "重置支出" }));
 
       await waitFor(() => {
         expect(screen.getByText("Reset Key Spend")).toBeInTheDocument();
@@ -1349,7 +1349,7 @@ describe("KeyInfoView", () => {
       );
 
       await openMoreKeyActions();
-      await userEvent.click(await screen.findByRole("menuitem", { name: /delete key/i }));
+      await userEvent.click(await screen.findByRole("menuitem", { name: "删除密钥" }));
 
       const confirmInput = await screen.findByPlaceholderText(MOCK_KEY_DATA.key_alias);
       await userEvent.type(confirmInput, MOCK_KEY_DATA.key_alias);

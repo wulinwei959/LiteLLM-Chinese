@@ -79,6 +79,7 @@
     "loadingData": "Loading data...",
     "noItems": "No items",
     "copy": "Copy",
+    "copyField": "Copy {label}",
     "copied": "Copied",
     "rename": "Rename",
     "duplicate": "Duplicate",
@@ -354,6 +355,22 @@
       "budgetReset": "Budget Reset",
       "models": "Models",
       "rateLimits": "Rate Limits"
+    },
+    "header": {
+        "backToKeys": "Back to Keys",
+        "blockKey": "Block Key",
+        "copyKeyAlias": "Copy Key Alias",
+        "copyKeyId": "Copy Key ID",
+        "createNewKey": "Create New Key",
+        "deleteKey": "Delete Key",
+        "keyIdValue": "Key ID: {value}",
+        "lastUpdated": "Last Updated",
+        "moreKeyActions": "More key actions",
+        "regenerateKey": "Regenerate Key",
+        "resetSpend": "Reset Spend",
+        "unblockKey": "Unblock Key",
+        "userAlias": "User Alias",
+        "userEmail": "User Email"
     },
     "actions": {
       "copy": "Copy",
@@ -1733,6 +1750,7 @@
     "infoFailedToRemoveTeamMember": "Failed to remove team member",
     "infoFailedToUpdateTeamMember": "Failed to update team member",
     "infoFallbacks": "Fallbacks: {count} configured",
+    "infoFallbacksLabel": "Fallbacks:",
     "infoGuardrails": "Guardrails",
     "infoGuardrailsHint": "Select which guardrails apply to this team. Global guardrails are enabled by default, uncheck to opt out. Other guardrails are opt-in.",
     "infoInheritTeamResetPeriod": "Inherit team reset period",

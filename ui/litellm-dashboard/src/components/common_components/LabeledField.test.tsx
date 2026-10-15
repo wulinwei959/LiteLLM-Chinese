@@ -36,22 +36,22 @@ describe("LabeledField", () => {
 
   it("should not be copyable when value is empty", () => {
     renderWithProviders(<LabeledField label="User ID" value="" copyable />);
-    expect(screen.queryByRole("button", { name: "Copy User ID" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "复制 User ID" })).not.toBeInTheDocument();
   });
 
   it("should not be copyable when value is default_user_id and defaultUserIdCheck is true", () => {
     renderWithProviders(<LabeledField label="User ID" value="default_user_id" copyable defaultUserIdCheck />);
-    expect(screen.queryByRole("button", { name: "Copy User ID" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "复制 User ID" })).not.toBeInTheDocument();
   });
 
   it("should not be copyable when copyable is false", () => {
     renderWithProviders(<LabeledField label="User ID" value="user-123" />);
-    expect(screen.queryByRole("button", { name: "Copy User ID" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "复制 User ID" })).not.toBeInTheDocument();
   });
 
   it("should be copyable when copyable is true and value is present", () => {
     renderWithProviders(<LabeledField label="User ID" value="user-123" copyable />);
-    expect(screen.getByRole("button", { name: "Copy User ID" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "复制 User ID" })).toBeInTheDocument();
   });
 
   it("should render the value as a link when href is provided", () => {
@@ -62,7 +62,7 @@ describe("LabeledField", () => {
   it("should keep the copy button next to a linked value", () => {
     renderWithProviders(<LabeledField label="Created By" value="alice" href="/ui/users?user=u1" copyable />);
     expect(screen.getByRole("link", { name: "alice" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Copy Created By" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "复制 Created By" })).toBeInTheDocument();
   });
 
   it("should not link an empty value even when href is provided", () => {
