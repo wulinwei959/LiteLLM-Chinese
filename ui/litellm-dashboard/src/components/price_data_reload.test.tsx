@@ -1,8 +1,8 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { toast } from "@/lib/toast";
+import { fireEvent, renderWithProviders, screen, waitFor } from "@/../tests/test-utils";
 import {
   cancelModelCostMapReload,
   getModelCostMapReloadStatus,
@@ -51,25 +51,25 @@ describe("PriceDataReload", () => {
   });
 
   it("shows the pricing source and current reload status", async () => {
-    render(<PriceDataReload accessToken="sk-test" />);
+    renderWithProviders(<PriceDataReload accessToken="sk-test" />);
 
-    expect(await screen.findByText("Pricing Data Source")).toBeInTheDocument();
-    expect(screen.getByText("Remote")).toBeInTheDocument();
+    expect(await screen.findByText("定价数据源")).toBeInTheDocument();
+    expect(screen.getByText("远程")).toBeInTheDocument();
     expect(screen.getByText("1,234")).toBeInTheDocument();
-    expect(screen.getByText("No periodic reload scheduled")).toBeInTheDocument();
+    expect(screen.getByText("未设置周期重载")).toBeInTheDocument();
   });
 
   it("shows which revision of the cost map is loaded when the source reports one", async () => {
     vi.mocked(getModelCostMapSource).mockResolvedValue({ ...remoteSource, ...provenance } as never);
-    render(<PriceDataReload accessToken="sk-test" />);
+    renderWithProviders(<PriceDataReload accessToken="sk-test" />);
 
-    expect(await screen.findByText("Source revision:")).toBeInTheDocument();
+    expect(await screen.findByText("源修订版本：")).toBeInTheDocument();
     expect(screen.getByText("4273ec544726")).toBeInTheDocument();
-    expect(screen.getByText("ETag:")).toBeInTheDocument();
+    expect(screen.getByText("ETag：")).toBeInTheDocument();
     expect(screen.getByText('W/"eb8e9a53f4cc284b"')).toBeInTheDocument();
-    expect(screen.getByText("Loaded at:")).toBeInTheDocument();
-    expect(screen.getByText(/worker that answered this request/)).toBeInTheDocument();
-    expect(screen.getByText(/Last run time is the latest reload any worker recorded/)).toBeInTheDocument();
+    expect(screen.getByText("加载时间：")).toBeInTheDocument();
+    expect(screen.getByText(/响应此请求的 worker 上报/)).toBeInTheDocument();
+    expect(screen.getByText(/任意 worker 记录的最新一次重载/)).toBeInTheDocument();
     expect(screen.getByText(new Date(provenance.loaded_at).toLocaleString())).toBeInTheDocument();
   });
 
@@ -79,74 +79,74 @@ describe("PriceDataReload", () => {
       ...provenance,
       loaded_at: "yesterday-ish",
     } as never);
-    render(<PriceDataReload accessToken="sk-test" />);
+    renderWithProviders(<PriceDataReload accessToken="sk-test" />);
 
-    expect(await screen.findByText("Loaded at:")).toBeInTheDocument();
+    expect(await screen.findByText("加载时间：")).toBeInTheDocument();
     expect(screen.getByText("yesterday-ish")).toBeInTheDocument();
     expect(screen.queryByText("Invalid Date")).not.toBeInTheDocument();
   });
 
   it("hides the provenance rows when the loaded map carries no stamp", async () => {
-    render(<PriceDataReload accessToken="sk-test" />);
+    renderWithProviders(<PriceDataReload accessToken="sk-test" />);
 
-    expect(await screen.findByText("Pricing Data Source")).toBeInTheDocument();
-    expect(screen.queryByText("Source revision:")).not.toBeInTheDocument();
-    expect(screen.queryByText("ETag:")).not.toBeInTheDocument();
-    expect(screen.queryByText("Loaded at:")).not.toBeInTheDocument();
-    expect(screen.queryByText(/worker that answered this request/)).not.toBeInTheDocument();
+    expect(await screen.findByText("定价数据源")).toBeInTheDocument();
+    expect(screen.queryByText("源修订版本：")).not.toBeInTheDocument();
+    expect(screen.queryByText("ETag：")).not.toBeInTheDocument();
+    expect(screen.queryByText("加载时间：")).not.toBeInTheDocument();
+    expect(screen.queryByText(/响应此请求的 worker 上报/)).not.toBeInTheDocument();
   });
 
   it("confirms an immediate reload and refreshes dependent data", async () => {
     const user = userEvent.setup();
     const onReloadSuccess = vi.fn();
     vi.mocked(reloadModelCostMap).mockResolvedValue({ status: "success", models_count: 42 } as never);
-    render(<PriceDataReload accessToken="sk-test" onReloadSuccess={onReloadSuccess} />);
+    renderWithProviders(<PriceDataReload accessToken="sk-test" onReloadSuccess={onReloadSuccess} />);
 
-    await user.click(screen.getByRole("button", { name: /Reload Price Data/ }));
-    expect(screen.getByText("Hard Refresh Price Data")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Yes" }));
+    await user.click(screen.getByRole("button", { name: /重载价格数据/ }));
+    expect(screen.getByText("硬刷新价格数据")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "是" }));
 
     await waitFor(() => expect(reloadModelCostMap).toHaveBeenCalledWith("sk-test"));
     expect(onReloadSuccess).toHaveBeenCalledTimes(1);
-    expect(toast.success).toHaveBeenCalledWith("Price data reloaded successfully! 42 models updated.");
+    expect(toast.success).toHaveBeenCalledWith("价格数据重载成功！已更新 42 个模型。");
   });
 
   it("schedules periodic reloads using the selected interval", async () => {
     const user = userEvent.setup();
     vi.mocked(scheduleModelCostMapReload).mockResolvedValue({ status: "success" } as never);
-    render(<PriceDataReload accessToken="sk-test" />);
+    renderWithProviders(<PriceDataReload accessToken="sk-test" />);
 
-    await user.click(screen.getByRole("button", { name: /Set Up Periodic Reload/ }));
-    expect(screen.getByRole("dialog", { name: "Set Up Periodic Reload" })).toBeInTheDocument();
-    const hours = screen.getByRole("spinbutton", { name: "Reload interval in hours" });
+    await user.click(screen.getByRole("button", { name: /设置周期重载/ }));
+    expect(screen.getByRole("dialog", { name: "设置周期重载" })).toBeInTheDocument();
+    const hours = screen.getByRole("spinbutton", { name: "重载间隔（小时）" });
     await user.clear(hours);
     fireEvent.change(hours, { target: { value: "12" } });
-    await user.click(screen.getByRole("button", { name: "Schedule" }));
+    await user.click(screen.getByRole("button", { name: "调度" }));
 
     await waitFor(() => expect(scheduleModelCostMapReload).toHaveBeenCalledWith("sk-test", 12));
-    expect(toast.success).toHaveBeenCalledWith("Periodic reload scheduled for every 12 hours");
+    expect(toast.success).toHaveBeenCalledWith("已调度每隔 12 小时进行一次周期重载");
   });
 
   it.each(["-1", "1.5", "169"])("should reject an invalid periodic reload interval of %s hours", async (interval) => {
     const user = userEvent.setup();
-    render(<PriceDataReload accessToken="sk-test" />);
+    renderWithProviders(<PriceDataReload accessToken="sk-test" />);
 
-    await user.click(screen.getByRole("button", { name: /Set Up Periodic Reload/ }));
+    await user.click(screen.getByRole("button", { name: /设置周期重载/ }));
     fireEvent.change(screen.getByRole("spinbutton"), { target: { value: interval } });
-    await user.click(screen.getByRole("button", { name: "Schedule" }));
+    await user.click(screen.getByRole("button", { name: "调度" }));
 
     expect(scheduleModelCostMapReload).not.toHaveBeenCalled();
-    expect(toast.fromError).toHaveBeenCalledWith("Hours must be a whole number between 1 and 168");
+    expect(toast.fromError).toHaveBeenCalledWith("小时数必须是 1 到 168 之间的整数");
   });
 
   it.each([1, 168])("should schedule a periodic reload at the inclusive %s-hour boundary", async (interval) => {
     const user = userEvent.setup();
     vi.mocked(scheduleModelCostMapReload).mockResolvedValue({ status: "success" } as never);
-    render(<PriceDataReload accessToken="sk-test" />);
+    renderWithProviders(<PriceDataReload accessToken="sk-test" />);
 
-    await user.click(screen.getByRole("button", { name: /Set Up Periodic Reload/ }));
+    await user.click(screen.getByRole("button", { name: /设置周期重载/ }));
     fireEvent.change(screen.getByRole("spinbutton"), { target: { value: String(interval) } });
-    await user.click(screen.getByRole("button", { name: "Schedule" }));
+    await user.click(screen.getByRole("button", { name: "调度" }));
 
     await waitFor(() => expect(scheduleModelCostMapReload).toHaveBeenCalledWith("sk-test", interval));
   });
@@ -155,11 +155,11 @@ describe("PriceDataReload", () => {
     const user = userEvent.setup();
     vi.mocked(getModelCostMapReloadStatus).mockResolvedValue(scheduledStatus);
     vi.mocked(cancelModelCostMapReload).mockResolvedValue({ status: "success" } as never);
-    render(<PriceDataReload accessToken="sk-test" />);
+    renderWithProviders(<PriceDataReload accessToken="sk-test" />);
 
-    await user.click(await screen.findByRole("button", { name: /Cancel Periodic Reload/ }));
+    await user.click(await screen.findByRole("button", { name: /取消周期重载/ }));
 
     await waitFor(() => expect(cancelModelCostMapReload).toHaveBeenCalledWith("sk-test"));
-    expect(toast.success).toHaveBeenCalledWith("Periodic reload cancelled successfully");
+    expect(toast.success).toHaveBeenCalledWith("周期重载已成功取消");
   });
 });
