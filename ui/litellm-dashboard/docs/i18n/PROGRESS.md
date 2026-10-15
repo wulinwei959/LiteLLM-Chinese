@@ -1,6 +1,19 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 65 簇后（非测试 `.tsx` 912 个接入 466 个、51.1%，目录叶子 7183、中英同值 87）。最新的四片全量是第 65 簇（886 文件 11581 例、8 失败 + 9 例预期失败，8 例全在 `cost_tracking_settings`（7）与 `LensSetup`（1）这两个已定性为上游既有的文件上，与本簇无关；例数与第 62、63、64 簇持平，本簇只换断言、未增删用例）。最新的测试统计是第 55 簇后的一次全量（886 文件 11577 例、27 失败 + 9 例预期失败，27 例落在 12 个测试文件上：19 例是已汉化组件的英文断言欠账、已在随后的清扫里改绿，8 例经与上游快照比对确认不是汉化欠账，明细见"## 2026-10-15 第 55 簇后的全量快照"与"## 2026-10-15 断言欠账清扫"），上一次全量是第 53 簇后（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），再上一次是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 66 簇后（非测试 `.tsx` 912 个接入 467 个、51.2%，目录叶子 7201、中英同值 87）。最新的四片全量是第 66 簇（886 文件 11581 例、8 失败 + 9 例预期失败，8 例全在 `cost_tracking_settings`（7）与 `LensSetup`（1）这两个已定性为上游既有的文件上，与本簇无关；例数与第 62、63、64、65 簇持平，本簇只换断言、未增删用例）。最新的测试统计是第 55 簇后的一次全量（886 文件 11577 例、27 失败 + 9 例预期失败，27 例落在 12 个测试文件上：19 例是已汉化组件的英文断言欠账、已在随后的清扫里改绿，8 例经与上游快照比对确认不是汉化欠账，明细见"## 2026-10-15 第 55 簇后的全量快照"与"## 2026-10-15 断言欠账清扫"），上一次全量是第 53 簇后（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），再上一次是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 66 簇更新
+
+批次 24 第 66 簇：`common_components/PassThroughGuardrailsSection.tsx`（透传端点的护栏选择 + 字段级定位区块）。4 个文件 +68/−39，两个消息目录各 +18/−0
+
+- 新开 18 键，全部挂在 `models.passThrough` 下、紧跟第 64 簇的 `securityEnterpriseNotice`：区块说明 `guardrailsDescription`、`fieldTargetingTitle`/`fieldTargetingIntro`、`commonExamples` 与三条示例 `exampleQuery`/`exampleDocuments`/`exampleMessages`、`selectGuardrails`/`selectGuardrailsHint`、`fieldTargetingOptional`、`tipLeaveEmpty`、两个输入框标签 `requestFieldsLabel`/`responseFieldsLabel` 及其 `requestFieldsHint`/`responseFieldsHint`、`examplesLabel` 与两个占位符 `requestFieldsPlaceholder`/`responseFieldsPlaceholder`；目录叶子 7183→7201
+- 标题与"Learn more"复用既有键：h3 直接用 `guardrails.title`、链接文字用 `common.learnMore`，不为同词再开新键
+- 三条示例都是 `• <code>query</code> - 说明` 的形态，`code` 在守卫的 `RICH_TAGS` 白名单里，故走 `t.rich` + 一个组件内 `codeRenderer`（输出真 `<code className="rounded-sm bg-muted px-1">`），比第 64 簇的 `link` 少一层转义顾虑
+- 留在英文的数据：输入框下方的 `+ query`/`+ documents[*]`/`+ results[*]` 三个快捷按钮是 JSONPath 片段、tooltip 里"示例"后的 `• query` 是字段名，`pre_call`/`post_call` 是服务端枚举，三者都不接键
+- 断言同步 1 个测试文件：`PassThroughGuardrailsSection.test.tsx` 由裸 `render` 改为 `renderWithProviders`（`../../../tests/test-utils`，锁 zh-CN），`FIELDS` 的两条 matcher 改为 `/请求字段/`、`/响应字段/`，另外 2 条用例的提交值断言不含文案、无需改
+- 连带成本为零：两个消费者 `add_pass_through.integration.test.tsx` 与 `pass_through_info.integration.test.tsx` 本就全用 `renderWithProviders`，单跑 2 文件 22 例全绿；区块内新文案与它们的既有断言无重叠字符串
+- 全量复跑 886 文件 11581 例、8 失败 + 9 例预期失败，与第 62、63、64、65 簇逐条一致；`npm run build` 通过，`tsc` 非测试报错 0，两个改动文件的 eslint 零输出（HEAD 亦无）、`prettier --list-different` 干净
+- 中途一次目录写坏：插入脚本把 `•`/`💡` 写成了 `\\u2022`/`\\U0001F4A1` 字面量，`U` 不是合法 JSON 转义，解析即报错；因两目录当时是干净已提交态，`git checkout HEAD --` 回退后改用字面字符重插，parity 守卫复核 7201 对齐
 
 ## 2026-10-15 第 65 簇更新
 
