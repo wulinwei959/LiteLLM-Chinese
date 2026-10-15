@@ -2467,6 +2467,26 @@
       "filtersDesc": "缩小团队范围"
     }
   },
+  "userAgentActivity": {
+    "summaryTitle": "按用户代理汇总",
+    "summarySubtitle": "不同用户代理的性能指标",
+    "filterLabel": "按用户代理筛选",
+    "allUserAgents": "所有用户代理",
+    "clearFilter": "清除用户代理筛选",
+    "noUserAgents": "未找到用户代理",
+    "successRequests": "成功请求数",
+    "totalTokens": "Token 总数",
+    "totalCost": "总费用",
+    "noData": "暂无数据",
+    "tabPerUser": "每用户用量（近 30 天）",
+    "sectionTitle": "各智能体的 DAU/WAU/MAU",
+    "sectionSubtitle": "不同时间周期内的活跃用户",
+    "dailyTitle": "日活跃用户 - 近 7 天",
+    "weeklyTitle": "周活跃用户 - 近 7 周",
+    "monthlyTitle": "月活跃用户 - 近 7 个月",
+    "weekBucket": "第 {n} 周",
+    "monthBucket": "第 {n} 月"
+  },
   "users": {
     "title": "内部用户",
     "subtitle": "管理内部用户及其权限",

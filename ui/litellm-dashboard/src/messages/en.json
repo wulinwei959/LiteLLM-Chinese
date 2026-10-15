@@ -2467,6 +2467,26 @@
       "filtersDesc": "Narrow down your teams"
     }
   },
+  "userAgentActivity": {
+    "summaryTitle": "Summary by User Agent",
+    "summarySubtitle": "Performance metrics for different user agents",
+    "filterLabel": "Filter by User Agents",
+    "allUserAgents": "All User Agents",
+    "clearFilter": "Clear user agent filter",
+    "noUserAgents": "No user agents found",
+    "successRequests": "Success Requests",
+    "totalTokens": "Total Tokens",
+    "totalCost": "Total Cost",
+    "noData": "No Data",
+    "tabPerUser": "Per User Usage (Last 30 Days)",
+    "sectionTitle": "DAU, WAU & MAU per Agent",
+    "sectionSubtitle": "Active users across different time periods",
+    "dailyTitle": "Daily Active Users - Last 7 Days",
+    "weeklyTitle": "Weekly Active Users - Last 7 Weeks",
+    "monthlyTitle": "Monthly Active Users - Last 7 Months",
+    "weekBucket": "Week {n}",
+    "monthBucket": "Month {n}"
+  },
   "users": {
     "title": "Internal Users",
     "subtitle": "Manage internal users and their permissions",

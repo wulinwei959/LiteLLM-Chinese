@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import UserAgentActivity from "./user_agent_activity";
 import * as networking from "./networking";
+import { renderWithProviders } from "../../tests/test-utils";
 
 // Mock the networking module
 vi.mock("./networking", () => ({
@@ -110,7 +111,7 @@ describe("UserAgentActivity", () => {
   });
 
   it("should render summary cards with user agent data", async () => {
-    render(<UserAgentActivity {...defaultProps} />);
+    renderWithProviders(<UserAgentActivity {...defaultProps} />);
 
     // Wait for data to load
     await waitFor(() => {
@@ -119,8 +120,8 @@ describe("UserAgentActivity", () => {
     });
 
     // Check that summary section is displayed
-    expect(screen.getByText("Summary by User Agent")).toBeInTheDocument();
-    expect(screen.getByText("Performance metrics for different user agents")).toBeInTheDocument();
+    expect(screen.getByText("按用户代理汇总")).toBeInTheDocument();
+    expect(screen.getByText("不同用户代理的性能指标")).toBeInTheDocument();
 
     // Check that user agent cards are displayed
     await waitFor(() => {
@@ -129,13 +130,13 @@ describe("UserAgentActivity", () => {
     });
 
     // Check that metrics are displayed
-    expect(screen.getAllByText("Success Requests").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Total Tokens").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Total Cost").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("成功请求数").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Token 总数").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("总费用").length).toBeGreaterThan(0);
   });
 
   it("should switch between DAU, WAU, and MAU tabs", async () => {
-    render(<UserAgentActivity {...defaultProps} />);
+    renderWithProviders(<UserAgentActivity {...defaultProps} />);
 
     // Wait for data to load
     await waitFor(() => {
@@ -145,7 +146,7 @@ describe("UserAgentActivity", () => {
     });
 
     // Check default DAU tab content
-    expect(screen.getByText("Daily Active Users - Last 7 Days")).toBeInTheDocument();
+    expect(screen.getByText("日活跃用户 - 近 7 天")).toBeInTheDocument();
 
     // Find all WAU tab buttons (there might be multiple)
     const wauTabs = screen.getAllByText("WAU");
@@ -153,7 +154,7 @@ describe("UserAgentActivity", () => {
 
     // Check WAU tab content
     await waitFor(() => {
-      expect(screen.getByText("Weekly Active Users - Last 7 Weeks")).toBeInTheDocument();
+      expect(screen.getByText("周活跃用户 - 近 7 周")).toBeInTheDocument();
     });
 
     // Find all MAU tab buttons
@@ -162,12 +163,12 @@ describe("UserAgentActivity", () => {
 
     // Check MAU tab content
     await waitFor(() => {
-      expect(screen.getByText("Monthly Active Users - Last 7 Months")).toBeInTheDocument();
+      expect(screen.getByText("月活跃用户 - 近 7 个月")).toBeInTheDocument();
     });
   });
 
   it("should display filter dropdown and allow tag selection", async () => {
-    render(<UserAgentActivity {...defaultProps} />);
+    renderWithProviders(<UserAgentActivity {...defaultProps} />);
 
     // Wait for tags to load
     await waitFor(() => {
@@ -175,12 +176,12 @@ describe("UserAgentActivity", () => {
     });
 
     // Check that filter label is present
-    expect(screen.getByText("Filter by User Agents")).toBeInTheDocument();
+    expect(screen.getByText("按用户代理筛选")).toBeInTheDocument();
 
     // One library paints the prompt as its own text node and the other leaves it on the input's
     // placeholder attribute, so either one means the user is being told what the filter does.
     const prompts =
-      screen.queryAllByText("All User Agents").length + screen.queryAllByPlaceholderText("All User Agents").length;
+      screen.queryAllByText("所有用户代理").length + screen.queryAllByPlaceholderText("所有用户代理").length;
     expect(prompts).toBeGreaterThan(0);
   });
 
@@ -217,16 +218,16 @@ describe("UserAgentActivity", () => {
   };
 
   it("keeps every tab panel mounted so switching tabs does not reset their state", async () => {
-    render(<UserAgentActivity {...defaultProps} />);
+    renderWithProviders(<UserAgentActivity {...defaultProps} />);
 
     await waitFor(() => {
       expect(mockTagDauCall).toHaveBeenCalled();
     });
 
     // No tab has been clicked: the inactive DAU/WAU/MAU panels are mounted alongside the active one.
-    expect(screen.getByText("Daily Active Users - Last 7 Days")).toBeInTheDocument();
-    expect(screen.getByText("Weekly Active Users - Last 7 Weeks")).toBeInTheDocument();
-    expect(screen.getByText("Monthly Active Users - Last 7 Months")).toBeInTheDocument();
+    expect(screen.getByText("日活跃用户 - 近 7 天")).toBeInTheDocument();
+    expect(screen.getByText("周活跃用户 - 近 7 周")).toBeInTheDocument();
+    expect(screen.getByText("月活跃用户 - 近 7 个月")).toBeInTheDocument();
 
     // And so is the second panel of the outer tab group.
     expect(screen.getByText("Per User Usage")).toBeInTheDocument();
@@ -243,18 +244,13 @@ describe("UserAgentActivity", () => {
       ],
     });
 
-    render(<UserAgentActivity {...defaultProps} />);
+    renderWithProviders(<UserAgentActivity {...defaultProps} />);
 
     await waitFor(() => {
-      expect(
-        chartForTitle("Daily Active Users - Last 7 Days").querySelectorAll("path.recharts-rectangle"),
-      ).toHaveLength(2);
+      expect(chartForTitle("日活跃用户 - 近 7 天").querySelectorAll("path.recharts-rectangle")).toHaveLength(2);
     });
 
-    expectStackedTwoCategoryChart(
-      chartForTitle("Daily Active Users - Last 7 Days"),
-      firstBucketDate.toISOString().split("T")[0],
-    );
+    expectStackedTwoCategoryChart(chartForTitle("日活跃用户 - 近 7 天"), firstBucketDate.toISOString().split("T")[0]);
   });
 
   it("renders the WAU chart stacked with week buckets and abbreviated axis ticks", async () => {
@@ -265,15 +261,13 @@ describe("UserAgentActivity", () => {
       ],
     });
 
-    render(<UserAgentActivity {...defaultProps} />);
+    renderWithProviders(<UserAgentActivity {...defaultProps} />);
 
     await waitFor(() => {
-      expect(
-        chartForTitle("Weekly Active Users - Last 7 Weeks").querySelectorAll("path.recharts-rectangle"),
-      ).toHaveLength(2);
+      expect(chartForTitle("周活跃用户 - 近 7 周").querySelectorAll("path.recharts-rectangle")).toHaveLength(2);
     });
 
-    expectStackedTwoCategoryChart(chartForTitle("Weekly Active Users - Last 7 Weeks"), "Week 1");
+    expectStackedTwoCategoryChart(chartForTitle("周活跃用户 - 近 7 周"), "第 1 周");
   });
 
   it("renders the MAU chart stacked with month buckets and abbreviated axis ticks", async () => {
@@ -284,14 +278,12 @@ describe("UserAgentActivity", () => {
       ],
     });
 
-    render(<UserAgentActivity {...defaultProps} />);
+    renderWithProviders(<UserAgentActivity {...defaultProps} />);
 
     await waitFor(() => {
-      expect(
-        chartForTitle("Monthly Active Users - Last 7 Months").querySelectorAll("path.recharts-rectangle"),
-      ).toHaveLength(2);
+      expect(chartForTitle("月活跃用户 - 近 7 个月").querySelectorAll("path.recharts-rectangle")).toHaveLength(2);
     });
 
-    expectStackedTwoCategoryChart(chartForTitle("Monthly Active Users - Last 7 Months"), "Month 1");
+    expectStackedTwoCategoryChart(chartForTitle("月活跃用户 - 近 7 个月"), "第 1 月");
   });
 });
