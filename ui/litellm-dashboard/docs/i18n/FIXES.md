@@ -387,6 +387,14 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-15 第 76 簇：`??` 兜底改中文，测试里的可访问名却仍来自 mock；裸 `render` 要换 harness
+
+`UISettings.tsx` 的开关写成 `ariaLabel={property?.description ?? t("…")}`：兜底串翻成中文，**并不决定测试里的可访问名**。只要 mock 的 `field_schema.properties.*.description` 有值，`Switch` 的 `aria-label` 就取自那段 mock 英文串，故 `getByRole("switch", { name: "Disable model add for internal users" })` 要保持英文；同一个组件里随 `t` 变中文的只有卡片标题与 toast。判断开关断言改不改，先看 mock 的 schema 给没给 description，别看到兜底串翻了就跟着翻
+
+给组件挂 `t` 前先看测试用的哪个 `render`。`useTranslations` 需要 `NextIntlClientProvider`，本仓库把 provider 挂在 `LocaleProvider` 里、只由 `tests/test-utils.tsx` 的 `renderWithProviders` 装配；`UISettings.test.tsx` 原本是裸 `render`，直接挂 `t` 会抛 "No intl context"。规则：凡把裸 `render` 的组件接上 `t`，先把 `render` 换成 `renderWithProviders`、import 改从 `@/../tests/test-utils` 借出（它 re-export 了 testing-library 的全部），再改断言——`renderWithProviders` 默认钉 zh-CN，翻成中文的文案随之断言
+
+家族补完照既有子命名空间写：`adminPanel` 里 `teamAdminEditable` 是早就存在的嵌套对象，新加的 `uiSettings` 照它的"对象套对象"写法，调用走 `t("uiSettings.pageVisibility.title")` 点号路径，不用给子组件 `PageVisibilitySettings` 再开第二把 `useTranslations`。`getAvailablePages()` 返回的 `label`/`description`/`group` 是英文数据（同 `vector_store_providers` 一类），本轮只翻组件自身的框架文案，分组名与勾选名留英文
+
 ## 2026-10-15 第 75 簇：页签文案、URL 契约与跨文件 label 的边界
 
 补完一个已接入的家族时，先数清命名空间里已有什么。`organization_view.tsx` 需要的串里有 20 个在 `organizations` 与 `common` 里已经存在（同一家族前几个文件留下的），只补了真正缺的 24 个净新键。硬翻一遍会凭空造出重复键
