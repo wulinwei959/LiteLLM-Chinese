@@ -387,6 +387,12 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-15 第 81 簇：拼接脚本"先写盘后校验"会把坏 JSON 落盘
+
+往目录批量追加键的拼接脚本，第 81 簇第一版把行末逗号写进了**行字符串本身**（`'      "editModalTitle": "Edit SSO Settings",'`）又用 `",\n".join(lines)` 连接，产出 `,,` 双逗号——而 `json.loads` 校验放在**写盘之后**，坏 JSON 已经落盘才发现，只能 `git checkout --` 还原重拼。规矩两条：**行字符串一律不带尾逗号**（逗号只由 join 的分隔符与 extra 的前导 `,\n` 提供）；**先在内存里 `json.loads(new)` 校验、断言键数，全过再落盘**。另外 extra 末尾的 `"\n"` 会在最后一个键与闭合 `}` 之间留一个空行——JSON 合法但难看，拼完顺手把 `"\n\n    }"` 收成 `"\n    }"`
+
+同簇还确认一条 ICU 行为：`t("key", { error: parseErrorMessage(error) })` 在入参为 `undefined` 时**渲染为空串**（旧写法 `"前缀: " + parseErrorMessage(error)` 会把字面 `undefined` 三字透给用户）。从字符串拼接迁到 ICU 带参，断言要按新渲染更新：`undefined` 用例期望值从 `${PREFIX} undefined` 改为 `PREFIX` 本身，拼接处自带的空格（`": "`）改全角冒号后消失，`${PREFIX}Parsed error message` 不再补空格
+
 ## 2026-10-15 第 79 簇：`t()` 调用撑破 printWidth、模块级"子组件"各挂各的 `useTranslations`
 
 `SSOSettings.tsx` 的字段配置本是单行的 `{ label: "Proxy Base URL", render: … },`（111 字符，printWidth 120 内）。把 `label` 换成 `t("ssoSettings.proxyBaseUrl")` 后这行涨到 128、越界，`prettier --list-different` 直接点名该文件——**接线把短字面量换成 `t("ns.key")` 调用，行数不减、宽度反增，落码后必须重跑 prettier**。确认 HEAD 是否本就 clean：把 `git show HEAD:./$f` 落到**仓库内**兄弟名（如 `…/head79check.tsx`）再 `--list-different`，`/tmp` 会因脱离项目根而丢 `.prettierrc` 解析；HEAD clean 就 `--write` 让它拆超长行，HEAD 不 clean（如两个消息目录）就别动、只手工保证新行合规
