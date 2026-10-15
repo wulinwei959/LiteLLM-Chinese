@@ -13,6 +13,7 @@ import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { FormField } from "@/components/shared/form/FormField";
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { hasCapability } from "../../utils/capabilities";
 import { isProxyAdminRole, rolesWithWriteAccess } from "../../utils/roles";
 import AccessGroupSelector from "../common_components/AccessGroupSelector";
@@ -23,7 +24,7 @@ import PassThroughRoutesSelector from "../common_components/PassThroughRoutesSel
 import OrganizationDropdown from "../common_components/OrganizationDropdown";
 import RouterSettingsAccordion, { RouterSettingsAccordionRef } from "../common_components/RouterSettingsAccordion";
 import { routerSettingsEditorValue, routerSettingsUpdate } from "../common_components/routerSettingsPayload";
-import { estimateTooltips, withNormalizedEstimates } from "./estimatedOutputTokens";
+import { estimateMessages, estimateTooltips, withNormalizedEstimates } from "./estimatedOutputTokens";
 import {
   currentValuePlaceholder,
   keyTypeFromRoutes,
@@ -40,8 +41,8 @@ import {
   moveMetadataTagsToTagsField,
 } from "./KeyEditViewControls";
 import {
+  buildKeyEditFormSchema,
   KeyEditFormValues,
-  keyEditFormSchema,
   McpServersAndGroups,
   toKeyEditFormValues,
   toSubmittedValues,
@@ -98,12 +99,18 @@ export function KeyEditView({
   userRole,
   premiumUser = false,
 }: KeyEditViewProps) {
+  const editFormT = useTranslations("virtualKeys.editForm");
+  const vkT = useTranslations("virtualKeys");
+  const commonT = useTranslations("common");
+  const estimateT = useTranslations("virtualKeys.estimatedOutputTokens");
+  const guardrailsT = useTranslations("guardrails");
+  const policiesT = useTranslations("policies");
   const canEditGuardrails = premiumUser || (userRole != null && rolesWithWriteAccess.includes(userRole));
   const canViewPolicies = hasCapability(userRole, "viewPolicies");
   const canViewPrompts = hasCapability(userRole, "viewPrompts");
   const canEditEstimates = userRole != null && isProxyAdminRole(userRole);
-  const estimateTooltip = estimateTooltips(canEditEstimates);
-  const form = useZodForm<KeyEditFormValues, KeyEditFormValues>(keyEditFormSchema, {
+  const estimateTooltip = estimateTooltips(canEditEstimates, estimateT);
+  const form = useZodForm<KeyEditFormValues, KeyEditFormValues>(buildKeyEditFormSchema(estimateMessages(estimateT)), {
     defaultValues: toKeyEditFormValues(keyData),
   });
   const [promptsList, setPromptsList] = useState<string[]>([]);
@@ -213,11 +220,11 @@ export function KeyEditView({
         const response = await tagListCall(accessToken);
         setTagsList(response);
       } catch (error) {
-        toast.fromError("Error fetching tags: " + error);
+        toast.fromError(editFormT("tagsFetchFailed", { error: String(error) }));
       }
     };
     fetchTags();
-  }, [accessToken]);
+  }, [accessToken, editFormT]);
 
   const handleSubmit = async (values: any) => {
     try {
@@ -348,7 +355,7 @@ export function KeyEditView({
   };
 
   const modelOptions = [
-    ...modelSentinelOptions(keyData.team_id, team != null),
+    ...modelSentinelOptions(keyData.team_id, team != null, editFormT),
     ...availableModels.map((model) => ({
       value: model,
       label: model,
@@ -364,22 +371,22 @@ export function KeyEditView({
     <TooltipProvider>
       <form
         onSubmit={(event) => {
-          moveMetadataTagsToTagsField(form);
+          moveMetadataTagsToTagsField(form, editFormT);
           return form.handleSubmit((values) =>
             handleSubmit(toSubmittedValues(values, { canViewPolicies, canViewPrompts })),
           )(event);
         }}
       >
         <FieldGroup>
-          <FormField control={form.control} name="key_alias" label="Key Alias">
+          <FormField control={form.control} name="key_alias" label={vkT("columns.keyAlias")}>
             {(field) => <Input {...field} value={(field.value as string | undefined) ?? ""} />}
           </FormField>
 
           <FormField
             control={form.control}
             name="models"
-            label="Models"
-            description={isModelsDisabled ? "Models field is disabled for this key type" : undefined}
+            label={vkT("columns.models")}
+            description={isModelsDisabled ? editFormT("modelsDisabled") : undefined}
           >
             {({ value, onChange, id }) => (
               <MultiSelect
@@ -396,13 +403,13 @@ export function KeyEditView({
                   }
                 }}
                 disabled={isModelsDisabled}
-                placeholder="Select models"
+                placeholder={editFormT("selectModels")}
               />
             )}
           </FormField>
 
           <Field>
-            <FieldLabel htmlFor={keyTypeFieldId}>Key Type</FieldLabel>
+            <FieldLabel htmlFor={keyTypeFieldId}>{editFormT("keyType")}</FieldLabel>
             <KeyTypeSelect
               id={keyTypeFieldId}
               value={keyTypeFromRoutes(allowedRoutes)}
@@ -426,16 +433,13 @@ export function KeyEditView({
           <FormField
             control={form.control}
             name="allowed_routes"
-            label={labelWithHint(
-              "Allowed Routes",
-              "List of allowed routes for the key (comma-separated). Can be specific routes (e.g., '/chat/completions') or route patterns (e.g., 'llm_api_routes', 'management_routes', '/keys/*'). Leave empty to allow all routes.",
-            )}
+            label={labelWithHint(vkT("info.allowedRoutesLabel"), editFormT("allowedRoutesHint"))}
           >
             {(field) => (
               <Input
                 {...field}
                 value={(field.value as string | undefined) ?? ""}
-                placeholder="Enter allowed routes (comma-separated). Special values: llm_api_routes, management_routes. Examples: llm_api_routes, /chat/completions, /keys/*. Leave empty to allow all routes"
+                placeholder={editFormT("allowedRoutesPlaceholder")}
               />
             )}
           </FormField>
@@ -443,18 +447,18 @@ export function KeyEditView({
           <KeyBudgetNumberField
             control={form.control}
             name="max_budget"
-            label="Max Budget (USD)"
-            placeholder="Enter a numerical value"
+            label={editFormT("maxBudget")}
+            placeholder={editFormT("enterNumericalValue")}
           />
 
           <KeyBudgetNumberField
             control={form.control}
             name="soft_budget"
-            label="Soft Budget (USD)"
-            placeholder="Get alerts when spend crosses this value, without blocking requests"
+            label={editFormT("softBudget")}
+            placeholder={editFormT("softBudgetPlaceholder")}
           />
 
-          <FormField control={form.control} name="budget_duration" label="Reset Budget">
+          <FormField control={form.control} name="budget_duration" label={editFormT("resetBudget")}>
             {({ value, onChange, id }) => (
               <BudgetDurationDropdown
                 id={id}
@@ -466,12 +470,7 @@ export function KeyEditView({
           </FormField>
 
           <Field>
-            <FieldLabel>
-              {labelWithHint(
-                "Budget Windows",
-                "Set multiple independent budget windows (e.g., hourly $10 AND monthly $200). Each window tracks spend separately and resets on its own schedule.",
-              )}
-            </FieldLabel>
+            <FieldLabel>{labelWithHint(editFormT("budgetWindows"), editFormT("budgetWindowsHint"))}</FieldLabel>
             <BudgetWindowsEditor value={budgetLimits} onChange={setBudgetLimits} />
           </Field>
 
@@ -482,16 +481,11 @@ export function KeyEditView({
             onChange={modelBudget.setValue}
             availableModels={availableModels}
             usage={keyData.model_max_budget_usage}
-            hint="Cap spend on individual models, each with its own reset window. Enforced across every request this key makes."
+            hint={editFormT("modelMaxBudgetHint")}
           />
 
           <Field>
-            <FieldLabel>
-              {labelWithHint(
-                "Budget Fallbacks",
-                "When a model exceeds its per-model budget, requests automatically reroute to fallback models instead of failing",
-              )}
-            </FieldLabel>
+            <FieldLabel>{labelWithHint(vkT("info.budgetFallbacksLabel"), editFormT("budgetFallbacksHint"))}</FieldLabel>
             <BudgetFallbacksEditor
               value={budgetFallbacks}
               onChange={setBudgetFallbacks}
@@ -502,7 +496,7 @@ export function KeyEditView({
           {keyOffersEndUserBudget(keyData.metadata) && (
             <Field>
               <FieldLabel htmlFor={endUserBudgetFieldId}>
-                {labelWithHint("Default Customer Budget", END_USER_BUDGET_HINT)}
+                {labelWithHint(editFormT("defaultCustomerBudget"), END_USER_BUDGET_HINT)}
               </FieldLabel>
               <EndUserBudgetSelect
                 id={endUserBudgetFieldId}
@@ -519,10 +513,7 @@ export function KeyEditView({
           <FormField
             control={form.control}
             name="throttle_on_budget_exceeded"
-            label={labelWithHint(
-              "Throttle on budget exceeded",
-              "When this key exceeds its max budget, throttle its TPM/RPM to the globally configured percentage instead of blocking access entirely. Requires budget_exceeded_throttle_percentage in litellm_settings and a TPM/RPM limit on the key.",
-            )}
+            label={labelWithHint(editFormT("throttleOnBudgetExceeded"), editFormT("throttleOnBudgetExceededHint"))}
           >
             {({ value, onChange, ref: _ref, ...field }) => (
               <Switch {...field} checked={Boolean(value)} onCheckedChange={onChange} />
@@ -532,21 +523,18 @@ export function KeyEditView({
           <FormField
             control={form.control}
             name="enable_prompt_caching"
-            label={labelWithHint(
-              "Enable Prompt Caching",
-              "Automatically add prompt caching breakpoints (cache_control markers) to requests made with this key, cutting input cost on repeated prompts. Applies to Anthropic and Bedrock Claude models; requests that already set their own cache_control markers are left untouched.",
-            )}
+            label={labelWithHint(editFormT("enablePromptCaching"), editFormT("enablePromptCachingHint"))}
           >
             {({ value, onChange, ref: _ref, ...field }) => (
               <Switch {...field} checked={Boolean(value)} onCheckedChange={onChange} />
             )}
           </FormField>
 
-          <FormField control={form.control} name="max_parallel_requests" label="Max Parallel Requests">
+          <FormField control={form.control} name="max_parallel_requests" label={editFormT("maxParallelRequests")}>
             {({ ref: _ref, ...field }) => <NumericalInput {...field} value={field.value ?? ""} min={0} />}
           </FormField>
 
-          <FormField control={form.control} name="model_tpm_limit" label="Model TPM Limit">
+          <FormField control={form.control} name="model_tpm_limit" label={editFormT("modelTpmLimit")}>
             {(field) => (
               <Textarea
                 {...field}
@@ -557,7 +545,7 @@ export function KeyEditView({
             )}
           </FormField>
 
-          <FormField control={form.control} name="model_rpm_limit" label="Model RPM Limit">
+          <FormField control={form.control} name="model_rpm_limit" label={editFormT("modelRpmLimit")}>
             {(field) => (
               <Textarea
                 {...field}
@@ -571,7 +559,7 @@ export function KeyEditView({
           <FormField
             control={form.control}
             name="default_estimated_output_tokens"
-            label={labelWithHint("Estimated Output Tokens", estimateTooltip.estimate)}
+            label={labelWithHint(editFormT("estimatedOutputTokens"), estimateTooltip.estimate)}
           >
             {({ ref: _ref, ...field }) => (
               <NumericalInput {...field} value={field.value ?? ""} min={1} step={1} disabled={!canEditEstimates} />
@@ -581,7 +569,7 @@ export function KeyEditView({
           <FormField
             control={form.control}
             name="default_estimated_output_tokens_per_model"
-            label={labelWithHint("Estimated Output Tokens Per Model", estimateTooltip.perModel)}
+            label={labelWithHint(editFormT("estimatedOutputTokensPerModel"), estimateTooltip.perModel)}
           >
             {(field) => (
               <Textarea
@@ -595,16 +583,11 @@ export function KeyEditView({
           </FormField>
 
           <Field>
-            <FieldLabel>
-              {labelWithHint(
-                "Per-Tag Rate Limits",
-                "Scope rate limits to a request tag so each tag (e.g. a cell or group) gets its own RPM counter. Requests without a matching tag fall back to the key-level limit.",
-              )}
-            </FieldLabel>
+            <FieldLabel>{labelWithHint(editFormT("perTagRateLimits"), editFormT("perTagRateLimitsHint"))}</FieldLabel>
             <TagRateLimitEditor value={tagRateLimits} onChange={setTagRateLimits} />
           </Field>
 
-          <FormField control={form.control} name="guardrails" label="Guardrails">
+          <FormField control={form.control} name="guardrails" label={guardrailsT("title")}>
             {({ value, onChange }) =>
               accessToken ? (
                 <GuardrailSelector
@@ -623,10 +606,7 @@ export function KeyEditView({
             <FormField
               control={form.control}
               name="disable_global_guardrails"
-              label={labelWithHint(
-                "Disable Global Guardrails",
-                "When enabled, this key will bypass any guardrails configured to run on every request (global guardrails)",
-              )}
+              label={labelWithHint(vkT("info.disableGlobalGuardrailsLabel"), editFormT("disableGlobalGuardrailsHint"))}
             >
               {({ value, onChange, ref: _ref, ...field }) => (
                 <Switch {...field} checked={Boolean(value)} onCheckedChange={onChange} disabled={!canEditGuardrails} />
@@ -638,7 +618,7 @@ export function KeyEditView({
             <FormField
               control={form.control}
               name="policies"
-              label={labelWithHint("Policies", "Apply policies to this key to control guardrails and other settings")}
+              label={labelWithHint(policiesT("title"), editFormT("policiesHint"))}
             >
               {({ value, onChange }) =>
                 accessToken ? (
@@ -655,14 +635,14 @@ export function KeyEditView({
             </FormField>
           )}
 
-          <FormField control={form.control} name="tags" label="Tags">
+          <FormField control={form.control} name="tags" label={vkT("info.tagsLabel")}>
             {({ value, onChange, id }) => (
               <TagsInput
                 id={id}
                 value={(value as string[] | undefined) ?? []}
                 onValueChange={onChange}
                 options={Object.values(tagsList).map((tag) => ({ value: tag.name, label: tag.name }))}
-                placeholder="Select or enter tags"
+                placeholder={editFormT("selectOrEnterTags")}
               />
             )}
           </FormField>
@@ -671,7 +651,11 @@ export function KeyEditView({
             <FormField
               control={form.control}
               name="prompts"
-              label={premiumUser ? "Prompts" : labelWithHint("Prompts", "Setting prompts by key is a premium feature")}
+              label={
+                premiumUser
+                  ? vkT("info.promptsLabel")
+                  : labelWithHint(vkT("info.promptsLabel"), editFormT("promptsPremiumHint"))
+              }
             >
               {({ value, onChange, id }) => (
                 <TagsInput
@@ -683,8 +667,11 @@ export function KeyEditView({
                   placeholder={currentValuePlaceholder(
                     premiumUser,
                     keyData.metadata?.prompts,
-                    "Premium feature - Upgrade to set prompts by key",
-                    "Select or enter prompts",
+                    {
+                      premium: editFormT("promptsPremiumPlaceholder"),
+                      empty: editFormT("selectOrEnterPrompts"),
+                    },
+                    editFormT,
                   )}
                 />
               )}
@@ -694,16 +681,13 @@ export function KeyEditView({
           <FormField
             control={form.control}
             name="access_group_ids"
-            label={labelWithHint(
-              "Access Groups",
-              "Assign access groups to this key. Access groups control which models, MCP servers, and agents this key can use",
-            )}
+            label={labelWithHint(editFormT("accessGroups"), editFormT("accessGroupsHint"))}
           >
             {({ value, onChange }) => (
               <AccessGroupSelector
                 value={value as string[] | undefined}
                 onChange={onChange}
-                placeholder="Select access groups (optional)"
+                placeholder={editFormT("selectAccessGroups")}
               />
             )}
           </FormField>
@@ -713,11 +697,8 @@ export function KeyEditView({
             name="allowed_passthrough_routes"
             label={
               premiumUser
-                ? "Allowed Pass Through Routes"
-                : labelWithHint(
-                    "Allowed Pass Through Routes",
-                    "Setting allowed pass through routes by key is a premium feature",
-                  )
+                ? vkT("info.allowedPassThroughRoutesLabel")
+                : labelWithHint(vkT("info.allowedPassThroughRoutesLabel"), editFormT("passThroughPremiumHint"))
             }
           >
             {({ value, onChange }) => (
@@ -728,32 +709,35 @@ export function KeyEditView({
                 placeholder={currentValuePlaceholder(
                   premiumUser,
                   keyData.metadata?.allowed_passthrough_routes,
-                  "Premium feature - Upgrade to set allowed pass through routes by key",
-                  "Select or enter allowed pass through routes",
+                  {
+                    premium: editFormT("passThroughPremiumPlaceholder"),
+                    empty: editFormT("selectOrEnterPassThrough"),
+                  },
+                  editFormT,
                 )}
                 disabled={!premiumUser}
               />
             )}
           </FormField>
 
-          <FormField control={form.control} name="vector_stores" label="Vector Stores">
+          <FormField control={form.control} name="vector_stores" label={editFormT("vectorStores")}>
             {({ value, onChange }) => (
               <VectorStoreSelector
                 onChange={onChange}
                 value={value as string[] | undefined}
                 accessToken={accessToken || ""}
-                placeholder="Select vector stores"
+                placeholder={editFormT("selectVectorStores")}
               />
             )}
           </FormField>
 
-          <FormField control={form.control} name="mcp_servers_and_groups" label="MCP Servers / Access Groups">
+          <FormField control={form.control} name="mcp_servers_and_groups" label={editFormT("mcpServersAndGroups")}>
             {({ value, onChange }) => (
               <MCPServerSelector
                 onChange={onChange}
                 value={value as McpServersAndGroups | undefined}
                 accessToken={accessToken || ""}
-                placeholder="Select MCP servers or access groups (optional)"
+                placeholder={editFormT("selectMcpServers")}
                 allowNoMcpServers
               />
             )}
@@ -775,11 +759,8 @@ export function KeyEditView({
           <FormField
             control={form.control}
             name="organization_id"
-            label={labelWithHint(
-              "Organization",
-              "The organization this key belongs to. Selecting an organization filters the available teams.",
-            )}
-            description={hasProject ? "Organization is locked because this key belongs to a project" : undefined}
+            label={labelWithHint(vkT("columns.organization"), editFormT("organizationHint"))}
+            description={hasProject ? editFormT("organizationLocked") : undefined}
           >
             {({ value, onChange, id }) => (
               <OrganizationDropdown
@@ -796,8 +777,8 @@ export function KeyEditView({
           <FormField
             control={form.control}
             name="team_id"
-            label="Team ID"
-            description={hasProject ? "Team is locked because this key belongs to a project" : undefined}
+            label={vkT("info.teamIdLabel")}
+            description={hasProject ? editFormT("teamLocked") : undefined}
           >
             {({ value, onChange, id }) => (
               <Select
@@ -809,7 +790,7 @@ export function KeyEditView({
                 )}
               >
                 <SelectTrigger id={id} className="w-full">
-                  <SelectValue placeholder="Select team" />
+                  <SelectValue placeholder={editFormT("selectTeam")} />
                 </SelectTrigger>
                 <SelectContent>
                   {visibleTeams?.map((t) => (
@@ -833,7 +814,7 @@ export function KeyEditView({
           )}
 
           <Field>
-            <FieldLabel>Router Settings</FieldLabel>
+            <FieldLabel>{vkT("info.routerSettingsLabel")}</FieldLabel>
             <RouterSettingsAccordion
               ref={routerSettingsRef}
               accessToken={accessToken || ""}
@@ -842,7 +823,7 @@ export function KeyEditView({
             />
           </Field>
 
-          <FormField control={form.control} name="logging_settings" label="Logging Settings">
+          <FormField control={form.control} name="logging_settings" label={editFormT("loggingSettings")}>
             {({ value, onChange }) => (
               <EditLoggingSettings
                 value={(value as unknown[] | undefined) ?? []}
@@ -877,11 +858,11 @@ export function KeyEditView({
         <div className="sticky z-chrome bg-background p-4 border-t border-border -bottom-6 -inset-x-6">
           <div className="flex justify-end items-center gap-2">
             <Button type="button" variant="secondary" onClick={onCancel} disabled={isKeySaving}>
-              Cancel
+              {commonT("cancel")}
             </Button>
             <Button type="submit" disabled={isKeySaving} aria-busy={isKeySaving}>
               {isKeySaving && <UiLoadingSpinner className="size-4" />}
-              Save Changes
+              {editFormT("saveChanges")}
             </Button>
           </div>
         </div>

@@ -1,3 +1,5 @@
+import type { VirtualKeysEditFormTranslator } from "@/lib/i18n/translators";
+
 const WORD_FORM_BUDGET_DURATIONS: Record<string, string> = {
   hourly: "1h",
   daily: "24h",
@@ -29,9 +31,10 @@ export const parseAllowedRoutes = (value: unknown): string[] =>
 export const modelSentinelOptions = (
   keyTeamId: string | null | undefined,
   teamLoaded: boolean,
+  t: VirtualKeysEditFormTranslator,
 ): { value: string; label: string }[] => {
-  if (keyTeamId == null) return [{ value: "all-proxy-models", label: "All Proxy Models" }];
-  return teamLoaded ? [{ value: "all-team-models", label: "All Team Models" }] : [];
+  if (keyTeamId == null) return [{ value: "all-proxy-models", label: t("allProxyModels") }];
+  return teamLoaded ? [{ value: "all-team-models", label: t("allTeamModels") }] : [];
 };
 
 export type MovedMetadataTags = {
@@ -70,9 +73,9 @@ export const moveTagsOutOfMetadataJson = (
 export const currentValuePlaceholder = (
   premiumUser: boolean,
   current: unknown,
-  premiumHint: string,
-  emptyHint: string,
+  hints: { premium: string; empty: string },
+  t: VirtualKeysEditFormTranslator,
 ): string => {
-  if (!premiumUser) return premiumHint;
-  return Array.isArray(current) && current.length > 0 ? `Current: ${current.join(", ")}` : emptyHint;
+  if (!premiumUser) return hints.premium;
+  return Array.isArray(current) && current.length > 0 ? t("currentValue", { value: current.join(", ") }) : hints.empty;
 };

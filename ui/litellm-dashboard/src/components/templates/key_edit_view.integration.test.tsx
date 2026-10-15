@@ -292,7 +292,7 @@ describe("KeyEditView", () => {
       renderWithRouterSettings(onSubmit);
       routerSettingsMocks.editedValue = { num_retries: 2, fallbacks: [{ "gpt-4": ["gpt-4o", "gpt-4o-mini"] }] };
 
-      fireEvent.click(screen.getByText("Save Changes"));
+      fireEvent.click(screen.getByText("保存更改"));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -313,7 +313,7 @@ describe("KeyEditView", () => {
       renderWithRouterSettings(onSubmit);
       routerSettingsMocks.editedValue = { num_retries: null, fallbacks: null };
 
-      fireEvent.click(screen.getByText("Save Changes"));
+      fireEvent.click(screen.getByText("保存更改"));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -344,7 +344,7 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Save Changes")).toBeInTheDocument();
+      expect(screen.getByText("保存更改")).toBeInTheDocument();
     });
   });
 
@@ -379,7 +379,7 @@ describe("KeyEditView", () => {
       />,
     );
 
-    const metadataTextarea = screen.getByLabelText("Metadata") as HTMLTextAreaElement;
+    const metadataTextarea = screen.getByLabelText("元数据") as HTMLTextAreaElement;
     await waitFor(() => {
       expect(metadataTextarea).toHaveValue("{}");
     });
@@ -419,7 +419,7 @@ describe("KeyEditView", () => {
         />,
       );
 
-      const prompts = await screen.findByLabelText(/Prompts/);
+      const prompts = await screen.findByLabelText(/提示词/);
       expect(prompts).toBeDisabled();
 
       await userEvent.type(prompts, "sneaky-prompt{Enter}");
@@ -440,7 +440,7 @@ describe("KeyEditView", () => {
         />,
       );
 
-      const prompts = await screen.findByLabelText(/Prompts/);
+      const prompts = await screen.findByLabelText(/提示词/);
       expect(prompts).toBeEnabled();
 
       await userEvent.type(prompts, "allowed-prompt{Enter}");
@@ -454,8 +454,8 @@ describe("KeyEditView", () => {
       await waitFor(() => {
         expect(getPromptsList).toHaveBeenCalledWith("test-token");
       });
-      expect(screen.getByText("Prompts", { selector: "label" })).toBeInTheDocument();
-      expect(screen.getByText("Policies")).toBeInTheDocument();
+      expect(screen.getByText("提示词", { selector: "label" })).toBeInTheDocument();
+      expect(screen.getByText("策略")).toBeInTheDocument();
     });
 
     it("lists a prompt existing in several environments once in the dropdown", async () => {
@@ -468,7 +468,7 @@ describe("KeyEditView", () => {
 
       renderAs("Admin");
 
-      const prompts = await screen.findByLabelText(/Prompts/);
+      const prompts = await screen.findByLabelText(/提示词/);
       await userEvent.type(prompts, "envgreet");
 
       expect(await screen.findAllByRole("option", { name: "envgreet" })).toHaveLength(1);
@@ -483,8 +483,8 @@ describe("KeyEditView", () => {
 
       expect(getPromptsList).not.toHaveBeenCalled();
       expect(getPoliciesList).not.toHaveBeenCalled();
-      expect(screen.queryByText("Prompts", { selector: "label" })).not.toBeInTheDocument();
-      expect(screen.queryByText("Policies")).not.toBeInTheDocument();
+      expect(screen.queryByText("提示词", { selector: "label" })).not.toBeInTheDocument();
+      expect(screen.queryByText("策略")).not.toBeInTheDocument();
     });
   });
 
@@ -503,7 +503,7 @@ describe("KeyEditView", () => {
       />,
     );
 
-    const cancelButton = await screen.findByRole("button", { name: /cancel/i });
+    const cancelButton = await screen.findByRole("button", { name: /取消/ });
     await userEvent.click(cancelButton);
 
     expect(onCancelMock).toHaveBeenCalledTimes(1);
@@ -524,7 +524,7 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByLabelText("Key Alias")).toBeInTheDocument();
+      expect(screen.getByLabelText("密钥别名")).toBeInTheDocument();
     });
   });
 
@@ -542,7 +542,7 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Models")).toBeInTheDocument();
+      expect(screen.getByText("模型")).toBeInTheDocument();
     });
   });
 
@@ -560,7 +560,7 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByLabelText("Max Budget (USD)")).toBeInTheDocument();
+      expect(screen.getByLabelText("最大预算（USD）")).toBeInTheDocument();
     });
   });
 
@@ -578,7 +578,7 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/allowed routes/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/允许的路由/)).toBeInTheDocument();
     });
   });
 
@@ -597,10 +597,10 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
     });
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -628,10 +628,10 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Throttle on budget exceeded")).toBeInTheDocument();
+      expect(screen.getByText("超出预算时限流")).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalledWith(
@@ -661,10 +661,10 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Enable Prompt Caching")).toBeInTheDocument();
+      expect(screen.getByText("启用提示缓存")).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalledWith(
@@ -693,7 +693,7 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Models field is disabled for this key type")).toBeInTheDocument();
+      expect(screen.getByText("此密钥类型下 Models 字段不可用")).toBeInTheDocument();
     });
   });
 
@@ -716,7 +716,7 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Models field is disabled for this key type")).toBeInTheDocument();
+      expect(screen.getByText("此密钥类型下 Models 字段不可用")).toBeInTheDocument();
     });
   });
 
@@ -734,7 +734,7 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Guardrails")).toBeInTheDocument();
+      expect(screen.getByText("护栏")).toBeInTheDocument();
     });
   });
 
@@ -753,14 +753,14 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/allowed routes/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/允许的路由/)).toBeInTheDocument();
     });
 
-    const allowedRoutesInput = screen.getByLabelText(/allowed routes/i);
+    const allowedRoutesInput = screen.getByLabelText(/允许的路由/);
     await userEvent.clear(allowedRoutesInput);
     await userEvent.type(allowedRoutesInput, "route1, route2, route3");
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -790,13 +790,13 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/allowed routes/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/允许的路由/)).toBeInTheDocument();
     });
 
-    const allowedRoutesInput = screen.getByLabelText(/allowed routes/i);
+    const allowedRoutesInput = screen.getByLabelText(/允许的路由/);
     await userEvent.clear(allowedRoutesInput);
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -825,10 +825,10 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
     });
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -857,10 +857,10 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
     });
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -889,10 +889,10 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
     });
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -929,7 +929,7 @@ describe("KeyEditView", () => {
     await userEvent.clear(accessGroupInput);
     await userEvent.type(accessGroupInput, "ag-1,ag-2");
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -962,10 +962,10 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Save Changes")).toBeInTheDocument();
+      expect(screen.getByText("保存更改")).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalled();
@@ -994,7 +994,7 @@ describe("KeyEditView", () => {
     const deleteWindowButton = await screen.findByRole("button", { name: "✕" });
     await userEvent.click(deleteWindowButton);
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -1018,9 +1018,9 @@ describe("KeyEditView", () => {
       />,
     );
 
-    await chooseSelectOption(userEvent, await screen.findByLabelText("Reset Budget"), "每周");
+    await chooseSelectOption(userEvent, await screen.findByLabelText("重置预算"), "每周");
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -1044,7 +1044,7 @@ describe("KeyEditView", () => {
       />,
     );
 
-    const submitButton = await screen.findByRole("button", { name: /save changes/i });
+    const submitButton = await screen.findByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -1069,7 +1069,7 @@ describe("KeyEditView", () => {
       />,
     );
 
-    const submitButton = await screen.findByRole("button", { name: /save changes/i });
+    const submitButton = await screen.findByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -1093,14 +1093,14 @@ describe("KeyEditView", () => {
       />,
     );
 
-    const resetBudget = await screen.findByLabelText("Reset Budget");
+    const resetBudget = await screen.findByLabelText("重置预算");
     await chooseSelectOption(userEvent, resetBudget, "从不重置");
 
     await waitFor(() => {
       expect(resetBudget).toHaveTextContent("从不重置");
     });
 
-    await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalled();
@@ -1125,9 +1125,9 @@ describe("KeyEditView", () => {
       />,
     );
 
-    await chooseSelectOption(userEvent, await screen.findByLabelText("Reset Budget"), "从不重置");
+    await chooseSelectOption(userEvent, await screen.findByLabelText("重置预算"), "从不重置");
 
-    await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalled();
@@ -1156,7 +1156,7 @@ describe("KeyEditView", () => {
       />,
     );
 
-    const submitButton = await screen.findByRole("button", { name: /save changes/i });
+    const submitButton = await screen.findByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -1183,7 +1183,7 @@ describe("KeyEditView", () => {
       />,
     );
 
-    const submitButton = await screen.findByRole("button", { name: /save changes/i });
+    const submitButton = await screen.findByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -1215,7 +1215,7 @@ describe("KeyEditView", () => {
     await userEvent.clear(maxBudgetInput);
     await userEvent.type(maxBudgetInput, "200");
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -1246,7 +1246,7 @@ describe("KeyEditView", () => {
     const maxBudgetInput = await screen.findByPlaceholderText("Max spend ($)");
     await userEvent.clear(maxBudgetInput);
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -1335,7 +1335,7 @@ describe("KeyEditView", () => {
     it("should leave model_max_budget out of an edit that did not touch it", async () => {
       const onSubmit = renderWith(true);
 
-      await userEvent.click(await screen.findByRole("button", { name: /save changes/i }));
+      await userEvent.click(await screen.findByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalled();
@@ -1363,16 +1363,16 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Key Type")).toBeInTheDocument();
+      expect(screen.getByText("密钥类型")).toBeInTheDocument();
     });
 
     // The selected key type label should show "AI APIs" (not "LLM API")
-    await userEvent.click(screen.getByLabelText("Key Type"));
+    await userEvent.click(screen.getByLabelText("密钥类型"));
 
     await waitFor(() => {
       // Verify "AI APIs" appears as an option label
       const optionTexts = visibleOptions().map((el) => el.textContent);
-      const hasAIAPIs = optionTexts.some((text) => text?.includes("AI APIs"));
+      const hasAIAPIs = optionTexts.some((text) => text?.includes("AI API"));
       expect(hasAIAPIs).toBe(true);
 
       // Verify old "LLM API" label does NOT appear
@@ -1401,10 +1401,10 @@ describe("KeyEditView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /取消/ })).toBeInTheDocument();
     });
 
-    const submitButton = screen.getByRole("button", { name: /save changes/i });
+    const submitButton = screen.getByRole("button", { name: /保存更改/ });
     await userEvent.click(submitButton);
 
     // Wait for onSubmit to be called, which means handleSubmit has started and isKeySaving should be true
@@ -1415,7 +1415,7 @@ describe("KeyEditView", () => {
     // Wait for the cancel button to actually be disabled (state update may take a moment)
     await waitFor(
       () => {
-        const cancelButton = screen.getByRole("button", { name: /cancel/i });
+        const cancelButton = screen.getByRole("button", { name: /取消/ });
         expect(cancelButton).toBeDisabled();
       },
       { timeout: 3000 },
@@ -1442,7 +1442,7 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText("Organization")).toBeInTheDocument();
+        expect(screen.getByText("组织")).toBeInTheDocument();
       });
     });
 
@@ -1460,10 +1460,10 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText("Organization")).toBeInTheDocument();
+        expect(screen.getByText("组织")).toBeInTheDocument();
       });
 
-      await userEvent.click(screen.getByLabelText("Organization"));
+      await userEvent.click(screen.getByLabelText("组织"));
 
       expect(screen.queryByText("Engineering")).not.toBeInTheDocument();
     });
@@ -1482,10 +1482,10 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText("Organization")).toBeInTheDocument();
+        expect(screen.getByText("组织")).toBeInTheDocument();
       });
 
-      await userEvent.click(screen.getByLabelText("Organization"));
+      await userEvent.click(screen.getByLabelText("组织"));
 
       expect(await screen.findByText("Engineering")).toBeInTheDocument();
     });
@@ -1509,7 +1509,7 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByLabelText("Organization")).toHaveValue("Engineering");
+        expect(screen.getByLabelText("组织")).toHaveValue("Engineering");
       });
     });
 
@@ -1528,10 +1528,10 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByLabelText("Organization")).toHaveValue("Engineering");
+        expect(screen.getByLabelText("组织")).toHaveValue("Engineering");
       });
       await userEvent.click(screen.getByRole("button", { name: "Clear" }));
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -1570,21 +1570,21 @@ describe("KeyEditView", () => {
       );
       const view = renderWithProviders(renderEditor());
       await userEvent.click(await screen.findByRole("button", { name: "Detach from project" }));
-      expect(screen.getByRole("combobox", { name: "Organization" })).toBeDisabled();
-      expect(screen.getByRole("combobox", { name: "Team ID" })).toBeDisabled();
-      await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+      expect(screen.getByRole("combobox", { name: "组织" })).toBeDisabled();
+      expect(screen.getByRole("combobox", { name: "团队 ID" })).toBeDisabled();
+      await userEvent.click(screen.getByRole("button", { name: "取消" }));
       expect(onCancel).toHaveBeenCalledOnce();
       expect(onSubmit).not.toHaveBeenCalled();
       view.rerender(renderEditor({ ...key }));
       await userEvent.click(await screen.findByRole("button", { name: "Detach from project" }));
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
       const expectedDetach = { project_id: null, organization_id: "org-1", team_id: "group-maple", models: key.models };
       await waitFor(() =>
         expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining(expectedDetach), expect.any(Array)),
       );
-      expect(screen.getByRole("combobox", { name: "Team ID" })).toBeDisabled();
+      expect(screen.getByRole("combobox", { name: "团队 ID" })).toBeDisabled();
       view.rerender(renderEditor({ ...key, project_id: null }));
-      expect(screen.getByRole("combobox", { name: "Team ID" })).toBeEnabled();
+      expect(screen.getByRole("combobox", { name: "团队 ID" })).toBeEnabled();
       expect(screen.queryByRole("button", { name: "Detach from project" })).not.toBeInTheDocument();
       view.rerender(renderEditor(key, "Internal User"));
       expect(screen.queryByRole("button", { name: "Detach from project" })).not.toBeInTheDocument();
@@ -1614,9 +1614,9 @@ describe("KeyEditView", () => {
           premiumUser={false}
         />,
       );
-      expect(await screen.findByRole("combobox", { name: "Organization" })).toBeDisabled();
-      expect(screen.getByRole("combobox", { name: "Team ID" })).toBeDisabled();
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      expect(await screen.findByRole("combobox", { name: "组织" })).toBeDisabled();
+      expect(screen.getByRole("combobox", { name: "团队 ID" })).toBeDisabled();
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
       await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
       expect(onSubmit.mock.calls[0][0]).toMatchObject({ organization_id: "org-1", team_id: "group-maple" });
       expect(onSubmit.mock.calls[0][0]).not.toHaveProperty("project_id");
@@ -1625,7 +1625,7 @@ describe("KeyEditView", () => {
 
   describe("models dropdown team gating", () => {
     const openModelsDropdown = async () => {
-      await userEvent.click(screen.getByLabelText("Models"));
+      await userEvent.click(screen.getByLabelText("模型"));
     };
 
     it("should offer all-proxy-models but not all-team-models for a teamless key", async () => {
@@ -1642,7 +1642,7 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText("Models", { selector: "label" })).toBeInTheDocument();
+        expect(screen.getByText("模型", { selector: "label" })).toBeInTheDocument();
       });
 
       await openModelsDropdown();
@@ -1651,8 +1651,8 @@ describe("KeyEditView", () => {
         expect(screen.getAllByText("gpt-4").length).toBeGreaterThan(0);
       });
 
-      expect(screen.getAllByText("All Proxy Models").length).toBeGreaterThan(0);
-      expect(screen.queryAllByText("All Team Models")).toHaveLength(0);
+      expect(screen.getAllByText("所有代理模型").length).toBeGreaterThan(0);
+      expect(screen.queryAllByText("所有团队模型")).toHaveLength(0);
     });
 
     it("should offer all-team-models but hide all-proxy-models for a team key", async () => {
@@ -1673,7 +1673,7 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText("Models", { selector: "label" })).toBeInTheDocument();
+        expect(screen.getByText("模型", { selector: "label" })).toBeInTheDocument();
       });
 
       await openModelsDropdown();
@@ -1682,8 +1682,8 @@ describe("KeyEditView", () => {
         expect(screen.getAllByText("team-model-1").length).toBeGreaterThan(0);
       });
 
-      expect(screen.getAllByText("All Team Models").length).toBeGreaterThan(0);
-      expect(screen.queryAllByText("All Proxy Models")).toHaveLength(0);
+      expect(screen.getAllByText("所有团队模型").length).toBeGreaterThan(0);
+      expect(screen.queryAllByText("所有代理模型")).toHaveLength(0);
       expect(screen.queryAllByText("all-proxy-models")).toHaveLength(0);
     });
 
@@ -1704,13 +1704,13 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText("Models", { selector: "label" })).toBeInTheDocument();
+        expect(screen.getByText("模型", { selector: "label" })).toBeInTheDocument();
       });
 
       await openModelsDropdown();
 
-      expect(screen.queryAllByText("All Team Models")).toHaveLength(0);
-      expect(screen.queryAllByText("All Proxy Models")).toHaveLength(0);
+      expect(screen.queryAllByText("所有团队模型")).toHaveLength(0);
+      expect(screen.queryAllByText("所有代理模型")).toHaveLength(0);
     });
 
     it("should not duplicate the all-proxy-models option when the teamless model list already carries the sentinel", async () => {
@@ -1731,7 +1731,7 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText("Models", { selector: "label" })).toBeInTheDocument();
+        expect(screen.getByText("模型", { selector: "label" })).toBeInTheDocument();
       });
 
       await openModelsDropdown();
@@ -1743,7 +1743,7 @@ describe("KeyEditView", () => {
       });
 
       const labels = proxyOptionLabels();
-      expect(labels.filter((label) => label === "All Proxy Models")).toHaveLength(1);
+      expect(labels.filter((label) => label === "所有代理模型")).toHaveLength(1);
       expect(labels).not.toContain("all-proxy-models");
     });
 
@@ -1763,7 +1763,7 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText("Models", { selector: "label" })).toBeInTheDocument();
+        expect(screen.getByText("模型", { selector: "label" })).toBeInTheDocument();
       });
 
       await openModelsDropdown();
@@ -1778,10 +1778,10 @@ describe("KeyEditView", () => {
       };
 
       await clickOption("gpt-4");
-      await clickOption("All Proxy Models");
+      await clickOption("所有代理模型");
       await userEvent.keyboard("{Escape}");
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -1803,7 +1803,7 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText("Models", { selector: "label" })).toBeInTheDocument();
+        expect(screen.getByText("模型", { selector: "label" })).toBeInTheDocument();
       });
 
       await openModelsDropdown();
@@ -1819,7 +1819,7 @@ describe("KeyEditView", () => {
 
       fireEvent.click(
         await waitFor(() => {
-          const match = findOption("All Proxy Models");
+          const match = findOption("所有代理模型");
           expect(match).toBeTruthy();
           return match!;
         }),
@@ -1857,7 +1857,7 @@ describe("KeyEditView", () => {
     };
 
     const budgetField = () => screen.findByRole("combobox", { name: "Default Customer Budget" });
-    const save = async () => userEvent.click(await screen.findByRole("button", { name: /save changes/i }));
+    const save = async () => userEvent.click(await screen.findByRole("button", { name: /保存更改/ }));
 
     it("shows the stored budget and leaves it off an edit that did not touch it", async () => {
       const onSubmit = renderEditView(serviceAccountKey("svc-a-budget"));
@@ -1909,7 +1909,7 @@ describe("KeyEditView", () => {
     it("does not render the control on a plain key that has no budget to show", async () => {
       renderEditView(MOCK_KEY_DATA);
 
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
       expect(screen.queryByRole("combobox", { name: "Default Customer Budget" })).not.toBeInTheDocument();
     });
   });
@@ -1935,17 +1935,17 @@ describe("KeyEditView", () => {
     it("refuses to save an invalid per-model estimate, and saves once it is corrected", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderEditView(MOCK_KEY_DATA, onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
-      const perModel = screen.getByLabelText("Estimated Output Tokens Per Model");
+      await screen.findByRole("button", { name: /保存更改/ });
+      const perModel = screen.getByLabelText("每个模型的预估输出 Token");
 
       fireEvent.change(perModel, { target: { value: "not json" } });
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
-      expect(await screen.findByText(/JSON object of positive integers/)).toBeInTheDocument();
+      expect(await screen.findByText(/请输入正整数构成的 JSON 对象/)).toBeInTheDocument();
       expect(onSubmitMock).not.toHaveBeenCalled();
 
       fireEvent.change(perModel, { target: { value: '{"gpt-4": 4096}' } });
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -1955,18 +1955,18 @@ describe("KeyEditView", () => {
     it("refuses to save a fractional estimate, and saves once it is corrected", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderEditView(MOCK_KEY_DATA, onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
-      const estimate = screen.getByLabelText("Estimated Output Tokens");
+      await screen.findByRole("button", { name: /保存更改/ });
+      const estimate = screen.getByLabelText("预估输出 Token");
 
       fireEvent.change(estimate, { target: { value: "12.5" } });
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).not.toHaveBeenCalled();
       });
 
       fireEvent.change(estimate, { target: { value: "2048" } });
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -1988,11 +1988,11 @@ describe("KeyEditView", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByLabelText("Estimated Output Tokens")).toHaveValue(512);
+        expect(screen.getByLabelText("预估输出 Token")).toHaveValue(512);
       });
-      expect(screen.getByLabelText("Estimated Output Tokens Per Model")).toHaveValue('{"gpt-4":4096}');
+      expect(screen.getByLabelText("每个模型的预估输出 Token")).toHaveValue('{"gpt-4":4096}');
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2007,15 +2007,15 @@ describe("KeyEditView", () => {
       renderEditView(MOCK_KEY_DATA, onSubmitMock);
 
       await waitFor(() => {
-        expect(screen.getByLabelText("Estimated Output Tokens")).toBeInTheDocument();
+        expect(screen.getByLabelText("预估输出 Token")).toBeInTheDocument();
       });
 
-      fireEvent.change(screen.getByLabelText("Estimated Output Tokens"), { target: { value: "2048" } });
-      fireEvent.change(screen.getByLabelText("Estimated Output Tokens Per Model"), {
+      fireEvent.change(screen.getByLabelText("预估输出 Token"), { target: { value: "2048" } });
+      fireEvent.change(screen.getByLabelText("每个模型的预估输出 Token"), {
         target: { value: '{"gpt-5": 8192}' },
       });
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2030,10 +2030,10 @@ describe("KeyEditView", () => {
       renderEditView(MOCK_KEY_DATA, onSubmitMock);
 
       await waitFor(() => {
-        expect(screen.getByLabelText("Estimated Output Tokens Per Model")).toHaveValue("");
+        expect(screen.getByLabelText("每个模型的预估输出 Token")).toHaveValue("");
       });
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2061,11 +2061,11 @@ describe("KeyEditView", () => {
         );
 
         await waitFor(() => {
-          expect(screen.getByLabelText("Estimated Output Tokens")).toBeDisabled();
+          expect(screen.getByLabelText("预估输出 Token")).toBeDisabled();
         });
-        expect(screen.getByLabelText("Estimated Output Tokens Per Model")).toBeDisabled();
+        expect(screen.getByLabelText("每个模型的预估输出 Token")).toBeDisabled();
 
-        await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+        await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
         await waitFor(() => {
           expect(onSubmitMock).toHaveBeenCalled();
@@ -2080,9 +2080,9 @@ describe("KeyEditView", () => {
       renderEditView(MOCK_KEY_DATA, vi.fn().mockResolvedValue(undefined), userRole);
 
       await waitFor(() => {
-        expect(screen.getByLabelText("Estimated Output Tokens")).toBeEnabled();
+        expect(screen.getByLabelText("预估输出 Token")).toBeEnabled();
       });
-      expect(screen.getByLabelText("Estimated Output Tokens Per Model")).toBeEnabled();
+      expect(screen.getByLabelText("每个模型的预估输出 Token")).toBeEnabled();
     });
   });
 
@@ -2146,9 +2146,9 @@ describe("KeyEditView", () => {
     it("sends exactly the bound form fields on an untouched save, and no server-only key data", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2169,9 +2169,9 @@ describe("KeyEditView", () => {
           premiumUser={true}
         />,
       );
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2185,7 +2185,7 @@ describe("KeyEditView", () => {
     it("routes the shared lifecycle and rate-limit-type controls into their own payload keys", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
       const duration = screen.getByPlaceholderText("例如 30d");
       await userEvent.clear(duration);
@@ -2193,7 +2193,7 @@ describe("KeyEditView", () => {
 
       await chooseSelectOption(userEvent, screen.getByLabelText(/TPM 速率限制类型/), /^保证吞吐/);
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2207,10 +2207,10 @@ describe("KeyEditView", () => {
     it("blanks duration rather than dropping the key when Never Expire is ticked", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock, { ...MOCK_KEY_DATA, expires: "2026-01-01T00:00:00Z" });
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
       await userEvent.click(screen.getByRole("checkbox", { name: "永不过期" }));
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2221,7 +2221,7 @@ describe("KeyEditView", () => {
     it("carries a typed value from every free-text and numeric control into the payload", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
       const retype = async (label: RegExp | string, text: string) => {
         const control = screen.getByLabelText(label);
@@ -2229,16 +2229,16 @@ describe("KeyEditView", () => {
         await userEvent.type(control, text);
       };
 
-      await retype("Key Alias", "typed-alias");
-      await retype("Max Budget (USD)", "12.5");
-      await retype("TPM Limit", "111");
-      await retype("RPM Limit", "222");
-      await retype("Max Parallel Requests", "3");
-      await retype("Model TPM Limit", '{{"gpt-4": 7}');
-      await retype("Model RPM Limit", '{{"gpt-4": 8}');
-      await retype("Metadata", '{{"typed": true}');
+      await retype("密钥别名", "typed-alias");
+      await retype("最大预算（USD）", "12.5");
+      await retype("TPM 限制", "111");
+      await retype("RPM 限制", "222");
+      await retype("最大并发请求数", "3");
+      await retype("模型 TPM 限制", '{{"gpt-4": 7}');
+      await retype("模型 RPM 限制", '{{"gpt-4": 8}');
+      await retype("元数据", '{{"typed": true}');
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2258,13 +2258,13 @@ describe("KeyEditView", () => {
     it("carries every toggle driven off its default into the payload", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await userEvent.click(screen.getByRole("switch", { name: /throttle on budget exceeded/i }));
-      await userEvent.click(screen.getByRole("switch", { name: /enable prompt caching/i }));
-      await userEvent.click(screen.getByRole("switch", { name: /disable global guardrails/i }));
+      await userEvent.click(screen.getByRole("switch", { name: /超出预算时限流/ }));
+      await userEvent.click(screen.getByRole("switch", { name: /启用提示缓存/ }));
+      await userEvent.click(screen.getByRole("switch", { name: /禁用全局护栏/ }));
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2279,11 +2279,11 @@ describe("KeyEditView", () => {
     it("carries a tag typed into the tags control into the payload", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await userEvent.type(screen.getByLabelText("Tags"), "typed-tag{Enter}");
+      await userEvent.type(screen.getByLabelText("标签"), "typed-tag{Enter}");
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2293,9 +2293,9 @@ describe("KeyEditView", () => {
 
     it("moves a tags array typed into the metadata JSON into the Tags control on blur", async () => {
       renderForPayload(vi.fn().mockResolvedValue(undefined));
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      const metadata = screen.getByLabelText("Metadata");
+      const metadata = screen.getByLabelText("元数据");
       fireEvent.change(metadata, { target: { value: '{"tags": ["pilot-tag"], "env": "non-prod"}' } });
       fireEvent.blur(metadata);
 
@@ -2306,10 +2306,10 @@ describe("KeyEditView", () => {
     it("carries a tags array typed into the metadata JSON into the payload even without a blur", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      fireEvent.change(screen.getByLabelText("Metadata"), { target: { value: '{"tags": ["pilot-tag"]}' } });
-      fireEvent.submit(screen.getByRole("button", { name: /save changes/i }));
+      fireEvent.change(screen.getByLabelText("元数据"), { target: { value: '{"tags": ["pilot-tag"]}' } });
+      fireEvent.submit(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2326,10 +2326,10 @@ describe("KeyEditView", () => {
     it("carries a picked guardrail into the payload", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
       await pickFromCombobox("Select guardrails", "guardrail-1");
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2343,10 +2343,10 @@ describe("KeyEditView", () => {
       });
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
       await pickFromCombobox(/Select policies/, /policy-1/);
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2357,10 +2357,10 @@ describe("KeyEditView", () => {
     it("carries a typed prompt into the payload", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await userEvent.type(screen.getByLabelText("Prompts"), "prompt-1{Enter}");
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.type(screen.getByLabelText("提示词"), "prompt-1{Enter}");
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2371,11 +2371,11 @@ describe("KeyEditView", () => {
     it("carries the RPM rate limit type into its own payload key", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
       await chooseSelectOption(userEvent, screen.getByLabelText(/RPM 速率限制类型/), /^保证吞吐/);
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2391,10 +2391,10 @@ describe("KeyEditView", () => {
       });
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await pickFromCombobox("Select vector stores", /VS One/);
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await pickFromCombobox("选择向量存储", /VS One/);
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2408,10 +2408,10 @@ describe("KeyEditView", () => {
       });
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await pickFromCombobox(/allowed pass through routes/, /\/bria/);
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await pickFromCombobox(/允许的直通路由/, /\/bria/);
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2433,12 +2433,12 @@ describe("KeyEditView", () => {
           premiumUser={true}
         />,
       );
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await userEvent.click(screen.getByLabelText("Team ID"));
+      await userEvent.click(screen.getByLabelText("团队 ID"));
       await userEvent.click(await screen.findByRole("option", { name: /Team Nine/ }));
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2449,10 +2449,10 @@ describe("KeyEditView", () => {
     it("carries a picked MCP server into the payload", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
       await userEvent.click(screen.getByRole("button", { name: "pick mcp server" }));
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2463,10 +2463,10 @@ describe("KeyEditView", () => {
     it("carries a picked agent into the payload", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
       await userEvent.click(screen.getByRole("button", { name: "pick agent" }));
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2477,10 +2477,10 @@ describe("KeyEditView", () => {
     it("carries a picked skill into the payload", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
       await userEvent.click(screen.getByRole("button", { name: "pick skill" }));
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2494,9 +2494,9 @@ describe("KeyEditView", () => {
         ...MOCK_KEY_DATA,
         object_permission: { ...MOCK_KEY_DATA.object_permission, skills: ["stored-skill"] },
       } as KeyResponse);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2507,10 +2507,10 @@ describe("KeyEditView", () => {
     it("carries an added logging integration into the payload", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
       await userEvent.click(screen.getByRole("button", { name: /添加集成/ }));
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2526,9 +2526,9 @@ describe("KeyEditView", () => {
         ...MOCK_KEY_DATA,
         budget_fallbacks: { "gpt-4": ["gpt-4o-mini"] },
       } as KeyResponse);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2539,9 +2539,9 @@ describe("KeyEditView", () => {
     it("omits budget fallbacks entirely for a key that has none", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2555,9 +2555,9 @@ describe("KeyEditView", () => {
         ...MOCK_KEY_DATA,
         metadata: { ...MOCK_KEY_DATA.metadata, tag_rpm_limit: { "test-tag": 7 } },
       } as KeyResponse);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalled();
@@ -2566,16 +2566,16 @@ describe("KeyEditView", () => {
     });
 
     const setRpmLimit = (value: string) => {
-      fireEvent.change(screen.getByLabelText("RPM Limit"), { target: { value } });
+      fireEvent.change(screen.getByLabelText("RPM 限制"), { target: { value } });
     };
 
     it("carries an edited RPM limit and the key identifier onto the wire", async () => {
       const onSubmitMock = vi.fn().mockResolvedValue(undefined);
       renderForPayload(onSubmitMock);
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
       setRpmLimit("25");
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalledTimes(1);
@@ -2588,10 +2588,10 @@ describe("KeyEditView", () => {
       async () => {
         const onSubmitMock = vi.fn().mockResolvedValue(undefined);
         renderForPayload(onSubmitMock);
-        await screen.findByRole("button", { name: /save changes/i });
+        await screen.findByRole("button", { name: /保存更改/ });
 
-        await userEvent.clear(screen.getByLabelText("Max Budget (USD)"));
-        await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+        await userEvent.clear(screen.getByLabelText("最大预算（USD）"));
+        await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
         await waitFor(() => {
           expect(onSubmitMock).toHaveBeenCalledTimes(1);
@@ -2605,10 +2605,10 @@ describe("KeyEditView", () => {
       async () => {
         const onSubmitMock = vi.fn().mockResolvedValue(undefined);
         renderForPayload(onSubmitMock);
-        await screen.findByRole("button", { name: /save changes/i });
+        await screen.findByRole("button", { name: /保存更改/ });
 
         setRpmLimit("25");
-        await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+        await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
         await waitFor(() => {
           expect(onSubmitMock).toHaveBeenCalledTimes(1);
@@ -2634,15 +2634,15 @@ describe("KeyEditView", () => {
 
     it("hides the switch from a non-admin", async () => {
       renderAs("Internal User");
-      await screen.findByRole("button", { name: /save changes/i });
+      await screen.findByRole("button", { name: /保存更改/ });
 
-      expect(screen.queryByRole("switch", { name: /disable global guardrails/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("switch", { name: /禁用全局护栏/ })).not.toBeInTheDocument();
     });
 
     it("shows the switch to a proxy admin", async () => {
       renderAs("Admin");
 
-      expect(await screen.findByRole("switch", { name: /disable global guardrails/i })).toBeInTheDocument();
+      expect(await screen.findByRole("switch", { name: /禁用全局护栏/ })).toBeInTheDocument();
     });
   });
 });

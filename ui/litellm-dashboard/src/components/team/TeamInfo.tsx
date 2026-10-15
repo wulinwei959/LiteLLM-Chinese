@@ -1,4 +1,4 @@
-import type { TeamsTranslator } from "@/lib/i18n/translators";
+import type { EstimatedOutputTokensTranslator, TeamsTranslator } from "@/lib/i18n/translators";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { useTranslations } from "next-intl";
 import type { components } from "@/lib/http/schema";
@@ -101,7 +101,7 @@ import { useMCPServers } from "@/app/(dashboard)/hooks/mcpServers/useMCPServers"
 import { useMCPToolsets } from "@/app/(dashboard)/hooks/mcpServers/useMCPToolsets";
 import { useAccessGroups, type AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
 import { ModelSelect } from "../ModelSelect/ModelSelect";
-import { estimateChecks, estimateTooltips } from "../templates/estimatedOutputTokens";
+import { estimateChecks, estimateMessages, estimateTooltips } from "../templates/estimatedOutputTokens";
 import ObjectPermissionsView from "../object_permissions_view";
 import NumericalInput from "../shared/numerical_input";
 import VectorStoreSelector from "../vector_store_management/VectorStoreSelector";
@@ -349,7 +349,7 @@ const SUPPRESSED_BY_DESCRIPTION = "";
 
 const numericInputSchema = z.union([z.string(), z.number()]).nullish();
 
-const buildTeamUpdateFieldsSchema = (t: TeamsTranslator) =>
+const buildTeamUpdateFieldsSchema = (t: TeamsTranslator, estimateT: EstimatedOutputTokensTranslator) =>
   z.object({
   team_alias: z.string().min(1, t("listTeamNameRequired")),
   models: z.array(z.string()).optional(),
@@ -401,12 +401,12 @@ const buildTeamUpdateFieldsSchema = (t: TeamsTranslator) =>
     }),
   default_estimated_output_tokens: numericInputSchema.refine(
     estimateChecks.positive.isValid,
-    estimateChecks.positive.message,
+    estimateMessages(estimateT).positive,
   ),
   default_estimated_output_tokens_per_model: z
     .string()
     .optional()
-    .refine(estimateChecks.perModel.isValid, estimateChecks.perModel.message),
+    .refine(estimateChecks.perModel.isValid, estimateMessages(estimateT).perModel),
   guardrails: z.array(z.string()).optional(),
   disable_global_guardrails: z.boolean().optional(),
   policies: z.array(z.string()).optional(),
@@ -577,9 +577,10 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   onUpdate,
 }) => {
   const t = useTranslations("teams");
+  const estimateT = useTranslations("teams.estimatedOutputTokens");
   const teamUpdateSchema = useMemo(
     () =>
-      buildTeamUpdateFieldsSchema(t).superRefine((values, ctx) => {
+      buildTeamUpdateFieldsSchema(t, estimateT).superRefine((values, ctx) => {
         if (!isParsableJson(values.secret_manager_settings)) {
           ctx.addIssue({ code: "custom", message: SUPPRESSED_BY_DESCRIPTION, path: ["secret_manager_settings"] });
         }
@@ -625,7 +626,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   const { data: allMcpToolsets = [], isError: mcpToolsetsFailed, isLoading: mcpToolsetsLoading } = useMCPToolsets();
   const { data: allAccessGroups = [], isError: accessGroupsFailed, isLoading: accessGroupsLoading } = useAccessGroups();
   const canEditTeamEstimates = isProxyAdminRole(userRole);
-  const teamEstimateTooltip = estimateTooltips(canEditTeamEstimates, "team");
+  const teamEstimateTooltip = estimateTooltips(canEditTeamEstimates, estimateT);
   const { data: userOrganizations = [] } = useOrganizations();
   const { data: teamMetadataSchemaFields = [], isLoading: isTeamMetadataSchemaLoading } = useTeamMetadataSchema();
   const queryClient = useQueryClient();

@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { KeyResponse } from "../key_team_helpers/key_list";
-import { keyEditFormSchema, toKeyEditFormValues, toSubmittedValues } from "./keyEditFormValues";
+import { buildKeyEditFormSchema, toKeyEditFormValues, toSubmittedValues } from "./keyEditFormValues";
 
-const parse = (values: Record<string, unknown>) => keyEditFormSchema.safeParse(values);
+const parse = (values: Record<string, unknown>) =>
+  buildKeyEditFormSchema({ positive: "", perModel: "" }).safeParse(values);
 
 describe("tpd_limit round trip", () => {
   const keyData = { token: "tok", models: [], rpm_limit: 5, tpd_limit: 250000 } as unknown as KeyResponse;

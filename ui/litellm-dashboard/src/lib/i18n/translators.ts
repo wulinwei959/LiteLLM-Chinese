@@ -199,3 +199,13 @@ function useSecretManagerTranslator() {
   return useTranslations("secretManager");
 }
 export type SecretManagerTranslator = ReturnType<typeof useSecretManagerTranslator>;
+
+function useVirtualKeysEditFormTranslator() {
+  return useTranslations("virtualKeys.editForm");
+}
+export type VirtualKeysEditFormTranslator = ReturnType<typeof useVirtualKeysEditFormTranslator>;
+
+function useEstimatedOutputTokensTranslator() {
+  return useTranslations("virtualKeys.estimatedOutputTokens");
+}
+export type EstimatedOutputTokensTranslator = ReturnType<typeof useEstimatedOutputTokensTranslator>;

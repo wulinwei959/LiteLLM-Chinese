@@ -2,8 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import { estimateFields, estimateRules, withNormalizedEstimates } from "./estimatedOutputTokens";
 
+const rules = estimateRules({
+  positive: "请输入正整数",
+  perModel: '请输入正整数构成的 JSON 对象，例如 {"gpt-4": 4096}',
+});
+
 const expectRejects = async (value: unknown) =>
-  expect(estimateRules.perModel.validator(null, value)).rejects.toThrow(/JSON object of positive integers/);
+  expect(rules.perModel.validator(null, value)).rejects.toThrow(/请输入正整数构成的 JSON 对象/);
 
 describe("estimateFields", () => {
   it("renders a stored per-model map as editable JSON text", () => {
@@ -33,13 +38,13 @@ describe("estimateFields", () => {
 
 describe("estimateRules.perModel", () => {
   it("accepts a blank control", async () => {
-    await expect(estimateRules.perModel.validator(null, "")).resolves.toBeUndefined();
-    await expect(estimateRules.perModel.validator(null, "   ")).resolves.toBeUndefined();
-    await expect(estimateRules.perModel.validator(null, undefined)).resolves.toBeUndefined();
+    await expect(rules.perModel.validator(null, "")).resolves.toBeUndefined();
+    await expect(rules.perModel.validator(null, "   ")).resolves.toBeUndefined();
+    await expect(rules.perModel.validator(null, undefined)).resolves.toBeUndefined();
   });
 
   it("accepts a per-model object", async () => {
-    await expect(estimateRules.perModel.validator(null, '{"gpt-4": 4096}')).resolves.toBeUndefined();
+    await expect(rules.perModel.validator(null, '{"gpt-4": 4096}')).resolves.toBeUndefined();
   });
 
   it("rejects text that is not JSON", async () => {
@@ -108,13 +113,13 @@ describe("withNormalizedEstimates", () => {
 
 describe("estimateRules.positive", () => {
   it("accepts a blank control and a positive integer", async () => {
-    await expect(estimateRules.positive.validator(null, "")).resolves.toBeUndefined();
-    await expect(estimateRules.positive.validator(null, 2048)).resolves.toBeUndefined();
+    await expect(rules.positive.validator(null, "")).resolves.toBeUndefined();
+    await expect(rules.positive.validator(null, 2048)).resolves.toBeUndefined();
   });
 
   it("rejects values the runtime would ignore", async () => {
-    await expect(estimateRules.positive.validator(null, 0)).rejects.toThrow(/positive integer/);
-    await expect(estimateRules.positive.validator(null, -5)).rejects.toThrow(/positive integer/);
-    await expect(estimateRules.positive.validator(null, 12.5)).rejects.toThrow(/positive integer/);
+    await expect(rules.positive.validator(null, 0)).rejects.toThrow(/请输入正整数/);
+    await expect(rules.positive.validator(null, -5)).rejects.toThrow(/请输入正整数/);
+    await expect(rules.positive.validator(null, 12.5)).rejects.toThrow(/请输入正整数/);
   });
 });
