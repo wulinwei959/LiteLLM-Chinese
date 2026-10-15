@@ -205,7 +205,7 @@ describe("KeyInfoView", () => {
     vi.mocked(useAuthorized).mockReturnValue({ ...baseUseAuthorizedMock, userRole: "Admin" });
     renderWithProviders(<KeyInfoView keyData={MOCK_KEY_DATA} onClose={() => {}} keyId="test-key-id" teams={[]} />);
 
-    await userEvent.click(screen.getByRole("tab", { name: "Auto-router usage" }));
+    await userEvent.click(screen.getByRole("tab", { name: "自动路由用量" }));
 
     expect(screen.getByTestId("key-auto-router-usage")).toHaveTextContent("test-token-123");
   });
@@ -215,14 +215,14 @@ describe("KeyInfoView", () => {
     renderWithProviders(<KeyInfoView keyData={MOCK_KEY_DATA} onClose={() => {}} keyId="test-key-id" teams={[]} />);
 
     expect(screen.queryByLabelText("Selected dates")).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("tab", { name: "Savings" }));
+    await userEvent.click(screen.getByRole("tab", { name: "节省" }));
     await userEvent.click(screen.getByRole("button", { name: "Select August 1" }));
-    await userEvent.click(screen.getByRole("tab", { name: "Auto-router usage" }));
+    await userEvent.click(screen.getByRole("tab", { name: "自动路由用量" }));
     expect(screen.getByLabelText("Selected dates")).toHaveTextContent("2026-08-01T00:00:00.000Z");
     await userEvent.click(screen.getByRole("button", { name: "Select August 10" }));
-    await userEvent.click(screen.getByRole("tab", { name: "Settings" }));
+    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
     expect(screen.queryByLabelText("Selected dates")).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("tab", { name: "Savings" }));
+    await userEvent.click(screen.getByRole("tab", { name: "节省" }));
     expect(screen.getByLabelText("Selected dates")).toHaveTextContent("2026-08-10T00:00:00.000Z");
   });
 
@@ -230,7 +230,7 @@ describe("KeyInfoView", () => {
     vi.mocked(useAuthorized).mockReturnValue({ ...baseUseAuthorizedMock, userRole: "Internal User" });
     renderWithProviders(<KeyInfoView keyData={MOCK_KEY_DATA} onClose={() => {}} keyId="test-key-id" teams={[]} />);
 
-    expect(screen.queryByRole("tab", { name: "Auto-router usage" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "自动路由用量" })).not.toBeInTheDocument();
   });
 
   describe("last updated", () => {
@@ -287,7 +287,7 @@ describe("KeyInfoView", () => {
     );
 
     expect(await screen.findByText("$0.2500")).toBeInTheDocument();
-    expect(screen.getByTestId("key-lifetime-spend")).toHaveTextContent("Lifetime spend: $340.5000");
+    expect(screen.getByTestId("key-lifetime-spend")).toHaveTextContent("累计花费：$340.5000");
   });
 
   it("shows the backfill hint when lifetime spend trails the period spend", async () => {
@@ -304,8 +304,8 @@ describe("KeyInfoView", () => {
     );
 
     expect(await screen.findByTestId("key-lifetime-spend-backfill-hint")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /lifetime spend is below/i })).toBeInTheDocument();
-    expect(screen.getByTestId("key-lifetime-spend")).toHaveTextContent("Lifetime spend: $4.0000");
+    expect(screen.getByRole("button", { name: /累计花费低于/ })).toBeInTheDocument();
+    expect(screen.getByTestId("key-lifetime-spend")).toHaveTextContent("累计花费：$4.0000");
   });
 
   it("hides the backfill hint when lifetime spend covers the period spend", async () => {
@@ -355,7 +355,7 @@ describe("KeyInfoView", () => {
       />,
     );
 
-    expect(await screen.findByText("Router Settings")).toBeInTheDocument();
+    expect(await screen.findByText("路由设置")).toBeInTheDocument();
     expect(screen.getByText("gpt-4")).toBeInTheDocument();
     expect(screen.getByText("gpt-4o")).toBeInTheDocument();
     expect(screen.getByText("重试次数：2")).toBeInTheDocument();
@@ -391,7 +391,7 @@ describe("KeyInfoView", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText("Metadata")).toBeInTheDocument();
+      expect(screen.getByText("元数据")).toBeInTheDocument();
       const metadataBlock = container.querySelector("pre");
       expect(metadataBlock).toBeInTheDocument();
       expect(metadataBlock?.textContent?.trim()).toBe("{}");
@@ -413,8 +413,8 @@ describe("KeyInfoView", () => {
       <KeyInfoView keyData={keyData} onClose={() => {}} keyId={"test-key-id"} onKeyDataUpdate={() => {}} teams={[]} />,
     );
 
-    expect(await screen.findByText("Estimated Output Tokens: 512")).toBeInTheDocument();
-    expect(await screen.findByText('Estimated Output Tokens Per Model: {"gpt-4":4096}')).toBeInTheDocument();
+    expect(await screen.findByText("预计输出 token 数：512")).toBeInTheDocument();
+    expect(await screen.findByText('各模型预计输出 token 数：{"gpt-4":4096}')).toBeInTheDocument();
   });
 
   it("should fall back to Default when no estimated output tokens are configured", async () => {
@@ -430,8 +430,8 @@ describe("KeyInfoView", () => {
       />,
     );
 
-    expect(await screen.findByText("Estimated Output Tokens: Default")).toBeInTheDocument();
-    expect(await screen.findByText("Estimated Output Tokens Per Model: Default")).toBeInTheDocument();
+    expect(await screen.findByText("预计输出 token 数：默认")).toBeInTheDocument();
+    expect(await screen.findByText("各模型预计输出 token 数：默认")).toBeInTheDocument();
   });
 
   it("should allow proxy admin to modify key", async () => {
@@ -744,10 +744,10 @@ describe("KeyInfoView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /back to keys/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /返回密钥列表/ })).toBeInTheDocument();
     });
 
-    const backButton = screen.getByRole("button", { name: /back to keys/i });
+    const backButton = screen.getByRole("button", { name: /返回密钥列表/ });
     await userEvent.click(backButton);
 
     expect(onCloseMock).toHaveBeenCalledTimes(1);
@@ -759,9 +759,9 @@ describe("KeyInfoView", () => {
         <KeyInfoView keyData={keyData} onClose={() => {}} keyId="test-key-id" onKeyDataUpdate={() => {}} teams={[]} />,
       );
       await waitFor(() => {
-        expect(screen.getByRole("tab", { name: /settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("tab", { name: /设置/ })).toBeInTheDocument();
       });
-      await userEvent.click(screen.getByRole("tab", { name: /settings/i }));
+      await userEvent.click(screen.getByRole("tab", { name: /设置/ }));
     };
 
     it("should show the Edit Settings button when the user is a proxy admin for a key they do not own", async () => {
@@ -773,7 +773,7 @@ describe("KeyInfoView", () => {
 
       await renderAndOpenSettingsTab({ ...MOCK_KEY_DATA, user_id: "someone-else-id" });
 
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
 
     it("should show the Edit Settings button when the user is the key owner", async () => {
@@ -785,7 +785,7 @@ describe("KeyInfoView", () => {
 
       await renderAndOpenSettingsTab({ ...MOCK_KEY_DATA, user_id: "owner-user-id" });
 
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
 
     it("should not show the Edit Settings button when an Internal User does not own the key", async () => {
@@ -797,7 +797,7 @@ describe("KeyInfoView", () => {
 
       await renderAndOpenSettingsTab({ ...MOCK_KEY_DATA, user_id: "owner-user-id" });
 
-      expect(screen.queryByRole("button", { name: /edit settings/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /编辑设置/ })).not.toBeInTheDocument();
     });
 
     it("should not show the Edit Settings button when the user is an Internal Viewer even if they own the key", async () => {
@@ -809,7 +809,7 @@ describe("KeyInfoView", () => {
 
       await renderAndOpenSettingsTab({ ...MOCK_KEY_DATA, user_id: "owner-user-id" });
 
-      expect(screen.queryByRole("button", { name: /edit settings/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /编辑设置/ })).not.toBeInTheDocument();
     });
 
     it("should show the Edit Settings button when the user is a team admin for the key's team", async () => {
@@ -842,7 +842,7 @@ describe("KeyInfoView", () => {
 
       await renderAndOpenSettingsTab({ ...MOCK_KEY_DATA, team_id: teamId, user_id: "other-user-id" });
 
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
   });
 
@@ -868,7 +868,7 @@ describe("KeyInfoView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Guardrails")).toBeInTheDocument();
+      expect(screen.getByText("护栏")).toBeInTheDocument();
     });
   });
 
@@ -894,7 +894,7 @@ describe("KeyInfoView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Policies")).toBeInTheDocument();
+      expect(screen.getByText("策略")).toBeInTheDocument();
     });
   });
 
@@ -912,7 +912,7 @@ describe("KeyInfoView", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Key not found")).toBeInTheDocument();
+      expect(screen.getByText("未找到密钥")).toBeInTheDocument();
     });
   });
 
@@ -1027,8 +1027,8 @@ describe("KeyInfoView", () => {
       await userEvent.click(await screen.findByRole("menuitem", { name: "重置支出" }));
 
       await waitFor(() => {
-        expect(screen.getByText("Reset Key Spend")).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /^reset$/i })).toBeInTheDocument();
+        expect(screen.getByText("重置密钥花费")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /^重置$/ })).toBeInTheDocument();
       });
     });
 
@@ -1055,11 +1055,11 @@ describe("KeyInfoView", () => {
       await userEvent.click(await screen.findByRole("menuitem", { name: "重置支出" }));
 
       await waitFor(() => {
-        expect(screen.getByText("Reset Key Spend")).toBeInTheDocument();
+        expect(screen.getByText("重置密钥花费")).toBeInTheDocument();
       });
 
       // Click the confirm button in the modal
-      await userEvent.click(screen.getByRole("button", { name: /^reset$/i }));
+      await userEvent.click(screen.getByRole("button", { name: /^重置$/ }));
 
       await waitFor(() => {
         expect(mockResetKeySpendMutate).toHaveBeenCalledWith(
@@ -1080,8 +1080,8 @@ describe("KeyInfoView", () => {
       renderWithProviders(
         <KeyInfoView keyData={keyData} onClose={() => {}} keyId="test-key-id" onKeyDataUpdate={() => {}} teams={[]} />,
       );
-      await userEvent.click(screen.getByRole("tab", { name: /settings/i }));
-      await userEvent.click(screen.getByRole("button", { name: /edit settings/i }));
+      await userEvent.click(screen.getByRole("tab", { name: /设置/ }));
+      await userEvent.click(screen.getByRole("button", { name: /编辑设置/ }));
       await waitFor(() => expect(editViewMocks.onSubmit).toBeDefined());
     };
 
@@ -1174,8 +1174,8 @@ describe("KeyInfoView", () => {
       renderWithProviders(
         <KeyInfoView keyData={keyData} onClose={() => {}} keyId="test-key-id" onKeyDataUpdate={() => {}} teams={[]} />,
       );
-      await userEvent.click(screen.getByRole("tab", { name: /settings/i }));
-      await userEvent.click(screen.getByRole("button", { name: /edit settings/i }));
+      await userEvent.click(screen.getByRole("tab", { name: /设置/ }));
+      await userEvent.click(screen.getByRole("button", { name: /编辑设置/ }));
       await waitFor(() => expect(editViewMocks.onSubmit).toBeDefined());
     };
 

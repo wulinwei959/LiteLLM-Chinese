@@ -201,9 +201,9 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
     // defaults to 0 decimals — so $0.10 rendered as "$0".
     // After the fix it must render "$0.10".
     await waitFor(() => {
-      expect(screen.getByText(/of \$0\.10/)).toBeInTheDocument();
+      expect(screen.getByText(/上限 \$0\.10/)).toBeInTheDocument();
     });
-    expect(screen.queryByText(/of \$0$/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/上限 \$0$/)).not.toBeInTheDocument();
   });
 
   it("still renders whole-dollar max_budget with 2-decimal precision", async () => {
@@ -218,7 +218,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
     );
     await waitFor(() => {
       // 2-decimal formatting -> "$100.00"
-      expect(screen.getByText(/of \$100\.00/)).toBeInTheDocument();
+      expect(screen.getByText(/上限 \$100\.00/)).toBeInTheDocument();
     });
   });
 
@@ -233,7 +233,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText(/of Unlimited/)).toBeInTheDocument();
+      expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
   });
 
@@ -252,9 +252,9 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText(/of Unlimited/)).toBeInTheDocument();
+      expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
-    expect(screen.queryByText(/of \$1,200\.00/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/上限 \$1,200\.00/)).not.toBeInTheDocument();
     expect(screen.queryByText(/\(Team: Test Budget/)).not.toBeInTheDocument();
     await userEvent.setup().hover(screen.getByLabelText("question-circle"));
     expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("Team Test Budget: $1,200.00 / 30d");
@@ -276,7 +276,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText(/of Unlimited/)).toBeInTheDocument();
+      expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
     await userEvent.setup().hover(screen.getByLabelText("question-circle"));
     expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("Organization Acme Org: $5,000.00");
@@ -307,7 +307,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText(/of Unlimited/)).toBeInTheDocument();
+      expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
     await userEvent.setup().hover(screen.getByLabelText("question-circle"));
     expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("User Budget Owner: $1,500.00 / 1mo");
@@ -328,7 +328,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText(/of Unlimited/)).toBeInTheDocument();
+      expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
     await userEvent.setup().hover(screen.getByLabelText("question-circle"));
     expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("Team Test Budget: $1,200.00 / 30d");
@@ -351,7 +351,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText(/of Unlimited/)).toBeInTheDocument();
+      expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
     await userEvent.setup().hover(screen.getByLabelText("question-circle"));
     expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("Team Test Budget: $1,200.00 / 30d");
@@ -373,7 +373,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText(/of Unlimited/)).toBeInTheDocument();
+      expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
     expect(screen.queryByLabelText("question-circle")).not.toBeInTheDocument();
   });
@@ -393,7 +393,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText(/of \$25\.00/)).toBeInTheDocument();
+      expect(screen.getByText(/上限 \$25\.00/)).toBeInTheDocument();
     });
     expect(screen.queryByLabelText("question-circle")).not.toBeInTheDocument();
   });
@@ -424,7 +424,7 @@ describe("KeyInfoView budget reset visibility", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText(/^Resets Jul 22, 2026/)).toBeInTheDocument();
+      expect(screen.getByText(/^Jul 22, 2026/)).toBeInTheDocument();
     });
   });
 
@@ -439,9 +439,9 @@ describe("KeyInfoView budget reset visibility", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText(/of \$0\.10/)).toBeInTheDocument();
+      expect(screen.getByText(/上限 \$0\.10/)).toBeInTheDocument();
     });
-    expect(screen.queryByText(/^Resets /)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Jul /)).not.toBeInTheDocument();
   });
 
   it("shows the duration and next reset in the Settings tab", async () => {
@@ -455,13 +455,13 @@ describe("KeyInfoView budget reset visibility", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByRole("tab", { name: "Settings" })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "设置" })).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("tab", { name: "Settings" }));
+    fireEvent.click(screen.getByRole("tab", { name: "设置" }));
     await waitFor(() => {
-      expect(screen.getByText("Budget Reset")).toBeInTheDocument();
+      expect(screen.getByText("预算重置")).toBeInTheDocument();
     });
-    expect(screen.getByText(/Every 1d, next Jul 22, 2026/)).toBeInTheDocument();
+    expect(screen.getByText(/每 1d 重置，下次 Jul 22, 2026/)).toBeInTheDocument();
   });
 
   it("shows 'Never' in the Settings tab when no reset is scheduled", async () => {
@@ -475,12 +475,12 @@ describe("KeyInfoView budget reset visibility", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByRole("tab", { name: "Settings" })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "设置" })).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("tab", { name: "Settings" }));
+    fireEvent.click(screen.getByRole("tab", { name: "设置" }));
     await waitFor(() => {
-      expect(screen.getByText("Budget Reset")).toBeInTheDocument();
+      expect(screen.getByText("预算重置")).toBeInTheDocument();
     });
-    expect(screen.getByTestId("budget-reset-value")).toHaveTextContent("Never");
+    expect(screen.getByTestId("budget-reset-value")).toHaveTextContent("从不");
   });
 });
