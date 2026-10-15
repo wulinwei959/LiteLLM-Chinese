@@ -84,7 +84,7 @@ describe("SSOSettings", () => {
   it("should render", () => {
     renderSSOSettings();
 
-    expect(screen.getByText("SSO Configuration")).toBeInTheDocument();
+    expect(screen.getByText("SSO 配置")).toBeInTheDocument();
     expect(screen.getByText("管理单点登录（SSO）认证设置")).toBeInTheDocument();
   });
 
@@ -111,9 +111,9 @@ describe("SSOSettings", () => {
     renderSSOSettings();
 
     expect(screen.queryByText("未找到 SSO 配置")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Edit SSO Settings/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /编辑 SSO 设置/ })).toBeInTheDocument();
     expect(screen.getByText("SAML SSO")).toBeInTheDocument();
     expect(screen.getByText("https://proxy.example.com/sso/saml/metadata")).toBeInTheDocument();
-    expect(screen.getByText("Enabled")).toBeInTheDocument();
+    expect(screen.getByText("已启用")).toBeInTheDocument();
   });
 });

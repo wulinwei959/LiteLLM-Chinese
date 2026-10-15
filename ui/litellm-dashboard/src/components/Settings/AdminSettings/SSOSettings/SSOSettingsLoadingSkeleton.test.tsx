@@ -7,8 +7,8 @@ describe("SSOSettingsLoadingSkeleton", () => {
   it("should render", () => {
     renderWithProviders(<SSOSettingsLoadingSkeleton />);
 
-    expect(screen.getByRole("heading", { name: "SSO Configuration" })).toBeInTheDocument();
-    expect(screen.getByRole("status", { name: "Loading SSO configuration" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "SSO 配置" })).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "正在加载 SSO 配置" })).toBeInTheDocument();
   });
 
   it("should explain which configuration is loading", () => {
