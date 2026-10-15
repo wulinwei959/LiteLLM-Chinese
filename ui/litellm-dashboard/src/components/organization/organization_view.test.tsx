@@ -143,10 +143,10 @@ test("should display empty state when organization has no members", async () => 
     expect(screen.getByText("Acme Corp")).toBeInTheDocument();
   });
 
-  await user.click(screen.getByRole("tab", { name: "Members" }));
+  await user.click(screen.getByRole("tab", { name: "成员" }));
 
   await waitFor(() => {
-    expect(screen.getByText("No members found")).toBeInTheDocument();
+    expect(screen.getByText("未找到成员")).toBeInTheDocument();
   });
 });
 
@@ -271,16 +271,16 @@ test("should keep unsaved settings edits when switching tabs and back", async ()
     />,
   );
 
-  await user.click(screen.getByRole("tab", { name: "Settings" }));
-  await user.click(await screen.findByRole("button", { name: /Edit Settings/i }));
+  await user.click(screen.getByRole("tab", { name: "设置" }));
+  await user.click(await screen.findByRole("button", { name: /编辑设置/ }));
 
   const alias = await screen.findByLabelText(/Organization Name/i);
   await user.clear(alias);
   fireEvent.change(alias, { target: { value: "Renamed Org" } });
   expect(alias).toHaveValue("Renamed Org");
 
-  await user.click(screen.getByRole("tab", { name: "Overview" }));
-  await user.click(screen.getByRole("tab", { name: "Settings" }));
+  await user.click(screen.getByRole("tab", { name: "概览" }));
+  await user.click(screen.getByRole("tab", { name: "设置" }));
 
   expect(screen.getByLabelText(/Organization Name/i)).toHaveValue("Renamed Org");
 });
@@ -306,16 +306,16 @@ test("renders a tpm/rpm limit of 0 as 0 in the overview and settings tabs, never
     />,
   );
 
-  const overview = await screen.findByRole("tabpanel", { name: "Overview" });
+  const overview = await screen.findByRole("tabpanel", { name: "概览" });
   expect(within(overview).getByText("TPM: 0")).toBeInTheDocument();
   expect(within(overview).getByText("RPM: 0")).toBeInTheDocument();
 
-  await user.click(screen.getByRole("tab", { name: "Settings" }));
-  const settings = await screen.findByRole("tabpanel", { name: "Settings" });
+  await user.click(screen.getByRole("tab", { name: "设置" }));
+  const settings = await screen.findByRole("tabpanel", { name: "设置" });
   expect(within(settings).getByText("TPM: 0")).toBeInTheDocument();
   expect(within(settings).getByText("RPM: 0")).toBeInTheDocument();
-  expect(screen.queryByText("TPM: Unlimited")).not.toBeInTheDocument();
-  expect(screen.queryByText("RPM: Unlimited")).not.toBeInTheDocument();
+  expect(screen.queryByText("TPM: 无限制")).not.toBeInTheDocument();
+  expect(screen.queryByText("RPM: 无限制")).not.toBeInTheDocument();
 });
 
 const renderOrgView = (props: { is_proxy_admin?: boolean } = {}) => (
@@ -341,21 +341,21 @@ describe("organization detail tab in the URL (?org_tab=)", () => {
   test("opens on the tab named by ?org_tab=", () => {
     renderWithProviders(renderOrgView(), { searchParams: "?org=org_123&org_tab=members" });
 
-    expect(screen.getByRole("tab", { name: "Members" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByText("No members found")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "成员" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("未找到成员")).toBeInTheDocument();
   });
 
   test("the settings deep link used by the list's Edit action opens the Settings tab", () => {
     renderWithProviders(renderOrgView({ is_proxy_admin: true }), { searchParams: "?org=org_123&org_tab=settings" });
 
-    expect(screen.getByRole("tab", { name: "Settings" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("button", { name: /Edit Settings/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "设置" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
   });
 
   test("opens on Overview when the URL names no tab", () => {
     renderWithProviders(renderOrgView(), { searchParams: "?org=org_123" });
 
-    expect(screen.getByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "概览" })).toHaveAttribute("aria-selected", "true");
   });
 
   test("writes the selected tab to ?org_tab= and drops it again for Overview", async () => {
@@ -363,13 +363,13 @@ describe("organization detail tab in the URL (?org_tab=)", () => {
     const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
     renderWithProviders(renderOrgView(), { searchParams: "?org=org_123", onUrlUpdate });
 
-    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(screen.getByRole("tab", { name: "设置" }));
 
     await waitFor(() => expect(lastSearchParams(onUrlUpdate)?.get("org_tab")).toBe("settings"));
     expect(lastSearchParams(onUrlUpdate)?.get("org")).toBe("org_123");
-    expect(screen.getByRole("tab", { name: "Settings" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "设置" })).toHaveAttribute("aria-selected", "true");
 
-    await user.click(screen.getByRole("tab", { name: "Overview" }));
+    await user.click(screen.getByRole("tab", { name: "概览" }));
 
     await waitFor(() => expect(lastSearchParams(onUrlUpdate)?.has("org_tab")).toBe(false));
     expect(lastSearchParams(onUrlUpdate)?.get("org")).toBe("org_123");
@@ -392,7 +392,7 @@ describe("organization detail tab in the URL (?org_tab=)", () => {
       ),
     });
 
-    expect(screen.getByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "概览" })).toHaveAttribute("aria-selected", "true");
     await waitFor(() => expect(onUrlUpdate).toHaveBeenCalled());
     expect(lastSearchParams(onUrlUpdate)?.has("org_tab")).toBe(false);
     expect(lastSearchParams(onUrlUpdate)?.get("org")).toBe("org_123");
@@ -407,13 +407,13 @@ describe("organization detail tab in the URL (?org_tab=)", () => {
       </NuqsTestingAdapter>
     );
     const { rerender } = render(atUrl("?org=org_123&org_tab=members"));
-    expect(screen.getByRole("tab", { name: "Members" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "成员" })).toHaveAttribute("aria-selected", "true");
 
     rerender(atUrl("?org=org_123"));
-    expect(screen.getByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "概览" })).toHaveAttribute("aria-selected", "true");
 
     rerender(atUrl("?org=org_123&org_tab=members"));
-    expect(screen.getByRole("tab", { name: "Members" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByText("No members found")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "成员" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("未找到成员")).toBeInTheDocument();
   });
 });
