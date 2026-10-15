@@ -387,6 +387,14 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-15 第 75 簇：页签文案、URL 契约与跨文件 label 的边界
+
+补完一个已接入的家族时，先数清命名空间里已有什么。`organization_view.tsx` 需要的串里有 20 个在 `organizations` 与 `common` 里已经存在（同一家族前几个文件留下的），只补了真正缺的 24 个净新键。硬翻一遍会凭空造出重复键
+
+页签要分清"显示文案"和"取值"：`<TabsTrigger value="members">{t("members")}</TabsTrigger>`——`value` 是 `useUrlTab`/`?org_tab=` 的 URL 契约，不能动；动的只是文本。但 Radix 的 `TabsContent` 用 `aria-labelledby` 指回触发器，所以页签文案一改，**面板的可访问名也跟着改**，测试里 `getByRole("tab", { name })` 和 `getByRole("tabpanel", { name })` 要一起换
+
+`getByLabelText(/Organization Name/i)` 这类查询可能落在**另一个还没接入的文件**上：本视图的编辑态渲染的是 `org-settings/OrgSettingsForm.tsx`，它的 `label="Organization Name"` 仍是英文，所以这条断言保持英文、与本簇无关。改测试前先确认查询命中的是哪个组件，别把别人的账算到自己头上
+
 ## 2026-10-15 第 74 簇：图表桶标签的生成键与查找键必须同源
 
 `user_agent_activity.tsx` 的堆叠柱状图不直接渲染接口数据，而是先"铺满空桶再回填"：`generateWeeklyChartData` 先生成 7 个 `{ week: ... }` 条目，再用 `wauData.results.forEach` 按 `chartData.find((d) => d.week === weekLabel)` 回填。接口返回的 `date` 是英文（如 `"Week 1 (Jul 27)"`），桶标签由 `/Week (\d+)/` 抽出序号后拼出。把桶标签改接翻译时，**生成键和查找键必须走同一个 `t(...)` 调用**——两边都改成 `t("weekBucket", { n })` 才能让 `find` 命中；只改生成侧不改查找侧，`find` 会安静地返回 `undefined`，图表不报错、只是全为 0，很难从测试里一眼看出。月度桶（`monthBucket`）同理
