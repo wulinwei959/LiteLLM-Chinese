@@ -4200,7 +4200,10 @@
       "deleteResourceTitle": "SSO Settings",
       "providerGenericFallback": "Generic",
       "clearSuccessToast": "SSO settings cleared successfully",
-      "clearFailedToast": "Failed to clear SSO settings: {error}"
+      "clearFailedToast": "Failed to clear SSO settings: {error}",
+      "editModalTitle": "Edit SSO Settings",
+      "updatedToast": "SSO settings updated successfully",
+      "processFailedToast": "Failed to process SSO settings: {error}"
     }
   },
   "usage": {

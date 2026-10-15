@@ -4200,7 +4200,10 @@
       "deleteResourceTitle": "SSO 设置",
       "providerGenericFallback": "通用",
       "clearSuccessToast": "SSO 设置已清除",
-      "clearFailedToast": "清除 SSO 设置失败：{error}"
+      "clearFailedToast": "清除 SSO 设置失败：{error}",
+      "editModalTitle": "编辑 SSO 设置",
+      "updatedToast": "SSO 设置已成功更新",
+      "processFailedToast": "处理 SSO 设置失败：{error}"
     }
   },
   "usage": {

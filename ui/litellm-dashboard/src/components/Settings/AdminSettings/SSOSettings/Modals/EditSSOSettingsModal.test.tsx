@@ -1,5 +1,6 @@
-import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
+import { screen, fireEvent, waitFor, within } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import EditSSOSettingsModal, { toSSOFormValues } from "./EditSSOSettingsModal";
 import { ssoProviderConfigs } from "./BaseSSOSettingsForm";
 import type { SSOSettingsValues } from "@/app/(dashboard)/hooks/sso/useSSOSettings";
@@ -19,13 +20,13 @@ const SSO_PROVIDERS = {
 } as const;
 
 const TEST_DATA = {
-  MODAL_TITLE: "Edit SSO Settings",
-  SUCCESS_MESSAGE: "SSO settings updated successfully",
-  ERROR_MESSAGE_PREFIX: "Failed to save SSO settings:",
+  MODAL_TITLE: "编辑 SSO 设置",
+  SUCCESS_MESSAGE: "SSO 设置已成功更新",
+  ERROR_MESSAGE_PREFIX: "保存 SSO 设置失败：",
   BUTTON_TEXT: {
-    CANCEL: "Cancel",
-    SAVE: "Save",
-    SAVING: "Saving...",
+    CANCEL: "取消",
+    SAVE: "保存",
+    SAVING: "保存中...",
   },
 } as const;
 
@@ -180,7 +181,7 @@ const renderComponent = (props: Partial<React.ComponentProps<typeof EditSSOSetti
   };
 
   return {
-    ...render(<EditSSOSettingsModal {...defaultProps} {...props} />),
+    ...renderWithProviders(<EditSSOSettingsModal {...defaultProps} {...props} />),
     mockOnCancel: defaultProps.onCancel,
     mockOnSuccess: defaultProps.onSuccess,
   };
@@ -188,7 +189,7 @@ const renderComponent = (props: Partial<React.ComponentProps<typeof EditSSOSetti
 
 const getDialog = () => screen.getByRole("dialog");
 const getCancelButton = () => within(getDialog()).getByRole("button", { name: TEST_DATA.BUTTON_TEXT.CANCEL });
-const getSaveButton = () => within(getDialog()).getByRole("button", { name: /^(Save|Saving)/ });
+const getSaveButton = () => within(getDialog()).getByRole("button", { name: /^(保存|保存中)/ });
 
 const seededValuesFor = (ssoData: SSOData) => toSSOFormValues(ssoData.values as SSOSettingsValues);
 
@@ -343,7 +344,7 @@ describe("EditSSOSettingsModal", () => {
       fireEvent.click(screen.getByTestId(TEST_IDS.TRIGGER_FORM_SUBMIT));
 
       expect(parseErrorMessage).toHaveBeenCalledWith(error);
-      expect(toast.fromError).toHaveBeenCalledWith(`${TEST_DATA.ERROR_MESSAGE_PREFIX} Parsed error message`);
+      expect(toast.fromError).toHaveBeenCalledWith(`${TEST_DATA.ERROR_MESSAGE_PREFIX}Parsed error message`);
     });
   });
 
@@ -498,7 +499,8 @@ describe("EditSSOSettingsModal", () => {
 
       fireEvent.click(screen.getByTestId(TEST_IDS.TRIGGER_FORM_SUBMIT));
 
-      expect(toast.fromError).toHaveBeenCalledWith(`${TEST_DATA.ERROR_MESSAGE_PREFIX} undefined`);
+      // next-intl renders a missing {error} as an empty string instead of "undefined"
+      expect(toast.fromError).toHaveBeenCalledWith(TEST_DATA.ERROR_MESSAGE_PREFIX);
     });
 
     it("handles form submission with malformed data", async () => {

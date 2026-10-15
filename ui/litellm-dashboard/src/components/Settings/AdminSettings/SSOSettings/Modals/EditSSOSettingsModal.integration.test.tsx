@@ -30,7 +30,7 @@ const seed = (values: Record<string, unknown> = storedGoogleConfig) => {
   } as unknown as ReturnType<typeof useEditSSOSettings>);
 };
 
-const saveButton = () => screen.getByRole("button", { name: "Save" });
+const saveButton = () => screen.getByRole("button", { name: "保存" });
 
 describe("EditSSOSettingsModal (real form tree)", () => {
   beforeEach(() => {
