@@ -47,7 +47,7 @@ describe("MemberTable display", () => {
     renderTable();
 
     expect(within(screen.getByRole("row", { name: /zed@example\.com/ })).getByText("Zed Ortiz")).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /^name/i })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /^名称/ })).toBeInTheDocument();
     const cells = within(screen.getByRole("row", { name: /mystery@example\.com/ })).getAllByRole("cell");
     expect(cells[0]).toHaveTextContent("-");
   });
@@ -61,7 +61,19 @@ describe("MemberTable display", () => {
   it("reports the full member count", () => {
     renderTable();
 
-    expect(screen.getByText("4 Members")).toBeInTheDocument();
+    expect(screen.getByText("4 名成员")).toBeInTheDocument();
+  });
+
+  it("falls back to the translated column title and plural count when the caller gives neither", async () => {
+    const user = userEvent.setup();
+    renderTable({ members: [MEMBERS[0]] });
+
+    expect(screen.getByRole("columnheader", { name: /^角色/ })).toBeInTheDocument();
+    expect(screen.getByText("1 名成员")).toBeInTheDocument();
+
+    await user.click(screen.getByTestId("datatable-filters-trigger"));
+    await user.click(screen.getByTestId("filter-role"));
+    expect(await screen.findByRole("option", { name: "全部角色" })).toBeInTheDocument();
   });
 });
 
@@ -104,7 +116,7 @@ describe("MemberTable search", () => {
     search("admin");
 
     await waitFor(() => expect(rowIds()).toEqual([]));
-    expect(screen.getByText("No members match your search or filters")).toBeInTheDocument();
+    expect(screen.getByText("没有符合搜索或筛选条件的成员")).toBeInTheDocument();
   });
 });
 

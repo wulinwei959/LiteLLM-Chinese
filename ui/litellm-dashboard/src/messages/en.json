@@ -2125,6 +2125,27 @@
       "updated": "Updated",
       "team": "Team"
     },
+    "memberSearch": {
+      "defaultTitle": "Add Team Member",
+      "adminRoleDesc": "Admin role. Can create team keys, add members, and manage settings.",
+      "userRoleDesc": "User role. Can view team info, but not manage it.",
+      "existingUsersNotice": "Search selects from users that already exist. To add someone new, ask a proxy admin to create their account first.",
+      "emailPlaceholder": "Search by email",
+      "userIdPlaceholder": "Search by user ID",
+      "memberRoleLabel": "Member Role"
+    },
+    "memberTable": {
+      "editTooltip": "Edit member",
+      "deleteTooltip": "Delete member",
+      "resetSpendTooltip": "Reset spend",
+      "allRoles": "All Roles",
+      "membersCount": "{count, plural, =1 {# Member} other {# Members}}",
+      "noMatch": "No members match your search or filters",
+      "noData": "No data",
+      "filtersTitle": "Filters",
+      "filtersDescription": "Narrow down members",
+      "searchPlaceholder": "Search by name, email, or user ID"
+    },
     "teamsTable": {
       "exportCsv": "Export CSV",
       "exporting": "Exporting...",

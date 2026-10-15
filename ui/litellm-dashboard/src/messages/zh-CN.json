@@ -2125,6 +2125,27 @@
       "updated": "更新时间",
       "team": "团队"
     },
+    "memberSearch": {
+      "defaultTitle": "添加团队成员",
+      "adminRoleDesc": "管理员角色。可创建团队密钥、添加成员并管理设置。",
+      "userRoleDesc": "普通用户角色。可查看团队信息，但不能管理。",
+      "existingUsersNotice": "搜索只会列出已存在的用户。要添加新用户，请先请代理管理员为其创建账号。",
+      "emailPlaceholder": "按邮箱搜索",
+      "userIdPlaceholder": "按用户 ID 搜索",
+      "memberRoleLabel": "成员角色"
+    },
+    "memberTable": {
+      "editTooltip": "编辑成员",
+      "deleteTooltip": "删除成员",
+      "resetSpendTooltip": "重置支出",
+      "allRoles": "全部角色",
+      "membersCount": "{count, plural, other {# 名成员}}",
+      "noMatch": "没有符合搜索或筛选条件的成员",
+      "noData": "暂无数据",
+      "filtersTitle": "筛选",
+      "filtersDescription": "缩小成员范围",
+      "searchPlaceholder": "按名称、邮箱或用户 ID 搜索"
+    },
     "teamsTable": {
       "exportCsv": "导出 CSV",
       "exporting": "导出中...",

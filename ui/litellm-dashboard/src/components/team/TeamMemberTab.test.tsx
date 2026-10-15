@@ -152,10 +152,10 @@ describe("TeamMembersComponent", () => {
       />,
     );
 
-    expect(screen.getByRole("columnheader", { name: /user email/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /user id/i })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /用户邮箱/ })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /用户 id/i })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "团队角色" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /actions/i })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /操作/ })).toBeInTheDocument();
   });
 
   it("should render team members data", () => {
@@ -217,7 +217,7 @@ describe("TeamMembersComponent", () => {
       />,
     );
 
-    expect(screen.getByText("Add Member")).toBeInTheDocument();
+    expect(screen.getByText("添加成员")).toBeInTheDocument();
   });
 
   it("should display dash when user email is null", () => {
@@ -273,7 +273,7 @@ describe("TeamMembersComponent", () => {
       />,
     );
 
-    expect(screen.getByText("Default Proxy Admin")).toBeInTheDocument();
+    expect(screen.getByText("默认代理管理员")).toBeInTheDocument();
   });
 
   it("should display spend and rate limits for member with membership", () => {
@@ -294,7 +294,7 @@ describe("TeamMembersComponent", () => {
     expect(screen.getByText("$1,538.26")).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: "$100.50" })).toHaveClass("text-right");
     expect(screen.getByRole("columnheader", { name: /^团队成员预算（美元）/ })).toHaveClass("text-right");
-    expect(screen.getByRole("columnheader", { name: "User Email" })).not.toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "用户邮箱" })).not.toHaveClass("text-right");
     expect(screen.getByText(/100 RPM/)).toBeInTheDocument();
     expect(screen.getByText(/10000 TPM/)).toBeInTheDocument();
   });
@@ -460,7 +460,7 @@ describe("TeamMembersComponent", () => {
       />,
     );
 
-    const addButton = screen.getByRole("button", { name: /add member/i });
+    const addButton = screen.getByRole("button", { name: /添加成员/ });
     await user.click(addButton);
 
     expect(mockSetIsAddMemberModalVisible).toHaveBeenCalledWith(true);

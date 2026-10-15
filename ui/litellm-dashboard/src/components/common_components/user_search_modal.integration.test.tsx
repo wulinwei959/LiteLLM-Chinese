@@ -72,8 +72,8 @@ describe("UserSearchModal", () => {
     renderModal();
 
     const notice = screen.getByRole("alert");
-    expect(notice).toHaveTextContent(/users that already exist/i);
-    expect(notice).toHaveTextContent(/ask a proxy admin to create their account first/i);
+    expect(notice).toHaveTextContent("已存在的用户");
+    expect(notice).toHaveTextContent("请先请代理管理员为其创建账号");
     // info, not warning: a warning here would read as an error state on an empty form
     expect(notice).toHaveAttribute("data-variant", "info");
   });
@@ -92,7 +92,7 @@ describe("UserSearchModal submit payload", () => {
     return { user, onSubmit };
   };
 
-  const save = () => screen.getByRole("button", { name: /add member/i });
+  const save = () => screen.getByRole("button", { name: /添加成员/ });
 
   const searchByEmail = async (user: ReturnType<typeof userEvent.setup>, text: string) => {
     const input = getEmailSearchInput();
@@ -108,8 +108,8 @@ describe("UserSearchModal submit payload", () => {
     expect(save()).toBeDisabled();
     await searchByEmail(user, "pick");
     await user.click(screen.getAllByRole("button", { name: "Clear" })[0]);
-    expect(screen.getByLabelText("Email")).toHaveValue("");
-    expect(screen.getByLabelText("User ID")).toHaveValue("");
+    expect(screen.getByLabelText("邮箱")).toHaveValue("");
+    expect(screen.getByLabelText("用户 ID")).toHaveValue("");
     expect(save()).toBeDisabled();
     await user.click(save());
 
@@ -135,7 +135,7 @@ describe("UserSearchModal submit payload", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
 
     await searchByEmail(user, "pick");
-    await user.click(screen.getByLabelText("Member Role"));
+    await user.click(screen.getByLabelText("成员角色"));
     await user.click(await screen.findByRole("option", { name: /^admin/ }));
     await user.click(save());
 
@@ -149,12 +149,12 @@ describe("UserSearchModal submit payload", () => {
     await searchByEmail(user, "pick");
 
     vi.mocked(userFilterUICall).mockResolvedValue([] as never);
-    const idInput = screen.getByLabelText("User ID");
+    const idInput = screen.getByLabelText("用户 ID");
     await user.click(idInput);
     await user.type(idInput, "zzz");
     await waitFor(() => expect(userFilterUICall).toHaveBeenCalledTimes(2), { timeout: 3000 });
 
-    await user.click(screen.getByPlaceholderText("Search by email"));
+    await user.click(screen.getByPlaceholderText("按邮箱搜索"));
     await user.click(await screen.findByRole("option", { name: "picked@example.com" }));
 
     await user.click(save());
@@ -192,9 +192,9 @@ describe("UserSearchModal submit payload", () => {
     await searchByEmail(user, "pick");
     await user.click(getEmailSearchInput());
     await user.keyboard("{Enter}");
-    await user.click(screen.getByLabelText("User ID"));
+    await user.click(screen.getByLabelText("用户 ID"));
     await user.keyboard("{Enter}");
-    await user.click(screen.getByLabelText("Member Role"));
+    await user.click(screen.getByLabelText("成员角色"));
     await user.keyboard("{Escape}");
     await user.keyboard("{Enter}");
     expect(onSubmit).not.toHaveBeenCalled();
@@ -295,7 +295,7 @@ describe("UserSearchModal out-of-order search results", () => {
     ]);
 
     await user.keyboard("{Enter}");
-    await user.click(screen.getByRole("button", { name: /add member/i }));
+    await user.click(screen.getByRole("button", { name: /添加成员/ }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit.mock.calls[0][0]).toStrictEqual({
@@ -313,15 +313,15 @@ describe("UserSearchModal out-of-order search results", () => {
     await user.click(input);
     await user.type(input, "ali");
     await waitFor(() => expect(answers.has("ali")).toBe(true), { timeout: 3000 });
-    await screen.findByText("Loading...");
+    await screen.findByText("加载中...");
 
     await user.clear(input);
-    await screen.findByText("No results");
+    await screen.findByText("暂无结果");
 
     await answerFor("ali", [{ user_id: "u-jones", user_email: "alice.jones@example.com" }]);
 
     expect(screen.queryByRole("option")).not.toBeInTheDocument();
-    expect(screen.getByText("No results")).toBeInTheDocument();
+    expect(screen.getByText("暂无结果")).toBeInTheDocument();
   });
 
   it("keeps loading while a newer search is still in flight", async () => {
@@ -338,8 +338,8 @@ describe("UserSearchModal out-of-order search results", () => {
 
     await answerFor("ali", []);
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
-    expect(screen.queryByText("No results")).not.toBeInTheDocument();
+    expect(screen.getByText("加载中...")).toBeInTheDocument();
+    expect(screen.queryByText("暂无结果")).not.toBeInTheDocument();
 
     await answerFor("alice.smith@example.com", [{ user_id: "u-smith", user_email: "alice.smith@example.com" }]);
     await screen.findByRole("option", { name: "alice.smith@example.com" });

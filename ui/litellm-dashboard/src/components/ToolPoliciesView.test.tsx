@@ -39,7 +39,8 @@ describe("ToolPoliciesView", () => {
     can.mockReturnValue(false);
     renderWithProviders(<ToolPoliciesView accessToken="token" />);
 
-    expect(screen.getByText(/only available to admin users/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "工具策略" })).toBeInTheDocument();
+    expect(screen.getByText("工具策略仅管理员可用。")).toBeInTheDocument();
     expect(screen.queryByText("Tool Policies Overview")).not.toBeInTheDocument();
   });
 
