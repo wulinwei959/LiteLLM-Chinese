@@ -387,6 +387,14 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-15 第 79 簇：`t()` 调用撑破 printWidth、模块级"子组件"各挂各的 `useTranslations`
+
+`SSOSettings.tsx` 的字段配置本是单行的 `{ label: "Proxy Base URL", render: … },`（111 字符，printWidth 120 内）。把 `label` 换成 `t("ssoSettings.proxyBaseUrl")` 后这行涨到 128、越界，`prettier --list-different` 直接点名该文件——**接线把短字面量换成 `t("ns.key")` 调用，行数不减、宽度反增，落码后必须重跑 prettier**。确认 HEAD 是否本就 clean：把 `git show HEAD:./$f` 落到**仓库内**兄弟名（如 `…/head79check.tsx`）再 `--list-different`，`/tmp` 会因脱离项目根而丢 `.prettierrc` 解析；HEAD clean 就 `--write` 让它拆超长行，HEAD 不 clean（如两个消息目录）就别动、只手工保证新行合规
+
+`NotConfigured`、`EndpointValue` 这类定义在组件文件**模块作用域、但本身是 React 函数组件**（返回 JSX、被当 `<X/>` 渲染）的小件，要用 `t` 就在它们各自函数体内 `const t = useTranslations("adminPanel")`——组件挂 hook 合法，不必从父 `SSOSettings()` 把 `t` 当 prop 往下传。与"纯函数"分清楚：`serializeRouterConfig` 那种非组件的模块函数才走首参 translator 约定（见第 62/73 簇），别把两者混为一谈
+
+provider 展示名（`ssoProviderDisplayNames` 的 "Google SSO"/"SAML SSO"）连同 `Logo` 的 `alt` 由 `${label} logo` 拼出（如 "Google SSO logo"），均来自 `constants.ts` 的数据、按"数据模块留待专簇"不动。于是同文件里 `getByText("SAML SSO")`、`getByAltText("Google SSO logo")` 保持英文断言，而 heading/按钮/徽标改中文。判断某断言改不改，看那句文案是**组件自身的框架文案**还是**从数据模块取的值**——后者接线前先回溯来源，来源没翻就别跟着翻断言
+
 ## 2026-10-15 第 78 簇：同缩进的兄弟块只看缩进会插错父级
 
 给 `adminPanel` 加 `ssoSettings` 子命名空间时，第一版锚点写成"`pageVisibility` 的 `reset` 行 + `}` + `}` + `},`"。看着是"在 `uiSettings` 那块后面插"，实际落在 `adminPanel.uiSettings.ssoSettings`——因为 `uiSettings`（4 空格）与它内部的 `pageVisibility`（6 空格）各有一个 `}`，`pageVisibility` 的 `}` 与 `uiSettings` 的 `}` 是**不同缩进的相邻两行**，而真正要插入的层级是 `uiSettings` 的 `}` **之后**（与 `uiSettings` 同层、在 `adminPanel` 内）。锚点只到 `      }\n    }\n  },` 就分不清这两层
