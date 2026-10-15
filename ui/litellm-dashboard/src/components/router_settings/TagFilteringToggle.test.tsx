@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "../../../tests/test-utils";
 import TagFilteringToggle from "./TagFilteringToggle";
 
 const baseMetadata = {
@@ -13,27 +14,27 @@ const baseMetadata = {
 
 describe("TagFilteringToggle", () => {
   it("should render", () => {
-    render(<TagFilteringToggle enabled={false} routerFieldsMetadata={{}} onToggle={vi.fn()} />);
+    renderWithProviders(<TagFilteringToggle enabled={false} routerFieldsMetadata={{}} onToggle={vi.fn()} />);
     expect(screen.getByRole("switch")).toBeInTheDocument();
   });
 
   it("should display default label when no metadata is provided", () => {
-    render(<TagFilteringToggle enabled={false} routerFieldsMetadata={{}} onToggle={vi.fn()} />);
-    expect(screen.getByText("Enable Tag Filtering")).toBeInTheDocument();
+    renderWithProviders(<TagFilteringToggle enabled={false} routerFieldsMetadata={{}} onToggle={vi.fn()} />);
+    expect(screen.getByText("启用标签过滤")).toBeInTheDocument();
   });
 
   it("should name the switch with the metadata label so it is reachable by accessible name", () => {
-    render(<TagFilteringToggle enabled={false} routerFieldsMetadata={baseMetadata} onToggle={vi.fn()} />);
+    renderWithProviders(<TagFilteringToggle enabled={false} routerFieldsMetadata={baseMetadata} onToggle={vi.fn()} />);
     expect(screen.getByRole("switch", { name: "Tag Filtering" })).toBeInTheDocument();
   });
 
   it("should display the label from metadata when provided", () => {
-    render(<TagFilteringToggle enabled={false} routerFieldsMetadata={baseMetadata} onToggle={vi.fn()} />);
+    renderWithProviders(<TagFilteringToggle enabled={false} routerFieldsMetadata={baseMetadata} onToggle={vi.fn()} />);
     expect(screen.getByText("Tag Filtering")).toBeInTheDocument();
   });
 
   it("should display the description from metadata", () => {
-    render(<TagFilteringToggle enabled={false} routerFieldsMetadata={baseMetadata} onToggle={vi.fn()} />);
+    renderWithProviders(<TagFilteringToggle enabled={false} routerFieldsMetadata={baseMetadata} onToggle={vi.fn()} />);
     expect(screen.getByText("Route requests based on tags")).toBeInTheDocument();
   });
 
@@ -44,26 +45,26 @@ describe("TagFilteringToggle", () => {
         link: "https://docs.example.com/tag-filtering",
       },
     };
-    render(<TagFilteringToggle enabled={false} routerFieldsMetadata={metadata} onToggle={vi.fn()} />);
-    const link = screen.getByRole("link", { name: /learn more/i });
+    renderWithProviders(<TagFilteringToggle enabled={false} routerFieldsMetadata={metadata} onToggle={vi.fn()} />);
+    const link = screen.getByRole("link", { name: /了解更多/ });
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "https://docs.example.com/tag-filtering");
   });
 
   it("should not render a Learn more link when metadata has no link", () => {
-    render(<TagFilteringToggle enabled={false} routerFieldsMetadata={baseMetadata} onToggle={vi.fn()} />);
-    expect(screen.queryByRole("link", { name: /learn more/i })).not.toBeInTheDocument();
+    renderWithProviders(<TagFilteringToggle enabled={false} routerFieldsMetadata={baseMetadata} onToggle={vi.fn()} />);
+    expect(screen.queryByRole("link", { name: /了解更多/ })).not.toBeInTheDocument();
   });
 
   it("should reflect the enabled=true state on the switch", () => {
-    render(<TagFilteringToggle enabled={true} routerFieldsMetadata={{}} onToggle={vi.fn()} />);
+    renderWithProviders(<TagFilteringToggle enabled={true} routerFieldsMetadata={{}} onToggle={vi.fn()} />);
     expect(screen.getByRole("switch")).toBeChecked();
   });
 
   it("should call onToggle with the new value when the switch is toggled", async () => {
     const onToggle = vi.fn();
     const user = userEvent.setup();
-    render(<TagFilteringToggle enabled={false} routerFieldsMetadata={{}} onToggle={onToggle} />);
+    renderWithProviders(<TagFilteringToggle enabled={false} routerFieldsMetadata={{}} onToggle={onToggle} />);
 
     await user.click(screen.getByRole("switch"));
 

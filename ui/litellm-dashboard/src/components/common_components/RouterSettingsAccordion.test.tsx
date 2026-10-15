@@ -4,6 +4,7 @@ import type { ReactElement, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RouterSettingsFormValue } from "../router_settings/RouterSettingsForm";
 import { fetchAvailableModels, fetchAvailableModelsForTeam } from "@/components/llm_calls/fetch_models";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import RouterSettingsAccordion, { RouterSettingsAccordionValue } from "./RouterSettingsAccordion";
 
 vi.mock("../networking", () => ({
@@ -40,7 +41,9 @@ const renderWithQueryClient = (ui: ReactElement) => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(ui, {
     wrapper: ({ children }: { children: ReactNode }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <LocaleProvider locale="zh-CN">{children}</LocaleProvider>
+      </QueryClientProvider>
     ),
   });
 };

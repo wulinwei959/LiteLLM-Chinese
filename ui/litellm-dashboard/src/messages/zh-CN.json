@@ -4931,7 +4931,20 @@
     "promptCachingTitle": "提示词缓存",
     "anthropicCaching": "自动启用 Anthropic 提示词缓存",
     "cacheTtl": "缓存有效期(TTL)",
-    "systemMessagesFirst": "OpenAI 系统消息前置"
+    "systemMessagesFirst": "OpenAI 系统消息前置",
+    "routingSettingsTitle": "路由设置",
+    "routingSettingsDescription": "配置请求如何路由到各个部署",
+    "routingStrategyFallback": "路由策略",
+    "tagFilteringFallback": "启用标签过滤",
+    "reliabilityTitle": "可靠性与重试",
+    "reliabilityDescription": "配置重试逻辑与失败处理",
+    "latencyTitle": "基于延迟的配置",
+    "latencyDescription": "微调基于延迟的路由行为",
+    "latencyTtlHelp": "计算某个部署平均延迟时回溯的滑动窗口。默认值 - 1 小时(以秒为单位)。",
+    "latencyBufferHelp": "在最低延迟的这个百分比范围内随机调度各个部署。默认值 - 0(即始终选择最低延迟的部署)。",
+    "saveChanges": "保存更改",
+    "updateSuccessToast": "路由设置更新成功",
+    "updateFailedToast": "更新路由设置失败：{error}"
   },
   "changePassword": {
     "changePasswordTitle": "修改密码",

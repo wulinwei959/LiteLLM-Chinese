@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import ReliabilityRetriesSection from "./ReliabilityRetriesSection";
 
 const baseSettings = {
@@ -15,19 +16,19 @@ const baseSettings = {
 
 describe("ReliabilityRetriesSection", () => {
   it("should render the section heading", () => {
-    render(<ReliabilityRetriesSection routerSettings={{}} routerFieldsMetadata={{}} />);
-    expect(screen.getByText("Reliability & Retries")).toBeInTheDocument();
+    renderWithProviders(<ReliabilityRetriesSection routerSettings={{}} routerFieldsMetadata={{}} />);
+    expect(screen.getByText("可靠性与重试")).toBeInTheDocument();
   });
 
   it("should render input fields for non-excluded settings", () => {
-    render(<ReliabilityRetriesSection routerSettings={baseSettings} routerFieldsMetadata={{}} />);
+    renderWithProviders(<ReliabilityRetriesSection routerSettings={baseSettings} routerFieldsMetadata={{}} />);
     expect(screen.getByDisplayValue("3")).toBeInTheDocument(); // num_retries
     expect(screen.getByDisplayValue("30")).toBeInTheDocument(); // timeout
     expect(screen.getByDisplayValue("2")).toBeInTheDocument(); // allowed_fails
   });
 
   it("should not render inputs for excluded keys", () => {
-    render(<ReliabilityRetriesSection routerSettings={baseSettings} routerFieldsMetadata={{}} />);
+    renderWithProviders(<ReliabilityRetriesSection routerSettings={baseSettings} routerFieldsMetadata={{}} />);
     // Each excluded key must not produce a visible input value
     const inputs = screen.queryAllByRole("textbox");
     const inputNames = inputs.map((el) => el.getAttribute("name"));
@@ -45,24 +46,26 @@ describe("ReliabilityRetriesSection", () => {
     const metadata = {
       num_retries: { ui_field_name: "Number of Retries", field_description: "How many times to retry" },
     };
-    render(<ReliabilityRetriesSection routerSettings={{ num_retries: 3 }} routerFieldsMetadata={metadata} />);
+    renderWithProviders(
+      <ReliabilityRetriesSection routerSettings={{ num_retries: 3 }} routerFieldsMetadata={metadata} />,
+    );
     expect(screen.getByText("Number of Retries")).toBeInTheDocument();
   });
 
   it("should fall back to the raw param name when no metadata label is available", () => {
-    render(<ReliabilityRetriesSection routerSettings={{ num_retries: 3 }} routerFieldsMetadata={{}} />);
+    renderWithProviders(<ReliabilityRetriesSection routerSettings={{ num_retries: 3 }} routerFieldsMetadata={{}} />);
     expect(screen.getByText("num_retries")).toBeInTheDocument();
   });
 
   it("should render null values as an empty input", () => {
-    render(<ReliabilityRetriesSection routerSettings={{ timeout: null }} routerFieldsMetadata={{}} />);
+    renderWithProviders(<ReliabilityRetriesSection routerSettings={{ timeout: null }} routerFieldsMetadata={{}} />);
     const input = screen.getByRole("textbox", { name: /timeout/i }) as HTMLInputElement;
     expect(input.value).toBe("");
   });
 
   it("should render object values stringified into the input", () => {
     const settings = { model_group_alias: { "gpt-4": "gpt-4-turbo" } };
-    render(<ReliabilityRetriesSection routerSettings={settings} routerFieldsMetadata={{}} />);
+    renderWithProviders(<ReliabilityRetriesSection routerSettings={settings} routerFieldsMetadata={{}} />);
     // HTML input type=text strips newlines, so check that the key/value appears
     const input = screen.getByRole("textbox", { name: /model_group_alias/i }) as HTMLInputElement;
     expect(input.value).toContain('"gpt-4"');
@@ -70,7 +73,7 @@ describe("ReliabilityRetriesSection", () => {
   });
 
   it("should render no inputs when routerSettings is empty", () => {
-    render(<ReliabilityRetriesSection routerSettings={{}} routerFieldsMetadata={{}} />);
+    renderWithProviders(<ReliabilityRetriesSection routerSettings={{}} routerFieldsMetadata={{}} />);
     expect(screen.queryAllByRole("textbox")).toHaveLength(0);
   });
 });

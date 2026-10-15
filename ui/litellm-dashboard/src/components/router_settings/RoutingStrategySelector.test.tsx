@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "../../../tests/test-utils";
 import RoutingStrategySelector from "./RoutingStrategySelector";
 
 const openStrategyDropdown = async (user: ReturnType<typeof userEvent.setup>) =>
@@ -19,13 +20,13 @@ const baseProps = {
 
 describe("RoutingStrategySelector", () => {
   it("should render", () => {
-    render(<RoutingStrategySelector {...baseProps} />);
+    renderWithProviders(<RoutingStrategySelector {...baseProps} />);
     expect(screen.getByRole("combobox")).toBeInTheDocument();
   });
 
   it("should display default label when no metadata is provided", () => {
-    render(<RoutingStrategySelector {...baseProps} />);
-    expect(screen.getByText("Routing Strategy")).toBeInTheDocument();
+    renderWithProviders(<RoutingStrategySelector {...baseProps} />);
+    expect(screen.getByText("路由策略")).toBeInTheDocument();
   });
 
   it("should display ui_field_name from metadata when provided", () => {
@@ -38,14 +39,14 @@ describe("RoutingStrategySelector", () => {
         },
       },
     };
-    render(<RoutingStrategySelector {...props} />);
+    renderWithProviders(<RoutingStrategySelector {...props} />);
     expect(screen.getByText("Strategy")).toBeInTheDocument();
     expect(screen.getByText("How to pick a deployment")).toBeInTheDocument();
   });
 
   it("should render all available strategies as options", async () => {
     const user = userEvent.setup();
-    render(<RoutingStrategySelector {...baseProps} />);
+    renderWithProviders(<RoutingStrategySelector {...baseProps} />);
 
     await openStrategyDropdown(user);
 
@@ -56,7 +57,7 @@ describe("RoutingStrategySelector", () => {
 
   it("should display strategy descriptions alongside option labels", async () => {
     const user = userEvent.setup();
-    render(<RoutingStrategySelector {...baseProps} />);
+    renderWithProviders(<RoutingStrategySelector {...baseProps} />);
 
     await openStrategyDropdown(user);
 
@@ -66,7 +67,7 @@ describe("RoutingStrategySelector", () => {
 
   it("should not render a description for a strategy that has none", async () => {
     const user = userEvent.setup();
-    render(<RoutingStrategySelector {...baseProps} />);
+    renderWithProviders(<RoutingStrategySelector {...baseProps} />);
 
     await openStrategyDropdown(user);
 
@@ -77,7 +78,7 @@ describe("RoutingStrategySelector", () => {
   it("should call onStrategyChange with the selected strategy value", async () => {
     const onStrategyChange = vi.fn();
     const user = userEvent.setup();
-    render(<RoutingStrategySelector {...baseProps} onStrategyChange={onStrategyChange} />);
+    renderWithProviders(<RoutingStrategySelector {...baseProps} onStrategyChange={onStrategyChange} />);
 
     await openStrategyDropdown(user);
     await user.click(await screen.findByRole("option", { name: /latency-based-routing/ }));

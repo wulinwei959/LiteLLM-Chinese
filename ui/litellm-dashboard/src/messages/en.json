@@ -4931,7 +4931,20 @@
     "promptCachingTitle": "Prompt Caching",
     "anthropicCaching": "Automatic Anthropic prompt caching",
     "cacheTtl": "Cache lifetime (TTL)",
-    "systemMessagesFirst": "System messages first for OpenAI"
+    "systemMessagesFirst": "System messages first for OpenAI",
+    "routingSettingsTitle": "Routing Settings",
+    "routingSettingsDescription": "Configure how requests are routed to deployments",
+    "routingStrategyFallback": "Routing Strategy",
+    "tagFilteringFallback": "Enable Tag Filtering",
+    "reliabilityTitle": "Reliability & Retries",
+    "reliabilityDescription": "Configure retry logic and failure handling",
+    "latencyTitle": "Latency-Based Configuration",
+    "latencyDescription": "Fine-tune latency-based routing behavior",
+    "latencyTtlHelp": "Sliding window to look back over when calculating the average latency of a deployment. Default - 1 hour (in seconds).",
+    "latencyBufferHelp": "Shuffle between deployments within this % of the lowest latency. Default - 0 (i.e. always pick lowest latency).",
+    "saveChanges": "Save Changes",
+    "updateSuccessToast": "router settings updated successfully",
+    "updateFailedToast": "Failed to update router settings: {error}"
   },
   "changePassword": {
     "changePasswordTitle": "Change Password",

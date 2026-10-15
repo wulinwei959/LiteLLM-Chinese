@@ -4,6 +4,7 @@ import type { ReactElement } from "react";
 import { describe, expect, it, vi } from "vitest";
 import type { FallbackGroup } from "../Settings/RouterSettings/Fallbacks/FallbackGroupConfig";
 import type { RouterSettingsFormValue } from "../router_settings/RouterSettingsForm";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import RouterSettingsAccordion from "./RouterSettingsAccordion";
 import { routerSettingsEditorValue } from "./routerSettingsPayload";
 
@@ -41,7 +42,9 @@ const KEY_INFO_ROUTER_SETTINGS: Record<string, unknown> = {
 
 const renderAccordion = (stored: Record<string, unknown> | null): ReactElement => (
   <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-    <RouterSettingsAccordion accessToken="test-token" value={routerSettingsEditorValue(stored)} />
+    <LocaleProvider locale="zh-CN">
+      <RouterSettingsAccordion accessToken="test-token" value={routerSettingsEditorValue(stored)} />
+    </LocaleProvider>
   </QueryClientProvider>
 );
 
