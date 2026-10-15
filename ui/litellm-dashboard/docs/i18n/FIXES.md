@@ -359,6 +359,18 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - 嵌套块的键名用 6 空格（房内既有风格，参照 `virtualKeys.lifecycle`），块内正文行除最后一行外都要带逗号。第 69 簇把第 68 簇那 30 行统一纠正回 6 空格，两个消息目录的 prettier 欠账随之从 150/156 行收敛到 90/96 行；剩下的 90/96 是这批簇之前就在的（第 360–373 行一类 8 空格旧块），本簇没有新增
 - 插键脚本必须带 `assert after == before + N` 与两侧键树相等两道检查，还要 `json.load` 一遍。第 69 簇第一版漏了逗号，报错是 `JSONDecodeError: Expecting ',' delimiter: line 4980`，位置在整份目录里而不是新块里，排查成本高；当时的处置是 `git checkout HEAD -- src/messages/en.json src/messages/zh-CN.json` 退回、重跑缩进纠正、再补逗号逻辑重写
 
+## 2026-10-15 动态键表接 next-intl 的三条类型规矩
+
+第 70 簇的两张密钥管理器卡把字段标签放在模块级表里（`FIELD_LABELS: Record<string, string>`），把弹窗分组放在 `interface FieldGroup { title: string; subtitle?: string }` + 数组字面量里。直接把这些值喂给 `t()` 会撞上 `NamespacedMessageKeys`——`Record<string, string>` 的值是宽 `string`，next-intl 的类型只接受目录里真实存在的键名，`tsc` 一下多出 8 条 TS2345
+
+三条规矩：
+
+- 键表写成 `const FIELD_LABEL_KEYS = { … } as const`，别加 `Record<string, string>` 注解（注解会把字面量类型重新放宽，等于没写）。取值用 `FIELD_LABEL_KEYS[field as keyof typeof FIELD_LABEL_KEYS]`，查不到时回落到原始字段名，组件里包一层 `labelOf(field)` 就够了。这个写法在第 24 簇的 `src/components/team/TeamMemberTab.tsx`（`BUDGET_SOURCE_LABEL_KEYS … as const satisfies Record<…>`）已经有先例
+- 分组数组同样写成 `const FIELD_GROUPS = [...] as const`，成员存 `titleKey`/`subtitleKey` 而不是文案，并把只为描述形状而存在的 interface 删掉——留着接口就还得给键名标 `string`，又回到 TS2345
+- 可选键在 JSX 里要用 `{"subtitleKey" in group && (<p>{t(group.subtitleKey)}</p>)}` 收窄，`group.subtitleKey && …` 这种写法通不过检查。改这行时注意别吃掉开头的 `{`，第 70 簇就漏过一次，报错是 TS1381 `Unexpected token`，症状却是 `tsc` 总数从 880 塌到 2——单文件语法错误让后续类型检查中断，看着像"错误变少了"
+
+守卫侧不受影响：`missingKeys` 只解析同文件里的 `useTranslations("<ns>")` 与字面量 `t("a.b")`，`t(变量)` 一律跳过，所以键表本身不会被静态检查证伪，类型检查是唯一防线。
+
 ## 回归守卫
 
 改完之后这几条必须一起跑
