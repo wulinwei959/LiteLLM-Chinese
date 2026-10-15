@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { MultiSelect, type MultiSelectOption } from "@/components/shared/MultiSelect";
 import { getPassThroughEndpointsCall } from "../networking";
@@ -7,7 +8,7 @@ interface PassThroughRoutesSelectorProps {
   value?: string[];
   className?: string;
   accessToken: string;
-  placeholder?: string;
+  placeholder?: string | undefined;
   disabled?: boolean;
   teamId?: string | null;
 }
@@ -27,10 +28,11 @@ const PassThroughRoutesSelector: React.FC<PassThroughRoutesSelectorProps> = ({
   value,
   className,
   accessToken,
-  placeholder = "Select pass through routes",
+  placeholder,
   disabled = false,
   teamId,
 }) => {
+  const t = useTranslations("models.passThrough");
   const [passThroughRoutes, setPassThroughRoutes] = useState<MultiSelectOption[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -59,8 +61,8 @@ const PassThroughRoutesSelector: React.FC<PassThroughRoutesSelectorProps> = ({
       options={passThroughRoutes}
       value={value}
       onValueChange={(routes) => onChange?.(routes)}
-      placeholder={placeholder}
-      emptyText="No pass through routes found"
+      placeholder={placeholder ?? t("routesPlaceholder")}
+      emptyText={t("routesEmpty")}
       loading={loading}
       allowCustomValues
       disabled={disabled}

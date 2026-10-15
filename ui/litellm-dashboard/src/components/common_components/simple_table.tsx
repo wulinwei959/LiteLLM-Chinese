@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 import {
   NUMERIC_CELL_CLASS,
@@ -21,8 +22,8 @@ interface SimpleTableProps<T> {
   data: T[];
   columns: SimpleTableColumn<T>[];
   isLoading?: boolean;
-  loadingMessage?: string;
-  emptyMessage?: string;
+  loadingMessage?: string | undefined;
+  emptyMessage?: string | undefined;
   getRowKey?: (row: T, index: number) => string;
 }
 
@@ -34,10 +35,11 @@ export function SimpleTable<T>({
   data,
   columns,
   isLoading = false,
-  loadingMessage = "Loading...",
-  emptyMessage = "No data",
+  loadingMessage,
+  emptyMessage,
   getRowKey,
 }: SimpleTableProps<T>) {
+  const commonT = useTranslations("common");
   return (
     <Table>
       <TableHeader>
@@ -57,7 +59,7 @@ export function SimpleTable<T>({
         {isLoading ? (
           <TableRow>
             <TableCell colSpan={columns.length} className="text-center">
-              <span className="text-muted-foreground">{loadingMessage}</span>
+              <span className="text-muted-foreground">{loadingMessage ?? commonT("loading")}</span>
             </TableCell>
           </TableRow>
         ) : data.length > 0 ? (
@@ -73,7 +75,7 @@ export function SimpleTable<T>({
         ) : (
           <TableRow>
             <TableCell colSpan={columns.length} className="text-center">
-              <span className="text-muted-foreground">{emptyMessage}</span>
+              <span className="text-muted-foreground">{emptyMessage ?? commonT("noDataShort")}</span>
             </TableCell>
           </TableRow>
         )}

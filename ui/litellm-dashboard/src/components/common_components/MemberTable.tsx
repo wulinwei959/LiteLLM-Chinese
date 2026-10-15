@@ -269,7 +269,7 @@ export default function MemberTable({
         onGlobalFilterChange={setGlobalFilter}
         noDataMessage={
           <span className="text-muted-foreground">
-            {isNarrowed ? t("memberTable.noMatch") : emptyText ?? t("memberTable.noData")}
+            {isNarrowed ? t("memberTable.noMatch") : emptyText ?? commonT("noDataShort")}
           </span>
         }
         toolbar={(table) => (

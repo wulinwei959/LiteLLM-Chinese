@@ -1,5 +1,6 @@
-import React from "react";
 import { Users } from "lucide-react";
+import { useTranslations } from "next-intl";
+import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MultiSelect, type MultiSelectOption } from "@/components/shared/MultiSelect";
 import { useAccessGroups, AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
@@ -7,12 +8,12 @@ import { useAccessGroups, AccessGroupResponse } from "@/app/(dashboard)/hooks/ac
 export interface AccessGroupSelectorProps {
   value?: string[];
   onChange?: (value: string[]) => void;
-  placeholder?: string;
+  placeholder?: string | undefined;
   disabled?: boolean;
   style?: React.CSSProperties;
   className?: string;
   showLabel?: boolean;
-  labelText?: string;
+  labelText?: string | undefined;
 }
 
 /**
@@ -25,13 +26,16 @@ export interface AccessGroupSelectorProps {
 const AccessGroupSelector: React.FC<AccessGroupSelectorProps> = ({
   value,
   onChange,
-  placeholder = "Select access groups",
+  placeholder,
   disabled = false,
   style,
   className,
   showLabel = false,
-  labelText = "Access Group",
+  labelText,
 }) => {
+  const t = useTranslations("access-groups");
+  const resolvedPlaceholder = placeholder ?? t("selectorPlaceholder");
+  const resolvedLabel = labelText ?? t("selectorLabel");
   const { data: accessGroups, isLoading, isError } = useAccessGroups();
 
   // ── Loading skeleton ─────────────────────────────────────────────────────
@@ -40,7 +44,7 @@ const AccessGroupSelector: React.FC<AccessGroupSelectorProps> = ({
       <div>
         {showLabel && (
           <p className="mb-2 flex items-center text-sm font-medium text-foreground">
-            <Users className="mr-2 size-4" /> {labelText}
+            <Users className="mr-2 size-4" /> {resolvedLabel}
           </p>
         )}
         <Skeleton className="h-8 w-full" style={style} />
@@ -60,7 +64,7 @@ const AccessGroupSelector: React.FC<AccessGroupSelectorProps> = ({
     <div>
       {showLabel && (
         <p className="mb-2 flex items-center text-sm font-medium text-foreground">
-          <Users className="mr-2 size-4" /> {labelText}
+          <Users className="mr-2 size-4" /> {resolvedLabel}
         </p>
       )}
       <div style={style}>
@@ -68,8 +72,8 @@ const AccessGroupSelector: React.FC<AccessGroupSelectorProps> = ({
           options={options}
           value={value}
           onValueChange={onChange ?? (() => {})}
-          placeholder={placeholder}
-          emptyText={isError ? "Failed to load access groups" : "No access groups found"}
+          placeholder={resolvedPlaceholder}
+          emptyText={isError ? t("selectorLoadFailed") : t("selectorEmpty")}
           disabled={disabled}
           className={`w-full rounded-md ${className ?? ""}`}
         />
