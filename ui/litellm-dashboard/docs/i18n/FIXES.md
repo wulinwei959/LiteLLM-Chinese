@@ -380,6 +380,13 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 
 另一处非直觉点：`useTranslations` 是 hook，`translators.ts` 里那些给模块级纯函数用的 `*Translator` 别名只能从组件把 `t` 往下传，别在模块顶层调用 hook。第 71 簇两个 schema 工厂本身不碰 `t`，只收已算好的 `messages`，所以可以安全地留在模块级。
 
+## 2026-10-15 第 72 簇：三态文案别写嵌套三元、逐行替换的键要整行
+
+第 72 簇给 `key_info_view.tsx` 换预算重置文案时踩到两条：
+
+- **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
+- **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
+
 ## 回归守卫
 
 改完之后这几条必须一起跑
