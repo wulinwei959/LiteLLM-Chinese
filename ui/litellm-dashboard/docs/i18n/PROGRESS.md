@@ -1,6 +1,17 @@
 # 开发进度
 
-数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 63 簇后（非测试 `.tsx` 912 个接入 462 个、50.7%，目录叶子 7149、中英同值 87）。最新的四片全量是第 63 簇（886 文件 11581 例、8 失败 + 9 例预期失败，8 例全在 `cost_tracking_settings`（7）与 `LensSetup`（1）这两个已定性为上游既有的文件上，与本簇无关；例数与第 62 簇持平，本簇只换断言、未增删用例）。最新的测试统计是第 55 簇后的一次全量（886 文件 11577 例、27 失败 + 9 例预期失败，27 例落在 12 个测试文件上：19 例是已汉化组件的英文断言欠账、已在随后的清扫里改绿，8 例经与上游快照比对确认不是汉化欠账，明细见"## 2026-10-15 第 55 簇后的全量快照"与"## 2026-10-15 断言欠账清扫"），上一次全量是第 53 簇后（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），再上一次是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-15，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 64 簇后（非测试 `.tsx` 912 个接入 464 个、50.9%，目录叶子 7154、中英同值 87）。最新的四片全量是第 64 簇（886 文件 11581 例、8 失败 + 9 例预期失败，8 例全在 `cost_tracking_settings`（7）与 `LensSetup`（1）这两个已定性为上游既有的文件上，与本簇无关；例数与第 62、63 簇持平，本簇只换 2 处断言、未增删用例）。最新的测试统计是第 55 簇后的一次全量（886 文件 11577 例、27 失败 + 9 例预期失败，27 例落在 12 个测试文件上：19 例是已汉化组件的英文断言欠账、已在随后的清扫里改绿，8 例经与上游快照比对确认不是汉化欠账，明细见"## 2026-10-15 第 55 簇后的全量快照"与"## 2026-10-15 断言欠账清扫"），上一次全量是第 53 簇后（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），再上一次是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-15 第 64 簇更新
+
+批次 24 第 64 簇：`common_components/` 的两块企业版提示卡 `PassThroughSecuritySection.tsx` 与 `PremiumLoggingSettings.tsx`。5 个文件 +38/−18，两个消息目录各 +5/−0
+
+- 新开 5 键：`models.passThrough` 的 `securityTitle`/`securityDescription`/`authPremiumLabel`/`securityEnterpriseNotice`，与 `teams.loggingEnterpriseNotice`；目录叶子 7149→7154
+- 两条企业版提示语都带"获取试用 key"的链接，改用 `t.rich` 承载。守卫的富文本标签白名单（`messagesParity.test.ts` 的 `RICH_TAGS`）不含 `a`，但含 `link`，故消息里写 `<link>…</link>`、渲染器仍输出 `<a target="_blank" rel="noopener noreferrer">`；第 46 簇的 `<label>` 走的是同一道守卫、当时改用 `<strong>`，本簇用更贴语义的 `link`
+- `PassThroughSecuritySection` 的标题、说明与"Authentication (Premium)"标签一并接入 `models.passThrough`，与第 62 簇的 `routesPlaceholder`/`routesEmpty` 同组
+- `PremiumLoggingSettings.test.tsx` 有一条读源码的守卫（断 `export function PremiumLoggingSettings`、语义 token、无硬编码色板），故保留 `export function` 写法与全部 class；`✨ langfuse-logging`/`✨ datadog-logging` 是徽标的数据值、不接键；两条 `/LiteLLM Enterprise feature/` 断言换成 `/企业版功能/`
+- 连带成本落在 4 个消费者测试文件（`Teams.test.tsx`、`create_key_button.integration.test.tsx`、`add_pass_through.integration.test.tsx`、`pass_through_info.integration.test.tsx`），全部零断言改动：`Teams.test.tsx` 的 `next-intl` mock 查不到键值时回退成键名、不会抛错，另三个只断言自己的表单文案；`create_key_button` 与 `Teams` 单跑 164 例 + 1 例预期失败画像不变
+- 全量复跑 886 文件 11581 例、8 失败 + 9 例预期失败，与第 62、63 簇逐条一致；`npm run build` 通过，`tsc` 非测试报错 0，两个组件的 eslint 与 HEAD 画像相同（`PremiumLoggingSettings` 那两条 `any` 警告是既有的）
 
 ## 2026-10-15 第 63 簇更新
 
