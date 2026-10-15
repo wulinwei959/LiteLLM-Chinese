@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { fireEvent, act } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import UISettings from "./UISettings";
 import { toast } from "@/lib/toast";
+import { renderWithProviders, screen } from "@/../tests/test-utils";
 
 const mockUseAuthorized = vi.hoisted(() => vi.fn());
 const mockUseUISettings = vi.hoisted(() => vi.fn());
@@ -61,9 +62,9 @@ describe("UISettings", () => {
   });
 
   it("should render", () => {
-    render(<UISettings />);
+    renderWithProviders(<UISettings />);
 
-    expect(screen.getByText("UI Settings")).toBeInTheDocument();
+    expect(screen.getByText("界面设置")).toBeInTheDocument();
     expect(screen.getByRole("switch", { name: "Disable model add for internal users" })).toBeInTheDocument();
     expect(screen.getByRole("switch", { name: "Disable team admin delete team user" })).toBeInTheDocument();
     expect(screen.getByRole("switch", { name: "Require authentication for public AI Hub" })).toBeInTheDocument();
@@ -80,7 +81,7 @@ describe("UISettings", () => {
       error: null,
     });
 
-    render(<UISettings />);
+    renderWithProviders(<UISettings />);
 
     const toggle = screen.getByRole("switch", { name: "Disable model add for internal users" });
 
@@ -95,7 +96,7 @@ describe("UISettings", () => {
         onError: expect.any(Function),
       }),
     );
-    expect(toast.success).toHaveBeenCalledWith("UI settings updated successfully");
+    expect(toast.success).toHaveBeenCalledWith("界面设置更新成功");
   });
 
   it("should toggle disable team admin delete team user setting and call update", () => {
@@ -109,7 +110,7 @@ describe("UISettings", () => {
       error: null,
     });
 
-    render(<UISettings />);
+    renderWithProviders(<UISettings />);
 
     const toggle = screen.getByRole("switch", { name: "Disable team admin delete team user" });
 
@@ -124,7 +125,7 @@ describe("UISettings", () => {
         onError: expect.any(Function),
       }),
     );
-    expect(toast.success).toHaveBeenCalledWith("UI settings updated successfully");
+    expect(toast.success).toHaveBeenCalledWith("界面设置更新成功");
   });
 
   it("should toggle require auth for public AI Hub setting and call update", () => {
@@ -138,7 +139,7 @@ describe("UISettings", () => {
       error: null,
     });
 
-    render(<UISettings />);
+    renderWithProviders(<UISettings />);
 
     const toggle = screen.getByRole("switch", { name: "Require authentication for public AI Hub" });
 
@@ -153,6 +154,6 @@ describe("UISettings", () => {
         onError: expect.any(Function),
       }),
     );
-    expect(toast.success).toHaveBeenCalledWith("UI settings updated successfully");
+    expect(toast.success).toHaveBeenCalledWith("界面设置更新成功");
   });
 });

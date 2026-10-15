@@ -18,21 +18,21 @@ describe("PageVisibilitySettings", () => {
     renderWithProviders(
       <PageVisibilitySettings enabledPagesInternalUsers={null} isUpdating={false} onUpdate={vi.fn()} />,
     );
-    expect(screen.getByText("Not set (all pages visible)")).toBeInTheDocument();
+    expect(screen.getByText("未设置（所有页面可见）")).toBeInTheDocument();
   });
 
   it("should show the selected page count tag when pages are configured", () => {
     renderWithProviders(
       <PageVisibilitySettings enabledPagesInternalUsers={["usage", "keys"]} isUpdating={false} onUpdate={vi.fn()} />,
     );
-    expect(screen.getByText("2 pages selected")).toBeInTheDocument();
+    expect(screen.getByText("已选择 2 个页面")).toBeInTheDocument();
   });
 
   it("should show singular 'page' when exactly one page is selected", () => {
     renderWithProviders(
       <PageVisibilitySettings enabledPagesInternalUsers={["usage"]} isUpdating={false} onUpdate={vi.fn()} />,
     );
-    expect(screen.getByText("1 page selected")).toBeInTheDocument();
+    expect(screen.getByText("已选择 1 个页面")).toBeInTheDocument();
   });
 
   it("should call onUpdate with null when reset button is clicked", async () => {
@@ -43,8 +43,8 @@ describe("PageVisibilitySettings", () => {
     );
 
     // Expand the collapse panel first to reveal the reset button
-    await user.click(screen.getByRole("button", { name: /configure page visibility/i }));
-    await user.click(await screen.findByRole("button", { name: /reset to default/i }));
+    await user.click(screen.getByRole("button", { name: /配置页面可见性/ }));
+    await user.click(await screen.findByRole("button", { name: /重置为默认/ }));
 
     expect(onUpdate).toHaveBeenCalledWith({ enabled_ui_pages_internal_users: null });
   });
@@ -59,7 +59,7 @@ describe("PageVisibilitySettings", () => {
         <PageVisibilitySettings enabledPagesInternalUsers={null} isUpdating={false} onUpdate={vi.fn()} />,
       );
 
-      await user.click(screen.getByRole("button", { name: /configure page visibility/i }));
+      await user.click(screen.getByRole("button", { name: /配置页面可见性/ }));
 
       expect(screen.getByRole("group", { name: "Analytics" })).toBeInTheDocument();
       expect(screen.getByRole("group", { name: "Access" })).toBeInTheDocument();
