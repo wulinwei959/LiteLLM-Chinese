@@ -25,7 +25,7 @@ describe("PremiumLoggingSettings", () => {
   it("shows the enterprise notice and withholds the editor from a free user", () => {
     renderWithProviders(<PremiumLoggingSettings value={[]} onChange={vi.fn()} />);
 
-    expect(screen.getByText(/LiteLLM Enterprise feature/)).toBeInTheDocument();
+    expect(screen.getByText(/企业版功能/)).toBeInTheDocument();
     expect(screen.getByText("✨ langfuse-logging")).toBeInTheDocument();
     expect(screen.queryByText("日志集成")).not.toBeInTheDocument();
   });
@@ -34,6 +34,6 @@ describe("PremiumLoggingSettings", () => {
     renderWithProviders(<PremiumLoggingSettings value={[]} onChange={vi.fn()} premiumUser />);
 
     expect(screen.getByText("日志集成")).toBeInTheDocument();
-    expect(screen.queryByText(/LiteLLM Enterprise feature/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/企业版功能/)).not.toBeInTheDocument();
   });
 });
