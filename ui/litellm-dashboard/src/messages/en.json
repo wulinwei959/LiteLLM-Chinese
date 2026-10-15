@@ -4153,6 +4153,20 @@
         "save": "Save Page Visibility Settings",
         "reset": "Reset to Default (All Pages)"
       }
+    },
+    "ssoSettings": {
+      "notConfigured": "Not configured",
+      "showValue": "Show value",
+      "hideValue": "Hide value",
+      "emptyTitle": "No SSO Configuration Found",
+      "emptyBody": "Configure Single Sign-On (SSO) to enable seamless authentication for your team members using your identity provider.",
+      "configureSso": "Configure SSO",
+      "roleMappingsTitle": "Role Mappings",
+      "groupClaim": "Group Claim",
+      "defaultRole": "Default Role",
+      "roleColumn": "Role",
+      "mappedGroupsColumn": "Mapped Groups",
+      "noGroupsMapped": "No groups mapped"
     }
   },
   "usage": {

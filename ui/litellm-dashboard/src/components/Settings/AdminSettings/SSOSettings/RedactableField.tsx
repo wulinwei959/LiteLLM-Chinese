@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +11,7 @@ export default function RedactableField({
   defaultHidden?: boolean;
   value: string | null;
 }) {
+  const t = useTranslations("adminPanel");
   const [isHidden, setIsHidden] = useState(defaultHidden);
 
   return (
@@ -22,7 +24,7 @@ export default function RedactableField({
             value
           )
         ) : (
-          <span className="text-muted-foreground italic">Not configured</span>
+          <span className="text-muted-foreground italic">{t("ssoSettings.notConfigured")}</span>
         )}
       </span>
       {value && (
@@ -30,7 +32,7 @@ export default function RedactableField({
           type="button"
           variant="ghost"
           size="icon-sm"
-          aria-label={isHidden ? "Show value" : "Hide value"}
+          aria-label={isHidden ? t("ssoSettings.showValue") : t("ssoSettings.hideValue")}
           onClick={() => setIsHidden(!isHidden)}
           className="text-muted-foreground"
         >

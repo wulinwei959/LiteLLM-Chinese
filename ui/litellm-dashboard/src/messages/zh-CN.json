@@ -4153,6 +4153,20 @@
         "save": "保存页面可见性设置",
         "reset": "重置为默认（所有页面）"
       }
+    },
+    "ssoSettings": {
+      "notConfigured": "未配置",
+      "showValue": "显示值",
+      "hideValue": "隐藏值",
+      "emptyTitle": "未找到 SSO 配置",
+      "emptyBody": "配置单点登录（SSO），让团队成员使用你的身份提供商无缝登录。",
+      "configureSso": "配置 SSO",
+      "roleMappingsTitle": "角色映射",
+      "groupClaim": "组声明",
+      "defaultRole": "默认角色",
+      "roleColumn": "角色",
+      "mappedGroupsColumn": "映射的组",
+      "noGroupsMapped": "未映射任何组"
     }
   },
   "usage": {

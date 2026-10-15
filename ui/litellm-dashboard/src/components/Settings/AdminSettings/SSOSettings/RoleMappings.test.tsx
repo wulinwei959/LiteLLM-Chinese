@@ -20,7 +20,7 @@ describe("RoleMappings", () => {
 
     renderWithProviders(<RoleMappings roleMappings={roleMappings} />);
 
-    expect(screen.getByText("Role Mappings")).toBeInTheDocument();
+    expect(screen.getByText("角色映射")).toBeInTheDocument();
   });
 
   it("should return null when roleMappings is undefined", () => {
@@ -52,9 +52,9 @@ describe("RoleMappings", () => {
 
       const { unmount } = renderWithProviders(<RoleMappings roleMappings={roleMappings} />);
 
-      expect(screen.getByText("Group Claim")).toBeInTheDocument();
+      expect(screen.getByText("组声明")).toBeInTheDocument();
       expect(screen.getByText(groupClaim)).toBeInTheDocument();
-      expect(screen.getByText("Default Role")).toBeInTheDocument();
+      expect(screen.getByText("默认角色")).toBeInTheDocument();
       const displayNameElements = screen.getAllByText(displayName);
       expect(displayNameElements.length).toBeGreaterThan(0);
       unmount();
@@ -76,8 +76,8 @@ describe("RoleMappings", () => {
 
     renderWithProviders(<RoleMappings roleMappings={roleMappings} />);
 
-    expect(screen.getByText("Role")).toBeInTheDocument();
-    expect(screen.getByText("Mapped Groups")).toBeInTheDocument();
+    expect(screen.getByText("角色")).toBeInTheDocument();
+    expect(screen.getByText("映射的组")).toBeInTheDocument();
     expect(screen.getAllByText("Proxy Admin").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Proxy Admin Viewer").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Internal User").length).toBeGreaterThan(0);
@@ -87,6 +87,6 @@ describe("RoleMappings", () => {
     expect(screen.getByText("admin-group-3")).toBeInTheDocument();
     expect(screen.getByText("viewer-group")).toBeInTheDocument();
     expect(screen.getByText("user-group")).toBeInTheDocument();
-    expect(screen.getByText("No groups mapped")).toBeInTheDocument();
+    expect(screen.getByText("未映射任何组")).toBeInTheDocument();
   });
 });

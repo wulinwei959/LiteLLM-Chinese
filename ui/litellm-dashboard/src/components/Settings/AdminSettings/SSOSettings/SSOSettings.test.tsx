@@ -110,7 +110,7 @@ describe("SSOSettings", () => {
 
     renderSSOSettings();
 
-    expect(screen.queryByText("No SSO Configuration Found")).not.toBeInTheDocument();
+    expect(screen.queryByText("未找到 SSO 配置")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Edit SSO Settings/i })).toBeInTheDocument();
     expect(screen.getByText("SAML SSO")).toBeInTheDocument();
     expect(screen.getByText("https://proxy.example.com/sso/saml/metadata")).toBeInTheDocument();

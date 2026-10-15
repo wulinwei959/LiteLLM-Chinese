@@ -1,14 +1,14 @@
-import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { renderWithProviders, screen } from "../../../../../tests/test-utils";
 import SSOSettingsEmptyPlaceholder from "./SSOSettingsEmptyPlaceholder";
 
 describe("SSOSettingsEmptyPlaceholder", () => {
   it("should render", () => {
     const onAdd = vi.fn();
 
-    render(<SSOSettingsEmptyPlaceholder onAdd={onAdd} />);
+    renderWithProviders(<SSOSettingsEmptyPlaceholder onAdd={onAdd} />);
 
-    expect(screen.getByText("No SSO Configuration Found")).toBeInTheDocument();
-    expect(screen.getByText("Configure SSO")).toBeInTheDocument();
+    expect(screen.getByText("未找到 SSO 配置")).toBeInTheDocument();
+    expect(screen.getByText("配置 SSO")).toBeInTheDocument();
   });
 });

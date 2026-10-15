@@ -9,7 +9,7 @@ describe("RedactableField", () => {
     it("should display 'Not configured' text", () => {
       renderWithProviders(<RedactableField value={null} />);
 
-      expect(screen.getByText("Not configured")).toBeInTheDocument();
+      expect(screen.getByText("未配置")).toBeInTheDocument();
     });
 
     it("should not display toggle button", () => {
@@ -38,14 +38,14 @@ describe("RedactableField", () => {
     it("should identify the hidden-value control and render its icon", () => {
       renderWithProviders(<RedactableField value={testValue} />);
 
-      const button = screen.getByRole("button", { name: "Show value" });
+      const button = screen.getByRole("button", { name: "显示值" });
       expect(button.querySelector("svg")).toBeInTheDocument();
     });
 
     it("should identify the visible-value control and render its icon", () => {
       renderWithProviders(<RedactableField value={testValue} defaultHidden={false} />);
 
-      const button = screen.getByRole("button", { name: "Hide value" });
+      const button = screen.getByRole("button", { name: "隐藏值" });
       expect(button.querySelector("svg")).toBeInTheDocument();
     });
 
@@ -53,18 +53,18 @@ describe("RedactableField", () => {
       const user = userEvent.setup();
       renderWithProviders(<RedactableField value={testValue} />);
 
-      await user.click(screen.getByRole("button", { name: "Show value" }));
+      await user.click(screen.getByRole("button", { name: "显示值" }));
       expect(screen.getByText(testValue)).toBeInTheDocument();
       expect(screen.queryByText("•".repeat(testValue.length))).not.toBeInTheDocument();
 
-      await user.click(screen.getByRole("button", { name: "Hide value" }));
+      await user.click(screen.getByRole("button", { name: "隐藏值" }));
       expect(screen.getByText("•".repeat(testValue.length))).toBeInTheDocument();
       expect(screen.queryByText(testValue)).not.toBeInTheDocument();
     });
 
     it("should handle empty string value", () => {
       renderWithProviders(<RedactableField value="" />);
-      expect(screen.getByText("Not configured")).toBeInTheDocument();
+      expect(screen.getByText("未配置")).toBeInTheDocument();
 
       const buttons = screen.queryAllByRole("button");
       expect(buttons).toHaveLength(0);
