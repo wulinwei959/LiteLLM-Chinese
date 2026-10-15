@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import PassThroughGuardrailsSection from "./PassThroughGuardrailsSection";
@@ -10,13 +11,13 @@ vi.mock("../networking", async (importOriginal) => ({
 }));
 
 const FIELDS = [
-  { label: "Request Fields", matcher: /Request Fields/, payloadKey: "request_fields", typed: "query" },
-  { label: "Response Fields", matcher: /Response Fields/, payloadKey: "response_fields", typed: "choices.content" },
+  { label: "Request Fields", matcher: /请求字段/, payloadKey: "request_fields", typed: "query" },
+  { label: "Response Fields", matcher: /响应字段/, payloadKey: "response_fields", typed: "choices.content" },
 ] as const;
 
 const renderSection = (disabled: boolean) => {
   const onChange = vi.fn();
-  render(
+  renderWithProviders(
     <PassThroughGuardrailsSection
       accessToken="test-token"
       value={{ "pii-guard": null }}
