@@ -387,6 +387,16 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-15 第 78 簇：同缩进的兄弟块只看缩进会插错父级
+
+给 `adminPanel` 加 `ssoSettings` 子命名空间时，第一版锚点写成"`pageVisibility` 的 `reset` 行 + `}` + `}` + `},`"。看着是"在 `uiSettings` 那块后面插"，实际落在 `adminPanel.uiSettings.ssoSettings`——因为 `uiSettings`（4 空格）与它内部的 `pageVisibility`（6 空格）各有一个 `}`，`pageVisibility` 的 `}` 与 `uiSettings` 的 `}` 是**不同缩进的相邻两行**，而真正要插入的层级是 `uiSettings` 的 `}` **之后**（与 `uiSettings` 同层、在 `adminPanel` 内）。锚点只到 `      }\n    }\n  },` 就分不清这两层
+
+症状很有辨识度：组件测试把 `t("ssoSettings.configureSso")` 渲染成**裸键** `adminPanel.ssoSettings.configureSso`（next-intl 找不到就回显全键路径），而不是抛错。此时守卫可能是绿的——因为 `missingKeys` 只查"代码引用的键在 scope 里存不存在"，若接线前先跑守卫（键还没被引用）就查不出来
+
+规矩：往顶层命名空间里加**兄弟**块时，锚点必须含**下一层级的兄弟行的开头**（本项目是 `  },\n  "usage": {\n    "title": `，比 `pageVisibility` 的 `}` 低一层），落表后用 `json.load` 断言 `d["adminPanel"]["ssoSettings"]` 存在且键数正确，而不是只看 JSON 合法——合法 JSON 插错父级一样合法
+
+测试里 `queryByText("<英文空态语>")` 这类**负向**断言（断言某文案不存在）在文案翻中文后会**假绿**：英文串永远查不到。翻文案时要把这类负向断言一起翻成新串，否则测的是"这句话不存在"这件恒真的事
+
 ## 2026-10-15 第 77 簇：复用已有命名空间、兜底语义回调用点、ICU 入参不接受 null
 
 `price_data_reload.tsx` 挑中它是因为它**已经有一把 `useTranslations("models.priceData")` 的消费者**（`PriceDataManagementTab.tsx`）。补一体文件时先看命名空间在不在：在，就沿用同一把、只补净新键（本簇 3→48），省掉新建命名空间与消费者同步两件事。别一见新文件就开新命名空间
