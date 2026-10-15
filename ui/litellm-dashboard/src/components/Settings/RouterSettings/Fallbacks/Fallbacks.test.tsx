@@ -195,7 +195,7 @@ describe("Fallbacks", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
-      expect(screen.getByText("Delete Fallback?")).toBeInTheDocument();
+      expect(screen.getByText("确定删除该回退吗？")).toBeInTheDocument();
     });
   });
 
@@ -315,9 +315,7 @@ describe("Fallbacks", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("add-fallbacks-button")).toBeInTheDocument();
-      expect(
-        screen.getByText(/No fallbacks configured. Add fallbacks to automatically try another model/),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/尚未配置回退/)).toBeInTheDocument();
     });
 
     expect(screen.queryByText("gpt-4")).not.toBeInTheDocument();
@@ -331,9 +329,7 @@ describe("Fallbacks", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("add-fallbacks-button")).toBeInTheDocument();
-      expect(
-        screen.getByText(/No fallbacks configured. Add fallbacks to automatically try another model/),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/尚未配置回退/)).toBeInTheDocument();
     });
   });
 

@@ -189,3 +189,8 @@ function useLogsTranslator() {
   return useTranslations("logs");
 }
 export type LogsTranslator = ReturnType<typeof useLogsTranslator>;
+
+function useRouterSettingsFallbacksTranslator() {
+  return useTranslations("routerSettings.fallbacks");
+}
+export type RouterSettingsFallbacksTranslator = ReturnType<typeof useRouterSettingsFallbacksTranslator>;
