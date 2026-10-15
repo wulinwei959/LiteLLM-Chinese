@@ -387,6 +387,18 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-15 第 77 簇：复用已有命名空间、兜底语义回调用点、ICU 入参不接受 null
+
+`price_data_reload.tsx` 挑中它是因为它**已经有一把 `useTranslations("models.priceData")` 的消费者**（`PriceDataManagementTab.tsx`）。补一体文件时先看命名空间在不在：在，就沿用同一把、只补净新键（本簇 3→48），省掉新建命名空间与消费者同步两件事。别一见新文件就开新命名空间
+
+模块级纯函数里的硬编码英文兜底值，翻不动就先改语义、把决定权交回调用点。`formatDateTime` 原本 `if (!dateTimeString) return "Never";`——"Never" 是英文、且函数在模块级拿不到 `t`。改法是 `return null`，调用点各自 `?? t("never")`。改完要按**调用点是否已受保护**逐个过一遍：`CostMapProvenanceRows` 里那处外头有 `sourceInfo.loaded_at &&`，`?? t("never")` 是死分支、要删；状态卡的 "Last run" 行没有保护，必须补兜底否则空态从 "Never" 变成空白（静默回归，测试不一定会抓）
+
+next-intl 的 ICU 入参类型不收 `null`：`t("scheduledEvery", { hours: reloadStatus.interval_hours })` 里 `interval_hours: number | null`，`tsc` 报 TS2322 `Type 'number | null' is not assignable to type 'string | number | Date'`，基线 880 → 881。补 `?? ""` 即回到 880。`number | ""` 这种联合天然合法，不用动
+
+`buttonText = "Reload Price Data"` 这种**带英文默认值的可选 prop**，改成可选 `buttonText`、体内 `const reloadLabel = buttonText ?? t("reloadButton")`；消费者本就传 `t("reloadButton")`，行为不变。同一个 handler 里重复出现的同一句 toast（本簇三处 `"No access token available"`）用一个键一次替换（`Edit` 的 `allow_multiple`），别逐个手改
+
+zh 目录里给标签配的**全角冒号**（`源修订版本：`/`ETag：`/`加载时间：`）会原样进 DOM，测试断言要跟着写全角 `：`，不是 ASCII `:`——这类"看着一样、字节不同"的差是断言翻中文时最容易漏的一类
+
 ## 2026-10-15 第 76 簇：`??` 兜底改中文，测试里的可访问名却仍来自 mock；裸 `render` 要换 harness
 
 `UISettings.tsx` 的开关写成 `ariaLabel={property?.description ?? t("…")}`：兜底串翻成中文，**并不决定测试里的可访问名**。只要 mock 的 `field_schema.properties.*.description` 有值，`Switch` 的 `aria-label` 就取自那段 mock 英文串，故 `getByRole("switch", { name: "Disable model add for internal users" })` 要保持英文；同一个组件里随 `t` 变中文的只有卡片标题与 toast。判断开关断言改不改，先看 mock 的 schema 给没给 description，别看到兜底串翻了就跟着翻
