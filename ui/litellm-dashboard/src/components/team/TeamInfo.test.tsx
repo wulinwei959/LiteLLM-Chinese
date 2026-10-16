@@ -421,16 +421,14 @@ describe("TeamInfoView", () => {
 
       const serverRow = await screen.findByText(/github \(mcp\.\.\.1234\)/);
       const agentRow = await screen.findByText(/support_agent \(age\.\.\.5678\)/);
-      expect(screen.queryByText("No MCP servers, access groups, or toolsets configured")).not.toBeInTheDocument();
-      expect(screen.queryByText("No agents or access groups configured")).not.toBeInTheDocument();
+      expect(screen.queryByText("未配置 MCP 服务器、访问组或工具集")).not.toBeInTheDocument();
+      expect(screen.queryByText("未配置智能体或访问组")).not.toBeInTheDocument();
 
       await user.hover(serverRow);
-      expect(
-        await screen.findByText("Granted via access group platform-tools. Full ID: mcp-github-1234"),
-      ).toBeInTheDocument();
+      expect(await screen.findByText("通过访问组 platform-tools 授予。完整 ID：mcp-github-1234")).toBeInTheDocument();
       await user.hover(agentRow);
       expect(
-        await screen.findByText("Granted via access group platform-tools. Full ID: agent-support-5678"),
+        await screen.findByText("通过访问组 platform-tools 授予。完整 ID：agent-support-5678"),
       ).toBeInTheDocument();
     });
 
@@ -522,7 +520,7 @@ describe("TeamInfoView", () => {
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByText("Guardrails Settings")).toBeInTheDocument();
+        expect(screen.getByText("护栏设置")).toBeInTheDocument();
       });
       expect(screen.getByText("guardrail1")).toBeInTheDocument();
       expect(screen.getByText("guardrail2")).toBeInTheDocument();
@@ -833,9 +831,9 @@ describe("TeamInfoView", () => {
       await user.click(virtualKeysTab);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "筛选" })).toBeInTheDocument();
       });
-      expect(screen.getByRole("button", { name: "Columns" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "列" })).toBeInTheDocument();
       expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-1 条，共 1 条");
       expect(screen.getByTestId("pagination-prev")).toBeInTheDocument();
       expect(screen.getByTestId("pagination-next")).toBeInTheDocument();

@@ -97,7 +97,7 @@ const renderTable = (props: Partial<React.ComponentProps<typeof TeamsTable>> = {
     />,
   );
 
-const openFilters = () => fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+const openFilters = () => fireEvent.click(screen.getByRole("button", { name: "筛选" }));
 const lastOptions = () => mockUseTeamsTable.mock.calls[mockUseTeamsTable.mock.calls.length - 1][2] ?? {};
 
 beforeEach(() => {
@@ -372,7 +372,7 @@ describe("hidden-by-default columns", () => {
 
     expect(screen.queryByText("速率限制")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Columns" }));
+    await user.click(screen.getByRole("button", { name: "列" }));
     const menu = await screen.findByRole("menu");
     expect(within(menu).getByText("速率限制")).toBeInTheDocument();
     expect(within(menu).getByText("更新时间")).toBeInTheDocument();

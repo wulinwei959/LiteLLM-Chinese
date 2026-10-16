@@ -1,9 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import UpdateModelCredentialsModal from "./update_model_credentials_modal";
 import * as networking from "./networking";
 import { toast } from "@/lib/toast";
+import { renderWithProviders } from "../../tests/test-utils";
 
 vi.mock("./networking", async () => {
   const actual = await vi.importActual("./networking");
@@ -33,7 +34,7 @@ beforeAll(() => {
 });
 
 const renderModal = (overrides: Partial<Parameters<typeof UpdateModelCredentialsModal>[0]> = {}) =>
-  render(
+  renderWithProviders(
     <UpdateModelCredentialsModal
       open
       onCancel={vi.fn()}
@@ -55,8 +56,8 @@ describe("UpdateModelCredentialsModal", () => {
     const onCancel = vi.fn();
     renderModal({ onUpdated, onCancel });
 
-    fireEvent.change(screen.getByLabelText(/new api key/i), { target: { value: "sk-rotated-9988" } });
-    await user.click(screen.getByRole("button", { name: /update api key/i }));
+    fireEvent.change(screen.getByLabelText(/新的 API 密钥/), { target: { value: "sk-rotated-9988" } });
+    await user.click(screen.getByRole("button", { name: /更新 API 密钥/ }));
 
     await waitFor(() => expect(mockModelPatchUpdateCall).toHaveBeenCalledTimes(1));
     const [token, payload, modelId] = mockModelPatchUpdateCall.mock.calls[0];
@@ -72,7 +73,7 @@ describe("UpdateModelCredentialsModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.click(screen.getByRole("button", { name: /update api key/i }));
+    await user.click(screen.getByRole("button", { name: /更新 API 密钥/ }));
 
     // Required-field validation blocks submit; give it a tick then assert no call.
     await new Promise((resolve) => setTimeout(resolve, 50));
@@ -83,19 +84,19 @@ describe("UpdateModelCredentialsModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.click(screen.getByRole("button", { name: /update api key/i }));
+    await user.click(screen.getByRole("button", { name: /更新 API 密钥/ }));
 
-    expect(await screen.findByText("Enter a new API key")).toBeInTheDocument();
+    expect(await screen.findByText("请输入新的 API 密钥")).toBeInTheDocument();
   });
 
   it("rejects a whitespace-only key without sending a PATCH", async () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(screen.getByLabelText(/new api key/i), { target: { value: "   " } });
-    await user.click(screen.getByRole("button", { name: /update api key/i }));
+    fireEvent.change(screen.getByLabelText(/新的 API 密钥/), { target: { value: "   " } });
+    await user.click(screen.getByRole("button", { name: /更新 API 密钥/ }));
 
-    await waitFor(() => expect(mockToast.fromError).toHaveBeenCalledWith("Enter a new API key"));
+    await waitFor(() => expect(mockToast.fromError).toHaveBeenCalledWith("请输入新的 API 密钥"));
     expect(mockModelPatchUpdateCall).not.toHaveBeenCalled();
   });
 
@@ -103,8 +104,8 @@ describe("UpdateModelCredentialsModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(screen.getByLabelText(/new api key/i), { target: { value: "  sk-pad-77  " } });
-    await user.click(screen.getByRole("button", { name: /update api key/i }));
+    fireEvent.change(screen.getByLabelText(/新的 API 密钥/), { target: { value: "  sk-pad-77  " } });
+    await user.click(screen.getByRole("button", { name: /更新 API 密钥/ }));
 
     await waitFor(() => expect(mockModelPatchUpdateCall).toHaveBeenCalledTimes(1));
     expect(mockModelPatchUpdateCall.mock.calls[0][1]).toEqual({
@@ -117,7 +118,7 @@ describe("UpdateModelCredentialsModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.type(screen.getByLabelText(/new api key/i), "sk-enter-1{Enter}");
+    await user.type(screen.getByLabelText(/新的 API 密钥/), "sk-enter-1{Enter}");
 
     await waitFor(() => expect(mockModelPatchUpdateCall).toHaveBeenCalledTimes(1));
     expect(mockModelPatchUpdateCall.mock.calls[0][1]).toEqual({
@@ -130,7 +131,7 @@ describe("UpdateModelCredentialsModal", () => {
     const user = userEvent.setup();
     renderModal();
 
-    const field = screen.getByLabelText(/new api key/i);
+    const field = screen.getByLabelText(/新的 API 密钥/);
     fireEvent.change(field, { target: { value: "sk-peek-42" } });
     expect(field).toHaveAttribute("type", "password");
 

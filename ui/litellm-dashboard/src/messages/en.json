@@ -10044,5 +10044,27 @@
     "valuePlaceholder": "Parameter Value (e.g., v1)",
     "addBtn": "Add Query Parameter",
     "removeAria": "Remove query parameter {index}"
+  },
+  "updateModelCredentials": {
+    "title": "Update API Key",
+    "description": "Update this model's API key. Only the new key is sent; the rest of the deployment configuration is left untouched.",
+    "rotateWarning": "Only the API key is rotated here. Models that authenticate with an Azure AD token, AWS credentials, or a Vertex service-account JSON aren't supported yet; update those from the model's LiteLLM Params for now.",
+    "newKeyLabel": "New API Key",
+    "newKeyPlaceholder": "Enter the new API key",
+    "newKeyRequired": "Enter a new API key",
+    "updated": "API key updated",
+    "updateFailed": "Failed to update API key",
+    "submit": "Update API Key"
+  },
+  "dataTableToolbar": {
+    "searchPlaceholder": "Search",
+    "clearAll": "Clear all",
+    "refreshAria": "Refresh",
+    "columns": "Columns",
+    "filters": "Filters",
+    "removeFilterAria": "Remove {label} filter"
+  },
+  "dataTableViewOptions": {
+    "view": "View"
   }
 }

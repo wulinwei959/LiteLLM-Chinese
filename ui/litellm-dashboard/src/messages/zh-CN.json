@@ -10040,5 +10040,27 @@
     "valuePlaceholder": "参数值（例如 v1）",
     "addBtn": "添加查询参数",
     "removeAria": "删除第 {index} 个查询参数"
+  },
+  "updateModelCredentials": {
+    "title": "更新 API 密钥",
+    "description": "更新该模型的 API 密钥。只会发送新密钥，部署配置的其余部分保持不变。",
+    "rotateWarning": "此处只会轮换 API 密钥。使用 Azure AD 令牌、AWS 凭据或 Vertex 服务账号 JSON 认证的模型暂不支持，请暂时从模型的 LiteLLM Params 中更新。",
+    "newKeyLabel": "新的 API 密钥",
+    "newKeyPlaceholder": "请输入新的 API 密钥",
+    "newKeyRequired": "请输入新的 API 密钥",
+    "updated": "API 密钥已更新",
+    "updateFailed": "更新 API 密钥失败",
+    "submit": "更新 API 密钥"
+  },
+  "dataTableToolbar": {
+    "searchPlaceholder": "搜索",
+    "clearAll": "全部清除",
+    "refreshAria": "刷新",
+    "columns": "列",
+    "filters": "筛选",
+    "removeFilterAria": "移除 {label} 筛选"
+  },
+  "dataTableViewOptions": {
+    "view": "视图"
   }
 }

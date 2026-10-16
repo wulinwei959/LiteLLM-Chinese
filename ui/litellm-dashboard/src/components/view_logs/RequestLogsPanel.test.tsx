@@ -473,7 +473,7 @@ describe("RequestLogsPanel", () => {
       expect(row("req-initial")).toBeNull();
       expect(screen.getByTestId("filter-chip-search")).toHaveTextContent("搜索:sess-42");
 
-      await user.click(screen.getByRole("button", { name: "Remove 搜索 filter" }));
+      await user.click(screen.getByRole("button", { name: "移除 搜索 筛选" }));
 
       expect(screen.getByTestId("datatable-search")).toHaveValue("");
       await waitFor(() => expect(row("req-initial")).not.toBeNull());
