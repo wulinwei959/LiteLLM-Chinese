@@ -75,6 +75,8 @@ const mockTranslations: Record<string, string> = {
     "Applied to every new internal user created through SSO or the user management APIs.",
   "users.defaultUserSettingsLoadFailed": "Could not load the default user settings.",
   "users.editSettings": "Edit Settings",
+  "modelSelect.allProxyModels": "All Proxy Models",
+  "modelSelect.noDefaultModels": "No Default Models",
 };
 
 vi.mock("next-intl", () => ({

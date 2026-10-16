@@ -10221,5 +10221,16 @@
     "stateMismatch": "OAuth state mismatch. Please retry.",
     "codeMissing": "Authorization code missing in callback.",
     "success": "OAuth token retrieved successfully"
+  },
+  "modelSelect": {
+    "allProxyModels": "All Proxy Models",
+    "noDefaultModels": "No Default Models",
+    "specialOptions": "Special Options",
+    "wildcardOptions": "Wildcard Options",
+    "models": "Models",
+    "allProviderModels": "All {provider} models",
+    "moreCount": "+{count} more",
+    "selectModels": "Select Models",
+    "noModelsFound": "No models found"
   }
 }

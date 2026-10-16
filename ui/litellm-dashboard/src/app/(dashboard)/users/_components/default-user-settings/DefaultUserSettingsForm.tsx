@@ -43,7 +43,7 @@ const TEAM_ROLE_OPTIONS = [
   { value: "admin", labelKey: "teamRoleAdmin" },
 ] as const;
 
-const MODEL_SENTINEL_LABELS: ReadonlyMap<string, string> = new Map(
+const MODEL_SENTINEL_LABEL_KEYS: ReadonlyMap<string, string> = new Map(
   MODEL_SENTINEL_OPTIONS.map(({ value, label }) => [value, label]),
 );
 
@@ -197,6 +197,13 @@ interface SettingsViewProps {
 
 const SettingsView = ({ values, roleOptions }: SettingsViewProps) => {
   const t = useTranslations("users");
+  const sentinelT = useTranslations("modelSelect");
+  const sentinelLabels = new Map(
+    [...MODEL_SENTINEL_LABEL_KEYS].map(([value, labelKey]) => [
+      value,
+      sentinelT(labelKey as "allProxyModels" | "noDefaultModels"),
+    ]),
+  );
   const roleLabel = roleOptions.find((option) => option.value === values.user_role)?.label ?? values.user_role;
   const durationValue = values.budget_duration === "" ? NO_RESET : values.budget_duration;
   const durationOption = BUDGET_DURATION_OPTIONS.find((option) => option.value === durationValue);
@@ -210,7 +217,7 @@ const SettingsView = ({ values, roleOptions }: SettingsViewProps) => {
       <ViewRow label={t("defaultModels")}>
         {values.models.length === 0
           ? t("notSet")
-          : values.models.map((model) => MODEL_SENTINEL_LABELS.get(model) ?? model).join(", ")}
+          : values.models.map((model) => sentinelLabels.get(model) ?? model).join(", ")}
       </ViewRow>
       <div>
         <p className="text-sm font-medium">{t("defaultTeams")}</p>

@@ -2,6 +2,7 @@ import { ProxyModel, useAllProxyModels } from "@/app/(dashboard)/hooks/models/us
 import { useOrganization } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { useTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { useCurrentUser } from "@/app/(dashboard)/hooks/users/useCurrentUser";
+import { useTranslations } from "next-intl";
 import {
   Combobox,
   ComboboxChip,
@@ -22,20 +23,12 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import type { Team } from "@/components/key_team_helpers/key_list";
 import { splitWildcardModels } from "./modelUtils";
 
-const MODEL_SELECT_ALL_PROXY_MODELS_SPECIAL_VALUE = {
-  label: "All Proxy Models",
-  value: "all-proxy-models",
-} as const;
+type SentinelLabelKey = "allProxyModels" | "noDefaultModels";
 
-const MODEL_SELECT_NO_DEFAULT_MODELS_SPECIAL_VALUE = {
-  label: "No Default Models",
-  value: "no-default-models",
-} as const;
-
-export const MODEL_SENTINEL_OPTIONS = [
-  MODEL_SELECT_ALL_PROXY_MODELS_SPECIAL_VALUE,
-  MODEL_SELECT_NO_DEFAULT_MODELS_SPECIAL_VALUE,
-] as const;
+export const MODEL_SENTINEL_OPTIONS: ReadonlyArray<{ label: SentinelLabelKey; value: string }> = [
+  { label: "allProxyModels", value: "all-proxy-models" },
+  { label: "noDefaultModels", value: "no-default-models" },
+];
 
 const MAX_VISIBLE_MODEL_CHIPS = 5;
 
@@ -76,7 +69,7 @@ type FilterContextArgs = {
 };
 
 const isUncappedModelCeiling = (organizationModels: string[]) =>
-  organizationModels.length === 0 || organizationModels.includes(MODEL_SELECT_ALL_PROXY_MODELS_SPECIAL_VALUE.value);
+  organizationModels.length === 0 || organizationModels.includes(MODEL_SENTINEL_OPTIONS[0].value);
 
 // useTeam seeds from the team list, which omits organization_models; /team/info is the only source of the org ceiling.
 const isAwaitingOrganizationModels = (team: Team | undefined, isFetchingTeam: boolean) =>
@@ -127,6 +120,7 @@ const filterModels = (
 };
 
 export const ModelSelect = (props: ModelSelectProps) => {
+  const t = useTranslations("modelSelect");
   const anchor = useComboboxAnchor();
   const { id, teamID, organizationID, options, context, dataTestId, value = [], onChange, style } = props;
   const { showAllProxyModelsOverride, includeSpecialOptions } = options || {};
@@ -144,6 +138,8 @@ export const ModelSelect = (props: ModelSelectProps) => {
   const organizationHasAllProxyModels = organizationModels !== undefined && isUncappedModelCeiling(organizationModels);
   const shouldShowAllProxyModels =
     showAllProxyModelsOverride || (organizationHasAllProxyModels && includeSpecialOptions) || context === "global";
+
+  const sentinelLabel = (sentinel: (typeof MODEL_SENTINEL_OPTIONS)[number]): string => t(sentinel.label);
 
   if (isLoading) {
     return <Skeleton className="h-9 w-full" />;
@@ -175,27 +171,24 @@ export const ModelSelect = (props: ModelSelectProps) => {
     ...(includeSpecialOptions
       ? [
           {
-            label: "Special Options",
+            label: t("specialOptions"),
             items: [
               ...(shouldShowAllProxyModels
                 ? [
                     {
-                      label: MODEL_SELECT_ALL_PROXY_MODELS_SPECIAL_VALUE.label,
-                      value: MODEL_SELECT_ALL_PROXY_MODELS_SPECIAL_VALUE.value,
+                      label: sentinelLabel(MODEL_SENTINEL_OPTIONS[0]),
+                      value: MODEL_SENTINEL_OPTIONS[0].value,
                       disabled:
                         value.length > 0 &&
-                        value.some(
-                          (v) => isSpecialOption(v) && v !== MODEL_SELECT_ALL_PROXY_MODELS_SPECIAL_VALUE.value,
-                        ),
+                        value.some((v) => isSpecialOption(v) && v !== MODEL_SENTINEL_OPTIONS[0].value),
                     },
                   ]
                 : []),
               {
-                label: MODEL_SELECT_NO_DEFAULT_MODELS_SPECIAL_VALUE.label,
-                value: MODEL_SELECT_NO_DEFAULT_MODELS_SPECIAL_VALUE.value,
+                label: sentinelLabel(MODEL_SENTINEL_OPTIONS[1]),
+                value: MODEL_SENTINEL_OPTIONS[1].value,
                 disabled:
-                  value.length > 0 &&
-                  value.some((v) => isSpecialOption(v) && v !== MODEL_SELECT_NO_DEFAULT_MODELS_SPECIAL_VALUE.value),
+                  value.length > 0 && value.some((v) => isSpecialOption(v) && v !== MODEL_SENTINEL_OPTIONS[1].value),
               },
             ],
           },
@@ -204,13 +197,13 @@ export const ModelSelect = (props: ModelSelectProps) => {
     ...(wildcard.length > 0
       ? [
           {
-            label: "Wildcard Options",
+            label: t("wildcardOptions"),
             items: wildcard.map((model) => {
               const provider = model.replace("/*", "");
               const capitalizedProvider = provider.charAt(0).toUpperCase() + provider.slice(1);
 
               return {
-                label: `All ${capitalizedProvider} models`,
+                label: t("allProviderModels", { provider: capitalizedProvider }),
                 value: model,
                 disabled: hasSpecialOptionSelected,
               };
@@ -219,7 +212,7 @@ export const ModelSelect = (props: ModelSelectProps) => {
         ]
       : []),
     {
-      label: "Models",
+      label: t("models"),
       items: regular.map((model) => ({
         label: model,
         value: model,
@@ -253,19 +246,24 @@ export const ModelSelect = (props: ModelSelectProps) => {
                 ))}
                 {overflowOptions.length > 0 && (
                   <Tooltip>
-                    <TooltipTrigger
-                      render={<span className="px-1 text-xs text-muted-foreground" />}
-                    >{`+${overflowOptions.length} more`}</TooltipTrigger>
+                    <TooltipTrigger render={<span className="px-1 text-xs text-muted-foreground" />}>
+                      {t("moreCount", { count: overflowOptions.length })}
+                    </TooltipTrigger>
                     <TooltipContent>{overflowOptions.map((option) => option.value).join(", ")}</TooltipContent>
                   </Tooltip>
                 )}
               </>
             )}
           </ComboboxValue>
-          <ComboboxChipsInput id={id} placeholder="Select Models" aria-label="Select Models" className="min-w-24" />
+          <ComboboxChipsInput
+            id={id}
+            placeholder={t("selectModels")}
+            aria-label={t("selectModels")}
+            className="min-w-24"
+          />
         </ComboboxChips>
         <ComboboxContent anchor={anchor}>
-          <ComboboxEmpty>No models found</ComboboxEmpty>
+          <ComboboxEmpty>{t("noModelsFound")}</ComboboxEmpty>
           <ComboboxList>
             {(group: ModelOptionGroup) => (
               <ComboboxGroup key={group.label} items={group.items}>

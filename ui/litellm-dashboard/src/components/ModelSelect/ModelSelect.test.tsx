@@ -96,11 +96,11 @@ describe("ModelSelect", () => {
 
     await openModelList(user);
 
-    expectOffered("Wildcard Options");
+    expectOffered("通配符选项");
     expectOffered("gpt-4");
     expectOffered("claude-3");
-    expectOffered("All Openai models");
-    expectOffered("All Anthropic models");
+    expectOffered("所有 Openai 模型");
+    expectOffered("所有 Anthropic 模型");
   });
 
   it("should offer nothing to select while any dependency is loading", () => {
@@ -175,9 +175,9 @@ describe("ModelSelect", () => {
 
     await openModelList(user);
 
-    expectOffered("Special Options");
-    expectOffered("All Proxy Models");
-    expectOffered("No Default Models");
+    expectOffered("特殊选项");
+    expectOffered("所有代理模型");
+    expectOffered("无默认模型");
   });
 
   it("should replace an existing selection when a special option is picked", async () => {
@@ -193,7 +193,7 @@ describe("ModelSelect", () => {
     );
 
     await openModelList(user);
-    await user.click(screen.getAllByText("No Default Models")[0]);
+    await user.click(screen.getAllByText("无默认模型")[0]);
 
     expect(mockOnChange).toHaveBeenCalledWith(["no-default-models"]);
   });
@@ -400,10 +400,10 @@ describe("ModelSelect", () => {
 
       await openModelList(user);
       if (testCase.shouldShow) {
-        expectOffered("All Proxy Models");
+        expectOffered("所有代理模型");
       } else {
-        expectNotOffered("All Proxy Models");
-        expectOffered("No Default Models");
+        expectNotOffered("所有代理模型");
+        expectOffered("无默认模型");
       }
 
       unmount();
@@ -461,11 +461,11 @@ describe("ModelSelect", () => {
 
       await openModelList(user);
       if (testCase.shouldShowSentinel) {
-        expectOffered("All Proxy Models");
+        expectOffered("所有代理模型");
       } else {
-        expectNotOffered("All Proxy Models");
+        expectNotOffered("所有代理模型");
       }
-      expectOffered("No Default Models");
+      expectOffered("无默认模型");
       testCase.offered.forEach(expectOffered);
       testCase.notOffered.forEach(expectNotOffered);
 
@@ -514,7 +514,7 @@ describe("ModelSelect", () => {
     );
 
     await openModelList(user);
-    expectOffered("All Proxy Models");
+    expectOffered("所有代理模型");
   });
 
   it("should offer no models for an org team when neither the team nor the org reports a ceiling", async () => {
@@ -539,8 +539,8 @@ describe("ModelSelect", () => {
       );
 
       await openModelList(user);
-      expectNotOffered("All Proxy Models");
-      expectOffered("No Default Models");
+      expectNotOffered("所有代理模型");
+      expectOffered("无默认模型");
       expectNotOffered("gpt-4");
       expectNotOffered("claude-3");
 
@@ -587,10 +587,10 @@ describe("ModelSelect", () => {
 
     await openModelList(user);
 
-    expectNotOffered("Special Options");
-    expectNotOffered("All Proxy Models");
-    expectNotOffered("No Default Models");
-    expectOffered("Models");
+    expectNotOffered("特殊选项");
+    expectNotOffered("所有代理模型");
+    expectNotOffered("无默认模型");
+    expectOffered("模型");
   });
 
   it("should mark models and wildcards unselectable while a special option is selected", async () => {
@@ -607,9 +607,9 @@ describe("ModelSelect", () => {
     await openModelList(user);
 
     expect(screen.getByRole("option", { name: "gpt-4" })).toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByRole("option", { name: "All Openai models" })).toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByRole("option", { name: "No Default Models" })).toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByRole("option", { name: "All Proxy Models" })).not.toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("option", { name: "所有 Openai 模型" })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("option", { name: "无默认模型" })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("option", { name: "所有代理模型" })).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("should list a duplicated proxy model only once", async () => {
@@ -655,7 +655,7 @@ describe("ModelSelect", () => {
       />,
     );
 
-    expect(await screen.findByText("+3 more")).toBeInTheDocument();
+    expect(await screen.findByText("还有 3 个")).toBeInTheDocument();
     expect(screen.getByLabelText("model-0")).toBeInTheDocument();
     expect(screen.getByLabelText("model-4")).toBeInTheDocument();
     expect(screen.queryByLabelText("model-5")).not.toBeInTheDocument();
