@@ -4324,6 +4324,26 @@
       "hideKey": "隐藏插件密钥",
       "required": "必填",
       "invalidUrl": "必须是有效的 URL"
+    },
+    "webSearchInterception": {
+      "loginPrompt": "请登录后再配置网页搜索拦截设置。",
+      "loadErrorTitle": "无法加载网页搜索拦截设置",
+      "updateErrorTitle": "无法更新设置",
+      "enabledLabel": "启用网页搜索拦截",
+      "enabledHint": "启用后，网页搜索工具调用会在服务端通过所选搜索工具执行",
+      "providersLabel": "提供商",
+      "providersHint": "要拦截哪些 LLM 提供商。留空则仅拦截 Bedrock。",
+      "providersPlaceholder": "选择提供商（默认为 Bedrock）",
+      "searchToolLabel": "搜索工具",
+      "searchToolHint": "由哪个已配置的搜索工具执行搜索。留空则使用第一个可用的。",
+      "searchToolPlaceholder": "选择搜索工具（默认为第一个可用的）",
+      "maxLoopsLabel": "最大智能体循环次数",
+      "maxLoopsHint": "一次被拦截的请求最多可串联多少次后续模型调用。留空则使用默认值 3。",
+      "saveButton": "保存设置",
+      "updatedToast": "设置更新成功。更改将在 10 秒内应用到所有 pod。",
+      "notAppliedTitle": "未运行在处理此页面的代理上",
+      "notAppliedBody": "集群已开启拦截，但处理此页面的代理尚未应用。更改或重启后的约 10 秒内属正常现象。若持续存在，请检查该代理的日志：它处理的请求没有被拦截。",
+      "infoAlertBody": "将网页搜索工具调用交给已配置的搜索工具执行，而不是转发到上游，这样没有原生网页搜索的模型也能给出最新结果。点击“保存设置”即可在所有 pod 上应用更改（10 秒内生效）。"
     }
   },
   "usage": {

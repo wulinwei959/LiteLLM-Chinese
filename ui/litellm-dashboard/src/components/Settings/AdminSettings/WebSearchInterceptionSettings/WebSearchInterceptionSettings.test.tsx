@@ -1,11 +1,12 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, act } from "@testing-library/react";
+import { screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import WebSearchInterceptionSettings from "./WebSearchInterceptionSettings";
 import { useWebSearchInterceptionSettings } from "@/app/(dashboard)/hooks/webSearchInterceptionSettings/useWebSearchInterceptionSettings";
 import { useUpdateWebSearchInterceptionSettings } from "@/app/(dashboard)/hooks/webSearchInterceptionSettings/useUpdateWebSearchInterceptionSettings";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 
 vi.mock("@/app/(dashboard)/hooks/webSearchInterceptionSettings/useWebSearchInterceptionSettings", () => ({
   useWebSearchInterceptionSettings: vi.fn(),
@@ -49,7 +50,7 @@ const storedSettings = {
 };
 
 async function renderSettings() {
-  const result = render(<WebSearchInterceptionSettings />);
+  const result = renderWithProviders(<WebSearchInterceptionSettings />);
   await act(async () => {});
   return result;
 }
@@ -73,13 +74,13 @@ describe("WebSearchInterceptionSettings", () => {
 
   it("renders the settings section", async () => {
     await renderSettings();
-    expect(screen.getByText("Web Search Interception")).toBeInTheDocument();
+    expect(screen.getByText("网页搜索拦截")).toBeInTheDocument();
   });
 
   it("shows a login prompt when there is no access token", () => {
     vi.mocked(useAuthorized).mockReturnValue({ accessToken: null } as any);
-    render(<WebSearchInterceptionSettings />);
-    expect(screen.getByText(/please log in/i)).toBeInTheDocument();
+    renderWithProviders(<WebSearchInterceptionSettings />);
+    expect(screen.getByText(/请登录/)).toBeInTheDocument();
   });
 
   it("hides the settings while loading", async () => {
@@ -90,7 +91,7 @@ describe("WebSearchInterceptionSettings", () => {
       error: null,
     } as any);
     await renderSettings();
-    expect(screen.queryByText("Enable Web Search Interception")).not.toBeInTheDocument();
+    expect(screen.queryByText("启用网页搜索拦截")).not.toBeInTheDocument();
   });
 
   it("surfaces a load failure", async () => {
@@ -101,7 +102,7 @@ describe("WebSearchInterceptionSettings", () => {
       error: new Error("boom"),
     } as any);
     await renderSettings();
-    expect(screen.getByText("Could not load web search interception settings")).toBeInTheDocument();
+    expect(screen.getByText("无法加载网页搜索拦截设置")).toBeInTheDocument();
     expect(screen.getByText("boom")).toBeInTheDocument();
   });
 
@@ -109,7 +110,7 @@ describe("WebSearchInterceptionSettings", () => {
     const user = userEvent.setup();
     await renderSettings();
 
-    const save = screen.getByRole("button", { name: /save settings/i });
+    const save = screen.getByRole("button", { name: /保存设置/ });
     expect(save).toBeDisabled();
 
     await user.click(save);
@@ -121,7 +122,7 @@ describe("WebSearchInterceptionSettings", () => {
     await renderSettings();
 
     await user.click(screen.getByRole("switch"));
-    await user.click(screen.getByRole("button", { name: /save settings/i }));
+    await user.click(screen.getByRole("button", { name: /保存设置/ }));
 
     expect(mockMutate).toHaveBeenCalledTimes(1);
     expect(mockMutate.mock.calls[0][0]).toEqual(ENABLED_PAYLOAD);
@@ -137,7 +138,7 @@ describe("WebSearchInterceptionSettings", () => {
 
     await renderSettings();
 
-    expect(screen.getByText(/has not applied it/i)).toBeInTheDocument();
+    expect(screen.getByText(/尚未应用/)).toBeInTheDocument();
   });
 
   it("stays quiet when the serving pod has applied the cluster setting", async () => {
@@ -150,7 +151,7 @@ describe("WebSearchInterceptionSettings", () => {
 
     await renderSettings();
 
-    expect(screen.queryByText(/has not applied it/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/尚未应用/)).not.toBeInTheDocument();
   });
 
   it("ignores stored values whose types do not match the field", async () => {
@@ -172,7 +173,7 @@ describe("WebSearchInterceptionSettings", () => {
     await renderSettings();
 
     expect(screen.getByRole("switch")).not.toBeChecked();
-    expect(screen.getByLabelText(/max agentic loops/i)).toHaveValue(null);
+    expect(screen.getByLabelText(/最大智能体循环次数/)).toHaveValue(null);
     expect(screen.queryByText("bedrock")).not.toBeInTheDocument();
   });
 
@@ -210,7 +211,7 @@ describe("WebSearchInterceptionSettings", () => {
     await renderSettings();
 
     await user.clear(screen.getByRole("spinbutton"));
-    await user.click(screen.getByRole("button", { name: /save settings/i }));
+    await user.click(screen.getByRole("button", { name: /保存设置/ }));
 
     expect(mockMutate).toHaveBeenCalledTimes(1);
     expect(mockMutate.mock.calls[0][0].max_agentic_loops).toBeNull();

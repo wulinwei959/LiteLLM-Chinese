@@ -4324,6 +4324,26 @@
       "hideKey": "Hide plugin key",
       "required": "Required",
       "invalidUrl": "Must be a valid URL"
+    },
+    "webSearchInterception": {
+      "loginPrompt": "Please log in to configure web search interception settings.",
+      "loadErrorTitle": "Could not load web search interception settings",
+      "updateErrorTitle": "Could not update settings",
+      "enabledLabel": "Enable Web Search Interception",
+      "enabledHint": "When enabled, web search tool calls are executed server-side through the selected search tool",
+      "providersLabel": "Providers",
+      "providersHint": "Which LLM providers to intercept for. Leave empty to intercept Bedrock only.",
+      "providersPlaceholder": "Select providers (defaults to Bedrock)",
+      "searchToolLabel": "Search Tool",
+      "searchToolHint": "Which configured search tool runs the searches. Leave empty to use the first one available.",
+      "searchToolPlaceholder": "Select a search tool (defaults to the first available)",
+      "maxLoopsLabel": "Max Agentic Loops",
+      "maxLoopsHint": "How many follow-up model calls one intercepted request may chain. Leave empty for the default of 3.",
+      "saveButton": "Save Settings",
+      "updatedToast": "Settings updated successfully. Changes will be applied across all pods within 10 seconds.",
+      "notAppliedTitle": "Not running on the proxy that answered this page",
+      "notAppliedBody": "Interception is switched on for the cluster, but the proxy serving this page has not applied it. That is expected for about 10 seconds after a change or a restart. If it persists, check that proxy's logs: requests it handles are not being intercepted.",
+      "infoAlertBody": "Serve web search tool calls from a configured search tool instead of passing them upstream, so models without native web search can still answer with fresh results. Click 'Save Settings' to apply changes across all pods (takes effect within 10 seconds)."
     }
   },
   "usage": {
