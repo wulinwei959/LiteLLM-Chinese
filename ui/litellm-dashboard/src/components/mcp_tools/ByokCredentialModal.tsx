@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useId, useState } from "react";
 import { toast } from "@/lib/toast";
 import { fetchClient } from "@/lib/http/api";
@@ -10,12 +11,14 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PasswordInput } from "@/components/shared/PasswordInput";
 import { Switch } from "@/components/ui/switch";
 
-const byokSaveErrorMessage = (e: unknown): string => {
+type ByokTranslator = ReturnType<typeof useTranslations<"byokModal">>;
+
+const byokSaveErrorMessage = (t: ByokTranslator, e: unknown): string => {
   if (e instanceof ApiError) {
     const detail = (e.body as { detail?: { error?: string } } | null)?.detail?.error;
     if (detail) return detail;
   }
-  return e instanceof Error && e.message ? e.message : "Failed to connect";
+  return e instanceof Error && e.message ? e.message : t("connectFailed");
 };
 
 interface ByokCredentialModalProps {
@@ -26,6 +29,7 @@ interface ByokCredentialModalProps {
 }
 
 export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server, open, onClose, onSuccess }) => {
+  const t = useTranslations("byokModal");
   const [step, setStep] = useState<1 | 2>(1);
   const [apiKey, setApiKey] = useState("");
   const [saveKey, setSaveKey] = useState(true);
@@ -45,7 +49,7 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
 
   const handleAuthorize = async () => {
     if (!apiKey.trim()) {
-      toast.error("Please enter your API key");
+      toast.error(t("apiKeyRequired"));
       return;
     }
     setLoading(true);
@@ -58,7 +62,7 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
       onSuccess(server.server_id);
       handleClose();
     } catch (e) {
-      toast.error(byokSaveErrorMessage(e));
+      toast.error(byokSaveErrorMessage(t, e));
     } finally {
       setLoading(false);
     }
@@ -120,10 +124,9 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
                     </svg>
                   </div>
                   <div>
-                    <p className="font-semibold text-foreground mb-1">How it works</p>
+                    <p className="font-semibold text-foreground mb-1">{t("howItWorks")}</p>
                     <p className="text-muted-foreground text-sm">
-                      LiteLLM acts as a secure bridge. Your requests are routed through our MCP client directly to{" "}
-                      {serverDisplayName}&apos;s API.
+                      {t("howItWorksBody", { server: serverDisplayName })}
                     </p>
                   </div>
                 </div>
@@ -137,7 +140,7 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
                       <path d="M12 2L12 22M2 12L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
                     </svg>
-                    Requested Access
+                    {t("requestedAccessTitle")}
                   </p>
                   <ul className="space-y-2">
                     {server.byok_description.map((item, i) => (
@@ -170,18 +173,16 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
                 <Key className="size-5 text-info" />
               </div>
 
-              <h2 className="text-2xl font-bold text-foreground mb-2">Provide API Key</h2>
-              <p className="text-muted-foreground mb-6">
-                Enter your {serverDisplayName} API key to authorize this connection.
-              </p>
+              <h2 className="text-2xl font-bold text-foreground mb-2">{t("provideApiKey")}</h2>
+              <p className="text-muted-foreground mb-6">{t("intro", { server: serverDisplayName })}</p>
 
               <div className="mb-4">
                 <label htmlFor={apiKeyInputId} className="block text-sm font-semibold text-foreground mb-2">
-                  {serverDisplayName} API Key
+                  {t("apiKeyLabel", { server: serverDisplayName })}
                 </label>
                 <PasswordInput
                   id={apiKeyInputId}
-                  placeholder="Enter your API key"
+                  placeholder={t("apiKeyPlaceholder")}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   groupClassName="rounded-lg"
@@ -209,7 +210,7 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
                   </svg>
                   <span className="text-sm font-medium text-foreground">Save key for future use</span>
                 </div>
-                <Switch checked={saveKey} onCheckedChange={setSaveKey} aria-label="Save key for future use" />
+                <Switch checked={saveKey} onCheckedChange={setSaveKey} aria-label={t("saveKeyAria")} />
               </div>
 
               {/* Security note */}

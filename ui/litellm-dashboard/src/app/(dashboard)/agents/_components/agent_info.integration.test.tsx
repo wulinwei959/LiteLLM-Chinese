@@ -188,10 +188,10 @@ describe("AgentInfoView update payload", () => {
     renderView();
     expect(await screen.findByText("Configured, awaiting an authenticated request")).toBeInTheDocument();
     await openEditor(user);
-    expect(screen.getByLabelText("Application (Client) ID")).toHaveValue(identity.client_id);
-    expect(screen.getByRole("combobox", { name: "Identity Provider" })).toHaveTextContent("Microsoft Entra ID");
-    expect(screen.getByRole("combobox", { name: "Execution Mode" })).toHaveTextContent("Autonomous");
-    expect(screen.getByRole("combobox", { name: /^Execution$/ })).toHaveTextContent("Enabled");
+    expect(screen.getByLabelText("应用程序（客户端）ID")).toHaveValue(identity.client_id);
+    expect(screen.getByRole("combobox", { name: "身份提供商" })).toHaveTextContent("Microsoft Entra ID");
+    expect(screen.getByRole("combobox", { name: "执行模式" })).toHaveTextContent("自主执行");
+    expect(screen.getByRole("combobox", { name: /^执行$/ })).toHaveTextContent("启用");
     fireEvent.change(screen.getByLabelText("智能体名称"), { target: { value: "Renamed agent" } });
     if (editCard) {
       fireEvent.change(screen.getByLabelText("显示名称"), { target: { value: "Configured runtime" } });

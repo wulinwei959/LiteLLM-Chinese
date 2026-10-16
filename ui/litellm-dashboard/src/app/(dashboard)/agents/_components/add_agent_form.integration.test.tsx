@@ -104,16 +104,16 @@ describe("AddAgentForm submit payload", () => {
       .mockRejectedValueOnce(new Error("temporarily unavailable"))
       .mockResolvedValue([`https://login.microsoftonline.com/${tenant}/v2.0`]);
     renderForm();
-    await user.click(await screen.findByLabelText("Identity Provider"));
+    await user.click(await screen.findByLabelText("身份提供商"));
     await user.click(await screen.findByRole("option", { name: "Microsoft Entra ID" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Could not load the gateway's trusted identity providers",
+      "无法加载网关的受信任身份提供商",
     );
-    await user.click(screen.getByLabelText("Identity Provider"));
-    await user.click(await screen.findByRole("option", { name: "No explicit identity binding" }));
-    await user.click(screen.getByLabelText("Identity Provider"));
+    await user.click(screen.getByLabelText("身份提供商"));
+    await user.click(await screen.findByRole("option", { name: "不显式绑定身份" }));
+    await user.click(screen.getByLabelText("身份提供商"));
     await user.click(await screen.findByRole("option", { name: "Microsoft Entra ID" }));
-    await user.click(screen.getByLabelText("Trusted Entra Tenant"));
+    await user.click(screen.getByLabelText("受信任的 Entra 租户"));
     expect(await screen.findByRole("option", { name: tenant })).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
@@ -130,12 +130,12 @@ describe("AddAgentForm submit payload", () => {
     fireEvent.change(screen.getByPlaceholderText("描述这个智能体的用途..."), {
       target: { value: "Test agent" },
     });
-    await user.click(screen.getByLabelText("Identity Provider"));
+    await user.click(screen.getByLabelText("身份提供商"));
     await user.click(await screen.findByRole("option", { name: "Microsoft Entra ID" }));
-    await user.click(screen.getByLabelText("Trusted Entra Tenant"));
+    await user.click(screen.getByLabelText("受信任的 Entra 租户"));
     await user.click(await screen.findByRole("option", { name: tenant }));
-    fireEvent.change(screen.getByLabelText("Application (Client) ID"), { target: { value: clientId } });
-    fireEvent.change(screen.getByLabelText("Enterprise Application Object ID"), {
+    fireEvent.change(screen.getByLabelText("应用程序（客户端）ID"), { target: { value: clientId } });
+    fireEvent.change(screen.getByLabelText("企业应用程序对象 ID"), {
       target: { value: "33333333-3333-4333-8333-333333333333" },
     });
     await user.click(screen.getByRole("button", { name: /^Next/ }));

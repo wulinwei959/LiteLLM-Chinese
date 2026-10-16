@@ -37,7 +37,7 @@ describe("agent identity evidence", () => {
     renderWithProviders(
       <AgentIdentityDetails agentId="native" identity={identity} accessToken="user" isAdmin={false} />,
     );
-    expect(screen.queryByRole("region", { name: "Agent Identity" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "智能体身份" })).not.toBeInTheDocument();
     expect(apiClient.get).not.toHaveBeenCalled();
   });
 });

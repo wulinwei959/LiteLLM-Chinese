@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -20,7 +21,7 @@ const jsonResponse = (body: unknown, status = 200) =>
 
 async function fillAndSubmit(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByText("Continue to Authentication"));
-  fireEvent.change(screen.getByPlaceholderText("Enter your API key"), { target: { value: "linear-key" } });
+  fireEvent.change(screen.getByPlaceholderText("请输入您的 API 密钥"), { target: { value: "linear-key" } });
   await user.click(screen.getByRole("button", { name: /Connect & Authorize/ }));
 }
 

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { useWatch } from "react-hook-form";
 import { apiClient } from "@/components/networking";
@@ -7,20 +8,21 @@ import { AgentFormField, type AgentFormValues } from "./AgentFormKit";
 import { entraTenantFromIssuer, IDENTITY_UUID_PATTERN } from "./agent_identity";
 
 const PROVIDER_OPTIONS = [
-  { value: "none", label: "No explicit identity binding" },
-  { value: "microsoft_entra", label: "Microsoft Entra ID" },
-];
+  { value: "none", labelKey: "providerNoneLabel" },
+  { value: "microsoft_entra", labelKey: "providerEntra" },
+] as const;
 const EXECUTION_MODE_OPTIONS = [
-  { value: "autonomous", label: "Autonomous" },
-  { value: "delegated", label: "On behalf of a user" },
-  { value: "both", label: "Both" },
-];
+  { value: "autonomous", labelKey: "modeAutonomous" },
+  { value: "delegated", labelKey: "modeDelegated" },
+  { value: "both", labelKey: "modeBoth" },
+] as const;
 const EXECUTION_OPTIONS = [
-  { value: "enabled", label: "Enabled" },
-  { value: "disabled", label: "Disabled" },
-];
+  { value: "enabled", labelKey: "executionEnabled" },
+  { value: "disabled", labelKey: "executionDisabled" },
+] as const;
 
 export const AgentIdentityFields = ({ accessToken }: { accessToken: string | null }) => {
+  const t = useTranslations("agentIdentity");
   const provider = useWatch<AgentFormValues>({ name: "identity_provider" });
   const mode = useWatch<AgentFormValues>({ name: "execution_mode" });
   const showScopes = mode !== "autonomous" && mode !== undefined;
@@ -44,7 +46,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
         }
       })
       .catch(() => {
-        if (active) setError("Could not load the gateway's trusted identity providers");
+        if (active) setError(t("providersLoadFailed"));
       });
     return () => {
       active = false;
@@ -53,18 +55,15 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
 
   return (
     <>
-      <section aria-label="Agent Identity" className="my-6 space-y-4 rounded-lg border border-border p-4">
+      <section aria-label={t("sectionAria")} className="my-6 space-y-4 rounded-lg border border-border p-4">
         <div>
-          <h3 className="font-medium">Agent Identity</h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Connect an existing identity provider application to this agent. Its name and runtime address can change
-            independently.
-          </p>
+          <h3 className="font-medium">{t("sectionTitle")}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">{t("sectionDesc")}</p>
         </div>
-        <AgentFormField name="identity_provider" label="Identity Provider" defaultValue="none">
+        <AgentFormField name="identity_provider" label={t("providerLabel")} defaultValue="none">
           {({ value, onChange, id }) => (
             <Select
-              items={PROVIDER_OPTIONS}
+              items={PROVIDER_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
               value={typeof value === "string" ? value : "none"}
               onValueChange={onChange}
             >
@@ -74,7 +73,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
               <SelectContent>
                 {PROVIDER_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                    {t(option.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -85,13 +84,13 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
           <>
             <AgentFormField
               name="identity_tenant_id"
-              label="Trusted Entra Tenant"
+              label={t("trustedTenant")}
               rules={{ required: "Select a trusted tenant" }}
             >
               {({ value, onChange, id }) => (
                 <Select value={typeof value === "string" ? value : ""} onValueChange={onChange}>
                   <SelectTrigger id={id}>
-                    <SelectValue placeholder="Select the gateway's trusted tenant" />
+                    <SelectValue placeholder={t("trustedTenantPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {tenants.map((tenant) => (
@@ -116,18 +115,18 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
             )}
             <AgentFormField
               name="identity_client_id"
-              label="Application (Client) ID"
+              label={t("clientId")}
               rules={{
-                required: "Enter the Entra application client ID",
-                pattern: { value: IDENTITY_UUID_PATTERN, message: "Enter a valid application client UUID" },
+                required: t("clientIdRequired"),
+                pattern: { value: IDENTITY_UUID_PATTERN, message: t("clientIdInvalid") },
               }}
               description={
                 <>
-                  Find this under{" "}
+                  {t("clientIdDescBefore")}{" "}
                   <a className="underline" href="https://entra.microsoft.com/" target="_blank" rel="noreferrer">
-                    Entra App registrations
+                    {t("clientIdDescLink")}
                   </a>
-                  , select your agent application, then Overview. No client secret is required here.
+                  {t("clientIdDescAfter")}
                 </>
               }
             >
@@ -137,14 +136,14 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
                   ref={ref}
                   value={typeof value === "string" ? value : ""}
                   onChange={onChange}
-                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  placeholder={t("clientIdPlaceholder")}
                 />
               )}
             </AgentFormField>
-            <AgentFormField name="execution_mode" label="Execution Mode" defaultValue="autonomous">
+            <AgentFormField name="execution_mode" label={t("executionMode")} defaultValue="autonomous">
               {({ value, onChange, id }) => (
                 <Select
-                  items={EXECUTION_MODE_OPTIONS}
+                  items={EXECUTION_MODE_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
                   value={typeof value === "string" ? value : "autonomous"}
                   onValueChange={onChange}
                 >
@@ -154,7 +153,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
                   <SelectContent>
                     {EXECUTION_MODE_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(option.labelKey)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -163,9 +162,9 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
             </AgentFormField>
             <AgentFormField
               name="identity_service_principal_id"
-              label="Enterprise Application Object ID"
+              label={t("enterpriseObjectId")}
               rules={{
-                required: mode !== "delegated" ? "Enter the service principal Object ID" : false,
+                required: mode !== "delegated" ? t("enterpriseObjectIdRequired") : false,
                 pattern: { value: IDENTITY_UUID_PATTERN, message: "Enter a valid service principal UUID" },
               }}
               description={
@@ -191,8 +190,8 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
 
             <AgentFormField
               name="identity_required_roles"
-              label="Required Application Roles"
-              description="Comma-separated role values required on autonomous application tokens"
+              label={t("requiredRoles")}
+              description={t("requiredRolesDesc")}
             >
               {({ value, onChange, ref, ...control }) => (
                 <Input
@@ -209,9 +208,9 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
               <>
                 <AgentFormField
                   name="identity_required_scopes"
-                  label="Required Delegated Scopes"
+                  label={t("requiredScopes")}
                   defaultValue="user_impersonation"
-                  rules={{ required: "Enter a delegated scope" }}
+                  rules={{ required: t("requiredScopeRequired") }}
                 >
                   {({ value, onChange, ref, ...control }) => (
                     <Input
@@ -222,16 +221,13 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
                     />
                   )}
                 </AgentFormField>
-                <p className="text-sm text-muted-foreground">
-                  Users must first sign in through this gateway&apos;s Microsoft SSO. Subsequent delegated calls must
-                  satisfy both user and agent permissions.
-                </p>
+                <p className="text-sm text-muted-foreground">{t("delegatedScopesNote")}</p>
               </>
             )}
-            <AgentFormField name="enabled" label="Execution" defaultValue={true}>
+            <AgentFormField name="enabled" label={t("execution")} defaultValue={true}>
               {({ value, onChange, id }) => (
                 <Select
-                  items={EXECUTION_OPTIONS}
+                  items={EXECUTION_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
                   value={value === false ? "disabled" : "enabled"}
                   onValueChange={(next) => onChange(next === "enabled")}
                 >
@@ -241,7 +237,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
                   <SelectContent>
                     {EXECUTION_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(option.labelKey)}
                       </SelectItem>
                     ))}
                   </SelectContent>
