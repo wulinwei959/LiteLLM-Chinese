@@ -29,7 +29,7 @@ const renderModal = (token: KeyResponse | null = makeToken(), onKeyUpdate = vi.f
 };
 
 const regenerate = async (user: ReturnType<typeof userEvent.setup>) => {
-  await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+  await user.click(screen.getByRole("button", { name: /重新生成/ }));
 };
 
 const submittedPayload = (): Record<string, unknown> =>
@@ -74,19 +74,19 @@ describe("RegenerateKeyModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    const budget = screen.getByLabelText("Max Budget (USD)");
+    const budget = screen.getByLabelText("最大预算（USD）");
     await user.clear(budget);
     await user.type(budget, "42.567");
-    const tpm = screen.getByLabelText("TPM Limit");
+    const tpm = screen.getByLabelText("TPM 上限");
     await user.clear(tpm);
     await user.type(tpm, "1234");
-    const rpm = screen.getByLabelText("RPM Limit");
+    const rpm = screen.getByLabelText("RPM 上限");
     await user.clear(rpm);
     await user.type(rpm, "56");
-    const duration = screen.getByPlaceholderText("e.g. 30s, 30h, 30d");
+    const duration = screen.getByPlaceholderText("例如 30s、30h、30d");
     await user.clear(duration);
     await user.type(duration, "7d");
-    await user.type(screen.getByPlaceholderText("e.g. 24h, 2d"), "24h");
+    await user.type(screen.getByPlaceholderText("例如 24h、2d"), "24h");
 
     await regenerate(user);
 
@@ -111,7 +111,7 @@ describe("RegenerateKeyModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    const budget = screen.getByLabelText("Max Budget (USD)");
+    const budget = screen.getByLabelText("最大预算（USD）");
     await user.clear(budget);
     await user.type(budget, typed);
 
@@ -122,8 +122,8 @@ describe("RegenerateKeyModal submit payload", () => {
   });
 
   it.each([
-    ["TPM Limit", "tpm_limit"],
-    ["RPM Limit", "rpm_limit"],
+    ["TPM 上限", "tpm_limit"],
+    ["RPM 上限", "rpm_limit"],
   ])("still submits a fractional %s rather than letting a step constraint block it", async (label, key) => {
     const user = userEvent.setup();
     renderModal();
@@ -142,10 +142,10 @@ describe("RegenerateKeyModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.clear(screen.getByLabelText("Max Budget (USD)"));
-    await user.clear(screen.getByLabelText("TPM Limit"));
-    await user.clear(screen.getByLabelText("RPM Limit"));
-    await user.clear(screen.getByPlaceholderText("e.g. 30s, 30h, 30d"));
+    await user.clear(screen.getByLabelText("最大预算（USD）"));
+    await user.clear(screen.getByLabelText("TPM 上限"));
+    await user.clear(screen.getByLabelText("RPM 上限"));
+    await user.clear(screen.getByPlaceholderText("例如 30s、30h、30d"));
 
     await regenerate(user);
 
@@ -225,13 +225,13 @@ describe("RegenerateKeyModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    const duration = screen.getByPlaceholderText("e.g. 30s, 30h, 30d");
+    const duration = screen.getByPlaceholderText("例如 30s、30h、30d");
     await user.clear(duration);
     await user.type(duration, "bogus");
 
     await regenerate(user);
 
-    expect(await screen.findByText("Must be a duration like 30s, 30m, 24h, 2d, 1w, or 1mo")).toBeInTheDocument();
+    expect(await screen.findByText("请填写形如 30s、30m、24h、2d、1w、1mo 的时长")).toBeInTheDocument();
     expect(mockRegenerateKeyCall).not.toHaveBeenCalled();
   });
 
@@ -242,7 +242,7 @@ describe("RegenerateKeyModal submit payload", () => {
 
     await regenerate(user);
 
-    expect(await screen.findByText("Expiration is required for expired keys")).toBeInTheDocument();
+    expect(await screen.findByText("已过期的密钥必须填写过期时长")).toBeInTheDocument();
     expect(mockRegenerateKeyCall).not.toHaveBeenCalled();
   });
 
@@ -250,11 +250,11 @@ describe("RegenerateKeyModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.type(screen.getByPlaceholderText("e.g. 24h, 2d"), "soon");
+    await user.type(screen.getByPlaceholderText("例如 24h、2d"), "soon");
 
     await regenerate(user);
 
-    expect(await screen.findByText("Must be a duration like 30s, 30m, 24h, 2d, 1w, or 1mo")).toBeInTheDocument();
+    expect(await screen.findByText("请填写形如 30s、30m、24h、2d、1w、1mo 的时长")).toBeInTheDocument();
     expect(mockRegenerateKeyCall).not.toHaveBeenCalled();
   });
 

@@ -44,43 +44,43 @@ describe("RegenerateKeyModal", () => {
 
   it("should render the modal with correct title", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    expect(screen.getByText("Regenerate Virtual Key")).toBeInTheDocument();
+    expect(screen.getByText("重新生成虚拟密钥")).toBeInTheDocument();
   });
 
   it("should not render the modal when visible is false", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} visible={false} />);
-    expect(screen.queryByText("Regenerate Virtual Key")).not.toBeInTheDocument();
+    expect(screen.queryByText("重新生成虚拟密钥")).not.toBeInTheDocument();
   });
 
   it("should display the form with pre-filled values", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
 
-    const keyAliasInput = screen.getByLabelText("Key Alias") as HTMLInputElement;
+    const keyAliasInput = screen.getByLabelText("密钥别名") as HTMLInputElement;
     expect(keyAliasInput).toBeDisabled();
     expect(keyAliasInput).toHaveValue("my-test-key");
   });
 
   it("should display the current expiry when token has expires", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    expect(screen.getByText(/Current expiry:/)).toBeInTheDocument();
+    expect(screen.getByText(/当前过期时间：/)).toBeInTheDocument();
   });
 
   it("should display 'Never' when token has no expires", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} selectedToken={makeToken({ expires: undefined })} />);
-    expect(screen.getByText("Current expiry: Never")).toBeInTheDocument();
+    expect(screen.getByText("当前过期时间：从不")).toBeInTheDocument();
   });
 
   it("should show Cancel and Regenerate buttons in form view", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Regenerate/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /重新生成/ })).toBeInTheDocument();
   });
 
   it("should call onClose when Cancel is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
     expect(mockOnClose).toHaveBeenCalledOnce();
   });
 
@@ -95,21 +95,21 @@ describe("RegenerateKeyModal", () => {
   it("should render form fields for budget and rate limits", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
 
-    expect(screen.getByText("Max Budget (USD)")).toBeInTheDocument();
-    expect(screen.getByText("TPM Limit")).toBeInTheDocument();
-    expect(screen.getByText("RPM Limit")).toBeInTheDocument();
+    expect(screen.getByText("最大预算（USD）")).toBeInTheDocument();
+    expect(screen.getByText("TPM 上限")).toBeInTheDocument();
+    expect(screen.getByText("RPM 上限")).toBeInTheDocument();
   });
 
   it("should render duration and grace period fields", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
 
-    expect(screen.getByText("Expire Key")).toBeInTheDocument();
-    expect(screen.getByText("Grace Period")).toBeInTheDocument();
+    expect(screen.getByText("密钥过期时间")).toBeInTheDocument();
+    expect(screen.getByText("宽限期")).toBeInTheDocument();
   });
 
   it("should display grace period recommendation text", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    expect(screen.getByText("Recommended: 24h to 72h for production keys")).toBeInTheDocument();
+    expect(screen.getByText("建议：生产密钥设置为 24h 到 72h")).toBeInTheDocument();
   });
 
   it("should call regenerateKeyCall and show success view on successful regeneration", async () => {
@@ -121,7 +121,7 @@ describe("RegenerateKeyModal", () => {
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
 
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
       expect(mockRegenerateKeyCall).toHaveBeenCalledOnce();
@@ -131,7 +131,7 @@ describe("RegenerateKeyModal", () => {
       expect(screen.getByText("sk-new-regenerated-key")).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/will not see it again/)).toBeInTheDocument();
+    expect(screen.getByText(/无法再次查看/)).toBeInTheDocument();
   });
 
   it("should show Close button after successful regeneration", async () => {
@@ -142,17 +142,17 @@ describe("RegenerateKeyModal", () => {
     });
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
       expect(screen.getByText("sk-new-regenerated-key")).toBeInTheDocument();
     });
 
     // Should show Close buttons (footer + modal X), not Cancel/Regenerate
-    const closeButtons = screen.getAllByRole("button", { name: "Close" });
+    const closeButtons = screen.getAllByRole("button", { name: /关闭|Close/ });
     expect(closeButtons.length).toBeGreaterThanOrEqual(1);
-    expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Regenerate/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "取消" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /重新生成/ })).not.toBeInTheDocument();
   });
 
   it("should show Copy Key button after successful regeneration", async () => {
@@ -163,10 +163,10 @@ describe("RegenerateKeyModal", () => {
     });
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Copy Key/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /复制密钥/ })).toBeInTheDocument();
     });
   });
 
@@ -178,15 +178,15 @@ describe("RegenerateKeyModal", () => {
     });
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
-    const copyButton = await screen.findByRole("button", { name: /Copy Key/ });
+    const copyButton = await screen.findByRole("button", { name: /复制密钥/ });
     await user.click(copyButton);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Copied/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /已复制/ })).toBeInTheDocument();
     });
-    expect(screen.queryByRole("button", { name: /Copy Key/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /复制密钥/ })).not.toBeInTheDocument();
   });
 
   it("should display the 'Virtual Key' label above the key in the success view", async () => {
@@ -197,10 +197,10 @@ describe("RegenerateKeyModal", () => {
     });
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
-      expect(screen.getByText("Virtual Key")).toBeInTheDocument();
+      expect(screen.getByText("虚拟密钥")).toBeInTheDocument();
     });
   });
 
@@ -212,7 +212,7 @@ describe("RegenerateKeyModal", () => {
     });
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
       expect(mockOnKeyUpdate).toHaveBeenCalledOnce();
@@ -223,17 +223,17 @@ describe("RegenerateKeyModal", () => {
   });
 
   it.each([
-    ["30s", /New expiry:/],
-    ["15m", /New expiry:/],
-    ["2h", /New expiry:/],
-    ["7d", /New expiry:/],
-    ["2w", /New expiry:/],
-    ["1mo", /New expiry:/],
+    ["30s", /新过期时间：/],
+    ["15m", /新过期时间：/],
+    ["2h", /新过期时间：/],
+    ["7d", /新过期时间：/],
+    ["2w", /新过期时间：/],
+    ["1mo", /新过期时间：/],
   ])("should compute a new expiry preview for duration '%s'", async (durationInput, expected) => {
     const user = userEvent.setup();
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
 
-    const durationField = screen.getByPlaceholderText("e.g. 30s, 30h, 30d");
+    const durationField = screen.getByPlaceholderText("例如 30s、30h、30d");
     await user.clear(durationField);
     await user.type(durationField, durationInput);
 
@@ -255,7 +255,7 @@ describe("RegenerateKeyModal", () => {
       <RegenerateKeyModal {...defaultProps} selectedToken={makeToken({ expires: "2026-12-31T00:00:00Z" })} />,
     );
 
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
       expect(mockOnKeyUpdate).toHaveBeenCalledOnce();
@@ -276,7 +276,7 @@ describe("RegenerateKeyModal", () => {
       <RegenerateKeyModal {...defaultProps} selectedToken={makeToken({ expires: previousExpires })} />,
     );
 
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
       expect(mockOnKeyUpdate).toHaveBeenCalledOnce();
@@ -290,14 +290,14 @@ describe("RegenerateKeyModal", () => {
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
 
-    const durationField = screen.getByPlaceholderText("e.g. 30s, 30h, 30d");
+    const durationField = screen.getByPlaceholderText("例如 30s、30h、30d");
     await user.clear(durationField);
     await user.type(durationField, "bogus");
 
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
-      expect(screen.getByText("Must be a duration like 30s, 30m, 24h, 2d, 1w, or 1mo")).toBeInTheDocument();
+      expect(screen.getByText("请填写形如 30s、30m、24h、2d、1w、1mo 的时长")).toBeInTheDocument();
     });
     expect(mockRegenerateKeyCall).not.toHaveBeenCalled();
     expect(mockNotificationFromBackend).not.toHaveBeenCalled();
@@ -318,7 +318,7 @@ describe("RegenerateKeyModal", () => {
     });
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
       expect(mockOnKeyUpdate).toHaveBeenCalledOnce();
@@ -339,7 +339,7 @@ describe("RegenerateKeyModal", () => {
     });
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
       expect(screen.getByText("my-test-key")).toBeInTheDocument();
@@ -354,10 +354,10 @@ describe("RegenerateKeyModal", () => {
     });
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} selectedToken={makeToken({ key_alias: undefined })} />);
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
-      expect(screen.getByText("No alias set")).toBeInTheDocument();
+      expect(screen.getByText("未设置别名")).toBeInTheDocument();
     });
   });
 
@@ -366,7 +366,7 @@ describe("RegenerateKeyModal", () => {
     renderWithProviders(<RegenerateKeyModal {...defaultProps} selectedToken={null} />);
 
     // The form shouldn't even be populated, but we check the button doesn't trigger a call
-    const regenerateBtn = screen.queryByRole("button", { name: /Regenerate/ });
+    const regenerateBtn = screen.queryByRole("button", { name: /重新生成/ });
     if (regenerateBtn) {
       await user.click(regenerateBtn);
     }
@@ -384,8 +384,8 @@ describe("RegenerateKeyModal", () => {
       />,
     );
 
-    expect(screen.getByText(/\(expired\)/)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("e.g. 30s, 30h, 30d")).toHaveValue("");
+    expect(screen.getByText(/（已过期）/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("例如 30s、30h、30d")).toHaveValue("");
   });
 
   it("should require a new expiration before regenerating an expired key", async () => {
@@ -399,10 +399,10 @@ describe("RegenerateKeyModal", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
-      expect(screen.getByText("Expiration is required for expired keys")).toBeInTheDocument();
+      expect(screen.getByText("已过期的密钥必须填写过期时长")).toBeInTheDocument();
     });
     expect(mockRegenerateKeyCall).not.toHaveBeenCalled();
     // Form validation rejections must not surface a backend-style toast.
@@ -417,7 +417,7 @@ describe("RegenerateKeyModal", () => {
     });
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
       expect(mockRegenerateKeyCall).toHaveBeenCalledWith(
@@ -437,7 +437,7 @@ describe("RegenerateKeyModal", () => {
     });
 
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /Regenerate/ }));
+    await user.click(screen.getByRole("button", { name: /重新生成/ }));
 
     await waitFor(() => {
       expect(mockOnKeyUpdate).toHaveBeenCalledOnce();
