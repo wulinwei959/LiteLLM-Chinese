@@ -43,7 +43,7 @@ describe("SSOModals", () => {
     };
 
     renderWithProviders(<TestWrapper />);
-    expect(screen.getByText("Add SSO")).toBeInTheDocument();
+    expect(screen.getByText("添加 SSO")).toBeInTheDocument();
   });
 
   it("should show validation error if proxy base url is not a valid URL", async () => {
@@ -82,7 +82,7 @@ describe("SSOModals", () => {
     fireEvent.change(urlInput, { target: { value: "invalid-url" } });
 
     // Submit the form
-    const saveButton = screen.getByText("Save");
+    const saveButton = screen.getByText("保存");
     fireEvent.click(saveButton);
 
     // Check for validation error
@@ -131,7 +131,7 @@ describe("SSOModals", () => {
     fireEvent.change(urlInput, { target: { value: "https://example.com/" } });
 
     // Submit the form
-    const saveButton = screen.getByText("Save");
+    const saveButton = screen.getByText("保存");
     fireEvent.click(saveButton);
 
     // Check for validation error using findByText for async rendering
@@ -225,7 +225,7 @@ describe("SSOModals", () => {
     fireEvent.change(urlInput, { target: { value: "http:" } });
 
     // Submit the form
-    const saveButton = screen.getByText("Save");
+    const saveButton = screen.getByText("保存");
     fireEvent.click(saveButton);
 
     // Check that only the URL format error appears (use findByText for async rendering)
@@ -376,7 +376,7 @@ describe("SSOModals", () => {
     fireEvent.change(proxyAdminTeamsInput, { target: { value: "admin-group, super-admin" } });
 
     // Submit the form
-    const saveButton = screen.getByText("Save");
+    const saveButton = screen.getByText("保存");
     fireEvent.click(saveButton);
 
     // Verify the API was called with correct payload including role mappings
@@ -460,7 +460,7 @@ describe("SSOModals", () => {
     });
     await user().click(screen.getAllByLabelText("允许 IdP 发起的（未请求）响应")[0]);
 
-    fireEvent.click(screen.getByText("Save"));
+    fireEvent.click(screen.getByText("保存"));
 
     await waitFor(() => {
       expect(updateSSOSettings).toHaveBeenCalledWith(
@@ -504,14 +504,14 @@ describe("SSOModals", () => {
     renderWithProviders(<TestWrapper />);
 
     // Check that Clear button is visible when SSO is configured
-    const clearButton = screen.getByText("Clear");
+    const clearButton = screen.getByText("清除");
     expect(clearButton).toBeInTheDocument();
 
     // Click Clear button to open confirmation modal
     fireEvent.click(clearButton);
 
     // Confirm the clear action in the modal
-    const confirmButton = screen.getByText("Yes, Clear");
+    const confirmButton = screen.getByText("确认清除");
     fireEvent.click(confirmButton);
 
     // Verify the clear API was called with null values
@@ -539,7 +539,7 @@ describe("SSOModals", () => {
       });
     });
 
-    expect(toast.success).toHaveBeenCalledWith("SSO settings cleared successfully");
+    expect(toast.success).toHaveBeenCalledWith("SSO 设置已清除");
     expect(mockHandleAddSSOOk).toHaveBeenCalled();
   });
 
@@ -580,5 +580,35 @@ describe("SSOModals", () => {
       expect.stringContaining("https://www.okta.com/"),
     );
     expect(screen.queryByAltText("Generic SSO logo")).not.toBeInTheDocument();
+  });
+
+  it("renders the SSO setup instructions with all four steps", () => {
+    const TestWrapper = () => {
+      const form = useSSOSettingsForm("admin-panel");
+      return (
+        <SSOModals
+          isAddSSOModalVisible={false}
+          isInstructionsModalVisible={true}
+          handleAddSSOOk={() => {}}
+          handleAddSSOCancel={() => {}}
+          handleShowInstructions={() => {}}
+          handleInstructionsOk={() => {}}
+          handleInstructionsCancel={() => {}}
+          form={form}
+          accessToken={null}
+          ssoConfigured={false}
+        />
+      );
+    };
+
+    renderWithProviders(<TestWrapper />);
+
+    expect(screen.getByText("SSO 设置说明")).toBeInTheDocument();
+    expect(screen.getByText("请按以下步骤完成 SSO 设置：")).toBeInTheDocument();
+    expect(screen.getByText("1. 请勿关闭此标签页")).toBeInTheDocument();
+    expect(screen.getByText("2. 新开一个标签页，访问你的代理基础 URL")).toBeInTheDocument();
+    expect(screen.getByText("3. 在新标签页确认 SSO 配置正确且可以正常登录")).toBeInTheDocument();
+    expect(screen.getByText("4. 若第 3 步成功，即可关闭此标签页")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "完成" })).toBeInTheDocument();
   });
 });

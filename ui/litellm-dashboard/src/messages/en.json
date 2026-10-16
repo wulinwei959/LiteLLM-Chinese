@@ -4249,7 +4249,18 @@
       "providerNameOkta": "Okta / Auth0 SSO",
       "providerNameGeneric": "Generic SSO",
       "providerNameSaml": "SAML SSO",
-      "roleProxyAdminViewer": "Proxy Admin Viewer"
+      "roleProxyAdminViewer": "Proxy Admin Viewer",
+      "noAccessTokenToast": "No access token available",
+      "clearConfirmButton": "Yes, Clear",
+      "clearConfirmBody": "Are you sure you want to clear all SSO settings? This action cannot be undone.",
+      "clearLoginWarning": "Users will no longer be able to login using SSO after this change.",
+      "clearFailedToastWithoutError": "Failed to clear SSO settings",
+      "instructionsTitle": "SSO Setup Instructions",
+      "instructionsIntro": "Follow these steps to complete the SSO setup:",
+      "instructionStep1": "1. DO NOT Exit this TAB",
+      "instructionStep2": "2. Open a new tab, visit your proxy base url",
+      "instructionStep3": "3. Confirm your SSO is configured correctly and you can login on the new Tab",
+      "instructionStep4": "4. If Step 3 is successful, you can close this tab"
     }
   },
   "usage": {

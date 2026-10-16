@@ -4249,7 +4249,18 @@
       "providerNameOkta": "Okta / Auth0 SSO",
       "providerNameGeneric": "通用 SSO",
       "providerNameSaml": "SAML SSO",
-      "roleProxyAdminViewer": "代理管理员（只读）"
+      "roleProxyAdminViewer": "代理管理员（只读）",
+      "noAccessTokenToast": "无可用访问令牌",
+      "clearConfirmButton": "确认清除",
+      "clearConfirmBody": "确定要清除所有 SSO 设置吗？此操作不可撤销。",
+      "clearLoginWarning": "更改后用户将无法再通过 SSO 登录。",
+      "clearFailedToastWithoutError": "清除 SSO 设置失败",
+      "instructionsTitle": "SSO 设置说明",
+      "instructionsIntro": "请按以下步骤完成 SSO 设置：",
+      "instructionStep1": "1. 请勿关闭此标签页",
+      "instructionStep2": "2. 新开一个标签页，访问你的代理基础 URL",
+      "instructionStep3": "3. 在新标签页确认 SSO 配置正确且可以正常登录",
+      "instructionStep4": "4. 若第 3 步成功，即可关闭此标签页"
     }
   },
   "usage": {
