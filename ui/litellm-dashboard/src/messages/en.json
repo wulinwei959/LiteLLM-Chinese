@@ -8646,5 +8646,33 @@
     "moreCount": "+{count} more",
     "ofBudget": "of {amount}",
     "spendOfBudget": "{spend} of {amount}"
+  },
+  "chatUi": {
+    "listTools": "List tools",
+    "toolCall": "Tool call",
+    "request": "Request",
+    "approved": "Approved",
+    "response": "Response",
+    "responseCache": "Response Cache",
+    "responseCacheTooltip": "This response was replayed from LiteLLM's response cache. The request never reached the provider, so it did not read from or write to the provider's own prompt cache.",
+    "cacheRead": "Cache Read",
+    "cacheWrite": "Cache Write",
+    "ttft": "TTFT",
+    "ttftTooltip": "Time to first token",
+    "totalLatency": "Total Latency",
+    "totalLatencyTooltip": "Total latency",
+    "in": "In",
+    "inTooltip": "Prompt tokens",
+    "out": "Out",
+    "outTooltip": "Completion tokens",
+    "reasoning": "Reasoning",
+    "reasoningTooltip": "Reasoning tokens",
+    "total": "Total",
+    "totalTooltip": "Total tokens",
+    "cost": "Cost",
+    "costTooltip": "Cost",
+    "tool": "Tool",
+    "toolTooltip": "Tool used",
+    "hit": "Hit"
   }
 }

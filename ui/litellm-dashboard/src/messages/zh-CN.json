@@ -8642,5 +8642,33 @@
     "moreCount": "+{count} 个",
     "ofBudget": "共 {amount}",
     "spendOfBudget": "{spend} 共 {amount}"
+  },
+  "chatUi": {
+    "listTools": "列出工具",
+    "toolCall": "工具调用",
+    "request": "请求",
+    "approved": "已批准",
+    "response": "响应",
+    "responseCache": "响应缓存",
+    "responseCacheTooltip": "此响应由 LiteLLM 的响应缓存重放。请求从未到达提供商，因此未读取或写入提供商自身的提示词缓存。",
+    "cacheRead": "缓存读取",
+    "cacheWrite": "缓存写入",
+    "ttft": "TTFT",
+    "ttftTooltip": "首 token 延迟",
+    "totalLatency": "总延迟",
+    "totalLatencyTooltip": "总延迟",
+    "in": "输入",
+    "inTooltip": "提示词令牌",
+    "out": "输出",
+    "outTooltip": "补全令牌",
+    "reasoning": "推理",
+    "reasoningTooltip": "推理令牌",
+    "total": "总计",
+    "totalTooltip": "总令牌",
+    "cost": "成本",
+    "costTooltip": "成本",
+    "tool": "工具",
+    "toolTooltip": "使用的工具",
+    "hit": "命中"
   }
 }
