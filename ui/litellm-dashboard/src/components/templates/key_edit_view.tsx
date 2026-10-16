@@ -48,7 +48,7 @@ import {
   toSubmittedValues,
 } from "./keyEditFormValues";
 import { BudgetFallbacksEditor } from "../key_team_helpers/BudgetFallbacksEditor";
-import { END_USER_BUDGET_HINT, EndUserBudgetSelect } from "../key_team_helpers/EndUserBudgetSelect";
+import { EndUserBudgetSelect } from "../key_team_helpers/EndUserBudgetSelect";
 import {
   endUserBudgetIdUpdate,
   keyOffersEndUserBudget,
@@ -100,6 +100,7 @@ export function KeyEditView({
   premiumUser = false,
 }: KeyEditViewProps) {
   const editFormT = useTranslations("virtualKeys.editForm");
+  const budgetEditorsT = useTranslations("budgetEditors");
   const vkT = useTranslations("virtualKeys");
   const commonT = useTranslations("common");
   const estimateT = useTranslations("virtualKeys.estimatedOutputTokens");
@@ -496,7 +497,7 @@ export function KeyEditView({
           {keyOffersEndUserBudget(keyData.metadata) && (
             <Field>
               <FieldLabel htmlFor={endUserBudgetFieldId}>
-                {labelWithHint(editFormT("defaultCustomerBudget"), END_USER_BUDGET_HINT)}
+                {labelWithHint(editFormT("defaultCustomerBudget"), budgetEditorsT("endUserBudget.hint"))}
               </FieldLabel>
               <EndUserBudgetSelect
                 id={endUserBudgetFieldId}

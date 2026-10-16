@@ -1662,9 +1662,9 @@ describe("TeamInfoView", () => {
 
       await openSettingsEditor(user);
 
-      expect(screen.getByPlaceholderText("Max spend ($)")).toHaveValue(5);
-      expect(screen.getByPlaceholderText("Max spend ($)")).toBeDisabled();
-      expect(screen.getByRole("button", { name: /Add Model Budget/i })).toBeDisabled();
+      expect(screen.getByPlaceholderText("最大花费（$）")).toHaveValue(5);
+      expect(screen.getByPlaceholderText("最大花费（$）")).toBeDisabled();
+      expect(screen.getByRole("button", { name: /添加模型预算/i })).toBeDisabled();
     });
 
     it("leaves model_max_budget out of a save that did not touch it", async () => {
@@ -1688,7 +1688,7 @@ describe("TeamInfoView", () => {
       renderWithProviders(<TeamInfoView {...defaultProps} premiumUser={true} />);
 
       await openSettingsEditor(user);
-      fireEvent.change(screen.getByPlaceholderText("Max spend ($)"), { target: { value: "2.5" } });
+      fireEvent.change(screen.getByPlaceholderText("最大花费（$）"), { target: { value: "2.5" } });
       await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       expect((await savedPayload()).model_max_budget).toEqual({ "gpt-4": { budget_limit: 2.5, time_period: "1d" } });
@@ -1702,7 +1702,7 @@ describe("TeamInfoView", () => {
       renderWithProviders(<TeamInfoView {...defaultProps} premiumUser={true} />);
 
       await openSettingsEditor(user);
-      await user.click(screen.getByRole("button", { name: "Remove model budget" }));
+      await user.click(screen.getByRole("button", { name: "移除模型预算" }));
       await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       expect((await savedPayload()).model_max_budget).toEqual({});
@@ -3064,9 +3064,7 @@ describe("TeamInfo MCP permission retention", () => {
     await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
-    await waitFor(() =>
-      expect(errorToast).toHaveBeenCalledWith(expect.stringMatching(/MCP 服务器列表无法加载/)),
-    );
+    await waitFor(() => expect(errorToast).toHaveBeenCalledWith(expect.stringMatching(/MCP 服务器列表无法加载/)));
     expect(networking.teamUpdateCall).not.toHaveBeenCalled();
     errorToast.mockRestore();
   });

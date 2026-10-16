@@ -157,7 +157,7 @@ describe("UserInfoView add-to-team form", () => {
 
     const openEditor = async (user: ReturnType<typeof userEvent.setup>) => {
       await user.click(await screen.findByRole("button", { name: /编辑设置/ }));
-      return screen.findByPlaceholderText("Max spend ($)");
+      return screen.findByPlaceholderText("最大花费（$）");
     };
 
     beforeEach(() => {
@@ -462,7 +462,9 @@ describe("UserInfoView savings", () => {
       Promise.resolve({ ...MOCK_USER_DATA_NO_TEAMS, user_id: userId }),
     );
     mockUserDailyActivityAggregatedCall.mockReset();
-    mockDailyActivityKeyPageCall.mockReset().mockResolvedValue({ api_keys: [], total_api_keys: 0, offset: 0, limit: 50 });
+    mockDailyActivityKeyPageCall
+      .mockReset()
+      .mockResolvedValue({ api_keys: [], total_api_keys: 0, offset: 0, limit: 50 });
     mockDailyActivityAggregatedCall.mockReset().mockResolvedValue(savingsResponse([]));
     mockUserDailyActivityCall.mockReset().mockResolvedValue(savingsResponse([]));
   });

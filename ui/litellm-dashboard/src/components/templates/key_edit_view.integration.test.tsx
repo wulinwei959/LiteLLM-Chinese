@@ -3,7 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { chooseSelectOption, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
 import { KeyResponse } from "../key_team_helpers/key_list";
-import { MODEL_MAX_BUDGET_PREMIUM_HINT } from "../key_team_helpers/ModelMaxBudgetEditor";
 import {
   getPassThroughEndpointsCall,
   getPoliciesList,
@@ -1211,7 +1210,7 @@ describe("KeyEditView", () => {
       />,
     );
 
-    const maxBudgetInput = await screen.findByPlaceholderText("Max spend ($)");
+    const maxBudgetInput = await screen.findByPlaceholderText("最大花费（$）");
     await userEvent.clear(maxBudgetInput);
     await userEvent.type(maxBudgetInput, "200");
 
@@ -1243,7 +1242,7 @@ describe("KeyEditView", () => {
       />,
     );
 
-    const maxBudgetInput = await screen.findByPlaceholderText("Max spend ($)");
+    const maxBudgetInput = await screen.findByPlaceholderText("最大花费（$）");
     await userEvent.clear(maxBudgetInput);
 
     const submitButton = screen.getByRole("button", { name: /保存更改/ });
@@ -1299,7 +1298,7 @@ describe("KeyEditView", () => {
           premiumUser={true}
         />,
       );
-      expect(await screen.findByPlaceholderText("Max spend ($)")).toHaveValue(5);
+      expect(await screen.findByPlaceholderText("最大花费（$）")).toHaveValue(5);
 
       rerender(
         <KeyEditView
@@ -1313,20 +1312,20 @@ describe("KeyEditView", () => {
         />,
       );
 
-      expect(await screen.findByPlaceholderText("Max spend ($)")).toHaveValue(99);
+      expect(await screen.findByPlaceholderText("最大花费（$）")).toHaveValue(99);
     });
 
     it("should say why the editor is locked when the proxy has no enterprise license", async () => {
       renderWith(false);
 
-      expect(await screen.findByText(MODEL_MAX_BUDGET_PREMIUM_HINT)).toBeInTheDocument();
+      expect(await screen.findByText("高级功能 - 升级后即可设置单模型预算")).toBeInTheDocument();
     });
 
     it("should leave the editor usable when the proxy has one", async () => {
       renderWith(true);
 
-      expect(await screen.findByText(/Cap spend per model over its own window/)).toBeInTheDocument();
-      expect(screen.queryByText(MODEL_MAX_BUDGET_PREMIUM_HINT)).not.toBeInTheDocument();
+      expect(await screen.findByText(/限制每个模型在其自身窗口内的花费/)).toBeInTheDocument();
+      expect(screen.queryByText("高级功能 - 升级后即可设置单模型预算")).not.toBeInTheDocument();
     });
 
     // /key/update validates model_max_budget whenever the field is present and
@@ -1856,7 +1855,7 @@ describe("KeyEditView", () => {
       return onSubmit;
     };
 
-    const budgetField = () => screen.findByRole("combobox", { name: "Default Customer Budget" });
+    const budgetField = () => screen.findByRole("combobox", { name: "默认客户预算" });
     const save = async () => userEvent.click(await screen.findByRole("button", { name: /保存更改/ }));
 
     it("shows the stored budget and leaves it off an edit that did not touch it", async () => {
@@ -1910,7 +1909,7 @@ describe("KeyEditView", () => {
       renderEditView(MOCK_KEY_DATA);
 
       await screen.findByRole("button", { name: /保存更改/ });
-      expect(screen.queryByRole("combobox", { name: "Default Customer Budget" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("combobox", { name: "默认客户预算" })).not.toBeInTheDocument();
     });
   });
 

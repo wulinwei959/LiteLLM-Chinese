@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect } from "vitest";
+import { renderWithProviders as render, screen } from "../../../tests/test-utils";
 import { TagRateLimitEditor, TagRateLimitEntry, tagLimitsToRows, tagRowsToLimits } from "./TagRateLimitEditor";
 
 function Harness({ initial = [] as TagRateLimitEntry[], onValue }: { initial?: TagRateLimitEntry[]; onValue?: any }) {
@@ -22,27 +23,27 @@ const rowsWith = (tag: string, rpm: number | null): TagRateLimitEntry[] => [{ id
 describe("TagRateLimitEditor", () => {
   it("should render one tag and one RPM field per row", () => {
     render(<Harness initial={rowsWith("cell-1", 100)} />);
-    expect(screen.getByRole("textbox", { name: "Tag" })).toHaveValue("cell-1");
-    expect(screen.getByRole("spinbutton", { name: "RPM limit" })).toHaveValue(100);
+    expect(screen.getByRole("textbox", { name: "标签" })).toHaveValue("cell-1");
+    expect(screen.getByRole("spinbutton", { name: "RPM 上限" })).toHaveValue(100);
   });
 
   it("should add a row when Add Tag Limit is clicked", async () => {
     const user = userEvent.setup();
     render(<Harness />);
-    expect(screen.queryAllByRole("textbox", { name: "Tag" })).toHaveLength(0);
+    expect(screen.queryAllByRole("textbox", { name: "标签" })).toHaveLength(0);
 
-    await user.click(screen.getByRole("button", { name: /add tag limit/i }));
+    await user.click(screen.getByRole("button", { name: /添加标签上限/i }));
 
-    expect(screen.getAllByRole("textbox", { name: "Tag" })).toHaveLength(1);
+    expect(screen.getAllByRole("textbox", { name: "标签" })).toHaveLength(1);
   });
 
   it("should let the user type a tag name", async () => {
     const user = userEvent.setup();
     render(<Harness initial={rowsWith("", null)} />);
 
-    fireEvent.change(screen.getByRole("textbox", { name: "Tag" }), { target: { value: "cell-2" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "标签" }), { target: { value: "cell-2" } });
 
-    expect(screen.getByRole("textbox", { name: "Tag" })).toHaveValue("cell-2");
+    expect(screen.getByRole("textbox", { name: "标签" })).toHaveValue("cell-2");
   });
 
   it("should record the typed RPM limit as a number, not a string", async () => {
@@ -50,7 +51,7 @@ describe("TagRateLimitEditor", () => {
     const seen: TagRateLimitEntry[][] = [];
     render(<Harness initial={rowsWith("cell-1", null)} onValue={(v: TagRateLimitEntry[]) => seen.push(v)} />);
 
-    fireEvent.change(screen.getByRole("spinbutton", { name: "RPM limit" }), { target: { value: "60" } });
+    fireEvent.change(screen.getByRole("spinbutton", { name: "RPM 上限" }), { target: { value: "60" } });
 
     const latest = seen[seen.length - 1][0];
     expect(latest.rpm_limit).toBe(60);
@@ -62,7 +63,7 @@ describe("TagRateLimitEditor", () => {
     const seen: TagRateLimitEntry[][] = [];
     render(<Harness initial={rowsWith("cell-1", 60)} onValue={(v: TagRateLimitEntry[]) => seen.push(v)} />);
 
-    await user.clear(screen.getByRole("spinbutton", { name: "RPM limit" }));
+    await user.clear(screen.getByRole("spinbutton", { name: "RPM 上限" }));
 
     expect(seen[seen.length - 1][0].rpm_limit).toBeNull();
   });
@@ -75,9 +76,9 @@ describe("TagRateLimitEditor", () => {
     ];
     render(<Harness initial={initial} />);
 
-    await user.click(screen.getAllByRole("button", { name: "Remove tag limit" })[1]);
+    await user.click(screen.getAllByRole("button", { name: "移除标签上限" })[1]);
 
-    const tags = screen.getAllByRole("textbox", { name: "Tag" });
+    const tags = screen.getAllByRole("textbox", { name: "标签" });
     expect(tags).toHaveLength(1);
     expect(tags[0]).toHaveValue("keep-me");
   });
@@ -95,10 +96,10 @@ describe("TagRateLimitEditor", () => {
       </form>,
     );
 
-    await user.click(screen.getByRole("button", { name: "Remove tag limit" }));
+    await user.click(screen.getByRole("button", { name: "移除标签上限" }));
 
     expect(submitted).toBe(false);
-    expect(screen.queryAllByRole("textbox", { name: "Tag" })).toHaveLength(0);
+    expect(screen.queryAllByRole("textbox", { name: "标签" })).toHaveLength(0);
   });
 });
 

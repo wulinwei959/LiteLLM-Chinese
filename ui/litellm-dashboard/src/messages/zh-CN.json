@@ -8922,5 +8922,60 @@
     "invalidJsonError": "必须是有效的 JSON",
     "modelConflict": "每个模型最多只能属于一个非优先级组。已被占用：{detail}",
     "modelConflictEntry": "{model}（属于“{name}”）"
+  },
+  "budgetEditors": {
+    "shared": {
+      "selectModel": "选择模型",
+      "noModelsFound": "未找到模型",
+      "maxSpendPlaceholder": "最大花费（$）"
+    },
+    "period": {
+      "hourly": "每小时",
+      "daily": "每日",
+      "weekly": "每周",
+      "monthly": "每月",
+      "calendarMonth": "自然月"
+    },
+    "windows": {
+      "resetHourly": "每小时重置",
+      "resetDaily": "每天 UTC 午夜重置",
+      "resetWeekly": "每周日 UTC 午夜重置",
+      "resetMonthly": "每月 1 日 UTC 午夜重置",
+      "addWindow": "+ 添加预算窗口"
+    },
+    "fallbacks": {
+      "blurb": "当模型超出其单模型预算时，请求会自动改道到回退模型",
+      "addFallback": "添加预算回退",
+      "primaryModel": "主模型",
+      "ifBudgetExceeded": "超出预算时，尝试",
+      "fallbackModels": "回退模型",
+      "selectFallbackModels": "选择回退模型",
+      "selectPrimaryFirst": "请先选择主模型",
+      "orderHint": "按顺序尝试；使用第一个仍未超出其自身预算的模型"
+    },
+    "model": {
+      "fieldLabel": "单模型预算",
+      "premiumHint": "高级功能 - 升级后即可设置单模型预算",
+      "blurb": "限制每个模型在其自身窗口内的花费。设置在裸模型名上的预算也会覆盖该模型带提供商前缀的写法。",
+      "addBudget": "添加模型预算",
+      "removeBudgetAria": "移除模型预算",
+      "modelLabel": "模型",
+      "currentWindowSpend": "当前窗口花费：${spent}",
+      "currentWindowSpendWithLimit": "当前窗口花费：${spent}，上限 ${limit}"
+    },
+    "endUserBudget": {
+      "noDefaultBudget": "无默认预算",
+      "noBudgetsFound": "未找到预算。请在预算下创建一个。",
+      "resetsSublabel": "每 {duration} 重置",
+      "hint": "可复用的预算，应用于此密钥通过 `user` 或 x-litellm-end-user-id 创建的每个新客户（终端用户）。会覆盖代理级别的 max_end_user_budget_id；已有自己预算的客户会保留其预算。"
+    },
+    "tagLimits": {
+      "tagAria": "标签",
+      "tagPlaceholder": "标签（例如 cell-1）",
+      "rpmAria": "RPM 上限",
+      "rpmPlaceholder": "RPM",
+      "removeAria": "移除标签上限",
+      "addLimit": "+ 添加标签上限"
+    }
   }
 }

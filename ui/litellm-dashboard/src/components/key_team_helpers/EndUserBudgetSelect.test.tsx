@@ -1,8 +1,7 @@
-import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { chooseSelectOption } from "../../../tests/test-utils";
+import { chooseSelectOption, renderWithProviders as render, screen } from "../../../tests/test-utils";
 import { EndUserBudgetSelect } from "./EndUserBudgetSelect";
 
 const useBudgetOptions = vi.fn();
@@ -22,7 +21,7 @@ describe("EndUserBudgetSelect", () => {
     const user = userEvent.setup();
     render(<EndUserBudgetSelect accessToken="tok" value={null} onChange={onChange} canEdit />);
 
-    await chooseSelectOption(user, screen.getByRole("combobox", { name: "Default Customer Budget" }), /svc-a-budget/);
+    await chooseSelectOption(user, screen.getByRole("combobox", { name: "默认客户预算" }), /svc-a-budget/);
 
     expect(onChange).toHaveBeenLastCalledWith("svc-a-budget");
     expect(useBudgetOptions).toHaveBeenCalledWith("tok", true);
@@ -35,7 +34,7 @@ describe("EndUserBudgetSelect", () => {
 
     await user.click(screen.getByRole("combobox"));
 
-    expect(await screen.findByRole("option", { name: /svc-a-budget/ })).toHaveTextContent("$0.5, resets 30d");
+    expect(await screen.findByRole("option", { name: /svc-a-budget/ })).toHaveTextContent("$0.5, 每 30d 重置");
   });
 
   it("clears to null so the edit form can send an explicit empty value", async () => {
@@ -53,7 +52,7 @@ describe("EndUserBudgetSelect", () => {
     useBudgetOptions.mockReturnValue({ data: undefined });
     render(<EndUserBudgetSelect accessToken="tok" value="svc-a-budget" onChange={vi.fn()} canEdit={false} />);
 
-    const combobox = screen.getByRole("combobox", { name: "Default Customer Budget" });
+    const combobox = screen.getByRole("combobox", { name: "默认客户预算" });
     expect(combobox).toHaveValue("svc-a-budget");
     expect(combobox).toBeDisabled();
     expect(useBudgetOptions).toHaveBeenLastCalledWith("tok", false);

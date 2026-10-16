@@ -8926,5 +8926,60 @@
     "invalidJsonError": "Must be valid JSON",
     "modelConflict": "Each model may belong to at most one non-priority group. Already claimed: {detail}",
     "modelConflictEntry": "{model} (in \"{name}\")"
+  },
+  "budgetEditors": {
+    "shared": {
+      "selectModel": "Select model",
+      "noModelsFound": "No models found",
+      "maxSpendPlaceholder": "Max spend ($)"
+    },
+    "period": {
+      "hourly": "Hourly",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "calendarMonth": "Calendar month"
+    },
+    "windows": {
+      "resetHourly": "Resets every hour",
+      "resetDaily": "Resets daily at midnight UTC",
+      "resetWeekly": "Resets every Sunday at midnight UTC",
+      "resetMonthly": "Resets on the 1st of every month at midnight UTC",
+      "addWindow": "+ Add Budget Window"
+    },
+    "fallbacks": {
+      "blurb": "When a model exceeds its per-model budget, requests automatically reroute to fallback models",
+      "addFallback": "Add Budget Fallback",
+      "primaryModel": "Primary Model",
+      "ifBudgetExceeded": "IF BUDGET EXCEEDED, TRY",
+      "fallbackModels": "Fallback Models",
+      "selectFallbackModels": "Select fallback models",
+      "selectPrimaryFirst": "Select a primary model first",
+      "orderHint": "Tried in order; first model still within its own budget is used"
+    },
+    "model": {
+      "fieldLabel": "Per-Model Budgets",
+      "premiumHint": "Premium feature - Upgrade to set per-model budgets",
+      "blurb": "Cap spend per model over its own window. A budget set on the bare model name also covers the provider-prefixed spelling of that model.",
+      "addBudget": "Add Model Budget",
+      "removeBudgetAria": "Remove model budget",
+      "modelLabel": "Model",
+      "currentWindowSpend": "Current window spend: ${spent}",
+      "currentWindowSpendWithLimit": "Current window spend: ${spent} of ${limit}"
+    },
+    "endUserBudget": {
+      "noDefaultBudget": "No default budget",
+      "noBudgetsFound": "No budgets found. Create one under Budgets.",
+      "resetsSublabel": "resets {duration}",
+      "hint": "Reusable budget applied to every new customer (end user) this key creates via `user` or x-litellm-end-user-id. Overrides the proxy-wide max_end_user_budget_id; customers that already have their own budget keep it."
+    },
+    "tagLimits": {
+      "tagAria": "Tag",
+      "tagPlaceholder": "Tag (e.g. cell-1)",
+      "rpmAria": "RPM limit",
+      "rpmPlaceholder": "RPM",
+      "removeAria": "Remove tag limit",
+      "addLimit": "+ Add Tag Limit"
+    }
   }
 }
