@@ -387,7 +387,17 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
-## 2026-10-16 第 83 簇：数据模块改接翻译要回溯渲染处的拼装规则，按键名查表的表别用 `as const`
+## 2026-10-16 第 84 簇：同一句话拆成两段就是两种文案，带 `{error}` 的消息别往无参调用点上套
+
+`components/SSOModals.tsx` 是 admin 面板那套老 SSO 弹窗（与 `Settings/AdminSettings/SSOSettings/Modals/` 的新弹窗并存，由 `AdminPanel.tsx` 挂载），标题、五颗按钮、四条 toast、清除确认弹窗与四步说明弹窗全是英文字面量。接线时新建 11 键，另有 9 处直接复用既有键（`addModalTitle`/`editModalTitle`/`deleteConfirmTitle`/`clearSuccessToast`/`saveFailedToast` 与 `common.save`/`cancel`/`done`/`clear`），但"能回溯"不等于"能复用"。四条值得固化：
+
+- **同一句话在不同文件里断句不同，就各建一键，别拼**。`SSOModals` 的确认弹窗是两个 `<p>`：`Are you sure you want to clear all SSO settings? This action cannot be undone.` 与 `Users will no longer be able to login using SSO after this change.`；第 80 簇的 `deleteConfirmBody` 把第二句和"确定要清除吗"合成了一句，`cannotUndo` 又是独立一条。三条既有键都只覆盖了一半，用 `{t(a)} {t(b)}` 拼出来的英文与源串对不上（多一个空格、少一个问号），跨语言还可能要换语序。规矩与第 82 簇"必填整句别参数化"同源：**整句进一个键**，本簇因此建 `clearConfirmBody` 与 `clearLoginWarning`，中文各自整句落 `此操作不可撤销。` 与 `更改后用户将无法再通过 SSO 登录。`，与 `cannotUndo`/`deleteConfirmBody` 按模块重复记账
+- **带 `{error}` 的消息不能复用于不报详情的调用点**。既有 `clearFailedToast` 是 `Failed to clear SSO settings: {error}`，而 `SSOModals.handleClearSSO` 的 catch 只 `console.error(error)` 后 toast 一句不带详情的 `Failed to clear SSO settings`。套过去要传 `{ error: "" }`，英文会留下尾冒号、中文留下尾冒号，两边都改了原串。所以另建 `clearFailedToastWithoutError`，反过来 `handleFormSubmit` 那句 `"Failed to save SSO settings: " + parseErrorMessage(error)` 与 `saveFailedToast` 逐字一致（含 `: ` 分隔），直接带参复用。判据是**先比英文是否逐字相等，再比参数占位是否一致**，两者都过才算复用
+- **带序号的步骤，序号留在消息里**。目录里已有先例（`vectorStores.step1` = `Step 1: Upload Documents` → `步骤 1：上传文档`），本簇 `instructionStep1..4` 照此把 `1.` `2.` 写进值里，JSX 不做手工编号。否则编号进了结构，翻译要负责调序号、屏幕阅读器朗读顺序也会跟着散
+- **老弹窗的说明流一条断言都没有**。`isInstructionsModalVisible` 由 `AdminPanel` 控制，`SSOModals.test.tsx` 十个用例全走 `false`，那五个 `<p>` 与 `Done` 按钮从来没被渲染过。汉化把它接上时补一条用例钉住标题、引导句与四步全文，并用变异验证确认它会红（把 `instructionStep2` 换成 `instructionStep4`，报 `Unable to find an element with the text: 2. 新开一个标签页，访问你的代理基础 URL`）。补文案簇碰到"这片渲染根本没有断言"时，值得为覆盖加用例，和"配置守卫该不该加"是两套判据
+
+顺带记一笔没动的债：`SSOModals.tsx` 自带一份 `detectSSOProvider` 与一份 clear payload 手搭逻辑，和 `SSOSettings/utils.ts` 的同名实现重复（字段集合已不一致，老的少 `team_mappings`），新弹窗走 `useEditSSOSettings` hook、老的直连 `updateSSOSettings`。合并两套 SSO 弹窗属于功能重构，不该混进汉化簇
+
 
 `SSOSettings/constants.ts` 的两张展示名表（五个 provider、四个默认角色）是这一片 SSO 文案最后的英文来源，接键之后连带影响三个消费方与四份测试。三条值得固化：
 
