@@ -2,6 +2,7 @@
 
 import { OnChangeFn, PaginationState, RowSelectionState, SortingState } from "@tanstack/react-table";
 import { HeartPulse } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 import { Team } from "@/components/key_team_helpers/key_list";
@@ -54,6 +55,7 @@ export function HealthChecksTable({
   onSelectModel,
   teams,
 }: HealthChecksTableProps) {
+  const t = useTranslations("models.health");
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const columns = useMemo(() => {
@@ -66,8 +68,8 @@ export function HealthChecksTable({
       onSelectModel,
       teams,
     };
-    return getHealthChecksTableColumns(columnDeps);
-  }, [modelHealthStatuses, getDisplayModelName, onRunHealthCheck, onShowError, onShowSuccess, onSelectModel, teams]);
+    return getHealthChecksTableColumns(columnDeps, t);
+  }, [modelHealthStatuses, getDisplayModelName, onRunHealthCheck, onShowError, onShowSuccess, onSelectModel, teams, t]);
 
   return (
     <DataTable
@@ -84,7 +86,7 @@ export function HealthChecksTable({
       rowSelection={rowSelection}
       onRowSelectionChange={onRowSelectionChange}
       isLoading={isLoading}
-      loadingMessage="Loading models…"
+      loadingMessage={t("loadingModels")}
       noDataMessage={<EmptyState />}
       size="compact"
     />

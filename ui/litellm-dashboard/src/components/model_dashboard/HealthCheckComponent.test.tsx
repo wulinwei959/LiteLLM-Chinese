@@ -132,10 +132,10 @@ describe("HealthCheckComponent", () => {
       await renderHealthCheck({ modelData: twoModels, allModelsOnProxy: bothIds, rowCount: 2 });
       const user = userEvent.setup();
 
-      expect(screen.getByTestId("run-health-checks")).toHaveTextContent("Run All Checks");
+      expect(screen.getByTestId("run-health-checks")).toHaveTextContent("运行全部检查");
 
       await user.click(screen.getByTestId("datatable-select-row-id-beta"));
-      expect(screen.getByTestId("run-health-checks")).toHaveTextContent("Run Selected Checks");
+      expect(screen.getByTestId("run-health-checks")).toHaveTextContent("运行所选检查");
 
       await act(async () => {
         screen.getByTestId("run-health-checks").click();
@@ -168,7 +168,7 @@ describe("HealthCheckComponent", () => {
 
       await user.click(screen.getByTestId("datatable-select-all"));
 
-      expect(screen.getByTestId("run-health-checks")).toHaveTextContent("Run All Checks");
+      expect(screen.getByTestId("run-health-checks")).toHaveTextContent("运行全部检查");
     });
 
     it("clears the selection from the Clear Selection button", async () => {
@@ -181,7 +181,7 @@ describe("HealthCheckComponent", () => {
       await user.click(screen.getByTestId("clear-health-selection"));
 
       expect(screen.getByTestId("datatable-select-row-id-alpha")).not.toBeChecked();
-      expect(screen.getByTestId("run-health-checks")).toHaveTextContent("Run All Checks");
+      expect(screen.getByTestId("run-health-checks")).toHaveTextContent("运行全部检查");
     });
 
     // The pager swaps the underlying rows, so a carried-over selection would target

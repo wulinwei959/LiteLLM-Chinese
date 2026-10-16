@@ -1,4 +1,5 @@
 import { OnChangeFn, PaginationState, RowSelectionState } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -62,8 +63,8 @@ const KEYWORD_ERRORS: ReadonlyArray<{ pattern: RegExp; label: string }> = [
 const truncate = (value: string): string => (value.length > 100 ? `${value.substring(0, 97)}...` : value);
 
 // Helper function to extract meaningful error information
-const extractMeaningfulError = (error: unknown): string => {
-  if (!error) return "Health check failed";
+const extractMeaningfulError = (t: ReturnType<typeof useTranslations<"models.health">>, error: unknown): string => {
+  if (!error) return t("checkFailed");
 
   const errorStr = typeof error === "string" ? error : JSON.stringify(error);
 
@@ -167,6 +168,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
   onPaginationChange,
   rowCount,
 }) => {
+  const t = useTranslations("models.health");
   const [modelHealthStatuses, setModelHealthStatuses] = useState<{ [key: string]: HealthStatus }>({});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [errorModalVisible, setErrorModalVisible] = useState(false);
@@ -228,7 +230,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
               lastCheck: toCheckedAtLabel(checkData.checked_at, "None"),
               lastSuccess: toLastSuccessLabel(checkData, "None"),
               loading: false,
-              error: fullError ? extractMeaningfulError(fullError) : undefined,
+              error: fullError ? extractMeaningfulError(t, fullError) : undefined,
               fullError: fullError,
               successResponse: checkData.status === "healthy" ? checkData : undefined,
             };
@@ -262,8 +264,8 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
         const currentTime = new Date().toLocaleString();
 
         if (response.unhealthy_count > 0 && response.unhealthy_endpoints && response.unhealthy_endpoints.length > 0) {
-          const rawError = response.unhealthy_endpoints[0]?.error || "Health check failed";
-          const errorMessage = extractMeaningfulError(rawError);
+          const rawError = response.unhealthy_endpoints[0]?.error || t("checkFailed");
+          const errorMessage = extractMeaningfulError(t, rawError);
           setModelHealthStatuses((prev) => ({
             ...prev,
             [modelId]: {
@@ -301,7 +303,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
                 lastCheck: toCheckedAtLabel(checkData.checked_at, prev[modelId]?.lastCheck || "None"),
                 lastSuccess: toLastSuccessLabel(checkData, prev[modelId]?.lastSuccess || "None"),
                 loading: false,
-                error: fullError ? extractMeaningfulError(fullError) : prev[modelId]?.error,
+                error: fullError ? extractMeaningfulError(t, fullError) : prev[modelId]?.error,
                 fullError: fullError || prev[modelId]?.fullError,
                 successResponse: checkData.status === "healthy" ? checkData : prev[modelId]?.successResponse,
               },
@@ -311,7 +313,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
       } catch (error) {
         const currentTime = new Date().toLocaleString();
         const rawError = error instanceof Error ? error.message : String(error);
-        const errorMessage = extractMeaningfulError(rawError);
+        const errorMessage = extractMeaningfulError(t, rawError);
         setModelHealthStatuses((prev) => ({
           ...prev,
           [modelId]: {
@@ -358,8 +360,8 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
 
         const currentTime = new Date().toLocaleString();
         if (response.unhealthy_count > 0 && response.unhealthy_endpoints && response.unhealthy_endpoints.length > 0) {
-          const rawError = response.unhealthy_endpoints[0]?.error || "Health check failed";
-          const errorMessage = extractMeaningfulError(rawError);
+          const rawError = response.unhealthy_endpoints[0]?.error || t("checkFailed");
+          const errorMessage = extractMeaningfulError(t, rawError);
           setModelHealthStatuses((prev) => ({
             ...prev,
             [modelId]: {
@@ -387,7 +389,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
         console.error(`Health check failed for model id ${modelId}:`, error);
         const currentTime = new Date().toLocaleString();
         const rawError = error instanceof Error ? error.message : String(error);
-        const errorMessage = extractMeaningfulError(rawError);
+        const errorMessage = extractMeaningfulError(t, rawError);
         setModelHealthStatuses((prev) => ({
           ...prev,
           [modelId]: {
@@ -423,7 +425,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
                 lastCheck: toCheckedAtLabel(checkData.checked_at, currentStatus?.lastCheck || "None"),
                 lastSuccess: toLastSuccessLabel(checkData, currentStatus?.lastSuccess || "None"),
                 loading: false,
-                error: fullError ? extractMeaningfulError(fullError) : currentStatus?.error,
+                error: fullError ? extractMeaningfulError(t, fullError) : currentStatus?.error,
                 fullError: fullError || currentStatus?.fullError,
                 successResponse: checkData.status === "healthy" ? checkData : currentStatus?.successResponse,
               },
@@ -514,7 +516,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
                 onClick={() => setRowSelection({})}
                 data-testid="clear-health-selection"
               >
-                Clear Selection
+                {t("clearSelection")}
               </Button>
             )}
             <Button
@@ -524,7 +526,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
               disabled={anyCheckRunning}
               data-testid="run-health-checks"
             >
-              {isPartialSelection ? "Run Selected Checks" : "Run All Checks"}
+              {isPartialSelection ? t("runSelectedChecks") : t("runAllChecks")}
             </Button>
           </div>
         </div>
@@ -556,21 +558,23 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>
-              {selectedErrorDetails ? `Health Check Error - ${selectedErrorDetails.modelName}` : "Error Details"}
+              {selectedErrorDetails
+                ? t("errorDialogTitle", { model: selectedErrorDetails.modelName })
+                : t("errorDialogTitleGeneric")}
             </DialogTitle>
-            <DialogDescription>Details returned by the model health check.</DialogDescription>
+            <DialogDescription>{t("errorDialogDesc")}</DialogDescription>
           </DialogHeader>
           {selectedErrorDetails && (
             <div className="space-y-4">
               <div>
-                <span className="font-medium">Error:</span>
+                <span className="font-medium">{t("errorLabel")}</span>
                 <div className="mt-2 rounded-md border border-destructive/30 bg-destructive/10 p-3">
                   <span className="text-destructive">{selectedErrorDetails.cleanedError}</span>
                 </div>
               </div>
 
               <div>
-                <span className="font-medium">Full Error Details:</span>
+                <span className="font-medium">{t("fullErrorDetailsLabel")}</span>
                 <div className="mt-2 max-h-96 overflow-y-auto rounded-md border bg-muted/50 p-3">
                   <pre className="whitespace-pre-wrap text-sm text-foreground">{selectedErrorDetails.fullError}</pre>
                 </div>
@@ -579,7 +583,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
           )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={closeErrorModal}>
-              Close
+              {t("close")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -595,22 +599,22 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
           <DialogHeader>
             <DialogTitle>
               {selectedSuccessDetails
-                ? `Health Check Response - ${selectedSuccessDetails.modelName}`
-                : "Response Details"}
+                ? t("successDialogTitle", { model: selectedSuccessDetails.modelName })
+                : t("successDialogTitleGeneric")}
             </DialogTitle>
-            <DialogDescription>Response returned by the successful model health check.</DialogDescription>
+            <DialogDescription>{t("successDialogDesc")}</DialogDescription>
           </DialogHeader>
           {selectedSuccessDetails && (
             <div className="space-y-4">
               <div>
-                <span className="font-medium">Status:</span>
+                <span className="font-medium">{t("statusLabel")}</span>
                 <div className="mt-2 rounded-md border border-primary/30 bg-primary/5 p-3">
-                  <span className="text-foreground">Health check passed successfully</span>
+                  <span className="text-foreground">{t("passedSuccessfully")}</span>
                 </div>
               </div>
 
               <div>
-                <span className="font-medium">Response Details:</span>
+                <span className="font-medium">{t("responseDetailsLabel")}</span>
                 <div className="mt-2 max-h-96 overflow-y-auto rounded-md border bg-muted/50 p-3">
                   <pre className="whitespace-pre-wrap text-sm text-foreground">
                     {JSON.stringify(selectedSuccessDetails.response, null, 2)}
@@ -621,7 +625,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
           )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={closeSuccessModal}>
-              Close
+              {t("close")}
             </Button>
           </DialogFooter>
         </DialogContent>
