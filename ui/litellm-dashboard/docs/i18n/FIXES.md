@@ -178,6 +178,29 @@ npx tsc --noEmit 2>&1 | grep "error TS" | sed 's/^ *//' | sort -u
 
 新增的用例要有牙齿。把 `getSnapshot` 里的浏览器语言回退临时去掉，只有"跟随浏览器语言"那一条变红，其余三条仍绿，说明它盯的确实是这条回退
 
+## 2026-10-16 第 111-117 簇：自建 Provider 树的测试会绕过默认 locale
+
+`LiteAdmin.integration.test.tsx` 自己搭了一棵测试树，而不是用 `tests/test-utils.tsx` 的 `renderWithProviders`：
+
+```tsx
+<QueryClientProvider client={client}>
+  <LocaleProvider>
+    <Toaster />
+    <AuthProvider>
+      <LiteAdmin />
+    </AuthProvider>
+  </LocaleProvider>
+</QueryClientProvider>
+```
+
+`LocaleProvider` 不带 `locale` prop 时跟随浏览器语言，在 jsdom 里就是英文。于是这份测试整份跑在英文目录下，把组件里的文案换成中文之后 17 例一起红。判断方法很简单：断言里如果出现过英文原文，先确认这份测试到底跑在哪个 locale。两条路子，要么把测试改成 `renderWithProviders`（默认钉 `zh-CN`）并把断言一并换成中文，要么保持英文断言但确认组件在英文下确实渲染英文。后者更省事，前者更一致。改之前先 `git checkout` 掉测试文件试一次，能省掉一整轮无效替换。
+
+同类的还有 `GuardrailDetail.test.tsx`（自带未 pin locale 的 `LocaleProvider`）、`model_info_view.test.tsx`（自带 wrapper 但显式钉了 `zh-CN`）。凡是测试文件里自己 `import { LocaleProvider }` 的，都要在动手前先看一眼它 pin 的是哪个 locale。
+
+## 2026-10-16 第 111-117 簇：同名文案撞查询
+
+`cloudzero_export_modal.tsx` 的提交按钮文案随所选导出目标在两串之间切换，而目标类型切换里恰好也有一个同名选项，于是页面上同时存在两个 "Export CSV"，`getByRole("button", { name: "导出 CSV" })` 直接报 `Found multiple elements`。修法是给提交按钮单独开一个键（`exportCsvBtn`），哪怕英文值与选项文案逐字相同。判断标准很朴素：如果一个名字在渲染树上会同时命中两个可交互元素，就不能复用同一个键。
+
 ## 2026-10-16 第 93-109 簇新发现的五条
 
 **用英文展示值当数据在用**（第 108 簇最典型）。`ToolPolicies` 的测试原本这样读策略值：`(cell?.textContent ?? "").replace(/[^a-z]/gi, "")`，靠剥掉圆点和箭头再与 `untrusted` 比较。这在翻译之前能work，因为选项的 `label` 恰好等于 `value`；标签一翻成中文，这条正则就再也匹配不到任何东西，而且失败信息会是"找不到 `untrusted`"，很容易被误判成组件坏了。修法是给控件加一个与语言无关的 `data-policy={value}`，断言改读它。凡是"界面上显示的字符串同时也是要断言的业务值"，都要先补一个语言无关的读取口，再翻译。同类的还有 `HealthChecksTableColumns` 里那几个排序用的 `NEVER_CHECKED` 常量，它们是后端原样下发的字符串，翻译它们会让排序断言在 `zh-CN` 下失效。

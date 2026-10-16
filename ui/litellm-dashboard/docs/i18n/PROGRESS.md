@@ -1,6 +1,26 @@
 # 开发进度
 
-数据快照 2026-10-16，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 109 簇后（非测试 `.tsx` 912 个接入 585 个、64.1%，目录叶子 8879、中英同值 102）。第 93 到 109 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了两处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-16，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 117 簇后（非测试 `.tsx` 912 个接入 593 个、65.0%，目录叶子 9008、中英同值 103）。第 93 到 117 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了两处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+
+## 2026-10-16 第 111-117 簇更新
+
+这一段是串行推进的一批，全部由主会话亲手做，没有再派子代理（子代理在第 93-109 簇那轮撞上模型限速全部失败）。工作树里那批限速的 worktree 已不再使用。
+
+第 111 簇 `components/settings.tsx`：设置页里的日志回调选择器与六个告警页签，新开顶层 `settings` 命名空间 14 键。`CallbackSelector` 的 `required: "Please select a callback"` 是 react-hook-form 的校验规则文案，一并接键。
+
+第 112 簇 `components/model_info_view.tsx`：模型信息详情视图，新开 `modelInfo` 命名空间 46 键。删除确认弹窗的 `Are you sure you want to delete this {kind}?` 按约定把 `auto-router`/`model` 作为 `{kind}` 参数传入而不是 select。`Failed to fetch guardrails:` 这类只在 `console.error` 里、从不进 UI 的串保持英文。
+
+第 113 簇 `components/liteadmin/`：`LiteAdmin.tsx`、`LiteAdminConversation.tsx` 与 `useLiteAdmin.ts` 三个文件，新开 `liteAdmin` 命名空间。`ACTION_STATUS` 从英文串映射改成 i18n key 映射。`useLiteAdmin` 是 hook，直接在函数体内挂 `useTranslations`，模块顶部的 `INTERRUPTED_WRITE` 常量因此删掉。这一簇踩到一个测试陷阱：`LiteAdmin.integration.test.tsx` 自己搭了一棵 `<LocaleProvider>`（不带 `locale` prop，跟随浏览器语言即英文）而不是用 `renderWithProviders`，所以它整份测试都跑在英文下，断言必须保持英文。第一版把断言换成中文后 17 例全红，`git checkout` 撤销测试文件才对。
+
+第 114 簇 `components/model_group_alias_settings.tsx`：新开 `modelGroupAlias` 16 键，说明段落里的 `'gpt-4o'` 是 HTML 实体 `&apos;`，键里保留同样的实体写法以保证英文渲染逐字一致。
+
+第 115 簇 `components/cloudzero_export_modal.tsx`：新开 `cloudZeroExport` 22 键。提交按钮的文案随所选目标在 "Export to CloudZero" 与 "Export CSV" 之间切换，与目标类型切换里的同名选项撞名，故提交按钮单独用 `exportCsvBtn`，否则 `getByRole("button", { name })` 会命中两个元素。
+
+第 116 簇 `components/SCIM.tsx`：新开 `scim` 11 键。创建失败提示 `Failed to create SCIM token: ` 是前缀，`parseErrorMessage(error)` 拼在后面，键只存前缀。
+
+`components/networking.tsx`（14 处）这一段没做：它是全仓的中心网络层，函数被几十个调用方直接调用，把翻译器逐层穿透进去的改动面远大于收益，且其中大部分串是 `console.error`。记在剩余清单里，等有专门的接口层重构时一起处理。
+
+本段合计：非测试 `.tsx` 912 接入 585→593（64.1%→65.0%），目录叶子 8879→9008（+129），中英同值 102→103。
 
 ## 2026-10-16 第 93-109 簇更新
 
