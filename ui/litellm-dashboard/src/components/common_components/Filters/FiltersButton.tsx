@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cva.config";
 import { Filter } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 interface FiltersButtonProps {
@@ -10,17 +11,13 @@ interface FiltersButtonProps {
   label?: string;
 }
 
-export const FiltersButton: React.FC<FiltersButtonProps> = ({
-  onClick,
-  active,
-  hasActiveFilters,
-  label = "Filters",
-}) => {
+export const FiltersButton: React.FC<FiltersButtonProps> = ({ onClick, active, hasActiveFilters, label }) => {
+  const t = useTranslations("common");
   return (
     <span className="relative inline-flex">
       <Button variant="outline" onClick={onClick} className={cn(active && "bg-muted")}>
         <Filter className="size-4" />
-        {label}
+        {label ?? t("filters")}
       </Button>
       {hasActiveFilters && (
         <sup aria-hidden="true" className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-primary" />

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { NuqsTestingAdapter, type UrlUpdateEvent } from "nuqs/adapters/testing";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -247,7 +247,7 @@ describe("OrganizationsPanel - list filters in the URL", () => {
   it("writes the org ID filter to ?filter_org_id= and returns the list to the first page", async () => {
     renderPanel({ searchParams: "?page=3" });
 
-    fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+    fireEvent.click(screen.getByRole("button", { name: "筛选" }));
     fireEvent.change(screen.getByPlaceholderText("按组织 ID 搜索"), { target: { value: "org-9" } });
 
     await waitFor(() => expect(lastSearchParams()?.get("filter_org_id")).toBe("org-9"));
@@ -258,7 +258,7 @@ describe("OrganizationsPanel - list filters in the URL", () => {
   it("clears the search, the org ID filter and the page in one update on reset", async () => {
     renderPanel({ searchParams: "?org_search=Acme&filter_org_id=org-7&page=2" });
 
-    fireEvent.click(screen.getByRole("button", { name: "Reset Filters" }));
+    fireEvent.click(screen.getByRole("button", { name: "重置筛选" }));
 
     await expectQueryString("");
     expect(onUrlUpdate).toHaveBeenCalledTimes(1);

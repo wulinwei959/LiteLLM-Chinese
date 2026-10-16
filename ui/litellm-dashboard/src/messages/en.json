@@ -19,6 +19,8 @@
     "update": "Update",
     "search": "Search",
     "filter": "Filter",
+    "filters": "Filters",
+    "resetFilters": "Reset Filters",
     "settings": "Settings",
     "back": "Back",
     "next": "Next",
