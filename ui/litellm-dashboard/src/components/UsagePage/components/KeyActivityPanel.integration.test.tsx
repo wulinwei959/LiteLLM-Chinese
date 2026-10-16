@@ -102,7 +102,7 @@ const pageResponse = (apiKeys: KeySpendActivityRow[], total: number, offset = 0)
 });
 
 const summary: ModelActivityData = {
-  label: "Overall Usage",
+  label: "总体用量",
   total_requests: 200,
   total_successful_requests: 198,
   total_failed_requests: 2,
@@ -201,21 +201,21 @@ describe("KeyActivityPanel", () => {
     );
 
     expect(await screen.findByRole("button", { name: /key-49/ })).toBeInTheDocument();
-    expect(screen.getByText("52 keys")).toBeInTheDocument();
+    expect(screen.getByText("52 个密钥")).toBeInTheDocument();
     expect(screen.getByText("$500.00")).toBeInTheDocument();
     expect(fetchKeyPage).toHaveBeenCalledWith(0, 50);
     expect(screen.queryByText(/limit|truncat|highest-spend|load top/i)).not.toBeInTheDocument();
 
     await intersectSentinel();
     expect(fetchKeyPage).toHaveBeenCalledWith(50, 50);
-    expect(screen.getByText("Loading more keys...")).toBeInTheDocument();
+    expect(screen.getByText("正在加载更多密钥...")).toBeInTheDocument();
 
     await act(async () => {
       resolveNextPage(pageResponse([pageRow("key-50"), pageRow("key-51")], 52, 50));
       await nextPage;
     });
     expect(await screen.findByRole("button", { name: /key-51/ })).toBeInTheDocument();
-    expect(screen.queryByText("Loading more keys...")).not.toBeInTheDocument();
+    expect(screen.queryByText("正在加载更多密钥...")).not.toBeInTheDocument();
   });
 
   it("fetches full detail on first expansion and renders charts with daily data", async () => {
@@ -238,13 +238,13 @@ describe("KeyActivityPanel", () => {
     fireEvent.click(await screen.findByRole("button", { name: /key-chart/ }));
 
     expect(fetchKeyDetail).toHaveBeenCalledWith("key-chart");
-    expect(await screen.findByText("Loading key details...")).toBeInTheDocument();
+    expect(await screen.findByText("正在加载密钥详情...")).toBeInTheDocument();
     await act(async () => {
       resolveDetail(detail("key-chart"));
       await detailResponse;
     });
-    expect(await screen.findByText("Spend per day")).toBeInTheDocument();
-    expect(screen.getByText("Requests per day")).toBeInTheDocument();
+    expect(await screen.findByText("每日花费")).toBeInTheDocument();
+    expect(screen.getByText("每日请求数")).toBeInTheDocument();
     expect(screen.queryByText("暂无数据")).not.toBeInTheDocument();
   });
 
@@ -264,16 +264,16 @@ describe("KeyActivityPanel", () => {
 
     fireEvent.click(await screen.findByRole("button", { name: /key-broken/ }));
 
-    expect(await screen.findByText(/Could not load key details\./)).toBeInTheDocument();
+    expect(await screen.findByText(/无法加载密钥详情。/)).toBeInTheDocument();
     expect(fetchKeyDetail).toHaveBeenCalledTimes(1);
-    expect(screen.queryByText("Spend per day")).not.toBeInTheDocument();
+    expect(screen.queryByText("每日花费")).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    fireEvent.click(screen.getByRole("button", { name: "重试" }));
 
     expect(fetchKeyDetail).toHaveBeenCalledTimes(2);
     expect(fetchKeyDetail).toHaveBeenLastCalledWith("key-broken");
-    expect(await screen.findByText("Spend per day")).toBeInTheDocument();
-    expect(screen.queryByText(/Could not load key details\./)).not.toBeInTheDocument();
+    expect(await screen.findByText("每日花费")).toBeInTheDocument();
+    expect(screen.queryByText(/无法加载密钥详情。/)).not.toBeInTheDocument();
     consoleError.mockRestore();
   });
 
@@ -290,13 +290,13 @@ describe("KeyActivityPanel", () => {
 
     expect(await screen.findByRole("button", { name: /key-local/ })).toBeInTheDocument();
     expect(screen.getByText("Loading chart data...")).toBeInTheDocument();
-    expect(screen.queryByText("Overall Usage")).not.toBeInTheDocument();
+    expect(screen.queryByText("总体用量")).not.toBeInTheDocument();
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
 
     rerender(<KeyActivityPanel summary={summary} summaryLoading={false} {...props} />);
 
     expect(screen.queryByText("Loading chart data...")).not.toBeInTheDocument();
-    expect(screen.getByText("Overall Usage")).toBeInTheDocument();
+    expect(screen.getByText("总体用量")).toBeInTheDocument();
     expect(screen.getAllByText("$500.00").length).toBeGreaterThan(0);
   });
 
@@ -317,19 +317,19 @@ describe("KeyActivityPanel", () => {
       />,
     );
 
-    fireEvent.change(screen.getByLabelText("Search keys"), { target: { value: "remote" } });
+    fireEvent.change(screen.getByLabelText("搜索密钥"), { target: { value: "remote" } });
     await act(async () => {
       await vi.advanceTimersByTimeAsync(300);
     });
     vi.useRealTimers();
     expect(searchKeys).toHaveBeenCalledWith("remote");
-    expect(screen.getByText("2 matching keys")).toBeInTheDocument();
+    expect(screen.getByText("2 个匹配的密钥")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /key-local-remote/ })).toBeInTheDocument();
     const remoteButton = screen.getByRole("button", { name: /remote server result/ });
     fireEvent.click(remoteButton);
 
     expect(fetchKeyDetail).toHaveBeenCalledWith("key-remote");
-    expect(await screen.findByText("Spend per day")).toBeInTheDocument();
+    expect(await screen.findByText("每日花费")).toBeInTheDocument();
     expect(screen.queryByText("暂无数据")).not.toBeInTheDocument();
   });
 
@@ -354,13 +354,13 @@ describe("KeyActivityPanel", () => {
       />,
     );
 
-    expect(await screen.findByText("Could not load keys for this range.")).toBeInTheDocument();
+    expect(await screen.findByText("无法加载该时间范围内的密钥。")).toBeInTheDocument();
     expect(screen.queryByText("0 keys")).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    fireEvent.click(screen.getByRole("button", { name: "重试" }));
 
-    expect(screen.getByText("Loading keys...")).toBeInTheDocument();
-    expect(screen.queryByText("Could not load keys for this range.")).not.toBeInTheDocument();
+    expect(screen.getByText("正在加载密钥...")).toBeInTheDocument();
+    expect(screen.queryByText("无法加载该时间范围内的密钥。")).not.toBeInTheDocument();
     expect(fetchKeyPage).toHaveBeenCalledTimes(2);
     expect(fetchKeyPage).toHaveBeenNthCalledWith(2, 0, 50);
 
@@ -368,7 +368,7 @@ describe("KeyActivityPanel", () => {
       resolveRetry(pageResponse([pageRow("key-after-retry")], 1));
     });
     expect(await screen.findByRole("button", { name: /key-after-retry/ })).toBeInTheDocument();
-    expect(screen.queryByText("Loading keys...")).not.toBeInTheDocument();
+    expect(screen.queryByText("正在加载密钥...")).not.toBeInTheDocument();
   });
 
   it("stops auto-retrying after a failed next page until Retry is clicked", async () => {
@@ -390,7 +390,7 @@ describe("KeyActivityPanel", () => {
 
     expect(await screen.findByRole("button", { name: /key-49/ })).toBeInTheDocument();
     await intersectSentinel();
-    expect(await screen.findByText("Could not load more keys.")).toBeInTheDocument();
+    expect(await screen.findByText("无法加载更多密钥。")).toBeInTheDocument();
     expect(fetchKeyPage).toHaveBeenCalledTimes(2);
 
     await act(async () => {
@@ -398,7 +398,7 @@ describe("KeyActivityPanel", () => {
     });
     expect(fetchKeyPage).toHaveBeenCalledTimes(2);
 
-    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    fireEvent.click(screen.getByRole("button", { name: "重试" }));
     expect(await screen.findByRole("button", { name: /key-51/ })).toBeInTheDocument();
     expect(fetchKeyPage).toHaveBeenCalledTimes(3);
     expect(fetchKeyPage).toHaveBeenNthCalledWith(3, 50, 50);
@@ -423,15 +423,15 @@ describe("KeyActivityPanel", () => {
 
     expect(await screen.findByRole("button", { name: /key-49/ })).toBeInTheDocument();
     await intersectSentinel();
-    expect(await screen.findByText("Could not load more keys.")).toBeInTheDocument();
+    expect(await screen.findByText("无法加载更多密钥。")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("Search keys"), { target: { value: "key-1" } });
-    expect(screen.queryByText("Could not load more keys.")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Retry" })).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("搜索密钥"), { target: { value: "key-1" } });
+    expect(screen.queryByText("无法加载更多密钥。")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "重试" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Clear key search" }));
-    expect(await screen.findByText("Could not load more keys.")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    fireEvent.click(screen.getByRole("button", { name: "清除密钥搜索" }));
+    expect(await screen.findByText("无法加载更多密钥。")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "重试" }));
     expect(await screen.findByRole("button", { name: /key-51/ })).toBeInTheDocument();
     expect(fetchKeyPage).toHaveBeenCalledTimes(3);
     expect(fetchKeyPage).toHaveBeenNthCalledWith(3, 50, 50);
@@ -455,9 +455,9 @@ describe("KeyActivityPanel", () => {
     await act(async () => {
       await vi.advanceTimersByTimeAsync(0);
     });
-    expect(screen.getByText("Could not load keys for this range.")).toBeInTheDocument();
+    expect(screen.getByText("无法加载该时间范围内的密钥。")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("Search keys"), { target: { value: "remote" } });
+    fireEvent.change(screen.getByLabelText("搜索密钥"), { target: { value: "remote" } });
     await act(async () => {
       await vi.advanceTimersByTimeAsync(300);
     });
@@ -465,11 +465,11 @@ describe("KeyActivityPanel", () => {
 
     expect(searchKeys).toHaveBeenCalledWith("remote");
     expect(screen.getByRole("button", { name: /remote server result/ })).toBeInTheDocument();
-    expect(screen.getByText("1 matching keys")).toBeInTheDocument();
-    expect(screen.queryByText("Could not load keys for this range.")).not.toBeInTheDocument();
+    expect(screen.getByText("1 个匹配的密钥")).toBeInTheDocument();
+    expect(screen.queryByText("无法加载该时间范围内的密钥。")).not.toBeInTheDocument();
   });
 
-  it("keeps the loader and the first page error visible for a short query instead of No keys match", async () => {
+  it("keeps the loader and the first page error visible for a short query instead of no-match", async () => {
     let resolveFirstPage: (page: DailyActivityKeyPageResponse) => void = () => undefined;
     const fetchKeyPage = vi.fn().mockImplementationOnce(
       () =>
@@ -487,16 +487,16 @@ describe("KeyActivityPanel", () => {
       />,
     );
 
-    fireEvent.change(screen.getByLabelText("Search keys"), { target: { value: "a" } });
-    expect(screen.getByText("Loading keys...")).toBeInTheDocument();
-    expect(screen.queryByText(/No keys match/)).not.toBeInTheDocument();
-    expect(screen.queryByText("0 matching keys")).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("搜索密钥"), { target: { value: "a" } });
+    expect(screen.getByText("正在加载密钥...")).toBeInTheDocument();
+    expect(screen.queryByText(/没有与/)).not.toBeInTheDocument();
+    expect(screen.queryByText("0 个匹配的密钥")).not.toBeInTheDocument();
 
     await act(async () => {
       resolveFirstPage(pageResponse([pageRow("key-alpha")], 1));
     });
     expect(await screen.findByRole("button", { name: /key-alpha/ })).toBeInTheDocument();
-    expect(screen.getByText("1 matching keys")).toBeInTheDocument();
+    expect(screen.getByText("1 个匹配的密钥")).toBeInTheDocument();
 
     cleanup();
     const failingFetch = vi.fn().mockRejectedValue(new Error("boom"));
@@ -509,11 +509,11 @@ describe("KeyActivityPanel", () => {
         teams={[]}
       />,
     );
-    expect(await screen.findByText("Could not load keys for this range.")).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("Search keys"), { target: { value: "a" } });
-    expect(screen.getByText("Could not load keys for this range.")).toBeInTheDocument();
-    expect(screen.queryByText(/No keys match/)).not.toBeInTheDocument();
-    expect(screen.queryByText("0 matching keys")).not.toBeInTheDocument();
+    expect(await screen.findByText("无法加载该时间范围内的密钥。")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("搜索密钥"), { target: { value: "a" } });
+    expect(screen.getByText("无法加载该时间范围内的密钥。")).toBeInTheDocument();
+    expect(screen.queryByText(/没有与/)).not.toBeInTheDocument();
+    expect(screen.queryByText("0 个匹配的密钥")).not.toBeInTheDocument();
   });
 
   it("does not restart an in-flight search when the parent passes a new teams array", async () => {
@@ -534,7 +534,7 @@ describe("KeyActivityPanel", () => {
     };
     const { rerender } = render(<KeyActivityPanel {...props} teams={[]} />);
 
-    fireEvent.change(screen.getByLabelText("Search keys"), { target: { value: "remote" } });
+    fireEvent.change(screen.getByLabelText("搜索密钥"), { target: { value: "remote" } });
     await act(async () => {
       await vi.advanceTimersByTimeAsync(300);
     });
@@ -551,7 +551,7 @@ describe("KeyActivityPanel", () => {
     });
     vi.useRealTimers();
     expect(await screen.findByRole("button", { name: /remote server result/ })).toBeInTheDocument();
-    expect(screen.getByText("1 matching keys")).toBeInTheDocument();
+    expect(screen.getByText("1 个匹配的密钥")).toBeInTheDocument();
   });
 
   it("keeps paging past a page of already loaded keys by server offset instead of loaded row count", async () => {
@@ -603,10 +603,10 @@ describe("KeyActivityPanel", () => {
     expect(fetchKeyPage).toHaveBeenCalledTimes(2);
     expect(fetchKeyPage).toHaveBeenLastCalledWith(2, 50);
     expect(triggerIntersection).toBeUndefined();
-    expect(screen.getByText("3 keys")).toBeInTheDocument();
+    expect(screen.getByText("3 个密钥")).toBeInTheDocument();
   });
 
-  it("shows a search error with Retry search instead of No keys match when the search fails", async () => {
+  it("shows a search error with 重新搜索 instead of no-match when the search fails", async () => {
     vi.useFakeTimers();
     const fetchKeyPage = vi.fn().mockResolvedValue(pageResponse([pageRow("key-local")], 1));
     const searchKeys = vi
@@ -626,18 +626,18 @@ describe("KeyActivityPanel", () => {
       await vi.advanceTimersByTimeAsync(0);
     });
 
-    fireEvent.change(screen.getByLabelText("Search keys"), { target: { value: "remote" } });
+    fireEvent.change(screen.getByLabelText("搜索密钥"), { target: { value: "remote" } });
     await act(async () => {
       await vi.advanceTimersByTimeAsync(300);
     });
     expect(searchKeys).toHaveBeenCalledTimes(1);
-    expect(screen.getByText(/Could not search keys\./)).toBeInTheDocument();
-    expect(screen.queryByText(/No keys match/)).not.toBeInTheDocument();
-    expect(screen.queryByText("0 matching keys")).not.toBeInTheDocument();
-    expect(screen.getByText("Search failed")).toBeInTheDocument();
+    expect(screen.getByText(/无法搜索密钥。/)).toBeInTheDocument();
+    expect(screen.queryByText(/没有与/)).not.toBeInTheDocument();
+    expect(screen.queryByText("0 个匹配的密钥")).not.toBeInTheDocument();
+    expect(screen.getByText("搜索中...")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Retry search" }));
-    expect(screen.getByText("Searching...")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "重新搜索" }));
+    expect(screen.getByText("搜索中...")).toBeInTheDocument();
     await act(async () => {
       await vi.advanceTimersByTimeAsync(300);
     });
@@ -645,7 +645,7 @@ describe("KeyActivityPanel", () => {
 
     expect(searchKeys).toHaveBeenCalledTimes(2);
     expect(screen.getByRole("button", { name: /remote server result/ })).toBeInTheDocument();
-    expect(screen.queryByText(/Could not search keys\./)).not.toBeInTheDocument();
+    expect(screen.queryByText(/无法搜索密钥。/)).not.toBeInTheDocument();
   });
 
   it("discards stale pages and clears loaded keys when the scope changes", async () => {

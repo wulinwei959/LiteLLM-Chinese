@@ -6,6 +6,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/outline";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { SimpleTooltip } from "@/components/ui/tooltip";
+import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 import { formatNumberWithCommas } from "../../../../utils/dataUtils";
 import { transformKeyInfo } from "../../../key_team_helpers/transform_key_info";
@@ -24,9 +25,6 @@ export interface TopKeyItem {
   spend: number;
 }
 
-const KEY_NOT_IN_DATABASE_TOOLTIP =
-  "This key is no longer in the database (deleted, or a CLI/SSO session key), so its details can't be opened";
-
 const canOpenKeyInfo = (item: TopKeyItem) => item.key_exists !== false;
 
 interface TopKeyViewProps {
@@ -39,6 +37,7 @@ interface TopKeyViewProps {
 
 const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = false, topKeysLimit, setTopKeysLimit }) => {
   const { accessToken } = useAuthorized();
+  const t = useTranslations("topKeyView");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [keyData, setKeyData] = useState<any | undefined>(undefined);
@@ -100,24 +99,24 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
   // Define columns for the table view
   const baseColumns = [
     {
-      header: "Key ID",
+      header: t("keyId"),
       accessorKey: "api_key",
       cell: (info: any) =>
         canOpenKeyInfo(info.row.original) ? (
           <IdCell value={info.getValue()} onClick={() => handleKeyClick(info.row.original)} />
         ) : (
-          <IdCell value={info.getValue()} variant="plain" tooltip={KEY_NOT_IN_DATABASE_TOOLTIP} />
+          <IdCell value={info.getValue()} variant="plain" tooltip={t("keyNotInDatabase")} />
         ),
     },
     {
-      header: "Key Alias",
+      header: t("keyAlias"),
       accessorKey: "key_alias",
       cell: (info: any) => info.getValue() || "-",
     },
     ...(topKeys.some((k) => k.user)
       ? [
           {
-            header: "User",
+            header: t("user"),
             accessorKey: "user",
             cell: (info: any) => info.getValue() || "-",
           },
@@ -126,7 +125,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
   ];
 
   const tagsColumn = {
-    header: "Tags",
+    header: t("tags"),
     accessorKey: "tags",
     cell: (info: any) => {
       const tags = info.getValue() as TagUsage[] | undefined;
@@ -150,10 +149,10 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                 content={
                   <div>
                     <div>
-                      <span className="text-muted-foreground">Tag Name:</span> {tag.tag}
+                      <span className="text-muted-foreground">{t("tagName")}</span> {tag.tag}
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Spend:</span>{" "}
+                      <span className="text-muted-foreground">{t("spend")}</span>{" "}
                       {tag.usage > 0 && tag.usage < 0.01 ? "<$0.01" : `$${formatNumberWithCommas(tag.usage, 2)}`}
                     </div>
                   </div>
@@ -166,7 +165,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
               <button
                 onClick={() => toggleTagsExpansion(apiKey)}
                 className="ml-1 p-1 hover:bg-accent rounded-full transition-colors"
-                title={isExpanded ? "Show fewer tags" : "Show all tags"}
+                title={isExpanded ? t("showFewerTags") : t("showAllTags")}
               >
                 {isExpanded ? (
                   <ChevronUpIcon className="h-3 w-3 text-muted-foreground" />
@@ -182,7 +181,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
   };
 
   const spendColumn = {
-    header: "Spend (USD)",
+    header: t("spendUsd"),
     accessorKey: "spend",
     meta: { numeric: true },
     cell: (info: any) => <MoneyCell value={info.getValue()} decimals={2} />,
@@ -199,7 +198,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
     <>
       <div className="mb-4 flex justify-between items-center">
         <RadioGroup
-          aria-label="Number of top keys to show"
+          aria-label={t("topKeysLimitAria")}
           value={String(topKeysLimit)}
           onValueChange={(limit: unknown) => setTopKeysLimit(Number(limit))}
           className="inline-flex w-fit items-center gap-1 rounded-lg bg-muted p-[3px]"
@@ -252,15 +251,15 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                 <div className="relative z-floating p-3 bg-black/90 shadow-lg rounded-lg text-white max-w-xs">
                   <div className="space-y-1.5">
                     <div className="text-sm">
-                      <span className="text-muted-foreground">Key Alias: </span>
+                      <span className="text-muted-foreground">{t("tooltipKeyAlias")}</span>
                       <span className="font-mono text-gray-100 break-all">{item?.key_alias}</span>
                     </div>
                     <div className="text-sm">
-                      <span className="text-muted-foreground">Key ID: </span>
+                      <span className="text-muted-foreground">{t("tooltipKeyId")}</span>
                       <span className="font-mono text-gray-100 break-all">{item?.api_key}</span>
                     </div>
                     <div className="text-sm">
-                      <span className="text-muted-foreground">Spend: </span>
+                      <span className="text-muted-foreground">{t("tooltipSpend")}</span>
                       <span className="text-white font-medium">${formatNumberWithCommas(item?.spend, 2)}</span>
                     </div>
                   </div>
@@ -283,7 +282,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
             <button
               onClick={handleClose}
               className="absolute top-4 right-4 text-muted-foreground hover:text-foreground focus:outline-hidden"
-              aria-label="Close"
+              aria-label={t("close")}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />

@@ -392,7 +392,7 @@ describe("ActivityMetrics", () => {
     };
 
     render(<ActivityMetrics modelMetrics={modelWithTopModels} />);
-    expect(screen.getByText("Model Usage").closest('[data-slot="card-title"]')).toBeInTheDocument();
+    expect(screen.getByText("模型用量").closest('[data-slot="card-title"]')).toBeInTheDocument();
   });
 
   it("should display Spend per day in model section", () => {

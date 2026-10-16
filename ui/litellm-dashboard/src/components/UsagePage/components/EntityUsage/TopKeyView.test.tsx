@@ -82,19 +82,19 @@ describe("TopKeyView", () => {
 
   it("should display base table column headers", () => {
     renderWithProviders(<TopKeyView {...baseProps} />);
-    expect(screen.getByText("Key ID")).toBeInTheDocument();
-    expect(screen.getByText("Key Alias")).toBeInTheDocument();
-    expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
+    expect(screen.getByText("密钥 ID")).toBeInTheDocument();
+    expect(screen.getByText("密钥别名")).toBeInTheDocument();
+    expect(screen.getByText("花费（美元）")).toBeInTheDocument();
   });
 
   it("should display Tags column when showTags is true", () => {
     renderWithProviders(<TopKeyView {...baseProps} showTags={true} />);
-    expect(screen.getByText("Tags")).toBeInTheDocument();
+    expect(screen.getByText("标签")).toBeInTheDocument();
   });
 
   it("should not display Tags column when showTags is false", () => {
     renderWithProviders(<TopKeyView {...baseProps} showTags={false} />);
-    expect(screen.queryByText("Tags")).not.toBeInTheDocument();
+    expect(screen.queryByText("标签")).not.toBeInTheDocument();
   });
 
   it("should display key information in table view", () => {
@@ -153,7 +153,7 @@ describe("TopKeyView", () => {
       />,
     );
 
-    expect(screen.getByText("User")).toBeInTheDocument();
+    expect(screen.getByText("用户")).toBeInTheDocument();
     expect(screen.getByText("alice@example.com")).toBeInTheDocument();
   });
 
@@ -172,7 +172,7 @@ describe("TopKeyView", () => {
       />,
     );
 
-    expect(screen.getByText("User")).toBeInTheDocument();
+    expect(screen.getByText("用户")).toBeInTheDocument();
     expect(screen.getByText("user-123")).toBeInTheDocument();
   });
 
@@ -420,7 +420,7 @@ describe("TopKeyView", () => {
       />,
     );
 
-    const expandButton = screen.getByTitle("Show all tags");
+    const expandButton = screen.getByTitle("显示全部标签");
     await user.click(expandButton);
 
     expect(screen.getByText(/tag-3/)).toBeInTheDocument();
@@ -448,12 +448,12 @@ describe("TopKeyView", () => {
       />,
     );
 
-    const expandButton = screen.getByTitle("Show all tags");
+    const expandButton = screen.getByTitle("显示全部标签");
     await user.click(expandButton);
 
     expect(screen.getByText(/tag-3/)).toBeInTheDocument();
 
-    const collapseButton = screen.getByTitle("Show fewer tags");
+    const collapseButton = screen.getByTitle("收起部分标签");
     await user.click(collapseButton);
 
     expect(screen.queryByText(/tag-3/)).not.toBeInTheDocument();
@@ -553,7 +553,7 @@ describe("TopKeyView", () => {
       expect(screen.getByTestId("key-info-view")).toBeInTheDocument();
     });
 
-    const closeButton = screen.getByLabelText("Close");
+    const closeButton = screen.getByLabelText("关闭");
     await user.click(closeButton);
 
     await waitFor(() => {
@@ -736,8 +736,8 @@ describe("TopKeyView", () => {
 
   it("should handle empty key list", () => {
     renderWithProviders(<TopKeyView {...baseProps} topKeys={[]} />);
-    expect(screen.getByText("Key ID")).toBeInTheDocument();
-    expect(screen.getByText("Key Alias")).toBeInTheDocument();
+    expect(screen.getByText("密钥 ID")).toBeInTheDocument();
+    expect(screen.getByText("密钥别名")).toBeInTheDocument();
   });
 
   it("should display full key alias in table view", () => {

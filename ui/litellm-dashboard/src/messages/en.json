@@ -9397,5 +9397,51 @@
     "unknownModel": "Unknown Model",
     "requestsCount": "{count} requests",
     "avgResponse": "{time} avg response"
+  },
+  "usageKeyActivity": {
+    "searching": "Searching...",
+    "matchingKeys": "{count} matching keys",
+    "totalKeys": "{count} keys",
+    "loadingKeyDetails": "Loading key details...",
+    "keyDetailsFailed": "Could not load key details.",
+    "noDailyDetails": "No daily details available",
+    "keysRangeFailed": "Could not load keys for this range.",
+    "loadingKeys": "Loading keys...",
+    "searchKeysAria": "Search keys",
+    "searchPlaceholder": "Search by key alias, key hash, user ID, or email",
+    "clearSearchAria": "Clear key search",
+    "searchAllKeysFailed": "Could not search all keys.",
+    "loadingMoreKeys": "Loading more keys...",
+    "moreKeysFailed": "Could not load more keys.",
+    "searchKeysFailed": "Could not search keys.",
+    "retrySearch": "Retry search",
+    "noKeysMatch": "No keys match \"{query}\" in this date range"
+  },
+  "keyModelUsage": {
+    "title": "Model Usage",
+    "table": "Table",
+    "chart": "Chart",
+    "model": "Model",
+    "spend": "Spend (USD)",
+    "successful": "Successful",
+    "failed": "Failed",
+    "tokens": "Tokens"
+  },
+  "topKeyView": {
+    "keyId": "Key ID",
+    "keyAlias": "Key Alias",
+    "user": "User",
+    "tags": "Tags",
+    "spendUsd": "Spend (USD)",
+    "tagName": "Tag Name:",
+    "spend": "Spend:",
+    "showAllTags": "Show all tags",
+    "showFewerTags": "Show fewer tags",
+    "topKeysLimitAria": "Number of top keys to show",
+    "tooltipKeyAlias": "Key Alias: ",
+    "tooltipKeyId": "Key ID: ",
+    "tooltipSpend": "Spend: ",
+    "close": "Close",
+    "keyNotInDatabase": "This key is no longer in the database (deleted, or a CLI/SSO session key), so its details can't be opened"
   }
 }

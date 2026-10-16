@@ -26,7 +26,7 @@ describe("KeyModelUsageView", () => {
 
   it("should render", () => {
     render(<KeyModelUsageView topModels={mockTopModels} />);
-    expect(screen.getByText("Model Usage")).toBeInTheDocument();
+    expect(screen.getByText("模型用量")).toBeInTheDocument();
   });
 
   it("should return null when topModels is empty", () => {
@@ -36,32 +36,32 @@ describe("KeyModelUsageView", () => {
 
   it("should display Model Usage title", () => {
     render(<KeyModelUsageView topModels={mockTopModels} />);
-    expect(screen.getByText("Model Usage")).toBeInTheDocument();
+    expect(screen.getByText("模型用量")).toBeInTheDocument();
   });
 
   it("should display Table view button", () => {
     render(<KeyModelUsageView topModels={mockTopModels} />);
-    expect(screen.getByRole("button", { name: "Table" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "表格" })).toBeInTheDocument();
   });
 
   it("should display Chart view button", () => {
     render(<KeyModelUsageView topModels={mockTopModels} />);
-    expect(screen.getByRole("button", { name: "Chart" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "图表" })).toBeInTheDocument();
   });
 
   it("should default to table view", () => {
     render(<KeyModelUsageView topModels={mockTopModels} />);
-    const tableButton = screen.getByRole("button", { name: "Table" });
+    const tableButton = screen.getByRole("button", { name: "表格" });
     expect(tableButton).toHaveClass("bg-info/15");
   });
 
   it("should display all table column headers", () => {
     render(<KeyModelUsageView topModels={mockTopModels} />);
-    expect(screen.getByText("Model")).toBeInTheDocument();
-    expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
-    expect(screen.getByText("Successful")).toBeInTheDocument();
-    expect(screen.getByText("Failed")).toBeInTheDocument();
-    expect(screen.getByText("Tokens")).toBeInTheDocument();
+    expect(screen.getByText("模型")).toBeInTheDocument();
+    expect(screen.getByText("花费（美元）")).toBeInTheDocument();
+    expect(screen.getByText("成功")).toBeInTheDocument();
+    expect(screen.getByText("失败")).toBeInTheDocument();
+    expect(screen.getByText("令牌")).toBeInTheDocument();
   });
 
   it("should display model data in table view", () => {
@@ -166,11 +166,11 @@ describe("KeyModelUsageView", () => {
     const user = userEvent.setup();
     render(<KeyModelUsageView topModels={mockTopModels} />);
 
-    const chartButton = screen.getByRole("button", { name: "Chart" });
+    const chartButton = screen.getByRole("button", { name: "图表" });
     await user.click(chartButton);
 
     expect(chartButton).toHaveClass("bg-info/15");
-    const tableButton = screen.getByRole("button", { name: "Table" });
+    const tableButton = screen.getByRole("button", { name: "表格" });
     expect(tableButton).not.toHaveClass("bg-info/15");
   });
 
@@ -178,8 +178,8 @@ describe("KeyModelUsageView", () => {
     const user = userEvent.setup();
     render(<KeyModelUsageView topModels={mockTopModels} />);
 
-    const chartButton = screen.getByRole("button", { name: "Chart" });
-    const tableButton = screen.getByRole("button", { name: "Table" });
+    const chartButton = screen.getByRole("button", { name: "图表" });
+    const tableButton = screen.getByRole("button", { name: "表格" });
 
     await user.click(chartButton);
     await user.click(tableButton);
@@ -192,17 +192,17 @@ describe("KeyModelUsageView", () => {
     const user = userEvent.setup();
     render(<KeyModelUsageView topModels={mockTopModels} />);
 
-    const chartButton = screen.getByRole("button", { name: "Chart" });
+    const chartButton = screen.getByRole("button", { name: "图表" });
     await user.click(chartButton);
 
-    expect(screen.queryByText("Model")).not.toBeInTheDocument();
+    expect(screen.queryByText("模型")).not.toBeInTheDocument();
   });
 
   it("renders one cyan bar per model with model names on the axis in chart view", async () => {
     const user = userEvent.setup();
     const { container } = render(<KeyModelUsageView topModels={mockTopModels} />);
 
-    await user.click(screen.getByRole("button", { name: "Chart" }));
+    await user.click(screen.getByRole("button", { name: "图表" }));
 
     const bars = container.querySelectorAll("path.recharts-rectangle");
     expect(bars).toHaveLength(2);
@@ -214,7 +214,7 @@ describe("KeyModelUsageView", () => {
 
   it("should display table when table view is selected", () => {
     render(<KeyModelUsageView topModels={mockTopModels} />);
-    expect(screen.getByText("Model")).toBeInTheDocument();
+    expect(screen.getByText("模型")).toBeInTheDocument();
     expect(screen.getByText("gpt-4")).toBeInTheDocument();
   });
 

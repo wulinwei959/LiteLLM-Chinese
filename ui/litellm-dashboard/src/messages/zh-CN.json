@@ -9393,5 +9393,51 @@
     "unknownModel": "未知模型",
     "requestsCount": "{count} 次请求",
     "avgResponse": "{time} 平均响应"
+  },
+  "usageKeyActivity": {
+    "searching": "搜索中...",
+    "matchingKeys": "{count} 个匹配的密钥",
+    "totalKeys": "{count} 个密钥",
+    "loadingKeyDetails": "正在加载密钥详情...",
+    "keyDetailsFailed": "无法加载密钥详情。",
+    "noDailyDetails": "没有可用的每日明细",
+    "keysRangeFailed": "无法加载该时间范围内的密钥。",
+    "loadingKeys": "正在加载密钥...",
+    "searchKeysAria": "搜索密钥",
+    "searchPlaceholder": "按密钥别名、密钥哈希、用户 ID 或邮箱搜索",
+    "clearSearchAria": "清除密钥搜索",
+    "searchAllKeysFailed": "无法搜索全部密钥。",
+    "loadingMoreKeys": "正在加载更多密钥...",
+    "moreKeysFailed": "无法加载更多密钥。",
+    "searchKeysFailed": "无法搜索密钥。",
+    "retrySearch": "重新搜索",
+    "noKeysMatch": "该日期范围内没有与“{query}”匹配的密钥"
+  },
+  "keyModelUsage": {
+    "title": "模型用量",
+    "table": "表格",
+    "chart": "图表",
+    "model": "模型",
+    "spend": "花费（美元）",
+    "successful": "成功",
+    "failed": "失败",
+    "tokens": "令牌"
+  },
+  "topKeyView": {
+    "keyId": "密钥 ID",
+    "keyAlias": "密钥别名",
+    "user": "用户",
+    "tags": "标签",
+    "spendUsd": "花费（美元）",
+    "tagName": "标签名称：",
+    "spend": "花费：",
+    "showAllTags": "显示全部标签",
+    "showFewerTags": "收起部分标签",
+    "topKeysLimitAria": "显示的头部密钥数量",
+    "tooltipKeyAlias": "密钥别名：",
+    "tooltipKeyId": "密钥 ID：",
+    "tooltipSpend": "花费：",
+    "close": "关闭",
+    "keyNotInDatabase": "该密钥已不在数据库中（已被删除，或属于 CLI/SSO 会话密钥），因此无法打开其详情"
   }
 }
