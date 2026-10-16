@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
+import type { EmailEventSettingsTranslator } from "@/lib/i18n/translators";
 import { getEmailEventSettings, updateEmailEventSettings, resetEmailEventSettings } from "../networking";
 import { EmailEvent } from "../../types";
 import { EmailEventSetting } from "./types";
@@ -13,7 +15,22 @@ interface EmailEventSettingsProps {
   accessToken: string | null;
 }
 
+const getEventDescription = (event: EmailEvent, t: EmailEventSettingsTranslator): string => {
+  if (event.includes("Virtual Key Created")) {
+    return t("descVirtualKey");
+  } else if (event.includes("New User Invitation")) {
+    return t("descNewUser");
+  } else {
+    const words = event
+      .split(/(?=[A-Z])/)
+      .join(" ")
+      .toLowerCase();
+    return t("descGeneric", { words });
+  }
+};
+
 const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) => {
+  const t = useTranslations("emailEventSettings");
   const [loading, setLoading] = useState(true);
   const [eventSettings, setEventSettings] = useState<EmailEventSetting[]>([]);
 
@@ -49,7 +66,7 @@ const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) 
 
     try {
       await updateEmailEventSettings(accessToken, { settings: eventSettings });
-      toast.success("Email event settings updated successfully");
+      toast.success(t("updated"));
     } catch (error) {
       console.error("Failed to update email event settings:", error);
       toast.fromError(error);
@@ -61,7 +78,7 @@ const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) 
 
     try {
       await resetEmailEventSettings(accessToken);
-      toast.success("Email event settings reset to defaults");
+      toast.success(t("resetDone"));
       // Refresh settings after reset
       fetchEventSettings();
     } catch (error) {
@@ -70,28 +87,11 @@ const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) 
     }
   };
 
-  // Helper function to get a description for each event type
-  const getEventDescription = (event: EmailEvent): string => {
-    // Convert event name to a sentence with more context
-    if (event.includes("Virtual Key Created")) {
-      return "An email will be sent to the user when a new virtual key is created with their user ID";
-    } else if (event.includes("New User Invitation")) {
-      return "An email will be sent to the email address of the user when a new user is created";
-    } else {
-      // Handle any other event type from the API
-      const words = event
-        .split(/(?=[A-Z])/)
-        .join(" ")
-        .toLowerCase();
-      return `Receive an email notification when ${words}`;
-    }
-  };
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Email Notifications</CardTitle>
-        <p className="text-sm text-muted-foreground">Select which events should trigger email notifications.</p>
+        <CardTitle className="text-base">{t("title")}</CardTitle>
+        <p className="text-sm text-muted-foreground">{t("description")}</p>
       </CardHeader>
 
       <CardContent>
@@ -113,7 +113,7 @@ const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) 
                 />
                 <div className="ml-3">
                   <p className="text-sm">{setting.event}</p>
-                  <div className="block text-sm text-muted-foreground">{getEventDescription(setting.event)}</div>
+                  <div className="block text-sm text-muted-foreground">{getEventDescription(setting.event, t)}</div>
                 </div>
               </div>
             ))}
@@ -122,10 +122,10 @@ const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) 
 
         <div className="mt-6 flex gap-4">
           <Button onClick={handleSaveSettings} disabled={loading}>
-            Save Changes
+            {t("saveChanges")}
           </Button>
           <Button variant="secondary" onClick={handleResetSettings} disabled={loading}>
-            Reset to Defaults
+            {t("resetToDefaults")}
           </Button>
         </div>
       </CardContent>

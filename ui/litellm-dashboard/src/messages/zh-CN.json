@@ -10112,5 +10112,34 @@
     "deletedAt": "删除时间",
     "deletedBy": "删除者",
     "unlimited": "无限制"
+  },
+  "emailSettings": {
+    "updated": "邮件设置更新成功",
+    "title": "邮件服务器设置",
+    "docsLink": "LiteLLM 文档：邮件告警",
+    "requiredMarker": "必填 *",
+    "smtpHost": "请输入 SMTP 主机地址，例如 `smtp.resend.com`",
+    "smtpPort": "请输入 SMTP 端口号，例如 `587`",
+    "smtpUsername": "请输入 SMTP 用户名，例如 `username`",
+    "smtpSenderEmail": "请输入发件人邮箱地址，例如 `sender@berri.ai`",
+    "testEmailAddress": "接收 `Test Email Alert` 的邮箱地址。示例：`info@berri.ai`",
+    "emailLogoUrl": "（可选）自定义邮件中显示的 Logo，传入你的 Logo 链接",
+    "emailSupportContact": "（可选）自定义邮件中显示的支持邮箱地址。默认是 support@berri.ai",
+    "showCredential": "显示凭据",
+    "hideCredential": "隐藏凭据",
+    "saveChanges": "保存更改",
+    "testEmailAlerts": "测试邮件告警",
+    "testTriggered": "已触发邮件测试。请查看你配置的邮件收件箱/日志。"
+  },
+  "emailEventSettings": {
+    "title": "邮件通知",
+    "description": "选择哪些事件应触发邮件通知。",
+    "updated": "邮件事件设置更新成功",
+    "resetDone": "邮件事件设置已恢复为默认值",
+    "saveChanges": "保存更改",
+    "resetToDefaults": "恢复默认",
+    "descVirtualKey": "使用其用户 ID 创建新虚拟密钥时，会向该用户发送邮件",
+    "descNewUser": "创建新用户时，会向该用户的邮箱地址发送邮件",
+    "descGeneric": "当{words}时，你会收到邮件通知"
   }
 }

@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
+import type { EmailSettingsTranslator } from "@/lib/i18n/translators";
 import { serviceHealthCheck, setCallbacksCall } from "./networking";
 import { EmailEventSettings } from "./email_events";
 
@@ -13,27 +15,51 @@ interface EmailSettingsProps {
   alerts: any[];
 }
 
-const REQUIRED_MARKER = <span className="text-destructive"> Required * </span>;
-
-const FIELD_HELP: Record<string, React.ReactNode> = {
-  SMTP_HOST: <>Enter the SMTP host address, e.g. `smtp.resend.com`{REQUIRED_MARKER}</>,
-  SMTP_PORT: <>Enter the SMTP port number, e.g. `587`{REQUIRED_MARKER}</>,
-  SMTP_USERNAME: <>Enter the SMTP username, e.g. `username`{REQUIRED_MARKER}</>,
-  SMTP_PASSWORD: REQUIRED_MARKER,
-  SMTP_SENDER_EMAIL: <>Enter the sender email address, e.g. `sender@berri.ai`{REQUIRED_MARKER}</>,
-  TEST_EMAIL_ADDRESS: <>Email Address to send `Test Email Alert` to. example: `info@berri.ai`{REQUIRED_MARKER}</>,
-  EMAIL_LOGO_URL: <>(Optional) Customize the Logo that appears in the email, pass a url to your logo</>,
-  EMAIL_SUPPORT_CONTACT: (
-    <>(Optional) Customize the support email address that appears in the email. Default is support@berri.ai</>
+const buildFieldHelp = (t: EmailSettingsTranslator, required: React.ReactNode): Record<string, React.ReactNode> => ({
+  SMTP_HOST: (
+    <>
+      {t("smtpHost")}
+      {required}
+    </>
   ),
-};
+  SMTP_PORT: (
+    <>
+      {t("smtpPort")}
+      {required}
+    </>
+  ),
+  SMTP_USERNAME: (
+    <>
+      {t("smtpUsername")}
+      {required}
+    </>
+  ),
+  SMTP_PASSWORD: required,
+  SMTP_SENDER_EMAIL: (
+    <>
+      {t("smtpSenderEmail")}
+      {required}
+    </>
+  ),
+  TEST_EMAIL_ADDRESS: (
+    <>
+      {t("testEmailAddress")}
+      {required}
+    </>
+  ),
+  EMAIL_LOGO_URL: <>{t("emailLogoUrl")}</>,
+  EMAIL_SUPPORT_CONTACT: <>{t("emailSupportContact")}</>,
+});
 
 const PREMIUM_ONLY_FIELDS = ["EMAIL_LOGO_URL", "EMAIL_SUPPORT_CONTACT"];
 
 const SENSITIVE_FIELD_PATTERN = /(PASSWORD|SECRET|KEY|TOKEN)/i;
 
 const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser, alerts }) => {
+  const t = useTranslations("emailSettings");
   const [visibleFields, setVisibleFields] = useState<Record<string, boolean>>({});
+  const requiredMarker = <span className="text-destructive"> {t("requiredMarker")} </span>;
+  const fieldHelp = buildFieldHelp(t, requiredMarker);
 
   const toggleFieldVisibility = (key: string) => {
     setVisibleFields((prev) => ({
@@ -78,7 +104,7 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
     };
     try {
       await setCallbacksCall(accessToken, payload);
-      toast.success("Email settings updated successfully");
+      toast.success(t("updated"));
     } catch (error) {
       toast.fromError(error);
     }
@@ -91,7 +117,7 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
       </div>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Email Server Settings</CardTitle>
+          <CardTitle className="text-base">{t("title")}</CardTitle>
           <p className="text-sm">
             <a
               href="https://docs.litellm.ai/docs/proxy/email"
@@ -99,7 +125,7 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
               rel="noreferrer"
               className="text-primary underline underline-offset-4"
             >
-              LiteLLM Docs: email alerts
+              {t("docsLink")}
             </a>
           </p>
         </CardHeader>
@@ -139,14 +165,14 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
                             <InputGroupButton
                               size="icon-xs"
                               onClick={() => toggleFieldVisibility(key)}
-                              aria-label={isVisible ? "Hide credential" : "Show credential"}
+                              aria-label={isVisible ? t("hideCredential") : t("showCredential")}
                             >
                               {isVisible ? <EyeOff /> : <Eye />}
                             </InputGroupButton>
                           </InputGroupAddon>
                         )}
                       </InputGroup>
-                      <div className="text-xs text-muted-foreground italic">{FIELD_HELP[key]}</div>
+                      <div className="text-xs text-muted-foreground italic">{fieldHelp[key]}</div>
                     </div>
                   );
                 })}
@@ -154,20 +180,20 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
             ))}
 
           <div className="mt-6 flex gap-2">
-            <Button onClick={() => handleSaveEmailSettings()}>Save Changes</Button>
+            <Button onClick={() => handleSaveEmailSettings()}>{t("saveChanges")}</Button>
             <Button
               variant="secondary"
               onClick={async () => {
                 if (!accessToken) return;
                 try {
                   await serviceHealthCheck(accessToken, "email");
-                  toast.success("Email test triggered. Check your configured email inbox/logs.");
+                  toast.success(t("testTriggered"));
                 } catch (error) {
                   toast.fromError(error);
                 }
               }}
             >
-              Test Email Alerts
+              {t("testEmailAlerts")}
             </Button>
           </div>
         </CardContent>

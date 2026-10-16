@@ -10116,5 +10116,34 @@
     "deletedAt": "Deleted At",
     "deletedBy": "Deleted By",
     "unlimited": "Unlimited"
+  },
+  "emailSettings": {
+    "updated": "Email settings updated successfully",
+    "title": "Email Server Settings",
+    "docsLink": "LiteLLM Docs: email alerts",
+    "requiredMarker": "Required *",
+    "smtpHost": "Enter the SMTP host address, e.g. `smtp.resend.com`",
+    "smtpPort": "Enter the SMTP port number, e.g. `587`",
+    "smtpUsername": "Enter the SMTP username, e.g. `username`",
+    "smtpSenderEmail": "Enter the sender email address, e.g. `sender@berri.ai`",
+    "testEmailAddress": "Email Address to send `Test Email Alert` to. example: `info@berri.ai`",
+    "emailLogoUrl": "(Optional) Customize the Logo that appears in the email, pass a url to your logo",
+    "emailSupportContact": "(Optional) Customize the support email address that appears in the email. Default is support@berri.ai",
+    "showCredential": "Show credential",
+    "hideCredential": "Hide credential",
+    "saveChanges": "Save Changes",
+    "testEmailAlerts": "Test Email Alerts",
+    "testTriggered": "Email test triggered. Check your configured email inbox/logs."
+  },
+  "emailEventSettings": {
+    "title": "Email Notifications",
+    "description": "Select which events should trigger email notifications.",
+    "updated": "Email event settings updated successfully",
+    "resetDone": "Email event settings reset to defaults",
+    "saveChanges": "Save Changes",
+    "resetToDefaults": "Reset to Defaults",
+    "descVirtualKey": "An email will be sent to the user when a new virtual key is created with their user ID",
+    "descNewUser": "An email will be sent to the email address of the user when a new user is created",
+    "descGeneric": "Receive an email notification when {words}"
   }
 }

@@ -35,8 +35,8 @@ describe("EmailEventSettings", () => {
   it("renders the heading and the explanatory copy", async () => {
     renderWithProviders(<EmailEventSettings accessToken="sk-test" />);
 
-    expect(await screen.findByText("Email Notifications")).toBeInTheDocument();
-    expect(screen.getByText("Select which events should trigger email notifications.")).toBeInTheDocument();
+    expect(await screen.findByText("邮件通知")).toBeInTheDocument();
+    expect(screen.getByText("选择哪些事件应触发邮件通知。")).toBeInTheDocument();
   });
 
   it("renders one checkbox per event, reflecting the persisted enabled state", async () => {
@@ -53,12 +53,8 @@ describe("EmailEventSettings", () => {
   it("renders a per-event description", async () => {
     renderWithProviders(<EmailEventSettings accessToken="sk-test" />);
 
-    expect(
-      await screen.findByText(/An email will be sent to the user when a new virtual key is created/),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/An email will be sent to the email address of the user when a new user is created/),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/使用其用户 ID 创建新虚拟密钥时/)).toBeInTheDocument();
+    expect(screen.getByText(/创建新用户时/)).toBeInTheDocument();
   });
 
   it("saves the toggled enabled flags rather than the originally fetched ones", async () => {
@@ -67,7 +63,7 @@ describe("EmailEventSettings", () => {
 
     await screen.findByText("Virtual Key Created");
     await user.click(screen.getAllByRole("checkbox")[1]);
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(updateEmailEventSettings).toHaveBeenCalledWith("sk-test", {
@@ -85,7 +81,7 @@ describe("EmailEventSettings", () => {
 
     await screen.findByText("Virtual Key Created");
     await user.click(screen.getAllByRole("checkbox")[0]);
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(updateEmailEventSettings).toHaveBeenCalledWith("sk-test", {
@@ -104,7 +100,7 @@ describe("EmailEventSettings", () => {
     await screen.findByText("Virtual Key Created");
     expect(getEmailEventSettings).toHaveBeenCalledTimes(1);
 
-    await user.click(screen.getByRole("button", { name: "Reset to Defaults" }));
+    await user.click(screen.getByRole("button", { name: "恢复默认" }));
 
     await waitFor(() => {
       expect(resetEmailEventSettings).toHaveBeenCalledWith("sk-test");
@@ -119,7 +115,7 @@ describe("EmailEventSettings", () => {
     renderWithProviders(<EmailEventSettings accessToken="sk-test" />);
 
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "保存更改" })).toBeDisabled();
   });
 
   it("does not call the API when there is no access token", async () => {

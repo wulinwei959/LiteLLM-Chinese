@@ -205,6 +205,16 @@ function useDeletedTeamsTableTranslator() {
 }
 export type DeletedTeamsTableTranslator = ReturnType<typeof useDeletedTeamsTableTranslator>;
 
+function useEmailSettingsTranslator() {
+  return useTranslations("emailSettings");
+}
+export type EmailSettingsTranslator = ReturnType<typeof useEmailSettingsTranslator>;
+
+function useEmailEventSettingsTranslator() {
+  return useTranslations("emailEventSettings");
+}
+export type EmailEventSettingsTranslator = ReturnType<typeof useEmailEventSettingsTranslator>;
+
 function useCostTrackingTranslator() {
   return useTranslations("costTracking");
 }
