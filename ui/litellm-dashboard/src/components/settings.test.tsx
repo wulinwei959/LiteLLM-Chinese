@@ -81,7 +81,7 @@ describe("Settings", () => {
     renderWithProviders(<Settings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Active Logging Callbacks")).toBeInTheDocument();
+      expect(screen.getByText("活跃的日志回调")).toBeInTheDocument();
     });
   });
 
@@ -144,7 +144,7 @@ describe("Settings", () => {
     renderWithProviders(<Settings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Active Logging Callbacks")).toBeInTheDocument();
+      expect(screen.getByText("活跃的日志回调")).toBeInTheDocument();
     });
 
     await waitFor(() => {
@@ -537,7 +537,7 @@ describe("Settings", () => {
     await waitFor(() => {
       expect(screen.queryByTestId("skeleton-row")).not.toBeInTheDocument();
     });
-    expect(screen.getByText("No callbacks configured")).toBeInTheDocument();
+    expect(screen.getByText("未配置回调")).toBeInTheDocument();
   });
 
   it("should resolve loading without fetching when the user id is missing", async () => {
@@ -547,14 +547,14 @@ describe("Settings", () => {
       expect(screen.queryByTestId("skeleton-row")).not.toBeInTheDocument();
     });
     expect(mockGetCallbacksCall).not.toHaveBeenCalled();
-    expect(screen.getByText("No callbacks configured")).toBeInTheDocument();
+    expect(screen.getByText("未配置回调")).toBeInTheDocument();
   });
 
   it("should display CloudZero Cost Tracking tab", async () => {
     renderWithProviders(<Settings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Active Logging Callbacks")).toBeInTheDocument();
+      expect(screen.getByText("活跃的日志回调")).toBeInTheDocument();
     });
 
     expect(screen.getByText("CloudZero Cost Tracking")).toBeInTheDocument();

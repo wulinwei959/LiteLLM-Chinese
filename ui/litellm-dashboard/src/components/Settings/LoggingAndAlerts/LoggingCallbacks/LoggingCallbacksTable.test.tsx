@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { renderWithProviders, screen } from "../../../../../tests/test-utils";
 import { LoggingCallbacksTable } from "./LoggingCallbacksTable";
 
 const baseVars = {
@@ -18,24 +18,24 @@ describe("LoggingCallbacksTable", () => {
   });
 
   it("should render", () => {
-    render(<LoggingCallbacksTable callbacks={[]} availableCallbacks={{}} />);
-    expect(screen.getByText("Active Logging Callbacks")).toBeInTheDocument();
+    renderWithProviders(<LoggingCallbacksTable callbacks={[]} availableCallbacks={{}} />);
+    expect(screen.getByText("活跃的日志回调")).toBeInTheDocument();
   });
 
   it("should show the empty state when there are no callbacks", () => {
-    render(<LoggingCallbacksTable callbacks={[]} availableCallbacks={{}} />);
-    expect(screen.getByText("No callbacks configured")).toBeInTheDocument();
-    expect(screen.getByText("Add your first callback to start logging data to external services.")).toBeInTheDocument();
+    renderWithProviders(<LoggingCallbacksTable callbacks={[]} availableCallbacks={{}} />);
+    expect(screen.getByText("未配置回调")).toBeInTheDocument();
+    expect(screen.getByText("添加第一个回调，开始将数据记录到外部服务。")).toBeInTheDocument();
   });
 
   it("should show skeleton rows while loading", () => {
-    render(<LoggingCallbacksTable callbacks={[]} availableCallbacks={{}} isLoading />);
+    renderWithProviders(<LoggingCallbacksTable callbacks={[]} availableCallbacks={{}} isLoading />);
     expect(screen.getAllByTestId("skeleton-row").length).toBeGreaterThan(0);
-    expect(screen.queryByText("No callbacks configured")).not.toBeInTheDocument();
+    expect(screen.queryByText("未配置回调")).not.toBeInTheDocument();
   });
 
   it('should map "otel" to "OpenTelemetry" on the table', () => {
-    render(
+    renderWithProviders(
       <LoggingCallbacksTable
         callbacks={[{ name: "otel", variables: baseVars }]}
         availableCallbacks={{
@@ -51,7 +51,7 @@ describe("LoggingCallbacksTable", () => {
   });
 
   it("should fallback to original callback name when not in availableCallbacks", () => {
-    render(
+    renderWithProviders(
       <LoggingCallbacksTable
         callbacks={[{ name: "custom_callback_x", variables: baseVars }]}
         availableCallbacks={{}}
@@ -63,8 +63,8 @@ describe("LoggingCallbacksTable", () => {
   it("should call onAdd when the Add Callback button is clicked", async () => {
     const user = userEvent.setup();
     const onAdd = vi.fn();
-    render(<LoggingCallbacksTable callbacks={[]} availableCallbacks={{}} onAdd={onAdd} />);
-    await user.click(screen.getByRole("button", { name: /add callback/i }));
+    renderWithProviders(<LoggingCallbacksTable callbacks={[]} availableCallbacks={{}} onAdd={onAdd} />);
+    await user.click(screen.getByRole("button", { name: /添加回调/ }));
     expect(onAdd).toHaveBeenCalled();
   });
 
@@ -74,7 +74,7 @@ describe("LoggingCallbacksTable", () => {
     const onEdit = vi.fn();
     const onDelete = vi.fn();
     const callback = { name: "langfuse", type: "success" as const, variables: baseVars };
-    render(
+    renderWithProviders(
       <LoggingCallbacksTable
         callbacks={[callback]}
         availableCallbacks={{}}
@@ -98,7 +98,7 @@ describe("LoggingCallbacksTable", () => {
   });
 
   it("shows a read-only label instead of the actions menu for runtime-only callback rows", () => {
-    render(
+    renderWithProviders(
       <LoggingCallbacksTable
         callbacks={[
           { name: "langfuse", type: "success" as const, variables: baseVars },
@@ -112,7 +112,7 @@ describe("LoggingCallbacksTable", () => {
     );
     expect(screen.getByTestId("callback-actions-langfuse-success")).toBeInTheDocument();
     expect(screen.queryByTestId("callback-actions-datadog-success")).not.toBeInTheDocument();
-    expect(screen.getAllByText("Read only")).toHaveLength(1);
+    expect(screen.getAllByText("只读")).toHaveLength(1);
   });
 
   // Regression: `/get_callbacks` returns the same `name` twice when a
@@ -122,7 +122,7 @@ describe("LoggingCallbacksTable", () => {
   // failure registration. Reading `record.type` fixes the badge AND
   // composing the row id with type avoids React's duplicate-key warning.
   it("renders distinct Success and Failure badges for same-name dual registration", () => {
-    render(
+    renderWithProviders(
       <LoggingCallbacksTable
         callbacks={[
           { name: "generic_api", type: "success", variables: baseVars },
@@ -138,7 +138,7 @@ describe("LoggingCallbacksTable", () => {
       />,
     );
     expect(screen.getAllByText("Custom Callback API")).toHaveLength(2);
-    expect(screen.getByText("Success")).toBeInTheDocument();
-    expect(screen.getByText("Failure")).toBeInTheDocument();
+    expect(screen.getByText("成功")).toBeInTheDocument();
+    expect(screen.getByText("失败")).toBeInTheDocument();
   });
 });

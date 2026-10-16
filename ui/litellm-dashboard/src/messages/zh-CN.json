@@ -8826,5 +8826,38 @@
     "coverageLabel": "{merged} 个 PR 中有 {matched} 个有邮件匹配",
     "estimateFailed": "估算失败",
     "needsReview": "需审核"
+  },
+  "regenerateKey": {
+    "title": "重新生成虚拟密钥",
+    "saveWarning": "请立即保存，之后将无法再次查看",
+    "noAlias": "未设置别名",
+    "tpmLimit": "TPM 上限",
+    "rpmLimit": "RPM 上限",
+    "currentExpiry": "当前过期时间：{expiry}{expiredSuffix}",
+    "expiredSuffix": "（已过期）",
+    "newExpiry": "新过期时间：{expiry}",
+    "expirePlaceholder": "例如 30s、30h、30d",
+    "gracePeriod": "宽限期",
+    "gracePeriodHint": "轮换后在这段时间内保留旧密钥有效。此期间新旧密钥都可使用，实现无缝切换。留空表示立即吊销。",
+    "gracePeriodRecommended": "建议：生产密钥设置为 24h 到 72h",
+    "gracePlaceholder": "例如 24h、2d",
+    "copyKey": "复制密钥",
+    "durationFormat": "请填写形如 30s、30m、24h、2d、1w、1mo 的时长",
+    "durationRequired": "已过期的密钥必须填写过期时长",
+    "successToast": "虚拟密钥重新生成成功"
+  },
+  "loggingCallbacks": {
+    "title": "活跃的日志回调",
+    "addCallback": "添加回调",
+    "loading": "正在加载回调…",
+    "noCallbacks": "未配置回调",
+    "noCallbacksDescription": "添加第一个回调，开始将数据记录到外部服务。",
+    "callbackName": "回调名称",
+    "failure": "失败",
+    "successAndFailure": "成功与失败",
+    "readOnly": "只读",
+    "readOnlyTooltip": "通过控制台之外的方式添加的活跃回调。请在配置它的位置进行编辑。",
+    "openActions": "打开回调操作",
+    "test": "测试"
   }
 }

@@ -8830,5 +8830,38 @@
     "coverageLabel": "{matched} of {merged} PRs have email matches",
     "estimateFailed": "Estimate failed",
     "needsReview": "Needs review"
+  },
+  "regenerateKey": {
+    "title": "Regenerate Virtual Key",
+    "saveWarning": "Save it now, you will not see it again",
+    "noAlias": "No alias set",
+    "tpmLimit": "TPM Limit",
+    "rpmLimit": "RPM Limit",
+    "currentExpiry": "Current expiry: {expiry}{expiredSuffix}",
+    "expiredSuffix": " (expired)",
+    "newExpiry": "New expiry: {expiry}",
+    "expirePlaceholder": "e.g. 30s, 30h, 30d",
+    "gracePeriod": "Grace Period",
+    "gracePeriodHint": "Keep the old key valid for this duration after rotation. Both keys work during this period for seamless cutover. Empty = immediate revoke.",
+    "gracePeriodRecommended": "Recommended: 24h to 72h for production keys",
+    "gracePlaceholder": "e.g. 24h, 2d",
+    "copyKey": "Copy Key",
+    "durationFormat": "Must be a duration like 30s, 30m, 24h, 2d, 1w, or 1mo",
+    "durationRequired": "Expiration is required for expired keys",
+    "successToast": "Virtual Key regenerated successfully"
+  },
+  "loggingCallbacks": {
+    "title": "Active Logging Callbacks",
+    "addCallback": "Add Callback",
+    "loading": "Loading callbacks…",
+    "noCallbacks": "No callbacks configured",
+    "noCallbacksDescription": "Add your first callback to start logging data to external services.",
+    "callbackName": "Callback Name",
+    "failure": "Failure",
+    "successAndFailure": "Success & Failure",
+    "readOnly": "Read only",
+    "readOnlyTooltip": "Active callback that was not added through the dashboard. Edit it where it was configured.",
+    "openActions": "Open callback actions",
+    "test": "Test"
   }
 }
