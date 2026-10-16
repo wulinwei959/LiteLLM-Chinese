@@ -264,7 +264,9 @@ const SSOModals: React.FC<SSOModalsProps> = ({
                 {provider ? renderProviderFields(provider) : null}
                 <ProxyAdminEmailField />
                 <ProxyBaseUrlField />
-                {showRoleMappingToggle && <MappingToggleField name="use_role_mappings" label="Use Role Mappings" />}
+                {showRoleMappingToggle && (
+                  <MappingToggleField name="use_role_mappings" labelKey="ssoSettings.useRoleMappings" />
+                )}
                 {useRoleMappings && (
                   <>
                     <GroupClaimField />

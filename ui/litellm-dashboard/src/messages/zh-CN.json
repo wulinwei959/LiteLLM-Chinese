@@ -357,20 +357,20 @@
       "rateLimits": "速率限制"
     },
     "header": {
-        "backToKeys": "返回密钥列表",
-        "blockKey": "封禁密钥",
-        "copyKeyAlias": "复制密钥别名",
-        "copyKeyId": "复制密钥 ID",
-        "createNewKey": "新建密钥",
-        "deleteKey": "删除密钥",
-        "keyIdValue": "密钥 ID：{value}",
-        "lastUpdated": "最后更新",
-        "moreKeyActions": "更多密钥操作",
-        "regenerateKey": "重新生成密钥",
-        "resetSpend": "重置支出",
-        "unblockKey": "解除封禁密钥",
-        "userAlias": "用户别名",
-        "userEmail": "用户邮箱"
+      "backToKeys": "返回密钥列表",
+      "blockKey": "封禁密钥",
+      "copyKeyAlias": "复制密钥别名",
+      "copyKeyId": "复制密钥 ID",
+      "createNewKey": "新建密钥",
+      "deleteKey": "删除密钥",
+      "keyIdValue": "密钥 ID：{value}",
+      "lastUpdated": "最后更新",
+      "moreKeyActions": "更多密钥操作",
+      "regenerateKey": "重新生成密钥",
+      "resetSpend": "重置支出",
+      "unblockKey": "解除封禁密钥",
+      "userAlias": "用户别名",
+      "userEmail": "用户邮箱"
     },
     "actions": {
       "copy": "复制",
@@ -4203,7 +4203,47 @@
       "clearFailedToast": "清除 SSO 设置失败：{error}",
       "editModalTitle": "编辑 SSO 设置",
       "updatedToast": "SSO 设置已成功更新",
-      "processFailedToast": "处理 SSO 设置失败：{error}"
+      "processFailedToast": "处理 SSO 设置失败：{error}",
+      "ssoProvider": "SSO 提供商",
+      "googleClientId": "Google 客户端 ID",
+      "googleClientSecret": "Google 客户端密钥",
+      "microsoftClientId": "Microsoft 客户端 ID",
+      "microsoftClientSecret": "Microsoft 客户端密钥",
+      "microsoftTenant": "Microsoft 租户",
+      "genericClientId": "通用客户端 ID",
+      "genericClientSecret": "通用客户端密钥",
+      "userinfoEndpoint": "用户信息端点",
+      "proxyAdminEmail": "代理管理员邮箱",
+      "useRoleMappings": "启用角色映射",
+      "useTeamMappings": "启用团队映射",
+      "roleInternalViewer": "内部用户（只读）",
+      "roleInternalUser": "内部用户",
+      "roleAdminViewer": "管理员（只读）",
+      "roleProxyAdmin": "代理管理员",
+      "proxyAdminTeams": "代理管理员团队",
+      "adminViewerTeams": "管理员（只读）团队",
+      "internalUserTeams": "内部用户团队",
+      "internalViewerTeams": "内部用户（只读）团队",
+      "idpMetadataUrlPlaceholder": "https://idp.example.com/metadata（或改用下方的元数据 XML）",
+      "idpMetadataXmlPlaceholder": "没有元数据 URL 时，把 IdP 元数据 XML 粘贴到这里",
+      "spEntityIdPlaceholder": "默认值为'<代理基础 URL>'/sso/saml/metadata",
+      "enterGoogleClientId": "请输入 Google 客户端 ID",
+      "enterGoogleClientSecret": "请输入 Google 客户端密钥",
+      "enterMicrosoftClientId": "请输入 Microsoft 客户端 ID",
+      "enterMicrosoftClientSecret": "请输入 Microsoft 客户端密钥",
+      "enterMicrosoftTenant": "请输入 Microsoft 租户",
+      "enterGenericClientId": "请输入通用客户端 ID",
+      "enterGenericClientSecret": "请输入通用客户端密钥",
+      "enterAuthorizationEndpoint": "请输入授权端点",
+      "enterTokenEndpoint": "请输入令牌端点",
+      "enterUserinfoEndpoint": "请输入用户信息端点",
+      "pleaseSelectProvider": "请选择 SSO 提供商",
+      "pleaseEnterAdminEmail": "请输入代理管理员邮箱",
+      "proxyBaseUrlRequired": "请输入代理基础 URL",
+      "groupClaimRequired": "请输入组声明",
+      "teamIdsJwtFieldRequired": "请输入团队 ID JWT 字段",
+      "urlMustStartWithHttp": "URL 必须以 http:// 或 https:// 开头",
+      "urlMustNotEndWithSlash": "URL 不能以斜杠结尾"
     }
   },
   "usage": {
@@ -7061,16 +7101,8 @@
         "image": "描述您想生成的图片..."
       },
       "suggestions": {
-        "a2a": [
-          "你能帮我做什么？",
-          "介绍一下你自己",
-          "你能执行什么任务？"
-        ],
-        "default": [
-          "写一首诗",
-          "解释量子计算",
-          "起草一封礼貌的会议请求邮件"
-        ]
+        "a2a": ["你能帮我做什么？", "介绍一下你自己", "你能执行什么任务？"],
+        "default": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"]
       },
       "imageUpload": {
         "clickOrDrag": "点击或拖拽图片上传",
@@ -7114,16 +7146,8 @@
       "attachmentReady": "附件已准备好发送",
       "provideVirtualKey": "请提供虚拟密钥或选择当前 UI 会话",
       "errorFetching": "获取响应出错: {error}",
-      "genericFollowUps": [
-        "能总结一下要点吗？",
-        "你做了什么假设？",
-        "后续步骤是什么？"
-      ],
-      "suggestedPrompts": [
-        "写一首诗",
-        "解释量子计算",
-        "起草一封礼貌的会议请求邮件"
-      ],
+      "genericFollowUps": ["能总结一下要点吗？", "你做了什么假设？", "后续步骤是什么？"],
+      "suggestedPrompts": ["写一首诗", "解释量子计算", "起草一封礼貌的会议请求邮件"],
       "syncSettings": "跨模型同步设置",
       "syncSettingsLabel": "跨模型同步设置",
       "generalSettings": "常规设置",
@@ -8372,4 +8396,3 @@
     }
   }
 }
-

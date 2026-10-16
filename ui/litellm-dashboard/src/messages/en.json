@@ -357,20 +357,20 @@
       "rateLimits": "Rate Limits"
     },
     "header": {
-        "backToKeys": "Back to Keys",
-        "blockKey": "Block Key",
-        "copyKeyAlias": "Copy Key Alias",
-        "copyKeyId": "Copy Key ID",
-        "createNewKey": "Create New Key",
-        "deleteKey": "Delete Key",
-        "keyIdValue": "Key ID: {value}",
-        "lastUpdated": "Last Updated",
-        "moreKeyActions": "More key actions",
-        "regenerateKey": "Regenerate Key",
-        "resetSpend": "Reset Spend",
-        "unblockKey": "Unblock Key",
-        "userAlias": "User Alias",
-        "userEmail": "User Email"
+      "backToKeys": "Back to Keys",
+      "blockKey": "Block Key",
+      "copyKeyAlias": "Copy Key Alias",
+      "copyKeyId": "Copy Key ID",
+      "createNewKey": "Create New Key",
+      "deleteKey": "Delete Key",
+      "keyIdValue": "Key ID: {value}",
+      "lastUpdated": "Last Updated",
+      "moreKeyActions": "More key actions",
+      "regenerateKey": "Regenerate Key",
+      "resetSpend": "Reset Spend",
+      "unblockKey": "Unblock Key",
+      "userAlias": "User Alias",
+      "userEmail": "User Email"
     },
     "actions": {
       "copy": "Copy",
@@ -4203,7 +4203,47 @@
       "clearFailedToast": "Failed to clear SSO settings: {error}",
       "editModalTitle": "Edit SSO Settings",
       "updatedToast": "SSO settings updated successfully",
-      "processFailedToast": "Failed to process SSO settings: {error}"
+      "processFailedToast": "Failed to process SSO settings: {error}",
+      "ssoProvider": "SSO Provider",
+      "googleClientId": "Google Client ID",
+      "googleClientSecret": "Google Client Secret",
+      "microsoftClientId": "Microsoft Client ID",
+      "microsoftClientSecret": "Microsoft Client Secret",
+      "microsoftTenant": "Microsoft Tenant",
+      "genericClientId": "Generic Client ID",
+      "genericClientSecret": "Generic Client Secret",
+      "userinfoEndpoint": "Userinfo Endpoint",
+      "proxyAdminEmail": "Proxy Admin Email",
+      "useRoleMappings": "Use Role Mappings",
+      "useTeamMappings": "Use Team Mappings",
+      "roleInternalViewer": "Internal Viewer",
+      "roleInternalUser": "Internal User",
+      "roleAdminViewer": "Admin Viewer",
+      "roleProxyAdmin": "Proxy Admin",
+      "proxyAdminTeams": "Proxy Admin Teams",
+      "adminViewerTeams": "Admin Viewer Teams",
+      "internalUserTeams": "Internal User Teams",
+      "internalViewerTeams": "Internal Viewer Teams",
+      "idpMetadataUrlPlaceholder": "https://idp.example.com/metadata (use this or the metadata XML below)",
+      "idpMetadataXmlPlaceholder": "Paste the IdP metadata XML here if you do not have a metadata URL",
+      "spEntityIdPlaceholder": "Defaults to '<proxy base url>'/sso/saml/metadata",
+      "enterGoogleClientId": "Please enter the google client id",
+      "enterGoogleClientSecret": "Please enter the google client secret",
+      "enterMicrosoftClientId": "Please enter the microsoft client id",
+      "enterMicrosoftClientSecret": "Please enter the microsoft client secret",
+      "enterMicrosoftTenant": "Please enter the microsoft tenant",
+      "enterGenericClientId": "Please enter the generic client id",
+      "enterGenericClientSecret": "Please enter the generic client secret",
+      "enterAuthorizationEndpoint": "Please enter the authorization endpoint",
+      "enterTokenEndpoint": "Please enter the token endpoint",
+      "enterUserinfoEndpoint": "Please enter the userinfo endpoint",
+      "pleaseSelectProvider": "Please select an SSO provider",
+      "pleaseEnterAdminEmail": "Please enter the email of the proxy admin",
+      "proxyBaseUrlRequired": "Please enter the proxy base url",
+      "groupClaimRequired": "Please enter the group claim",
+      "teamIdsJwtFieldRequired": "Please enter the team IDs JWT field",
+      "urlMustStartWithHttp": "URL must start with http:// or https://",
+      "urlMustNotEndWithSlash": "URL must not end with a trailing slash"
     }
   },
   "usage": {
@@ -7061,16 +7101,8 @@
         "image": "Describe the image you want to generate..."
       },
       "suggestions": {
-        "a2a": [
-          "What can you help me with?",
-          "Tell me about yourself",
-          "What tasks can you perform?"
-        ],
-        "default": [
-          "Write me a poem",
-          "Explain quantum computing",
-          "Draft a polite email requesting a meeting"
-        ]
+        "a2a": ["What can you help me with?", "Tell me about yourself", "What tasks can you perform?"],
+        "default": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"]
       },
       "imageUpload": {
         "clickOrDrag": "Click or drag images to upload",
@@ -7119,11 +7151,7 @@
         "What assumptions did you make?",
         "What are the next steps?"
       ],
-      "suggestedPrompts": [
-        "Write me a poem",
-        "Explain quantum computing",
-        "Draft a polite email requesting a meeting"
-      ],
+      "suggestedPrompts": ["Write me a poem", "Explain quantum computing", "Draft a polite email requesting a meeting"],
       "syncSettings": "Sync Settings Across Models",
       "syncSettingsLabel": "Sync Settings Across Models",
       "generalSettings": "General Settings",
@@ -8372,4 +8400,3 @@
     }
   }
 }
-

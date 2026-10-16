@@ -14,7 +14,7 @@ import { expectControlBesideLabel } from "../../../../../../tests/fieldOrientati
 const user = () => userEvent.setup({ pointerEventsCheck: 0 });
 
 const openProviderDropdown = async () => {
-  await user().click(screen.getByLabelText("SSO Provider"));
+  await user().click(screen.getByLabelText("SSO 提供商"));
 };
 
 describe("BaseSSOSettingsForm", () => {
@@ -32,9 +32,9 @@ describe("BaseSSOSettingsForm", () => {
 
     renderWithProviders(<TestWrapper />);
 
-    expect(screen.getByText("SSO Provider")).toBeInTheDocument();
-    expect(screen.getByText("Proxy Admin Email")).toBeInTheDocument();
-    expect(screen.getByText("Proxy Base URL")).toBeInTheDocument();
+    expect(screen.getByText("SSO 提供商")).toBeInTheDocument();
+    expect(screen.getByText("代理管理员邮箱")).toBeInTheDocument();
+    expect(screen.getByText("代理基础 URL")).toBeInTheDocument();
   });
 
   it("should render provider fields when provider is selected", async () => {
@@ -53,8 +53,8 @@ describe("BaseSSOSettingsForm", () => {
     await user().click(googleOption);
 
     await waitFor(() => {
-      expect(screen.getByText("Google Client ID")).toBeInTheDocument();
-      expect(screen.getByText("Google Client Secret")).toBeInTheDocument();
+      expect(screen.getByText("Google 客户端 ID")).toBeInTheDocument();
+      expect(screen.getByText("Google 客户端密钥")).toBeInTheDocument();
     });
   });
 
@@ -74,7 +74,7 @@ describe("BaseSSOSettingsForm", () => {
     await user().click(oktaOption);
 
     await waitFor(() => {
-      expect(screen.getByText("Use Role Mappings")).toBeInTheDocument();
+      expect(screen.getByText("启用角色映射")).toBeInTheDocument();
     });
   });
 
@@ -95,7 +95,7 @@ describe("BaseSSOSettingsForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/URL must start with http:\/\/ or https:\/\//i)).toBeInTheDocument();
+      expect(screen.getByText(/URL 必须以 http:\/\/ 或 https:\/\/ 开头/)).toBeInTheDocument();
     });
   });
 
@@ -116,7 +116,7 @@ describe("BaseSSOSettingsForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/URL must not end with a trailing slash/i)).toBeInTheDocument();
+      expect(screen.getByText(/URL 不能以斜杠结尾/)).toBeInTheDocument();
     });
   });
 
@@ -136,14 +136,14 @@ describe("BaseSSOSettingsForm", () => {
     await user().click(genericOption);
 
     await waitFor(() => {
-      expect(screen.getByText("Use Role Mappings")).toBeInTheDocument();
+      expect(screen.getByText("启用角色映射")).toBeInTheDocument();
     });
 
-    await user().click(screen.getAllByLabelText("Use Role Mappings")[0]);
+    await user().click(screen.getAllByLabelText("启用角色映射")[0]);
 
     await waitFor(() => {
-      expect(screen.getByText("Group Claim")).toBeInTheDocument();
-      expect(screen.getByText("Default Role")).toBeInTheDocument();
+      expect(screen.getByText("组声明")).toBeInTheDocument();
+      expect(screen.getByText("默认角色")).toBeInTheDocument();
     });
   });
 
@@ -163,7 +163,7 @@ describe("BaseSSOSettingsForm", () => {
     await user().click(oktaOption);
 
     await waitFor(() => {
-      expect(screen.getByText("Use Team Mappings")).toBeInTheDocument();
+      expect(screen.getByText("启用团队映射")).toBeInTheDocument();
     });
   });
 
@@ -183,7 +183,7 @@ describe("BaseSSOSettingsForm", () => {
     await user().click(genericOption);
 
     await waitFor(() => {
-      expect(screen.getByText("Use Team Mappings")).toBeInTheDocument();
+      expect(screen.getByText("启用团队映射")).toBeInTheDocument();
     });
   });
 
@@ -203,13 +203,13 @@ describe("BaseSSOSettingsForm", () => {
     await user().click(oktaOption);
 
     await waitFor(() => {
-      expect(screen.getByText("Use Team Mappings")).toBeInTheDocument();
+      expect(screen.getByText("启用团队映射")).toBeInTheDocument();
     });
 
-    await user().click(screen.getAllByLabelText("Use Team Mappings")[0]);
+    await user().click(screen.getAllByLabelText("启用团队映射")[0]);
 
     await waitFor(() => {
-      expect(screen.getByText("Team IDs JWT Field")).toBeInTheDocument();
+      expect(screen.getByText("团队 ID JWT 字段")).toBeInTheDocument();
     });
   });
 
@@ -229,10 +229,10 @@ describe("BaseSSOSettingsForm", () => {
     await user().click(googleOption);
 
     await waitFor(() => {
-      expect(screen.getByText("Google Client ID")).toBeInTheDocument();
+      expect(screen.getByText("Google 客户端 ID")).toBeInTheDocument();
     });
 
-    expect(screen.queryByText("Use Team Mappings")).not.toBeInTheDocument();
+    expect(screen.queryByText("启用团队映射")).not.toBeInTheDocument();
   });
 
   it("lays a provider checkbox field out beside its label", async () => {
@@ -247,12 +247,13 @@ describe("BaseSSOSettingsForm", () => {
     await openProviderDropdown();
     await user().click(await screen.findByText(/saml sso/i));
 
-    expectControlBesideLabel(
-      await screen.findByRole("checkbox", { name: "Allow IdP-initiated (unsolicited) responses" }),
-    );
+    expectControlBesideLabel(await screen.findByRole("checkbox", { name: "允许 IdP 发起的（未请求）响应" }));
   });
 
-  it.each(["Use Role Mappings", "Use Team Mappings"])("lays the %s toggle out beside its label", async (label) => {
+  it.each([
+    { english: "Use Role Mappings", chinese: "启用角色映射" },
+    { english: "Use Team Mappings", chinese: "启用团队映射" },
+  ])("lays the $english toggle out beside its label", async ({ chinese }) => {
     const TestWrapper = () => {
       const form = useSSOSettingsForm("sso-settings");
 
@@ -264,7 +265,7 @@ describe("BaseSSOSettingsForm", () => {
     await openProviderDropdown();
     await user().click(await screen.findByText(/okta/i));
 
-    expectControlBesideLabel(await screen.findByRole("checkbox", { name: label }));
+    expectControlBesideLabel(await screen.findByRole("checkbox", { name: chinese }));
   });
 });
 
@@ -307,6 +308,15 @@ describe("renderProviderFields", () => {
       expect(ssoProviderConfigs[provider].envVarMap.generic_scope).toBe("GENERIC_SCOPE");
     },
   );
+
+  it("pairs every required provider field with a translated missing-value message", () => {
+    const missingKeyFields = Object.values(ssoProviderConfigs)
+      .flatMap((config) => config.fields)
+      .filter((field) => field.required !== false && field.requiredKey === undefined)
+      .map((field) => field.name);
+
+    expect(missingKeyFields).toEqual([]);
+  });
 
   it("submits generic_scope untouched, so saving an unrelated edit cannot clear GENERIC_SCOPE", async () => {
     // update_sso_settings clears the env var for any mapped field its payload
@@ -415,7 +425,7 @@ describe("renderProviderFields", () => {
       submitMountedSSOValues(form, "sso-settings", handleSubmit)();
     });
 
-    expect(await screen.findByText("Please enter the google client id")).toBeInTheDocument();
+    expect(await screen.findByText("请输入 Google 客户端 ID")).toBeInTheDocument();
     expect(handleSubmit).not.toHaveBeenCalled();
   });
 
@@ -433,6 +443,6 @@ describe("renderProviderFields", () => {
       form.reset({ ...emptySSOSettingsFormValues, sso_provider: "okta", use_role_mappings: true });
     });
 
-    expect(await screen.findByLabelText("Default Role")).toHaveTextContent("Internal User");
+    expect(await screen.findByLabelText("默认角色")).toHaveTextContent("内部用户");
   });
 });

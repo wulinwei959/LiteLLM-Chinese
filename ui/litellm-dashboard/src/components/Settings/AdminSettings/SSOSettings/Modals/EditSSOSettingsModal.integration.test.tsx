@@ -42,10 +42,10 @@ describe("EditSSOSettingsModal (real form tree)", () => {
     const user = userEvent.setup({ pointerEventsCheck: 0 });
     renderWithProviders(<EditSSOSettingsModal isVisible={true} onCancel={vi.fn()} onSuccess={vi.fn()} />);
 
-    await user.clear(await screen.findByLabelText("Google Client ID"));
+    await user.clear(await screen.findByLabelText("Google 客户端 ID"));
     await user.click(saveButton());
 
-    expect(await screen.findByText("Please enter the google client id")).toBeInTheDocument();
+    expect(await screen.findByText("请输入 Google 客户端 ID")).toBeInTheDocument();
     expect(mutateAsync).not.toHaveBeenCalled();
   });
 
@@ -53,8 +53,8 @@ describe("EditSSOSettingsModal (real form tree)", () => {
     const user = userEvent.setup({ pointerEventsCheck: 0 });
     renderWithProviders(<EditSSOSettingsModal isVisible={true} onCancel={vi.fn()} onSuccess={vi.fn()} />);
 
-    await user.clear(await screen.findByLabelText("Google Client ID"));
-    fireEvent.change(screen.getByLabelText("Google Client ID"), { target: { value: "rotated-client-id" } });
+    await user.clear(await screen.findByLabelText("Google 客户端 ID"));
+    fireEvent.change(screen.getByLabelText("Google 客户端 ID"), { target: { value: "rotated-client-id" } });
     await user.click(saveButton());
 
     await waitFor(() => expect(mutateAsync).toHaveBeenCalledTimes(1));

@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../tests/test-utils";
 import SSOModals from "./SSOModals";
 import { useSSOSettingsForm } from "./Settings/AdminSettings/SSOSettings/Modals/BaseSSOSettingsForm";
 
@@ -41,7 +42,7 @@ describe("SSOModals", () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProviders(<TestWrapper />);
     expect(screen.getByText("Add SSO")).toBeInTheDocument();
   });
 
@@ -64,20 +65,20 @@ describe("SSOModals", () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProviders(<TestWrapper />);
 
     // Find and interact with the SSO provider select
-    await user().click(screen.getByLabelText("SSO Provider"));
+    await user().click(screen.getByLabelText("SSO 提供商"));
     // Wait for dropdown and select Google
     const googleOption = await screen.findByText("Google SSO");
     await user().click(googleOption);
 
     // Fill in the email field
-    const emailInput = screen.getByLabelText("Proxy Admin Email");
+    const emailInput = screen.getByLabelText("代理管理员邮箱");
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
 
     // Fill in an invalid URL
-    const urlInput = screen.getByLabelText("Proxy Base URL");
+    const urlInput = screen.getByLabelText("代理基础 URL");
     fireEvent.change(urlInput, { target: { value: "invalid-url" } });
 
     // Submit the form
@@ -87,7 +88,7 @@ describe("SSOModals", () => {
     // Check for validation error
     await waitFor(
       () => {
-        expect(screen.getByText("URL must start with http:// or https://")).toBeInTheDocument();
+        expect(screen.getByText("URL 必须以 http:// 或 https:// 开头")).toBeInTheDocument();
       },
       // The validation is based on a Promise, so we need to wait for it to resolve
       { timeout: 5000 },
@@ -113,20 +114,20 @@ describe("SSOModals", () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProviders(<TestWrapper />);
 
     // Find and interact with the SSO provider select
-    await user().click(screen.getByLabelText("SSO Provider"));
+    await user().click(screen.getByLabelText("SSO 提供商"));
     // Wait for dropdown and select Google
     const googleOption = await screen.findByText("Google SSO");
     await user().click(googleOption);
 
     // Fill in the email field
-    const emailInput = screen.getByLabelText("Proxy Admin Email");
+    const emailInput = screen.getByLabelText("代理管理员邮箱");
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
 
     // Fill in a URL with trailing slash
-    const urlInput = screen.getByLabelText("Proxy Base URL") as HTMLInputElement;
+    const urlInput = screen.getByLabelText("代理基础 URL") as HTMLInputElement;
     fireEvent.change(urlInput, { target: { value: "https://example.com/" } });
 
     // Submit the form
@@ -134,7 +135,7 @@ describe("SSOModals", () => {
     fireEvent.click(saveButton);
 
     // Check for validation error using findByText for async rendering
-    const errorMessage = await screen.findByText("URL must not end with a trailing slash", {}, { timeout: 5000 });
+    const errorMessage = await screen.findByText("URL 不能以斜杠结尾", {}, { timeout: 5000 });
     expect(errorMessage).toBeInTheDocument();
   });
 
@@ -157,9 +158,9 @@ describe("SSOModals", () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProviders(<TestWrapper />);
 
-    const urlInput = screen.getByLabelText("Proxy Base URL") as HTMLInputElement;
+    const urlInput = screen.getByLabelText("代理基础 URL") as HTMLInputElement;
 
     // Simulate user typing "https://"
     fireEvent.change(urlInput, { target: { value: "h" } });
@@ -207,20 +208,20 @@ describe("SSOModals", () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProviders(<TestWrapper />);
 
     // Find and interact with the SSO provider select
-    await user().click(screen.getByLabelText("SSO Provider"));
+    await user().click(screen.getByLabelText("SSO 提供商"));
     // Wait for dropdown and select Google
     const googleOption = await screen.findByText("Google SSO");
     await user().click(googleOption);
 
     // Fill in the email field
-    const emailInput = screen.getByLabelText("Proxy Admin Email");
+    const emailInput = screen.getByLabelText("代理管理员邮箱");
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
 
     // Fill in an incomplete URL like "http:"
-    const urlInput = screen.getByLabelText("Proxy Base URL");
+    const urlInput = screen.getByLabelText("代理基础 URL");
     fireEvent.change(urlInput, { target: { value: "http:" } });
 
     // Submit the form
@@ -228,11 +229,11 @@ describe("SSOModals", () => {
     fireEvent.click(saveButton);
 
     // Check that only the URL format error appears (use findByText for async rendering)
-    const errorMessage = await screen.findByText("URL must start with http:// or https://", {}, { timeout: 3000 });
+    const errorMessage = await screen.findByText("URL 必须以 http:// 或 https:// 开头", {}, { timeout: 3000 });
     expect(errorMessage).toBeInTheDocument();
 
     // Verify the trailing slash error does NOT appear
-    expect(screen.queryByText("URL must not end with a trailing slash")).not.toBeInTheDocument();
+    expect(screen.queryByText("URL 不能以斜杠结尾")).not.toBeInTheDocument();
   });
 
   it("should load existing SSO settings when modal opens", async () => {
@@ -276,7 +277,7 @@ describe("SSOModals", () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProviders(<TestWrapper />);
 
     // Wait for the useEffect to load data and populate form
     await waitFor(() => {
@@ -285,15 +286,15 @@ describe("SSOModals", () => {
 
     // Check that form fields are populated with loaded data
     await waitFor(() => {
-      const emailInput = screen.getByLabelText("Proxy Admin Email") as HTMLInputElement;
+      const emailInput = screen.getByLabelText("代理管理员邮箱") as HTMLInputElement;
       expect(emailInput.value).toBe("admin@example.com");
     });
 
-    const urlInput = screen.getByLabelText("Proxy Base URL") as HTMLInputElement;
+    const urlInput = screen.getByLabelText("代理基础 URL") as HTMLInputElement;
     expect(urlInput.value).toBe("https://example.com");
 
     // Check that role mappings are populated
-    const groupClaimInput = screen.getByLabelText("Group Claim") as HTMLInputElement;
+    const groupClaimInput = screen.getByLabelText("组声明") as HTMLInputElement;
     expect(groupClaimInput.value).toBe("groups");
   });
 
@@ -325,7 +326,7 @@ describe("SSOModals", () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProviders(<TestWrapper />);
 
     // Wait for any initial loading to complete
     await waitFor(() => {
@@ -337,41 +338,41 @@ describe("SSOModals", () => {
 
     // Wait for the "Use Role Mappings" checkbox to appear
     await waitFor(() => {
-      expect(screen.getAllByLabelText("Use Role Mappings")[0]).toBeInTheDocument();
+      expect(screen.getAllByLabelText("启用角色映射")[0]).toBeInTheDocument();
     });
 
     // Enable role mappings
-    const roleMappingsCheckbox = screen.getAllByLabelText("Use Role Mappings")[0];
+    const roleMappingsCheckbox = screen.getAllByLabelText("启用角色映射")[0];
     await user().click(roleMappingsCheckbox);
 
     // Fill required fields
-    const emailInput = screen.getByLabelText("Proxy Admin Email");
+    const emailInput = screen.getByLabelText("代理管理员邮箱");
     fireEvent.change(emailInput, { target: { value: "admin@example.com" } });
 
-    const urlInput = screen.getByLabelText("Proxy Base URL");
+    const urlInput = screen.getByLabelText("代理基础 URL");
     fireEvent.change(urlInput, { target: { value: "https://example.com" } });
 
     // Fill Okta specific fields
-    const clientIdInput = screen.getByLabelText("Generic Client ID");
+    const clientIdInput = screen.getByLabelText("通用客户端 ID");
     fireEvent.change(clientIdInput, { target: { value: "test-client-id" } });
 
-    const clientSecretInput = screen.getByLabelText("Generic Client Secret");
+    const clientSecretInput = screen.getByLabelText("通用客户端密钥");
     fireEvent.change(clientSecretInput, { target: { value: "test-client-secret" } });
 
-    const authEndpointInput = screen.getByLabelText("Authorization Endpoint");
+    const authEndpointInput = screen.getByLabelText("授权端点");
     fireEvent.change(authEndpointInput, { target: { value: "https://example.okta.com/authorize" } });
 
-    const tokenEndpointInput = screen.getByLabelText("Token Endpoint");
+    const tokenEndpointInput = screen.getByLabelText("令牌端点");
     fireEvent.change(tokenEndpointInput, { target: { value: "https://example.okta.com/token" } });
 
-    const userinfoEndpointInput = screen.getByLabelText("Userinfo Endpoint");
+    const userinfoEndpointInput = screen.getByLabelText("用户信息端点");
     fireEvent.change(userinfoEndpointInput, { target: { value: "https://example.okta.com/userinfo" } });
 
     // Fill role mapping fields
-    const groupClaimInput = screen.getByLabelText("Group Claim");
+    const groupClaimInput = screen.getByLabelText("组声明");
     fireEvent.change(groupClaimInput, { target: { value: "groups" } });
 
-    const proxyAdminTeamsInput = screen.getByLabelText("Proxy Admin Teams");
+    const proxyAdminTeamsInput = screen.getByLabelText("代理管理员团队");
     fireEvent.change(proxyAdminTeamsInput, { target: { value: "admin-group, super-admin" } });
 
     // Submit the form
@@ -433,7 +434,7 @@ describe("SSOModals", () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProviders(<TestWrapper />);
 
     await waitFor(() => {
       expect(getSSOSettings).toHaveBeenCalledWith("test-token");
@@ -442,22 +443,22 @@ describe("SSOModals", () => {
     formInstance!.setValue("sso_provider", "saml");
 
     await waitFor(() => {
-      expect(screen.getByLabelText("IdP Metadata URL")).toBeInTheDocument();
+      expect(screen.getByLabelText("IdP 元数据 URL")).toBeInTheDocument();
     });
 
-    fireEvent.change(screen.getByLabelText("Proxy Admin Email"), {
+    fireEvent.change(screen.getByLabelText("代理管理员邮箱"), {
       target: { value: "admin@example.com" },
     });
-    fireEvent.change(screen.getByLabelText("Proxy Base URL"), {
+    fireEvent.change(screen.getByLabelText("代理基础 URL"), {
       target: { value: "https://proxy.example.com" },
     });
-    fireEvent.change(screen.getByLabelText("IdP Metadata URL"), {
+    fireEvent.change(screen.getByLabelText("IdP 元数据 URL"), {
       target: { value: "https://idp.example.com/metadata" },
     });
-    fireEvent.change(screen.getByLabelText("SP Entity ID"), {
+    fireEvent.change(screen.getByLabelText("SP 实体 ID"), {
       target: { value: "https://proxy.example.com/sso/saml/metadata" },
     });
-    await user().click(screen.getAllByLabelText("Allow IdP-initiated (unsolicited) responses")[0]);
+    await user().click(screen.getAllByLabelText("允许 IdP 发起的（未请求）响应")[0]);
 
     fireEvent.click(screen.getByText("Save"));
 
@@ -500,7 +501,7 @@ describe("SSOModals", () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProviders(<TestWrapper />);
 
     // Check that Clear button is visible when SSO is configured
     const clearButton = screen.getByText("Clear");
@@ -561,9 +562,9 @@ describe("SSOModals", () => {
       );
     };
 
-    render(<TestWrapper />);
+    renderWithProviders(<TestWrapper />);
 
-    await user().click(screen.getByLabelText("SSO Provider"));
+    await user().click(screen.getByLabelText("SSO 提供商"));
 
     await waitFor(() => {
       expect(screen.getAllByAltText("Google SSO logo").length).toBeGreaterThan(0);

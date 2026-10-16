@@ -30,7 +30,7 @@ describe("AddSSOSettingsModal", () => {
 
     renderWithProviders(<AddSSOSettingsModal isVisible={true} onCancel={onCancel} onSuccess={onSuccess} />);
 
-    expect(screen.getByText("SSO Provider")).toBeInTheDocument();
+    expect(screen.getByText("SSO 提供商")).toBeInTheDocument();
     expect(screen.getByText("取消")).toBeInTheDocument();
     expect(screen.getAllByText("添加 SSO")).toHaveLength(2); // Title and button
   });
