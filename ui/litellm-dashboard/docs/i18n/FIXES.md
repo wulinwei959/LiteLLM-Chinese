@@ -387,6 +387,16 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-16 第 83 簇：数据模块改接翻译要回溯渲染处的拼装规则，按键名查表的表别用 `as const`
+
+`SSOSettings/constants.ts` 的两张展示名表（五个 provider、四个默认角色）是这一片 SSO 文案最后的英文来源，接键之后连带影响三个消费方与四份测试。三条值得固化：
+
+- **按任意 `string` 查表的键名表不能写成 `as const`**。第 82 簇那三列键名是把具名联合写在字段声明上，本簇两张表要拿接口回来的 `role`、`selectedProvider` 当键去查，`as const` 的对象没有索引签名，`obj[someString]` 是隐式 any（旧写法 `Record<string, string>` 能过就是靠那个索引签名）。规矩补一句：值的联合显式命名（`SSOProviderNameKey`、`DefaultRoleNameKey`），表声明成 `Record<string, 那个联合>`，既能按 string 查，又把 `t()` 的入参锁死在目录键上，写错的键仍旧编译期红
+- **展示名进了消息目录，渲染处拼出来的 alt 会跟着变**。`Logo` 的 `alt` 是由模板串把 `name` 与 ` logo` 拼出来的，label 一换语言 alt 就换。改断言前先回溯这条拼装规则：本簇四个品牌名按 GLOSSARY"product 名保留英文"落得与英文逐字相同，所以 `getByAltText("Google SSO logo")`、`getByText("SAML SSO")` 和字母头像的 `getByText("O")` 零改动；唯一改了值的"通用 SSO"恰好没有 logo（`ssoProviderLogoMap.generic` 是空串），只沾到 `queryByAltText("Generic SSO logo")` 那条负向断言，中文下仍旧成立。反过来，若 generic 哪天配了 logo，`/通用 SSO/` 与那条 alt 断言就得一起动
+- **同一个角色在两处英文不同串，必须分键**。表单里第 82 簇建的 `roleAdminViewer` 是 "Admin Viewer"，`defaultRoleDisplayNames` 的 `proxy_admin_viewer` 是 "Proxy Admin Viewer"，差两个词也是不同文案，不能为省一个键去改英语原文。落两条键，中文分别"管理员（只读）"与"代理管理员（只读）"，按分组内重复记账，不做跨串合并
+
+顺带留一条"要不要补配置守卫"的判据。第 82 簇那条守卫值得加，因为漏配 `requiredKey` 会**静默**退化成 zod 自己的通用英文消息；本簇漏配一个展示名，兜底会把原始 id（`google`、`internal_user_viewer`）直接渲染出来，肉眼和测试都看得见，而五个 provider 与四个角色的中文串已分别被下拉断言和 `RoleMappings.test.tsx` 的四条用例钉住，就不再补一条只查配置表结构的用例
+
 ## 2026-10-16 第 82 簇：配置表改收键名要给可选字段补守卫、必填整句别参数化
 
 `BaseSSOSettingsForm.tsx` 把五个 provider 的字段清单写在模块级 `ssoProviderConfigs` 里，label、必填消息、placeholder 三列都是英文字面量。接线没有把 `t` 传进模块作用域（hook 不能在模块顶层调用，见第 71 簇），而是把这三列换成三个受限的键名联合类型（`FieldLabelKey`/`FieldRequiredKey`/`FieldPlaceholderKey`），由渲染点 `SSOProviderField` 和 schema 工厂 `buildSSOSettingsSchema(variant, t)` 各自 `t(key)`。配置表从"英文文案表"变成"键名表"，写错的键在编译期就红（`t()` 的入参是目录键的联合类型），比运行时回显全键路径早一步
