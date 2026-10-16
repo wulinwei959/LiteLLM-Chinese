@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useEffect, type RefObject } from "react";
 import { ArrowDown, Check, ChevronDown } from "lucide-react";
 import { MessageScroller, useMessageScroller } from "@shadcn/react/message-scroller";
@@ -12,12 +13,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import type { ActionEntry, ConversationEntry } from "./useLiteAdmin";
 
-const ACTION_STATUS: Record<ActionEntry["status"], string> = {
-  review: "Review change",
-  applying: "Applying…",
-  completed: "Completed",
-  cancelled: "Cancelled",
-  unknown: "Check result",
+const ACTION_STATUS: Record<
+  ActionEntry["status"],
+  "actionReview" | "actionApplying" | "actionCompleted" | "actionCancelled" | "actionUnknown"
+> = {
+  review: "actionReview",
+  applying: "actionApplying",
+  completed: "actionCompleted",
+  cancelled: "actionCancelled",
+  unknown: "actionUnknown",
 };
 
 interface ConversationProps {
@@ -29,12 +33,13 @@ interface ConversationProps {
 }
 
 export function LiteAdminConversation({ entries, thinking, open, reviewRef, onAnswer }: ConversationProps) {
+  const t = useTranslations("liteAdmin");
   return (
     <MessageScroller.Provider autoScroll>
       <MessageScroller.Root className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
         <MessageScroller.Viewport
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain data-pending-scroll:invisible"
-          aria-label="LiteAdmin conversation"
+          aria-label={t("conversationLabel")}
         >
           <MessageScroller.Content className="flex flex-col gap-4 p-4" aria-busy={thinking}>
             {entries.map((entry) => (
@@ -59,10 +64,10 @@ export function LiteAdminConversation({ entries, thinking, open, reviewRef, onAn
             ))}
             {thinking && (
               <MessageScroller.Item messageId="thinking">
-                <div role="status" aria-label="LiteAdmin is working" className="space-y-2">
+                <div role="status" aria-label={t("isWorking")} className="space-y-2">
                   <Skeleton className="h-3 w-3/4" />
                   <Skeleton className="h-3 w-1/2" />
-                  <span className="sr-only">Working…</span>
+                  <span className="sr-only">{t("working")}</span>
                 </div>
               </MessageScroller.Item>
             )}
@@ -70,14 +75,14 @@ export function LiteAdminConversation({ entries, thinking, open, reviewRef, onAn
         </MessageScroller.Viewport>
         {entries.length === 0 && (
           <div className="pointer-events-none absolute inset-0 flex flex-col justify-center gap-2 p-6">
-            <p className="font-medium">How can I help?</p>
+            <p className="font-medium">{t("howCanIHelp")}</p>
             <p className="text-sm text-muted-foreground">
               Check budgets, inspect usage, or manage keys and teams. You review every change before it runs.
             </p>
           </div>
         )}
         <MessageScroller.Button
-          aria-label="Jump to latest"
+          aria-label={t("jumpToLatest")}
           className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full shadow-sm data-[active=false]:pointer-events-none data-[active=false]:opacity-0"
           render={<Button variant="outline" size="icon-sm" />}
         >
@@ -94,6 +99,7 @@ function ActionCard({
   reviewRef,
   onAnswer,
 }: Pick<ConversationProps, "open" | "reviewRef" | "onAnswer"> & { entry: ActionEntry }) {
+  const t = useTranslations("liteAdmin");
   const { scrollToEnd } = useMessageScroller();
   const review = entry.status === "review";
   useEffect(() => {
@@ -135,7 +141,7 @@ function ActionCard({
         <CardTitle>{entry.action.title}</CardTitle>
         <Badge variant={entry.status === "unknown" ? "destructive" : "secondary"} role="status">
           {entry.status === "completed" && <Check className="size-3" />}
-          {ACTION_STATUS[entry.status]}
+          {t(ACTION_STATUS[entry.status])}
         </Badge>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -159,9 +165,9 @@ function ActionCard({
           <div className="space-y-2">
             <div className="flex items-start gap-2">
               <code className="min-w-0 flex-1 break-all text-xs">{entry.key}</code>
-              <CopyButton value={entry.key} label="Copy generated key" />
+              <CopyButton value={entry.key} label={t("copyGeneratedKey")} />
             </div>
-            <p className="text-xs text-muted-foreground">Copy this key now. It stays only in this chat session.</p>
+            <p className="text-xs text-muted-foreground">{t("copyKeyHint")}</p>
           </div>
         )}
       </CardContent>

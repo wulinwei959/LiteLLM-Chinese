@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ChatMessage } from "@/components/chat/types";
@@ -28,7 +29,6 @@ type ActiveTurn = {
   outcome: "none" | "submitted" | "completed" | "unknown";
   approval?: { id: string; resolve: (approved: boolean) => void };
 };
-const INTERRUPTED_WRITE = "A submitted change may have completed. Check the relevant page before trying again.";
 const RESOURCE_QUERIES = new Set([
   "keys",
   "infiniteKeys",
@@ -46,6 +46,7 @@ const RESOURCE_QUERIES = new Set([
 ]);
 
 export function useLiteAdmin(session: LiteAdminSession) {
+  const t = useTranslations("liteAdmin");
   const queryClient = useQueryClient();
   const [entries, setEntries] = useState<ConversationEntry[]>([]);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -55,7 +56,7 @@ export function useLiteAdmin(session: LiteAdminSession) {
     () => () => {
       const turn = active.current;
       active.current = null;
-      if (turn?.outcome === "submitted") toast.warning(INTERRUPTED_WRITE);
+      if (turn?.outcome === "submitted") toast.warning(t("interruptedWrite"));
       turn?.controller.abort();
       turn?.approval?.resolve(false);
     },
@@ -155,10 +156,10 @@ export function useLiteAdmin(session: LiteAdminSession) {
     } catch (error) {
       if (active.current !== turn) return;
       if (!sameSession()) {
-        if (turn.outcome === "submitted") toast.warning(INTERRUPTED_WRITE);
+        if (turn.outcome === "submitted") toast.warning(t("interruptedWrite"));
         setEntries([]);
       } else if (!turn.controller.signal.aborted && turn.outcome !== "unknown") {
-        const context = turn.outcome === "completed" ? "Completed changes are shown above. " : "";
+        const context = turn.outcome === "completed" ? t("completedChangesPrefix") : "";
         setEntries((current) => [
           ...current,
           { kind: "error", id: crypto.randomUUID(), text: context + extractProxyErrorMessage(error) },

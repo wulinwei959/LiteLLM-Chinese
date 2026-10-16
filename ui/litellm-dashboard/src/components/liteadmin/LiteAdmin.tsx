@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { RotateCcw, Sparkles, X } from "lucide-react";
@@ -34,6 +35,7 @@ const PANEL_CLASS =
 type ManagementSession = Omit<LiteAdminSession, "inferenceBaseUrl">;
 
 export default function LiteAdmin() {
+  const t = useTranslations("liteAdmin");
   const auth = useAuthorized();
   const [disabled] = useDisableLiteAdmin(auth.userId);
   const sessionReady = !auth.isLoading && auth.isAuthorized;
@@ -50,6 +52,7 @@ export default function LiteAdmin() {
 }
 
 function ConfiguredLiteAdmin({ session }: { session: ManagementSession }) {
+  const t = useTranslations("liteAdmin");
   const [open, setOpen] = useState(false);
   const settings = useProxySettingsQuery(session.accessToken);
   const candidate =
@@ -63,7 +66,7 @@ function ConfiguredLiteAdmin({ session }: { session: ManagementSession }) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger render={<Button className="fixed right-5 bottom-5 z-floating rounded-full shadow-lg" />}>
         <Sparkles className="size-4" />
-        LiteAdmin
+        {t("trigger")}
       </PopoverTrigger>
       <Destination
         key={target?.baseUrl ?? "unavailable"}
@@ -93,6 +96,7 @@ function Destination({
   open: boolean;
   close: () => void;
 }) {
+  const t = useTranslations("liteAdmin");
   const [approved, setApproved] = useState(false);
   if (target?.baseUrl && (!target.requiresConsent || approved)) {
     return <LiteAdminChat session={{ ...session, inferenceBaseUrl: target.baseUrl }} open={open} close={close} />;
@@ -101,7 +105,7 @@ function Destination({
     <PopoverContent side="top" align="end" sideOffset={12} className={PANEL_CLASS}>
       <PanelHeader close={close} />
       <div className="p-4">
-        {loading && <Skeleton className="h-24" aria-label="Loading gateway settings" />}
+        {loading && <Skeleton className="h-24" aria-label={t("loadingGatewaySettings")} />}
         {!loading && !target?.baseUrl && (
           <Alert variant="destructive">
             <AlertDescription>{target?.error || "Could not load gateway settings."}</AlertDescription>
@@ -113,7 +117,7 @@ function Destination({
         {!loading && target?.baseUrl && (
           <Card size="sm">
             <CardHeader>
-              <CardTitle>Connect to the configured gateway</CardTitle>
+              <CardTitle>{t("connectToGateway")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="break-all font-mono text-xs">{target.baseUrl}</p>
@@ -123,7 +127,7 @@ function Destination({
               </p>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => setApproved(true)}>Use configured gateway</Button>
+              <Button onClick={() => setApproved(true)}>{t("useConfiguredGateway")}</Button>
             </CardFooter>
           </Card>
         )}
@@ -133,6 +137,7 @@ function Destination({
 }
 
 function LiteAdminChat({ session, open, close }: { session: LiteAdminSession; open: boolean; close: () => void }) {
+  const t = useTranslations("liteAdmin");
   const chat = useLiteAdmin(session);
   const [input, setInput] = useState("");
   const [model, setModel] = useState<string | null>(null);
@@ -167,8 +172,8 @@ function LiteAdminChat({ session, open, close }: { session: LiteAdminSession; op
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label="New chat"
-          title="New chat"
+          aria-label={t("newChat")}
+          title={t("newChat")}
           disabled={chat.phase === "applying"}
           onClick={() => {
             chat.reset();
@@ -187,14 +192,14 @@ function LiteAdminChat({ session, open, close }: { session: LiteAdminSession; op
       />
       <div className="space-y-3 border-t p-3">
         {models.isPending ? (
-          <Skeleton className="h-8" aria-label="Loading models" />
+          <Skeleton className="h-8" aria-label={t("loadingModels")} />
         ) : (
           <SearchSelect
-            aria-label="LiteAdmin model"
+            aria-label={t("modelLabel")}
             options={(models.data ?? []).map((item) => ({ value: item.model_group, label: item.model_group }))}
             value={selectedModel}
             onValueChange={setModel}
-            placeholder="Choose a chat model"
+            placeholder={t("chooseChatModel")}
             disabled={busy}
             allowClear={false}
           />
@@ -211,7 +216,7 @@ function LiteAdminChat({ session, open, close }: { session: LiteAdminSession; op
         )}
         {models.isSuccess && models.data.length === 0 && (
           <Alert role="status">
-            <AlertDescription>Add a chat model to your gateway to use LiteAdmin.</AlertDescription>
+            <AlertDescription>{t("addChatModelHint")}</AlertDescription>
           </Alert>
         )}
         {tooLong && <FieldError>Keep your message within {MAX_INPUT_LENGTH.toLocaleString()} characters.</FieldError>}
@@ -220,27 +225,28 @@ function LiteAdminChat({ session, open, close }: { session: LiteAdminSession; op
           onChange={setInput}
           onSubmit={send}
           onCancel={chat.phase === "applying" ? undefined : chat.stop}
-          placeholder="Ask LiteAdmin…"
+          placeholder={t("askPlaceholder")}
           disabled={busy || !selectedModel}
           isLoading={busy}
           submitDisabled={submitDisabled}
         />
-        <p className="text-xs text-muted-foreground">Use a model you trust with your gateway data.</p>
+        <p className="text-xs text-muted-foreground">{t("trustModelHint")}</p>
       </div>
     </PopoverContent>
   );
 }
 
 function PanelHeader({ close, children }: { close: () => void; children?: ReactNode }) {
+  const t = useTranslations("liteAdmin");
   return (
     <div className="flex items-start justify-between gap-3 border-b p-4">
       <PopoverHeader>
-        <PopoverTitle>LiteAdmin</PopoverTitle>
-        <PopoverDescription>Ask about your gateway. Review changes in chat.</PopoverDescription>
+        <PopoverTitle>{t("trigger")}</PopoverTitle>
+        <PopoverDescription>{t("subtitle")}</PopoverDescription>
       </PopoverHeader>
       <div className="flex shrink-0">
         {children}
-        <Button variant="ghost" size="icon-sm" aria-label="Close LiteAdmin" onClick={close}>
+        <Button variant="ghost" size="icon-sm" aria-label={t("close")} onClick={close}>
           <X className="size-4" />
         </Button>
       </div>
