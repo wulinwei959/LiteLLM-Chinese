@@ -47,9 +47,9 @@ describe("DocumentsTable", () => {
   it("should display correct status badges", () => {
     render(<DocumentsTable documents={mockDocuments} onRemove={vi.fn()} />);
 
-    expect(screen.getByText("Ready")).toBeInTheDocument();
-    expect(screen.getByText("Uploading")).toBeInTheDocument();
-    expect(screen.getByText("Error")).toBeInTheDocument();
+    expect(screen.getByText("就绪")).toBeInTheDocument();
+    expect(screen.getByText("上传中")).toBeInTheDocument();
+    expect(screen.getByText("错误")).toBeInTheDocument();
   });
 
   it("should display file sizes", () => {

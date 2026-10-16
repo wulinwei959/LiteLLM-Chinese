@@ -154,7 +154,21 @@ describe("message syntax", () => {
   // render time. The brackets have to be quoted ('<app-id>') to render literally.
   // A <...> already inside a quoted span is literal to ICU, so it needs no help,
   // and a message rendered through t.rich is allowed to keep its real tags.
-  const RICH_TAGS = new Set(["strong", "b", "i", "em", "link", "code", "br", "claude", "codex"]);
+  const RICH_TAGS = new Set([
+    "strong",
+    "b",
+    "i",
+    "em",
+    "link",
+    "code",
+    "br",
+    "claude",
+    "codex",
+    // 同一条消息里需要两个指向不同地址的链接时，用语义化的标签名区分，
+    // 例如 vectorStores.indexesIntro 的 docsLink 与 issueLink。
+    "docslink",
+    "issuelink",
+  ]);
   const pairs = [...collectEntries(en, ""), ...collectEntries(zhCN, "")];
 
   /** Drops ICU-quoted spans; a possessive like "caller's" stays literal. */
@@ -179,8 +193,9 @@ describe("message syntax", () => {
       .filter(([, value]) => typeof value === "string")
       .flatMap(([path, value]) => {
         const body = unquoted(value);
+        const lowered = body.toLowerCase();
         const opened = [...body.matchAll(/<([a-zA-Z][a-zA-Z0-9]*)\s*>/g)].map((m) => m[1].toLowerCase());
-        return opened.filter((tag) => !body.includes(`</${tag}>`)).map((tag) => `${path}: <${tag}>`);
+        return opened.filter((tag) => !lowered.includes(`</${tag}>`)).map((tag) => `${path}: <${tag}>`);
       });
 
     expect([...new Set(unpaired)]).toEqual([]);

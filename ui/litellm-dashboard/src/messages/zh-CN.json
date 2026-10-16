@@ -8471,7 +8471,16 @@
     "loadingIndexes": "正在加载索引…",
     "idCopied": "向量存储 ID 已复制",
     "copyId": "复制向量存储 ID",
-    "configStoreHint": "只读：该向量存储在配置文件中定义，无法在管理面板上编辑或删除。"
+    "configStoreHint": "只读：该向量存储在配置文件中定义，无法在管理面板上编辑或删除。",
+    "docStatusUploading": "上传中",
+    "docStatusReady": "就绪",
+    "docStatusError": "错误",
+    "docStatusRemoved": "已移除",
+    "copyDocId": "复制文档 ID",
+    "docIdCopied": "文档 ID 已复制到剪贴板",
+    "removeDoc": "移除",
+    "indexesErrorPrefix": "获取索引失败：",
+    "indexesIntro": "通过 <code>/v1/indexes</code> API 注册到本代理的向量存储索引。工作原理见<docsLink>向量存储索引文档</docsLink>。目前索引透传支持 Azure AI Search 与 Milvus；如需支持更多供应商，欢迎<issueLink>提交 GitHub issue</issueLink>。"
   },
   "modelHub": {
     "showingModels": "已显示 {shown}，共 {total} 个模型",

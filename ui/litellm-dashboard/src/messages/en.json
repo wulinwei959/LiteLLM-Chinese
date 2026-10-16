@@ -8475,7 +8475,16 @@
     "loadingIndexes": "Loading indexes…",
     "idCopied": "Vector store ID copied",
     "copyId": "Copy vector store ID",
-    "configStoreHint": "Read only: this vector store is defined in the config file and cannot be edited or deleted on the dashboard."
+    "configStoreHint": "Read only: this vector store is defined in the config file and cannot be edited or deleted on the dashboard.",
+    "docStatusUploading": "Uploading",
+    "docStatusReady": "Ready",
+    "docStatusError": "Error",
+    "docStatusRemoved": "Removed",
+    "copyDocId": "Copy document ID",
+    "docIdCopied": "Document ID copied to clipboard",
+    "removeDoc": "Remove",
+    "indexesErrorPrefix": "Error fetching indexes: ",
+    "indexesIntro": "Vector store indexes registered on this proxy via the <code>/v1/indexes</code> API. See the <docsLink>vector store index docs</docsLink> for how this works. Index passthrough is supported for Azure AI Search and Milvus today; support for more providers can be added, so please <issueLink>file a GitHub issue</issueLink> if you want your provider supported."
   },
   "modelHub": {
     "showingModels": "Showing {shown} of {total, plural, one {# model} other {# models}}",

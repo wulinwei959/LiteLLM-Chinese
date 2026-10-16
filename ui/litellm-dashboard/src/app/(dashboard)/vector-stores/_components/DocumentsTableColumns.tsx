@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import type { VectorStoresTranslator } from "@/lib/i18n/translators";
+import type { CommonTranslator, VectorStoresTranslator } from "@/lib/i18n/translators";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
 
 import { StatusBadge, type StatusTone } from "@/components/shared/table_cells";
@@ -16,11 +16,21 @@ import { DocumentUpload } from "@/components/vector_store_management/types";
 import { cn } from "@/lib/cva.config";
 import { copyToClipboard } from "@/utils/dataUtils";
 
-const STATUS_CONFIG: Record<DocumentUpload["status"], { tone: StatusTone; label: string }> = {
-  uploading: { tone: "info", label: "Uploading" },
-  done: { tone: "success", label: "Ready" },
-  error: { tone: "error", label: "Error" },
-  removed: { tone: "neutral", label: "Removed" },
+const STATUS_LABEL_KEYS: Record<
+  DocumentUpload["status"],
+  "docStatusUploading" | "docStatusReady" | "docStatusError" | "docStatusRemoved"
+> = {
+  uploading: "docStatusUploading",
+  done: "docStatusReady",
+  error: "docStatusError",
+  removed: "docStatusRemoved",
+};
+
+const STATUS_TONES: Record<DocumentUpload["status"], StatusTone> = {
+  uploading: "info",
+  done: "success",
+  error: "error",
+  removed: "neutral",
 };
 
 function formatFileSize(bytes?: number): string {
@@ -51,10 +61,10 @@ function DocumentRowActions({
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem
           data-testid="document-action-copy"
-          onClick={() => void copyToClipboard(document.uid, "Document ID copied to clipboard")}
+          onClick={() => void copyToClipboard(document.uid, t("docIdCopied"))}
         >
           <Copy />
-          Copy document ID
+          {t("copyDocId")}
         </DropdownMenuItem>
         <DropdownMenuItem
           variant="destructive"
@@ -62,7 +72,7 @@ function DocumentRowActions({
           onClick={() => onRemove(document.uid)}
         >
           <Trash2 />
-          Remove
+          {t("removeDoc")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -71,15 +81,20 @@ function DocumentRowActions({
 
 interface DocumentsTableColumnsDeps {
   t: VectorStoresTranslator;
+  commonT: CommonTranslator;
   onRemove: (uid: string) => void;
 }
 
-export const getDocumentsTableColumns = ({ onRemove, t }: DocumentsTableColumnsDeps): ColumnDef<DocumentUpload>[] => [
+export const getDocumentsTableColumns = ({
+  onRemove,
+  t,
+  commonT,
+}: DocumentsTableColumnsDeps): ColumnDef<DocumentUpload>[] => [
   {
     id: "name",
     accessorKey: "name",
-    meta: { title: "Name" },
-    header: "Name",
+    meta: { title: t("table.columnName") },
+    header: t("table.columnName"),
     enableSorting: false,
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
@@ -95,13 +110,14 @@ export const getDocumentsTableColumns = ({ onRemove, t }: DocumentsTableColumnsD
   {
     id: "status",
     accessorKey: "status",
-    meta: { title: "Status", skeleton: "badge" },
-    header: "Status",
+    meta: { title: commonT("status"), skeleton: "badge" },
+    header: commonT("status"),
     size: 150,
     enableSorting: false,
     cell: ({ row }) => {
-      const config = STATUS_CONFIG[row.original.status] ?? { tone: "neutral", label: row.original.status };
-      return <StatusBadge tone={config.tone} label={config.label} />;
+      const status = row.original.status;
+      const labelKey = STATUS_LABEL_KEYS[status];
+      return <StatusBadge tone={STATUS_TONES[status]} label={labelKey ? t(labelKey) : status} />;
     },
   },
   {

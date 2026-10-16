@@ -29,7 +29,8 @@ function EmptyState() {
 
 const DocumentsTable: React.FC<DocumentsTableProps> = ({ documents, onRemove }) => {
   const t = useTranslations("vectorStores");
-  const columns = useMemo(() => getDocumentsTableColumns({ onRemove, t }), [onRemove, t]);
+  const commonT = useTranslations("common");
+  const columns = useMemo(() => getDocumentsTableColumns({ onRemove, t, commonT }), [onRemove, t, commonT]);
 
   return (
     <DataTable
