@@ -126,7 +126,7 @@ describe("ModelInsightsView", () => {
     vi.mocked(apiClient.get).mockRejectedValue(new Error("Only proxy admins can view deployment-wide model insights"));
     render(<ModelInsightsView accessToken="token" />);
 
-    expect(await screen.findByText("Could not load model insights")).toBeInTheDocument();
+    expect(await screen.findByText("无法加载模型洞察")).toBeInTheDocument();
     expect(screen.getByText("Only proxy admins can view deployment-wide model insights")).toBeInTheDocument();
   });
 
@@ -143,12 +143,12 @@ describe("ModelInsightsView", () => {
     await userEvent.click(screen.getByRole("tab", { name: "spend" }));
 
     expect(
-      screen.getByText("Share of tokens, with the change between the first and second half of the period"),
+      screen.getByText("令牌数的占比，以及该时段前后两半的变化"),
     ).toBeInTheDocument();
 
     resolve(response);
     expect(
-      await screen.findByText("Share of spend, with the change between the first and second half of the period"),
+      await screen.findByText("花费的占比，以及该时段前后两半的变化"),
     ).toBeInTheDocument();
   });
 
@@ -158,14 +158,14 @@ describe("ModelInsightsView", () => {
     const chart = screen.getByTestId("usage-chart");
     const days = (Date.parse(response.end_date) - Date.parse(response.start_date)) / 86_400_000 + 1;
 
-    expect(screen.getByRole("tab", { name: "Daily" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "按日" })).toHaveAttribute("aria-selected", "true");
     expect(chart).toHaveAttribute("data-buckets", String(days));
-    expect(screen.getByText("Daily tokens across your gateway")).toBeInTheDocument();
+    expect(screen.getByText("网关的按日令牌数")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("tab", { name: "Weekly" }));
+    await userEvent.click(screen.getByRole("tab", { name: "按周" }));
 
     expect(chart).toHaveAttribute("data-buckets", String(Math.ceil(days / 7)));
     expect(chart).toHaveAttribute("data-first", response.start_date);
-    expect(screen.getByText("Weekly tokens across your gateway")).toBeInTheDocument();
+    expect(screen.getByText("网关的按周令牌数")).toBeInTheDocument();
   });
 });

@@ -9811,5 +9811,37 @@
     "requestedAccess": "请求的权限",
     "connectFailed": "连接失败",
     "requestedAccessTitle": "请求的权限"
+  },
+  "modelInsights": {
+    "loadFailed": "无法加载模型洞察",
+    "leaderboardTitle": "模型排行榜",
+    "topModels": "热门模型",
+    "bucketSizeAria": "时间粒度",
+    "leaderboard": "排行榜",
+    "taskMetricAria": "任务指标",
+    "shareOfSpend": "花费占比",
+    "shareOfRequests": "请求占比",
+    "shareOfTokens": "令牌占比",
+    "tasksLoadFailed": "无法加载任务",
+    "costPerSession": "单次会话成本",
+    "sessionCostNote": "会话成本不由请求数推算",
+    "granularityDaily": "按日",
+    "granularityWeekly": "按周",
+    "metricRequests": "请求数",
+    "metricSpend": "花费",
+    "metricTokens": "令牌数",
+    "summaryDesc": "网关的{granularity}{metric}",
+    "topModelsByTask": "按任务的热门模型",
+    "topModelsByTaskDesc": "每个任务中{metric}的占比，并标注其主导模型",
+    "leaderboardDesc": "{metric}的占比，以及该时段前后两半的变化"
+  },
+  "guardrailSettingsView": {
+    "noGuardrails": "未配置任何护栏",
+    "globalGuardrailAria": "全局护栏",
+    "bypassedForTeam": "该团队已绕过",
+    "noneConfigured": "未配置",
+    "teamSpecific": "团队专属",
+    "title": "护栏设置",
+    "description": "应用到该团队的全局与团队专属护栏"
   }
 }

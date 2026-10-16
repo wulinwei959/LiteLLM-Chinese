@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 import { Bar, BarChart, CartesianGrid, Treemap, XAxis, YAxis } from "recharts";
 import { ArrowDownRight, ArrowUpRight, BarChart3, Layers, Minus } from "lucide-react";
@@ -49,8 +50,15 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 const SCALES = ["linear", "log"] as const;
 const GRANULARITIES = ["day", "week"] as const;
-const GRANULARITY_LABELS: Record<Granularity, string> = { day: "Daily", week: "Weekly" };
-const METRIC_LABELS: Record<Metric, string> = { requests: "requests", spend: "spend", tokens: "tokens" };
+const GRANULARITY_KEYS: Record<Granularity, "granularityDaily" | "granularityWeekly"> = {
+  day: "granularityDaily",
+  week: "granularityWeekly",
+};
+const METRIC_KEYS: Record<Metric, "metricRequests" | "metricSpend" | "metricTokens"> = {
+  requests: "metricRequests",
+  spend: "metricSpend",
+  tokens: "metricTokens",
+};
 const RANKING_ROWS = 5;
 
 type Scale = (typeof SCALES)[number];
@@ -113,6 +121,7 @@ const TaskTileContent = ({ x, y, width, height, category, label, leader }: TileP
 };
 
 export default function ModelInsightsView({ accessToken }: { accessToken: string | null }) {
+  const t = useTranslations("modelInsights");
   const [loaded, setLoaded] = React.useState<{ metric: Metric; response: ModelInsightsResponse } | null>(null);
   const [metric, setMetric] = React.useState<Metric>("tokens");
   const [scale, setScale] = React.useState<Scale>("linear");
@@ -189,7 +198,7 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
     return (
       <div className="p-8">
         <Alert variant="destructive">
-          <AlertTitle>Could not load model insights</AlertTitle>
+          <AlertTitle>{t("loadFailed")}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       </div>
@@ -213,16 +222,16 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
     <main className="w-full space-y-6 p-8">
       <PageHeader
         icon={<BarChart3 />}
-        title="Model Leaderboard"
+        title={t("leaderboardTitle")}
         subtitle={`See which models your gateway used from ${data.start_date} through ${data.end_date}`}
       />
 
       <Card aria-busy={isStale} className={isStale ? "opacity-60 transition-opacity" : "transition-opacity"}>
         <CardHeader className="flex-row items-start justify-between space-y-0">
           <div>
-            <CardTitle>Top models</CardTitle>
+            <CardTitle>{t("topModels")}</CardTitle>
             <CardDescription>
-              {GRANULARITY_LABELS[granularity]} {METRIC_LABELS[shown]} across your gateway
+              {t("summaryDesc", { granularity: t(GRANULARITY_KEYS[granularity]), metric: t(METRIC_KEYS[shown]) })}
             </CardDescription>
           </div>
           <div className="flex items-center gap-3">
@@ -236,10 +245,10 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
               </TabsList>
             </Tabs>
             <Tabs value={granularity} onValueChange={(value) => setGranularity(value as Granularity)}>
-              <TabsList aria-label="Bucket size">
+              <TabsList aria-label={t("bucketSizeAria")}>
                 {GRANULARITIES.map((value) => (
                   <TabsTrigger key={value} value={value}>
-                    {GRANULARITY_LABELS[value]}
+                    {t(GRANULARITY_KEYS[value])}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -293,10 +302,8 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
 
       <Card aria-busy={isStale} className={isStale ? "opacity-60 transition-opacity" : "transition-opacity"}>
         <CardHeader>
-          <CardTitle>Leaderboard</CardTitle>
-          <CardDescription>
-            Share of {METRIC_LABELS[shown]}, with the change between the first and second half of the period
-          </CardDescription>
+          <CardTitle>{t("leaderboard")}</CardTitle>
+          <CardDescription>{t("leaderboardDesc", { metric: t(METRIC_KEYS[shown]) })}</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-x-12 md:grid-cols-2">
           <ol className="divide-y">
@@ -316,27 +323,25 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
         <CardHeader className="flex-row items-start justify-between space-y-0">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Layers className="size-5" /> Top models by task
+              <Layers className="size-5" /> {t("topModelsByTask")}
             </CardTitle>
-            <CardDescription>
-              Each task&apos;s share of {METRIC_LABELS[taskMetric]}, labelled with its leading model
-            </CardDescription>
+            <CardDescription>{t("topModelsByTaskDesc", { metric: t(METRIC_KEYS[taskMetric]) })}</CardDescription>
           </div>
           <Select value={taskMetric} onValueChange={(value) => setTaskMetric(value as Metric)}>
-            <SelectTrigger className="w-44" aria-label="Task metric">
+            <SelectTrigger className="w-44" aria-label={t("taskMetricAria")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="spend">Share of spend</SelectItem>
-              <SelectItem value="requests">Share of requests</SelectItem>
-              <SelectItem value="tokens">Share of tokens</SelectItem>
+              <SelectItem value="spend">{t("shareOfSpend")}</SelectItem>
+              <SelectItem value="requests">{t("shareOfRequests")}</SelectItem>
+              <SelectItem value="tokens">{t("shareOfTokens")}</SelectItem>
             </SelectContent>
           </Select>
         </CardHeader>
         <CardContent className="space-y-4">
           {taskError && (
             <Alert variant="destructive">
-              <AlertTitle>Could not load tasks</AlertTitle>
+              <AlertTitle>{t("tasksLoadFailed")}</AlertTitle>
               <AlertDescription>{taskError}</AlertDescription>
             </Alert>
           )}
@@ -365,8 +370,8 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
 
       <Card>
         <CardHeader>
-          <CardTitle>Cost per session</CardTitle>
-          <CardDescription>Session cost is not estimated from request counts</CardDescription>
+          <CardTitle>{t("costPerSession")}</CardTitle>
+          <CardDescription>{t("sessionCostNote")}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">

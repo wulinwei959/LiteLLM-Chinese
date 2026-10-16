@@ -6,7 +6,7 @@ describe("GuardrailSettingsView", () => {
   it("should render", () => {
     renderWithProviders(<GuardrailSettingsView globalGuardrailNames={new Set()} />);
 
-    expect(screen.getByText("Guardrails Settings")).toBeInTheDocument();
+    expect(screen.getByText("护栏设置")).toBeInTheDocument();
   });
 
   it("should separate active global and team-specific guardrails", () => {
@@ -26,6 +26,6 @@ describe("GuardrailSettingsView", () => {
   it("should show when global guardrails are bypassed", () => {
     renderWithProviders(<GuardrailSettingsView globalGuardrailNames={new Set(["global-one"])} killSwitchOn />);
 
-    expect(screen.getByText("Bypassed for this team")).toBeInTheDocument();
+    expect(screen.getByText("该团队已绕过")).toBeInTheDocument();
   });
 });

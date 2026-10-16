@@ -9815,5 +9815,37 @@
     "requestedAccess": "Requested access",
     "connectFailed": "Failed to connect",
     "requestedAccessTitle": "Requested Access"
+  },
+  "modelInsights": {
+    "loadFailed": "Could not load model insights",
+    "leaderboardTitle": "Model Leaderboard",
+    "topModels": "Top models",
+    "bucketSizeAria": "Bucket size",
+    "leaderboard": "Leaderboard",
+    "taskMetricAria": "Task metric",
+    "shareOfSpend": "Share of spend",
+    "shareOfRequests": "Share of requests",
+    "shareOfTokens": "Share of tokens",
+    "tasksLoadFailed": "Could not load tasks",
+    "costPerSession": "Cost per session",
+    "sessionCostNote": "Session cost is not estimated from request counts",
+    "granularityDaily": "Daily",
+    "granularityWeekly": "Weekly",
+    "metricRequests": "requests",
+    "metricSpend": "spend",
+    "metricTokens": "tokens",
+    "summaryDesc": "{granularity} {metric} across your gateway",
+    "topModelsByTask": "Top models by task",
+    "topModelsByTaskDesc": "Each task&apos;s share of {metric}, labelled with its leading model",
+    "leaderboardDesc": "Share of {metric}, with the change between the first and second half of the period"
+  },
+  "guardrailSettingsView": {
+    "noGuardrails": "No guardrails configured",
+    "globalGuardrailAria": "Global guardrail",
+    "bypassedForTeam": "Bypassed for this team",
+    "noneConfigured": "None configured",
+    "teamSpecific": "Team-specific",
+    "title": "Guardrails Settings",
+    "description": "Global and team-specific guardrails applied to this team"
   }
 }
