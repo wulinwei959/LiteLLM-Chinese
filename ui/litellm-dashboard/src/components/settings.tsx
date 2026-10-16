@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
 
@@ -176,6 +177,7 @@ export const CallbackSelector: React.FC<CallbackSelectorProps> = ({
   onCallbackChange,
   disabled = false,
 }) => {
+  const t = useTranslations("settings");
   const { control } = useFormContext<CallbackFormValues>();
   const inputId = React.useId();
   const selectedConfig = findCallbackConfig(callbackConfigs, selectedCallback) ?? null;
@@ -184,10 +186,10 @@ export const CallbackSelector: React.FC<CallbackSelectorProps> = ({
     <Controller
       control={control}
       name="callback"
-      rules={disabled ? undefined : { required: "Please select a callback" }}
+      rules={disabled ? undefined : { required: t("selectCallback") }}
       render={({ field, fieldState }) => (
         <Field>
-          <FieldLabel htmlFor={inputId}>Callback</FieldLabel>
+          <FieldLabel htmlFor={inputId}>{t("callback")}</FieldLabel>
           <Combobox
             items={callbackConfigs}
             value={selectedConfig}
@@ -204,14 +206,14 @@ export const CallbackSelector: React.FC<CallbackSelectorProps> = ({
           >
             <ComboboxInput
               id={inputId}
-              placeholder="Choose a logging callback..."
+              placeholder={t("chooseCallbackPlaceholder")}
               className="w-full"
               disabled={disabled}
               onBlur={field.onBlur}
               aria-invalid={fieldState.error !== undefined || undefined}
             />
             <ComboboxContent>
-              <ComboboxEmpty>No results</ComboboxEmpty>
+              <ComboboxEmpty>{t("noResults")}</ComboboxEmpty>
               <ComboboxList>
                 {(callbackConfig: CallbackConfigOption) => (
                   <ComboboxItem key={callbackConfig.id} value={callbackConfig}>
@@ -293,6 +295,7 @@ const buildCallbackPayload = (formValues: Record<string, any>, callbackName: str
 };
 
 const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, premiumUser }) => {
+  const t = useTranslations("settings");
   const [callbacks, setCallbacks] = useState<AlertingObject[]>([]);
   const [isLoadingCallbacks, setIsLoadingCallbacks] = useState(true);
   const [alerts, setAlerts] = useState<any[]>([]);
@@ -572,12 +575,12 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
       <div className="grid grid-cols-1 gap-2 p-8 w-full mt-2">
         <Tabs defaultValue="logging-callbacks">
           <TabsList variant="line">
-            <TabsTrigger value="logging-callbacks">Logging Callbacks</TabsTrigger>
-            <TabsTrigger value="cloudzero-cost-tracking">CloudZero Cost Tracking</TabsTrigger>
-            <TabsTrigger value="alerting-types">Alerting Types</TabsTrigger>
-            <TabsTrigger value="alerting-settings">Alerting Settings</TabsTrigger>
-            <TabsTrigger value="email-alerts">Email Alerts</TabsTrigger>
-            <TabsTrigger value="ms-teams-alerts">MS Teams Alerts</TabsTrigger>
+            <TabsTrigger value="logging-callbacks">{t("tabLoggingCallbacks")}</TabsTrigger>
+            <TabsTrigger value="cloudzero-cost-tracking">{t("tabCloudzero")}</TabsTrigger>
+            <TabsTrigger value="alerting-types">{t("tabAlertingTypes")}</TabsTrigger>
+            <TabsTrigger value="alerting-settings">{t("tabAlertingSettings")}</TabsTrigger>
+            <TabsTrigger value="email-alerts">{t("tabEmailAlerts")}</TabsTrigger>
+            <TabsTrigger value="ms-teams-alerts">{t("tabMsTeamsAlerts")}</TabsTrigger>
           </TabsList>
           <TabsContent value="logging-callbacks" keepMounted>
             <LoggingCallbacksTable
@@ -619,7 +622,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
                   <TableRow>
                     <TableHead></TableHead>
                     <TableHead></TableHead>
-                    <TableHead>Webhook URL (Slack-compatible)</TableHead>
+                    <TableHead>{t("webhookUrlHeader")}</TableHead>
                   </TableRow>
                 </TableHeader>
 
@@ -705,7 +708,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
       <Dialog open={showAddCallbacksModal} onOpenChange={(open) => !open && closeAddCallbackModal()}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle>Add Logging Callback</DialogTitle>
+            <DialogTitle>{t("addCallbackTitle")}</DialogTitle>
           </DialogHeader>
           <a
             href="https://docs.litellm.ai/docs/proxy/logging"
@@ -747,7 +750,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
       <Dialog open={showEditCallback} onOpenChange={(open) => !open && closeEditCallbackModal()}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle>Edit Callback Settings</DialogTitle>
+            <DialogTitle>{t("editCallbackTitle")}</DialogTitle>
           </DialogHeader>
           <FormProvider {...editForm}>
             <form onSubmit={editForm.handleSubmit(updateCallbackCall)}>
@@ -787,7 +790,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
 
       <DeleteResourceModal
         isOpen={showDeleteConfirmModal}
-        title="Delete Callback"
+        title={t("deleteCallbackTitle")}
         message="Are you sure you want to delete this callback? This action cannot be undone."
         resourceInformationTitle="Callback Information"
         resourceInformation={[

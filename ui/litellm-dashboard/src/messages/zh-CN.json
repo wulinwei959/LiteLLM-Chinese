@@ -9576,5 +9576,21 @@
     "colUserAgent": "用户代理",
     "needsReviewBody": "发现 {count} 个新工具，需要做出策略决定。",
     "loadToolsFailed": "无法加载工具"
+  },
+  "settings": {
+    "callback": "回调",
+    "selectCallback": "请选择一个回调",
+    "chooseCallbackPlaceholder": "选择一个日志回调...",
+    "noResults": "无结果",
+    "tabLoggingCallbacks": "日志回调",
+    "tabCloudzero": "CloudZero 成本追踪",
+    "tabAlertingTypes": "告警类型",
+    "tabAlertingSettings": "告警设置",
+    "tabEmailAlerts": "邮件告警",
+    "tabMsTeamsAlerts": "MS Teams 告警",
+    "webhookUrlHeader": "Webhook 地址（兼容 Slack）",
+    "addCallbackTitle": "添加日志回调",
+    "editCallbackTitle": "编辑回调设置",
+    "deleteCallbackTitle": "删除回调"
   }
 }

@@ -89,10 +89,10 @@ describe("Settings", () => {
     renderWithProviders(<Settings {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("CloudZero Cost Tracking")).toBeInTheDocument();
-      expect(screen.getByText("Alerting Types")).toBeInTheDocument();
-      expect(screen.getByText("Alerting Settings")).toBeInTheDocument();
-      expect(screen.getByText("Email Alerts")).toBeInTheDocument();
+      expect(screen.getByText("CloudZero 成本追踪")).toBeInTheDocument();
+      expect(screen.getByText("告警类型")).toBeInTheDocument();
+      expect(screen.getByText("告警设置")).toBeInTheDocument();
+      expect(screen.getByText("邮件告警")).toBeInTheDocument();
     });
   });
 
@@ -155,7 +155,7 @@ describe("Settings", () => {
     await user.click(await screen.findByTestId("callback-action-edit"));
 
     await waitFor(() => {
-      expect(screen.getByText("Edit Callback Settings")).toBeInTheDocument();
+      expect(screen.getByText("编辑回调设置")).toBeInTheDocument();
     });
 
     return user;
@@ -401,7 +401,7 @@ describe("Settings", () => {
 
     const promptsOnlySwitch = await screen.findByRole("switch", { name: "Log Prompts Only" });
     expect(promptsOnlySwitch).not.toBeChecked();
-    expect(within(screen.getByRole("dialog")).getByRole("combobox", { name: "Callback" })).toHaveValue("S3");
+    expect(within(screen.getByRole("dialog")).getByRole("combobox", { name: "回调" })).toHaveValue("S3");
 
     await user.click(promptsOnlySwitch);
     await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Save Changes" }));
@@ -495,7 +495,7 @@ describe("Settings", () => {
     const user = userEvent.setup();
     renderWithProviders(<Settings {...defaultProps} />);
 
-    await user.click(await screen.findByRole("tab", { name: "Alerting Types" }));
+    await user.click(await screen.findByRole("tab", { name: "告警类型" }));
 
     const webhookInput = document.querySelector('input[name="llm_exceptions"]') as HTMLInputElement;
     expect(webhookInput).not.toBeNull();
@@ -557,7 +557,7 @@ describe("Settings", () => {
       expect(screen.getByText("活跃的日志回调")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("CloudZero Cost Tracking")).toBeInTheDocument();
+    expect(screen.getByText("CloudZero 成本追踪")).toBeInTheDocument();
   });
 });
 

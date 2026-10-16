@@ -9580,5 +9580,21 @@
     "colUserAgent": "User Agent",
     "needsReviewBody": "{count, plural, one {# new tool} other {# new tools}} discovered that require policy decisions.",
     "loadToolsFailed": "Failed to load tools"
+  },
+  "settings": {
+    "callback": "Callback",
+    "selectCallback": "Please select a callback",
+    "chooseCallbackPlaceholder": "Choose a logging callback...",
+    "noResults": "No results",
+    "tabLoggingCallbacks": "Logging Callbacks",
+    "tabCloudzero": "CloudZero Cost Tracking",
+    "tabAlertingTypes": "Alerting Types",
+    "tabAlertingSettings": "Alerting Settings",
+    "tabEmailAlerts": "Email Alerts",
+    "tabMsTeamsAlerts": "MS Teams Alerts",
+    "webhookUrlHeader": "Webhook URL (Slack-compatible)",
+    "addCallbackTitle": "Add Logging Callback",
+    "editCallbackTitle": "Edit Callback Settings",
+    "deleteCallbackTitle": "Delete Callback"
   }
 }
