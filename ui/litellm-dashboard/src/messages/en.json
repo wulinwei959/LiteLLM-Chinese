@@ -10175,5 +10175,18 @@
     "maxBudget": "Max Budget",
     "budgetLimit": "{amount} limit",
     "noLimit": "No limit"
+  },
+  "mcpOauthFlow": {
+    "missingAdminToken": "Missing admin token",
+    "accessTokenMissing": "Access token missing. Please re-authenticate and try again.",
+    "incompletePayload": "Please complete server URL and transport before starting OAuth.",
+    "serverIdMissing": "Temporary MCP server identifier missing. Please retry.",
+    "browserOnly": "OAuth redirect is only supported in the browser.",
+    "storageUnavailable": "Unable to access browser storage for OAuth. Please enable storage and retry.",
+    "resumeFailed": "Failed to resume OAuth flow. Please retry.",
+    "stateLost": "OAuth session state was lost. This can happen if you have strict browser privacy settings. Please try again and ensure cookies/storage is enabled.",
+    "stateMismatch": "OAuth state mismatch. Please retry.",
+    "codeMissing": "Authorization code missing in callback.",
+    "success": "OAuth token retrieved successfully"
   }
 }

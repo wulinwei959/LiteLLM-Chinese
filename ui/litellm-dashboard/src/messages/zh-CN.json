@@ -10171,5 +10171,18 @@
     "maxBudget": "最大预算",
     "budgetLimit": "{amount} 上限",
     "noLimit": "无上限"
+  },
+  "mcpOauthFlow": {
+    "missingAdminToken": "缺少管理员令牌",
+    "accessTokenMissing": "访问令牌缺失，请重新认证后重试。",
+    "incompletePayload": "开始 OAuth 前，请先填写服务器 URL 和传输方式。",
+    "serverIdMissing": "临时 MCP 服务器标识缺失，请重试。",
+    "browserOnly": "OAuth 跳转仅支持在浏览器中进行。",
+    "storageUnavailable": "无法访问浏览器存储以进行 OAuth。请启用存储后重试。",
+    "resumeFailed": "恢复 OAuth 流程失败，请重试。",
+    "stateLost": "OAuth 会话状态丢失。浏览器隐私设置过于严格时可能出现这种情况，请重试并确保已启用 Cookie/存储。",
+    "stateMismatch": "OAuth state 不匹配，请重试。",
+    "codeMissing": "回调中缺少授权码。",
+    "success": "OAuth 令牌获取成功"
   }
 }

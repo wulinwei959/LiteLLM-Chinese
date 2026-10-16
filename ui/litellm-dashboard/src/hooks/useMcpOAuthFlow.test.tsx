@@ -1,8 +1,14 @@
+import React from "react";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "@/components/networking";
 import { setSecureItem } from "@/utils/secureStorage";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { useMcpOAuthFlow } from "./useMcpOAuthFlow";
+
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <LocaleProvider locale="zh-CN">{children}</LocaleProvider>
+);
 
 vi.mock("@/components/networking", () => ({
   exchangeMcpOAuthToken: vi.fn(),
@@ -52,7 +58,7 @@ function renderFlow(onTokenReceived = vi.fn()) {
         onTokenReceived: cb,
         flowSource: "create",
       }),
-    { initialProps: { onTokenReceived } },
+    { initialProps: { onTokenReceived }, wrapper },
   );
 }
 
@@ -172,18 +178,20 @@ describe("useMcpOAuthFlow reset", () => {
     vi.mocked(networking.cacheTemporaryMcpServer).mockResolvedValue({ server_id: "server-1" });
     vi.mocked(networking.buildMcpOAuthAuthorizeUrl).mockReturnValue("https://idp.example.com/authorize");
 
-    const { result } = renderHook(() =>
-      useMcpOAuthFlow({
-        accessToken: "admin-token",
-        getCredentials: () => ({ client_id: "existing-client" }),
-        getTemporaryPayload: () => ({
-          url: "https://server-1.example.com/mcp",
-          transport: "http",
-          credentials: { client_id: "existing-client" },
+    const { result } = renderHook(
+      () =>
+        useMcpOAuthFlow({
+          accessToken: "admin-token",
+          getCredentials: () => ({ client_id: "existing-client" }),
+          getTemporaryPayload: () => ({
+            url: "https://server-1.example.com/mcp",
+            transport: "http",
+            credentials: { client_id: "existing-client" },
+          }),
+          onTokenReceived: vi.fn(),
+          flowSource: "create",
         }),
-        onTokenReceived: vi.fn(),
-        flowSource: "create",
-      }),
+      { wrapper },
     );
 
     await act(async () => {
@@ -201,18 +209,20 @@ describe("useMcpOAuthFlow reset", () => {
     vi.mocked(networking.registerMcpOAuthClient).mockResolvedValue({ client_id: "fresh-client" });
     vi.mocked(networking.buildMcpOAuthAuthorizeUrl).mockReturnValue("https://idp.example.com/authorize");
 
-    const { result } = renderHook(() =>
-      useMcpOAuthFlow({
-        accessToken: "admin-token",
-        getCredentials: () => ({}),
-        getTemporaryPayload: () => ({
-          url: "https://server-2.example.com/mcp",
-          transport: "http",
-          credentials: {},
+    const { result } = renderHook(
+      () =>
+        useMcpOAuthFlow({
+          accessToken: "admin-token",
+          getCredentials: () => ({}),
+          getTemporaryPayload: () => ({
+            url: "https://server-2.example.com/mcp",
+            transport: "http",
+            credentials: {},
+          }),
+          onTokenReceived: vi.fn(),
+          flowSource: "create",
         }),
-        onTokenReceived: vi.fn(),
-        flowSource: "create",
-      }),
+      { wrapper },
     );
 
     await act(async () => {
