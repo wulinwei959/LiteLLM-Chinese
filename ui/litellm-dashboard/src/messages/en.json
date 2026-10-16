@@ -8637,5 +8637,21 @@
     "moreCount": "+{count} more",
     "ofBudget": "of {amount}",
     "spendOfBudget": "{spend} of {amount}"
+  },
+  "createdKeyDisplay": {
+    "securityWarning": "Please save this secret key somewhere safe and accessible. For security reasons, <b>you will not be able to view it again</b> through your LiteLLM account. If you lose this secret key, you will need to generate a new one.",
+    "virtualKeyLabel": "Virtual Key:",
+    "copyButton": "Copy Virtual Key",
+    "copied": "Copied!",
+    "keyCopiedToast": "Key copied to clipboard"
+  },
+  "sharedComponents": {
+    "pageControls": "Page controls",
+    "howCalculated": "How {label} is calculated",
+    "noOwnBudgetHint": "This key has no budget of its own, but its spend still counts toward:",
+    "scopeTeam": "Team",
+    "scopeOrganization": "Organization",
+    "scopeUser": "User",
+    "gateFormat": "{scope} {alias}: ${amount}{suffix}"
   }
 }

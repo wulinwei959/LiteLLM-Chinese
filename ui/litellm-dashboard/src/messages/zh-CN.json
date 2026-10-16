@@ -8633,5 +8633,21 @@
     "moreCount": "+{count} 个",
     "ofBudget": "共 {amount}",
     "spendOfBudget": "{spend} 共 {amount}"
+  },
+  "createdKeyDisplay": {
+    "securityWarning": "请将此密钥保存在安全且可访问的地方。出于安全考虑，<b>你将无法通过 LiteLLM 账户再次查看它</b>。如果丢失此密钥，你需要生成一个新的。",
+    "virtualKeyLabel": "虚拟密钥：",
+    "copyButton": "复制虚拟密钥",
+    "copied": "已复制！",
+    "keyCopiedToast": "密钥已复制到剪贴板"
+  },
+  "sharedComponents": {
+    "pageControls": "页面控件",
+    "howCalculated": "如何计算 {label}",
+    "noOwnBudgetHint": "此密钥自身没有预算，但其花费仍计入以下预算：",
+    "scopeTeam": "团队",
+    "scopeOrganization": "组织",
+    "scopeUser": "用户",
+    "gateFormat": "{scope} {alias}：${amount}{suffix}"
   }
 }

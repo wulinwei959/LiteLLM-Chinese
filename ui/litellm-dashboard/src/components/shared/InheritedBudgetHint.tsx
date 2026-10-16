@@ -1,9 +1,16 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { SimpleTooltip } from "@/components/ui/tooltip";
 import type { Team } from "@/components/key_team_helpers/key_list";
 import type { Organization } from "@/components/networking";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
+
+const SCOPE_KEYS = {
+  Team: "scopeTeam",
+  Organization: "scopeOrganization",
+  User: "scopeUser",
+} as const;
 
 export interface InheritedBudgetGate {
   scope: "Team" | "Organization" | "User";
@@ -68,22 +75,30 @@ export const keyOwnerBudgetSource = (
   applyUserBudgetToTeamKeys: boolean,
 ): UserBudgetSource | null => (!key.team_id || applyUserBudgetToTeamKeys ? key.user ?? null : null);
 
-const formatGate = (gate: InheritedBudgetGate): string =>
-  `${gate.scope} ${gate.alias}: $${formatNumberWithCommas(gate.maxBudget, 2)}${gate.budgetDuration ? ` / ${gate.budgetDuration}` : ""}`;
+const formatGate = (gate: InheritedBudgetGate, t: ReturnType<typeof useTranslations<"sharedComponents">>): string => {
+  const values = {
+    scope: t(SCOPE_KEYS[gate.scope]),
+    alias: gate.alias,
+    amount: formatNumberWithCommas(gate.maxBudget, 2),
+    suffix: gate.budgetDuration ? ` / ${gate.budgetDuration}` : "",
+  };
+  return t("gateFormat", values);
+};
 
 interface InheritedBudgetHintProps {
   gates: readonly InheritedBudgetGate[];
 }
 
 export function InheritedBudgetHint({ gates }: InheritedBudgetHintProps) {
+  const t = useTranslations("sharedComponents");
   if (gates.length === 0) return null;
   return (
     <SimpleTooltip
       content={
         <div data-testid="inherited-budget-hint" className="flex flex-col gap-1">
-          <span>This key has no budget of its own, but its spend still counts toward:</span>
+          <span>{t("noOwnBudgetHint")}</span>
           {gates.map((gate) => (
-            <span key={gate.scope}>{formatGate(gate)}</span>
+            <span key={gate.scope}>{formatGate(gate, t)}</span>
           ))}
         </div>
       }

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { renderWithProviders as render, screen } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
@@ -99,14 +99,14 @@ describe("InheritedBudgetHint", () => {
   it("shows each gate with its budget and duration on hover", async () => {
     render(<InheritedBudgetHint gates={inheritedBudgetGates(team, organization)} />);
     await userEvent.setup().hover(screen.getByLabelText("question-circle"));
-    expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("Team Platform: $1,200.00 / 30d");
-    expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("Organization Acme: $5,000.00");
-    expect(screen.getByTestId("inherited-budget-hint")).not.toHaveTextContent("Organization Acme: $5,000.00 /");
+    expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("团队 Platform：$1,200.00 / 30d");
+    expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("组织 Acme：$5,000.00");
+    expect(screen.getByTestId("inherited-budget-hint")).not.toHaveTextContent("组织 Acme：$5,000.00 /");
   });
 
   it("shows the owner's user budget on hover", async () => {
     render(<InheritedBudgetHint gates={inheritedBudgetGates(null, null, user)} />);
     await userEvent.setup().hover(screen.getByLabelText("question-circle"));
-    expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("User Key Owner: $1,500.00 / 1mo");
+    expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("用户 Key Owner：$1,500.00 / 1mo");
   });
 });
