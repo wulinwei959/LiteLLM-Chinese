@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +27,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
   skillsList,
   onSuccess,
 }) => {
+  const t = useTranslations("claudeCodePlugins");
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedSkills, setSelectedSkills] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
@@ -38,7 +40,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
 
   const handleNext = () => {
     if (selectedSkills.size === 0) {
-      toast.fromError("Please select at least one skill");
+      toast.fromError(t("selectAtLeastOne"));
       return;
     }
     setCurrentStep(1);
@@ -96,7 +98,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
       onSuccess();
     } catch (error) {
       console.error("Error publishing skills:", error);
-      toast.fromError("Failed to update skills. Please try again.");
+      toast.fromError(t("updateFailed"));
     } finally {
       setLoading(false);
     }
@@ -108,7 +110,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
   const renderStep1 = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Select Skills to Publish</h3>
+        <h3 className="text-lg font-semibold">{t("selectSkillsToPublish")}</h3>
         <label className="flex items-center gap-2 text-sm">
           <Checkbox
             checked={allSelected}
@@ -128,7 +130,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
         <div className="space-y-3">
           {skillsList.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <p>No skills registered yet.</p>
+              <p>{t("noSkillsRegistered")}</p>
             </div>
           ) : (
             skillsList.map((skill) => (
@@ -141,7 +143,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-medium font-mono text-sm break-words">{skill.name}</p>
-                    {skill.enabled && <Badge variant="secondary">Public</Badge>}
+                    {skill.enabled && <Badge variant="secondary">{t("publicLabel")}</Badge>}
                   </div>
                   {skill.description && (
                     <p className="text-xs text-muted-foreground truncate max-w-sm">{skill.description}</p>
@@ -166,17 +168,16 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
 
   const renderStep2 = () => (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Confirm Publish to Skill Hub</h3>
+      <h3 className="text-lg font-semibold">{t("confirmPublishTitle")}</h3>
 
       <div className="bg-warning/10 border border-warning/20 rounded-lg p-4">
         <p className="text-sm text-warning">
-          <strong>Note:</strong> Published skills will be visible to all users in the Skill Hub tab. Skills not in the
-          list below will be unpublished.
+          <strong>{t("noteLabel")}</strong> {t("publishNoteBody")}
         </p>
       </div>
 
       <div className="space-y-3">
-        <p className="font-medium">Skills to be published:</p>
+        <p className="font-medium">{t("skillsToPublish")}</p>
         <div className="max-h-48 overflow-y-auto border rounded-lg p-3">
           <div className="space-y-2">
             {Array.from(selectedSkills).map((name) => {
@@ -204,7 +205,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
     <Dialog open={visible} onOpenChange={(open) => !open && handleClose()} disablePointerDismissal>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle>Publish to Skill Hub</DialogTitle>
+          <DialogTitle>{t("publishToHub")}</DialogTitle>
         </DialogHeader>
 
         <div>

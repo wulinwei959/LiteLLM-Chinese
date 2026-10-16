@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 import { ArrowLeft, Check, Copy, Link2 } from "lucide-react";
 import { cn } from "@/lib/cva.config";
@@ -5,12 +6,13 @@ import { buildMarketplaceSettingsSnippet, formatInstallCommand, getSourceDisplay
 import { Plugin, PluginSource } from "./types";
 
 const SkillSource: React.FC<{ source: PluginSource }> = ({ source }) => {
+  const t = useTranslations("claudeCodePlugins");
   const link = getSourceLink(source);
   const href = link && source.source === "git-subdir" && source.path ? `${link}/tree/main/${source.path}` : link;
   if (href) {
     return (
       <div className="mb-6">
-        <div className="mb-1 text-xs text-muted-foreground">Source</div>
+        <div className="mb-1 text-xs text-muted-foreground">{t("source")}</div>
         <a
           href={href}
           target="_blank"
@@ -28,7 +30,7 @@ const SkillSource: React.FC<{ source: PluginSource }> = ({ source }) => {
   }
   return (
     <div className="mb-6">
-      <div className="mb-1 text-xs text-muted-foreground">Source</div>
+      <div className="mb-1 text-xs text-muted-foreground">{t("source")}</div>
       <div className="break-all text-[13px] text-foreground">{getSourceDisplayText(source)}</div>
     </div>
   );
@@ -43,6 +45,7 @@ interface SkillDetailProps {
 }
 
 const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
+  const t = useTranslations("claudeCodePlugins");
   const [activeTab, setActiveTab] = useState("overview");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
@@ -80,7 +83,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
         className="mb-6 inline-flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground"
       >
         <ArrowLeft className="size-3" />
-        <span>Skills</span>
+        <span>{t("skills")}</span>
       </div>
 
       {/* Header */}
@@ -116,12 +119,12 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
         <div className="flex gap-16">
           {/* Left column */}
           <div className="min-w-0 flex-1">
-            <h2 className="m-0 mb-1 text-lg font-normal text-foreground">Skill Details</h2>
-            <p className="m-0 mb-4 text-[13px] text-muted-foreground">Metadata registered with this skill</p>
+            <h2 className="m-0 mb-1 text-lg font-normal text-foreground">{t("skillDetails")}</h2>
+            <p className="m-0 mb-4 text-[13px] text-muted-foreground">{t("metadataNote")}</p>
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="w-40 py-3 text-left font-medium text-muted-foreground">Property</th>
+                  <th className="w-40 py-3 text-left font-medium text-muted-foreground">{t("property")}</th>
                   <th className="py-3 text-left font-medium text-muted-foreground">{skill.name}</th>
                 </tr>
               </thead>
@@ -139,7 +142,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
           {/* Right sidebar */}
           <div className="w-60 shrink-0">
             <div className="mb-6">
-              <div className="mb-1 text-xs text-muted-foreground">Status</div>
+              <div className="mb-1 text-xs text-muted-foreground">{t("status")}</div>
               <span
                 className={cn(
                   "rounded-xl px-2.5 py-[3px] text-xs font-medium",
@@ -154,7 +157,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
 
             {skill.keywords && skill.keywords.length > 0 && (
               <div className="mb-6">
-                <div className="mb-2 text-xs text-muted-foreground">Tags</div>
+                <div className="mb-2 text-xs text-muted-foreground">{t("tags")}</div>
                 <div className="flex flex-wrap gap-1.5">
                   {skill.keywords.map((kw) => (
                     <span
@@ -169,7 +172,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
             )}
 
             <div>
-              <div className="mb-1 text-xs text-muted-foreground">Skill ID</div>
+              <div className="mb-1 text-xs text-muted-foreground">{t("skillId")}</div>
               <div className="break-all font-mono text-xs text-foreground">{skill.id}</div>
             </div>
           </div>
@@ -179,7 +182,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
       {/* How to Use tab */}
       {activeTab === "usage" && (
         <div className="max-w-[640px]">
-          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">Using this skill</h2>
+          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">{t("usingThisSkill")}</h2>
           <p className="m-0 mb-6 text-sm leading-relaxed text-muted-foreground">
             Once your proxy is set as a marketplace, enable this skill in Claude Code with one command:
           </p>
@@ -187,7 +190,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
           {/* Install command */}
           <div className="mb-6 overflow-hidden rounded-lg border border-border">
             <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2.5">
-              <span className="text-[13px] font-medium text-foreground">Run in Claude Code</span>
+              <span className="text-[13px] font-medium text-foreground">{t("runInClaudeCode")}</span>
               <button
                 onClick={() => copyToClipboard(installCommand, "install")}
                 className={cn(
@@ -224,7 +227,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
       {/* Setup tab (linked from usage) */}
       {activeTab === "setup" && (
         <div className="max-w-[640px]">
-          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">One-time marketplace setup</h2>
+          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">{t("marketplaceSetup")}</h2>
 
           {/* Option 1: single command — fastest path for most users */}
           <p className="m-0 mb-3 text-sm leading-relaxed text-muted-foreground">
@@ -232,7 +235,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
           </p>
           <div className="mb-6 overflow-hidden rounded-lg border border-border">
             <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2.5">
-              <span className="text-[13px] font-medium text-foreground">Run in Claude Code</span>
+              <span className="text-[13px] font-medium text-foreground">{t("runInClaudeCode")}</span>
               <button
                 onClick={() => {
                   const origin = typeof window !== "undefined" ? window.location.origin : "";

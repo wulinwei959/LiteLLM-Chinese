@@ -9745,5 +9745,28 @@
     "loadingTools": "Loading tools...",
     "loadToolsFailed": "Unable to load tools",
     "noTools": "No tools available"
+  },
+  "claudeCodePlugins": {
+    "source": "Source",
+    "skills": "Skills",
+    "skillDetails": "Skill Details",
+    "metadataNote": "Metadata registered with this skill",
+    "property": "Property",
+    "status": "Status",
+    "tags": "Tags",
+    "skillId": "Skill ID",
+    "usingThisSkill": "Using this skill",
+    "runInClaudeCode": "Run in Claude Code",
+    "marketplaceSetup": "One-time marketplace setup",
+    "selectAtLeastOne": "Please select at least one skill",
+    "updateFailed": "Failed to update skills. Please try again.",
+    "selectSkillsToPublish": "Select Skills to Publish",
+    "noSkillsRegistered": "No skills registered yet.",
+    "publicLabel": "Public",
+    "confirmPublishTitle": "Confirm Publish to Skill Hub",
+    "noteLabel": "Note:",
+    "skillsToPublish": "Skills to be published:",
+    "publishToHub": "Publish to Skill Hub",
+    "publishNoteBody": "Published skills will be visible to all users in the Skill Hub tab. Skills not in the list below will be unpublished."
   }
 }

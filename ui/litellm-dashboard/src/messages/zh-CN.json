@@ -9741,5 +9741,28 @@
     "loadingTools": "正在加载工具...",
     "loadToolsFailed": "无法加载工具",
     "noTools": "没有可用工具"
+  },
+  "claudeCodePlugins": {
+    "source": "来源",
+    "skills": "技能",
+    "skillDetails": "技能详情",
+    "metadataNote": "此技能注册的元数据",
+    "property": "属性",
+    "status": "状态",
+    "tags": "标签",
+    "skillId": "技能 ID",
+    "usingThisSkill": "正在使用此技能",
+    "runInClaudeCode": "在 Claude Code 中运行",
+    "marketplaceSetup": "一次性市场配置",
+    "selectAtLeastOne": "请至少选择一个技能",
+    "updateFailed": "更新技能失败，请重试。",
+    "selectSkillsToPublish": "选择要发布的技能",
+    "noSkillsRegistered": "尚未注册任何技能。",
+    "publicLabel": "公开",
+    "confirmPublishTitle": "确认发布到技能中心",
+    "noteLabel": "注意：",
+    "skillsToPublish": "将要发布的技能：",
+    "publishToHub": "发布到技能中心",
+    "publishNoteBody": "已发布的技能将在技能中心页签对所有用户可见。不在下列列表中的技能将被取消发布。"
   }
 }
