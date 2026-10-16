@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { screen, waitFor } from "@testing-library/react";
 import CloudZeroCostTracking from "./CloudZeroCostTracking";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 const mockUseCloudZeroSettings = vi.fn();
 
@@ -21,16 +21,7 @@ vi.mock("@/components/networking", () => ({
 }));
 
 describe("CloudZeroCostTracking", () => {
-  let queryClient: QueryClient;
-
   beforeEach(() => {
-    queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
-      },
-    });
-
     vi.clearAllMocks();
     mockUseCloudZeroSettings.mockReturnValue({
       data: null,
@@ -40,14 +31,10 @@ describe("CloudZeroCostTracking", () => {
   });
 
   it("should render", async () => {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CloudZeroCostTracking />
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<CloudZeroCostTracking />);
 
     await waitFor(() => {
-      expect(screen.getByText("No CloudZero Integration Found")).toBeInTheDocument();
+      expect(screen.getByText("未找到 CloudZero 集成")).toBeInTheDocument();
     });
   });
 });

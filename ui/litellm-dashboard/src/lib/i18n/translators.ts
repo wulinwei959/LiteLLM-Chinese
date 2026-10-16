@@ -185,6 +185,11 @@ function useCostTrackingTranslator() {
 }
 export type CostTrackingTranslator = ReturnType<typeof useCostTrackingTranslator>;
 
+function useCloudZeroTranslator() {
+  return useTranslations("cloudZero");
+}
+export type CloudZeroTranslator = ReturnType<typeof useCloudZeroTranslator>;
+
 function useLogsTranslator() {
   return useTranslations("logs");
 }

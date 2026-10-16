@@ -1,10 +1,10 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import CloudZeroUpdateModal from "./CloudZeroUpdateModal";
 import { CloudZeroSettings } from "./types";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 const mutate = vi.fn();
 
@@ -24,16 +24,8 @@ const STORED_SETTINGS: CloudZeroSettings = {
   status: "Active",
 };
 
-const renderModal = (settings: CloudZeroSettings = STORED_SETTINGS) => {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  });
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <CloudZeroUpdateModal open={true} onOk={vi.fn()} onCancel={vi.fn()} settings={settings} />
-    </QueryClientProvider>,
-  );
-};
+const renderModal = (settings: CloudZeroSettings = STORED_SETTINGS) =>
+  renderWithProviders(<CloudZeroUpdateModal open={true} onOk={vi.fn()} onCancel={vi.fn()} settings={settings} />);
 
 const submittedPayload = (): Record<string, unknown> => {
   expect(mutate).toHaveBeenCalledTimes(1);
@@ -48,16 +40,16 @@ describe("CloudZeroUpdateModal submit payload", () => {
   it("seeds the stored connection id and timezone but never the stored key", () => {
     renderModal();
 
-    expect(screen.getByLabelText("Connection ID")).toHaveValue("stored-connection-id");
-    expect(screen.getByLabelText("Timezone")).toHaveValue("Europe/Berlin");
-    expect(screen.getByLabelText("CloudZero API Key")).toHaveValue("");
+    expect(screen.getByLabelText("连接 ID")).toHaveValue("stored-connection-id");
+    expect(screen.getByLabelText("时区")).toHaveValue("Europe/Berlin");
+    expect(screen.getByLabelText("CloudZero API 密钥")).toHaveValue("");
   });
 
   it("omits api_key entirely when the key field is left untouched, preserving the stored secret", async () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.click(screen.getByRole("button", { name: "Update" }));
+    await user.click(screen.getByRole("button", { name: "更新" }));
 
     await vi.waitFor(() =>
       expect(submittedPayload()).toEqual({
@@ -72,8 +64,8 @@ describe("CloudZeroUpdateModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(screen.getByLabelText("CloudZero API Key"), { target: { value: "cz-rotated-key" } });
-    await user.click(screen.getByRole("button", { name: "Update" }));
+    fireEvent.change(screen.getByLabelText("CloudZero API 密钥"), { target: { value: "cz-rotated-key" } });
+    await user.click(screen.getByRole("button", { name: "更新" }));
 
     await vi.waitFor(() =>
       expect(submittedPayload()).toEqual({
@@ -88,8 +80,8 @@ describe("CloudZeroUpdateModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.clear(screen.getByLabelText("Timezone"));
-    await user.click(screen.getByRole("button", { name: "Update" }));
+    await user.clear(screen.getByLabelText("时区"));
+    await user.click(screen.getByRole("button", { name: "更新" }));
 
     await vi.waitFor(() =>
       expect(submittedPayload()).toEqual({
@@ -102,16 +94,16 @@ describe("CloudZeroUpdateModal submit payload", () => {
   it("falls back to UTC when the stored settings carry no timezone", () => {
     renderModal({ ...STORED_SETTINGS, timezone: null });
 
-    expect(screen.getByLabelText("Timezone")).toHaveValue("UTC");
+    expect(screen.getByLabelText("时区")).toHaveValue("UTC");
   });
 
   it("reports a null connection id from the server as the required field, not as a type error", async () => {
     const user = userEvent.setup();
     renderModal({ ...STORED_SETTINGS, connection_id: null, timezone: null });
 
-    await user.click(screen.getByRole("button", { name: "Update" }));
+    await user.click(screen.getByRole("button", { name: "更新" }));
 
-    expect(await screen.findByText("Please enter your CloudZero connection ID")).toBeInTheDocument();
+    expect(await screen.findByText("请输入你的 CloudZero 连接 ID")).toBeInTheDocument();
     expect(screen.queryByText(/expected string, received null/i)).not.toBeInTheDocument();
     expect(mutate).not.toHaveBeenCalled();
   });
@@ -120,11 +112,11 @@ describe("CloudZeroUpdateModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.clear(screen.getByLabelText("Connection ID"));
-    await user.click(screen.getByRole("button", { name: "Update" }));
+    await user.clear(screen.getByLabelText("连接 ID"));
+    await user.click(screen.getByRole("button", { name: "更新" }));
 
-    expect(await screen.findByText("Please enter your CloudZero connection ID")).toBeInTheDocument();
-    expect(screen.queryByText("Please enter your CloudZero API key")).not.toBeInTheDocument();
+    expect(await screen.findByText("请输入你的 CloudZero 连接 ID")).toBeInTheDocument();
+    expect(screen.queryByText("请输入你的 CloudZero API 密钥")).not.toBeInTheDocument();
     expect(mutate).not.toHaveBeenCalled();
   });
 
@@ -132,7 +124,7 @@ describe("CloudZeroUpdateModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.type(screen.getByLabelText("CloudZero API Key"), "cz-rotated-key{Enter}");
+    await user.type(screen.getByLabelText("CloudZero API 密钥"), "cz-rotated-key{Enter}");
 
     expect(mutate).not.toHaveBeenCalled();
   });

@@ -1,9 +1,9 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import CloudZeroCreateModal from "./CloudZeroCreateModal";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 const mutate = vi.fn();
 
@@ -16,16 +16,7 @@ vi.mock("@/app/(dashboard)/hooks/cloudzero/useCloudZeroCreate", () => ({
   useCloudZeroCreate: () => ({ mutate, isPending: false }),
 }));
 
-const renderModal = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  });
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <CloudZeroCreateModal open={true} onOk={vi.fn()} onCancel={vi.fn()} />
-    </QueryClientProvider>,
-  );
-};
+const renderModal = () => renderWithProviders(<CloudZeroCreateModal open={true} onOk={vi.fn()} onCancel={vi.fn()} />);
 
 const submittedPayload = (): Record<string, unknown> => {
   expect(mutate).toHaveBeenCalledTimes(1);
@@ -41,10 +32,10 @@ describe("CloudZeroCreateModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(screen.getByLabelText("CloudZero API Key"), { target: { value: "cz-secret-key" } });
-    fireEvent.change(screen.getByLabelText("Connection ID"), { target: { value: "conn-42" } });
-    fireEvent.change(screen.getByLabelText("Timezone"), { target: { value: "America/New_York" } });
-    await user.click(screen.getByRole("button", { name: "Create" }));
+    fireEvent.change(screen.getByLabelText("CloudZero API 密钥"), { target: { value: "cz-secret-key" } });
+    fireEvent.change(screen.getByLabelText("连接 ID"), { target: { value: "conn-42" } });
+    fireEvent.change(screen.getByLabelText("时区"), { target: { value: "America/New_York" } });
+    await user.click(screen.getByRole("button", { name: "创建" }));
 
     await vi.waitFor(() =>
       expect(submittedPayload()).toEqual({
@@ -59,9 +50,9 @@ describe("CloudZeroCreateModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(screen.getByLabelText("CloudZero API Key"), { target: { value: "cz-secret-key" } });
-    fireEvent.change(screen.getByLabelText("Connection ID"), { target: { value: "conn-42" } });
-    await user.click(screen.getByRole("button", { name: "Create" }));
+    fireEvent.change(screen.getByLabelText("CloudZero API 密钥"), { target: { value: "cz-secret-key" } });
+    fireEvent.change(screen.getByLabelText("连接 ID"), { target: { value: "conn-42" } });
+    await user.click(screen.getByRole("button", { name: "创建" }));
 
     await vi.waitFor(() =>
       expect(submittedPayload()).toEqual({
@@ -76,10 +67,10 @@ describe("CloudZeroCreateModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await user.click(screen.getByRole("button", { name: "Create" }));
+    await user.click(screen.getByRole("button", { name: "创建" }));
 
-    expect(await screen.findByText("Please enter your CloudZero API key")).toBeInTheDocument();
-    expect(screen.getByText("Please enter your CloudZero connection ID")).toBeInTheDocument();
+    expect(await screen.findByText("请输入你的 CloudZero API 密钥")).toBeInTheDocument();
+    expect(screen.getByText("请输入你的 CloudZero 连接 ID")).toBeInTheDocument();
     expect(mutate).not.toHaveBeenCalled();
   });
 
@@ -87,8 +78,8 @@ describe("CloudZeroCreateModal submit payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    fireEvent.change(screen.getByLabelText("CloudZero API Key"), { target: { value: "cz-secret-key" } });
-    await user.type(screen.getByLabelText("Connection ID"), "conn-42{Enter}");
+    fireEvent.change(screen.getByLabelText("CloudZero API 密钥"), { target: { value: "cz-secret-key" } });
+    await user.type(screen.getByLabelText("连接 ID"), "conn-42{Enter}");
 
     expect(mutate).not.toHaveBeenCalled();
   });

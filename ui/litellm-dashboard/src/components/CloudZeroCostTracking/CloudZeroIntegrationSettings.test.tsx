@@ -1,9 +1,8 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { screen } from "@testing-library/react";
 import { CloudZeroIntegrationSettings } from "./CloudZeroIntegrationSettings";
 import { CloudZeroSettings } from "./types";
-import { LocaleProvider } from "@/contexts/LocaleContext";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
   __esModule: true,
@@ -28,7 +27,6 @@ vi.mock("@/app/(dashboard)/hooks/cloudzero/useCloudZeroExport", () => ({
 }));
 
 describe("CloudZeroIntegrationSettings", () => {
-  let queryClient: QueryClient;
   const mockSettings: CloudZeroSettings = {
     connection_id: "test-connection-id",
     api_key_masked: "****",
@@ -37,37 +35,20 @@ describe("CloudZeroIntegrationSettings", () => {
   };
 
   beforeEach(() => {
-    queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
-      },
-    });
+    vi.clearAllMocks();
   });
 
   it("should render", () => {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <LocaleProvider locale="zh-CN">
-          <CloudZeroIntegrationSettings settings={mockSettings} onSettingsUpdated={vi.fn()} />
-        </LocaleProvider>
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<CloudZeroIntegrationSettings settings={mockSettings} onSettingsUpdated={vi.fn()} />);
 
-    expect(screen.getByText("CloudZero Configuration")).toBeInTheDocument();
-    expect(screen.getByText("API Key (Redacted)")).toBeInTheDocument();
-    expect(screen.getByText("Connection ID")).toBeInTheDocument();
-    expect(screen.getByText("Timezone")).toBeInTheDocument();
+    expect(screen.getByText("CloudZero 配置")).toBeInTheDocument();
+    expect(screen.getByText("API 密钥（已脱敏）")).toBeInTheDocument();
+    expect(screen.getByText("连接 ID")).toBeInTheDocument();
+    expect(screen.getByText("时区")).toBeInTheDocument();
   });
 
   it("should display the correct values from settings", () => {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <LocaleProvider locale="zh-CN">
-          <CloudZeroIntegrationSettings settings={mockSettings} onSettingsUpdated={vi.fn()} />
-        </LocaleProvider>
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<CloudZeroIntegrationSettings settings={mockSettings} onSettingsUpdated={vi.fn()} />);
 
     expect(screen.getByText(mockSettings.api_key_masked)).toBeInTheDocument();
     expect(screen.getByText(mockSettings.connection_id)).toBeInTheDocument();
