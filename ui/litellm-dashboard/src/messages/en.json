@@ -6660,7 +6660,17 @@
     "twoOptions": "Two Options",
     "option1": "Option 1:",
     "option2": "Option 2:",
-    "actions": "Actions"
+    "actions": "Actions",
+    "selector": {
+        "placeholder": "Select MCP servers",
+        "mcpServer": "MCP Server",
+        "toolset": "Toolset",
+        "allProxyMcpServers": "All Proxy MCP Servers",
+        "noMcpServers": "No MCP Servers",
+        "blockAll": "Block all",
+        "emptyText": "No MCP servers found",
+      "accessGroup": "Access Group"
+    }
   },
   "guardrailsMonitor": {
     "overview": {

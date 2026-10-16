@@ -6660,7 +6660,17 @@
     "twoOptions": "两种方式",
     "option1": "方式一：",
     "option2": "方式二：",
-    "actions": "操作"
+    "actions": "操作",
+    "selector": {
+        "placeholder": "选择 MCP 服务器",
+        "mcpServer": "MCP 服务器",
+        "toolset": "工具集",
+        "allProxyMcpServers": "所有代理 MCP 服务器",
+        "noMcpServers": "无 MCP 服务器",
+        "blockAll": "全部拦截",
+        "emptyText": "未找到 MCP 服务器",
+      "accessGroup": "访问组"
+    }
   },
   "guardrailsMonitor": {
     "overview": {
