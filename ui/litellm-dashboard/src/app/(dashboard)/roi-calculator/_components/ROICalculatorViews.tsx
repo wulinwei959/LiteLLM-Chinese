@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Bar, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
 
 import { Button } from "@/components/ui/button";
@@ -18,11 +19,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { coverageLabel, peopleCsv, effortNote, estimateLabel, formatMoney, formatNumber } from "./roiCalculatorData";
 import type { ROIPerson, ROIPull, ROISummary } from "./roiCalculatorData";
 
-const CHART_CONFIG = {
-  spend: { label: "Matched spend", color: "var(--chart-1)" },
-  hours: { label: "Estimated hours", color: "var(--chart-2)" },
-} satisfies ChartConfig;
-
 export function ROIOverview({
   summary,
   pulls,
@@ -38,58 +34,63 @@ export function ROIOverview({
   onSelectPull: (pull: ROIPull) => void;
   onViewPeople: () => void;
 }) {
+  const t = useTranslations("roiCalculator");
   const [pagination, setPagination] = React.useState({ query, visibleCount: 10 });
   const visibleCount = pagination.query === query ? pagination.visibleCount : 10;
+  const chartConfig = {
+    spend: { label: t("chartMatchedSpend"), color: "var(--chart-1)" },
+    hours: { label: t("estimatedHours"), color: "var(--chart-2)" },
+  } satisfies ChartConfig;
   const metrics = summary.metrics;
-  const unavailableRate =
-    metrics.output_hours > 0
-      ? "Spend per estimated hour is unavailable until all selected repositories can be read."
-      : "A rate requires matched estimated hours greater than zero and access to all selected repositories.";
+  const unavailableRate = metrics.output_hours > 0 ? t("unavailableRateIncomplete") : t("unavailableRateNoHours");
+  const cohortSummaryValues = {
+    count: metrics.cohort_people,
+    matched: metrics.matched_prs,
+    merged: metrics.merged_prs,
+    excluded: formatMoney(metrics.excluded_spend),
+    total: formatMoney(metrics.total_spend),
+  };
   return (
     <div className="space-y-6">
-      <section aria-label="Spend and estimated engineering effort" className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard title="Spend per estimated engineering hour" value={formatMoney(metrics.cost_per_hour)} />
-        <MetricCard title="Matched gateway spend" value={formatMoney(metrics.matched_spend)} />
-        <MetricCard title="Estimated engineering hours" value={`${formatNumber(metrics.output_hours)} hrs`} />
-        <MetricCard title="PR email coverage" value={coverageLabel(summary)} />
+      <section aria-label={t("spendAndEffort")} className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <MetricCard title={t("metricCostPerHour")} value={formatMoney(metrics.cost_per_hour)} />
+        <MetricCard title={t("metricMatchedSpend")} value={formatMoney(metrics.matched_spend)} />
+        <MetricCard
+          title={t("estimatedEngineeringHours")}
+          value={t("hoursUnit", { value: formatNumber(metrics.output_hours) })}
+        />
+        <MetricCard title={t("metricPrCoverage")} value={coverageLabel(t, summary)} />
       </section>
       <p className="text-sm text-muted-foreground">
-        {formatMoney(metrics.excluded_spend)} of {formatMoney(metrics.total_spend)} total gateway spend is excluded from
-        the matched cohort.
+        {t("excludedSpend", { excluded: formatMoney(metrics.excluded_spend), total: formatMoney(metrics.total_spend) })}
       </p>
       <details className="rounded-lg border p-4 text-sm">
-        <summary className="cursor-pointer font-medium">Calculation details</summary>
+        <summary className="cursor-pointer font-medium">{t("calculationDetails")}</summary>
         <div className="space-y-3 pt-3 text-muted-foreground">
           <p>
             {metrics.cost_per_hour != null
-              ? `${formatMoney(metrics.matched_spend)} gateway spend ÷ ${formatNumber(metrics.output_hours)} estimated engineering hours = ${formatMoney(metrics.cost_per_hour)} per estimated hour.`
+              ? t("rateCalculation", {
+                  matched: formatMoney(metrics.matched_spend),
+                  hours: formatNumber(metrics.output_hours),
+                  rate: formatMoney(metrics.cost_per_hour),
+                })
               : unavailableRate}
           </p>
-          <p>
-            The comparison includes {metrics.cohort_people} matched {metrics.cohort_people === 1 ? "person" : "people"}{" "}
-            with complete PR estimates, for the same period in UTC. {metrics.matched_prs} of {metrics.merged_prs} PRs
-            have email matches. {formatMoney(metrics.excluded_spend)} of {formatMoney(metrics.total_spend)} total
-            gateway spend is excluded.
-          </p>
-          <p>
-            Gateway spend includes all of each person’s usage, across repositories. This does not measure hours saved by
-            AI or financial returns.
-          </p>
+          <p>{t("cohortSummary", cohortSummaryValues)}</p>
+          <p>{t("spendIncludes")}</p>
           <Button variant="link" className="h-auto p-0" onClick={onViewPeople}>
-            Review email matches
+            {t("reviewEmailMatches")}
           </Button>
         </div>
       </details>
 
       <Card>
         <CardHeader>
-          <CardTitle>Spend and estimated engineering effort</CardTitle>
-          <CardDescription>
-            Daily matched gateway spend and estimated engineering hours for the same UTC period
-          </CardDescription>
+          <CardTitle>{t("spendAndEffort")}</CardTitle>
+          <CardDescription>{t("spendAndEffortDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={CHART_CONFIG} className="h-[320px] w-full">
+          <ChartContainer config={chartConfig} className="h-[320px] w-full">
             <ComposedChart data={summary.trend} margin={{ left: 8, right: 8 }}>
               <CartesianGrid vertical={false} />
               <XAxis dataKey="date" tickLine={false} axisLine={false} minTickGap={36} />
@@ -114,15 +115,19 @@ export function ROIOverview({
       <Card>
         <CardHeader className="flex-row flex-wrap items-center justify-between gap-4">
           <div>
-            <CardTitle>Pull requests</CardTitle>
+            <CardTitle>{t("pullRequests")}</CardTitle>
             <CardDescription>
-              {metrics.merged_prs} merged · {metrics.estimated_prs} estimated · {metrics.pending_prs} need attention
+              {t("pullRequestsSummary", {
+                merged: metrics.merged_prs,
+                estimated: metrics.estimated_prs,
+                pending: metrics.pending_prs,
+              })}
             </CardDescription>
           </div>
           <Input
-            aria-label="Search pull requests"
+            aria-label={t("searchPullRequests")}
             className="w-full sm:max-w-xs"
-            placeholder="Search pull requests"
+            placeholder={t("searchPullRequests")}
             type="search"
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
@@ -132,8 +137,8 @@ export function ROIOverview({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Pull request</TableHead>
-                <TableHead className="text-right">Estimated hours</TableHead>
+                <TableHead>{t("pullRequest")}</TableHead>
+                <TableHead className="text-right">{t("estimatedHours")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -141,7 +146,7 @@ export function ROIOverview({
                 <TableRow key={`${pull.repo}#${pull.number}`}>
                   <TableCell>
                     <Button
-                      aria-label={`Open estimate for ${pull.repo} pull request ${pull.number}`}
+                      aria-label={t("openEstimateAriaLabel", { repo: pull.repo, number: pull.number })}
                       className="h-auto whitespace-normal p-0 text-left"
                       variant="link"
                       onClick={() => onSelectPull(pull)}
@@ -154,13 +159,13 @@ export function ROIOverview({
                       </span>
                     </Button>
                   </TableCell>
-                  <TableCell className="text-right tabular-nums">{estimateLabel(pull.estimate)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{estimateLabel(t, pull.estimate)}</TableCell>
                 </TableRow>
               ))}
               {pulls.length === 0 && (
                 <TableRow>
                   <TableCell className="text-center text-muted-foreground" colSpan={2}>
-                    {query ? "No matching pull requests." : "No merged pull requests in this period."}
+                    {query ? t("noMatchingPullRequests") : t("noMergedPullRequests")}
                   </TableCell>
                 </TableRow>
               )}
@@ -177,11 +182,11 @@ export function ROIOverview({
                 }))
               }
             >
-              Load more pull requests
+              {t("loadMorePullRequests")}
             </Button>
           )}
           <Button variant="outline" onClick={onViewPeople}>
-            Review email matches
+            {t("reviewEmailMatches")}
           </Button>
         </CardContent>
       </Card>
@@ -211,6 +216,7 @@ export function ROIPeopleView({
   onMatch: (person: ROIPerson, login: string) => void;
   readOnly?: boolean;
 }) {
+  const t = useTranslations("roiCalculator");
   const exportCsv = () => {
     const url = URL.createObjectURL(new Blob([peopleCsv(summary)], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
@@ -223,22 +229,21 @@ export function ROIPeopleView({
     <div className="space-y-6">
       <div className="flex justify-end">
         <Button variant="outline" onClick={exportCsv}>
-          Export CSV
+          {t("exportCsv")}
         </Button>
       </div>
       <p className="text-sm leading-relaxed text-muted-foreground">
-        {effortNote(summary.effort_basis)} Spend includes each person’s full gateway usage for this period. This does
-        not measure hours saved by AI or financial returns.
+        {effortNote(t, summary.effort_basis)} {t("peopleSpendNote")}
       </p>
       <Card>
         <CardContent className="pt-6">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Person</TableHead>
-                <TableHead className="text-right">Gateway spend</TableHead>
-                <TableHead className="text-right">Estimated hours</TableHead>
-                <TableHead className="text-right">Spend / estimated hour</TableHead>
+                <TableHead>{t("person")}</TableHead>
+                <TableHead className="text-right">{t("gatewaySpend")}</TableHead>
+                <TableHead className="text-right">{t("estimatedHours")}</TableHead>
+                <TableHead className="text-right">{t("spendPerEstimatedHour")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -262,29 +267,29 @@ export function ROIPeopleView({
                           ),
                         )
                       ) : (
-                        <span>Unassigned gateway spend</span>
+                        <span>{t("unassignedGatewaySpend")}</span>
                       )}
                       {person.match_methods.some(
                         (method) =>
                           ["manual", "commit email", "profile email"].includes(method) && person.spend != null,
                       ) ? (
-                        <span className="text-xs text-emerald-700">Matched</span>
+                        <span className="text-xs text-emerald-700">{t("matched")}</span>
                       ) : (
-                        <span className="text-xs text-muted-foreground">Unmatched</span>
+                        <span className="text-xs text-muted-foreground">{t("unmatched")}</span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">{person.email || "Email unavailable"}</p>
+                    <p className="text-xs text-muted-foreground">{person.email || t("emailUnavailable")}</p>
                     {person.logins.some((login) => identityMap[login.toLowerCase()]) && (
-                      <p className="text-xs text-muted-foreground">Manual email match</p>
+                      <p className="text-xs text-muted-foreground">{t("manualEmailMatch")}</p>
                     )}
-                    {!person.eligible && <p className="text-xs text-muted-foreground">Excluded from ratio</p>}
+                    {!person.eligible && <p className="text-xs text-muted-foreground">{t("excludedFromRatio")}</p>}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">{formatMoney(person.spend)}</TableCell>
                   <TableCell className="text-right tabular-nums">
-                    {person.estimated_prs > 0 ? `${formatNumber(person.hours)} hrs` : "—"}
+                    {person.estimated_prs > 0 ? t("hoursUnit", { value: formatNumber(person.hours) }) : "—"}
                     <p className="text-xs text-muted-foreground">
-                      {person.prs} {person.prs === 1 ? "PR" : "PRs"}
-                      {person.pending_prs > 0 ? ` · ${person.pending_prs} pending` : ""}
+                      {t("prCount", { count: person.prs })}
+                      {person.pending_prs > 0 ? t("pendingPrsSuffix", { count: person.pending_prs }) : ""}
                     </p>
                   </TableCell>
                   <TableCell className="text-right tabular-nums">{formatMoney(person.cost_per_hour)}</TableCell>
@@ -293,7 +298,7 @@ export function ROIPeopleView({
               {summary.people.length === 0 && (
                 <TableRow>
                   <TableCell className="text-center text-muted-foreground" colSpan={4}>
-                    No people in this period.
+                    {t("noPeople")}
                   </TableCell>
                 </TableRow>
               )}
@@ -302,12 +307,8 @@ export function ROIPeopleView({
         </CardContent>
       </Card>
       <details className="rounded-lg border p-4 text-sm">
-        <summary className="cursor-pointer font-medium">How email matching works</summary>
-        <p className="mt-3 text-muted-foreground">
-          Matches use the author’s public GitHub email or commit emails associated with their GitHub account. Email
-          matching ignores case. Private, noreply, and ambiguous emails stay unmatched. Manual matches take priority.
-          People with no spend record or incomplete PR estimates are excluded from the ratio.
-        </p>
+        <summary className="cursor-pointer font-medium">{t("howEmailMatchingWorks")}</summary>
+        <p className="mt-3 text-muted-foreground">{t("emailMatchingExplanation")}</p>
       </details>
     </div>
   );

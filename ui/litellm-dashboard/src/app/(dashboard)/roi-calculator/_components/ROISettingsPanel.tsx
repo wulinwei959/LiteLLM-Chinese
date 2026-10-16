@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 
 import { apiClient } from "@/components/networking";
 import { extractErrorMessage } from "@/utils/errorUtils";
@@ -38,6 +39,8 @@ export default function ROISettingsPanel({
   readOnly: boolean;
   syncDisabled: boolean;
 }) {
+  const t = useTranslations("roiCalculator");
+  const commonT = useTranslations("common");
   const initialStep = initialSettings.has_github_token ? 1 : 0;
   const [step, setStep] = React.useState(initialSettings.ready ? 2 : initialStep);
   const [apiUrl, setApiUrl] = React.useState(initialSettings.github_api_url);
@@ -106,7 +109,7 @@ export default function ROISettingsPanel({
       setEstimatorKey("");
       setClearEstimatorKey(false);
       setClearToken(false);
-      setMessage("Settings saved.");
+      setMessage(t("settingsSaved"));
       setError(null);
       return true;
     } catch (reason) {
@@ -144,7 +147,7 @@ export default function ROISettingsPanel({
     setBusy(true);
     try {
       await apiClient.post("/roi-calculator/connections/test", { accessToken });
-      setMessage("Gateway model and selected repositories are available.");
+      setMessage(t("connectionsAvailable"));
     } catch (reason) {
       setError(extractErrorMessage(reason));
     } finally {
@@ -176,22 +179,18 @@ export default function ROISettingsPanel({
   const githubUrlChanged = apiUrl !== initialSettings.github_api_url;
   const missingReplacementToken = initialSettings.has_github_token && githubUrlChanged && !token.trim();
   const stepReady = [Boolean(token.trim() || initialSettings.has_github_token), repos.length > 0, Boolean(model)][step];
-  const onboardingLabel = step < 2 ? "Continue" : "Start backfill";
-  const submitLabel = onboarding ? onboardingLabel : "Save settings";
+  const onboardingLabel = step < 2 ? commonT("continue") : t("startBackfill");
+  const submitLabel = onboarding ? onboardingLabel : t("saveSettings");
 
   return (
     <Card>
       <CardHeader>
         <h2 className="text-base leading-normal font-medium">
           {onboarding
-            ? ["Connect GitHub to get started", "Choose repositories", "Choose an estimator"][step]
-            : "ROI Calculator settings"}
+            ? [t("connectGithubHeading"), t("chooseRepositoriesHeading"), t("chooseEstimatorHeading")][step]
+            : t("settingsHeading")}
         </h2>
-        <CardDescription>
-          {onboarding
-            ? "Your gateway is already connected. Set up GitHub and an estimator to see your first report."
-            : "Choose GitHub repositories and the router model used for metadata-only estimates."}
-        </CardDescription>
+        <CardDescription>{onboarding ? t("onboardingDescription") : t("settingsDescription")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
         {error && (
@@ -204,17 +203,17 @@ export default function ROISettingsPanel({
             {message}
           </p>
         )}
-        {onboarding && (
-          <p className="text-sm text-muted-foreground">Step {step + 1} of 3 · GitHub / Repositories / Estimator</p>
-        )}
+        {onboarding && <p className="text-sm text-muted-foreground">{t("stepIndicator", { step: step + 1 })}</p>}
         <form className="space-y-5" onSubmit={(event) => void submit(event)}>
           <fieldset disabled={busy || syncDisabled || readOnly} className="space-y-5">
             {(!onboarding || step === 0) && (
               <>
                 <details>
-                  <summary className="cursor-pointer text-sm text-muted-foreground">GitHub Enterprise settings</summary>
+                  <summary className="cursor-pointer text-sm text-muted-foreground">
+                    {t("githubEnterpriseSettings")}
+                  </summary>
                   <div className="mt-3 grid gap-2">
-                    <Label htmlFor="roi-github-url">GitHub API URL</Label>
+                    <Label htmlFor="roi-github-url">{t("githubApiUrl")}</Label>
                     <Input
                       disabled={readOnly}
                       id="roi-github-url"
@@ -224,7 +223,7 @@ export default function ROISettingsPanel({
                   </div>
                 </details>
                 <div className="grid gap-2">
-                  <Label htmlFor="roi-github-token">GitHub token</Label>
+                  <Label htmlFor="roi-github-token">{t("githubToken")}</Label>
                   <Input
                     autoComplete="new-password"
                     disabled={readOnly}
@@ -235,28 +234,22 @@ export default function ROISettingsPanel({
                       setToken(event.target.value);
                       setClearToken(false);
                     }}
-                    placeholder={initialSettings.has_github_token ? "Token saved" : "Enter a GitHub token"}
+                    placeholder={initialSettings.has_github_token ? t("tokenSaved") : t("enterGithubToken")}
                   />
                   <p className="text-xs text-muted-foreground">
-                    {initialSettings.has_github_token
-                      ? "A token is saved securely and is never shown here."
-                      : "Save a token to list repositories and read private repository metadata."}
+                    {initialSettings.has_github_token ? t("tokenSavedHelp") : t("tokenHelp")}
                   </p>
-                  {missingReplacementToken && (
-                    <p className="text-xs text-amber-700">
-                      Changing the GitHub API URL clears the saved token. Enter a replacement token to keep access.
-                    </p>
-                  )}
+                  {missingReplacementToken && <p className="text-xs text-amber-700">{t("githubUrlChangedWarning")}</p>}
                   {initialSettings.has_github_token && (
                     <label className="flex items-center gap-2 text-sm">
                       <input
-                        aria-label="Clear saved GitHub token"
+                        aria-label={t("clearGithubTokenAriaLabel")}
                         checked={clearToken}
                         disabled={readOnly}
                         type="checkbox"
                         onChange={(event) => setClearToken(event.target.checked)}
                       />
-                      Clear saved token
+                      {t("clearSavedToken")}
                     </label>
                   )}
                 </div>
@@ -264,13 +257,13 @@ export default function ROISettingsPanel({
             )}
             {(!onboarding || step === 1) && (
               <div className="grid gap-2">
-                <Label htmlFor="roi-repository-search">Repositories</Label>
+                <Label htmlFor="roi-repository-search">{t("repositories")}</Label>
                 <div className="flex gap-2">
                   <Input
                     id="roi-repository-search"
                     value={repositoryQuery}
                     onChange={(event) => setRepositoryQuery(event.target.value)}
-                    placeholder="Search repositories"
+                    placeholder={t("searchRepositories")}
                   />
                   <Button
                     type="button"
@@ -278,14 +271,10 @@ export default function ROISettingsPanel({
                     disabled={busy || !canLoadRepositories}
                     onClick={() => void loadRepositories(1)}
                   >
-                    Load repositories
+                    {t("loadRepositories")}
                   </Button>
                 </div>
-                {!canLoadRepositories && (
-                  <p className="text-xs text-muted-foreground">
-                    Save the GitHub token and API URL before loading repositories.
-                  </p>
-                )}
+                {!canLoadRepositories && <p className="text-xs text-muted-foreground">{t("saveTokenBeforeLoading")}</p>}
                 {repos.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {repos.map((repo) => (
@@ -295,7 +284,7 @@ export default function ROISettingsPanel({
                         variant="outline"
                         disabled={readOnly}
                         onClick={() => toggleRepository(repo)}
-                        aria-label={`Remove ${repo}`}
+                        aria-label={t("removeRepositoryAriaLabel", { repo })}
                       >
                         {repo} ×
                       </Button>
@@ -303,10 +292,10 @@ export default function ROISettingsPanel({
                   </div>
                 )}
                 <details>
-                  <summary className="cursor-pointer text-xs text-muted-foreground">Add a repository by name</summary>
+                  <summary className="cursor-pointer text-xs text-muted-foreground">{t("addRepositoryByName")}</summary>
                   <div className="mt-2 flex gap-2">
                     <Input
-                      aria-label="Repository name"
+                      aria-label={t("repositoryName")}
                       placeholder="owner/repository"
                       value={repositoryName}
                       onChange={(e) => setRepositoryName(e.target.value)}
@@ -320,7 +309,7 @@ export default function ROISettingsPanel({
                         setRepositoryName("");
                       }}
                     >
-                      Add
+                      {commonT("add")}
                     </Button>
                   </div>
                 </details>
@@ -328,7 +317,7 @@ export default function ROISettingsPanel({
                   {availableRepos.map((repository) => (
                     <label key={repository.name} className="flex items-center gap-2 text-sm">
                       <input
-                        aria-label={`Select ${repository.name}`}
+                        aria-label={t("selectRepositoryAriaLabel", { repo: repository.name })}
                         checked={repos.includes(repository.name)}
                         disabled={readOnly}
                         type="checkbox"
@@ -337,14 +326,12 @@ export default function ROISettingsPanel({
                       <span>{repository.name}</span>
                       <span className="text-xs text-muted-foreground">
                         {repository.visibility}
-                        {repository.archived ? " · archived" : ""}
+                        {repository.archived ? t("archivedSuffix") : ""}
                       </span>
                     </label>
                   ))}
                   {availableRepos.length === 0 && (
-                    <p className="text-sm text-muted-foreground">
-                      Load repositories to choose which pull requests to analyze.
-                    </p>
+                    <p className="text-sm text-muted-foreground">{t("loadRepositoriesHint")}</p>
                   )}
                 </div>
                 {hasMoreRepos && (
@@ -355,7 +342,7 @@ export default function ROISettingsPanel({
                     disabled={busy}
                     onClick={() => void loadRepositories(repositoryPage + 1)}
                   >
-                    Load more repositories
+                    {t("loadMoreRepositories")}
                   </Button>
                 )}
               </div>
@@ -363,7 +350,7 @@ export default function ROISettingsPanel({
             {(!onboarding || step === 2) && (
               <>
                 <div className="grid gap-2">
-                  <Label htmlFor="roi-estimator-model">Estimator model</Label>
+                  <Label htmlFor="roi-estimator-model">{t("estimatorModel")}</Label>
                   <select
                     id="roi-estimator-model"
                     className="h-9 rounded-md border bg-background px-3 text-sm"
@@ -371,7 +358,7 @@ export default function ROISettingsPanel({
                     value={model}
                     onChange={(event) => setModel(event.target.value)}
                   >
-                    <option value="">Select a router model</option>
+                    <option value="">{t("selectRouterModel")}</option>
                     {model && !initialSettings.available_models.includes(model) && (
                       <option value={model}>{model}</option>
                     )}
@@ -383,9 +370,11 @@ export default function ROISettingsPanel({
                   </select>
                 </div>
                 <details>
-                  <summary className="cursor-pointer text-sm text-muted-foreground">Advanced estimator options</summary>
+                  <summary className="cursor-pointer text-sm text-muted-foreground">
+                    {t("advancedEstimatorOptions")}
+                  </summary>
                   <div className="mt-3 grid gap-2">
-                    <Label htmlFor="roi-estimator-prompt">Estimator prompt</Label>
+                    <Label htmlFor="roi-estimator-prompt">{t("estimatorPrompt")}</Label>
                     <Textarea
                       id="roi-estimator-prompt"
                       rows={5}
@@ -396,7 +385,7 @@ export default function ROISettingsPanel({
                   </div>
                 </details>
                 <div className="grid max-w-xs gap-2">
-                  <Label htmlFor="roi-backfill-days">Backfill days</Label>
+                  <Label htmlFor="roi-backfill-days">{t("backfillDays")}</Label>
                   <Input
                     id="roi-backfill-days"
                     min={1}
@@ -408,7 +397,7 @@ export default function ROISettingsPanel({
                   />
                 </div>
                 <div className="grid max-w-xs gap-2">
-                  <Label htmlFor="roi-interval">Update interval (hours)</Label>
+                  <Label htmlFor="roi-interval">{t("updateIntervalHours")}</Label>
                   <Input
                     id="roi-interval"
                     type="number"
@@ -419,14 +408,12 @@ export default function ROISettingsPanel({
                     value={intervalHours}
                     onChange={(e) => setIntervalHours(e.target.value)}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    0 for manual updates; otherwise at least 5 minutes. Updates run while the gateway is running.
-                  </p>
+                  <p className="text-xs text-muted-foreground">{t("updateIntervalHelp")}</p>
                 </div>
                 <details>
-                  <summary className="cursor-pointer text-sm text-muted-foreground">Advanced settings</summary>
+                  <summary className="cursor-pointer text-sm text-muted-foreground">{t("advancedSettings")}</summary>
                   <div className="mt-3 space-y-3">
-                    <Label htmlFor="roi-estimator-key">Estimator API key</Label>
+                    <Label htmlFor="roi-estimator-key">{t("estimatorApiKey")}</Label>
                     <Input
                       id="roi-estimator-key"
                       type="password"
@@ -436,12 +423,9 @@ export default function ROISettingsPanel({
                         setEstimatorKey(e.target.value);
                         setClearEstimatorKey(false);
                       }}
-                      placeholder={initialSettings.has_estimator_key ? "Key saved" : "Optional gateway key"}
+                      placeholder={initialSettings.has_estimator_key ? t("keySaved") : t("optionalGatewayKey")}
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Defaults to the gateway admin key. Use a dedicated inference key to separate estimation costs from
-                      people&apos;s spend.
-                    </p>
+                    <p className="text-xs text-muted-foreground">{t("estimatorKeyHelp")}</p>
                     {initialSettings.has_estimator_key && (
                       <label className="flex items-center gap-2 text-sm">
                         <input
@@ -449,23 +433,20 @@ export default function ROISettingsPanel({
                           checked={clearEstimatorKey}
                           onChange={(e) => setClearEstimatorKey(e.target.checked)}
                         />
-                        Use gateway admin key instead
+                        {t("useGatewayAdminKey")}
                       </label>
                     )}
                     <Button type="button" variant="link" onClick={() => setPrompt(initialSettings.default_prompt)}>
-                      Reset prompt
+                      {t("resetPrompt")}
                     </Button>
                     {!onboarding && !readOnly && (
                       <Button type="button" variant="outline" onClick={() => setResetOpen(true)}>
-                        Restart setup
+                        {t("restartSetup")}
                       </Button>
                     )}
                   </div>
                 </details>
-                <p className="text-xs text-muted-foreground">
-                  Estimates use pull request metadata, without source code. Hours represent estimated effort without AI,
-                  not measured hours saved.
-                </p>
+                <p className="text-xs text-muted-foreground">{t("estimatesNote")}</p>
               </>
             )}
             {!readOnly && (
@@ -477,20 +458,20 @@ export default function ROISettingsPanel({
                     disabled={busy || syncDisabled}
                     onClick={() => setStep(step - 1)}
                   >
-                    Back
+                    {commonT("back")}
                   </Button>
                 )}
                 <Button disabled={formDisabled || (onboarding && !stepReady)} type="submit">
-                  {busy ? "Saving…" : submitLabel}
+                  {busy ? t("saving") : submitLabel}
                 </Button>
                 {!onboarding && (
                   <Button type="button" variant="outline" onClick={() => void testConnections()}>
-                    Test connections
+                    {t("testConnections")}
                   </Button>
                 )}
                 {!onboarding && (
                   <Button disabled={runDisabled} type="button" variant="outline" onClick={() => void saveAndRun()}>
-                    Save and run analysis
+                    {t("saveAndRunAnalysis")}
                   </Button>
                 )}
               </div>
@@ -500,17 +481,15 @@ export default function ROISettingsPanel({
         <Dialog open={resetOpen} onOpenChange={setResetOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Restart setup?</DialogTitle>
-              <DialogDescription>
-                Clear reports and repository selections. Saved connections and cached estimates will be kept.
-              </DialogDescription>
+              <DialogTitle>{t("restartSetupTitle")}</DialogTitle>
+              <DialogDescription>{t("restartSetupDescription")}</DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <Button variant="outline" disabled={busy} onClick={() => setResetOpen(false)}>
-                Cancel
+                {commonT("cancel")}
               </Button>
               <Button disabled={busy} onClick={() => void resetSetup()}>
-                Restart setup
+                {t("restartSetup")}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Calculator, RefreshCw } from "lucide-react";
 
 import { apiClient } from "@/components/networking";
@@ -50,6 +51,8 @@ export default function ROICalculatorView({
   userRole?: string | null;
   isViewOnly?: boolean;
 }) {
+  const t = useTranslations("roiCalculator");
+  const commonT = useTranslations("common");
   const [sampleSummary, setSampleSummary] = React.useState<ROISummary | null>(null);
   const adminReadOnly = isViewOnly && isProxyAdminTierRole(userRole ?? "");
   const readOnly = adminReadOnly || sampleSummary !== null;
@@ -175,7 +178,7 @@ export default function ROICalculatorView({
     return (
       <div className="p-8">
         <Alert variant="destructive">
-          <AlertTitle>Could not load ROI Calculator</AlertTitle>
+          <AlertTitle>{t("loadErrorTitle")}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       </div>
@@ -211,7 +214,7 @@ export default function ROICalculatorView({
     statusRef.current = IDLE_STATUS;
   };
   const showLiveStatus = !sampleSummary && !status.running;
-  const scheduleLabel = settings.update_interval_minutes ? "Automatic updates enabled" : "Manual updates";
+  const scheduleLabel = settings.update_interval_minutes ? t("automaticUpdatesEnabled") : t("manualUpdates");
   const progress = status.total > 0 ? Math.min(100, (status.done / status.total) * 100) : 0;
   const statusIsIdleOrComplete = status.phase === "idle" || status.phase === "complete";
   const syncIsUpToDate = !status.running && statusIsIdleOrComplete;
@@ -221,17 +224,15 @@ export default function ROICalculatorView({
     <main className="w-full space-y-6 p-8">
       <PageHeader
         icon={<Calculator />}
-        title="ROI Calculator"
+        title={t("title")}
         subtitle={
           <>
-            {summary
-              ? `${summary.start} through ${summary.end} · UTC`
-              : "Compare gateway spend with estimated engineering effort for merged pull requests"}
+            {summary ? t("period", { start: summary.start, end: summary.end }) : t("subtitle")}
             {syncedAt && (
               <span className="mt-1 block text-xs text-muted-foreground" role="status">
-                Last synced {formatSyncedAt(syncedAt)}
+                {t("lastSynced", { time: formatSyncedAt(syncedAt) })}
                 {!status.running && status.phase === "complete" && status.reused > 0
-                  ? ` · ${status.reused} of ${status.total} estimates reused`
+                  ? t("estimatesReusedSuffix", { reused: status.reused, total: status.total })
                   : ""}
               </span>
             )}
@@ -240,44 +241,44 @@ export default function ROICalculatorView({
       />
       {!liveSummary && showLiveStatus && (
         <Button variant="outline" onClick={() => void previewSample()}>
-          Preview sample report
+          {t("previewSample")}
         </Button>
       )}
       {sampleSummary && (
         <Alert>
-          <AlertTitle>Sample report</AlertTitle>
+          <AlertTitle>{t("sampleReport")}</AlertTitle>
           <AlertDescription>
-            Example data only. No GitHub or model requests were made.
+            {t("sampleReportBody")}
             <Button variant="link" onClick={() => setSampleSummary(null)}>
-              Use my data
+              {t("useMyData")}
             </Button>
           </AlertDescription>
         </Alert>
       )}
       {liveSummary && showLiveStatus && (
         <p className="text-xs text-muted-foreground">
-          {status.next_update ? `Next update ${formatSyncedAt(status.next_update)}` : scheduleLabel}
+          {status.next_update ? t("nextUpdate", { time: formatSyncedAt(status.next_update) }) : scheduleLabel}
         </p>
       )}
       {adminReadOnly && (
         <p className="text-sm text-muted-foreground" role="note">
-          Read-only access. Settings, analysis runs, and email matches are unavailable.
+          {t("readOnlyNotice")}
         </p>
       )}
 
       {summary && (
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Tabs value={view} onValueChange={(value) => setView(value as View)}>
-            <TabsList aria-label="ROI Calculator views">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="people">People</TabsTrigger>
-              {!sampleSummary && <TabsTrigger value="settings">Settings</TabsTrigger>}
+            <TabsList aria-label={t("viewsAriaLabel")}>
+              <TabsTrigger value="overview">{commonT("overview")}</TabsTrigger>
+              <TabsTrigger value="people">{t("people")}</TabsTrigger>
+              {!sampleSummary && <TabsTrigger value="settings">{commonT("settings")}</TabsTrigger>}
             </TabsList>
           </Tabs>
           {view !== "settings" && !readOnly && (
             <Button onClick={() => void startSync()} disabled={status.running || !settings.ready}>
               <RefreshCw className={status.running ? "animate-spin" : ""} />
-              {status.running ? "Syncing…" : "Run analysis"}
+              {status.running ? t("syncing") : t("runAnalysis")}
             </Button>
           )}
         </div>
@@ -285,19 +286,19 @@ export default function ROICalculatorView({
 
       {error && (
         <Alert variant="destructive">
-          <AlertTitle>ROI Calculator request failed</AlertTitle>
+          <AlertTitle>{t("requestFailedTitle")}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
       {status.error && (
         <Alert variant="destructive">
-          <AlertTitle>Sync failed</AlertTitle>
+          <AlertTitle>{t("syncFailedTitle")}</AlertTitle>
           <AlertDescription>{status.error}</AlertDescription>
         </Alert>
       )}
       {summary?.warnings.map((warning) => (
         <Alert key={warning}>
-          <AlertTitle>Sync note</AlertTitle>
+          <AlertTitle>{t("syncNoteTitle")}</AlertTitle>
           <AlertDescription>{warning}</AlertDescription>
         </Alert>
       ))}
@@ -305,7 +306,7 @@ export default function ROICalculatorView({
         <Card>
           <CardContent className="flex flex-wrap items-center justify-between gap-4 pt-6">
             <div
-              aria-label="Sync progress"
+              aria-label={t("syncProgressAriaLabel")}
               aria-valuemax={100}
               aria-valuemin={0}
               aria-valuenow={progress}
@@ -317,14 +318,14 @@ export default function ROICalculatorView({
                 <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
               </div>
               <p className="text-sm text-muted-foreground">
-                {status.done} of {status.total} pull requests processed · {status.reused} reused
-                {` · ${status.elapsed_seconds ?? 0}s elapsed`}
-                {status.remaining_seconds != null ? ` · about ${status.remaining_seconds}s remaining` : ""}
+                {t("progress", { done: status.done, total: status.total, reused: status.reused })}
+                {t("progressElapsed", { seconds: status.elapsed_seconds ?? 0 })}
+                {status.remaining_seconds != null ? t("progressRemaining", { seconds: status.remaining_seconds }) : ""}
               </p>
             </div>
             {!readOnly && (
               <Button variant="outline" onClick={() => void cancelSync()}>
-                Cancel sync
+                {t("cancelSync")}
               </Button>
             )}
           </CardContent>

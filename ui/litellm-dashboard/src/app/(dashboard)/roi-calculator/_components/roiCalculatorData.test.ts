@@ -1,4 +1,7 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
+
+import zh from "@/messages/zh-CN.json";
 
 import {
   coverageLabel,
@@ -11,6 +14,8 @@ import {
   peopleCsv,
 } from "./roiCalculatorData";
 import type { ROIPull } from "./roiCalculatorData";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "roiCalculator" });
 
 const pull = (overrides: Partial<ROIPull>): ROIPull => ({
   repo: "org/repo",
@@ -54,15 +59,15 @@ describe("ROI calculator display helpers", () => {
   });
 
   it("keeps caveat copy tied to the estimate basis and reports match coverage", () => {
-    expect(effortNote("without_ai")).toContain("not actual hours worked or hours saved");
-    expect(effortNote(null)).toContain("Earlier estimates");
-    expect(coverageLabel(summary)).toBe("1 of 2 PRs have email matches");
+    expect(effortNote(t, "without_ai")).toContain("实际工作时长或节省的小时数");
+    expect(effortNote(t, null)).toContain("较早的估算");
+    expect(coverageLabel(t, summary)).toBe("2 个 PR 中有 1 个有邮件匹配");
   });
 
   it("labels estimates and filters PRs by title, repository, number, or login", () => {
     const matchingPull = pull({});
-    expect(estimateLabel(matchingPull.estimate)).toBe("4.5 hrs");
-    expect(estimateLabel({ status: "needs_review", hours: null, reasoning: "", cached: false })).toBe("Needs review");
+    expect(estimateLabel(t, matchingPull.estimate)).toBe("4.5 小时");
+    expect(estimateLabel(t, { status: "needs_review", hours: null, reasoning: "", cached: false })).toBe("需审核");
     expect(filterPulls([matchingPull], "ROUTING")).toEqual([matchingPull]);
     expect(filterPulls([matchingPull], "nobody")).toEqual([]);
   });

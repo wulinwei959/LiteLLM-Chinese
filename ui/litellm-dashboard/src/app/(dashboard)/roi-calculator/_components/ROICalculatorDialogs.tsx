@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 
 import { extractErrorMessage } from "@/utils/errorUtils";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -29,6 +30,7 @@ export function PullReasoningDialog({
   summary: ROISummary | null;
   onClose: () => void;
 }) {
+  const t = useTranslations("roiCalculator");
   return (
     <Dialog open={Boolean(pull)} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-xl">
@@ -41,34 +43,30 @@ export function PullReasoningDialog({
               </DialogDescription>
             </DialogHeader>
             <div>
-              <p className="text-sm text-muted-foreground">Estimated engineering hours</p>
-              <p className="mt-2 text-3xl font-semibold tabular-nums">{estimateLabel(pull.estimate)}</p>
+              <p className="text-sm text-muted-foreground">{t("estimatedEngineeringHours")}</p>
+              <p className="mt-2 text-3xl font-semibold tabular-nums">{estimateLabel(t, pull.estimate)}</p>
               <p className="mt-2 text-xs text-muted-foreground">
-                {effortNote(pull.estimate.effort_basis ?? summary?.effort_basis)}
+                {effortNote(t, pull.estimate.effort_basis ?? summary?.effort_basis)}
               </p>
               {pull.estimate.evidence_source === "pr_metadata" && (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Based on PR descriptions, file change counts, and commit metadata.
-                </p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("prMetadataNote")}</p>
               )}
             </div>
             <section>
-              <h3 className="mb-2 font-medium">Reasoning</h3>
-              <p className="whitespace-pre-wrap leading-relaxed">
-                {pull.estimate.reasoning || "No estimate available."}
-              </p>
+              <h3 className="mb-2 font-medium">{t("reasoning")}</h3>
+              <p className="whitespace-pre-wrap leading-relaxed">{pull.estimate.reasoning || t("noEstimate")}</p>
             </section>
             <dl className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2 text-xs">
-              <dt className="text-muted-foreground">Model</dt>
+              <dt className="text-muted-foreground">{t("model")}</dt>
               <dd className="break-all">{pull.estimate.model || summary?.estimator_model}</dd>
-              <dt className="text-muted-foreground">Merged</dt>
+              <dt className="text-muted-foreground">{t("merged")}</dt>
               <dd>{new Date(pull.merged_at).toLocaleDateString(undefined, { timeZone: "UTC" })}</dd>
-              <dt className="text-muted-foreground">Email match</dt>
-              <dd>{pull.email || "Not matched"}</dd>
+              <dt className="text-muted-foreground">{t("emailMatch")}</dt>
+              <dd>{pull.email || t("notMatched")}</dd>
             </dl>
             {summary?.estimator_prompt && (
               <details className="rounded-md border p-3">
-                <summary className="cursor-pointer font-medium">Estimator prompt</summary>
+                <summary className="cursor-pointer font-medium">{t("estimatorPrompt")}</summary>
                 <p className="mt-2 whitespace-pre-wrap text-sm">{summary.estimator_prompt}</p>
               </details>
             )}
@@ -80,7 +78,7 @@ export function PullReasoningDialog({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  View on GitHub
+                  {t("viewOnGitHub")}
                 </a>
               )}
             </DialogFooter>
@@ -104,6 +102,7 @@ export function IdentityMatchDialog({
   onClose: () => void;
   onSave: (payload: ROIIdentityMapUpdate) => Promise<void>;
 }) {
+  const t = useTranslations("roiCalculator");
   const [email, setEmail] = React.useState(() =>
     selection ? identityMap[selection.login.toLowerCase()] ?? selection.person.email ?? "" : "",
   );
@@ -131,8 +130,8 @@ export function IdentityMatchDialog({
     <Dialog open={Boolean(person)} onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Match email</DialogTitle>
-          <DialogDescription>Link {login} to their gateway email. Manual matches take priority.</DialogDescription>
+          <DialogTitle>{t("matchEmail")}</DialogTitle>
+          <DialogDescription>{t("matchEmailDescription", { login })}</DialogDescription>
         </DialogHeader>
         <form
           className="space-y-4"
@@ -142,7 +141,7 @@ export function IdentityMatchDialog({
           }}
         >
           <div className="grid gap-2">
-            <Label htmlFor="roi-match-email">Gateway email</Label>
+            <Label htmlFor="roi-match-email">{t("gatewayEmail")}</Label>
             <Input
               id="roi-match-email"
               autoComplete="off"
@@ -166,11 +165,11 @@ export function IdentityMatchDialog({
           <DialogFooter>
             {existingEmail && (
               <Button disabled={busy} type="button" variant="outline" onClick={() => void save(null)}>
-                Use automatic match
+                {t("useAutomaticMatch")}
               </Button>
             )}
             <Button disabled={busy || !email.trim()} type="submit">
-              {busy ? "Saving…" : "Save match"}
+              {busy ? t("saving") : t("saveMatch")}
             </Button>
           </DialogFooter>
         </form>
