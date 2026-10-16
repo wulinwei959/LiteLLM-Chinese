@@ -50,10 +50,6 @@ function useChatTranslator() {
 }
 export type ChatTranslator = ReturnType<typeof useChatTranslator>;
 
-function useCommonTranslator() {
-  return useTranslations("common");
-}
-export type CommonTranslator = ReturnType<typeof useCommonTranslator>;
 
 function useMcpServersTranslator() {
   return useTranslations("mcpServers");
@@ -69,6 +65,16 @@ function useModelsTranslator() {
   return useTranslations("models");
 }
 export type ModelsTranslator = ReturnType<typeof useModelsTranslator>;
+
+function usePassThroughTableTranslator() {
+  return useTranslations("models.passThrough.table");
+}
+export type PassThroughTableTranslator = ReturnType<typeof usePassThroughTableTranslator>;
+
+function useCommonTranslator() {
+  return useTranslations("common");
+}
+export type CommonTranslator = ReturnType<typeof useCommonTranslator>;
 
 function useModelsAutoRoutersTranslator() {
   return useTranslations("models.autoRouters");
@@ -184,6 +190,11 @@ function useVectorStoresTranslator() {
   return useTranslations("vectorStores");
 }
 export type VectorStoresTranslator = ReturnType<typeof useVectorStoresTranslator>;
+
+function useVectorStoresTableTranslator() {
+  return useTranslations("vectorStores.table");
+}
+export type VectorStoresTableTranslator = ReturnType<typeof useVectorStoresTableTranslator>;
 
 function useCostTrackingTranslator() {
   return useTranslations("costTracking");

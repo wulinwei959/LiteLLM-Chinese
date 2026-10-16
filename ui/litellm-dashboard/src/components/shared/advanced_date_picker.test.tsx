@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, renderWithProviders as render, screen, waitFor } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 import AdvancedDatePicker from "./advanced_date_picker";
@@ -40,7 +40,7 @@ describe("AdvancedDatePicker", () => {
 
   it("should render with default label", () => {
     render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
-    expect(screen.getByText("Select Time Range")).toBeInTheDocument();
+    expect(screen.getByText("选择时间范围")).toBeInTheDocument();
   });
 
   it("should render with custom label", () => {
@@ -59,9 +59,9 @@ describe("AdvancedDatePicker", () => {
     openDropdown(container);
 
     // Check for relative time options
-    expect(screen.getByText("Today")).toBeInTheDocument();
-    expect(screen.getByText("Last 7 days")).toBeInTheDocument();
-    expect(screen.getByText("Last 30 days")).toBeInTheDocument();
+    expect(screen.getAllByText("今天")[0]).toBeInTheDocument();
+    expect(screen.getByText("最近 7 天")).toBeInTheDocument();
+    expect(screen.getByText("最近 30 天")).toBeInTheDocument();
   });
 
   it("should display relative time options", () => {
@@ -69,11 +69,11 @@ describe("AdvancedDatePicker", () => {
 
     openDropdown(container);
 
-    expect(screen.getByText("Today")).toBeInTheDocument();
-    expect(screen.getByText("Last 7 days")).toBeInTheDocument();
-    expect(screen.getByText("Last 30 days")).toBeInTheDocument();
-    expect(screen.getByText("Month to date")).toBeInTheDocument();
-    expect(screen.getByText("Year to date")).toBeInTheDocument();
+    expect(screen.getAllByText("今天")[0]).toBeInTheDocument();
+    expect(screen.getByText("最近 7 天")).toBeInTheDocument();
+    expect(screen.getByText("最近 30 天")).toBeInTheDocument();
+    expect(screen.getByText("本月至今")).toBeInTheDocument();
+    expect(screen.getByText("本年至今")).toBeInTheDocument();
   });
 
   it("anchors the panel to the trigger edge named by align", () => {
@@ -105,7 +105,7 @@ describe("AdvancedDatePicker", () => {
 
     await user.keyboard("{Enter}");
 
-    expect(screen.getByText("Relative time")).toBeInTheDocument();
+    expect(screen.getByText("相对时间")).toBeInTheDocument();
     expect(trigger).toHaveAttribute("aria-expanded", "true");
   });
 
@@ -150,7 +150,7 @@ describe("AdvancedDatePicker", () => {
     fireEvent.click(cancelButton);
 
     // Dropdown should be closed, so relative time options shouldn't be visible
-    expect(screen.queryByText("Today")).not.toBeInTheDocument();
+    expect(screen.queryAllByText("今天")).toHaveLength(0);
   });
 
   it("should call onValueChange when Apply is clicked", async () => {
@@ -171,7 +171,7 @@ describe("AdvancedDatePicker", () => {
 
     openDropdown(container);
 
-    const todayOption = screen.getByText("Today");
+    const todayOption = screen.getAllByText("今天")[0];
     fireEvent.click(todayOption);
 
     // The option should be highlighted (bg-info/10)
@@ -197,7 +197,7 @@ describe("AdvancedDatePicker", () => {
 
     await user.keyboard("{Enter}");
     expect(presets[1]).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByText("Last 7 days").closest("button")).toHaveClass("bg-info/10");
+    expect(screen.getByText("最近 7 天").closest("button")).toHaveClass("bg-info/10");
   });
 
   it("should show validation error for invalid date range", async () => {
@@ -213,7 +213,7 @@ describe("AdvancedDatePicker", () => {
     fireEvent.change(endDateInput, { target: { value: "2025-01-01" } });
 
     await waitFor(() => {
-      expect(screen.getByText("End date cannot be before start date")).toBeInTheDocument();
+      expect(screen.getByText("结束日期不能早于开始日期")).toBeInTheDocument();
     });
   });
 

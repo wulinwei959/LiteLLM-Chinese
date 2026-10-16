@@ -206,7 +206,9 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                                     {/* Metadata */}
                                     {(result.file_id || result.filename || result.attributes) && (
                                       <div className="mt-3 border-t pt-3">
-                                        <div className="mb-2 text-xs font-medium text-muted-foreground">{t("metadataLabel")}</div>
+                                        <div className="mb-2 text-xs font-medium text-muted-foreground">
+                                          {t("metadataLabel")}
+                                        </div>
                                         <div className="space-y-2 text-xs">
                                           {result.file_id && (
                                             <div className="rounded-sm bg-muted/50 p-2">
@@ -215,7 +217,8 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                                           )}
                                           {result.filename && (
                                             <div className="rounded-sm bg-muted/50 p-2">
-                                              <span className="font-medium">{t("filenameLabel")}</span> {result.filename}
+                                              <span className="font-medium">{t("filenameLabel")}</span>{" "}
+                                              {result.filename}
                                             </div>
                                           )}
                                           {result.attributes && Object.keys(result.attributes).length > 0 && (

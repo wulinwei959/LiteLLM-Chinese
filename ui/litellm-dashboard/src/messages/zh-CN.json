@@ -1668,7 +1668,29 @@
       "costPerRequestUsd": "单次请求成本（美元）",
       "costOptionalHelp": "可选：追踪发往该端点请求的成本",
       "costChargedHelp": "经过该端点的每个请求所收取的成本",
-      "creating": "创建中……"
+      "creating": "创建中……",
+      "table": {
+        "emptyTitle": "尚未配置直通端点",
+        "emptyBody": "添加一个直通端点以路由自定义路径。",
+        "openRowActions": "打开端点操作菜单",
+        "configEndpointHint": "该端点在配置文件中定义，无法在控制面板上编辑或删除。",
+        "hideHeadersAria": "隐藏请求头",
+        "showHeadersAria": "显示请求头",
+        "allMethods": "全部",
+        "sourceConfig": "配置文件",
+        "columnId": "ID",
+        "columnSource": "来源",
+        "columnPath": "路径",
+        "columnTarget": "目标",
+        "columnMethods": "方法",
+        "columnAuth": "认证",
+        "columnHeaders": "请求头",
+        "columnActions": "操作",
+        "methodsTooltip": "该端点支持的 HTTP 方法",
+        "authTooltip": "调用该端点需要 LiteLLM 虚拟密钥",
+        "yes": "是",
+        "no": "否"
+      }
     },
     "modelGroupAlias": {
       "title": "模型组别名",
@@ -8412,7 +8434,26 @@
     "providerShort": "供应商",
     "metadataShort": "元数据",
     "createdShort": "创建时间",
-    "lastUpdatedShort": "最后更新"
+    "lastUpdatedShort": "最后更新",
+    "table": {
+      "columnId": "向量存储 ID",
+      "columnName": "名称",
+      "columnDescription": "描述",
+      "columnSource": "来源",
+      "columnFiles": "文件",
+      "columnProvider": "供应商",
+      "columnCreatedAt": "创建时间",
+      "columnUpdatedAt": "更新时间",
+      "sourceConfig": "配置文件",
+      "unknownFilename": "未知",
+      "oneFile": "1 个文件",
+      "manyFiles": "{count} 个文件",
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "idCopied": "向量存储 ID 已复制",
+    "copyId": "复制向量存储 ID",
+    "configStoreHint": "只读：该向量存储在配置文件中定义，无法在管理面板上编辑或删除。"
   },
   "modelHub": {
     "showingModels": "已显示 {shown}，共 {total} 个模型",
@@ -9893,5 +9934,28 @@
     "enterJsonArrayPlaceholder": "请输入 {key} 的 JSON 数组",
     "trueLabel": "是",
     "falseLabel": "否"
+  },
+  "advancedDatePicker": {
+    "defaultLabel": "选择时间范围",
+    "relativeTime": "相对时间",
+    "startAndEndDates": "起止日期",
+    "startDate": "开始日期",
+    "endDate": "结束日期",
+    "fromLabel": "起始：",
+    "toLabel": "结束：",
+    "selectDateRange": "选择日期范围",
+    "invalidDateFormat": "日期格式无效",
+    "endBeforeStart": "结束日期不能早于开始日期",
+    "timeConnector": "于",
+    "presetToday": "今天",
+    "presetLast7": "最近 7 天",
+    "presetLast30": "最近 30 天",
+    "presetMonthToDate": "本月至今",
+    "presetYearToDate": "本年至今",
+    "badgeToday": "今天",
+    "badge7d": "7 天",
+    "badge30d": "30 天",
+    "badgeMtd": "本月",
+    "badgeYtd": "本年"
   }
 }

@@ -150,9 +150,7 @@ const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, 
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("deleteConfirmTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("deleteConfirmMessage")}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{t("deleteConfirmMessage")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{commonT("cancel")}</AlertDialogCancel>

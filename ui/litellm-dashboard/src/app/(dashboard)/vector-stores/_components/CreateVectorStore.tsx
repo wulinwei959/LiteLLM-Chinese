@@ -244,9 +244,7 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
       <div className="space-y-6">
         <div>
           <h3 className="text-lg font-medium">{t("createTitle")}</h3>
-          <p className="text-sm text-muted-foreground">
-            {t("createDesc")}
-          </p>
+          <p className="text-sm text-muted-foreground">{t("createDesc")}</p>
         </div>
 
         {/* Upload Area */}
@@ -254,9 +252,7 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
           <CardContent>
             <div className="mb-4">
               <p className="font-medium">{t("step1")}</p>
-              <p className="text-sm text-muted-foreground block mt-1">
-                {t("uploadNote")}
-              </p>
+              <p className="text-sm text-muted-foreground block mt-1">{t("uploadNote")}</p>
             </div>
             <label
               htmlFor={documentsInputId}

@@ -39,7 +39,12 @@ const VectorStoreTable: React.FC<VectorStoreTableProps> = ({ data, onView, onEdi
   const t = useTranslations("vectorStores");
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
-  const columns = useMemo(() => getVectorStoreTableColumns({ onView, onEdit, onDelete, t }), [onView, onEdit, onDelete, t]);
+  const tableT = useTranslations("vectorStores.table");
+  const commonT = useTranslations("common");
+  const columns = useMemo(
+    () => getVectorStoreTableColumns({ onView, onEdit, onDelete, t, tableT, commonT }),
+    [onView, onEdit, onDelete, t, tableT, commonT],
+  );
 
   return (
     <DataTable

@@ -60,16 +60,7 @@ describe("VectorStoreTable", () => {
 
   it("should render every column header", () => {
     render(<VectorStoreTable {...defaultProps} />);
-    for (const header of [
-      "Vector Store ID",
-      "Name",
-      "Description",
-      "Source",
-      "Files",
-      "Provider",
-      "Created At",
-      "Updated At",
-    ]) {
+    for (const header of ["向量存储 ID", "名称", "描述", "来源", "文件", "供应商", "创建时间", "更新时间"]) {
       expect(screen.getByText(header)).toBeInTheDocument();
     }
   });
@@ -101,7 +92,7 @@ describe("VectorStoreTable", () => {
 
   it("should summarize ingested files and fall back to a dash without files", () => {
     render(<VectorStoreTable {...defaultProps} />);
-    expect(screen.getByText("2 files")).toBeInTheDocument();
+    expect(screen.getByText("2 个文件")).toBeInTheDocument();
     const olderRow = screen.getAllByRole("row").slice(1)[1];
     expect(within(olderRow).getAllByText("-").length).toBeGreaterThan(0);
   });
@@ -129,8 +120,8 @@ describe("VectorStoreTable", () => {
     const dbRow = rows.find((row) => within(row).queryByText("vs-newer"));
     const configRow = rows.find((row) => within(row).queryByText("vs-config"));
     expect(within(dbRow!).getByText("DB")).toBeInTheDocument();
-    expect(within(dbRow!).queryByText("Config")).not.toBeInTheDocument();
-    expect(within(configRow!).getByText("Config")).toBeInTheDocument();
+    expect(within(dbRow!).queryByText("配置文件")).not.toBeInTheDocument();
+    expect(within(configRow!).getByText("配置文件")).toBeInTheDocument();
     expect(within(configRow!).queryByText("DB")).not.toBeInTheDocument();
   });
 
@@ -143,7 +134,7 @@ describe("VectorStoreTable", () => {
     const deleteItem = screen.getByTestId("vector-store-action-delete");
     expect(editItem).toHaveAttribute("aria-disabled", "true");
     expect(deleteItem).toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByText(/Read only: this vector store is defined in the config file/)).toBeVisible();
+    expect(screen.getByText(/只读：该向量存储在配置文件中定义/)).toBeVisible();
     await user.click(editItem);
     await user.click(deleteItem);
     expect(mockOnEdit).not.toHaveBeenCalled();
@@ -165,6 +156,6 @@ describe("VectorStoreTable", () => {
     render(<VectorStoreTable {...defaultProps} />);
     await user.click(screen.getByTestId("vector-store-actions-vs-newer"));
     await screen.findByTestId("vector-store-action-edit");
-    expect(screen.queryByText(/Read only: this vector store is defined in the config file/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/只读：该向量存储在配置文件中定义/)).not.toBeInTheDocument();
   });
 });

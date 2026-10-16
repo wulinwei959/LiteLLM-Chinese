@@ -54,13 +54,13 @@ describe("PassThroughEndpointsTable", () => {
   it("should show method chips, or ALL when no methods are set", () => {
     renderWithProviders(<PassThroughEndpointsTable {...defaultProps} />);
     expect(screen.getByText("POST")).toBeInTheDocument();
-    expect(screen.getByText("ALL")).toBeInTheDocument();
+    expect(screen.getByText("全部")).toBeInTheDocument();
   });
 
   it("should show authentication as Yes or No", () => {
     renderWithProviders(<PassThroughEndpointsTable {...defaultProps} />);
-    expect(screen.getByText("Yes")).toBeInTheDocument();
-    expect(screen.getByText("No")).toBeInTheDocument();
+    expect(screen.getByText("是")).toBeInTheDocument();
+    expect(screen.getByText("否")).toBeInTheDocument();
   });
 
   it("should mask headers until the visibility toggle is clicked", async () => {
@@ -68,7 +68,7 @@ describe("PassThroughEndpointsTable", () => {
     renderWithProviders(<PassThroughEndpointsTable {...defaultProps} />);
 
     expect(screen.queryByText(/secret-value/)).not.toBeInTheDocument();
-    const toggles = screen.getAllByRole("button", { name: "Show headers" });
+    const toggles = screen.getAllByRole("button", { name: "显示请求头" });
     await user.click(toggles[0]);
     expect(screen.getByText(/secret-value/)).toBeInTheDocument();
   });
@@ -117,7 +117,7 @@ describe("PassThroughEndpointsTable", () => {
     expect(editItem).toHaveAttribute("data-disabled");
     expect(deleteItem).toHaveAttribute("data-disabled");
     expect(screen.getByTestId("endpoint-config-hint")).toHaveTextContent(
-      "This endpoint is defined in the config file and cannot be edited or deleted on the dashboard.",
+      "该端点在配置文件中定义，无法在控制面板上编辑或删除。",
     );
 
     await user.click(editItem);
@@ -145,7 +145,7 @@ describe("PassThroughEndpointsTable", () => {
       is_from_config: true,
     };
     renderWithProviders(<PassThroughEndpointsTable {...defaultProps} endpoints={[...endpoints, configEndpoint]} />);
-    expect(screen.getByText("Config")).toBeInTheDocument();
+    expect(screen.getByText("配置文件")).toBeInTheDocument();
     expect(screen.getAllByText("DB")).toHaveLength(2);
   });
 
@@ -179,12 +179,12 @@ describe("PassThroughEndpointsTable", () => {
 
   it("should show the empty state when there are no endpoints", () => {
     renderWithProviders(<PassThroughEndpointsTable {...defaultProps} endpoints={[]} />);
-    expect(screen.getByText("No pass-through endpoints configured")).toBeInTheDocument();
+    expect(screen.getByText("尚未配置直通端点")).toBeInTheDocument();
   });
 
   it("should show skeleton rows while loading", () => {
     renderWithProviders(<PassThroughEndpointsTable {...defaultProps} endpoints={[]} isLoading />);
     expect(screen.getAllByTestId("skeleton-row").length).toBeGreaterThan(0);
-    expect(screen.queryByText("No pass-through endpoints configured")).not.toBeInTheDocument();
+    expect(screen.queryByText("尚未配置直通端点")).not.toBeInTheDocument();
   });
 });

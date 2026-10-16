@@ -195,9 +195,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
           Back to Vector Stores
         </Button>
         <h1 className="text-xl font-semibold">{t("notFound")}</h1>
-        <p className="text-sm text-muted-foreground">
-          {t("loadFailedDesc", { id: vectorStoreId })}
-        </p>
+        <p className="text-sm text-muted-foreground">{t("loadFailedDesc", { id: vectorStoreId })}</p>
       </div>
     );
   }
@@ -235,9 +233,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
         <Alert variant="info" className="mb-4">
           <Lock className="size-4" aria-hidden />
           <AlertTitle>{t("readOnlyConfig")}</AlertTitle>
-          <AlertDescription>
-            {t("readOnlyDesc")}
-          </AlertDescription>
+          <AlertDescription>{t("readOnlyDesc")}</AlertDescription>
         </Alert>
       )}
 

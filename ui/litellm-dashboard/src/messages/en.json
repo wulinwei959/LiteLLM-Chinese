@@ -1668,7 +1668,29 @@
       "costPerRequestUsd": "Cost Per Request (USD)",
       "costOptionalHelp": "Optional: Track costs for requests to this endpoint",
       "costChargedHelp": "The cost charged for each request through this endpoint",
-      "creating": "Creating..."
+      "creating": "Creating...",
+      "table": {
+        "emptyTitle": "No pass-through endpoints configured",
+        "emptyBody": "Add a pass-through endpoint to route custom paths.",
+        "openRowActions": "Open endpoint actions",
+        "configEndpointHint": "This endpoint is defined in the config file and cannot be edited or deleted on the dashboard.",
+        "hideHeadersAria": "Hide headers",
+        "showHeadersAria": "Show headers",
+        "allMethods": "ALL",
+        "sourceConfig": "Config",
+        "columnId": "ID",
+        "columnSource": "Source",
+        "columnPath": "Path",
+        "columnTarget": "Target",
+        "columnMethods": "Methods",
+        "columnAuth": "Authentication",
+        "columnHeaders": "Headers",
+        "columnActions": "Actions",
+        "methodsTooltip": "HTTP methods supported by this endpoint",
+        "authTooltip": "LiteLLM Virtual Key required to call endpoint",
+        "yes": "Yes",
+        "no": "No"
+      }
     },
     "modelGroupAlias": {
       "title": "Model Group Alias",
@@ -8416,7 +8438,26 @@
     "providerShort": "Provider",
     "metadataShort": "Metadata",
     "createdShort": "Created",
-    "lastUpdatedShort": "Last Updated"
+    "lastUpdatedShort": "Last Updated",
+    "table": {
+      "columnId": "Vector Store ID",
+      "columnName": "Name",
+      "columnDescription": "Description",
+      "columnSource": "Source",
+      "columnFiles": "Files",
+      "columnProvider": "Provider",
+      "columnCreatedAt": "Created At",
+      "columnUpdatedAt": "Updated At",
+      "sourceConfig": "Config",
+      "unknownFilename": "Unknown",
+      "oneFile": "1 file",
+      "manyFiles": "{count} files",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "idCopied": "Vector store ID copied",
+    "copyId": "Copy vector store ID",
+    "configStoreHint": "Read only: this vector store is defined in the config file and cannot be edited or deleted on the dashboard."
   },
   "modelHub": {
     "showingModels": "Showing {shown} of {total, plural, one {# model} other {# models}}",
@@ -9897,5 +9938,28 @@
     "enterJsonArrayPlaceholder": "Enter JSON array for {key}",
     "trueLabel": "True",
     "falseLabel": "False"
+  },
+  "advancedDatePicker": {
+    "defaultLabel": "Select Time Range",
+    "relativeTime": "Relative time",
+    "startAndEndDates": "Start and end dates",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "fromLabel": "From:",
+    "toLabel": "To:",
+    "selectDateRange": "Select date range",
+    "invalidDateFormat": "Invalid date format",
+    "endBeforeStart": "End date cannot be before start date",
+    "timeConnector": "at",
+    "presetToday": "Today",
+    "presetLast7": "Last 7 days",
+    "presetLast30": "Last 30 days",
+    "presetMonthToDate": "Month to date",
+    "presetYearToDate": "Year to date",
+    "badgeToday": "today",
+    "badge7d": "7d",
+    "badge30d": "30d",
+    "badgeMtd": "MTD",
+    "badgeYtd": "YTD"
   }
 }

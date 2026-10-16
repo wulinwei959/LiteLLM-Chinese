@@ -1,6 +1,7 @@
 "use client";
 
 import { Waypoints } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 import { DataTable } from "@/components/shared/DataTable";
@@ -16,13 +17,14 @@ interface PassThroughEndpointsTableProps {
 }
 
 function EmptyState() {
+  const t = useTranslations("models.passThrough.table");
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Waypoints className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No pass-through endpoints configured</div>
-      <div className="text-sm text-muted-foreground">Add a pass-through endpoint to route custom paths.</div>
+      <div className="text-sm font-medium text-foreground">{t("emptyTitle")}</div>
+      <div className="text-sm text-muted-foreground">{t("emptyBody")}</div>
     </div>
   );
 }
@@ -33,9 +35,11 @@ export function PassThroughEndpointsTable({
   onEndpointClick,
   onDeleteClick,
 }: PassThroughEndpointsTableProps) {
+  const t = useTranslations("models.passThrough.table");
+  const commonT = useTranslations("common");
   const columns = useMemo(
-    () => getPassThroughEndpointsTableColumns({ onEndpointClick, onDeleteClick }),
-    [onEndpointClick, onDeleteClick],
+    () => getPassThroughEndpointsTableColumns({ onEndpointClick, onDeleteClick, t, commonT }),
+    [onEndpointClick, onDeleteClick, t, commonT],
   );
 
   return (
