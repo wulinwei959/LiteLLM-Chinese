@@ -387,6 +387,15 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-16 第 85 簇：字段说明"接口优先、兜底接键"，`as const` 的键名表按查表方向选
+
+`Settings/AdminSettings/LoggingSettings/LoggingSettings.tsx` 的五个可选旋钮把 label、placeholder 与说明都写死在模块级 `OPTIONAL_FIELDS`，其中说明还经 `describeField(name, fallback)` 优先取后端的 `field_description`。两条值得固化：
+
+- **字段说明是"接口值优先、本地兜底接键"**。`describeField` 命中后端 `field_description` 就用它（那是数据，随代理版本回显英文，不进目录），只有没命中才回落写死的 `fallbackTooltip`，所以只有兜底那一段接键：`describeField(field.name, t(field.tooltipKey))`，父组件的 `describeField` 不必再持有文案。判据与第 60 簇 `property?.description ?? t(...)`、第 57 簇把默认参数值挪到渲染处同源：**凡是"外部数据 ?? 本地兜底"的取值，只给本地那半边接键**。反过来把后端值也塞进目录，就成了给一个不受我们控制的字符串找键
+- **同一根 `as const`，按查表方向决定用不用**。第 83 簇记的是"按任意 `string` 查表的表不能用 `as const`"（要拿 `role`/`selectedProvider` 当键去查，对象没有索引签名）；本簇 `OPTIONAL_FIELDS` 恰恰相反，遍历出来的 `field.labelKey` 直接喂 `t()`，`as const` 让每个键成为字面量联合、逐个被目录类型检查，写错编译期红。规矩补全成：**遍历喂 `t` 的表用 `as const`，按外部 `string` 当键查表的表用显式 `Record<string, 联合>`**
+
+顺带记两条小账：`Saving...` 复用 `common.saving` 需要在表单里再挂一把 `useTranslations("common")`（同第 80 簇 `AddSSOSettingsModal` 的两把 translator），不为省一把 translator 去建同值的 `savingButton`；spinner 的 `aria-label="loading"` 是技术标识不接键，与既有 `ChangePasswordForm`/`LoginPage`/`OnboardingFormBody` 保持一致
+
 ## 2026-10-16 第 84 簇：同一句话拆成两段就是两种文案，带 `{error}` 的消息别往无参调用点上套
 
 `components/SSOModals.tsx` 是 admin 面板那套老 SSO 弹窗（与 `Settings/AdminSettings/SSOSettings/Modals/` 的新弹窗并存，由 `AdminPanel.tsx` 挂载），标题、五颗按钮、四条 toast、清除确认弹窗与四步说明弹窗全是英文字面量。接线时新建 11 键，另有 9 处直接复用既有键（`addModalTitle`/`editModalTitle`/`deleteConfirmTitle`/`clearSuccessToast`/`saveFailedToast` 与 `common.save`/`cancel`/`done`/`clear`），但"能回溯"不等于"能复用"。四条值得固化：
@@ -398,6 +407,8 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 
 顺带记一笔没动的债：`SSOModals.tsx` 自带一份 `detectSSOProvider` 与一份 clear payload 手搭逻辑，和 `SSOSettings/utils.ts` 的同名实现重复（字段集合已不一致，老的少 `team_mappings`），新弹窗走 `useEditSSOSettings` hook、老的直连 `updateSSOSettings`。合并两套 SSO 弹窗属于功能重构，不该混进汉化簇
 
+
+## 2026-10-16 第 83 簇：数据模块改接翻译要回溯渲染处的拼装规则，按键名查表的表别用 `as const`
 
 `SSOSettings/constants.ts` 的两张展示名表（五个 provider、四个默认角色）是这一片 SSO 文案最后的英文来源，接键之后连带影响三个消费方与四份测试。三条值得固化：
 
