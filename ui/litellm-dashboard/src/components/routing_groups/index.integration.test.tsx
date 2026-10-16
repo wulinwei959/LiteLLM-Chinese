@@ -77,7 +77,7 @@ describe("RoutingGroups delete confirmation", () => {
     setup();
     renderWithProviders(<RoutingGroups />);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.queryByText("Delete routing group?")).not.toBeInTheDocument();
+    expect(screen.queryByText("删除路由组？")).not.toBeInTheDocument();
   });
 
   it("should name the group being deleted in the confirmation", async () => {
@@ -87,9 +87,9 @@ describe("RoutingGroups delete confirmation", () => {
 
     const dialog = await openDeleteConfirm(user);
 
-    expect(within(dialog).getByText("Delete routing group?")).toBeInTheDocument();
+    expect(within(dialog).getByText("删除路由组？")).toBeInTheDocument();
     expect(within(dialog).getByText("prod-group")).toBeInTheDocument();
-    expect(within(dialog).getByText(/This cannot be undone/)).toBeInTheDocument();
+    expect(within(dialog).getByText(/此操作无法撤销/)).toBeInTheDocument();
   });
 
   it("should save the remaining groups and report success when confirmed", async () => {
@@ -98,10 +98,10 @@ describe("RoutingGroups delete confirmation", () => {
     renderWithProviders(<RoutingGroups />);
 
     const dialog = await openDeleteConfirm(user);
-    await user.click(within(dialog).getByRole("button", { name: "Delete" }));
+    await user.click(within(dialog).getByRole("button", { name: "删除" }));
 
     expect(mutateAsync).toHaveBeenCalledWith([devGroup]);
-    expect(toast.success).toHaveBeenCalledWith('Deleted routing group "prod-group"');
+    expect(toast.success).toHaveBeenCalledWith('已删除路由组 "prod-group"');
   });
 
   it("should report the failure and keep the confirmation open when the save rejects", async () => {
@@ -111,7 +111,7 @@ describe("RoutingGroups delete confirmation", () => {
     renderWithProviders(<RoutingGroups />);
 
     const dialog = await openDeleteConfirm(user);
-    await user.click(within(dialog).getByRole("button", { name: "Delete" }));
+    await user.click(within(dialog).getByRole("button", { name: "删除" }));
 
     expect(toast.error).toHaveBeenCalledWith("boom");
     expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -123,7 +123,7 @@ describe("RoutingGroups delete confirmation", () => {
     renderWithProviders(<RoutingGroups />);
 
     const dialog = await openDeleteConfirm(user);
-    await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
+    await user.click(within(dialog).getByRole("button", { name: "取消" }));
 
     expect(mutateAsync).not.toHaveBeenCalled();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

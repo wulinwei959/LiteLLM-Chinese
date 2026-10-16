@@ -224,3 +224,8 @@ function useRoiCalculatorTranslator() {
   return useTranslations("roiCalculator");
 }
 export type RoiCalculatorTranslator = ReturnType<typeof useRoiCalculatorTranslator>;
+
+function useRoutingGroupsTranslator() {
+  return useTranslations("routingGroups");
+}
+export type RoutingGroupsTranslator = ReturnType<typeof useRoutingGroupsTranslator>;
