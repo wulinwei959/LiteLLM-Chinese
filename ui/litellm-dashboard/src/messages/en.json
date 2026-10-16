@@ -4261,6 +4261,31 @@
       "instructionStep2": "2. Open a new tab, visit your proxy base url",
       "instructionStep3": "3. Confirm your SSO is configured correctly and you can login on the new Tab",
       "instructionStep4": "4. If Step 3 is successful, you can close this tab"
+    },
+    "loggingSettings": {
+      "title": "Logging Settings",
+      "description": "Proxy-wide settings that control how request and response data are written to spend logs.",
+      "storePromptsInSpendLogs": "Store Prompts in Spend Logs",
+      "storePromptsDesc": "When enabled, prompts will be stored in spend logs for tracking and analysis purposes.",
+      "retentionPeriodLabel": "Maximum Spend Logs Retention Period (Optional)",
+      "retentionPeriodPlaceholder": "e.g., 7d, 30d",
+      "retentionPeriodTooltip": "Set the maximum retention period for spend logs (e.g., '7d' for 7 days, '30d' for 30 days). Leave empty for no limit.",
+      "cleanupBatchSizeLabel": "Spend Logs Cleanup Batch Size (Optional)",
+      "cleanupBatchSizePlaceholder": "e.g., 1000",
+      "cleanupBatchSizeTooltip": "Rows deleted per DELETE statement during cleanup. Leave empty to use the default of 1000.",
+      "cleanupMaxBatchesLabel": "Spend Logs Cleanup Max Batches (Optional)",
+      "cleanupMaxBatchesPlaceholder": "e.g., 500",
+      "cleanupMaxBatchesTooltip": "Maximum number of DELETE statements run per table per cleanup run. Leave empty to use the default of 500.",
+      "cleanupRunBudgetLabel": "Spend Logs Cleanup Run Budget (Optional)",
+      "cleanupRunBudgetPlaceholder": "e.g., 5m",
+      "cleanupRunBudgetTooltip": "Wall-clock budget for a whole cleanup run, shared across every table it cleans (e.g., '5m'). Leave empty to use the default of 5m.",
+      "cleanupBatchTimeoutLabel": "Spend Logs Cleanup Batch Timeout (Optional)",
+      "cleanupBatchTimeoutPlaceholder": "e.g., 30s",
+      "cleanupBatchTimeoutTooltip": "Postgres statement and lock timeout applied to each cleanup batch, so cleanup never monopolizes a connection (e.g., '30s'). Leave empty to use the default of 30s.",
+      "saveButton": "Save Settings",
+      "updatedToast": "Spend logs settings updated successfully",
+      "saveFailedToast": "Failed to save spend logs settings: {error}",
+      "clearFailedToast": "Failed to clear saved value for: {fields}"
     }
   },
   "usage": {

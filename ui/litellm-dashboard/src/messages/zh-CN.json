@@ -4261,6 +4261,31 @@
       "instructionStep2": "2. 新开一个标签页，访问你的代理基础 URL",
       "instructionStep3": "3. 在新标签页确认 SSO 配置正确且可以正常登录",
       "instructionStep4": "4. 若第 3 步成功，即可关闭此标签页"
+    },
+    "loggingSettings": {
+      "title": "日志设置",
+      "description": "控制请求与响应数据如何写入消费日志的代理级设置。",
+      "storePromptsInSpendLogs": "在消费日志中存储提示词",
+      "storePromptsDesc": "启用后，提示词将存储在消费日志中，用于追踪和分析。",
+      "retentionPeriodLabel": "消费日志最长保留期（可选）",
+      "retentionPeriodPlaceholder": "例如 7d、30d",
+      "retentionPeriodTooltip": "设置消费日志的最长保留期（例如 '7d' 表示 7 天，'30d' 表示 30 天）。留空表示不限制。",
+      "cleanupBatchSizeLabel": "消费日志清理批处理大小（可选）",
+      "cleanupBatchSizePlaceholder": "例如 1000",
+      "cleanupBatchSizeTooltip": "清理时每条 DELETE 语句删除的行数。留空则使用默认值 1000。",
+      "cleanupMaxBatchesLabel": "消费日志清理最大批次数（可选）",
+      "cleanupMaxBatchesPlaceholder": "例如 500",
+      "cleanupMaxBatchesTooltip": "每次清理中每张表运行的 DELETE 语句最大数量。留空则使用默认值 500。",
+      "cleanupRunBudgetLabel": "消费日志清理运行预算（可选）",
+      "cleanupRunBudgetPlaceholder": "例如 5m",
+      "cleanupRunBudgetTooltip": "整个清理运行的实际耗时预算，由其清理的每张表共享（例如 '5m'）。留空则使用默认值 5m。",
+      "cleanupBatchTimeoutLabel": "消费日志清理批处理超时（可选）",
+      "cleanupBatchTimeoutPlaceholder": "例如 30s",
+      "cleanupBatchTimeoutTooltip": "应用到每个清理批次的 Postgres 语句与锁超时，避免清理长时间独占连接（例如 '30s'）。留空则使用默认值 30s。",
+      "saveButton": "保存设置",
+      "updatedToast": "消费日志设置更新成功",
+      "saveFailedToast": "保存消费日志设置失败：{error}",
+      "clearFailedToast": "清除已保存的值失败：{fields}"
     }
   },
   "usage": {

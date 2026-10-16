@@ -91,7 +91,7 @@ describe("LoggingSettings", () => {
   // Blank every optional input the form rendered from stored values, which is
   // what an admin does to reset a knob to its default.
   const blankEveryOptionalField = async (user: ReturnType<typeof userEvent.setup>) => {
-    for (const placeholder of ["e.g., 7d, 30d", "e.g., 1000", "e.g., 500", "e.g., 5m", "e.g., 30s"]) {
+    for (const placeholder of ["例如 7d、30d", "例如 1000", "例如 500", "例如 5m", "例如 30s"]) {
       await user.clear(screen.getByPlaceholderText(placeholder));
     }
   };
@@ -117,24 +117,24 @@ describe("LoggingSettings", () => {
   it("should render the card with title and form fields", () => {
     renderWithProviders(<LoggingSettings />);
 
-    expect(screen.getByText("Logging Settings")).toBeInTheDocument();
-    expect(screen.getByText("Store Prompts in Spend Logs")).toBeInTheDocument();
-    expect(screen.getByLabelText("Maximum Spend Logs Retention Period (Optional)")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("e.g., 7d, 30d")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Save Settings" })).toBeInTheDocument();
+    expect(screen.getByText("日志设置")).toBeInTheDocument();
+    expect(screen.getByText("在消费日志中存储提示词")).toBeInTheDocument();
+    expect(screen.getByLabelText("消费日志最长保留期（可选）")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("例如 7d、30d")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "保存设置" })).toBeInTheDocument();
   });
 
   it("should render a control for every spend logs cleanup knob", () => {
     renderWithProviders(<LoggingSettings />);
 
-    expect(screen.getByLabelText("Spend Logs Cleanup Batch Size (Optional)")).toBeInTheDocument();
-    expect(screen.getByLabelText("Spend Logs Cleanup Max Batches (Optional)")).toBeInTheDocument();
-    expect(screen.getByLabelText("Spend Logs Cleanup Run Budget (Optional)")).toBeInTheDocument();
-    expect(screen.getByLabelText("Spend Logs Cleanup Batch Timeout (Optional)")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("e.g., 1000")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("e.g., 500")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("e.g., 5m")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("e.g., 30s")).toBeInTheDocument();
+    expect(screen.getByLabelText("消费日志清理批处理大小（可选）")).toBeInTheDocument();
+    expect(screen.getByLabelText("消费日志清理最大批次数（可选）")).toBeInTheDocument();
+    expect(screen.getByLabelText("消费日志清理运行预算（可选）")).toBeInTheDocument();
+    expect(screen.getByLabelText("消费日志清理批处理超时（可选）")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("例如 1000")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("例如 500")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("例如 5m")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("例如 30s")).toBeInTheDocument();
   });
 
   it("should toggle store prompts switch", async () => {
@@ -155,7 +155,7 @@ describe("LoggingSettings", () => {
     const user = userEvent.setup();
     renderWithProviders(<LoggingSettings />);
 
-    const retentionInput = screen.getByPlaceholderText("e.g., 7d, 30d");
+    const retentionInput = screen.getByPlaceholderText("例如 7d、30d");
     await user.type(retentionInput, "30d");
 
     expect(retentionInput).toHaveValue("30d");
@@ -175,10 +175,10 @@ describe("LoggingSettings", () => {
     const switchElement = screen.getByRole("switch");
     await user.click(switchElement);
 
-    const retentionInput = screen.getByPlaceholderText("e.g., 7d, 30d");
+    const retentionInput = screen.getByPlaceholderText("例如 7d、30d");
     await user.type(retentionInput, "30d");
 
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -202,13 +202,13 @@ describe("LoggingSettings", () => {
     renderWithProviders(<LoggingSettings />);
 
     await user.click(screen.getByRole("switch"));
-    await user.type(screen.getByPlaceholderText("e.g., 7d, 30d"), "30d");
-    await user.type(screen.getByPlaceholderText("e.g., 1000"), "2000");
-    await user.type(screen.getByPlaceholderText("e.g., 500"), "50");
-    await user.type(screen.getByPlaceholderText("e.g., 5m"), "90s");
-    await user.type(screen.getByPlaceholderText("e.g., 30s"), "10s");
+    await user.type(screen.getByPlaceholderText("例如 7d、30d"), "30d");
+    await user.type(screen.getByPlaceholderText("例如 1000"), "2000");
+    await user.type(screen.getByPlaceholderText("例如 500"), "50");
+    await user.type(screen.getByPlaceholderText("例如 5m"), "90s");
+    await user.type(screen.getByPlaceholderText("例如 30s"), "10s");
 
-    await user.click(screen.getByRole("button", { name: "Save Settings" }));
+    await user.click(screen.getByRole("button", { name: "保存设置" }));
 
     const expectedParams = {
       store_prompts_in_spend_logs: true,
@@ -236,8 +236,8 @@ describe("LoggingSettings", () => {
 
     renderWithProviders(<LoggingSettings />);
 
-    await user.type(screen.getByPlaceholderText("e.g., 1000"), "2000");
-    await user.click(screen.getByRole("button", { name: "Save Settings" }));
+    await user.type(screen.getByPlaceholderText("例如 1000"), "2000");
+    await user.click(screen.getByRole("button", { name: "保存设置" }));
 
     await waitFor(() => {
       expect(mockMutate).toHaveBeenCalled();
@@ -267,8 +267,8 @@ describe("LoggingSettings", () => {
     renderWithProviders(<LoggingSettings />);
 
     await blankEveryOptionalField(user);
-    await user.type(screen.getByPlaceholderText("e.g., 5m"), "10m");
-    await user.click(screen.getByRole("button", { name: "Save Settings" }));
+    await user.type(screen.getByPlaceholderText("例如 5m"), "10m");
+    await user.click(screen.getByRole("button", { name: "保存设置" }));
 
     await waitFor(() => {
       expect(mockMutate).toHaveBeenCalled();
@@ -295,7 +295,7 @@ describe("LoggingSettings", () => {
     renderWithProviders(<LoggingSettings />);
 
     await blankEveryOptionalField(user);
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -320,11 +320,11 @@ describe("LoggingSettings", () => {
 
     renderWithProviders(<LoggingSettings />);
 
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(mockToast.success).toHaveBeenCalledWith("Spend logs settings updated successfully");
+      expect(mockToast.success).toHaveBeenCalledWith("消费日志设置更新成功");
     });
   });
 
@@ -341,11 +341,11 @@ describe("LoggingSettings", () => {
 
     renderWithProviders(<LoggingSettings />);
 
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(mockToast.fromError).toHaveBeenCalledWith("Failed to save spend logs settings: Backend error");
+      expect(mockToast.fromError).toHaveBeenCalledWith("保存消费日志设置失败：Backend error");
     });
     expect(mockToast.fromError).toHaveBeenCalledTimes(1);
   });
@@ -358,7 +358,7 @@ describe("LoggingSettings", () => {
 
     renderWithProviders(<LoggingSettings />);
 
-    const saveButton = screen.getByRole("button", { name: /Saving/i });
+    const saveButton = screen.getByRole("button", { name: /保存中/ });
     expect(saveButton).toBeInTheDocument();
     expect(within(saveButton).getByRole("img", { name: "loading" })).toBeInTheDocument();
   });
@@ -371,7 +371,7 @@ describe("LoggingSettings", () => {
 
     renderWithProviders(<LoggingSettings />);
 
-    const saveButton = screen.getByRole("button", { name: /Saving/i });
+    const saveButton = screen.getByRole("button", { name: /保存中/ });
     expect(saveButton).toBeInTheDocument();
     expect(within(saveButton).getByRole("img", { name: "loading" })).toBeInTheDocument();
   });
@@ -435,14 +435,14 @@ describe("LoggingSettings", () => {
     renderWithProviders(<LoggingSettings />);
 
     const switchElement = screen.getByRole("switch");
-    const retentionInput = screen.getByPlaceholderText("e.g., 7d, 30d");
+    const retentionInput = screen.getByPlaceholderText("例如 7d、30d");
 
     expect(switchElement).toBeChecked();
     expect(retentionInput).toHaveValue("30d");
-    expect(screen.getByPlaceholderText("e.g., 1000")).toHaveDisplayValue("2000");
-    expect(screen.getByPlaceholderText("e.g., 500")).toHaveDisplayValue("50");
-    expect(screen.getByPlaceholderText("e.g., 5m")).toHaveValue("90s");
-    expect(screen.getByPlaceholderText("e.g., 30s")).toHaveValue("10s");
+    expect(screen.getByPlaceholderText("例如 1000")).toHaveDisplayValue("2000");
+    expect(screen.getByPlaceholderText("例如 500")).toHaveDisplayValue("50");
+    expect(screen.getByPlaceholderText("例如 5m")).toHaveValue("90s");
+    expect(screen.getByPlaceholderText("例如 30s")).toHaveValue("10s");
   });
 
   it("should reflect persisted values that arrive after the initial loading render", async () => {
@@ -484,7 +484,7 @@ describe("LoggingSettings", () => {
     await waitFor(() => {
       expect(screen.getByRole("switch")).toBeChecked();
     });
-    expect(screen.getByPlaceholderText("e.g., 7d, 30d")).toHaveValue("30d");
+    expect(screen.getByPlaceholderText("例如 7d、30d")).toHaveValue("30d");
   });
 
   it("should show skeleton loaders when config is loading", () => {
@@ -497,8 +497,8 @@ describe("LoggingSettings", () => {
     renderWithProviders(<LoggingSettings />);
 
     expect(screen.queryByRole("switch")).not.toBeInTheDocument();
-    expect(screen.queryByPlaceholderText("e.g., 7d, 30d")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Save Settings" })).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("例如 7d、30d")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "保存设置" })).not.toBeInTheDocument();
 
     expect(document.querySelectorAll('[data-slot="skeleton"]').length).toBeGreaterThan(0);
   });
@@ -517,7 +517,7 @@ describe("LoggingSettings", () => {
     renderWithProviders(<LoggingSettings />);
 
     await blankEveryOptionalField(user);
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -552,7 +552,7 @@ describe("LoggingSettings", () => {
     renderWithProviders(<LoggingSettings />);
 
     await blankEveryOptionalField(user);
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -578,7 +578,7 @@ describe("LoggingSettings", () => {
     const switchElement = screen.getByRole("switch");
     await user.click(switchElement);
 
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -610,7 +610,7 @@ describe("LoggingSettings", () => {
 
     const switchElement = screen.getByRole("switch");
     await user.click(switchElement);
-    await user.click(screen.getByRole("button", { name: "Save Settings" }));
+    await user.click(screen.getByRole("button", { name: "保存设置" }));
 
     await waitFor(() => {
       expect(mockToast.success).toHaveBeenCalled();
@@ -634,8 +634,8 @@ describe("LoggingSettings", () => {
 
     renderWithProviders(<LoggingSettings />);
 
-    await user.clear(screen.getByPlaceholderText("e.g., 5m"));
-    await user.click(screen.getByRole("button", { name: "Save Settings" }));
+    await user.clear(screen.getByPlaceholderText("例如 5m"));
+    await user.click(screen.getByRole("button", { name: "保存设置" }));
 
     await waitFor(() => {
       expect(mockToast.success).toHaveBeenCalled();
@@ -651,9 +651,9 @@ describe("LoggingSettings", () => {
 
       renderWithProviders(<LoggingSettings />);
 
-      const batchSize = screen.getByPlaceholderText("e.g., 1000");
+      const batchSize = screen.getByPlaceholderText("例如 1000");
       await user.type(batchSize, "2000.7");
-      await user.click(screen.getByRole("button", { name: "Save Settings" }));
+      await user.click(screen.getByRole("button", { name: "保存设置" }));
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -674,9 +674,9 @@ describe("LoggingSettings", () => {
 
       renderWithProviders(<LoggingSettings />);
 
-      const batchSize = screen.getByPlaceholderText("e.g., 1000");
+      const batchSize = screen.getByPlaceholderText("例如 1000");
       await user.type(batchSize, "0");
-      await user.click(screen.getByRole("button", { name: "Save Settings" }));
+      await user.click(screen.getByRole("button", { name: "保存设置" }));
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -693,8 +693,8 @@ describe("LoggingSettings", () => {
 
       renderWithProviders(<LoggingSettings />);
 
-      await user.type(screen.getByPlaceholderText("e.g., 7d, 30d"), "30d");
-      await user.click(screen.getByRole("button", { name: "Save Settings" }));
+      await user.type(screen.getByPlaceholderText("例如 7d、30d"), "30d");
+      await user.click(screen.getByRole("button", { name: "保存设置" }));
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -713,8 +713,8 @@ describe("LoggingSettings", () => {
 
       renderWithProviders(<LoggingSettings />);
 
-      await user.type(screen.getByPlaceholderText("e.g., 7d, 30d"), "   ");
-      await user.click(screen.getByRole("button", { name: "Save Settings" }));
+      await user.type(screen.getByPlaceholderText("例如 7d、30d"), "   ");
+      await user.click(screen.getByRole("button", { name: "保存设置" }));
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
