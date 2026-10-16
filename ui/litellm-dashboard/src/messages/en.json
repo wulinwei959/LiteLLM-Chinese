@@ -2578,7 +2578,10 @@
       "searchPlaceholder": "Search teams by name or ID…",
       "filters": "Filters",
       "filtersDesc": "Narrow down your teams"
-    }
+    },
+    "listEditTeam": "Edit team",
+    "listCopyTeamId": "Copy team ID",
+    "listDeleteTeam": "Delete team"
   },
   "userAgentActivity": {
     "summaryTitle": "Summary by User Agent",

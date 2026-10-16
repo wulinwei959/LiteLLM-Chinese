@@ -114,19 +114,19 @@ function TeamRowActions({ team, canManage, onEditTeam, onDeleteTeam, t }: TeamRo
         {canManage && (
           <DropdownMenuItem onClick={() => onEditTeam(team)} data-testid="team-action-edit">
             <Pencil />
-            Edit team
+            {t("listEditTeam")}
           </DropdownMenuItem>
         )}
         <DropdownMenuItem onClick={handleCopy} data-testid="team-action-copy">
           <Copy />
-          Copy team ID
+          {t("listCopyTeamId")}
         </DropdownMenuItem>
         {canManage && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onClick={() => onDeleteTeam(team)} data-testid="team-action-delete">
               <Trash2 />
-              Delete team
+              {t("listDeleteTeam")}
             </DropdownMenuItem>
           </>
         )}

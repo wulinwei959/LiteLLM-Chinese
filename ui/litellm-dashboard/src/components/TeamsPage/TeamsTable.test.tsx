@@ -258,10 +258,10 @@ describe("row actions", () => {
 
     await user.click(screen.getByTestId("team-actions-team-1"));
 
-    await user.click(await screen.findByText("Edit team"));
+    await user.click(await screen.findByText("编辑团队"));
     expect(onEditTeam).toHaveBeenCalledWith(expect.objectContaining({ team_id: "team-1" }));
 
-    await chooseSelectOption(user, screen.getByTestId("team-actions-team-1"), "Delete team", "menuitem");
+    await chooseSelectOption(user, screen.getByTestId("team-actions-team-1"), "删除团队", "menuitem");
     expect(onDeleteTeam).toHaveBeenCalledWith(expect.objectContaining({ team_id: "team-1" }));
   });
 
@@ -271,8 +271,8 @@ describe("row actions", () => {
 
     await user.click(screen.getByTestId("team-actions-team-1"));
 
-    expect(await screen.findByText("Copy team ID")).toBeInTheDocument();
-    expect(screen.queryByText("Edit team")).not.toBeInTheDocument();
+    expect(await screen.findByText("复制团队 ID")).toBeInTheDocument();
+    expect(screen.queryByText("编辑团队")).not.toBeInTheDocument();
     expect(screen.queryByText("Delete team")).not.toBeInTheDocument();
   });
 });

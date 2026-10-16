@@ -2578,7 +2578,10 @@
       "searchPlaceholder": "按名称或 ID 搜索团队…",
       "filters": "筛选",
       "filtersDesc": "缩小团队范围"
-    }
+    },
+    "listEditTeam": "编辑团队",
+    "listCopyTeamId": "复制团队 ID",
+    "listDeleteTeam": "删除团队"
   },
   "userAgentActivity": {
     "summaryTitle": "按用户代理汇总",
