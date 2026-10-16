@@ -4299,6 +4299,31 @@
       "previewLabel": "Preview",
       "saveButton": "Save banner",
       "updatedToast": "User banner updated successfully"
+    },
+    "pluginSettings": {
+      "title": "Plugins",
+      "description": "Register external services as plugins. Once added, users can toggle to the plugin from the mode switcher in the top-left of the sidebar.",
+      "manifestHint": "Each plugin must expose <code>GET /api/plugin-manifest</code> returning nav items and capabilities.",
+      "addPlugin": "Add Plugin",
+      "editPlugin": "Edit Plugin",
+      "displayName": "Display Name",
+      "url": "URL",
+      "pluginKey": "Plugin Key",
+      "editAria": "Edit {name}",
+      "deleteAria": "Delete {name}",
+      "nameLabel": "Name (identifier)",
+      "nameDesc": "Used in URLs and config. No spaces. E.g. litellm-platform-plugin",
+      "namePlaceholder": "litellm-platform-plugin",
+      "displayNamePlaceholder": "Agent Control Plane",
+      "urlDesc": "Base URL of the plugin service",
+      "urlPlaceholder": "https://your-plugin.example.com",
+      "pluginKeyDesc": "Optional. The plugin's own credential, injected as Authorization: Bearer '<key>' only when litellm reverse-proxies API calls to the plugin's backend (/plugin-proxy/'<name>'/*). Leave blank for plugins that use the forwarded litellm user token (e.g. iframe plugins) — that path uses the user's token, not this key.",
+      "pluginKeyPlaceholderKeep": "Leave blank to keep current key",
+      "pluginKeyPlaceholderOptional": "sk-... (optional)",
+      "showKey": "Show plugin key",
+      "hideKey": "Hide plugin key",
+      "required": "Required",
+      "invalidUrl": "Must be a valid URL"
     }
   },
   "usage": {
