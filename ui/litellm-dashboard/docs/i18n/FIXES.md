@@ -178,6 +178,18 @@ npx tsc --noEmit 2>&1 | grep "error TS" | sed 's/^ *//' | sort -u
 
 新增的用例要有牙齿。把 `getSnapshot` 里的浏览器语言回退临时去掉，只有"跟随浏览器语言"那一条变红，其余三条仍绿，说明它盯的确实是这条回退
 
+## 2026-10-16 第 93-109 簇新发现的五条
+
+**用英文展示值当数据在用**（第 108 簇最典型）。`ToolPolicies` 的测试原本这样读策略值：`(cell?.textContent ?? "").replace(/[^a-z]/gi, "")`，靠剥掉圆点和箭头再与 `untrusted` 比较。这在翻译之前能work，因为选项的 `label` 恰好等于 `value`；标签一翻成中文，这条正则就再也匹配不到任何东西，而且失败信息会是"找不到 `untrusted`"，很容易被误判成组件坏了。修法是给控件加一个与语言无关的 `data-policy={value}`，断言改读它。凡是"界面上显示的字符串同时也是要断言的业务值"，都要先补一个语言无关的读取口，再翻译。同类的还有 `HealthChecksTableColumns` 里那几个排序用的 `NEVER_CHECKED` 常量，它们是后端原样下发的字符串，翻译它们会让排序断言在 `zh-CN` 下失效。
+
+**派生值与展示值共用一个函数**（第 103 簇）。`shared/charts` 的 `formatCategoryName` 把 dataKey 机械地转成标题（`metrics.cache_read_input_tokens` → `Cache Read Input Tokens`），`CustomLegend`、`CustomTooltip` 与 `activity_metrics` 都调它。直接给它接翻译会同时破坏未登记 key 的兜底路径。做法是保留 `formatCategoryName` 作为纯函数，另加 `useCategoryName` hook：已知 dataKey 查 `chartLabels`，未知 key 走原来的机械转换，英文渲染因此逐字不变。
+
+**中文同形导致的断言歧义**（第 103 簇）。`chartLabels.avgResponseTimeMs` 一开始译成"平均响应时间"，与卡片标题 `activityMetrics.avgResponseTime` 完全同名，于是测试里"图例里有这条"与"图例里没有这条"两个断言都无法区分。中文里给毫秒图例单独写成"平均响应时间 (ms)"既符合习惯也消掉了歧义。同一文件里 `chartLabels.totalTokens` 与 `activityMetrics.totalTokens` 也同名（"令牌总数"），靠所在容器区分，没有制造问题，但值得记住这种坑。
+
+**同值键跨命名空间复用会引出隐性耦合**（第 105 簇）。`public_model_hub.test.tsx` 里手写的表格 harness 调列工厂，而列工厂现在需要 `t`。测试没有 `renderWithProviders` 提供的上下文，就用 `createTranslator({ locale: "zh-CN", messages: zh, namespace: "modelHub" })` 直接构造。注意 `createTranslator` 的参数是 `{ locale, messages, namespace }` 这个对象，传裸 messages 会得到一个把键名原样回显的假翻译器（`t("colServerName")` 返回字符串 `"colServerName"`），症状是断言找不到英文原文，很容易误判成翻译没生效。
+
+**并行的代价：共享文件的合并冲突**（第 96-101 簇）。多个 worktree 同时改 `en.json`/`zh-CN.json` 时，只要每个簇都在文件末尾追加自己的顶层命名空间，git 一定会把末尾判成冲突。这次用脚本做递归三方并集解决，键集互不相交时结果是两边的并集。`translators.ts` 这类追加型的 TS 文件则手工解。教训是：并行簇要保证新增内容落在互不相交的顶层命名空间上，否则并集脚本也救不了同键不同值。
+
 ## 本轮修过的缺陷
 
 2026-10-12 这一轮从"翻译做完，测试红一片"收尾到"核心模块全绿"，修的东西按类分

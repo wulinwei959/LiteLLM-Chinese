@@ -1,6 +1,46 @@
 # 开发进度
 
-数据快照 2026-10-16，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 92 簇后（非测试 `.tsx` 912 个接入 518 个、56.8%，目录叶子 7975、中英同值 98；第 87 到 92 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例是 `LensSetup` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言必挂（夹具 `2026-09-30 18:00:00.000` 归一为 UTC 后被 +8 推到 `2026-10-01`），本地单跑 1 failed|18 passed、`TZ=UTC` 单跑 19 例全绿；第 84 簇另曾见 `EntityUsage`、`mcp_server_edit`、`KeyActivityPanel` 各 1 例并发抖动，本簇四片未复现；第 81 簇那 `cost_tracking_settings` 7 例与 shard 1 偶发的"saves a discovered agent independently of the application name"本簇亦未复现，第 67、72、76、77、80 簇四片里曾多报 `LensSetup` 的日期或按钮断言，故继续记为时区/并发相关的上游既有抖动，第 68、69、70、71、73、74、75、76、77、78、79、81 簇的四片里未出现；例数与第 84 簇持平，本簇未增删用例）。最新的测试统计是第 55 簇后的一次全量（886 文件 11577 例、27 失败 + 9 例预期失败，27 例落在 12 个测试文件上：19 例是已汉化组件的英文断言欠账、已在随后的清扫里改绿，8 例经与上游快照比对确认不是汉化欠账，明细见"## 2026-10-15 第 55 簇后的全量快照"与"## 2026-10-15 断言欠账清扫"），上一次全量是第 53 簇后（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），再上一次是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-16，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 109 簇后（非测试 `.tsx` 912 个接入 585 个、64.1%，目录叶子 8879、中英同值 102）。第 93 到 109 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了两处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+
+## 2026-10-16 第 93-109 簇更新
+
+这一段是一轮并行推进，簇的编号沿用顺序，其中第 96 到 101 簇在各自 worktree 完成后再三方合并回 `main`。并行带来两个必须记住的坑：`en.json`/`zh-CN.json` 的合并冲突用脚本做递归三方并集解决（每个 worktree 只在自己的命名空间末尾追加，键集互不相交），`translators.ts` 与其他共享文件的冲突手工解。
+
+第 93 簇 `components/shared/table_cells/`：10 个共享单元格渲染器里只有 5 个含面向用户的文案（`AutoRouterTag`、`UserPopoverCell`、`id_cell`、`models_cell`、`spend_budget_cell`）。新开顶层 `tableCells` 12 键。`date_cell` 的月份数组、`cell_tooltip`/`identity_cell`/`status_badge` 是数据格式化或纯透传，没有可译文案，保持未挂 hook。`id_cell` 的 `copyLabel` 默认值从解构默认值改成 `copyLabel ?? t("copyId")`，`UserPopoverCell` 改为传 `t("copyField", { label })`。消费者 `OrganizationsTable`、`TeamsTable`、`AccessGroupBudgetsPanel` 的 `+N more`/`of $X`/`· Unlimited` 断言同步换中文。
+
+第 94 簇共享下拉选择组件（`MultiSelect`、`PaginatedMultiSelect`、`PaginatedSearchSelect`、`SearchSelect`、`numerical_input`）：这些是通用组件，默认值文案按既有约定落 `common` 而非特性命名空间，新增 `common.selectOptions`、`commonOptionsFound` 等 9 键。`MultiSelect` 的 `Loading...` 复用既有 `common.loading`（逐字相同），`Paginated*` 的 `Loading…` 是省略号字符，与 `common.loading` 不同值，另开 `common.loadingEllipsis`。三态省略号与句点混用时必须逐字区分，这是第 94 簇最容易出错的地方。`numerical_input.tsx` 原本没有 `"use client"`，加 hook 前先补上。消费者 `ComplexityRouterConfig`、`add_auto_router_tab`、`edit_auto_router` 的 `Create "..."` 断言换中文。
+
+第 95 簇 `chat_ui/`（`ResponseMetrics`、`MCPEventsDisplay`）：新开 `chatUi` 26 键。`ResponseMetrics` 里 `RESPONSE_CACHE_TOOLTIP` 从模块常量改成 `ResponseCacheIndicator` 组件内取键；`PROMPT_CACHE_READ_TOOLTIP`/`PROMPT_CACHE_CREATION_TOOLTIP` 来自 `@/utils/promptCacheUsage`，属另一个模块的文案，本簇只译本文件内的标签，这两条 tooltip 暂留英文。
+
+第 96 簇若干共享展示组件（`CreatedKeyDisplay`、`SummaryCard`、`PageHeader`、`InheritedBudgetHint`、图表 `area_chart`/`bar_chart` 的空态）：新开 `createdKeyDisplay` 与 `sharedComponents` 两个命名空间。`CreatedKeyDisplay` 的内联加粗长句走 `t.rich` 的 `b` 渲染器。图表空态复用既有 `common.noDataShort`，不新建同值键。`InheritedBudgetHint` 的 `scope`（Team/Organization/User）是面向用户的词，各开一个键，`formatGate` 按约定把条件后缀作为 `{suffix}` 参数传入而不用 select。顺带发现 `activity_metrics`、`KeyModelUsageView`、`KeyActivityPanel` 等用裸 `render` 的图表消费者测试，一并换成 `renderWithProviders`。
+
+第 97 簇 `app/(dashboard)/lens/_components/`：13 个组件加 `lensData.ts`，新开 `lens` 命名空间。`lensData.ts` 的纯函数（`scopeLabel`、`normalizeFilters`、`lensStatus`、`analysisProgress`、`durationLabel`、`nextCheckStatus` 等）按"非组件模块"约定改成首参收翻译器。`LensWelcome` 与 `WorkerSetup` 同时渲染 `Connect worker` 与 `Connect a worker` 两个不同串，故拆成两键。`LensSetup.integration.test.tsx` 那条时区日期断言是上游既有，未动。
+
+第 98 簇 `app/(dashboard)/roi-calculator/_components/`：新开 `roiCalculator` 138 键，是本轮最大的一块。`chartConfig` 从模块常量改成组件内基于 `t` 构建；`effortNote`/`coverageLabel`/`estimateLabel` 改成收 `t`。用裸占位符加复数词而不是 `#` 格式化，否则 `1000` 会被渲染成 `1,000`（`#` 会按 locale 加千分位）。`peopleCsv` 的 CSV 表头与 `formatMoney`/`formatNumber` 的 `en-US` 固定格式属数据与格式化，不是文案，保持原样，中文句里会出现 `$0.01` 这类串是预期。
+
+第 99 簇 `components/routing_groups/`：5 个组件外加 `strategy.ts`、`routingGroupPayload.ts`、`modelOwnership.ts` 三个纯逻辑模块，新开 `routingGroups` 60 键。三个纯逻辑的首参从原参数列表首位插入 `t`，各自单测改用 `createTranslator` 注入翻译器。删除确认与用量面板的富文本走 `t.rich` 的 `strong`。策略标签 `formatStrategyLabel` 与校验文案同属面向用户的展示串，一并接入。
+
+第 100 簇 `components/key_team_helpers/` 的 5 个预算编辑器：新开 `budgetEditors` 55 键。`BUDGET_WINDOW_OPTIONS` 与 `MODEL_BUDGET_PERIOD_OPTIONS` 从 `label/resetHint` 改成 `labelKey/resetKey`，与 `DefaultUserSettingsForm` 的既有约定一致。`EndUserBudgetSelect` 的 aria 复用 `virtualKeys.editForm.defaultCustomerBudget`。连带更新了 `Teams`、`TeamInfo`、`key_edit_view`、`create_key_button`、`user_edit_view`、`user_info_view` 六个消费者测试的英文断言。
+
+第 101 簇 `RegenerateKeyModal` 与 `LoggingCallbacks` 设置：新开 `regenerateKey` 与 `loggingCallbacks`。`LoggingCallbacksTableColumns` 的列工厂把模块顶层的 `CALLBACK_MODE_LABELS` 移进工厂并接收 `t`/`tCommon`，`useMemo` 依赖同步加。`RegenerateKeyModal` 的 zod 改成 `buildSchema(t)`，过期后缀按约定作为 `{expiredSuffix}` 参数传入。弹窗右上角 X 的 `sr-only` 文案在共享 `ui/dialog.tsx` 里，超出本簇范围，保持英文，故"点击 X 关闭"的断言仍用 `Close`。
+
+第 102 簇 `app/onboarding/`：`onboarding` 命名空间早已存在但没被使用（`OnboardingFormBody`、`OnboardingErrorView` 仍是字面量），本簇把组件挂上并复用既有键，只新增 `onboarding.passwordRequired` 一条给 zod。`page.tsx` 的 Suspense 兜底复用 `common.loading`。`OnboardingLoadingView` 只有一条技术性 `aria-label="loading"`，按既有约定保持英文不接键。
+
+第 103 簇 `activity_metrics.tsx` 与图表图例：新开 `activityMetrics` 31 键与 `chartLabels` 10 键。`shared/charts` 的 `formatCategoryName` 是从 dataKey 机械派生的（`metrics.spend` → `Spend`），直接接翻译会破坏所有未知 key 的兜底；做法是新增 `useCategoryName` hook，按已知 dataKey 查 `chartLabels`，未知 key 仍走 `formatCategoryName` 的机械转换，英文因此逐字不变。`chartLabels.avgResponseTimeMs` 的中文特意写成"平均响应时间 (ms)"而不是与卡片标题同名的"平均响应时间"，否则测试里两处断言无法区分。
+
+第 104 簇 `UsagePage` 的 `KeyActivityPanel`、`KeyModelUsageView`、`EntityUsage/TopKeyView`：新开 `usageKeyActivity`、`keyModelUsage`、`topKeyView` 三个命名空间。`keyCountText` 是模块级纯函数，改成首参收翻译器；为绕开 `max-params` 的 4 参上限，把四个布尔与数值打包成一个 `KeyCountInput` 对象。
+
+第 105 簇 `PublicModelHubTableColumns.tsx`：表头在既有 `modelHub` 命名空间下补 15 个 `col*` 键，三个列工厂各加一个 `t` 形参。测试里的 `PublicMcpTestTable` 用 `createTranslator({ locale: "zh-CN", messages: zh, namespace: "modelHub" })` 注入，而不是裸 `render`——列工厂是普通函数拿不到 hook。
+
+第 106 簇 `components/model_dashboard/`：表头与弹窗文案补进既有 `models.health` 命名空间。`HealthChecksTableColumns` 里的 `NEVER_CHECKED`/`CHECK_IN_PROGRESS`/`NEVER_SUCCEEDED`/`NONE` 是后端下发的原始值、排序比较按字符串逐字匹配，因此这四个常量保持英文不翻译，只有渲染时才用 `t(...)`；把它们翻译会让 `HealthChecksTable.test.tsx` 的排序断言在 `zh-CN` 下直接失效。
+
+第 107 簇账户菜单（`UserDropdown`、`SidebarAccountMenu`）：新开 `accountMenus` 23 键。触发按钮的 `aria-label` 是模板串，改为带 `{role}`/`{identity}` 的键，角色缺失时用同命名空间的 `unknownRole` 兜底。
+
+第 108 簇 `ToolPolicies/` 与 `ToolDetail.tsx`：新开 `toolPolicies` 50 键。`PolicySelect` 的选项原本 `label` 就是 `value`（`untrusted`/`trusted`/`blocked`），改成 `labelKey` 并在组件内取键，同时给 `SelectTrigger` 加 `data-policy={value}`。这一步不只是为了翻译：原测试用 `(cell.textContent ?? "").replace(/[^a-z]/gi, "")` 剥掉标点与圆点来读策略值，是拿英文 label 当数据在用；标签一翻译这条正则就废了，改成读 `data-policy` 后断言与语言彻底解耦。`needsReviewBody` 用 ICU plural 处理 `{count, plural, ...}`。
+
+第 109 簇 `organization/org-create` 与 `org-settings` 两个表单：在既有 `organizations` 命名空间下补 `orgForm` 21 键。预算重置周期沿用 `DefaultUserSettingsForm` 已有的 `labelKey` 约定，两个表单共用同一份 `BUDGET_DURATION_OPTIONS`。顺带修好 `OrganizationFilters.test.tsx` 的 3 例存量红灯。
+
+本轮合计：非测试 `.tsx` 912 接入 518→585（56.8%→64.1%），目录叶子 7975→8879（+904），中英同值 98→102。
 
 ## 2026-10-16 第 92 簇更新
 

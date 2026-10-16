@@ -94,6 +94,12 @@
 
 二是死键清理。`en.json` 里存在但代码没人引用的键，目前没有守卫能抓到，只能人工发现。发现一个删一个，同时确认它不是被动态拼接的键名引用的
 
+## 批次 24 第 93-109 簇（2026-10-16）
+
+本轮把共享组件长尾里较大的一片收口，覆盖 `shared/table_cells`、共享下拉选择组件、`chat_ui`、`app/onboarding`、`lens`、`roi-calculator`、`routing_groups`、`key_team_helpers`、`RegenerateKeyModal` 与日志回调、`activity_metrics` 与图表图例、`UsagePage` 三个组件、`PublicModelHubTableColumns`、`model_dashboard`、账户菜单、`ToolPolicies` 与 `ToolDetail`、`organization` 两个表单。覆盖率从 56.8% 推到 64.1%，目录叶子从 7975 增到 8879。
+
+剩余量见"## 汉化完成度实测"，当前最大的未接入目录是 `src/components` 根下零散文件（`settings.tsx`、`model_info_view.tsx`、`networking.tsx`、`cloudzero_export_modal.tsx`、`SCIM.tsx` 等）、`app/login`、`components/liteadmin`、`components/claude_code_plugins`、`components/mcp_tools`、`app/(dashboard)/agents/_components` 与 `playground` 的 `AdditionalModelSettings`。
+
 ## 已完成批次里值得回头看的两处重构
 
 `mcp_servers.tsx` 的排序下拉原本是带 `label` 的字面量数组，翻译时改成 `SORT_KEYS`（只存 key）加 `SORT_LABEL_KEYS`（key 到 i18n key 的映射），下拉项与 `items` 属性都从 `SORT_KEYS` 派生。这样数组本身不含文案，重排或增删选项不会碰到翻译
