@@ -9871,5 +9871,31 @@
     "namePlaceholder": "Enter a friendly name for these credentials",
     "githubHelp": "Get help on our github",
     "submit": "Reuse Credentials"
+  },
+  "loggingSettingsView": {
+    "integrations": "Logging Integrations",
+    "noIntegrations": "No logging integrations configured",
+    "disabledCallbacks": "Disabled Callbacks",
+    "disabledForKey": "Disabled for this key",
+    "disabled": "Disabled",
+    "noDisabledCallbacks": "No callbacks disabled",
+    "title": "Logging Settings"
+  },
+  "mcpToolArgs": {
+    "toolInputDesc": "Input for this tool",
+    "enterInputRequired": "Please enter input for this tool",
+    "enterField": "Please enter {key}",
+    "selectValid": "Please select a valid {key}",
+    "invalidJsonObject": "Please enter a JSON object",
+    "invalidJsonArray": "Please enter a JSON array",
+    "invalidJson": "Invalid JSON",
+    "inputPlaceholder": "Enter input for this tool",
+    "noParameters": "No parameters required for this tool.",
+    "selectKeyPlaceholder": "Select {key}",
+    "enterKeyPlaceholder": "Enter {key}",
+    "enterJsonObjectPlaceholder": "Enter JSON object for {key}",
+    "enterJsonArrayPlaceholder": "Enter JSON array for {key}",
+    "trueLabel": "True",
+    "falseLabel": "False"
   }
 }

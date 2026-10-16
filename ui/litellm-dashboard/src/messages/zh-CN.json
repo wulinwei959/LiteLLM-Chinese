@@ -9867,5 +9867,31 @@
     "namePlaceholder": "请为这些凭据输入一个易记的名称",
     "githubHelp": "在 GitHub 上获取帮助",
     "submit": "复用凭据"
+  },
+  "loggingSettingsView": {
+    "integrations": "日志集成",
+    "noIntegrations": "尚未配置任何日志集成",
+    "disabledCallbacks": "已禁用的回调",
+    "disabledForKey": "该密钥已禁用",
+    "disabled": "已禁用",
+    "noDisabledCallbacks": "没有禁用的回调",
+    "title": "日志设置"
+  },
+  "mcpToolArgs": {
+    "toolInputDesc": "该工具的输入",
+    "enterInputRequired": "请输入该工具的输入内容",
+    "enterField": "请输入 {key}",
+    "selectValid": "请选择有效的 {key}",
+    "invalidJsonObject": "请输入 JSON 对象",
+    "invalidJsonArray": "请输入 JSON 数组",
+    "invalidJson": "JSON 无效",
+    "inputPlaceholder": "请输入该工具的内容",
+    "noParameters": "该工具不需要任何参数。",
+    "selectKeyPlaceholder": "选择 {key}",
+    "enterKeyPlaceholder": "请输入 {key}",
+    "enterJsonObjectPlaceholder": "请输入 {key} 的 JSON 对象",
+    "enterJsonArrayPlaceholder": "请输入 {key} 的 JSON 数组",
+    "trueLabel": "是",
+    "falseLabel": "否"
   }
 }
