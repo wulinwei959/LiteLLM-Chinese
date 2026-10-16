@@ -1,6 +1,18 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 136 簇后（非测试 `.tsx` 912 个接入 627 个、68.8%，目录叶子 9416、中英同值 106）。第 93 到 136 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了两处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步），以及 `TeamInfo.test.tsx` 里因 `permissions` 簇翻译而过期的两处断言（第 133 簇顺手修）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 139 簇后（非测试 `.tsx` 912 个接入 629 个、69.0%，目录叶子 9447、中英同值 106）。第 93 到 139 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了三处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）、`TeamInfo.test.tsx` 里因 `permissions` 簇翻译而过期的两处断言（第 133 簇顺手修）、`TeamInfo.test.tsx` 的护栏标题与对象权限 tooltip（第 133 簇）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+
+## 2026-10-17 第 137-139 簇更新
+
+继续串行推进，没有派子代理。
+
+第 137 簇 `vector-stores/_components/` 的 `DocumentsTableColumns.tsx` 与 `IndexesTab.tsx`：接进既有 `vectorStores`，9 键。文档状态徽标从 `{ tone, label }` 常量表改成 `STATUS_LABEL_KEYS`（键名）+ `STATUS_TONES`（色调）两张表，未知状态回落到后端原始值；说明段落走 `t.rich`，`docsLink` 与 `issueLink` 两个标签各自指向不同地址，因此 `messagesParity` 的富文本标签白名单补了 `docslink`/`issuelink`，闭合检查改成大小写不敏感（原文是 `body.includes("</" + tag + ">")`，混排大小写的标签会被误报未闭合）。
+
+第 138 簇 `usage/_components/components/UsageViewSelect/UsageViewSelect.tsx`：接进既有 `usage` 的新 `viewSelect` 子对象，21 键。`OPTIONS` 选项表从英文 `label`/`description` 改存受限 union 的键名，管理员与非管理员两套文案用 `nonAdminLabelKey`/`nonAdminDescriptionKey` 表达；`title`/`description` 默认参数改为渲染处 `?? t(...)` 兜底。
+
+第 139 簇两张列定义表的残留：`ToolPoliciesTableColumns.tsx` 的四处 `meta.title`（skeleton 与隐藏列用的可访问名，此前只翻了 `header`）与新键 `colUserTooltip`；`TeamsPage/teamTableColumns.tsx` 的 `Unlimited` 与 `fallback="Never"`，列工厂 deps 补 `commonT`。
+
+这一段合计：非测试 `.tsx` 912 接入 627→629（68.8%→69.0%），目录叶子 9416→9447（+31），中英同值 106 不变。候选文件 80→76（含 `MCPStandardsSettings.tsx` 这种"键名已就位但目录还没有对应命名空间、且当前无组件消费"的误报，以及 `callback_info_helpers.tsx` 这类数据表）。
 
 ## 2026-10-17 第 132-136 簇更新
 

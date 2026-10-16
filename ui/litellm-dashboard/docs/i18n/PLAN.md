@@ -104,7 +104,7 @@
 
 这一轮继续串行收共享组件长尾：`logging_settings_view`、`mcp_tools/MCPToolArgumentsForm`、`shared/advanced_date_picker`、`PassThroughSettings/`、`vector-stores/_components/`、`update_model_credentials_modal`、`shared/DataTable` 的工具栏与列视图开关、四张列定义表（搜索工具、索引、已删除密钥、已删除团队）、`email_settings` 与 `email_event_settings`、`per_user_usage`、`view_user_spend`、`hooks/useMcpOAuthFlow`，以及一批小组件（`UIAccessControlForm`、登录提示与无 Redis 提示条、`SidebarUsageCard`、入门弹窗、`query_param_input`）。覆盖率从 65.9% 推到 68.8%，目录叶子从 9128 增到 9416。
 
-仍未动的两块：`components/networking.tsx`（中心网络层，穿透成本远大于收益，已单独记账）与剩余约 80 个启发式候选文件（多为一处两条提示的小文件，另有 `vector_store_providers.tsx` 这种配置模块体量偏大）。
+仍未动的两块：`components/networking.tsx`（中心网络层，穿透成本远大于收益，已单独记账）与剩余约 76 个启发式候选文件（多为一处两条提示的小文件，另有 `vector_store_providers.tsx` 这种配置模块体量偏大，`callback_info_helpers.tsx` 这类数据表要把 `description` 改成键名再逐个消费者跟进）。
 
 ## 已完成批次里值得回头看的两处重构
 
