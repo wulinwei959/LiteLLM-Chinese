@@ -18,25 +18,23 @@ import { cn } from "@/lib/cva.config";
 
 import { AvailableSearchProvider, SearchTool } from "./types";
 
-const CONFIG_EDIT_HINT = "Config search tools cannot be edited on the dashboard. Please edit the config file.";
-const CONFIG_DELETE_HINT = "Config search tools cannot be deleted on the dashboard. Please edit the config file.";
-
 export const searchToolKey = (tool: SearchTool): string => tool.search_tool_id || tool.search_tool_name;
 
 interface SearchToolRowActionsProps {
   tool: SearchTool;
   onEdit: (searchToolId: string) => void;
   onDelete: (searchToolId: string) => void;
+  t: SearchToolsTranslator;
 }
 
-function SearchToolRowActions({ tool, onEdit, onDelete }: SearchToolRowActionsProps) {
+function SearchToolRowActions({ tool, onEdit, onDelete, t }: SearchToolRowActionsProps) {
   const isFromConfig = tool.is_from_config ?? false;
   const toolId = tool.search_tool_id;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open search tool actions"
+        aria-label={t("openActionsAria")}
         data-testid={`search-tool-actions-${searchToolKey(tool)}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -46,22 +44,22 @@ function SearchToolRowActions({ tool, onEdit, onDelete }: SearchToolRowActionsPr
         <DropdownMenuItem
           disabled={isFromConfig || !toolId}
           data-testid="search-tool-action-edit"
-          title={isFromConfig ? CONFIG_EDIT_HINT : undefined}
+          title={isFromConfig ? t("configEditHint") : undefined}
           onClick={() => toolId && onEdit(toolId)}
         >
           <Pencil />
-          Edit search tool
+          {t("editTool")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           variant="destructive"
           disabled={isFromConfig || !toolId}
           data-testid="search-tool-action-delete"
-          title={isFromConfig ? CONFIG_DELETE_HINT : undefined}
+          title={isFromConfig ? t("configDeleteHint") : undefined}
           onClick={() => toolId && onDelete(toolId)}
         >
           <Trash2 />
-          Delete search tool
+          {t("deleteTool")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -86,8 +84,8 @@ export const getSearchToolTableColumns = ({
   {
     id: "search_tool_id",
     accessorKey: "search_tool_id",
-    meta: { title: "Search Tool ID" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Search Tool ID" />,
+    meta: { title: t("searchToolIdCol") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("searchToolIdCol")} />,
     size: 200,
     enableSorting: true,
     cell: ({ row }) => {
@@ -104,8 +102,8 @@ export const getSearchToolTableColumns = ({
   {
     id: "search_tool_name",
     accessorKey: "search_tool_name",
-    meta: { title: "Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Name" />,
+    meta: { title: t("nameCol") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("nameCol")} />,
     size: 200,
     enableSorting: true,
     cell: ({ row }) => (
@@ -138,21 +136,26 @@ export const getSearchToolTableColumns = ({
   {
     id: "updated_at",
     accessorKey: "updated_at",
-    meta: { title: "Updated At" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Updated At" />,
+    meta: { title: t("updatedAtCol") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("updatedAtCol")} />,
     size: 130,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.updated_at} precision="date" />,
   },
   {
     id: "source",
-    meta: { title: "Source", skeleton: "badge" },
-    header: "Source",
+    meta: { title: t("sourceCol"), skeleton: "badge" },
+    header: t("sourceCol"),
     size: 100,
     enableSorting: false,
     cell: ({ row }) => {
       const isFromConfig = row.original.is_from_config ?? false;
-      return <StatusBadge tone={isFromConfig ? "neutral" : "info"} label={isFromConfig ? "Config" : "DB"} />;
+      return (
+        <StatusBadge
+          tone={isFromConfig ? "neutral" : "info"}
+          label={isFromConfig ? t("sourceConfig") : t("sourceDb")}
+        />
+      );
     },
   },
   {
@@ -164,7 +167,7 @@ export const getSearchToolTableColumns = ({
     enableHiding: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <SearchToolRowActions tool={row.original} onEdit={onEdit} onDelete={onDelete} />
+        <SearchToolRowActions tool={row.original} onEdit={onEdit} onDelete={onDelete} t={t} />
       </div>
     ),
   },

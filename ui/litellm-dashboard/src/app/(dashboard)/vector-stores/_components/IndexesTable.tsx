@@ -39,11 +39,12 @@ const IndexesTable: React.FC<IndexesTableProps> = ({
   isLoading = false,
 }) => {
   const t = useTranslations("vectorStores");
+  const tableT = useTranslations("vectorStores.table");
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
   const columns = useMemo(
-    () => getIndexesTableColumns({ resolveVectorStoreId, onViewVectorStore }),
-    [resolveVectorStoreId, onViewVectorStore],
+    () => getIndexesTableColumns({ resolveVectorStoreId, onViewVectorStore, tableT }),
+    [resolveVectorStoreId, onViewVectorStore, tableT],
   );
 
   return (
@@ -56,7 +57,7 @@ const IndexesTable: React.FC<IndexesTableProps> = ({
       sorting={sorting}
       onSortingChange={setSorting}
       isLoading={isLoading}
-      loadingMessage="Loading indexes…"
+      loadingMessage={t("loadingIndexes")}
       noDataMessage={<EmptyState />}
       size="compact"
     />

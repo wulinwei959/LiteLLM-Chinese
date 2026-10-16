@@ -8336,7 +8336,19 @@
     "providerCol": "供应商",
     "apiKeyCol": "API 密钥",
     "createdAtCol": "创建时间",
-    "descriptionCol": "描述"
+    "descriptionCol": "描述",
+    "searchToolIdCol": "搜索工具 ID",
+    "nameCol": "名称",
+    "updatedAtCol": "更新时间",
+    "sourceCol": "来源",
+    "sourceConfig": "配置文件",
+    "sourceDb": "数据库",
+    "openActionsAria": "打开搜索工具操作",
+    "editTool": "编辑搜索工具",
+    "deleteTool": "删除搜索工具",
+    "configEditHint": "配置文件中的搜索工具无法在管理面板编辑，请直接修改配置文件。",
+    "configDeleteHint": "配置文件中的搜索工具无法在管理面板删除，请直接修改配置文件。",
+    "loadingMessage": "正在加载搜索工具…"
   },
   "vectorStores": {
     "createdSuccess": "向量存储创建成功",
@@ -8449,8 +8461,14 @@
       "oneFile": "1 个文件",
       "manyFiles": "{count} 个文件",
       "edit": "编辑",
-      "delete": "删除"
+      "delete": "删除",
+      "indexName": "索引名称",
+      "indexVectorStore": "向量存储",
+      "indexProvider": "供应商索引",
+      "indexCreatedBy": "创建者",
+      "indexCreatedAt": "创建时间"
     },
+    "loadingIndexes": "正在加载索引…",
     "idCopied": "向量存储 ID 已复制",
     "copyId": "复制向量存储 ID",
     "configStoreHint": "只读：该向量存储在配置文件中定义，无法在管理面板上编辑或删除。"
@@ -10062,5 +10080,37 @@
   },
   "dataTableViewOptions": {
     "view": "视图"
+  },
+  "deletedKeysTable": {
+    "loading": "正在加载已删除的密钥…",
+    "emptyTitle": "未找到已删除的密钥",
+    "emptyDesc": "从此代理删除的密钥将显示在这里。",
+    "keyId": "密钥 ID",
+    "keyAlias": "密钥别名",
+    "teamAlias": "团队别名",
+    "spend": "花费（美元）",
+    "budget": "预算（美元）",
+    "userEmail": "用户邮箱",
+    "userId": "用户 ID",
+    "createdAt": "创建时间",
+    "createdBy": "创建者",
+    "deletedAt": "删除时间",
+    "deletedBy": "删除者",
+    "unlimited": "无限制"
+  },
+  "deletedTeamsTable": {
+    "loading": "正在加载已删除的团队…",
+    "emptyTitle": "未找到已删除的团队",
+    "emptyDesc": "从此代理删除的团队将显示在这里。",
+    "teamName": "团队名称",
+    "teamId": "团队 ID",
+    "created": "创建时间",
+    "spend": "花费（美元）",
+    "budget": "预算（美元）",
+    "models": "模型",
+    "organization": "组织",
+    "deletedAt": "删除时间",
+    "deletedBy": "删除者",
+    "unlimited": "无限制"
   }
 }

@@ -34,7 +34,6 @@ function EmptyState({ t }: { t: SearchToolsTranslator }) {
   );
 }
 
-
 const SearchToolTable: React.FC<SearchToolTableProps> = ({
   searchTools,
   isLoading,
@@ -49,7 +48,7 @@ const SearchToolTable: React.FC<SearchToolTableProps> = ({
   const columns = useMemo(() => {
     const deps = { availableProviders, onView, onEdit, onDelete, t };
     return getSearchToolTableColumns(deps);
-  }, [availableProviders, onView, onEdit, onDelete]);
+  }, [availableProviders, onView, onEdit, onDelete, t]);
 
   return (
     <DataTable
@@ -61,7 +60,7 @@ const SearchToolTable: React.FC<SearchToolTableProps> = ({
       sorting={sorting}
       onSortingChange={setSorting}
       isLoading={isLoading}
-      loadingMessage="Loading search tools…"
+      loadingMessage={t("loadingMessage")}
       noDataMessage={<EmptyState t={t} />}
       size="compact"
     />

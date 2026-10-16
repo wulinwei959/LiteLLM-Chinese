@@ -8340,7 +8340,19 @@
     "providerCol": "Provider",
     "apiKeyCol": "API Key",
     "createdAtCol": "Created At",
-    "descriptionCol": "Description"
+    "descriptionCol": "Description",
+    "searchToolIdCol": "Search Tool ID",
+    "nameCol": "Name",
+    "updatedAtCol": "Updated At",
+    "sourceCol": "Source",
+    "sourceConfig": "Config",
+    "sourceDb": "DB",
+    "openActionsAria": "Open search tool actions",
+    "editTool": "Edit search tool",
+    "deleteTool": "Delete search tool",
+    "configEditHint": "Config search tools cannot be edited on the dashboard. Please edit the config file.",
+    "configDeleteHint": "Config search tools cannot be deleted on the dashboard. Please edit the config file.",
+    "loadingMessage": "Loading search tools…"
   },
   "vectorStores": {
     "createdSuccess": "Vector Store Created Successfully",
@@ -8453,8 +8465,14 @@
       "oneFile": "1 file",
       "manyFiles": "{count} files",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "indexName": "Index Name",
+      "indexVectorStore": "Vector Store",
+      "indexProvider": "Provider Index",
+      "indexCreatedBy": "Created By",
+      "indexCreatedAt": "Created At"
     },
+    "loadingIndexes": "Loading indexes…",
     "idCopied": "Vector store ID copied",
     "copyId": "Copy vector store ID",
     "configStoreHint": "Read only: this vector store is defined in the config file and cannot be edited or deleted on the dashboard."
@@ -10066,5 +10084,37 @@
   },
   "dataTableViewOptions": {
     "view": "View"
+  },
+  "deletedKeysTable": {
+    "loading": "Loading deleted keys…",
+    "emptyTitle": "No deleted keys found",
+    "emptyDesc": "Keys deleted from this proxy will show up here.",
+    "keyId": "Key ID",
+    "keyAlias": "Key Alias",
+    "teamAlias": "Team Alias",
+    "spend": "Spend (USD)",
+    "budget": "Budget (USD)",
+    "userEmail": "User Email",
+    "userId": "User ID",
+    "createdAt": "Created At",
+    "createdBy": "Created By",
+    "deletedAt": "Deleted At",
+    "deletedBy": "Deleted By",
+    "unlimited": "Unlimited"
+  },
+  "deletedTeamsTable": {
+    "loading": "Loading deleted teams…",
+    "emptyTitle": "No deleted teams found",
+    "emptyDesc": "Teams deleted from this proxy will show up here.",
+    "teamName": "Team Name",
+    "teamId": "Team ID",
+    "created": "Created",
+    "spend": "Spend (USD)",
+    "budget": "Budget (USD)",
+    "models": "Models",
+    "organization": "Organization",
+    "deletedAt": "Deleted At",
+    "deletedBy": "Deleted By",
+    "unlimited": "Unlimited"
   }
 }

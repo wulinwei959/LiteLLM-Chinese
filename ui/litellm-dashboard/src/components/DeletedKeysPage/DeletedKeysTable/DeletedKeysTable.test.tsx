@@ -86,7 +86,7 @@ it("should show skeleton rows when loading", () => {
 it("should show the empty state when there are no deleted keys", () => {
   renderWithProviders(<DeletedKeysTable {...defaultProps} keys={[]} totalCount={0} />);
 
-  expect(screen.getByText("No deleted keys found")).toBeInTheDocument();
+  expect(screen.getByText("未找到已删除的密钥")).toBeInTheDocument();
 });
 
 it("links the owner, creator and deleter cells to their user detail pages", () => {
