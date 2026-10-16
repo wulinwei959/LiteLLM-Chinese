@@ -53,7 +53,7 @@ import OrganizationDropdown from "../common_components/OrganizationDropdown";
 import ProjectDropdown from "../common_components/ProjectDropdown";
 import { CreateUserButton } from "../CreateUserButton";
 import { BudgetFallbacksEditor } from "../key_team_helpers/BudgetFallbacksEditor";
-import { END_USER_BUDGET_HINT, EndUserBudgetSelect } from "../key_team_helpers/EndUserBudgetSelect";
+import { EndUserBudgetSelect } from "../key_team_helpers/EndUserBudgetSelect";
 import { BudgetWindowEntry, BudgetWindowsEditor } from "../key_team_helpers/BudgetWindowsEditor";
 import { ModelMaxBudget, ModelMaxBudgetEditor } from "../key_team_helpers/ModelMaxBudgetEditor";
 import { TagRateLimitEditor, TagRateLimitEntry } from "../key_team_helpers/TagRateLimitEditor";
@@ -219,6 +219,7 @@ export const fetchUserModels = async (
  */
 const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOpenCreate, prefillData }) => {
   const t = useTranslations("virtualKeys");
+  const budgetEditorsT = useTranslations("budgetEditors");
   const tDuration = useTranslations("common.budgetDuration");
   const { accessToken, userId: userID, userRole, premiumUser } = useAuthorized();
   const canEditGuardrails = premiumUser || (userRole != null && rolesWithWriteAccess.includes(userRole));
@@ -1078,7 +1079,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           label={
                             <span>
                               Default Customer Budget{" "}
-                              <SimpleTooltip content={END_USER_BUDGET_HINT}>
+                              <SimpleTooltip content={budgetEditorsT("endUserBudget.hint")}>
                                 <Info className="ml-1 inline size-3.5 align-text-bottom" />
                               </SimpleTooltip>
                             </span>

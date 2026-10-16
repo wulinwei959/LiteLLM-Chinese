@@ -7,7 +7,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useTeamMetadataSchema } from "@/app/(dashboard)/hooks/teams/useTeamMetadataSchema";
 import { toast } from "@/lib/toast";
 import { fetchAvailableModelsForTeamOrKey } from "./key_team_helpers/fetch_available_models_team_key";
-import { MODEL_MAX_BUDGET_PREMIUM_HINT } from "./key_team_helpers/ModelMaxBudgetEditor";
 import {
   fetchMCPAccessGroups,
   getDefaultTeamSettings,
@@ -151,6 +150,11 @@ const mockTranslations: Record<string, string> = {
   "teams.listModelAliases": "Model Aliases",
   "teams.listModelAliasesDescription":
     "Create custom aliases for models that can be used by team members in API calls. This allows you to create shortcuts for specific models.",
+  "budgetEditors.model.addBudget": "Add Model Budget",
+  "budgetEditors.model.premiumHint": "Premium feature - Upgrade to set per-model budgets",
+  "budgetEditors.model.removeBudgetAria": "Remove model budget",
+  "budgetEditors.shared.selectModel": "Select model",
+  "budgetEditors.shared.maxSpendPlaceholder": "Max spend ($)",
 };
 
 const mockInterpolate = (template: string, values?: Record<string, unknown>) =>
@@ -1700,7 +1704,7 @@ describe("Teams - the exact bytes the create call sends", () => {
     await openCreateModal({ premiumUser: false });
 
     expect(screen.getByRole("button", { name: /Add Model Budget/i })).toBeDisabled();
-    expect(screen.getByText(MODEL_MAX_BUDGET_PREMIUM_HINT)).toBeInTheDocument();
+    expect(screen.getByText("Premium feature - Upgrade to set per-model budgets")).toBeInTheDocument();
   });
 
   it("sends the per-model budget a licensed operator fills in, keyed by model", async () => {

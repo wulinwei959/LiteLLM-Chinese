@@ -677,7 +677,7 @@ describe("CreateKey", () => {
       await userEvent.click(await screen.findByLabelText("Team"));
       await userEvent.click(await screen.findByRole("option", { name: /Team One/ }));
       await openSection(/Optional Settings/i);
-      await userEvent.click(await screen.findByRole("combobox", { name: "Default Customer Budget" }));
+      await userEvent.click(await screen.findByRole("combobox", { name: "默认客户预算" }));
       await userEvent.click(await screen.findByRole("option", { name: /svc-a-budget/ }));
 
       await submit();
@@ -693,10 +693,10 @@ describe("CreateKey", () => {
       await openModal();
       await openSection(/Optional Settings/i);
       await screen.findByLabelText(/Max Budget/);
-      expect(screen.queryByRole("combobox", { name: "Default Customer Budget" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("combobox", { name: "默认客户预算" })).not.toBeInTheDocument();
 
       await userEvent.click(screen.getByRole("radio", { name: "Service Account" }));
-      expect(await screen.findByRole("combobox", { name: "Default Customer Budget" })).toBeInTheDocument();
+      expect(await screen.findByRole("combobox", { name: "默认客户预算" })).toBeInTheDocument();
     });
 
     it("hides the default customer budget from a non-admin creating a service account", async () => {
@@ -706,7 +706,7 @@ describe("CreateKey", () => {
       await openSection(/Optional Settings/i);
 
       await screen.findByLabelText(/Max Budget/);
-      expect(screen.queryByRole("combobox", { name: "Default Customer Budget" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("combobox", { name: "默认客户预算" })).not.toBeInTheDocument();
     });
   });
 
