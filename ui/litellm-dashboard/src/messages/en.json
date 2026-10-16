@@ -278,8 +278,8 @@
     "title": "Login",
     "subtitle": "Access your LiteLLM Admin UI.",
     "defaultCredentials": "Default Credentials",
-    "defaultCredentialsDesc": "By default, Username is {username} and Password is your set LiteLLM Proxy {masterKey}.",
-    "needHelp": "Need to set UI credentials or SSO? {link}Check the documentation{/link}.",
+    "defaultCredentialsDesc": "By default, Username is <code>admin</code> and Password is your set LiteLLM Proxy <code>MASTER_KEY</code>.",
+    "needHelp": "Need to set UI credentials or SSO? <link>Check the documentation</link>.",
     "workerLabel": "Worker",
     "workerPlaceholder": "Choose a worker to connect to",
     "usernameLabel": "Username",
@@ -295,7 +295,10 @@
     "adminDisabledCode": "DISABLE_ADMIN_UI=False",
     "ssoEnabledTitle": "Single Sign-On (SSO) is enabled",
     "ssoEnabledDesc": "LiteLLM no longer automatically redirects to the SSO login flow upon loading this page. To re-enable auto-redirect-to-SSO, set {code}AUTO_REDIRECT_UI_LOGIN_TO_SSO=true{/code} in your environment configuration.",
-    "ssoDismiss": "Dismiss"
+    "ssoDismiss": "Dismiss",
+    "ssoRedirectNotice": "Single Sign-On (SSO) is enabled. LiteLLM no longer automatically redirects to the SSO login flow upon loading this page. To re-enable auto-redirect-to-SSO, set <code>AUTO_REDIRECT_UI_LOGIN_TO_SSO=true</code> in your environment configuration.",
+    "usernameRequired": "Please enter your username",
+    "passwordRequired": "Please enter your password"
   },
   "onboarding": {
     "brand": "🚅 LiteLLM",

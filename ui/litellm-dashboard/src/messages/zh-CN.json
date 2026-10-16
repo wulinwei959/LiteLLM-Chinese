@@ -278,8 +278,8 @@
     "title": "登录",
     "subtitle": "访问您的 LiteLLM 管理界面。",
     "defaultCredentials": "默认凭据",
-    "defaultCredentialsDesc": "默认情况下，用户名为 {username}，密码为您设置的 LiteLLM Proxy {masterKey}。",
-    "needHelp": "需要设置界面凭据或 SSO？{link}查看文档{/link}。",
+    "defaultCredentialsDesc": "默认情况下，用户名为 <code>admin</code>，密码为您设置的 LiteLLM 代理密钥 <code>MASTER_KEY</code>。",
+    "needHelp": "需要设置界面凭据或 SSO？<link>查看文档</link>。",
     "workerLabel": "工作节点",
     "workerPlaceholder": "选择要连接的工作节点",
     "usernameLabel": "用户名",
@@ -295,7 +295,10 @@
     "adminDisabledCode": "DISABLE_ADMIN_UI=False",
     "ssoEnabledTitle": "单点登录 (SSO) 已启用",
     "ssoEnabledDesc": "LiteLLM 加载此页面时不再自动重定向到 SSO 登录流程。如需重新启用自动重定向到 SSO，请在环境配置中设置 {code}AUTO_REDIRECT_UI_LOGIN_TO_SSO=true{/code}。",
-    "ssoDismiss": "关闭"
+    "ssoDismiss": "关闭",
+    "ssoRedirectNotice": "单点登录（SSO）已启用。LiteLLM 在加载此页面时不再自动跳转到 SSO 登录流程。若要重新启用自动跳转，请在环境配置中设置 <code>AUTO_REDIRECT_UI_LOGIN_TO_SSO=true</code>。",
+    "usernameRequired": "请输入用户名",
+    "passwordRequired": "请输入密码"
   },
   "onboarding": {
     "brand": "🚅 LiteLLM",
