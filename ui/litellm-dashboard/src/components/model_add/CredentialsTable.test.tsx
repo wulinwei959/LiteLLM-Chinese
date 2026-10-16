@@ -47,7 +47,7 @@ describe("CredentialsTable", () => {
 
   it("should render the data column headers", () => {
     renderWithProviders(<CredentialsTable {...defaultProps} />);
-    for (const header of ["Credential Name", "Provider"]) {
+    for (const header of ["凭据名称", "提供商"]) {
       expect(screen.getByText(header)).toBeInTheDocument();
     }
   });
@@ -82,7 +82,7 @@ describe("CredentialsTable", () => {
 
   it("should display the empty state when there are no credentials", () => {
     renderWithProviders(<CredentialsTable {...defaultProps} credentials={[]} />);
-    expect(screen.getByText("No credentials configured")).toBeInTheDocument();
+    expect(screen.getByText("尚未配置凭据")).toBeInTheDocument();
   });
 
   it("should edit a credential through the actions menu", async () => {

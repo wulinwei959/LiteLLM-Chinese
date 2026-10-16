@@ -84,9 +84,9 @@ describe("CredentialModal", () => {
     it("renders the add title and an editable credential name", () => {
       renderModal({ mode: "add" });
 
-      expect(screen.getByText("Add New Credential")).toBeInTheDocument();
-      expect(screen.getByText("Add Credential")).toBeInTheDocument();
-      const nameInput = screen.getByLabelText("Credential Name:") as HTMLInputElement;
+      expect(screen.getByText("新建凭据")).toBeInTheDocument();
+      expect(screen.getByText("添加凭据")).toBeInTheDocument();
+      const nameInput = screen.getByLabelText("凭据名称：") as HTMLInputElement;
       expect(nameInput.value).toBe("");
       expect(nameInput).toBeEnabled();
     });
@@ -105,15 +105,15 @@ describe("CredentialModal", () => {
     it("renders the edit title and update button", () => {
       renderModal({ mode: "edit", existingCredential: mockCredential });
 
-      expect(screen.getByText("Edit Credential")).toBeInTheDocument();
-      expect(screen.getByText("Update Credential")).toBeInTheDocument();
+      expect(screen.getByText("编辑凭据")).toBeInTheDocument();
+      expect(screen.getByText("更新凭据")).toBeInTheDocument();
     });
 
     it("prefills the credential name and disables it", async () => {
       renderModal({ mode: "edit", existingCredential: mockCredential });
 
       await waitFor(() => {
-        const nameInput = screen.getByLabelText("Credential Name:") as HTMLInputElement;
+        const nameInput = screen.getByLabelText("凭据名称：") as HTMLInputElement;
         expect(nameInput.value).toBe("test-credential");
         expect(nameInput).toBeDisabled();
       });
@@ -125,7 +125,7 @@ describe("CredentialModal", () => {
         existingCredential: { ...mockCredential, credential_name: "" },
       });
 
-      expect(screen.getByLabelText("Credential Name:")).toBeDisabled();
+      expect(screen.getByLabelText("凭据名称：")).toBeDisabled();
     });
   });
 });

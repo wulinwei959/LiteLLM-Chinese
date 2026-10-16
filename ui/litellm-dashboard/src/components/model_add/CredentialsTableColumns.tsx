@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/cva.config";
 import { copyToClipboard } from "@/utils/dataUtils";
+import type { CommonTranslator, CredentialsTranslator } from "@/lib/i18n/translators";
 
 function CredentialProviderCell({ provider }: { provider: string | undefined }) {
   if (!provider) {
@@ -44,13 +45,15 @@ interface CredentialRowActionsProps {
   credential: CredentialItem;
   onEdit: (credential: CredentialItem) => void;
   onDelete: (credential: CredentialItem) => void;
+  t: CredentialsTranslator;
+  commonT: CommonTranslator;
 }
 
-function CredentialRowActions({ credential, onEdit, onDelete }: CredentialRowActionsProps) {
+function CredentialRowActions({ credential, onEdit, onDelete, t, commonT }: CredentialRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open credential actions"
+        aria-label={t("openActionsAria")}
         data-testid={`credential-actions-${credential.credential_name}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -59,14 +62,14 @@ function CredentialRowActions({ credential, onEdit, onDelete }: CredentialRowAct
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem data-testid="credential-action-edit" onClick={() => onEdit(credential)}>
           <Pencil />
-          Edit
+          {commonT("edit")}
         </DropdownMenuItem>
         <DropdownMenuItem
           data-testid="credential-action-copy"
-          onClick={() => void copyToClipboard(credential.credential_name, "Credential name copied")}
+          onClick={() => void copyToClipboard(credential.credential_name, t("nameCopied"))}
         >
           <Copy />
-          Copy credential name
+          {t("copyName")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -75,7 +78,7 @@ function CredentialRowActions({ credential, onEdit, onDelete }: CredentialRowAct
           onClick={() => onDelete(credential)}
         >
           <Trash2 />
-          Delete
+          {commonT("delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -86,19 +89,23 @@ interface CredentialsTableColumnsDeps {
   canModifyCredentials: boolean;
   onEdit: (credential: CredentialItem) => void;
   onDelete: (credential: CredentialItem) => void;
+  t: CredentialsTranslator;
+  commonT: CommonTranslator;
 }
 
 export const getCredentialsTableColumns = ({
   canModifyCredentials,
   onEdit,
   onDelete,
+  t,
+  commonT,
 }: CredentialsTableColumnsDeps): ColumnDef<CredentialItem>[] => {
   const dataColumns: ColumnDef<CredentialItem>[] = [
     {
       id: "credential_name",
       accessorKey: "credential_name",
-      meta: { title: "Credential Name" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Credential Name" />,
+      meta: { title: t("nameCol") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("nameCol")} />,
       size: 260,
       enableSorting: true,
       cell: ({ row }) => (
@@ -108,8 +115,8 @@ export const getCredentialsTableColumns = ({
     {
       id: "provider",
       accessorKey: "credential_info.custom_llm_provider",
-      meta: { title: "Provider" },
-      header: "Provider",
+      meta: { title: commonT("provider") },
+      header: commonT("provider"),
       size: 200,
       enableSorting: false,
       cell: ({ row }) => <CredentialProviderCell provider={row.original.credential_info?.custom_llm_provider} />,
@@ -125,13 +132,13 @@ export const getCredentialsTableColumns = ({
     {
       id: "actions",
       meta: { className: "text-right", headerClassName: "text-right" },
-      header: () => <span className="sr-only">Actions</span>,
+      header: () => <span className="sr-only">{commonT("actions")}</span>,
       size: 64,
       enableSorting: false,
       enableHiding: false,
       cell: ({ row }) => (
         <div className="flex justify-end">
-          <CredentialRowActions credential={row.original} onEdit={onEdit} onDelete={onDelete} />
+          <CredentialRowActions credential={row.original} onEdit={onEdit} onDelete={onDelete} t={t} commonT={commonT} />
         </div>
       ),
     },

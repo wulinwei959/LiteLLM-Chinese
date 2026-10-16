@@ -10242,5 +10242,25 @@
     "moreCount": "+{count} more",
     "selectModels": "Select Models",
     "noModelsFound": "No models found"
+  },
+  "credentials": {
+    "nameCol": "Credential Name",
+    "copyName": "Copy credential name",
+    "nameCopied": "Credential name copied",
+    "openActionsAria": "Open credential actions",
+    "loading": "Loading credentials…",
+    "emptyTitle": "No credentials configured",
+    "emptyDesc": "Add a credential to connect an AI provider.",
+    "editTitle": "Edit Credential",
+    "addTitle": "Add New Credential",
+    "nameLabel": "Credential Name:",
+    "nameRequired": "Credential name is required",
+    "namePlaceholder": "Enter a friendly name for these credentials",
+    "providerLabel": "Provider:",
+    "providerHint": "Helper to auto-populate provider specific fields",
+    "helpTooltip": "Get help on our github",
+    "needHelp": "Need Help?",
+    "updateBtn": "Update Credential",
+    "addBtn": "Add Credential"
   }
 }

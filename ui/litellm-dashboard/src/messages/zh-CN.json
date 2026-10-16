@@ -10238,5 +10238,25 @@
     "moreCount": "还有 {count} 个",
     "selectModels": "选择模型",
     "noModelsFound": "未找到模型"
+  },
+  "credentials": {
+    "nameCol": "凭据名称",
+    "copyName": "复制凭据名称",
+    "nameCopied": "凭据名称已复制",
+    "openActionsAria": "打开凭据操作",
+    "loading": "正在加载凭据…",
+    "emptyTitle": "尚未配置凭据",
+    "emptyDesc": "添加凭据以连接 AI 供应商。",
+    "editTitle": "编辑凭据",
+    "addTitle": "新建凭据",
+    "nameLabel": "凭据名称：",
+    "nameRequired": "请输入凭据名称",
+    "namePlaceholder": "为这组凭据起一个好记的名字",
+    "providerLabel": "供应商：",
+    "providerHint": "用于自动填充供应商专属字段",
+    "helpTooltip": "在 GitHub 获取帮助",
+    "needHelp": "需要帮助？",
+    "updateBtn": "更新凭据",
+    "addBtn": "添加凭据"
   }
 }

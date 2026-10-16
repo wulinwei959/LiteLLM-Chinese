@@ -116,7 +116,7 @@ describe("CredentialsPanel", () => {
 
     renderPanel();
 
-    expect(screen.getByText("No credentials configured")).toBeInTheDocument();
+    expect(screen.getByText("尚未配置凭据")).toBeInTheDocument();
   });
 
   it("shows the loading skeleton instead of the empty state while credentials load", () => {
@@ -126,7 +126,7 @@ describe("CredentialsPanel", () => {
     renderPanel();
 
     // isLoading must reach the table: the empty state must not render mid-load.
-    expect(screen.queryByText("No credentials configured")).not.toBeInTheDocument();
+    expect(screen.queryByText("尚未配置凭据")).not.toBeInTheDocument();
   });
 
   it("opens the add modal when the add button is clicked", async () => {

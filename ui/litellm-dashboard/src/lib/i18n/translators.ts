@@ -210,6 +210,11 @@ function useEmailSettingsTranslator() {
 }
 export type EmailSettingsTranslator = ReturnType<typeof useEmailSettingsTranslator>;
 
+function useCredentialsTranslator() {
+  return useTranslations("credentials");
+}
+export type CredentialsTranslator = ReturnType<typeof useCredentialsTranslator>;
+
 function useEmailEventSettingsTranslator() {
   return useTranslations("emailEventSettings");
 }
