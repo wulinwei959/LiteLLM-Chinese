@@ -214,3 +214,8 @@ function useEstimatedOutputTokensTranslator() {
   return useTranslations("virtualKeys.estimatedOutputTokens");
 }
 export type EstimatedOutputTokensTranslator = ReturnType<typeof useEstimatedOutputTokensTranslator>;
+
+function useRoutingGroupsTranslator() {
+  return useTranslations("routingGroups");
+}
+export type RoutingGroupsTranslator = ReturnType<typeof useRoutingGroupsTranslator>;

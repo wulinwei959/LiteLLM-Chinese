@@ -1,6 +1,7 @@
 "use client";
 
 import { Code2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import CodeBlock from "@/components/CodeBlock";
@@ -63,24 +64,23 @@ const SNIPPET_TABS = [
 ] as const;
 
 export function RoutingGroupUsagePanel({ group, baseUrl }: RoutingGroupUsagePanelProps) {
+  const t = useTranslations("routingGroups");
   return (
     <div className="border-y bg-muted/40 px-4 py-4">
       <div className="mb-2 flex items-center gap-2">
         <Code2 className="size-4 text-primary" />
-        <span className="text-sm font-medium text-foreground">How routing works for this group</span>
+        <span className="text-sm font-medium text-foreground">{t("usagePanelTitle")}</span>
       </div>
       <p className="mb-3 text-sm text-muted-foreground">
-        {group.routing_strategy === "priority" ? (
-          <>
-            Request <span className="font-medium text-foreground">{group.group_name}</span> to try eligible models in
-            priority order. Direct requests to a member model keep their existing routing behavior.
-          </>
-        ) : (
-          <>
-            Callers request any model in the group by name; LiteLLM picks a deployment behind the scenes using the{" "}
-            <span className="font-medium text-foreground">{formatStrategyLabel(group.routing_strategy)}</span> strategy.
-          </>
-        )}
+        {group.routing_strategy === "priority"
+          ? t.rich("usagePriorityBody", {
+              name: group.group_name,
+              strong: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+            })
+          : t.rich("usageBody", {
+              strategy: formatStrategyLabel(t, group.routing_strategy),
+              strong: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+            })}
       </p>
       <Tabs defaultValue="curl">
         <TabsList variant="line" className="h-auto w-full justify-start rounded-none border-b p-0">

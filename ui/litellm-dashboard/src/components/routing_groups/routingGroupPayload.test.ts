@@ -1,5 +1,7 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
+import zh from "@/messages/zh-CN.json";
 import type { RoutingGroup } from "./types";
 import {
   argsForStrategy,
@@ -8,6 +10,8 @@ import {
   toRoutingGroupFormValues,
   type RoutingGroupFormValues,
 } from "./routingGroupPayload";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "routingGroups" });
 
 const values = (overrides: Partial<RoutingGroupFormValues> = {}): RoutingGroupFormValues => ({
   group_name: "fast-chat",
@@ -20,7 +24,7 @@ const values = (overrides: Partial<RoutingGroupFormValues> = {}): RoutingGroupFo
 
 describe("buildRoutingGroupPayload", () => {
   it("sends a null args key for a strategy that takes no arguments", () => {
-    expect(buildRoutingGroupPayload(values())).toStrictEqual({
+    expect(buildRoutingGroupPayload(t, values())).toStrictEqual({
       ok: true,
       group: {
         group_name: "fast-chat",
@@ -33,6 +37,7 @@ describe("buildRoutingGroupPayload", () => {
 
   it("parses the arguments for latency based routing", () => {
     const result = buildRoutingGroupPayload(
+      t,
       values({ routing_strategy: "latency-based-routing", routing_strategy_args: '{"ttl": 3600}' }),
     );
 
@@ -49,6 +54,7 @@ describe("buildRoutingGroupPayload", () => {
 
   it("parses the arguments for usage based routing", () => {
     const result = buildRoutingGroupPayload(
+      t,
       values({ routing_strategy: "usage-based-routing", routing_strategy_args: '{"ttl": 60}' }),
     );
 
@@ -57,6 +63,7 @@ describe("buildRoutingGroupPayload", () => {
 
   it("drops arguments belonging to a strategy that does not take them", () => {
     const result = buildRoutingGroupPayload(
+      t,
       values({ routing_strategy: "least-busy", routing_strategy_args: '{"ttl": 3600}' }),
     );
 
@@ -65,6 +72,7 @@ describe("buildRoutingGroupPayload", () => {
 
   it("treats whitespace-only arguments as absent", () => {
     const result = buildRoutingGroupPayload(
+      t,
       values({ routing_strategy: "latency-based-routing", routing_strategy_args: "   \n  " }),
     );
 
@@ -73,19 +81,22 @@ describe("buildRoutingGroupPayload", () => {
 
   it("reports invalid JSON instead of a payload", () => {
     expect(
-      buildRoutingGroupPayload(values({ routing_strategy: "latency-based-routing", routing_strategy_args: "{ttl:}" })),
-    ).toStrictEqual({ ok: false, field: "routing_strategy_args", message: "Must be valid JSON" });
+      buildRoutingGroupPayload(
+        t,
+        values({ routing_strategy: "latency-based-routing", routing_strategy_args: "{ttl:}" }),
+      ),
+    ).toStrictEqual({ ok: false, field: "routing_strategy_args", message: "必须是有效的 JSON" });
   });
 
   it("trims the group name", () => {
-    const result = buildRoutingGroupPayload(values({ group_name: "  fast-chat  " }));
+    const result = buildRoutingGroupPayload(t, values({ group_name: "  fast-chat  " }));
 
     expect(result.ok && result.group.group_name).toBe("fast-chat");
   });
 
   it("passes the selected models through untouched", () => {
     const models = ["gpt-4o", "claude-sonnet", "gemini-pro"];
-    const result = buildRoutingGroupPayload(values({ models }));
+    const result = buildRoutingGroupPayload(t, values({ models }));
 
     expect(result.ok && result.group.models).toStrictEqual(models);
   });
@@ -107,7 +118,7 @@ describe("priority payloads", () => {
   };
 
   it("sends explicit membership priorities, including ties, without strategy arguments", () => {
-    expect(buildRoutingGroupPayload(priorityValues())).toStrictEqual({
+    expect(buildRoutingGroupPayload(t, priorityValues())).toStrictEqual({
       ok: true,
       group: {
         group_name: "fast-chat",
@@ -124,6 +135,7 @@ describe("priority payloads", () => {
     (priority) => {
       expect(
         buildRoutingGroupPayload(
+          t,
           priorityValues({
             model_priorities: [
               { model: "preferred", priority },
@@ -135,7 +147,7 @@ describe("priority payloads", () => {
       ).toStrictEqual({
         ok: false,
         field: "model_priorities",
-        message: "Priorities must be whole numbers from 1 to 9007199254740991",
+        message: "优先级必须是从 1 到 9007199254740991 的整数",
       });
     },
   );
@@ -154,17 +166,18 @@ describe("priority payloads", () => {
       { model: "peer", priority: "1" },
     ],
   ])("requires exactly the selected membership priorities", (...model_priorities) => {
-    expect(buildRoutingGroupPayload(priorityValues({ model_priorities })).ok).toBe(false);
+    expect(buildRoutingGroupPayload(t, priorityValues({ model_priorities })).ok).toBe(false);
   });
 
   it("omits membership priorities when another strategy is selected", () => {
-    const result = buildRoutingGroupPayload(priorityValues({ routing_strategy: "simple-shuffle" }));
+    const result = buildRoutingGroupPayload(t, priorityValues({ routing_strategy: "simple-shuffle" }));
     expect(result.ok && result.group).not.toHaveProperty("model_priorities");
   });
 
   it("preserves model names with dots and object prototype names as own payload keys", () => {
     const models = ["provider/model.v1", "__proto__", "constructor"];
     const result = buildRoutingGroupPayload(
+      t,
       priorityValues({ models, model_priorities: prioritiesForModels(models, []) }),
     );
     expect(result.ok && Object.entries(result.group.model_priorities ?? {})).toStrictEqual([
@@ -188,7 +201,7 @@ describe("priority payloads", () => {
       { model: "peer", priority: "-1" },
       { model: "unused", priority: "8" },
     ]);
-    expect(buildRoutingGroupPayload(form).ok).toBe(false);
+    expect(buildRoutingGroupPayload(t, form).ok).toBe(false);
   });
 
   it("round-trips explicit priorities independently of persisted map order", () => {
@@ -199,7 +212,10 @@ describe("priority payloads", () => {
       routing_strategy_args: null,
       model_priorities: { backup: Number.MAX_SAFE_INTEGER, preferred: 4 },
     };
-    expect(buildRoutingGroupPayload(toRoutingGroupFormValues(stored, []))).toStrictEqual({ ok: true, group: stored });
+    expect(buildRoutingGroupPayload(t, toRoutingGroupFormValues(stored, []))).toStrictEqual({
+      ok: true,
+      group: stored,
+    });
   });
 
   it("retains edited priorities and defaults new members when membership is explicitly changed", () => {

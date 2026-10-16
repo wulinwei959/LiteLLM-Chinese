@@ -1,3 +1,5 @@
+import type { RoutingGroupsTranslator } from "@/lib/i18n/translators";
+
 import type { RoutingGroup } from "./types";
 
 export const groupNameByModel = (groups: RoutingGroup[], excludeGroupName?: string): Record<string, string> =>
@@ -8,11 +10,12 @@ export const groupNameByModel = (groups: RoutingGroup[], excludeGroupName?: stri
   );
 
 export const modelConflictError = (
+  t: RoutingGroupsTranslator,
   models: string[] | undefined,
   ownerByModel: Record<string, string>,
 ): string | null => {
   const conflicts = (models ?? []).filter((model) => Object.hasOwn(ownerByModel, model));
   if (conflicts.length === 0) return null;
-  const detail = conflicts.map((model) => `${model} (in "${ownerByModel[model]}")`).join(", ");
-  return `Each model may belong to at most one non-priority group. Already claimed: ${detail}`;
+  const detail = conflicts.map((model) => t("modelConflictEntry", { model, name: ownerByModel[model] })).join(", ");
+  return t("modelConflict", { detail });
 };
