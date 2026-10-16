@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render, screen, waitFor } from "../../tests/test-utils";
 import userEvent, { PointerEventsCheckLevel } from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -16,7 +16,7 @@ const mockUpdateSSOSettings = vi.mocked(updateSSOSettings);
 
 const RESTRICTED_GROUP_PLACEHOLDER = "ui-access-group";
 const JWT_FIELD_PLACEHOLDER = "groups";
-const SUBMIT_LABEL = "Update UI Access Control";
+const SUBMIT_LABEL = "更新 UI 访问控制";
 
 // jsdom has no layout, so a Base UI popup can never leave its unpositioned `pointer-events: none` state.
 const renderForm = (accessToken: string | null = "sk-test") => {
@@ -51,7 +51,7 @@ describe("UIAccessControlForm", () => {
   it("sends the nested ui_access_mode payload with every field the user filled in", async () => {
     const { onSuccess, user } = renderForm();
 
-    await chooseAccessMode(user, "Restricted SSO Group");
+    await chooseAccessMode(user, "受限 SSO 分组");
     await typeInto(user, RESTRICTED_GROUP_PLACEHOLDER, "admin-team");
     await typeInto(user, JWT_FIELD_PLACEHOLDER, "team_groups");
     await submit(user);
@@ -73,7 +73,7 @@ describe("UIAccessControlForm", () => {
   it('collapses the payload to ui_access_mode "none" for all authenticated users', async () => {
     const { onSuccess, user } = renderForm();
 
-    await chooseAccessMode(user, "All Authenticated Users");
+    await chooseAccessMode(user, "所有已认证用户");
     await typeInto(user, JWT_FIELD_PLACEHOLDER, "team_groups");
     await submit(user);
 
@@ -104,10 +104,10 @@ describe("UIAccessControlForm", () => {
   it("blocks submission while the restricted SSO group is empty", async () => {
     const { onSuccess, user } = renderForm();
 
-    await chooseAccessMode(user, "Restricted SSO Group");
+    await chooseAccessMode(user, "受限 SSO 分组");
     await submit(user);
 
-    expect(await screen.findByText("Please enter the restricted SSO group")).toBeInTheDocument();
+    expect(await screen.findByText("请输入受限 SSO 分组")).toBeInTheDocument();
     expect(mockUpdateSSOSettings).not.toHaveBeenCalled();
     expect(onSuccess).not.toHaveBeenCalled();
   });
@@ -203,15 +203,15 @@ describe("UIAccessControlForm", () => {
   it("restores a typed restricted SSO group when its field is shown again", async () => {
     const { user } = renderForm();
 
-    await chooseAccessMode(user, "Restricted SSO Group");
+    await chooseAccessMode(user, "受限 SSO 分组");
     await typeInto(user, RESTRICTED_GROUP_PLACEHOLDER, "typed-then-hidden");
-    await chooseAccessMode(user, "All Authenticated Users");
+    await chooseAccessMode(user, "所有已认证用户");
     await submit(user);
 
     await waitFor(() => expect(mockUpdateSSOSettings).toHaveBeenCalledTimes(1));
     expect(submittedPayload()).toStrictEqual(["sk-test", { ui_access_mode: "none" }]);
 
-    await chooseAccessMode(user, "Restricted SSO Group");
+    await chooseAccessMode(user, "受限 SSO 分组");
     expect(screen.getByPlaceholderText(RESTRICTED_GROUP_PLACEHOLDER)).toHaveValue("typed-then-hidden");
 
     await submit(user);

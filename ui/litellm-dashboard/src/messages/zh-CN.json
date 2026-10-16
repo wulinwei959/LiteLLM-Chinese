@@ -9991,5 +9991,54 @@
     "grantedViaGroup": "通过访问组 {group} 授予。完整 ID：{id}",
     "grantedViaGroups": "通过访问组 {groups} 授予。完整 ID：{id}",
     "grantedViaGeneric": "通过某个访问组授予。完整 ID：{id}"
+  },
+  "uiAccessControlForm": {
+    "intro": "配置谁可以访问 UI 界面，以及如何从 JWT 令牌中提取分组信息。",
+    "noAccessToken": "没有可用的访问令牌",
+    "saveFailed": "保存 UI 访问设置失败",
+    "accessModeLabel": "UI 访问模式",
+    "accessModeHint": "控制谁可以访问 UI 界面",
+    "accessModePlaceholder": "选择访问模式",
+    "modeAllAuthenticated": "所有已认证用户",
+    "modeRestrictedSso": "受限 SSO 分组",
+    "restrictedGroupLabel": "受限 SSO 分组",
+    "jwtFieldLabel": "SSO 分组 JWT 字段",
+    "jwtFieldHint": "包含团队/分组信息的 JWT 字段名。使用点号表示法访问嵌套字段。",
+    "restrictedGroupRequired": "请输入受限 SSO 分组",
+    "submit": "更新 UI 访问控制"
+  },
+  "envCredentialBanner": {
+    "title": "已启用环境变量凭据登录",
+    "body": "任何掌握 <code>UI_USERNAME</code>/<code>UI_PASSWORD</code>（或在 <code>UI_PASSWORD</code> 未设置时掌握主密钥）的人，都能以共享的静态密钥登录为代理管理员。请先创建一个带独立密码的常规管理员账号，再设置 <code>general_settings.disable_env_credential_login: true</code> 以关闭这条登录路径。",
+    "dismissAria": "关闭横幅"
+  },
+  "noRedisBanner": {
+    "title": "未配置 Redis。强烈建议配置 Redis",
+    "body": "该代理正在运行多个 worker（或无法确认 worker 数量）。没有 Redis 时，速率限制、预算、路由状态与缓存失效都是按 worker 独立生效的，因此限制只按每个 worker 强制执行一次，花费可能超出预算。<link>查看没有 Redis 时无法正常工作的功能</link>。如需屏蔽此横幅，请设置 <code>LITELLM_DISABLE_NO_REDIS_WARNING=true</code>。",
+    "docsLink": "查看没有 Redis 时无法正常工作的功能"
+  },
+  "sidebarUsageCard": {
+    "enterpriseUsage": "企业版用量",
+    "activePlan": "有效订阅",
+    "seats": "席位",
+    "teams": "团队",
+    "loading": "加载中……",
+    "meterValueText": "{total} 中的 {used}"
+  },
+  "onboardingModal": {
+    "invitationTitle": "邀请链接",
+    "resetTitle": "重置密码链接",
+    "invitationBody": "复制并发送生成的链接，以便将该用户接入代理。",
+    "resetBody": "复制并发送生成的链接，让用户重置密码。",
+    "userId": "用户 ID",
+    "copied": "已复制！",
+    "copyInvitation": "复制邀请链接",
+    "copyReset": "复制密码重置链接"
+  },
+  "queryParamInput": {
+    "namePlaceholder": "参数名（例如 version）",
+    "valuePlaceholder": "参数值（例如 v1）",
+    "addBtn": "添加查询参数",
+    "removeAria": "删除第 {index} 个查询参数"
   }
 }

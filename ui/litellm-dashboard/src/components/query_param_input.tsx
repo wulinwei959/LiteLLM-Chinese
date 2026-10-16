@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 import { Minus, Plus } from "lucide-react";
 
@@ -11,6 +12,7 @@ interface QueryParamInputProps {
 }
 
 const QueryParamInput: React.FC<QueryParamInputProps> = ({ value = [], onChange }) => {
+  const t = useTranslations("queryParamInput");
   const handleAdd = () => onChange?.([...value, ["", ""]]);
 
   const handleRemove = (index: number) => onChange?.(value.filter((_, i) => i !== index));
@@ -23,12 +25,12 @@ const QueryParamInput: React.FC<QueryParamInputProps> = ({ value = [], onChange 
       {value.map(([key, val], index) => (
         <div key={index} className="flex items-center gap-2">
           <Input
-            placeholder="Parameter Name (e.g., version)"
+            placeholder={t("namePlaceholder")}
             value={key}
             onChange={(e) => handleChange(index, [e.target.value, val])}
           />
           <Input
-            placeholder="Parameter Value (e.g., v1)"
+            placeholder={t("valuePlaceholder")}
             value={val}
             onChange={(e) => handleChange(index, [key, e.target.value])}
           />
@@ -37,7 +39,7 @@ const QueryParamInput: React.FC<QueryParamInputProps> = ({ value = [], onChange 
             variant="ghost"
             size="icon-sm"
             onClick={() => handleRemove(index)}
-            aria-label={`Remove query parameter ${index + 1}`}
+            aria-label={t("removeAria", { index: index + 1 })}
           >
             <Minus />
           </Button>
@@ -45,7 +47,7 @@ const QueryParamInput: React.FC<QueryParamInputProps> = ({ value = [], onChange 
       ))}
       <Button type="button" variant="outline" onClick={handleAdd}>
         <Plus />
-        Add Query Parameter
+        {t("addBtn")}
       </Button>
     </div>
   );

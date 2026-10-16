@@ -9995,5 +9995,54 @@
     "grantedViaGroup": "Granted via access group {group}. Full ID: {id}",
     "grantedViaGroups": "Granted via access groups {groups}. Full ID: {id}",
     "grantedViaGeneric": "Granted via an access group. Full ID: {id}"
+  },
+  "uiAccessControlForm": {
+    "intro": "Configure who can access the UI interface and how group information is extracted from JWT tokens.",
+    "noAccessToken": "No access token available",
+    "saveFailed": "Failed to save UI access settings",
+    "accessModeLabel": "UI Access Mode",
+    "accessModeHint": "Controls who can access the UI interface",
+    "accessModePlaceholder": "Select access mode",
+    "modeAllAuthenticated": "All Authenticated Users",
+    "modeRestrictedSso": "Restricted SSO Group",
+    "restrictedGroupLabel": "Restricted SSO Group",
+    "jwtFieldLabel": "SSO Group JWT Field",
+    "jwtFieldHint": "JWT field name that contains team/group information. Use dot notation to access nested fields.",
+    "restrictedGroupRequired": "Please enter the restricted SSO group",
+    "submit": "Update UI Access Control"
+  },
+  "envCredentialBanner": {
+    "title": "Environment-credential login is enabled",
+    "body": "Anyone with <code>UI_USERNAME</code>/<code>UI_PASSWORD</code> (or the master key, when <code>UI_PASSWORD</code> is unset) can sign in as a proxy admin with a shared static secret. First create a regular admin account with its own password, then set <code>general_settings.disable_env_credential_login: true</code> to turn this login path off.",
+    "dismissAria": "Dismiss banner"
+  },
+  "noRedisBanner": {
+    "title": "No Redis configured. Redis is highly recommended",
+    "body": "This proxy is running more than one worker (or the worker count could not be verified). Without Redis, rate limits, budgets, router state, and cache invalidation are per worker, so limits are enforced once per worker and spend can overshoot. <link>See everything that does not work without Redis</link>. Set <code>LITELLM_DISABLE_NO_REDIS_WARNING=true</code> to hide this banner anyway.",
+    "docsLink": "See everything that does not work without Redis"
+  },
+  "sidebarUsageCard": {
+    "enterpriseUsage": "Enterprise usage",
+    "activePlan": "Active plan",
+    "seats": "Seats",
+    "teams": "Teams",
+    "loading": "Loading…",
+    "meterValueText": "{used} of {total}"
+  },
+  "onboardingModal": {
+    "invitationTitle": "Invitation Link",
+    "resetTitle": "Reset Password Link",
+    "invitationBody": "Copy and send the generated link to onboard this user to the proxy.",
+    "resetBody": "Copy and send the generated link to the user to reset their password.",
+    "userId": "User ID",
+    "copied": "Copied!",
+    "copyInvitation": "Copy invitation link",
+    "copyReset": "Copy password reset link"
+  },
+  "queryParamInput": {
+    "namePlaceholder": "Parameter Name (e.g., version)",
+    "valuePlaceholder": "Parameter Value (e.g., v1)",
+    "addBtn": "Add Query Parameter",
+    "removeAria": "Remove query parameter {index}"
   }
 }

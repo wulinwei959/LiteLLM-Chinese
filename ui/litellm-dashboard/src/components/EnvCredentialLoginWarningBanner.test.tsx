@@ -31,7 +31,7 @@ describe("EnvCredentialLoginWarningBanner", () => {
     mockRole("Admin");
     mockDetails({ status: "healthy", show_env_credential_login_warning: true });
     const first = renderWithProviders(<EnvCredentialLoginWarningBanner accessToken="token" />);
-    fireEvent.click(screen.getByRole("button", { name: "Dismiss banner" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭横幅" }));
     expect(first.container).toBeEmptyDOMElement();
 
     first.unmount();
@@ -44,14 +44,14 @@ describe("EnvCredentialLoginWarningBanner", () => {
     mockDetails({ status: "healthy", show_env_credential_login_warning: true });
     renderWithProviders(<EnvCredentialLoginWarningBanner accessToken="token" />);
     expect(screen.getByRole("alert")).toBeInTheDocument();
-    expect(screen.getByText("Environment-credential login is enabled")).toBeInTheDocument();
+    expect(screen.getByText("已启用环境变量凭据登录")).toBeInTheDocument();
   });
 
   it("should tell the admin to create a regular admin account before disabling", () => {
     mockRole("Admin");
     mockDetails({ status: "healthy", show_env_credential_login_warning: true });
     renderWithProviders(<EnvCredentialLoginWarningBanner accessToken="token" />);
-    expect(screen.getByText(/First create a regular admin account/i)).toBeInTheDocument();
+    expect(screen.getByText(/请先创建一个带独立密码的常规管理员账号/)).toBeInTheDocument();
     expect(screen.getByText("general_settings.disable_env_credential_login: true")).toBeInTheDocument();
   });
 

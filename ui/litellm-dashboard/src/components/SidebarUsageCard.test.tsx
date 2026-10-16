@@ -1,6 +1,6 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render, screen, waitFor } from "../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import SidebarUsageCard from "./SidebarUsageCard";
@@ -71,11 +71,11 @@ describe("SidebarUsageCard", () => {
       <SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />,
     );
 
-    await screen.findByText("Enterprise usage");
+    await screen.findByText("企业版用量");
     const meter = await screen.findByRole("meter");
     expect(meter).toHaveAttribute("aria-valuenow", "20");
     expect(meter).toHaveAttribute("aria-valuemax", "100");
-    expect(screen.getByText("Seats")).toBeInTheDocument();
+    expect(screen.getByText("席位")).toBeInTheDocument();
 
     const indicator = container.querySelector('[data-slot="meter-indicator"]');
     expect(indicator).toHaveStyle({ width: "20%" });
@@ -86,7 +86,7 @@ describe("SidebarUsageCard", () => {
     renderWithClient(<SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />);
 
     await screen.findByRole("meter");
-    await user.click(screen.getByRole("button", { name: /Enterprise usage/i }));
+    await user.click(screen.getByRole("button", { name: /企业版用量/ }));
 
     await waitFor(() => expect(screen.queryByRole("meter")).not.toBeInTheDocument());
   });
@@ -109,7 +109,7 @@ describe("SidebarUsageCard", () => {
 
     renderWithClient(<SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />);
 
-    await waitFor(() => expect(screen.queryByText("Enterprise usage")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("企业版用量")).not.toBeInTheDocument());
   });
 
   it("renders nothing without an enterprise license even when seat limits exist", async () => {
@@ -120,7 +120,7 @@ describe("SidebarUsageCard", () => {
     );
 
     await waitFor(() => expect(mockGetRemainingUsers).toHaveBeenCalled());
-    expect(screen.queryByText("Enterprise usage")).not.toBeInTheDocument();
+    expect(screen.queryByText("企业版用量")).not.toBeInTheDocument();
     expect(container.querySelector('[data-slot="meter"]')).toBeNull();
   });
 
@@ -144,7 +144,7 @@ describe("SidebarUsageCard", () => {
   it("falls back to Active plan when the license has no expiration date", async () => {
     renderWithClient(<SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />);
 
-    expect(await screen.findByText("Active plan")).toBeInTheDocument();
+    expect(await screen.findByText("有效订阅")).toBeInTheDocument();
   });
 
   it("shows a collapsed rail button that expands the sidebar", async () => {
@@ -152,7 +152,7 @@ describe("SidebarUsageCard", () => {
     const user = userEvent.setup();
     renderWithClient(<SidebarUsageCard accessToken="token" collapsed onExpandRail={onExpandRail} />);
 
-    const rail = await screen.findByTitle("Enterprise usage");
+    const rail = await screen.findByTitle("企业版用量");
     await user.click(rail);
     expect(onExpandRail).toHaveBeenCalledOnce();
   });
@@ -160,7 +160,7 @@ describe("SidebarUsageCard", () => {
   it("keeps the collapsed rail tinted on hover instead of the outline variant's foreground", async () => {
     renderWithClient(<SidebarUsageCard accessToken="token" collapsed onExpandRail={vi.fn()} />);
 
-    const rail = await screen.findByTitle("Enterprise usage");
+    const rail = await screen.findByTitle("企业版用量");
     expect(rail).toHaveClass("hover:text-sidebar-primary/80");
     expect(rail).not.toHaveClass("hover:text-foreground");
   });

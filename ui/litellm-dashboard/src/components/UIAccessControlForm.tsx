@@ -1,4 +1,5 @@
 import { CircleHelp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { useWatch } from "react-hook-form";
 import { z } from "zod/v4";
@@ -20,28 +21,31 @@ interface UIAccessControlFormProps {
   onSuccess: () => void;
 }
 
-const uiAccessControlSchema = z
-  .object({
-    ui_access_mode_type: z.string().optional(),
-    restricted_sso_group: z.string().optional(),
-    sso_group_jwt_field: z.string().optional(),
-  })
-  .superRefine((values, ctx) => {
-    if (values.ui_access_mode_type !== "restricted_sso_group" || values.restricted_sso_group) {
-      return;
-    }
-    ctx.addIssue({
-      code: "custom",
-      path: ["restricted_sso_group"],
-      message: "Please enter the restricted SSO group",
-    });
-  });
+type UIAccessControlTranslator = ReturnType<typeof useTranslations<"uiAccessControlForm">>;
 
-type UIAccessControlFormValues = z.output<typeof uiAccessControlSchema>;
+const uiAccessControlSchema = (t: UIAccessControlTranslator) =>
+  z
+    .object({
+      ui_access_mode_type: z.string().optional(),
+      restricted_sso_group: z.string().optional(),
+      sso_group_jwt_field: z.string().optional(),
+    })
+    .superRefine((values, ctx) => {
+      if (values.ui_access_mode_type !== "restricted_sso_group" || values.restricted_sso_group) {
+        return;
+      }
+      ctx.addIssue({
+        code: "custom",
+        path: ["restricted_sso_group"],
+        message: t("restrictedGroupRequired"),
+      });
+    });
+
+type UIAccessControlFormValues = z.output<ReturnType<typeof uiAccessControlSchema>>;
 
 const UI_ACCESS_MODE_OPTIONS = [
-  { value: "all_authenticated_users", label: "All Authenticated Users" },
-  { value: "restricted_sso_group", label: "Restricted SSO Group" },
+  { value: "all_authenticated_users", labelKey: "modeAllAuthenticated" },
+  { value: "restricted_sso_group", labelKey: "modeRestrictedSso" },
 ] as const;
 
 const asRecord = (value: unknown): Record<string, unknown> | null =>
@@ -87,7 +91,8 @@ const labelWithHint = (label: string, hint: string): React.ReactNode => (
 );
 
 const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, onSuccess }) => {
-  const form = useZodForm(uiAccessControlSchema, { defaultValues: {} });
+  const t = useTranslations("uiAccessControlForm");
+  const form = useZodForm(uiAccessControlSchema(t), { defaultValues: {} });
   const [loading, setLoading] = useState(false);
   const uiAccessModeType = useWatch({ control: form.control, name: "ui_access_mode_type" });
 
@@ -112,7 +117,7 @@ const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, 
 
   const handleUIAccessSubmit = async (formValues: UIAccessControlFormValues) => {
     if (!accessToken) {
-      toast.fromError("No access token available");
+      toast.fromError(t("noAccessToken"));
       return;
     }
 
@@ -133,7 +138,7 @@ const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, 
       onSuccess();
     } catch (error) {
       console.error("Failed to save UI access settings:", error);
-      toast.fromError("Failed to save UI access settings");
+      toast.fromError(t("saveFailed"));
     } finally {
       setLoading(false);
     }
@@ -150,9 +155,7 @@ const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, 
     <TooltipProvider>
       <div className="p-4">
         <div className="mb-4">
-          <p className="text-sm text-muted-foreground">
-            Configure who can access the UI interface and how group information is extracted from JWT tokens.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("intro")}</p>
         </div>
 
         <form onSubmit={form.handleSubmit(submitMountedValues)} noValidate>
@@ -160,11 +163,11 @@ const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, 
             <FormField
               control={form.control}
               name="ui_access_mode_type"
-              label={labelWithHint("UI Access Mode", "Controls who can access the UI interface")}
+              label={labelWithHint(t("accessModeLabel"), t("accessModeHint"))}
             >
               {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
                 <Select
-                  items={UI_ACCESS_MODE_OPTIONS}
+                  items={UI_ACCESS_MODE_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
                   value={value ?? null}
                   onValueChange={(selected) => onChange(selected ?? undefined)}
                 >
@@ -174,12 +177,12 @@ const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, 
                     aria-invalid={ariaInvalid}
                     aria-describedby={ariaDescribedBy}
                   >
-                    <SelectValue placeholder="Select access mode" />
+                    <SelectValue placeholder={t("accessModePlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {UI_ACCESS_MODE_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(option.labelKey)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -188,7 +191,7 @@ const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, 
             </FormField>
 
             {uiAccessModeType === "restricted_sso_group" && (
-              <FormField control={form.control} name="restricted_sso_group" label="Restricted SSO Group">
+              <FormField control={form.control} name="restricted_sso_group" label={t("restrictedGroupLabel")}>
                 {({ ref, value, ...field }) => (
                   <Input {...field} ref={ref} value={value ?? ""} placeholder="ui-access-group" />
                 )}
@@ -198,10 +201,7 @@ const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, 
             <FormField
               control={form.control}
               name="sso_group_jwt_field"
-              label={labelWithHint(
-                "SSO Group JWT Field",
-                "JWT field name that contains team/group information. Use dot notation to access nested fields.",
-              )}
+              label={labelWithHint(t("jwtFieldLabel"), t("jwtFieldHint"))}
             >
               {({ ref, value, ...field }) => <Input {...field} ref={ref} value={value ?? ""} placeholder="groups" />}
             </FormField>
@@ -210,7 +210,7 @@ const UIAccessControlForm: React.FC<UIAccessControlFormProps> = ({ accessToken, 
           <div className="mt-4 text-right">
             <Button type="submit" disabled={loading}>
               {loading && <UiLoadingSpinner className="size-4" />}
-              Update UI Access Control
+              {t("submit")}
             </Button>
           </div>
         </form>

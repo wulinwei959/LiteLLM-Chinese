@@ -19,14 +19,14 @@ describe("NoRedisWarningBanner", () => {
     mockDetails({ status: "healthy", show_no_redis_warning: true });
     renderWithProviders(<NoRedisWarningBanner accessToken="token" />);
     expect(screen.getByRole("alert")).toBeInTheDocument();
-    expect(screen.getByText(/No Redis configured\. Redis is highly recommended/i)).toBeInTheDocument();
-    expect(screen.getByText(/more than one worker/i)).toBeInTheDocument();
+    expect(screen.getByText(/未配置 Redis。强烈建议配置 Redis/)).toBeInTheDocument();
+    expect(screen.getByText(/正在运行多个 worker/)).toBeInTheDocument();
   });
 
   it("should link to the docs page listing what breaks without Redis", () => {
     mockDetails({ status: "healthy", show_no_redis_warning: true });
     renderWithProviders(<NoRedisWarningBanner accessToken="token" />);
-    expect(screen.getByRole("link", { name: /does not work without Redis/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /没有 Redis 时无法正常工作的功能/ })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/proxy/redis_requirements",
     );
