@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart as RechartsBarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
 import { cn } from "@/lib/cva.config";
@@ -52,20 +53,23 @@ export function BarChart<TDatum extends Record<string, unknown>>({
   className,
   style,
 }: BarChartProps<TDatum>) {
+  const t = useTranslations("common");
   if (data.length === 0) {
     return (
       <div
         className={cn("flex h-80 w-full items-center justify-center rounded-lg border border-dashed", className)}
         style={style}
       >
-        <p className="text-sm text-muted-foreground">No data</p>
+        <p className="text-sm text-muted-foreground">{t("noDataShort")}</p>
       </div>
     );
   }
 
   const fills = categoryFills(colorByDatum ? data.length : categories.length, colors);
   const labelOf = (category: string): string => categoryLabels?.[category] ?? category;
-  const config: ChartConfig = Object.fromEntries(categories.map((category) => [category, { label: labelOf(category) }]));
+  const config: ChartConfig = Object.fromEntries(
+    categories.map((category) => [category, { label: labelOf(category) }]),
+  );
   const vertical = layout === "vertical";
   const TooltipContent = customTooltip ?? ValueTooltip;
 

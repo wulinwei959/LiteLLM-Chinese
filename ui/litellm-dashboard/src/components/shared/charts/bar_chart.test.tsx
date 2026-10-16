@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, renderWithProviders as render, screen } from "../../../../tests/test-utils";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { BarChart } from "./bar_chart";
@@ -23,7 +23,7 @@ describe("BarChart", () => {
   it("renders the No data placeholder instead of a chart when data is empty", () => {
     const { container } = render(<BarChart data={[]} index="date" categories={["passed"]} />);
 
-    expect(screen.getByText("No data")).toBeInTheDocument();
+    expect(screen.getByText("暂无数据")).toBeInTheDocument();
     expect(container.querySelector('[data-slot="chart"]')).toBeNull();
   });
 

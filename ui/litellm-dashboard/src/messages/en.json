@@ -7039,7 +7039,7 @@
       "remoteClient": "My client is on a remote or SSH machine"
     },
     "connectPicker": {
-      "loadToolsFailed": "Could not load tools for {server} \u2014 it will be excluded from this message.",
+      "loadToolsFailed": "Could not load tools for {server} — it will be excluded from this message.",
       "empty": "No MCP servers configured"
     },
     "appsPanel": {
@@ -8674,5 +8674,21 @@
     "tool": "Tool",
     "toolTooltip": "Tool used",
     "hit": "Hit"
+  },
+  "createdKeyDisplay": {
+    "securityWarning": "Please save this secret key somewhere safe and accessible. For security reasons, <b>you will not be able to view it again</b> through your LiteLLM account. If you lose this secret key, you will need to generate a new one.",
+    "virtualKeyLabel": "Virtual Key:",
+    "copyButton": "Copy Virtual Key",
+    "copied": "Copied!",
+    "keyCopiedToast": "Key copied to clipboard"
+  },
+  "sharedComponents": {
+    "pageControls": "Page controls",
+    "howCalculated": "How {label} is calculated",
+    "noOwnBudgetHint": "This key has no budget of its own, but its spend still counts toward:",
+    "scopeTeam": "Team",
+    "scopeOrganization": "Organization",
+    "scopeUser": "User",
+    "gateFormat": "{scope} {alias}: ${amount}{suffix}"
   }
 }

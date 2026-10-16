@@ -1,6 +1,7 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { renderWithProviders as render } from "../../../../tests/test-utils";
 import type { components } from "@/lib/http/schema";
 import { type DailyActivityKeyPageResponse, type KeyActivityRow, type KeySpendActivityRow } from "../dailyActivityApi";
 import type { ModelActivityData } from "../types";
@@ -244,7 +245,7 @@ describe("KeyActivityPanel", () => {
     });
     expect(await screen.findByText("Spend per day")).toBeInTheDocument();
     expect(screen.getByText("Requests per day")).toBeInTheDocument();
-    expect(screen.queryByText("No data")).not.toBeInTheDocument();
+    expect(screen.queryByText("暂无数据")).not.toBeInTheDocument();
   });
 
   it("shows a detail error with Retry when the detail request fails and refetches on retry", async () => {
@@ -329,7 +330,7 @@ describe("KeyActivityPanel", () => {
 
     expect(fetchKeyDetail).toHaveBeenCalledWith("key-remote");
     expect(await screen.findByText("Spend per day")).toBeInTheDocument();
-    expect(screen.queryByText("No data")).not.toBeInTheDocument();
+    expect(screen.queryByText("暂无数据")).not.toBeInTheDocument();
   });
 
   it("shows an error with Retry when the first page fails and recovers on retry", async () => {

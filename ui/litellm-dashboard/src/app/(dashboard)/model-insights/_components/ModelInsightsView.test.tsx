@@ -1,8 +1,9 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { renderWithProviders as render } from "../../../../../tests/test-utils";
 import ModelInsightsView from "./ModelInsightsView";
 import { apiClient } from "@/components/networking";
 

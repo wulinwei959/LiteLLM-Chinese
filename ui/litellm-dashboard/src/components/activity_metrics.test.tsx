@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import { renderWithProviders as render } from "../../tests/test-utils";
 import { ActivityMetrics, formatKeyLabel, processActivityData, ResponseTimeTooltip } from "./activity_metrics";
 import type { ChartTooltipProps } from "@/components/shared/charts";
 import { Team } from "./key_team_helpers/key_list";
@@ -580,7 +581,7 @@ describe("ActivityMetrics charts", () => {
   it("shows the No data placeholder on both global charts when there is no usage data", () => {
     const { container } = render(<ActivityMetrics modelMetrics={{}} />);
 
-    expect(screen.getAllByText("No data")).toHaveLength(2);
+    expect(screen.getAllByText("暂无数据")).toHaveLength(2);
     expect(chartsOf(container)).toHaveLength(0);
   });
 

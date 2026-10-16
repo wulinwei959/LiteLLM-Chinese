@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { renderWithProviders as render, screen } from "../../../../tests/test-utils";
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { AreaChart } from "./area_chart";
@@ -23,7 +23,7 @@ describe("AreaChart", () => {
   it("renders the No data placeholder instead of a chart when data is empty", () => {
     const { container } = render(<AreaChart data={[]} index="date" categories={["tokens"]} />);
 
-    expect(screen.getByText("No data")).toBeInTheDocument();
+    expect(screen.getByText("暂无数据")).toBeInTheDocument();
     expect(container.querySelector('[data-slot="chart"]')).toBeNull();
   });
 
