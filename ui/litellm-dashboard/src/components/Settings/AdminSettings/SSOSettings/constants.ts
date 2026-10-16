@@ -10,18 +10,31 @@ export const ssoProviderLogoMap: Record<string, string> = {
   saml: "",
 };
 
+type SSOProviderNameKey =
+  | "ssoSettings.providerNameGoogle"
+  | "ssoSettings.providerNameMicrosoft"
+  | "ssoSettings.providerNameOkta"
+  | "ssoSettings.providerNameGeneric"
+  | "ssoSettings.providerNameSaml";
+
 // SSO Provider display names (consistent between select dropdown and table)
-export const ssoProviderDisplayNames: Record<string, string> = {
-  google: "Google SSO",
-  microsoft: "Microsoft SSO",
-  okta: "Okta / Auth0 SSO",
-  generic: "Generic SSO",
-  saml: "SAML SSO",
+export const ssoProviderNameKeys: Record<string, SSOProviderNameKey> = {
+  google: "ssoSettings.providerNameGoogle",
+  microsoft: "ssoSettings.providerNameMicrosoft",
+  okta: "ssoSettings.providerNameOkta",
+  generic: "ssoSettings.providerNameGeneric",
+  saml: "ssoSettings.providerNameSaml",
 };
 
-export const defaultRoleDisplayNames: Record<string, string> = {
-  internal_user_viewer: "Internal Viewer",
-  internal_user: "Internal User",
-  proxy_admin_viewer: "Proxy Admin Viewer",
-  proxy_admin: "Proxy Admin",
+type DefaultRoleNameKey =
+  | "ssoSettings.roleInternalViewer"
+  | "ssoSettings.roleInternalUser"
+  | "ssoSettings.roleProxyAdminViewer"
+  | "ssoSettings.roleProxyAdmin";
+
+export const defaultRoleNameKeys: Record<string, DefaultRoleNameKey> = {
+  internal_user_viewer: "ssoSettings.roleInternalViewer",
+  internal_user: "ssoSettings.roleInternalUser",
+  proxy_admin_viewer: "ssoSettings.roleProxyAdminViewer",
+  proxy_admin: "ssoSettings.roleProxyAdmin",
 };

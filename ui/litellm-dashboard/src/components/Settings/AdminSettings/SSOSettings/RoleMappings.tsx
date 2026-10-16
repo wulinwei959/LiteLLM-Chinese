@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { defaultRoleDisplayNames } from "./constants";
+import { defaultRoleNameKeys } from "./constants";
 
 const inlineCodeClass = "rounded-sm border border-border bg-muted px-1 py-0.5 font-mono text-xs";
 
@@ -18,6 +18,11 @@ interface RoleMappingRow {
 export default function RoleMappings({ roleMappings }: { roleMappings: RoleMappingsType | undefined }) {
   const t = useTranslations("adminPanel");
 
+  const roleName = (role: string) => {
+    const nameKey = defaultRoleNameKeys[role];
+    return nameKey ? t(nameKey) : role;
+  };
+
   if (!roleMappings) {
     return null;
   }
@@ -27,7 +32,7 @@ export default function RoleMappings({ roleMappings }: { roleMappings: RoleMappi
       id: "role",
       accessorKey: "role",
       header: t("ssoSettings.roleColumn"),
-      cell: ({ row }) => <strong className="font-semibold">{defaultRoleDisplayNames[row.original.role]}</strong>,
+      cell: ({ row }) => <strong className="font-semibold">{roleName(row.original.role)}</strong>,
     },
     {
       id: "groups",
@@ -63,7 +68,7 @@ export default function RoleMappings({ roleMappings }: { roleMappings: RoleMappi
             <div>
               <h5 className="mb-2 text-base font-semibold text-foreground">{t("ssoSettings.defaultRole")}</h5>
               <div>
-                <strong className="font-semibold">{defaultRoleDisplayNames[roleMappings.default_role]}</strong>
+                <strong className="font-semibold">{roleName(roleMappings.default_role)}</strong>
               </div>
             </div>
           </div>

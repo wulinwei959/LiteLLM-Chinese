@@ -31,10 +31,10 @@ describe("RoleMappings", () => {
 
   it("should display Group Claim and Default Role with correct values and display names", () => {
     const testCases: Array<{ role: RoleMappingsType["default_role"]; displayName: string; groupClaim: string }> = [
-      { role: "internal_user_viewer", displayName: "Internal Viewer", groupClaim: "custom-groups-1" },
-      { role: "internal_user", displayName: "Internal User", groupClaim: "custom-groups-2" },
-      { role: "proxy_admin_viewer", displayName: "Proxy Admin Viewer", groupClaim: "custom-groups-3" },
-      { role: "proxy_admin", displayName: "Proxy Admin", groupClaim: "custom-groups-4" },
+      { role: "internal_user_viewer", displayName: "内部用户（只读）", groupClaim: "custom-groups-1" },
+      { role: "internal_user", displayName: "内部用户", groupClaim: "custom-groups-2" },
+      { role: "proxy_admin_viewer", displayName: "代理管理员（只读）", groupClaim: "custom-groups-3" },
+      { role: "proxy_admin", displayName: "代理管理员", groupClaim: "custom-groups-4" },
     ];
 
     testCases.forEach(({ role, displayName, groupClaim }) => {
@@ -78,10 +78,10 @@ describe("RoleMappings", () => {
 
     expect(screen.getByText("角色")).toBeInTheDocument();
     expect(screen.getByText("映射的组")).toBeInTheDocument();
-    expect(screen.getAllByText("Proxy Admin").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Proxy Admin Viewer").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Internal User").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Internal Viewer").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("代理管理员").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("代理管理员（只读）").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("内部用户").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("内部用户（只读）").length).toBeGreaterThan(0);
     expect(screen.getByText("admin-group-1")).toBeInTheDocument();
     expect(screen.getByText("admin-group-2")).toBeInTheDocument();
     expect(screen.getByText("admin-group-3")).toBeInTheDocument();

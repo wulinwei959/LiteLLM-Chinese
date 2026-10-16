@@ -4,7 +4,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import { FormProvider, useFormContext, useWatch, type UseFormReturn } from "react-hook-form";
 import { z } from "zod/v4";
-import { ssoProviderLogoMap, ssoProviderDisplayNames } from "../constants";
+import { ssoProviderLogoMap, ssoProviderNameKeys } from "../constants";
 import { Logo } from "@/components/molecules/logo/Logo";
 import { FieldGroup } from "@/components/ui/field";
 import { FormField } from "@/components/shared/form/FormField";
@@ -434,6 +434,11 @@ export const SSOProviderSelectField = () => {
   const t = useTranslations("adminPanel");
   const { control } = useFormContext<SSOSettingsFormValues>();
 
+  const providerOptionLabel = (value: string) => {
+    const nameKey = ssoProviderNameKeys[value];
+    return nameKey ? t(nameKey) : value;
+  };
+
   return (
     <FormField control={control} name="sso_provider" label={t("ssoSettings.ssoProvider")}>
       {({ value, onChange, onBlur, id, ...rest }) => (
@@ -452,11 +457,7 @@ export const SSOProviderSelectField = () => {
               <SelectItem key={optionValue} value={optionValue}>
                 <span className="flex items-center py-1">
                   {logo && (
-                    <Logo
-                      src={logo}
-                      label={ssoProviderDisplayNames[optionValue] || optionValue}
-                      className="h-6 w-6 mr-3 object-contain"
-                    />
+                    <Logo src={logo} label={providerOptionLabel(optionValue)} className="h-6 w-6 mr-3 object-contain" />
                   )}
                   <span>{providerOptionLabel(optionValue)}</span>
                 </span>
@@ -548,9 +549,6 @@ const DEFAULT_ROLE_OPTIONS: ReadonlyArray<{ value: string; labelKey: DefaultRole
   { value: "proxy_admin_viewer", labelKey: "ssoSettings.roleAdminViewer" },
   { value: "proxy_admin", labelKey: "ssoSettings.roleProxyAdmin" },
 ];
-
-const providerOptionLabel = (value: string) =>
-  ssoProviderDisplayNames[value] || value.charAt(0).toUpperCase() + value.slice(1) + " SSO";
 
 export const RoleMappingTeamFields = () => {
   const t = useTranslations("adminPanel");

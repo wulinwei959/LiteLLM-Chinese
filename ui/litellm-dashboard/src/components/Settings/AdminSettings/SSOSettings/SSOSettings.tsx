@@ -18,7 +18,7 @@ import RedactableField from "./RedactableField";
 import RoleMappings from "./RoleMappings";
 import SSOSettingsEmptyPlaceholder from "./SSOSettingsEmptyPlaceholder";
 import SSOSettingsLoadingSkeleton from "./SSOSettingsLoadingSkeleton";
-import { ssoProviderDisplayNames, ssoProviderLogoMap } from "./constants";
+import { ssoProviderLogoMap } from "./constants";
 import { detectSSOProvider } from "./utils";
 
 function NotConfigured() {
@@ -82,7 +82,7 @@ export default function SSOSettings() {
 
   const providerConfigs = {
     google: {
-      providerText: ssoProviderDisplayNames.google,
+      providerText: t("ssoSettings.providerNameGoogle"),
       fields: [
         {
           label: t("ssoSettings.clientId"),
@@ -99,7 +99,7 @@ export default function SSOSettings() {
       ],
     },
     microsoft: {
-      providerText: ssoProviderDisplayNames.microsoft,
+      providerText: t("ssoSettings.providerNameMicrosoft"),
       fields: [
         {
           label: t("ssoSettings.clientId"),
@@ -120,7 +120,7 @@ export default function SSOSettings() {
       ],
     },
     okta: {
-      providerText: ssoProviderDisplayNames.okta,
+      providerText: t("ssoSettings.providerNameOkta"),
       fields: [
         {
           label: t("ssoSettings.clientId"),
@@ -159,7 +159,7 @@ export default function SSOSettings() {
       ],
     },
     generic: {
-      providerText: ssoProviderDisplayNames.generic,
+      providerText: t("ssoSettings.providerNameGeneric"),
       fields: [
         {
           label: t("ssoSettings.clientId"),
@@ -198,7 +198,7 @@ export default function SSOSettings() {
       ],
     },
     saml: {
-      providerText: ssoProviderDisplayNames.saml,
+      providerText: t("ssoSettings.providerNameSaml"),
       fields: [
         {
           label: t("ssoSettings.idpMetadataUrl"),
@@ -245,7 +245,7 @@ export default function SSOSettings() {
             {ssoProviderLogoMap[selectedProvider] && (
               <Logo
                 src={ssoProviderLogoMap[selectedProvider]}
-                label={ssoProviderDisplayNames[selectedProvider] || selectedProvider}
+                label={config.providerText}
                 className="size-6 object-contain"
               />
             )}

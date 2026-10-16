@@ -132,7 +132,7 @@ describe("BaseSSOSettingsForm", () => {
 
     await openProviderDropdown();
 
-    const genericOption = await screen.findByText(/generic sso/i);
+    const genericOption = await screen.findByText(/通用 SSO/);
     await user().click(genericOption);
 
     await waitFor(() => {
@@ -179,7 +179,7 @@ describe("BaseSSOSettingsForm", () => {
 
     await openProviderDropdown();
 
-    const genericOption = await screen.findByText(/generic sso/i);
+    const genericOption = await screen.findByText(/通用 SSO/);
     await user().click(genericOption);
 
     await waitFor(() => {

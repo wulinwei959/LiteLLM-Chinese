@@ -4243,7 +4243,13 @@
       "groupClaimRequired": "请输入组声明",
       "teamIdsJwtFieldRequired": "请输入团队 ID JWT 字段",
       "urlMustStartWithHttp": "URL 必须以 http:// 或 https:// 开头",
-      "urlMustNotEndWithSlash": "URL 不能以斜杠结尾"
+      "urlMustNotEndWithSlash": "URL 不能以斜杠结尾",
+      "providerNameGoogle": "Google SSO",
+      "providerNameMicrosoft": "Microsoft SSO",
+      "providerNameOkta": "Okta / Auth0 SSO",
+      "providerNameGeneric": "通用 SSO",
+      "providerNameSaml": "SAML SSO",
+      "roleProxyAdminViewer": "代理管理员（只读）"
     }
   },
   "usage": {
