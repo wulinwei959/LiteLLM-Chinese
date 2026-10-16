@@ -178,6 +178,39 @@ npx tsc --noEmit 2>&1 | grep "error TS" | sed 's/^ *//' | sort -u
 
 新增的用例要有牙齿。把 `getSnapshot` 里的浏览器语言回退临时去掉，只有"跟随浏览器语言"那一条变红，其余三条仍绿，说明它盯的确实是这条回退
 
+## 2026-10-17 第 126-131 簇：t.rich 的 tag 必须是消息里的字面量标签
+
+next-intl 的 `t.rich` 只会对消息串里出现的字面量标签（`<code>`、`<link>` 等）调用传入的函数。如果把标签名写成普通占位符 `{usernameVar}`，再往 `t.rich` 里塞同名函数，运行时不会报错，但每个函数收到的 `chunks` 是空的，整段标签内容静默消失。表现是正文里 `UI_USERNAME`、`general_settings.disable_env_credential_login: true` 这类代码片段全没了，只剩两个空格，而测试报的是 `Unable to find an element with the text: ...`。
+
+所以正文里的代码片段一律写成消息里的字面量 `<code>`，不用占位符：
+
+```json
+"body": "Anyone with <code>UI_USERNAME</code>/<code>UI_PASSWORD</code> ..."
+```
+
+另外，用 `Object.fromEntries([...].map(...))` 拼 tag 映射表也会踩同一个坑：`fromEntries` 的返回类型是 `{[k: string]: Function}`，next-intl 的类型增强认不出这是 tag 表，于是按普通实参处理。tag 表必须是字面量对象。
+
+## 2026-10-17 第 126-131 簇：中文 plural 分支不能加引号
+
+`messagesParity` 有两条互相对抗的检查：
+
+- "quote every brace that is not a placeholder" 要求非占位符的花括号加引号；
+- "should use the same argument names in both languages" 会先跑 `stripIcuQuotes`，而它把 `'{` 当成 ICU 转义引号直接吃掉，于是加引号后的 `{个工具}` 被当成一个新的实参名，和英文侧的 `{count}` 对不上。
+
+唯一的写法是把 plural 分支的左花括号紧贴关键字、不留空格，让第一条检查的非重叠正则只匹配到 `{count, plural, other{个工具}`（含逗号，判定合法），而 `stripIcuQuotes` 也不会动它：
+
+```json
+"toolWord": "{count, plural, other{个工具}}"
+```
+
+仓库里 `roiCalculator.prCount` 的 `"{count} {count, plural, other{个 PR}}"` 就是这个写法。英文侧照常用 `one {...} other {...}`。
+
+## 2026-10-17 第 126-131 簇：一个文件只能有一个 useTranslations 命名空间
+
+`missingKeys` 的 "should resolve every t() call that names a namespace via useTranslations" 是按文件里最近的 `useTranslations("ns")` 字面量去解析所有裸 `t("x")` 调用的。所以哪怕某个 `t` 是从 props 传进来的，只要同文件里还有一处 `useTranslations("vectorStores.table")`，那个 `t` 就会被当成 `vectorStores.table` 翻译器，报出一堆 `vectorStores.table.openActions` 之类的假缺失。
+
+结论是：一个文件里要么只用 props 传的翻译器，要么所有 `useTranslations` 挂在同一命名空间上。列定义工厂的惯例（`t`/`tableT`/`commonT` 全部由调用方传入，本文件不调 `useTranslations`）正好绕开这条限制。
+
 ## 2026-10-16 第 119-126 簇：`as const` 是选项数组接翻译的前提
 
 把一个选项数组从 `label` 改成 `labelKey` 之后，如果不加 `as const`，数组元素的 `labelKey` 会被推成 `string`，于是 `t(option.labelKey)` 报 `TS2345: Argument of type 'string' is not assignable to parameter of type 'NamespacedMessageKeys<...>'`。`npm run build` 的类型检查阶段能抓到，但 `npx vitest run` 的 `types` 项目有时不会（取决于 `AppConfig.Messages` 的类型增强是否命中该调用点）。所以凡是"数组里存 key、渲染时取文案"的写法，数组末尾一律补 `as const`：

@@ -1,6 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-16，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 125 簇后（非测试 `.tsx` 912 个接入 601 个、65.9%，目录叶子 9128、中英同值 105）。第 93 到 125 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了两处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-16，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 131 簇后（非测试 `.tsx` 912 个接入 617 个、67.7%，目录叶子 9284、中英同值 106）。第 93 到 131 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了两处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+
+## 2026-10-17 第 126-131 簇更新
+
+继续串行推进，同样没有派子代理。
+
+第 126 簇 `logging_settings_view.tsx`：新开 `loggingSettingsView` 8 键。
+
+第 127 簇 `mcp_tools/MCPToolArgumentsForm.tsx`：新开 `mcpToolArgs` 17 键。这个文件的校验层全是模块级纯函数（`jsonErrorFor`、`collectErrors`、`buildResolver`），按约定逐个加翻译器首参；`STRING_SCHEMA_MESSAGES` 与 `BOOLEAN_ITEMS` 从常量改成 `stringSchemaMessages(t)`、`booleanItems(t)` 工厂。
+
+第 128 簇 `shared/advanced_date_picker.tsx`：新开 `advancedDatePicker` 22 键。相对时间选项数组原本拿 `shortLabel`（`today`/`7d`/`MTD`）同时当选中态标识和展示文案，改成 `id`（标识）+ `labelKey` + `badgeKey` 三个字段；`label` 变成可选入参，缺省时回落到目录里的 `defaultLabel`。
+
+第 129 簇 `PassThroughSettings/`：接进既有 `models.passThrough` 的新 `table` 子对象，21 键。列工厂同时要 `common.edit`/`common.delete`/`common.yes`/`common.no`，所以 deps 上并列传了 `t`（`models.passThrough.table`）和 `commonT`（`common`）两个翻译器。
+
+第 130 簇 `vector-stores/_components/`：接进既有 `vectorStores` 的新 `table` 子对象，18 键。同上并列传 `t`/`tableT`/`commonT`。
+
+第 131 簇一批小组件：`UIAccessControlForm.tsx`（13 键）、`EnvCredentialLoginWarningBanner.tsx`、`NoRedisWarningBanner.tsx`、`SidebarUsageCard.tsx`、`onboarding_link.tsx`（改名 `onboardingModal`，与已有的 `onboarding.*` 命名空间区分）、`query_param_input.tsx`，合计约 45 键。`uiAccessControlSchema` 改成收翻译器的工厂，`type UIAccessControlFormValues = z.output<ReturnType<typeof uiAccessControlSchema>>`。
+
+这一段合计：非测试 `.tsx` 912 接入 601→617（65.9%→67.7%），目录叶子 9128→9284（+156），中英同值 105→106。候选文件 85 个。
 
 ## 2026-10-16 第 119-126 簇更新
 
