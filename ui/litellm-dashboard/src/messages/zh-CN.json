@@ -4398,6 +4398,28 @@
         "testCompleted": "语义过滤器测试成功完成",
         "testFailed": "测试语义过滤器失败"
       }
+    },
+    "mcpToolSearch": {
+      "loginPrompt": "请登录后再配置工具搜索。",
+      "loadErrorTitle": "无法加载 MCP 工具搜索设置",
+      "infoTitle": "原生 MCP 工具搜索",
+      "infoBody": "控制原生 MCP 客户端用来发现工具的 <code>mcp_tool_search</code> 虚拟工具。设置了嵌入模型后，工具会按其名称与描述的语义排序，因此像“FX”这样的查询能找到“外汇汇率”工具。未设置时则使用关键词匹配。调用方始终只能看到其密钥、团队与服务器权限已允许的工具。",
+      "rankingTitle": "排序",
+      "embeddingModelLabel": "嵌入模型",
+      "embeddingModelHint": "模型列表中用于按语义对工具排序的嵌入模型。清除后将回退到关键词匹配。",
+      "loadingModels": "正在加载模型...",
+      "keywordMatching": "关键词匹配（不使用嵌入模型）",
+      "loading": "加载中...",
+      "noEmbeddingModels": "没有可用的嵌入模型",
+      "topKLabel": "Top K 结果数",
+      "topKHint": "一次搜索返回的排序工具数量上限。工具调用中更小的 top_k 会生效。核心工具不计入。",
+      "thresholdLabel": "相似度阈值",
+      "thresholdHint": "工具出现在语义结果中所需的最低余弦相似度。0 表示不设阈值。",
+      "coreToolsTitle": "核心工具",
+      "coreToolsLabel": "始终优先返回",
+      "coreToolsHint": "每行一个工具名，例如 my_server-get_rates。只要调用方有权限使用，这些工具就会排在排序结果之前。",
+      "saveButton": "保存设置",
+      "updatedToast": "设置更新成功。更改将在 10 秒内应用到所有 pod。"
     }
   },
   "usage": {

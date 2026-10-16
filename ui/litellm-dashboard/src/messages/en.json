@@ -4398,6 +4398,28 @@
         "testCompleted": "Semantic filter test completed successfully",
         "testFailed": "Failed to test semantic filter"
       }
+    },
+    "mcpToolSearch": {
+      "loginPrompt": "Please log in to configure tool search.",
+      "loadErrorTitle": "Could not load MCP tool search settings",
+      "infoTitle": "Native MCP Tool Search",
+      "infoBody": "Controls the <code>mcp_tool_search</code> virtual tool that native MCP clients call to discover tools. With an embedding model set, tools are ranked by the meaning of their name and description, so a query like \"FX\" finds a \"foreign exchange rates\" tool. Without one, keyword matching is used. Callers only ever see tools their key, team and server permissions already allow.",
+      "rankingTitle": "Ranking",
+      "embeddingModelLabel": "Embedding Model",
+      "embeddingModelHint": "Embedding model from your model list used to rank tools by meaning. Clear it to fall back to keyword matching.",
+      "loadingModels": "Loading models...",
+      "keywordMatching": "Keyword matching (no embedding model)",
+      "loading": "Loading...",
+      "noEmbeddingModels": "No embedding models available",
+      "topKLabel": "Top K Results",
+      "topKHint": "Most ranked tools a search returns. A smaller top_k in the tool call wins. Core tools do not count.",
+      "thresholdLabel": "Similarity Threshold",
+      "thresholdHint": "Lowest cosine similarity a tool needs to appear in semantic results. 0 means no cutoff.",
+      "coreToolsTitle": "Core Tools",
+      "coreToolsLabel": "Always Returned First",
+      "coreToolsHint": "One tool name per line, e.g. my_server-get_rates. Listed before ranked results whenever the caller is allowed to use them.",
+      "saveButton": "Save Settings",
+      "updatedToast": "Settings updated successfully. Changes will be applied across all pods within 10 seconds."
     }
   },
   "usage": {

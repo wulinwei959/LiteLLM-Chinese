@@ -1,7 +1,8 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, act, fireEvent } from "@testing-library/react";
+import { screen, act, fireEvent } from "@testing-library/react";
 import MCPToolSearchSettings from "./MCPToolSearchSettings";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import {
   useMCPToolSearchSettings,
   useUpdateMCPToolSearchSettings,
@@ -44,7 +45,7 @@ const settled = (data: typeof STORED | undefined, overrides: Partial<SettingsQue
   ({ data, isLoading: false, isError: false, error: null, ...overrides }) as SettingsQuery;
 
 async function renderSettings(accessToken: string | null = "token") {
-  const result = render(<MCPToolSearchSettings accessToken={accessToken} />);
+  const result = renderWithProviders(<MCPToolSearchSettings accessToken={accessToken} />);
   await act(async () => {});
   return result;
 }
@@ -62,21 +63,21 @@ describe("MCPToolSearchSettings", () => {
   it("shows the stored settings and keeps Save disabled until something changes", async () => {
     await renderSettings();
 
-    expect(screen.getByLabelText(/top k results/i)).toHaveValue(3);
-    expect(screen.getByLabelText(/always returned first/i)).toHaveValue("treasury-get_rates");
+    expect(screen.getByLabelText(/Top K 结果数/i)).toHaveValue(3);
+    expect(screen.getByLabelText(/始终优先返回/)).toHaveValue("treasury-get_rates");
     expect(screen.getByRole("slider", { hidden: true })).toHaveAttribute("aria-valuenow", "0.25");
-    expect(screen.getByRole("button", { name: /save settings/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /保存设置/ })).toBeDisabled();
   });
 
   it("sends the edited settings as the proxy's PATCH payload", async () => {
     await renderSettings();
 
-    fireEvent.change(screen.getByLabelText(/top k results/i), { target: { value: "8" } });
-    fireEvent.change(screen.getByLabelText(/always returned first/i), {
+    fireEvent.change(screen.getByLabelText(/Top K 结果数/i), { target: { value: "8" } });
+    fireEvent.change(screen.getByLabelText(/始终优先返回/), {
       target: { value: "treasury-get_rates\nweather-forecast" },
     });
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /save settings/i }));
+      fireEvent.click(screen.getByRole("button", { name: /保存设置/ }));
     });
 
     expect(mockMutate).toHaveBeenCalledTimes(1);
@@ -85,7 +86,7 @@ describe("MCPToolSearchSettings", () => {
 
   it("asks the user to log in without a token and surfaces load errors", async () => {
     await renderSettings(null);
-    expect(screen.getByText(/please log in/i)).toBeInTheDocument();
+    expect(screen.getByText(/请登录/)).toBeInTheDocument();
 
     vi.mocked(useMCPToolSearchSettings).mockReturnValue(
       settled(undefined, { isError: true, error: new Error("Database not connected") }),

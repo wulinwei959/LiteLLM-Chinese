@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import {
   useMCPToolSearchSettings,
   useUpdateMCPToolSearchSettings,
@@ -48,6 +50,7 @@ const labelWithHint = (label: string, hint: string): React.ReactNode => (
 );
 
 export default function MCPToolSearchSettings({ accessToken }: MCPToolSearchSettingsProps) {
+  const t = useTranslations("adminPanel");
   const { data, isLoading, isError, error } = useMCPToolSearchSettings();
   const { mutate: updateSettings, isPending: isUpdating } = useUpdateMCPToolSearchSettings();
   const form = useForm<ToolSearchFormValues>({ defaultValues: DEFAULT_FORM_VALUES });
@@ -73,14 +76,14 @@ export default function MCPToolSearchSettings({ accessToken }: MCPToolSearchSett
     updateSettings(formToPayload(formValues), {
       onSuccess: () => {
         form.reset(formValues);
-        toast.success("Settings updated successfully. Changes will be applied across all pods within 10 seconds.");
+        toast.success(t("mcpToolSearch.updatedToast"));
       },
       onError: (saveError) => toast.fromError(saveError),
     });
   };
 
   if (!accessToken) {
-    return <div className="p-6 text-center text-muted-foreground">Please log in to configure tool search.</div>;
+    return <div className="p-6 text-center text-muted-foreground">{t("mcpToolSearch.loginPrompt")}</div>;
   }
 
   if (isLoading) {
@@ -96,7 +99,7 @@ export default function MCPToolSearchSettings({ accessToken }: MCPToolSearchSett
   if (isError) {
     return (
       <Alert variant="error" className="mb-6">
-        <AlertTitle>Could not load MCP tool search settings</AlertTitle>
+        <AlertTitle>{t("mcpToolSearch.loadErrorTitle")}</AlertTitle>
         {error instanceof Error && <AlertDescription>{error.message}</AlertDescription>}
       </Alert>
     );
@@ -106,12 +109,11 @@ export default function MCPToolSearchSettings({ accessToken }: MCPToolSearchSett
     <div className="w-full">
       <Alert variant="info" className="mb-6">
         <Info />
-        <AlertTitle>Native MCP Tool Search</AlertTitle>
+        <AlertTitle>{t("mcpToolSearch.infoTitle")}</AlertTitle>
         <AlertDescription>
-          Controls the <code>mcp_tool_search</code> virtual tool that native MCP clients call to discover tools. With an
-          embedding model set, tools are ranked by the meaning of their name and description, so a query like
-          &quot;FX&quot; finds a &quot;foreign exchange rates&quot; tool. Without one, keyword matching is used. Callers
-          only ever see tools their key, team and server permissions already allow.
+          {t.rich("mcpToolSearch.infoBody", {
+            code: (chunks) => <code>{chunks}</code>,
+          })}
         </AlertDescription>
       </Alert>
 
@@ -119,17 +121,14 @@ export default function MCPToolSearchSettings({ accessToken }: MCPToolSearchSett
         <form onSubmit={(event) => event.preventDefault()} noValidate>
           <Card className="mb-4">
             <CardHeader className="border-b">
-              <CardTitle>Ranking</CardTitle>
+              <CardTitle>{t("mcpToolSearch.rankingTitle")}</CardTitle>
             </CardHeader>
             <CardContent>
               <FieldGroup>
                 <FormField
                   control={form.control}
                   name="embedding_model"
-                  label={labelWithHint(
-                    "Embedding Model",
-                    "Embedding model from your model list used to rank tools by meaning. Clear it to fall back to keyword matching.",
-                  )}
+                  label={labelWithHint(t("mcpToolSearch.embeddingModelLabel"), t("mcpToolSearch.embeddingModelHint"))}
                 >
                   {({ value, onChange, id }) => (
                     <SearchSelect
@@ -138,8 +137,10 @@ export default function MCPToolSearchSettings({ accessToken }: MCPToolSearchSett
                       value={value}
                       onValueChange={onChange}
                       allowClear
-                      placeholder={loadingModels ? "Loading models..." : "Keyword matching (no embedding model)"}
-                      emptyText={loadingModels ? "Loading..." : "No embedding models available"}
+                      placeholder={
+                        loadingModels ? t("mcpToolSearch.loadingModels") : t("mcpToolSearch.keywordMatching")
+                      }
+                      emptyText={loadingModels ? t("mcpToolSearch.loading") : t("mcpToolSearch.noEmbeddingModels")}
                       disabled={isUpdating || loadingModels}
                     />
                   )}
@@ -148,10 +149,7 @@ export default function MCPToolSearchSettings({ accessToken }: MCPToolSearchSett
                 <FormField
                   control={form.control}
                   name="top_k"
-                  label={labelWithHint(
-                    "Top K Results",
-                    "Most ranked tools a search returns. A smaller top_k in the tool call wins. Core tools do not count.",
-                  )}
+                  label={labelWithHint(t("mcpToolSearch.topKLabel"), t("mcpToolSearch.topKHint"))}
                 >
                   {({ ref, value, onChange, onBlur, id }) => (
                     <Input
@@ -174,10 +172,7 @@ export default function MCPToolSearchSettings({ accessToken }: MCPToolSearchSett
                 <FormField
                   control={form.control}
                   name="similarity_threshold"
-                  label={labelWithHint(
-                    "Similarity Threshold",
-                    "Lowest cosine similarity a tool needs to appear in semantic results. 0 means no cutoff.",
-                  )}
+                  label={labelWithHint(t("mcpToolSearch.thresholdLabel"), t("mcpToolSearch.thresholdHint"))}
                 >
                   {({ value, onChange, id }) => (
                     <div className="w-full">
@@ -206,17 +201,14 @@ export default function MCPToolSearchSettings({ accessToken }: MCPToolSearchSett
 
           <Card className="mb-4">
             <CardHeader className="border-b">
-              <CardTitle>Core Tools</CardTitle>
+              <CardTitle>{t("mcpToolSearch.coreToolsTitle")}</CardTitle>
             </CardHeader>
             <CardContent>
               <FieldGroup>
                 <FormField
                   control={form.control}
                   name="core_tools_text"
-                  label={labelWithHint(
-                    "Always Returned First",
-                    "One tool name per line, e.g. my_server-get_rates. Listed before ranked results whenever the caller is allowed to use them.",
-                  )}
+                  label={labelWithHint(t("mcpToolSearch.coreToolsLabel"), t("mcpToolSearch.coreToolsHint"))}
                 >
                   {({ ref, value, onChange, onBlur, id }) => (
                     <Textarea
@@ -241,7 +233,7 @@ export default function MCPToolSearchSettings({ accessToken }: MCPToolSearchSett
               disabled={!isDirty || isUpdating}
             >
               {isUpdating ? <UiLoadingSpinner className="size-4" /> : <Save />}
-              Save Settings
+              {t("mcpToolSearch.saveButton")}
             </Button>
           </div>
         </form>
