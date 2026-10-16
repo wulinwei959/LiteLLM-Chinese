@@ -387,6 +387,13 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-16 第 92 簇：共享组件的默认 `label` 怎么接键、动到存量脏文件顺手清
+
+`components/common_components/Filters/` 的两个按钮把可见文案写在解构默认值里（`label = "Filters"`），两条值得固化：
+
+- **通用组件的默认 `label` 接键：默认值放 `common`，写法用 `label ?? t(...)`**。这类组件被多处复用、调用方可能传也可能不传 `label`。把解构默认值 `label = "Filters"` 改成可选 `label`、渲染处 `label ?? t("filters")`，未传时走目录、传了则原样用。默认值文案进 `common`（通用兜底），不进某个特性命名空间。注意 `common` 已有 `filter`（单数 `Filter`）但没有复数 `Filters`，英文字面不同就要各开一键，别为了少建键拿单数顶替。相对地，`FilterInput` 的 `placeholder` 是调用方入参、组件自身无文案，就保持不挂 hook，别为了让"目录里每个文件都挂 hook"而硬接
+- **动到一个文件时，顺手清掉它存量的 lint 错误，但要先确认是存量**。`OrganizationsPanel.test.tsx` 的 import 里有个一直没用的 `render`，HEAD 单跑 `npx eslint <该文件>` 就报 `unused-imports/no-unused-imports`、且没进 `eslint-suppressions.json`。既然本簇改了这个文件，就删掉它（一行、无行为变化），让"改动文件 eslint 干净"这句话成立。用 `git stash -u` 回基线单跑同一文件确认是存量，再决定删。若确认后是别处模块的账、又与本次改动无关，就别顺手动（判断办法见本篇开头"总则"）
+
 ## 2026-10-16 第 91 簇：新开顶层命名空间时如何复用 `common`、哪些位置能自己挂 hook
 
 `components/CloudZeroCostTracking/` 是批次 24 里第一个自成一体的集成目录（新开顶层 `cloudZero` 命名空间），三条值得固化：
