@@ -1,6 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 139 簇后（非测试 `.tsx` 912 个接入 629 个、69.0%，目录叶子 9447、中英同值 106）。第 93 到 139 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了三处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）、`TeamInfo.test.tsx` 里因 `permissions` 簇翻译而过期的两处断言（第 133 簇顺手修）、`TeamInfo.test.tsx` 的护栏标题与对象权限 tooltip（第 133 簇）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 144 簇后（非测试 `.tsx` 912 个接入 634 个、69.5%，目录叶子 9492、中英同值 106）。第 93 到 144 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）、`TeamInfo.test.tsx` 里因 `permissions` 簇与护栏翻译而过期的四处断言（第 133 簇顺手修）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+
+## 2026-10-17 第 140-144 簇更新
+
+继续串行推进，没有派子代理。这一批把候选清单里的一批选择器与单文件弹窗收掉了，也核实了两个误报。
+
+第 140 簇 `ModelSelect/ModelSelect.tsx`：新开 `modelSelect` 9 键。`MODEL_SENTINEL_OPTIONS` 从英文 `label` 改存键名，`DefaultUserSettingsForm` 的只读摘要改用 `modelSelect` 翻译器即时解析（原来是模块级 Map，拿不到 hook）；通配符分组的 `All {provider} models` 走带参模板，provider 名是派生数据。这一簇的教训是改共享组件的导出形状前先查消费者：`create_key_button.integration.test.tsx` 里的 `All Proxy Models` 来自 `create_key_button.tsx` 自己那份硬编码（该文件尚未接线），不是本组件的导出，改断言前先看渲染链路。
+
+第 141 簇 `mcp_server_management/MCPServerSelector.tsx`：接进既有 `mcpServers` 的新 `selector` 子对象 8 键。三个来源（访问组、服务器、工具集）的 description、两个哨兵选项与其说明、占位符与空态全部接键。
+
+第 142 簇 `model_add/CredentialsTableColumns.tsx` + `CredentialsTable.tsx` + `CredentialModal.tsx`：新开 `credentials` 18 键，列工厂收 `t`/`commonT`，编辑、删除、操作列复用 `common`，供应商选择与取消也复用 `common`。
+
+第 143 簇 `model_dashboard/ModelSettingsModal/ModelSettingsModal.tsx`：新开 `modelSettings` 7 键。`Store Model in DB` 的字段说明按"接口值优先、本地兜底接键"只给兜底那半边接键；保存失败的 toast 前缀接键，后端错误详情仍拼在后面。
+
+第 144 簇 `TeamsPage/teamTableColumns.tsx` 行操作菜单残留：编辑/复制 ID/删除三个菜单项接进既有 `teams` 的 `listEditTeam`/`listCopyTeamId`/`listDeleteTeam`。
+
+两个核实为误报的候选：`add_model_modes.tsx` 的 `AUTO_ROUTER_MODES` 是无消费者的死代码，`TEST_MODES` 本就已用 `labelKey`；`mcp-servers/_components/MCPStandardsSettings.tsx` 的 `mcpStandards.*` 键名已就位但目录里没有该命名空间，且当前没有任何组件消费它，只有自己的测试在用。
+
+这一段合计：非测试 `.tsx` 912 接入 629→634（69.0%→69.5%），目录叶子 9447→9492（+45），中英同值 106 不变。候选文件 76→70。
 
 ## 2026-10-17 第 137-139 簇更新
 

@@ -223,6 +223,12 @@ next-intl 的 `t.rich` 只会对消息串里出现的字面量标签（`<code>`�
 
 列定义工厂里，`header` 翻了不代表全部：`meta: { title: ... }` 是骨架屏与列隐藏菜单用的可访问名，多数表把它写成英文字面量，只有 `header` 走 `t`。清残留时两处都要查，`ToolPoliciesTableColumns` 的 `Input Policy`/`Output Policy`/`Team Name`/`Key Name` 就是这么漏下的。
 
+## 2026-10-17 第 140 簇：改共享组件的导出形状前先看渲染链路
+
+把 `MODEL_SENTINEL_OPTIONS` 从英文 `label` 改成键名时，顺手把 `create_key_button.integration.test.tsx` 里的 `All Proxy Models` 断言一起改成了中文，结果红了。那个下拉根本不是 `ModelSelect`，而是 `create_key_button.tsx` 里 `modelOptions` 数组的另一份硬编码，该文件还没接线。教训是同名字符串在仓库里往往有多份来源，改断言前先确认被测元素由哪个文件渲染，别按"这个字符串应该归这个组件管"来推断。
+
+另一个连带问题：`DefaultUserSettingsForm` 原来在模块顶层用 `MODEL_SENTINEL_OPTIONS` 建了一张 value 到英文 label 的表，改键名后这张表拿不到 `t`，只能下沉进组件体、用第二把 `modelSelect` 翻译器即时解析。模块级常量承载文案是同一个病根，键名化之后自然要把翻译点挪到组件里。
+
 ## 2026-10-16 第 119-126 簇：`as const` 是选项数组接翻译的前提
 
 把一个选项数组从 `label` 改成 `labelKey` 之后，如果不加 `as const`，数组元素的 `labelKey` 会被推成 `string`，于是 `t(option.labelKey)` 报 `TS2345: Argument of type 'string' is not assignable to parameter of type 'NamespacedMessageKeys<...>'`。`npm run build` 的类型检查阶段能抓到，但 `npx vitest run` 的 `types` 项目有时不会（取决于 `AppConfig.Messages` 的类型增强是否命中该调用点）。所以凡是"数组里存 key、渲染时取文案"的写法，数组末尾一律补 `as const`：
