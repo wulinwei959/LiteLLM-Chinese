@@ -41,11 +41,11 @@ const teamMemberCount = (team: Team): number => team.members_count ?? team.membe
 const teamModelCount = (team: Team): number => team.models?.length ?? 0;
 const teamKeyCount = (team: Team): number => team.keys_count ?? team.keys?.length ?? 0;
 
-function ResourcesCell({ team }: { team: Team }) {
+function ResourcesCell({ team, t }: { team: Team; t: TeamsTableTranslator }) {
   const items = [
-    { key: "members" as const, label: "members", count: teamMemberCount(team) },
-    { key: "models" as const, label: "models", count: teamModelCount(team) },
-    { key: "keys" as const, label: "keys", count: teamKeyCount(team) },
+    { key: "members" as const, label: t("table.members"), count: teamMemberCount(team) },
+    { key: "models" as const, label: t("table.models"), count: teamModelCount(team) },
+    { key: "keys" as const, label: t("table.keys"), count: teamKeyCount(team) },
   ];
 
   return (
@@ -81,21 +81,22 @@ function RateLimitLine({ label, value }: { label: string; value: number | null }
 }
 
 interface TeamRowActionsProps {
+  t: TeamsTableTranslator;
   team: Team;
   canManage: boolean;
   onEditTeam: (team: Team) => void;
   onDeleteTeam: (team: Team) => void;
 }
 
-function TeamRowActions({ team, canManage, onEditTeam, onDeleteTeam }: TeamRowActionsProps) {
+function TeamRowActions({ team, canManage, onEditTeam, onDeleteTeam, t }: TeamRowActionsProps) {
   const handleCopy = () => {
-    void copyToClipboard(team.team_id, "Team ID copied");
+    void copyToClipboard(team.team_id, t("table.teamIdCopied"));
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open team actions"
+        aria-label={t("table.openRowActions")}
         data-testid={`team-actions-${team.team_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -176,7 +177,7 @@ export const getTeamTableColumns = ({
     {
       id: "organization_alias",
       accessorKey: "organization_id",
-      meta: { title: "Organization" },
+      meta: { title: t("table.organization") },
       header: t("table.organization"),
       size: 160,
       enableSorting: false,
@@ -196,7 +197,7 @@ export const getTeamTableColumns = ({
     {
       id: "resources",
       meta: {
-        title: "Resources",
+        title: t("table.resources"),
         renderSkeleton: () => (
           <div className="flex items-center gap-1.5">
             <Skeleton className="h-6 w-12 rounded-md" />
@@ -208,7 +209,7 @@ export const getTeamTableColumns = ({
       header: t("table.resources"),
       size: 210,
       enableSorting: false,
-      cell: ({ row }) => <ResourcesCell team={row.original} />,
+      cell: ({ row }) => <ResourcesCell team={row.original} t={t} />,
     },
     {
       id: "spend",
@@ -229,8 +230,8 @@ export const getTeamTableColumns = ({
     {
       id: "created_at",
       accessorKey: "created_at",
-      meta: { title: "Created" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Created" variant="header-cycle" />,
+      meta: { title: t("table.created") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("table.created")} variant="header-cycle" />,
       size: 130,
       enableSorting: true,
       cell: (info) => <DateCell value={info.getValue() as string | null} precision="date" />,
@@ -253,7 +254,7 @@ export const getTeamTableColumns = ({
     },
     {
       id: "rate_limits",
-      meta: { title: "Rate Limits", skeleton: "twoLine" },
+      meta: { title: t("table.rateLimits"), skeleton: "twoLine" },
       header: t("table.rateLimits"),
       size: 140,
       enableSorting: false,
@@ -267,7 +268,7 @@ export const getTeamTableColumns = ({
     {
       id: "updated_at",
       accessorKey: "updated_at",
-      meta: { title: "Updated" },
+      meta: { title: t("table.updated") },
       header: t("table.updated"),
       size: 130,
       enableSorting: false,
@@ -276,13 +277,14 @@ export const getTeamTableColumns = ({
     {
       id: "actions",
       meta: { className: "text-right", headerClassName: "text-right" },
-      header: () => <span className="sr-only">Actions</span>,
+      header: () => <span className="sr-only">{t("table.actions")}</span>,
       size: 60,
       enableSorting: false,
       enableHiding: false,
       cell: ({ row }) => (
         <div className="flex justify-end">
           <TeamRowActions
+            t={t}
             team={row.original}
             canManage={canManage}
             onEditTeam={onEditTeam}

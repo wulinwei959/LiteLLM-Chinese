@@ -119,9 +119,9 @@ it("renders a team row with alias, organization, and spend/budget", async () => 
 it("renders the Resources cell with member, model, and key counts", () => {
   renderTable();
 
-  expect(screen.getByTitle("2 members")).toBeInTheDocument();
-  expect(screen.getByTitle("4 models")).toBeInTheDocument();
-  expect(screen.getByTitle("3 keys")).toBeInTheDocument();
+  expect(screen.getByTitle("2 成员")).toBeInTheDocument();
+  expect(screen.getByTitle("4 模型")).toBeInTheDocument();
+  expect(screen.getByTitle("3 密钥")).toBeInTheDocument();
 });
 
 it("shows '未找到团队' when the list is empty", () => {
@@ -172,7 +172,7 @@ describe("sort contract – only backend-sortable columns are sortable", () => {
     expect(screen.queryByText("支出 / 预算").closest("button")).toBeNull();
     // Team and Created are the only sortable headers.
     expect(screen.getByText("团队").closest("button")).not.toBeNull();
-    expect(screen.getByText("Created").closest("button")).not.toBeNull();
+    expect(screen.getByText("创建时间").closest("button")).not.toBeNull();
   });
 });
 
@@ -361,7 +361,7 @@ describe("column rendering details", () => {
       ]),
     );
     renderTable();
-    expect(screen.getByTitle("2 keys")).toBeInTheDocument();
+    expect(screen.getByTitle("2 密钥")).toBeInTheDocument();
   });
 });
 
@@ -370,11 +370,11 @@ describe("hidden-by-default columns", () => {
     const user = userEvent.setup();
     renderTable();
 
-    expect(screen.queryByText("Rate Limits")).not.toBeInTheDocument();
+    expect(screen.queryByText("速率限制")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Columns" }));
     const menu = await screen.findByRole("menu");
-    expect(within(menu).getByText("Rate Limits")).toBeInTheDocument();
-    expect(within(menu).getByText("Updated")).toBeInTheDocument();
+    expect(within(menu).getByText("速率限制")).toBeInTheDocument();
+    expect(within(menu).getByText("更新时间")).toBeInTheDocument();
   });
 });

@@ -2521,7 +2521,12 @@
       "models": "模型",
       "rateLimits": "速率限制",
       "updated": "更新时间",
-      "team": "团队"
+      "team": "团队",
+      "created": "创建时间",
+      "actions": "操作",
+      "openRowActions": "打开团队操作菜单",
+      "keys": "密钥",
+      "teamIdCopied": "团队 ID 已复制"
     },
     "memberSearch": {
       "defaultTitle": "添加团队成员",

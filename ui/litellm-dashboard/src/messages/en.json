@@ -2521,7 +2521,12 @@
       "models": "Models",
       "rateLimits": "Rate Limits",
       "updated": "Updated",
-      "team": "Team"
+      "team": "Team",
+      "created": "Created",
+      "actions": "Actions",
+      "openRowActions": "Open team actions",
+      "keys": "keys",
+      "teamIdCopied": "Team ID copied"
     },
     "memberSearch": {
       "defaultTitle": "Add Team Member",
