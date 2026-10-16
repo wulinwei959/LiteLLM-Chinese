@@ -211,6 +211,12 @@ next-intl 的 `t.rich` 只会对消息串里出现的字面量标签（`<code>`�
 
 结论是：一个文件里要么只用 props 传的翻译器，要么所有 `useTranslations` 挂在同一命名空间上。列定义工厂的惯例（`t`/`tableT`/`commonT` 全部由调用方传入，本文件不调 `useTranslations`）正好绕开这条限制。
 
+## 2026-10-17 第 136 簇：hook 里的抛错文案也算用户可见
+
+`useMcpOAuthFlow` 的十几句提示有两类出口：直接的 `toast.error(...)`，和 `throw new Error(...)` 之后再被 `extractErrorMessage` 收进 toast。两条路最终都落在用户屏幕上，所以都得接键；判据不是"这句在哪个语法位置"，而是"最终有没有人看到"。这与第 112 簇"只写进 `console.error` 的串保持英文"是同一条规则的两面。副作用是 hook 的两个 `useCallback` 依赖要补上 `t`，否则切语言后闭包里还是旧文案。
+
+非组件模块直接挂 `useTranslations` 时，`renderHook` 的测试也要给包装层：`renderHook(fn, { wrapper })`，`wrapper` 用 `LocaleProvider locale="zh-CN"` 包一层即可，不必上完整的 `renderWithProviders`（那是给 `render` 用的，里面还有 react-query 和 nuqs）。不包的话首个渲染就抛 "context from `NextIntlClientProvider` was not found"。
+
 ## 2026-10-16 第 119-126 簇：`as const` 是选项数组接翻译的前提
 
 把一个选项数组从 `label` 改成 `labelKey` 之后，如果不加 `as const`，数组元素的 `labelKey` 会被推成 `string`，于是 `t(option.labelKey)` 报 `TS2345: Argument of type 'string' is not assignable to parameter of type 'NamespacedMessageKeys<...>'`。`npm run build` 的类型检查阶段能抓到，但 `npx vitest run` 的 `types` 项目有时不会（取决于 `AppConfig.Messages` 的类型增强是否命中该调用点）。所以凡是"数组里存 key、渲染时取文案"的写法，数组末尾一律补 `as const`：

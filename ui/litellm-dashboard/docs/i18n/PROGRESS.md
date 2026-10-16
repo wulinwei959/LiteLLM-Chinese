@@ -1,6 +1,22 @@
 # 开发进度
 
-数据快照 2026-10-16，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 131 簇后（非测试 `.tsx` 912 个接入 617 个、67.7%，目录叶子 9284、中英同值 106）。第 93 到 131 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了两处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 136 簇后（非测试 `.tsx` 912 个接入 627 个、68.8%，目录叶子 9416、中英同值 106）。第 93 到 136 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了两处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步），以及 `TeamInfo.test.tsx` 里因 `permissions` 簇翻译而过期的两处断言（第 133 簇顺手修）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+
+## 2026-10-17 第 132-136 簇更新
+
+继续串行推进，同样没有派子代理。这一批把候选清单里剩下的几个中等体量文件收掉了。
+
+第 132 簇 `update_model_credentials_modal.tsx` 与 `shared/DataTable/DataTableToolbar.tsx` + `DataTableViewOptions.tsx`：新开 `updateModelCredentials` 9 键、`dataTableToolbar` 6 键、`dataTableViewOptions` 1 键。工具栏的 `searchPlaceholder` 默认值从参数默认改成函数体内 `?? t("searchPlaceholder")`（默认参数在 hook 之前求值，不能调 hook）；`DataTableViewOptions` 的 `label` 默认值同样改成 `label ?? t("view")`。工具栏是全仓共享组件，`TeamsTable`、`TeamInfo`、`RequestLogsPanel` 三份测试里按英文按钮名查询的断言跟着改成中文，`VirtualKeysTable.test.tsx` 那份自己 mock 了 `next-intl`（回退返回键名），所以它的 `openFilters` helper 保持不动。zod 校验的 `api_key` 必填文案按约定改成收翻译器的 `updateCredentialsSchema(t)` 工厂。
+
+第 133 簇四张列定义表：`SearchToolTableColumns.tsx`（接进既有 `searchTools`，16 键）、`IndexesTableColumns.tsx`（接进既有 `vectorStores.table`，6 键）、`DeletedKeysTableColumns.tsx` 与 `DeletedTeamsTableColumns.tsx`（各新开一个命名空间，15 + 14 键）。后三张原本零参，改成首参收 translator；`SearchToolRowActions` 从模块常量改为由父级把 `t` 传下去。`translators.ts` 补了 `DeletedKeysTableTranslator`、`DeletedTeamsTableTranslator` 两个类型。这一簇顺手修了 `TeamInfo.test.tsx` 两处早已过期的断言：对象权限卡的 tooltip（`inheritedGrants.grantedViaGroup`）与护栏设置的标题（`guardrailSettingsView.title`），都是前面簇翻译组件时没同步测试留下的，属于存量红灯不是本批引入。
+
+第 134 簇 `email_settings.tsx` 与 `email_events/email_event_settings.tsx`：新开 `emailSettings` 17 键、`emailEventSettings` 9 键。`FIELD_HELP` 从模块级常量改成 `buildFieldHelp(t, required)` 工厂，必填标记 `Required *` 单独成键、两侧的空格留在 JSX 里，保证英文渲染逐字一致；`getEventDescription` 从组件内函数提升为模块级 `(event, t)`，兜底模板 `Receive an email notification when {words}` 里的 `{words}` 仍是后端事件名拆出来的英文，属"后端原始值不翻"的口径。
+
+第 135 簇 `per_user_usage.tsx` 与 `view_user_spend.tsx`：新开 `perUserUsage` 22 键、`viewUserSpend` 4 键。直方图的六个分桶标签原来是对象字面量的键，改成计算属性 `[t("cat1to9")]`，逻辑不变；`usersCount` 用 ICU plural，照抄 `roiCalculator.prCount` 的写法（数字放在 plural 外面的 `{count}`，分支里只放量词），`usersFormatter` 的正则断言从 `/ users$/` 改成 `/个用户$/`。未识别的 user agent 回退复用 `common.unknown`。
+
+第 136 簇 `hooks/useMcpOAuthFlow.tsx`：新开 `mcpOauthFlow` 11 键。hook 体内直接挂 `useTranslations`，`startOAuthFlow`、`resumeOAuthFlow` 两个 `useCallback` 的依赖补上 `t`；抛出的 `new Error(...)` 文案一并接键，因为这些串最终经 `extractErrorMessage` 进 toast，是用户可见的。单测 `renderHook` 加了 `LocaleProvider` 包装。
+
+这一段合计：非测试 `.tsx` 912 接入 617→627（67.7%→68.8%），目录叶子 9284→9416（+132），中英同值 106 不变。候选文件 80 个（本批重跑了启发式扫描，脚本与上一批略有出入，85→80 的差值不能按文件逐个对账；其余 14 个本批接完的文件已从清单里消失）。
 
 ## 2026-10-17 第 126-131 簇更新
 

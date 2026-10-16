@@ -100,6 +100,12 @@
 
 剩余量见"## 汉化完成度实测"，当前最大的未接入目录是 `src/components` 根下零散文件（`settings.tsx`、`model_info_view.tsx`、`networking.tsx`、`cloudzero_export_modal.tsx`、`SCIM.tsx` 等）、`app/login`、`components/liteadmin`、`components/claude_code_plugins`、`components/mcp_tools`、`app/(dashboard)/agents/_components` 与 `playground` 的 `AdditionalModelSettings`。
 
+## 批次 24 第 126-136 簇（2026-10-17）
+
+这一轮继续串行收共享组件长尾：`logging_settings_view`、`mcp_tools/MCPToolArgumentsForm`、`shared/advanced_date_picker`、`PassThroughSettings/`、`vector-stores/_components/`、`update_model_credentials_modal`、`shared/DataTable` 的工具栏与列视图开关、四张列定义表（搜索工具、索引、已删除密钥、已删除团队）、`email_settings` 与 `email_event_settings`、`per_user_usage`、`view_user_spend`、`hooks/useMcpOAuthFlow`，以及一批小组件（`UIAccessControlForm`、登录提示与无 Redis 提示条、`SidebarUsageCard`、入门弹窗、`query_param_input`）。覆盖率从 65.9% 推到 68.8%，目录叶子从 9128 增到 9416。
+
+仍未动的两块：`components/networking.tsx`（中心网络层，穿透成本远大于收益，已单独记账）与剩余约 80 个启发式候选文件（多为一处两条提示的小文件，另有 `vector_store_providers.tsx` 这种配置模块体量偏大）。
+
 ## 已完成批次里值得回头看的两处重构
 
 `mcp_servers.tsx` 的排序下拉原本是带 `label` 的字面量数组，翻译时改成 `SORT_KEYS`（只存 key）加 `SORT_LABEL_KEYS`（key 到 i18n key 的映射），下拉项与 `items` 属性都从 `SORT_KEYS` 派生。这样数组本身不含文案，重排或增删选项不会碰到翻译
