@@ -9660,5 +9660,23 @@
     "actionUnknown": "检查结果",
     "interruptedWrite": "已提交的改动可能已完成。请在重试前检查相关页面。",
     "completedChangesPrefix": "已完成的改动显示在上方。"
+  },
+  "modelGroupAlias": {
+    "saveFailed": "保存模型组别名设置失败",
+    "provideBoth": "请同时填写别名名称与目标模型组",
+    "duplicateName": "同名别名已存在",
+    "added": "别名添加成功",
+    "updated": "别名更新成功",
+    "deleted": "别名删除成功",
+    "title": "模型组别名设置",
+    "addAlias": "添加新别名",
+    "aliasName": "别名名称",
+    "aliasNamePlaceholder": "例如 gpt-4o",
+    "targetModelGroup": "目标模型组",
+    "targetPlaceholder": "例如 gpt-4o-mini-openai",
+    "manageAliases": "管理已有别名",
+    "actions": "操作",
+    "configExample": "配置示例",
+    "description": "为您的模型组创建别名以简化 API 调用。例如，可以创建一个指向 &apos;gpt-4o-mini-openai&apos; 模型组的别名 &apos;gpt-4o&apos;。"
   }
 }

@@ -9664,5 +9664,23 @@
     "actionUnknown": "Check result",
     "interruptedWrite": "A submitted change may have completed. Check the relevant page before trying again.",
     "completedChangesPrefix": "Completed changes are shown above. "
+  },
+  "modelGroupAlias": {
+    "saveFailed": "Failed to save model group alias settings",
+    "provideBoth": "Please provide both alias name and target model group",
+    "duplicateName": "An alias with this name already exists",
+    "added": "Alias added successfully",
+    "updated": "Alias updated successfully",
+    "deleted": "Alias deleted successfully",
+    "title": "Model Group Alias Settings",
+    "addAlias": "Add New Alias",
+    "aliasName": "Alias Name",
+    "aliasNamePlaceholder": "e.g., gpt-4o",
+    "targetModelGroup": "Target Model Group",
+    "targetPlaceholder": "e.g., gpt-4o-mini-openai",
+    "manageAliases": "Manage Existing Aliases",
+    "actions": "Actions",
+    "configExample": "Configuration Example",
+    "description": "Create aliases for your model groups to simplify API calls. For example, you can create an alias &apos;gpt-4o&apos; that points to &apos;gpt-4o-mini-openai&apos; model group."
   }
 }
