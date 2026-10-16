@@ -10,6 +10,7 @@ import { SimpleTooltip } from "@/components/ui/tooltip";
 import { applyPtuModelInfo } from "../utils/ptuModelInfo";
 import { usePtuCostAttributionEnabled } from "@/app/(dashboard)/hooks/uiSettings/usePtuCostAttributionEnabled";
 import { ArrowLeft, CheckIcon, CopyIcon, Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { copyToClipboard as utilCopyToClipboard } from "../utils/dataUtils";
 import { stripMaskedSecrets } from "../utils/maskedSecretUtils";
@@ -70,6 +71,7 @@ export default function ModelInfoView({
   onModelUpdate,
   modelAccessGroups,
 }: ModelInfoViewProps) {
+  const t = useTranslations("modelInfo");
   const queryClient = useQueryClient();
   const [localModelData, setLocalModelData] = useState<any>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -141,7 +143,7 @@ export default function ModelInfoView({
   // Broader than the editor check: adaptive and quality routers equally have no upstream
   // credential, so the credential actions are meaningless for every auto-router strategy.
   const isAnyAutoRouter = isAutoRouterDeployment(modelData?.litellm_params);
-  const deleteLabel = isAnyAutoRouter ? "Delete Auto-Router" : "Delete Model";
+  const deleteLabel = isAnyAutoRouter ? t("deleteAutoRouter") : t("deleteModel");
   const isComplexityRouterModel = isComplexityRouterParams(modelData?.litellm_params);
 
   const usingExistingCredential =
@@ -254,9 +256,9 @@ export default function ModelInfoView({
         custom_llm_provider: localModelData.litellm_params?.custom_llm_provider,
       },
     };
-    toast.info("Storing credential..");
+    toast.info(t("storingCredential"));
     let credentialResponse = await credentialCreateCall(accessToken, credentialItem);
-    toast.success("Credential stored successfully");
+    toast.success(t("credentialStored"));
   };
 
   const handleModelUpdate = async (
@@ -273,7 +275,7 @@ export default function ModelInfoView({
         parsedExtraParams = values.litellm_extra_params ? JSON.parse(values.litellm_extra_params) : {};
         delete parsedExtraParams.litellm_credential_name;
       } catch (e) {
-        toast.fromError("Invalid JSON in LiteLLM Params");
+        toast.fromError(t("invalidLiteLlmParams"));
         setIsSaving(false);
         return;
       }
@@ -390,7 +392,7 @@ export default function ModelInfoView({
         if (values.team_id) updatedModelInfo = { ...updatedModelInfo, team_id: values.team_id };
         updatedModelInfo = applyPtuModelInfo(updatedModelInfo, values, ptuCostAttributionEnabled);
       } catch (e) {
-        toast.fromError("Invalid JSON in Model Info");
+        toast.fromError(t("invalidModelInfo"));
         return;
       }
 
@@ -426,11 +428,11 @@ export default function ModelInfoView({
         onModelUpdate(updatedModelData);
       }
 
-      toast.success("Model settings updated successfully");
+      toast.success(t("modelSettingsUpdated"));
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating model:", error);
-      toast.fromError("Failed to update model settings");
+      toast.fromError(t("updateFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -444,7 +446,7 @@ export default function ModelInfoView({
           <ArrowLeft className="size-4" />
           Back to Models
         </Button>
-        <p className="text-sm">Loading...</p>
+        <p className="text-sm">{t("loading")}</p>
       </div>
     );
   }
@@ -457,7 +459,7 @@ export default function ModelInfoView({
           <ArrowLeft className="size-4" />
           Back to Models
         </Button>
-        <p className="text-sm">Model not found</p>
+        <p className="text-sm">{t("modelNotFound")}</p>
       </div>
     );
   }
@@ -467,7 +469,7 @@ export default function ModelInfoView({
     if (isComplexityRouterModel) {
       const targets = buildComplexityRouterTestTargets(localModelData ?? modelData);
       if (targets.length === 0) {
-        toast.warning("No complexity tiers are configured yet, so there is nothing to test.");
+        toast.warning(t("noComplexityTiers"));
         return;
       }
       setAutoRouterTestTargets(targets);
@@ -476,7 +478,7 @@ export default function ModelInfoView({
       return;
     }
     try {
-      toast.info("Testing connection...");
+      toast.info(t("testingConnection"));
       const response = await testConnectionRequest(
         accessToken,
         {
@@ -497,15 +499,15 @@ export default function ModelInfoView({
       );
 
       if (response.status === "success") {
-        toast.success("Connection test successful!");
+        toast.success(t("connectionTestSuccess"));
       } else {
-        throw new Error(response?.result?.error || response?.message || "Unknown error");
+        throw new Error(response?.result?.error || response?.message || t("unknownError"));
       }
     } catch (error) {
       if (error instanceof Error) {
-        toast.error("Error testing connection: " + truncateString(error.message, 100));
+        toast.error(t("errorTestingConnection") + truncateString(error.message, 100));
       } else {
-        toast.error("Error testing connection: " + String(error));
+        toast.error(t("errorTestingConnection") + String(error));
       }
     }
   };
@@ -515,7 +517,7 @@ export default function ModelInfoView({
       setDeleteLoading(true);
       if (!accessToken) return;
       await modelDeleteCall(accessToken, modelId);
-      toast.success("Model deleted successfully");
+      toast.success(t("modelDeleted"));
 
       if (onModelUpdate) {
         onModelUpdate({
@@ -527,7 +529,7 @@ export default function ModelInfoView({
       onClose();
     } catch (error) {
       console.error("Error deleting the model:", error);
-      toast.fromError("Failed to delete model");
+      toast.fromError(t("deleteFailed"));
     } finally {
       setDeleteLoading(false);
       setIsDeleteModalOpen(false);
@@ -574,7 +576,7 @@ export default function ModelInfoView({
             <Button
               variant="ghost"
               size="icon-xs"
-              aria-label="Copy model ID"
+              aria-label={t("copyModelId")}
               onClick={() => copyToClipboard(modelData.model_info.id, "model-id")}
               className={`left-2 z-raised transition-all duration-200 ${
                 copiedStates["model-id"]
@@ -655,21 +657,21 @@ export default function ModelInfoView({
                 <p className="text-sm">Provider</p>
                 <div className="mt-2 flex items-center space-x-2">
                   {modelData.provider && <Logo provider={modelData.provider} className="w-4 h-4" />}
-                  <h3 className="text-lg font-medium">{modelData.provider || "Not Set"}</h3>
+                  <h3 className="text-lg font-medium">{modelData.provider || t("notSet")}</h3>
                 </div>
               </Card>
               <Card className="block p-6">
-                <p className="text-sm">LiteLLM Model</p>
+                <p className="text-sm">{t("liteLlmModel")}</p>
                 <div className="mt-2 overflow-hidden">
-                  <SimpleTooltip content={modelData.litellm_model_name || "Not Set"} className="w-full min-w-0">
+                  <SimpleTooltip content={modelData.litellm_model_name || t("notSet")} className="w-full min-w-0">
                     <div className="break-all text-sm font-medium leading-relaxed cursor-pointer">
-                      {modelData.litellm_model_name || "Not Set"}
+                      {modelData.litellm_model_name || t("notSet")}
                     </div>
                   </SimpleTooltip>
                 </div>
               </Card>
               <Card className="block p-6">
-                <p className="text-sm">Pricing</p>
+                <p className="text-sm">{t("pricing")}</p>
                 <ModelPricingSummary model={modelData} />
               </Card>
             </div>
@@ -692,7 +694,7 @@ export default function ModelInfoView({
                       day: "numeric",
                       year: "numeric",
                     })
-                  : "Not Set"}
+                  : t("notSet")}
               </div>
               <div className="flex items-center gap-x-2">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -703,14 +705,14 @@ export default function ModelInfoView({
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   />
                 </svg>
-                Created By {modelData.model_info.created_by || "Not Set"}
+                {t("createdBy")} {modelData.model_info.created_by || t("notSet")}
               </div>
             </div>
 
             {/* Settings Card */}
             <Card className="block p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Model Settings</h3>
+                <h3 className="text-lg font-medium">{t("modelSettings")}</h3>
                 <div className="flex gap-2">
                   {isAutoRouterModel && canEditRouter && !isEditing && (
                     <Button onClick={() => setIsAutoRouterModalOpen(true)} className="flex items-center">
@@ -752,7 +754,7 @@ export default function ModelInfoView({
                   teams={assignableTeams}
                 />
               ) : (
-                <p className="text-sm">Loading...</p>
+                <p className="text-sm">{t("loading")}</p>
               )}
             </Card>
           </TabsContent>
@@ -770,25 +772,25 @@ export default function ModelInfoView({
       <DeleteResourceModal
         isOpen={isDeleteModalOpen}
         title={deleteLabel}
-        alertMessage="This action cannot be undone."
-        message={`Are you sure you want to delete this ${isAnyAutoRouter ? "auto-router" : "model"}?`}
-        resourceInformationTitle="Model Information"
+        alertMessage={t("undoWarning")}
+        message={t("deleteConfirmMessage", { kind: isAnyAutoRouter ? t("kindAutoRouter") : t("kindModel") })}
+        resourceInformationTitle={t("resourceInformationTitle")}
         resourceInformation={[
           {
-            label: "Model Name",
-            value: modelData?.model_name || "Not Set",
+            label: t("modelName"),
+            value: modelData?.model_name || t("notSet"),
           },
           {
-            label: "LiteLLM Model Name",
-            value: modelData?.litellm_model_name || "Not Set",
+            label: t("liteLlmModelName"),
+            value: modelData?.litellm_model_name || t("notSet"),
           },
           {
-            label: "Provider",
-            value: modelData?.provider || "Not Set",
+            label: t("provider"),
+            value: modelData?.provider || t("notSet"),
           },
           {
-            label: "Created By",
-            value: modelData?.model_info?.created_by || "Not Set",
+            label: t("createdBy"),
+            value: modelData?.model_info?.created_by || t("notSet"),
           },
         ]}
         onCancel={() => setIsDeleteModalOpen(false)}
@@ -808,7 +810,7 @@ export default function ModelInfoView({
         <Dialog open={isCredentialModalOpen} onOpenChange={(open) => !open && setIsCredentialModalOpen(false)}>
           <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Using Existing Credential</DialogTitle>
+              <DialogTitle>{t("usingExistingCredential")}</DialogTitle>
             </DialogHeader>
             <p className="text-sm">{modelData.litellm_params.litellm_credential_name}</p>
             <DialogFooter>
@@ -846,7 +848,7 @@ export default function ModelInfoView({
       <Dialog open={isAutoRouterTestModalOpen} onOpenChange={(open) => !open && setIsAutoRouterTestModalOpen(false)}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[700px]">
           <DialogHeader>
-            <DialogTitle>Connection Test Results</DialogTitle>
+            <DialogTitle>{t("connectionTestResults")}</DialogTitle>
           </DialogHeader>
           {isAutoRouterTestModalOpen && accessToken && (
             <AutoRouterConnectionTest

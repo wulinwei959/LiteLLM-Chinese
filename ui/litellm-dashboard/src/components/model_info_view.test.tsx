@@ -197,7 +197,7 @@ describe("ModelInfoView", () => {
   it("should render", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("Model Settings")).toBeInTheDocument();
+      expect(screen.getByText("模型设置")).toBeInTheDocument();
     });
   });
 
@@ -209,7 +209,7 @@ describe("ModelInfoView", () => {
     });
 
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(screen.getByText("加载中...")).toBeInTheDocument();
   });
 
   it("should display not found message when model data is not available", async () => {
@@ -223,7 +223,7 @@ describe("ModelInfoView", () => {
 
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("Model not found")).toBeInTheDocument();
+      expect(screen.getByText("未找到模型")).toBeInTheDocument();
     });
   });
 
@@ -240,7 +240,7 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} onClose={mockOnClose} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText("Model Settings")).toBeInTheDocument();
+      expect(screen.getByText("模型设置")).toBeInTheDocument();
     });
 
     const backButton = screen.getByRole("button", { name: /back to models/i });
@@ -261,7 +261,7 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText("Model Settings")).toBeInTheDocument();
+      expect(screen.getByText("模型设置")).toBeInTheDocument();
     });
 
     const testButton = screen.getByRole("button", { name: /test connection/i });
@@ -269,7 +269,7 @@ describe("ModelInfoView", () => {
 
     await waitFor(() => {
       expect(mockTestConnectionRequest).toHaveBeenCalled();
-      expect(mockToast.success).toHaveBeenCalledWith("Connection test successful!");
+      expect(mockToast.success).toHaveBeenCalledWith("连接测试成功！");
     });
   });
 
@@ -283,7 +283,7 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText("Model Settings")).toBeInTheDocument();
+      expect(screen.getByText("模型设置")).toBeInTheDocument();
     });
 
     const testButton = screen.getByRole("button", { name: /test connection/i });
@@ -307,7 +307,7 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText("Model Settings")).toBeInTheDocument();
+      expect(screen.getByText("模型设置")).toBeInTheDocument();
     });
 
     const testButton = screen.getByRole("button", { name: /test connection/i });
@@ -336,7 +336,7 @@ describe("ModelInfoView", () => {
   it("should display delete model button", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /delete model/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /删除模型/ })).toBeInTheDocument();
     });
   });
 
@@ -369,7 +369,7 @@ describe("ModelInfoView", () => {
 
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      const deleteButton = screen.getByRole("button", { name: /delete model/i });
+      const deleteButton = screen.getByRole("button", { name: /删除模型/ });
       expect(deleteButton).toBeDisabled();
     });
   });
@@ -393,7 +393,7 @@ describe("ModelInfoView", () => {
 
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole="User" />, { wrapper });
     await waitFor(() => {
-      const deleteButton = screen.getByRole("button", { name: /delete model/i });
+      const deleteButton = screen.getByRole("button", { name: /删除模型/ });
       expect(deleteButton).toBeDisabled();
     });
   });
@@ -432,8 +432,8 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Provider")).toBeInTheDocument();
-      expect(screen.getByText("LiteLLM Model")).toBeInTheDocument();
-      expect(screen.getByText("Pricing")).toBeInTheDocument();
+      expect(screen.getByText("LiteLLM 模型")).toBeInTheDocument();
+      expect(screen.getByText("定价")).toBeInTheDocument();
     });
   });
 
@@ -595,7 +595,7 @@ describe("ModelInfoView", () => {
 
     await waitFor(() => {
       expect(mockModelPatchUpdateCall).toHaveBeenCalled();
-      expect(mockToast.success).toHaveBeenCalledWith("Model settings updated successfully");
+      expect(mockToast.success).toHaveBeenCalledWith("模型设置更新成功");
       expect(mockOnModelUpdate).toHaveBeenCalled();
     });
   });
@@ -719,7 +719,7 @@ describe("ModelInfoView", () => {
       renderWithPtuModel();
 
       await waitFor(() => {
-        expect(screen.getByText("Model Settings")).toBeInTheDocument();
+        expect(screen.getByText("模型设置")).toBeInTheDocument();
       });
 
       expect(screen.queryByText("PTU Count")).not.toBeInTheDocument();
@@ -1099,7 +1099,7 @@ describe("ModelInfoView", () => {
   it("should not display health check model field for non-wildcard models", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("Model Settings")).toBeInTheDocument();
+      expect(screen.getByText("模型设置")).toBeInTheDocument();
       expect(screen.queryByText("Health Check Model")).not.toBeInTheDocument();
     });
   });
@@ -1146,7 +1146,7 @@ describe("ModelInfoView", () => {
 
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("Model Settings")).toBeInTheDocument();
+      expect(screen.getByText("模型设置")).toBeInTheDocument();
     });
     expect(screen.queryByTestId("test-connection-button")).not.toBeInTheDocument();
   });
@@ -1272,9 +1272,7 @@ describe("ModelInfoView", () => {
     await userEvent.click(testConnectionButton);
 
     await waitFor(() => {
-      expect(mockToast.warning).toHaveBeenCalledWith(
-        "No complexity tiers are configured yet, so there is nothing to test.",
-      );
+      expect(mockToast.warning).toHaveBeenCalledWith("尚未配置任何复杂度层级，无需测试。");
     });
     expect(mockTestModelGroupConnection).not.toHaveBeenCalled();
   });
@@ -1343,7 +1341,7 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText(/Created At/)).toBeInTheDocument();
-      expect(screen.getByText(/Created By/)).toBeInTheDocument();
+      expect(screen.getByText(/创建者/)).toBeInTheDocument();
     });
   });
 
@@ -1504,7 +1502,7 @@ describe("ModelInfoView", () => {
       withParams({ model });
       renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-      expect(await screen.findByTestId("delete-model-button")).toHaveTextContent("Delete Auto-Router");
+      expect(await screen.findByTestId("delete-model-button")).toHaveTextContent("删除自动路由器");
       expect(screen.queryByTestId("update-api-key-button")).not.toBeInTheDocument();
       expect(screen.queryByTestId("reuse-credentials-button")).not.toBeInTheDocument();
     });
@@ -1513,7 +1511,7 @@ describe("ModelInfoView", () => {
       withParams({ model: "gpt-4", api_base: "https://api.openai.com/v1" });
       renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-      expect(await screen.findByTestId("delete-model-button")).toHaveTextContent("Delete Model");
+      expect(await screen.findByTestId("delete-model-button")).toHaveTextContent("删除模型");
       expect(screen.getByTestId("update-api-key-button")).toBeInTheDocument();
       expect(screen.getByTestId("reuse-credentials-button")).toBeInTheDocument();
     });
@@ -1916,7 +1914,7 @@ describe("ModelInfoView", () => {
 
       await waitFor(() => expect(mockToast.fromError).toHaveBeenCalled());
       expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
-      expect(mockToast.success).not.toHaveBeenCalledWith("Model settings updated successfully");
+      expect(mockToast.success).not.toHaveBeenCalledWith("模型设置更新成功");
     });
 
     it("sends the vector stores picked in the knowledge base selector", async () => {
