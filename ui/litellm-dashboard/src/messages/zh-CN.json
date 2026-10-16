@@ -7744,6 +7744,25 @@
       "taskId": "任务 ID：",
       "sessionId": "会话 ID：",
       "customMetadata": "自定义元数据："
+    },
+    "additionalSettings": {
+      "streamResponses": "流式响应",
+      "helpStreamResponses": "帮助：流式响应",
+      "streamResponsesHelp": "逐个令牌流式返回答案。取消勾选则发送非流式请求，一次性渲染完整响应。",
+      "useAdvanced": "使用高级参数",
+      "simulateFallbacks": "模拟失败以测试回退",
+      "helpSimulateFallbacks": "帮助：模拟失败以测试回退",
+      "simulateFallbacksHelp": "让第一个请求失败，从而让路由器尝试回退（若已配置）。可用它验证回退设置。",
+      "simulateFallbacksNote": "配置了密钥、团队或路由设置时，行为可能不同。",
+      "learnMore": "了解更多",
+      "temperature": "温度",
+      "helpTemperature": "帮助：温度",
+      "temperatureHelp": "控制随机性。数值越低输出越确定，数值越高越有创意。",
+      "temperatureValue": "温度值",
+      "maxTokens": "最大令牌数",
+      "helpMaxTokens": "帮助：最大令牌数",
+      "maxTokensHelp": "响应中最多生成的令牌数量。",
+      "maxTokensValue": "最大令牌数值"
     }
   },
   "tagManagement": {

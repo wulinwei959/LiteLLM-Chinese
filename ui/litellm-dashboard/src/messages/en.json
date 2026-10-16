@@ -7748,6 +7748,25 @@
       "taskId": "Task ID:",
       "sessionId": "Session ID:",
       "customMetadata": "Custom Metadata:"
+    },
+    "additionalSettings": {
+      "streamResponses": "Stream responses",
+      "helpStreamResponses": "Help: Stream responses",
+      "streamResponsesHelp": "Streams the answer token by token. Uncheck to send a non-streaming request and render the full response at once.",
+      "useAdvanced": "Use Advanced Parameters",
+      "simulateFallbacks": "Simulate failure to test fallbacks",
+      "helpSimulateFallbacks": "Help: Simulate failure to test fallbacks",
+      "simulateFallbacksHelp": "Causes the first request to fail so the router tries fallbacks (if configured). Use this to verify your fallback setup.",
+      "simulateFallbacksNote": "Behavior can differ when keys, teams, or router settings are configured.",
+      "learnMore": "Learn more",
+      "temperature": "Temperature",
+      "helpTemperature": "Help: Temperature",
+      "temperatureHelp": "Controls randomness. Lower values make output more deterministic, higher values more creative.",
+      "temperatureValue": "Temperature value",
+      "maxTokens": "Max Tokens",
+      "helpMaxTokens": "Help: Max Tokens",
+      "maxTokensHelp": "Maximum number of tokens to generate in the response.",
+      "maxTokensValue": "Max tokens value"
     }
   },
   "tagManagement": {

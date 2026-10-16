@@ -1,4 +1,5 @@
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useId, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -37,6 +38,7 @@ const AdditionalModelSettings: React.FC<AdditionalModelSettingsProps> = ({
   onStreamingChange,
   showAdvancedParams = true,
 }) => {
+  const t = useTranslations("playground.additionalSettings");
   const [internalUseAdvancedParams, setInternalUseAdvancedParams] = useState(false);
   const useAdvancedParams =
     externalUseAdvancedParams !== undefined ? externalUseAdvancedParams : internalUseAdvancedParams;
@@ -111,19 +113,16 @@ const AdditionalModelSettings: React.FC<AdditionalModelSettingsProps> = ({
             id={streamingId}
             checked={streamingEnabled}
             onCheckedChange={(checked) => onStreamingChange(checked === true)}
-            aria-label="Stream responses"
+            aria-label={t("streamResponses")}
           />
           <label htmlFor={streamingId} className="cursor-pointer text-sm font-medium">
-            Stream responses
+            {t("streamResponses")}
           </label>
           <Tooltip>
-            <TooltipTrigger aria-label="Help: Stream responses">
+            <TooltipTrigger aria-label={t("helpStreamResponses")}>
               <Info className="size-3 shrink-0 cursor-pointer text-muted-foreground hover:text-foreground" />
             </TooltipTrigger>
-            <TooltipContent className="max-w-xs">
-              Streams the answer token by token. Uncheck to send a non-streaming request and render the full response at
-              once.
-            </TooltipContent>
+            <TooltipContent className="max-w-xs">{t("streamResponsesHelp")}</TooltipContent>
           </Tooltip>
         </div>
       )}
@@ -134,10 +133,10 @@ const AdditionalModelSettings: React.FC<AdditionalModelSettingsProps> = ({
             id={advancedId}
             checked={useAdvancedParams}
             onCheckedChange={(checked) => handleUseAdvancedParamsChange(checked === true)}
-            aria-label="Use Advanced Parameters"
+            aria-label={t("useAdvanced")}
           />
           <label htmlFor={advancedId} className="cursor-pointer text-sm font-medium">
-            Use Advanced Parameters
+            {t("useAdvanced")}
           </label>
         </div>
       )}
@@ -148,29 +147,26 @@ const AdditionalModelSettings: React.FC<AdditionalModelSettingsProps> = ({
             id={fallbacksId}
             checked={mockTestFallbacks ?? false}
             onCheckedChange={(checked) => onMockTestFallbacksChange(checked === true)}
-            aria-label="Simulate failure to test fallbacks"
+            aria-label={t("simulateFallbacks")}
           />
           <label htmlFor={fallbacksId} className="cursor-pointer text-sm font-medium">
-            Simulate failure to test fallbacks
+            {t("simulateFallbacks")}
           </label>
           <Popover>
-            <PopoverTrigger aria-label="Help: Simulate failure to test fallbacks">
+            <PopoverTrigger aria-label={t("helpSimulateFallbacks")}>
               <Info className="size-3 shrink-0 cursor-pointer text-muted-foreground hover:text-foreground" />
             </PopoverTrigger>
             <PopoverContent side="right" className="max-w-[340px] gap-2 p-3 text-sm">
+              <p>{t("simulateFallbacksHelp")}</p>
               <p>
-                Causes the first request to fail so the router tries fallbacks (if configured). Use this to verify your
-                fallback setup.
-              </p>
-              <p>
-                Behavior can differ when keys, teams, or router settings are configured.{" "}
+                {t("simulateFallbacksNote")}{" "}
                 <a
                   href="https://docs.litellm.ai/docs/proxy/keys_teams_router_settings"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-info hover:text-info/80"
                 >
-                  Learn more
+                  {t("learnMore")}
                 </a>
               </p>
             </PopoverContent>
@@ -186,22 +182,20 @@ const AdditionalModelSettings: React.FC<AdditionalModelSettingsProps> = ({
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <label htmlFor={temperatureId} className={cn("text-sm", disabledTextColor)}>
-                  Temperature
+                  {t("temperature")}
                 </label>
                 <Tooltip>
-                  <TooltipTrigger aria-label="Help: Temperature">
+                  <TooltipTrigger aria-label={t("helpTemperature")}>
                     <Info className={cn("size-3 cursor-help", disabledTextColor)} />
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    Controls randomness. Lower values make output more deterministic, higher values more creative.
-                  </TooltipContent>
+                  <TooltipContent className="max-w-xs">{t("temperatureHelp")}</TooltipContent>
                 </Tooltip>
               </div>
               <Input
                 id={`${temperatureId}-number`}
                 type="text"
                 inputMode="decimal"
-                aria-label="Temperature value"
+                aria-label={t("temperatureValue")}
                 value={temperatureText}
                 disabled={!useAdvancedParams}
                 className="h-8 w-20"
@@ -217,7 +211,7 @@ const AdditionalModelSettings: React.FC<AdditionalModelSettingsProps> = ({
               step={0.1}
               value={localTemperature}
               disabled={!useAdvancedParams}
-              aria-label="Temperature"
+              aria-label={t("temperature")}
               className="w-full accent-primary disabled:cursor-not-allowed"
               onChange={(event) => handleTemperatureChange(Number(event.target.value))}
             />
@@ -232,22 +226,20 @@ const AdditionalModelSettings: React.FC<AdditionalModelSettingsProps> = ({
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <label htmlFor={maxTokensId} className={cn("text-sm", disabledTextColor)}>
-                  Max Tokens
+                  {t("maxTokens")}
                 </label>
                 <Tooltip>
-                  <TooltipTrigger aria-label="Help: Max Tokens">
+                  <TooltipTrigger aria-label={t("helpMaxTokens")}>
                     <Info className={cn("size-3 cursor-help", disabledTextColor)} />
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    Maximum number of tokens to generate in the response.
-                  </TooltipContent>
+                  <TooltipContent className="max-w-xs">{t("maxTokensHelp")}</TooltipContent>
                 </Tooltip>
               </div>
               <Input
                 id={`${maxTokensId}-number`}
                 type="text"
                 inputMode="numeric"
-                aria-label="Max tokens value"
+                aria-label={t("maxTokensValue")}
                 value={maxTokensText}
                 disabled={!useAdvancedParams}
                 className="h-8 w-24"
@@ -263,7 +255,7 @@ const AdditionalModelSettings: React.FC<AdditionalModelSettingsProps> = ({
               step={1}
               value={localMaxTokens}
               disabled={!useAdvancedParams}
-              aria-label="Max Tokens"
+              aria-label={t("maxTokens")}
               className="w-full accent-primary disabled:cursor-not-allowed"
               onChange={(event) => handleMaxTokensChange(Number(event.target.value))}
             />

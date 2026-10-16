@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render } from "../../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import AdditionalModelSettings from "./AdditionalModelSettings";
@@ -8,10 +9,10 @@ describe("AdditionalModelSettings", () => {
     const { container } = render(<AdditionalModelSettings />);
     expect(container).toBeTruthy();
 
-    expect(screen.getByText("Use Advanced Parameters")).toBeInTheDocument();
+    expect(screen.getByText("使用高级参数")).toBeInTheDocument();
 
-    expect(screen.getByText("Temperature")).toBeInTheDocument();
-    expect(screen.getByText("Max Tokens")).toBeInTheDocument();
+    expect(screen.getByText("温度")).toBeInTheDocument();
+    expect(screen.getByText("最大令牌数")).toBeInTheDocument();
   });
 
   it("should enable the sliders when the checkbox is checked", async () => {
@@ -26,14 +27,14 @@ describe("AdditionalModelSettings", () => {
       />,
     );
 
-    const checkbox = screen.getByRole("checkbox", { name: /Use Advanced Parameters/i });
+    const checkbox = screen.getByRole("checkbox", { name: /使用高级参数/ });
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).not.toBeChecked();
 
     await user.click(checkbox);
 
     await waitFor(() => {
-      expect(screen.getByRole("checkbox", { name: /Use Advanced Parameters/i })).toBeChecked();
+      expect(screen.getByRole("checkbox", { name: /使用高级参数/ })).toBeChecked();
     });
 
     await waitFor(() => {
@@ -50,7 +51,7 @@ describe("AdditionalModelSettings", () => {
 
   it("should not show Stream responses when onStreamingChange is not provided", () => {
     render(<AdditionalModelSettings />);
-    expect(screen.queryByText(/Stream responses/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/流式响应/)).not.toBeInTheDocument();
   });
 
   it("should render Stream responses checked by default and report unchecking it", async () => {
@@ -59,7 +60,7 @@ describe("AdditionalModelSettings", () => {
 
     render(<AdditionalModelSettings onStreamingChange={onStreamingChange} />);
 
-    const streamingCheckbox = screen.getByRole("checkbox", { name: /Stream responses/i });
+    const streamingCheckbox = screen.getByRole("checkbox", { name: /流式响应/ });
     expect(streamingCheckbox).toBeChecked();
 
     await act(async () => {
@@ -74,21 +75,21 @@ describe("AdditionalModelSettings", () => {
   it("should keep the streaming toggle but drop advanced params when showAdvancedParams is false", () => {
     render(<AdditionalModelSettings showAdvancedParams={false} onStreamingChange={vi.fn()} />);
 
-    expect(screen.getByRole("checkbox", { name: /Stream responses/i })).toBeInTheDocument();
-    expect(screen.queryByText("Use Advanced Parameters")).not.toBeInTheDocument();
-    expect(screen.queryByText("Temperature")).not.toBeInTheDocument();
-    expect(screen.queryByText("Max Tokens")).not.toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: /流式响应/ })).toBeInTheDocument();
+    expect(screen.queryByText("使用高级参数")).not.toBeInTheDocument();
+    expect(screen.queryByText("温度")).not.toBeInTheDocument();
+    expect(screen.queryByText("最大令牌数")).not.toBeInTheDocument();
   });
 
   it("should reflect a disabled streaming setting from props", () => {
     render(<AdditionalModelSettings streamingEnabled={false} onStreamingChange={vi.fn()} />);
 
-    expect(screen.getByRole("checkbox", { name: /Stream responses/i })).not.toBeChecked();
+    expect(screen.getByRole("checkbox", { name: /流式响应/ })).not.toBeChecked();
   });
 
   it("should not show Simulate failure to test fallbacks when onMockTestFallbacksChange is not provided", () => {
     render(<AdditionalModelSettings />);
-    expect(screen.queryByText(/Simulate failure to test fallbacks/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/模拟失败以测试回退/)).not.toBeInTheDocument();
   });
 
   it("should show and toggle Simulate failure to test fallbacks when callback is provided", async () => {
@@ -105,7 +106,7 @@ describe("AdditionalModelSettings", () => {
     );
 
     const fallbacksCheckbox = screen.getByRole("checkbox", {
-      name: /Simulate failure to test fallbacks/i,
+      name: /模拟失败以测试回退/,
     });
     expect(fallbacksCheckbox).toBeInTheDocument();
     expect(fallbacksCheckbox).not.toBeChecked();
@@ -121,7 +122,7 @@ describe("AdditionalModelSettings", () => {
     rerender(<AdditionalModelSettings mockTestFallbacks={currentValue} onMockTestFallbacksChange={handleChange} />);
 
     await act(async () => {
-      await user.click(screen.getByRole("checkbox", { name: /Simulate failure to test fallbacks/i }));
+      await user.click(screen.getByRole("checkbox", { name: /模拟失败以测试回退/ }));
     });
 
     await waitFor(() => {
@@ -134,7 +135,7 @@ describe("AdditionalModelSettings", () => {
 
     render(<AdditionalModelSettings useAdvancedParams onTemperatureChange={onTemperatureChange} />);
 
-    const temperatureField = screen.getByLabelText("Temperature value") as HTMLInputElement;
+    const temperatureField = screen.getByLabelText("温度值") as HTMLInputElement;
     fireEvent.change(temperatureField, { target: { value: "0." } });
 
     expect(temperatureField.value).toBe("0.");
@@ -151,7 +152,7 @@ describe("AdditionalModelSettings", () => {
 
     render(<AdditionalModelSettings useAdvancedParams onMaxTokensChange={onMaxTokensChange} />);
 
-    const maxTokensField = screen.getByLabelText("Max tokens value");
+    const maxTokensField = screen.getByLabelText("最大令牌数值");
     await user.clear(maxTokensField);
 
     expect((maxTokensField as HTMLInputElement).value).toBe("");
@@ -163,7 +164,7 @@ describe("AdditionalModelSettings", () => {
 
     render(<AdditionalModelSettings useAdvancedParams onTemperatureChange={onTemperatureChange} />);
 
-    const temperatureField = screen.getByLabelText("Temperature value");
+    const temperatureField = screen.getByLabelText("温度值");
     await user.clear(temperatureField);
     fireEvent.change(temperatureField, { target: { value: "9" } });
     await user.tab();
