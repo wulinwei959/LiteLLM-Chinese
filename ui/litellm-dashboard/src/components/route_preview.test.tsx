@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { renderWithProviders as render, screen } from "../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 
 import RoutePreview from "./route_preview";
@@ -17,14 +17,14 @@ describe("RoutePreview", () => {
 
     expect(screen.getByText("http://proxy.test/images")).toBeInTheDocument();
     expect(screen.getByText("https://upstream.test")).toBeInTheDocument();
-    expect(screen.getByText(/Not seeing the routing you wanted/)).toBeInTheDocument();
+    expect(screen.getByText(/没有看到预期的路由？/)).toBeInTheDocument();
   });
 
   it("previews appended subpaths when enabled", () => {
     render(<RoutePreview pathValue="/images" targetValue="https://upstream.test" includeSubpath />);
 
-    expect(screen.getByText("With subpaths:")).toBeInTheDocument();
+    expect(screen.getByText("带子路径时：")).toBeInTheDocument();
     expect(screen.getAllByText("/v1/text-to-image/base/model")).toHaveLength(2);
-    expect(screen.getByText(/Any path after \/images will be appended/)).toBeInTheDocument();
+    expect(screen.getByText(/\/images 之后的任何路径都会追加到目标 URL/)).toBeInTheDocument();
   });
 });

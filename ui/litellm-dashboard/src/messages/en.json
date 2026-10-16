@@ -9852,5 +9852,24 @@
     "teamSpecific": "Team-specific",
     "title": "Guardrails Settings",
     "description": "Global and team-specific guardrails applied to this team"
+  },
+  "routePreview": {
+    "title": "Route Preview",
+    "description": "How your requests will be routed",
+    "basicRouting": "Basic routing:",
+    "yourEndpoint": "Your endpoint",
+    "forwardsTo": "Forwards to",
+    "withSubpaths": "With subpaths:",
+    "endpointPlusSubpath": "Your endpoint + subpath",
+    "appendNote": "Any path after {path} will be appended to the target URL",
+    "hintTitle": "Not seeing the routing you wanted?",
+    "hintBody": "Try enabling - Include Subpaths - above - this allows subroutes like <code>/api/v1/models</code> to be forwarded automatically."
+  },
+  "reuseCredentials": {
+    "title": "Reuse Credentials",
+    "nameLabel": "Credential Name:",
+    "namePlaceholder": "Enter a friendly name for these credentials",
+    "githubHelp": "Get help on our github",
+    "submit": "Reuse Credentials"
   }
 }

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 import { z } from "zod/v4";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -35,6 +36,7 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
   existingCredential,
   setIsCredentialModalOpen,
 }) => {
+  const t = useTranslations("reuseCredentials");
   const fieldIdPrefix = React.useId();
   const storedValues = storedValuesOf(existingCredential);
   const form = useZodForm(reuseCredentialsSchema, {
@@ -56,15 +58,13 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
     <Dialog open={isVisible} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Reuse Credentials</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
         <TooltipProvider>
           <form onSubmit={form.handleSubmit(handleSubmit)} noValidate>
             <FieldGroup>
-              <FormField control={form.control} name="credential_name" label="Credential Name:">
-                {({ ref, ...field }) => (
-                  <Input {...field} ref={ref} placeholder="Enter a friendly name for these credentials" />
-                )}
+              <FormField control={form.control} name="credential_name" label={t("nameLabel")}>
+                {({ ref, ...field }) => <Input {...field} ref={ref} placeholder={t("namePlaceholder")} />}
               </FormField>
 
               {Object.entries(storedValues).map(([key, value]) => (
@@ -92,14 +92,14 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
                       </a>
                     }
                   />
-                  <TooltipContent>Get help on our github</TooltipContent>
+                  <TooltipContent>{t("githubHelp")}</TooltipContent>
                 </Tooltip>
 
                 <div className="flex gap-2.5">
                   <Button type="button" variant="outline" onClick={handleCancel}>
                     Cancel
                   </Button>
-                  <Button type="submit">Reuse Credentials</Button>
+                  <Button type="submit">{t("submit")}</Button>
                 </div>
               </div>
             </FieldGroup>

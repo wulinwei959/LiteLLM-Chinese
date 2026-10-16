@@ -29,14 +29,14 @@ const renderModal = (existingCredential: CredentialItem | null = EXISTING_CREDEN
 };
 
 const submit = async (user: ReturnType<typeof userEvent.setup>) =>
-  await user.click(screen.getByRole("button", { name: "Reuse Credentials" }));
+  await user.click(screen.getByRole("button", { name: "复用凭据" }));
 
 describe("ReuseCredentialsModal", () => {
   it("submits the typed name alongside every stored credential value", async () => {
     const user = userEvent.setup();
     const { onAddCredential, setIsCredentialModalOpen } = renderModal();
 
-    const nameInput = screen.getByLabelText("Credential Name:");
+    const nameInput = screen.getByLabelText("凭据名称：");
     await user.clear(nameInput);
     fireEvent.change(nameInput, { target: { value: "reused-openai" } });
     await submit(user);
@@ -54,7 +54,7 @@ describe("ReuseCredentialsModal", () => {
     const user = userEvent.setup();
     const { onAddCredential } = renderModal();
 
-    expect(screen.getByLabelText("Credential Name:")).toHaveValue("openai-prod");
+    expect(screen.getByLabelText("凭据名称：")).toHaveValue("openai-prod");
     await submit(user);
 
     expect(onAddCredential).toHaveBeenCalledWith({
@@ -76,7 +76,7 @@ describe("ReuseCredentialsModal", () => {
     const user = userEvent.setup();
     const { onAddCredential } = renderModal();
 
-    await user.clear(screen.getByLabelText("Credential Name:"));
+    await user.clear(screen.getByLabelText("凭据名称："));
     await submit(user);
 
     expect(await screen.findByText("Credential name is required")).toBeInTheDocument();
@@ -110,7 +110,7 @@ describe("ReuseCredentialsModal", () => {
     const user = userEvent.setup();
     const { onAddCredential } = renderModal();
 
-    await user.type(screen.getByLabelText("Credential Name:"), "{Enter}");
+    await user.type(screen.getByLabelText("凭据名称："), "{Enter}");
 
     expect(onAddCredential).toHaveBeenCalledTimes(1);
   });

@@ -9848,5 +9848,24 @@
     "teamSpecific": "团队专属",
     "title": "护栏设置",
     "description": "应用到该团队的全局与团队专属护栏"
+  },
+  "routePreview": {
+    "title": "路由预览",
+    "description": "您的请求将如何被路由",
+    "basicRouting": "基础路由：",
+    "yourEndpoint": "您的端点",
+    "forwardsTo": "转发到",
+    "withSubpaths": "带子路径时：",
+    "endpointPlusSubpath": "您的端点 + 子路径",
+    "appendNote": "{path} 之后的任何路径都会追加到目标 URL",
+    "hintTitle": "没有看到预期的路由？",
+    "hintBody": "试试在上方启用 - 包含子路径 - ，这样就能自动转发 <code>/api/v1/models</code> 这样的子路由。"
+  },
+  "reuseCredentials": {
+    "title": "复用凭据",
+    "nameLabel": "凭据名称：",
+    "namePlaceholder": "请为这些凭据输入一个易记的名称",
+    "githubHelp": "在 GitHub 上获取帮助",
+    "submit": "复用凭据"
   }
 }
