@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { renderWithProviders as render, screen } from "../../../../tests/test-utils";
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { CustomLegend } from "./chart_legend";
@@ -7,8 +7,8 @@ describe("CustomLegend", () => {
   it("renders title-cased category names without the metrics prefix", () => {
     render(<CustomLegend categories={["metrics.total_tokens", "metrics.spend"]} colors={["blue", "green"]} />);
 
-    expect(screen.getByText("Total Tokens")).toBeInTheDocument();
-    expect(screen.getByText("Spend")).toBeInTheDocument();
+    expect(screen.getByText("令牌总数")).toBeInTheDocument();
+    expect(screen.getByText("花费")).toBeInTheDocument();
   });
 
   it("matches colors to categories by index with theme-var values", () => {

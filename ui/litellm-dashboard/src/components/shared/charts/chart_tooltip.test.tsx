@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { renderWithProviders as render, screen } from "../../../../tests/test-utils";
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { CustomTooltip, ValueTooltip, type ChartTooltipProps } from "./chart_tooltip";
@@ -39,7 +39,7 @@ describe("CustomTooltip", () => {
     render(<CustomTooltip active={true} payload={[metricsPayload("metrics.total_tokens", 1000)]} label="2026-01-15" />);
 
     expect(screen.getByText("2026-01-15")).toBeInTheDocument();
-    expect(screen.getByText("Total Tokens")).toBeInTheDocument();
+    expect(screen.getByText("令牌总数")).toBeInTheDocument();
     expect(screen.getByText("1,000")).toBeInTheDocument();
   });
 

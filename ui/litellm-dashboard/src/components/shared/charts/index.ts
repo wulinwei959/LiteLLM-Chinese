@@ -5,6 +5,7 @@ export {
   CustomTooltip,
   ValueTooltip,
   formatCategoryName,
+  useCategoryName,
   type ChartTooltipComponent,
   type ChartTooltipProps,
 } from "./chart_tooltip";

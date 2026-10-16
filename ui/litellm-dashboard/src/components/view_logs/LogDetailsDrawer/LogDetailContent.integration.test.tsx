@@ -202,7 +202,7 @@ describe("LogDetailContent", () => {
 
       expect(screen.getByText("批处理结果")).toBeInTheDocument();
       expect(screen.getByText("batch_abc123")).toBeInTheDocument();
-      expect(screen.queryByText("Successful Requests")).not.toBeInTheDocument();
+      expect(screen.queryByText("成功请求")).not.toBeInTheDocument();
     });
 
     it("never renders for a non-batch call type", () => {

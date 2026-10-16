@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { renderWithProviders as render } from "../../../../tests/test-utils";
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { DonutChart } from "./donut_chart";

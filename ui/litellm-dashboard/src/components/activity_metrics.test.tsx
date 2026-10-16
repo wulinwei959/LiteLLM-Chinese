@@ -178,28 +178,28 @@ describe("ActivityMetrics", () => {
 
   it("should render", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} />);
-    expect(screen.getByText("Overall Usage")).toBeInTheDocument();
+    expect(screen.getByText("总体用量")).toBeInTheDocument();
   });
 
   it("should display prompt caching metrics when hidePromptCachingMetrics is false", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} hidePromptCachingMetrics={false} />);
-    expect(screen.getByText("Prompt Caching Metrics")).toBeInTheDocument();
+    expect(screen.getByText("提示词缓存指标")).toBeInTheDocument();
   });
 
   it("should hide prompt caching metrics when hidePromptCachingMetrics is true", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} hidePromptCachingMetrics={true} />);
-    expect(screen.queryByText("Prompt Caching Metrics")).not.toBeInTheDocument();
+    expect(screen.queryByText("提示词缓存指标")).not.toBeInTheDocument();
   });
 
   it("should display overall usage summary metrics", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} />);
-    const totalRequestsElements = screen.getAllByText("Total Requests");
+    const totalRequestsElements = screen.getAllByText("请求总数");
     expect(totalRequestsElements.length).toBeGreaterThan(0);
-    const totalSuccessfulElements = screen.getAllByText("Total Successful Requests");
+    const totalSuccessfulElements = screen.getAllByText("成功请求总数");
     expect(totalSuccessfulElements.length).toBeGreaterThan(0);
-    const totalTokensElements = screen.getAllByText("Total Tokens");
+    const totalTokensElements = screen.getAllByText("令牌总数");
     expect(totalTokensElements.length).toBeGreaterThan(0);
-    const totalSpendElements = screen.getAllByText("Total Spend");
+    const totalSpendElements = screen.getAllByText("花费总额");
     expect(totalSpendElements.length).toBeGreaterThan(0);
   });
 
@@ -296,14 +296,14 @@ describe("ActivityMetrics", () => {
     });
     render(<ActivityMetrics modelMetrics={mockModelMetrics} fetchTopApiKeys={fetchTopApiKeys} />);
 
-    expect(await screen.findByText("Top Virtual Keys by Spend")).toBeInTheDocument();
+    expect(await screen.findByText("花费最高的头部虚拟密钥")).toBeInTheDocument();
     expect(await screen.findByText("Test Key")).toBeInTheDocument();
-    expect(screen.getByText(/Team: team1/)).toBeInTheDocument();
-    expect(screen.getByText("User: owner@example.com")).toBeInTheDocument();
+    expect(screen.getByText(/团队：team1/)).toBeInTheDocument();
+    expect(screen.getByText("用户：owner@example.com")).toBeInTheDocument();
     expect(screen.getByText("Owner Alias")).toBeInTheDocument();
-    expect(screen.queryByText("User: Owner Alias")).not.toBeInTheDocument();
+    expect(screen.queryByText("用户：Owner Alias")).not.toBeInTheDocument();
     expect(screen.getByText(/key-789012/)).toBeInTheDocument();
-    expect(screen.getByText("User: owner-id-3")).toBeInTheDocument();
+    expect(screen.getByText("用户：owner-id-3")).toBeInTheDocument();
     expect(fetchTopApiKeys).toHaveBeenCalledTimes(1);
   });
 
@@ -333,7 +333,7 @@ describe("ActivityMetrics", () => {
 
     rerender(<ActivityMetrics modelMetrics={mockModelMetrics} fetchTopApiKeys={secondFetch} />);
 
-    expect(screen.getByText("Loading top keys...")).toBeInTheDocument();
+    expect(screen.getByText("正在加载头部密钥...")).toBeInTheDocument();
     expect(screen.queryByText("Old Scope Key")).not.toBeInTheDocument();
     expect(await screen.findByText("New Scope Key")).toBeInTheDocument();
     expect(secondFetch).toHaveBeenCalledWith("gpt-4");
@@ -355,23 +355,23 @@ describe("ActivityMetrics", () => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     render(<ActivityMetrics modelMetrics={mockModelMetrics} fetchTopApiKeys={fetchTopApiKeys} />);
 
-    expect(await screen.findByText(/Could not load top keys\./)).toBeInTheDocument();
-    expect(screen.getByText("Top Virtual Keys by Spend")).toBeInTheDocument();
+    expect(await screen.findByText(/无法加载头部密钥。/)).toBeInTheDocument();
+    expect(screen.getByText("花费最高的头部虚拟密钥")).toBeInTheDocument();
     expect(fetchTopApiKeys).toHaveBeenCalledTimes(1);
 
-    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    fireEvent.click(screen.getByRole("button", { name: "重试" }));
 
-    expect(screen.getByText("Loading top keys...")).toBeInTheDocument();
+    expect(screen.getByText("正在加载头部密钥...")).toBeInTheDocument();
     expect(await screen.findByText("Retried Key")).toBeInTheDocument();
     expect(fetchTopApiKeys).toHaveBeenCalledTimes(2);
     expect(fetchTopApiKeys).toHaveBeenLastCalledWith("gpt-4");
-    expect(screen.queryByText(/Could not load top keys\./)).not.toBeInTheDocument();
+    expect(screen.queryByText(/无法加载头部密钥。/)).not.toBeInTheDocument();
     consoleError.mockRestore();
   });
 
   it("hides the top keys section without a fetcher", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} />);
-    expect(screen.queryByText("Top Virtual Keys by Spend")).not.toBeInTheDocument();
+    expect(screen.queryByText("花费最高的头部虚拟密钥")).not.toBeInTheDocument();
   });
 
   it("should display Model Usage when model has top_models", () => {
@@ -397,17 +397,17 @@ describe("ActivityMetrics", () => {
 
   it("should display Spend per day in model section", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} />);
-    expect(screen.getByText("Spend per day")).toBeInTheDocument();
+    expect(screen.getByText("每日花费")).toBeInTheDocument();
   });
 
   it("should display Requests per day in model section", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} />);
-    expect(screen.getByText("Requests per day")).toBeInTheDocument();
+    expect(screen.getByText("每日请求数")).toBeInTheDocument();
   });
 
   it("should display Success vs Failed Requests in model section", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} />);
-    expect(screen.getByText("Success vs Failed Requests")).toBeInTheDocument();
+    expect(screen.getByText("成功与失败请求")).toBeInTheDocument();
   });
 
   it("should sort empty string model key last in collapse order", () => {
@@ -432,7 +432,7 @@ describe("ActivityMetrics", () => {
 
     render(<ActivityMetrics modelMetrics={multipleModels} />);
 
-    const sectionsMounted = () => screen.getAllByText("Spend per day").length;
+    const sectionsMounted = () => screen.getAllByText("每日花费").length;
     expect(sectionsMounted()).toBe(1);
 
     fireEvent.click(screen.getAllByText("GPT-3.5")[0]);
@@ -444,14 +444,14 @@ describe("ActivityMetrics", () => {
 
   it("should display average tokens per successful request", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} />);
-    const avgTokensElements = screen.getAllByText(/avg per successful request/);
+    const avgTokensElements = screen.getAllByText(/每次成功请求平均/);
     expect(avgTokensElements.length).toBeGreaterThan(0);
     expect(avgTokensElements.some((el) => el.textContent?.includes("526"))).toBe(true);
   });
 
   it("should display average spend per successful request", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} />);
-    const avgSpendElements = screen.getAllByText(/per successful request/);
+    const avgSpendElements = screen.getAllByText(/每次成功请求/);
     expect(avgSpendElements.length).toBeGreaterThan(0);
     expect(avgSpendElements.some((el) => el.textContent?.includes("1.058"))).toBe(true);
   });
@@ -473,24 +473,24 @@ describe("ActivityMetrics", () => {
 
   it("should display prompt caching token counts when visible", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} hidePromptCachingMetrics={false} />);
-    expect(screen.getByText(/Cache Read:.*tokens/)).toBeInTheDocument();
-    expect(screen.getByText(/Cache Creation:.*tokens/)).toBeInTheDocument();
+    expect(screen.getByText(/缓存读取：.*个令牌/)).toBeInTheDocument();
+    expect(screen.getByText(/缓存写入：.*个令牌/)).toBeInTheDocument();
   });
 
   it("should display charts for tokens over time", () => {
     const { container } = render(<ActivityMetrics modelMetrics={mockModelMetrics} />);
-    expect(screen.getByText("Total Tokens Over Time")).toBeInTheDocument();
+    expect(screen.getByText("令牌总数趋势")).toBeInTheDocument();
     expect(container.querySelectorAll(".recharts-area").length).toBeGreaterThan(0);
   });
 
   it("should display charts for requests over time", () => {
     render(<ActivityMetrics modelMetrics={mockModelMetrics} />);
-    expect(screen.getByText("Total Requests Over Time")).toBeInTheDocument();
+    expect(screen.getByText("请求总数趋势")).toBeInTheDocument();
   });
 
   it("should handle empty model metrics", () => {
     render(<ActivityMetrics modelMetrics={{}} />);
-    expect(screen.getByText("Overall Usage")).toBeInTheDocument();
+    expect(screen.getByText("总体用量")).toBeInTheDocument();
   });
 
   it("should display model label or fallback to Unknown Item", () => {
@@ -502,7 +502,7 @@ describe("ActivityMetrics", () => {
     };
 
     render(<ActivityMetrics modelMetrics={modelWithEmptyLabel} />);
-    expect(screen.getByText("Unknown Item")).toBeInTheDocument();
+    expect(screen.getByText("未知条目")).toBeInTheDocument();
   });
 });
 
@@ -595,27 +595,27 @@ describe("ActivityMetrics charts", () => {
   it("maps the configured colors onto every series", () => {
     render(<ActivityMetrics modelMetrics={twoDayModelMetrics} />);
 
-    expect(areaStrokes(chartTitled("Total Tokens Over Time"))).toEqual([
+    expect(areaStrokes(chartTitled("令牌总数趋势"))).toEqual([
       "var(--color-blue-500, #3b82f6)",
       "var(--color-cyan-500, #06b6d4)",
       "var(--color-indigo-500, #6366f1)",
     ]);
-    expect(areaStrokes(chartTitled("Total Requests Over Time"))).toEqual([
+    expect(areaStrokes(chartTitled("请求总数趋势"))).toEqual([
       "var(--color-emerald-500, #10b981)",
       "var(--color-red-500, #ef4444)",
     ]);
-    expect(barFills(chartTitled("Spend per day"))).toEqual(["var(--color-green-500, #22c55e)"]);
-    expect(areaStrokes(chartTitled("Total Tokens"))).toEqual([
+    expect(barFills(chartTitled("每日花费"))).toEqual(["var(--color-green-500, #22c55e)"]);
+    expect(areaStrokes(chartTitled("令牌总数"))).toEqual([
       "var(--color-blue-500, #3b82f6)",
       "var(--color-cyan-500, #06b6d4)",
       "var(--color-indigo-500, #6366f1)",
     ]);
-    expect(barFills(chartTitled("Requests per day"))).toEqual(["var(--color-blue-500, #3b82f6)"]);
-    expect(areaStrokes(chartTitled("Success vs Failed Requests"))).toEqual([
+    expect(barFills(chartTitled("每日请求数"))).toEqual(["var(--color-blue-500, #3b82f6)"]);
+    expect(areaStrokes(chartTitled("成功与失败请求"))).toEqual([
       "var(--color-green-500, #22c55e)",
       "var(--color-red-500, #ef4444)",
     ]);
-    expect(areaStrokes(chartTitled("Prompt Caching Metrics"))).toEqual([
+    expect(areaStrokes(chartTitled("提示词缓存指标"))).toEqual([
       "var(--color-cyan-500, #06b6d4)",
       "var(--color-purple-500, #a855f7)",
     ]);
@@ -631,23 +631,23 @@ describe("ActivityMetrics charts", () => {
   it("renders formatted header legends for each chart card", () => {
     render(<ActivityMetrics modelMetrics={twoDayModelMetrics} />);
 
-    expect(screen.getAllByText("Spend").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Api Requests").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Successful Requests").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Cache Creation Input Tokens").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("花费").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("请求数").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("成功请求").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("缓存写入令牌").length).toBeGreaterThan(0);
   });
 
   it("formats axis ticks as currency on the spend chart and compact numbers on token charts", () => {
     render(<ActivityMetrics modelMetrics={twoDayModelMetrics} />);
 
-    const spendTicks = tickTexts(chartTitled("Spend per day"));
+    const spendTicks = tickTexts(chartTitled("每日花费"));
     expect(spendTicks.some((text) => text.startsWith("$"))).toBe(true);
 
-    const tokenTicks = tickTexts(chartTitled("Total Tokens"));
+    const tokenTicks = tickTexts(chartTitled("令牌总数"));
     expect(tokenTicks.some((text) => text.endsWith("k"))).toBe(true);
     expect(tokenTicks.some((text) => text.startsWith("$"))).toBe(false);
 
-    const requestTicks = tickTexts(chartTitled("Requests per day"));
+    const requestTicks = tickTexts(chartTitled("每日请求数"));
     expect(requestTicks.some((text) => text.startsWith("$"))).toBe(false);
   });
 });
@@ -1446,17 +1446,17 @@ describe("ActivityMetrics response time", () => {
   it("shows the model's average response time in the summary card and the collapsed header", () => {
     render(<ActivityMetrics modelMetrics={{ "gpt-5.5": timedModel }} />);
 
-    expect(screen.getByText("Avg Response Time")).toBeInTheDocument();
+    expect(screen.getByText("平均响应时间")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "1.50s" })).toBeInTheDocument();
-    expect(screen.getByText("over 4 timed successful requests")).toBeInTheDocument();
-    expect(screen.getByText("1.50s avg response")).toBeInTheDocument();
+    expect(screen.getByText("基于 4 次计时成功请求")).toBeInTheDocument();
+    expect(screen.getByText("1.50s 平均响应")).toBeInTheDocument();
   });
 
   it("renders the per-day response time chart with duration-formatted axis ticks", () => {
     render(<ActivityMetrics modelMetrics={{ "gpt-5.5": timedModel }} />);
 
-    expect(screen.getByText("Avg Response Time per day")).toBeInTheDocument();
-    expect(screen.getByText("Avg Response Time Ms")).toBeInTheDocument();
+    expect(screen.getByText("每日平均响应时间")).toBeInTheDocument();
+    expect(screen.getByText("平均响应时间 (ms)")).toBeInTheDocument();
     expect(screen.getAllByText(/^\d+(\.\d+)?(ms|s)$/).length).toBeGreaterThan(1);
   });
 
@@ -1466,7 +1466,7 @@ describe("ActivityMetrics response time", () => {
     ] as NonNullable<ChartTooltipProps["payload"]>;
     render(<ResponseTimeTooltip active={true} payload={payload} label="2025-01-01" />);
 
-    expect(screen.getByText("Avg Response Time Ms")).toBeInTheDocument();
+    expect(screen.getByText("平均响应时间 (ms)")).toBeInTheDocument();
     expect(screen.getByText("1.50s")).toBeInTheDocument();
     expect(screen.queryByText("metrics.avg_response_time_ms")).not.toBeInTheDocument();
   });
@@ -1474,12 +1474,12 @@ describe("ActivityMetrics response time", () => {
   it("shows a dash and no response time chart when the model has no timed requests", () => {
     render(<ActivityMetrics modelMetrics={{ "gpt-5.5": createMockModelActivityData("GPT-5.5") }} />);
 
-    expect(screen.getByText("Avg Response Time")).toBeInTheDocument();
+    expect(screen.getByText("平均响应时间")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "-" })).toBeInTheDocument();
-    expect(screen.getByText("over 0 timed successful requests")).toBeInTheDocument();
-    expect(screen.queryByText(/avg response$/)).not.toBeInTheDocument();
-    expect(screen.queryByText("Avg Response Time per day")).not.toBeInTheDocument();
-    expect(screen.queryByText("Avg Response Time Ms")).not.toBeInTheDocument();
+    expect(screen.getByText("基于 0 次计时成功请求")).toBeInTheDocument();
+    expect(screen.queryByText(/平均响应$/)).not.toBeInTheDocument();
+    expect(screen.queryByText("每日平均响应时间")).not.toBeInTheDocument();
+    expect(screen.queryByText("平均响应时间 (ms)")).not.toBeInTheDocument();
   });
 });
 

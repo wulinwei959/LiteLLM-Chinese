@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import type { TooltipContentProps, TooltipValueType } from "recharts";
 
 export type ChartTooltipProps = Pick<
@@ -17,6 +18,27 @@ export const formatCategoryName = (name: string): string =>
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+
+const CATEGORY_LABEL_KEYS = {
+  "metrics.spend": "spend",
+  "metrics.prompt_tokens": "promptTokens",
+  "metrics.completion_tokens": "completionTokens",
+  "metrics.total_tokens": "totalTokens",
+  "metrics.api_requests": "apiRequests",
+  "metrics.successful_requests": "successfulRequests",
+  "metrics.failed_requests": "failedRequests",
+  "metrics.avg_response_time_ms": "avgResponseTimeMs",
+  "metrics.cache_read_input_tokens": "cacheReadInputTokens",
+  "metrics.cache_creation_input_tokens": "cacheCreationInputTokens",
+} as const;
+
+export const useCategoryName = (): ((name: string) => string) => {
+  const t = useTranslations("chartLabels");
+  return (name: string): string => {
+    const key = CATEGORY_LABEL_KEYS[name as keyof typeof CATEGORY_LABEL_KEYS];
+    return key ? t(key) : formatCategoryName(name);
+  };
+};
 
 export const ValueTooltip = ({
   active,
@@ -68,6 +90,7 @@ const formatMetricValue = (rawValue: number | undefined, isSpend: boolean): stri
 };
 
 export const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
+  const categoryName = useCategoryName();
   if (!active || !payload || payload.length === 0) return null;
 
   return (
@@ -86,7 +109,7 @@ export const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => 
                 className="h-2 w-2 shrink-0 rounded-full ring-2 ring-white drop-shadow-md"
                 style={{ backgroundColor: item.color }}
               />
-              <p className="font-medium text-muted-foreground">{formatCategoryName(dataKey)}</p>
+              <p className="font-medium text-muted-foreground">{categoryName(dataKey)}</p>
             </div>
             <p className="font-medium text-foreground">{formattedValue}</p>
           </div>

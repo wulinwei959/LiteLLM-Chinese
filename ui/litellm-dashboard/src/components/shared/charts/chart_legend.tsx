@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { formatCategoryName } from "./chart_tooltip";
+import { useCategoryName } from "./chart_tooltip";
 import { chartColorValue, type ChartColor } from "./colors";
 
 export const CustomLegend = ({
@@ -10,16 +10,19 @@ export const CustomLegend = ({
 }: {
   categories: readonly string[];
   colors: readonly ChartColor[];
-}) => (
-  <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
-    {categories.map((category, idx) => (
-      <div key={category} className="flex items-center space-x-2">
-        <span
-          className="h-2 w-2 shrink-0 rounded-full ring-4 ring-white"
-          style={{ backgroundColor: chartColorValue(colors[idx % colors.length]) }}
-        />
-        <p className="text-sm text-muted-foreground">{formatCategoryName(category)}</p>
-      </div>
-    ))}
-  </div>
-);
+}) => {
+  const categoryName = useCategoryName();
+  return (
+    <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
+      {categories.map((category, idx) => (
+        <div key={category} className="flex items-center space-x-2">
+          <span
+            className="h-2 w-2 shrink-0 rounded-full ring-4 ring-white"
+            style={{ backgroundColor: chartColorValue(colors[idx % colors.length]) }}
+          />
+          <p className="text-sm text-muted-foreground">{categoryName(category)}</p>
+        </div>
+      ))}
+    </div>
+  );
+};

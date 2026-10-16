@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { renderWithProviders as render, screen } from "../../../../tests/test-utils";
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { LineChart } from "./line_chart";
