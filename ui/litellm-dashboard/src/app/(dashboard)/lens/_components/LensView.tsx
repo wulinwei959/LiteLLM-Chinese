@@ -2,6 +2,7 @@
 
 import type { components } from "@/lib/http/schema";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { parseAsString, useQueryState } from "nuqs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -45,12 +46,14 @@ import {
   InvestigationFailure,
 } from "./LensOverview";
 import { LensWelcome } from "./LensWelcome";
+import type { LensTranslator } from "@/lib/i18n/translators";
 import {
   workerConnected,
   scopeLabel,
   evidenceTarget,
   sortedFindings,
   runTime,
+  priorityLabelKeys,
   type Lens,
   type LensList,
   type Finding,
@@ -60,17 +63,19 @@ import {
 
 const money = (n: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 3 }).format(n);
-const when = (value?: string | null) => (value ? runTime(value) : "Not yet");
+const when = (value: string | null | undefined, t: LensTranslator) => (value ? runTime(value) : t("notYet"));
 
-const sourceLabels = { both: "Traces and requests", requests: "LLM requests", traces: "Agent traces" };
+const sourceLabels = { both: "tracesAndRequests", requests: "llmRequests", traces: "agentTraces" } as const;
 const priorityColors = { high: "bg-red-500", medium: "bg-amber-500", low: "bg-slate-400" };
-function emptyFindingTitle(active: boolean, scanned: boolean, status?: string) {
-  if (status === "failed" || status === "cancelled") return "No findings from this run";
-  if (active) return "Your findings will appear here";
-  return scanned ? "No matching findings" : "Ready for the first analysis";
+function emptyFindingTitle(active: boolean, scanned: boolean, status: string | undefined, t: LensTranslator) {
+  if (status === "failed" || status === "cancelled") return t("noFindingsFromRun");
+  if (active) return t("findingsWillAppear");
+  return scanned ? t("noMatchingFindings") : t("readyFirstAnalysis");
 }
 
 export function LensView({ accessToken, readOnly = false }: { accessToken: string; readOnly?: boolean }) {
+  const t = useTranslations("lens");
+  const commonT = useTranslations("common");
   const client = useQueryClient();
   const [workerSetup, setWorkerSetup] = useState(false);
   const [showExample, setShowExample] = useState(false);
@@ -212,16 +217,14 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
       await apiClient[method](path, { accessToken, body });
       await client.invalidateQueries({ queryKey: key });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not update lens");
+      setError(e instanceof Error ? e.message : t("couldNotUpdateLens"));
     } finally {
       setBusy(false);
     }
   };
   const save = async (settings: Settings) => {
-    if (editing === "edit" && (!lens || lens.id !== selected))
-      throw new Error("Reopen the investigation to edit its settings");
-    if (editing !== "edit" && !ready)
-      throw new Error("Wait for recorded activity and a connected worker before starting an investigation");
+    if (editing === "edit" && (!lens || lens.id !== selected)) throw new Error(t("reopenToEdit"));
+    if (editing !== "edit" && !ready) throw new Error(t("waitForActivity"));
     const saved = await apiClient.request<Lens>(
       editing === "edit" ? "PUT" : "POST",
       editing === "edit" ? `/lens/${lens?.id}` : "/lens",
@@ -237,15 +240,15 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
   };
 
   return (
-    <section aria-label="Investigations" className="w-full min-w-0 space-y-6">
+    <section aria-label={t("investigations")} className="w-full min-w-0 space-y-6">
       {!showEmpty && (
         <header className="flex flex-wrap items-center justify-between gap-3">
           {lens ? (
             <Button variant="ghost" size="sm" className="-ml-3" onClick={() => selectLens(null)}>
-              <ArrowLeft className="size-4" /> All investigations
+              <ArrowLeft className="size-4" /> {t("allInvestigations")}
             </Button>
           ) : (
-            <h2 className="text-lg font-semibold">Investigations</h2>
+            <h2 className="text-lg font-semibold">{t("investigations")}</h2>
           )}
           {showActions && (
             <div className="flex flex-wrap gap-2">
@@ -253,10 +256,10 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
                 <Circle
                   className={`size-2 ${connected ? "fill-emerald-500 text-emerald-500" : "fill-amber-500 text-amber-500"}`}
                 />
-                {connected ? "Worker connected" : "Connect worker"}
+                {connected ? t("workerConnected") : t("connectWorker")}
               </Button>
               <Button variant={lens ? "outline" : "default"} disabled={!ready} onClick={() => setEditing("new")}>
-                <Plus className="size-4" /> New investigation
+                <Plus className="size-4" /> {t("newInvestigation")}
               </Button>
             </div>
           )}
@@ -265,7 +268,7 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
       {(error || query.error) && (
         <div role="alert" className="rounded-lg border border-destructive/30 p-4 text-sm text-destructive">
           {query.error instanceof ApiError && query.error.status === 404
-            ? "The Lens API is unavailable. Reload this page to use the current dashboard; if it persists, check the proxy deployment."
+            ? t("lensApiUnavailable")
             : error || query.error?.message}
           <Button
             variant="ghost"
@@ -274,13 +277,13 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
               query.error instanceof ApiError && query.error.status === 404 ? window.location.reload() : refresh()
             }
           >
-            {query.error instanceof ApiError && query.error.status === 404 ? "Reload page" : "Retry"}
+            {query.error instanceof ApiError && query.error.status === 404 ? t("reloadPage") : commonT("retry")}
           </Button>
         </div>
       )}
       {query.isLoading && (
         <p role="status" className="py-8 text-sm text-muted-foreground">
-          Loading investigations…
+          {t("loadingInvestigations")}
         </p>
       )}
       {loaded && showEmpty && (
@@ -302,12 +305,10 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
       )}
       {showReadiness && !ready && (
         <div role="status" className="flex flex-wrap items-center gap-2 border-y py-3 text-sm text-muted-foreground">
-          {activityReady
-            ? "Connect a worker to run new investigations. Saved results are still available."
-            : "Recorded activity is not ready. Saved results are still available."}
+          {activityReady ? t("connectWorkerReadiness") : t("activityNotReady")}
           {!activityReady && (
             <a className="font-medium underline" href={uiHref("lens/?tab=traces")}>
-              Check traces
+              {t("checkTraces")}
             </a>
           )}
         </div>
@@ -317,9 +318,9 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
       )}
       {missingSelection && !lens && (
         <div role="alert" className="text-sm">
-          This investigation was not found.{" "}
+          {t("investigationNotFound")}{" "}
           <Button variant="link" onClick={() => selectLens(null)}>
-            View all investigations
+            {t("viewAllInvestigations")}
           </Button>
         </div>
       )}
@@ -330,25 +331,25 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
               <div>
                 <h2 className="text-lg font-semibold">{lens.settings.name}</h2>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {sourceLabels[lens.settings.source ?? "traces"]} · {scopeLabel(lens.settings)}
+                  {t(sourceLabels[lens.settings.source ?? "traces"])} · {scopeLabel(lens.settings, t)}
                 </p>
               </div>
               {!readOnly && (
                 <div className="flex flex-wrap gap-2">
                   <DropdownMenu>
                     <DropdownMenuTrigger
-                      render={<Button variant="ghost" size="icon" aria-label="Investigation actions" />}
+                      render={<Button variant="ghost" size="icon" aria-label={t("investigationActions")} />}
                     >
                       <MoreHorizontal className="size-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem onClick={() => setEditing("edit")}>
                         <Settings2 />
-                        Edit investigation
+                        {t("editInvestigation")}
                       </DropdownMenuItem>
                       <DropdownMenuItem disabled={!ready} onClick={() => setEditing("duplicate")}>
                         <Copy />
-                        Duplicate
+                        {commonT("duplicate")}
                       </DropdownMenuItem>
                       {lens.settings.enabled ? (
                         <DropdownMenuItem
@@ -356,19 +357,19 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
                           onClick={() => update(`/lens/${lens.id}`, { ...lens.settings, enabled: false }, "put")}
                         >
                           <Pause />
-                          Pause monitoring
+                          {t("pauseMonitoring")}
                         </DropdownMenuItem>
                       ) : (
                         <DropdownMenuItem disabled={!ready || busy} onClick={() => setMonitoring(true)}>
                           <Play />
-                          Enable monitoring
+                          {t("enableMonitoring")}
                         </DropdownMenuItem>
                       )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <Button disabled={busy || !!active || !ready} onClick={() => update(`/lens/${lens.id}/runs`, {})}>
                     <Play className="size-3" />
-                    Run now
+                    {t("runNow")}
                   </Button>
                 </div>
               )}
@@ -391,21 +392,21 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
             <Tabs value={tab} onValueChange={setTab} key={lens.id}>
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b">
                 <TabsList variant="line">
-                  <TabsTrigger value="findings">Findings</TabsTrigger>
-                  <TabsTrigger value="checks">Criteria</TabsTrigger>
+                  <TabsTrigger value="findings">{t("findings")}</TabsTrigger>
+                  <TabsTrigger value="checks">{t("criteria")}</TabsTrigger>
                   <TabsTrigger value="runs">
                     {
-                      { requests: "Requests", both: "Traces & requests", traces: "Traces" }[
+                      { requests: t("requests"), both: t("tracesAmpRequests"), traces: t("traces") }[
                         batchSettings?.source ?? "traces"
                       ]
                     }
                   </TabsTrigger>
-                  <TabsTrigger value="activity">History</TabsTrigger>
+                  <TabsTrigger value="activity">{t("history")}</TabsTrigger>
                 </TabsList>
                 {tab !== "activity" && (
                   <div className="flex min-w-0 items-center gap-1 pb-1">
                     <select
-                      aria-label="Investigation run"
+                      aria-label={t("investigationRun")}
                       className="h-8 w-44 max-w-full truncate rounded-md border-0 bg-transparent px-2 text-xs text-muted-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
                       value={batchId}
                       onChange={(e) => {
@@ -413,50 +414,56 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
                         setFindingId(null);
                       }}
                     >
-                      <option value="latest">Latest run</option>
+                      <option value="latest">{t("latestRunOption")}</option>
                       {job && selectedOutsideHistory && (
                         <option value={batchId}>
-                          {when(job.created_at)} · {job.status}
+                          {when(job.created_at, t)} · {job.status}
                         </option>
                       )}
                       {(history.data ?? lens.jobs)?.map((j) => (
                         <option key={j.id} value={j.id}>
-                          {when(j.created_at)} · {j.status}
+                          {when(j.created_at, t)} · {j.status}
                         </option>
                       ))}
-                      <option value="all">All accumulated findings</option>
+                      <option value="all">{t("allAccumulatedFindings")}</option>
                     </select>
                     {job && batchId !== "all" && (
                       <Popover key={job.id}>
                         <PopoverTrigger
-                          aria-label="Run details"
+                          aria-label={t("runDetails")}
                           render={<Button variant="ghost" size="icon" className="size-7 text-muted-foreground" />}
                         >
                           <Info className="size-3.5" />
                         </PopoverTrigger>
                         <PopoverContent align="end" className="gap-3">
-                          <PopoverTitle>Run details</PopoverTitle>
+                          <PopoverTitle>{t("runDetails")}</PopoverTitle>
                           <p className="text-xs text-muted-foreground">
-                            {job.coverage?.screened ?? 0} / {job.coverage?.selected ?? 0} selected runs reviewed
+                            {t("runCoverageDetail", {
+                              screened: job.coverage?.screened ?? 0,
+                              selected: job.coverage?.selected ?? 0,
+                            })}
                             <ScanDuration job={job} />
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {job.coverage?.partial ?? 0} partial traces · {job.coverage?.unassessable ?? 0} could not be
-                            assessed · {job.coverage?.inconclusive ?? 0} inconclusive
+                            {t("coverageDetail", {
+                              partial: job.coverage?.partial ?? 0,
+                              unassessable: job.coverage?.unassessable ?? 0,
+                              inconclusive: job.coverage?.inconclusive ?? 0,
+                            })}
                           </p>
                           <dl className="space-y-2 text-xs">
                             <div>
-                              <dt className="text-muted-foreground">Activity window</dt>
+                              <dt className="text-muted-foreground">{t("activityWindow")}</dt>
                               <dd className="mt-1">
-                                {when(job.start)} to {when(job.end)}
+                                {t("windowRange", { start: when(job.start, t), end: when(job.end, t) })}
                               </dd>
                             </div>
                             <div className="flex justify-between gap-2">
-                              <dt className="text-muted-foreground">Analysis cost</dt>
+                              <dt className="text-muted-foreground">{t("analysisCost")}</dt>
                               <dd>{money(job.cost ?? 0)}</dd>
                             </div>
                             <div className="flex justify-between gap-2">
-                              <dt className="text-muted-foreground">Status</dt>
+                              <dt className="text-muted-foreground">{commonT("status")}</dt>
                               <dd className="capitalize">{job.status}</dd>
                             </div>
                           </dl>
@@ -468,53 +475,51 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
               </div>
               {historical.error && (
                 <p role="alert" className="text-sm text-destructive">
-                  Could not load this run.{" "}
+                  {t("couldNotLoadRun")}{" "}
                   <Button variant="link" onClick={() => void historical.refetch()}>
-                    Retry
+                    {commonT("retry")}
                   </Button>
                 </p>
               )}
               {missingSnapshot && tab !== "activity" && (
-                <p className="text-sm text-muted-foreground">
-                  This older batch predates saved result snapshots. Its findings remain available under All accumulated
-                  findings.
-                </p>
+                <p className="text-sm text-muted-foreground">{t("olderBatchSnapshot")}</p>
               )}
               <TabsContent value="findings" className="pt-4 space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex gap-1" aria-label="Finding category">
+                  <div className="flex gap-1" aria-label={t("findingCategory")}>
                     <Button
                       size="sm"
                       variant={kind === "issue" ? "secondary" : "ghost"}
                       onClick={() => setKind("issue")}
                     >
-                      Needs attention (
-                      {batchFindings.filter((f) => f.kind === "issue" && f.status === "open").length ?? 0})
+                      {t("needsAttentionCount", {
+                        count: batchFindings.filter((f) => f.kind === "issue" && f.status === "open").length ?? 0,
+                      })}
                     </Button>
                     <Button
                       size="sm"
                       variant={kind === "pattern" ? "secondary" : "ghost"}
                       onClick={() => setKind("pattern")}
                     >
-                      Patterns ({batchFindings.filter((f) => f.kind === "pattern" && f.status === "open").length ?? 0})
+                      {t("patternsCount", {
+                        count: batchFindings.filter((f) => f.kind === "pattern" && f.status === "open").length ?? 0,
+                      })}
                     </Button>
                   </div>
                   <select
-                    aria-label="Finding status"
+                    aria-label={t("findingStatus")}
                     className="rounded-md border bg-background px-2 py-1 text-xs"
                     value={filter}
                     onChange={(e) => setFilter(e.target.value)}
                   >
-                    <option value="open">Open</option>
-                    <option value="resolved">Resolved</option>
-                    <option value="dismissed">Dismissed</option>
-                    <option value="all">All statuses</option>
+                    <option value="open">{t("statusOpen")}</option>
+                    <option value="resolved">{t("statusResolved")}</option>
+                    <option value="dismissed">{t("statusDismissed")}</option>
+                    <option value="all">{t("allStatuses")}</option>
                   </select>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {kind === "issue"
-                    ? "Problems worth investigating, highest priority first."
-                    : "Useful behavior and trends. These do not necessarily need a fix."}
+                  {kind === "issue" ? t("issuesDescription") : t("patternsDescription")}
                 </p>
                 <div className="divide-y border-y">
                   {visibleFindings.map((f) => (
@@ -528,14 +533,14 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
                     >
                       <span
                         className={`mt-1 size-2 shrink-0 rounded-full ${priorityColors[f.priority ?? "medium"]}`}
-                        aria-label={`${f.priority} priority`}
+                        aria-label={t(priorityLabelKeys[f.priority ?? "medium"])}
                       />
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium">{f.title}</p>
                         <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{f.description}</p>
                         <p className="mt-2 text-xs text-muted-foreground">
-                          {f.occurrences?.length ?? 0} linked {f.occurrences?.length === 1 ? "run" : "runs"} ·{" "}
-                          {f.kind === "issue" ? `${f.priority} priority` : "Pattern"}
+                          {t("linkedRuns", { count: f.occurrences?.length ?? 0 })} ·{" "}
+                          {f.kind === "issue" ? t(priorityLabelKeys[f.priority ?? "medium"]) : t("pattern")}
                         </p>
                       </div>
                       <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
@@ -545,12 +550,10 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
                     <div className="px-6 py-14 text-center">
                       <CheckCircle2 className="mx-auto mb-3 size-5 text-muted-foreground" />
                       <p className="text-sm font-medium">
-                        {emptyFindingTitle(!!active, !!lens.last_scan_at, job?.status)}
+                        {emptyFindingTitle(!!active, !!lens.last_scan_at, job?.status, t)}
                       </p>
                       <p className="mt-2 text-xs text-muted-foreground">
-                        {active
-                          ? "Lens is reviewing the selected activity."
-                          : "Findings reflect the runs analyzed, not a guarantee about all activity."}
+                        {active ? t("reviewingActivity") : t("findingsGuarantee")}
                       </p>
                     </div>
                   )}
@@ -558,34 +561,32 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
               </TabsContent>
               <TabsContent value="checks" className="pt-4 space-y-4">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">Used for this run</p>
+                  <p className="text-sm text-muted-foreground">{t("usedForThisRun")}</p>
                   {!readOnly && (
                     <Button variant="outline" size="sm" onClick={() => setEditing("edit")}>
-                      Edit criteria
+                      {t("editCriteria")}
                     </Button>
                   )}
                 </div>
                 {batchSettings?.context && (
                   <div className="space-y-2 border-b pb-5">
-                    <h3 className="text-base font-semibold">What should the agent be doing?</h3>
-                    <p className="text-xs text-muted-foreground">The purpose and expected outcome of the agent.</p>
+                    <h3 className="text-base font-semibold">{t("whatShouldAgentDo")}</h3>
+                    <p className="text-xs text-muted-foreground">{t("agentPurposeHelp")}</p>
                     <p className="mt-2 whitespace-pre-wrap text-sm">{batchSettings.context}</p>
                   </div>
                 )}
                 <div className="pt-2">
-                  <h3 className="text-base font-semibold">What should we look out for?</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">Specific problems or patterns to investigate.</p>
+                  <h3 className="text-base font-semibold">{t("whatToLookFor")}</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">{t("problemsHelp")}</p>
                 </div>
                 {batchSettings?.checks.map((c, index) => (
                   <div key={c.id} className="flex items-start gap-3 border-b py-4">
                     <span className="mt-0.5 text-xs tabular-nums text-muted-foreground">{index + 1}.</span>
                     <p className="text-sm leading-6 flex-1">{c.instruction}</p>
-                    {!c.enabled && <span className="text-xs text-muted-foreground">Disabled</span>}
+                    {!c.enabled && <span className="text-xs text-muted-foreground">{commonT("disabled")}</span>}
                   </div>
                 ))}
-                <p className="text-xs text-muted-foreground">
-                  Changes apply to future scans. Rechecking history uses your analysis budget.
-                </p>
+                <p className="text-xs text-muted-foreground">{t("changesApplyFuture")}</p>
               </TabsContent>
               <TabsContent value="runs" className="pt-4 space-y-4">
                 <LensRuns
@@ -600,9 +601,9 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
               <TabsContent value="activity" className="pt-4 space-y-4">
                 {history.error && (
                   <p role="alert" className="text-sm text-destructive">
-                    Could not load run history.{" "}
+                    {t("couldNotLoadRunHistory")}{" "}
                     <Button variant="link" size="sm" onClick={() => void history.refetch()}>
-                      Retry
+                      {commonT("retry")}
                     </Button>
                   </p>
                 )}
@@ -614,10 +615,10 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
                       className="flex w-full items-center gap-4 py-4 text-left hover:bg-muted/30 focus-visible:outline-2 focus-visible:outline-ring"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium">{when(j.created_at)}</p>
+                        <p className="text-sm font-medium">{when(j.created_at, t)}</p>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          {j.coverage?.screened ?? 0} runs reviewed
-                          {j.findings != null && <> · {j.findings.length} findings</>}
+                          {t("runsReviewedCount", { count: j.coverage?.screened ?? 0 })}
+                          {j.findings != null && <> · {t("findingsCount", { count: j.findings.length })}</>}
                           <ScanDuration job={j} />
                         </p>
                         {j.error && <p className="mt-2 line-clamp-2 text-xs text-destructive">{j.error}</p>}
@@ -638,7 +639,7 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
                       disabled={!historyOffset}
                       onClick={() => setHistoryOffset(Math.max(0, historyOffset - 50))}
                     >
-                      Newer runs
+                      {t("newerRuns")}
                     </Button>
                     <Button
                       variant="ghost"
@@ -646,7 +647,7 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
                       disabled={(history.data?.length ?? 0) < 50}
                       onClick={() => setHistoryOffset(historyOffset + 50)}
                     >
-                      Older runs
+                      {t("olderRuns")}
                     </Button>
                   </div>
                 )}
@@ -731,22 +732,22 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
       >
         <SheetContent className="overflow-y-auto data-[side=right]:sm:max-w-2xl">
           <SheetHeader>
-            <SheetTitle>Request evidence</SheetTitle>
-            <SheetDescription>Original logged input and output</SheetDescription>
+            <SheetTitle>{t("requestEvidence")}</SheetTitle>
+            <SheetDescription>{t("originalLoggedInputOutput")}</SheetDescription>
           </SheetHeader>
           <div className="p-4 space-y-3">
-            {requestEvidence.isLoading && <p role="status">Loading request…</p>}
+            {requestEvidence.isLoading && <p role="status">{t("loadingRequest")}</p>}
             {requestEvidence.error && <p role="alert">{requestEvidence.error.message}</p>}
             {requestEvidence.data?.parts.map((p) => (
               <pre className="whitespace-pre-wrap break-words text-xs" key={p.span_id}>
                 {p.content}
               </pre>
             ))}
-            {requestEvidence.data?.parts.length === 0 && <p>Request was not found or is past retention</p>}
+            {requestEvidence.data?.parts.length === 0 && <p>{t("requestNotFound")}</p>}
             <div className="flex flex-wrap gap-2">
               {requestOffset > 0 && (
                 <Button variant="outline" onClick={() => setRequestOffset(Math.max(0, requestOffset - 8000))}>
-                  Previous section
+                  {t("previousSection")}
                 </Button>
               )}
               {requestEvidence.data?.parts.some((p) => p.truncated) && (
@@ -754,7 +755,7 @@ export function LensView({ accessToken, readOnly = false }: { accessToken: strin
                   variant="outline"
                   onClick={() => setRequestOffset(requestOffset === 0 ? 1 : requestOffset + 8000)}
                 >
-                  Next section
+                  {t("nextSection")}
                 </Button>
               )}
             </div>

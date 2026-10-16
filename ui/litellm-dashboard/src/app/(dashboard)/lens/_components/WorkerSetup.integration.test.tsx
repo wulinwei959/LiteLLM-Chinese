@@ -39,20 +39,20 @@ describe("Worker setup", () => {
     vi.mocked(apiClient.post).mockResolvedValue(created);
     const user = userEvent.setup();
     renderWithProviders(<WorkerSetup accessToken="admin" workers={[]} onClose={vi.fn()} onChanged={vi.fn()} />);
-    await user.click(screen.getByText("Advanced options"));
-    await user.click(screen.getByRole("switch", { name: "Use an existing virtual key" }));
-    expect(screen.getByRole("textbox", { name: "LiteLLM proxy URL" })).toHaveValue("https://gateway.example/proxy");
-    expect(screen.getByRole("button", { name: "Get install command" })).toBeDisabled();
-    await user.click(screen.getByRole("combobox", { name: "Charge analysis to" }));
+    await user.click(screen.getByText("高级选项"));
+    await user.click(screen.getByRole("switch", { name: "使用已有的虚拟密钥" }));
+    expect(screen.getByRole("textbox", { name: "LiteLLM 代理 URL" })).toHaveValue("https://gateway.example/proxy");
+    expect(screen.getByRole("button", { name: "获取安装命令" })).toBeDisabled();
+    await user.click(screen.getByRole("combobox", { name: "分析费用计入" }));
     await user.click(await screen.findByRole("option", { name: "Analysis" }));
-    await user.click(screen.getByRole("button", { name: "Get install command" }));
+    await user.click(screen.getByRole("button", { name: "获取安装命令" }));
     expect(apiClient.post).toHaveBeenCalledWith("/lens/workers/register", {
       accessToken: "admin",
       body: { name: "Lens worker", analysis_key_id: "b".repeat(64) },
     });
-    expect(screen.getByRole("status")).toHaveTextContent("Waiting for your worker to connect");
-    expect(screen.getByLabelText("Docker command preview")).not.toBeVisible();
-    await user.click(screen.getByRole("button", { name: "Copy Docker command" }));
+    expect(screen.getByRole("status")).toHaveTextContent("正在等待你的工作进程连接");
+    expect(screen.getByLabelText("Docker 命令预览")).not.toBeVisible();
+    await user.click(screen.getByRole("button", { name: "复制 Docker 命令" }));
     const command = await navigator.clipboard.readText();
     expect(command).toContain("LITELLM_URL=https://gateway.example/proxy");
     expect(command).toContain("LENS_WORKER_TOKEN=lens-test-token");
@@ -71,11 +71,11 @@ describe("Worker setup", () => {
         onChanged={changed}
       />,
     );
-    expect(screen.getByText("Billing key required")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Settings" }));
-    await user.click(screen.getByRole("combobox", { name: "Charge analysis to" }));
+    expect(screen.getByText("需要计费密钥")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "设置" }));
+    await user.click(screen.getByRole("combobox", { name: "分析费用计入" }));
     await user.click(await screen.findByRole("option", { name: "Analysis" }));
-    await user.click(screen.getByRole("button", { name: "Save analysis access" }));
+    await user.click(screen.getByRole("button", { name: "保存分析访问权限" }));
     expect(apiClient.put).toHaveBeenCalledWith("/lens/workers/worker/billing-key", {
       accessToken: "admin",
       body: { analysis_key_id: "b".repeat(64) },
@@ -90,13 +90,13 @@ describe("Worker setup", () => {
     const props = { accessToken: "admin", onClose: vi.fn(), onChanged: changed };
     const view = renderWithProviders(<WorkerSetup {...props} workers={[created.worker]} />);
     expect(screen.queryByRole("button", { name: "Add worker" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Get install command" })).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Revoke access" }));
+    expect(screen.queryByRole("button", { name: "获取安装命令" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "撤销访问权限" }));
     expect(apiClient.delete).toHaveBeenCalledWith("/lens/workers/worker", { accessToken: "admin" });
     expect(changed).toHaveBeenCalledOnce();
     view.rerender(<WorkerSetup {...props} workers={[{ ...created.worker, revoked: true }]} />);
-    expect(screen.getByRole("button", { name: "Get install command" })).toBeDisabled();
-    expect(screen.getByRole("combobox", { name: "Analysis model" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "获取安装命令" })).toBeDisabled();
+    expect(screen.getByRole("combobox", { name: "分析模型" })).toBeVisible();
   });
   it("cleans up a newly created key when registration fails before retrying", async () => {
     const user = userEvent.setup();
@@ -112,13 +112,13 @@ describe("Worker setup", () => {
       .mockResolvedValueOnce({ token_id: "retry-key-id" })
       .mockResolvedValueOnce(created);
     renderWithProviders(<WorkerSetup accessToken="admin" workers={[]} onClose={vi.fn()} onChanged={vi.fn()} />);
-    expect(screen.getByRole("button", { name: "Get install command" })).toBeDisabled();
-    expect(screen.getByRole("textbox", { name: "LiteLLM proxy URL", hidden: true })).not.toBeVisible();
-    await user.click(screen.getByRole("combobox", { name: "Analysis model" }));
+    expect(screen.getByRole("button", { name: "获取安装命令" })).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: "LiteLLM 代理 URL", hidden: true })).not.toBeVisible();
+    await user.click(screen.getByRole("combobox", { name: "分析模型" }));
     await user.click(await screen.findByRole("option", { name: "analysis-model" }));
-    await user.clear(screen.getByLabelText("Monthly limit (USD)"));
-    await user.type(screen.getByLabelText("Monthly limit (USD)"), "12");
-    await user.click(screen.getByRole("button", { name: "Get install command" }));
+    await user.clear(screen.getByLabelText("每月上限（美元）"));
+    await user.type(screen.getByLabelText("每月上限（美元）"), "12");
+    await user.click(screen.getByRole("button", { name: "获取安装命令" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Registration unavailable");
     expect(apiClient.post).toHaveBeenNthCalledWith(1, "/key/generate", {
       accessToken: "admin",
@@ -130,8 +130,8 @@ describe("Worker setup", () => {
         metadata: { purpose: "lens" },
       },
     });
-    await user.click(screen.getByRole("button", { name: "Get install command" }));
-    expect(await screen.findByRole("status")).toHaveTextContent("Waiting for your worker");
+    await user.click(screen.getByRole("button", { name: "获取安装命令" }));
+    expect(await screen.findByRole("status")).toHaveTextContent("正在等待你的工作进程");
     expect(apiClient.post).toHaveBeenCalledWith("/key/delete", {
       accessToken: "admin",
       body: { keys: ["limited-key-id"] },

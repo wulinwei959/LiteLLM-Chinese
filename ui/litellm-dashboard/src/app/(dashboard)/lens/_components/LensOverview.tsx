@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,17 +24,19 @@ export function InvestigationList({
   connected: boolean;
   onSelect: (id: string) => void;
 }) {
+  const t = useTranslations("lens");
+  const commonT = useTranslations("common");
   const [search, setSearch] = useState("");
   const shown = lenses.filter((lens) =>
-    `${lens.settings.name} ${scopeLabel(lens.settings)}`.toLowerCase().includes(search.toLowerCase()),
+    `${lens.settings.name} ${scopeLabel(lens.settings, t)}`.toLowerCase().includes(search.toLowerCase()),
   );
   return (
-    <section aria-label="Saved investigations" className="space-y-4">
+    <section aria-label={t("savedInvestigations")} className="space-y-4">
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
         <Input
-          aria-label="Search investigations"
-          placeholder="Search investigations"
+          aria-label={t("searchInvestigations")}
+          placeholder={t("searchInvestigations")}
           className="pl-9"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -48,26 +51,27 @@ export function InvestigationList({
           >
             <div className="col-start-1 row-start-1 min-w-0">
               <p className="text-sm font-medium">{lens.settings.name}</p>
-              <p className="mt-1 truncate text-xs text-muted-foreground">{scopeLabel(lens.settings)}</p>
+              <p className="mt-1 truncate text-xs text-muted-foreground">{scopeLabel(lens.settings, t)}</p>
             </div>
             <div className="col-start-1 row-start-2 text-xs sm:col-start-2 sm:row-start-1 sm:text-right">
               <p className={lens.jobs[0]?.status === "failed" ? "text-destructive" : "text-muted-foreground"}>
-                {lensStatus(lens, connected)}
+                {lensStatus(lens, connected, t, commonT)}
               </p>
               <p className="mt-1 text-muted-foreground">
-                {lens.jobs[0] ? runTime(lens.jobs[0].created_at) : "Not run yet"}
+                {lens.jobs[0] ? runTime(lens.jobs[0].created_at) : t("notRunYet")}
               </p>
             </div>
             <ChevronRight className="col-start-2 row-start-1 size-4 text-muted-foreground sm:col-start-3" />
           </button>
         ))}
-        {!shown.length && <p className="py-8 text-sm text-muted-foreground">No investigations match your search.</p>}
+        {!shown.length && <p className="py-8 text-sm text-muted-foreground">{t("noInvestigationsMatch")}</p>}
       </div>
     </section>
   );
 }
 
 export function InvestigationExample({ onClose }: { onClose: () => void }) {
+  const t = useTranslations("lens");
   return (
     <Dialog
       open
@@ -78,58 +82,51 @@ export function InvestigationExample({ onClose }: { onClose: () => void }) {
       <DialogContent className="sm:max-w-2xl max-h-[90dvh] overflow-y-auto gap-0 p-0">
         <div className="px-6 py-5 sm:px-8">
           <DialogHeader>
-            <DialogTitle className="text-base">Example investigation</DialogTitle>
-            <DialogDescription>Does the support agent recover when a tool fails?</DialogDescription>
+            <DialogTitle className="text-base">{t("exampleInvestigation")}</DialogTitle>
+            <DialogDescription>{t("exampleQuestion")}</DialogDescription>
           </DialogHeader>
         </div>
         <div className="border-y px-6 py-6 sm:px-8">
           <div className="flex flex-wrap items-center gap-3 text-xs">
             <span className="rounded-full bg-amber-50 px-2.5 py-1 font-medium text-amber-800 dark:bg-amber-950 dark:text-amber-200">
-              Needs attention
+              {t("needsAttention")}
             </span>
-            <span className="text-muted-foreground">3 of 20 conversations</span>
+            <span className="text-muted-foreground">{t("exampleConversations")}</span>
           </div>
-          <h3 className="mt-4 max-w-lg text-2xl font-semibold leading-8 tracking-tight">
-            Failed lookups leave customers without an answer
-          </h3>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            The agent repeats the same failed order lookup, then ends the conversation without an answer or a handoff.
-          </p>
+          <h3 className="mt-4 max-w-lg text-2xl font-semibold leading-8 tracking-tight">{t("exampleFindingTitle")}</h3>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">{t("exampleFindingDesc")}</p>
           <div className="mt-6 border-l-2 border-border pl-4">
-            <p className="text-xs text-muted-foreground">After three failed lookups, the agent replies:</p>
-            <blockquote className="mt-2 text-base leading-6">“I will check that for you.”</blockquote>
+            <p className="text-xs text-muted-foreground">{t("exampleReplies")}</p>
+            <blockquote className="mt-2 text-base leading-6">{t("exampleQuote")}</blockquote>
             <details className="group mt-3 text-sm">
               <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 font-medium [&::-webkit-details-marker]:hidden">
-                See the trace <ChevronRight className="size-3.5 transition-transform group-open:rotate-90" />
+                {t("seeTheTrace")} <ChevronRight className="size-3.5 transition-transform group-open:rotate-90" />
               </summary>
               <ol className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
                 <li>
-                  <span className="font-medium text-foreground">Customer</span> · Where is my order?
+                  <span className="font-medium text-foreground">{t("customer")}</span> · {t("whereIsMyOrder")}
                 </li>
                 <li>
-                  <span className="font-medium text-foreground">Order lookup</span> · Service unavailable
+                  <span className="font-medium text-foreground">{t("orderLookup")}</span> · {t("serviceUnavailable")}
                 </li>
                 <li>
-                  <span className="font-medium text-foreground">Two retries</span> · Same error, no new information
+                  <span className="font-medium text-foreground">{t("twoRetries")}</span> · {t("sameErrorNoInfo")}
                 </li>
                 <li>
-                  <span className="font-medium text-foreground">Agent</span> · I will check that for you. Conversation
-                  ends.
+                  <span className="font-medium text-foreground">{t("agent")}</span> · {t("exampleEnds")}
                 </li>
               </ol>
             </details>
           </div>
           <div className="mt-6">
-            <h4 className="text-sm font-semibold">What to change</h4>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              After repeated failures, explain the problem and offer a handoff instead of retrying.
-            </p>
+            <h4 className="text-sm font-semibold">{t("whatToChange")}</h4>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("whatToChangeDesc")}</p>
           </div>
         </div>
         <div className="flex items-center justify-between gap-4 px-6 py-4 sm:px-8">
-          <p className="text-xs text-muted-foreground">Illustrative data, not your agent’s results</p>
+          <p className="text-xs text-muted-foreground">{t("illustrativeData")}</p>
           <Button variant="outline" onClick={onClose}>
-            Back to setup
+            {t("backToSetup")}
           </Button>
         </div>
       </DialogContent>
@@ -148,6 +145,8 @@ export function MonitoringSetup({
   onSave: (settings: Settings) => Promise<void>;
   onClose: () => void;
 }) {
+  const t = useTranslations("lens");
+  const commonT = useTranslations("common");
   const [interval, setInterval] = useState(settings.interval_minutes ?? 30);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -157,7 +156,7 @@ export function MonitoringSetup({
       await onSave({ ...settings, enabled: true, interval_minutes: interval });
       onClose();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Could not enable monitoring");
+      setError(cause instanceof Error ? cause.message : t("couldNotEnableMonitoring"));
     } finally {
       setBusy(false);
     }
@@ -172,18 +171,14 @@ export function MonitoringSetup({
     >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl">Keep monitoring</DialogTitle>
-          <DialogDescription>
-            Repeat this investigation with the saved scope, sample, model, and budget.
-          </DialogDescription>
+          <DialogTitle className="text-xl">{t("keepMonitoring")}</DialogTitle>
+          <DialogDescription>{t("keepMonitoringDesc")}</DialogDescription>
         </DialogHeader>
-        <DurationInput label="Check every" value={interval} onChange={setInterval} base="minutes" max={10080} />
-        <p className="text-xs leading-5 text-muted-foreground">
-          Each investigation looks back over the saved time range. The interval starts after the previous run finishes.
-        </p>
+        <DurationInput label={t("checkEvery")} value={interval} onChange={setInterval} base="minutes" max={10080} />
+        <p className="text-xs leading-5 text-muted-foreground">{t("keepMonitoringHelp")}</p>
         {!ready && (
           <p role="status" className="text-sm text-amber-700">
-            Reconnect the worker before enabling monitoring.
+            {t("reconnectWorkerMonitoring")}
           </p>
         )}
         {error && (
@@ -193,10 +188,10 @@ export function MonitoringSetup({
         )}
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {commonT("cancel")}
           </Button>
           <Button disabled={busy || !ready || !validInterval} onClick={() => void save()}>
-            {busy ? "Saving…" : "Enable monitoring"}
+            {busy ? t("saving") : t("enableMonitoring")}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -205,29 +200,31 @@ export function MonitoringSetup({
 }
 
 export function InvestigationSummary({ lens, connected }: { lens: Lens; connected: boolean }) {
+  const t = useTranslations("lens");
+  const commonT = useTranslations("common");
   const lastCompleted = lens.jobs.find((job) => job.status === "completed");
   const lastSuccess = lastCompleted?.finished_at ?? lens.last_scan_at;
   const spent = lens.budget_month === new Date().toISOString().slice(0, 7) ? lens.spent ?? 0 : 0;
   return (
     <div className="flex flex-wrap gap-x-8 gap-y-3 border-y py-3 text-xs text-muted-foreground">
       <span>
-        Latest run:{" "}
+        {t("latestRunLabel")}
         <strong className={`font-medium ${lens.jobs[0]?.status === "failed" ? "text-destructive" : "text-foreground"}`}>
-          {lensStatus(lens, connected)}
+          {lensStatus(lens, connected, t, commonT)}
         </strong>
       </span>
       <span>
-        Last success: <span className="text-foreground">{lastSuccess ? runTime(lastSuccess) : "Not yet"}</span>
+        {t("lastSuccess")} <span className="text-foreground">{lastSuccess ? runTime(lastSuccess) : t("notYet")}</span>
       </span>
       <span>
-        This month:{" "}
+        {t("thisMonth")}
         <span className="text-foreground">
           ${spent.toFixed(3)} / ${lens.settings.monthly_budget ?? 100}
         </span>
       </span>
       {lens.settings.enabled && (
         <span>
-          Monitoring every {lens.settings.interval_minutes} minutes
+          {t("monitoringEvery", { minutes: lens.settings.interval_minutes })}
           <NextCheck lens={lens} />
         </span>
       )}
@@ -236,34 +233,32 @@ export function InvestigationSummary({ lens, connected }: { lens: Lens; connecte
 }
 
 export function InvestigationFailure({ job, connected }: { job: Job; connected: boolean }) {
+  const t = useTranslations("lens");
   return (
     <div role="alert" className="space-y-2 rounded-md border border-destructive/20 p-3 text-sm">
-      <p className="font-medium text-destructive">This investigation did not finish</p>
+      <p className="font-medium text-destructive">{t("investigationDidNotFinish")}</p>
       <p>{job.error}</p>
       <details>
-        <summary className="cursor-pointer text-xs text-muted-foreground">Troubleshooting details</summary>
+        <summary className="cursor-pointer text-xs text-muted-foreground">{t("troubleshootingDetails")}</summary>
         <dl className="mt-2 space-y-1 text-xs text-muted-foreground">
           <div>
-            <dt className="inline">Run: </dt>
+            <dt className="inline">{t("runColon")}</dt>
             <dd className="inline">{job.id}</dd>
           </div>
           <div>
-            <dt className="inline">Model: </dt>
+            <dt className="inline">{t("modelColon")}</dt>
             <dd className="inline">{job.settings.model}</dd>
           </div>
           <div>
-            <dt className="inline">Worker: </dt>
-            <dd className="inline">{connected ? "Connected now" : "Not connected"}</dd>
+            <dt className="inline">{t("workerColon")}</dt>
+            <dd className="inline">{connected ? t("connectedNow") : t("notConnected")}</dd>
           </div>
           <div>
-            <dt className="inline">Started: </dt>
+            <dt className="inline">{t("startedColon")}</dt>
             <dd className="inline">{runTime(job.created_at)}</dd>
           </div>
         </dl>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Use the run ID to find the error in proxy and worker logs. Check the worker key&apos;s model permissions and
-          budget before retrying.
-        </p>
+        <p className="mt-2 text-xs text-muted-foreground">{t("troubleshootingHelp")}</p>
       </details>
     </div>
   );

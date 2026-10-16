@@ -1,17 +1,20 @@
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { LensTranslator } from "@/lib/i18n/translators";
 import { runTime, type Job } from "./lensData";
 
-function assessmentLabel(assessment: Job["assessments"][number] | undefined): string {
-  if (!assessment) return "Not reviewed";
-  if (assessment.cannot_assess) return "Insufficient evidence";
-  return assessment.issue_checks?.length ? "Issue observed" : "No issue observed";
+function assessmentLabel(assessment: Job["assessments"][number] | undefined, t: LensTranslator): string {
+  if (!assessment) return t("notReviewed");
+  if (assessment.cannot_assess) return t("insufficientEvidence");
+  return assessment.issue_checks?.length ? t("issueObserved") : t("noIssueObserved");
 }
 
 export function LensRuns({ job, onOpen }: { job?: Job; onOpen: (id: string) => void }) {
   const [runOffset, setRunOffset] = useState(0);
   const [runFilter, setRunFilter] = useState("all");
+  const t = useTranslations("lens");
   const assessments = new Map(job?.assessments?.map((a) => [a.execution_id, a]));
   const runs = job?.sample?.executions ?? [];
   const visibleRuns = runs.filter((run) => {
@@ -25,10 +28,10 @@ export function LensRuns({ job, onOpen }: { job?: Job; onOpen: (id: string) => v
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
-          {runs.length} selected from {job?.sample?.eligible ?? 0} matching runs
+          {t("selectedFromMatchingRuns", { selected: runs.length, total: job?.sample?.eligible ?? 0 })}
         </p>
         <select
-          aria-label="Filter reviewed runs"
+          aria-label={t("filterReviewedRuns")}
           className="h-8 max-w-full rounded-md border bg-background px-2 text-xs sm:max-w-64"
           value={runFilter}
           onChange={(e) => {
@@ -36,10 +39,10 @@ export function LensRuns({ job, onOpen }: { job?: Job; onOpen: (id: string) => v
             setRunOffset(0);
           }}
         >
-          <option value="all">All outcomes</option>
-          <option value="clear">No issue observed</option>
-          <option value="unknown">Insufficient evidence or not reviewed</option>
-          {job?.settings?.context && <option value="expected_behavior">Expected behavior deviation</option>}
+          <option value="all">{t("allOutcomes")}</option>
+          <option value="clear">{t("noIssueObserved")}</option>
+          <option value="unknown">{t("insufficientOrNotReviewed")}</option>
+          {job?.settings?.context && <option value="expected_behavior">{t("expectedBehaviorDeviation")}</option>}
           {job?.settings?.checks.map((check) => (
             <option key={check.id} value={check.id}>
               {check.instruction}
@@ -60,7 +63,7 @@ export function LensRuns({ job, onOpen }: { job?: Job; onOpen: (id: string) => v
               {runTime(run.start_time)}
             </span>
             <span className="col-start-1 row-start-3 text-xs text-muted-foreground sm:col-start-3 sm:row-start-1">
-              {assessmentLabel(assessments.get(run.id))}
+              {assessmentLabel(assessments.get(run.id), t)}
             </span>
             <ChevronRight
               aria-hidden="true"
@@ -70,9 +73,7 @@ export function LensRuns({ job, onOpen }: { job?: Job; onOpen: (id: string) => v
         ))}
         {!visibleRuns.length && (
           <p className="py-10 text-center text-sm text-muted-foreground">
-            {runs.length
-              ? "No runs match this outcome."
-              : "Selected activity appears here when the worker starts reviewing it."}
+            {runs.length ? t("noRunsMatchOutcome") : t("selectedActivityAppears")}
           </p>
         )}
       </div>
@@ -84,10 +85,14 @@ export function LensRuns({ job, onOpen }: { job?: Job; onOpen: (id: string) => v
             disabled={!runOffset}
             onClick={() => setRunOffset(Math.max(0, runOffset - 50))}
           >
-            Previous runs
+            {t("previousRuns")}
           </Button>
           <span>
-            {runOffset + 1}–{Math.min(runOffset + 50, visibleRuns.length)} of {visibleRuns.length}
+            {t("runsRange", {
+              start: runOffset + 1,
+              end: Math.min(runOffset + 50, visibleRuns.length),
+              total: visibleRuns.length,
+            })}
           </span>
           <Button
             size="sm"
@@ -95,7 +100,7 @@ export function LensRuns({ job, onOpen }: { job?: Job; onOpen: (id: string) => v
             disabled={runOffset + 50 >= visibleRuns.length}
             onClick={() => setRunOffset(runOffset + 50)}
           >
-            Next runs
+            {t("nextRuns")}
           </Button>
         </div>
       )}

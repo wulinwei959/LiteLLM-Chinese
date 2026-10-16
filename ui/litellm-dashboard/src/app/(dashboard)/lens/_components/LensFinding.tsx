@@ -1,8 +1,9 @@
+import { useTranslations } from "next-intl";
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { evidenceTarget, runTime, type Finding, type Sample } from "./lensData";
+import { evidenceTarget, priorityLabelKeys, runTime, type Finding, type Sample } from "./lensData";
 
 export function LensFinding({
   finding,
@@ -32,6 +33,8 @@ export function LensFinding({
         quotes: finding.evidence.filter((e) => e.execution_id === id),
       }))
     : [];
+  const t = useTranslations("lens");
+  const priorityLabel = (priority: Finding["priority"]) => t(priorityLabelKeys[priority ?? "medium"]);
   return (
     <Sheet
       open={!!finding}
@@ -45,40 +48,37 @@ export function LensFinding({
             <SheetHeader>
               <SheetTitle className="pr-8 text-xl leading-snug">{finding.title}</SheetTitle>
               <SheetDescription>
-                {finding.kind === "issue" ? `${finding.priority} priority` : "Pattern"} ·{" "}
-                {finding.occurrences?.length ?? 0} linked {finding.occurrences?.length === 1 ? "run" : "runs"}
+                {finding.kind === "issue" ? priorityLabel(finding.priority) : t("pattern")} ·{" "}
+                {t("linkedRuns", { count: finding.occurrences?.length ?? 0 })}
               </SheetDescription>
             </SheetHeader>
             <div className="space-y-6 p-4">
               <div>
-                <p className="mb-2 text-sm font-medium">What happened</p>
+                <p className="mb-2 text-sm font-medium">{t("whatHappened")}</p>
                 <p className="text-sm leading-6 whitespace-pre-wrap">{finding.description}</p>
               </div>
               {finding.suggestion && (
                 <div className="border-y py-4">
-                  <p className="text-sm font-medium">What to do next</p>
+                  <p className="text-sm font-medium">{t("whatToDoNext")}</p>
                   <p className="mt-2 text-sm leading-6">{finding.suggestion}</p>
                 </div>
               )}
               {finding.limitation && (
                 <details className="text-sm">
-                  <summary className="cursor-pointer font-medium">Evidence limits</summary>
+                  <summary className="cursor-pointer font-medium">{t("evidenceLimits")}</summary>
                   <p className="mt-3 leading-6 text-muted-foreground">{finding.limitation}</p>
                 </details>
               )}
               <div>
-                <p className="text-sm font-medium">Evidence by run</p>
-                <p className="mt-1 mb-3 text-xs text-muted-foreground">
-                  Exact quotes from the recorded activity. Counterexamples are labeled separately from supporting
-                  evidence.
-                </p>
+                <p className="text-sm font-medium">{t("evidenceByRun")}</p>
+                <p className="mt-1 mb-3 text-xs text-muted-foreground">{t("evidenceByRunHelp")}</p>
                 <div className="space-y-2">
                   {evidenceGroups.map((group) => (
                     <details key={group.id} className="rounded-lg border p-3">
                       <summary className="cursor-pointer text-sm font-medium">
-                        {group.run?.name ?? evidenceTarget(group.id)?.id.slice(0, 12) ?? "Recorded run"}
+                        {group.run?.name ?? evidenceTarget(group.id)?.id.slice(0, 12) ?? t("recordedRun")}
                         <span className="ml-2 text-xs font-normal text-muted-foreground">
-                          {group.quotes.length} {group.quotes.length === 1 ? "quote" : "quotes"}
+                          {t("quotes", { count: group.quotes.length })}
                           {group.run ? ` · ${runTime(group.run.start_time)}` : ""}
                         </span>
                       </summary>
@@ -86,7 +86,7 @@ export function LensFinding({
                         {group.quotes.map((e, i) => (
                           <div key={`${e.span_id}-${i}`} className="rounded-md bg-muted/40 p-3">
                             {e.role === "counterexample" && (
-                              <p className="mb-1 text-xs font-medium text-muted-foreground">Counterexample</p>
+                              <p className="mb-1 text-xs font-medium text-muted-foreground">{t("counterexample")}</p>
                             )}
                             <blockquote className="text-xs leading-5 whitespace-pre-wrap break-words">
                               {e.quote}
@@ -100,8 +100,8 @@ export function LensFinding({
                               }}
                             >
                               {evidenceTarget(e.execution_id)?.source === "traces"
-                                ? "Open original step"
-                                : "Open request"}
+                                ? t("openOriginalStep")
+                                : t("openRequest")}
                               <ArrowUpRight className="size-3" />
                             </Button>
                           </div>
@@ -114,25 +114,25 @@ export function LensFinding({
               {!readOnly && (
                 <div className="space-y-3 border-t pt-4">
                   <label className="grid gap-2 text-sm">
-                    What should Lens remember?
+                    {t("whatShouldLensRemember")}
                     <Textarea
                       value={reason}
                       onChange={(e) => onReason(e.target.value)}
-                      placeholder="What should Lens know about this finding?"
+                      placeholder={t("whatShouldLensKnow")}
                     />
                   </label>
-                  <p className="text-xs text-muted-foreground">Your explanation informs future scans of this Lens.</p>
+                  <p className="text-xs text-muted-foreground">{t("explanationInformsScans")}</p>
                   <div className="flex flex-wrap gap-2">
                     {finding.kind === "issue" && (
                       <Button
                         disabled={busy}
                         onClick={() => changeFinding(finding.status === "resolved" ? "open" : "resolved")}
                       >
-                        {finding.status === "resolved" ? "Reopen" : "Mark resolved"}
+                        {finding.status === "resolved" ? t("reopen") : t("markResolved")}
                       </Button>
                     )}
                     <Button disabled={busy} variant="outline" onClick={() => changeFinding("dismissed")}>
-                      This is expected
+                      {t("thisIsExpected")}
                     </Button>
                   </div>
                 </div>

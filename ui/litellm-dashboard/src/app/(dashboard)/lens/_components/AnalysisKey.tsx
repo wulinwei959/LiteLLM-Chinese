@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { apiClient } from "@/components/networking";
 import { SearchSelect } from "@/components/shared/SearchSelect";
 import { Input } from "@/components/ui/input";
+import type { LensTranslator } from "@/lib/i18n/translators";
 import { AnalysisKeyDetails } from "./AnalysisKeyDetails";
 import {
   Combobox,
@@ -31,6 +33,7 @@ export function AnalysisKey({
 }) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Key | null>(value ? { token: value } : null);
+  const t = useTranslations("lens");
 
   const queryOptions = {
     queryKey: ["lens-analysis-keys", accessToken, query],
@@ -71,11 +74,11 @@ export function AnalysisKey({
   };
   const choices = choice && !keys.some((key) => key.token === choice.token) ? [choice, ...keys] : keys;
   const items = keyPages.hasNextPage
-    ? [...choices, { token: "load-more", key_alias: loading ? "Loading…" : "Load more keys" }]
+    ? [...choices, { token: "load-more", key_alias: loading ? t("loadingEllipsis") : t("loadMoreKeys") }]
     : choices;
   return (
     <div className="space-y-2">
-      <p className="text-sm">Charge analysis to</p>
+      <p className="text-sm">{t("chargeAnalysisTo")}</p>
       <div className="flex flex-wrap items-start gap-2">
         <div className="min-w-0 flex-1">
           <Combobox
@@ -91,9 +94,9 @@ export function AnalysisKey({
             }}
             onValueChange={changeKey}
           >
-            <ComboboxInput aria-label="Charge analysis to" placeholder="Search existing keys" />
+            <ComboboxInput aria-label={t("chargeAnalysisTo")} placeholder={t("searchExistingKeys")} />
             <ComboboxContent>
-              <ComboboxEmpty>{loading ? "Loading keys…" : "No matching keys"}</ComboboxEmpty>
+              <ComboboxEmpty>{loading ? t("loadingKeys") : t("noMatchingKeys")}</ComboboxEmpty>
               <ComboboxList>
                 {(key: Key) => (
                   <ComboboxItem key={key.token} value={key}>
@@ -130,23 +133,24 @@ export function AnalysisAccessFields({
     queryKey: ["lens-models", accessToken],
     queryFn: () => apiClient.get<{ data: { id: string }[] }>("/models", { accessToken }),
   });
+  const t = useTranslations("lens");
   return (
     <div className="space-y-5">
       <div className="space-y-2">
         <label htmlFor="analysis-access-model" className="block text-sm font-medium">
-          Analysis model
+          {t("analysisModel")}
         </label>
         <SearchSelect
           inputId="analysis-access-model"
           options={(models.data?.data ?? []).map(({ id }) => ({ label: id, value: id }))}
           value={value.model}
           onValueChange={(model) => onChange({ ...value, model })}
-          placeholder={models.isLoading ? "Loading models…" : "Select a model"}
+          placeholder={models.isLoading ? t("loadingModels") : t("selectAModel")}
         />
       </div>
       <div className="space-y-2">
         <label htmlFor="analysis-access-budget" className="block text-sm font-medium">
-          Monthly limit (USD)
+          {t("monthlyLimitUsd")}
         </label>
         <Input
           id="analysis-access-budget"
@@ -156,7 +160,7 @@ export function AnalysisAccessFields({
           value={value.budget}
           onChange={(e) => onChange({ ...value, budget: e.target.value })}
         />
-        <p className="text-xs text-muted-foreground">Shared across all investigations.</p>
+        <p className="text-xs text-muted-foreground">{t("sharedAcrossInvestigations")}</p>
       </div>
       {models.error && (
         <p role="alert" className="text-sm text-destructive">
@@ -167,9 +171,13 @@ export function AnalysisAccessFields({
   );
 }
 
-export async function createAnalysisKey(accessToken: string, access: AnalysisAccess): Promise<string> {
+export async function createAnalysisKey(
+  accessToken: string,
+  access: AnalysisAccess,
+  t: LensTranslator,
+): Promise<string> {
   if (!access.model || !Number.isFinite(Number(access.budget)) || Number(access.budget) <= 0)
-    throw new Error("Choose a model and a monthly limit greater than zero");
+    throw new Error(t("chooseModelAndLimit"));
   const result = await apiClient.post("/key/generate", {
     accessToken,
     body: {
@@ -180,6 +188,6 @@ export async function createAnalysisKey(accessToken: string, access: AnalysisAcc
       metadata: { purpose: "lens" },
     },
   });
-  if (!result.token_id) throw new Error("The proxy did not return the new key's ID");
+  if (!result.token_id) throw new Error(t("missingKeyId"));
   return result.token_id;
 }

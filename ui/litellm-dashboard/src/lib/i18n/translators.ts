@@ -185,6 +185,11 @@ function useCostTrackingTranslator() {
 }
 export type CostTrackingTranslator = ReturnType<typeof useCostTrackingTranslator>;
 
+function useLensTranslator() {
+  return useTranslations("lens");
+}
+export type LensTranslator = ReturnType<typeof useLensTranslator>;
+
 function useCloudZeroTranslator() {
   return useTranslations("cloudZero");
 }
