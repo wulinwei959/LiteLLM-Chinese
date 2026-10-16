@@ -1,7 +1,9 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
+import { renderWithProviders } from "../../../tests/test-utils";
+import type { ToolPoliciesTranslator } from "@/lib/i18n/translators";
 import { getToolPoliciesTableColumns } from "./ToolPoliciesTableColumns";
 import type { ToolRow } from "@/components/networking";
 
@@ -46,12 +48,16 @@ function TableHarness({ columns, data }: { columns: ColumnDef<ToolRow>[]; data: 
   );
 }
 
+const t = ((key: string) => key) as unknown as ToolPoliciesTranslator;
+
 const renderTable = (deps = {}, data: ToolRow[] = [row]) =>
-  render(<TableHarness columns={getToolPoliciesTableColumns({ ...defaultDeps, ...deps })} data={data} />);
+  renderWithProviders(
+    <TableHarness columns={getToolPoliciesTableColumns({ ...defaultDeps, ...deps }, t)} data={data} />,
+  );
 
 describe("getToolPoliciesTableColumns", () => {
   it("defines the expected columns in order", () => {
-    const columns = getToolPoliciesTableColumns(defaultDeps);
+    const columns = getToolPoliciesTableColumns(defaultDeps, t);
 
     expect(columns.map((c) => c.id)).toEqual([
       "created_at",
@@ -88,7 +94,7 @@ describe("getToolPoliciesTableColumns", () => {
   it("renders a dash without a link when the discovering key has no owner", () => {
     renderTable({}, [{ ...row, user: null }]);
 
-    const userIndex = getToolPoliciesTableColumns(defaultDeps).findIndex((c) => c.id === "user");
+    const userIndex = getToolPoliciesTableColumns(defaultDeps, t).findIndex((c) => c.id === "user");
     const userCell = screen.getAllByRole("cell")[userIndex];
     expect(userCell).toHaveTextContent("-");
     expect(within(userCell).queryByRole("link")).not.toBeInTheDocument();
@@ -133,8 +139,8 @@ describe("getToolPoliciesTableColumns", () => {
   it("renders a policy control for each direction, showing the row's current policies", () => {
     renderTable();
 
-    expect(screen.getByText("untrusted")).toBeInTheDocument();
-    expect(screen.getByText("trusted")).toBeInTheDocument();
+    expect(screen.getByText("不受信任")).toBeInTheDocument();
+    expect(screen.getByText("受信任")).toBeInTheDocument();
     expect(screen.getAllByRole("combobox")).toHaveLength(2);
   });
 

@@ -1,7 +1,8 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderWithProviders } from "../../tests/test-utils";
 import { ToolDetail } from "./ToolDetail";
 import {
   deleteToolPolicyOverride,
@@ -55,7 +56,7 @@ const detail = {
 
 const renderDetail = (onBack = vi.fn()) => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
-  return render(
+  return renderWithProviders(
     <QueryClientProvider client={queryClient}>
       <ToolDetail toolName="search_docs" onBack={onBack} accessToken="tok" />
     </QueryClientProvider>,
@@ -88,10 +89,10 @@ describe("ToolDetail", () => {
   it("renders both policy panels with the tool's current policies", async () => {
     renderDetail();
 
-    expect(await screen.findByText("Input Policy")).toBeInTheDocument();
-    expect(screen.getByText("Output Policy")).toBeInTheDocument();
-    expect(screen.getByText("untrusted")).toBeInTheDocument();
-    expect(screen.getByText("trusted")).toBeInTheDocument();
+    expect(await screen.findByText("输入策略")).toBeInTheDocument();
+    expect(screen.getByText("输出策略")).toBeInTheDocument();
+    expect(screen.getByText("不受信任")).toBeInTheDocument();
+    expect(screen.getByText("受信任")).toBeInTheDocument();
   });
 
   it("uses the policy option descriptions when the backend supplies them", async () => {
@@ -110,7 +111,7 @@ describe("ToolDetail", () => {
     const onBack = vi.fn();
     renderDetail(onBack);
 
-    await userEvent.click(await screen.findByRole("button", { name: /Back to Tool Policies/ }));
+    await userEvent.click(await screen.findByRole("button", { name: /返回工具策略/ }));
 
     expect(onBack).toHaveBeenCalled();
   });
@@ -120,15 +121,15 @@ describe("ToolDetail", () => {
 
     renderDetail();
 
-    expect(await screen.findByText("Failed to load tool details.")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Back to Tool Policies/ })).toBeInTheDocument();
+    expect(await screen.findByText("无法加载工具详情。")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /返回工具策略/ })).toBeInTheDocument();
   });
 
   it("hides the overrides panel when the tool has none", async () => {
     renderDetail();
 
-    await screen.findByText("Input Policy");
-    expect(screen.queryByText("Blocked for team or key")).not.toBeInTheDocument();
+    await screen.findByText("输入策略");
+    expect(screen.queryByText("已为团队或密钥阻止")).not.toBeInTheDocument();
   });
 
   it("lists existing overrides and removes the chosen one", async () => {
@@ -147,7 +148,7 @@ describe("ToolDetail", () => {
     renderDetail();
 
     expect(await screen.findByText("Team: team-alpha")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Remove" }));
+    await userEvent.click(screen.getByRole("button", { name: "移除" }));
 
     await waitFor(() =>
       expect(deleteToolPolicyOverride).toHaveBeenCalledWith("tok", "search_docs", {
@@ -180,8 +181,8 @@ describe("ToolDetail", () => {
   it("switches the block scope to a key", async () => {
     renderDetail();
 
-    await screen.findByText("Block for team or key");
-    await userEvent.click(screen.getByRole("radio", { name: "Key" }));
+    await screen.findByText("为团队或密钥阻止");
+    await userEvent.click(screen.getByRole("radio", { name: "密钥" }));
 
     expect(await screen.findByRole("button", { name: /Block for key/ })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "pick team" })).not.toBeInTheDocument();

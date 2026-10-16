@@ -235,6 +235,11 @@ function useRoiCalculatorTranslator() {
 }
 export type RoiCalculatorTranslator = ReturnType<typeof useRoiCalculatorTranslator>;
 
+function useToolPoliciesTranslator() {
+  return useTranslations("toolPolicies");
+}
+export type ToolPoliciesTranslator = ReturnType<typeof useToolPoliciesTranslator>;
+
 function useRoutingGroupsTranslator() {
   return useTranslations("routingGroups");
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useMemo, useState } from "react";
 
 import useCan from "@/app/(dashboard)/hooks/useCan";
@@ -129,13 +130,15 @@ export const ToolPoliciesPanel: React.FC<ToolPoliciesPanelProps> = ({ accessToke
     });
   };
 
+  const t = useTranslations("toolPolicies");
+
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-semibold text-foreground mb-6">Tool Policies</h1>
+      <h1 className="text-2xl font-semibold text-foreground mb-6">{t("title")}</h1>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <MetricCard
-          label="New Today"
+          label={t("newToday")}
           value={newToday}
           valueColor="text-success"
           subtitle={trendSubtitle}
@@ -145,22 +148,19 @@ export const ToolPoliciesPanel: React.FC<ToolPoliciesPanelProps> = ({ accessToke
             </svg>
           }
         />
-        <MetricCard label="Total Tools Discovered" value={totalTools} />
+        <MetricCard label={t("totalToolsDiscovered")} value={totalTools} />
         <MetricCard
-          label="Blocked Tools"
+          label={t("blockedTools")}
           value={blockedCount}
           valueColor={blockedCount > 0 ? "text-destructive" : undefined}
         />
-        <MetricCard label="Active Teams" value={activeTeamsCount > 0 ? activeTeamsCount : "—"} />
+        <MetricCard label={t("activeTeams")} value={activeTeamsCount > 0 ? activeTeamsCount : "—"} />
       </div>
 
       {needsReviewTools.length > 0 && (
         <div className="bg-warning/10 border border-warning/20 rounded-lg p-4 mb-6">
-          <h2 className="text-sm font-semibold text-warning mb-1">Needs Review</h2>
-          <p className="text-sm text-warning mb-3">
-            {needsReviewTools.length} new tool{needsReviewTools.length !== 1 ? "s" : ""} discovered that require policy
-            decisions.
-          </p>
+          <h2 className="text-sm font-semibold text-warning mb-1">{t("needsReview")}</h2>
+          <p className="text-sm text-warning mb-3">{t("needsReviewBody", { count: needsReviewTools.length })}</p>
           <div className="flex flex-wrap gap-2">
             {needsReviewTools.map((tool) => (
               <span
@@ -175,7 +175,7 @@ export const ToolPoliciesPanel: React.FC<ToolPoliciesPanelProps> = ({ accessToke
                   onClick={() => scrollToToolRow(tool.tool_id)}
                   className="text-warning hover:text-warning/80 font-medium text-xs whitespace-nowrap"
                 >
-                  Review
+                  {t("review")}
                 </button>
               </span>
             ))}
@@ -188,7 +188,7 @@ export const ToolPoliciesPanel: React.FC<ToolPoliciesPanelProps> = ({ accessToke
           className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-sm text-sm text-destructive"
           role="alert"
         >
-          {toMessage(query.error, "Failed to load tools")}
+          {toMessage(query.error, t("loadToolsFailed"))}
         </div>
       )}
 

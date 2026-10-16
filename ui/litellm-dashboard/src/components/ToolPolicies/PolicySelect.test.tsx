@@ -1,30 +1,18 @@
 import { renderWithProviders, screen } from "../../../tests/test-utils";
+import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
-import { PolicySelect, policyStyle, INPUT_POLICY_OPTIONS, OUTPUT_POLICY_OPTIONS } from "./PolicySelect";
-
-describe("policyStyle", () => {
-  it("should return the matching option for a known policy", () => {
-    expect(policyStyle("trusted")).toEqual(INPUT_POLICY_OPTIONS[1]);
-  });
-
-  it("should return the matching option for blocked", () => {
-    expect(policyStyle("blocked")).toEqual(INPUT_POLICY_OPTIONS[2]);
-  });
-
-  it("should return the first option as fallback for unknown policy", () => {
-    expect(policyStyle("unknown")).toEqual(INPUT_POLICY_OPTIONS[0]);
-  });
-});
+import { PolicySelect, inputPolicyOptions, outputPolicyOptions } from "./PolicySelect";
 
 describe("PolicySelect", () => {
-  it("should render", () => {
+  it("should render the translated label of the selected policy", () => {
     renderWithProviders(<PolicySelect value="untrusted" toolName="test-tool" saving={false} onChange={vi.fn()} />);
-    expect(screen.getByText("untrusted")).toBeInTheDocument();
+    expect(screen.getByText("不受信任")).toBeInTheDocument();
   });
 
-  it("should show the current policy value", () => {
+  it("should expose the raw policy value so callers never depend on the label language", () => {
     renderWithProviders(<PolicySelect value="trusted" toolName="test-tool" saving={false} onChange={vi.fn()} />);
-    expect(screen.getByText("trusted")).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toHaveAttribute("data-policy", "trusted");
+    expect(screen.getByText("受信任")).toBeInTheDocument();
   });
 
   it("should be disabled when saving is true", () => {
@@ -39,13 +27,37 @@ describe("PolicySelect", () => {
   });
 });
 
-describe("Policy option constants", () => {
-  it("should have 3 input policy options", () => {
-    expect(INPUT_POLICY_OPTIONS).toHaveLength(3);
+describe("policy option list", () => {
+  it("should offer untrusted, trusted and blocked as input policies", async () => {
+    renderWithProviders(<PolicySelect value="untrusted" toolName="test-tool" saving={false} onChange={vi.fn()} />);
+    await userEvent.click(screen.getByRole("combobox"));
+
+    expect(screen.getByRole("option", { name: "不受信任" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "受信任" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "已阻止" })).toBeInTheDocument();
   });
 
-  it("should have 2 output policy options (no blocked)", () => {
-    expect(OUTPUT_POLICY_OPTIONS).toHaveLength(2);
-    expect(OUTPUT_POLICY_OPTIONS.map((o) => o.value)).toEqual(["untrusted", "trusted"]);
+  it("should not offer blocked as an output policy", async () => {
+    renderWithProviders(
+      <PolicySelect value="untrusted" toolName="test-tool" saving={false} onChange={vi.fn()} policyType="output" />,
+    );
+    await userEvent.click(screen.getByRole("combobox"));
+
+    expect(screen.getByRole("option", { name: "不受信任" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "受信任" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "已阻止" })).not.toBeInTheDocument();
+  });
+});
+
+describe("policy option helpers", () => {
+  it("should keep the wire values stable regardless of locale", () => {
+    const fakeT = ((key: string) => key) as never;
+
+    expect(inputPolicyOptions(fakeT)).toEqual([
+      { value: "untrusted", label: "policyUntrusted", dot: "bg-warning" },
+      { value: "trusted", label: "policyTrusted", dot: "bg-success" },
+      { value: "blocked", label: "policyBlocked", dot: "bg-destructive" },
+    ]);
+    expect(outputPolicyOptions(fakeT).map((option) => option.value)).toEqual(["untrusted", "trusted"]);
   });
 });

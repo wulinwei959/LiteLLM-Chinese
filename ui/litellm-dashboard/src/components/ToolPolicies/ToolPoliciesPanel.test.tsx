@@ -71,15 +71,12 @@ const policySelect = (toolId: string, kind: "input" | "output"): HTMLElement =>
   within(row(toolId)).getAllByRole("combobox")[kind === "input" ? 0 : 1];
 
 /**
- * Exact selected-value text, read off the policy cell and stripped of anything
- * that is not a letter (the control draws a status dot and a chevron around the
- * label). Never assert with toHaveTextContent here: it substring-matches, so
- * "untrusted" satisfies "trusted".
+ * The wire value the control currently holds, read from the data attribute
+ * rather than the label: labels are translated, so text matching would tie the
+ * assertion to the locale and would substring-match "untrusted" as "trusted".
  */
-const policyValue = (toolId: string, kind: "input" | "output"): string => {
-  const cell = policySelect(toolId, kind).closest("td");
-  return (cell?.textContent ?? "").replace(/[^a-z]/gi, "");
-};
+const policyValue = (toolId: string, kind: "input" | "output"): string =>
+  policySelect(toolId, kind).getAttribute("data-policy") ?? "";
 
 const isSaving = (toolId: string, kind: "input" | "output"): boolean =>
   policySelect(toolId, kind).hasAttribute("disabled");
@@ -191,7 +188,7 @@ describe("ToolPoliciesPanel inline policy editing", () => {
     renderPanel();
     await waitForRows();
 
-    await chooseSelectOption(user, policySelect("tool-1", "input"), "trusted");
+    await chooseSelectOption(user, policySelect("tool-1", "input"), "受信任");
 
     expect(updateToolPolicy).toHaveBeenCalledWith("sk-token", "get_weather", { input_policy: "trusted" });
     await waitFor(() => expect(policyValue("tool-1", "input")).toBe("trusted"));
@@ -203,7 +200,7 @@ describe("ToolPoliciesPanel inline policy editing", () => {
     renderPanel();
     await waitForRows();
 
-    await chooseSelectOption(user, policySelect("tool-1", "output"), "trusted");
+    await chooseSelectOption(user, policySelect("tool-1", "output"), "受信任");
 
     expect(updateToolPolicy).toHaveBeenCalledWith("sk-token", "get_weather", { output_policy: "trusted" });
   });
@@ -214,8 +211,8 @@ describe("ToolPoliciesPanel inline policy editing", () => {
     renderPanel();
     await waitForRows();
 
-    await chooseSelectOption(user, policySelect("tool-1", "input"), "trusted");
-    await chooseSelectOption(user, policySelect("tool-2", "input"), "blocked");
+    await chooseSelectOption(user, policySelect("tool-1", "input"), "受信任");
+    await chooseSelectOption(user, policySelect("tool-2", "input"), "已阻止");
 
     expect(isSaving("tool-2", "input")).toBe(true);
     expect(isSaving("tool-1", "input")).toBe(true);
@@ -230,8 +227,8 @@ describe("ToolPoliciesPanel inline policy editing", () => {
     renderPanel();
     await waitForRows();
 
-    await chooseSelectOption(user, policySelect("tool-1", "input"), "trusted");
-    await chooseSelectOption(user, policySelect("tool-2", "input"), "blocked");
+    await chooseSelectOption(user, policySelect("tool-1", "input"), "受信任");
+    await chooseSelectOption(user, policySelect("tool-2", "input"), "已阻止");
     await act(async () => {
       finishFirst();
     });
@@ -251,7 +248,7 @@ describe("ToolPoliciesPanel inline policy editing", () => {
       () => new Promise<ToolRow[]>((resolve) => (landStaleRefresh = () => resolve(TOOLS))),
     );
     await user.click(screen.getByTestId("datatable-refresh"));
-    await chooseSelectOption(user, policySelect("tool-1", "input"), "trusted");
+    await chooseSelectOption(user, policySelect("tool-1", "input"), "受信任");
     await waitFor(() => expect(policyValue("tool-1", "input")).toBe("trusted"));
 
     await act(async () => {
@@ -270,7 +267,7 @@ describe("ToolPoliciesPanel inline policy editing", () => {
     renderPanel();
     await waitForRows();
 
-    await chooseSelectOption(user, policySelect("tool-1", "input"), "trusted");
+    await chooseSelectOption(user, policySelect("tool-1", "input"), "受信任");
 
     await waitFor(() => expect(fromBackend).toHaveBeenCalledWith("Failed to update input policy: nope"));
     expect(policyValue("tool-1", "input")).toBe("untrusted");
@@ -282,7 +279,7 @@ describe("ToolPoliciesPanel inline policy editing", () => {
     renderPanel();
     await waitForRows();
 
-    await chooseSelectOption(user, policySelect("tool-1", "input"), "trusted");
+    await chooseSelectOption(user, policySelect("tool-1", "input"), "受信任");
 
     await waitFor(() => expect(isSaving("tool-1", "input")).toBe(true));
     expect(isSaving("tool-1", "output")).toBe(false);
@@ -301,10 +298,10 @@ describe("ToolPoliciesPanel header chrome", () => {
       return card as HTMLElement;
     };
 
-    expect(metric("Total Tools Discovered")).toHaveTextContent("3");
-    expect(metric("Blocked Tools")).toHaveTextContent("1");
-    expect(metric("Active Teams")).toHaveTextContent("2");
-    expect(metric("New Today")).toHaveTextContent("1");
+    expect(metric("已发现工具总数")).toHaveTextContent("3");
+    expect(metric("已阻止工具")).toHaveTextContent("1");
+    expect(metric("活跃团队")).toHaveTextContent("2");
+    expect(metric("今日新增")).toHaveTextContent("1");
   });
 
   it("should list only today's untrusted tools for review and scroll to the row", async () => {
@@ -312,12 +309,12 @@ describe("ToolPoliciesPanel header chrome", () => {
     renderPanel();
     await waitForRows();
 
-    const banner = screen.getByText("Needs Review").closest("div");
+    const banner = screen.getByText("需要复核").closest("div");
     if (banner === null) throw new Error("needs review banner missing");
-    expect(banner).toHaveTextContent("1 new tool discovered");
+    expect(banner).toHaveTextContent("发现 1 个新工具，需要做出策略决定。");
     expect(within(banner as HTMLElement).queryByText("delete_file")).not.toBeInTheDocument();
 
-    await user.click(within(banner as HTMLElement).getByRole("button", { name: "Review" }));
+    await user.click(within(banner as HTMLElement).getByRole("button", { name: "复核" }));
 
     expect(row("tool-1").scrollIntoView).toHaveBeenCalled();
   });
@@ -327,6 +324,6 @@ describe("ToolPoliciesPanel header chrome", () => {
     renderPanel();
     await waitForRows();
 
-    expect(screen.queryByText("Needs Review")).not.toBeInTheDocument();
+    expect(screen.queryByText("需要复核")).not.toBeInTheDocument();
   });
 });

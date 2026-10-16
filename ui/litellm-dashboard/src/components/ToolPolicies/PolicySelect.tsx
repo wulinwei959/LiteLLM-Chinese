@@ -1,23 +1,33 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/cva.config";
 
-export const INPUT_POLICY_OPTIONS = [
-  { value: "untrusted", label: "untrusted", dot: "bg-warning" },
-  { value: "trusted", label: "trusted", dot: "bg-success" },
-  { value: "blocked", label: "blocked", dot: "bg-destructive" },
+type PolicyTranslator = ReturnType<typeof useTranslations<"toolPolicies">>;
+
+const INPUT_POLICY_DEFS = [
+  { value: "untrusted", labelKey: "policyUntrusted", dot: "bg-warning" },
+  { value: "trusted", labelKey: "policyTrusted", dot: "bg-success" },
+  { value: "blocked", labelKey: "policyBlocked", dot: "bg-destructive" },
 ] as const;
 
-export const OUTPUT_POLICY_OPTIONS = [
-  { value: "untrusted", label: "untrusted", dot: "bg-warning" },
-  { value: "trusted", label: "trusted", dot: "bg-success" },
+const OUTPUT_POLICY_DEFS = [
+  { value: "untrusted", labelKey: "policyUntrusted", dot: "bg-warning" },
+  { value: "trusted", labelKey: "policyTrusted", dot: "bg-success" },
 ] as const;
 
-export const POLICY_OPTIONS = INPUT_POLICY_OPTIONS;
+export type PolicyOption = { value: string; label: string; dot: string };
 
-export const policyStyle = (p: string) => INPUT_POLICY_OPTIONS.find((o) => o.value === p) ?? INPUT_POLICY_OPTIONS[0];
+export const inputPolicyOptions = (t: PolicyTranslator): PolicyOption[] =>
+  INPUT_POLICY_DEFS.map(({ value, labelKey, dot }) => ({ value, label: t(labelKey), dot }));
+
+export const outputPolicyOptions = (t: PolicyTranslator): PolicyOption[] =>
+  OUTPUT_POLICY_DEFS.map(({ value, labelKey, dot }) => ({ value, label: t(labelKey), dot }));
+
+const policyDot = (value: string): string =>
+  INPUT_POLICY_DEFS.find((option) => option.value === value)?.dot ?? INPUT_POLICY_DEFS[0].dot;
 
 export interface PolicySelectProps {
   value: string;
@@ -39,16 +49,23 @@ export const PolicySelect: React.FC<PolicySelectProps> = ({
   size = "small",
   stopPropagation = true,
 }) => {
-  const options = policyType === "output" ? OUTPUT_POLICY_OPTIONS : INPUT_POLICY_OPTIONS;
-  const selected = policyStyle(value);
+  const t = useTranslations("toolPolicies");
+  const options = policyType === "output" ? outputPolicyOptions(t) : inputPolicyOptions(t);
+  const selectedDot = policyDot(value);
   return (
-    <Select value={value} disabled={saving} onValueChange={(v: string | null) => v !== null && onChange(toolName, v)}>
+    <Select
+      items={options.map((option) => ({ value: option.value, label: option.label }))}
+      value={value}
+      disabled={saving}
+      onValueChange={(v: string | null) => v !== null && onChange(toolName, v)}
+    >
       <SelectTrigger
         size={size === "small" ? "sm" : "default"}
         className="w-auto min-w-28"
+        data-policy={value}
         onClick={(e) => stopPropagation && e.stopPropagation()}
       >
-        <span className={cn("size-2 shrink-0 rounded-full", selected.dot)} />
+        <span className={cn("size-2 shrink-0 rounded-full", selectedDot)} />
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

@@ -124,7 +124,7 @@ describe("ToolPoliciesTable filters", () => {
     renderTable();
 
     await user.click(screen.getByTestId("datatable-filters-trigger"));
-    await pickFilter(user, "filter-input-policy", "trusted");
+    await pickFilter(user, "filter-input-policy", "受信任");
     await user.click(screen.getByTestId("filter-drawer-apply"));
 
     await waitFor(() => expect(rowIds()).toEqual(["tool-2"]));
@@ -143,10 +143,10 @@ describe("ToolPoliciesTable filters", () => {
   });
 
   it.each([
-    ["filter-input-policy", "All Input Policies"],
-    ["filter-output-policy", "All Output Policies"],
-    ["filter-team", "All Teams"],
-    ["filter-key-alias", "All Keys"],
+    ["filter-input-policy", "全部输入策略"],
+    ["filter-output-policy", "全部输出策略"],
+    ["filter-team", "全部团队"],
+    ["filter-key-alias", "全部密钥"],
   ])("should show the human label on the %s trigger while unfiltered", async (testId, label) => {
     const user = userEvent.setup();
     renderTable();
@@ -164,7 +164,7 @@ describe("ToolPoliciesTable filters", () => {
     await user.click(screen.getByTestId("filter-team"));
 
     const teams = (await screen.findAllByRole("option")).map((option) => option.textContent);
-    expect(teams).toEqual(["All Teams", "team-alpha", "team-beta"]);
+    expect(teams).toEqual(["全部团队", "team-alpha", "team-beta"]);
   });
 });
 
