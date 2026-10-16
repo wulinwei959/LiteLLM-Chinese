@@ -9701,5 +9701,18 @@
     "exportCloudZeroSuccess": "导出到 CloudZero 已成功完成",
     "loadFailedDetail": "加载已有设置失败：{msg}",
     "unknownError": "未知错误"
+  },
+  "scim": {
+    "loginRequired": "您需要登录后才能创建 SCIM 令牌",
+    "created": "SCIM 令牌创建成功",
+    "createFailed": "创建 SCIM 令牌失败：",
+    "title": "SCIM 配置",
+    "urlCopied": "地址已复制到剪贴板",
+    "usingScim": "使用 SCIM",
+    "tokenName": "令牌名称",
+    "accessToken": "SCIM 访问令牌",
+    "yourToken": "您的 SCIM 令牌",
+    "tokenCopied": "令牌已复制到剪贴板",
+    "createButton": "创建 SCIM 令牌"
   }
 }

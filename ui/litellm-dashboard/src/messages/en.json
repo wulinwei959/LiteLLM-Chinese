@@ -9705,5 +9705,18 @@
     "exportCloudZeroSuccess": "Export to CloudZero completed successfully",
     "loadFailedDetail": "Failed to load existing settings: {msg}",
     "unknownError": "Unknown error"
+  },
+  "scim": {
+    "loginRequired": "You need to be logged in to create a SCIM token",
+    "created": "SCIM token created successfully",
+    "createFailed": "Failed to create SCIM token: ",
+    "title": "SCIM Configuration",
+    "urlCopied": "URL copied to clipboard",
+    "usingScim": "Using SCIM",
+    "tokenName": "Token Name",
+    "accessToken": "SCIM Access Token",
+    "yourToken": "Your SCIM Token",
+    "tokenCopied": "Token copied to clipboard",
+    "createButton": "Create SCIM Token"
   }
 }
