@@ -1,6 +1,51 @@
 # 开发进度
 
-数据快照 2026-10-16，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 86 簇后（非测试 `.tsx` 912 个接入 505 个、55.4%，目录叶子 7821、中英同值 93；本簇按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例是 `LensSetup` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言必挂（夹具 `2026-09-30 18:00:00.000` 归一为 UTC 后被 +8 推到 `2026-10-01`），本地单跑 1 failed|18 passed、`TZ=UTC` 单跑 19 例全绿；第 84 簇另曾见 `EntityUsage`、`mcp_server_edit`、`KeyActivityPanel` 各 1 例并发抖动，本簇四片未复现；第 81 簇那 `cost_tracking_settings` 7 例与 shard 1 偶发的"saves a discovered agent independently of the application name"本簇亦未复现，第 67、72、76、77、80 簇四片里曾多报 `LensSetup` 的日期或按钮断言，故继续记为时区/并发相关的上游既有抖动，第 68、69、70、71、73、74、75、76、77、78、79、81 簇的四片里未出现；例数与第 84 簇持平，本簇未增删用例）。最新的测试统计是第 55 簇后的一次全量（886 文件 11577 例、27 失败 + 9 例预期失败，27 例落在 12 个测试文件上：19 例是已汉化组件的英文断言欠账、已在随后的清扫里改绿，8 例经与上游快照比对确认不是汉化欠账，明细见"## 2026-10-15 第 55 簇后的全量快照"与"## 2026-10-15 断言欠账清扫"），上一次全量是第 53 簇后（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），再上一次是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+数据快照 2026-10-16，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 90 簇后（非测试 `.tsx` 912 个接入 510 个、55.9%，目录叶子 7928、中英同值 97；第 87 到 90 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例是 `LensSetup` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言必挂（夹具 `2026-09-30 18:00:00.000` 归一为 UTC 后被 +8 推到 `2026-10-01`），本地单跑 1 failed|18 passed、`TZ=UTC` 单跑 19 例全绿；第 84 簇另曾见 `EntityUsage`、`mcp_server_edit`、`KeyActivityPanel` 各 1 例并发抖动，本簇四片未复现；第 81 簇那 `cost_tracking_settings` 7 例与 shard 1 偶发的"saves a discovered agent independently of the application name"本簇亦未复现，第 67、72、76、77、80 簇四片里曾多报 `LensSetup` 的日期或按钮断言，故继续记为时区/并发相关的上游既有抖动，第 68、69、70、71、73、74、75、76、77、78、79、81 簇的四片里未出现；例数与第 84 簇持平，本簇未增删用例）。最新的测试统计是第 55 簇后的一次全量（886 文件 11577 例、27 失败 + 9 例预期失败，27 例落在 12 个测试文件上：19 例是已汉化组件的英文断言欠账、已在随后的清扫里改绿，8 例经与上游快照比对确认不是汉化欠账，明细见"## 2026-10-15 第 55 簇后的全量快照"与"## 2026-10-15 断言欠账清扫"），上一次全量是第 53 簇后（886 文件 11577 例、56 失败 + 9 例预期失败，明细见"## 2026-10-15 第 53 簇更新"），再上一次是第 18 簇后（886 文件 11576 例、57 失败，无一在 `view_logs`，多出的三个文件单跑全绿），第 19 到 32 簇只复跑了 `view_logs` + `src/lib/i18n`（52 文件 671 例，第 25、26、27、28、29、30、31、32 簇未增删用例；第 20、21、22 簇另跑 `add_model`，均为 94 文件 1672 例），第 33 簇起把 `chat` + `app/chat` + `app/connect` 并进复跑范围（67 文件 749 例，第 34 簇未增删用例），第 35 簇起再把 `components/liteadmin` 并入（70 文件 861 例，第 35、36、37、38、39、40、41 簇未增删用例），第 42 簇起再把 `components/AIHub` 并入（79 文件 978 例，第 42、43、44、45、46、47、48、49 簇未增删用例；第 50 簇在 `ModelHubTable.test.tsx` 补了 1 例模型详情弹窗，为 979 例；第 51、52 簇未增删用例），"批次 24：add_model 与 edit_auto_router"一节的 11576 例 / 54 失败是它的前一次，"### 修复后的复核"的 11308 例 / 1 失败与 `## 测试状态` 的表格都是更早的快照，保留用于对照起点
+
+## 2026-10-16 第 90 簇更新
+
+批次 24 第 90 簇：`components/Settings/AdminSettings/MCPToolSearchSettings/MCPToolSearchSettings.tsx`，MCP 服务器页里"原生 MCP 工具搜索"的设置面板（嵌入模型、Top K、相似度阈值与核心工具四组旋钮），收口后 `Settings/AdminSettings/` 家族只剩已接入的目录。4 文件 +53/−29（`en.json` +22/−0、`zh-CN.json` +22/−0、组件 +21/−29、测试 +10/−9）
+
+- `adminPanel.mcpToolSearch` 20 键，全为净新：登录提示、加载失败标题、说明标题与正文、`Ranking`/`Core Tools` 两张卡片标题、四个字段的标签与提示、模型下拉三态文案、保存按钮与更新成功 toast；目录叶子 7908→7928（+20），中英同值 97 不变
+- `toolSearchForm.ts` 是纯逻辑（`parseCoreTools`/`clampTopK`/`storedValuesToForm`/`formToPayload`）无用户可见文案，未改动，故本簇只动一个组件
+- 说明正文含 `<code>mcp_tool_search</code>`，走 `t.rich` 的 `code` 渲染器；正文里的 `"FX"` 与 `"foreign exchange rates"` 是直引号（JSX 里原为 `&quot;`），在 ICU 中非特殊字符，经 `intl-messageformat` 实跑确认英文逐字还原
+- 单测从裸 `render` 换成 `renderWithProviders`（`/top k results/i`→`/Top K 结果数/i`、`/always returned first/i`→`/始终优先返回/`、`/save settings/i`→`/保存设置/`、`/please log in/i`→`/请登录/`，`Database not connected` 属数据保留）；例数 8 未增删
+- 验证：定向 `MCPToolSearchSettings/` 与 `src/lib/i18n` 共 5 文件 24 例通过；消费者 `mcp_servers.test.tsx` 与 `MCPToolSearchSettings.test.tsx` 共 33 例通过；`tsc --noEmit` 非测试文件 0 错；eslint 改动文件零告警；prettier 改动文件全净；`npm run build` 退出 0；按 `WORKFLOW.md` 第六步未跑全量
+- 指标：非测试 `.tsx` 912 接入 509→510（55.9%，`MCPToolSearchSettings.tsx` 新挂 `useTranslations`）；目录叶子 7908→7928（+20）；中英同值 97 不变
+
+## 2026-10-16 第 89 簇更新
+
+批次 24 第 89 簇：`components/Settings/AdminSettings/MCPSemanticFilterSettings/`，MCP 服务器页里"语义工具过滤"的三处（设置组件、测试面板、测试工具函数），是本家族里唯一多文件且有非组件模块的一簇。8 文件 +241/−159（`en.json` +54/−0、`zh-CN.json` +54/−0、`MCPSemanticFilterSettings.tsx` +36/−25、`MCPSemanticFilterSettings.test.tsx` +24/−23、`MCPSemanticFilterTestPanel.tsx` +33/−22、`MCPSemanticFilterTestPanel.test.tsx` +41/−36、`semanticFilterTestUtils.ts` +8/−5、`semanticFilterTestUtils.test.ts` +11/−6）
+
+- `adminPanel.mcpSemanticFilter` 46 键，按 `settings`（21）/`testPanel`（21）/`toast`（4）三段：设置区覆盖登录提示、加载与更新失败标题、保存成功标题、说明正文、`Configuration` 卡片、四个字段的标签与提示、模型下拉三态文案、保存按钮与更新成功 toast；测试面板覆盖标题、两个页签、测试查询、模型选择、`Test Filter` 按钮、禁用与未运行告警、`{selected} of {total} tools selected`/`{count} tools filtered out`/`+{count} more...` 三条带参、`API Usage` 正文与响应头示例；toast 四句供工具函数消费。目录叶子 7862→7908（+46），中英同值 97 不变
+- `semanticFilterTestUtils.ts` 的 `runSemanticFilterTest` 按"非组件模块纯函数"约定（第 55、62、73 簇）新增 `t: AdminPanelTranslator` 入参，四句 toast 与兜底错误消息走目录；`getCurlCommand` 生成的 curl 片段属技术示例，保持英文（含 `Your query here`/`your-master-key` 占位）
+- `SaveSuccessAlert` 是模块作用域里的 React 函数组件，在自身函数体内挂 `useTranslations("adminPanel")` 与 `useTranslations("common")`（第 84 簇记的"组件挂 hook 合法、纯函数才走首参约定"），关闭按钮 `aria-label="Close"` 复用 `common.close`
+- 英文原文逐字可证：脚本比对 HEAD 组件的字符串字面量与 `en.json` 新值，`Settings updated successfully...`/说明正文等逐一命中；ICU 实跑核对三条带参消息
+- 单测：设置与测试面板从裸 `render` 换成 `renderWithProviders`、断言换中文；utils 测试改用 `createTranslator({ locale: "zh-CN", messages: zh, namespace: "adminPanel" })` 读真实 zh 目录并把 `t` 传进 `runSemanticFilterTest`，四句断言换中文；三文件共 64 例通过，例数未增删
+- 验证：定向 `MCPSemanticFilterSettings/` 与 `src/lib/i18n` 共 6 文件 64 例通过；消费者 `mcp_servers.test.tsx` 30 例通过；`tsc --noEmit` 非测试文件 0 错；eslint 组件两条 `no-large-inline-object-arg` warning 与 HEAD 逐条一致（同一对象、阈值 4 未变）、测试文件 warning 均既有；prettier 改动文件全净；`npm run build` 退出 0；按 `WORKFLOW.md` 第六步未跑全量
+- 指标：非测试 `.tsx` 912 接入 507→509（55.7%→55.9%，`MCPSemanticFilterSettings.tsx` 与 `MCPSemanticFilterTestPanel.tsx` 各新挂 `useTranslations`）；目录叶子 7862→7908（+46）；中英同值 97 不变
+
+## 2026-10-16 第 88 簇更新
+
+批次 24 第 88 簇：`components/Settings/AdminSettings/WebSearchInterceptionSettings/WebSearchInterceptionSettings.tsx`，管理面板"网页搜索拦截"页签（导航拦截开关、拦截提供商、搜索工具与最大智能体循环四组旋钮，外加未在本 pod 生效的告警）。4 文件 +56/−46（`en.json` +20/−0、`zh-CN.json` +20/−0、组件 +22/−33、测试 +14/−13）
+
+- `adminPanel.webSearchInterception` 18 键，全为净新：登录提示、加载与更新失败标题、四个字段的标签与提示、两个下拉占位、保存按钮、更新成功 toast、未生效告警的标题与正文、顶部说明正文；信息告警标题复用既有 `tabWebSearch`（同值同义，避免新键）。目录叶子 7844→7862（+18），中英同值 97 不变
+- 正文里的 `'Save Settings'` 与 `that proxy's` 直写单引号即可（`'` 后跟非特殊字符按字面量），经 `intl-messageformat` 实跑确认英文渲染与源串逐字一致；中文把 `'Save Settings'` 用全角引号包裹
+- 后端 `field_schema` 的 `description` 属数据不接键（第 85 簇同一约定），只翻组件内兜底文案
+- 单测从裸 `render` 换成 `renderWithProviders`（`Web Search Interception`→`网页搜索拦截`、`/please log in/i`→`/请登录/`、`/save settings/i`→`/保存设置/`、`/max agentic loops/i`→`/最大智能体循环次数/`、`/has not applied it/i`→`/尚未应用/`）；`rerender` 保持 RTL 原样（脚本首版把 `rerender(<...>)` 里的子串一并换成 `renderWithProviders` 致 provider 重复，已改回）；例数 27 未增删
+- 验证：定向 `WebSearchInterceptionSettings.test.tsx` 与 `src/lib/i18n` 共 4 文件 27 例通过；`tsc --noEmit` 非测试文件 0 错；eslint 测试文件 12 条 `no-explicit-any` warning 与 HEAD 逐条一致（行号相同）、组件零告警；prettier 改动文件全净；`npm run build` 退出 0；按 `WORKFLOW.md` 第六步未跑全量
+- 指标：非测试 `.tsx` 912 接入 506→507（55.5%→55.6%，`WebSearchInterceptionSettings.tsx` 新挂 `useTranslations`）；目录叶子 7844→7862（+18）；中英同值 97 不变
+
+## 2026-10-16 第 87 簇更新
+
+批次 24 第 87 簇：`components/Settings/AdminSettings/PluginSettings/`，管理面板"插件"页签（插件表、新增/编辑弹窗与密钥显隐，含 zod 校验 schema）。5 文件 +130/−65（`en.json` +25/−0、`zh-CN.json` +25/−0、`PluginSettings.tsx` +54/−32、`PluginSettings.integration.test.tsx` +23/−22、`schema.ts` +14/−11）
+
+- `adminPanel.pluginSettings` 23 键，全为净新：卡片标题与说明（说明里的 `<code>GET /api/plugin-manifest</code>` 走 `t.rich`）、增改插件弹窗标题、表格列头与表单标签、编辑与删除按钮的带参 aria、三处字段说明与占位、密钥显隐按钮的 aria，以及 zod 文案 `required`/`invalidUrl`；`Cancel`/`Save` 复用 `common.cancel`/`common.save`，`Name`/`Actions` 复用 `common.name`/`common.actions`，`No data` 复用 `common.noDataShort`。目录叶子 7821→7844（+23），中英同值 93→97（+4：`namePlaceholder`/`displayNamePlaceholder`/`url`/`urlPlaceholder` 属示例标识符与缩写）
+- `schema.ts` 从模块级 `pluginSchema` 改成 `buildPluginSchema(t: AdminPanelTranslator)` 工厂，校验消息走目录；保留具名 `pluginShape` 以免触发 `no-large-inline-object-arg`（阈值 4）
+- `plugin_key` 说明里的 `<key>`/`<name>` 用单引号转义为 ICU 字面量，经 `intl-messageformat` 实跑确认渲染为 `<key>`/`<name>`（`'` 后跟 `<` 触发引用）
+- 集成测试从裸 `render` 换成 `renderWithProviders`并改中文断言；密钥标签查询改用精确串 `"插件密钥"`，以避开 `"显示插件密钥"`/`"隐藏插件密钥"` 的子串碰撞（`getByLabelText` 会同时匹配 `aria-label`）；例数 7 未增删
+- 验证：定向 `PluginSettings.integration.test.tsx` 与 `src/lib/i18n` 共 4 文件 20 例通过；消费者 `AdminPanel.test.tsx` 25 例通过；`tsc --noEmit` 非测试文件 0 错；eslint 组件与 schema 零告警（具名 `pluginShape` 后）、测试零告警；prettier 改动文件全净；`npm run build` 退出 0；按 `WORKFLOW.md` 第六步未跑全量
+- 指标：非测试 `.tsx` 912 接入 505→506（55.4%→55.5%，`PluginSettings.tsx` 新挂 `useTranslations`）；目录叶子 7821→7844（+23）；中英同值 93→97
 
 ## 2026-10-16 第 86 簇更新
 

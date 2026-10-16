@@ -387,6 +387,16 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-16 第 87-90 簇：子串碰撞的标签查询、非组件工具的翻译入参、`render(` 全局替换误伤 `rerender(`
+
+`Settings/AdminSettings/` 家族最后四个目录（`PluginSettings`、`WebSearchInterceptionSettings`、`MCPSemanticFilterSettings`、`MCPToolSearchSettings`）收口时踩到三条：
+
+- **`getByLabelText(regex)` 会同时命中 `aria-label`，当心子串碰撞**。`PluginSettings` 的密钥字段 `<label>插件密钥</label>` 与显隐按钮 `aria-label="显示插件密钥"`/`"隐藏插件密钥"` 都含"插件密钥"，`getByLabelText(/插件密钥/)` 报 `Found multiple elements`（`getByLabelText` 按子串匹配正则，且把 `aria-label` 也算作标签）。英文原文 `Plugin Key` 与 `Show plugin key` 因大小写不同没这问题，译成中文后子串关系才暴露。修法是把查询改成精确串 `getByLabelText("插件密钥")`（字符串按全等匹配）或锚定正则 `/^插件密钥$/`。同理要留意任何"字段名是另一个按钮名子串"的标签
+- **非组件模块的 toast 文案接翻译，用入参加 `t`，测试用 `createTranslator` 读真实目录**。`semanticFilterTestUtils.ts` 的 `runSemanticFilterTest` 不是 React 组件、不能挂 hook，按第 55/62/73 簇的首参翻译器约定给它加 `t: AdminPanelTranslator` 入参（本函数收单个 options 对象，就加进对象里）。类型取 `lib/i18n/translators` 的具体 translator（`AdminPanelTranslator`），别用裸 `ReturnType<typeof useTranslations>`。单测里用 `createTranslator({ locale: "zh-CN", messages: zh, namespace: "adminPanel" })` 造一个真翻译器传进去，断言直接读真实中文，既测了目录又不依赖 provider。与它同簇的 `SaveSuccessAlert` 相反：那是模块作用域里的 React 函数组件，就在自身函数体内挂 `useTranslations`，别把 `t` 当 prop 往下传
+- **批量替换 `render(<X` 会误伤 `rerender(<X`**。给 `WebSearchInterceptionSettings.test.tsx` 换 `renderWithProviders` 时，脚本把 `rerender(<WebSearchInterceptionSettings />)` 里的子串也换成了 `rerenderWithProviders(...)`，运行时 React 报错、3 例全红。规矩是替换前先数一遍、把 `rerender(` 排除在外，或替换后 `grep -n "rerenderWithProviders"` 复查
+
+顺带一条 ICU 事实（本簇两处用到）：直引号 `"` 在 ICU 里不是特殊字符，`"FX"` 原样输出；而 `'<key>'`/`'<name>'` 里的 `'` 后跟 `<` 会触发引号引用、把尖括号转成字面量，正好用来在消息里写字面 `<key>`。两者都要用 `intl-messageformat` 实跑确认渲染结果
+
 ## 2026-10-16 第 86 簇：枚举标签与 `common` 通用词同值同义就复用，一处文案兼多角色只建一键
 
 `UserBannerSettings` 的严重程度三档原来是模块级 `SEVERITY_LABELS` 里的 `Info`/`Warning`/`Error`，同时充当可访问名与可见文案。两条值得固化：
