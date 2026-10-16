@@ -4286,6 +4286,19 @@
       "updatedToast": "Spend logs settings updated successfully",
       "saveFailedToast": "Failed to save spend logs settings: {error}",
       "clearFailedToast": "Failed to clear saved value for: {fields}"
+    },
+    "userBanner": {
+      "title": "User Banner",
+      "description": "Publish an announcement to all dashboard users. Markdown is supported; the banner appears below the header on every page until you unpublish it. Users can dismiss it, and it reappears whenever the content changes.",
+      "publishSwitch": "Publish user banner",
+      "messageLabel": "Message",
+      "messagePlaceholder": "**Scheduled maintenance** tonight at 10 PM UTC. See [status page](https://example.com).",
+      "messageRequiredHint": "Add a message before publishing.",
+      "severityLabel": "Severity",
+      "severitySelectAria": "Banner severity",
+      "previewLabel": "Preview",
+      "saveButton": "Save banner",
+      "updatedToast": "User banner updated successfully"
     }
   },
   "usage": {

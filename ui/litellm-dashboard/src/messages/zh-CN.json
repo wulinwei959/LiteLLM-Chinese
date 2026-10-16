@@ -4286,6 +4286,19 @@
       "updatedToast": "消费日志设置更新成功",
       "saveFailedToast": "保存消费日志设置失败：{error}",
       "clearFailedToast": "清除已保存的值失败：{fields}"
+    },
+    "userBanner": {
+      "title": "用户横幅",
+      "description": "向所有仪表盘用户发布公告。支持 Markdown；横幅会显示在每个页面头部下方，直到你取消发布。用户可以关闭它，内容变化后它会重新出现。",
+      "publishSwitch": "发布用户横幅",
+      "messageLabel": "消息",
+      "messagePlaceholder": "**计划维护**：今晚 22:00 UTC。参见 [状态页](https://example.com)。",
+      "messageRequiredHint": "发布前请先填写消息。",
+      "severityLabel": "严重程度",
+      "severitySelectAria": "横幅严重程度",
+      "previewLabel": "预览",
+      "saveButton": "保存横幅",
+      "updatedToast": "用户横幅更新成功"
     }
   },
   "usage": {

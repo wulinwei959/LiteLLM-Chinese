@@ -40,8 +40,8 @@ describe("UserBannerSettings", () => {
   it("seeds the form from the persisted banner", () => {
     mockHooks(publishedBanner);
     renderWithProviders(<UserBannerSettings />);
-    expect(screen.getByLabelText("Message")).toHaveValue(publishedBanner.message);
-    expect(screen.getByRole("switch", { name: "Publish user banner" })).toHaveAttribute("data-checked");
+    expect(screen.getByLabelText("消息")).toHaveValue(publishedBanner.message);
+    expect(screen.getByRole("switch", { name: "发布用户横幅" })).toHaveAttribute("data-checked");
   });
 
   it("shows a live markdown preview with the selected severity icon", () => {
@@ -54,8 +54,8 @@ describe("UserBannerSettings", () => {
   it("saves the edited draft", () => {
     const mutate = mockHooks(publishedBanner);
     renderWithProviders(<UserBannerSettings />);
-    fireEvent.change(screen.getByLabelText("Message"), { target: { value: "New announcement" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save banner" }));
+    fireEvent.change(screen.getByLabelText("消息"), { target: { value: "New announcement" } });
+    fireEvent.click(screen.getByRole("button", { name: "保存横幅" }));
     expect(mutate).toHaveBeenCalledWith(
       { enabled: true, message: "New announcement", severity: "warning" },
       expect.anything(),
@@ -65,9 +65,9 @@ describe("UserBannerSettings", () => {
   it("blocks saving a published banner with an empty message", () => {
     const mutate = mockHooks(publishedBanner);
     renderWithProviders(<UserBannerSettings />);
-    fireEvent.change(screen.getByLabelText("Message"), { target: { value: "   " } });
-    expect(screen.getByText("Add a message before publishing.")).toBeInTheDocument();
-    const saveButton = screen.getByRole("button", { name: "Save banner" });
+    fireEvent.change(screen.getByLabelText("消息"), { target: { value: "   " } });
+    expect(screen.getByText("发布前请先填写消息。")).toBeInTheDocument();
+    const saveButton = screen.getByRole("button", { name: "保存横幅" });
     fireEvent.click(saveButton);
     expect(mutate).not.toHaveBeenCalled();
   });
@@ -75,18 +75,18 @@ describe("UserBannerSettings", () => {
   it("allows unpublishing without a message", () => {
     const mutate = mockHooks({ enabled: false, message: "", severity: "info", revision: "" });
     renderWithProviders(<UserBannerSettings />);
-    fireEvent.click(screen.getByRole("button", { name: "Save banner" }));
+    fireEvent.click(screen.getByRole("button", { name: "保存横幅" }));
     expect(mutate).toHaveBeenCalledWith({ enabled: false, message: "", severity: "info" }, expect.anything());
   });
 
   it.each([
-    ["info", "Info"],
-    ["warning", "Warning"],
-    ["error", "Error"],
+    ["info", "信息"],
+    ["warning", "警告"],
+    ["error", "错误"],
   ])("shows the %s severity by its human label", (severity, label) => {
     mockHooks({ ...publishedBanner, severity: severity as UserBanner["severity"] });
     renderWithProviders(<UserBannerSettings />);
 
-    expect(screen.getByRole("combobox", { name: "Banner severity" })).toHaveTextContent(label);
+    expect(screen.getByRole("combobox", { name: "横幅严重程度" })).toHaveTextContent(label);
   });
 });
