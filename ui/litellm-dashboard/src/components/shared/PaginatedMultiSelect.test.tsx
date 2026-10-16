@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, renderWithProviders, screen, waitFor, within } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -20,7 +20,7 @@ function renderSelect(overrides: Partial<React.ComponentProps<typeof PaginatedMu
     onLoadMore: vi.fn(),
     ...overrides,
   };
-  render(<PaginatedMultiSelect {...props} />);
+  renderWithProviders(<PaginatedMultiSelect {...props} />);
   return props;
 }
 
@@ -55,7 +55,7 @@ describe("PaginatedMultiSelect", () => {
         />
       );
     }
-    render(<Controlled />);
+    renderWithProviders(<Controlled />);
 
     const input = screen.getByRole("combobox");
     await user.click(input);
@@ -120,7 +120,7 @@ describe("PaginatedMultiSelect", () => {
         />
       );
     }
-    render(<Controlled />);
+    renderWithProviders(<Controlled />);
 
     const input = screen.getByRole("combobox");
     await user.click(input);
@@ -155,7 +155,7 @@ describe("PaginatedMultiSelect", () => {
         />
       );
     }
-    render(<Controlled />);
+    renderWithProviders(<Controlled />);
 
     await user.click(chipRemoveButton("alias-alpha"));
 
@@ -165,7 +165,7 @@ describe("PaginatedMultiSelect", () => {
   });
 
   it("keeps a selected chip visible after the options page no longer contains it", () => {
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <PaginatedMultiSelect
         options={OPTIONS}
         value={["ghost-key"]}
@@ -210,7 +210,7 @@ describe("PaginatedMultiSelect", () => {
         />
       );
     }
-    const { rerender } = render(<Controlled options={aliased} />);
+    const { rerender } = renderWithProviders(<Controlled options={aliased} />);
 
     const input = screen.getByRole("combobox");
     await user.click(input);
@@ -235,7 +235,7 @@ describe("PaginatedMultiSelect", () => {
   });
 
   it("shows no clear-all control without a label or without selections", () => {
-    const { unmount } = render(
+    const { unmount } = renderWithProviders(
       <PaginatedMultiSelect
         options={OPTIONS}
         value={["alias-alpha"]}

@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 
 interface NumericalInputProps {
@@ -23,23 +26,23 @@ interface NumericalInputProps {
  * @param {any} props.rest - Additional props passed to Input
  */
 const NumericalInput = React.forwardRef<HTMLInputElement, NumericalInputProps>(
-  (
-    { step = 0.01, style = { width: "100%" }, placeholder = "Enter a numerical value", min, max, onChange, ...rest },
-    ref,
-  ) => (
-    <Input
-      ref={ref}
-      type="number"
-      onWheel={(event) => event.currentTarget.blur()}
-      step={step}
-      style={style}
-      placeholder={placeholder}
-      min={min}
-      max={max}
-      onChange={onChange}
-      {...rest}
-    />
-  ),
+  ({ step = 0.01, style = { width: "100%" }, placeholder, min, max, onChange, ...rest }, ref) => {
+    const t = useTranslations("common");
+    return (
+      <Input
+        ref={ref}
+        type="number"
+        onWheel={(event) => event.currentTarget.blur()}
+        step={step}
+        style={style}
+        placeholder={placeholder ?? t("numericalPlaceholder")}
+        min={min}
+        max={max}
+        onChange={onChange}
+        {...rest}
+      />
+    );
+  },
 );
 NumericalInput.displayName = "NumericalInput";
 

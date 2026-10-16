@@ -237,9 +237,7 @@ describe("ComplexityRouterConfig", () => {
     const onChange = vi.fn();
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={value} onChange={onChange} />);
     const retained = screen.getByRole("region", { name: "未启用的启发式 v2 阈值" });
-    expect(within(retained).getByRole("status", { name: "保留的启发式 v2 阈值" })).toHaveTextContent(
-      "无效值",
-    );
+    expect(within(retained).getByRole("status", { name: "保留的启发式 v2 阈值" })).toHaveTextContent("无效值");
     expect(within(retained).getByRole("alert")).toHaveTextContent("成功率阈值必须是 0 到 1 之间的数字");
     fireEvent.click(within(retained).getByRole("button", { name: "清除启发式 v2 阈值" }));
     expect(onChange).toHaveBeenCalledWith({ ...value, heuristic_v2_success_threshold: undefined });
@@ -489,7 +487,7 @@ describe("ComplexityRouterConfig", () => {
     openAutoRouterAdvanced("Classification Method");
     const keywordsSection = screen.getByText("自定义技术关键词").closest("div")?.parentElement as HTMLElement;
     await user.type(within(keywordsSection).getByRole("combobox"), "udp");
-    await user.click(await screen.findByText('Create "udp"'));
+    await user.click(await screen.findByText('创建 "udp"'));
     expect(onCustomTechnicalKeywordsChange).toHaveBeenCalledWith(["udp"]);
   });
 
@@ -506,7 +504,7 @@ describe("ComplexityRouterConfig", () => {
     openAutoRouterAdvanced("Classification Method");
     const keywordsSection = screen.getByText("自定义技术关键词").closest("div")?.parentElement as HTMLElement;
     await user.type(within(keywordsSection).getByRole("combobox"), "udp, kafka ,terraform");
-    await user.click(await screen.findByText('Create "udp, kafka ,terraform"'));
+    await user.click(await screen.findByText('创建 "udp, kafka ,terraform"'));
     expect(onCustomTechnicalKeywordsChange).toHaveBeenCalledWith(["udp", "kafka", "terraform"]);
   });
 
@@ -553,7 +551,7 @@ describe("ComplexityRouterConfig", () => {
 
     const field = screen.getByText("关键词 1").closest("div") as HTMLElement;
     await user.type(within(field).getByRole("combobox"), "invoice");
-    await user.click(await screen.findByText('Create "invoice"'));
+    await user.click(await screen.findByText('创建 "invoice"'));
 
     expect(onKeywordTierRulesChange).toHaveBeenCalledWith([{ id: "rule-1", keywords: ["invoice"], tier: "COMPLEX" }]);
   });
@@ -774,9 +772,7 @@ describe("ComplexityRouterConfig classification frequency", () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={llmValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
     expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent("每个请求");
-    expect(screen.getByRole("combobox", { name: "分类频率" })).not.toHaveTextContent(
-      "每条新用户消息",
-    );
+    expect(screen.getByRole("combobox", { name: "分类频率" })).not.toHaveTextContent("每条新用户消息");
     expect(screen.getByRole("combobox", { name: "分类频率" })).not.toHaveTextContent("每个会话一次");
   });
 
@@ -814,9 +810,7 @@ describe("ComplexityRouterConfig classification frequency", () => {
     );
     openAutoRouterAdvanced("Classification Method");
     expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent("每个会话一次");
-    expect(screen.getByRole("combobox", { name: "分类频率" })).not.toHaveTextContent(
-      "每条新用户消息",
-    );
+    expect(screen.getByRole("combobox", { name: "分类频率" })).not.toHaveTextContent("每条新用户消息");
   });
 
   it("records a switch back to every request", async () => {
@@ -1395,9 +1389,7 @@ describe("ComplexityRouterConfig classifier reasoning effort", () => {
       ...llmValue,
       classifier_llm_config: { model, timeout_ms: 3000, reasoning_effort: effort },
     });
-    expect(screen.getByRole("combobox", { name: `分类器模型 ${model} 的推理强度` })).toHaveTextContent(
-      label,
-    );
+    expect(screen.getByRole("combobox", { name: `分类器模型 ${model} 的推理强度` })).toHaveTextContent(label);
     expect(screen.getByText(warning)).toBeInTheDocument();
   });
 
@@ -1406,18 +1398,14 @@ describe("ComplexityRouterConfig classifier reasoning effort", () => {
       ...llmValue,
       classifier_llm_config: { model, timeout_ms: 3000 },
     });
-    expect(
-      screen.queryByRole("combobox", { name: `分类器模型 ${model} 的推理强度` }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: `分类器模型 ${model} 的推理强度` })).not.toBeInTheDocument();
   });
 });
 
 describe("ComplexityRouterConfig reasoning effort gating", () => {
   it("offers no effort select for a model group without reasoning support", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
-    expect(
-      screen.queryByRole("combobox", { name: "简单 层级中 gpt-3.5-turbo 的推理强度" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "简单 层级中 gpt-3.5-turbo 的推理强度" })).not.toBeInTheDocument();
   });
 
   // A stored effort on a model the group info calls non-reasoning must stay visible, or the
@@ -1429,9 +1417,7 @@ describe("ComplexityRouterConfig reasoning effort gating", () => {
         value={{ ...defaultValue, tier_model_params: { SIMPLE: { "gpt-3.5-turbo": { reasoning_effort: "low" } } } }}
       />,
     );
-    expect(
-      screen.getByRole("combobox", { name: "简单 层级中 gpt-3.5-turbo 的推理强度" }),
-    ).toHaveTextContent("low");
+    expect(screen.getByRole("combobox", { name: "简单 层级中 gpt-3.5-turbo 的推理强度" })).toHaveTextContent("low");
   });
 });
 
@@ -1447,9 +1433,7 @@ describe("ComplexityRouterConfig per-model effort filtering", () => {
   it("falls back to every effort when the group only reports supports_reasoning", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     const user = userEvent.setup();
-    await user.click(
-      screen.getByRole("combobox", { name: "推理 层级中 claude-3-opus 的推理强度" }),
-    );
+    await user.click(screen.getByRole("combobox", { name: "推理 层级中 claude-3-opus 的推理强度" }));
     const options = (await screen.findAllByRole("option")).map((option) => option.textContent);
     expect(options).toEqual(["默认", "none", "minimal", "low", "medium", "high", "xhigh"]);
   });
@@ -1466,9 +1450,7 @@ describe("ComplexityRouterConfig per-model effort filtering", () => {
         ]}
       />,
     );
-    expect(
-      screen.queryByRole("combobox", { name: "推理 层级中 claude-3-opus 的推理强度" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "推理 层级中 claude-3-opus 的推理强度" })).not.toBeInTheDocument();
   });
 
   // Hand-authored configs can carry a level outside the supported set (e.g. max); it must render
@@ -1480,9 +1462,7 @@ describe("ComplexityRouterConfig per-model effort filtering", () => {
         value={{ ...defaultValue, tier_model_params: { COMPLEX: { "gpt-4": { reasoning_effort: "max" } } } }}
       />,
     );
-    expect(screen.getByRole("combobox", { name: "复杂 层级中 gpt-4 的推理强度" })).toHaveTextContent(
-      "max",
-    );
+    expect(screen.getByRole("combobox", { name: "复杂 层级中 gpt-4 的推理强度" })).toHaveTextContent("max");
   });
 });
 
@@ -1570,9 +1550,7 @@ describe("ComplexityRouterConfig tier editing", () => {
 
   it("surfaces the caller's orphaned-rule verdict while editing, so Done is not a silent exit", async () => {
     renderEditor(customValue, { keywordRulesError: "关键词规则 1 指向的层级已不存在" });
-    expect(
-      screen.getByText("关键词规则 1 指向的层级已不存在", { exact: false }),
-    ).toBeInTheDocument();
+    expect(screen.getByText("关键词规则 1 指向的层级已不存在", { exact: false })).toBeInTheDocument();
   });
 
   it("keeps the orphaned-rule verdict out of the collapsed view, where the submit tooltip owns it", async () => {
@@ -1632,9 +1610,7 @@ describe("ComplexityRouterConfig tier editing", () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} value={customValue} onEditingTiersChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
     expect(screen.queryByText("分类如何运作")).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("路由器会从 7 个内置维度对每个请求评分", { exact: false }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("路由器会从 7 个内置维度对每个请求评分", { exact: false })).not.toBeInTheDocument();
   });
 
   it("keeps the scorer card on a built-in router, whose tiers the score still decides", async () => {
@@ -1755,9 +1731,7 @@ describe("ComplexityRouterConfig tier editing", () => {
     const sessionOption = screen.getByRole("option", { name: "每个会话一次" });
     expect(sessionOption).toHaveAttribute("aria-disabled", "true");
     expect(sessionOption).not.toBeChecked();
-    expect(
-      screen.getByText("会话固定沿内置层级阶梯升级", { exact: false }),
-    ).toBeInTheDocument();
+    expect(screen.getByText("会话固定沿内置层级阶梯升级", { exact: false })).toBeInTheDocument();
   });
 
   it("lets an edited tier set write its own opening instructions instead of refusing a prompt outright", async () => {

@@ -352,7 +352,7 @@ describe("EditAutoRouterModal keyword matching", () => {
       within(screen.getByText("关键词 2").closest("div") as HTMLElement).getByRole("combobox"),
       "chargeback",
     );
-    await user.click(await screen.findByText('Create "chargeback"'));
+    await user.click(await screen.findByText('创建 "chargeback"'));
 
     await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
     expect(screen.queryByText("至少需要一个关键词")).not.toBeInTheDocument();
@@ -613,9 +613,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     renderWithStoredConfig({ ...STORED_CONFIG, session_affinity: true });
 
     openAutoRouterAdvanced("Classification Method");
-    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent(
-      "每个会话一次",
-    );
+    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent("每个会话一次");
 
     await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
@@ -672,9 +670,7 @@ describe("EditAutoRouterModal classification frequency", () => {
     renderWithStoredConfig({ ...STORED_CONFIG, classification_mode: "user_turn" });
 
     openAutoRouterAdvanced("Classification Method");
-    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent(
-      "每条新用户消息",
-    );
+    expect(await screen.findByRole("combobox", { name: "分类频率" })).toHaveTextContent("每条新用户消息");
 
     await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));

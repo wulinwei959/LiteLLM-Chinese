@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders, screen, waitFor } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { MultiSelect, type MultiSelectOption } from "./MultiSelect";
@@ -10,7 +10,9 @@ const OPTIONS: MultiSelectOption[] = [
 
 const renderMultiSelect = (props: Partial<React.ComponentProps<typeof MultiSelect>> = {}) => {
   const onValueChange = vi.fn();
-  render(<MultiSelect options={OPTIONS} onValueChange={onValueChange} placeholder="Select stores" {...props} />);
+  renderWithProviders(
+    <MultiSelect options={OPTIONS} onValueChange={onValueChange} placeholder="Select stores" {...props} />,
+  );
   return { onValueChange, input: screen.getByRole("combobox") };
 };
 
@@ -79,7 +81,7 @@ describe("MultiSelect", () => {
     const { onValueChange, input } = renderMultiSelect({ allowCustomValues: true });
 
     await userEvent.type(input, "vs-typed");
-    await userEvent.click(await screen.findByText('Create "vs-typed"'));
+    await userEvent.click(await screen.findByText('创建 "vs-typed"'));
 
     expect(onValueChange).toHaveBeenCalledWith(["vs-typed"]);
   });
@@ -89,22 +91,22 @@ describe("MultiSelect", () => {
 
     await userEvent.type(input, "vs-typed");
 
-    expect(screen.queryByText('Create "vs-typed"')).not.toBeInTheDocument();
-    expect(await screen.findByText("No options found")).toBeInTheDocument();
+    expect(screen.queryByText('创建 "vs-typed"')).not.toBeInTheDocument();
+    expect(await screen.findByText("未找到选项")).toBeInTheDocument();
   });
 
   it("splits a comma-separated custom entry into one value per token", async () => {
     const { onValueChange, input } = renderMultiSelect({ allowCustomValues: true });
 
     await userEvent.type(input, "udp, kafka ,terraform");
-    await userEvent.click(await screen.findByText('Create "udp, kafka ,terraform"'));
+    await userEvent.click(await screen.findByText('创建 "udp, kafka ,terraform"'));
 
     expect(onValueChange).toHaveBeenCalledWith(["udp", "kafka", "terraform"]);
   });
 
   it("leaves an already selected value that contains a comma alone when a later entry is added", async () => {
     const onValueChange = vi.fn();
-    render(
+    renderWithProviders(
       <MultiSelect
         options={OPTIONS}
         value={["--filter=a,b"]}
@@ -115,14 +117,14 @@ describe("MultiSelect", () => {
     );
 
     await userEvent.type(screen.getByRole("combobox"), "--verbose");
-    await userEvent.click(await screen.findByText('Create "--verbose"'));
+    await userEvent.click(await screen.findByText('创建 "--verbose"'));
 
     expect(onValueChange).toHaveBeenCalledWith(["--filter=a,b", "--verbose"]);
   });
 
   it("clears every selection at once", async () => {
     const onValueChange = vi.fn();
-    render(
+    renderWithProviders(
       <MultiSelect
         options={OPTIONS}
         value={["vs-alpha", "vs-beta"]}
@@ -131,7 +133,7 @@ describe("MultiSelect", () => {
       />,
     );
 
-    await userEvent.click(screen.getByRole("button", { name: "Clear all" }));
+    await userEvent.click(screen.getByRole("button", { name: "全部清除" }));
 
     expect(onValueChange).toHaveBeenCalledWith([]);
   });

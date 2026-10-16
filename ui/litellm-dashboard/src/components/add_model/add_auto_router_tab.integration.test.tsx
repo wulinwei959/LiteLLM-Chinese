@@ -70,8 +70,7 @@ const isOptionDisabled = (option: HTMLElement): boolean => option.getAttribute("
 
 const TIER_ZH: Record<string, string> = { Simple: "简单", Medium: "中等", Complex: "复杂", Reasoning: "推理" };
 
-const tierZh = (tier: string): string =>
-  TIER_ZH[tier] ?? TIER_ZH[tier.charAt(0).toUpperCase() + tier.slice(1)] ?? tier;
+const tierZh = (tier: string): string => TIER_ZH[tier] ?? TIER_ZH[tier.charAt(0).toUpperCase() + tier.slice(1)] ?? tier;
 
 const tierChips = (tier: string): HTMLElement => {
   const placeholder = `为${tierZh(tier)}层级选择模型`;
@@ -112,7 +111,7 @@ const waitForPresetEnabled = async (label: string) => {
 // keyword only lands on the rule once that entry is picked.
 const addKeyword = async (user: ReturnType<typeof userEvent.setup>, field: HTMLElement, keyword: string) => {
   await user.type(within(field).getByRole("combobox"), keyword);
-  await user.click(await screen.findByText(`Create "${keyword}"`));
+  await user.click(await screen.findByText(`创建 "${keyword}"`));
 };
 
 const { mockFetchAvailableModels, mockFetchAllModelDeployments } = vi.hoisted(() => ({
@@ -281,7 +280,7 @@ describe("AddAutoRouterTab", () => {
     await waitForAutomaticTiers();
     await userEvent.click(screen.getByRole("radio", { name: "决策模型" }));
     await userEvent.click(screen.getByRole("combobox", { name: "决策模型" }));
-    expect(await screen.findByText("No results")).toBeVisible();
+    expect(await screen.findByText("无结果")).toBeVisible();
     await userEvent.keyboard("{Escape}");
     expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
   });
@@ -503,9 +502,7 @@ describe("AddAutoRouterTab", () => {
       });
       await waitForAutomaticTiers();
       expect(screen.getByRole("radio", { name: family })).toBeChecked();
-      expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent(
-        "每条新用户消息",
-      );
+      expect(screen.getByRole("combobox", { name: "分类频率" })).toHaveTextContent("每条新用户消息");
       expect(screen.getByRole("button", { name: "高级设置" })).toHaveAttribute("aria-expanded", "false");
     },
   );
@@ -534,9 +531,7 @@ describe("AddAutoRouterTab", () => {
         ["efficient", "高效求解器"],
         ["capable", "能力求解器"],
       ]) {
-        await user.click(
-          screen.getByRole("combobox", { name: capability ? `选择${solverLabel}模型` : solverLabel }),
-        );
+        await user.click(screen.getByRole("combobox", { name: capability ? `选择${solverLabel}模型` : solverLabel }));
         await user.click(await screen.findByRole("option", { name: model, exact: true }));
         if (capability) await user.keyboard("{Escape}");
       }
@@ -1019,9 +1014,7 @@ describe("AddAutoRouterTab", () => {
     await user.type(screen.getByPlaceholderText(/smart_router/i), "affinity-router");
     expandDetailedConfiguration();
     openAutoRouterAdvanced("Classification Method");
-    expect(await screen.findByRole("combobox", { name: "分类频率" })).not.toHaveTextContent(
-      "每个会话一次",
-    );
+    expect(await screen.findByRole("combobox", { name: "分类频率" })).not.toHaveTextContent("每个会话一次");
 
     await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
     await user.click(screen.getByRole("button", { name: "添加自动路由" }));
@@ -1209,11 +1202,7 @@ describe("AddAutoRouterTab", () => {
       await user.type(screen.getByPlaceholderText(/smart_router/i), "no-compression-explicit-router");
       expandDetailedConfiguration();
       openAutoRouterAdvanced("Compression");
-      await chooseSelectOption(
-        user,
-        screen.getByRole("combobox", { name: "路由决策的压缩" }),
-        "无（不做压缩）",
-      );
+      await chooseSelectOption(user, screen.getByRole("combobox", { name: "路由决策的压缩" }), "无（不做压缩）");
 
       await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
       await user.click(screen.getByRole("button", { name: "添加自动路由" }));
@@ -1233,11 +1222,7 @@ describe("AddAutoRouterTab", () => {
       await user.type(screen.getByPlaceholderText(/smart_router/i), "different-compression-router");
       expandDetailedConfiguration();
       openAutoRouterAdvanced("Compression");
-      await chooseSelectOption(
-        user,
-        screen.getByRole("combobox", { name: "路由决策的压缩" }),
-        "无（不做压缩）",
-      );
+      await chooseSelectOption(user, screen.getByRole("combobox", { name: "路由决策的压缩" }), "无（不做压缩）");
       await user.click(screen.getByText("使用不同的压缩"));
       expect(screen.getByRole("combobox", { name: "模型调用的压缩" })).toBeInTheDocument();
 
@@ -1428,14 +1413,7 @@ describe("AddAutoRouterTab", () => {
 
     const labels = visibleOptions().map((option) => option.querySelector(".font-medium")?.textContent);
 
-    expect(labels).toEqual([
-      "1M Context",
-      "Anthropic Family",
-      "Gemini Family",
-      "Lite",
-      "OpenAI Family",
-      "从零开始",
-    ]);
+    expect(labels).toEqual(["1M Context", "Anthropic Family", "Gemini Family", "Lite", "OpenAI Family", "从零开始"]);
   });
 
   describe("routing test", () => {
@@ -1873,14 +1851,7 @@ describe("AddAutoRouterTab", () => {
         expect(isOptionDisabled(optionByLabel("Anthropic Family")!)).toBe(false);
       });
       const labels = visibleOptions().map((option) => option.querySelector(".font-medium")?.textContent);
-      expect(labels).toEqual([
-        "Anthropic Family",
-        "1M Context",
-        "Gemini Family",
-        "Lite",
-        "OpenAI Family",
-        "从零开始",
-      ]);
+      expect(labels).toEqual(["Anthropic Family", "1M Context", "Gemini Family", "Lite", "OpenAI Family", "从零开始"]);
     });
 
     it.each([
