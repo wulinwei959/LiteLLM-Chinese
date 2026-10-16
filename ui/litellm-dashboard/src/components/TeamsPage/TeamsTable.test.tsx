@@ -112,7 +112,7 @@ it("renders a team row with alias, organization, and spend/budget", async () => 
     expect(screen.getByText("Acme Team")).toBeInTheDocument();
     expect(screen.getByText("Test Organization")).toBeInTheDocument();
     expect(screen.getByText("$42.50")).toBeInTheDocument();
-    expect(screen.getByText("of $100.00")).toBeInTheDocument();
+    expect(screen.getByText("共 $100.00")).toBeInTheDocument();
   });
 });
 

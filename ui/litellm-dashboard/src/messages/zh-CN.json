@@ -8619,5 +8619,19 @@
       "mountPath": "挂载路径",
       "certRole": "证书角色"
     }
+  },
+  "tableCells": {
+    "autoRouterTitle": "由自动路由 \"{modelGroup}\" 处理",
+    "userAlias": "用户别名",
+    "userEmail": "用户邮箱",
+    "userId": "用户 ID",
+    "copyField": "复制{label}",
+    "copyId": "复制 ID",
+    "allProxyModels": "所有代理模型",
+    "noModelAccess": "无模型访问权限",
+    "scopedRoutesTooltip": "范围限定为 {routes} 路由；此密钥无法调用任何模型",
+    "moreCount": "+{count} 个",
+    "ofBudget": "共 {amount}",
+    "spendOfBudget": "{spend} 共 {amount}"
   }
 }

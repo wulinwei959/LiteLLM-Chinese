@@ -1,6 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen, renderWithProviders } from "../../../../tests/test-utils";
 import { describe, expect, it, vi, beforeEach } from "vitest";
-
 import { AutoRouterModelGroupsProvider, AutoRouterTag } from "./AutoRouterTag";
 
 vi.mock("@/app/(dashboard)/hooks/models/useModels", () => ({
@@ -12,7 +11,7 @@ import { useAutoRouterModelGroups } from "@/app/(dashboard)/hooks/models/useMode
 const mockUseAutoRouterModelGroups = vi.mocked(useAutoRouterModelGroups);
 
 const renderInProvider = (ui: React.ReactNode) =>
-  render(<AutoRouterModelGroupsProvider>{ui}</AutoRouterModelGroupsProvider>);
+  renderWithProviders(<AutoRouterModelGroupsProvider>{ui}</AutoRouterModelGroupsProvider>);
 
 describe("AutoRouterTag", () => {
   beforeEach(() => {
@@ -24,7 +23,7 @@ describe("AutoRouterTag", () => {
 
     renderInProvider(<AutoRouterTag modelGroup="smart-router" />);
 
-    const tag = screen.getByTitle('Routed by auto-router "smart-router"');
+    const tag = screen.getByTitle('由自动路由 "smart-router" 处理');
     expect(tag).toHaveTextContent("smart-router");
     expect(tag.querySelector("svg")).not.toBeNull();
   });
@@ -54,7 +53,7 @@ describe("AutoRouterTag", () => {
   });
 
   it("renders nothing outside a provider instead of requiring a QueryClient", () => {
-    const { container } = render(<AutoRouterTag modelGroup="smart-router" />);
+    const { container } = renderWithProviders(<AutoRouterTag modelGroup="smart-router" />);
 
     expect(container).toBeEmptyDOMElement();
     expect(mockUseAutoRouterModelGroups).not.toHaveBeenCalled();

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { screen, renderWithProviders } from "../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -17,17 +17,17 @@ vi.mock("@/utils/dataUtils", async (importOriginal) => ({
 
 describe("IdCell", () => {
   it("renders '-' for empty values", () => {
-    render(<IdCell value={null} />);
+    renderWithProviders(<IdCell value={null} />);
     expect(screen.getByText("-")).toBeInTheDocument();
   });
 
   it("renders the custom fallback for empty values", () => {
-    render(<IdCell value="" fallback="—" />);
+    renderWithProviders(<IdCell value="" fallback="—" />);
     expect(screen.getByText("—")).toBeInTheDocument();
   });
 
   it("renders the full id as a non-interactive pill by default", () => {
-    render(<IdCell value="sk-1234567890abcdef" />);
+    renderWithProviders(<IdCell value="sk-1234567890abcdef" />);
     const el = screen.getByText("sk-1234567890abcdef");
     expect(el.tagName).toBe("SPAN");
     expect(el).toHaveClass("bg-info/10");
@@ -37,60 +37,60 @@ describe("IdCell", () => {
   });
 
   it("renders plain mono text without pill styling for the plain variant", () => {
-    render(<IdCell value="req-123" variant="plain" />);
+    renderWithProviders(<IdCell value="req-123" variant="plain" />);
     const el = screen.getByText("req-123");
     expect(el).toHaveClass("font-mono");
     expect(el).not.toHaveClass("bg-info/10");
   });
 
   it("does not truncate when truncate is false", () => {
-    render(<IdCell value="audit-object-id" truncate={false} />);
+    renderWithProviders(<IdCell value="audit-object-id" truncate={false} />);
     expect(screen.getByText("audit-object-id")).not.toHaveClass("truncate");
   });
 
   it("becomes a button that fires onClick with the id value", async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
-    render(<IdCell value="team-42" onClick={onClick} />);
+    renderWithProviders(<IdCell value="team-42" onClick={onClick} />);
     await user.click(screen.getByRole("button", { name: "team-42" }));
     expect(onClick).toHaveBeenCalledWith("team-42");
   });
 
   it("stays non-interactive when disabled, even with onClick", () => {
     const onClick = vi.fn();
-    render(<IdCell value="tag-1" onClick={onClick} disabled />);
+    renderWithProviders(<IdCell value="tag-1" onClick={onClick} disabled />);
     expect(screen.queryByRole("button", { name: "tag-1" })).not.toBeInTheDocument();
   });
 
   it("copies the id via the trailing copy button without triggering row clicks", async () => {
     const user = userEvent.setup();
     const rowClick = vi.fn();
-    render(
+    renderWithProviders(
       <div onClick={rowClick}>
         <IdCell value="key-hash-9" copyable />
       </div>,
     );
-    await user.click(screen.getByRole("button", { name: "Copy ID" }));
+    await user.click(screen.getByRole("button", { name: "复制 ID" }));
     expect(copyToClipboardMock).toHaveBeenCalledWith("key-hash-9");
     expect(rowClick).not.toHaveBeenCalled();
   });
 
   it("names the copy button after the field it copies", async () => {
     const user = userEvent.setup();
-    render(<IdCell value="alice@example.com" copyable copyLabel="Copy User Email" />);
-    expect(screen.queryByRole("button", { name: "Copy ID" })).not.toBeInTheDocument();
+    renderWithProviders(<IdCell value="alice@example.com" copyable copyLabel="Copy User Email" />);
+    expect(screen.queryByRole("button", { name: "复制 ID" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Copy User Email" }));
     expect(copyToClipboardMock).toHaveBeenCalledWith("alice@example.com");
   });
 
   it("passes dataTestId through to the id element", () => {
-    render(<IdCell value="k-1" dataTestId="key-id-cell" />);
+    renderWithProviders(<IdCell value="k-1" dataTestId="key-id-cell" />);
     expect(screen.getByTestId("key-id-cell")).toHaveTextContent("k-1");
   });
 
   it("renders the id as a link and routes client side when href is set", async () => {
     const user = userEvent.setup();
-    render(<IdCell value="user-42" href="/ui/users?user=user-42" />);
+    renderWithProviders(<IdCell value="user-42" href="/ui/users?user=user-42" />);
 
     const link = screen.getByRole("link", { name: "user-42" });
     expect(link).toHaveAttribute("href", "/ui/users?user=user-42");
@@ -101,7 +101,7 @@ describe("IdCell", () => {
   });
 
   it("stays plain text when href is undefined", () => {
-    render(<IdCell value="default_user_id" href={undefined} />);
+    renderWithProviders(<IdCell value="default_user_id" href={undefined} />);
 
     expect(screen.getByText("default_user_id").tagName).toBe("SPAN");
     expect(screen.queryByRole("link")).not.toBeInTheDocument();

@@ -187,7 +187,7 @@ describe("OrganizationsTable", () => {
     expect(screen.getByText("RPM: 60")).toBeInTheDocument();
     expect(screen.getByText("3 成员")).toBeInTheDocument();
     // Five models, three visible -> the shared ModelsCell collapses the rest.
-    expect(screen.getByText("+2 more")).toBeInTheDocument();
+    expect(screen.getByText("+2 个")).toBeInTheDocument();
   });
 
   it("shows Unlimited budget and All Proxy Models when unset", () => {
@@ -198,7 +198,7 @@ describe("OrganizationsTable", () => {
       />,
     );
 
-    expect(screen.getByText("All Proxy Models")).toBeInTheDocument();
+    expect(screen.getByText("所有代理模型")).toBeInTheDocument();
     // Budget shows a standalone "Unlimited"; the limits fall back inline.
     expect(screen.getByText("无限制")).toBeInTheDocument();
     expect(screen.getByText("TPM: 无限制")).toBeInTheDocument();

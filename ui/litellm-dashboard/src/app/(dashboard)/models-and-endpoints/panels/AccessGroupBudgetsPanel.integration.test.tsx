@@ -65,7 +65,7 @@ describe("AccessGroupBudgetsPanel", () => {
 
     expect(await screen.findByText("premium")).toBeInTheDocument();
     expect(screen.getByText("$1.2500")).toBeInTheDocument();
-    expect(screen.getByText("of $2.50")).toBeInTheDocument();
+    expect(screen.getByText("共 $2.50")).toBeInTheDocument();
     expect(screen.getByText("每月")).toBeInTheDocument();
     expect(GET).toHaveBeenCalledWith("/access_group/list");
   });
@@ -76,13 +76,13 @@ describe("AccessGroupBudgetsPanel", () => {
     });
     renderPanel();
 
-    expect(await screen.findByText("of $0.00002")).toBeInTheDocument();
+    expect(await screen.findByText("共 $0.00002")).toBeInTheDocument();
   });
 
   it("shows a group with no budget as unlimited and offers nothing to clear", async () => {
     renderPanel();
 
-    expect(await screen.findByText("· Unlimited")).toBeInTheDocument();
+    expect(await screen.findByText("· 无限制")).toBeInTheDocument();
 
     await openActions("shared");
 

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, type ReactNode } from "react";
 import { Waypoints } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { useAutoRouterModelGroups } from "@/app/(dashboard)/hooks/models/useModels";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +38,7 @@ export interface AutoRouterTagProps {
 }
 
 export function AutoRouterTag({ modelGroup, className }: AutoRouterTagProps) {
+  const t = useTranslations("tableCells");
   const isAutoRouted = useIsAutoRoutedModelGroup(modelGroup);
 
   if (!isAutoRouted) return null;
@@ -44,7 +46,7 @@ export function AutoRouterTag({ modelGroup, className }: AutoRouterTagProps) {
   return (
     <Badge
       variant="secondary"
-      title={`Routed by auto-router "${modelGroup}"`}
+      title={t("autoRouterTitle", { modelGroup: modelGroup as string })}
       className={cn("gap-1.5 px-2.5 py-1 text-sm font-normal text-foreground", className)}
     >
       <Waypoints aria-hidden />

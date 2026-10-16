@@ -8623,5 +8623,19 @@
       "mountPath": "Mount Path",
       "certRole": "Certificate Role"
     }
+  },
+  "tableCells": {
+    "autoRouterTitle": "Routed by auto-router \"{modelGroup}\"",
+    "userAlias": "User Alias",
+    "userEmail": "User Email",
+    "userId": "User ID",
+    "copyField": "Copy {label}",
+    "copyId": "Copy ID",
+    "allProxyModels": "All Proxy Models",
+    "noModelAccess": "No model access",
+    "scopedRoutesTooltip": "Scoped to {routes} routes; this key cannot call any models",
+    "moreCount": "+{count} more",
+    "ofBudget": "of {amount}",
+    "spendOfBudget": "{spend} of {amount}"
   }
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { InheritedBudgetHint, type InheritedBudgetGate } from "@/components/shared/InheritedBudgetHint";
 import { Meter, MeterIndicator, MeterTrack } from "@/components/shared/Meter";
 import { formatNumberWithCommas, getSpendString } from "@/utils/dataUtils";
@@ -25,13 +27,16 @@ export function SpendBudgetCell({
   spendDecimals = 4,
   budgetDecimals = 0,
 }: SpendBudgetCellProps) {
+  const t = useTranslations("tableCells");
+  const commonT = useTranslations("common");
   const spendValue = typeof spend === "number" && !Number.isNaN(spend) ? spend : 0;
   const budget = maxBudget ?? null;
   const hasBudget = typeof budget === "number" && budget > 0;
   const pct = hasBudget ? (spendValue / budget) * 100 : 0;
 
   const spendText = spendValue > 0 ? getSpendString(spendValue, spendDecimals) : "$0.00";
-  const budgetLabel = budget === null ? "· Unlimited" : `of $${formatNumberWithCommas(budget, budgetDecimals)}`;
+  const budgetAmount = budget === null ? null : `$${formatNumberWithCommas(budget, budgetDecimals)}`;
+  const budgetLabel = budgetAmount === null ? `· ${commonT("unlimited")}` : t("ofBudget", { amount: budgetAmount });
 
   return (
     <div className="flex min-w-[130px] flex-col gap-1">
@@ -44,7 +49,10 @@ export function SpendBudgetCell({
         <Meter
           value={spendValue}
           max={budget}
-          aria-valuetext={`${spendText} of $${formatNumberWithCommas(budget, budgetDecimals)}`}
+          aria-valuetext={t("spendOfBudget", {
+            spend: spendText,
+            amount: `$${formatNumberWithCommas(budget, budgetDecimals)}`,
+          })}
         >
           <MeterTrack>
             <MeterIndicator tone={meterTone(pct)} />
