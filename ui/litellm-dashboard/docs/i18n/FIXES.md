@@ -387,6 +387,15 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-16 第 86 簇：枚举标签与 `common` 通用词同值同义就复用，一处文案兼多角色只建一键
+
+`UserBannerSettings` 的严重程度三档原来是模块级 `SEVERITY_LABELS` 里的 `Info`/`Warning`/`Error`，同时充当可访问名与可见文案。两条值得固化：
+
+- **枚举标签若与 `common` 里的通用词同值同义，优先复用而不是新建**。目录里 `common.info`/`common.warning`/`common.error` 早有同值键，只是全仓查不到调用点。判据回到本仓库一贯的"概念与取值都相同就复用"：三档就是同一组级别词，直接 `tc("info")` 复用，不新建 `severityInfo` 之类。表声明成 `Record<UserBannerSeverity, "info" | "warning" | "error">`（值的联合写死，别退化成 `string`），遍历时 `tc(SEVERITY_LABEL_KEYS[severity])` 既能按枚举查表、又把 `t()` 入参锁死在 `common` 键上。反之新建键会多出三条与 `common` 逐字相同的叶子，把"中英同值"计数推高却没有任何收益
+- **同一段文案在同一处兼作 aria、可见 `Label`、`SelectValue` 占位时只建一键**。本簇 `Publish user banner` 同时是 `<Switch aria-label>` 与可见 `<Label>`，`Severity` 同时是 `<Label>` 与 `<SelectValue placeholder>`，英文原文逐字一致，各建一键（`publishSwitch`、`severityLabel`）在多个渲染点 `t(...)` 同一个键即可。这与第 84 簇"同一句话拆成两段就是两种文案"是相反的两面：那里断句不同必须分键，这里逐字相同就该合并
+
+顺带补 ICU 一句：placeholder 里的 Markdown `**…**`、`[文字](url)`、`:` 都不是 ICU 语法，只有 `{}` 才是，所以这类示例文案照原文翻译即可，不必给 `[]` 或 `**` 加引号（加了反而会多印出 `'`）
+
 ## 2026-10-16 第 85 簇：字段说明"接口优先、兜底接键"，`as const` 的键名表按查表方向选
 
 `Settings/AdminSettings/LoggingSettings/LoggingSettings.tsx` 的五个可选旋钮把 label、placeholder 与说明都写死在模块级 `OPTIONAL_FIELDS`，其中说明还经 `describeField(name, fallback)` 优先取后端的 `field_description`。两条值得固化：
