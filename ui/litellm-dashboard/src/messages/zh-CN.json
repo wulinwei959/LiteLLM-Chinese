@@ -9678,5 +9678,28 @@
     "actions": "操作",
     "configExample": "配置示例",
     "description": "为您的模型组创建别名以简化 API 调用。例如，可以创建一个指向 &apos;gpt-4o-mini-openai&apos; 模型组的别名 &apos;gpt-4o&apos;。"
+  },
+  "cloudZeroExport": {
+    "loadFailed": "加载已有设置失败",
+    "noAccessToken": "没有可用的访问令牌",
+    "saveFailed": "保存 CloudZero 设置失败",
+    "exportFailed": "导出到 CloudZero 失败",
+    "csvComingSoon": "CSV 导出功能即将推出！",
+    "csvExportFailed": "导出 CSV 失败",
+    "exportToCloudZero": "导出到 CloudZero",
+    "exportToCsv": "导出为 CSV",
+    "exportData": "导出数据",
+    "exportDestination": "导出目标",
+    "existingConfig": "已有 CloudZero 配置",
+    "apiKeyLabel": "CloudZero API 密钥",
+    "apiKeyPlaceholder": "请输入您的 CloudZero API 密钥",
+    "connectionIdLabel": "连接 ID",
+    "connectionIdPlaceholder": "请输入 CloudZero 连接 ID",
+    "csvExport": "CSV 导出",
+    "exportCsvBtn": "导出 CSV",
+    "savedSuccess": "CloudZero 设置保存成功",
+    "exportCloudZeroSuccess": "导出到 CloudZero 已成功完成",
+    "loadFailedDetail": "加载已有设置失败：{msg}",
+    "unknownError": "未知错误"
   }
 }

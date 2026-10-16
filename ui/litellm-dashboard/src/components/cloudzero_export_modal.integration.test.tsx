@@ -1,5 +1,6 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render } from "../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import CloudZeroExportModal from "./cloudzero_export_modal";
@@ -44,9 +45,9 @@ describe("CloudZeroExportModal", () => {
     const user = userEvent.setup();
     open();
 
-    fireEvent.change(await screen.findByLabelText("CloudZero API Key"), { target: { value: "cz-key-123" } });
-    fireEvent.change(screen.getByLabelText("Connection ID"), { target: { value: "conn-abc" } });
-    await user.click(screen.getByRole("button", { name: "Export to CloudZero" }));
+    fireEvent.change(await screen.findByLabelText("CloudZero API 密钥"), { target: { value: "cz-key-123" } });
+    fireEvent.change(screen.getByLabelText("连接 ID"), { target: { value: "conn-abc" } });
+    await user.click(screen.getByRole("button", { name: "导出到 CloudZero" }));
 
     await waitFor(() => expect(callsTo(fetchMock, "/cloudzero/init")).toHaveLength(1));
 
@@ -63,9 +64,9 @@ describe("CloudZeroExportModal", () => {
     const user = userEvent.setup();
     open();
 
-    fireEvent.change(await screen.findByLabelText("CloudZero API Key"), { target: { value: "cz-key-123" } });
-    fireEvent.change(screen.getByLabelText("Connection ID"), { target: { value: "conn-abc" } });
-    await user.click(screen.getByRole("button", { name: "Export to CloudZero" }));
+    fireEvent.change(await screen.findByLabelText("CloudZero API 密钥"), { target: { value: "cz-key-123" } });
+    fireEvent.change(screen.getByLabelText("连接 ID"), { target: { value: "conn-abc" } });
+    await user.click(screen.getByRole("button", { name: "导出到 CloudZero" }));
 
     await waitFor(() => expect(callsTo(fetchMock, "/cloudzero/export")).toHaveLength(1));
 
@@ -78,8 +79,8 @@ describe("CloudZeroExportModal", () => {
     const user = userEvent.setup();
     open();
 
-    fireEvent.change(await screen.findByLabelText("CloudZero API Key"), { target: { value: "cz-key-123" } });
-    await user.click(screen.getByRole("button", { name: "Export to CloudZero" }));
+    fireEvent.change(await screen.findByLabelText("CloudZero API 密钥"), { target: { value: "cz-key-123" } });
+    await user.click(screen.getByRole("button", { name: "导出到 CloudZero" }));
 
     await screen.findByText("Please enter the CloudZero connection ID");
     expect(callsTo(fetchMock, "/cloudzero/init")).toHaveLength(0);
@@ -90,8 +91,8 @@ describe("CloudZeroExportModal", () => {
     const user = userEvent.setup();
     open();
 
-    await screen.findByLabelText("CloudZero API Key");
-    await user.click(screen.getByRole("button", { name: "Export to CloudZero" }));
+    await screen.findByLabelText("CloudZero API 密钥");
+    await user.click(screen.getByRole("button", { name: "导出到 CloudZero" }));
 
     expect(await screen.findByText("Please enter your CloudZero API key")).toBeInTheDocument();
     expect(screen.getByText("Please enter the CloudZero connection ID")).toBeInTheDocument();
@@ -113,9 +114,9 @@ describe("CloudZeroExportModal", () => {
     open();
 
     await screen.findByText(/conn-existing/);
-    expect(screen.queryByLabelText("CloudZero API Key")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("CloudZero API 密钥")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Export to CloudZero" }));
+    await user.click(screen.getByRole("button", { name: "导出到 CloudZero" }));
 
     await waitFor(() => expect(callsTo(fetchMock, "/cloudzero/export")).toHaveLength(1));
     expect(callsTo(fetchMock, "/cloudzero/init")).toHaveLength(0);
@@ -125,9 +126,9 @@ describe("CloudZeroExportModal", () => {
     const user = userEvent.setup();
     open();
 
-    fireEvent.change(await screen.findByLabelText("CloudZero API Key"), { target: { value: "cz-key-123456789" } });
-    fireEvent.change(screen.getByLabelText("Connection ID"), { target: { value: "conn-abc" } });
-    await user.click(screen.getByRole("button", { name: "Export to CloudZero" }));
+    fireEvent.change(await screen.findByLabelText("CloudZero API 密钥"), { target: { value: "cz-key-123456789" } });
+    fireEvent.change(screen.getByLabelText("连接 ID"), { target: { value: "conn-abc" } });
+    await user.click(screen.getByRole("button", { name: "导出到 CloudZero" }));
 
     await waitFor(() => expect(callsTo(fetchMock, "/cloudzero/export")).toHaveLength(1));
     expect(bodyOf(callsTo(fetchMock, "/cloudzero/init")[0]).api_key).toBe("cz-key-123456789");
@@ -137,12 +138,12 @@ describe("CloudZeroExportModal", () => {
     const user = userEvent.setup();
     open();
 
-    await screen.findByLabelText("CloudZero API Key");
+    await screen.findByLabelText("CloudZero API 密钥");
     await user.click(screen.getByRole("combobox"));
-    await user.click(await screen.findByRole("option", { name: "Export to CSV" }));
+    await user.click(await screen.findByRole("option", { name: "导出为 CSV" }));
 
-    expect(screen.queryByLabelText("CloudZero API Key")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Export CSV" }));
+    expect(screen.queryByLabelText("CloudZero API 密钥")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "导出 CSV" }));
 
     expect(callsTo(fetchMock, "/cloudzero/init")).toHaveLength(0);
     expect(callsTo(fetchMock, "/cloudzero/export")).toHaveLength(0);
@@ -150,6 +151,6 @@ describe("CloudZeroExportModal", () => {
 
   it("keeps the API key entry obscured", async () => {
     open();
-    expect(await screen.findByLabelText("CloudZero API Key")).toHaveAttribute("type", "password");
+    expect(await screen.findByLabelText("CloudZero API 密钥")).toHaveAttribute("type", "password");
   });
 });

@@ -9682,5 +9682,28 @@
     "actions": "Actions",
     "configExample": "Configuration Example",
     "description": "Create aliases for your model groups to simplify API calls. For example, you can create an alias &apos;gpt-4o&apos; that points to &apos;gpt-4o-mini-openai&apos; model group."
+  },
+  "cloudZeroExport": {
+    "loadFailed": "Failed to load existing settings",
+    "noAccessToken": "No access token available",
+    "saveFailed": "Failed to save CloudZero settings",
+    "exportFailed": "Failed to export to CloudZero",
+    "csvComingSoon": "CSV export functionality coming soon!",
+    "csvExportFailed": "Failed to export CSV",
+    "exportToCloudZero": "Export to CloudZero",
+    "exportToCsv": "Export to CSV",
+    "exportData": "Export Data",
+    "exportDestination": "Export Destination",
+    "existingConfig": "Existing CloudZero Configuration",
+    "apiKeyLabel": "CloudZero API Key",
+    "apiKeyPlaceholder": "Enter your CloudZero API key",
+    "connectionIdLabel": "Connection ID",
+    "connectionIdPlaceholder": "Enter CloudZero connection ID",
+    "csvExport": "CSV Export",
+    "exportCsvBtn": "Export CSV",
+    "savedSuccess": "CloudZero settings saved successfully",
+    "exportCloudZeroSuccess": "Export to CloudZero completed successfully",
+    "loadFailedDetail": "Failed to load existing settings: {msg}",
+    "unknownError": "Unknown error"
   }
 }
