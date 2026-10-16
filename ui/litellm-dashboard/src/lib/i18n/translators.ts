@@ -214,3 +214,8 @@ function useEstimatedOutputTokensTranslator() {
   return useTranslations("virtualKeys.estimatedOutputTokens");
 }
 export type EstimatedOutputTokensTranslator = ReturnType<typeof useEstimatedOutputTokensTranslator>;
+
+function useRoiCalculatorTranslator() {
+  return useTranslations("roiCalculator");
+}
+export type RoiCalculatorTranslator = ReturnType<typeof useRoiCalculatorTranslator>;

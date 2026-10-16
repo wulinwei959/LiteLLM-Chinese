@@ -1,8 +1,9 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
 
 import { apiClient } from "@/components/networking";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import ROICalculatorView from "./ROICalculatorView";
 
 vi.mock("@/components/networking", () => ({
@@ -143,15 +144,15 @@ describe("ROICalculatorView", () => {
   });
 
   it("shows the spend summary and opens an accessible pull reasoning dialog", async () => {
-    render(<ROICalculatorView accessToken="token" />);
+    renderWithProviders(<ROICalculatorView accessToken="token" />);
 
-    expect(await screen.findByText("Spend per estimated engineering hour")).toBeInTheDocument();
+    expect(await screen.findByText("每估算工程小时的花费")).toBeInTheDocument();
     expect(screen.getByText("$3.00")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Open estimate for org/repo pull request 42" }));
+    fireEvent.click(screen.getByRole("button", { name: "打开 org/repo 拉取请求 42 的估算" }));
 
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Updated routing and added a regression test.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "View on GitHub" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "在 GitHub 上查看" })).toHaveAttribute(
       "href",
       "https://github.com/org/repo/pull/42",
     );
@@ -174,15 +175,13 @@ describe("ROICalculatorView", () => {
       return Promise.resolve(idleStatus);
     });
 
-    render(<ROICalculatorView accessToken="token" />);
+    renderWithProviders(<ROICalculatorView accessToken="token" />);
 
     expect(await screen.findByRole("alert")).toHaveTextContent(warning);
-    expect(screen.getByRole("button", { name: "Open estimate for org/repo pull request 42" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "打开 org/repo 拉取请求 42 的估算" })).toBeInTheDocument();
     expect(screen.queryByText("$3.00")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByText("Calculation details"));
-    expect(
-      screen.getByText("Spend per estimated hour is unavailable until all selected repositories can be read."),
-    ).toBeVisible();
+    fireEvent.click(screen.getByText("计算详情"));
+    expect(screen.getByText("在所有选定仓库均可读取之前，无法计算每估算小时花费。")).toBeVisible();
   });
 
   it("lets a view-only admin read the report without write controls", async () => {
@@ -199,32 +198,32 @@ describe("ROICalculatorView", () => {
       return Promise.resolve(runningStatus);
     });
 
-    render(<ROICalculatorView accessToken="token" userRole="Admin" isViewOnly />);
+    renderWithProviders(<ROICalculatorView accessToken="token" userRole="Admin" isViewOnly />);
 
-    expect(await screen.findByText("Spend per estimated engineering hour")).toBeInTheDocument();
-    expect(screen.getByRole("note")).toHaveTextContent("Read-only access");
-    expect(screen.queryByRole("button", { name: "Run analysis" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Cancel sync" })).not.toBeInTheDocument();
+    expect(await screen.findByText("每估算工程小时的花费")).toBeInTheDocument();
+    expect(screen.getByRole("note")).toHaveTextContent("只读访问");
+    expect(screen.queryByRole("button", { name: "运行分析" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "取消同步" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("tab", { name: "People" }));
+    fireEvent.click(screen.getByRole("tab", { name: "人员" }));
     expect(screen.getByText("alice-work")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "alice-work" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("tab", { name: "Settings" }));
-    expect(screen.getByLabelText("GitHub token")).toBeDisabled();
-    expect(screen.queryByRole("button", { name: "Save settings" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Run analysis" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: "设置" }));
+    expect(screen.getByLabelText("GitHub 令牌")).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "保存设置" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "运行分析" })).not.toBeInTheDocument();
   });
 
   it("lets an admin open the people view and save a manual email match", async () => {
-    render(<ROICalculatorView accessToken="token" />);
+    renderWithProviders(<ROICalculatorView accessToken="token" />);
 
-    fireEvent.click(await screen.findByRole("tab", { name: "People" }));
+    fireEvent.click(await screen.findByRole("tab", { name: "人员" }));
     fireEvent.click(await screen.findByRole("button", { name: "alice-work" }));
-    fireEvent.change(screen.getByLabelText("Gateway email"), {
+    fireEvent.change(screen.getByLabelText("网关邮箱"), {
       target: { value: "alice+work@example.com" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Save match" }));
+    fireEvent.click(screen.getByRole("button", { name: "保存匹配" }));
 
     await waitFor(() =>
       expect(apiClient.put).toHaveBeenCalledWith("/roi-calculator/identity-map", {
@@ -242,11 +241,11 @@ describe("ROICalculatorView", () => {
       return Promise.resolve(idleStatus);
     });
 
-    render(<ROICalculatorView accessToken="token" />);
+    renderWithProviders(<ROICalculatorView accessToken="token" />);
 
-    expect(await screen.findByRole("heading", { name: "Connect GitHub to get started" })).toBeInTheDocument();
-    expect(screen.getByLabelText("GitHub token")).toHaveAttribute("type", "password");
-    expect(screen.getAllByText("Connect GitHub to get started")).toHaveLength(1);
+    expect(await screen.findByRole("heading", { name: "连接 GitHub 以开始" })).toBeInTheDocument();
+    expect(screen.getByLabelText("GitHub 令牌")).toHaveAttribute("type", "password");
+    expect(screen.getAllByText("连接 GitHub 以开始")).toHaveLength(1);
   });
 
   it("returns to Overview and shows the last sync time when completion is polled from Settings", async () => {
@@ -270,13 +269,13 @@ describe("ROICalculatorView", () => {
           }),
       );
 
-    render(<ROICalculatorView accessToken="token" />);
+    renderWithProviders(<ROICalculatorView accessToken="token" />);
 
-    expect(await screen.findByRole("progressbar", { name: "Sync progress" })).toBeInTheDocument();
-    expect(await screen.findByText("Spend per estimated engineering hour", {}, { timeout: 5000 })).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Connect GitHub to get started" })).not.toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("Last synced Sep 30, 2026, 12:00 PM UTC");
-    expect(screen.getByRole("status")).toHaveTextContent("57 of 57 estimates reused");
+    expect(await screen.findByRole("progressbar", { name: "同步进度" })).toBeInTheDocument();
+    expect(await screen.findByText("每估算工程小时的花费", {}, { timeout: 5000 })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "连接 GitHub 以开始" })).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("上次同步 Sep 30, 2026, 12:00 PM UTC");
+    expect(screen.getByRole("status")).toHaveTextContent("已复用 57 项估算中的 57 项");
   });
 
   it("shows the sync error returned by the status endpoint", async () => {
@@ -298,12 +297,12 @@ describe("ROICalculatorView", () => {
       .mockResolvedValueOnce(runningStatus)
       .mockResolvedValueOnce(errorStatus);
 
-    render(<ROICalculatorView accessToken="token" />);
+    renderWithProviders(<ROICalculatorView accessToken="token" />);
 
     expect(await screen.findByRole("alert", {}, { timeout: 5000 })).toHaveTextContent(
       "The estimator could not score a pull request.",
     );
-    expect(screen.getByText("Sync failed")).toBeInTheDocument();
+    expect(screen.getByText("同步失败")).toBeInTheDocument();
   });
 
   it("shows a report error and ends progress when the completed report cannot load", async () => {
@@ -322,13 +321,13 @@ describe("ROICalculatorView", () => {
       .mockResolvedValueOnce(completedStatus)
       .mockRejectedValueOnce(new Error("The report could not be loaded."));
 
-    render(<ROICalculatorView accessToken="token" />);
+    renderWithProviders(<ROICalculatorView accessToken="token" />);
 
-    expect(await screen.findByRole("progressbar", { name: "Sync progress" })).toBeInTheDocument();
+    expect(await screen.findByRole("progressbar", { name: "同步进度" })).toBeInTheDocument();
     expect(await screen.findByRole("alert", {}, { timeout: 5000 })).toHaveTextContent(
       "The report could not be loaded.",
     );
-    expect(screen.queryByRole("progressbar", { name: "Sync progress" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("progressbar", { name: "同步进度" })).not.toBeInTheDocument();
   });
 
   it("clears a transient poll error when the next poll completes and loads the report", async () => {
@@ -348,22 +347,22 @@ describe("ROICalculatorView", () => {
       .mockResolvedValueOnce(completedStatus)
       .mockResolvedValueOnce({ report: summary });
 
-    render(<ROICalculatorView accessToken="token" />);
+    renderWithProviders(<ROICalculatorView accessToken="token" />);
 
-    expect(await screen.findByRole("progressbar", { name: "Sync progress" })).toBeInTheDocument();
+    expect(await screen.findByRole("progressbar", { name: "同步进度" })).toBeInTheDocument();
     expect(await screen.findByRole("alert", {}, { timeout: 5000 })).toHaveTextContent(
       "The sync status could not be loaded.",
     );
-    expect(await screen.findByText("Spend per estimated engineering hour", {}, { timeout: 7000 })).toBeInTheDocument();
+    expect(await screen.findByText("每估算工程小时的花费", {}, { timeout: 7000 })).toBeInTheDocument();
     expect(screen.queryByText("The sync status could not be loaded.")).not.toBeInTheDocument();
   });
   it("saves the edited schedule before running from Settings", async () => {
     vi.mocked(apiClient.put).mockResolvedValue(settings);
     vi.mocked(apiClient.post).mockResolvedValue({ ...idleStatus, running: true });
-    render(<ROICalculatorView accessToken="token" />);
-    fireEvent.click(await screen.findByRole("tab", { name: "Settings" }));
-    fireEvent.change(screen.getByLabelText("Update interval (hours)"), { target: { value: "6" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save and run analysis" }));
+    renderWithProviders(<ROICalculatorView accessToken="token" />);
+    fireEvent.click(await screen.findByRole("tab", { name: "设置" }));
+    fireEvent.change(screen.getByLabelText("更新间隔（小时）"), { target: { value: "6" } });
+    fireEvent.click(screen.getByRole("button", { name: "保存并运行分析" }));
     await waitFor(() => expect(apiClient.post).toHaveBeenCalledWith("/roi-calculator/sync", { accessToken: "token" }));
     expect(apiClient.put).toHaveBeenCalledWith(
       "/roi-calculator/settings",
