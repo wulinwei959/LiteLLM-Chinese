@@ -387,6 +387,14 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-16 第 91 簇：新开顶层命名空间时如何复用 `common`、哪些位置能自己挂 hook
+
+`components/CloudZeroCostTracking/` 是批次 24 里第一个自成一体的集成目录（新开顶层 `cloudZero` 命名空间），三条值得固化：
+
+- **新开命名空间不排斥复用 `common.*`，但要再挂一把 `useTranslations("common")`**。`Cancel`/`Create`/`Update`/`Delete`/`Edit`/`Export`/`Actions` 以及状态回退 `Active` 在 `common` 里都是同值键，直接复用，别在新命名空间里复制一份同值叶子（复制会把"中英同值"计数推高、还把一句话拆成两处维护）。代价是同一文件里出现两个 translator：`const t = useTranslations("cloudZero")` 取专属文案，`const commonT = useTranslations("common")` 取通用按钮，与 `PassThroughSettings`、`PluginSettings` 的既有写法一致。判据仍是"概念与取值都相同就复用"
+- **能自己挂 hook 的位置比想象的多**：`React.forwardRef` 的渲染函数就是组件体（`CloudZeroApiKeyInput` 在里面对 `useTranslations("cloudZero")` 取显隐按钮的两条 aria），模块级、无参、只渲染一处文案的函数组件也在自身挂 hook（本簇的 `NotConfigured`）。真正的边界只有"非 React 组件的纯函数"（工具函数、列定义工厂、`label`/`hint` 拼装函数），它们才走首参/入参 `t`。所以给一个目录接线时，先按"它是不是组件"分堆，组件一律就地 `useTranslations`，别把 `t` 当 prop 层层往下传
+- **`npx tsc --noEmit` 在本仓库基线本就大面积报错**（本簇实测 880 条，几乎全落在存量 `*.test.tsx`，如 `src/utils/returnUrlUtils.test.ts` 缺 vitest 全局、`tests/top_key_view.test.tsx` 夹具字段不全）。这不是本簇引入的，判断有没有净增要 `git stash -u` 回基线跑同一命令比条数（本簇前后都是 880）。日常只报"非测试文件 0 错"，真正的类型门禁是 `npx vitest run` 里 `types` 项目那行 `Type Errors  no errors`。若碰巧改到的测试文件本来就有 `getByText(string | null)` 之类的存量类型错（本簇 `CloudZeroIntegrationSettings.test.tsx` 即两处），照旧保留、不必顺手改
+
 ## 2026-10-16 第 87-90 簇：子串碰撞的标签查询、非组件工具的翻译入参、`render(` 全局替换误伤 `rerender(`
 
 `Settings/AdminSettings/` 家族最后四个目录（`PluginSettings`、`WebSearchInterceptionSettings`、`MCPSemanticFilterSettings`、`MCPToolSearchSettings`）收口时踩到三条：
