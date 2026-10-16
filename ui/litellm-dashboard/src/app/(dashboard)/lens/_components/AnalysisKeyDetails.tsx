@@ -1,9 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { apiClient } from "@/components/networking";
 import { Button } from "@/components/ui/button";
+import type { LensTranslator } from "@/lib/i18n/translators";
 import { runTime } from "./lensData";
 
 const keyInfoFields = {
@@ -18,22 +20,24 @@ const keyInfoFields = {
 };
 const keyInfoSchema = z.object({ info: z.object(keyInfoFields) });
 
-function budgetLabel(amount: number | null, duration?: string | null): string {
-  if (amount === null) return "No key budget";
+function budgetLabel(amount: number | null, duration: string | null | undefined, t: LensTranslator): string {
+  if (amount === null) return t("noKeyBudget");
   const periods: Record<string, string> = {
-    "1mo": "month",
-    "30d": "month",
-    "1d": "day",
-    "24h": "day",
-    "7d": "week",
-    "1h": "hour",
+    "1mo": t("periodMonth"),
+    "30d": t("periodMonth"),
+    "1d": t("periodDay"),
+    "24h": t("periodDay"),
+    "7d": t("periodWeek"),
+    "1h": t("periodHour"),
   };
   const dollars = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 2,
   }).format(amount);
-  return duration ? `${dollars} / ${periods[duration] ?? duration}` : `${dollars} total`;
+  return duration
+    ? t("budgetPerPeriod", { amount: dollars, period: periods[duration] ?? duration })
+    : t("budgetTotal", { amount: dollars });
 }
 
 export function useAnalysisKeyInfo(accessToken: string, keyId?: string) {
@@ -54,14 +58,16 @@ export function AnalysisKeyDetails({
   keyId: string;
   showName?: boolean;
 }) {
+  const t = useTranslations("lens");
+  const commonT = useTranslations("common");
   const key = useAnalysisKeyInfo(accessToken, keyId);
-  if (key.isLoading) return <p className="text-xs text-muted-foreground">Loading key permissions…</p>;
+  if (key.isLoading) return <p className="text-xs text-muted-foreground">{t("loadingKeyPermissions")}</p>;
   if (key.error || !key.data)
     return (
       <div role="alert" className="flex items-center gap-2 text-sm text-destructive">
-        Could not load key permissions
+        {t("couldNotLoadKeyPermissions")}
         <Button variant="ghost" size="sm" onClick={() => void key.refetch()}>
-          Retry
+          {commonT("retry")}
         </Button>
       </div>
     );
@@ -71,27 +77,27 @@ export function AnalysisKeyDetails({
       <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-2">
         {showName && (
           <>
-            <dt className="text-muted-foreground">Billing key</dt>
-            <dd className="break-words">{info.key_alias || "Assigned virtual key"}</dd>
+            <dt className="text-muted-foreground">{t("billingKey")}</dt>
+            <dd className="break-words">{info.key_alias || t("assignedVirtualKey")}</dd>
           </>
         )}
-        <dt className="text-muted-foreground">Models</dt>
-        <dd className="break-words">{info.models.length ? info.models.join(", ") : "All models"}</dd>
-        <dt className="text-muted-foreground">Key limit</dt>
-        <dd>{budgetLabel(info.max_budget, info.budget_duration)}</dd>
+        <dt className="text-muted-foreground">{t("models")}</dt>
+        <dd className="break-words">{info.models.length ? info.models.join(", ") : t("allModels")}</dd>
+        <dt className="text-muted-foreground">{t("keyLimit")}</dt>
+        <dd>{budgetLabel(info.max_budget, info.budget_duration, t)}</dd>
       </dl>
       {info.status && info.status !== "active" && (
         <p role="alert" className="text-destructive">
-          This key is {info.status}. Choose an active key.
+          {t("thisKeyIsStatus", { status: info.status })}
         </p>
       )}
       <details className="text-xs text-muted-foreground">
-        <summary className="cursor-pointer">Other limits</summary>
+        <summary className="cursor-pointer">{t("otherLimits")}</summary>
         <div className="mt-2 space-y-1 leading-5">
-          <p>Requests per minute: {info.rpm_limit ?? "No key limit"}</p>
-          <p>Tokens per minute: {info.tpm_limit ?? "No key limit"}</p>
-          <p>Expires: {info.expires ? runTime(info.expires) : "No expiry"}</p>
-          <p>Team, organization, and model limits still apply.</p>
+          <p>{t("requestsPerMinute", { value: info.rpm_limit ?? t("noKeyLimit") })}</p>
+          <p>{t("tokensPerMinute", { value: info.tpm_limit ?? t("noKeyLimit") })}</p>
+          <p>{t("expires", { value: info.expires ? runTime(info.expires) : t("noExpiry") })}</p>
+          <p>{t("otherLimitsNote")}</p>
         </div>
       </details>
     </div>

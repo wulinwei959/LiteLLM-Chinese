@@ -28,11 +28,11 @@ describe("Lens billing key", () => {
           },
     );
     renderWithProviders(<AnalysisKey accessToken="test" value={null} onChange={changed} />);
-    await user.click(screen.getByRole("combobox", { name: "Charge analysis to" }));
-    await user.click(await screen.findByRole("option", { name: "Load more keys" }));
+    await user.click(screen.getByRole("combobox", { name: "分析费用计入" }));
+    await user.click(await screen.findByRole("option", { name: "加载更多密钥" }));
     await user.click(await screen.findByRole("option", { name: "Second page" }));
     expect(changed).toHaveBeenCalledExactlyOnceWith("c".repeat(64));
     expect(await screen.findByText("restricted-model")).toBeInTheDocument();
-    expect(screen.getByText("$4.00 / day")).toBeInTheDocument();
+    expect(screen.getByText("$4.00 / 天")).toBeInTheDocument();
   });
 });

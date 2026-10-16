@@ -1,4 +1,5 @@
 import { formatActivityTimestamp } from "@/utils/activityTimestamp";
+import type { CommonTranslator, LensTranslator } from "@/lib/i18n/translators";
 import type { components } from "@/lib/http/schema";
 
 export type Lens = components["schemas"]["Lens"];
@@ -12,11 +13,14 @@ export function workerConnected(worker: LensList["workers"][number], now = Date.
   return !worker.revoked && !!worker.analysis_key_id && now - Date.parse(worker.last_seen) < 120000;
 }
 
-export function scopeLabel(settings: Partial<Pick<Settings, "service" | "agent_name" | "filters">>): string {
+export function scopeLabel(
+  settings: Partial<Pick<Settings, "service" | "agent_name" | "filters">>,
+  t: LensTranslator,
+): string {
   return (
     [settings.agent_name, settings.service, ...(settings.filters ?? []).map((f) => `${f.key}: ${f.value}`)]
       .filter(Boolean)
-      .join(" · ") || "All activity"
+      .join(" · ") || t("allActivity")
   );
 }
 
@@ -26,9 +30,9 @@ export const starterQuestions = [
   "Identify recurring user needs and successful ways the agent handles them.",
 ];
 
-export function normalizeFilters(filters: NonNullable<Settings["filters"]>): Settings["filters"] {
+export function normalizeFilters(filters: NonNullable<Settings["filters"]>, t: LensTranslator): Settings["filters"] {
   return filters.map((f) => {
-    if (!f.key.trim() || !f.value.trim()) throw new Error("Choose a key and value for every condition, or remove it");
+    if (!f.key.trim() || !f.value.trim()) throw new Error(t("filterIncomplete"));
     return { key: f.key.trim(), value: f.value.trim() };
   });
 }
@@ -43,16 +47,16 @@ export function sortedFindings(findings: Finding[]): Finding[] {
   );
 }
 
-export function lensStatus(lens: Lens, connected: boolean): string {
+export function lensStatus(lens: Lens, connected: boolean, t: LensTranslator, commonT: CommonTranslator): string {
   const active = lens.jobs?.find((job) => ["queued", "running"].includes(job.status ?? ""));
-  if (active) return connected ? active.stage ?? "Queued" : "Waiting for analyzer";
+  if (active) return connected ? active.stage ?? t("statusQueued") : t("waitingForAnalyzer");
   const spent = lens.budget_month === new Date().toISOString().slice(0, 7) ? lens.spent ?? 0 : 0;
-  if (spent >= (lens.settings.monthly_budget ?? 100)) return "Budget reached";
+  if (spent >= (lens.settings.monthly_budget ?? 100)) return t("budgetReached");
   const latest = lens.jobs?.[0];
-  if (latest?.status === "failed") return "Failed";
-  if (latest?.status === "cancelled") return "Cancelled";
-  if (latest?.status === "completed") return "Completed";
-  return "Ready";
+  if (latest?.status === "failed") return commonT("failed");
+  if (latest?.status === "cancelled") return t("statusCancelled");
+  if (latest?.status === "completed") return commonT("completed");
+  return t("statusReady");
 }
 
 export function evidenceTarget(id: string): { source: string; team: string; id: string; traceRef?: string } | null {
@@ -68,7 +72,13 @@ export function evidenceTarget(id: string): { source: string; team: string; id: 
 
 export type Job = components["schemas"]["Job"];
 
-export function analysisProgress(job: Job) {
+export const priorityLabelKeys = {
+  high: "priorityHigh",
+  medium: "priorityMedium",
+  low: "priorityLow",
+} as const;
+
+export function analysisProgress(job: Job, t: LensTranslator) {
   const {
     screened = 0,
     selected = 0,
@@ -80,40 +90,40 @@ export function analysisProgress(job: Job) {
   if (job.status === "queued") {
     return {
       step: -1,
-      title: "Queued for your worker",
+      title: t("progressQueuedTitle"),
       done: 0,
       total: 0,
-      detail: "The worker picks up queued investigations automatically.",
+      detail: t("progressQueuedDetail"),
     };
   }
   if (job.stage === "Grouping observations") {
     return {
       step: 1,
-      title: "Finding patterns",
+      title: t("progressFindingPatterns"),
       done: grouped_batches,
       total: grouping_batches,
       detail: grouping_batches
-        ? `${grouped_batches} of ${grouping_batches} observation batches compared`
-        : `Comparing observations across ${screened} reviewed runs`,
+        ? t("batchesCompared", { grouped: grouped_batches, total: grouping_batches })
+        : t("comparingObservations", { screened }),
     };
   }
   if (job.stage === "Checking original evidence") {
     return {
       step: 2,
-      title: "Checking evidence",
+      title: t("progressCheckingEvidence"),
       done: investigated,
       total: candidates,
       detail: candidates
-        ? `${investigated} of ${candidates} patterns checked against the original activity`
-        : `${investigated} patterns checked against the original activity`,
+        ? t("patternsChecked", { investigated, candidates })
+        : t("patternsCheckedAll", { investigated }),
     };
   }
   return {
     step: 0,
-    title: "Reviewing activity",
+    title: t("progressReviewingActivity"),
     done: screened,
     total: selected,
-    detail: `${screened} of ${selected} selected runs reviewed`,
+    detail: t("selectedRunsReviewed", { screened, selected }),
   };
 }
 
@@ -132,13 +142,13 @@ export interface AnalysisModelInfo {
   supported_openai_params?: string[] | null;
 }
 
-export function analysisModelOptions(models: string[], details: AnalysisModelInfo[]) {
+export function analysisModelOptions(models: string[], details: AnalysisModelInfo[], t: LensTranslator) {
   return [...new Set(models)].sort().map((name) => {
     const info = details.find((item) => item.model_group === name);
     const capability = () => {
-      if (info?.mode && info.mode !== "chat") return `${info.mode}: not suitable for Lens`;
-      if (info?.supported_openai_params?.includes("response_format")) return "JSON output supported";
-      return "JSON output support unverified";
+      if (info?.mode && info.mode !== "chat") return t("modelNotSuitable", { mode: info.mode });
+      if (info?.supported_openai_params?.includes("response_format")) return t("jsonSupported");
+      return t("jsonUnverified");
     };
     return {
       value: name,
@@ -148,26 +158,26 @@ export function analysisModelOptions(models: string[], details: AnalysisModelInf
   });
 }
 
-export function durationLabel(value: number, base: "minutes" | "hours" = "minutes"): string {
+export function durationLabel(value: number, base: "minutes" | "hours", t: LensTranslator): string {
   const minutes = base === "hours" ? value * 60 : value;
   if (minutes >= 1440) {
     const days = Number((minutes / 1440).toFixed(2));
-    return `${days} ${days === 1 ? "day" : "days"}`;
+    return t("durationDays", { value: days });
   }
-  if (minutes % 60 === 0) return `${minutes / 60} ${minutes === 60 ? "hour" : "hours"}`;
-  return `${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
+  if (minutes % 60 === 0) return t("durationHours", { value: minutes / 60 });
+  return t("durationMinutes", { value: minutes });
 }
 
-export function nextCheckStatus(lens: Lens, now: number): string | null {
+export function nextCheckStatus(lens: Lens, now: number, t: LensTranslator): string | null {
   if (!lens.settings.enabled) return null;
   const active = lens.jobs.find((job) => job.status === "queued" || job.status === "running");
-  if (active?.status === "running") return "Next check scheduled after this scan finishes";
-  if (active?.status === "queued") return "Waiting for an analyzer";
+  if (active?.status === "running") return t("nextCheckScheduled");
+  if (active?.status === "queued") return t("waitingForAnAnalyzer");
   const next = new Date(lens.next_run_at);
   const remaining = next.getTime() - now;
-  if (remaining <= 0) return "Due now · waiting for an analyzer";
+  if (remaining <= 0) return t("dueNow");
   const minutes = Math.ceil(remaining / 60000);
-  const relative = minutes === 1 ? "in less than a minute" : `in ${minutes} minutes`;
+  const relative = minutes === 1 ? t("inLessThanMinute") : t("inMinutes", { minutes });
   const time = formatActivityTimestamp(lens.next_run_at);
-  return `Next check ${time} · ${relative}`;
+  return t("nextCheckWithTime", { time, relative });
 }

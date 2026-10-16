@@ -45,13 +45,13 @@ describe("Lens setup", () => {
     renderWithProviders(
       <LensSetup initial={settings} models={["analysis"]} accessToken="test" onClose={vi.fn()} onSave={save} />,
     );
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-    fireEvent.change(screen.getByRole("textbox", { name: "Check 1" }), {
+    await user.click(screen.getByRole("button", { name: "继续" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "检查 1" }), {
       target: { value: "Find repetitive searches\nInclude retries that add no information" },
     });
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Save changes" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "Save changes" }));
+    await user.click(screen.getByRole("button", { name: "继续" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
     expect(save).toHaveBeenCalledWith(
       expect.objectContaining({
         checks: [
@@ -65,12 +65,12 @@ describe("Lens setup", () => {
   it("rejects invalid metadata before reviewing the selection", async () => {
     const user = userEvent.setup();
     renderWithProviders(<LensSetup models={["analysis"]} accessToken="test" onClose={vi.fn()} onSave={vi.fn()} />);
-    await user.click(screen.getByText("Advanced filters"));
-    await user.click(screen.getByRole("button", { name: "Add condition" }));
-    fireEvent.change(screen.getByRole("combobox", { name: "Metadata key 1" }), { target: { value: "swarm" } });
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(screen.getByRole("alert")).toHaveTextContent("Choose a key and value for every condition, or remove it");
-    expect(screen.queryByRole("textbox", { name: "Check 1" })).not.toBeInTheDocument();
+    await user.click(screen.getByText("高级筛选"));
+    await user.click(screen.getByRole("button", { name: "添加条件" }));
+    fireEvent.change(screen.getByRole("combobox", { name: "元数据键 1" }), { target: { value: "swarm" } });
+    await user.click(screen.getByRole("button", { name: "继续" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("每个条件都要填写键和值，否则请将其移除");
+    expect(screen.queryByRole("textbox", { name: "检查 1" })).not.toBeInTheDocument();
   });
   it("previews identifiable matching runs and saves the same filter selection", async () => {
     const save = vi.fn().mockResolvedValue(undefined);
@@ -97,28 +97,28 @@ describe("Lens setup", () => {
     renderWithProviders(
       <LensSetup models={["analysis"]} defaultModel="analysis" accessToken="test" onClose={vi.fn()} onSave={save} />,
     );
-    fireEvent.change(screen.getByRole("textbox", { name: "Investigation name" }), {
+    fireEvent.change(screen.getByRole("textbox", { name: "调查名称" }), {
       target: { value: "Research follow-up" },
     });
-    await user.click(screen.getByText("Advanced filters"));
-    await user.click(screen.getByRole("button", { name: "Add condition" }));
-    fireEvent.change(screen.getByRole("combobox", { name: "Metadata key 1" }), { target: { value: "swarm" } });
-    fireEvent.change(screen.getByRole("combobox", { name: "Metadata value 1" }), { target: { value: "research" } });
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-    await user.type(screen.getByRole("textbox", { name: "Check 1" }), "Find incomplete reports");
-    await user.click(screen.getByRole("button", { name: "Add check" }));
-    fireEvent.change(screen.getByRole("textbox", { name: "Check 2" }), {
+    await user.click(screen.getByText("高级筛选"));
+    await user.click(screen.getByRole("button", { name: "添加条件" }));
+    fireEvent.change(screen.getByRole("combobox", { name: "元数据键 1" }), { target: { value: "swarm" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "元数据值 1" }), { target: { value: "research" } });
+    await user.click(screen.getByRole("button", { name: "继续" }));
+    await user.type(screen.getByRole("textbox", { name: "检查 1" }), "Find incomplete reports");
+    await user.click(screen.getByRole("button", { name: "添加检查" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "检查 2" }), {
       target: { value: "Find repeated searches\nInclude retries that add no information" },
     });
-    await user.click(screen.getByRole("button", { name: "Add check" }));
-    await user.click(screen.getByRole("button", { name: "Remove check 3" }));
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Run investigation" })).toBeEnabled());
-    expect(screen.getByText("1 matching run")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "添加检查" }));
+    await user.click(screen.getByRole("button", { name: "移除检查 3" }));
+    await user.click(screen.getByRole("button", { name: "继续" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "运行调查" })).toBeEnabled());
+    expect(screen.getByText("1 个匹配运行")).toBeInTheDocument();
     expect(screen.getByText("Research report")).toBeInTheDocument();
     expect(screen.getByText(/2026-09-30/)).toBeInTheDocument();
-    expect(screen.getByRole("spinbutton", { name: "Monthly limit (USD)" })).not.toBeVisible();
-    await user.click(screen.getByRole("button", { name: "Run investigation" }));
+    expect(screen.getByRole("spinbutton", { name: "每月上限（美元）" })).not.toBeVisible();
+    await user.click(screen.getByRole("button", { name: "运行调查" }));
     const expected = {
       name: "Research follow-up",
       service: "",
@@ -153,17 +153,17 @@ it("searches providers and saves custom history while preserving existing schedu
       onSave={save}
     />,
   );
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.selectOptions(screen.getByRole("combobox", { name: "Review the last unit" }), "1");
-  fireEvent.change(screen.getByRole("spinbutton", { name: "Review the last" }), { target: { value: "3" } });
-  expect(screen.getByText(/is no longer available/)).toBeVisible();
-  await user.clear(screen.getByRole("combobox", { name: "Analysis model" }));
-  await user.type(screen.getByRole("combobox", { name: "Analysis model" }), "OpenAI");
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.selectOptions(screen.getByRole("combobox", { name: "审查最近单位" }), "1");
+  fireEvent.change(screen.getByRole("spinbutton", { name: "审查最近" }), { target: { value: "3" } });
+  expect(screen.getByText(/已不可用/)).toBeVisible();
+  await user.clear(screen.getByRole("combobox", { name: "分析模型" }));
+  await user.type(screen.getByRole("combobox", { name: "分析模型" }), "OpenAI");
   expect(screen.queryByRole("option", { name: /Anthropic/ })).not.toBeInTheDocument();
-  await user.click(await screen.findByRole("option", { name: /review.*JSON output supported/ }));
-  await waitFor(() => expect(screen.getByRole("button", { name: "Save changes" })).toBeEnabled());
-  await user.click(screen.getByRole("button", { name: "Save changes" }));
+  await user.click(await screen.findByRole("option", { name: /review.*支持 JSON 输出/ }));
+  await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled());
+  await user.click(screen.getByRole("button", { name: "保存更改" }));
   const expected = { model: "review", lookback_hours: 3, interval_minutes: 15, enabled: false };
   expect(save).toHaveBeenCalledWith(expect.objectContaining(expected));
 });
@@ -172,11 +172,11 @@ it("configures monitoring separately and rejects a zero interval", async () => {
   const user = userEvent.setup();
   const save = vi.fn().mockResolvedValue(undefined);
   renderWithProviders(<MonitoringSetup settings={settings} ready onSave={save} onClose={vi.fn()} />);
-  fireEvent.change(screen.getByRole("spinbutton", { name: "Check every" }), { target: { value: "2" } });
-  await user.click(screen.getByRole("button", { name: "Enable monitoring" }));
+  fireEvent.change(screen.getByRole("spinbutton", { name: "每多久检查一次" }), { target: { value: "2" } });
+  await user.click(screen.getByRole("button", { name: "启用监控" }));
   expect(save).toHaveBeenCalledWith(expect.objectContaining({ interval_minutes: 2, enabled: true }));
-  fireEvent.change(screen.getByRole("spinbutton", { name: "Check every" }), { target: { value: "0" } });
-  expect(screen.getByRole("button", { name: "Enable monitoring" })).toBeDisabled();
+  fireEvent.change(screen.getByRole("spinbutton", { name: "每多久检查一次" }), { target: { value: "0" } });
+  expect(screen.getByRole("button", { name: "启用监控" })).toBeDisabled();
 });
 
 it("keeps the draft when readiness changes and blocks a run until the worker recovers", async () => {
@@ -191,14 +191,14 @@ it("keeps the draft when readiness changes and blocks a run until the worker rec
     onSave: save,
   };
   const view = renderWithProviders(<LensSetup {...props} ready />);
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.type(screen.getByRole("textbox", { name: "What should the agent be doing?" }), "Finish the report");
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.type(screen.getByRole("textbox", { name: "智能体应该做什么？" }), "Finish the report");
   view.rerender(<LensSetup {...props} ready={false} />);
-  expect(screen.getByRole("textbox", { name: "What should the agent be doing?" })).toHaveValue("Finish the report");
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  expect(screen.getByRole("button", { name: "Run investigation" })).toBeDisabled();
+  expect(screen.getByRole("textbox", { name: "智能体应该做什么？" })).toHaveValue("Finish the report");
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  expect(screen.getByRole("button", { name: "运行调查" })).toBeDisabled();
   view.rerender(<LensSetup {...props} ready />);
-  await waitFor(() => expect(screen.getByRole("button", { name: "Run investigation" })).toBeEnabled());
+  await waitFor(() => expect(screen.getByRole("button", { name: "运行调查" })).toBeEnabled());
 });
 
 it.each(["empty", "error"])("allows editing saved settings when the preview is %s", async (state) => {
@@ -208,11 +208,11 @@ it.each(["empty", "error"])("allows editing saved settings when the preview is %
   renderWithProviders(
     <LensSetup initial={settings} models={["analysis"]} accessToken="test" onClose={vi.fn()} onSave={vi.fn()} />,
   );
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  expect(screen.getByRole("button", { name: "Save changes" })).toBeEnabled();
-  if (state === "error") expect(await screen.findByRole("button", { name: "Retry preview" })).toBeVisible();
-  else expect(await screen.findByText(/No matches/)).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled();
+  if (state === "error") expect(await screen.findByRole("button", { name: "重试预览" })).toBeVisible();
+  else expect(await screen.findByText(/无匹配项/)).toBeVisible();
 });
 
 it.each(["loading", "error"])("saves edits with the existing model while models are %s", async (state) => {
@@ -229,12 +229,12 @@ it.each(["loading", "error"])("saves edits with the existing model while models 
       onSave={save}
     />,
   );
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  fireEvent.change(screen.getByRole("textbox", { name: "What should the agent be doing?" }), {
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  fireEvent.change(screen.getByRole("textbox", { name: "智能体应该做什么？" }), {
     target: { value: "Include verified sources" },
   });
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.click(screen.getByRole("button", { name: "Save changes" }));
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.click(screen.getByRole("button", { name: "保存更改" }));
   expect(save).toHaveBeenCalledWith(
     expect.objectContaining({ model: settings.model, context: "Include verified sources" }),
   );
@@ -254,10 +254,10 @@ it.each(["new", "duplicate"] as const)("blocks a %s investigation until its mode
       onSave={save}
     />,
   );
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  expect(await screen.findByText("1 matching run")).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Run investigation" })).toBeDisabled();
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  expect(await screen.findByText("1 个匹配运行")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "运行调查" })).toBeDisabled();
   expect(save).not.toHaveBeenCalled();
 });
 
@@ -274,15 +274,15 @@ it("shows optional budget and repeat controls only under advanced options and sa
       onSave={save}
     />,
   );
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await waitFor(() => expect(screen.getByRole("button", { name: "Run investigation" })).toBeEnabled());
-  await user.click(screen.getByText("Advanced options"));
-  expect(screen.getByRole("checkbox", { name: "Repeat this investigation" })).not.toBeChecked();
-  fireEvent.change(screen.getByRole("spinbutton", { name: "Monthly limit (USD)" }), { target: { value: "8" } });
-  await user.click(screen.getByRole("checkbox", { name: "Repeat this investigation" }));
-  fireEvent.change(screen.getByRole("spinbutton", { name: "Repeat every" }), { target: { value: "120" } });
-  await user.click(screen.getByRole("button", { name: "Run and monitor" }));
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await waitFor(() => expect(screen.getByRole("button", { name: "运行调查" })).toBeEnabled());
+  await user.click(screen.getByText("高级选项"));
+  expect(screen.getByRole("checkbox", { name: "重复此调查" })).not.toBeChecked();
+  fireEvent.change(screen.getByRole("spinbutton", { name: "每月上限（美元）" }), { target: { value: "8" } });
+  await user.click(screen.getByRole("checkbox", { name: "重复此调查" }));
+  fireEvent.change(screen.getByRole("spinbutton", { name: "重复间隔" }), { target: { value: "120" } });
+  await user.click(screen.getByRole("button", { name: "运行并监控" }));
   expect(save).toHaveBeenCalledWith(
     expect.objectContaining({ enabled: true, interval_minutes: 120, monthly_budget: 8 }),
   );
@@ -307,13 +307,13 @@ it("does not silently analyze everything after individual selection is enabled",
   renderWithProviders(
     <LensSetup initial={settings} models={["analysis"]} accessToken="test" onClose={vi.fn()} onSave={vi.fn()} />,
   );
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.click(screen.getByText("Advanced options"));
-  await user.click(screen.getByRole("checkbox", { name: "Choose individual runs" }));
-  expect(screen.getByRole("button", { name: "Save changes" })).toBeDisabled();
-  await user.click(await screen.findByRole("checkbox", { name: "Select Example run" }));
-  await waitFor(() => expect(screen.getByRole("button", { name: "Save changes" })).toBeEnabled());
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.click(screen.getByText("高级选项"));
+  await user.click(screen.getByRole("checkbox", { name: "选择单个运行" }));
+  expect(screen.getByRole("button", { name: "保存更改" })).toBeDisabled();
+  await user.click(await screen.findByRole("checkbox", { name: "选择 Example run" }));
+  await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled());
 });
 
 it("refreshes agent suggestions when the first activity arrives", async () => {
@@ -323,8 +323,8 @@ it("refreshes agent suggestions when the first activity arrives", async () => {
     vi.mocked(apiClient.post).mockResolvedValue({ eligible: 0, selected: 0, executions: [] });
     renderWithProviders(<LensSetup models={["analysis"]} accessToken="test" onClose={vi.fn()} onSave={vi.fn()} />);
     await vi.advanceTimersByTimeAsync(400);
-    await user.click(screen.getByRole("combobox", { name: "Agent (optional)" }));
-    expect(await screen.findByText(/No matches. You can enter/)).toBeVisible();
+    await user.click(screen.getByRole("combobox", { name: "智能体（可选）" }));
+    expect(await screen.findByText(/无匹配项。你可以输入/)).toBeVisible();
     await user.keyboard("{Escape}");
     vi.mocked(apiClient.post).mockResolvedValue({
       eligible: 1,
@@ -343,7 +343,7 @@ it("refreshes agent suggestions when the first activity arrives", async () => {
     });
     vi.mocked(apiClient.get).mockResolvedValue(["support-agent"]);
     await vi.advanceTimersByTimeAsync(15000);
-    await user.click(screen.getByRole("combobox", { name: "Agent (optional)" }));
+    await user.click(screen.getByRole("combobox", { name: "智能体（可选）" }));
     expect(await screen.findByRole("option", { name: "support-agent" })).toBeVisible();
   } finally {
     vi.useRealTimers();
@@ -364,9 +364,9 @@ it.each(["empty", "error"])("blocks a new investigation when its preview is %s",
       onSave={vi.fn()}
     />,
   );
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  expect(screen.getByRole("button", { name: "Run investigation" })).toBeDisabled();
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  expect(screen.getByRole("button", { name: "运行调查" })).toBeDisabled();
 });
 
 it("exposes an unsupported inherited model before allowing a run", async () => {
@@ -382,11 +382,11 @@ it("exposes an unsupported inherited model before allowing a run", async () => {
       onSave={vi.fn()}
     />,
   );
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  expect(screen.getByText("Choose a chat model that supports JSON output.")).toBeVisible();
-  expect(screen.getByRole("combobox", { name: "Analysis model" })).toBeVisible();
-  expect(screen.getByRole("button", { name: "Run investigation" })).toBeDisabled();
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  expect(screen.getByText("请选择支持 JSON 输出的对话模型")).toBeVisible();
+  expect(screen.getByRole("combobox", { name: "分析模型" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "运行调查" })).toBeDisabled();
 });
 
 it("saves a discovered agent independently of the application name", async () => {
@@ -402,11 +402,11 @@ it("saves a discovered agent independently of the application name", async () =>
       onSave={save}
     />,
   );
-  await user.click(screen.getByRole("combobox", { name: "Agent (optional)" }));
+  await user.click(screen.getByRole("combobox", { name: "智能体（可选）" }));
   await user.click(await screen.findByRole("option", { name: "research_agent" }));
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.click(screen.getByRole("button", { name: "Continue" }));
-  await user.click(screen.getByRole("button", { name: "Save changes" }));
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.click(screen.getByRole("button", { name: "继续" }));
+  await user.click(screen.getByRole("button", { name: "保存更改" }));
   expect(save).toHaveBeenCalledWith(
     expect.objectContaining({ agent_name: "research_agent", service: "shared-service" }),
   );

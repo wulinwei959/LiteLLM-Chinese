@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { ChevronDown } from "lucide-react";
 
@@ -18,16 +19,17 @@ export function DurationInput({
   max: number;
 }) {
   const id = useId();
+  const t = useTranslations("lens");
   const units =
     base === "minutes"
       ? [
-          { label: "minutes", scale: 1 },
-          { label: "hours", scale: 60 },
-          { label: "days", scale: 1440 },
+          { label: t("unitMinutes"), scale: 1 },
+          { label: t("unitHours"), scale: 60 },
+          { label: t("unitDays"), scale: 1440 },
         ]
       : [
-          { label: "hours", scale: 1 },
-          { label: "days", scale: 24 },
+          { label: t("unitHours"), scale: 1 },
+          { label: t("unitDays"), scale: 24 },
         ];
   const [scale, setScale] = useState(() => [...units].reverse().find((unit) => value % unit.scale === 0)?.scale ?? 1);
   function changeUnit(next: number) {
@@ -50,7 +52,7 @@ export function DurationInput({
         />
         <div className="relative w-28 shrink-0">
           <select
-            aria-label={`${label} unit`}
+            aria-label={t("unitAria", { label })}
             value={scale}
             className="h-9 w-full appearance-none rounded-md border border-input bg-background pl-3 pr-9 text-sm"
             onChange={(event) => changeUnit(Number(event.target.value))}

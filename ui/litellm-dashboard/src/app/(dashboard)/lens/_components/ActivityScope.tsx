@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { Plus, X, ChevronRight, RotateCw } from "lucide-react";
 import { apiClient } from "@/components/networking";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ export type ActivitySelection = Pick<Settings, "source"> &
 const selectClass = "h-9 w-full rounded-md border border-input bg-background px-3 text-sm";
 
 export function RunList({ executions }: { executions: Sample["executions"] }) {
+  const t = useTranslations("lens");
   return (
     <div className="divide-y">
       {executions.map((run) => (
@@ -44,7 +46,7 @@ export function RunList({ executions }: { executions: Sample["executions"] }) {
           <p className="text-sm font-medium">{run.name}</p>
           <p className="mt-1 text-xs text-muted-foreground">
             {runTime(run.start_time)} ·{" "}
-            {run.source === "traces" ? `${run.span_count} ${run.span_count === 1 ? "step" : "steps"}` : "LLM request"}
+            {run.source === "traces" ? t("steps", { count: run.span_count }) : t("llmRequest")}
           </p>
         </div>
       ))}
@@ -70,6 +72,8 @@ export function ActivityScope({
   nameField?: ReactNode;
 }) {
   const id = useId();
+  const t = useTranslations("lens");
+  const commonT = useTranslations("common");
   const hasFilters = !!value.filters?.length || !!value.team_id;
   const [advanced, setAdvanced] = useState(hasFilters || !!value.service || value.source !== "traces");
   const [offset, setOffset] = useState(0);
@@ -174,15 +178,16 @@ export function ActivityScope({
     onChange(selection);
   };
   const windowLabel = validWindow
-    ? `Last ${durationLabel(value.lookback_hours ?? 24, "hours")}`
-    : "Choose a valid history window";
+    ? t("lastWindow", { window: durationLabel(value.lookback_hours ?? 24, "hours", t) })
+    : t("chooseValidWindow");
   const previewTitle = () => {
-    if (pending) return "Finding matching activity…";
-    if (!validWindow) return "Choose a history window between 1 hour and 365 days";
-    if (!valid) return "Complete your condition to preview matches";
-    if (!preview.data) return "Preview unavailable";
-    const noun = value.source === "requests" ? "request" : "run";
-    return `${preview.data.eligible} matching ${noun}${preview.data.eligible === 1 ? "" : "s"}`;
+    if (pending) return t("findingMatchingActivity");
+    if (!validWindow) return t("chooseHistoryWindow");
+    if (!valid) return t("completeCondition");
+    if (!preview.data) return t("previewUnavailable");
+    return value.source === "requests"
+      ? t("matchingRequests", { count: preview.data.eligible })
+      : t("matchingRuns", { count: preview.data.eligible });
   };
   return (
     <div className={mode === "activity" ? "grid gap-6 sm:grid-cols-2" : "space-y-5"}>
@@ -191,7 +196,7 @@ export function ActivityScope({
           <>
             {nameField}
             <label className="grid gap-2 text-sm font-medium">
-              {value.source === "requests" ? "Model group (optional)" : "Agent (optional)"}
+              {value.source === "requests" ? t("modelGroupOptional") : t("agentOptional")}
               <Combobox
                 items={names}
                 value={selectedName || null}
@@ -200,15 +205,13 @@ export function ActivityScope({
                 onValueChange={(name) => selectName(name ?? "")}
               >
                 <ComboboxInput
-                  aria-label={value.source === "requests" ? "Model group (optional)" : "Agent (optional)"}
-                  placeholder={value.source === "requests" ? "All model groups" : "All agents and activity"}
+                  aria-label={value.source === "requests" ? t("modelGroupOptional") : t("agentOptional")}
+                  placeholder={value.source === "requests" ? t("allModelGroups") : t("allAgentsAndActivity")}
                   showClear={!!selectedName}
                   className="w-full h-9"
                 />
                 <ComboboxContent>
-                  <ComboboxEmpty>
-                    {agents.isFetching ? "Loading agents…" : "No matches. You can enter a recorded name."}
-                  </ComboboxEmpty>
+                  <ComboboxEmpty>{agents.isFetching ? t("loadingAgents") : t("noMatchesEnterName")}</ComboboxEmpty>
                   <ComboboxList>
                     {(name: string) => (
                       <ComboboxItem key={name} value={name}>
@@ -221,65 +224,64 @@ export function ActivityScope({
             </label>
             {value.source !== "requests" && agents.isError && (
               <p role="alert" className="text-sm text-destructive">
-                Could not load agents.{" "}
+                {t("couldNotLoadAgents")}{" "}
                 <button type="button" className="underline" onClick={() => void agents.refetch()}>
-                  Retry
+                  {commonT("retry")}
                 </button>
               </p>
             )}
             <details open={advanced} onToggle={(event) => setAdvanced(event.currentTarget.open)} className="group">
               <summary className="cursor-pointer text-sm font-medium">
-                Advanced filters{filters.length ? ` (${filters.length})` : ""}
+                {t("advancedFilters")}
+                {filters.length ? ` (${filters.length})` : ""}
               </summary>
               <div className="mt-4 space-y-4">
                 {value.source !== "requests" && (
                   <label className="grid gap-2 text-sm">
-                    Application (optional)
+                    {t("applicationOptional")}
                     <Input
                       value={value.service ?? ""}
-                      placeholder="All applications"
+                      placeholder={t("allApplications")}
                       onChange={(event) => onChange({ ...value, service: event.target.value, execution_ids: [] })}
                     />
                   </label>
                 )}
                 <label className="grid gap-2 text-sm">
-                  Activity type
+                  {t("activityType")}
                   <select
                     className={selectClass}
                     value={value.source}
                     onChange={(e) => changeSource(e.target.value as Settings["source"])}
                   >
-                    <option value="traces">Agent traces</option>
-                    <option value="requests">LLM requests</option>
-                    <option value="both">Traces and LLM requests</option>
+                    <option value="traces">{t("agentTraces")}</option>
+                    <option value="requests">{t("llmRequests")}</option>
+                    <option value="both">{t("tracesAndLlmRequests")}</option>
                   </select>
                 </label>
-                <p className="text-xs leading-5 text-muted-foreground">
-                  Match any recorded metadata, such as a user ID, environment, or tag. All conditions must match.
-                </p>
+                <p className="text-xs leading-5 text-muted-foreground">{t("matchMetadataHelp")}</p>
                 {filters.map((f, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex gap-2">
                       <Input
-                        aria-label={`Metadata key ${index + 1}`}
+                        aria-label={t("metadataKeyAria", { index: index + 1 })}
                         list={`${id}-keys`}
-                        placeholder="Metadata key"
+                        placeholder={t("metadataKey")}
                         value={f.key}
                         onChange={(e) => edit(index, "key", e.target.value)}
                       />
                       <Button
                         variant="ghost"
                         size="icon"
-                        aria-label={`Remove condition ${index + 1}`}
+                        aria-label={t("removeConditionAria", { index: index + 1 })}
                         onClick={() => onChange({ ...value, filters: filters.filter((_, i) => i !== index) })}
                       >
                         <X className="size-4" />
                       </Button>
                     </div>
                     <Input
-                      aria-label={`Metadata value ${index + 1}`}
+                      aria-label={t("metadataValueAria", { index: index + 1 })}
                       list={`${id}-values-${index}`}
-                      placeholder="Equals"
+                      placeholder={t("equals")}
                       value={f.value}
                       onChange={(e) => edit(index, "value", e.target.value)}
                     />
@@ -301,13 +303,13 @@ export function ActivityScope({
                   disabled={filters.length >= 8}
                   onClick={() => onChange({ ...value, filters: [...filters, { key: "", value: "" }] })}
                 >
-                  <Plus className="size-3" /> Add condition
+                  <Plus className="size-3" /> {t("addCondition")}
                 </Button>
                 <label className="grid gap-2 text-sm">
-                  Team ID (optional)
+                  {t("teamIdOptional")}
                   <Input
                     value={value.team_id ?? ""}
-                    placeholder="All accessible teams"
+                    placeholder={t("allAccessibleTeams")}
                     onChange={(e) => onChange({ ...value, team_id: e.target.value })}
                   />
                 </label>
@@ -317,14 +319,14 @@ export function ActivityScope({
         ) : (
           <>
             <DurationInput
-              label="Review the last"
+              label={t("reviewTheLast")}
               value={value.lookback_hours ?? 24}
               base="hours"
               max={8760}
               onChange={(lookback_hours) => onChange({ ...value, lookback_hours })}
             />
             <label className="grid gap-2 text-sm">
-              Sample (%)
+              {t("samplePercent")}
               <Input
                 type="number"
                 min="0.01"
@@ -338,7 +340,7 @@ export function ActivityScope({
         )}
         {manualSelection && !!value.execution_ids?.length && (
           <Button variant="outline" size="sm" onClick={() => onChange({ ...value, execution_ids: [] })}>
-            Clear {value.execution_ids.length} selected runs
+            {t("clearSelectedRuns", { count: value.execution_ids.length })}
           </Button>
         )}
       </div>
@@ -415,11 +417,13 @@ function MatchingActivity({
   onRetry: () => void;
   onOpen: (run: Sample["executions"][number]) => void;
 }) {
+  const t = useTranslations("lens");
+  const commonT = useTranslations("common");
   const paginated = data?.next_offset != null || offset > 0;
   const showSelection = selectedCount !== data?.eligible || paginated;
   const selectionData = ready && showSelection ? data : undefined;
   return (
-    <section aria-label="Matching activity" className="self-start rounded-lg border">
+    <section aria-label={t("matchingActivity")} className="self-start rounded-lg border">
       <div className="border-b px-4 py-3">
         <div className="flex items-center justify-between gap-2">
           <p className="text-sm font-medium" role="status">
@@ -428,37 +432,34 @@ function MatchingActivity({
           <Button
             variant="ghost"
             size="icon-xs"
-            aria-label="Refresh matching activity"
+            aria-label={t("refreshMatchingActivity")}
             onClick={onRetry}
             disabled={!ready}
           >
             <RotateCw className="size-3" />
           </Button>
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">{windowLabel} · No analysis cost</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {windowLabel} · {t("noAnalysisCost")}
+        </p>
       </div>
       <div className="max-h-64 overflow-y-auto px-4">
         {ready && error && (
           <p role="alert" className="py-3 text-sm text-destructive">
             {error.message}{" "}
             <Button variant="link" onClick={onRetry}>
-              Retry preview
+              {t("retryPreview")}
             </Button>
           </p>
         )}
-        {ready && data?.eligible === 0 && (
-          <p className="py-4 text-sm text-muted-foreground">
-            No matches. Try removing a condition or check that your agent records this metadata. Recent trace updates
-            need two minutes to settle.
-          </p>
-        )}
+        {ready && data?.eligible === 0 && <p className="py-4 text-sm text-muted-foreground">{t("noMatchesHelp")}</p>}
         {ready &&
           data?.executions.map((run) => (
             <div key={run.id} className="flex items-center justify-between gap-3 border-b last:border-0">
               {manualSelection && (
                 <input
                   type="checkbox"
-                  aria-label={`Select ${run.name}`}
+                  aria-label={t("selectRunAria", { name: run.name })}
                   checked={selectedIds.includes(run.id)}
                   onChange={(e) => onSelect(run.id, e.target.checked)}
                 />
@@ -467,7 +468,12 @@ function MatchingActivity({
                 <RunList executions={[run]} />
               </div>
               {run.source === "traces" && (
-                <Button variant="ghost" size="icon-sm" aria-label={`Open ${run.name}`} onClick={() => onOpen(run)}>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={t("openRunAria", { name: run.name })}
+                  onClick={() => onOpen(run)}
+                >
                   <ChevronRight className="size-4" />
                 </Button>
               )}
@@ -477,12 +483,16 @@ function MatchingActivity({
       {selectionData && (
         <div className="border-t px-4 py-3 space-y-2">
           <p className="text-xs text-muted-foreground">
-            {selectedCount} selected for analysis
+            {t("selectedForAnalysis", { count: selectedCount })}
             {paginated && (
               <>
                 {" "}
-                · Showing {offset + (selectionData.executions.length ? 1 : 0)}–
-                {offset + selectionData.executions.length} of {selectionData.eligible}
+                ·{" "}
+                {t("showingRange", {
+                  start: offset + (selectionData.executions.length ? 1 : 0),
+                  end: offset + selectionData.executions.length,
+                  total: selectionData.eligible,
+                })}
               </>
             )}
           </p>
@@ -494,7 +504,7 @@ function MatchingActivity({
                 disabled={offset === 0}
                 onClick={() => onPage(Math.max(0, offset - 100))}
               >
-                Previous
+                {commonT("previous")}
               </Button>
               <Button
                 size="sm"
@@ -502,7 +512,7 @@ function MatchingActivity({
                 disabled={selectionData.next_offset == null}
                 onClick={() => onPage(selectionData.next_offset ?? offset)}
               >
-                Next
+                {commonT("next")}
               </Button>
             </div>
           )}

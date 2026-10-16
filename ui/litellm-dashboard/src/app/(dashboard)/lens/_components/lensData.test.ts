@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "next-intl";
+import zhCN from "@/messages/zh-CN.json";
 import {
   analysisElapsed,
   workerConnected,
@@ -9,6 +11,8 @@ import {
   type Finding,
   type Job,
 } from "./lensData";
+
+const t = createTranslator({ locale: "zh-CN", messages: zhCN, namespace: "lens" });
 
 const coverage: Job["coverage"] = {
   eligible: 0,
@@ -59,40 +63,46 @@ const job: Job = {
 
 describe("Analysis progress", () => {
   it("measures review progress against the sample, not all eligible runs", () => {
-    const expected = { step: 0, done: 7, total: 20, detail: "7 of 20 selected runs reviewed" };
+    const expected = { step: 0, done: 7, total: 20, detail: "已审查 20 个已选运行中的 7 个" };
     expect(
-      analysisProgress({ ...job, coverage: { ...coverage, eligible: 1000, selected: 20, screened: 7 } }),
+      analysisProgress({ ...job, coverage: { ...coverage, eligible: 1000, selected: 20, screened: 7 } }, t),
     ).toMatchObject(expected);
   });
 
   it("shows actual grouping progress instead of treating reviewed runs as a finished scan", () => {
-    const expected = { step: 1, done: 2, total: 4, detail: "2 of 4 observation batches compared" };
+    const expected = { step: 1, done: 2, total: 4, detail: "已比较 4 个观察批次中的 2 个" };
     expect(
-      analysisProgress({
-        ...job,
-        stage: "Grouping observations",
-        coverage: { ...coverage, screened: 21, grouped_batches: 2, grouping_batches: 4 },
-      }),
+      analysisProgress(
+        {
+          ...job,
+          stage: "Grouping observations",
+          coverage: { ...coverage, screened: 21, grouped_batches: 2, grouping_batches: 4 },
+        },
+        t,
+      ),
     ).toMatchObject(expected);
   });
 
   it("keeps older worker grouping responses indeterminate", () => {
     expect(
-      analysisProgress({ ...job, stage: "Grouping observations", coverage: { ...coverage, screened: 21 } }),
+      analysisProgress({ ...job, stage: "Grouping observations", coverage: { ...coverage, screened: 21 } }, t),
     ).toMatchObject({
       step: 1,
       total: 0,
-      detail: "Comparing observations across 21 reviewed runs",
+      detail: "正在跨 21 个已审查运行比较观察结果",
     });
   });
 
   it("shows verified candidate counts separately from run counts", () => {
     expect(
-      analysisProgress({
-        ...job,
-        stage: "Checking original evidence",
-        coverage: { ...coverage, screened: 21, investigated: 2, candidates: 5 },
-      }),
+      analysisProgress(
+        {
+          ...job,
+          stage: "Checking original evidence",
+          coverage: { ...coverage, screened: 21, investigated: 2, candidates: 5 },
+        },
+        t,
+      ),
     ).toMatchObject({
       step: 2,
       done: 2,
@@ -101,10 +111,10 @@ describe("Analysis progress", () => {
   });
 
   it("does not show queued work as started", () => {
-    expect(analysisProgress({ ...job, status: "queued" })).toMatchObject({
+    expect(analysisProgress({ ...job, status: "queued" }, t)).toMatchObject({
       step: -1,
       total: 0,
-      title: "Queued for your worker",
+      title: "已加入工作进程队列",
     });
   });
 
@@ -116,12 +126,12 @@ describe("Analysis progress", () => {
 
 describe("Lens selection and findings", () => {
   it("preserves literal equals signs in a metadata value", () => {
-    expect(normalizeFilters([{ key: " swarm ", value: " research=v2 " }])).toEqual([
+    expect(normalizeFilters([{ key: " swarm ", value: " research=v2 " }], t)).toEqual([
       { key: "swarm", value: "research=v2" },
     ]);
   });
   it("rejects an incomplete condition instead of broadening the scan", () => {
-    expect(() => normalizeFilters([{ key: "swarm", value: " " }])).toThrow("Choose a key and value");
+    expect(() => normalizeFilters([{ key: "swarm", value: " " }], t)).toThrow("每个条件都要填写键和值");
   });
   it("puts high priority issues ahead of newer low priority findings", () => {
     const base: Finding = {

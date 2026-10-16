@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,6 +12,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import type { LensTranslator } from "@/lib/i18n/translators";
 import { serverRootPath } from "@/lib/serverRootPath";
 import { apiClient, proxyBaseUrl } from "@/components/networking";
 import { CheckCircle2, Copy, Loader2 } from "lucide-react";
@@ -41,9 +43,9 @@ export function workerSetupCommand(address: string, token: string): string {
   ].join(" \\\n");
 }
 
-function workerStatus(worker: LensList["workers"][number], now: number): string {
-  if (!worker.analysis_key_id) return "Billing key required";
-  return workerConnected(worker, now) ? "Connected" : "Not connected";
+function workerStatus(worker: LensList["workers"][number], now: number, t: LensTranslator): string {
+  if (!worker.analysis_key_id) return t("billingKeyRequired");
+  return workerConnected(worker, now) ? t("connected") : t("notConnected");
 }
 
 export function WorkerSetup({
@@ -60,6 +62,8 @@ export function WorkerSetup({
   onReady?: () => void;
 }) {
   const [now, setNow] = useState(Date.now);
+  const t = useTranslations("lens");
+  const commonT = useTranslations("common");
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 2000);
     return () => window.clearInterval(timer);
@@ -77,14 +81,14 @@ export function WorkerSetup({
     ? workers.some((w) => w.id === created.worker.id && workerConnected(w, now))
     : workers.some((w) => workerConnected(w, now));
   const formVisible = !workers.some((w) => !w.revoked) || !!editingWorker;
-  const createdTitle = connected ? "Worker connected" : "Run the worker";
-  const formTitle = editingWorker ? "Analysis access" : "Connect a worker";
+  const createdTitle = connected ? t("workerConnected") : t("runTheWorker");
+  const formTitle = editingWorker ? t("analysisAccess") : t("connectAWorker");
   const validAccess = useExisting
     ? !!analysisKey
     : !!access.model && Number.isFinite(Number(access.budget)) && Number(access.budget) > 0;
-  const baseTitle = formVisible ? formTitle : "Analysis worker";
+  const baseTitle = formVisible ? formTitle : t("analysisWorker");
   const dialogTitle = created ? createdTitle : baseTitle;
-  const actionLabel = editingWorker ? "Save analysis access" : "Get install command";
+  const actionLabel = editingWorker ? t("saveAnalysisAccess") : t("getInstallCommand");
   const cancelForm = () => {
     if (!workers.some((w) => !w.revoked)) {
       onClose();
@@ -106,8 +110,8 @@ export function WorkerSetup({
     try {
       const parsedAddress = new URL(address);
       if (!["http:", "https:"].includes(parsedAddress.protocol) || parsedAddress.username || parsedAddress.password)
-        throw new Error("Enter an HTTP or HTTPS proxy URL without credentials");
-      const keyId = useExisting ? analysisKey : await createAnalysisKey(accessToken, access);
+        throw new Error(t("enterHttpUrl"));
+      const keyId = useExisting ? analysisKey : await createAnalysisKey(accessToken, access, t);
       if (!useExisting) newKey = keyId;
       if (editingWorker) {
         await apiClient.put(`/lens/workers/${editingWorker}/billing-key`, {
@@ -127,7 +131,7 @@ export function WorkerSetup({
       );
       onChanged();
     } catch (e) {
-      const message = e instanceof Error ? e.message : "Could not create credential";
+      const message = e instanceof Error ? e.message : t("couldNotCreateCredential");
       setError(message);
       if (newKey) {
         try {
@@ -137,24 +141,20 @@ export function WorkerSetup({
           }
           onChanged();
         } catch {
-          setError(
-            `${message}. Could not confirm cleanup. Check the Lens analysis key in Virtual Keys before retrying.`,
-          );
+          setError(t("cleanupFailed", { message }));
         }
       }
     } finally {
       setBusy(false);
     }
   };
-  const setupDescription = created
-    ? "Run this command on a server with Docker."
-    : "Deploy the worker on your server to run investigations.";
+  const setupDescription = created ? t("runCommandDocker") : t("deployWorker");
   const awaitingConnection = !editingWorker && !connected;
   const describeSetup = awaitingConnection && (formVisible || !!created);
   const completed = !!created && connected;
   const installSize = connected ? "sm:max-w-sm p-8" : "sm:max-w-lg";
   const modalSize = created ? installSize : "sm:max-w-xl";
-  const description = describeSetup ? setupDescription : "Worker status and model access";
+  const description = describeSetup ? setupDescription : t("workerStatusModelAccess");
   return (
     <Dialog
       open
@@ -171,7 +171,7 @@ export function WorkerSetup({
           )}
           <DialogTitle className="text-xl leading-7">{dialogTitle}</DialogTitle>
           <DialogDescription className={describeSetup || completed ? undefined : "sr-only"}>
-            {completed ? "Ready to run investigations." : description}
+            {completed ? t("readyToRun") : description}
           </DialogDescription>
         </DialogHeader>
         {formVisible && !created && (
@@ -188,19 +188,19 @@ export function WorkerSetup({
               />
             )}
             <details className="text-sm" open={editingWorker ? true : undefined}>
-              <summary className="cursor-pointer font-medium">Advanced options</summary>
+              <summary className="cursor-pointer font-medium">{t("advancedOptions")}</summary>
               <div className="mt-4 space-y-5">
                 <label className="flex items-center justify-between gap-4">
-                  Use an existing virtual key
+                  {t("useExistingVirtualKey")}
                   <Switch checked={useExisting} onCheckedChange={setUseExisting} />
                 </label>
                 {!editingWorker && (
                   <div className="space-y-2">
                     <label htmlFor="worker-proxy-address" className="block text-sm font-medium">
-                      LiteLLM proxy URL
+                      {t("litellmProxyUrl")}
                     </label>
                     <Input id="worker-proxy-address" value={address} onChange={(e) => setAddress(e.target.value)} />
-                    <p className="text-xs text-muted-foreground">Your server must be able to reach this address.</p>
+                    <p className="text-xs text-muted-foreground">{t("serverReachable")}</p>
                   </div>
                 )}
               </div>
@@ -219,18 +219,18 @@ export function WorkerSetup({
                       await navigator.clipboard.writeText(workerSetupCommand(address, created.token));
                       setCopied(true);
                     } catch {
-                      setError("Clipboard access failed. Allow clipboard access and try again.");
+                      setError(t("clipboardFailed"));
                     }
                   }}
                 >
                   {copied ? <CheckCircle2 className="size-4" /> : <Copy className="size-4" />}
-                  {copied ? "Copied" : "Copy Docker command"}
+                  {copied ? commonT("copied") : t("copyDockerCommand")}
                 </Button>
                 <details className="text-sm">
-                  <summary className="cursor-pointer text-muted-foreground">View command</summary>
-                  <p className="mt-3 text-xs text-muted-foreground">Contains a private worker token.</p>
+                  <summary className="cursor-pointer text-muted-foreground">{t("viewCommand")}</summary>
+                  <p className="mt-3 text-xs text-muted-foreground">{t("containsPrivateToken")}</p>
                   <pre
-                    aria-label="Docker command preview"
+                    aria-label={t("dockerCommandPreview")}
                     className="mt-3 max-h-48 overflow-auto rounded-md bg-muted/40 p-3 text-xs leading-5"
                   >
                     {workerSetupCommand(address, created.token)}
@@ -241,21 +241,18 @@ export function WorkerSetup({
             {!connected && (
               <div className="space-y-3 border-t pt-5">
                 <div role="status" className="flex items-center gap-2.5 text-sm">
-                  <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" /> Waiting for your worker to
-                  connect…
+                  <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />{" "}
+                  {t("waitingForWorkerConnect")}
                 </div>
                 <details className="pl-6.5 text-sm text-muted-foreground">
-                  <summary className="cursor-pointer">Not connecting?</summary>
-                  <p className="mt-2 break-words leading-6">
-                    Check that Docker is running and can reach {address}. Inspect the container logs for connection or
-                    authentication errors. This page updates automatically.
-                  </p>
+                  <summary className="cursor-pointer">{t("notConnecting")}</summary>
+                  <p className="mt-2 break-words leading-6">{t("notConnectingHelp", { address })}</p>
                 </details>
               </div>
             )}
             {connected && (
               <Button className="w-full" onClick={onReady ?? onClose}>
-                {onReady ? "New investigation" : "Done"}
+                {onReady ? t("newInvestigation") : commonT("done")}
               </Button>
             )}
           </div>
@@ -263,10 +260,10 @@ export function WorkerSetup({
         {!created && formVisible && (
           <DialogFooter>
             <Button variant="outline" disabled={busy} onClick={cancelForm}>
-              Cancel
+              {commonT("cancel")}
             </Button>
             <Button disabled={busy || !address.trim() || !validAccess} onClick={createWorker}>
-              {busy ? "Preparing…" : actionLabel}
+              {busy ? t("preparing") : actionLabel}
             </Button>
           </DialogFooter>
         )}
@@ -282,7 +279,7 @@ export function WorkerSetup({
                     className={`flex items-center gap-2 ${workerConnected(worker, now) ? "text-emerald-700 dark:text-emerald-400" : "text-muted-foreground"}`}
                   >
                     {workerConnected(worker, now) && <CheckCircle2 className="size-4" />}
-                    {workerStatus(worker, now)}
+                    {workerStatus(worker, now, t)}
                   </span>
                 </div>
                 {worker.analysis_key_id && (
@@ -290,7 +287,7 @@ export function WorkerSetup({
                 )}
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <Button variant="outline" size="sm" onClick={() => editBilling(worker)}>
-                    Settings
+                    {commonT("settings")}
                   </Button>
                   <Button
                     variant="ghost"
@@ -302,11 +299,11 @@ export function WorkerSetup({
                         setUseExisting(false);
                         onChanged();
                       } catch (e) {
-                        setError(e instanceof Error ? e.message : "Could not revoke worker");
+                        setError(e instanceof Error ? e.message : t("couldNotRevokeWorker"));
                       }
                     }}
                   >
-                    Revoke access
+                    {t("revokeAccess")}
                   </Button>
                 </div>
               </section>

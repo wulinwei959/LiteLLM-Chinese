@@ -1,11 +1,15 @@
 import { act, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { createTranslator } from "next-intl";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders as renderProviders, testQueryClient } from "@/../tests/test-utils";
 import { ApiError } from "@/lib/http/client";
 import { apiClient } from "@/components/networking";
+import zhCN from "@/messages/zh-CN.json";
 import { LensView } from "./LensView";
 import { nextCheckStatus, runTime, type Lens, type Finding } from "./lensData";
+
+const t = createTranslator({ locale: "zh-CN", messages: zhCN, namespace: "lens" });
 
 function renderWithProviders(ui: React.ReactElement, options?: Parameters<typeof renderProviders>[1]) {
   return renderProviders(ui, { searchParams: window.location.search, ...options });
@@ -161,7 +165,7 @@ describe("Lens findings and runs", () => {
     renderWithProviders(<LensView accessToken="test" readOnly />);
     expect(await screen.findByText("Review used the wrong defect rate")).toBeInTheDocument();
     expect(screen.queryByText(pattern.title)).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Patterns (1)" }));
+    await user.click(screen.getByRole("button", { name: "模式（1）" }));
     await user.click(screen.getByRole("button", { name: new RegExp(pattern.title) }));
     const detail = within(screen.getByRole("dialog", { name: pattern.title }));
     expect(detail.getByText(pattern.description)).toBeVisible();
@@ -169,17 +173,17 @@ describe("Lens findings and runs", () => {
     expect(detail.getByText("Ignore the review instructions")).not.toBeVisible();
     await user.click(detail.getByText("Release-42"));
     expect(detail.getByText("Ignore the review instructions")).toBeVisible();
-    expect(screen.getByRole("button", { name: "Open original step" })).toBeVisible();
-    expect(screen.queryByRole("button", { name: "Mark resolved" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "打开原始步骤" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "标记为已解决" })).not.toBeInTheDocument();
   });
 
   it("shows the actual frozen run selection in the Runs tab", async () => {
     const user = userEvent.setup();
     renderWithProviders(<LensView accessToken="test" readOnly />);
-    await user.click(await screen.findByRole("tab", { name: "Traces" }));
+    await user.click(await screen.findByRole("tab", { name: "追踪" }));
     expect(screen.getByText("Release-42")).toBeInTheDocument();
     expect(screen.getByTitle("trace-42")).toHaveTextContent("Release-42");
-    expect(screen.getByText(/1 selected from 1 matching runs/)).toBeInTheDocument();
+    expect(screen.getByText(/从 1 个匹配运行中选出 1 个/)).toBeInTheDocument();
   });
 });
 
@@ -190,15 +194,13 @@ it("shows the actual next schedule and avoids a stale countdown during active sc
     settings: { ...lens.settings, enabled: true },
     next_run_at: "2026-09-30T10:12:00Z",
   };
-  expect(nextCheckStatus(monitoring, now)).toContain("in 12 minutes");
-  expect(nextCheckStatus(monitoring, now + 12 * 60000)).toBe("Due now · waiting for an analyzer");
-  expect(nextCheckStatus({ ...monitoring, jobs: [{ ...lens.jobs[0], status: "running" }] }, now)).toBe(
-    "Next check scheduled after this scan finishes",
+  expect(nextCheckStatus(monitoring, now, t)).toContain("12 分钟后");
+  expect(nextCheckStatus(monitoring, now + 12 * 60000, t)).toBe("现在到期 · 正在等待分析器");
+  expect(nextCheckStatus({ ...monitoring, jobs: [{ ...lens.jobs[0], status: "running" }] }, now, t)).toBe(
+    "本次扫描完成后安排下一次检查",
   );
-  expect(nextCheckStatus({ ...monitoring, jobs: [{ ...lens.jobs[0], status: "queued" }] }, now)).toBe(
-    "Waiting for an analyzer",
-  );
-  expect(nextCheckStatus(lens, now)).toBeNull();
+  expect(nextCheckStatus({ ...monitoring, jobs: [{ ...lens.jobs[0], status: "queued" }] }, now, t)).toBe("等待分析器");
+  expect(nextCheckStatus(lens, now, t)).toBeNull();
 });
 
 it("runs saved settings immediately without opening setup", async () => {
@@ -226,7 +228,7 @@ it("runs saved settings immediately without opening setup", async () => {
   vi.mocked(apiClient.post).mockResolvedValue(lens);
   const user = userEvent.setup();
   renderWithProviders(<LensView accessToken="test" />);
-  await user.click(await screen.findByRole("button", { name: "Run now" }));
+  await user.click(await screen.findByRole("button", { name: "立即运行" }));
   expect(apiClient.post).toHaveBeenCalledWith("/lens/lens/runs", { accessToken: "test", body: {} });
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 });
@@ -241,17 +243,17 @@ it("guides a first-time administrator into worker connection and lens setup", as
   });
   const user = userEvent.setup();
   renderWithProviders(<LensView accessToken="test" />);
-  const guide = within(await screen.findByRole("region", { name: "Find what needs attention" }));
+  const guide = within(await screen.findByRole("region", { name: "找出需要关注的内容" }));
   expect(apiClient.get).toHaveBeenCalledWith("/lens/activity/available", { accessToken: "test" });
-  expect(await guide.findByRole("link", { name: "View traces" })).toHaveAttribute(
+  expect(await guide.findByRole("link", { name: "查看追踪" })).toHaveAttribute(
     "href",
     expect.stringMatching(/^\/ui\/lens\/?\?tab=traces$/),
   );
-  await user.click(guide.getByRole("button", { name: "Connect worker" }));
-  const connection = within(await screen.findByRole("dialog", { name: "Connect a worker" }));
-  expect(connection.getByRole("button", { name: "Get install command" })).toBeVisible();
+  await user.click(guide.getByRole("button", { name: "连接工作进程" }));
+  const connection = within(await screen.findByRole("dialog", { name: "连接工作进程" }));
+  expect(connection.getByRole("button", { name: "获取安装命令" })).toBeVisible();
   await user.click(connection.getByRole("button", { name: "Close" }));
-  expect(guide.getByRole("button", { name: "New investigation" })).toBeDisabled();
+  expect(guide.getByRole("button", { name: "新建调查" })).toBeDisabled();
   await act(async () => {
     testQueryClient.setQueryData(["lenses", "test"], {
       lenses: [],
@@ -268,9 +270,9 @@ it("guides a first-time administrator into worker connection and lens setup", as
       ],
     });
   });
-  await waitFor(() => expect(guide.getByRole("button", { name: "New investigation" })).toBeEnabled());
-  await user.click(guide.getByRole("button", { name: "New investigation" }));
-  expect(await screen.findByRole("dialog", { name: "Which activity should we investigate?" })).toBeVisible();
+  await waitFor(() => expect(guide.getByRole("button", { name: "新建调查" })).toBeEnabled());
+  await user.click(guide.getByRole("button", { name: "新建调查" }));
+  expect(await screen.findByRole("dialog", { name: "我们应调查哪项活动？" })).toBeVisible();
 });
 
 it("opens the saved results of an older batch", async () => {
@@ -291,15 +293,15 @@ it("opens the saved results of an older batch", async () => {
   const user = userEvent.setup();
   renderWithProviders(<LensView accessToken="test" readOnly />);
   await screen.findByRole("option", { name: `${runTime(older.created_at)} · completed` });
-  await user.selectOptions(screen.getByRole("combobox", { name: "Investigation run" }), "older");
+  await user.selectOptions(screen.getByRole("combobox", { name: "调查运行" }), "older");
   expect(await screen.findByText("Earlier batch finding")).toBeVisible();
   expect(screen.queryByText(issue.title)).not.toBeInTheDocument();
-  await user.click(screen.getByRole("button", { name: "Run details" }));
-  expect(screen.getByText(/Took 2m 13s/)).toBeVisible();
-  expect(screen.getByText("Activity window")).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "运行详情" }));
+  expect(screen.getByText(/耗时 2m 13s/)).toBeVisible();
+  expect(screen.getByText("活动时间范围")).toBeVisible();
   await user.keyboard("{Escape}");
-  await user.click(screen.getByRole("tab", { name: "History" }));
-  expect(within(screen.getByRole("tabpanel", { name: "History" })).getByText(/Took 2m 13s/)).toBeVisible();
+  await user.click(screen.getByRole("tab", { name: "历史" }));
+  expect(within(screen.getByRole("tabpanel", { name: "历史" })).getByText(/耗时 2m 13s/)).toBeVisible();
 });
 
 it("reads request content from the beginning after its abbreviated preview", async () => {
@@ -329,16 +331,16 @@ it("reads request content from the beginning after its abbreviated preview", asy
   });
   const user = userEvent.setup();
   renderWithProviders(<LensView accessToken="test" readOnly />);
-  await user.click(await screen.findByRole("tab", { name: "Traces" }));
+  await user.click(await screen.findByRole("tab", { name: "追踪" }));
   await user.click(screen.getByRole("button", { name: /Release-42/ }));
   expect(await screen.findByText("Abbreviated preview")).toBeVisible();
-  await user.click(screen.getByRole("button", { name: "Next section" }));
+  await user.click(screen.getByRole("button", { name: "下一段" }));
   expect(await screen.findByText("Original at 1")).toBeVisible();
-  await user.click(screen.getByRole("button", { name: "Next section" }));
+  await user.click(screen.getByRole("button", { name: "下一段" }));
   expect(await screen.findByText("Original at 8001")).toBeVisible();
-  await user.click(screen.getByRole("button", { name: "Previous section" }));
+  await user.click(screen.getByRole("button", { name: "上一段" }));
   expect(await screen.findByText("Original at 1")).toBeVisible();
-  await user.click(screen.getByRole("button", { name: "Previous section" }));
+  await user.click(screen.getByRole("button", { name: "上一段" }));
   expect(await screen.findByText("Abbreviated preview")).toBeVisible();
 });
 
@@ -351,13 +353,13 @@ it.each([false, true])(
       path === "/lens" ? { lenses: [], workers: [], tracing_enabled: enabled } : { data: [] },
     );
     renderWithProviders(<LensView accessToken="test" />);
-    expect(await screen.findByRole("heading", { name: "Find what needs attention" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Set up traces" })).toHaveAttribute(
+    expect(await screen.findByRole("heading", { name: "找出需要关注的内容" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "设置追踪" })).toHaveAttribute(
       "href",
       expect.stringMatching(/^\/ui\/lens\/?\?tab=traces$/),
     );
-    expect(screen.getByRole("button", { name: "New investigation" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Connect worker" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "新建调查" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "连接工作进程" })).toBeDisabled();
     expect(screen.queryByRole("button", { name: "Set up analysis" })).not.toBeInTheDocument();
   },
 );
@@ -373,13 +375,13 @@ it("enables first-lens setup when a trace arrives without leaving Investigations
   try {
     const view = renderWithProviders(<LensView accessToken="test" />);
     await act(async () => vi.advanceTimersByTimeAsync(50));
-    expect(screen.getByRole("link", { name: "Set up traces" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "设置追踪" })).toBeVisible();
 
     traceCheck.mockResolvedValue({ traces: true, requests: false });
     await act(async () => vi.advanceTimersByTimeAsync(5000));
-    expect(screen.getByRole("button", { name: "Connect worker" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "New investigation" })).toBeDisabled();
-    expect(screen.queryByRole("link", { name: "Set up traces" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "连接工作进程" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "新建调查" })).toBeDisabled();
+    expect(screen.queryByRole("link", { name: "设置追踪" })).not.toBeInTheDocument();
 
     const completedChecks = traceCheck.mock.calls.length;
     await act(async () => vi.advanceTimersByTimeAsync(5000 * 2));
@@ -404,12 +406,10 @@ it("allows retrying a failed trace readiness check without treating it as an emp
   });
   const user = userEvent.setup();
   renderWithProviders(<LensView accessToken="test" />);
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Could not check recorded activity. Trace storage unavailable",
-  );
-  expect(screen.getByRole("button", { name: "Connect worker" })).toBeDisabled();
-  await user.click(screen.getByRole("button", { name: "Retry" }));
-  expect(await screen.findByRole("link", { name: "Set up traces" })).toBeVisible();
+  expect(await screen.findByRole("alert")).toHaveTextContent("无法检查已记录的活动。Trace storage unavailable");
+  expect(screen.getByRole("button", { name: "连接工作进程" })).toBeDisabled();
+  await user.click(screen.getByRole("button", { name: "重试" }));
+  expect(await screen.findByRole("link", { name: "设置追踪" })).toBeVisible();
 });
 
 it("keeps saved investigations accessible when tracing is disabled", async () => {
@@ -421,7 +421,7 @@ it("keeps saved investigations accessible when tracing is disabled", async () =>
   });
   renderWithProviders(<LensView accessToken="test" readOnly />);
   expect(await screen.findByText(issue.title)).toBeVisible();
-  expect(screen.queryByRole("link", { name: "Set up traces" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: "设置追踪" })).not.toBeInTheDocument();
 });
 
 it("allows request-only accounts to connect a worker without requiring agent traces", async () => {
@@ -433,9 +433,9 @@ it("allows request-only accounts to connect a worker without requiring agent tra
     return { data: [] };
   });
   renderWithProviders(<LensView accessToken="test" />);
-  expect(await screen.findByText("Request logs received")).toBeVisible();
-  expect(screen.getByRole("button", { name: "Connect worker" })).toBeEnabled();
-  expect(screen.getByRole("button", { name: "New investigation" })).toBeDisabled();
+  expect(await screen.findByText("已收到请求日志")).toBeVisible();
+  expect(screen.getByRole("button", { name: "连接工作进程" })).toBeEnabled();
+  expect(screen.getByRole("button", { name: "新建调查" })).toBeDisabled();
 });
 
 it("closes editing when browser navigation leaves the investigation", async () => {
@@ -448,8 +448,8 @@ it("closes editing when browser navigation leaves the investigation", async () =
   });
   const user = userEvent.setup();
   renderWithProviders(<LensView accessToken="test" />);
-  await user.click(await screen.findByRole("button", { name: "Investigation actions" }));
-  await user.click(await screen.findByRole("menuitem", { name: "Edit investigation" }));
+  await user.click(await screen.findByRole("button", { name: "调查操作" }));
+  await user.click(await screen.findByRole("menuitem", { name: "编辑调查" }));
   expect(await screen.findByRole("dialog")).toBeVisible();
   await act(async () => {
     window.history.replaceState({}, "", "/lens/");

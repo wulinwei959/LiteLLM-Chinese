@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,19 +15,18 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { SearchSelect } from "@/components/shared/SearchSelect";
+import type { LensTranslator } from "@/lib/i18n/translators";
 import { DurationInput } from "./DurationInput";
 import { ActivityScope, type ActivitySelection } from "./ActivityScope";
 import { analysisModelOptions, normalizeFilters, type AnalysisModelInfo, type Settings } from "./lensData";
 
-function validateSample(selection: ActivitySelection) {
+function validateSample(selection: ActivitySelection, t: LensTranslator) {
   const hours = selection.lookback_hours ?? 24;
-  if (!Number.isInteger(hours) || hours < 1 || hours > 8760)
-    throw new Error("Choose a time range between 1 hour and 365 days");
+  if (!Number.isInteger(hours) || hours < 1 || hours > 8760) throw new Error(t("chooseTimeRange"));
   const percent = selection.sample_percent ?? 100;
-  if (!Number.isFinite(percent) || percent <= 0 || percent > 100)
-    throw new Error("Choose a sampling percentage greater than 0 and up to 100");
+  if (!Number.isFinite(percent) || percent <= 0 || percent > 100) throw new Error(t("chooseSamplingPercent"));
   if (selection.sample_size != null && (!Number.isInteger(selection.sample_size) || selection.sample_size < 1))
-    throw new Error("Choose a positive maximum or leave it blank for no limit");
+    throw new Error(t("choosePositiveMax"));
 }
 
 function newCheck(instruction = ""): Settings["checks"][number] {
@@ -60,6 +60,8 @@ export function LensSetup({
   onClose: () => void;
   onSave: (settings: Settings) => Promise<void>;
 }) {
+  const t = useTranslations("lens");
+  const commonT = useTranslations("common");
   const [step, setStep] = useState(0);
   const [previewReady, setPreviewReady] = useState(false);
   const [manualSelection, setManualSelection] = useState(!!initial?.execution_ids?.length);
@@ -86,7 +88,7 @@ export function LensSetup({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const filledChecks = questions.filter((check) => check.instruction.trim());
-  const suggestedName = filledChecks[0]?.instruction.trim() || context.trim().split("\n")[0] || "Investigation";
+  const suggestedName = filledChecks[0]?.instruction.trim() || context.trim().split("\n")[0] || t("investigation");
   const title = name.trim() || suggestedName.slice(0, 100);
   const changeSelection = (next: ActivitySelection) => {
     const pool = (s: ActivitySelection) =>
@@ -98,14 +100,11 @@ export function LensSetup({
     });
   };
   const validate = () => {
-    normalizeFilters(selection.filters ?? []);
-    if (step >= 2 && manualSelection && !selection.execution_ids?.length)
-      throw new Error("Choose at least one run or turn off individual selection");
-    validateSample(selection);
-    if (step >= 1 && !context.trim() && !filledChecks.length)
-      throw new Error("Describe the expected behavior or what to look out for");
-    if (filledChecks.some((check) => check.instruction.trim().length < 3))
-      throw new Error("Use at least three characters for each check");
+    normalizeFilters(selection.filters ?? [], t);
+    if (step >= 2 && manualSelection && !selection.execution_ids?.length) throw new Error(t("chooseAtLeastOneRun"));
+    validateSample(selection, t);
+    if (step >= 1 && !context.trim() && !filledChecks.length) throw new Error(t("describeExpectedBehavior"));
+    if (filledChecks.some((check) => check.instruction.trim().length < 3)) throw new Error(t("minThreeChars"));
   };
   const next = () => {
     try {
@@ -113,7 +112,7 @@ export function LensSetup({
       setError("");
       setStep(step + 1);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Check your settings");
+      setError(cause instanceof Error ? cause.message : t("checkYourSettings"));
     }
   };
   const save = async () => {
@@ -131,12 +130,12 @@ export function LensSetup({
         enabled: repeat,
         interval_minutes: interval,
         concurrency: initial?.concurrency ?? 8,
-        filters: normalizeFilters(selection.filters ?? []),
+        filters: normalizeFilters(selection.filters ?? [], t),
         checks: filledChecks.map((check) => ({ ...check, instruction: check.instruction.trim() })),
       };
       await onSave(settings);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Could not save investigation");
+      setError(cause instanceof Error ? cause.message : t("couldNotSaveInvestigation"));
     } finally {
       setBusy(false);
     }
@@ -157,12 +156,12 @@ export function LensSetup({
   const selectionValid = !manualSelection || !!selection.execution_ids?.length;
   const validSettings = configurationValid && selectionValid;
   const canSave = !busy && runReady && validSettings;
-  const createLabel = repeat ? "Run and monitor" : "Run investigation";
-  const saveLabel = mode === "edit" ? "Save changes" : createLabel;
+  const createLabel = repeat ? t("runAndMonitor") : t("runInvestigation");
+  const saveLabel = mode === "edit" ? t("saveChanges") : createLabel;
   const headings = [
-    "Which activity should we investigate?",
-    "What should Lens look for?",
-    mode === "edit" ? "Review changes" : "Ready to investigate",
+    t("headingActivity"),
+    t("headingLookFor"),
+    mode === "edit" ? t("headingReviewChanges") : t("headingReady"),
   ];
   return (
     <Dialog
@@ -177,17 +176,11 @@ export function LensSetup({
         <DialogHeader>
           <DialogTitle className="text-xl">{headings[step]}</DialogTitle>
           <DialogDescription className="sr-only">
-            {
-              [
-                "Start with an agent, or use filters to investigate any recorded activity.",
-                "Describe the expected behavior, the questions you have, or both.",
-                "Review the selected activity, then start your investigation.",
-              ][step]
-            }
+            {[t("step0Desc"), t("step1Desc"), t("step2Desc")][step]}
           </DialogDescription>
         </DialogHeader>
-        <nav aria-label="Investigation setup" className="flex gap-2 text-xs">
-          {["Activity", "Expectations", "Run"].map((label, index) => (
+        <nav aria-label={t("investigationSetup")} className="flex gap-2 text-xs">
+          {[t("tabActivity"), t("tabExpectations"), t("tabRun")].map((label, index) => (
             <button
               key={label}
               disabled={index > step || busy}
@@ -212,11 +205,11 @@ export function LensSetup({
               nameField={
                 step === 0 ? (
                   <label className="grid gap-2 text-sm font-medium">
-                    Investigation name
+                    {t("investigationName")}
                     <Input
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Support quality"
+                      placeholder={t("investigationNamePlaceholder")}
                       maxLength={100}
                     />
                   </label>
@@ -230,21 +223,21 @@ export function LensSetup({
           {step === 1 && (
             <>
               <label className="grid gap-2 text-sm font-medium">
-                What should the agent be doing?
+                {t("whatShouldAgentDo")}
                 <Textarea
                   value={context}
                   onChange={(e) => setContext(e.target.value)}
                   maxLength={6000}
                   rows={4}
-                  placeholder="Answer the customer's question using verified sources and explain when information is missing."
+                  placeholder={t("agentDoPlaceholder")}
                 />
               </label>
               <fieldset className="space-y-3">
-                <legend className="mb-2 text-sm font-medium">What should we look out for?</legend>
+                <legend className="mb-2 text-sm font-medium">{t("whatToLookFor")}</legend>
                 {questions.map((check, index) => (
                   <div key={check.id} className="flex items-start gap-2">
                     <Textarea
-                      aria-label={`Check ${index + 1}`}
+                      aria-label={t("checkAria", { index: index + 1 })}
                       value={check.instruction}
                       onChange={(event) =>
                         setQuestions(
@@ -254,12 +247,12 @@ export function LensSetup({
                         )
                       }
                       rows={2}
-                      placeholder="e.g. Repeated searches that add no useful information"
+                      placeholder={t("checkPlaceholder")}
                     />
                     <Button
                       variant="ghost"
                       size="icon"
-                      aria-label={`Remove check ${index + 1}`}
+                      aria-label={t("removeCheckAria", { index: index + 1 })}
                       onClick={() => setQuestions(questions.filter((item) => item.id !== check.id))}
                     >
                       <X className="size-4" />
@@ -267,7 +260,7 @@ export function LensSetup({
                   </div>
                 ))}
                 <Button variant="outline" size="sm" onClick={() => setQuestions([...questions, newCheck()])}>
-                  <Plus className="size-3.5" /> Add check
+                  <Plus className="size-3.5" /> {t("addCheck")}
                 </Button>
               </fieldset>
               {(!context.trim() || !filledChecks.length) && (
@@ -275,18 +268,12 @@ export function LensSetup({
                   variant="link"
                   className="h-auto px-0"
                   onClick={() => {
-                    if (!context.trim())
-                      setContext(
-                        "Answer the user's question using verified sources. Explain when information is missing.",
-                      );
+                    if (!context.trim()) setContext(t("exampleContext"));
                     if (!filledChecks.length)
-                      setQuestions([
-                        newCheck("Find repeated work that adds no useful information."),
-                        newCheck("Find claims that contradict the available evidence."),
-                      ]);
+                      setQuestions([newCheck(t("exampleCheck1")), newCheck(t("exampleCheck2"))]);
                   }}
                 >
-                  Use an example
+                  {t("useAnExample")}
                 </Button>
               )}
             </>
@@ -294,42 +281,42 @@ export function LensSetup({
           {step === 2 && (
             <>
               <details open={!modelValid || undefined}>
-                <summary className="cursor-pointer text-sm font-medium">Advanced options</summary>
+                <summary className="cursor-pointer text-sm font-medium">{t("advancedOptions")}</summary>
                 <div className="mt-4 space-y-5">
                   <div className="space-y-2">
-                    <p className="text-sm font-medium">Analysis model</p>
+                    <p className="text-sm font-medium">{t("analysisModel")}</p>
                     <SearchSelect
-                      aria-label="Analysis model"
-                      options={analysisModelOptions(models, modelDetails)}
+                      aria-label={t("analysisModel")}
+                      options={analysisModelOptions(models, modelDetails, t)}
                       value={model}
                       onValueChange={(value) => setModel(value ?? "")}
-                      placeholder={modelsLoading ? "Loading models…" : "Choose a model"}
+                      placeholder={modelsLoading ? t("loadingModels") : t("chooseAModel")}
                       disabled={modelsLoading}
-                      emptyText="No matching models configured on this gateway"
+                      emptyText={t("noMatchingModels")}
                     />
                     {modelsError && (
                       <p role="alert" className="text-sm text-destructive">
-                        Could not load models: {modelsError}
+                        {t("couldNotLoadModels", { error: modelsError })}
                       </p>
                     )}
                     {unavailable && (
                       <p role="alert" className="text-sm text-destructive">
-                        {model} is no longer available. Choose another analysis model.
+                        {t("modelUnavailable", { model })}
                       </p>
                     )}
                     {unsupported && (
                       <p role="alert" className="text-sm text-destructive">
-                        Choose a chat model that supports JSON output.
+                        {t("chooseChatModel")}
                       </p>
                     )}
                   </div>
                   <div className="grid gap-5 sm:grid-cols-2">
                     <label className="grid content-start gap-2 text-sm font-medium">
-                      Maximum runs (optional)
+                      {t("maximumRunsOptional")}
                       <Input
                         type="number"
                         min="1"
-                        placeholder="No limit"
+                        placeholder={t("noLimit")}
                         value={selection.sample_size ?? ""}
                         onChange={(event) =>
                           setSelection({
@@ -348,12 +335,12 @@ export function LensSetup({
                           setSelection({ ...selection, execution_ids: [] });
                         }}
                       />
-                      Choose individual runs
+                      {t("chooseIndividualRuns")}
                     </label>
                   </div>
                   <div className="grid gap-5 sm:grid-cols-2">
                     <label className="grid content-start gap-2 text-sm font-medium">
-                      Monthly limit (USD)
+                      {t("monthlyLimitUsd")}
                       <Input
                         type="number"
                         min="0.01"
@@ -371,11 +358,11 @@ export function LensSetup({
                           onChange={(e) => setRepeat(e.target.checked)}
                           className="size-4 rounded border-input accent-foreground"
                         />
-                        Repeat this investigation
+                        {t("repeatInvestigation")}
                       </label>
                       {repeat && (
                         <DurationInput
-                          label="Repeat every"
+                          label={t("repeatEvery")}
                           value={interval}
                           onChange={setInterval}
                           base="minutes"
@@ -390,7 +377,7 @@ export function LensSetup({
           )}
           {!ready && mode !== "edit" && (
             <p role="status" className="text-sm text-amber-700">
-              The worker or trace storage is unavailable. Your draft is safe; you can start when it reconnects.
+              {t("workerUnavailableDraft")}
             </p>
           )}
           {error && (
@@ -401,13 +388,13 @@ export function LensSetup({
         </div>
         <DialogFooter className="border-t pt-4">
           <Button variant="outline" disabled={busy} onClick={() => (step ? setStep(step - 1) : onClose())}>
-            {step ? "Back" : "Cancel"}
+            {step ? commonT("back") : commonT("cancel")}
           </Button>
           {step < 2 ? (
-            <Button onClick={next}>Continue</Button>
+            <Button onClick={next}>{commonT("continue")}</Button>
           ) : (
             <Button disabled={!canSave} onClick={() => void save()}>
-              {busy ? "Saving…" : saveLabel}
+              {busy ? t("saving") : saveLabel}
             </Button>
           )}
         </DialogFooter>
