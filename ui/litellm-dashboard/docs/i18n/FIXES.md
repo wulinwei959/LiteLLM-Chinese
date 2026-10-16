@@ -387,6 +387,19 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 - **三态以上的文案兜底别用嵌套三元**。预算重置要分"无 `reset_at` 走 `common.never`、有 `budget_duration` 走 `everyDurationNext`、否则裸时间戳"三种，第一版顺手写成 `a ? x : b ? y : z`，被本地 eslint 规则 `no-nested-ternary`（**ERROR** 级，不是 warning）直接判红。规矩是提前算：`let budgetResetDisplay: string;` + `if/else if/else`，再把 `{budgetResetDisplay}` 放进 JSX。凡是一段文案按二态以上分支组装的（`? :` 出现两次），都按这个改
 - **逐行替换的字面量键必须是整行（`stripped` 后）**。批量脚本常把 `<stripped 原行> → <stripped 替换>` 放进字典按行套用来保留原缩进，比整块多行锚点更省事；但键若是"长行的截断"，就会漏。第 72 簇两次踩到：`<p className="text-xs text-muted-foreground">Loading guardrails...</p>` 其实是 `{loadingPolicies && <p …>…</p>}` 的尾巴、`{currentKeyData.key_alias || "Not Set"}` 被包在 `<p className="text-sm">…</p>` 里——短键既匹配不到（脚本报"unused key"）又可能误伤更深缩进的同名行。规矩是键写完整 stripped 行，落表前用 `src.count("\n"+key)` 数一遍，断言为 1 再替换
 
+## 2026-10-16 第 82 簇：配置表改收键名要给可选字段补守卫、必填整句别参数化
+
+`BaseSSOSettingsForm.tsx` 把五个 provider 的字段清单写在模块级 `ssoProviderConfigs` 里，label、必填消息、placeholder 三列都是英文字面量。接线没有把 `t` 传进模块作用域（hook 不能在模块顶层调用，见第 71 簇），而是把这三列换成三个受限的键名联合类型（`FieldLabelKey`/`FieldRequiredKey`/`FieldPlaceholderKey`），由渲染点 `SSOProviderField` 和 schema 工厂 `buildSSOSettingsSchema(variant, t)` 各自 `t(key)`。配置表从"英文文案表"变成"键名表"，写错的键在编译期就红（`t()` 的入参是目录键的联合类型），比运行时回显全键路径早一步
+
+两个坑值得固化：
+
+- **`requiredKey` 设成可选就开了一个静默洞**。schema 工厂里那段循环是 `if (field.required === false || !requiredKey) return;`，必填字段忘配 `requiredKey` 不报错，只退化成 zod 自己的通用英文消息。补一条配置守卫：`ssoProviderConfigs` 里 `required !== false` 且 `requiredKey === undefined` 的字段名集合必须为空。守卫要变异验证才算数——临时摘掉 `google_client_id` 的 `requiredKey`，它报 `expected [ 'google_client_id' ] to deeply equal []`，装回去转绿。本就 `required: false` 的可选字段（`generic_scope` 与四个 saml 字段）不会被误伤
+- **必填整句别用一条带 `{field}` 参数的通用消息**。`请输入 {field}` 这类写法只有两条出路，都不对：把英文改成 Title Case 的 `Please enter the {field}`，与源码里逐字小写的 `Please enter the google client id` 不再是同一串，破了"英语原文逐字不动"；或者在中文句子里塞进 ASCII 小写字段名，产出 `请输入google 客户端 id`。参数化换来的仅是 10 个键收成 1 个键加一份字段名映射，而中英 placeholder 集合一致本就是守卫要求，不值当。规矩：源串是从代码里逐字抠出的整句，就一句一键
+
+第 79 簇那条"看文案来自组件还是数据模块"在本簇复用：provider 下拉项名字与 `Logo` 的 `alt` 仍取 `constants.ts`，所以 `/google sso/i`、`getByAltText("Google SSO logo")` 这些断言原样留英文，同文件的 label 断言改中文
+
+顺带一条 harness 迁移细节：`tests/test-utils` 在 `src` 之外（`ui/litellm-dashboard/tests/`），`src/components/SSOModals.test.tsx` 里要写 `../../tests/test-utils`。按 `src` 内的直觉写成 `../tests/test-utils` 会撞 vite 的 `Failed to resolve import`，整个文件 0 例装载，报错还不指向 locale provider
+
 ## 2026-10-15 第 81 簇：拼接脚本"先写盘后校验"会把坏 JSON 落盘
 
 往目录批量追加键的拼接脚本，第 81 簇第一版把行末逗号写进了**行字符串本身**（`'      "editModalTitle": "Edit SSO Settings",'`）又用 `",\n".join(lines)` 连接，产出 `,,` 双逗号——而 `json.loads` 校验放在**写盘之后**，坏 JSON 已经落盘才发现，只能 `git checkout --` 还原重拼。规矩两条：**行字符串一律不带尾逗号**（逗号只由 join 的分隔符与 extra 的前导 `,\n` 提供）；**先在内存里 `json.loads(new)` 校验、断言键数，全过再落盘**。另外 extra 末尾的 `"\n"` 会在最后一个键与闭合 `}` 之间留一个空行——JSON 合法但难看，拼完顺手把 `"\n\n    }"` 收成 `"\n    }"`
