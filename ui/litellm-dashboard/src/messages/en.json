@@ -9961,5 +9961,39 @@
     "badge30d": "30d",
     "badgeMtd": "MTD",
     "badgeYtd": "YTD"
+  },
+  "objectPermissions": {
+    "title": "Object Permissions",
+    "description": "Access control for Vector Stores and MCP Servers",
+    "searchToolsTitle": "Search tools",
+    "searchToolsNone": "No restriction — all configured search tools are allowed for this team.",
+    "skillsTitle": "Skills",
+    "skillsNone": "No private skills granted. Only enabled (public) Claude Code plugins are visible."
+  },
+  "vectorStorePermissions": {
+    "title": "Vector Stores",
+    "none": "No vector stores configured"
+  },
+  "mcpServerPermissions": {
+    "title": "MCP Servers",
+    "badgeBlocked": "Blocked",
+    "badgeAll": "All",
+    "blockedNote": "No MCP servers — this key is blocked from all MCP servers, including its team&apos;s servers",
+    "allProxy": "All Proxy MCP Servers",
+    "groupBadge": "Group",
+    "toolsetBadge": "Toolset",
+    "toolWord": "{count, plural, one {tool} other {tools}}",
+    "none": "No MCP servers, access groups, or toolsets configured"
+  },
+  "agentPermissions": {
+    "title": "Allowed agents to call",
+    "groupBadge": "Group",
+    "none": "No agents or access groups configured"
+  },
+  "inheritedGrants": {
+    "fullId": "Full ID: {id}",
+    "grantedViaGroup": "Granted via access group {group}. Full ID: {id}",
+    "grantedViaGroups": "Granted via access groups {groups}. Full ID: {id}",
+    "grantedViaGeneric": "Granted via an access group. Full ID: {id}"
   }
 }

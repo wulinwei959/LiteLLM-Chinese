@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { UserGroupIcon } from "@heroicons/react/outline";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,8 @@ export function AgentPermissions({
   inheritedAgents = [],
   accessToken,
 }: AgentPermissionsProps) {
+  const t = useTranslations("agentPermissions");
+  const inheritedT = useTranslations("inheritedGrants");
   const [agentDetails, setAgentDetails] = useState<Agent[]>([]);
   const inheritedOnlyAgents = inheritedAgents.filter((grant) => !agents.includes(grant.id));
   const agentIdCount = agents.length + inheritedOnlyAgents.length;
@@ -57,8 +60,12 @@ export function AgentPermissions({
   };
 
   const mergedItems = [
-    ...agents.map((agent) => ({ type: "agent", value: agent, tooltip: `Full ID: ${agent}` })),
-    ...inheritedOnlyAgents.map((grant) => ({ type: "agent", value: grant.id, tooltip: inheritedGrantTooltip(grant) })),
+    ...agents.map((agent) => ({ type: "agent", value: agent, tooltip: inheritedT("fullId", { id: agent }) })),
+    ...inheritedOnlyAgents.map((grant) => ({
+      type: "agent",
+      value: grant.id,
+      tooltip: inheritedGrantTooltip(inheritedT, grant),
+    })),
     ...agentAccessGroups.map((group) => ({ type: "accessGroup", value: group, tooltip: "" })),
   ];
   const totalCount = mergedItems.length;
@@ -67,7 +74,7 @@ export function AgentPermissions({
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <UserGroupIcon className="h-4 w-4 text-purple-600" />
-        <p className="text-sm font-semibold text-foreground">Allowed agents to call</p>
+        <p className="text-sm font-semibold text-foreground">{t("title")}</p>
         <Badge variant="secondary">{totalCount}</Badge>
       </div>
 
@@ -94,7 +101,7 @@ export function AgentPermissions({
                       <span className="inline-block w-1.5 h-1.5 bg-success rounded-full shrink-0"></span>
                       <span className="text-sm font-medium text-foreground truncate">{item.value}</span>
                       <span className="ml-1 px-1.5 py-0.5 text-[9px] font-semibold text-success bg-success/10 border border-success/20 rounded-sm uppercase tracking-wide shrink-0">
-                        Group
+                        {t("groupBadge")}
                       </span>
                     </div>
                   )}
@@ -106,7 +113,7 @@ export function AgentPermissions({
       ) : (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted border border-border">
           <UserGroupIcon className="h-4 w-4 text-muted-foreground" />
-          <p className="text-muted-foreground text-sm">No agents or access groups configured</p>
+          <p className="text-muted-foreground text-sm">{t("none")}</p>
         </div>
       )}
     </div>

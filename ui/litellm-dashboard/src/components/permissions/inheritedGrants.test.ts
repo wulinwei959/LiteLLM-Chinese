@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "next-intl";
+
+import en from "@/messages/en.json";
 import { computeInheritedGrants, inheritedGrantTooltip } from "./inheritedGrants";
+
+const t = createTranslator({ locale: "en", messages: en, namespace: "inheritedGrants" });
 import { TeamAccessGroupModelGrant } from "../team/teamModelAccess";
 
 const GRANTS: TeamAccessGroupModelGrant[] = [
@@ -42,19 +47,19 @@ describe("computeInheritedGrants", () => {
 
 describe("inheritedGrantTooltip", () => {
   it("names a single group", () => {
-    expect(inheritedGrantTooltip({ id: "mcp-1", accessGroupNames: ["platform-tools"] })).toBe(
+    expect(inheritedGrantTooltip(t, { id: "mcp-1", accessGroupNames: ["platform-tools"] })).toBe(
       "Granted via access group platform-tools. Full ID: mcp-1",
     );
   });
 
   it("lists several groups", () => {
-    expect(inheritedGrantTooltip({ id: "mcp-2", accessGroupNames: ["platform-tools", "support"] })).toBe(
+    expect(inheritedGrantTooltip(t, { id: "mcp-2", accessGroupNames: ["platform-tools", "support"] })).toBe(
       "Granted via access groups platform-tools, support. Full ID: mcp-2",
     );
   });
 
   it("stays generic when the proxy did not say which group granted it", () => {
-    expect(inheritedGrantTooltip({ id: "agent-legacy", accessGroupNames: [] })).toBe(
+    expect(inheritedGrantTooltip(t, { id: "agent-legacy", accessGroupNames: [] })).toBe(
       "Granted via an access group. Full ID: agent-legacy",
     );
   });

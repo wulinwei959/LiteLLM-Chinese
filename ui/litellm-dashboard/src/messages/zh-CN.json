@@ -9957,5 +9957,39 @@
     "badge30d": "30 天",
     "badgeMtd": "本月",
     "badgeYtd": "本年"
+  },
+  "objectPermissions": {
+    "title": "对象权限",
+    "description": "向量存储与 MCP 服务器的访问控制",
+    "searchToolsTitle": "搜索工具",
+    "searchToolsNone": "未做限制，该团队可以使用所有已配置的搜索工具。",
+    "skillsTitle": "技能",
+    "skillsNone": "未授予任何私有技能。仅已启用的（公开的）Claude Code 插件可见。"
+  },
+  "vectorStorePermissions": {
+    "title": "向量存储",
+    "none": "未配置任何向量存储"
+  },
+  "mcpServerPermissions": {
+    "title": "MCP 服务器",
+    "badgeBlocked": "已阻止",
+    "badgeAll": "全部",
+    "blockedNote": "无可用 MCP 服务器，该密钥已被阻止访问所有 MCP 服务器，包括其团队的服务器",
+    "allProxy": "全部代理 MCP 服务器",
+    "groupBadge": "分组",
+    "toolsetBadge": "工具集",
+    "toolWord": "{count, plural, other{个工具}}",
+    "none": "未配置 MCP 服务器、访问组或工具集"
+  },
+  "agentPermissions": {
+    "title": "允许调用的智能体",
+    "groupBadge": "分组",
+    "none": "未配置智能体或访问组"
+  },
+  "inheritedGrants": {
+    "fullId": "完整 ID：{id}",
+    "grantedViaGroup": "通过访问组 {group} 授予。完整 ID：{id}",
+    "grantedViaGroups": "通过访问组 {groups} 授予。完整 ID：{id}",
+    "grantedViaGeneric": "通过某个访问组授予。完整 ID：{id}"
   }
 }

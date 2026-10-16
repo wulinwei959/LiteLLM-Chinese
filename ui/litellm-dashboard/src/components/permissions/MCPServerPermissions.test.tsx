@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render, screen, waitFor } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import MCPServerPermissions from "./MCPServerPermissions";
 import * as networking from "../networking";
@@ -98,7 +98,7 @@ describe("MCPServerPermissions", () => {
 
     // Verify tool count is shown
     expect(screen.getByText("3")).toBeInTheDocument();
-    expect(screen.getByText("tools")).toBeInTheDocument();
+    expect(screen.getByText("个工具")).toBeInTheDocument();
 
     // Tools should NOT be visible initially (collapsed state)
     expect(screen.queryByText("read_wiki_structure")).not.toBeInTheDocument();
@@ -181,7 +181,7 @@ describe("MCPServerPermissions", () => {
     });
 
     expect(screen.getByText("development-group")).toBeInTheDocument();
-    expect(screen.getAllByText("Group")).toHaveLength(2);
+    expect(screen.getAllByText("分组")).toHaveLength(2);
 
     // Verify the count badge shows correct number
     expect(screen.getByText("2")).toBeInTheDocument();
@@ -242,7 +242,7 @@ describe("MCPServerPermissions", () => {
     );
 
     // Verify empty state message
-    expect(screen.getByText("No MCP servers, access groups, or toolsets configured")).toBeInTheDocument();
+    expect(screen.getByText("未配置 MCP 服务器、访问组或工具集")).toBeInTheDocument();
 
     // Verify count badge shows 0
     expect(screen.getByText("0")).toBeInTheDocument();
@@ -291,7 +291,7 @@ describe("MCPServerPermissions", () => {
     // Verify both servers show tool counts
     // Server 1 has 2 tools, Server 2 has 1 tool
     const toolCounts = screen.getAllByText(/^\d+$/);
-    const toolLabels = screen.getAllByText(/^tools?$/i);
+    const toolLabels = screen.getAllByText(/^个工具$/);
     expect(toolCounts.length).toBeGreaterThan(0);
     expect(toolLabels.length).toBeGreaterThan(0);
 
@@ -405,7 +405,7 @@ describe("MCPServerPermissions", () => {
     });
 
     expect(screen.getByText("2")).toBeInTheDocument();
-    expect(screen.getByText("tools")).toBeInTheDocument();
+    expect(screen.getByText("个工具")).toBeInTheDocument();
 
     await userEvent.click(screen.getByText(/GitHub/));
 
@@ -427,8 +427,8 @@ describe("MCPServerPermissions", () => {
       />,
     );
 
-    expect(await screen.findByText("All Proxy MCP Servers")).toBeInTheDocument();
-    expect(screen.getByText("All")).toBeInTheDocument();
+    expect(await screen.findByText("全部代理 MCP 服务器")).toBeInTheDocument();
+    expect(screen.getByText("全部")).toBeInTheDocument();
     expect(screen.queryByText(ALL_PROXY_MCP_SERVERS_SENTINEL)).not.toBeInTheDocument();
   });
 
@@ -453,7 +453,7 @@ describe("MCPServerPermissions", () => {
         accessToken={mockAccessToken}
       />,
     );
-    await waitFor(() => expect(screen.getByText("All")).toHaveAttribute("data-variant", "secondary"));
+    await waitFor(() => expect(screen.getByText("全部")).toHaveAttribute("data-variant", "secondary"));
 
     rerender(
       <MCPServerPermissions
@@ -463,7 +463,7 @@ describe("MCPServerPermissions", () => {
         accessToken={mockAccessToken}
       />,
     );
-    await waitFor(() => expect(screen.getByText("Blocked")).toHaveAttribute("data-variant", "destructive"));
+    await waitFor(() => expect(screen.getByText("已阻止")).toHaveAttribute("data-variant", "destructive"));
   });
 
   it("lists servers inherited from access groups, counts them, and names the group on hover", async () => {
@@ -484,13 +484,11 @@ describe("MCPServerPermissions", () => {
 
     const row = await screen.findByText(/DW_MCP/);
     expect(screen.getByText("1")).toBeInTheDocument();
-    expect(screen.queryByText("No MCP servers, access groups, or toolsets configured")).not.toBeInTheDocument();
+    expect(screen.queryByText("未配置 MCP 服务器、访问组或工具集")).not.toBeInTheDocument();
     expect(networking.fetchMCPServers).toHaveBeenCalledWith(mockAccessToken);
 
     await user.hover(row);
-    expect(
-      await screen.findByText(`Granted via access group platform-tools. Full ID: ${mockServerId1}`),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(`通过访问组 platform-tools 授予。完整 ID：${mockServerId1}`)).toBeInTheDocument();
   });
 
   it("does not double-list a server that is both granted directly and inherited", async () => {
@@ -514,6 +512,6 @@ describe("MCPServerPermissions", () => {
     expect(screen.getByText("1")).toBeInTheDocument();
 
     await user.hover(row);
-    expect(await screen.findByText(`Full ID: ${mockServerId2}`)).toBeInTheDocument();
+    expect(await screen.findByText(`完整 ID：${mockServerId2}`)).toBeInTheDocument();
   });
 });
