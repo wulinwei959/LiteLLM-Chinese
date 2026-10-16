@@ -62,7 +62,7 @@ export const getToolPoliciesTableColumns = (
     header: ({ column }) => <DataTableSortHeader column={column} title={t("inputPolicy")} />,
     size: 140,
     filterFn: "equalsString",
-    meta: { title: "Input Policy", skeleton: "badge" },
+    meta: { title: t("inputPolicy"), skeleton: "badge" },
     cell: ({ row }) => (
       <PolicySelect
         value={row.original.input_policy}
@@ -79,7 +79,7 @@ export const getToolPoliciesTableColumns = (
     header: ({ column }) => <DataTableSortHeader column={column} title={t("outputPolicy")} />,
     size: 140,
     filterFn: "equalsString",
-    meta: { title: "Output Policy", skeleton: "badge" },
+    meta: { title: t("outputPolicy"), skeleton: "badge" },
     cell: ({ row }) => (
       <PolicySelect
         value={row.original.output_policy}
@@ -105,7 +105,7 @@ export const getToolPoliciesTableColumns = (
     header: ({ column }) => <DataTableSortHeader column={column} title={t("teamName")} />,
     size: 160,
     filterFn: "equalsString",
-    meta: { title: "Team Name" },
+    meta: { title: t("teamName") },
     cell: ({ row }) => <IdCell value={row.original.team_id} variant="plain" />,
   },
   {
@@ -122,7 +122,7 @@ export const getToolPoliciesTableColumns = (
     header: ({ column }) => <DataTableSortHeader column={column} title={t("keyName")} />,
     size: 150,
     filterFn: "equalsString",
-    meta: { title: "Key Name" },
+    meta: { title: t("keyName") },
     cell: ({ row }) => <TruncatedText value={row.original.key_alias} className="block max-w-32 truncate" />,
   },
   {
@@ -131,11 +131,8 @@ export const getToolPoliciesTableColumns = (
     header: () => (
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger render={<span>User</span>} />
-          <TooltipContent>
-            The user who owns the key that discovered this tool. Displays the first available value: User Alias, User
-            Email, or User ID.
-          </TooltipContent>
+          <TooltipTrigger render={<span>{t("colUser")}</span>} />
+          <TooltipContent>{t("colUserTooltip")}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     ),

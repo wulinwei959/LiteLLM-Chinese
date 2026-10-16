@@ -139,7 +139,7 @@ describe("ToolPoliciesTable filters", () => {
     await user.click(screen.getByTestId("filter-drawer-apply"));
 
     await waitFor(() => expect(rowIds()).toEqual(["tool-1"]));
-    expect(screen.getByTestId("filter-chip-team_id")).toHaveTextContent("Team Name:");
+    expect(screen.getByTestId("filter-chip-team_id")).toHaveTextContent("团队名称:");
   });
 
   it.each([

@@ -119,10 +119,11 @@ export function TeamsTable({ userRole, userID, onSelectTeam, onEditTeam, onDelet
   }, [accessToken, isExporting, teamListOptions]);
 
   const t = useTranslations("teams");
+  const commonT = useTranslations("common");
   const columns = useMemo(() => {
-    const columnDeps = { organizations, userRole, onSelectTeam, onEditTeam, onDeleteTeam, t };
+    const columnDeps = { organizations, userRole, onSelectTeam, onEditTeam, onDeleteTeam, t, commonT };
     return getTeamTableColumns(columnDeps);
-  }, [organizations, userRole, onSelectTeam, onEditTeam, onDeleteTeam, t]);
+  }, [organizations, userRole, onSelectTeam, onEditTeam, onDeleteTeam, t, commonT]);
 
   const orgOptions = useMemo(
     () =>

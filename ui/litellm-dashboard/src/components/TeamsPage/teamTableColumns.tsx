@@ -19,7 +19,7 @@ import { orgDetailHref } from "@/utils/entityLinks";
 import { copyToClipboard, formatNumberWithCommas } from "@/utils/dataUtils";
 
 import { Team } from "../key_team_helpers/key_list";
-import type { TeamsTableTranslator } from "@/lib/i18n/translators";
+import type { CommonTranslator, TeamsTableTranslator } from "@/lib/i18n/translators";
 import { Organization } from "../networking";
 
 interface ResourceTone {
@@ -71,11 +71,19 @@ function ResourcesCell({ team, t }: { team: Team; t: TeamsTableTranslator }) {
   );
 }
 
-function RateLimitLine({ label, value }: { label: string; value: number | null }) {
+function RateLimitLine({
+  label,
+  value,
+  unlimitedText,
+}: {
+  label: string;
+  value: number | null;
+  unlimitedText: string;
+}) {
   return (
     <div>
       <span className="text-[10px] font-semibold text-muted-foreground">{label} </span>
-      <span className="tabular-nums">{value != null ? formatNumberWithCommas(value) : "Unlimited"}</span>
+      <span className="tabular-nums">{value != null ? formatNumberWithCommas(value) : unlimitedText}</span>
     </div>
   );
 }
@@ -134,6 +142,7 @@ interface TeamTableColumnsDeps {
   onEditTeam: (team: Team) => void;
   onDeleteTeam: (team: Team) => void;
   t: TeamsTableTranslator;
+  commonT: CommonTranslator;
 }
 
 export const getTeamTableColumns = ({
@@ -143,6 +152,7 @@ export const getTeamTableColumns = ({
   onEditTeam,
   onDeleteTeam,
   t,
+  commonT,
 }: TeamTableColumnsDeps): ColumnDef<Team>[] => {
   const canManage = userRole === "Admin";
 
@@ -260,8 +270,8 @@ export const getTeamTableColumns = ({
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-xs leading-tight">
-          <RateLimitLine label="TPM" value={row.original.tpm_limit} />
-          <RateLimitLine label="RPM" value={row.original.rpm_limit} />
+          <RateLimitLine label="TPM" value={row.original.tpm_limit} unlimitedText={t("infoUnlimited")} />
+          <RateLimitLine label="RPM" value={row.original.rpm_limit} unlimitedText={t("infoUnlimited")} />
         </div>
       ),
     },
@@ -272,7 +282,9 @@ export const getTeamTableColumns = ({
       header: t("table.updated"),
       size: 130,
       enableSorting: false,
-      cell: (info) => <DateCell value={info.getValue() as string | null} precision="date" fallback="Never" />,
+      cell: (info) => (
+        <DateCell value={info.getValue() as string | null} precision="date" fallback={commonT("never")} />
+      ),
     },
     {
       id: "actions",
