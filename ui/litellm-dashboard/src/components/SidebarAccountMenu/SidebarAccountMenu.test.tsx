@@ -67,7 +67,7 @@ vi.mock("@/utils/localStorageUtils", () => ({
 describe("SidebarAccountMenu", () => {
   const mockOnLogout = vi.fn();
 
-  const getAccountTrigger = () => screen.getByRole("button", { name: /account menu/i });
+  const getAccountTrigger = () => screen.getByRole("button", { name: /账户菜单/ });
 
   const openMenu = async (user: ReturnType<typeof userEvent.setup>) => {
     await user.click(getAccountTrigger());
@@ -126,7 +126,7 @@ describe("SidebarAccountMenu", () => {
 
     await openMenu(user);
 
-    expect(screen.getByText("Standard")).toBeInTheDocument();
+    expect(screen.getByText("标准版")).toBeInTheDocument();
   });
 
   it("should display Premium tier for premium users", async () => {
@@ -143,7 +143,7 @@ describe("SidebarAccountMenu", () => {
 
     await openMenu(user);
 
-    expect(screen.getByText("Premium")).toBeInTheDocument();
+    expect(screen.getByText("高级版")).toBeInTheDocument();
   });
 
   it("should render a clickable version badge linking to the release notes", async () => {
@@ -171,7 +171,7 @@ describe("SidebarAccountMenu", () => {
     const user = userEvent.setup();
     renderWithProviders(<SidebarAccountMenu onLogout={mockOnLogout} />);
     await openMenu(user);
-    expect(screen.getByTitle("Thanks for using LiteLLM!")).toBeInTheDocument();
+    expect(screen.getByTitle("感谢使用 LiteLLM！")).toBeInTheDocument();
   });
 
   it("should hide the bouncing icon when Hide Bouncing Icon is enabled", async () => {
@@ -179,7 +179,7 @@ describe("SidebarAccountMenu", () => {
     mockUseDisableBouncingIconImpl = () => true;
     renderWithProviders(<SidebarAccountMenu onLogout={mockOnLogout} />);
     await openMenu(user);
-    expect(screen.queryByTitle("Thanks for using LiteLLM!")).not.toBeInTheDocument();
+    expect(screen.queryByTitle("感谢使用 LiteLLM！")).not.toBeInTheDocument();
   });
 
   it("wires the email row to the shared copy button", async () => {
@@ -190,7 +190,7 @@ describe("SidebarAccountMenu", () => {
     renderWithProviders(<SidebarAccountMenu onLogout={mockOnLogout} />);
     await openMenu(user);
 
-    const copyButton = screen.getByRole("button", { name: "Copy email" });
+    const copyButton = screen.getByRole("button", { name: "复制邮箱" });
     await user.click(copyButton);
 
     expect(writeText).toHaveBeenCalledWith("test@example.com");
@@ -203,7 +203,7 @@ describe("SidebarAccountMenu", () => {
 
     await openMenu(user);
 
-    await user.click(screen.getByRole("button", { name: /logout/i }));
+    await user.click(screen.getByRole("button", { name: /退出登录/ }));
 
     expect(mockOnLogout).toHaveBeenCalledTimes(1);
   });
@@ -222,7 +222,7 @@ describe("SidebarAccountMenu", () => {
 
     await openMenu(user);
 
-    await user.click(screen.getByRole("button", { name: /change password/i }));
+    await user.click(screen.getByRole("button", { name: /修改密码/ }));
 
     expect(mockRouterPush).toHaveBeenCalledWith(expect.stringContaining("change-password"));
   });
@@ -241,7 +241,7 @@ describe("SidebarAccountMenu", () => {
 
     await openMenu(user);
 
-    expect(screen.queryByRole("button", { name: /change password/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /修改密码/ })).not.toBeInTheDocument();
   });
 
   it("should toggle hide new feature indicators on", async () => {
@@ -250,7 +250,7 @@ describe("SidebarAccountMenu", () => {
 
     await openMenu(user);
 
-    const toggle = screen.getByLabelText("Toggle hide new feature indicators");
+    const toggle = screen.getByLabelText("切换隐藏新功能标记");
     expect(toggle).not.toBeChecked();
 
     await user.click(toggle);
@@ -271,7 +271,7 @@ describe("SidebarAccountMenu", () => {
 
     await openMenu(user);
 
-    const toggle = screen.getByLabelText("Toggle hide new feature indicators");
+    const toggle = screen.getByLabelText("切换隐藏新功能标记");
     expect(toggle).toBeChecked();
 
     await user.click(toggle);
@@ -287,7 +287,7 @@ describe("SidebarAccountMenu", () => {
 
     await openMenu(user);
 
-    const toggle = screen.getByLabelText("Toggle hide all prompts");
+    const toggle = screen.getByLabelText("切换隐藏所有提示");
     expect(toggle).not.toBeChecked();
 
     await user.click(toggle);
@@ -308,7 +308,7 @@ describe("SidebarAccountMenu", () => {
 
     await openMenu(user);
 
-    const toggle = screen.getByLabelText("Toggle hide new feature indicators");
+    const toggle = screen.getByLabelText("切换隐藏新功能标记");
     expect(toggle).toBeChecked();
   });
 

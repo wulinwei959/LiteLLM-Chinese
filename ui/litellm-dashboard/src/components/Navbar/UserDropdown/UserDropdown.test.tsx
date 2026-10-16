@@ -49,7 +49,7 @@ vi.mock("@/utils/localStorageUtils", () => ({
 describe("UserDropdown", () => {
   const mockOnLogout = vi.fn();
 
-  const getAccountTrigger = () => screen.getByRole("button", { name: /account menu/i });
+  const getAccountTrigger = () => screen.getByRole("button", { name: /账户菜单/ });
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -118,7 +118,7 @@ describe("UserDropdown", () => {
     await user.click(getAccountTrigger());
 
     await waitFor(() => {
-      expect(screen.getByText("Standard")).toBeInTheDocument();
+      expect(screen.getByText("标准版")).toBeInTheDocument();
     });
   });
 
@@ -136,7 +136,7 @@ describe("UserDropdown", () => {
     await user.click(getAccountTrigger());
 
     await waitFor(() => {
-      expect(screen.getByText("Premium")).toBeInTheDocument();
+      expect(screen.getByText("高级版")).toBeInTheDocument();
     });
   });
 
@@ -150,7 +150,7 @@ describe("UserDropdown", () => {
       expect(screen.getAllByText("test@example.com").length).toBeGreaterThan(0);
     });
 
-    await user.click(screen.getByText("Logout"));
+    await user.click(screen.getByText("退出登录"));
 
     expect(mockOnLogout).toHaveBeenCalledTimes(1);
   });
@@ -168,7 +168,7 @@ describe("UserDropdown", () => {
 
     await user.click(getAccountTrigger());
 
-    await user.click(await screen.findByText("Change Password"));
+    await user.click(await screen.findByText("修改密码"));
 
     expect(mockRouterPush).toHaveBeenCalledWith(expect.stringContaining("change-password"));
   });
@@ -190,7 +190,7 @@ describe("UserDropdown", () => {
       expect(screen.getAllByText("test@example.com").length).toBeGreaterThan(0);
     });
 
-    expect(screen.queryByText("Change Password")).not.toBeInTheDocument();
+    expect(screen.queryByText("修改密码")).not.toBeInTheDocument();
   });
 
   it("should toggle hide new feature indicators switch", async () => {
@@ -203,7 +203,7 @@ describe("UserDropdown", () => {
       expect(screen.getAllByText("test@example.com").length).toBeGreaterThan(0);
     });
 
-    const toggle = screen.getByLabelText("Toggle hide new feature indicators");
+    const toggle = screen.getByLabelText("切换隐藏新功能标记");
     expect(toggle).not.toBeChecked();
 
     await user.click(toggle);
@@ -228,7 +228,7 @@ describe("UserDropdown", () => {
       expect(screen.getAllByText("test@example.com").length).toBeGreaterThan(0);
     });
 
-    const toggle = screen.getByLabelText("Toggle hide new feature indicators");
+    const toggle = screen.getByLabelText("切换隐藏新功能标记");
     expect(toggle).toBeChecked();
 
     await user.click(toggle);
@@ -248,7 +248,7 @@ describe("UserDropdown", () => {
       expect(screen.getAllByText("test@example.com").length).toBeGreaterThan(0);
     });
 
-    const toggle = screen.getByLabelText("Toggle hide all prompts");
+    const toggle = screen.getByLabelText("切换隐藏所有提示");
     expect(toggle).not.toBeChecked();
 
     await user.click(toggle);
@@ -274,7 +274,7 @@ describe("UserDropdown", () => {
       expect(screen.getAllByText("test@example.com").length).toBeGreaterThan(0);
     });
 
-    const toggle = screen.getByLabelText("Toggle hide all prompts");
+    const toggle = screen.getByLabelText("切换隐藏所有提示");
     expect(toggle).toBeChecked();
 
     await user.click(toggle);
@@ -347,7 +347,7 @@ describe("UserDropdown", () => {
       expect(screen.getAllByText("test@example.com").length).toBeGreaterThan(0);
     });
 
-    const toggle = screen.getByLabelText("Toggle hide new feature indicators");
+    const toggle = screen.getByLabelText("切换隐藏新功能标记");
     expect(toggle).toBeChecked();
   });
 });

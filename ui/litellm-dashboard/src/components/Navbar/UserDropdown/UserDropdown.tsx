@@ -13,6 +13,7 @@ import { navAccountDisplayName } from "@/components/Navbar/navDisplayName";
 import { uiHref } from "@/utils/uiHref";
 import { isProxyAdminRole } from "@/utils/roles";
 import { ChevronDown, ChevronsUpDown, Crown, KeyRound, LogOut, Mail, ShieldCheck, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -68,6 +69,7 @@ interface UserDropdownProps {
 }
 
 const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar", collapsed = false }) => {
+  const t = useTranslations("accountMenus");
   const {
     userId,
     userEmail,
@@ -101,16 +103,16 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
         {premiumUser ? (
           <Badge>
             <Crown className="size-3" />
-            Premium
+            {t("premium")}
           </Badge>
         ) : (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger render={<Badge variant="outline" />}>
                 <Crown className="size-3" />
-                Standard
+                {t("standard")}
               </TooltipTrigger>
-              <TooltipContent side="left">Upgrade to Premium for advanced features</TooltipContent>
+              <TooltipContent side="left">{t("upgradeHint")}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )}
@@ -119,25 +121,25 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
       <div className="flex w-full items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <User className="size-4" />
-          <span className="text-muted-foreground">User ID</span>
+          <span className="text-muted-foreground">{t("userId")}</span>
         </div>
         <div className="flex items-center gap-1">
           <span className="max-w-[150px] truncate" title={userId || "-"}>
             {userId || "-"}
           </span>
-          <CopyButton value={userId} label="Copy User ID" />
+          <CopyButton value={userId} label={t("copyUserId")} />
         </div>
       </div>
       <div className="flex w-full items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <ShieldCheck className="size-4" />
-          <span className="text-muted-foreground">Role</span>
+          <span className="text-muted-foreground">{t("role")}</span>
         </div>
         <span>{userRole}</span>
       </div>
       <Separator className="my-2" />
       <div className="flex w-full items-center justify-between gap-2">
-        <span className="text-muted-foreground">Hide New Feature Indicators</span>
+        <span className="text-muted-foreground">{t("hideNewFeatureIndicators")}</span>
         <Switch
           size="sm"
           checked={disableShowNewBadge}
@@ -151,11 +153,11 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
               emitLocalStorageChange("disableShowNewBadge");
             }
           }}
-          aria-label="Toggle hide new feature indicators"
+          aria-label={t("toggleNewFeatureIndicators")}
         />
       </div>
       <div className="flex w-full items-center justify-between gap-2">
-        <span className="text-muted-foreground">Hide All Prompts</span>
+        <span className="text-muted-foreground">{t("hideAllPrompts")}</span>
         <Switch
           size="sm"
           checked={disableShowPrompts}
@@ -168,11 +170,11 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
               emitLocalStorageChange("disableShowPrompts");
             }
           }}
-          aria-label="Toggle hide all prompts"
+          aria-label={t("toggleAllPrompts")}
         />
       </div>
       <div className="flex w-full items-center justify-between gap-2">
-        <span className="text-muted-foreground">Hide Blog Posts</span>
+        <span className="text-muted-foreground">{t("hideBlogPosts")}</span>
         <Switch
           size="sm"
           checked={disableBlogPosts}
@@ -185,11 +187,11 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
               emitLocalStorageChange("disableBlogPosts");
             }
           }}
-          aria-label="Toggle hide blog posts"
+          aria-label={t("toggleBlogPosts")}
         />
       </div>
       <div className="flex w-full items-center justify-between gap-2">
-        <span className="text-muted-foreground">Hide Bouncing Icon</span>
+        <span className="text-muted-foreground">{t("hideBouncingIcon")}</span>
         <Switch
           size="sm"
           checked={disableBouncingIcon}
@@ -202,17 +204,17 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
               emitLocalStorageChange("disableBouncingIcon");
             }
           }}
-          aria-label="Toggle hide bouncing icon"
+          aria-label={t("toggleBouncingIcon")}
         />
       </div>
       {canUseLiteAdmin && (
         <div className="flex w-full items-center justify-between gap-2">
-          <span className="text-muted-foreground">Hide LiteAdmin</span>
+          <span className="text-muted-foreground">{t("hideLiteAdmin")}</span>
           <Switch
             size="sm"
             checked={disableLiteAdmin}
             onCheckedChange={setDisableLiteAdmin}
-            aria-label="Toggle hide LiteAdmin"
+            aria-label={t("toggleLiteAdmin")}
           />
         </div>
       )}
@@ -238,7 +240,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
                 "flex w-full items-center rounded-lg border border-transparent transition-colors hover:bg-sidebar-accent",
                 collapsed ? "justify-center px-0 py-1" : "gap-2.5 px-2 py-1.5 text-left",
               )}
-              aria-label={`Account menu — ${userRole ?? "Unknown role"} — signed in as ${userEmail || userId || "unknown"}`}
+              aria-label={t("accountMenuTrigger", {
+                role: userRole ?? t("unknownRole"),
+                identity: userEmail || userId || "unknown",
+              })}
               aria-haspopup="dialog"
               title={collapsed ? displayName : undefined}
             />
@@ -265,7 +270,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
             <button
               type="button"
               className="flex! max-w-[min(200px,34vw)] items-center gap-2 rounded-md! py-0.5! pl-1! pr-2! transition-colors hover:bg-accent!"
-              aria-label={`Account menu — ${userRole ?? "Unknown role"} — signed in as ${userEmail || userId || "unknown"}`}
+              aria-label={t("accountMenuTrigger", {
+                role: userRole ?? t("unknownRole"),
+                identity: userEmail || userId || "unknown",
+              })}
               aria-haspopup="dialog"
             />
           }
@@ -299,7 +307,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
             className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
           >
             <KeyRound className="size-4" />
-            Change Password
+            {t("changePassword")}
           </button>
         )}
         <button
@@ -308,7 +316,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
           className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
         >
           <LogOut className="size-4" />
-          Logout
+          {t("logout")}
         </button>
       </PopoverContent>
     </Popover>

@@ -9484,5 +9484,32 @@
     "tooltipSpend": "Spend: ",
     "close": "Close",
     "keyNotInDatabase": "This key is no longer in the database (deleted, or a CLI/SSO session key), so its details can't be opened"
+  },
+  "accountMenus": {
+    "premium": "Premium",
+    "standard": "Standard",
+    "upgradeHint": "Upgrade to Premium for advanced features",
+    "userId": "User ID",
+    "role": "Role",
+    "email": "Email",
+    "tier": "Tier",
+    "thanksTitle": "Thanks for using LiteLLM!",
+    "hideNewFeatureIndicators": "Hide New Feature Indicators",
+    "hideAllPrompts": "Hide All Prompts",
+    "hideBlogPosts": "Hide Blog Posts",
+    "hideBouncingIcon": "Hide Bouncing Icon",
+    "hideLiteAdmin": "Hide LiteAdmin",
+    "changePassword": "Change Password",
+    "logout": "Logout",
+    "copyUserId": "Copy User ID",
+    "toggleNewFeatureIndicators": "Toggle hide new feature indicators",
+    "toggleAllPrompts": "Toggle hide all prompts",
+    "toggleBlogPosts": "Toggle hide blog posts",
+    "toggleBouncingIcon": "Toggle hide bouncing icon",
+    "toggleLiteAdmin": "Toggle hide LiteAdmin",
+    "copyEmail": "Copy email",
+    "copyUserIdLabel": "Copy user ID",
+    "accountMenuTrigger": "Account menu — {role} — signed in as {identity}",
+    "unknownRole": "Unknown role"
   }
 }

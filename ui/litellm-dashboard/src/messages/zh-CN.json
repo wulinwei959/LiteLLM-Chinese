@@ -9480,5 +9480,32 @@
     "tooltipSpend": "花费：",
     "close": "关闭",
     "keyNotInDatabase": "该密钥已不在数据库中（已被删除，或属于 CLI/SSO 会话密钥），因此无法打开其详情"
+  },
+  "accountMenus": {
+    "premium": "高级版",
+    "standard": "标准版",
+    "upgradeHint": "升级到高级版以获取高级功能",
+    "userId": "用户 ID",
+    "role": "角色",
+    "email": "邮箱",
+    "tier": "档位",
+    "thanksTitle": "感谢使用 LiteLLM！",
+    "hideNewFeatureIndicators": "隐藏新功能提示标记",
+    "hideAllPrompts": "隐藏所有提示",
+    "hideBlogPosts": "隐藏博客文章",
+    "hideBouncingIcon": "隐藏弹跳图标",
+    "hideLiteAdmin": "隐藏 LiteAdmin",
+    "changePassword": "修改密码",
+    "logout": "退出登录",
+    "copyUserId": "复制用户 ID",
+    "toggleNewFeatureIndicators": "切换隐藏新功能标记",
+    "toggleAllPrompts": "切换隐藏所有提示",
+    "toggleBlogPosts": "切换隐藏博客文章",
+    "toggleBouncingIcon": "切换隐藏弹跳图标",
+    "toggleLiteAdmin": "切换隐藏 LiteAdmin",
+    "copyEmail": "复制邮箱",
+    "copyUserIdLabel": "复制用户 ID",
+    "accountMenuTrigger": "账户菜单 — {role} — 以 {identity} 身份登录",
+    "unknownRole": "未知角色"
   }
 }
