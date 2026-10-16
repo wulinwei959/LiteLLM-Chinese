@@ -215,6 +215,11 @@ function useEstimatedOutputTokensTranslator() {
 }
 export type EstimatedOutputTokensTranslator = ReturnType<typeof useEstimatedOutputTokensTranslator>;
 
+function useOnboardingTranslator() {
+  return useTranslations("onboarding");
+}
+export type OnboardingTranslator = ReturnType<typeof useOnboardingTranslator>;
+
 function useRoiCalculatorTranslator() {
   return useTranslations("roiCalculator");
 }

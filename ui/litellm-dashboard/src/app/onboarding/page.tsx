@@ -1,5 +1,6 @@
 "use client";
 import React, { Suspense } from "react";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { OnboardingForm } from "./OnboardingForm";
 
@@ -11,8 +12,9 @@ function OnboardingContent() {
 }
 
 export default function Onboarding() {
+  const t = useTranslations("common");
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">{t("loading")}</div>}>
       <OnboardingContent />
     </Suspense>
   );

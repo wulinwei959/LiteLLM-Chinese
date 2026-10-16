@@ -315,7 +315,8 @@
     "loadingInvitation": "Loading invitation...",
     "errorTitle": "Failed to load invitation",
     "errorDesc": "The invitation link may be invalid or expired.",
-    "backToLogin": "Back to Login"
+    "backToLogin": "Back to Login",
+    "passwordRequired": "password required to sign up"
   },
   "breadcrumb": {
     "unknownPage": "Unknown Page"

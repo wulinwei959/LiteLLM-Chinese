@@ -315,7 +315,8 @@
     "loadingInvitation": "正在加载邀请...",
     "errorTitle": "加载邀请失败",
     "errorDesc": "邀请链接可能无效或已过期。",
-    "backToLogin": "返回登录"
+    "backToLogin": "返回登录",
+    "passwordRequired": "注册需要设置密码"
   },
   "breadcrumb": {
     "unknownPage": "未知页面"
