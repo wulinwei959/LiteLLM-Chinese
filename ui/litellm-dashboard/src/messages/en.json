@@ -9718,5 +9718,13 @@
     "yourToken": "Your SCIM Token",
     "tokenCopied": "Token copied to clipboard",
     "createButton": "Create SCIM Token"
+  },
+  "mcpToolPermissions": {
+    "loadServersFailed": "Unable to load MCP servers",
+    "loadToolsetsFailed": "Unable to load toolsets",
+    "loadingServers": "Loading MCP servers...",
+    "loadingTools": "Loading tools...",
+    "loadToolsFailed": "Unable to load tools",
+    "noTools": "No tools available"
   }
 }

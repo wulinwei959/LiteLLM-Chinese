@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { listMCPTools } from "../networking";
 import { MCPTool } from "../mcp_tools/types";
@@ -58,6 +59,7 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
   onChange,
   disabled = false,
 }) => {
+  const t = useTranslations("mcpToolPermissions");
   const {
     data: allServers = [],
     isError: serversFailed,
@@ -187,7 +189,7 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
     <div className="space-y-4">
       {serversFailed && (
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-800 font-medium">Unable to load MCP servers</p>
+          <p className="text-sm text-yellow-800 font-medium">{t("loadServersFailed")}</p>
           <p className="text-sm text-yellow-700 mt-1">
             This list is incomplete; servers granted directly or through an access group may be missing. Reload before
             changing tool permissions
@@ -209,7 +211,7 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
 
       {toolsetsFailed && selectedToolsets.length > 0 && (
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-800 font-medium">Unable to load toolsets</p>
+          <p className="text-sm text-yellow-800 font-medium">{t("loadToolsetsFailed")}</p>
           <p className="text-sm text-yellow-700 mt-1">
             Servers reached through the selected toolsets are not listed below
           </p>
@@ -219,7 +221,7 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
       {serversLoading && (
         <div className="flex items-center justify-center py-6">
           <UiLoadingSpinner />
-          <p className="ml-3 text-sm text-muted-foreground">Loading MCP servers...</p>
+          <p className="ml-3 text-sm text-muted-foreground">{t("loadingServers")}</p>
         </div>
       )}
 
@@ -318,14 +320,14 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
               {isLoading && (
                 <div className="flex items-center justify-center py-8">
                   <UiLoadingSpinner />
-                  <p className="ml-3 text-sm text-muted-foreground">Loading tools...</p>
+                  <p className="ml-3 text-sm text-muted-foreground">{t("loadingTools")}</p>
                 </div>
               )}
 
               {/* Error */}
               {error && !isLoading && (
                 <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-center">
-                  <p className="text-sm text-destructive font-medium">Unable to load tools</p>
+                  <p className="text-sm text-destructive font-medium">{t("loadToolsFailed")}</p>
                   <p className="text-sm text-destructive mt-1">{error}</p>
                 </div>
               )}
@@ -378,7 +380,7 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
               {/* Empty State */}
               {!isLoading && !error && tools.length === 0 && (
                 <div className="text-center py-6">
-                  <p className="text-sm text-muted-foreground">No tools available</p>
+                  <p className="text-sm text-muted-foreground">{t("noTools")}</p>
                 </div>
               )}
             </div>

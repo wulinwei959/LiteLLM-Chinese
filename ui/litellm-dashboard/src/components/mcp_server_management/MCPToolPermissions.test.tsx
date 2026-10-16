@@ -695,7 +695,7 @@ describe("MCPToolPermissions", () => {
         />,
       );
 
-      expect(await screen.findByText("Unable to load MCP servers")).toBeInTheDocument();
+      expect(await screen.findByText("无法加载 MCP 服务器")).toBeInTheDocument();
       expect(screen.queryByText(/has 0 servers/)).not.toBeInTheDocument();
     });
 
@@ -751,7 +751,7 @@ describe("MCPToolPermissions", () => {
         />,
       );
 
-      expect(await screen.findByText("Unable to load toolsets")).toBeInTheDocument();
+      expect(await screen.findByText("无法加载工具集")).toBeInTheDocument();
     });
   });
 

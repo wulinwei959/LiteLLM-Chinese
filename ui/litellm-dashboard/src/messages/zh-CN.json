@@ -9714,5 +9714,13 @@
     "yourToken": "您的 SCIM 令牌",
     "tokenCopied": "令牌已复制到剪贴板",
     "createButton": "创建 SCIM 令牌"
+  },
+  "mcpToolPermissions": {
+    "loadServersFailed": "无法加载 MCP 服务器",
+    "loadToolsetsFailed": "无法加载工具集",
+    "loadingServers": "正在加载 MCP 服务器...",
+    "loadingTools": "正在加载工具...",
+    "loadToolsFailed": "无法加载工具",
+    "noTools": "没有可用工具"
   }
 }
