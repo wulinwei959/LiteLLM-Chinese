@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 
 import { organizationKeys } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
@@ -40,6 +41,8 @@ export const OrgCreateDialog = ({
   accessToken,
   createOrganization = defaultCreateOrganization,
 }: OrgCreateDialogProps) => {
+  const t = useTranslations("organizations.orgForm");
+  const orgT = useTranslations("organizations");
   const queryClient = useQueryClient();
   const form = useZodForm(orgSettingsSchema, { defaultValues: emptyOrgFormValues });
 
@@ -76,16 +79,16 @@ export const OrgCreateDialog = ({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create Organization</DialogTitle>
+          <DialogTitle>{orgT("createOrganization")}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={onSubmit} noValidate>
           <FieldGroup>
-            <FormField control={form.control} name="organization_alias" label="Organization Name">
+            <FormField control={form.control} name="organization_alias" label={t("name")}>
               {({ ref, ...field }) => <Input {...field} ref={ref} />}
             </FormField>
 
-            <FormField control={form.control} name="models" label="Models">
+            <FormField control={form.control} name="models" label={orgT("models")}>
               {(field) => (
                 <ModelSelect
                   value={field.value}
@@ -96,14 +99,14 @@ export const OrgCreateDialog = ({
               )}
             </FormField>
 
-            <FormField control={form.control} name="max_budget" label="Max Budget (USD)">
+            <FormField control={form.control} name="max_budget" label={t("maxBudgetUsd")}>
               {({ ref, ...field }) => <Input {...field} ref={ref} type="number" step="any" min={0} />}
             </FormField>
 
-            <FormField control={form.control} name="budget_duration" label="Reset Budget">
+            <FormField control={form.control} name="budget_duration" label={t("resetBudget")}>
               {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
                 <Select
-                  items={BUDGET_DURATION_OPTIONS}
+                  items={BUDGET_DURATION_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
                   value={value === "" ? NO_RESET : value}
                   onValueChange={(selected) => onChange(selected === NO_RESET ? "" : selected)}
                 >
@@ -113,7 +116,7 @@ export const OrgCreateDialog = ({
                   <SelectContent>
                     {BUDGET_DURATION_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(option.labelKey)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -121,26 +124,26 @@ export const OrgCreateDialog = ({
               )}
             </FormField>
 
-            <FormField control={form.control} name="tpm_limit" label="Tokens per minute Limit (TPM)">
+            <FormField control={form.control} name="tpm_limit" label={t("tpmLimit")}>
               {({ ref, ...field }) => <Input {...field} ref={ref} type="number" step={1} min={0} />}
             </FormField>
 
-            <FormField control={form.control} name="rpm_limit" label="Requests per minute Limit (RPM)">
+            <FormField control={form.control} name="rpm_limit" label={t("rpmLimit")}>
               {({ ref, ...field }) => <Input {...field} ref={ref} type="number" step={1} min={0} />}
             </FormField>
 
             <FormField
               control={form.control}
               name="vector_stores"
-              label="Allowed Vector Stores"
-              description="Select vector stores this organization can access. Leave empty for access to all vector stores"
+              label={t("allowedVectorStores")}
+              description={t("vectorStoresHint")}
             >
               {(field) => (
                 <VectorStoreSelector
                   value={field.value}
                   onChange={field.onChange}
                   accessToken={accessToken}
-                  placeholder="Select vector stores (optional)"
+                  placeholder={t("vectorStoresPlaceholder")}
                 />
               )}
             </FormField>
@@ -148,20 +151,20 @@ export const OrgCreateDialog = ({
             <FormField
               control={form.control}
               name="mcp"
-              label="Allowed MCP Servers"
-              description="Select MCP servers, access groups, and toolsets this organization can access. Leave empty for access to all"
+              label={t("allowedMcpServers")}
+              description={t("mcpServersHint")}
             >
               {(field) => (
                 <MCPServerSelector
                   value={field.value}
                   onChange={field.onChange}
                   accessToken={accessToken}
-                  placeholder="Select MCP servers and access groups (optional)"
+                  placeholder={t("mcpServersPlaceholder")}
                 />
               )}
             </FormField>
 
-            <FormField control={form.control} name="metadata" label="Metadata">
+            <FormField control={form.control} name="metadata" label={t("metadata")}>
               {({ ref, ...field }) => <Textarea {...field} ref={ref} rows={4} />}
             </FormField>
           </FieldGroup>
@@ -173,7 +176,7 @@ export const OrgCreateDialog = ({
               onClick={() => handleOpenChange(false)}
               disabled={mutation.isPending}
             >
-              Cancel
+              {orgT("cancel")}
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
               {mutation.isPending ? "Creating..." : "Create Organization"}

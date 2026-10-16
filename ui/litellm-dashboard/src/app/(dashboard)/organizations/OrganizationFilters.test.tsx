@@ -26,8 +26,8 @@ describe("OrganizationFilters", () => {
     );
 
     expect(screen.getByPlaceholderText("按组织名称搜索")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^filters$/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /reset filters/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^筛选$/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /重置筛选/ })).toBeInTheDocument();
   });
 
   it("should show additional filters when showFilters is true", () => {
@@ -91,7 +91,7 @@ describe("OrganizationFilters", () => {
       />,
     );
 
-    const resetButton = screen.getByRole("button", { name: /reset filters/i });
+    const resetButton = screen.getByRole("button", { name: /重置筛选/ });
     await user.click(resetButton);
 
     expect(onReset).toHaveBeenCalledTimes(1);
@@ -117,7 +117,7 @@ describe("OrganizationFilters", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: /^filters$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^筛选$/ })).toBeInTheDocument();
     expect(container.querySelector("sup")).toBeInTheDocument();
   });
 });

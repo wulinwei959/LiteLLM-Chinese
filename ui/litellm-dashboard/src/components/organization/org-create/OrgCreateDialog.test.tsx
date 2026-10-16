@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render } from "../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { describe, expect, it, vi, type Mock } from "vitest";
@@ -72,20 +73,20 @@ describe("OrgCreateDialog", () => {
     const user = userEvent.setup();
     const { createOrganization } = renderDialog();
 
-    await user.type(screen.getByLabelText("Organization Name"), "new-org");
+    await user.type(screen.getByLabelText("组织名称"), "new-org");
     await user.click(screen.getByRole("button", { name: "Create Organization" }));
 
     await waitFor(() => expect(createOrganization).toHaveBeenCalledTimes(1));
     expect(createOrganization.mock.calls[0][0]).toStrictEqual({ organization_alias: "new-org", models: [] });
-    await waitFor(() => expect(screen.queryByLabelText("Organization Name")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByLabelText("组织名称")).not.toBeInTheDocument());
   });
 
   it("creates with a sub-cent max budget the browser would veto under a 0.01 step", async () => {
     const user = userEvent.setup();
     const { createOrganization } = renderDialog();
 
-    await user.type(screen.getByLabelText("Organization Name"), "new-org");
-    const budget: HTMLInputElement = screen.getByLabelText("Max Budget (USD)");
+    await user.type(screen.getByLabelText("组织名称"), "new-org");
+    const budget: HTMLInputElement = screen.getByLabelText("最大预算（美元）");
     await user.type(budget, "0.001");
 
     // jsdom never blocks the submit itself, so assert the constraint the real browser
@@ -106,9 +107,9 @@ describe("OrgCreateDialog", () => {
     const user = userEvent.setup();
     const { createOrganization } = renderDialog();
 
-    await user.type(screen.getByLabelText("Organization Name"), "new-org");
+    await user.type(screen.getByLabelText("组织名称"), "new-org");
     await user.click(screen.getByRole("button", { name: "set-models" }));
-    await user.type(screen.getByLabelText("Tokens per minute Limit (TPM)"), "1000");
+    await user.type(screen.getByLabelText("每分钟令牌上限（TPM）"), "1000");
     await user.click(screen.getByRole("button", { name: "set-vector-stores" }));
     await user.click(screen.getByRole("button", { name: "set-mcp" }));
     await user.click(screen.getByRole("button", { name: "Create Organization" }));
@@ -131,8 +132,8 @@ describe("OrgCreateDialog", () => {
     const user = userEvent.setup();
     const { createOrganization } = renderDialog();
 
-    await user.type(screen.getByLabelText("Organization Name"), "new-org");
-    await user.type(screen.getByLabelText("Metadata"), "not json");
+    await user.type(screen.getByLabelText("组织名称"), "new-org");
+    await user.type(screen.getByLabelText("元数据"), "not json");
     await user.click(screen.getByRole("button", { name: "Create Organization" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Metadata must be a valid JSON object");
@@ -145,35 +146,35 @@ describe("OrgCreateDialog", () => {
       createOrganization: vi.fn().mockRejectedValue(new Error("boom")),
     });
 
-    await user.type(screen.getByLabelText("Organization Name"), "new-org");
+    await user.type(screen.getByLabelText("组织名称"), "new-org");
     await user.click(screen.getByRole("button", { name: "Create Organization" }));
 
     await waitFor(() => expect(createOrganization).toHaveBeenCalledTimes(1));
-    expect(screen.getByLabelText("Organization Name")).toHaveValue("new-org");
+    expect(screen.getByLabelText("组织名称")).toHaveValue("new-org");
   });
 
   it("resets the form when the dialog is cancelled and reopened", async () => {
     const user = userEvent.setup();
     renderDialog();
 
-    await user.type(screen.getByLabelText("Organization Name"), "abandoned");
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
-    await waitFor(() => expect(screen.queryByLabelText("Organization Name")).not.toBeInTheDocument());
+    await user.type(screen.getByLabelText("组织名称"), "abandoned");
+    await user.click(screen.getByRole("button", { name: "取消" }));
+    await waitFor(() => expect(screen.queryByLabelText("组织名称")).not.toBeInTheDocument());
 
     await user.click(screen.getByRole("button", { name: "reopen" }));
-    expect(screen.getByLabelText("Organization Name")).toHaveValue("");
+    expect(screen.getByLabelText("组织名称")).toHaveValue("");
   });
 
   it("resets the form when the dialog is dismissed with Escape and reopened", async () => {
     const user = userEvent.setup();
     renderDialog();
 
-    await user.type(screen.getByLabelText("Organization Name"), "abandoned");
+    await user.type(screen.getByLabelText("组织名称"), "abandoned");
     await user.keyboard("{Escape}");
-    await waitFor(() => expect(screen.queryByLabelText("Organization Name")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByLabelText("组织名称")).not.toBeInTheDocument());
 
     await user.click(screen.getByRole("button", { name: "reopen" }));
-    expect(screen.getByLabelText("Organization Name")).toHaveValue("");
+    expect(screen.getByLabelText("组织名称")).toHaveValue("");
   });
 
   it("cannot be dismissed while a create is pending, then closes once on success", async () => {
@@ -187,15 +188,15 @@ describe("OrgCreateDialog", () => {
     );
     renderDialog({ createOrganization });
 
-    await user.type(screen.getByLabelText("Organization Name"), "new-org");
+    await user.type(screen.getByLabelText("组织名称"), "new-org");
     await user.keyboard("{Enter}");
     await waitFor(() => expect(createOrganization).toHaveBeenCalledTimes(1));
 
     await user.keyboard("{Escape}");
-    expect(screen.getByLabelText("Organization Name")).toHaveValue("new-org");
+    expect(screen.getByLabelText("组织名称")).toHaveValue("new-org");
 
     resolveCreate({});
-    await waitFor(() => expect(screen.queryByLabelText("Organization Name")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByLabelText("组织名称")).not.toBeInTheDocument());
   });
 
   it("does not fire a second create while one is pending", async () => {
@@ -209,13 +210,13 @@ describe("OrgCreateDialog", () => {
     );
     renderDialog({ createOrganization });
 
-    await user.type(screen.getByLabelText("Organization Name"), "new-org");
+    await user.type(screen.getByLabelText("组织名称"), "new-org");
     await user.keyboard("{Enter}");
     await waitFor(() => expect(createOrganization).toHaveBeenCalledTimes(1));
     await user.keyboard("{Enter}");
 
     expect(createOrganization).toHaveBeenCalledTimes(1);
     resolveCreate({});
-    await waitFor(() => expect(screen.queryByLabelText("Organization Name")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByLabelText("组织名称")).not.toBeInTheDocument());
   });
 });

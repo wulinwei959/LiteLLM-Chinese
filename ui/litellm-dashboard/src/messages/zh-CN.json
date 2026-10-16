@@ -2893,7 +2893,29 @@
     "memberUpdateSuccess": "组织成员更新成功",
     "memberUpdateFailed": "更新组织成员失败",
     "memberDeleteSuccess": "组织成员删除成功",
-    "memberDeleteFailed": "删除组织成员失败"
+    "memberDeleteFailed": "删除组织成员失败",
+    "orgForm": {
+      "name": "组织名称",
+      "maxBudgetUsd": "最大预算（美元）",
+      "resetBudget": "重置预算",
+      "tpmLimit": "每分钟令牌上限（TPM）",
+      "rpmLimit": "每分钟请求上限（RPM）",
+      "allowedVectorStores": "允许的向量存储",
+      "vectorStoresHint": "选择该组织可访问的向量存储。留空表示可访问全部向量存储",
+      "vectorStoresPlaceholder": "选择向量存储（可选）",
+      "allowedMcpServers": "允许的 MCP 服务器",
+      "mcpServersHint": "选择该组织可访问的 MCP 服务器、访问组和工具集。留空表示可访问全部",
+      "mcpServersPlaceholder": "选择 MCP 服务器与访问组（可选）",
+      "vectorStores": "向量存储",
+      "vectorStoresSelect": "选择向量存储",
+      "mcpServersAndAccessGroups": "MCP 服务器与访问组",
+      "mcpServersSelect": "选择 MCP 服务器与访问组",
+      "noReset": "不重置",
+      "daily": "每天",
+      "weekly": "每周",
+      "monthly": "每月",
+      "metadata": "元数据"
+    }
   },
   "budgets": {
     "title": "预算",

@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render } from "../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { describe, expect, it, vi, type Mock } from "vitest";
@@ -97,8 +98,8 @@ describe("OrgSettingsForm", () => {
     const user = userEvent.setup();
     const { patchOrganization } = renderForm();
 
-    await user.clear(screen.getByLabelText("Organization Name"));
-    fireEvent.change(screen.getByLabelText("Organization Name"), { target: { value: "acme-2" } });
+    await user.clear(screen.getByLabelText("组织名称"));
+    fireEvent.change(screen.getByLabelText("组织名称"), { target: { value: "acme-2" } });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
     await waitFor(() => expect(patchOrganization).toHaveBeenCalledTimes(1));
@@ -109,7 +110,7 @@ describe("OrgSettingsForm", () => {
     const user = userEvent.setup();
     const { patchOrganization } = renderForm();
 
-    const budget: HTMLInputElement = screen.getByLabelText("Max Budget (USD)");
+    const budget: HTMLInputElement = screen.getByLabelText("最大预算（美元）");
     await user.clear(budget);
     fireEvent.change(budget, { target: { value: "0.001" } });
 
@@ -127,7 +128,7 @@ describe("OrgSettingsForm", () => {
     const user = userEvent.setup();
     const { patchOrganization } = renderForm();
 
-    await user.clear(screen.getByLabelText("Tokens per minute Limit (TPM)"));
+    await user.clear(screen.getByLabelText("每分钟令牌上限（TPM）"));
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
     await waitFor(() => expect(patchOrganization).toHaveBeenCalledTimes(1));
@@ -192,7 +193,7 @@ describe("OrgSettingsForm", () => {
     const user = userEvent.setup();
     renderForm();
 
-    const alias = screen.getByLabelText("Organization Name");
+    const alias = screen.getByLabelText("组织名称");
     await user.clear(alias);
     fireEvent.change(alias, { target: { value: "acme" } });
 
@@ -203,7 +204,7 @@ describe("OrgSettingsForm", () => {
     const user = userEvent.setup();
     const { patchOrganization } = renderForm();
 
-    fireEvent.change(screen.getByLabelText("Metadata"), { target: { value: "not json" } });
+    fireEvent.change(screen.getByLabelText("元数据"), { target: { value: "not json" } });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Metadata must be a valid JSON object");
@@ -218,8 +219,8 @@ describe("OrgSettingsForm", () => {
       onSaved,
     });
 
-    await user.clear(screen.getByLabelText("Organization Name"));
-    fireEvent.change(screen.getByLabelText("Organization Name"), { target: { value: "acme-2" } });
+    await user.clear(screen.getByLabelText("组织名称"));
+    fireEvent.change(screen.getByLabelText("组织名称"), { target: { value: "acme-2" } });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
     await waitFor(() => expect(patchOrganization).toHaveBeenCalledTimes(1));
@@ -231,8 +232,8 @@ describe("OrgSettingsForm", () => {
     const onSaved = vi.fn();
     renderForm({ onSaved });
 
-    await user.clear(screen.getByLabelText("Requests per minute Limit (RPM)"));
-    fireEvent.change(screen.getByLabelText("Requests per minute Limit (RPM)"), { target: { value: "75" } });
+    await user.clear(screen.getByLabelText("每分钟请求上限（RPM）"));
+    fireEvent.change(screen.getByLabelText("每分钟请求上限（RPM）"), { target: { value: "75" } });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
     await waitFor(() => expect(onSaved).toHaveBeenCalledTimes(1));

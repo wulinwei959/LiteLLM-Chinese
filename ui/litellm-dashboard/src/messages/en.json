@@ -2893,7 +2893,29 @@
     "memberUpdateSuccess": "Organization member updated successfully",
     "memberUpdateFailed": "Failed to update organization member",
     "memberDeleteSuccess": "Organization member deleted successfully",
-    "memberDeleteFailed": "Failed to delete organization member"
+    "memberDeleteFailed": "Failed to delete organization member",
+    "orgForm": {
+      "name": "Organization Name",
+      "maxBudgetUsd": "Max Budget (USD)",
+      "resetBudget": "Reset Budget",
+      "tpmLimit": "Tokens per minute Limit (TPM)",
+      "rpmLimit": "Requests per minute Limit (RPM)",
+      "allowedVectorStores": "Allowed Vector Stores",
+      "vectorStoresHint": "Select vector stores this organization can access. Leave empty for access to all vector stores",
+      "vectorStoresPlaceholder": "Select vector stores (optional)",
+      "allowedMcpServers": "Allowed MCP Servers",
+      "mcpServersHint": "Select MCP servers, access groups, and toolsets this organization can access. Leave empty for access to all",
+      "mcpServersPlaceholder": "Select MCP servers and access groups (optional)",
+      "vectorStores": "Vector Stores",
+      "vectorStoresSelect": "Select vector stores",
+      "mcpServersAndAccessGroups": "MCP Servers & Access Groups",
+      "mcpServersSelect": "Select MCP servers and access groups",
+      "noReset": "No reset",
+      "daily": "daily",
+      "weekly": "weekly",
+      "monthly": "monthly",
+      "metadata": "Metadata"
+    }
   },
   "budgets": {
     "title": "Budgets",

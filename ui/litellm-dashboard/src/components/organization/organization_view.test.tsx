@@ -274,7 +274,7 @@ test("should keep unsaved settings edits when switching tabs and back", async ()
   await user.click(screen.getByRole("tab", { name: "设置" }));
   await user.click(await screen.findByRole("button", { name: /编辑设置/ }));
 
-  const alias = await screen.findByLabelText(/Organization Name/i);
+  const alias = await screen.findByLabelText(/组织名称/);
   await user.clear(alias);
   fireEvent.change(alias, { target: { value: "Renamed Org" } });
   expect(alias).toHaveValue("Renamed Org");
@@ -282,7 +282,7 @@ test("should keep unsaved settings edits when switching tabs and back", async ()
   await user.click(screen.getByRole("tab", { name: "概览" }));
   await user.click(screen.getByRole("tab", { name: "设置" }));
 
-  expect(screen.getByLabelText(/Organization Name/i)).toHaveValue("Renamed Org");
+  expect(screen.getByLabelText(/组织名称/)).toHaveValue("Renamed Org");
 });
 
 test("renders a tpm/rpm limit of 0 as 0 in the overview and settings tabs, never as Unlimited", async () => {
