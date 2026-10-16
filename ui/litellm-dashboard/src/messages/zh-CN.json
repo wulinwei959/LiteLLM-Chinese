@@ -10141,5 +10141,35 @@
     "descVirtualKey": "使用其用户 ID 创建新虚拟密钥时，会向该用户发送邮件",
     "descNewUser": "创建新用户时，会向该用户的邮箱地址发送邮件",
     "descGeneric": "当{words}时，你会收到邮件通知"
+  },
+  "perUserUsage": {
+    "title": "按用户用量",
+    "subtitle": "单个开发者的用量指标",
+    "tabDetails": "用户详情",
+    "tabDistribution": "用量分布",
+    "noData": "暂无按用户用量数据",
+    "userIdCol": "用户 ID",
+    "userEmailCol": "用户邮箱",
+    "userAgentCol": "用户代理",
+    "successGenerationsCol": "成功生成次数",
+    "totalTokensCol": "总 Token 数",
+    "failedRequestsCol": "失败请求数",
+    "totalCostCol": "总费用",
+    "na": "无",
+    "distributionTitle": "用户用量分布",
+    "distributionDesc": "按成功请求频次统计的用户数量",
+    "usersCount": "{count} {count, plural, other{个用户}}",
+    "cat1to9": "1-9 次请求",
+    "cat10to99": "10-99 次请求",
+    "cat100to999": "100-999 次请求",
+    "cat1k": "1K-9.9K 次请求",
+    "cat10k": "10K-99.9K 次请求",
+    "cat100k": "100K+ 次请求"
+  },
+  "viewUserSpend": {
+    "totalSpend": "总花费",
+    "maxBudget": "最大预算",
+    "budgetLimit": "{amount} 上限",
+    "noLimit": "无上限"
   }
 }

@@ -10145,5 +10145,35 @@
     "descVirtualKey": "An email will be sent to the user when a new virtual key is created with their user ID",
     "descNewUser": "An email will be sent to the email address of the user when a new user is created",
     "descGeneric": "Receive an email notification when {words}"
+  },
+  "perUserUsage": {
+    "title": "Per User Usage",
+    "subtitle": "Individual developer usage metrics",
+    "tabDetails": "User Details",
+    "tabDistribution": "Usage Distribution",
+    "noData": "No per-user usage data",
+    "userIdCol": "User ID",
+    "userEmailCol": "User Email",
+    "userAgentCol": "User Agent",
+    "successGenerationsCol": "Success Generations",
+    "totalTokensCol": "Total Tokens",
+    "failedRequestsCol": "Failed Requests",
+    "totalCostCol": "Total Cost",
+    "na": "N/A",
+    "distributionTitle": "User Usage Distribution",
+    "distributionDesc": "Number of users by successful request frequency",
+    "usersCount": "{count} {count, plural, one {user} other {users}}",
+    "cat1to9": "1-9 requests",
+    "cat10to99": "10-99 requests",
+    "cat100to999": "100-999 requests",
+    "cat1k": "1K-9.9K requests",
+    "cat10k": "10K-99.9K requests",
+    "cat100k": "100K+ requests"
+  },
+  "viewUserSpend": {
+    "totalSpend": "Total Spend",
+    "maxBudget": "Max Budget",
+    "budgetLimit": "{amount} limit",
+    "noLimit": "No limit"
   }
 }

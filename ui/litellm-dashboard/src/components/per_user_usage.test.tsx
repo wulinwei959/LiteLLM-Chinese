@@ -74,7 +74,7 @@ describe("PerUserUsage", () => {
       expect(mockPerUserAnalyticsCall).toHaveBeenCalled();
     });
 
-    expect(screen.getByText("Per User Usage")).toBeInTheDocument();
+    expect(screen.getByText("按用户用量")).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText("u1")).toBeInTheDocument();
     });
@@ -88,9 +88,9 @@ describe("PerUserUsage", () => {
     });
 
     // Still on the User Details tab: the distribution panel is mounted alongside it.
-    expect(screen.getByText("User Usage Distribution")).toBeInTheDocument();
+    expect(screen.getByText("用户用量分布")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("Usage Distribution"));
+    fireEvent.click(screen.getByText("用量分布"));
 
     // And the details panel survives the switch rather than unmounting.
     expect(screen.getByText("u1")).toBeInTheDocument();
@@ -196,7 +196,7 @@ describe("PerUserUsage", () => {
         ["test-token", 3, 50, undefined],
         ["test-token", 1, 50, undefined],
       ]);
-      expect(screen.getByText("No per-user usage data")).toBeInTheDocument();
+      expect(screen.getByText("暂无按用户用量数据")).toBeInTheDocument();
       expect(screen.getByTestId("pagination-range")).toHaveTextContent("暂无结果");
       expect(screen.getByText("第 1 页，共 1 页")).toBeInTheDocument();
       expect(screen.getByTestId("pagination-first")).toBeDisabled();
@@ -243,7 +243,7 @@ describe("PerUserUsage", () => {
       renderWithProviders(<PerUserUsage {...defaultProps} accessToken={null} />);
 
       expect(mockPerUserAnalyticsCall).not.toHaveBeenCalled();
-      expect(screen.getByText("No per-user usage data")).toBeInTheDocument();
+      expect(screen.getByText("暂无按用户用量数据")).toBeInTheDocument();
     });
   });
 
@@ -254,7 +254,7 @@ describe("PerUserUsage", () => {
       expect(mockPerUserAnalyticsCall).toHaveBeenCalled();
     });
 
-    fireEvent.click(screen.getByText("Usage Distribution"));
+    fireEvent.click(screen.getByText("用量分布"));
 
     await waitFor(() => {
       expect(distributionChart().querySelectorAll("path.recharts-rectangle")).toHaveLength(4);
@@ -271,14 +271,14 @@ describe("PerUserUsage", () => {
     expect(xPositions.size).toBe(3);
 
     expect(chart).toHaveTextContent("curl/8.0");
-    expect(chart).toHaveTextContent("Unknown");
+    expect(chart).toHaveTextContent("未知");
     for (const bucket of [
-      "1-9 requests",
-      "10-99 requests",
-      "100-999 requests",
-      "1K-9.9K requests",
-      "10K-99.9K requests",
-      "100K+ requests",
+      "1-9 次请求",
+      "10-99 次请求",
+      "100-999 次请求",
+      "1K-9.9K 次请求",
+      "10K-99.9K 次请求",
+      "100K+ 次请求",
     ]) {
       expect(chart).toHaveTextContent(bucket);
     }
@@ -286,6 +286,6 @@ describe("PerUserUsage", () => {
     const tickTexts = Array.from(chart.querySelectorAll(".recharts-cartesian-axis-tick-value")).map(
       (tick) => tick.textContent ?? "",
     );
-    expect(tickTexts.some((tick) => / users$/.test(tick))).toBe(true);
+    expect(tickTexts.some((tick) => /个用户$/.test(tick))).toBe(true);
   });
 });
