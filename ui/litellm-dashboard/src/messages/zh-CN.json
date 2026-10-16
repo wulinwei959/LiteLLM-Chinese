@@ -4647,6 +4647,29 @@
       "noTagsFound": "未找到标签",
       "getStartedPerTag": "通过追踪每个标签的费用开始使用",
       "here": "此处"
+    },
+    "viewSelect": {
+        "title": "用量视图",
+        "description": "选择要查看的用量数据",
+        "global": "全局用量",
+        "yourUsage": "你的用量",
+        "organization": "组织用量",
+        "team": "团队用量",
+        "customer": "客户用量",
+        "tag": "标签用量",
+        "agent": "智能体用量（A2A）",
+        "user": "用户用量",
+        "userAgentActivity": "用户代理活跃度",
+        "globalDesc": "查看所有资源的用量",
+        "globalDescNonAdmin": "查看你的用量",
+        "myUsageDesc": "查看你自己的用量",
+        "organizationDesc": "查看所有组织的用量",
+        "teamDesc": "按团队查看用量",
+        "customerDesc": "按客户账号查看用量",
+        "tagDesc": "按标签分组查看用量",
+        "agentDesc": "按智能体查看用量",
+        "userDesc": "按单个用户查看用量",
+        "userAgentDesc": "查看详细的用户代理活跃日志"
     }
   },
   "logs": {

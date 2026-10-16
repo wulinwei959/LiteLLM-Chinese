@@ -4647,6 +4647,29 @@
       "noTagsFound": "No tags found",
       "getStartedPerTag": "Get Started by Tracking cost per tag",
       "here": "here"
+    },
+    "viewSelect": {
+        "title": "Usage View",
+        "description": "Select the usage data you want to view",
+        "global": "Global Usage",
+        "yourUsage": "Your Usage",
+        "organization": "Organization Usage",
+        "team": "Team Usage",
+        "customer": "Customer Usage",
+        "tag": "Tag Usage",
+        "agent": "Agent Usage (A2A)",
+        "user": "User Usage",
+        "userAgentActivity": "User Agent Activity",
+        "globalDesc": "View usage across all resources",
+        "globalDescNonAdmin": "View your usage",
+        "myUsageDesc": "View your own usage",
+        "organizationDesc": "View usage across all organizations",
+        "teamDesc": "View usage by team",
+        "customerDesc": "View usage by customer accounts",
+        "tagDesc": "View usage grouped by tags",
+        "agentDesc": "View usage by AI agents",
+        "userDesc": "View usage by individual users",
+        "userAgentDesc": "View detailed user agent activity logs"
     }
   },
   "logs": {
