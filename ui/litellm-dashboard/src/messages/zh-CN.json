@@ -10258,5 +10258,14 @@
     "needHelp": "需要帮助？",
     "updateBtn": "更新凭据",
     "addBtn": "添加凭据"
+  },
+  "modelSettings": {
+    "title": "模型设置",
+    "storeInDbLabel": "将模型存入数据库",
+    "storeInDbFallback": "启用后，模型与配置会存入数据库并从中加载。",
+    "loadingAria": "正在加载模型设置",
+    "updated": "模型存储设置更新成功",
+    "saveFailedPrefix": "保存模型存储设置失败：",
+    "saveSettings": "保存设置"
   }
 }

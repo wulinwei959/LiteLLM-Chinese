@@ -48,25 +48,25 @@ describe("ModelSettingsModal", () => {
   it("should render the modal", () => {
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("Model Settings")).toBeInTheDocument();
+    expect(screen.getByText("模型设置")).toBeInTheDocument();
   });
 
   it("should render form field with initial values", () => {
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
-    expect(screen.getByText("Store Model in DB")).toBeInTheDocument();
+    expect(screen.getByText("将模型存入数据库")).toBeInTheDocument();
   });
 
   it("should render cancel and save buttons", () => {
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Save Settings" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "保存设置" })).toBeInTheDocument();
   });
 
   it("should call onCancel when cancel button is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
 
-    const cancelButton = screen.getByRole("button", { name: "Cancel" });
+    const cancelButton = screen.getByRole("button", { name: "取消" });
     await user.click(cancelButton);
 
     expect(mockOnCancel).toHaveBeenCalledTimes(1);
@@ -109,7 +109,7 @@ describe("ModelSettingsModal", () => {
     const switchElement = screen.getByRole("switch");
     await user.click(switchElement);
 
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -127,7 +127,7 @@ describe("ModelSettingsModal", () => {
 
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
 
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -145,11 +145,11 @@ describe("ModelSettingsModal", () => {
 
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
 
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(mockToast.success).toHaveBeenCalledWith("Model storage settings updated successfully");
+      expect(mockToast.success).toHaveBeenCalledWith("模型存储设置更新成功");
       expect(mockRefetch).toHaveBeenCalled();
       expect(mockOnSuccess).toHaveBeenCalledTimes(1);
     });
@@ -163,11 +163,11 @@ describe("ModelSettingsModal", () => {
 
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
 
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(mockToast.fromError).toHaveBeenCalledWith("Failed to save model storage settings: Network error");
+      expect(mockToast.fromError).toHaveBeenCalledWith("保存模型存储设置失败：Network error");
     });
   });
 
@@ -182,11 +182,11 @@ describe("ModelSettingsModal", () => {
 
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
 
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(mockToast.fromError).toHaveBeenCalledWith("Failed to save model storage settings: Backend error");
+      expect(mockToast.fromError).toHaveBeenCalledWith("保存模型存储设置失败：Backend error");
     });
   });
 
@@ -198,7 +198,7 @@ describe("ModelSettingsModal", () => {
 
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
 
-    const cancelButton = screen.getByRole("button", { name: "Cancel" });
+    const cancelButton = screen.getByRole("button", { name: "取消" });
     expect(cancelButton).toBeDisabled();
   });
 
@@ -211,7 +211,7 @@ describe("ModelSettingsModal", () => {
 
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
 
-    const cancelButton = screen.getByRole("button", { name: "Cancel" });
+    const cancelButton = screen.getByRole("button", { name: "取消" });
     expect(cancelButton).toBeDisabled();
   });
 
@@ -223,7 +223,7 @@ describe("ModelSettingsModal", () => {
 
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
 
-    const saveButton = screen.getByRole("button", { name: /Saving/i });
+    const saveButton = screen.getByRole("button", { name: /保存中/i });
     expect(saveButton).toBeInTheDocument();
     expect(saveButton).toHaveAttribute("aria-busy", "true");
     expect(saveButton).toBeDisabled();
@@ -271,7 +271,7 @@ describe("ModelSettingsModal", () => {
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
 
     expect(screen.queryByRole("switch")).not.toBeInTheDocument();
-    expect(screen.getByRole("status", { name: "Loading model settings" })).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "正在加载模型设置" })).toBeInTheDocument();
   });
 
   it("should not call onSuccess when it is not provided", async () => {
@@ -284,7 +284,7 @@ describe("ModelSettingsModal", () => {
 
     renderWithProviders(<ModelSettingsModal isVisible={true} onCancel={mockOnCancel} />);
 
-    const saveButton = screen.getByRole("button", { name: "Save Settings" });
+    const saveButton = screen.getByRole("button", { name: "保存设置" });
     await user.click(saveButton);
 
     await waitFor(() => {

@@ -10262,5 +10262,14 @@
     "needHelp": "Need Help?",
     "updateBtn": "Update Credential",
     "addBtn": "Add Credential"
+  },
+  "modelSettings": {
+    "title": "Model Settings",
+    "storeInDbLabel": "Store Model in DB",
+    "storeInDbFallback": "If enabled, models and config are stored in and loaded from the database.",
+    "loadingAria": "Loading model settings",
+    "updated": "Model storage settings updated successfully",
+    "saveFailedPrefix": "Failed to save model storage settings: ",
+    "saveSettings": "Save Settings"
   }
 }
