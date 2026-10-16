@@ -1,6 +1,26 @@
 # 开发进度
 
-数据快照 2026-10-16，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 117 簇后（非测试 `.tsx` 912 个接入 593 个、65.0%，目录叶子 9008、中英同值 103）。第 93 到 117 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了两处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-16，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 125 簇后（非测试 `.tsx` 912 个接入 601 个、65.9%，目录叶子 9128、中英同值 105）。第 93 到 125 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好了两处上一批遗留的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+
+## 2026-10-16 第 119-126 簇更新
+
+继续串行推进，同样没有派子代理。
+
+第 119 簇 `playground/components/chat_ui/AdditionalModelSettings.tsx`：接进既有 `playground` 命名空间下的 `additionalSettings` 子对象，19 键。三个 tooltip 的正文（流式响应、温度、最大令牌数）都是跨行的 JSX 文本，收拢成单个键。
+
+第 120 簇 `claude_code_plugins/`：`skill_detail.tsx` 与 `MakeSkillPublicForm.tsx`，新开 `claudeCodePlugins` 23 键。
+
+第 121 簇 `agents/_components/AgentIdentityFields.tsx`：新开 `agentIdentity` 33 键。三个选项数组（身份提供商、执行模式、执行开关）从 `label` 改成 `labelKey` 加 `as const`，这样 `t(option.labelKey)` 的键是字面量联合而不是 `string`，否则 `npm run build` 会报 `TS2345: Argument of type 'string' is not assignable to parameter of type 'NamespacedMessageKeys<...>'`。这两个子组件（`ResourcesCell` 式的内联渲染、`AgentFormField` 的包装）都需要在 props 上带 `t`。
+
+第 122 簇 `mcp_tools/ByokCredentialModal.tsx`：新开 `byokModal` 14 键。`byokSaveErrorMessage` 是模块级函数，按约定首参收翻译器。
+
+第 123 簇 `model-insights/_components/ModelInsightsView.tsx`：新开 `modelInsights` 25 键。`METRIC_LABELS` 与 `GRANULARITY_LABELS` 从英文串映射改成 i18n key 映射。删掉 `METRIC_LABELS` 后忘了还有两处 JSX 在用它，运行时整个组件抛错、日志里只剩一句 "An error occurred in the <ModelInsightsView> component"，很难定位；`grep METRIC_LABELS` 才发现第 307 行还留着引用。
+
+第 124 簇 `GuardrailSettingsView.tsx`：新开 `guardrailSettingsView` 8 键。
+
+第 125 簇 `TeamsPage/teamTableColumns.tsx`：这个文件之前已经接过翻译，列工厂本来就把 `t` 作为入参，但 `meta.title`、`sr-only` 的表头、资源单元格里的 `label` 与复制提示仍是英文字面量，属于上一批的漏网。补进既有 `teams.table`：`created`、`actions`、`openRowActions`、`keys`、`teamIdCopied`。两个内联子组件（`ResourcesCell`、`TeamRowActions`）按 props 传 `t`。
+
+这一段合计：非测试 `.tsx` 912 接入 593→601（65.0%→65.9%），目录叶子 9008→9128（+120），中英同值 103→105。
 
 ## 2026-10-16 第 111-117 簇更新
 

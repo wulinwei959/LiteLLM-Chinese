@@ -178,6 +178,23 @@ npx tsc --noEmit 2>&1 | grep "error TS" | sed 's/^ *//' | sort -u
 
 新增的用例要有牙齿。把 `getSnapshot` 里的浏览器语言回退临时去掉，只有"跟随浏览器语言"那一条变红，其余三条仍绿，说明它盯的确实是这条回退
 
+## 2026-10-16 第 119-126 簇：`as const` 是选项数组接翻译的前提
+
+把一个选项数组从 `label` 改成 `labelKey` 之后，如果不加 `as const`，数组元素的 `labelKey` 会被推成 `string`，于是 `t(option.labelKey)` 报 `TS2345: Argument of type 'string' is not assignable to parameter of type 'NamespacedMessageKeys<...>'`。`npm run build` 的类型检查阶段能抓到，但 `npx vitest run` 的 `types` 项目有时不会（取决于 `AppConfig.Messages` 的类型增强是否命中该调用点）。所以凡是"数组里存 key、渲染时取文案"的写法，数组末尾一律补 `as const`：
+
+```ts
+const EXECUTION_OPTIONS = [
+  { value: "enabled", labelKey: "executionEnabled" },
+  { value: "disabled", labelKey: "executionDisabled" },
+] as const;
+```
+
+另外，`Record<Metric, "metricRequests" | ...>` 这种显式联合标注也能达到同样效果，但 `as const` 更短，也和仓库里既有的 `PUBLIC_MODEL_HUB_SORT_KEYS` 写法一致。
+
+## 2026-10-16 第 119-126 簇：删常量要 grep 全部引用
+
+`ModelInsightsView.tsx` 里把 `METRIC_LABELS` 这个英文串映射换成 `METRIC_KEYS` 之后，只改了渲染处，忘了第 307 行的 JSX 里还有一处引用。运行时后果是整个组件抛错，但 vitest 只打一句 `An error occurred in the <ModelInsightsView> component`，DOM 是空的，报错文本里既没有变量名也没有行号，看起来像是组件自己返回了 null。定位花的时间比改动本身长得多。删任何一个模块级常量之前，先 `grep` 一遍确认零引用。
+
 ## 2026-10-16 第 111-117 簇：自建 Provider 树的测试会绕过默认 locale
 
 `LiteAdmin.integration.test.tsx` 自己搭了一棵测试树，而不是用 `tests/test-utils.tsx` 的 `renderWithProviders`：
