@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useMCPSemanticFilterSettings } from "@/app/(dashboard)/hooks/mcpSemanticFilterSettings/useMCPSemanticFilterSettings";
 import { useUpdateMCPSemanticFilterSettings } from "@/app/(dashboard)/hooks/mcpSemanticFilterSettings/useUpdateMCPSemanticFilterSettings";
 import { toast } from "@/lib/toast";
@@ -81,6 +83,8 @@ const parseTopK = (raw: string, rawAsNumber: number): number | null =>
   raw === "" || Number.isNaN(rawAsNumber) ? null : rawAsNumber;
 
 const SaveSuccessAlert = () => {
+  const t = useTranslations("adminPanel");
+  const tc = useTranslations("common");
   const [dismissed, setDismissed] = useState(false);
 
   if (dismissed) {
@@ -90,9 +94,9 @@ const SaveSuccessAlert = () => {
   return (
     <Alert variant="success" className="mb-4">
       <CircleCheck />
-      <AlertTitle>Settings saved successfully</AlertTitle>
+      <AlertTitle>{t("mcpSemanticFilter.settings.saveSuccessTitle")}</AlertTitle>
       <AlertAction>
-        <Button variant="ghost" size="icon-sm" aria-label="Close" onClick={() => setDismissed(true)}>
+        <Button variant="ghost" size="icon-sm" aria-label={tc("close")} onClick={() => setDismissed(true)}>
           <X className="size-4" />
         </Button>
       </AlertAction>
@@ -101,6 +105,7 @@ const SaveSuccessAlert = () => {
 };
 
 export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFilterSettingsProps) {
+  const t = useTranslations("adminPanel");
   const { data, isLoading, isError, error } = useMCPSemanticFilterSettings();
   const {
     mutate: updateSettings,
@@ -164,7 +169,7 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
         setIsDirty(false);
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3000);
-        toast.success("Settings updated successfully. Changes will be applied across all pods within 10 seconds.");
+        toast.success(t("mcpSemanticFilter.settings.updatedToast"));
       },
       onError: (error) => {
         toast.fromError(error);
@@ -184,13 +189,12 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
       setIsTesting,
       setTestResult,
       setTestError,
+      t,
     });
   };
 
   if (!accessToken) {
-    return (
-      <div className="p-6 text-center text-muted-foreground">Please log in to configure semantic filter settings.</div>
-    );
+    return <div className="p-6 text-center text-muted-foreground">{t("mcpSemanticFilter.settings.loginPrompt")}</div>;
   }
 
   return (
@@ -204,26 +208,22 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
         </div>
       ) : isError ? (
         <Alert variant="error" className="mb-6">
-          <AlertTitle>Could not load MCP Semantic Filter settings</AlertTitle>
+          <AlertTitle>{t("mcpSemanticFilter.settings.loadErrorTitle")}</AlertTitle>
           {error instanceof Error && <AlertDescription>{error.message}</AlertDescription>}
         </Alert>
       ) : (
         <>
           <Alert variant="info" className="mb-6">
             <Info />
-            <AlertTitle>Semantic Tool Filtering</AlertTitle>
-            <AlertDescription>
-              Filter MCP tools semantically based on query relevance. This reduces context window size and improves tool
-              selection accuracy. Click &apos;Save Settings&apos; to apply changes across all pods (takes effect within
-              10 seconds).
-            </AlertDescription>
+            <AlertTitle>{t("mcpSemanticFilter.settings.infoTitle")}</AlertTitle>
+            <AlertDescription>{t("mcpSemanticFilter.settings.infoBody")}</AlertDescription>
           </Alert>
 
           {saveSuccess && <SaveSuccessAlert />}
 
           {updateError && (
             <Alert variant="error" className="mb-4">
-              <AlertTitle>Could not update settings</AlertTitle>
+              <AlertTitle>{t("mcpSemanticFilter.settings.updateErrorTitle")}</AlertTitle>
               {updateError instanceof Error && <AlertDescription>{updateError.message}</AlertDescription>}
             </Alert>
           )}
@@ -240,8 +240,8 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                           control={form.control}
                           name="enabled"
                           label={labelWithHint(
-                            "Enable Semantic Filtering",
-                            "When enabled, only the most relevant MCP tools will be included in requests based on semantic similarity",
+                            t("mcpSemanticFilter.settings.enabledLabel"),
+                            t("mcpSemanticFilter.settings.enabledHint"),
                           )}
                           description={schema?.properties?.enabled?.description}
                         >
@@ -261,7 +261,7 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
 
                   <Card className="mb-4">
                     <CardHeader className="border-b">
-                      <CardTitle>Configuration</CardTitle>
+                      <CardTitle>{t("mcpSemanticFilter.settings.configTitle")}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <FieldGroup>
@@ -269,8 +269,8 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                           control={form.control}
                           name="embedding_model"
                           label={labelWithHint(
-                            "Embedding Model",
-                            "The model used to generate embeddings for semantic matching",
+                            t("mcpSemanticFilter.settings.embeddingModelLabel"),
+                            t("mcpSemanticFilter.settings.embeddingModelHint"),
                           )}
                         >
                           {({ value, onChange, id }) => (
@@ -283,8 +283,16 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                               value={value}
                               onValueChange={(selected) => commitChange(onChange, selected)}
                               allowClear={false}
-                              placeholder={loadingModels ? "Loading models..." : "Select embedding model"}
-                              emptyText={loadingModels ? "Loading..." : "No embedding models available"}
+                              placeholder={
+                                loadingModels
+                                  ? t("mcpSemanticFilter.settings.loadingModels")
+                                  : t("mcpSemanticFilter.settings.selectEmbeddingModel")
+                              }
+                              emptyText={
+                                loadingModels
+                                  ? t("mcpSemanticFilter.settings.loading")
+                                  : t("mcpSemanticFilter.settings.noEmbeddingModels")
+                              }
                               disabled={isUpdating || loadingModels}
                             />
                           )}
@@ -293,7 +301,10 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                         <FormField
                           control={form.control}
                           name="top_k"
-                          label={labelWithHint("Top K Results", "Maximum number of tools to return after filtering")}
+                          label={labelWithHint(
+                            t("mcpSemanticFilter.settings.topKLabel"),
+                            t("mcpSemanticFilter.settings.topKHint"),
+                          )}
                         >
                           {({ ref, value, onChange, onBlur, id }) => (
                             <Input
@@ -319,8 +330,8 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                           control={form.control}
                           name="similarity_threshold"
                           label={labelWithHint(
-                            "Similarity Threshold",
-                            "Minimum similarity score (0-1) for a tool to be included",
+                            t("mcpSemanticFilter.settings.thresholdLabel"),
+                            t("mcpSemanticFilter.settings.thresholdHint"),
                           )}
                         >
                           {({ value, onChange, id }) => (
@@ -359,7 +370,7 @@ export default function MCPSemanticFilterSettings({ accessToken }: MCPSemanticFi
                       disabled={!isDirty || isUpdating}
                     >
                       {isUpdating ? <UiLoadingSpinner className="size-4" /> : <Save />}
-                      Save Settings
+                      {t("mcpSemanticFilter.settings.saveButton")}
                     </Button>
                   </div>
                 </form>

@@ -1,5 +1,6 @@
 import { toast } from "@/lib/toast";
 import { testMCPSemanticFilter } from "@/components/networking";
+import type { AdminPanelTranslator } from "@/lib/i18n/translators";
 
 export interface TestResult {
   totalTools: number;
@@ -30,6 +31,7 @@ export const runSemanticFilterTest = async ({
   setIsTesting,
   setTestResult,
   setTestError,
+  t,
 }: {
   accessToken: string;
   testModel: string | null;
@@ -37,9 +39,10 @@ export const runSemanticFilterTest = async ({
   setIsTesting: (value: boolean) => void;
   setTestResult: (result: TestResult | null) => void;
   setTestError: (error: string | null) => void;
+  t: AdminPanelTranslator;
 }) => {
   if (!testQuery || !testModel || !accessToken) {
-    toast.error("Please enter a query and select a model");
+    toast.error(t("mcpSemanticFilter.toast.testQueryAndModelRequired"));
     return;
   }
 
@@ -52,17 +55,17 @@ export const runSemanticFilterTest = async ({
     const parsedResult = parseFilterHeaders(headers);
 
     if (!parsedResult) {
-      toast.warning("Semantic filter is not enabled or no tools were filtered");
+      toast.warning(t("mcpSemanticFilter.toast.notEnabledOrNoTools"));
       return;
     }
 
     setTestResult(parsedResult);
-    toast.success("Semantic filter test completed successfully");
+    toast.success(t("mcpSemanticFilter.toast.testCompleted"));
   } catch (error) {
     console.error("Test failed:", error);
-    const message = error instanceof Error && error.message ? error.message : "Failed to test semantic filter";
+    const message = error instanceof Error && error.message ? error.message : t("mcpSemanticFilter.toast.testFailed");
     setTestError(message);
-    toast.error("Failed to test semantic filter");
+    toast.error(t("mcpSemanticFilter.toast.testFailed"));
   } finally {
     setIsTesting(false);
   }

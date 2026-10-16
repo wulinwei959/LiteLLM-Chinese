@@ -1,8 +1,9 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, act, fireEvent } from "@testing-library/react";
+import { screen, act, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MCPSemanticFilterSettings from "./MCPSemanticFilterSettings";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 import { useMCPSemanticFilterSettings } from "@/app/(dashboard)/hooks/mcpSemanticFilterSettings/useMCPSemanticFilterSettings";
 import { useUpdateMCPSemanticFilterSettings } from "@/app/(dashboard)/hooks/mcpSemanticFilterSettings/useUpdateMCPSemanticFilterSettings";
 import { fetchAvailableModels } from "@/components/llm_calls/fetch_models";
@@ -93,7 +94,7 @@ const CLAMPED_MIN_PAYLOAD = {
 
 // Helper that renders the component and flushes the fetchAvailableModels effect
 async function renderSettings(props: React.ComponentProps<typeof MCPSemanticFilterSettings>) {
-  const result = render(<MCPSemanticFilterSettings {...props} />);
+  const result = renderWithProviders(<MCPSemanticFilterSettings {...props} />);
   if (props.accessToken) {
     // Let the async fetchAvailableModels effect settle to avoid act() warnings
     await act(async () => {});
@@ -119,17 +120,17 @@ describe("MCPSemanticFilterSettings", () => {
 
   it("should render", async () => {
     await renderSettings({ accessToken: "test-token" });
-    expect(screen.getByText("Semantic Tool Filtering")).toBeInTheDocument();
+    expect(screen.getByText("语义工具过滤")).toBeInTheDocument();
   });
 
   it("should show a login prompt when accessToken is null", () => {
-    render(<MCPSemanticFilterSettings accessToken={null} />);
-    expect(screen.getByText(/please log in/i)).toBeInTheDocument();
+    renderWithProviders(<MCPSemanticFilterSettings accessToken={null} />);
+    expect(screen.getByText(/请登录/)).toBeInTheDocument();
   });
 
   it("should not render the form when accessToken is null", () => {
-    render(<MCPSemanticFilterSettings accessToken={null} />);
-    expect(screen.queryByText("Enable Semantic Filtering")).not.toBeInTheDocument();
+    renderWithProviders(<MCPSemanticFilterSettings accessToken={null} />);
+    expect(screen.queryByText("启用语义过滤")).not.toBeInTheDocument();
   });
 
   it("should not show the settings content while loading", async () => {
@@ -140,7 +141,7 @@ describe("MCPSemanticFilterSettings", () => {
       error: null,
     } as any);
     await renderSettings({ accessToken: "test-token" });
-    expect(screen.queryByText("Semantic Tool Filtering")).not.toBeInTheDocument();
+    expect(screen.queryByText("语义工具过滤")).not.toBeInTheDocument();
   });
 
   it("should show an error alert when data fails to load", async () => {
@@ -151,7 +152,7 @@ describe("MCPSemanticFilterSettings", () => {
       error: new Error("Network error"),
     } as any);
     await renderSettings({ accessToken: "test-token" });
-    expect(screen.getByText("Could not load MCP Semantic Filter settings")).toBeInTheDocument();
+    expect(screen.getByText("无法加载 MCP 语义过滤器设置")).toBeInTheDocument();
     expect(screen.getByText("Network error")).toBeInTheDocument();
   });
 
@@ -168,10 +169,10 @@ describe("MCPSemanticFilterSettings", () => {
 
   it("should render the info alert and form fields when data is loaded", async () => {
     await renderSettings({ accessToken: "test-token" });
-    expect(screen.getByText("Semantic Tool Filtering")).toBeInTheDocument();
-    expect(screen.getByText("Enable Semantic Filtering")).toBeInTheDocument();
-    expect(screen.getByText("Top K Results")).toBeInTheDocument();
-    expect(screen.getByText("Similarity Threshold")).toBeInTheDocument();
+    expect(screen.getByText("语义工具过滤")).toBeInTheDocument();
+    expect(screen.getByText("启用语义过滤")).toBeInTheDocument();
+    expect(screen.getByText("Top K 结果数")).toBeInTheDocument();
+    expect(screen.getByText("相似度阈值")).toBeInTheDocument();
   });
 
   it("should render the test panel", async () => {
@@ -181,18 +182,18 @@ describe("MCPSemanticFilterSettings", () => {
 
   it("should have Save Settings button disabled initially", async () => {
     await renderSettings({ accessToken: "test-token" });
-    expect(screen.getByRole("button", { name: /save settings/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /保存设置/ })).toBeDisabled();
   });
 
   it("should enable Save Settings button after a form field is changed", async () => {
     const user = userEvent.setup();
     await renderSettings({ accessToken: "test-token" });
 
-    expect(screen.getByRole("button", { name: /save settings/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /保存设置/ })).toBeDisabled();
 
     await user.click(screen.getByRole("switch"));
 
-    expect(screen.getByRole("button", { name: /save settings/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /保存设置/ })).toBeEnabled();
   });
 
   it("should show an error alert when the mutation fails", async () => {
@@ -202,7 +203,7 @@ describe("MCPSemanticFilterSettings", () => {
       error: new Error("Failed to update settings"),
     } as any);
     await renderSettings({ accessToken: "test-token" });
-    expect(screen.getByText("Could not update settings")).toBeInTheDocument();
+    expect(screen.getByText("无法更新设置")).toBeInTheDocument();
     expect(screen.getByText("Failed to update settings")).toBeInTheDocument();
   });
 
@@ -211,7 +212,7 @@ describe("MCPSemanticFilterSettings", () => {
     await renderSettings({ accessToken: "test-token" });
 
     await user.click(screen.getByRole("switch"));
-    await user.click(screen.getByRole("button", { name: /save settings/i }));
+    await user.click(screen.getByRole("button", { name: /保存设置/ }));
 
     expect(mockMutate).toHaveBeenCalledWith(SWITCH_ONLY_PAYLOAD, expect.anything());
   });
@@ -229,7 +230,7 @@ describe("MCPSemanticFilterSettings", () => {
     const topK = screen.getByRole("spinbutton");
     await user.clear(topK);
     fireEvent.change(topK, { target: { value: "7" } });
-    await user.click(screen.getByRole("button", { name: /save settings/i }));
+    await user.click(screen.getByRole("button", { name: /保存设置/ }));
 
     expect(mockMutate).toHaveBeenCalledWith(DEFAULTED_PAYLOAD, expect.anything());
   });
@@ -255,7 +256,7 @@ describe("MCPSemanticFilterSettings", () => {
     fireEvent.keyDown(embeddingModel, { key: "ArrowDown", keyCode: 40, which: 40 });
     fireEvent.keyDown(embeddingModel, { key: "Enter", keyCode: 13, which: 13 });
 
-    await user.click(screen.getByRole("button", { name: /save settings/i }));
+    await user.click(screen.getByRole("button", { name: /保存设置/ }));
 
     expect(mockMutate).toHaveBeenCalledWith(FULLY_EDITED_PAYLOAD, expect.anything());
   });
@@ -266,7 +267,7 @@ describe("MCPSemanticFilterSettings", () => {
 
     const topK = screen.getByRole("spinbutton");
     await user.clear(topK);
-    await user.click(screen.getByRole("button", { name: /save settings/i }));
+    await user.click(screen.getByRole("button", { name: /保存设置/ }));
 
     expect(mockMutate).toHaveBeenCalledWith(CLEARED_TOP_K_PAYLOAD, expect.anything());
   });
@@ -279,7 +280,7 @@ describe("MCPSemanticFilterSettings", () => {
     await user.clear(topK);
     fireEvent.change(topK, { target: { value: "500" } });
     await user.tab();
-    await user.click(screen.getByRole("button", { name: /save settings/i }));
+    await user.click(screen.getByRole("button", { name: /保存设置/ }));
 
     expect(mockMutate).toHaveBeenCalledWith(CLAMPED_MAX_PAYLOAD, expect.anything());
   });
@@ -292,7 +293,7 @@ describe("MCPSemanticFilterSettings", () => {
     await user.clear(topK);
     fireEvent.change(topK, { target: { value: "0" } });
     await user.tab();
-    await user.click(screen.getByRole("button", { name: /save settings/i }));
+    await user.click(screen.getByRole("button", { name: /保存设置/ }));
 
     expect(mockMutate).toHaveBeenCalledWith(CLAMPED_MIN_PAYLOAD, expect.anything());
   });

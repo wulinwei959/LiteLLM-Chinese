@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { createTranslator } from "next-intl";
 import { getCurlCommand, runSemanticFilterTest } from "./semanticFilterTestUtils";
 import { testMCPSemanticFilter } from "@/components/networking";
 import { toast } from "@/lib/toast";
+import zh from "@/messages/zh-CN.json";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "adminPanel" });
 
 vi.mock("@/components/networking", () => ({
   testMCPSemanticFilter: vi.fn(),
@@ -40,6 +44,7 @@ describe("runSemanticFilterTest", () => {
     setIsTesting: mockSetIsTesting,
     setTestResult: mockSetTestResult,
     setTestError: mockSetTestError,
+    t,
   };
 
   beforeEach(() => {
@@ -48,13 +53,13 @@ describe("runSemanticFilterTest", () => {
 
   it("should call toast.error and not set isTesting when testQuery is empty", async () => {
     await runSemanticFilterTest({ ...baseArgs, testQuery: "" });
-    expect(toast.error).toHaveBeenCalledWith("Please enter a query and select a model");
+    expect(toast.error).toHaveBeenCalledWith("请输入查询并选择模型");
     expect(mockSetIsTesting).not.toHaveBeenCalled();
   });
 
   it("should call toast.error and not set isTesting when testModel is empty", async () => {
     await runSemanticFilterTest({ ...baseArgs, testModel: "" });
-    expect(toast.error).toHaveBeenCalledWith("Please enter a query and select a model");
+    expect(toast.error).toHaveBeenCalledWith("请输入查询并选择模型");
     expect(mockSetIsTesting).not.toHaveBeenCalled();
   });
 
@@ -94,7 +99,7 @@ describe("runSemanticFilterTest", () => {
       selectedTools: 3,
       tools: ["wiki", "github", "slack"],
     });
-    expect(toast.success).toHaveBeenCalledWith("Semantic filter test completed successfully");
+    expect(toast.success).toHaveBeenCalledWith("语义过滤器测试成功完成");
   });
 
   it("should show a warning when the filter header is missing", async () => {
@@ -105,7 +110,7 @@ describe("runSemanticFilterTest", () => {
 
     await runSemanticFilterTest(baseArgs);
 
-    expect(toast.warning).toHaveBeenCalledWith("Semantic filter is not enabled or no tools were filtered");
+    expect(toast.warning).toHaveBeenCalledWith("语义过滤器未启用，或没有工具被过滤");
     expect(mockSetTestResult).not.toHaveBeenCalledWith(expect.objectContaining({ totalTools: expect.any(Number) }));
   });
 
@@ -114,7 +119,7 @@ describe("runSemanticFilterTest", () => {
 
     await runSemanticFilterTest(baseArgs);
 
-    expect(toast.error).toHaveBeenCalledWith("Failed to test semantic filter");
+    expect(toast.error).toHaveBeenCalledWith("测试语义过滤器失败");
     expect(mockSetIsTesting).toHaveBeenLastCalledWith(false);
   });
 
@@ -145,6 +150,6 @@ describe("runSemanticFilterTest", () => {
 
     await runSemanticFilterTest(baseArgs);
 
-    expect(mockSetTestError).toHaveBeenLastCalledWith("Failed to test semantic filter");
+    expect(mockSetTestError).toHaveBeenLastCalledWith("测试语义过滤器失败");
   });
 });

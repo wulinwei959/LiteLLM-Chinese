@@ -4344,6 +4344,60 @@
       "notAppliedTitle": "Not running on the proxy that answered this page",
       "notAppliedBody": "Interception is switched on for the cluster, but the proxy serving this page has not applied it. That is expected for about 10 seconds after a change or a restart. If it persists, check that proxy's logs: requests it handles are not being intercepted.",
       "infoAlertBody": "Serve web search tool calls from a configured search tool instead of passing them upstream, so models without native web search can still answer with fresh results. Click 'Save Settings' to apply changes across all pods (takes effect within 10 seconds)."
+    },
+    "mcpSemanticFilter": {
+      "settings": {
+        "loginPrompt": "Please log in to configure semantic filter settings.",
+        "loadErrorTitle": "Could not load MCP Semantic Filter settings",
+        "updateErrorTitle": "Could not update settings",
+        "saveSuccessTitle": "Settings saved successfully",
+        "infoTitle": "Semantic Tool Filtering",
+        "infoBody": "Filter MCP tools semantically based on query relevance. This reduces context window size and improves tool selection accuracy. Click 'Save Settings' to apply changes across all pods (takes effect within 10 seconds).",
+        "configTitle": "Configuration",
+        "enabledLabel": "Enable Semantic Filtering",
+        "enabledHint": "When enabled, only the most relevant MCP tools will be included in requests based on semantic similarity",
+        "embeddingModelLabel": "Embedding Model",
+        "embeddingModelHint": "The model used to generate embeddings for semantic matching",
+        "loadingModels": "Loading models...",
+        "selectEmbeddingModel": "Select embedding model",
+        "loading": "Loading...",
+        "noEmbeddingModels": "No embedding models available",
+        "topKLabel": "Top K Results",
+        "topKHint": "Maximum number of tools to return after filtering",
+        "thresholdLabel": "Similarity Threshold",
+        "thresholdHint": "Minimum similarity score (0-1) for a tool to be included",
+        "saveButton": "Save Settings",
+        "updatedToast": "Settings updated successfully. Changes will be applied across all pods within 10 seconds."
+      },
+      "testPanel": {
+        "title": "Test Configuration",
+        "tabTest": "Test",
+        "apiUsage": "API Usage",
+        "testQueryTitle": "Test Query",
+        "testQueryPlaceholder": "Enter a test query to see which tools would be selected...",
+        "selectModel": "Select Model",
+        "testFilterButton": "Test Filter",
+        "disabledTitle": "Semantic filtering is disabled",
+        "disabledBody": "Enable semantic filtering and save settings to test the filter.",
+        "notRunTitle": "Semantic filtering did not run",
+        "resultsTitle": "Results",
+        "toolsSelected": "{selected} of {total} tools selected",
+        "toolsFilteredOut": "{count} tools filtered out",
+        "selectedTools": "Selected Tools:",
+        "moreSelectedTools": "+{count} more selected tools not shown",
+        "apiUsageHint": "Use this curl command to test the semantic filter with your current configuration.",
+        "responseHeaders": "Response headers to check:",
+        "filterHeaderDesc": "x-litellm-semantic-filter: shows total tools → selected tools",
+        "filterHeaderExample": "Example: 10→3",
+        "toolsHeaderDesc": "x-litellm-semantic-filter-tools: CSV of selected tool names",
+        "toolsHeaderExample": "Example: wikipedia-fetch,github-search,slack-post"
+      },
+      "toast": {
+        "testQueryAndModelRequired": "Please enter a query and select a model",
+        "notEnabledOrNoTools": "Semantic filter is not enabled or no tools were filtered",
+        "testCompleted": "Semantic filter test completed successfully",
+        "testFailed": "Failed to test semantic filter"
+      }
     }
   },
   "usage": {

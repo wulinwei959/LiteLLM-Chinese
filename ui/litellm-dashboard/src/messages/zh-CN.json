@@ -4344,6 +4344,60 @@
       "notAppliedTitle": "未运行在处理此页面的代理上",
       "notAppliedBody": "集群已开启拦截，但处理此页面的代理尚未应用。更改或重启后的约 10 秒内属正常现象。若持续存在，请检查该代理的日志：它处理的请求没有被拦截。",
       "infoAlertBody": "将网页搜索工具调用交给已配置的搜索工具执行，而不是转发到上游，这样没有原生网页搜索的模型也能给出最新结果。点击“保存设置”即可在所有 pod 上应用更改（10 秒内生效）。"
+    },
+    "mcpSemanticFilter": {
+      "settings": {
+        "loginPrompt": "请登录后再配置语义过滤器设置。",
+        "loadErrorTitle": "无法加载 MCP 语义过滤器设置",
+        "updateErrorTitle": "无法更新设置",
+        "saveSuccessTitle": "设置保存成功",
+        "infoTitle": "语义工具过滤",
+        "infoBody": "基于查询相关性对 MCP 工具进行语义过滤。这可以缩小上下文窗口并提升工具选择的准确性。点击“保存设置”即可在所有 pod 上应用更改（10 秒内生效）。",
+        "configTitle": "配置",
+        "enabledLabel": "启用语义过滤",
+        "enabledHint": "启用后，请求中只会包含与语义相似度最相关的 MCP 工具",
+        "embeddingModelLabel": "嵌入模型",
+        "embeddingModelHint": "用于生成语义匹配嵌入的模型",
+        "loadingModels": "正在加载模型...",
+        "selectEmbeddingModel": "选择嵌入模型",
+        "loading": "加载中...",
+        "noEmbeddingModels": "没有可用的嵌入模型",
+        "topKLabel": "Top K 结果数",
+        "topKHint": "过滤后最多返回的工具数量",
+        "thresholdLabel": "相似度阈值",
+        "thresholdHint": "工具被纳入所需的最低相似度分数（0-1）",
+        "saveButton": "保存设置",
+        "updatedToast": "设置更新成功。更改将在 10 秒内应用到所有 pod。"
+      },
+      "testPanel": {
+        "title": "测试配置",
+        "tabTest": "测试",
+        "apiUsage": "API 用法",
+        "testQueryTitle": "测试查询",
+        "testQueryPlaceholder": "输入测试查询，看看会选中哪些工具...",
+        "selectModel": "选择模型",
+        "testFilterButton": "测试过滤器",
+        "disabledTitle": "语义过滤已禁用",
+        "disabledBody": "启用语义过滤并保存设置后再测试过滤器。",
+        "notRunTitle": "语义过滤未运行",
+        "resultsTitle": "结果",
+        "toolsSelected": "已选中 {selected}/{total} 个工具",
+        "toolsFilteredOut": "已过滤掉 {count} 个工具",
+        "selectedTools": "已选工具：",
+        "moreSelectedTools": "+{count} 个已选工具未显示",
+        "apiUsageHint": "用这条 curl 命令，以当前配置测试语义过滤器。",
+        "responseHeaders": "需要检查的响应头：",
+        "filterHeaderDesc": "x-litellm-semantic-filter：显示工具总数 → 已选工具数",
+        "filterHeaderExample": "示例：10→3",
+        "toolsHeaderDesc": "x-litellm-semantic-filter-tools：已选工具名的 CSV",
+        "toolsHeaderExample": "示例：wikipedia-fetch,github-search,slack-post"
+      },
+      "toast": {
+        "testQueryAndModelRequired": "请输入查询并选择模型",
+        "notEnabledOrNoTools": "语义过滤器未启用，或没有工具被过滤",
+        "testCompleted": "语义过滤器测试成功完成",
+        "testFailed": "测试语义过滤器失败"
+      }
     }
   },
   "usage": {
