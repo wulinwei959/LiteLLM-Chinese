@@ -278,9 +278,12 @@ const PublicModelHub: React.FC<PublicModelHubProps> = ({ accessToken, isEmbedded
   const [agentSorting, setAgentSorting] = useState<SortingState>([{ id: "name", desc: false }]);
   const [mcpSorting, setMcpSorting] = useState<SortingState>([{ id: "server_name", desc: false }]);
 
-  const modelColumns = useMemo(() => getPublicModelHubColumns({ onModelClick: showModal }), [showModal]);
-  const agentColumns = useMemo(() => getPublicAgentHubColumns({ onAgentClick: showAgentModal }), [showAgentModal]);
-  const mcpColumns = useMemo(() => getPublicMCPHubColumns({ onServerClick: showMcpModal }), [showMcpModal]);
+  const modelColumns = useMemo(() => getPublicModelHubColumns({ onModelClick: showModal }, t), [showModal, t]);
+  const agentColumns = useMemo(
+    () => getPublicAgentHubColumns({ onAgentClick: showAgentModal }, t),
+    [showAgentModal, t],
+  );
+  const mcpColumns = useMemo(() => getPublicMCPHubColumns({ onServerClick: showMcpModal }, t), [showMcpModal, t]);
 
   const hasAgents = Array.isArray(agentHubData) && agentHubData.length > 0;
   const hasMcpServers = Array.isArray(mcpHubData) && mcpHubData.length > 0;

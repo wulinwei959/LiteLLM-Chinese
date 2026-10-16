@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { CellTooltip, IdentityCell, StatusBadge, type StatusTone } from "@/components/shared/table_cells";
@@ -164,13 +165,16 @@ interface PublicModelHubColumnsDeps {
   onModelClick: (model: ModelGroupInfo) => void;
 }
 
-export const getPublicModelHubColumns = ({ onModelClick }: PublicModelHubColumnsDeps): ColumnDef<ModelGroupInfo>[] => {
+export const getPublicModelHubColumns = (
+  { onModelClick }: PublicModelHubColumnsDeps,
+  t: ReturnType<typeof useTranslations<"modelHub">>,
+): ColumnDef<ModelGroupInfo>[] => {
   const columns: ColumnDef<ModelGroupInfo>[] = [
     {
       id: "model_group",
       accessorKey: "model_group",
-      meta: { title: "Model Name" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Model Name" />,
+      meta: { title: t("colModelName") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("colModelName")} />,
       size: 200,
       sortingFn: "alphanumeric",
       cell: ({ row }) => (
@@ -185,8 +189,8 @@ export const getPublicModelHubColumns = ({ onModelClick }: PublicModelHubColumns
     {
       id: "providers",
       accessorKey: "providers",
-      meta: { title: "Providers", skeleton: "chips" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Providers" />,
+      meta: { title: t("colProviders"), skeleton: "chips" },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("colProviders")} />,
       size: 150,
       sortingFn: (rowA, rowB) =>
         (rowA.original.providers ?? []).join(", ").localeCompare((rowB.original.providers ?? []).join(", ")),
@@ -195,8 +199,8 @@ export const getPublicModelHubColumns = ({ onModelClick }: PublicModelHubColumns
     {
       id: "mode",
       accessorKey: "mode",
-      meta: { title: "Mode" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Mode" />,
+      meta: { title: t("colMode") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("colMode")} />,
       size: 110,
       sortingFn: "alphanumeric",
       cell: ({ row }) => (
@@ -209,24 +213,24 @@ export const getPublicModelHubColumns = ({ onModelClick }: PublicModelHubColumns
     {
       id: "max_input_tokens",
       accessorKey: "max_input_tokens",
-      meta: { title: "Max Input", numeric: true },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Max Input" />,
+      meta: { title: t("colMaxInput"), numeric: true },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("colMaxInput")} />,
       size: 100,
       cell: ({ row }) => <span className="text-sm">{formatTokens(row.original.max_input_tokens)}</span>,
     },
     {
       id: "max_output_tokens",
       accessorKey: "max_output_tokens",
-      meta: { title: "Max Output", numeric: true },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Max Output" />,
+      meta: { title: t("colMaxOutput"), numeric: true },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("colMaxOutput")} />,
       size: 100,
       cell: ({ row }) => <span className="text-sm">{formatTokens(row.original.max_output_tokens)}</span>,
     },
     {
       id: "input_cost_per_token",
       accessorKey: "input_cost_per_token",
-      meta: { title: "Input $/1M", numeric: true },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Input $/1M" />,
+      meta: { title: t("colInputPerMillion"), numeric: true },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("colInputPerMillion")} />,
       size: 110,
       cell: ({ row }) => (
         <span className="text-sm">
@@ -237,8 +241,8 @@ export const getPublicModelHubColumns = ({ onModelClick }: PublicModelHubColumns
     {
       id: "output_cost_per_token",
       accessorKey: "output_cost_per_token",
-      meta: { title: "Output $/1M", numeric: true },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Output $/1M" />,
+      meta: { title: t("colOutputPerMillion"), numeric: true },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("colOutputPerMillion")} />,
       size: 110,
       cell: ({ row }) => (
         <span className="text-sm">
@@ -248,8 +252,8 @@ export const getPublicModelHubColumns = ({ onModelClick }: PublicModelHubColumns
     },
     {
       id: "features",
-      meta: { title: "Features", skeleton: "chips" },
-      header: "Features",
+      meta: { title: t("colFeatures"), skeleton: "chips" },
+      header: t("colFeatures"),
       size: 140,
       cell: ({ row }) => {
         const features = Object.entries(row.original)
@@ -261,8 +265,8 @@ export const getPublicModelHubColumns = ({ onModelClick }: PublicModelHubColumns
     {
       id: "health_status",
       accessorKey: "health_status",
-      meta: { title: "Health Status", skeleton: "badge" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Health Status" />,
+      meta: { title: t("colHealthStatus"), skeleton: "badge" },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("colHealthStatus")} />,
       size: 130,
       cell: ({ row }) => {
         const model = row.original;
@@ -295,8 +299,8 @@ export const getPublicModelHubColumns = ({ onModelClick }: PublicModelHubColumns
     {
       id: "rpm",
       accessorKey: "rpm",
-      meta: { title: "Limits" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Limits" />,
+      meta: { title: t("colLimits") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("colLimits")} />,
       size: 150,
       cell: ({ row }) => (
         <span className="text-xs text-muted-foreground">{formatLimits(row.original.rpm, row.original.tpm)}</span>
@@ -313,12 +317,15 @@ interface PublicAgentHubColumnsDeps {
   onAgentClick: (agent: AgentCard) => void;
 }
 
-export const getPublicAgentHubColumns = ({ onAgentClick }: PublicAgentHubColumnsDeps): ColumnDef<AgentCard>[] => [
+export const getPublicAgentHubColumns = (
+  { onAgentClick }: PublicAgentHubColumnsDeps,
+  t: ReturnType<typeof useTranslations<"modelHub">>,
+): ColumnDef<AgentCard>[] => [
   {
     id: "name",
     accessorKey: "name",
-    meta: { title: "Agent Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Agent Name" />,
+    meta: { title: t("colAgentName") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colAgentName")} />,
     size: 200,
     enableSorting: true,
     sortingFn: "alphanumeric",
@@ -334,8 +341,8 @@ export const getPublicAgentHubColumns = ({ onAgentClick }: PublicAgentHubColumns
   {
     id: "description",
     accessorKey: "description",
-    meta: { title: "Description" },
-    header: "Description",
+    meta: { title: t("colDescription") },
+    header: t("colDescription"),
     size: 260,
     enableSorting: false,
     cell: ({ row }) => (
@@ -347,8 +354,8 @@ export const getPublicAgentHubColumns = ({ onAgentClick }: PublicAgentHubColumns
   {
     id: "version",
     accessorKey: "version",
-    meta: { title: "Version" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Version" />,
+    meta: { title: t("colVersion") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colVersion")} />,
     size: 90,
     enableSorting: true,
     sortingFn: "alphanumeric",
@@ -356,8 +363,8 @@ export const getPublicAgentHubColumns = ({ onAgentClick }: PublicAgentHubColumns
   },
   {
     id: "provider",
-    meta: { title: "Provider" },
-    header: "Provider",
+    meta: { title: t("colProvider") },
+    header: t("colProvider"),
     size: 130,
     enableSorting: false,
     cell: ({ row }) =>
@@ -369,16 +376,16 @@ export const getPublicAgentHubColumns = ({ onAgentClick }: PublicAgentHubColumns
   },
   {
     id: "skills",
-    meta: { title: "Skills", skeleton: "chips" },
-    header: "Skills",
+    meta: { title: t("colSkills"), skeleton: "chips" },
+    header: t("colSkills"),
     size: 160,
     enableSorting: false,
     cell: ({ row }) => <OverflowChips items={(row.original.skills || []).map((skill) => skill.name)} />,
   },
   {
     id: "capabilities",
-    meta: { title: "Capabilities", skeleton: "chips" },
-    header: "Capabilities",
+    meta: { title: t("colCapabilities"), skeleton: "chips" },
+    header: t("colCapabilities"),
     size: 160,
     enableSorting: false,
     cell: ({ row }) => {
@@ -405,12 +412,15 @@ interface PublicMCPHubColumnsDeps {
   onServerClick: (server: MCPServerData) => void;
 }
 
-export const getPublicMCPHubColumns = ({ onServerClick }: PublicMCPHubColumnsDeps): ColumnDef<MCPServerData>[] => [
+export const getPublicMCPHubColumns = (
+  { onServerClick }: PublicMCPHubColumnsDeps,
+  t: ReturnType<typeof useTranslations<"modelHub">>,
+): ColumnDef<MCPServerData>[] => [
   {
     id: "server_name",
     accessorKey: "server_name",
-    meta: { title: "Server Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Server Name" />,
+    meta: { title: t("colServerName") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colServerName")} />,
     size: 180,
     enableSorting: true,
     sortingFn: "alphanumeric",
@@ -425,8 +435,8 @@ export const getPublicMCPHubColumns = ({ onServerClick }: PublicMCPHubColumnsDep
   },
   {
     id: "description",
-    meta: { title: "Description" },
-    header: "Description",
+    meta: { title: t("colDescription") },
+    header: t("colDescription"),
     size: 260,
     enableSorting: false,
     cell: ({ row }) => {
@@ -441,8 +451,8 @@ export const getPublicMCPHubColumns = ({ onServerClick }: PublicMCPHubColumnsDep
   {
     id: "transport",
     accessorKey: "transport",
-    meta: { title: "Transport", skeleton: "badge" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Transport" />,
+    meta: { title: t("colTransport"), skeleton: "badge" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colTransport")} />,
     size: 110,
     enableSorting: true,
     sortingFn: "alphanumeric",
@@ -455,8 +465,8 @@ export const getPublicMCPHubColumns = ({ onServerClick }: PublicMCPHubColumnsDep
   {
     id: "auth_type",
     accessorKey: "auth_type",
-    meta: { title: "Auth Type", skeleton: "badge" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Auth Type" />,
+    meta: { title: t("colAuthType"), skeleton: "badge" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("colAuthType")} />,
     size: 110,
     enableSorting: true,
     sortingFn: "alphanumeric",

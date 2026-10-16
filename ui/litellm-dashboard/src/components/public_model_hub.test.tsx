@@ -5,6 +5,10 @@ import { renderWithProviders } from "../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import PublicModelHub from "./public_model_hub";
+import { createTranslator } from "next-intl";
+
+import zhCN from "@/messages/zh-CN.json";
+
 import { AgentCard, getPublicMCPHubColumns, MCPServerData, ModelGroupInfo } from "./PublicModelHubTableColumns";
 
 const { apiGetMock } = vi.hoisted(() => ({ apiGetMock: vi.fn() }));
@@ -248,7 +252,7 @@ describe("PublicModelHub", () => {
       "providers",
       "rpm",
     ]);
-    expect(screen.getByText("Health Status")).toBeInTheDocument();
+    expect(screen.getByText("健康状态")).toBeInTheDocument();
     expect(screen.queryByTestId("sort-header-health_status")).not.toBeInTheDocument();
   });
 
@@ -409,8 +413,10 @@ const mockMcpServer: MCPServerData = {
   mcp_info: { server_name: "exa_test", description: "Fast, intelligent web search and web crawling" },
 };
 
+const t = createTranslator({ locale: "zh-CN", messages: zhCN, namespace: "modelHub" });
+
 function PublicMcpTestTable({ data }: { data: MCPServerData[] }) {
-  const columns = getPublicMCPHubColumns({ onServerClick: vi.fn() });
+  const columns = getPublicMCPHubColumns({ onServerClick: vi.fn() }, t);
   const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
   return (
@@ -440,15 +446,15 @@ function PublicMcpTestTable({ data }: { data: MCPServerData[] }) {
 describe("publicMCPHubColumns", () => {
   it("keeps the non-sensitive columns", () => {
     renderWithProviders(<PublicMcpTestTable data={[mockMcpServer]} />);
-    expect(screen.getByText("Server Name")).toBeInTheDocument();
-    expect(screen.getByText("Transport")).toBeInTheDocument();
-    expect(screen.getByText("Auth Type")).toBeInTheDocument();
+    expect(screen.getByText("服务器名称")).toBeInTheDocument();
+    expect(screen.getByText("传输方式")).toBeInTheDocument();
+    expect(screen.getByText("认证类型")).toBeInTheDocument();
   });
 
   it("does not expose a URL column header", () => {
     renderWithProviders(<PublicMcpTestTable data={[mockMcpServer]} />);
     expect(screen.queryByText("URL")).not.toBeInTheDocument();
-    const columns = getPublicMCPHubColumns({ onServerClick: vi.fn() });
+    const columns = getPublicMCPHubColumns({ onServerClick: vi.fn() }, t);
     expect(columns.some((c) => c.header === "URL" || c.meta?.title === "URL")).toBe(false);
   });
 
