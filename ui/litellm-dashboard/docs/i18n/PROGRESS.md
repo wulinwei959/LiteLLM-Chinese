@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 179 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10477、中英同值 138）。第 93 到 179 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 180 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10482、中英同值 138）。第 93 到 180 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 180 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `agents/_components/agent_config.ts`，模块级智能体表单配置（`AGENT_FORM_CONFIG` 与 `SKILL_FIELD_CONFIG`）。该文件的英文字面量不是就地渲染，而是 `agent_form_fields.tsx` 里 `configText`/`FIELD_TEXT_KEYS` 桥接的查表源串，扫描器 8 条里有 3 条（`phDesc`、`urlTooltip`、`enableTracingTooltip`）此前已铺好映射与中英键、经 basic 面板的 configText 渲染；tracing 段配置没有任何消费方从数据路径渲染到 DOM（`add_agent_form.tsx` 的追踪 UI 直接走 `t()`），判定为已接线。剩下 5 条是真缺口：protocolVersion 的长 tooltip 与 helpText 不在映射表，helpText 消费处还是裸的 `description={field.helpText}`；三个技能占位符（"What this skill does"/"Type a tag and press Enter"/"Type an example and press Enter"）在 `SkillsFieldArray` 里整段裸渲染。新开 5 个 agents 键（叶子 10477 涨到 10482，同值持平 138），`FIELD_TEXT_KEYS` 补 5 条映射，helpText 消费处改成三元桥接，`SkillsFieldArray` 补 `t` 钩子后把五个标签与三个占位符都走 configText（五个标签的映射键早就铺好但消费处一直没接）。跨命名空间有个同值诱惑：`policies.sim.tagsPlaceholder` 的 en 值与 "Type a tag and press Enter" 逐字相同，按同命名空间教条不复用，agents 另开 `skillTagsPlaceholder`。协议选项 "1.0"/"0.3" 与默认值 "1.0.0" 照旧是 wire 值不翻。`dynamic_agent_form_fields.tsx` 与 `agent_info.tsx` 排查过：前者渲染的是服务端下发的凭据字段元数据，后者只取 `field.name` 做脏检查，均不吃这 8 条字面量。
+
+测试迁移：`add_agent_form.integration.test.tsx` 五处断言换中文（技能 ID/技能名称/这个技能的作用/标签/示例）。验证：agents 目录 16 文件加 `src/lib/i18n` 共 19 文件 166 例全绿、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径组件 1/1、测试 2/2 与 HEAD 逐条同数，prettier 两文件 HEAD 均脏按口径不跑 `--write`，映射表两条超长键手工拆成 prettier 的键值分行形态，脏行数当前与 HEAD 基线逐文件持平（44/44 与 10/10）；5 新键 10 侧 `IntlMessageFormat` 实跑全过（撇号消息按字面渲染），`npm run build` 过。扫描器对本文件仍报 8 条属桥接源串常驻，不视为漏翻。接入文件持平 686/912。
 
 ## 2026-10-18 第 179 簇更新
 
