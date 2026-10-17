@@ -102,9 +102,9 @@
 
 ## 批次 24 第 126-136 簇（2026-10-17）
 
-这一轮继续串行收共享组件长尾：`logging_settings_view`、`mcp_tools/MCPToolArgumentsForm`、`shared/advanced_date_picker`、`PassThroughSettings/`、`vector-stores/_components/`、`update_model_credentials_modal`、`shared/DataTable` 的工具栏与列视图开关、四张列定义表（搜索工具、索引、已删除密钥、已删除团队）、`email_settings` 与 `email_event_settings`、`per_user_usage`、`view_user_spend`、`hooks/useMcpOAuthFlow`、`ModelSelect`、`MCPServerSelector`、凭据表与凭据弹窗、`ModelSettingsModal`，以及一批小组件（`UIAccessControlForm`、登录提示与无 Redis 提示条、`SidebarUsageCard`、入门弹窗、`query_param_input`）。覆盖率从 65.9% 推到 69.5%，目录叶子从 9128 增到 9492。
+这一轮继续串行收共享组件长尾：`logging_settings_view`、`mcp_tools/MCPToolArgumentsForm`、`shared/advanced_date_picker`、`PassThroughSettings/`、`vector-stores/_components/`、`update_model_credentials_modal`、`shared/DataTable` 的工具栏与列视图开关、四张列定义表（搜索工具、索引、已删除密钥、已删除团队）、`email_settings` 与 `email_event_settings`、`per_user_usage`、`view_user_spend`、`hooks/useMcpOAuthFlow`、`ModelSelect`、`MCPServerSelector`、凭据表与凭据弹窗、`ModelSettingsModal`、日志回调描述表与向量存储供应商字段配置，以及一批小组件（`UIAccessControlForm`、登录提示与无 Redis 提示条、`SidebarUsageCard`、入门弹窗、`query_param_input`）。覆盖率从 65.9% 推到 69.5%，目录叶子从 9128 增到 9604。
 
-仍未动的两块：`components/networking.tsx`（中心网络层，穿透成本远大于收益，已单独记账）与剩余约 70 个启发式候选文件。其中最大的两个是 `vector_store_providers.tsx`（62 处，配置模块）与 `callback_info_helpers.tsx`（17 处，14 个回调的描述表，要把 `description` 改成键名再逐个消费者跟进）；其余多为一处两条提示的小文件，另有 `add_model_modes.tsx` 的死代码与 `MCPStandardsSettings.tsx` 这种键名就位但目录未建的误报。
+仍未动的两块：`components/networking.tsx`（中心网络层，穿透成本远大于收益，已单独记账）与剩余约 69 个启发式候选文件。体量最大的两个已收掉（`vector_store_providers.tsx` 62 处与 `callback_info_helpers.tsx` 17 处），剩下的多是 `app/chat/page.tsx`、`AgentIdentityDetails`、`Navbar/BlogDropdown`、`lens/page` 这类一两处提示的小文件，另有 `add_model_modes.tsx` 的死代码与 `MCPStandardsSettings.tsx` 这种键名就位但目录未建的误报。
 
 ## 已完成批次里值得回头看的两处重构
 

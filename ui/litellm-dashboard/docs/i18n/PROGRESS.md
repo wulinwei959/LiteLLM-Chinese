@@ -1,6 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 144 簇后（非测试 `.tsx` 912 个接入 634 个、69.5%，目录叶子 9492、中英同值 106）。第 93 到 144 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）、`TeamInfo.test.tsx` 里因 `permissions` 簇与护栏翻译而过期的四处断言（第 133 簇顺手修）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 146 簇后（非测试 `.tsx` 912 个接入 634 个、69.5%，目录叶子 9604、中英同值 128）。第 93 到 146 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）、`TeamInfo.test.tsx` 里因 `permissions` 簇与护栏翻译而过期的四处断言（第 133 簇顺手修）、`vector-stores/_components/index.test.tsx` 里因第 137 簇索引说明走 `t.rich` 而过期的三处英文断言（第 146 簇发现）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+
+中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 145-146 簇更新
+
+继续串行推进，没有派子代理。这一批清掉了候选清单里最大的两个文件。
+
+第 145 簇 `callback_info_helpers.tsx` + `team/LoggingSettings.tsx`：17 条回调描述接进既有 `loggingCallbacks` 命名空间，键名直接用回调的 `id`，`CallbackConfig` 去掉 `description` 字段、`id` 收窄成 `CallbackId` 联合类型，因此不需要并行查表。`callbackInfo` 是按 displayName 建的索引，tooltip 处改用 `callbackInfo[name]?.id` 再交给翻译器解析。
+
+第 146 簇 `vector_store_providers.tsx`：`vectorStores` 新增 `fields.<provider>.<field>` 三段式 90 键，覆盖 8 个供应商 31 个字段的标签、说明与占位符。`VectorStoreFieldConfig` 改为存 `labelKey`/`tooltipKey`/`placeholderKey`，用 `VectorStoreFieldMessageKey` 联合类型钉住键名。`VectorStoreForm` 的 zod `shape` 与 `superRefine` 改成收翻译器的工厂，两条必填文案按 select/input 分成两个键（不做 select）。消费者 `CreateVectorStore.tsx` 三处接键。供应商的枚举取值（`global`/`us`/`eu`、`false`/`true`）保持英文，它们是接口值。这一簇顺带修好了两处旧账：`index.test.tsx` 因第 137 簇的索引说明走 `t.rich` 而过期的三处断言，以及 `VectorStoreForm.integration.test.tsx` 的占位符与必填文案断言。
+
+这两个文件原本合计 79 处候选英文，现在只剩 `vector_store_providers.tsx` 的 5 处接口枚举取值（属数据，按口径不翻）。
+
+这一段合计：非测试 `.tsx` 912 接入 634 持平（两个文件都不新挂 hook，接键的是它们已有的消费者与数据模块），目录叶子 9492→9604（+112），中英同值 106→128（+22，全是格式示例占位符）。候选文件 70→69。
 
 ## 2026-10-17 第 140-144 簇更新
 

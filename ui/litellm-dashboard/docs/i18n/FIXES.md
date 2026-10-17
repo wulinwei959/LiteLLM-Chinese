@@ -229,6 +229,16 @@ next-intl 的 `t.rich` 只会对消息串里出现的字面量标签（`<code>`�
 
 另一个连带问题：`DefaultUserSettingsForm` 原来在模块顶层用 `MODEL_SENTINEL_OPTIONS` 建了一张 value 到英文 label 的表，改键名后这张表拿不到 `t`，只能下沉进组件体、用第二把 `modelSelect` 翻译器即时解析。模块级常量承载文案是同一个病根，键名化之后自然要把翻译点挪到组件里。
 
+## 2026-10-17 第 145-146 簇：配置表键名化时让 id 或字段名本身当键名，别写查表函数
+
+`CALLBACK_CONFIGS` 的 17 条描述与 `vectorStoreProviderFields` 的 31 个字段都是"数据表 + 文案"的结构。做法上可以写一个 `switch` 或映射函数把 id 翻译成 i18n key，也可以让 id（回调）与 `<provider>.<field>`（字段）**本身就是键名**。后者明显更好：不用维护查表函数，新增一条只改数据表一处，键名会同步出现在联合类型里，漏写会在 `t()` 上编译报错。联合类型还能按规则生成（遍历数据表收集 `label`、`tooltip`、`placeholder` 三个 part），不会出现"声明了 93 个键、目录里其实只有 90 个"的漂移。生成时记得 `placeholder` 只在该字段真的有占位符时才加进去，我第一版给每个字段都补齐三个 part，多声明了 3 个不存在的键。
+
+三个坑：
+
+- **批量重写数据表时多行字符串会留下孤儿行**。原有 9 处 `tooltip:` 是折行写的（第一行属性名、第二行只有字符串字面量），只按属性名过滤会删掉第一行却留下第二行，文件当场语法错误。除了这三种属性，还要顺手清掉只剩一个字符串字面量的续行
+- **改数据表结构后，mock 了该模块的测试不会自动跟着对**。`CreateVectorStore.characterization.test.tsx` 自己 mock 了一份字段配置，字段从 `placeholder` 变成 `placeholderKey` 之后就静默失效（`placeholderKey` 是 `undefined`，要等 `getByPlaceholderText` 才报错）。改完数据表要 grep 一遍指向它的 `vi.mock`，把 mock 里的字段形状一起换掉
+- **改 `t.rich` 或跨组件共享的文案后，要按目录重跑整包测试**。`vector-stores/_components/index.test.tsx` 早在第 137 簇就该红——那一簇把索引页说明段落改成了 `t.rich`，测试断言的还是英文原文，但第 137 簇只跑了 `DocumentsTable.test.tsx`、`IndexesTable.test.tsx` 与两条 i18n 守卫，没带上它；直到第 146 簇跑整包才发现
+
 ## 2026-10-16 第 119-126 簇：`as const` 是选项数组接翻译的前提
 
 把一个选项数组从 `label` 改成 `labelKey` 之后，如果不加 `as const`，数组元素的 `labelKey` 会被推成 `string`，于是 `t(option.labelKey)` 报 `TS2345: Argument of type 'string' is not assignable to parameter of type 'NamespacedMessageKeys<...>'`。`npm run build` 的类型检查阶段能抓到，但 `npx vitest run` 的 `types` 项目有时不会（取决于 `AppConfig.Messages` 的类型增强是否命中该调用点）。所以凡是"数组里存 key、渲染时取文案"的写法，数组末尾一律补 `as const`：
