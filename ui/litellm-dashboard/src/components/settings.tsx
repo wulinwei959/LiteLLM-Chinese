@@ -296,6 +296,7 @@ const buildCallbackPayload = (formValues: Record<string, any>, callbackName: str
 
 const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, premiumUser }) => {
   const t = useTranslations("settings");
+  const commonT = useTranslations("common");
   const [callbacks, setCallbacks] = useState<AlertingObject[]>([]);
   const [isLoadingCallbacks, setIsLoadingCallbacks] = useState(true);
   const [alerts, setAlerts] = useState<any[]>([]);
@@ -641,7 +642,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
                           ) : (
                             <Button className="flex items-center justify-center">
                               <a href="https://forms.gle/W3U4PZpJGFHWtHyA9" target="_blank">
-                                ✨ Enterprise Feature
+                                {commonT("enterpriseFeatureBadge")}
                               </a>
                             </Button>
                           )

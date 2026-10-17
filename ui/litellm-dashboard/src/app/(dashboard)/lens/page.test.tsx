@@ -22,20 +22,20 @@ describe("Lens navigation", () => {
     const user = userEvent.setup();
     const onUrlUpdate = vi.fn();
     renderWithProviders(<LensPage />, { onUrlUpdate });
-    expect(screen.getByRole("tab", { name: "Investigations" })).toHaveAttribute("aria-selected", "true");
-    await user.click(screen.getByRole("tab", { name: "Traces" }));
+    expect(screen.getByRole("tab", { name: "调查" })).toHaveAttribute("aria-selected", "true");
+    await user.click(screen.getByRole("tab", { name: "追踪" }));
     expect(screen.getByText("Trace polling active")).toBeVisible();
-    await user.click(screen.getByRole("tab", { name: "Investigations" }));
+    await user.click(screen.getByRole("tab", { name: "调查" }));
     expect(screen.getByText("Manage investigations")).toBeVisible();
     expect(screen.getByText("Trace polling paused")).not.toBeVisible();
     expect(onUrlUpdate.mock.lastCall?.[0].searchParams.get("tab")).toBe("investigations");
-    await user.click(screen.getByRole("tab", { name: "Traces" }));
+    await user.click(screen.getByRole("tab", { name: "追踪" }));
     expect(screen.getByText("Trace polling active")).toBeVisible();
   });
 
   it("opens existing lens links directly in investigations", () => {
     renderWithProviders(<LensPage />, { searchParams: "?lens=saved-lens" });
-    expect(screen.getByRole("tab", { name: "Investigations" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "调查" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByText("Manage investigations")).toBeVisible();
   });
 
@@ -46,8 +46,8 @@ describe("Lens navigation", () => {
       const user = userEvent.setup();
       renderWithProviders(<LensPage />);
       expect(screen.getByText("Trace polling active")).toBeVisible();
-      await user.click(screen.getByRole("tab", { name: "Investigations" }));
-      expect(screen.getByText(/Investigations require proxy administrator access/)).toBeVisible();
+      await user.click(screen.getByRole("tab", { name: "调查" }));
+      expect(screen.getByText(/调查功能需要代理管理员权限/)).toBeVisible();
       expect(screen.queryByText("Manage investigations")).not.toBeInTheDocument();
     },
   );

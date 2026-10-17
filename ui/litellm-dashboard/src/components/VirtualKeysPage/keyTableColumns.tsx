@@ -32,17 +32,19 @@ interface KeyStatus {
   tooltip?: string;
 }
 
-const SPEND_BUDGET_SORT_FIELDS: DataTableSortField[] = [
-  { id: "spend", label: "Spend" },
-  { id: "max_budget", label: "Budget" },
+const getSpendBudgetSortFields = (t: VirtualKeysTranslator): DataTableSortField[] => [
+  { id: "spend", label: t("columns.spend") },
+  { id: "max_budget", label: t("columns.budget") },
 ];
+
+const SPEND_BUDGET_SORT_IDS: readonly string[] = ["spend", "max_budget"];
 
 export const KEY_TABLE_SORT_FIELDS: readonly string[] = [
   "key_alias",
   "token",
   "created_at",
   "updated_at",
-  ...SPEND_BUDGET_SORT_FIELDS.map((field) => field.id),
+  ...SPEND_BUDGET_SORT_IDS,
 ];
 
 const getKeyStatus = (key: KeyResponse, t: VirtualKeysTranslator): KeyStatus => {
@@ -274,7 +276,7 @@ export const getKeyTableColumns = ({
     id: "spend",
     accessorKey: "spend",
     meta: { title: t("columns.spendBudget"), skeleton: "meter", numeric: true },
-    header: ({ table }) => <DataTableMultiSortHeader table={table} fields={SPEND_BUDGET_SORT_FIELDS} />,
+    header: ({ table }) => <DataTableMultiSortHeader table={table} fields={getSpendBudgetSortFields(t)} />,
     size: 180,
     enableSorting: true,
     cell: ({ row }) => {

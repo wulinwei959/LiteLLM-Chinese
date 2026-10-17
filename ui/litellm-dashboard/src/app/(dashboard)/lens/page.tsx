@@ -2,6 +2,7 @@
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { Aperture } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import AgentTracesPage from "@/components/view_logs/TraceView/AgentTracesPage";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,6 +10,7 @@ import { isProxyAdminRole, isProxyAdminTierRole } from "@/utils/roles";
 import { LensView } from "./_components/LensView";
 
 export default function LensPage() {
+  const t = useTranslations("lens");
   const { accessToken, userRole, isViewOnly } = useAuthorized();
   const [tab, setTab] = useQueryState(
     "tab",
@@ -22,19 +24,19 @@ export default function LensPage() {
     <main className="flex w-full min-w-0 flex-1 flex-col gap-5 p-6 md:p-8">
       <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
         <Aperture aria-hidden="true" className="size-7" strokeWidth={1.75} />
-        Lens
+        {t("page.title")}
       </h1>
       <Tabs
         value={activeTab}
         onValueChange={(value) => void setTab(value as "traces" | "investigations")}
         className="min-h-0 flex-1 gap-4"
       >
-        <TabsList variant="line" aria-label="Lens" className="w-full justify-start gap-6 border-b px-0">
+        <TabsList variant="line" aria-label={t("page.tabsAria")} className="w-full justify-start gap-6 border-b px-0">
           <TabsTrigger value="traces" className="flex-none px-0">
-            Traces
+            {t("traces")}
           </TabsTrigger>
           <TabsTrigger value="investigations" className="flex-none px-0">
-            Investigations
+            {t("investigations")}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="traces" keepMounted className="min-h-0">
@@ -49,9 +51,7 @@ export default function LensPage() {
           {isProxyAdminTierRole(userRole ?? "") ? (
             <LensView accessToken={accessToken} readOnly={isViewOnly || !isProxyAdminRole(userRole ?? "")} />
           ) : (
-            <p className="py-6 text-sm text-muted-foreground">
-              Investigations require proxy administrator access. You can still view your traces.
-            </p>
+            <p className="py-6 text-sm text-muted-foreground">{t("page.adminOnlyHint")}</p>
           )}
         </TabsContent>
       </Tabs>

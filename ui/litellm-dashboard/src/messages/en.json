@@ -217,7 +217,10 @@
     "hoursAgo": "{count, number}h ago",
     "daysAgo": "{count, number}d ago",
     "tokensInAndOut": "{prompt} in / {completion} out",
-    "selectAll": "Select All"
+    "selectAll": "Select All",
+    "enterpriseFeatureBadge": "✨ Enterprise Feature",
+    "resetField": "Reset {field}",
+    "notSet": "Not Set"
   },
   "nav": {
     "aiGateway": "AI Gateway",
@@ -6698,6 +6701,12 @@
         "blockAll": "Block all",
         "emptyText": "No MCP servers found",
       "accessGroup": "Access Group"
+    },
+    "oauthCallback": {
+        "title": "LiteLLM MCP OAuth",
+        "complete": "Authorization complete. You may close this window and return to the LiteLLM dashboard.",
+        "closeHint": "If the window does not close automatically, everything is still saved—you can close it manually.",
+        "loading": "Loading..."
     }
   },
   "guardrailsMonitor": {
@@ -9831,7 +9840,12 @@
     "revokeAccess": "Revoke access",
     "couldNotRevokeWorker": "Could not revoke worker",
     "dockerCommandPreview": "Docker command preview",
-    "connectAWorker": "Connect a worker"
+    "connectAWorker": "Connect a worker",
+    "page": {
+        "tabsAria": "Lens",
+        "adminOnlyHint": "Investigations require proxy administrator access. You can still view your traces.",
+      "title": "Lens"
+    }
   },
   "chartLabels": {
     "spend": "Spend",
@@ -10590,7 +10604,10 @@
     "worker": {
       "ariaLabel": "Worker",
       "noMatching": "No matching workers"
-    }
+    },
+    "brandAlt": "LiteLLM Brand",
+    "moonTitle": "Thanks for using LiteLLM!",
+    "docsNavAria": "Product documentation"
   },
   "banners": {
     "licenseExpiry": {
@@ -10709,5 +10726,10 @@
     "selectRow": "Select row",
     "columnTitle": "Select",
     "selectNamed": "Select {name}"
+  },
+  "alerting": {
+    "storedInDb": "In DB",
+    "inConfig": "In Config",
+    "updateSettings": "Update Settings"
   }
 }

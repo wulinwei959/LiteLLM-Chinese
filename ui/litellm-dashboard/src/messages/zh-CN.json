@@ -217,7 +217,10 @@
     "hoursAgo": "{count, number} 小时前",
     "daysAgo": "{count, number} 天前",
     "tokensInAndOut": "输入 {prompt} / 输出 {completion}",
-    "selectAll": "全选"
+    "selectAll": "全选",
+    "enterpriseFeatureBadge": "✨ 企业版功能",
+    "resetField": "重置 {field}",
+    "notSet": "未设置"
   },
   "nav": {
     "aiGateway": "AI 网关",
@@ -6698,6 +6701,12 @@
         "blockAll": "全部拦截",
         "emptyText": "未找到 MCP 服务器",
       "accessGroup": "访问组"
+    },
+    "oauthCallback": {
+        "title": "LiteLLM MCP OAuth",
+        "complete": "授权已完成，可以关闭本窗口并返回 LiteLLM 控制台。",
+        "closeHint": "如果窗口没有自动关闭，所有内容都已经保存好了，你可以手动关闭。",
+        "loading": "加载中..."
     }
   },
   "guardrailsMonitor": {
@@ -9827,7 +9836,12 @@
     "revokeAccess": "撤销访问权限",
     "couldNotRevokeWorker": "无法撤销工作进程",
     "dockerCommandPreview": "Docker 命令预览",
-    "connectAWorker": "连接工作进程"
+    "connectAWorker": "连接工作进程",
+    "page": {
+        "tabsAria": "Lens",
+        "adminOnlyHint": "调查功能需要代理管理员权限，你仍然可以查看追踪。",
+      "title": "Lens"
+    }
   },
   "chartLabels": {
     "spend": "花费",
@@ -10586,7 +10600,10 @@
     "worker": {
       "ariaLabel": "Worker",
       "noMatching": "没有匹配的 Worker"
-    }
+    },
+    "brandAlt": "LiteLLM 品牌标识",
+    "moonTitle": "感谢使用 LiteLLM！",
+    "docsNavAria": "产品文档"
   },
   "banners": {
     "licenseExpiry": {
@@ -10705,5 +10722,10 @@
     "selectRow": "选中该行",
     "columnTitle": "选择",
     "selectNamed": "选中 {name}"
+  },
+  "alerting": {
+    "storedInDb": "存于数据库",
+    "inConfig": "来自配置",
+    "updateSettings": "更新设置"
   }
 }
