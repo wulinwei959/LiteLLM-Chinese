@@ -1,10 +1,18 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 185 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10512、中英同值 138）。第 93 到 185 簇（184 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 186 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10537、中英同值 138）。第 93 到 186 簇（184 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 186 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `cost-optimization/_components/ShadowEvalStartForm.tsx`，影子评估发起表单。页面主体早已接 `shadowEval.*`，扫描器 7 条命中是 `DIRECTION_OPTIONS` 两条方向标签、`START_FORM_DESCRIPTION` 两条四句长文、`Only on models` 与两处 `No chat models available`；盲区还有一批抓不到的短串：Direction/Keys to shadow/Teams to shadow/Users to shadow/Traffic sampled/Duration/Spend budget/Baseline model/Judge model 共 9 个 Field 标签（scanner 报过的 `Only on models` 算上共 10 个）、`% of traffic`、`max shadow + judge spend, per target`、评审下拉的 `Recommended` sublabel、按钮 `Start shadow eval`/`Starting...` 与 `DURATION_OPTIONS` 五条 `N day(s)`。
+
+按第 177/183 簇键名化路子把三块模块级数据改成键字面量：`DIRECTION_OPTIONS`、`DURATION_OPTIONS` 的 `label` 换成 `labelKey` 联合类型，`START_FORM_DESCRIPTION` 改成 `Record<ShadowEvalDirection, "shadowEval.descForward" | "shadowEval.descReverse">`，渲染时 `t` 查表；`SelectValue` 的回显派生 `directionLabelKey`/`durationLabelKey` 后用 `{key ? t(key) : null}` 兜住可选类型。字段标签、`pctOfTraffic`、`budgetHint`、`noChatModels`、`recommended`、按钮态 `starting`/`startSubmit` 逐一接线。新开 25 键（叶子 10512 涨到 10537，同值 138 持平），中文措辞对齐目录先例：评审模型/基线模型/推荐既有叫法，时长沿用 `virtualKeys.lifecycle.interval7d` 的"N 天"构词。`RECOMMENDED_JUDGE_MODELS` 是模型 id、`MAX_ROUTERS`/`MAX_MODELS` 是数字，均不动。
+
+测试迁移：`ShadowEvalSection.test.tsx` 23 处渲染串换中文逐字面量（方向标签 4+4、`开始影子评估` 12、`/prod-judge.*推荐/` 与 `queryByText("推荐")` 各 1、`每个路由看到…`整句 1），it 描述照旧英文；L461 `/ends in 3 days/` 由未接线组件渲染保持英文。验证：cost-optimization 目录 16 文件加 `src/lib/i18n` 共 20 文件 228 例全绿、Type Errors no errors，tsc 本簇测试文件 9 条报错经 HEAD 基线换回比对逐条同数（`by_router` 缺字段 TS2741 等既有欠账），eslint stdin 口径组件 0/0、测试 13/13 与 HEAD 逐条同数，prettier 先证 HEAD 两文件均脏（组件 38、测试 4）按口径不跑 `--write`，本簇新写的 union 类型直接按 prettier 规范形态落盘，改过的 4 处 `chooseSelectOption` 与 1 处 `expect` 手工折成单行，测试文件脏行清零，组件脏行 38 与 HEAD 基线持平（整块 `RouterField` 缩进欠账非本簇触碰）；25 键 50 侧 `IntlMessageFormat` 实跑（无参数，英文撇号按字面渲染），`npm run build` 过，扫描器本文件归零。本文件接线前就已含 `useTranslations`，接入文件持平 686/912。下一簇按队列取 `cost-tracking/_components/use_discount_config.ts`。
 
 ## 2026-10-18 第 185 簇更新
 
