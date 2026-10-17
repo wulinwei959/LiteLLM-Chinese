@@ -8887,8 +8887,22 @@
         "clearAll": "清空全部搜索工具",
         "loading": "正在加载搜索工具…",
         "noTools": "未找到搜索工具"
-    }
-  },
+    },
+
+    "nameRequired": "请输入搜索工具名称",
+    "providerRequired": "请选择搜索供应商",
+    "deletedToast": "搜索工具已删除",
+    "deleteError": "删除搜索工具失败",
+    "updatedToast": "搜索工具已更新",
+    "updateError": "更新搜索工具失败",
+    "deleteTitle": "删除搜索工具",
+    "deleteConfirm": "确定要删除这个搜索工具吗？此操作不可撤销。",
+    "resourceInfoTitle": "搜索工具信息",
+    "searchToolName": "搜索工具名称",
+    "providerLabel": "搜索供应商",
+    "apiKeyDesc": "搜索供应商的 API 密钥",
+    "idLabel": "ID",
+    "nameExample": "例如：my-perplexity-search"  },
   "vectorStores": {
     "createdSuccess": "向量存储创建成功",
     "vectorStoreId": "向量存储 ID：",

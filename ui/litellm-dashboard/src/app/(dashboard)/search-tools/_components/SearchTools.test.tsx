@@ -175,7 +175,7 @@ describe("SearchTools", () => {
   it("should show Add New Search Tool button when user is admin", async () => {
     render(<SearchTools {...defaultProps} />, { wrapper: createWrapper() });
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /add new search tool/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /新建搜索工具/ })).toBeInTheDocument();
     });
   });
 
@@ -186,7 +186,7 @@ describe("SearchTools", () => {
     await waitFor(() => {
       expect(screen.getByText("搜索工具")).toBeInTheDocument();
     });
-    expect(screen.queryByRole("button", { name: /add new search tool/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /新建搜索工具/ })).not.toBeInTheDocument();
   });
 
   it("should open create modal when Add New Search Tool button is clicked", async () => {
@@ -194,10 +194,10 @@ describe("SearchTools", () => {
     render(<SearchTools {...defaultProps} />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /add new search tool/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /新建搜索工具/ })).toBeInTheDocument();
     });
 
-    const addButton = screen.getByRole("button", { name: /add new search tool/i });
+    const addButton = screen.getByRole("button", { name: /新建搜索工具/ });
     await user.click(addButton);
 
     expect(screen.getByTestId("create-search-tool-modal")).toBeInTheDocument();

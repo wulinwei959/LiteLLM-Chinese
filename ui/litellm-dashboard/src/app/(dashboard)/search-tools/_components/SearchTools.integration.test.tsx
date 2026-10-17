@@ -70,7 +70,7 @@ const openEditModal = async (user: ReturnType<typeof userEvent.setup>) => {
   await screen.findByText("Perplexity Search");
   await user.click(screen.getByTestId("search-tool-actions-tool-1"));
   await user.click(await screen.findByTestId("search-tool-action-edit"));
-  await waitFor(() => expect(screen.getByLabelText("Search Tool Name")).toHaveValue("Perplexity Search"));
+  await waitFor(() => expect(screen.getByLabelText("搜索工具名称")).toHaveValue("Perplexity Search"));
 };
 
 describe("SearchTools edit payload", () => {
@@ -87,7 +87,7 @@ describe("SearchTools edit payload", () => {
     renderPage();
     await openEditModal(user);
 
-    await user.click(screen.getByRole("button", { name: "OK" }));
+    await user.click(screen.getByRole("button", { name: "确定" }));
 
     await waitFor(() => expect(networking.updateSearchTool).toHaveBeenCalledTimes(1));
     const [token, toolId, payload] = vi.mocked(networking.updateSearchTool).mock.calls[0];
@@ -111,9 +111,9 @@ describe("SearchTools edit payload", () => {
     renderPage();
     await openEditModal(user);
 
-    await user.clear(screen.getByLabelText("Description"));
-    fireEvent.change(screen.getByLabelText("Description"), { target: { value: "updated copy" } });
-    await user.click(screen.getByRole("button", { name: "OK" }));
+    await user.clear(screen.getByLabelText("描述"));
+    fireEvent.change(screen.getByLabelText("描述"), { target: { value: "updated copy" } });
+    await user.click(screen.getByRole("button", { name: "确定" }));
 
     await waitFor(() => expect(networking.updateSearchTool).toHaveBeenCalledTimes(1));
     expect(vi.mocked(networking.updateSearchTool).mock.calls[0][2]).toMatchObject({
@@ -126,8 +126,8 @@ describe("SearchTools edit payload", () => {
     renderPage();
     await openEditModal(user);
 
-    await user.clear(screen.getByLabelText("Description"));
-    await user.click(screen.getByRole("button", { name: "OK" }));
+    await user.clear(screen.getByLabelText("描述"));
+    await user.click(screen.getByRole("button", { name: "确定" }));
 
     await waitFor(() => expect(networking.updateSearchTool).toHaveBeenCalledTimes(1));
     const payload = vi.mocked(networking.updateSearchTool).mock.calls[0][2];
@@ -146,7 +146,7 @@ describe("SearchTools edit payload", () => {
     renderPage();
     await openEditModal(user);
 
-    await user.type(screen.getByLabelText("Search Tool Name"), "{Enter}");
+    await user.type(screen.getByLabelText("搜索工具名称"), "{Enter}");
 
     await new Promise((resolve) => setTimeout(resolve, 200));
     expect(networking.updateSearchTool).not.toHaveBeenCalled();
@@ -157,10 +157,10 @@ describe("SearchTools edit payload", () => {
     renderPage();
     await openEditModal(user);
 
-    await user.clear(screen.getByLabelText("Search Tool Name"));
-    await user.click(screen.getByRole("button", { name: "OK" }));
+    await user.clear(screen.getByLabelText("搜索工具名称"));
+    await user.click(screen.getByRole("button", { name: "确定" }));
 
-    expect(await screen.findByText("Please enter a search tool name")).toBeInTheDocument();
+    expect(await screen.findByText("请输入搜索工具名称")).toBeInTheDocument();
     expect(networking.updateSearchTool).not.toHaveBeenCalled();
   });
   it("still edits a tool whose api_key and search_tool_info came back null", async () => {
@@ -169,7 +169,7 @@ describe("SearchTools edit payload", () => {
     renderPage();
     await openEditModal(user);
 
-    await user.click(screen.getByRole("button", { name: "OK" }));
+    await user.click(screen.getByRole("button", { name: "确定" }));
 
     await waitFor(() => expect(networking.updateSearchTool).toHaveBeenCalledTimes(1));
     const payload = vi.mocked(networking.updateSearchTool).mock.calls[0][2];

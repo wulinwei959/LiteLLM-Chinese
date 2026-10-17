@@ -8891,8 +8891,22 @@
         "clearAll": "Clear all search tools",
         "loading": "Loading search tools…",
         "noTools": "No search tools found"
-    }
-  },
+    },
+
+    "nameRequired": "Please enter a search tool name",
+    "providerRequired": "Please select a search provider",
+    "deletedToast": "Deleted search tool successfully",
+    "deleteError": "Failed to delete search tool",
+    "updatedToast": "Search tool updated successfully",
+    "updateError": "Failed to update search tool",
+    "deleteTitle": "Delete Search Tool",
+    "deleteConfirm": "Are you sure you want to delete this search tool? This action cannot be undone.",
+    "resourceInfoTitle": "Search Tool Information",
+    "searchToolName": "Search Tool Name",
+    "providerLabel": "Search Provider",
+    "apiKeyDesc": "API key for the search provider",
+    "idLabel": "ID",
+    "nameExample": "e.g., my-perplexity-search"  },
   "vectorStores": {
     "createdSuccess": "Vector Store Created Successfully",
     "vectorStoreId": "Vector Store ID:",
