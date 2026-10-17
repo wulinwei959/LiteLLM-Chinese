@@ -1,10 +1,18 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 176 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10427、中英同值 138）。第 93 到 176 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 177 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10459、中英同值 138）。第 93 到 177 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 177 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `vector-stores/_components/VectorStoreForm.tsx`，新建向量存储弹窗，本轮第一次吃到 vector-stores 页（该页的 schema、表格列名与说明段在前面的批次已由 `VectorStoresTranslator` 键化，本簇补剩下的字段文案、toast 与四段供应商引导）。模块级常量表 `VECTOR_STORE_ID_PLACEHOLDERS` 等三个常量按第 173 簇键名化路子改成 `VectorStoreIdPlaceholderKey` union 加 `VECTOR_STORE_ID_PLACEHOLDER_KEYS` 映射，`vertex_ai/search_api` 设了引擎 ID 时的特例走三元挑 `idPlaceholderWithEngine`，union 类型让 `t()` 的键参数保持类型安全。文件内自带的 `PasswordInput` forwardRef 组件补了 `useTranslations("vectorStores")`，显隐按钮 aria-label 接 `showPassword`/`hidePassword`；credentialOptions 的 "None" 复用 `noneLabel`；三条 toast 里 `createErrorToast` 与第 176 簇同法把字符串拼接改成 ICU 参数 `{error}`。字段标签六处复用（`providerShort`、嵌套键 `table.columnId` 直接当表单标签、`descriptionShort`、`existingCreds`、`metadataShort`、`engineId`），tooltip 五条与三个按钮链接文案新开；取消按钮走本页 `commonT` 先例的 `common.cancel`。
+
+四段供应商引导（pgVector/valkey/vertexRAG/vertexSearch）共 22 条说明是新开键的大头：引导链接与强调用 `t.rich` 的 `<link>`/`<strong>` 处理器渲染，消费侧保留原 `<a>` 的 href、target、rel 与下划线样式，`vertexSearchStep4` 里 `{engineId}` 参数直接传 `t("engineId")`；`valkeyStep4` 消息含字面 `"text"`/`"embedding"` 字段名，中英两侧原样保留。vertexRAG/vertexSearch 的 Note 行 en 侧带 `- ` 破折连字符，目录照抄不改成中文破折号以外的形态。新开 32 键（叶子 10427 涨到 10459，同值持平 138）。`console.error` 与元数据示例占位符 `'{"key": "value"}'` 照旧不翻。
+
+测试迁移：`VectorStoreForm.test.tsx` 的 `/Vector Store ID/` regex 两处换 `/向量存储 ID/`、"Cancel" 按钮换 "取消"；`VectorStoreForm.integration.test.tsx` 的默认 ID 占位符五处、vertex search 占位符一处（zh 值保留 `my-datastore_1234567890` 与 `"Agent Search"` 专名）、`fromError` 断言一处换中文；`index.test.tsx` 里该组件是 `() => null` mock 不受影响。验证：本目录 13 文件 113 例加 `src/lib/i18n` 全绿、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径组件 1/1、integration 3/3、测试 0/0 与 HEAD 逐条同数（残留都是既有 no-large-inline-object-arg），prettier 先证 HEAD 三文件全干净，组件当前脏 `--write` 后复跑 17 例仍绿；33 键（含 1 条只补逗号的既有键）66 侧 `IntlMessageFormat` 实跑，四条带标签消息带 link/strong/code 处理器渲染与去标签目标串逐字相等，`npm run build` 过，扫描器本文件归零。接入文件持平 686/912。
 
 ## 2026-10-18 第 176 簇更新
 
