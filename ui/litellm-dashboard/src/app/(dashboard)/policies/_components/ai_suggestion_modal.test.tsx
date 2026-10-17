@@ -92,7 +92,7 @@ describe("AiSuggestionModal", () => {
     await screen.findByText("AI 策略推荐");
     expect(screen.getByRole("button", { name: "推荐策略" })).toBeDisabled();
 
-    fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
+    fireEvent.change(screen.getByPlaceholderText(/在客服聊天机器人中拦截/), { target: { value: "block PII" } });
     expect(screen.getByRole("button", { name: "推荐策略" })).toBeDisabled();
 
     await pickModel(user);
@@ -104,10 +104,10 @@ describe("AiSuggestionModal", () => {
     renderModal();
 
     await screen.findByText("AI 策略推荐");
-    fireEvent.change(screen.getByPlaceholderText(/Ignore all previous instructions/), {
+    fireEvent.change(screen.getByPlaceholderText(/忽略之前的所有指令/), {
       target: { value: "my ssn is 123" },
     });
-    fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
+    fireEvent.change(screen.getByPlaceholderText(/在客服聊天机器人中拦截/), { target: { value: "block PII" } });
     await pickModel(user);
     await user.click(screen.getByRole("button", { name: "推荐策略" }));
 
@@ -138,7 +138,7 @@ describe("AiSuggestionModal", () => {
     renderModal();
 
     await screen.findByText("AI 策略推荐");
-    fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
+    fireEvent.change(screen.getByPlaceholderText(/在客服聊天机器人中拦截/), { target: { value: "block PII" } });
     await pickModel(user);
     await user.click(screen.getByRole("button", { name: "推荐策略" }));
 
@@ -154,7 +154,7 @@ describe("AiSuggestionModal", () => {
     renderModal();
 
     await screen.findByText("AI 策略推荐");
-    fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
+    fireEvent.change(screen.getByPlaceholderText(/在客服聊天机器人中拦截/), { target: { value: "block PII" } });
     await pickModel(user);
     await user.click(screen.getByRole("button", { name: "推荐策略" }));
 
@@ -166,7 +166,7 @@ describe("AiSuggestionModal", () => {
     renderModal();
 
     await screen.findByText("AI 策略推荐");
-    fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
+    fireEvent.change(screen.getByPlaceholderText(/在客服聊天机器人中拦截/), { target: { value: "block PII" } });
     await pickModel(user);
     await user.click(screen.getByRole("button", { name: "推荐策略" }));
 
@@ -181,7 +181,7 @@ describe("AiSuggestionModal", () => {
     renderModal({ onSelectTemplates });
 
     await screen.findByText("AI 策略推荐");
-    fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
+    fireEvent.change(screen.getByPlaceholderText(/在客服聊天机器人中拦截/), { target: { value: "block PII" } });
     await pickModel(user);
     await user.click(screen.getByRole("button", { name: "推荐策略" }));
     await user.click(await screen.findByRole("button", { name: "使用 2 个所选模板" }));
@@ -195,7 +195,7 @@ describe("AiSuggestionModal", () => {
     renderModal();
 
     await screen.findByText("AI 策略推荐");
-    fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
+    fireEvent.change(screen.getByPlaceholderText(/在客服聊天机器人中拦截/), { target: { value: "block PII" } });
     await pickModel(user);
     await user.click(screen.getByRole("button", { name: "推荐策略" }));
     await user.click(await screen.findByRole("button", { name: "返回" }));
@@ -211,7 +211,7 @@ describe("AiSuggestionModal", () => {
     renderModal();
 
     await screen.findByText("AI 策略推荐");
-    fireEvent.change(screen.getByPlaceholderText(/Block PII leakage/), { target: { value: "block PII" } });
+    fireEvent.change(screen.getByPlaceholderText(/在客服聊天机器人中拦截/), { target: { value: "block PII" } });
     await pickModel(user);
     await user.click(screen.getByRole("button", { name: "推荐策略" }));
 
