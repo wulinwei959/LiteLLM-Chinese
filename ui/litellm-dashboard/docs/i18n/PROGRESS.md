@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 171 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10385、中英同值 137）。第 93 到 171 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 172 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10391、中英同值 137）。第 93 到 172 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 172 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `policies/_components/ai_suggestion_modal.tsx`，AI 生成策略模板的建议弹窗。正文四十九条 `policies.ai` 键在前面的批次已接完，扫描器报的 11 条命中里两条是 `console.error`、四条是 SVG path 数据，真文案只剩输入占位符：四条攻击示例（`attackEx1`-`4`）、说明示例 `descEx`、品牌示例 `brandEx`，新开 6 键（叶子 10385 涨到 10391）。SQL 注入示例引号内的 `SELECT * FROM users WHERE 1=1` 是代码，中文侧原样保留只翻 `e.g.`；品牌示例 en 侧是上游的公司名，zh 侧改写为"你的品牌名"，不把具体公司带进目录（第 171 簇"命名示例保持英文"的延长：会进用户输入引导的专名换成通名）。`result.action` 首字母大写、`template.complexity` 徽章与 `suggestion.reason`、流式 `status` 都是后端数据值，照第 160 簇"接口值不翻"。
+
+测试同步：`ai_suggestion_modal.test.tsx` 走裸 `renderWithProviders`（zh 目录），`/Block PII leakage/` 8 处与 `/Ignore all previous instructions/` 1 处占位符正则换成中文。验证：本测试加 `src/lib/i18n` 4 文件 29 例全绿、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径组件 29 problems（16 errors 13 warnings）与 HEAD 逐条同数（全是历史欠账），测试文件两侧均 0；prettier 组件 34 行、测试 8 行的不合规与 HEAD 完全同量，按口径不跑 `--write`；6 条新消息 12 侧 `IntlMessageFormat` 解析渲染逐字相等，`npm run build` 过，扫描器本文件归零。接入文件持平 686/912。
 
 ## 2026-10-18 第 171 簇更新
 
