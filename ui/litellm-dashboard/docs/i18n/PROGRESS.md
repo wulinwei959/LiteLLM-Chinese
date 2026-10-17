@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 187 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10543、中英同值 138）。第 93 到 187 簇（184 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 188 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10575、中英同值 138）。第 93 到 188 簇（184 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 188 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `src/components/settings.tsx`，日志回调与告警设置页。页面主体早有 `useTranslations("settings")` 与 `commonT`，扫描器 6 条命中在动态参数区的裸英文：必填校验模板 `Please enter the ${label.toLowerCase()}`、下拉占位 `Select ${...}`、密码/文本占位 `Enter your ${...}`、数字占位 `Enter ${...}`，label 取自后端 `ui_name` 属数据值不翻，参数化外壳四个键化（`fieldRequired`/`selectFieldPlaceholder`/`enterYourField`/`enterField`，均带 `{name}`）。盲区是大头：`alerts_to_UI_NAME` 的 11 个告警标签（LLM Exceptions 等）按第 177/183 簇键名化路子改成 `AlertLabelKey` 联合类型 + `Record<string, AlertLabelKey>`，渲染处 `t(value)`，wire 键（`llm_exceptions`）不动，保存载荷与 `document.querySelector(input[name=...])` 选择器不受影响；六条 toast（回调更新/添加带 `{name}`/删除带 `{name}`/告警保存/健康检查/告警测试）、`getCallbackConfigsCall` 解析失败带 `{error}` 的 `loadCallbackConfigsFailed`、Slack 说明段 `t.rich("slackWebhookDesc")` 带 `<link>` 标签保留外链 href/target、保存与测试按钮、`LiteLLM Docs: Logging` 链接、添加/保存中按钮态、`commonT("cancel")`×2、DeleteResourceModal 的确认文案与回调信息/回调名称/模式三个标签（模式取值 `"success"` 是 wire 值不翻）共 32 个 settings 命名空间新键（叶子 10543 涨到 10575，同值 138 持平）。
+
+测试迁移：`settings.test.tsx` 12 处 `{ name: "Save Changes" }` 换 `保存更改`，必选校验断言换 `请输入public key`（小写由处理器传入），s3_v2 未选占位断言换 `toHaveTextContent("选择 folder partitioning")`；`ui_name` 派生的字段标签（Public Key/Endpoint URL/Export Protocol/Log Prompts Only/Folder Partitioning 等）保持英文。验证：`settings.test.tsx` 加 `src/lib/i18n` 共 4 文件 41 例全绿、Type Errors no errors，tsc 锚定 `^src/components/settings\.(tsx|test\.tsx)` 无本簇文件报错，eslint stdin 口径 20/20 与 HEAD 逐条同数（接线 loadConfig toast 后新爆一条 exhaustive-deps，useEffect 依赖补 `t` 归位），prettier 先证 HEAD 干净后 `--write` 只重排本簇 127 列校验行，复跑仍绿；32 键 64 侧 `IntlMessageFormat` 实跑（`slackWebhookDesc` 带 link 处理器、四条 `{name}` 与 `{error}` 参数逐侧渲染比对），`npm run build` 过，扫描器本文件只剩 `Failed to delete callback:` 一条 console.error 既定不翻。本文件早有 `useTranslations`，接入文件持平 686/912。下一簇按队列取 `src/components/add_model/add_model_modes.tsx`（6 条）。
 
 ## 2026-10-18 第 187 簇更新
 
