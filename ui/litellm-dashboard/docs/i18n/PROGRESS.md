@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 178 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10475、中英同值 138）。第 93 到 178 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 179 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10477、中英同值 138）。第 93 到 179 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 179 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `mcp-servers/_components/ToolTestPanel.tsx`，MCP 工具测试面板。该文件主体早已接 `toolTest.*`，扫描器 8 条里 7 条是 SVG path 数据（第 172 簇判定不翻），真文案在扫描器盲区：占位 schema 的 `description: "Input for this tool"` 会流进 ToolArgumentsForm 的输入框 placeholder 与 tooltip（prop.description 优先于 toolArgs 键），新开 `toolTest.inputFieldDescription` 接上，所在 useMemo 依赖补 `t`；"Provider: {server_name}" 行新开 `toolTest.providerLine` 带参；服务器 logo 的 alt 复用同命名空间 `tools.serverLogoAlt`（mcp_tools.tsx 同款接法）；Formatted/JSON 切换按钮接早已铺好的 `toolTest.formatted`/`toolTest.json`（json 中英同值 "JSON" 属格式专名非漏翻）；结果图 alt 借 `toolTest.toolResult`（原 "Tool result" 与键值只差大小写）；关闭按钮 aria-label 走 `common.close`（本页首个 `commonT`）。新开 2 键（叶子 10475 涨到 10477，同值持平 138）。`section.includes("Score:")` 是解析工具输出的功能逻辑，`execCommand failed` throw 与 `console.error` 照旧不翻。
+
+测试零改动：`ToolTestPanel.integration.test.tsx` 的断言全走 toolArgs/common 中文键，与本次接线的 6 处文案不相交。验证：mcp-servers 目录加 `src/lib/i18n` 共 44 文件 772 例全绿（2 例预期失败）再加单跑本文件 24 例、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径 7/7 与 HEAD 逐条同数（既有 any/条件链/setState 欠账），prettier HEAD 本就脏按口径不跑 `--write`，只把手写的超长行按 prettier 形态拆行；2 新键加复用键 6 条 12 侧 `IntlMessageFormat` 实跑逐字相等（`{server}` 渲染），`npm run build` 过，扫描器本文件只剩 SVG path 既定不翻。接入文件持平 686/912。
 
 ## 2026-10-18 第 178 簇更新
 
