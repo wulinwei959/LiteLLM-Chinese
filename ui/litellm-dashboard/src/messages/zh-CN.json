@@ -6848,7 +6848,13 @@
       "useWithAnyClient": "将此 URL 用于任何支持 HTTP 传输的 MCP 客户端",
       "differentTransports": "每个 MCP 客户端支持不同的传输方式。请查阅您的客户端文档以确定合适的传输方式。",
       "headersConfiguration": "请求头配置",
-      "learnMoreTransports": "了解更多 MCP 传输方式"
+      "learnMoreTransports": "了解更多 MCP 传输方式",
+      "implementationExample": "实现示例",
+      "limitToolsHint": "通过传入 <code>x-mcp-servers</code> 请求头，将工具限定到特定的 MCP 服务器或 MCP 分组",
+      "getSpecificServer": "获取特定服务器：",
+      "getMcpGroup": "获取一组 MCP：",
+      "mixBoth": "也可以两者混合使用：",
+      "getApiKeyFrom": "请从<link>{platform}</link>获取您的 API 密钥"
     },
     "toolConfig": {
       "enabled": "已启用",

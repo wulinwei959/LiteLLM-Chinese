@@ -6848,7 +6848,13 @@
       "useWithAnyClient": "Use this URL with any MCP client that supports HTTP transport",
       "differentTransports": "Each MCP client supports different transports. Refer to your client documentation to determine the appropriate transport method.",
       "headersConfiguration": "Headers Configuration",
-      "learnMoreTransports": "Learn more about MCP transports"
+      "learnMoreTransports": "Learn more about MCP transports",
+      "implementationExample": "Implementation Example",
+      "limitToolsHint": "Limit tools to specific MCP servers or MCP groups by passing the <code>x-mcp-servers</code> header",
+      "getSpecificServer": "Get a specific server:",
+      "getMcpGroup": "Get a group of MCPs:",
+      "mixBoth": "You can also mix both:",
+      "getApiKeyFrom": "Get your API key from the <link>{platform}</link>"
     },
     "toolConfig": {
       "enabled": "Enabled",

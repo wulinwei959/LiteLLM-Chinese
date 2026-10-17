@@ -32,9 +32,19 @@ interface CodeBlockProps {
   className?: string;
 }
 
+type FeatureCardTitleKey =
+  | "mcpConnect.virtualKeySetup"
+  | "mcpConnect.mcpServerInfo"
+  | "mcpConnect.implementationExample"
+  | "mcpConnect.apiKeySetup"
+  | "mcpConnect.configuration"
+  | "mcpConnect.universalMcpConnection";
+
+type CodeBlockTitleKey = "mcpConnect.environmentVariable" | "mcpConnect.serverUrl" | "mcpConnect.headersConfiguration";
+
 interface FeatureCardProps {
   icon: React.ReactNode;
-  title: string;
+  titleKey: FeatureCardTitleKey;
   description: string;
   children: React.ReactNode;
   serverName?: string;
@@ -43,7 +53,7 @@ interface FeatureCardProps {
 
 const FeatureCard: React.FC<FeatureCardProps> = ({
   icon,
-  title,
+  titleKey,
   description,
   children,
   serverName,
@@ -72,11 +82,11 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
         <div className="flex items-center gap-3 mb-3">
           <span className="p-2 rounded-lg bg-muted">{icon}</span>
           <div>
-            <h5 className="mb-0 text-base font-semibold text-foreground">{title}</h5>
+            <h5 className="mb-0 text-base font-semibold text-foreground">{t(titleKey)}</h5>
             <span className="text-muted-foreground">{description}</span>
           </div>
         </div>
-        {serverName && (title === "Implementation Example" || title === "Configuration") && (
+        {serverName && (titleKey === "mcpConnect.implementationExample" || titleKey === "mcpConnect.configuration") && (
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
               <Switch
@@ -86,7 +96,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
                 onCheckedChange={setUseServerHeader}
               />
               <Label htmlFor={serverHeaderToggleId} className="font-normal leading-normal">
-                Limit tools to specific MCP servers or MCP groups by passing the <code>x-mcp-servers</code> header
+                {t.rich("mcpConnect.limitToolsHint", { code: (chunks) => <code>{chunks}</code> })}
               </Label>
             </div>
             {useServerHeader && (
@@ -96,13 +106,14 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
                 <AlertDescription>
                   <div>
                     <p>
-                      <strong>{t("option1")}</strong> Get a specific server: <code>"{serverName.replace(/\s+/g, "_")}"</code>
+                      <strong>{t("option1")}</strong> {t("mcpConnect.getSpecificServer")}{" "}
+                      <code>"{serverName.replace(/\s+/g, "_")}"</code>
                     </p>
                     <p>
-                      <strong>{t("option2")}</strong> Get a group of MCPs: <code>"dev-group"</code>
+                      <strong>{t("option2")}</strong> {t("mcpConnect.getMcpGroup")} <code>"dev-group"</code>
                     </p>
                     <p className="mt-2 text-sm text-muted-foreground">
-                      You can also mix both: <code>"Server1,dev-group"</code>
+                      {t("mcpConnect.mixBoth")} <code>"Server1,dev-group"</code>
                     </p>
                   </div>
                 </AlertDescription>
@@ -153,14 +164,14 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
   const CodeBlock: React.FC<{
     code: string;
     copyKey: string;
-    title?: string;
+    titleKey?: CodeBlockTitleKey;
     className?: string;
-  }> = ({ code, copyKey, title, className = "" }) => (
+  }> = ({ code, copyKey, titleKey, className = "" }) => (
     <div className="relative group">
-      {title && (
+      {titleKey && (
         <div className="flex items-center gap-2 mb-2">
           <Code size={16} className="text-info" />
-          <strong className="font-semibold text-foreground">{title}</strong>
+          <strong className="font-semibold text-foreground">{t(titleKey)}</strong>
         </div>
       )}
       <Card className={`relative bg-muted ${className}`}>
@@ -216,28 +227,32 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
       <div className="flex w-full flex-col gap-6">
         <FeatureCard
           icon={<KeyIcon className="text-success" size={16} />}
-          title="Virtual Key Setup"
+          titleKey="mcpConnect.virtualKeySetup"
           description={t("mcpConnect.virtualKeyDesc")}
         >
           <div className="flex w-full flex-col gap-4">
             <div>
               <span>{t("mcpConnect.getVirtualKey")}</span>
             </div>
-            <CodeBlock title="Environment Variable" code='export LITELLM_API_KEY="sk-..."' copyKey="litellm-env" />
+            <CodeBlock
+              titleKey="mcpConnect.environmentVariable"
+              code='export LITELLM_API_KEY="sk-..."'
+              copyKey="litellm-env"
+            />
           </div>
         </FeatureCard>
 
         <FeatureCard
           icon={<ServerIcon className="text-success" size={16} />}
-          title="MCP Server Information"
+          titleKey="mcpConnect.mcpServerInfo"
           description={t("mcpConnect.connectionDetails")}
         >
-          <CodeBlock title="Server URL" code={`${proxyBaseUrl}/mcp`} copyKey="litellm-server-url" />
+          <CodeBlock titleKey="mcpConnect.serverUrl" code={`${proxyBaseUrl}/mcp`} copyKey="litellm-server-url" />
         </FeatureCard>
 
         <FeatureCard
           icon={<Code className="text-success" size={16} />}
-          title="Implementation Example"
+          titleKey="mcpConnect.implementationExample"
           description={t("mcpConnect.curlExampleDesc")}
           serverName={currentServer}
           accessGroups={["dev-group"]}
@@ -286,38 +301,47 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
       <div className="flex w-full flex-col gap-6">
         <FeatureCard
           icon={<KeyIcon className="text-info" size={16} />}
-          title="API Key Setup"
+          titleKey="mcpConnect.apiKeySetup"
           description={t("mcpConnect.configureOpenaiKey")}
         >
           <div className="flex w-full flex-col gap-4">
             <div>
               <span>
-                Get your API key from the{" "}
-                <a
-                  href="https://platform.openai.com/api-keys"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-info hover:text-info/80 inline-flex items-center gap-1"
-                >
-                  {t("mcpConnect.openaiPlatform")} <ExternalLinkIcon size={12} />
-                </a>
+                {t.rich("mcpConnect.getApiKeyFrom", {
+                  platform: t("mcpConnect.openaiPlatform"),
+                  link: (chunks) => (
+                    <a
+                      href="https://platform.openai.com/api-keys"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-info hover:text-info/80 inline-flex items-center gap-1"
+                    >
+                      {chunks}
+                      <ExternalLinkIcon size={12} />
+                    </a>
+                  ),
+                })}
               </span>
             </div>
-            <CodeBlock title="Environment Variable" code='export OPENAI_API_KEY="sk-..."' copyKey="openai-env" />
+            <CodeBlock
+              titleKey="mcpConnect.environmentVariable"
+              code='export OPENAI_API_KEY="sk-..."'
+              copyKey="openai-env"
+            />
           </div>
         </FeatureCard>
 
         <FeatureCard
           icon={<ServerIcon className="text-info" size={16} />}
-          title="MCP Server Information"
+          titleKey="mcpConnect.mcpServerInfo"
           description={t("mcpConnect.connectionDetails")}
         >
-          <CodeBlock title="Server URL" code={`${proxyBaseUrl}/mcp`} copyKey="openai-server-url" />
+          <CodeBlock titleKey="mcpConnect.serverUrl" code={`${proxyBaseUrl}/mcp`} copyKey="openai-server-url" />
         </FeatureCard>
 
         <FeatureCard
           icon={<Code className="text-info" size={16} />}
-          title="Implementation Example"
+          titleKey="mcpConnect.implementationExample"
           description={t("mcpConnect.curlExampleDesc")}
           serverName="Zapier Gmail"
           accessGroups={["dev-group"]}
@@ -358,10 +382,7 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
           <Terminal className="text-purple-600 dark:text-purple-400" size={24} />
           <h4 className="mb-0 text-xl font-semibold text-purple-900 dark:text-purple-100">{t("mcpConnect.cursorIdeIntegration")}</h4>
         </div>
-        <span className="text-purple-700 dark:text-purple-300">
-          Use tools directly from Cursor IDE with LiteLLM MCP. Enable your AI assistant to perform real-world tasks
-          without leaving your coding environment.
-        </span>
+        <span className="text-purple-700 dark:text-purple-300">{t("mcpConnect.cursorDesc")}</span>
       </div>
 
       <Card>
@@ -384,7 +405,7 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
               </span>
               <FeatureCard
                 icon={<Code className="text-purple-600 dark:text-purple-400" size={16} />}
-                title="Configuration"
+                titleKey="mcpConnect.configuration"
                 description={t("mcpConnect.cursorMcpConfig")}
                 serverName="Zapier Gmail"
                 accessGroups={["dev-group"]}
@@ -426,19 +447,16 @@ const MCPConnect: React.FC<MCPConnectProps> = ({ currentServerAccessGroups = [] 
 
       <FeatureCard
         icon={<Globe className="text-success" size={16} />}
-        title="Universal MCP Connection"
+        titleKey="mcpConnect.universalMcpConnection"
         description={t("mcpConnect.useWithAnyClient")}
       >
         <div className="flex w-full flex-col gap-4">
           <div>
-            <span>
-              Each MCP client supports different transports. Refer to your client documentation to determine the
-              appropriate transport method.
-            </span>
+            <span>{t("mcpConnect.differentTransports")}</span>
           </div>
-          <CodeBlock title="Server URL" code={`${proxyBaseUrl}/mcp`} copyKey="http-server-url" />
+          <CodeBlock titleKey="mcpConnect.serverUrl" code={`${proxyBaseUrl}/mcp`} copyKey="http-server-url" />
           <CodeBlock
-            title="Headers Configuration"
+            titleKey="mcpConnect.headersConfiguration"
             code={JSON.stringify(
               {
                 "x-litellm-api-key": "Bearer YOUR_LITELLM_API_KEY",
