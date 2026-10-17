@@ -979,7 +979,7 @@ describe("MCPToolPermissions", () => {
       const mockOnChange = vi.fn();
       renderCrudView({ [mockServerId]: allCrudToolNames }, mockOnChange);
 
-      const readGroupToggle = await screen.findByRole("checkbox", { name: "Allow all Read tools" });
+      const readGroupToggle = await screen.findByRole("checkbox", { name: "允许全部 读取 工具" });
       expect(readGroupToggle).toBeChecked();
 
       await userEvent.click(readGroupToggle);
@@ -991,7 +991,7 @@ describe("MCPToolPermissions", () => {
       const mockOnChange = vi.fn();
       renderCrudView({ [mockServerId]: ["list_documents"] }, mockOnChange);
 
-      const readGroupToggle = await screen.findByRole("checkbox", { name: "Allow all Read tools" });
+      const readGroupToggle = await screen.findByRole("checkbox", { name: "允许全部 读取 工具" });
       expect(readGroupToggle).toBePartiallyChecked();
 
       await userEvent.click(readGroupToggle);
@@ -1044,7 +1044,7 @@ describe("MCPToolPermissions", () => {
       renderWithProviders(<Harness />);
 
       const deleteTool = await screen.findByRole("checkbox", { name: "delete_document" });
-      const readGroupToggle = screen.getByRole("checkbox", { name: "Allow all Read tools" });
+      const readGroupToggle = screen.getByRole("checkbox", { name: "允许全部 读取 工具" });
       expect(deleteTool).toBeChecked();
       expect(readGroupToggle).toBeChecked();
 

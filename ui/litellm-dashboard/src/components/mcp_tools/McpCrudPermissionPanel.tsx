@@ -10,9 +10,16 @@
  */
 
 import React, { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
-import { CrudOp, MCPToolEntry, CRUD_GROUP_META, groupToolsByCrud } from "../../utils/mcpToolCrudClassification";
+import {
+  CrudOp,
+  CrudRiskLevel,
+  MCPToolEntry,
+  CRUD_GROUP_META,
+  groupToolsByCrud,
+} from "../../utils/mcpToolCrudClassification";
 
 interface McpCrudPermissionPanelProps {
   /** List of tools available on this MCP server. */
@@ -48,6 +55,15 @@ const RISK_BADGE: Record<string, string> = {
   unknown: "bg-muted text-foreground",
 };
 
+type RiskLabelKey = "riskSafe" | "riskMedium" | "riskHigh" | "riskUnclassified";
+
+const RISK_LABEL_KEY: Record<CrudRiskLevel, RiskLabelKey> = {
+  low: "riskSafe",
+  medium: "riskMedium",
+  high: "riskHigh",
+  unknown: "riskUnclassified",
+};
+
 const GROUP_BORDER: Record<CrudOp, string> = {
   read: "border-success/20",
   create: "border-info/20",
@@ -76,6 +92,7 @@ const McpCrudPermissionPanel: React.FC<McpCrudPermissionPanelProps> = ({
   readOnly = false,
   searchFilter = "",
 }) => {
+  const t = useTranslations("mcpToolPermissions");
   const [collapsed, setCollapsed] = useState<Record<CrudOp, boolean>>({
     read: false,
     create: false,
@@ -179,29 +196,26 @@ const McpCrudPermissionPanel: React.FC<McpCrudPermissionPanelProps> = ({
                 ) : (
                   <ChevronDownIcon className="w-4 h-4 text-muted-foreground shrink-0" />
                 )}
-                <span className="font-semibold text-foreground text-sm">{meta.label}</span>
+                <span className="font-semibold text-foreground text-sm">{t(meta.labelKey)}</span>
                 <span className={`text-xs px-2 py-0.5 rounded-full ${RISK_BADGE[meta.risk]}`}>
-                  {meta.risk === "high"
-                    ? "High Risk"
-                    : meta.risk === "medium"
-                      ? "Medium Risk"
-                      : meta.risk === "low"
-                        ? "Safe"
-                        : "Unclassified"}
+                  {t(RISK_LABEL_KEY[meta.risk])}
                 </span>
                 <span className="text-xs text-muted-foreground ml-1">
-                  {group.filter((t) => effectiveAllowed.has(t.name)).length}/{group.length} allowed
+                  {t("allowedCount", {
+                    allowed: group.filter((tool) => effectiveAllowed.has(tool.name)).length,
+                    total: group.length,
+                  })}
                 </span>
               </button>
 
               {!readOnly && (
                 <div className="flex items-center gap-2 ml-4">
                   <p className="text-xs text-muted-foreground">
-                    {fullyAllowed ? "All on" : partial ? "Partial" : "All off"}
+                    {fullyAllowed ? t("allOn") : partial ? t("partial") : t("allOff")}
                   </p>
                   {/* Checkbox supports `indeterminate`; Switch does not. */}
                   <Checkbox
-                    aria-label={`Allow all ${meta.label} tools`}
+                    aria-label={t("allowAllTools", { name: t(meta.labelKey) })}
                     checked={fullyAllowed}
                     indeterminate={partial}
                     onCheckedChange={(checked) => toggleGroup(op, checked)}
@@ -214,7 +228,7 @@ const McpCrudPermissionPanel: React.FC<McpCrudPermissionPanelProps> = ({
             {/* Description row */}
             {!isCollapsed && (
               <div className="px-4 pt-2 pb-1 text-xs text-muted-foreground bg-card border-b border-border">
-                {meta.description}
+                {t(meta.descriptionKey)}
               </div>
             )}
 
@@ -256,7 +270,7 @@ const McpCrudPermissionPanel: React.FC<McpCrudPermissionPanelProps> = ({
                             allowed ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"
                           }`}
                         >
-                          {allowed ? "on" : "off"}
+                          {allowed ? t("toolOn") : t("toolOff")}
                         </span>
                       </div>
                     );

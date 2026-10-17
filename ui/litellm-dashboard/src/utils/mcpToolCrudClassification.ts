@@ -54,33 +54,19 @@ export function groupToolsByCrud(tools: MCPToolEntry[]): Record<CrudOp, MCPToolE
   return groups;
 }
 
+export type CrudRiskLevel = "low" | "medium" | "high" | "unknown";
+
+export type CrudGroupLabelKey = "groupRead" | "groupCreate" | "groupUpdate" | "groupDelete" | "groupOther";
+
+export type CrudGroupDescriptionKey = "descRead" | "descCreate" | "descUpdate" | "descDelete" | "descUnknown";
+
 export const CRUD_GROUP_META: Record<
   CrudOp,
-  { label: string; description: string; risk: "low" | "medium" | "high" | "unknown" }
+  { labelKey: CrudGroupLabelKey; descriptionKey: CrudGroupDescriptionKey; risk: CrudRiskLevel }
 > = {
-  read: {
-    label: "Read",
-    description: "Safe operations — fetch, list, search. No side effects.",
-    risk: "low",
-  },
-  create: {
-    label: "Create",
-    description: "Add new resources — insert, upload, register.",
-    risk: "medium",
-  },
-  update: {
-    label: "Update",
-    description: "Modify existing resources — edit, patch, rename.",
-    risk: "medium",
-  },
-  delete: {
-    label: "Delete",
-    description: "Destructive operations — remove, purge, destroy.",
-    risk: "high",
-  },
-  unknown: {
-    label: "Other",
-    description: "Operations that could not be automatically classified.",
-    risk: "unknown",
-  },
+  read: { labelKey: "groupRead", descriptionKey: "descRead", risk: "low" },
+  create: { labelKey: "groupCreate", descriptionKey: "descCreate", risk: "medium" },
+  update: { labelKey: "groupUpdate", descriptionKey: "descUpdate", risk: "medium" },
+  delete: { labelKey: "groupDelete", descriptionKey: "descDelete", risk: "high" },
+  unknown: { labelKey: "groupOther", descriptionKey: "descUnknown", risk: "unknown" },
 };
