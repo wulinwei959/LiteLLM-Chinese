@@ -125,6 +125,7 @@ export function useLiteAdmin(session: LiteAdminSession) {
       const options: Parameters<typeof runLiteAdmin>[0] = {
         ...session,
         model,
+        t,
         messages: [...history, message],
         signal: turn.controller.signal,
         assertCurrent,

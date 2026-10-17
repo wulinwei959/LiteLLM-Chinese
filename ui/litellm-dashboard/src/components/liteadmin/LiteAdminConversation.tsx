@@ -76,9 +76,7 @@ export function LiteAdminConversation({ entries, thinking, open, reviewRef, onAn
         {entries.length === 0 && (
           <div className="pointer-events-none absolute inset-0 flex flex-col justify-center gap-2 p-6">
             <p className="font-medium">{t("howCanIHelp")}</p>
-            <p className="text-sm text-muted-foreground">
-              Check budgets, inspect usage, or manage keys and teams. You review every change before it runs.
-            </p>
+            <p className="text-sm text-muted-foreground">{t("capabilityHint")}</p>
           </div>
         )}
         <MessageScroller.Button
@@ -100,8 +98,10 @@ function ActionCard({
   onAnswer,
 }: Pick<ConversationProps, "open" | "reviewRef" | "onAnswer"> & { entry: ActionEntry }) {
   const t = useTranslations("liteAdmin");
+  const commonT = useTranslations("common");
   const { scrollToEnd } = useMessageScroller();
   const review = entry.status === "review";
+  const operationTitle = t(`operations.${entry.action.name}`);
   useEffect(() => {
     if (!open || !review) return;
     scrollToEnd();
@@ -134,11 +134,11 @@ function ActionCard({
       ref={review ? reviewRef : undefined}
       tabIndex={review ? -1 : undefined}
       role="region"
-      aria-label={entry.action.title}
+      aria-label={operationTitle}
       size="sm"
     >
       <CardHeader className="gap-2">
-        <CardTitle>{entry.action.title}</CardTitle>
+        <CardTitle>{operationTitle}</CardTitle>
         <Badge variant={entry.status === "unknown" ? "destructive" : "secondary"} role="status">
           {entry.status === "completed" && <Check className="size-3" />}
           {t(ACTION_STATUS[entry.status])}
@@ -151,14 +151,14 @@ function ActionCard({
           <Collapsible>
             <CollapsibleTrigger render={<Button variant="ghost" size="xs" />}>
               <ChevronDown className="size-3" />
-              Details
+              {commonT("details")}
             </CollapsibleTrigger>
             <CollapsibleContent>{fields}</CollapsibleContent>
           </Collapsible>
         )}
         {entry.status === "unknown" && (
           <Alert variant="destructive">
-            <AlertDescription>{entry.message}</AlertDescription>
+            <AlertDescription>{t("unknownResultHint")}</AlertDescription>
           </Alert>
         )}
         {entry.status === "completed" && entry.key && (
@@ -174,10 +174,10 @@ function ActionCard({
       {review && (
         <CardFooter className="justify-end gap-2">
           <Button variant="outline" onClick={() => answer(false)}>
-            Cancel
+            {commonT("cancel")}
           </Button>
           <Button variant={entry.action.destructive ? "destructive" : "default"} onClick={() => answer(true)}>
-            Confirm change
+            {t("confirmChange")}
           </Button>
         </CardFooter>
       )}

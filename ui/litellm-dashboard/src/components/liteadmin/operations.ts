@@ -5,15 +5,45 @@ import { ApiError } from "@/lib/http/client";
 import type { components } from "@/lib/http/schema";
 import { generatedKey, projectToolResult, type ResultKind } from "./toolResults";
 
+export type LiteAdminOperationName =
+  | "keys_list"
+  | "key_info"
+  | "key_create"
+  | "key_update"
+  | "key_delete"
+  | "key_block"
+  | "key_unblock"
+  | "teams_list"
+  | "team_info"
+  | "team_create"
+  | "team_update"
+  | "team_delete"
+  | "team_member_add"
+  | "team_member_update"
+  | "team_member_delete"
+  | "users_list"
+  | "user_info"
+  | "user_create"
+  | "user_update"
+  | "user_delete"
+  | "budgets_list"
+  | "budget_info"
+  | "budget_create"
+  | "budget_update"
+  | "budget_delete"
+  | "spend_report"
+  | "team_spend_report"
+  | "key_spend_report"
+  | "request_logs";
+
 export interface LiteAdminAction {
   id: string;
-  name: string;
-  title: string;
+  name: LiteAdminOperationName;
   arguments: Record<string, unknown>;
   destructive: boolean;
 }
 
-export type ActionResult = { status: "completed"; key?: string } | { status: "unknown"; message: string };
+export type ActionResult = { status: "completed"; key?: string } | { status: "unknown" };
 
 export interface OperationContext {
   accessToken: string;
@@ -110,7 +140,8 @@ export function createLiteAdminOperations(context: OperationContext) {
   const operation =
     (mode: "read" | "write" | "delete", kind: ResultKind) =>
     <Schema extends z.ZodType<Record<string, unknown>>>(
-      name: string,
+      name: LiteAdminOperationName,
+      // Prompt text for the model; the action card's label comes from `liteAdmin.operations.<name>` instead.
       title: string,
       schema: Schema,
       execute: (args: z.output<Schema>) => Promise<unknown>,
@@ -128,7 +159,6 @@ export function createLiteAdminOperations(context: OperationContext) {
               : {
                   id: crypto.randomUUID(),
                   name,
-                  title,
                   arguments: Object.fromEntries(Object.entries(args).filter(([, value]) => value !== undefined)),
                   destructive: mode === "delete",
                 };
@@ -149,12 +179,8 @@ export function createLiteAdminOperations(context: OperationContext) {
           active();
           if (!outcome.ok) {
             if (action) {
-              const result: ActionResult = {
-                status: "unknown",
-                message: "The change could not be verified. Check the resource before trying again.",
-              };
-              context.onResult(action, result);
-              throw new Error(result.message);
+              context.onResult(action, { status: "unknown" });
+              throw new Error("The change could not be verified. Check the resource before trying again.");
             }
             return {
               operation: name,

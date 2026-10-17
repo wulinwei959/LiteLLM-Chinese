@@ -97,6 +97,7 @@ function Destination({
   close: () => void;
 }) {
   const t = useTranslations("liteAdmin");
+  const commonT = useTranslations("common");
   const [approved, setApproved] = useState(false);
   if (target?.baseUrl && (!target.requiresConsent || approved)) {
     return <LiteAdminChat session={{ ...session, inferenceBaseUrl: target.baseUrl }} open={open} close={close} />;
@@ -108,9 +109,9 @@ function Destination({
         {loading && <Skeleton className="h-24" aria-label={t("loadingGatewaySettings")} />}
         {!loading && !target?.baseUrl && (
           <Alert variant="destructive">
-            <AlertDescription>{target?.error || "Could not load gateway settings."}</AlertDescription>
+            <AlertDescription>{t(target?.error ?? "gatewaySettingsError")}</AlertDescription>
             <Button variant="link" onClick={retry}>
-              Retry
+              {commonT("retry")}
             </Button>
           </Alert>
         )}
@@ -121,10 +122,7 @@ function Destination({
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="break-all font-mono text-xs">{target.baseUrl}</p>
-              <p className="text-muted-foreground">
-                This gateway uses a different address. LiteAdmin will send your existing session credential to the
-                address shown above.
-              </p>
+              <p className="text-muted-foreground">{t("consentNotice")}</p>
             </CardContent>
             <CardFooter>
               <Button onClick={() => setApproved(true)}>{t("useConfiguredGateway")}</Button>
@@ -139,6 +137,7 @@ function Destination({
 function LiteAdminChat({ session, open, close }: { session: LiteAdminSession; open: boolean; close: () => void }) {
   const t = useTranslations("liteAdmin");
   const chat = useLiteAdmin(session);
+  const commonT = useTranslations("common");
   const [input, setInput] = useState("");
   const [model, setModel] = useState<string | null>(null);
   const reviewRef = useRef<HTMLDivElement>(null);
@@ -207,9 +206,9 @@ function LiteAdminChat({ session, open, close }: { session: LiteAdminSession; op
         {models.isError && (
           <Alert variant="destructive">
             <AlertDescription>
-              Could not load models.{" "}
+              {t("modelsLoadError")}{" "}
               <Button variant="link" onClick={() => void models.refetch()}>
-                Retry
+                {commonT("retry")}
               </Button>
             </AlertDescription>
           </Alert>
@@ -219,7 +218,7 @@ function LiteAdminChat({ session, open, close }: { session: LiteAdminSession; op
             <AlertDescription>{t("addChatModelHint")}</AlertDescription>
           </Alert>
         )}
-        {tooLong && <FieldError>Keep your message within {MAX_INPUT_LENGTH.toLocaleString()} characters.</FieldError>}
+        {tooLong && <FieldError>{t("messageTooLong", { count: MAX_INPUT_LENGTH.toLocaleString() })}</FieldError>}
         <ChatComposer
           value={input}
           onChange={setInput}

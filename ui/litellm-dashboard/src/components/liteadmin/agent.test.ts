@@ -1,9 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createTranslator } from "next-intl";
 import type { ChatCompletion, ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
+import zh from "@/messages/zh-CN.json";
 import { createGatewayClient } from "@/components/llm_calls/gateway_client";
 import { registerAuthHeaderNameGetter } from "@/lib/http/runtime";
 import { MAX_INPUT_LENGTH, resolveInferenceTarget, runLiteAdmin, type LiteAdminOptions } from "./agent";
 import type { ActionResult, LiteAdminAction } from "./operations";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "liteAdmin" });
 
 const { managementFetch } = vi.hoisted(() => ({ managementFetch: vi.fn<typeof fetch>() }));
 vi.mock("@/components/networking", async () => {
@@ -87,6 +91,7 @@ const options = () =>
     model: "selected-model",
     accessToken: "test-session",
     inferenceBaseUrl: "https://inference.example",
+    t,
     messages: [{ role: "user" as const, content: "Check the team budget" }],
     signal: new AbortController().signal,
     assertCurrent: vi.fn<() => void>(),
@@ -395,10 +400,7 @@ describe("SDK conversation and action lifecycle", () => {
     const model = transport([completion([call("key_create", keyFields)])]);
     await expect(runLiteAdmin(input, model.client)).rejects.toThrow("could not be verified");
     expect(managementFetch).toHaveBeenCalledTimes(1);
-    expect(input.onResult).toHaveBeenCalledExactlyOnceWith(input.confirm.mock.calls[0][0], {
-      status: "unknown",
-      message: "The change could not be verified. Check the resource before trying again.",
-    });
+    expect(input.onResult).toHaveBeenCalledExactlyOnceWith(input.confirm.mock.calls[0][0], { status: "unknown" });
     expect(model.requests).toHaveLength(1);
     expect(JSON.stringify(input.onResult.mock.calls)).not.toContain("secret from provider");
   });
@@ -476,9 +478,7 @@ describe("SDK conversation and action lifecycle", () => {
     await runLiteAdmin(input, model.client);
     expect(model.requests).toHaveLength(6);
     expect(managementFetch).toHaveBeenCalledTimes(6);
-    expect(input.onMessage).toHaveBeenCalledExactlyOnceWith(
-      "I reached the step limit. Any completed actions remain applied; check the relevant page before continuing.",
-    );
+    expect(input.onMessage).toHaveBeenCalledExactlyOnceWith(t("stepLimitNotice"));
   });
 
   it("allows twelve actions and a final answer", async () => {
@@ -496,7 +496,7 @@ describe("SDK conversation and action lifecycle", () => {
     const model = transport([
       completion(Array.from({ length: 13 }, (_, index) => call("teams_list", teamsArgs, String(index)))),
     ]);
-    await expect(runLiteAdmin(options(), model.client)).rejects.toThrow("action limit");
+    await expect(runLiteAdmin(options(), model.client)).rejects.toThrow(t("actionLimitReached"));
     expect(managementFetch).toHaveBeenCalledTimes(12);
     expect(model.requests).toHaveLength(1);
   });
@@ -512,7 +512,7 @@ describe("SDK conversation and action lifecycle", () => {
         ),
         completion([call("key_create", keyFields)]),
       ]);
-      await expect(runLiteAdmin(input, model.client)).rejects.toThrow("action limit");
+      await expect(runLiteAdmin(input, model.client)).rejects.toThrow(t("actionLimitReached"));
       expect(managementFetch).toHaveBeenCalledTimes(12);
       expect(input.confirm).not.toHaveBeenCalled();
       expect(model.requests).toHaveLength(5);
@@ -527,7 +527,7 @@ describe("SDK conversation and action lifecycle", () => {
         call("key_create", keyFields, "valid"),
       ]),
     ]);
-    await expect(runLiteAdmin(input, model.client)).rejects.toThrow("action limit");
+    await expect(runLiteAdmin(input, model.client)).rejects.toThrow(t("actionLimitReached"));
     expect(managementFetch).not.toHaveBeenCalled();
     expect(input.confirm).not.toHaveBeenCalled();
   });
