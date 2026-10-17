@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 183 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10503、中英同值 138）。第 93 到 183 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 185 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10512、中英同值 138）。第 93 到 185 簇（184 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 185 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `cost-tracking/_components/use_margin_config.ts`，成本加成配置的 hook（fetch/save 两条 REST 加增删改回调）。`.ts` hook 带 toast 的先例是 `team/useMemberBudgetReset.ts`：直接在 hook 体内 `useTranslations("costTracking")`，九条用户可见 toast 全部键化：fetch 失败与 save 失败（`fetchMarginConfigFailed`/`updateMarginConfigFailed`）、保存成功（`marginConfigUpdated`）、服务端 detail 缺失时的兜底串（`updateSettingsFailed`）、供应商必选与非法（`selectProviderRequired`/`invalidProviderSelected`）、百分比区间 0% 到 1000%（`marginPercentRange`）、固定金额非负（`fixedAmountNonNegative`），以及模板串 `Margin for ${displayName} already exists...` 改成带 `{name}` 参数的 `marginExists`，displayName 里写死的 "Global" 换成本命名空间既有键 `global`（供应商名取 `Providers` 映射属数据值）。三个 `useCallback` 依赖补 `t`。新开 9 键（叶子 10503 涨到 10512，同值 138 持平），`百分比必须在 0% 到 1000% 之间` 的措辞对齐同 ns `validRangeDesc` 的折扣句式；跨 ns 有两条逐字同值的 "Please select a provider"（guardrails/vectorStores），按同命名空间教条不复用。两条 `console.error` 照旧不翻，本文件扫描器只剩这一形态。
+
+测试迁移：本文件是裸 `renderHook`，接线后必须有 Intl 上下文，按 `useMemberBudgetReset.test.tsx` 的 wrapper 先例包 `LocaleProvider locale="zh-CN"`（`.ts` 文件用 `React.createElement` 免 JSX；`LocaleProviderProps.children` 是必填字段，children 得放进 props 对象而不是第三参，否则 TS2769）；12 处 `renderHook` 统一加 `{ wrapper }`，六条断言换中文逐字面量（`/failed to fetch/i`、`/0%.*1000%/i`、`/already exists/i` 三条 regex 一并换成整句断言）。`cost_tracking_settings` 两个测试文件把 hook 整体 mock 掉不受影响。验证：cost-tracking 目录 20 文件 222 例全绿加单跑本文件 12 例、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径 hook 2/2、测试 6/6 与 HEAD 逐条同数，prettier 两文件 HEAD 均干净且 `--write` 零改写；9 键 18 侧 `IntlMessageFormat` 实跑（marginExists 带 `{name}` 渲染逐字相等，`0%`/`1000%` 百分号非 ICU 特殊字符），`npm run build` 过。hook 是 `.ts` 不计入非测试 `.tsx` 覆盖率，接入文件持平 686/912。队列新冒出一行 `hooks/cloudzero/useCloudZeroSettings.ts`（5 条）。
 
 ## 2026-10-18 第 184 簇更新
 
