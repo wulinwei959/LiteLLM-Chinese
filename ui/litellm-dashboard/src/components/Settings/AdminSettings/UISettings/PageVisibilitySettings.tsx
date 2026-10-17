@@ -24,8 +24,9 @@ export default function PageVisibilitySettings({
   onUpdate,
 }: PageVisibilitySettingsProps) {
   const t = useTranslations("adminPanel");
+  const metadataT = useTranslations("pageMetadata");
   const isPageVisibilitySet = enabledPagesInternalUsers !== null && enabledPagesInternalUsers !== undefined;
-  const availablePages = useMemo(() => getAvailablePages(), []);
+  const availablePages = useMemo(() => getAvailablePages(metadataT), [metadataT]);
   const pagesByGroup = useMemo(() => {
     const grouped: Record<string, typeof availablePages> = {};
     availablePages.forEach((page) => {

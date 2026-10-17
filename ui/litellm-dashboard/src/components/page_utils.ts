@@ -5,6 +5,9 @@
 import { menuGroups } from "./leftnav";
 import { pageDescriptions, PageMetadata } from "./page_metadata";
 import { internalUserRoles } from "@/utils/roles";
+import { useTranslations } from "next-intl";
+
+type MetadataTranslator = ReturnType<typeof useTranslations<"pageMetadata">>;
 
 /**
  * Check if a page is accessible to internal users
@@ -29,7 +32,12 @@ const isPageAccessibleToInternalUsers = (pageRoles?: string[]): boolean => {
  * Pages restricted to admin-only roles are excluded because internal users
  * cannot see them regardless of the UI visibility setting.
  */
-export const getAvailablePages = (): PageMetadata[] => {
+const describePage = (t: MetadataTranslator, page: string): string => {
+  const descriptionKey = pageDescriptions[page];
+  return descriptionKey ? t(descriptionKey) : t("noDescriptionAvailable");
+};
+
+export const getAvailablePages = (t: MetadataTranslator): PageMetadata[] => {
   const pages: PageMetadata[] = [];
 
   menuGroups.forEach((group) => {
@@ -48,7 +56,7 @@ export const getAvailablePages = (): PageMetadata[] => {
           page: item.page,
           label: label,
           group: group.groupLabel,
-          description: pageDescriptions[item.page] || "No description available",
+          description: describePage(t, item.page),
         });
       }
 
@@ -63,7 +71,7 @@ export const getAvailablePages = (): PageMetadata[] => {
               page: child.page,
               label: childLabel,
               group: `${group.groupLabel} > ${parentLabel}`,
-              description: pageDescriptions[child.page] || "No description available",
+              description: describePage(t, child.page),
             });
           }
         });

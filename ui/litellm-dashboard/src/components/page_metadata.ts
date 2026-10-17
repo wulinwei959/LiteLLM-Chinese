@@ -3,48 +3,90 @@
  * This file contains descriptions and metadata for all navigation pages
  */
 
-// Page descriptions for UI Settings configuration
-export const pageDescriptions: Record<string, string> = {
-  "api-keys": "Manage virtual keys for API access and authentication",
-  "llm-playground": "Interactive playground for testing LLM requests",
-  models: "Configure and manage LLM models and endpoints",
-  agents: "Create and manage AI agents",
-  agentic: "Manage agentic resources: agents, workflow runs, and memory",
-  workflows: "Track and inspect durable workflow run history",
-  "mcp-servers": "Configure Model Context Protocol servers",
-  memory: "Inspect and manage agent memory entries stored under /v1/memory",
-  guardrails: "Set up content moderation and safety guardrails",
-  policies: "Define access control and usage policies",
-  "search-tools": "Configure RAG search and retrieval tools",
-  "tool-policies": "Configure tool use policies and permissions",
-  "vector-stores": "Manage vector databases for embeddings",
-  new_usage: "View usage analytics and metrics",
-  "cost-optimization": "Track and configure cost-saving features: prompt compression, caching, and auto routing",
-  "model-insights": "Model Leaderboard: compare usage, spend, tokens, and task mix across this gateway",
-  "roi-calculator": "Compare gateway spend with estimated engineering effort for merged pull requests",
-  logs: "Access request and response logs",
-  lens: "Review agent activity and investigate patterns with supporting evidence",
-  "guardrails-monitor": "Monitor guardrail performance and view logs",
-  users: "Manage internal user accounts and permissions",
-  teams: "Create and manage teams for access control",
-  organizations: "Manage organizations and their members",
-  projects: "Manage projects within teams",
-  "access-groups": "Manage access groups for role-based permissions",
-  budgets: "Set and monitor spending budgets",
-  api_ref: "Browse API documentation and endpoints",
-  "model-hub-table": "Explore available AI models and providers",
-  "learning-resources": "Access tutorials and documentation",
-  caching: "Configure response caching and coordination Redis settings",
-  "transform-request": "Set up request transformation rules",
-  "cost-tracking": "Track and analyze API costs",
-  "ui-theme": "Customize dashboard appearance",
-  "tag-management": "Organize resources with tags",
-  prompts: "Manage and version prompt templates",
-  skills: "Browse and manage Claude Code skills",
-  usage: "View legacy usage dashboard",
-  "router-settings": "Configure routing and load balancing settings",
-  "logging-and-alerts": "Set up logging and alert configurations",
-  "admin-panel": "Access admin panel and settings",
+export type PageDescriptionKey =
+  | "api-keys"
+  | "llm-playground"
+  | "models"
+  | "agents"
+  | "agentic"
+  | "workflows"
+  | "mcp-servers"
+  | "memory"
+  | "guardrails"
+  | "policies"
+  | "search-tools"
+  | "tool-policies"
+  | "vector-stores"
+  | "new_usage"
+  | "cost-optimization"
+  | "model-insights"
+  | "roi-calculator"
+  | "logs"
+  | "lens"
+  | "guardrails-monitor"
+  | "users"
+  | "teams"
+  | "organizations"
+  | "projects"
+  | "access-groups"
+  | "budgets"
+  | "api_ref"
+  | "model-hub-table"
+  | "learning-resources"
+  | "caching"
+  | "transform-request"
+  | "cost-tracking"
+  | "ui-theme"
+  | "tag-management"
+  | "prompts"
+  | "skills"
+  | "usage"
+  | "router-settings"
+  | "logging-and-alerts"
+  | "admin-panel";
+
+/** Page ids that have a description under the `pageMetadata` namespace. The id is also the message key. */
+export const pageDescriptions: Readonly<Record<string, PageDescriptionKey>> = {
+  "api-keys": "api-keys",
+  "llm-playground": "llm-playground",
+  models: "models",
+  agents: "agents",
+  agentic: "agentic",
+  workflows: "workflows",
+  "mcp-servers": "mcp-servers",
+  memory: "memory",
+  guardrails: "guardrails",
+  policies: "policies",
+  "search-tools": "search-tools",
+  "tool-policies": "tool-policies",
+  "vector-stores": "vector-stores",
+  new_usage: "new_usage",
+  "cost-optimization": "cost-optimization",
+  "model-insights": "model-insights",
+  "roi-calculator": "roi-calculator",
+  logs: "logs",
+  lens: "lens",
+  "guardrails-monitor": "guardrails-monitor",
+  users: "users",
+  teams: "teams",
+  organizations: "organizations",
+  projects: "projects",
+  "access-groups": "access-groups",
+  budgets: "budgets",
+  api_ref: "api_ref",
+  "model-hub-table": "model-hub-table",
+  "learning-resources": "learning-resources",
+  caching: "caching",
+  "transform-request": "transform-request",
+  "cost-tracking": "cost-tracking",
+  "ui-theme": "ui-theme",
+  "tag-management": "tag-management",
+  prompts: "prompts",
+  skills: "skills",
+  usage: "usage",
+  "router-settings": "router-settings",
+  "logging-and-alerts": "logging-and-alerts",
+  "admin-panel": "admin-panel",
 };
 
 export interface PageMetadata {
