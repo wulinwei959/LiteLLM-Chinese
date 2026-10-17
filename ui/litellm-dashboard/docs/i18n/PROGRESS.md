@@ -1,10 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 165 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10319、中英同值 137）。第 93 到 165 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 166 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10352、中英同值 137）。第 93 到 166 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 166 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `playground/components/complianceUI/ComplianceUI.tsx`，playground 页的合规测试标签页。它前几批已接了 `playground.compliance` 的大部分键，本轮补剩下的：CSV 上传校验错误全家（9 处）、快速测试三条系统消息与被两处复用的 `Error: {reason}` 前缀、结果气泡的「已拦截/已放行」徽章、Add 表单与 CSV 面板的两个 Cancel、结果筛选四个枚举、FN/FP 两个 tooltip（头部 chip 和统计条各出现一次）、框架行的 "N prompts" 计数、策略与护栏选择器中间的 or、护栏列头、`(fail or pass)` 提示、结果行折叠展开 aria、护栏 chip 的 Remove aria、自定义提示词的 Delete aria、testButtonLabel 的单复数拼接、自定义与 CSV 两条分类描述，共新增 33 个键（叶子 10319 涨到 10352）。
+
+复用优先。护栏列头命中同命名空间的 `playground.compare.guardrails`（en/zh 值都严格一致），Expect Block/Allow 复用现成的 `compliance.expectBlock`/`expectAllow`，确认添加按钮复用 `compliance.add`，Cancel/Remove/Delete 复用 `common` 三键（组件补了 `useTranslations("common")`）。结果筛选沿用第 165 簇 `STEP_TITLE_KEYS` 的键名化路子，`RESULT_FILTER_KEYS: Record<ResultFilter, 四个字面量 union>` 后 `t(RESULT_FILTER_KEYS[filter])`，同时把按钮上只对英文有意义的 `capitalize` 类去掉了。testButtonLabel 拆成 `testBtn`、`testBtnWith` 加两条 ICU 复数（`testBtnPolicies` 英文 one/other、中文只写 other），parts 之间的 `&` 是符号，留在拼接代码里。
+
+不翻的：CSV 模板里三条英文示例提示词（下载文件内容，列名和 expected_result 取值必须跟解析逻辑一致，扫描器剩的 3 处命中全是它）、导出结果 CSV 的表头与 yes/no、`CSV Upload`/`Uploaded Prompts`/`Custom`/`Custom Prompts` 这类框架与分类名（既是展示词又是折叠态 Set 键和分组键，内置框架名来自定为不碰的数据文件，自定义侧不能单独跑偏）、`FN`/`FP` 指标缩写（同 TPM/RPM 先例）、`prompt`/`expected_result` 等 code 列名、后端拼出来的 `guardrail_name: message`、`litellm_content_filter` 类型标签。
+
+测试：ComplianceUI 没有专属测试文件，`page.test.tsx` 与 `AgentBuilderView.test.tsx` 都把它整体 mock 掉，无需断言迁移，一处没改。
+
+插键脚本又踩一次坑：拿 raw_decode 的收口偏移找插入行时，用了 `}` 之后的换行，31 个键全落到 compliance 块的收口花括号后面、成了 `playground` 顶层键，en.json 当场 JSON 解析失败，`git restore` 回滚重做。正确做法是 `text.rindex("\n", brace_pos, close) + 1` 在收口花括号之前回找行首再插，判据补进 WORKFLOW 第二步。
+
+验证：`messagesParity` 与 `missingKeys` 9 例绿，`page.test.tsx` 加 `AgentBuilderView.test.tsx` 25 例绿，tsc 该文件零错误，eslint stdin 口径现版与 HEAD 同为 20 problems（12 errors 8 warnings）无新欠账，`npm run build` 过，33 条新消息 `IntlMessageFormat` 全解析通过。
 
 ## 2026-10-17 第 165 簇更新
 
