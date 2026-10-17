@@ -1,10 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 153 簇后（非测试 `.tsx` 912 个接入 669 个、73.4%，目录叶子 9787、中英同值 135）。第 93 到 153 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 154 簇后（非测试 `.tsx` 912 个接入 681 个、74.7%，目录叶子 9807、中英同值 135）。第 93 到 154 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 154 簇更新
+
+继续串行推进，没有派子代理。这一簇把候选清单里剩下的单文件小控件一次清掉。
+
+`CodeBlock.tsx` 新开 `codeBlock`（复制按钮的 aria）；`ModelPricingSummary.tsx` 的两条来源说明接进既有的 `models`（新开 `pricingSummary` 三键），"覆盖哪些字段"那条把字段名列表当 `{fields}` 入参，中文侧的语序"为 {fields} 覆盖模型成本表"写在消息里。`ModelTeamSelect`、`TagSelector`、`VectorStoreSelector`、`KeyProjectField` 四处占位符与字段标签接键，其中 `VectorStoreSelector` 的占位符跟 `SkillSelector`/`SearchToolSelector` 同款，从解构默认值改成 `placeholder ?? t(...)`。
+
+`ExportFormatSelector.tsx` 的 `FORMAT_LABELS` 是模块级 `Record`，改成组件内按 `ExportFormat` 二分支即时取键，模块级只留 `EXPORT_FORMATS` 枚举供下拉遍历。`EntityUsageExportModal.tsx` 的弹窗标题、取消、导出按钮、导出中与两条 toast 全部接键，标题与 toast 复用 `entityNames.<实体>` 填实体名，因此删掉了原来那句 `entityType.charAt(0).toUpperCase()` 的大小写加工。
+
+两个 Deleted 页面的企业版提示合成 `common` 三键（标题共用，正文按 key/team 各一条）。`model_hub` 与 `model_hub_table` 的 `Suspense` 兜底复用既有 `common.loading`。
+
+这一段合计：非测试 `.tsx` 912 接入 669→681（73.4%→74.7%），消息叶子 9787→9807（+20），中英同值 135 持平。候选文件 28→19，其中真剩下的是 `add_model_modes.tsx`（死代码）、`vector_store_providers.tsx`（接口枚举取值）、`teamTableColumns` 的 `TPM`/`RPM`（缩写）、`layout.tsx`（静态元数据）四类判定为不翻的，以及 `useUserMcpOAuthFlow`/`useTestMCPConnection`/`useToolsOAuthFlow` 三份 hook 里被扫描器误判的 `Promise` 泛型。
+
+`VectorStoreSelector.test.tsx` 与 `ModelPricingSummary.test.tsx` 两份用裸 `render` 渲染已接线组件，整包复跑才暴露；`MakeMCPPublicForm.test.tsx` 的复制按钮与 `model_info_view.test.tsx` 的团队占位符是本簇引入的同批修掉。
 
 ## 2026-10-17 第 153 簇更新
 
