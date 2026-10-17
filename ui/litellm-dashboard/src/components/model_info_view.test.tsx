@@ -230,7 +230,7 @@ describe("ModelInfoView", () => {
   it("should display model name in the header", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText(/Public Model Name:/)).toBeInTheDocument();
+      expect(screen.getByText(/公共模型名称:/)).toBeInTheDocument();
     });
   });
 
@@ -243,7 +243,7 @@ describe("ModelInfoView", () => {
       expect(screen.getByText("模型设置")).toBeInTheDocument();
     });
 
-    const backButton = screen.getByRole("button", { name: /back to models/i });
+    const backButton = screen.getByRole("button", { name: /返回模型列表/ });
     await user.click(backButton);
 
     expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -252,7 +252,7 @@ describe("ModelInfoView", () => {
   it("should display test connection button", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /test connection/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /测试连接/ })).toBeInTheDocument();
     });
   });
 
@@ -264,7 +264,7 @@ describe("ModelInfoView", () => {
       expect(screen.getByText("模型设置")).toBeInTheDocument();
     });
 
-    const testButton = screen.getByRole("button", { name: /test connection/i });
+    const testButton = screen.getByRole("button", { name: /测试连接/ });
     await user.click(testButton);
 
     await waitFor(() => {
@@ -286,7 +286,7 @@ describe("ModelInfoView", () => {
       expect(screen.getByText("模型设置")).toBeInTheDocument();
     });
 
-    const testButton = screen.getByRole("button", { name: /test connection/i });
+    const testButton = screen.getByRole("button", { name: /测试连接/ });
     await user.click(testButton);
 
     await waitFor(() => {
@@ -310,7 +310,7 @@ describe("ModelInfoView", () => {
       expect(screen.getByText("模型设置")).toBeInTheDocument();
     });
 
-    const testButton = screen.getByRole("button", { name: /test connection/i });
+    const testButton = screen.getByRole("button", { name: /测试连接/ });
     await user.click(testButton);
 
     await waitFor(() => {
@@ -321,14 +321,14 @@ describe("ModelInfoView", () => {
   it("should display reuse credentials button for admin users", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /re-use credentials/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /复用凭据/ })).toBeInTheDocument();
     });
   });
 
   it("should disable reuse credentials button for non-admin users", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole="User" />, { wrapper });
     await waitFor(() => {
-      const button = screen.getByRole("button", { name: /re-use credentials/i });
+      const button = screen.getByRole("button", { name: /复用凭据/ });
       expect(button).toBeDisabled();
     });
   });
@@ -401,8 +401,8 @@ describe("ModelInfoView", () => {
   it("should display overview and raw JSON tabs", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByRole("tab", { name: /overview/i })).toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: /raw json/i })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /概览/ })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: /原始 JSON/ })).toBeInTheDocument();
     });
   });
 
@@ -410,13 +410,13 @@ describe("ModelInfoView", () => {
     const user = userEvent.setup();
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(await screen.findByRole("button", { name: /编辑设置/ }));
     const costInput = screen.getByPlaceholderText("请输入输入成本") as HTMLInputElement;
     await user.clear(costInput);
     await user.type(costInput, "5");
 
-    await user.click(screen.getByRole("tab", { name: /raw json/i }));
-    await user.click(screen.getByRole("tab", { name: /overview/i }));
+    await user.click(screen.getByRole("tab", { name: /原始 JSON/ }));
+    await user.click(screen.getByRole("tab", { name: /概览/ }));
 
     expect(screen.getByPlaceholderText("请输入输入成本")).toBe(costInput);
     expect(Number(costInput.value)).toBe(5);
@@ -431,7 +431,7 @@ describe("ModelInfoView", () => {
   it("should display model information in overview tab", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("Provider")).toBeInTheDocument();
+      expect(screen.getByText("提供商")).toBeInTheDocument();
       expect(screen.getByText("LiteLLM 模型")).toBeInTheDocument();
       expect(screen.getByText("定价")).toBeInTheDocument();
     });
@@ -471,7 +471,7 @@ describe("ModelInfoView", () => {
   it("should display edit settings button when user can edit model", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
   });
 
@@ -494,7 +494,7 @@ describe("ModelInfoView", () => {
 
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.queryByRole("button", { name: /edit settings/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /编辑设置/ })).not.toBeInTheDocument();
     });
   });
 
@@ -503,10 +503,10 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
 
-    const editButton = screen.getByRole("button", { name: /edit settings/i });
+    const editButton = screen.getByRole("button", { name: /编辑设置/ });
     await user.click(editButton);
 
     await waitFor(() => {
@@ -520,10 +520,10 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
 
-    const editButton = screen.getByRole("button", { name: /edit settings/i });
+    const editButton = screen.getByRole("button", { name: /编辑设置/ });
     await user.click(editButton);
 
     await waitFor(() => {
@@ -537,10 +537,10 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
 
-    const editButton = screen.getByRole("button", { name: /edit settings/i });
+    const editButton = screen.getByRole("button", { name: /编辑设置/ });
     await user.click(editButton);
 
     const modelNameInput = await screen.findByPlaceholderText("请输入模型名称");
@@ -555,10 +555,10 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
 
-    const editButton = screen.getByRole("button", { name: /edit settings/i });
+    const editButton = screen.getByRole("button", { name: /编辑设置/ });
     await user.click(editButton);
 
     await waitFor(() => {
@@ -569,7 +569,7 @@ describe("ModelInfoView", () => {
     await user.click(cancelButton);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
       expect(screen.queryByRole("button", { name: /保存更改/ })).not.toBeInTheDocument();
     });
   });
@@ -580,10 +580,10 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} onModelUpdate={mockOnModelUpdate} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
 
-    const editButton = screen.getByRole("button", { name: /edit settings/i });
+    const editButton = screen.getByRole("button", { name: /编辑设置/ });
     await user.click(editButton);
 
     await waitFor(() => {
@@ -619,10 +619,10 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
     await waitFor(() => {
       expect(screen.getByText("现有凭据")).toBeInTheDocument();
@@ -634,10 +634,10 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
     const litellmParamsInput = screen
       .getAllByRole("textbox")
@@ -672,10 +672,10 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
@@ -745,9 +745,9 @@ describe("ModelInfoView", () => {
       renderWithPtuModel();
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
       });
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
       await waitFor(() => {
         expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
@@ -783,9 +783,9 @@ describe("ModelInfoView", () => {
       renderWithPtuModel();
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
       });
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
       await waitFor(() => {
         expect(screen.getByPlaceholderText("请输入输入成本")).toBeInTheDocument();
@@ -814,9 +814,9 @@ describe("ModelInfoView", () => {
       renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
       });
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
       await waitFor(() => {
         expect(screen.getByPlaceholderText("例如 15")).toBeInTheDocument();
@@ -832,8 +832,8 @@ describe("ModelInfoView", () => {
     const enterPtuEdit = async (user: ReturnType<typeof userEvent.setup>) => {
       mockUsePtuCostAttributionEnabled.mockReturnValue(true);
       renderWithPtuModel();
-      expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      expect(await screen.findByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: /编辑设置/ }));
       expect(await screen.findByPlaceholderText("例如 15")).toBeInTheDocument();
     };
 
@@ -854,8 +854,8 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-      expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      expect(await screen.findByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: /编辑设置/ }));
       expect(await screen.findByRole("button", { name: /保存更改/ })).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
@@ -903,8 +903,8 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-      expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      expect(await screen.findByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: /编辑设置/ }));
       expect(await screen.findByPlaceholderText("例如 15")).toBeInTheDocument();
 
       await expectBlocked(user, /填写 PTU 数量后必须填写 PTU 生效起始时间/);
@@ -927,9 +927,9 @@ describe("ModelInfoView", () => {
       renderWithPtuModel();
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
       });
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
       await waitFor(() => {
         expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
@@ -950,8 +950,8 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       renderWithPtuModel();
 
-      expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      expect(await screen.findByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: /编辑设置/ }));
       expect(await screen.findByRole("button", { name: /保存更改/ })).toBeInTheDocument();
 
       await user.clear(screen.getByPlaceholderText("例如 15"));
@@ -982,8 +982,8 @@ describe("ModelInfoView", () => {
     const user = userEvent.setup();
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-    expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /edit settings/i }));
+    expect(await screen.findByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
     const extraParams = screen
       .getAllByRole("textbox")
@@ -1008,10 +1008,10 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
@@ -1054,9 +1054,9 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
     });
-    await user.click(screen.getByRole("button", { name: /edit settings/i }));
+    await user.click(screen.getByRole("button", { name: /编辑设置/ }));
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
@@ -1123,7 +1123,7 @@ describe("ModelInfoView", () => {
 
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /edit auto router/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /编辑自动路由器/ })).toBeInTheDocument();
     });
   });
 
@@ -1340,7 +1340,7 @@ describe("ModelInfoView", () => {
   it("should display created at and created by information", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText(/Created At/)).toBeInTheDocument();
+      expect(screen.getByText(/创建时间/)).toBeInTheDocument();
       expect(screen.getByText(/创建者/)).toBeInTheDocument();
     });
   });
@@ -1357,7 +1357,7 @@ describe("ModelInfoView", () => {
     });
 
     const readRawJson = async (user: ReturnType<typeof userEvent.setup>) => {
-      await user.click(await screen.findByRole("tab", { name: /raw json/i }));
+      await user.click(await screen.findByRole("tab", { name: /原始 JSON/ }));
       const pre = await screen.findByText(/"model_name": "GPT-4"/, { selector: "pre" });
       return JSON.parse(pre.textContent ?? "");
     };
@@ -1471,14 +1471,14 @@ describe("ModelInfoView", () => {
       renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       expect(await screen.findByText("GPT-4")).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /edit auto router/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /编辑自动路由器/ })).not.toBeInTheDocument();
     });
 
     it("is present for a complexity router, which the modal does understand", async () => {
       withRouter({ model: "auto_router/complexity_router", complexity_router_config: { tiers: {} } });
       renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-      expect(await screen.findByRole("button", { name: /edit auto router/i })).toBeInTheDocument();
+      expect(await screen.findByRole("button", { name: /编辑自动路由器/ })).toBeInTheDocument();
     });
   });
 
@@ -1538,8 +1538,8 @@ describe("ModelInfoView", () => {
   describe("payload parity pins", () => {
     const enterEditMode = async (user: ReturnType<typeof userEvent.setup>) => {
       renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
-      expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: /edit settings/i }));
+      expect(await screen.findByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: /编辑设置/ }));
       expect(await screen.findByRole("button", { name: /保存更改/ })).toBeInTheDocument();
     };
 
@@ -1740,7 +1740,7 @@ describe("ModelInfoView", () => {
       await user.click(await screen.findByText("beta (team-2)"));
       await save(user);
 
-      expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
+      expect(await screen.findByRole("button", { name: /编辑设置/ })).toBeInTheDocument();
       expect(screen.getByText("beta (team-2)")).toBeInTheDocument();
       expect(screen.queryByText("alpha (team-1)")).not.toBeInTheDocument();
     });
@@ -1775,7 +1775,7 @@ describe("ModelInfoView", () => {
       mockModelInfoV1Call.mockResolvedValue({ data: [teamModel] });
       const user = userEvent.setup();
       renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole={userRole} />, { wrapper });
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+      await user.click(await screen.findByRole("button", { name: /编辑设置/ }));
 
       await user.click(await screen.findByText("alpha (team-1)"));
 
@@ -1874,7 +1874,7 @@ describe("ModelInfoView", () => {
       await openCredentialSelect(user, "selected-credential");
       await user.click(await screen.findByRole("option", { name: "无" }));
       await user.click(screen.getByRole("button", { name: /取消/ }));
-      await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+      await user.click(await screen.findByRole("button", { name: /编辑设置/ }));
 
       const credentialTrigger: HTMLElement = screen
         .getAllByRole("combobox")

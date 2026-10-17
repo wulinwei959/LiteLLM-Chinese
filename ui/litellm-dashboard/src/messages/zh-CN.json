@@ -10603,7 +10603,27 @@
     "deleteAutoRouter": "删除自动路由器",
     "deleteConfirmMessage": "确定要删除这个{kind}吗？",
     "kindAutoRouter": "自动路由器",
-    "kindModel": "模型"
+    "kindModel": "模型",
+
+    "backToModels": "返回模型列表",
+
+    "publicModelName": "公共模型名称",
+
+    "testConnection": "测试连接",
+
+    "updateApiKey": "更新 API 密钥",
+
+    "reUseCredentials": "复用凭据",
+
+    "rawJson": "原始 JSON",
+
+    "createdAt": "创建时间",
+
+    "editAutoRouter": "编辑自动路由器",
+
+    "editSettings": "编辑设置",
+
+    "editOnlyDbHint": "只有 DB 模型可以编辑。必须是管理员或该模型的创建者才能编辑。"
   },
   "liteAdmin": {
     "loadingGatewaySettings": "正在加载网关设置",

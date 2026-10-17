@@ -10607,7 +10607,27 @@
     "deleteAutoRouter": "Delete Auto-Router",
     "deleteConfirmMessage": "Are you sure you want to delete this {kind}?",
     "kindAutoRouter": "auto-router",
-    "kindModel": "model"
+    "kindModel": "model",
+
+    "backToModels": "Back to Models",
+
+    "publicModelName": "Public Model Name",
+
+    "testConnection": "Test Connection",
+
+    "updateApiKey": "Update API Key",
+
+    "reUseCredentials": "Re-use Credentials",
+
+    "rawJson": "Raw JSON",
+
+    "createdAt": "Created At",
+
+    "editAutoRouter": "Edit Auto Router",
+
+    "editSettings": "Edit Settings",
+
+    "editOnlyDbHint": "Only DB models can be edited. You must be an admin or the creator of the model to edit it."
   },
   "liteAdmin": {
     "loadingGatewaySettings": "Loading gateway settings",
