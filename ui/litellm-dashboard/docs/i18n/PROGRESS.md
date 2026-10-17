@@ -1,10 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 170 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10372、中英同值 137）。第 93 到 170 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 171 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10385、中英同值 137）。第 93 到 171 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 171 簇更新
+
+继续串行推进，没有派子代理。开工前先清队列：扫描器榜首三份都已有定案，`operations.ts` 的 31 条在第 160 簇按"追消费者"判过不翻（29 个工具 title、description 模板、zod 校验句与三条 throw 全不进 DOM），`CodeSnippets.tsx` 的 20 条整文件是拼给用户的 Python 代码串，落在第 158 簇"代码示例不翻"的延长判定里，`editServerPayload.differential.cases.ts` 是测试夹具。本簇落到 `vector-stores/_components/S3VectorsConfig.tsx`，创建向量库弹窗里 s3_vectors 供应商的专页配置。
+
+这个文件四个字段标签、AWS 区域与嵌入模型两条提示、`us-west-2` 占位符与第 146 簇铺好的 `fields.s3Vectors.*` 逐字同值，直接借用；它自己的两条 tooltip（存储桶加"至少 3 个字符、只能小写字母数字连字符和点"、索引加"如填写至少 3 个字符"）与两个占位符（多了 "(min 3 chars)" 尾巴）语义不同，新开 13 个平铺键（叶子 10372 涨到 10385）：`s3Desc`/`s3AutoCreate`/`s3AutoDimensions`/`s3Permissions` 四条说明、`s3LearnMore`（`t.rich` 的 `<link>` 标签包住文档链接，中英文案里"Learn more: "后的空格改由消息自身控制）、`s3BucketTooltip`/`s3IndexTooltip`/`s3BucketPlaceholder`/`s3IndexPlaceholder` 四条字段文案、`bucketTooShort`/`indexTooShort` 两条行内校验、`loadingModels`/`noEmbeddingModels` 两条下拉空态（"Loading models..." 在 models/playground/agents 命名空间有现成同值键，按不跨页借键另开，中文对齐"正在加载模型..."）。`console.error` 与 AWS 文档 URL、`my-vector-bucket` 这类命名示例保持英文。
+
+顺带修掉一处第 146 簇的遗留账：`CreateVectorStore.test.tsx` 的 `getProviderSpecificFields` mock 还返回键名化前的 `label`/`tooltip`/`placeholder` 旧形态，s3 必填校验测试点 Create 时组件里 `t(field.labelKey)` 取到 undefined，常年往 stderr 喷 MISSING_MESSAGE（测试本身不红，所以一直没被发现）。mock 补成 `labelKey` 三键形态后噪声归零，这条路径从此真的过目录解析。
+
+测试迁移：`S3VectorsConfig.test.tsx` 走裸 `renderWithProviders`（zh 目录），4 条标签、3 条说明正则、2 条占位符共 9 处断言换中文，新增链接 role 断言和一条"名称过短显示中文校验"的回归例；`CreateVectorStore.test.tsx` 换 3 条标签断言。验证：vector-stores 四个测试文件加 `src/lib/i18n` 共 7 文件 57 例全绿、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径三个改动文件与 HEAD 持平（CreateVectorStore.test.tsx 十条 warning 既有），prettier 先证 HEAD 三文件干净再 `--write` 两个（第三个 unchanged），13 条新消息 26 侧 `IntlMessageFormat` 解析通过、`s3LearnMore` 实跑渲染与目标串逐字相等，`npm run build` 过，扫描器本文件归零。接入文件持平 686/912。
 
 ## 2026-10-18 第 170 簇更新
 
