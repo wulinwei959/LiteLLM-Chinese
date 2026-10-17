@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 181 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10492、中英同值 138）。第 93 到 181 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 182 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10497、中英同值 138）。第 93 到 182 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 182 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `playground/components/chat_ui/A2AMetrics.tsx`，playground 里 A2A 调用的指标条。扫描器 7 条命中全是 `t("a2a.xxx")` 的键引用被词形正则误判成英文句子（接线后同形键变 15 条，仍全为误报），真缺口都在扫描器盲区：触发器上的 `Task:`/`Session:` 短标签、两处 `Click to copy: {id}` tooltip、四处复制按钮的模板串 aria-label（`Copy task ID ${taskId}` 等）、`Details` 折叠按钮。接线八处：新开 5 个 `playground.a2a` 键（taskLabel/sessionLabel/clickToCopy/copyTaskIdAria/copySessionIdAria，叶子 10492 涨到 10497，同值持平 138），aria 两条带 `{id}` 参数、clickToCopy 一条 `{id}` 参数逐侧渲染比对逐字相等；`Details` 复用 `common.details`（本页首个 `commonT`）。`TTFT:` 是专业缩写与 `s` 单位同级不翻，徽标里直接渲染的 `status.state`（completed/working/failed 等）是 A2A 协议 wire 值不翻，时间戳 tooltip 展示原始 `status.timestamp` 属数据值不动。
+
+测试零改动：`ChatMessageBubble.test.tsx` 把 A2AMetrics 整体 mock 成 div，真实文案不进断言。验证：playground 目录加 `src/lib/i18n` 共 29 文件 291 例全绿、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径 1/1 与 HEAD 同数（既有欠账），prettier 先证 HEAD 干净、`--write` 零改写；5 键 10 侧 `IntlMessageFormat` 带 `{id}` 处理器实跑与去参数目标串逐字相等，`npm run build` 过。扫描器本文件剩 15 条 t() 键引用误报，登记为不翻。接入文件持平 686/912。
 
 ## 2026-10-18 第 181 簇更新
 
