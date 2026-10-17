@@ -28,6 +28,7 @@ import {
 const CoordinationRedisSettings: React.FC = () => {
   const form = useForm<CoordinationFormValues>({ defaultValues: buildInitialValues({}) });
   const t = useTranslations("caching");
+  const cacheT = useTranslations("cacheSettings");
   const [selectedRedisType, setSelectedRedisType] = useState<CoordinationRedisType | null>(null);
 
   const { data, isLoading, isError } = useCoordinationRedisSettings();
@@ -52,7 +53,7 @@ const CoordinationRedisSettings: React.FC = () => {
     const values = form.getValues();
     const failures = COORDINATION_FIELDS.filter((field) => isFieldVisible(field, redisType)).flatMap((field) => {
       const message = field.rules?.map((rule) => rule(values[field.name])).find((result) => result !== null);
-      return message === undefined || message === null ? [] : [[field.name, message] as const];
+      return message === undefined || message === null ? [] : [[field.name, cacheT(message)] as const];
     });
 
     form.clearErrors();

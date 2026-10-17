@@ -11360,6 +11360,10 @@
         "label": "GCP SSL CA 证书",
         "help": "GCP Memorystore Redis 的 SSL CA 证书文件路径"
       }
+    },
+    "coordination": {
+      "startupNodesHelp": "Redis Cluster 的启动节点列表（例如 '['{'\"host\": \"127.0.0.1\", \"port\": 7001'}']'）",
+      "urlHelp": "完整的 Redis/Valkey 连接 URL（例如 redis://:password@host:6379/1）。设置后它的优先级高于主机、端口、用户名与密码。"
     }
   }
 }

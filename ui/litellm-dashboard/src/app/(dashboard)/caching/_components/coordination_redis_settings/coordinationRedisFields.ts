@@ -4,14 +4,47 @@ export type CoordinationRedisType = "node" | "cluster" | "sentinel";
 
 export type CoordinationSection = "connection" | "cluster" | "sentinel" | "ssl";
 
-export type CoordinationFieldRule = (value: unknown) => string | null;
+/** Every key here resolves under the `cacheSettings` namespace. */
+export type CoordinationMessageKey =
+  | "coordination.startupNodesHelp"
+  | "coordination.urlHelp"
+  | "fields.host.help"
+  | "fields.host.label"
+  | "fields.password.help"
+  | "fields.password.label"
+  | "fields.port.help"
+  | "fields.port.label"
+  | "fields.redis_startup_nodes.label"
+  | "fields.sentinel_nodes.help"
+  | "fields.sentinel_nodes.label"
+  | "fields.sentinel_password.help"
+  | "fields.sentinel_password.label"
+  | "fields.service_name.help"
+  | "fields.service_name.label"
+  | "fields.ssl.help"
+  | "fields.ssl.label"
+  | "fields.url.label"
+  | "fields.username.help"
+  | "fields.username.label"
+  | "redisTypeDescriptions.cluster"
+  | "redisTypeDescriptions.node"
+  | "redisTypeDescriptions.sentinel"
+  | "redisTypes.cluster"
+  | "redisTypes.node"
+  | "redisTypes.sentinel"
+  | "rules.jsonArray"
+  | "rules.portRange"
+  | "rules.validJsonArray"
+  | "secretAlreadySet";
+
+export type CoordinationFieldRule = (value: unknown) => CoordinationMessageKey | null;
 
 export interface CoordinationField {
   readonly name: string;
-  readonly label: string;
+  readonly labelKey: CoordinationMessageKey;
   readonly type: CoordinationFieldType;
   readonly section: CoordinationSection;
-  readonly helpText: string;
+  readonly helpKey: CoordinationMessageKey;
   readonly redisType: CoordinationRedisType | null;
   readonly secret: boolean;
   readonly defaultValue?: string | number | boolean;
@@ -20,16 +53,17 @@ export interface CoordinationField {
 
 export const COORDINATION_REDIS_TYPES: readonly CoordinationRedisType[] = ["node", "cluster", "sentinel"];
 
-export const COORDINATION_REDIS_TYPE_DESCRIPTIONS: Readonly<Record<CoordinationRedisType, string>> = {
-  node: "Standard Redis node/single instance",
-  cluster: "Redis Cluster mode for high availability and horizontal scaling",
-  sentinel: "Redis Sentinel mode for high availability with automatic failover",
-};
+export const COORDINATION_REDIS_TYPE_DESCRIPTION_KEYS: Readonly<Record<CoordinationRedisType, CoordinationMessageKey>> =
+  {
+    node: "redisTypeDescriptions.node",
+    cluster: "redisTypeDescriptions.cluster",
+    sentinel: "redisTypeDescriptions.sentinel",
+  };
 
-export const COORDINATION_REDIS_TYPE_LABELS: Readonly<Record<CoordinationRedisType, string>> = {
-  node: "Node (Single Instance)",
-  cluster: "Cluster",
-  sentinel: "Sentinel",
+export const COORDINATION_REDIS_TYPE_LABEL_KEYS: Readonly<Record<CoordinationRedisType, CoordinationMessageKey>> = {
+  node: "redisTypes.node",
+  cluster: "redisTypes.cluster",
+  sentinel: "redisTypes.sentinel",
 };
 
 const isBlank = (value: unknown): boolean => value === undefined || value === null || String(value).trim() === "";
@@ -39,7 +73,7 @@ const portRule: CoordinationFieldRule = (value) => {
     return null;
   }
   const port = Number(value);
-  return Number.isInteger(port) && port >= 1 && port <= 65535 ? null : "Port must be an integer between 1 and 65535";
+  return Number.isInteger(port) && port >= 1 && port <= 65535 ? null : "rules.portRange";
 };
 
 const jsonListRule: CoordinationFieldRule = (value) => {
@@ -50,37 +84,36 @@ const jsonListRule: CoordinationFieldRule = (value) => {
   try {
     parsed = JSON.parse(String(value));
   } catch {
-    return "Must be a valid JSON array (use double quotes)";
+    return "rules.validJsonArray";
   }
-  return Array.isArray(parsed) ? null : "Must be a JSON array";
+  return Array.isArray(parsed) ? null : "rules.jsonArray";
 };
 
 export const COORDINATION_FIELDS: readonly CoordinationField[] = [
   {
     name: "url",
-    label: "Redis URL",
+    labelKey: "fields.url.label",
     type: "password",
     section: "connection",
-    helpText:
-      "Full Redis/Valkey connection URL (e.g. redis://:password@host:6379/1). When set, it takes precedence over Host, Port, Username, and Password.",
+    helpKey: "coordination.urlHelp",
     redisType: null,
     secret: true,
   },
   {
     name: "host",
-    label: "Host",
+    labelKey: "fields.host.label",
     type: "string",
     section: "connection",
-    helpText: "Redis server hostname or IP address",
+    helpKey: "fields.host.help",
     redisType: null,
     secret: false,
   },
   {
     name: "port",
-    label: "Port",
+    labelKey: "fields.port.label",
     type: "integer",
     section: "connection",
-    helpText: "Redis server port number",
+    helpKey: "fields.port.help",
     redisType: null,
     secret: false,
     defaultValue: "6379",
@@ -88,66 +121,66 @@ export const COORDINATION_FIELDS: readonly CoordinationField[] = [
   },
   {
     name: "username",
-    label: "Username",
+    labelKey: "fields.username.label",
     type: "string",
     section: "connection",
-    helpText: "Redis server username (if required)",
+    helpKey: "fields.username.help",
     redisType: null,
     secret: false,
   },
   {
     name: "password",
-    label: "Password",
+    labelKey: "fields.password.label",
     type: "password",
     section: "connection",
-    helpText: "Redis server password",
+    helpKey: "fields.password.help",
     redisType: null,
     secret: true,
   },
   {
     name: "startup_nodes",
-    label: "Startup Nodes",
+    labelKey: "fields.redis_startup_nodes.label",
     type: "list",
     section: "cluster",
-    helpText: 'List of startup nodes for Redis Cluster (e.g., [{"host": "127.0.0.1", "port": 7001}])',
+    helpKey: "coordination.startupNodesHelp",
     redisType: "cluster",
     secret: false,
     rules: [jsonListRule],
   },
   {
     name: "sentinel_nodes",
-    label: "Sentinel Nodes",
+    labelKey: "fields.sentinel_nodes.label",
     type: "list",
     section: "sentinel",
-    helpText: 'List of Sentinel nodes (e.g., [["localhost", 26379]])',
+    helpKey: "fields.sentinel_nodes.help",
     redisType: "sentinel",
     secret: false,
     rules: [jsonListRule],
   },
   {
     name: "service_name",
-    label: "Service Name",
+    labelKey: "fields.service_name.label",
     type: "string",
     section: "sentinel",
-    helpText: "Master service name for Redis Sentinel",
+    helpKey: "fields.service_name.help",
     redisType: "sentinel",
     secret: false,
   },
   {
     name: "sentinel_password",
-    label: "Sentinel Password",
+    labelKey: "fields.sentinel_password.label",
     type: "password",
     section: "sentinel",
-    helpText: "Password for Redis Sentinel authentication",
+    helpKey: "fields.sentinel_password.help",
     redisType: "sentinel",
     secret: true,
   },
   {
     name: "ssl",
-    label: "SSL",
+    labelKey: "fields.ssl.label",
     type: "boolean",
     section: "ssl",
-    helpText: "Enable SSL/TLS connection",
+    helpKey: "fields.ssl.help",
     redisType: null,
     secret: false,
     defaultValue: false,

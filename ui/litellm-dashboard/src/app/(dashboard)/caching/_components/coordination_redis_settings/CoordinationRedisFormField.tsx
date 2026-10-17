@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { FormField } from "@/components/shared/form/FormField";
 import { PasswordInput } from "@/components/shared/PasswordInput";
@@ -8,8 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { CoordinationField } from "./coordinationRedisFields";
 import type { CoordinationFormValues } from "./coordinationRedisUtils";
 
-export const SECRET_ALREADY_SET_PLACEHOLDER = "Already set. Enter a new value to replace it.";
-
 interface CoordinationRedisFormFieldProps {
   field: CoordinationField;
   isSecretConfigured: boolean;
@@ -17,10 +16,12 @@ interface CoordinationRedisFormFieldProps {
 
 const CoordinationRedisFormField: React.FC<CoordinationRedisFormFieldProps> = ({ field, isSecretConfigured }) => {
   const form = useFormContext<CoordinationFormValues>();
-  const placeholder = isSecretConfigured ? SECRET_ALREADY_SET_PLACEHOLDER : field.helpText;
+  const cacheT = useTranslations("cacheSettings");
+  const help = cacheT(field.helpKey);
+  const placeholder = isSecretConfigured ? cacheT("secretAlreadySet") : help;
 
   return (
-    <FormField control={form.control} name={field.name} label={field.label} description={field.helpText}>
+    <FormField control={form.control} name={field.name} label={cacheT(field.labelKey)} description={help}>
       {({ ref, value, onChange, ...rest }) => {
         if (field.type === "boolean") {
           return <Switch {...rest} checked={value === true} onCheckedChange={(checked) => onChange(checked)} />;
