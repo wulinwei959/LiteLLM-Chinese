@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import type { MemoryTranslator } from "@/lib/i18n/translators";
+import type { CommonTranslator, MemoryTranslator } from "@/lib/i18n/translators";
 import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { MemoryRow } from "@/components/networking";
@@ -19,17 +19,18 @@ import { teamDetailHref, userDetailHref } from "@/utils/entityLinks";
 
 interface MemoryRowActionsProps {
   t: MemoryTranslator;
+  commonT: CommonTranslator;
   row: MemoryRow;
   onViewClick: (row: MemoryRow) => void;
   onEditClick: (row: MemoryRow) => void;
   onDeleteClick: (row: MemoryRow) => void;
 }
 
-function MemoryRowActions({ row, onViewClick, onEditClick, onDeleteClick, t }: MemoryRowActionsProps) {
+function MemoryRowActions({ row, onViewClick, onEditClick, onDeleteClick, t, commonT }: MemoryRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open memory actions"
+        aria-label={t("openActions")}
         data-testid={`memory-actions-${row.memory_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -38,16 +39,16 @@ function MemoryRowActions({ row, onViewClick, onEditClick, onDeleteClick, t }: M
       <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuItem data-testid="memory-action-view" onClick={() => onViewClick(row)}>
           <Eye />
-          View
+          {commonT("view")}
         </DropdownMenuItem>
         <DropdownMenuItem data-testid="memory-action-edit" onClick={() => onEditClick(row)}>
           <Pencil />
-          Edit
+          {commonT("edit")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" data-testid="memory-action-delete" onClick={() => onDeleteClick(row)}>
           <Trash2 />
-          Delete
+          {commonT("delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -56,6 +57,7 @@ function MemoryRowActions({ row, onViewClick, onEditClick, onDeleteClick, t }: M
 
 export interface MemoryTableColumnsDeps {
   t: MemoryTranslator;
+  commonT: CommonTranslator;
   onViewClick: (row: MemoryRow) => void;
   onEditClick: (row: MemoryRow) => void;
   onDeleteClick: (row: MemoryRow) => void;
@@ -66,6 +68,7 @@ export const getMemoryTableColumns = ({
   onEditClick,
   onDeleteClick,
   t,
+  commonT,
 }: MemoryTableColumnsDeps): ColumnDef<MemoryRow>[] => [
   {
     id: "memory_id",
@@ -155,6 +158,7 @@ export const getMemoryTableColumns = ({
           onEditClick={onEditClick}
           onDeleteClick={onDeleteClick}
           t={t}
+          commonT={commonT}
         />
       </div>
     ),

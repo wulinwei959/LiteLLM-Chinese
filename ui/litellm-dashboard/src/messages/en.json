@@ -4673,6 +4673,20 @@
       "agentDesc": "View usage by AI agents",
       "userDesc": "View usage by individual users",
       "userAgentDesc": "View detailed user agent activity logs"
+    },
+    "endpointUsage": {
+        "endpoint": "Endpoint",
+        "successfulFailed": "Successful / Failed",
+        "successfulAria": "Successful requests",
+        "totalRequests": "Total Request",
+        "successRate": "Success Rate",
+        "totalTokens": "Total Tokens",
+        "spend": "Spend",
+        "noData": "No endpoint usage data"
+    },
+    "modelViewToggle": {
+        "publicName": "Public Model Name",
+        "litellmName": "Litellm Model Name"
     }
   },
   "logs": {
@@ -7958,7 +7972,12 @@
     "noSkillsYet": "No skills yet",
     "noMatchingSkillsDesc": "Adjust the search or domain filter to see more skills.",
     "noSkillsYetDesc": "Skills added here will appear for developers.",
-    "showingCount": "Showing {shown} of {total} {total, plural, one {skill} other {skills}}"
+    "showingCount": "Showing {shown} of {total} {total, plural, one {skill} other {skills}}",
+    "uncategorized": "Uncategorized",
+    "na": "N/A",
+    "noDescription": "No description",
+    "copyId": "Copy skill ID",
+    "idCopied": "Skill ID copied"
   },
   "memory": {
     "title": "Memory",
@@ -7981,7 +8000,8 @@
     "noMatching": "No matching memories",
     "noneYet": "No memories stored yet",
     "noMatchDesc": "No memories match your search.",
-    "noneYetDesc": "Memories your agents store under /v1/memory will appear here."
+    "noneYetDesc": "Memories your agents store under /v1/memory will appear here.",
+    "openActions": "Open memory actions"
   },
   "workflows": {
     "title": "Workflow Runs",
@@ -8186,7 +8206,8 @@
     "ioOutputModes": "<strong>Out:</strong> {modes}",
     "viewDetails": "View details",
     "copyAgentName": "Copy agent name",
-    "agentNameCopied": "Agent name copied"
+    "agentNameCopied": "Agent name copied",
+    "jwtConfigured": "JWT configured"
   },
   "costTracking": {
     "globalAll": "Global (All Providers)",
@@ -10542,5 +10563,10 @@
       "cta": "Share Feedback",
       "dismiss": "Dismiss banner"
     }
+  },
+  "apiReference": {
+    "docsLinkTitle": "Open documentation in a new tab",
+    "docsLinkLabel": "API Reference Docs",
+    "docsLinkOpensInNewTab": "(opens in a new tab)"
   }
 }

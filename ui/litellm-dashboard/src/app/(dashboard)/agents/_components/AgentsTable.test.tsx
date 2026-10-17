@@ -71,7 +71,7 @@ describe("AgentsTable", () => {
 
   it("shows JWT configured for agents without a virtual key", () => {
     render(<AgentsTable agents={[makeAgent({ keys: [], jwt_auth_configured: true })]} {...baseProps} />);
-    expect(screen.getByText("JWT configured")).toBeInTheDocument();
+    expect(screen.getByText("已配置 JWT")).toBeInTheDocument();
     expect(screen.queryByText("Needs Setup")).not.toBeInTheDocument();
   });
 

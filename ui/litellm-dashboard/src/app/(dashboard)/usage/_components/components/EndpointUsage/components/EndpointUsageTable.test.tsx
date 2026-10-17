@@ -25,12 +25,12 @@ describe("EndpointUsageTable", () => {
     renderWithProviders(<EndpointUsageTable endpointData={mockEndpointData} />);
 
     expect(screen.getAllByRole("columnheader").map((header) => header.textContent)).toEqual([
-      "Endpoint",
-      "Successful / Failed",
-      "Total Request",
-      "Success Rate",
-      "Total Tokens",
-      "Spend",
+      "端点",
+      "成功 / 失败",
+      "请求总数",
+      "成功率",
+      "总 Token 数",
+      "花费",
     ]);
     expect(screen.getByText("endpoint-1")).toBeInTheDocument();
     expect(screen.getByText("95.00%")).toBeInTheDocument();

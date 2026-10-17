@@ -4673,6 +4673,20 @@
       "agentDesc": "按智能体查看用量",
       "userDesc": "按单个用户查看用量",
       "userAgentDesc": "查看详细的用户代理活跃日志"
+    },
+    "endpointUsage": {
+        "endpoint": "端点",
+        "successfulFailed": "成功 / 失败",
+        "successfulAria": "成功的请求数",
+        "totalRequests": "请求总数",
+        "successRate": "成功率",
+        "totalTokens": "总 Token 数",
+        "spend": "花费",
+        "noData": "暂无端点用量数据"
+    },
+    "modelViewToggle": {
+        "publicName": "公开模型名",
+        "litellmName": "LiteLLM 模型名"
     }
   },
   "logs": {
@@ -7954,7 +7968,12 @@
     "noSkillsYet": "暂无技能",
     "noMatchingSkillsDesc": "调整搜索或领域筛选以查看更多技能。",
     "noSkillsYetDesc": "在此添加的技能会展示给开发者。",
-    "showingCount": "显示 {shown} 条，共 {total} 条技能"
+    "showingCount": "显示 {shown} 条，共 {total} 条技能",
+    "uncategorized": "未分类",
+    "na": "无",
+    "noDescription": "暂无描述",
+    "copyId": "复制技能 ID",
+    "idCopied": "技能 ID 已复制"
   },
   "memory": {
     "title": "记忆",
@@ -7977,7 +7996,8 @@
     "noMatching": "没有匹配的记忆",
     "noneYet": "尚未存储记忆",
     "noMatchDesc": "没有符合搜索条件的记忆。",
-    "noneYetDesc": "智能体存储在 /v1/memory 下的记忆会显示在这里。"
+    "noneYetDesc": "智能体存储在 /v1/memory 下的记忆会显示在这里。",
+    "openActions": "打开记忆操作菜单"
   },
   "workflows": {
     "title": "工作流运行",
@@ -8182,7 +8202,8 @@
     "ioOutputModes": "<strong>输出：</strong>{modes}",
     "viewDetails": "查看详情",
     "copyAgentName": "复制智能体名称",
-    "agentNameCopied": "智能体名称已复制"
+    "agentNameCopied": "智能体名称已复制",
+    "jwtConfigured": "已配置 JWT"
   },
   "costTracking": {
     "globalAll": "全局（所有供应商）",
@@ -10538,5 +10559,10 @@
       "cta": "分享反馈",
       "dismiss": "关闭横幅"
     }
+  },
+  "apiReference": {
+    "docsLinkTitle": "在新标签页打开文档",
+    "docsLinkLabel": "API 参考文档",
+    "docsLinkOpensInNewTab": "（在新标签页打开）"
   }
 }

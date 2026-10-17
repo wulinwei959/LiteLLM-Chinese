@@ -857,13 +857,13 @@ describe("EntityUsage", () => {
     expect(showingCount("metrics-source:model_groups")).toBeGreaterThan(0);
 
     act(() => {
-      fireEvent.click(showingText("Litellm Model Name"));
+      fireEvent.click(showingText("LiteLLM 模型名"));
     });
 
     expect(showingCount("metrics-source:models")).toBeGreaterThan(0);
 
     act(() => {
-      fireEvent.click(showingText("Public Model Name"));
+      fireEvent.click(showingText("公开模型名"));
     });
 
     expect(showingCount("metrics-source:model_groups")).toBeGreaterThan(0);
@@ -1190,7 +1190,9 @@ describe("EntityUsage", () => {
       ["organization", () => mockOrganizationDailyActivityCall, true],
       ["agent", () => mockAgentDailyActivityCall, false],
     ] as const)("fetches %s activity for an org admin: %s", async (entityType, call, expected) => {
-      renderWithProviders(<EntityUsage {...defaultProps} entityType={entityType} userRole="Internal User" isOrgAdmin={true} />);
+      renderWithProviders(
+        <EntityUsage {...defaultProps} entityType={entityType} userRole="Internal User" isOrgAdmin={true} />,
+      );
 
       if (expected) {
         await waitFor(() => {

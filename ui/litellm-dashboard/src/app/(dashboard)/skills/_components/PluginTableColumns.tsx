@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import type { SkillsTranslator } from "@/lib/i18n/translators";
+import type { CommonTranslator, SkillsTranslator } from "@/lib/i18n/translators";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -31,13 +31,13 @@ const CATEGORY_BADGE_CLASS: Record<ReturnType<typeof getCategoryBadgeColor>, str
   gray: "border-border bg-muted text-muted-foreground",
 };
 
-function PluginCategoryBadge({ category }: { category?: string }) {
+function PluginCategoryBadge({ category, t }: { category?: string; t: SkillsTranslator }) {
   return (
     <Badge
       variant="outline"
       className={cn("whitespace-nowrap font-normal", CATEGORY_BADGE_CLASS[getCategoryBadgeColor(category)])}
     >
-      {category || "Uncategorized"}
+      {category || t("uncategorized")}
     </Badge>
   );
 }
@@ -53,7 +53,7 @@ function PluginRowActions({ plugin, isAdmin, onDeleteClick, t }: PluginRowAction
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open skill actions"
+        aria-label={t("openActions")}
         data-testid={`plugin-actions-${plugin.name}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -62,10 +62,10 @@ function PluginRowActions({ plugin, isAdmin, onDeleteClick, t }: PluginRowAction
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem
           data-testid="plugin-action-copy"
-          onClick={() => void copyToClipboard(plugin.id, "Skill ID copied")}
+          onClick={() => void copyToClipboard(plugin.id, t("idCopied"))}
         >
           <Copy />
-          Copy skill ID
+          {t("copyId")}
         </DropdownMenuItem>
         {isAdmin && (
           <>
@@ -76,7 +76,7 @@ function PluginRowActions({ plugin, isAdmin, onDeleteClick, t }: PluginRowAction
               onClick={() => onDeleteClick(plugin.name, plugin.name)}
             >
               <Trash2 />
-              Delete
+              {t("deleteButton")}
             </DropdownMenuItem>
           </>
         )}
@@ -90,6 +90,7 @@ interface PluginTableColumnsDeps {
   onPluginClick: (pluginId: string) => void;
   onDeleteClick: (pluginName: string, displayName: string) => void;
   t: SkillsTranslator;
+  commonT: CommonTranslator;
 }
 
 export const getPluginTableColumns = ({
@@ -97,6 +98,7 @@ export const getPluginTableColumns = ({
   onPluginClick,
   onDeleteClick,
   t,
+  commonT,
 }: PluginTableColumnsDeps): ColumnDef<Plugin>[] => [
   {
     id: "name",
@@ -121,7 +123,7 @@ export const getPluginTableColumns = ({
     header: t("version"),
     size: 100,
     enableSorting: false,
-    cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.version || "N/A"}</span>,
+    cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.version || t("na")}</span>,
   },
   {
     id: "description",
@@ -134,7 +136,7 @@ export const getPluginTableColumns = ({
       const description = row.original.description;
       return (
         <span className="block max-w-72 truncate text-sm text-muted-foreground" title={description}>
-          {description || "No description"}
+          {description || t("noDescription")}
         </span>
       );
     },
@@ -146,7 +148,7 @@ export const getPluginTableColumns = ({
     header: t("category"),
     size: 150,
     enableSorting: false,
-    cell: ({ row }) => <PluginCategoryBadge category={row.original.category} />,
+    cell: ({ row }) => <PluginCategoryBadge category={row.original.category} t={t} />,
   },
   {
     id: "enabled",
@@ -156,7 +158,10 @@ export const getPluginTableColumns = ({
     size: 100,
     enableSorting: false,
     cell: ({ row }) => (
-      <StatusBadge tone={row.original.enabled ? "success" : "neutral"} label={row.original.enabled ? "Yes" : "No"} />
+      <StatusBadge
+        tone={row.original.enabled ? "success" : "neutral"}
+        label={row.original.enabled ? commonT("yes") : commonT("no")}
+      />
     ),
   },
   {

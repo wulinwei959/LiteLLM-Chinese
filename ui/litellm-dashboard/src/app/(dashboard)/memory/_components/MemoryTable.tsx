@@ -33,12 +33,8 @@ function MemoryEmptyState({ hasActiveSearch }: { hasActiveSearch: boolean }) {
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Database className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">
-        {hasActiveSearch ? t("noMatching") : t("noneYet")}
-      </div>
-      <div className="text-sm text-muted-foreground">
-        {hasActiveSearch ? t("noMatchDesc") : t("noneYetDesc")}
-      </div>
+      <div className="text-sm font-medium text-foreground">{hasActiveSearch ? t("noMatching") : t("noneYet")}</div>
+      <div className="text-sm text-muted-foreground">{hasActiveSearch ? t("noMatchDesc") : t("noneYetDesc")}</div>
     </div>
   );
 }
@@ -59,10 +55,11 @@ export function MemoryTable({
   onDeleteClick,
 }: MemoryTableProps) {
   const t = useTranslations("memory");
+  const commonT = useTranslations("common");
   const columns = useMemo(() => {
-    const columnDeps = { onViewClick, onEditClick, onDeleteClick, t };
+    const columnDeps = { onViewClick, onEditClick, onDeleteClick, t, commonT };
     return getMemoryTableColumns(columnDeps);
-  }, [onViewClick, onEditClick, onDeleteClick, t]);
+  }, [onViewClick, onEditClick, onDeleteClick, t, commonT]);
 
   return (
     <DataTable

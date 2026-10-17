@@ -79,13 +79,13 @@ describe("PluginTable", () => {
   it("should badge the category and fall back to Uncategorized", () => {
     render(<PluginTable {...defaultProps} />);
     expect(screen.getByText("development")).toBeInTheDocument();
-    expect(screen.getByText("Uncategorized")).toBeInTheDocument();
+    expect(screen.getByText("未分类")).toBeInTheDocument();
   });
 
   it("should show whether the skill is public", () => {
     render(<PluginTable {...defaultProps} />);
-    expect(screen.getByText("Yes")).toBeInTheDocument();
-    expect(screen.getByText("No")).toBeInTheDocument();
+    expect(screen.getByText("是")).toBeInTheDocument();
+    expect(screen.getByText("否")).toBeInTheDocument();
   });
 
   it("should delete a skill through the actions menu when admin", async () => {

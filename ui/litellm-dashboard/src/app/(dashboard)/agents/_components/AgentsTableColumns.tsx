@@ -40,7 +40,7 @@ function AgentRowActions({ agent, onDeleteClick, t }: AgentRowActionsProps) {
           onClick={() => onDeleteClick(agent.agent_id, agent.agent_name)}
         >
           <Trash2 />
-          Delete
+          {t("deleteButton")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -140,7 +140,7 @@ export const getAgentsTableColumns = ({
     enableSorting: false,
     cell: ({ row }) => {
       const hasKeys = (row.original.keys?.length ?? 0) > 0;
-      if (row.original.jwt_auth_configured) return <StatusBadge tone="success" label="JWT configured" />;
+      if (row.original.jwt_auth_configured) return <StatusBadge tone="success" label={t("jwtConfigured")} />;
       return hasKeys ? (
         <StatusBadge tone="success" label={t("active")} />
       ) : (

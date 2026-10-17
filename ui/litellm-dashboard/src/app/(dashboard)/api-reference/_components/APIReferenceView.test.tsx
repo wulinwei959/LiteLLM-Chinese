@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import APIReferenceView from "./APIReferenceView";
@@ -52,7 +53,7 @@ describe("APIReferenceView", () => {
     expect(screen.getByText("OpenAI Compatible Proxy: API Reference")).toBeInTheDocument();
     expect(screen.getByText(/LiteLLM is OpenAI Compatible/)).toBeInTheDocument();
 
-    const docsLink = screen.getByRole("link", { name: /API Reference Docs/ });
+    const docsLink = screen.getByRole("link", { name: /API 参考文档/ });
     expect(docsLink).toHaveAttribute("href", "https://docs.litellm.ai/docs/proxy/user_keys");
     expect(docsLink).toHaveAttribute("target", "_blank");
   });

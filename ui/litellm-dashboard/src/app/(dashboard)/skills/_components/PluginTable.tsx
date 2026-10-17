@@ -35,11 +35,12 @@ function EmptyState() {
 
 const PluginTable: React.FC<PluginTableProps> = ({ pluginsList, isLoading, onDeleteClick, isAdmin, onPluginClick }) => {
   const t = useTranslations("skills");
+  const commonT = useTranslations("common");
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
   const columns = useMemo(
-    () => getPluginTableColumns({ isAdmin, onPluginClick, onDeleteClick, t }),
-    [isAdmin, onPluginClick, onDeleteClick, t],
+    () => getPluginTableColumns({ isAdmin, onPluginClick, onDeleteClick, t, commonT }),
+    [isAdmin, onPluginClick, onDeleteClick, t, commonT],
   );
 
   return (

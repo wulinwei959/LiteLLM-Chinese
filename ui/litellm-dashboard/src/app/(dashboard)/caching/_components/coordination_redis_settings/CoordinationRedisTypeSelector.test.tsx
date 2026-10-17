@@ -11,7 +11,7 @@ describe("CoordinationRedisTypeSelector", () => {
   it("labels the control and shows the current selection", () => {
     renderWithProviders(<CoordinationRedisTypeSelector redisType="node" onTypeChange={vi.fn()} />);
 
-    expect(screen.getByText("Redis Type")).toBeInTheDocument();
+    expect(screen.getByText("Redis 类型")).toBeInTheDocument();
     expect(screen.getByRole("combobox")).toBeInTheDocument();
     expect(screen.getByText("Node (Single Instance)")).toBeInTheDocument();
   });
