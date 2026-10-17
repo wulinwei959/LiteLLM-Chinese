@@ -47,6 +47,16 @@ const buildXSchema = (t: ReturnType<typeof useTranslations>) =>
 
 收尾时搜索漏网的校验文案，关键词是 `min(1, "`、`refine(` 后面跟英文引号、以及 `message: "` 与 `error: "`
 
+### 第四步之后：模型驱动的面只翻到 DOM 为止
+
+LiteAdmin 这类由模型调工具的界面，文案分两层。喂给模型的那一层保持英文：`SYSTEM_PROMPT`、工具的 `name`/`title`/`description`、工具 schema 的 zod 校验消息、回给模型的结果串（`Gateway action receipt:`、`projectToolResult` 的 `notice`）。这层是模型输入，换了词就改变模型行为，跟代码示例同样按不翻处理。会落到 DOM 的才接键：徽标、按钮、告警、字段错误、以及只作为 `throw` 文案但仍会进对话区的行动上限提示。
+
+判断一条串要不要翻，追它的消费者，不要看它长在哪个文件里。`operations.ts` 里 `throw new Error("Action cancelled. No change was sent.")` 和读失败时的 `"The gateway could not complete this lookup."` 都由 SDK 塞回模型，永远不进 DOM，留英文；同一层的行动次数超限会 reject 到 `useLiteAdmin` 的错误条目，就要翻。
+
+动作卡标题不要给 `operations.ts` 注入翻译器。把 `LiteAdminAction.name` 声明成受限 union，渲染层写 `t(\`operations.${name}\`)`，卡片标签由目录决定，喂给模型的 prompt 一个字节都不变。代价是标题在目录和 prompt 里各写一遍，用一行注释说明哪一份是给谁看的。
+
+动态键 `missingKeys` 扫不到，要另加一份运行期同步守卫：用桩 context 构造工具表，断言工具 `name` 集合与目录子对象的键集合相等。少键 `tsc` 会拦（union 的每个成员都得在 `en.json` 里存在），多出来的孤儿键只有这道测试拦得住。
+
 ### 第五步：改测试
 
 组件引入 `useTranslations` 后，原来用普通 `render` 的测试会抛 "context from `NextIntlClientProvider` was not found"，后面的断言全都不执行

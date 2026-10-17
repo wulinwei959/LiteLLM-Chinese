@@ -1,10 +1,26 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 159 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10145、中英同值 137）。第 93 到 159 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 160 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10187、中英同值 137）。第 93 到 160 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 160 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `components/liteadmin/`，右下角那个管理员智能体面板，六份源文件加两份测试。
+
+新增 42 条 `liteAdmin` 键：13 条扁平的告警、按钮与提示，加一个 29 键的嵌套 `liteAdmin.operations`，键名逐一对上工具名。
+
+动作卡标题改成目录驱动。`LiteAdminAction.name` 声明成 29 成员的受限 union，渲染层写 `t(\`operations.${entry.action.name}\`)`，于是 `LiteAdminAction.title` 与 `ActionResult.message` 两个字段一起删掉了，模型看到的 prompt 一个字节没变。模板字面量键只在 union 有限时编译得过，这条已经在第 155-156 簇记过，这次是新场景。
+
+`resolveInferenceTarget` 是纯函数，把返回的英文句子换成键：`InferenceTargetError` 这个 union 就是 `liteAdmin` 下的两个键名，渲染层 `t(target?.error ?? "gatewaySettingsError")` 取词，跟第 156 簇的键名化一致。`runLiteAdmin` 反过来要往 `LiteAdminOptions` 里加 `t`，由 `useLiteAdmin` 注入，因为行动次数超限那句会 reject 成对话区的错误条目。
+
+不翻的：`SYSTEM_PROMPT`、29 个工具 `title`、`description` 模板、两条 zod 校验消息（`Use the key hash…`、`Choose an ordered date range…`）、`Action cancelled. No change was sent.`、`The change could not be verified.…`、`The gateway could not complete this lookup.`、`projectToolResult` 的两条 `notice`、`Gateway action receipt:`、`DOMException("Session changed")`。判据是消费者：前八条只进模型，最后一条被 `useLiteAdmin` 的 catch 吞掉，都不落 DOM。
+
+`LiteAdmin.integration.test.tsx` 又是手写包裹层只包 `LocaleProvider` 不传 `locale`，跟第 159 簇的 `CreateUserButton.test.tsx` 同一个坑，按 `locale="zh-CN"` 钉死后迁移 26 处断言。模型桩回复（`"The team budget is $40."`、`"Widget key"`）是喂给组件的数据，保持英文。新增 `operations.test.ts` 做工具名与 `operations` 键集合的相等断言，孤儿键只有这里能抓到。
+
+覆盖率：文件接入数不变（685/912、75.1%，`LiteAdmin.tsx` 与 `LiteAdminConversation.tsx` 原本已挂 hook，其余是 `.ts`），消息叶子 10145 涨到 10187（+42），中英同值 137 持平。验证：liteadmin 目录加 `messagesParity`、`missingKeys` 共 6 份文件 122 例全绿且类型检查无错，`tsc -p .` 对改动文件无错（仓库裸跑基线还有 1154 行与本轮无关的历史错误），`eslint` 0 错误 / 1 警告（`useLiteAdmin` 的 `useLayoutEffect` 缺 `t` 依赖，HEAD 同一位置缺的是 `toast`，基线既有且同数量），`npm run build` 通过。两道静态校验照跑：42 条中英消息各过一遍 `intl-messageformat`，带参的两条（`messageTooLong`、`eachMessageTooLong`）`{count}` 与调用点对齐。中途 prettier 把这份集成测试整文件重排，是 26 处中文串变长导致的正常换行，先确认该文件在 HEAD 上本就 prettier-clean。
 
 ## 2026-10-17 第 159 簇更新
 
