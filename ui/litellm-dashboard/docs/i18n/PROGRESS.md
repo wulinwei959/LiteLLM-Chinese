@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 188 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10575、中英同值 138）。第 93 到 189 簇（184、189 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 188 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10575、中英同值 138）。第 93 到 190 簇（184、189、190 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 190 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `src/components/AIHub/ModelHubTable.tsx`，AI Hub 目录页（模型/智能体/MCP/Skill 四个页签加三个详情弹层），纯判定簇，零接线、零改动（覆盖率沿用第 188 簇后口径：非测试 `.tsx` 686/912、75.2%，叶子 10575、同值 138）。页面主体早已整片接 `modelHub.*`：标题与角色说明、四个页签、三张表的加载/空态（含 `HubEmptyState` 的 title/body 由调用侧传译好的串）、各段 sec* 小节标题与 lbl* 字段标签、showing* 计数带参数、make public 按钮、Agent 搜索框与清空 aria、公开页未启用提示、notSpecified/unknownStatus 兜底、modelDetailsTitle 等全部就位。扫描器 6 条逐条判定：4 条 `console.error` 前缀串（`There was an error fetching the model data` 等，另外三条 `Error refreshing ...:` 形态扫描器不报，同判不翻），`Hello, how are you?` 与 `f"Available tools: ..."` 在模型用法示例与 MCP 用法示例的 Python 代码样本里（`SyntaxHighlighter` 渲染的 curl/代码样本内容教条不翻，`your_api_key`、`# Your LiteLLM Proxy URL`、`name="tool_name"` 同理）。盲区复查：Agent 技能卡的 `ID: {skill.id}` 短前缀按目录先例不翻（`"columnId"/"id": "ID"` 等中文侧全目录保持 ID 原样，与第 182 簇 TTFT 缩写同级），`Bearer <your-master-key>` 是 Bearer 样本先例，provider/transport/auth_type/status/支持参数/能力徽标（`formatCapabilityName` 从 `supports_*` wire 键派生）与版本号、时间戳均为数据值或 wire 值不动。本文件扫描器 6 条登记为不翻。下一簇按队列取 `policies/_components/ai_suggestion_modal.tsx`（6 条，此前登记过需复判）。
 
 ## 2026-10-18 第 189 簇更新
 
