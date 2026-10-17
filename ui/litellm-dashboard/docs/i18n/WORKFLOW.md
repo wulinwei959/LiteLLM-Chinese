@@ -14,6 +14,8 @@
 
 `en.json` 与 `zh-CN.json` 必须同时加，键树保持一致。加完立刻跑 `messagesParity.test.ts`，不用等组件改完
 
+用脚本插入时锚点要取整行或相邻两行成对，不要只匹配键名。`"mcpLabel": "MCP"`、`"removeHeader"` 这类行在目录里各出现两次，`guardrailsHint` 这种同名键还跨命名空间存在，只按键名 `index` 会把键插错位置
+
 设计键名时避开两个坑。一是不要出现同名键既是字符串又是对象的情况，比如已经用了 `status` 作字符串就不能再加 `status.active`。二是不要把语义不同的两处文案归并到一个键，英文原文有差异（哪怕只是大小写）就要分开
 
 中文值以 [`src/messages/GLOSSARY.md`](../../src/messages/GLOSSARY.md) 为准。已有定译的通用词不要再发明新译法，存量分歧只记录不批量回改
@@ -90,6 +92,8 @@ npm run build
 
 `npm run build` 的 TypeScript 阶段比 `npx tsc --noEmit` 更严，两个都要跑
 
+eslint 的路径形式在 `(dashboard)` 这类含括号的路径目录下会低报（疑似 flat config 的 glob 匹配撞上括号）。路径形式与 `npx eslint --stdin --stdin-filename <路径> < 文件` 的结果不一致时，以 stdin 形式为准，并把 HEAD 内容与当前内容各测一遍再对比，别把工具的低报当成没有告警
+
 不要跑全量单元测试（`npx vitest run` 不带路径）。380 个文件会把机器占满好几分钟，CI 会跑。只跑本次改动触及的文件，加上任何本次改动**有可能**解释其失败的文件
 
 新增键较多的批次，再补两道静态校验，覆盖测试没渲染到的键。一道是用 `intl-messageformat` 把本批每条中英消息各解析一遍，抓 ICU 语法错；另一道是把组件里 `t("key", { a, b })` 传的参数名和消息里的 `{arg}`、`<tag>` 逐个对一遍，名字不一致要到运行期才抛错。两道都是临时脚本，跑完即删
@@ -144,6 +148,8 @@ Failed to update MCP Server{suffix}
 | 内嵌 JSON 示例         | `(e.g. '{'"organization": "my-org"'}')`                 |
 | 富文本                 | `请查看 <link>文档</link>`，用 `t.rich` 渲染            |
 | 所有格里的撇号         | `caller's` 直接写，不会被当成引号                        |
+
+富文本标签名有白名单（`strong, b, i, em, link, code, br, claude, codex, docslink, issuelink`），`messagesParity` 会拒掉别的尖括号，比如自造的 `<v>`；样式留在 JSX formatter 里，`t.rich` 传入的 formatter 键名必须与标签名一致
 
 转义规则本身有点绕：只有后面跟着 `{ } # \| < '` 其中之一的 `'` 才开启引用，`''` 是转义后的单个引号。`'Authorization: Bearer <token>'` 里的引号后面跟的是普通字母，按规则不算引用，里面的 `<token>` 会被当成真标签而抛 `UNCLOSED_TAG`
 

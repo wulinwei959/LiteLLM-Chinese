@@ -175,7 +175,7 @@ describe("ChatUI", () => {
     await waitFor(() => {
       expect(screen.getAllByText("Model 1").length).toBeGreaterThan(0);
     });
-    await user.click(screen.getByRole("option", { name: "Model 1Mode: chat" }));
+    await user.click(screen.getByRole("option", { name: "Model 1模式：chat" }));
     expect(screen.getByPlaceholderText(/选择模型|enter custom model|输入自定义模型名称|Select Model/)).toHaveValue(
       "Model 1",
     );
@@ -280,7 +280,7 @@ describe("ChatUI", () => {
     await openComboboxByPlaceholder(/选择模型|输入自定义模型名称/);
 
     await waitFor(() => {
-      expect(screen.getByText("Enter custom model")).toBeInTheDocument();
+      expect(screen.getByText("输入自定义模型")).toBeInTheDocument();
     });
   });
 
@@ -643,7 +643,7 @@ describe("ChatUI", () => {
     await user.click(mcpInput);
 
     await waitFor(() => {
-      expect(screen.getByText("All MCP Servers")).toBeInTheDocument();
+      expect(screen.getByText("全部 MCP 服务器")).toBeInTheDocument();
     });
   });
 
@@ -841,7 +841,7 @@ describe("ChatUI", () => {
     expect(scrollIntoViewMock.mock.calls.length).toBe(scrollIntoViewCallsBeforeTokens);
 
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "Jump to bottom" }));
+    await user.click(screen.getByRole("button", { name: "跳到底部" }));
 
     expect(scrollTopSetter).toHaveBeenCalled();
   });

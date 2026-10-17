@@ -1,10 +1,28 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 161 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10230、中英同值 137）。第 93 到 161 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 162 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10248、中英同值 137）。第 93 到 162 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 162 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `playground/components/chat_ui/ChatUI.tsx`，playground 那个两千一百多行的会话组件。
+
+`playground` 新增 18 个键（config 5、chat 13），目录叶子 10230 涨到 10248。全部 MCP 服务器选项与描述、工具集计数、模式子标签都写成带参 ICU（`toolsetToolsCount`、`modeSublabel`），发送前校验的十条 toast、跳转与上传预览的 aria-label、自定义模型选项一并接键。跨命名空间没有去蹭 `models.selector.customOption` 或 `mcpServers.toolTest.executedSuccessfully`，英文原文不同（差个句号），按第二步的规矩各开各的键。
+
+大头其实花在 7 条存量值上。更早的提交（bd3def8d）预置了 `config.{vectorStoreHint,guardrailsHint,policiesHint}` 这批 `{link}.` 尾巴的孤儿键，没有调用方，本轮把它们改成 `<link>here</link>.` 的规范形态接上 `t.rich`，工具集说明对话框的 `toolsets.*` 四条也补了显式的 `<b>`/`<strong>`/`<code>` 标签。`messagesParity` 只认白名单标签名，最初自造的 `<v>` 被拒，换成 `<strong>`，紫色样式留在 JSX formatter 里。这条和脚本插键必须锚整行的坑（`"mcpLabel": "MCP"` 每侧目录出现两次、`guardrailsHint` 跨命名空间同名）都写进了 `WORKFLOW.md`。
+
+顺带修了两处遗留账。图片上传删除按钮的 `aria-label` 原来写成 `` `{t("chat.audioUpload.remove")} ${file.name}` ``，可访问性树里直接显示调用表达式字面量，改成 `t("chat.imageUpload.remove", { name: file.name })`。同一提交还把 7 处注释里的英文单词 Clear 误替换成了 `{t("config.clear")}`，注释不翻，全部恢复上游文本。
+
+不翻的：`console.error` 开发日志与 `"chat.inputPlaceholder.a2a"` 这类键名字符串，这两类之外该文件扫描无残留命中。
+
+`ChatUI.integration.test.tsx` 迁移 4 处断言（模式子标签、输入自定义模型、全部 MCP 服务器、跳到底部）。该文件 HEAD 就带的 10 处类型错误（RegExp 传给 string 型下拉框辅助函数）没动。
+
+eslint 门撞到一个值得记的工具异常：路径形式跑 ChatUI.tsx 报 0 错误 / 19 警告，`--stdin --stdin-filename` 对同一内容跑报 12 错误 / 19 警告（setState-in-effect 4、no-nested-ternary 6、max-lines 1、no-complex-jsx-arrow 1），`--print-config` 确认这些规则该路径就是 severity 2。把 HEAD 内容喂 stdin 同样报 31 条，说明本簇没引入新 lint 债，分歧疑在 flat config 的 glob 匹配撞上 `(dashboard)` 路径段。判法写进了 `WORKFLOW.md` 第六步。
+
+覆盖率：接入文件持平 685/912、75.1%（本文件原本已挂 hook），消息叶子 10230 涨到 10248（+18），中英同值 137 持平。验证：chat_ui 目录加 `messagesParity`、`missingKeys` 共 15 份文件 174 例全绿；两道静态守卫把 25 条新增或改写消息各过一遍 `intl-messageformat`，132 处 `t()` 加 7 处 `t.rich()` 调用点参数与标签逐一对齐；`tsc` 对改动文件除 HEAD 既有错误外无新增；`npm run build` 通过。确认 HEAD 非 prettier-clean，未跑 `--write`。
 
 ## 2026-10-17 第 161 簇更新
 

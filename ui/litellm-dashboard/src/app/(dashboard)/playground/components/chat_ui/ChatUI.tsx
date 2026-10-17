@@ -132,6 +132,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
   fixedModel,
 }) => {
   const t = useTranslations("playground");
+  const commonT = useTranslations("common");
   const syntaxTheme = useSyntaxTheme(coy);
   const canViewPolicies = useCan("viewPolicies");
   const [mcpServers, setMCPServers] = useState<MCPServer[]>([]);
@@ -506,7 +507,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
       try {
         const agents = await fetchAvailableAgents(userApiKey, customProxyBaseUrl || undefined);
         setAgentInfo(agents);
-        // {t("config.clear")} selection if current agent not in list
+        // Clear selection if current agent not in list
         if (selectedAgent && !agents.some((a) => a.agent_name === selectedAgent)) {
           setSelectedAgent(null);
         }
@@ -670,15 +671,15 @@ const ChatUI: React.FC<ChatUIProps> = ({
     if (endpointType !== EndpointType.MCP) {
       options.push({
         value: "__all__",
-        label: "All MCP Servers",
-        description: "Use all available MCP servers",
+        label: t("config.allMcpServers"),
+        description: t("config.allMcpServersDesc"),
       });
     }
     for (const toolset of mcpToolsets) {
       options.push({
         value: `toolset:${toolset.toolset_id}`,
         label: toolset.toolset_name,
-        description: toolset.description || `Toolset (${toolset.tools.length} tools)`,
+        description: toolset.description || t("config.toolsetToolsCount", { count: toolset.tools.length }),
       });
     }
     for (const server of mcpServers) {
@@ -689,7 +690,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
       });
     }
     return options;
-  }, [endpointType, mcpToolsets, mcpServers]);
+  }, [endpointType, mcpToolsets, mcpServers, t]);
 
   const handleMcpServersChange = (value: string[]) => {
     if (endpointType === EndpointType.MCP) {
@@ -729,7 +730,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
 
   const handleSendMessage = async () => {
     if (endpointType === null) {
-      toast.fromError("Please select an endpoint before sending a request");
+      toast.fromError(t("chat.selectEndpointFirst"));
       return;
     }
 
@@ -738,19 +739,19 @@ const ChatUI: React.FC<ChatUIProps> = ({
 
     // For image edits, require both image and prompt
     if (endpointType === EndpointType.IMAGE_EDITS && uploadedImages.length === 0) {
-      toast.fromError("Please upload at least one image for editing");
+      toast.fromError(t("chat.uploadImagesForEdits"));
       return;
     }
 
     // For audio transcriptions, require audio file
     if (endpointType === EndpointType.TRANSCRIPTION && !uploadedAudio) {
-      toast.fromError("Please upload an audio file for transcription");
+      toast.fromError(t("chat.uploadAudioForTranscription"));
       return;
     }
 
     // For A2A agents, require agent selection
     if (endpointType === EndpointType.A2A_AGENTS && !selectedAgent) {
-      toast.fromError("Please select an agent to send a message");
+      toast.fromError(t("chat.selectAgentToSend"));
       return;
     }
 
@@ -760,11 +761,11 @@ const ChatUI: React.FC<ChatUIProps> = ({
       const rawSelected =
         selectedMCPServers.length === 1 && selectedMCPServers[0] !== "__all__" ? selectedMCPServers[0] : null;
       if (!rawSelected) {
-        toast.fromError("Please select an MCP server to test");
+        toast.fromError(t("chat.selectMcpServerToTest"));
         return;
       }
       if (!selectedMCPDirectTool) {
-        toast.fromError("Please select an MCP tool to call");
+        toast.fromError(t("chat.selectMcpToolToCall"));
         return;
       }
       // For toolsets, find the tool in the servers that back this toolset
@@ -782,13 +783,13 @@ const ChatUI: React.FC<ChatUIProps> = ({
       }
       const mcpTool = searchPool.find((t: any) => t.name === selectedMCPDirectTool);
       if (!mcpTool) {
-        toast.fromError("Please wait for tool schema to load");
+        toast.fromError(t("chat.waitForToolSchema"));
         return;
       }
       try {
         mcpToolArguments = (await mcpToolArgsFormRef.current?.getSubmitValues()) ?? {};
       } catch (err) {
-        toast.fromError(err instanceof Error ? err.message : "Please fill in all required parameters");
+        toast.fromError(err instanceof Error ? err.message : t("chat.fillRequiredParams"));
         return;
       }
     }
@@ -807,7 +808,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
     ];
 
     if (modelRequiredEndpoints.includes(endpointType as EndpointType) && !selectedModel) {
-      toast.fromError("Please select a model before sending a request");
+      toast.fromError(t("chat.selectModelFirst"));
       return;
     }
 
@@ -834,7 +835,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
       try {
         newUserMessage = await createMultimodalMessage(inputMessage, responsesUploadedImage);
       } catch (error) {
-        toast.fromError("Failed to process image. Please try again.");
+        toast.fromError(t("chat.imageProcessFailed"));
         return;
       }
     }
@@ -843,7 +844,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
       try {
         newUserMessage = await createChatMultimodalMessage(inputMessage, chatUploadedImage);
       } catch (error) {
-        toast.fromError("Failed to process image. Please try again.");
+        toast.fromError(t("chat.imageProcessFailed"));
         return;
       }
     } else {
@@ -887,8 +888,8 @@ const ChatUI: React.FC<ChatUIProps> = ({
     }
 
     setChatHistory([...chatHistory, displayMessage]);
-    clearMCPEvents(); // {t("config.clear")} previous MCP events for new conversation turn
-    codeInterpreter.clearResult(); // {t("config.clear")} previous code interpreter results
+    clearMCPEvents(); // Clear previous MCP events for new conversation turn
+    codeInterpreter.clearResult(); // Clear previous code interpreter results
     setIsLoading(true);
 
     try {
@@ -1124,7 +1125,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                   2,
                 )
               : JSON.stringify(result, null, 2);
-          updateTextUI("assistant", resultText || "Tool executed successfully.");
+          updateTextUI("assistant", resultText || t("chat.toolExecutedSuccessfully"));
         }
       }
 
@@ -1153,19 +1154,19 @@ const ChatUI: React.FC<ChatUIProps> = ({
     } finally {
       setIsLoading(false);
       abortControllerRef.current = null;
-      // {t("config.clear")} image after successful request for image edits
+      // Clear image after successful request for image edits
       if (endpointType === EndpointType.IMAGE_EDITS) {
         handleRemoveAllImages();
       }
-      // {t("config.clear")} image after successful request for responses API
+      // Clear image after successful request for responses API
       if (endpointType === EndpointType.RESPONSES && responsesUploadedImage) {
         handleRemoveResponsesImage();
       }
-      // {t("config.clear")} image after successful request for chat completions API
+      // Clear image after successful request for chat completions API
       if (endpointType === EndpointType.CHAT && chatUploadedImage) {
         handleRemoveChatImage();
       }
-      // {t("config.clear")} audio after successful request for transcription
+      // Clear audio after successful request for transcription
       if (endpointType === EndpointType.TRANSCRIPTION && uploadedAudio) {
         handleRemoveAudio();
       }
@@ -1456,11 +1457,11 @@ const ChatUI: React.FC<ChatUIProps> = ({
                       disabled={isLoadingModels}
                       onValueChange={onModelChange}
                       options={[
-                        { value: "custom", label: "Enter custom model" },
+                        { value: "custom", label: t("config.customModelOption") },
                         ...modelsForEndpoint.map((model) => ({
                           value: model.model_group,
                           label: model.model_group,
-                          sublabel: model.mode ? `Mode: ${model.mode}` : undefined,
+                          sublabel: model.mode ? t("config.modeSublabel", { mode: model.mode }) : undefined,
                         })),
                       ]}
                     />
@@ -1698,11 +1699,13 @@ const ChatUI: React.FC<ChatUIProps> = ({
                         <Info className="size-3.5 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
-                        Select vector store(s) to use for this LLM API call. You can set up your vector store{" "}
-                        <a href={uiHref("vector-stores")} className="text-info underline">
-                          here
-                        </a>
-                        .
+                        {t.rich("config.vectorStoreHint", {
+                          link: (chunks) => (
+                            <a href={uiHref("vector-stores")} className="text-info underline">
+                              {chunks}
+                            </a>
+                          ),
+                        })}
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -1722,11 +1725,13 @@ const ChatUI: React.FC<ChatUIProps> = ({
                         <Info className="size-3.5 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
-                        Select guardrail(s) to use for this LLM API call. You can set up your guardrails{" "}
-                        <a href={uiHref("guardrails")} className="text-info underline">
-                          here
-                        </a>
-                        .
+                        {t.rich("config.guardrailsHint", {
+                          link: (chunks) => (
+                            <a href={uiHref("guardrails")} className="text-info underline">
+                              {chunks}
+                            </a>
+                          ),
+                        })}
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -1747,12 +1752,13 @@ const ChatUI: React.FC<ChatUIProps> = ({
                           <Info className="size-3.5 text-muted-foreground" />
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs">
-                          Select policy/policies to apply to this LLM API call. Policies define which guardrails are
-                          applied based on conditions. You can set up your policies{" "}
-                          <a href={uiHref("policies")} className="text-info underline">
-                            here
-                          </a>
-                          .
+                          {t.rich("config.policiesHint", {
+                            link: (chunks) => (
+                              <a href={uiHref("policies")} className="text-info underline">
+                                {chunks}
+                              </a>
+                            ),
+                          })}
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -1851,7 +1857,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
 
                     {isLoading && (
                       <div className="my-4 flex items-center justify-center">
-                        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label="Loading" />
+                        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label={commonT("loading")} />
                       </div>
                     )}
                     {chatHistory.length > 0 && <div aria-hidden className="h-[calc(100%-3rem)]" />}
@@ -1861,7 +1867,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                       type="button"
                       variant="outline"
                       size="icon"
-                      aria-label="Jump to bottom"
+                      aria-label={t("chat.jumpToBottom")}
                       className="absolute bottom-3 right-3 rounded-full shadow-sm"
                       onClick={scrollToLastMessage}
                     >
@@ -1913,7 +1919,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                                     return "";
                                   }
                                 })()}
-                                alt={`Upload preview ${index + 1}`}
+                                alt={t("chat.uploadPreviewAlt", { index: index + 1 })}
                                 className="max-h-32 max-w-32 rounded-md border border-border object-cover"
                               />
                               <Button
@@ -1921,7 +1927,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                                 variant="outline"
                                 size="icon-xs"
                                 className="absolute top-1 right-1 bg-card text-destructive hover:bg-destructive/10"
-                                aria-label={`{t("chat.audioUpload.remove")} ${file.name}`}
+                                aria-label={t("chat.imageUpload.remove", { name: file.name })}
                                 onClick={() => handleRemoveImage(index)}
                               >
                                 <X className="size-3" />
@@ -2218,15 +2224,17 @@ const ChatUI: React.FC<ChatUIProps> = ({
           </DialogHeader>
           <div className="space-y-4 py-2">
             <p className="text-foreground">
-              <strong>{t("chat.toolsets")}</strong> are named collections of specific tools from one or more MCP servers. Instead of
-              exposing all tools from a server, a toolset gives an agent exactly the tools it needs.
+              {t.rich("toolsets.toolsetsAre", {
+                b: (chunks) => <strong>{chunks}</strong>,
+              })}
             </p>
             <div>
               <h4 className="mb-2 font-semibold text-foreground">{t("toolsets.howToUse")}</h4>
               <ol className="list-inside list-decimal space-y-2 text-foreground">
                 <li>
-                  Select a <span className="font-semibold text-violet-600">{t("chat.toolset")}</span> (purple badge) from the MCP
-                  Servers dropdown.
+                  {t.rich("toolsets.step1", {
+                    strong: (chunks) => <span className="font-semibold text-violet-600">{chunks}</span>,
+                  })}
                 </li>
                 <li>{t("toolsets.step2")}</li>
                 <li>{t("toolsets.step3")}</li>
@@ -2235,16 +2243,18 @@ const ChatUI: React.FC<ChatUIProps> = ({
             </div>
             <div className="rounded-sm border border-purple-200 bg-purple-50 p-3 dark:border-purple-800 dark:bg-purple-950">
               <p className="text-sm text-purple-800 dark:text-purple-300">
-                <strong>{t("chat.example")}</strong> A &quot;GitHub Read-only&quot; toolset might include only{" "}
-                <code>list_repos</code> and <code>get_file</code> from a GitHub MCP server, preventing agents from
-                making writes.
+                {t.rich("toolsets.example", {
+                  b: (chunks) => <strong>{chunks}</strong>,
+                  code: (chunks) => <code>{chunks}</code>,
+                })}
               </p>
             </div>
             <div>
               <h4 className="mb-1 font-semibold text-foreground">{t("toolsets.creatingToolsets")}</h4>
               <p className="text-sm text-muted-foreground">
-                Admins can create and manage toolsets from the <strong>{t("chat.mcpLabel")}</strong> page → <strong>{t("chat.toolsets")}</strong>{" "}
-                tab. Toolsets can then be assigned to keys and teams to scope their tool access.
+                {t.rich("toolsets.creatingDesc", {
+                  b: (chunks) => <strong>{chunks}</strong>,
+                })}
               </p>
             </div>
           </div>
