@@ -497,7 +497,7 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
     }
     // Validate selection based on endpoint type
     if (targetComparisons.some((comparison) => !hasValidSelection(comparison, selectedEndpoint))) {
-      toast.fromError(endpointConfig.validationMessage);
+      toast.fromError(t(endpointConfig.validationMessageKey));
       return;
     }
 
@@ -728,12 +728,12 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
               <span className="text-sm font-medium text-muted-foreground">{t("config.endpointType")}</span>
               <Select value={selectedEndpoint} onValueChange={(value) => setSelectedEndpoint(value as EndpointIdType)}>
                 <SelectTrigger className="w-56" aria-label={t("config.endpointType")}>
-                  <SelectValue>{endpointConfig.label}</SelectValue>
+                  <SelectValue>{t(endpointConfig.labelKey)}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {getAvailableEndpoints().map((endpoint) => (
                     <SelectItem key={endpoint.value} value={endpoint.value}>
-                      {endpoint.label}
+                      {t(endpoint.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -814,10 +814,10 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
                 ) : isAnyComparisonLoading ? (
                   <span className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span className="h-2 w-2 rounded-full bg-info animate-pulse" aria-hidden />
-                    {endpointConfig.loadingMessage}
+                    {t(endpointConfig.loadingMessageKey)}
                   </span>
                 ) : (
-                  <span className="text-sm text-muted-foreground">{endpointConfig.inputPlaceholder}</span>
+                  <span className="text-sm text-muted-foreground">{t(endpointConfig.inputPlaceholderKey)}</span>
                 )}
               </div>
               {uploadedFile && (

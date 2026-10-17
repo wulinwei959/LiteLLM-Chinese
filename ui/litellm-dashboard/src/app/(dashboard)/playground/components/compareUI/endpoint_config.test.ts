@@ -32,11 +32,11 @@ describe("endpoint_config", () => {
     expect(endpoints).toHaveLength(2);
     expect(endpoints).toContainEqual({
       value: EndpointId.CHAT_COMPLETIONS,
-      label: "/v1/chat/completions",
+      labelKey: "compare.endpoints.chatCompletions",
     });
     expect(endpoints).toContainEqual({
       value: EndpointId.A2A_AGENTS,
-      label: "/a2a (Agents)",
+      labelKey: "compare.endpoints.a2aAgents",
     });
   });
 
@@ -44,7 +44,7 @@ describe("endpoint_config", () => {
     const config = getEndpointConfig(EndpointId.CHAT_COMPLETIONS);
     expect(config.id).toBe(EndpointId.CHAT_COMPLETIONS);
     expect(config.selectorType).toBe("model");
-    expect(config.selectorLabel).toBe("Model");
+    expect(config.selectorLabelKey).toBe("compare.endpoints.model");
   });
 
   it("should check if endpoint is agent endpoint", () => {

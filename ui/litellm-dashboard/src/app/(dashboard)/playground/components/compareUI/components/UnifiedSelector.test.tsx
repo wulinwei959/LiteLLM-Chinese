@@ -2,11 +2,15 @@ import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithProviders as render } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import zhCN from "@/messages/zh-CN.json";
 import { UnifiedSelector } from "./UnifiedSelector";
 import { EndpointId, ENDPOINT_CONFIGS } from "../endpoint_config";
 
 const CHAT = ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS];
 const AGENTS = ENDPOINT_CONFIGS[EndpointId.A2A_AGENTS];
+
+const zh = (key: string) =>
+  key.split(".").reduce<unknown>((acc, k) => (acc as Record<string, unknown>)[k], zhCN.playground) as string;
 
 const promptIsVisible = (text: string) =>
   screen.queryByText(text) !== null || screen.queryByPlaceholderText(text) !== null;
@@ -33,19 +37,19 @@ describe("UnifiedSelector", () => {
   it("prompts with the endpoint's own selector copy", () => {
     render(<UnifiedSelector value="" options={[]} loading={false} config={CHAT} onChange={vi.fn()} />);
 
-    expect(promptIsVisible(CHAT.selectorPlaceholder)).toBe(true);
+    expect(promptIsVisible(zh(CHAT.selectorPlaceholderKey))).toBe(true);
   });
 
   it("prompts with the agent endpoint's copy when configured for agents", () => {
     render(<UnifiedSelector value="" options={[]} loading={false} config={AGENTS} onChange={vi.fn()} />);
 
-    expect(promptIsVisible(AGENTS.selectorPlaceholder)).toBe(true);
+    expect(promptIsVisible(zh(AGENTS.selectorPlaceholderKey))).toBe(true);
   });
 
   it("swaps the prompt for a loading message while options are in flight", () => {
     render(<UnifiedSelector value="" options={[]} loading config={CHAT} onChange={vi.fn()} />);
 
-    expect(promptIsVisible(`正在加载 ${CHAT.selectorLabel.toLowerCase()}...`)).toBe(true);
+    expect(promptIsVisible(`正在加载 ${zh(CHAT.selectorLabelKey).toLowerCase()}...`)).toBe(true);
   });
 
   it("reports the chosen option's value, not its label", async () => {
@@ -117,6 +121,6 @@ describe("UnifiedSelector", () => {
 
     await openList(user);
 
-    expect(await screen.findByText(`无可用 ${CHAT.selectorLabel.toLowerCase()}`)).toBeInTheDocument();
+    expect(await screen.findByText(`无可用 ${zh(CHAT.selectorLabelKey).toLowerCase()}`)).toBeInTheDocument();
   });
 });

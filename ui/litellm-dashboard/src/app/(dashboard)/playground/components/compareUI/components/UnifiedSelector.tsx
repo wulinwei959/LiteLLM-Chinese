@@ -29,7 +29,7 @@ const matchesQuery = (option: SelectorOption, query: string): boolean =>
 export function UnifiedSelector({ value, options, loading, config, onChange }: UnifiedSelectorProps) {
   const t = useTranslations("playground");
   const selected = options.find((option) => option.value === value) ?? null;
-  const noun = config.selectorLabel.toLowerCase();
+  const noun = t(config.selectorLabelKey).toLowerCase();
 
   return (
     <Combobox
@@ -41,7 +41,7 @@ export function UnifiedSelector({ value, options, loading, config, onChange }: U
       filter={matchesQuery}
     >
       <ComboboxInput
-        placeholder={loading ? t("compare.loadingSelector", { noun }) : config.selectorPlaceholder}
+        placeholder={loading ? t("compare.loadingSelector", { noun }) : t(config.selectorPlaceholderKey)}
         className="w-48 md:w-64 lg:w-72"
       />
       <ComboboxContent>

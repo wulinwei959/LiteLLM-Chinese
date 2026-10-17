@@ -21,36 +21,36 @@ export type SelectorType = "model" | "agent";
 
 export interface EndpointConfig {
   id: EndpointIdType;
-  label: string;
+  labelKey: "compare.endpoints.chatCompletions" | "compare.endpoints.a2aAgents";
   selectorType: SelectorType;
-  selectorLabel: string;
-  selectorPlaceholder: string;
-  inputPlaceholder: string;
-  loadingMessage: string;
-  validationMessage: string;
+  selectorLabelKey: "compare.endpoints.model" | "compare.endpoints.agent";
+  selectorPlaceholderKey: "compare.endpoints.selectModel" | "compare.endpoints.selectAgent";
+  inputPlaceholderKey: "compare.endpoints.sendPromptCompareModels" | "compare.endpoints.sendMessageCompareAgents";
+  loadingMessageKey: "compare.endpoints.gatheringResponsesModels" | "compare.endpoints.gatheringResponsesAgents";
+  validationMessageKey: "compare.endpoints.validationModel" | "compare.endpoints.validationAgent";
 }
 
 // Endpoint configurations
 export const ENDPOINT_CONFIGS: Record<EndpointIdType, EndpointConfig> = {
   [EndpointId.CHAT_COMPLETIONS]: {
     id: EndpointId.CHAT_COMPLETIONS,
-    label: "/v1/chat/completions",
+    labelKey: "compare.endpoints.chatCompletions",
     selectorType: "model",
-    selectorLabel: "Model",
-    selectorPlaceholder: "Select a model",
-    inputPlaceholder: "Send a prompt to compare models",
-    loadingMessage: "Gathering responses from all models...",
-    validationMessage: "Select a model before sending a message.",
+    selectorLabelKey: "compare.endpoints.model",
+    selectorPlaceholderKey: "compare.endpoints.selectModel",
+    inputPlaceholderKey: "compare.endpoints.sendPromptCompareModels",
+    loadingMessageKey: "compare.endpoints.gatheringResponsesModels",
+    validationMessageKey: "compare.endpoints.validationModel",
   },
   [EndpointId.A2A_AGENTS]: {
     id: EndpointId.A2A_AGENTS,
-    label: "/a2a (Agents)",
+    labelKey: "compare.endpoints.a2aAgents",
     selectorType: "agent",
-    selectorLabel: "Agent",
-    selectorPlaceholder: "Select an agent",
-    inputPlaceholder: "Send a message to compare agents",
-    loadingMessage: "Gathering responses from all agents...",
-    validationMessage: "Select an agent before sending a message.",
+    selectorLabelKey: "compare.endpoints.agent",
+    selectorPlaceholderKey: "compare.endpoints.selectAgent",
+    inputPlaceholderKey: "compare.endpoints.sendMessageCompareAgents",
+    loadingMessageKey: "compare.endpoints.gatheringResponsesAgents",
+    validationMessageKey: "compare.endpoints.validationAgent",
   },
 };
 
@@ -58,7 +58,7 @@ export const ENDPOINT_CONFIGS: Record<EndpointIdType, EndpointConfig> = {
 export const getAvailableEndpoints = () =>
   Object.values(ENDPOINT_CONFIGS).map((config) => ({
     value: config.id,
-    label: config.label,
+    labelKey: config.labelKey,
   }));
 
 // Helper to get config for an endpoint
@@ -125,12 +125,12 @@ export const hasValidSelection = (
  *
  * ENDPOINT_CONFIGS[EndpointId.RESPONSES] = {
  *   id: EndpointId.RESPONSES,
- *   label: "/v1/responses",
+ *   labelKey: "compare.endpoints.chatCompletions",
  *   selectorType: "model",
- *   selectorLabel: "Model",
- *   selectorPlaceholder: "Select a model",
- *   inputPlaceholder: "Send a prompt to compare responses",
- *   loadingMessage: "Gathering responses...",
- *   validationMessage: "Select a model before sending.",
+ *   selectorLabelKey: "compare.endpoints.model",
+ *   selectorPlaceholderKey: "compare.endpoints.selectModel",
+ *   inputPlaceholderKey: "compare.endpoints.sendPromptCompareModels",
+ *   loadingMessageKey: "compare.endpoints.gatheringResponsesModels",
+ *   validationMessageKey: "compare.endpoints.validationModel",
  * }
  */
