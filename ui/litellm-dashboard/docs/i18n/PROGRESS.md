@@ -6,6 +6,10 @@
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
 
+## 2026-10-18 第 184 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `guardrails/_components/custom_code/testInputExamples.ts`，自定义代码护栏测试面板的三个示例输入常量。纯判定簇，零接线、零目录改动（覆盖率沿用第 183 簇后口径：非测试 `.tsx` 686/912、75.2%，叶子 10503、同值 138）。扫描器 7 条命中逐条判定：SSN 示例文本、`get_weather` 的工具描述、system/user 消息、旧金山天气响应、`read_wiki_structure` 描述与 "Pre MCP" 名称，全部位于 `TEST_INPUT_EXAMPLES.*.data`，唯一消费方 `CustomCodeModal.tsx` 只取 `.data` 做 `JSON.stringify` 灌进测试输入代码编辑器，属 curl/JSON 样本内容教条不翻（`model: "gpt-4"`、`tool_calls` 的 id 与 arguments 串同理）。三个 `name` 字段没有任何消费方读取（按钮文案走已接线的 `custom.exPre`/`exMcp`/`exPost`），死元数据不接不删。盲区复查过全文件：其余串（"City name"、repoName 描述、`Tool: read_wiki_structure` 文本）同样是样本负载，无 DOM 文案。扫描器对本文件的 7 条登记为不翻。下一簇按队列取 `cost-tracking/_components/use_margin_config.ts`。
+
 ## 2026-10-18 第 183 簇更新
 
 继续串行推进，没有派子代理。这一簇是 `mcp-servers/_components/mcp_connect.tsx`，MCP 客户端连接页（OpenAI API / LiteLLM 代理 / Cursor / Streamable HTTP 四个页签）。页面主体早已接 `mcpConnect.*`，扫描器 7 条里 5 条是 curl/JSON 示例里的 `Bearer YOUR_LITELLM_*` 占位值（含 `getHeadersConfig` 注入的一处，示例内容既定不翻），真缺口全在盲区：文件自带的 `FeatureCard`/`CodeBlock` 组件把 `title` 当裸字符串 prop 传进 `<h5>`/`<strong>` 渲染，14 个调用点（8 个 FeatureCard 标题、6 个 CodeBlock 标题）全是没接线的英文字面量；另有开关说明 Label、Alert 三行（`Get a specific server:` 等）、OpenAI 密钥引导段（"Get your API key from the" 加外链）、游标与 HTTP 传输两段说明共 5 段裸英文。
