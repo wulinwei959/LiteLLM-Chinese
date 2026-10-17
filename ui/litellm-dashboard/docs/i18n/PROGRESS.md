@@ -1,10 +1,26 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 157 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10020、中英同值 137）。第 93 到 157 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 158 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10064、中英同值 137）。第 93 到 158 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 158 簇更新
+
+继续串行推进，没有派子代理。这一簇清掉 `public_model_hub.tsx`，公开模型中心整页，1365 行。
+
+这个文件的特别之处是它早早就挂了 `useTranslations("modelHub")`，只是主路径接了、边角没接。`modelHub` 目录里已经有 214 个叶子，`lbl*` / `sec*` / `tab*` 三套命名把详情弹窗需要的标签基本铺好了，所以本簇真正新增的只有 44 条键。改完之后全文件 109 处取词，只有 48 处用新键，其余 61 处直接命中已有键，包括 `notSpecified`、`noCapabilitiesListed`、`searchAgentsPlaceholder` 这种逐字相同的。这也顺带验证了一个判断：先把命名空间铺密，后清的边角就会越来越便宜。
+
+剩下的 44 条集中在几类：页头的关于、常用链接、健康与端点状态和 `Service status: {status}`；三个页签各自的可用 X 标题、搜索标签、占位符与下拉空态；模型详情里的通配符路由说明；智能体详情的文档区与 A2A 示例的两步标题。`serviceStatus` 是模块作用域外的三元表达式，`"I'm alive! ✓"` 与 `"Service unavailable"` 两个值改由翻译器取词再塞进 `{status}` 参数。
+
+通配符路由那段是本簇唯一值得单独记的改写。原来是 `You can pass any value where you see the{" "}<code className="...">*</code> symbol.`，把 `<code>` 拆在 JSX 里手写，两句里同一个 className 重复了三遍。改成 `t.rich` 配 `code: (chunks) => <code className="...">{chunks}</code>`，两句共用一个 formatter，语序交给消息自己决定，中文侧写成"看到 <code>*</code> 的位置都可以传入任意值"，不必跟着英文的断句走。带值的第二句用 `<code>{modelGroup}</code>` 与 `<code>{example}</code>` 两个同名标签加两个 ICU 参数，`t.rich` 会为每次出现各调一遍 formatter。
+
+扫描器在这个文件报 28 条，实际只有 14 条是文案。其余 14 条里 4 条是 `console.error` 的开发日志，10 条落在 `<pre>` 里：Python A2A 示例代码、FastMCP 示例代码，以及传给 `generateCodeSnippet` 当样例消息的 `"Hello, how are you?"`。代码示例按口径不翻，这条判定对后面几片（`CodeSnippets.tsx`、playground 那几个）同样适用，可以直接少查一半。
+
+另外记一处判断：`Transport:` 这种带冒号的字段标签，`modelHub` 里 `lblTransport` 和 `colTransport` 两种都有，前者带冒号后者不带。筛选区和详情弹窗都该走 `lbl*`，一度新加了 `transportFilterLabel`，回头对上已有键后删掉了。写新键前先按值而不是按键名查一遍目录，能省下一批重复叶子。
+
+覆盖率：文件接入数不变（685/912、75.1%，此文件本来已接入），消息叶子 10020 涨到 10064（+44），中英同值 137 持平。验证：`public_model_hub.test.tsx` 25 例全绿，相关 5 份文件 40 例全绿，`messagesParity` 与 `missingKeys` 9 通过，`tsc` 对该文件无错，`eslint` 0 错误 / 5 警告且与 HEAD 基线同类同数（复杂度 66 未涨），`npm run build` 通过。中途 prettier 报解析错，是脚本把 `>Model Hub</TabsTrigger>` 换成 `{t("tabModels")}</TabsTrigger>` 时吞掉了左尖括号，四处页签同时坏；这次是 prettier 当场拦下的，比第 157 簇靠测试红灯发现更靠前。
 
 ## 2026-10-17 第 157 簇更新
 
