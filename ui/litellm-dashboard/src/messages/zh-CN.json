@@ -8650,7 +8650,17 @@
     "noKeyAssignedBody": "未分配密钥。你可以在虚拟密钥页面创建一个。",
     "createAgent": "创建智能体",
     "creating": "正在创建...",
-    "logoAltAgent": "智能体"
+    "logoAltAgent": "智能体",
+
+    "protocolVersionTooltip": "LiteLLM 向客户端提供该智能体的 A2A 协议版本。LiteLLM 会把上游智能体的响应转换为这个版本，因此无论原始智能体是什么版本，客户端看到的始终是你在这里选择的版本。",
+
+    "protocolVersionHelpText": "LiteLLM 向客户端提供这个版本，并把上游智能体的响应转换为与之匹配的版本，与原始智能体的版本无关。",
+
+    "skillDescPlaceholder": "这个技能的作用",
+
+    "skillTagsPlaceholder": "输入标签后按回车",
+
+    "skillExamplesPlaceholder": "输入示例后按回车"
   },
   "costTracking": {
     "globalAll": "全局（所有供应商）",

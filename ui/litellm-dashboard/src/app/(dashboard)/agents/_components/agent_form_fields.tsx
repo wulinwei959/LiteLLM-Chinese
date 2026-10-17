@@ -51,6 +51,7 @@ interface AgentFormFieldsProps {
 }
 
 const SkillsFieldArray = () => {
+  const t = useTranslations("agents");
   const { control } = useFormContext<AgentFormValues>();
   const { fields, append, remove } = useFieldArray({ control, name: "skills" });
 
@@ -61,7 +62,7 @@ const SkillsFieldArray = () => {
           <FieldGroup>
             <AgentFormField
               name={`skills.${index}.id`}
-              label={SKILL_FIELD_CONFIG.id.label}
+              label={configText(t, SKILL_FIELD_CONFIG.id.label)}
               rules={SKILL_FIELD_CONFIG.id.required ? { required: "Required" } : undefined}
             >
               {({ value, onChange, ref, ...control }) => (
@@ -77,7 +78,7 @@ const SkillsFieldArray = () => {
 
             <AgentFormField
               name={`skills.${index}.name`}
-              label={SKILL_FIELD_CONFIG.name.label}
+              label={configText(t, SKILL_FIELD_CONFIG.name.label)}
               rules={SKILL_FIELD_CONFIG.name.required ? { required: "Required" } : undefined}
             >
               {({ value, onChange, ref, ...control }) => (
@@ -93,7 +94,7 @@ const SkillsFieldArray = () => {
 
             <AgentFormField
               name={`skills.${index}.description`}
-              label={SKILL_FIELD_CONFIG.description.label}
+              label={configText(t, SKILL_FIELD_CONFIG.description.label)}
               rules={SKILL_FIELD_CONFIG.description.required ? { required: "Required" } : undefined}
             >
               {({ value, onChange, ref, ...control }) => (
@@ -101,7 +102,7 @@ const SkillsFieldArray = () => {
                   {...control}
                   ref={ref}
                   rows={SKILL_FIELD_CONFIG.description.rows}
-                  placeholder={SKILL_FIELD_CONFIG.description.placeholder}
+                  placeholder={configText(t, SKILL_FIELD_CONFIG.description.placeholder)}
                   value={typeof value === "string" ? value : ""}
                   onChange={onChange}
                 />
@@ -110,7 +111,7 @@ const SkillsFieldArray = () => {
 
             <AgentFormField
               name={`skills.${index}.tags`}
-              label={SKILL_FIELD_CONFIG.tags.label}
+              label={configText(t, SKILL_FIELD_CONFIG.tags.label)}
               rules={SKILL_FIELD_CONFIG.tags.required ? { required: "Required" } : undefined}
             >
               {({ id, value, onChange }) => (
@@ -118,18 +119,18 @@ const SkillsFieldArray = () => {
                   id={id}
                   value={Array.isArray(value) ? (value as string[]) : []}
                   onValueChange={onChange}
-                  placeholder={SKILL_FIELD_CONFIG.tags.placeholder}
+                  placeholder={configText(t, SKILL_FIELD_CONFIG.tags.placeholder)}
                 />
               )}
             </AgentFormField>
 
-            <AgentFormField name={`skills.${index}.examples`} label={SKILL_FIELD_CONFIG.examples.label}>
+            <AgentFormField name={`skills.${index}.examples`} label={configText(t, SKILL_FIELD_CONFIG.examples.label)}>
               {({ id, value, onChange }) => (
                 <AgentTagsInput
                   id={id}
                   value={Array.isArray(value) ? (value as string[]) : []}
                   onValueChange={onChange}
-                  placeholder={SKILL_FIELD_CONFIG.examples.placeholder}
+                  placeholder={configText(t, SKILL_FIELD_CONFIG.examples.placeholder)}
                 />
               )}
             </AgentFormField>
@@ -214,11 +215,18 @@ const FIELD_TEXT_KEYS: Record<string, string> = {
   "URL": "url",
   "Version": "version",
   "Protocol Version": "protocolVersion",
+  "The A2A protocol version LiteLLM serves to clients for this agent. LiteLLM converts the upstream agent's responses to this version, so clients always see the version you pick here regardless of the original agent's version.":
+    "protocolVersionTooltip",
+  "LiteLLM serves this version to clients and converts the upstream agent's responses to match it, regardless of the original agent's version.":
+    "protocolVersionHelpText",
   "Skill ID": "skillIdLabel",
   "Skill Name": "skillNameLabel",
   "Description": "skillDescLabel",
   "Tags": "skillTagsLabel",
   "Examples": "skillExamplesLabel",
+  "What this skill does": "skillDescPlaceholder",
+  "Type a tag and press Enter": "skillTagsPlaceholder",
+  "Type an example and press Enter": "skillExamplesPlaceholder",
   "Streaming": "streaming",
   "Push Notifications": "pushNotifications",
   "State Transition History": "stateTransitionHistory",
@@ -291,7 +299,7 @@ const AgentFormFields: React.FC<AgentFormFieldsProps> = ({ panels, showAgentName
                 key={field.name}
                 name={field.name}
                 label={field.tooltip ? labelWithHint(configText(t, field.label), configText(t, field.tooltip)) : configText(t, field.label)}
-                description={field.helpText}
+                description={field.helpText ? configText(t, field.helpText) : undefined}
                 rules={field.required ? { required: t("pleaseEnter", { field: configText(t, field.label) }) } : undefined}
               >
                 {({ value, onChange, ref, ...control }) => {
