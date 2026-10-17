@@ -1,10 +1,28 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 152 簇后（非测试 `.tsx` 912 个接入 665 个、72.9%，目录叶子 9771、中英同值 132）。第 93 到 152 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 153 簇后（非测试 `.tsx` 912 个接入 669 个、73.4%，目录叶子 9787、中英同值 135）。第 93 到 153 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 153 簇更新
+
+继续串行推进，没有派子代理。这一簇清掉告警动态表单、导航条、Lens 页、MCP OAuth 回调页与一处排序字段表。
+
+`alerting/dynamic_form.tsx`：新开 `alerting` 三键（存于数据库、来自配置、更新设置）。`✨ Enterprise Feature` 这枚徽标在 `settings.tsx` 里还有第二份，两处合成 `common.enterpriseFeatureBadge` 一键；逐字段的重置可访问名（`Reset {field}`）同理进 `common`，因为它拼的是后端下发的字段名，命名空间无关。
+
+`navbar.tsx`：品牌图的 alt、月亮图标的 title 与文档区 `<nav>` 的可访问名接进既有 `navbar`（第 147 簇开的）。
+
+`lens/page.tsx`：页签文案复用既有 `lens.traces`/`lens.investigations`，页签组的可访问名与管理员提示新开 `lens.page`。
+
+`keyTableColumns.tsx`：`SPEND_BUDGET_SORT_FIELDS` 是模块级常量，拿不到 hook，改成 `getSpendBudgetSortFields(t)` 即时生成；模块级只保留 id 数组供 `KEY_TABLE_SORT_FIELDS` 展开，标签复用既有 `virtualKeys.columns.spend`/`budget`。`teamTableColumns` 里 `TPM`/`RPM` 是缩写，按口径不翻。
+
+`mcp/oauth/callback/page.tsx`：新开 `mcpServers.oauthCallback` 四键。`Suspense` 的 fallback 是独立子树，翻译器要在外层组件挂一次。
+
+`src/app/layout.tsx` 的 `metadata.title`/`description` 留着没动：那是 `export const` 静态元数据，不在 React 树里，`next-intl` 的 hook 取不到，且它只影响浏览器标签页标题。
+
+这一段合计：非测试 `.tsx` 912 接入 665→669（72.9%→73.4%），消息叶子 9771→9787（+16），中英同值 132→135（`oauthCallback.title` 的 `LiteLLM MCP OAuth`、`lens.page.title` 的 `Lens`、`common.notSet` 的三处历史键对）。候选文件 39→28。
 
 ## 2026-10-17 第 152 簇更新
 
