@@ -365,6 +365,8 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
     };
   }, []);
 
+  const selectedVoiceOption = OPEN_AI_VOICE_SELECT_OPTIONS.find((v) => v.value === selectedVoice);
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -383,13 +385,13 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
             onValueChange={(voice) => setSelectedVoice(voice ?? selectedVoice)}
             disabled={isConnected}
           >
-            <SelectTrigger size="sm" className="w-[220px]" aria-label="Voice">
-              <SelectValue>{OPEN_AI_VOICE_SELECT_OPTIONS.find((v) => v.value === selectedVoice)?.label}</SelectValue>
+            <SelectTrigger size="sm" className="w-[220px]" aria-label={t("config.voice")}>
+              <SelectValue>{selectedVoiceOption ? t(selectedVoiceOption.labelKey) : null}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {OPEN_AI_VOICE_SELECT_OPTIONS.map((voice) => (
                 <SelectItem key={voice.value} value={voice.value}>
-                  {voice.label}
+                  {t(voice.labelKey)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -414,7 +416,7 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
             <Volume2 className="size-12" />
             <span className="text-lg text-muted-foreground">{t("realtime.playgroundTitle")}</span>
             <p className="text-sm text-muted-foreground text-center max-w-md">
-              {t("realtime.clickConnectDesc")}
+              {t.rich("realtime.clickConnectDesc", { b: (chunks) => <strong>{chunks}</strong> })}
             </p>
           </div>
         )}

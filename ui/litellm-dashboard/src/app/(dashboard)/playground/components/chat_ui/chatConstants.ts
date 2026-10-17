@@ -15,22 +15,35 @@ export const OPEN_AI_VOICES = {
 
 export type OpenAIVoice = (typeof OPEN_AI_VOICES)[keyof typeof OPEN_AI_VOICES];
 
-export const OPEN_AI_VOICE_LABELS = {
-  ALLOY: "Alloy - Professional and confident",
-  ASH: "Ash - Casual and relaxed",
-  BALAD: "Ballad - Smooth and melodic",
-  CORAL: "Coral - Warm and engaging",
-  ECHO: "Echo - Friendly and conversational",
-  FABLE: "Fable - Wise and measured",
-  NOVA: "Nova - Friendly and conversational",
-  ONYX: "Onyx - Deep and authoritative",
-  SAGE: "Sage - Wise and measured",
-  SHIMMER: "Shimmer - Bright and cheerful",
+export type PlaygroundVoiceMessageKey =
+  | "voices.alloy"
+  | "voices.ash"
+  | "voices.ballad"
+  | "voices.coral"
+  | "voices.echo"
+  | "voices.fable"
+  | "voices.nova"
+  | "voices.onyx"
+  | "voices.sage"
+  | "voices.shimmer";
+
+// Every key here resolves under the `playground` namespace.
+export const OPEN_AI_VOICE_LABEL_KEYS: Record<keyof typeof OPEN_AI_VOICES, PlaygroundVoiceMessageKey> = {
+  ALLOY: "voices.alloy",
+  ASH: "voices.ash",
+  BALAD: "voices.ballad",
+  CORAL: "voices.coral",
+  ECHO: "voices.echo",
+  FABLE: "voices.fable",
+  NOVA: "voices.nova",
+  ONYX: "voices.onyx",
+  SAGE: "voices.sage",
+  SHIMMER: "voices.shimmer",
 };
 
 export const OPEN_AI_VOICE_SELECT_OPTIONS = Object.entries(OPEN_AI_VOICES).map(([key, voice]) => ({
   value: voice,
-  label: OPEN_AI_VOICE_LABELS[key as keyof typeof OPEN_AI_VOICE_LABELS],
+  labelKey: OPEN_AI_VOICE_LABEL_KEYS[key as keyof typeof OPEN_AI_VOICE_LABEL_KEYS],
 }));
 
 export const ENDPOINT_OPTIONS = [

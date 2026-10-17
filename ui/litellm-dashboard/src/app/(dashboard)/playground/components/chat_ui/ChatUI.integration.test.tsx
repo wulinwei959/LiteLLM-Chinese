@@ -150,7 +150,7 @@ describe("ChatUI", () => {
     await selectComboboxOption("端点类型", "/v1/audio/speech");
 
     await waitFor(() => {
-      expect(screen.getByLabelText("语音")).toHaveTextContent("Alloy - Professional and confident");
+      expect(screen.getByLabelText("语音")).toHaveTextContent("Alloy - 专业自信");
     });
   });
 

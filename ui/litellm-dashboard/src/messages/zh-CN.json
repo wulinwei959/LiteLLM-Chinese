@@ -8174,6 +8174,18 @@
       "helpMaxTokens": "帮助：最大令牌数",
       "maxTokensHelp": "响应中最多生成的令牌数量。",
       "maxTokensValue": "最大令牌数值"
+    },
+    "voices": {
+      "alloy": "Alloy - 专业自信",
+      "ash": "Ash - 随性放松",
+      "ballad": "Ballad - 顺滑悦耳",
+      "coral": "Coral - 温暖亲切",
+      "echo": "Echo - 友好健谈",
+      "fable": "Fable - 睿智沉稳",
+      "nova": "Nova - 友好健谈",
+      "onyx": "Onyx - 深沉威严",
+      "sage": "Sage - 睿智沉稳",
+      "shimmer": "Shimmer - 明快活泼"
     }
   },
   "tagManagement": {

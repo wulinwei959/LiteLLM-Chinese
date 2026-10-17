@@ -1363,7 +1363,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                         {t("config.voice")}
                       </label>
                       <ShadcnSelect
-                        items={OPEN_AI_VOICE_SELECT_OPTIONS}
+                        items={OPEN_AI_VOICE_SELECT_OPTIONS.map((v) => ({ value: v.value, label: t(v.labelKey) }))}
                         value={selectedVoice}
                         onValueChange={handleVoiceChange}
                       >
@@ -1373,7 +1373,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
                         <SelectContent>
                           {OPEN_AI_VOICE_SELECT_OPTIONS.map((voice) => (
                             <SelectItem key={voice.value} value={voice.value}>
-                              {voice.label}
+                              {t(voice.labelKey)}
                             </SelectItem>
                           ))}
                         </SelectContent>

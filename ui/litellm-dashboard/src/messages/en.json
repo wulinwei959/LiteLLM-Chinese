@@ -8178,6 +8178,18 @@
       "helpMaxTokens": "Help: Max Tokens",
       "maxTokensHelp": "Maximum number of tokens to generate in the response.",
       "maxTokensValue": "Max tokens value"
+    },
+    "voices": {
+      "alloy": "Alloy - Professional and confident",
+      "ash": "Ash - Casual and relaxed",
+      "ballad": "Ballad - Smooth and melodic",
+      "coral": "Coral - Warm and engaging",
+      "echo": "Echo - Friendly and conversational",
+      "fable": "Fable - Wise and measured",
+      "nova": "Nova - Friendly and conversational",
+      "onyx": "Onyx - Deep and authoritative",
+      "sage": "Sage - Wise and measured",
+      "shimmer": "Shimmer - Bright and cheerful"
     }
   },
   "tagManagement": {
