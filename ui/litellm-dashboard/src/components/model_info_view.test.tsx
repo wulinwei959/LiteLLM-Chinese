@@ -411,16 +411,16 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
-    const costInput = screen.getByPlaceholderText("Enter input cost") as HTMLInputElement;
+    const costInput = screen.getByPlaceholderText("请输入输入成本") as HTMLInputElement;
     await user.clear(costInput);
     await user.type(costInput, "5");
 
     await user.click(screen.getByRole("tab", { name: /raw json/i }));
     await user.click(screen.getByRole("tab", { name: /overview/i }));
 
-    expect(screen.getByPlaceholderText("Enter input cost")).toBe(costInput);
+    expect(screen.getByPlaceholderText("请输入输入成本")).toBe(costInput);
     expect(Number(costInput.value)).toBe(5);
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => {
       expect(mockModelPatchUpdateCall).toHaveBeenCalled();
@@ -510,8 +510,8 @@ describe("ModelInfoView", () => {
     await user.click(editButton);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /取消/ })).toBeInTheDocument();
     });
   });
 
@@ -527,8 +527,8 @@ describe("ModelInfoView", () => {
     await user.click(editButton);
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText("Enter model name")).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("Enter LiteLLM model name")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("请输入模型名称")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("请输入 LiteLLM 模型名称")).toBeInTheDocument();
     });
   });
 
@@ -543,7 +543,7 @@ describe("ModelInfoView", () => {
     const editButton = screen.getByRole("button", { name: /edit settings/i });
     await user.click(editButton);
 
-    const modelNameInput = await screen.findByPlaceholderText("Enter model name");
+    const modelNameInput = await screen.findByPlaceholderText("请输入模型名称");
     await user.clear(modelNameInput);
     fireEvent.change(modelNameInput, { target: { value: "Updated Model Name" } });
 
@@ -562,15 +562,15 @@ describe("ModelInfoView", () => {
     await user.click(editButton);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /取消/ })).toBeInTheDocument();
     });
 
-    const cancelButton = screen.getByRole("button", { name: /cancel/i });
+    const cancelButton = screen.getByRole("button", { name: /取消/ });
     await user.click(cancelButton);
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /edit settings/i })).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /save changes/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /保存更改/ })).not.toBeInTheDocument();
     });
   });
 
@@ -587,10 +587,10 @@ describe("ModelInfoView", () => {
     await user.click(editButton);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByRole("button", { name: /save changes/i });
+    const saveButton = screen.getByRole("button", { name: /保存更改/ });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -603,14 +603,14 @@ describe("ModelInfoView", () => {
   it("should display tags section", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("Tags")).toBeInTheDocument();
+      expect(screen.getByText("标签")).toBeInTheDocument();
     });
   });
 
   it("should display LiteLLM Params section", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("LiteLLM Params")).toBeInTheDocument();
+      expect(screen.getByText("LiteLLM 参数")).toBeInTheDocument();
     });
   });
 
@@ -625,7 +625,7 @@ describe("ModelInfoView", () => {
     await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Existing Credentials")).toBeInTheDocument();
+      expect(screen.getByText("现有凭据")).toBeInTheDocument();
     });
   });
 
@@ -653,7 +653,7 @@ describe("ModelInfoView", () => {
     await user.clear(litellmParamsInput);
     await user.paste(`{"litellm_credential_name":"from-json","timeout":42}`);
 
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => {
       expect(mockModelPatchUpdateCall).toHaveBeenCalled();
@@ -678,10 +678,10 @@ describe("ModelInfoView", () => {
     await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => {
       expect(mockModelPatchUpdateCall).toHaveBeenCalled();
@@ -722,10 +722,10 @@ describe("ModelInfoView", () => {
         expect(screen.getByText("模型设置")).toBeInTheDocument();
       });
 
-      expect(screen.queryByText("PTU Count")).not.toBeInTheDocument();
-      expect(screen.queryByText("Cost per PTU / Hour (USD)")).not.toBeInTheDocument();
-      expect(screen.queryByText("PTU Effective From (UTC)")).not.toBeInTheDocument();
-      expect(screen.queryByText("PTU Effective To (UTC)")).not.toBeInTheDocument();
+      expect(screen.queryByText("PTU 数量")).not.toBeInTheDocument();
+      expect(screen.queryByText("PTU 每小时成本 (USD)")).not.toBeInTheDocument();
+      expect(screen.queryByText("PTU 生效起始时间 (UTC)")).not.toBeInTheDocument();
+      expect(screen.queryByText("PTU 生效结束时间 (UTC)")).not.toBeInTheDocument();
     });
 
     it("shows the PTU fields when enabled", async () => {
@@ -733,11 +733,11 @@ describe("ModelInfoView", () => {
       renderWithPtuModel();
 
       await waitFor(() => {
-        expect(screen.getByText("PTU Count")).toBeInTheDocument();
+        expect(screen.getByText("PTU 数量")).toBeInTheDocument();
       });
-      expect(screen.getByText("Cost per PTU / Hour (USD)")).toBeInTheDocument();
-      expect(screen.getByText("PTU Effective From (UTC)")).toBeInTheDocument();
-      expect(screen.getByText("PTU Effective To (UTC)")).toBeInTheDocument();
+      expect(screen.getByText("PTU 每小时成本 (USD)")).toBeInTheDocument();
+      expect(screen.getByText("PTU 生效起始时间 (UTC)")).toBeInTheDocument();
+      expect(screen.getByText("PTU 生效结束时间 (UTC)")).toBeInTheDocument();
     });
 
     it("omits PTU fields from the save payload when disabled, so an unrelated edit cannot clear stored config", async () => {
@@ -750,9 +750,9 @@ describe("ModelInfoView", () => {
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
       });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(mockModelPatchUpdateCall).toHaveBeenCalled();
@@ -770,9 +770,9 @@ describe("ModelInfoView", () => {
       renderWithPtuModel();
 
       await waitFor(() => {
-        expect(screen.getByText("Input Cost (per 1M tokens)")).toBeInTheDocument();
+        expect(screen.getByText("输入成本（每百万 Token）")).toBeInTheDocument();
       });
-      for (const label of ["Input Cost (per 1M tokens)", "Output Cost (per 1M tokens)"]) {
+      for (const label of ["输入成本（每百万 Token）", "输出成本（每百万 Token）"]) {
         expect(screen.getByText(label).parentElement).toHaveTextContent("0.0000");
       }
     });
@@ -788,14 +788,14 @@ describe("ModelInfoView", () => {
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
       await waitFor(() => {
-        expect(screen.getByPlaceholderText("Enter input cost")).toBeInTheDocument();
+        expect(screen.getByPlaceholderText("请输入输入成本")).toBeInTheDocument();
       });
-      await user.clear(screen.getByPlaceholderText("Enter input cost"));
-      fireEvent.change(screen.getByPlaceholderText("Enter input cost"), { target: { value: "2.5" } });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.clear(screen.getByPlaceholderText("请输入输入成本"));
+      fireEvent.change(screen.getByPlaceholderText("请输入输入成本"), { target: { value: "2.5" } });
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
-        expect(screen.getByText(/bills by reserved capacity/i)).toBeInTheDocument();
+        expect(screen.getByText(/PTU 部署按预留容量计费/)).toBeInTheDocument();
       });
       expect(mockModelPatchUpdateCall).not.toHaveBeenCalled();
     });
@@ -819,13 +819,13 @@ describe("ModelInfoView", () => {
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
       await waitFor(() => {
-        expect(screen.getByPlaceholderText("e.g. 15")).toBeInTheDocument();
+        expect(screen.getByPlaceholderText("例如 15")).toBeInTheDocument();
       });
-      fireEvent.change(screen.getByPlaceholderText("e.g. 15"), { target: { value: "15" } });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      fireEvent.change(screen.getByPlaceholderText("例如 15"), { target: { value: "15" } });
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
-        expect(screen.queryByText(/bills by reserved capacity/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/PTU 部署按预留容量计费/)).not.toBeInTheDocument();
       });
     });
 
@@ -834,11 +834,11 @@ describe("ModelInfoView", () => {
       renderWithPtuModel();
       expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
-      expect(await screen.findByPlaceholderText("e.g. 15")).toBeInTheDocument();
+      expect(await screen.findByPlaceholderText("例如 15")).toBeInTheDocument();
     };
 
     const expectBlocked = async (user: ReturnType<typeof userEvent.setup>, message: RegExp) => {
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
       expect(await screen.findAllByText(message)).not.toHaveLength(0);
       expect(mockModelPatchUpdateCall).not.toHaveBeenCalled();
     };
@@ -856,8 +856,8 @@ describe("ModelInfoView", () => {
 
       expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
-      expect(await screen.findByRole("button", { name: /save changes/i })).toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      expect(await screen.findByRole("button", { name: /保存更改/ })).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => expect(mockModelPatchUpdateCall).toHaveBeenCalled());
       expect(screen.queryByText(/must be set together/i)).not.toBeInTheDocument();
@@ -867,29 +867,29 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterPtuEdit(user);
 
-      await user.clear(screen.getByPlaceholderText("e.g. 15"));
-      await user.type(screen.getByPlaceholderText("e.g. 15"), "1000001");
+      await user.clear(screen.getByPlaceholderText("例如 15"));
+      await user.type(screen.getByPlaceholderText("例如 15"), "1000001");
 
-      await expectBlocked(user, /PTU Count must be a whole number between 1 and 1,000,000/i);
+      await expectBlocked(user, /PTU 数量必须是 1 到 1,000,000 之间的整数/);
     });
 
     it("blocks a cost per PTU hour above the backend ceiling", async () => {
       const user = userEvent.setup();
       await enterPtuEdit(user);
 
-      await user.clear(screen.getByPlaceholderText("e.g. 2.00"));
-      await user.type(screen.getByPlaceholderText("e.g. 2.00"), "2000000");
+      await user.clear(screen.getByPlaceholderText("例如 2.00"));
+      await user.type(screen.getByPlaceholderText("例如 2.00"), "2000000");
 
-      await expectBlocked(user, /Cost per PTU \/ Hour must be between 0 and 1,000,000/i);
+      await expectBlocked(user, /PTU 每小时成本必须在 0 到 1,000,000 之间/);
     });
 
     it("blocks a half-set PTU count and rate pair", async () => {
       const user = userEvent.setup();
       await enterPtuEdit(user);
 
-      await user.clear(screen.getByPlaceholderText("e.g. 2.00"));
+      await user.clear(screen.getByPlaceholderText("例如 2.00"));
 
-      await expectBlocked(user, /PTU Count and Cost per PTU \/ Hour must be set together/i);
+      await expectBlocked(user, /PTU 数量和 PTU 每小时成本必须同时填写/);
     });
 
     it("blocks PTU config with no effective start", async () => {
@@ -905,20 +905,20 @@ describe("ModelInfoView", () => {
 
       expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
-      expect(await screen.findByPlaceholderText("e.g. 15")).toBeInTheDocument();
+      expect(await screen.findByPlaceholderText("例如 15")).toBeInTheDocument();
 
-      await expectBlocked(user, /PTU Effective From is required when PTU Count is set/i);
+      await expectBlocked(user, /填写 PTU 数量后必须填写 PTU 生效起始时间/);
     });
 
     it("blocks a PTU window whose end is not after its start", async () => {
       const user = userEvent.setup();
       await enterPtuEdit(user);
 
-      fireEvent.change(screen.getByLabelText("PTU Effective To (UTC)"), {
+      fireEvent.change(screen.getByLabelText("PTU 生效结束时间 (UTC)"), {
         target: { value: "2026-06-01T00:00:00" },
       });
 
-      await expectBlocked(user, /PTU Effective To must be after PTU Effective From/i);
+      await expectBlocked(user, /PTU 生效结束时间必须晚于 PTU 生效起始时间/);
     });
 
     it("sends the PTU fields on save when enabled", async () => {
@@ -932,9 +932,9 @@ describe("ModelInfoView", () => {
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
       });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(mockModelPatchUpdateCall).toHaveBeenCalled();
@@ -952,22 +952,22 @@ describe("ModelInfoView", () => {
 
       expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
-      expect(await screen.findByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(await screen.findByRole("button", { name: /保存更改/ })).toBeInTheDocument();
 
-      await user.clear(screen.getByPlaceholderText("e.g. 15"));
-      await user.type(screen.getByPlaceholderText("e.g. 15"), "20");
-      await user.clear(screen.getByPlaceholderText("e.g. 2.00"));
-      await user.type(screen.getByPlaceholderText("e.g. 2.00"), "3.5");
+      await user.clear(screen.getByPlaceholderText("例如 15"));
+      await user.type(screen.getByPlaceholderText("例如 15"), "20");
+      await user.clear(screen.getByPlaceholderText("例如 2.00"));
+      await user.type(screen.getByPlaceholderText("例如 2.00"), "3.5");
 
-      const from = screen.getByLabelText("PTU Effective From (UTC)");
-      const to = screen.getByLabelText("PTU Effective To (UTC)");
+      const from = screen.getByLabelText("PTU 生效起始时间 (UTC)");
+      const to = screen.getByLabelText("PTU 生效结束时间 (UTC)");
       expect(from).toHaveValue("2026-07-01T00:00");
       expect(to).toHaveValue("2026-08-01T00:00");
 
       fireEvent.change(to, { target: { value: "2026-10-03T02:00:00" } });
       fireEvent.change(from, { target: { value: "2026-09-02T01:00:00" } });
 
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
       await waitFor(() => expect(mockModelPatchUpdateCall).toHaveBeenCalled());
 
       const modelInfo = mockModelPatchUpdateCall.mock.calls[0][1].model_info;
@@ -994,9 +994,9 @@ describe("ModelInfoView", () => {
     await user.clear(extraParams);
     await user.paste("{not json");
 
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
-    expect(await screen.findByText("Please enter valid JSON")).toBeInTheDocument();
+    expect(await screen.findByText("请输入有效的 JSON")).toBeInTheDocument();
     expect(mockModelPatchUpdateCall).not.toHaveBeenCalled();
   });
 
@@ -1014,10 +1014,10 @@ describe("ModelInfoView", () => {
     await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => {
       expect(mockModelPatchUpdateCall).toHaveBeenCalled();
@@ -1059,9 +1059,9 @@ describe("ModelInfoView", () => {
     await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
     });
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => {
       expect(mockModelPatchUpdateCall).toHaveBeenCalled();
@@ -1092,7 +1092,7 @@ describe("ModelInfoView", () => {
 
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("Health Check Model")).toBeInTheDocument();
+      expect(screen.getByText("健康检查模型")).toBeInTheDocument();
     });
   });
 
@@ -1100,7 +1100,7 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("模型设置")).toBeInTheDocument();
-      expect(screen.queryByText("Health Check Model")).not.toBeInTheDocument();
+      expect(screen.queryByText("健康检查模型")).not.toBeInTheDocument();
     });
   });
 
@@ -1318,14 +1318,14 @@ describe("ModelInfoView", () => {
   it("should display model access groups field", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("Model Access Groups")).toBeInTheDocument();
+      expect(screen.getByText("模型访问组")).toBeInTheDocument();
     });
   });
 
   it("should display guardrails field", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("Guardrails")).toBeInTheDocument();
+      expect(screen.getByText("护栏")).toBeInTheDocument();
     });
   });
 
@@ -1409,7 +1409,7 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-      expect(await screen.findByText("Team")).toBeInTheDocument();
+      expect(await screen.findByText("团队")).toBeInTheDocument();
       expect(screen.queryByText(/alpha/)).not.toBeInTheDocument();
 
       const raw = await readRawJson(user);
@@ -1540,7 +1540,7 @@ describe("ModelInfoView", () => {
       renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
       expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: /edit settings/i }));
-      expect(await screen.findByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(await screen.findByRole("button", { name: /保存更改/ })).toBeInTheDocument();
     };
 
     const openSelect = async (user: ReturnType<typeof userEvent.setup>, triggerText: string) => {
@@ -1561,7 +1561,7 @@ describe("ModelInfoView", () => {
     };
 
     const save = async (user: ReturnType<typeof userEvent.setup>) => {
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
       await waitFor(() => expect(mockModelPatchUpdateCall).toHaveBeenCalled());
       return mockModelPatchUpdateCall.mock.calls[0][1] as {
         model_name: string;
@@ -1608,20 +1608,20 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
 
-      await user.clear(screen.getByPlaceholderText("Enter model name"));
-      await user.type(screen.getByPlaceholderText("Enter model name"), "renamed-model");
-      await user.clear(screen.getByPlaceholderText("Enter LiteLLM model name"));
-      await user.type(screen.getByPlaceholderText("Enter LiteLLM model name"), "gpt-4o");
-      await user.clear(screen.getByPlaceholderText("Enter API base"));
-      await user.type(screen.getByPlaceholderText("Enter API base"), "https://example.test/v1");
-      await user.clear(screen.getByPlaceholderText("Enter custom LLM provider"));
-      await user.type(screen.getByPlaceholderText("Enter custom LLM provider"), "azure");
-      await user.type(screen.getByPlaceholderText("Enter organization"), "org-9");
-      await user.type(screen.getByPlaceholderText("Enter TPM"), "111");
-      await user.type(screen.getByPlaceholderText("Enter RPM"), "222");
-      await user.type(screen.getByPlaceholderText("Enter max retries"), "4");
-      await user.type(screen.getByPlaceholderText("Enter timeout"), "33");
-      await user.type(screen.getByPlaceholderText("Enter stream timeout"), "44");
+      await user.clear(screen.getByPlaceholderText("请输入模型名称"));
+      await user.type(screen.getByPlaceholderText("请输入模型名称"), "renamed-model");
+      await user.clear(screen.getByPlaceholderText("请输入 LiteLLM 模型名称"));
+      await user.type(screen.getByPlaceholderText("请输入 LiteLLM 模型名称"), "gpt-4o");
+      await user.clear(screen.getByPlaceholderText("请输入 API 基地址"));
+      await user.type(screen.getByPlaceholderText("请输入 API 基地址"), "https://example.test/v1");
+      await user.clear(screen.getByPlaceholderText("请输入自定义 LLM 提供商"));
+      await user.type(screen.getByPlaceholderText("请输入自定义 LLM 提供商"), "azure");
+      await user.type(screen.getByPlaceholderText("请输入组织"), "org-9");
+      await user.type(screen.getByPlaceholderText("请输入 TPM"), "111");
+      await user.type(screen.getByPlaceholderText("请输入 RPM"), "222");
+      await user.type(screen.getByPlaceholderText("请输入最大重试次数"), "4");
+      await user.type(screen.getByPlaceholderText("请输入超时时间"), "33");
+      await user.type(screen.getByPlaceholderText("请输入流式超时时间"), "44");
 
       const payload = await save(user);
 
@@ -1643,9 +1643,9 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
 
-      await user.clear(screen.getByPlaceholderText("Enter output cost"));
-      await user.type(screen.getByPlaceholderText("Enter output cost"), "12");
-      const [cacheRead, cacheWrite] = screen.getAllByPlaceholderText("Defaults to Input Cost if blank");
+      await user.clear(screen.getByPlaceholderText("请输入输出成本"));
+      await user.type(screen.getByPlaceholderText("请输入输出成本"), "12");
+      const [cacheRead, cacheWrite] = screen.getAllByPlaceholderText("留空则默认为输入成本");
       await user.type(cacheRead, "5");
       await user.type(cacheWrite, "9");
 
@@ -1668,9 +1668,9 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
 
-      await addTag(user, "Select existing groups or type to create new ones", "beta-testers");
-      await addTag(user, "Select existing guardrails or type to create new ones", "content_filter");
-      await addTag(user, "Select existing tags or type to create new ones", "production_tag");
+      await addTag(user, "选择现有分组，或输入以创建新分组", "beta-testers");
+      await addTag(user, "选择现有护栏，或输入以创建新护栏", "content_filter");
+      await addTag(user, "选择现有标签，或输入以创建新标签", "production_tag");
 
       const payload = await save(user);
 
@@ -1824,7 +1824,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "None" }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
 
       const payload = await save(user);
 
@@ -1837,7 +1837,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "None" }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
       await openCredentialSelect(user);
       await user.click(await screen.findByRole("option", { name: "selected-credential" }));
 
@@ -1859,7 +1859,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user);
-      await user.click(await screen.findByRole("option", { name: "None" }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
 
       const payload = await save(user);
 
@@ -1872,8 +1872,8 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "None" }));
-      await user.click(screen.getByRole("button", { name: /cancel/i }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
+      await user.click(screen.getByRole("button", { name: /取消/ }));
       await user.click(await screen.findByRole("button", { name: /edit settings/i }));
 
       const credentialTrigger: HTMLElement = screen
@@ -1888,10 +1888,10 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "None" }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
       await save(user);
 
-      expect(await screen.findByText("Manual")).toBeInTheDocument();
+      expect(await screen.findByText("手动输入")).toBeInTheDocument();
       expect(screen.queryByText("selected-credential")).not.toBeInTheDocument();
     });
 
@@ -1903,17 +1903,33 @@ describe("ModelInfoView", () => {
       expect(await screen.findByText("selected-credential")).toBeInTheDocument();
     });
 
+    it("shows the saved values, not the ones present when the form mounted, in read mode", async () => {
+      const user = userEvent.setup();
+      await enterEditMode(user);
+
+      await user.clear(screen.getByPlaceholderText("请输入模型名称"));
+      await user.type(screen.getByPlaceholderText("请输入模型名称"), "renamed-model");
+      await user.clear(screen.getByPlaceholderText("请输入 API 基地址"));
+      await user.type(screen.getByPlaceholderText("请输入 API 基地址"), "https://example.test/v1");
+      await save(user);
+
+      expect(await screen.findByText("renamed-model")).toBeInTheDocument();
+      expect(screen.getByText("https://example.test/v1")).toBeInTheDocument();
+      expect(screen.queryByText("GPT-4")).not.toBeInTheDocument();
+      expect(screen.queryByText("https://api.openai.com/v1")).not.toBeInTheDocument();
+    });
+
     it("keeps the form open and surfaces the error when the backend rejects the detach", async () => {
       mockModelPatchUpdateCall.mockRejectedValueOnce(new Error("403 Only a proxy admin can detach"));
       const user = userEvent.setup();
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "None" }));
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(await screen.findByRole("option", { name: "无" }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => expect(mockToast.fromError).toHaveBeenCalled());
-      expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /保存更改/ })).toBeInTheDocument();
       expect(mockToast.success).not.toHaveBeenCalledWith("模型设置更新成功");
     });
 
@@ -1921,7 +1937,7 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
 
-      await user.click(screen.getByPlaceholderText("Select knowledge bases (optional)"));
+      await user.click(screen.getByPlaceholderText("选择知识库（可选）"));
       await user.click(await screen.findByText("Beta (vs-beta)"));
       await user.keyboard("{Escape}");
 
@@ -1945,7 +1961,7 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
 
-      await openSelect(user, "Select existing health check model");
+      await openSelect(user, "选择现有的健康检查模型");
       await user.click(await screen.findByText("openai/gpt-4o"));
 
       const payload = await save(user);
@@ -1960,7 +1976,7 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
 
-      const inputCost = screen.getByPlaceholderText("Enter input cost") as HTMLInputElement;
+      const inputCost = screen.getByPlaceholderText("请输入输入成本") as HTMLInputElement;
       const seeded = inputCost.value;
       expect(seeded).toBe("30");
 
@@ -1979,7 +1995,7 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
 
-      await user.clear(screen.getByPlaceholderText("Enter input cost"));
+      await user.clear(screen.getByPlaceholderText("请输入输入成本"));
       const payload = await save(user);
 
       expect(payload.litellm_params.input_cost_per_token).toBeNull();
@@ -2048,7 +2064,7 @@ describe("ModelInfoView", () => {
     });
 
     const setInputCost = (value: string) => {
-      fireEvent.change(screen.getByPlaceholderText("Enter input cost"), { target: { value } });
+      fireEvent.change(screen.getByPlaceholderText("请输入输入成本"), { target: { value } });
     };
 
     it("carries an edited input cost and the model identifier onto the wire", async () => {

@@ -32,6 +32,10 @@ header: ({ column }) => <DataTableSortHeader column={column} title="Name" />
 
 要改成 `title={t("name")}`，写成 `header: t("name")` 会把 `DataTableSortHeader` 整个丢掉，表头不再可点击排序，而且只有断言排序的测试才会暴露这个问题
 
+翻译后的调用点普遍比英文字面量长，可能把文件顶过 prettier printWidth 120 的换行、进而撑破 eslint `max-lines` 800（按代码行计，不含空行注释）。`tsc` 和 vitest 都不报这条，只有 `npx eslint` 会。收尾必须对改动文件跑一遍 eslint，并与 `git show HEAD:<path>` 的基线告警数对比，别把翻译引入的新错误算作既有噪声
+
+只读展示的值不要从 `form.formState.defaultValues` 取。它在挂载时冻结，保存后父组件更新的是自己的数据（如 `localModelData`），只读模式会显示改动前的旧值。直接读父组件传下来的当前数据，并补一条"编辑保存后只读显示新值"的回归测试
+
 ### 第四步：处理校验文案
 
 zod schema 里的提示也是用户可见文案。schema 定义在模块顶层时拿不到 `t`，按仓库既有做法改成接收 `t` 的工厂函数

@@ -1,10 +1,26 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 160 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10187、中英同值 137）。第 93 到 160 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 161 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10230、中英同值 137）。第 93 到 161 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 161 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `components/ModelInfoEditForm.tsx`，模型详情页第 160 簇之后剩下的那块编辑/只读混合表单（815 行）。
+
+`models.addModel` 命名空间本簇新增 43 个键，叶子 785 涨到 828。复用压掉了大半工作量：字段标签、PTU 四项、`cancelLabel`/`saveChanges` 等 26 个键目录里已有，`notSet`/`none`/`enabled`/`disabled` 挂 `commonT`，`modelName`/`manual` 直接用了 `models.table` 的现成键，真正新造的只有占位符、校验消息、tooltip 这一批。带范围的校验消息写成 ICU 参数（`ptuCountRange`、`ptuRateRange` 各带 `{max}`），上限值仍由代码里的常量决定。
+
+PTU 字段表延续第 155/156 簇的键名化路子。`PTU_EDIT_FIELDS` 的 `labelKey`/`placeholderKey` 换成两个有限 union（`PtuLabelKey`、`PtuPlaceholderKey`），渲染层 `t(ptuField.labelKey)` 取词。`buildSchema` 原来是模块级函数返回英文 zod 消息，改成工厂接收 `AddModelTranslator`（本地别名 `ReturnType<typeof useTranslations<"models.addModel">>`，比照 `editAutoRouterFormSchema.ts`，没动共享的 `translators.ts` 注册表）。union 有限，所以 tsc 能覆盖动态键的存在性，本簇没有目录侧孤儿方向可漏，不需要像第 159/160 簇那样补守卫测试。
+
+顺带修了两个语义坑：`displayCost` 原来返回 `"Not Set"` 字面量，改成返回 `null` 由渲染层兜底；`ChipList` 自己挂 `useTranslations("common")`。只读值来源那次改动值得记：`textField`/`numberField` 一度改从 `form.formState.defaultValues` 取值，这在保存后是错的（defaultValues 挂载即冻结，父组件保存后更新的是 `localModelData`），新加的回归测试钉住"只读模式显示保存后的值"，并用变异检查验证过该测试在错误实现下会红。这个坑也写进了 `WORKFLOW.md` 第三步。
+
+不翻的：两条 JSON 占位符示例（`{"key": "value"}` 形态）、`input_cost_per_token` 这类字面参数字符串。
+
+`model_info_view.test.tsx` 迁移 44 处计数断言（`/save changes/i` 到 `/保存更改/`、`{ name: "None" }` 到 `{ name: "无" }`、占位符与标签按目录取词、8 处 ICU 校验正则）。父页面按钮（`/edit settings/i` 等）留给 model_info_view 那一簇。
+
+覆盖率：接入文件持平 685/912、75.1%（本簇文件原本就挂了 hook），目录叶子 10187 涨到 10230（+43），中英同值 137 持平。验证：`model_info_view.test.tsx` 加 models-and-endpoints 整页和 i18n 守卫共 19 份文件 313 例全绿（4 例预期失败）且类型检查无错；`tsc -p .` 对改动文件 0 错；`eslint` 0 错误 / 7 警告（与 HEAD 基线同集合，翻译把复杂度从 39 压到 31）；`npm run build` 两次通过。两道静态校验照跑：43 条新消息过 `intl-messageformat`，67 处静态 `t()` 调用点参数名与占位符对齐。中途一个提交前自查发现翻译后的调用点撑破了 prettier printWidth 120 又撞上 eslint `max-lines` 800（只有 `npx eslint` 会报，tsc 和 vitest 都不管），靠去掉 `textField`/`numberField` 重复的 `stored` 参数把代码行从 815 收回 787。
 
 ## 2026-10-17 第 160 簇更新
 
