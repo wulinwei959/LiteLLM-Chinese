@@ -1,10 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 156 簇后（非测试 `.tsx` 912 个接入 681 个、74.7%，目录叶子 9914、中英同值 137）。第 93 到 156 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 157 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10020、中英同值 137）。第 93 到 157 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 157 簇更新
+
+继续串行推进，没有派子代理。这一簇是按钮族的头一片：`organisms/create_key_button.tsx`，创建虚拟密钥的整张表单，1877 行。
+
+从密钥归属、密钥详情、可选设置、MCP / 智能体 / 技能 / 日志 / 路由 / 模型别名 / 密钥生命周期一路到高级设置，标签、tooltip、`help`、占位符、校验规则全部接键。`KEY_TYPE_OPTIONS` 是模块级常量拿不到 hook，沿用第 146 簇的写法：常量里存 `labelKey` / `hintKey` 字面量，组件内 `useMemo` 解析。预算、TPM、RPM、TPD 四处"不能超过团队上限"的说明，原来是用模板字面量把 `team?.tpm_limit ?? "unlimited"` 拼在 `help` 里，改成带 ICU 参数的消息 `ct("tpmCeilingHelp", { limit })`，`unlimited` 落到 `common.unlimitedLower`。日志设置的企业版说明和高级设置的文档链接两处要内嵌 `<a>`，用 `ct.rich` 配 `{ link: (chunks) => ... }`。
+
+命名空间的取舍：同一条串只在 `virtualKeys.*` / `common` / `users` / `guardrails` / `policies` / `agents.selector` / `budgetEditors` 这些同域或通用命名空间里已经存在的，一律复用，27 处标签直接走 `t("editForm.*")`。只在 `teams.*`、`projects.*`、`models.addModel.*` 下存在的同款串，本簇另开 `virtualKeys.createForm` 键，不为省一个键把三个模块的目录耦到一起。这笔重复记在收尾的去重待办里，等主路径都接完再统一合并。
+
+两个坑值得单独记。第一个是 JSX 漏花括号：批量脚本把 `label` 写成 `t("x"){" "}`，少了一对花括号，编译与 `tsc` 都不报错，页面直接把 `t("maxBudget")` 当纯文本渲染出来，集成测试一下红了 84 处才暴露。凡是脚本生成 `{t(...)}` 属性或文本节点，务必断言生成的串真的带花括号。第二个是 prettier 会把中英目录砸花：`src/messages/*.json` 不在 `.prettierignore` 里，但它们在当前仓库状态下本来就不是 prettier 排过版的，跑一次每个文件多出约 470 行纯空白改动，把 104 行的真实增量埋进 574 行的假 diff 里。恢复办法是先备份、再 `git show HEAD:./...` 还原、用唯一锚点重放插入，最后断言解析出的 dict 与备份相等。判据用 `git diff -w`。写脚本前先确认目标文件在 HEAD 上是否已经是 prettier-clean：`.tsx` 是，`messages/*.json` 不是。
+
+覆盖率这一簇文件接入数不变（685/912、75.1%，`create_key_button.tsx` 原本已经挂了 hook，只是文案没接），消息叶子 9918 涨到 10020（+102，104 行插入里含两条新增子对象的花括号行），中英同值 137 持平。另外校正一处：老文档记的 681 与 9914 是更早一次快照的口径，用同一份脚本回测 HEAD~1 得到的是 685 与 9918，本簇及以后的差值都以回测基线为准。
+
+验证：`create_key_button.integration.test.tsx` 85 通过 + 1 例预期失败（断言与 `SECTIONS` 正则整套换成中文），加上相关 7 份测试文件 148 通过 + 2 例预期失败，`messagesParity` 与 `missingKeys` 9 通过，`tsc` 无错，`eslint` 0 错误 / 8 警告（与改前基线一致，中途因把 `selectedModels` 这个 `?? []` 表达式塞进 `useMemo` 依赖多加了一条 `react-hooks` 警告，把派生布尔 `allModelsSentinel` 提到外面提出来解决），`npm run build` 通过。扫描器在该文件还剩 15 处命中，全是 `console.error` 的开发日志和 `another_user` 这个内部枚举取值，按口径不翻。
 
 ## 2026-10-17 第 155-156 簇更新
 
