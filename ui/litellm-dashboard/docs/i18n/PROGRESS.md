@@ -1,10 +1,18 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 166 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10352、中英同值 137）。第 93 到 166 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 167 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10352、中英同值 137）。第 93 到 167 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 167 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `playground/components/compareUI/endpoint_config.ts`，Compare 标签页的端点配置数据文件。`playground.compare.endpoints` 十四项键在目录里早已备好（含 `/a2a (智能体)` 这类路径加词），缺的只是消费侧。改法沿用第 155/156/165 簇的键名化：`EndpointConfig` 的 `label`/`selectorLabel`/`selectorPlaceholder`/`inputPlaceholder`/`loadingMessage`/`validationMessage` 六个字段全部换成 `xxxKey` 字面量 union 字段，`getAvailableEndpoints` 返回 `labelKey`，文案在渲染处解引用。消费方共三个文件五处：`CompareUI.tsx` 的 validation toast、端点下拉（`SelectValue` 与 `SelectItem`）、加载句与输入占位符，`UnifiedSelector.tsx` 的 noun（`t(selectorLabelKey).toLowerCase()`，中文 lowercase 是无操作）与占位符。本轮零新增键，叶子与同值持平。文件头尾的开发文档注释（怎么加新端点）与 `EndpointId` 的路径值是给维护者看的说明和标识符，不翻；`/v1/chat/completions` 本来就是路径。
+
+测试迁移：`endpoint_config.test.ts` 两处（`getAvailableEndpoints` 的期望对象改 `labelKey`、`selectorLabel` "Model" 断言改 `selectorLabelKey` 键名）；`UnifiedSelector.test.tsx` 沿用 `lensData.test.ts` 的目录导入先例，加 `zhCN.playground` 为根的 `zh(key)` 解析器，四处期望值（两个占位符、`正在加载 {noun}...`、`无可用 {noun}`）从配置旧字段改读目录。第一版解析器忘了从 `playground` 命名空间根起算，`compare.endpoints` 取不到，4 例红后修正。
+
+验证：compareUI 目录 6 文件 41 例绿（含 `CompareUI.test.tsx` 未受影响），tsc 该目录零错误，eslint stdin 口径五个文件现版与改前 problem 数逐一持平，`npm run build` 过，扫描器 `endpoint_config.ts` 归零。用户中途要求先提交，代码改动在 `021c323a` 单独成一个 commit，本段文档为收尾提交。CompareUI.tsx 尚余 3 处命中（`compare.errorFetching` 两处未接线、`Upload preview`/`Remove attachment`），留给后续簇。
 
 ## 2026-10-17 第 166 簇更新
 
