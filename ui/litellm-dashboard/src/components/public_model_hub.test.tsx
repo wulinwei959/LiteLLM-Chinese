@@ -265,7 +265,7 @@ describe("PublicModelHub", () => {
     await user.click(screen.getByTestId("pagination-next"));
     await waitFor(() => expect(lastModelQuery().page).toBe(2));
 
-    await user.type(screen.getByPlaceholderText("Search model names..."), "claude");
+    await user.type(screen.getByPlaceholderText("搜索模型名称..."), "claude");
 
     await waitFor(() => expect(lastModelQuery().q).toBe("claude"));
     expect(lastModelQuery().page).toBe(1);
@@ -276,7 +276,7 @@ describe("PublicModelHub", () => {
     renderHub();
     await screen.findByText("gpt-4");
 
-    await user.click(screen.getByPlaceholderText("Select modes"));
+    await user.click(screen.getByPlaceholderText("选择模式"));
     await user.click(await screen.findByRole("option", { name: "embedding" }));
 
     await waitFor(() => expect(lastModelQuery()["filter[mode][in]"]).toBe("embedding"));
@@ -291,7 +291,7 @@ describe("PublicModelHub", () => {
     await user.click(screen.getByTestId("pagination-next"));
     await waitFor(() => expect(lastModelQuery().page).toBe(2));
 
-    await user.click(screen.getByPlaceholderText("Select providers"));
+    await user.click(screen.getByPlaceholderText("选择提供商"));
     await user.click(await screen.findByRole("option", { name: /anthropic/i }));
     await waitFor(() => expect(lastModelQuery()["filter[providers][in]"]).toBe("anthropic"));
     expect(lastModelQuery().page).toBe(1);
@@ -306,7 +306,7 @@ describe("PublicModelHub", () => {
     renderHub();
     await screen.findByText("gpt-4");
 
-    await user.click(screen.getByPlaceholderText("Select features"));
+    await user.click(screen.getByPlaceholderText("选择功能"));
     await user.click(await screen.findByRole("option", { name: "Vision" }));
 
     await waitFor(() => expect(lastModelQuery()["filter[features][in]"]).toBe("vision"));
@@ -371,12 +371,12 @@ describe("PublicModelHub", () => {
     expect(await screen.findByText("gpt-4")).toBeInTheDocument();
 
     respondWith([], 0);
-    fireEvent.change(screen.getByPlaceholderText("Search model names..."), { target: { value: "zzzz" } });
+    fireEvent.change(screen.getByPlaceholderText("搜索模型名称..."), { target: { value: "zzzz" } });
 
     await waitFor(() => {
       expect(screen.queryByText("gpt-4")).not.toBeInTheDocument();
       expect(screen.queryByText("claude-3")).not.toBeInTheDocument();
-      expect(screen.getByText("No matching models")).toBeInTheDocument();
+      expect(screen.getByText("没有匹配的模型")).toBeInTheDocument();
     });
   });
 
@@ -385,7 +385,7 @@ describe("PublicModelHub", () => {
 
     renderHub();
 
-    expect(await screen.findByText(/Service unavailable/)).toBeInTheDocument();
+    expect(await screen.findByText(/服务不可用/)).toBeInTheDocument();
   });
 
   it("keeps the page usable when the response carries no rows", async () => {
@@ -395,8 +395,8 @@ describe("PublicModelHub", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("navbar")).toBeInTheDocument();
-      expect(screen.getByText("Model Hub")).toBeInTheDocument();
-      expect(screen.getByText("No models available")).toBeInTheDocument();
+      expect(screen.getByText("模型中心")).toBeInTheDocument();
+      expect(screen.getByText("暂无可用模型")).toBeInTheDocument();
     });
   });
 });
@@ -471,12 +471,12 @@ describe("public hub MCP details modal", () => {
 
     renderHub();
 
-    fireEvent.click(await screen.findByRole("tab", { name: /MCP Hub/i }));
+    fireEvent.click(await screen.findByRole("tab", { name: /MCP 中心/ }));
     fireEvent.click(await screen.findByRole("button", { name: "exa_test" }));
 
-    // "Server Overview" only exists inside the opened MCP details modal,
+    // "服务器概览"只在打开的 MCP 详情弹窗里出现,
     // so finding it proves the modal rendered and the url assertion is not vacuous.
-    await screen.findByText("Server Overview");
+    await screen.findByText("服务器概览");
     expect(screen.queryByText(PUBLIC_SERVER_URL)).not.toBeInTheDocument();
   });
 
@@ -486,13 +486,13 @@ describe("public hub MCP details modal", () => {
 
     renderHub();
 
-    fireEvent.click(await screen.findByRole("tab", { name: /MCP Hub/i }));
+    fireEvent.click(await screen.findByRole("tab", { name: /MCP 中心/ }));
     fireEvent.click(await screen.findByRole("button", { name: "exa_test" }));
-    await screen.findByText("Server Overview");
+    await screen.findByText("服务器概览");
 
     fireEvent.click(screen.getByRole("button", { name: /close/i }));
 
-    await waitFor(() => expect(screen.queryByText("Server Overview")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText("服务器概览")).not.toBeInTheDocument());
   });
 });
 
@@ -518,15 +518,15 @@ describe("public hub footers", () => {
 
     renderHub();
 
-    fireEvent.click(await screen.findByRole("tab", { name: /Agent Hub/i }));
+    fireEvent.click(await screen.findByRole("tab", { name: /智能体中心/ }));
     expect(await screen.findByText("已显示 2，共 2 个智能体")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByPlaceholderText("Search agent names or descriptions..."), {
+    fireEvent.change(screen.getByPlaceholderText("搜索智能体名称或描述..."), {
       target: { value: "zzzz" },
     });
     expect(await screen.findByText("已显示 0，共 2 个智能体")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("tab", { name: /MCP Hub/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /MCP 中心/ }));
     expect(await screen.findByText("已显示 1，共 1 个 MCP 服务器")).toBeInTheDocument();
   });
 });
