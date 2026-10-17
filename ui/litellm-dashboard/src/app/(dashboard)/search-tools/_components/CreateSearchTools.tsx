@@ -63,24 +63,29 @@ export const SearchProviderLabel: React.FC<SearchProviderLabelProps> = ({ provid
   </div>
 );
 
-const createSearchToolShape = {
+type SearchToolsTranslator = ReturnType<typeof useTranslations<"searchTools">>;
+
+const createSearchToolShape = (t: SearchToolsTranslator) => ({
   search_tool_name: z
     .string()
-    .min(1, "Please enter a search tool name")
-    .regex(/^[a-zA-Z0-9_-]+$/, "Name can only contain letters, numbers, hyphens, and underscores"),
+    .min(1, t("nameRequired"))
+    .regex(/^[a-zA-Z0-9_-]+$/, t("namePattern")),
   search_provider: z
     .string()
     .nullable()
-    .pipe(z.string({ error: "Please select a search provider" }).min(1, "Please select a search provider")),
+    .pipe(z.string({ error: t("providerRequired") }).min(1, t("providerRequired"))),
   api_key: z.string().optional(),
   description: z.string().optional(),
+});
+
+const createSearchToolSchema = (t: SearchToolsTranslator) => z.object(createSearchToolShape(t));
+
+type CreateSearchToolFormValues = z.infer<ReturnType<typeof createSearchToolSchema>>;
+
+const EMPTY_VALUES: z.input<ReturnType<typeof createSearchToolSchema>> = {
+  search_tool_name: "",
+  search_provider: null,
 };
-
-const createSearchToolSchema = z.object(createSearchToolShape);
-
-type CreateSearchToolFormValues = z.infer<typeof createSearchToolSchema>;
-
-const EMPTY_VALUES: z.input<typeof createSearchToolSchema> = { search_tool_name: "", search_provider: null };
 
 const labelWithHint = (label: string, hint: string): React.ReactNode => (
   <>
@@ -108,7 +113,11 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
   setModalVisible,
 }) => {
   const t = useTranslations("searchTools");
-  const form = useZodForm(createSearchToolSchema, { defaultValues: EMPTY_VALUES });
+  const commonT = useTranslations("common");
+  const form = useZodForm(
+    useMemo(() => createSearchToolSchema(t), [t]),
+    { defaultValues: EMPTY_VALUES },
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [isTestModalVisible, setIsTestModalVisible] = useState(false);
   const [isTestingConnection, setIsTestingConnection] = useState(false);
@@ -147,13 +156,13 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
       if (accessToken != null) {
         const response = await createSearchTool(accessToken, payload);
 
-        toast.success("Search tool created successfully");
+        toast.success(t("createdToast"));
         form.reset(EMPTY_VALUES);
         setModalVisible(false);
         onCreateSuccess(response);
       }
     } catch (error) {
-      toast.error("Error creating search tool: " + error);
+      toast.error(t("createErrorToast", { error: String(error) }));
     } finally {
       setIsLoading(false);
     }
@@ -167,7 +176,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
   const handleTestConnection = async () => {
     const isValid = await form.trigger(["search_provider", "api_key"]);
     if (!isValid) {
-      toast.error("Please fill in Search Provider and API Key before testing");
+      toast.error(t("testFieldsRequired"));
       return;
     }
 
@@ -196,28 +205,17 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                 <FormField
                   control={form.control}
                   name="search_tool_name"
-                  label={labelWithHint(
-                    "Search Tool Name",
-                    "A unique name to identify this search tool configuration (e.g., 'perplexity-search', 'tavily-news-search').",
-                  )}
+                  label={labelWithHint(t("searchToolName"), t("nameHint"))}
                 >
                   {({ ref, ...field }) => (
-                    <Input
-                      {...field}
-                      ref={ref}
-                      placeholder="e.g., perplexity-search, my-tavily-tool"
-                      className="rounded-lg"
-                    />
+                    <Input {...field} ref={ref} placeholder={t("createNameExample")} className="rounded-lg" />
                   )}
                 </FormField>
 
                 <FormField
                   control={form.control}
                   name="search_provider"
-                  label={labelWithHint(
-                    "Search Provider",
-                    "Select the search provider you want to use. Each provider has different capabilities and pricing.",
-                  )}
+                  label={labelWithHint(t("providerLabel"), t("providerHint"))}
                 >
                   {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
                     <Combobox
@@ -252,14 +250,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                   )}
                 </FormField>
 
-                <FormField
-                  control={form.control}
-                  name="api_key"
-                  label={labelWithHint(
-                    "API Key",
-                    "The API key for authenticating with the search provider. This will be securely stored.",
-                  )}
-                >
+                <FormField control={form.control} name="api_key" label={labelWithHint(t("apiKeyCol"), t("apiKeyHint"))}>
                   {({ ref, value, ...field }) => (
                     <PasswordInput
                       {...field}
@@ -271,7 +262,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                   )}
                 </FormField>
 
-                <FormField control={form.control} name="description" label="Description (Optional)">
+                <FormField control={form.control} name="description" label={t("descriptionOptional")}>
                   {({ ref, value, ...field }) => (
                     <Textarea
                       {...field}
@@ -295,7 +286,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Need Help?
+                        {t("needHelp")}
                       </a>
                     }
                   />
@@ -304,11 +295,11 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                 <div className="flex gap-2">
                   <Button type="submit" variant="outline" onClick={handleTestConnection} disabled={isTestingConnection}>
                     {isTestingConnection && <UiLoadingSpinner className="size-4" />}
-                    Test Connection
+                    {t("testConnection")}
                   </Button>
                   <Button type="submit" variant="outline" disabled={isLoading}>
                     {isLoading && <UiLoadingSpinner className="size-4" />}
-                    Add Search Tool
+                    {t("addTool")}
                   </Button>
                 </div>
               </div>
@@ -350,7 +341,7 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                   setIsTestingConnection(false);
                 }}
               >
-                Close
+                {commonT("close")}
               </Button>
             </DialogFooter>
           </DialogContent>
