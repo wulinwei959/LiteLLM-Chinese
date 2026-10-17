@@ -8156,7 +8156,12 @@
       "statusMessage": "状态信息：",
       "taskId": "任务 ID：",
       "sessionId": "会话 ID：",
-      "customMetadata": "自定义元数据："
+      "customMetadata": "自定义元数据：",
+      "taskLabel": "任务",
+      "sessionLabel": "会话",
+      "clickToCopy": "点击复制：{id}",
+      "copyTaskIdAria": "复制任务 ID {id}",
+      "copySessionIdAria": "复制会话 ID {id}"
     },
     "additionalSettings": {
       "streamResponses": "流式响应",

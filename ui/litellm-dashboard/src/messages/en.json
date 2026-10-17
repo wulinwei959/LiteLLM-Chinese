@@ -8160,7 +8160,12 @@
       "statusMessage": "Status Message:",
       "taskId": "Task ID:",
       "sessionId": "Session ID:",
-      "customMetadata": "Custom Metadata:"
+      "customMetadata": "Custom Metadata:",
+      "taskLabel": "Task",
+      "sessionLabel": "Session",
+      "clickToCopy": "Click to copy: {id}",
+      "copyTaskIdAria": "Copy task ID {id}",
+      "copySessionIdAria": "Copy session ID {id}"
     },
     "additionalSettings": {
       "streamResponses": "Stream responses",
