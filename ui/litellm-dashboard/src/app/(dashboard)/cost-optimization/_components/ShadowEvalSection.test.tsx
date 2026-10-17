@@ -265,18 +265,14 @@ describe("ShadowEvalSection", () => {
     render(<ShadowEvalSection />);
 
     await user.click(screen.getByPlaceholderText("选择评审模型"));
-    expect(screen.getByRole("option", { name: /prod-judge.*Recommended/ })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /prod-judge.*推荐/ })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: /openai\/gpt-4o/ })).not.toBeInTheDocument();
 
     await user.keyboard("{Escape}");
-    await chooseSelectOption(
-      user,
-      screen.getByText("Adoption check: key's traffic vs the router"),
-      "Regression check: router's picks vs a baseline",
-    );
+    await chooseSelectOption(user, screen.getByText("采用检查：密钥流量 vs 路由"), "回归检查：路由选择 vs 基线");
     await user.click(screen.getByPlaceholderText("选择基线模型"));
     expect(screen.getByRole("option", { name: "prod-judge", exact: true })).toBeInTheDocument();
-    expect(screen.queryByText("Recommended")).not.toBeInTheDocument();
+    expect(screen.queryByText("推荐")).not.toBeInTheDocument();
   });
 
   it("keeps custom models selectable through the real model hooks without widening chat choices to traffic filters", async () => {
@@ -311,11 +307,7 @@ describe("ShadowEvalSection", () => {
         );
         await chooseSelectOption(user, screen.getByPlaceholderText("目标使用的所有模型"), "responses-only");
         await chooseSelectOption(user, screen.getByPlaceholderText("目标使用的所有模型"), "custom-chat");
-        await chooseSelectOption(
-          user,
-          screen.getByText("Adoption check: key's traffic vs the router"),
-          "Regression check: router's picks vs a baseline",
-        );
+        await chooseSelectOption(user, screen.getByText("采用检查：密钥流量 vs 路由"), "回归检查：路由选择 vs 基线");
         await user.click(screen.getByPlaceholderText("按别名搜索密钥"));
         await user.click(within(await screen.findByTestId("paginated-multi-select-list")).getByText("prod-alpha"));
         await chooseSelectOption(user, screen.getByPlaceholderText("最多选择 4 个自动路由"), "gpt-auto");
@@ -329,7 +321,7 @@ describe("ShadowEvalSection", () => {
         expect(screen.getByRole("option", { name: "custom-chat", exact: true })).toBeInTheDocument();
         expect(screen.getByRole("option", { name: "custom-judge", exact: true })).toBeInTheDocument();
         await user.click(screen.getByRole("option", { name: "custom-chat", exact: true }));
-        await user.click(screen.getByText("Start shadow eval"));
+        await user.click(screen.getByText("开始影子评估"));
         expect(start.mutate).toHaveBeenCalledWith(
           expect.objectContaining({ judge_model: "custom-judge", baseline_model: "custom-chat", models: [] }),
         );
@@ -435,7 +427,7 @@ describe("ShadowEvalSection", () => {
     mockHooks({});
     render(<ShadowEvalSection />);
     expect(screen.getByText("发起影子评估")).toBeInTheDocument();
-    expect(screen.getByText("Start shadow eval")).toBeInTheDocument();
+    expect(screen.getByText("开始影子评估")).toBeInTheDocument();
   });
 
   it("renders the latest job's results with the headline stat, verdict split, and both stratifications", () => {
@@ -520,7 +512,7 @@ describe("ShadowEvalSection", () => {
     const { start } = mockHooks({});
     render(<ShadowEvalSection />);
 
-    expect(screen.getByText("Start shadow eval")).toBeDisabled();
+    expect(screen.getByText("开始影子评估")).toBeDisabled();
 
     const keyInput = screen.getByPlaceholderText("按别名搜索密钥");
     await user.click(keyInput);
@@ -530,12 +522,12 @@ describe("ShadowEvalSection", () => {
     await user.click(within(keyList).getByText("staging-beta"));
     await chooseSelectOption(user, screen.getByPlaceholderText("最多选择 4 个自动路由"), "gpt-auto");
 
-    expect(screen.getByText("Start shadow eval")).toBeDisabled();
+    expect(screen.getByText("开始影子评估")).toBeDisabled();
 
     await user.click(screen.getByPlaceholderText("选择评审模型"));
     expect(screen.queryByRole("option", { name: /openai\/gpt-4o/ })).not.toBeInTheDocument();
     await user.click(await screen.findByRole("option", { name: /prod-judge/ }));
-    await user.click(screen.getByText("Start shadow eval"));
+    await user.click(screen.getByText("开始影子评估"));
 
     const expectedBody = {
       api_key_ids: ["hash-alpha", "hash-beta"],
@@ -557,7 +549,7 @@ describe("ShadowEvalSection", () => {
     const { start } = mockHooks({});
     render(<ShadowEvalSection />);
 
-    expect(screen.getByText("Start shadow eval")).toBeDisabled();
+    expect(screen.getByText("开始影子评估")).toBeDisabled();
 
     await user.click(screen.getByPlaceholderText("按别名搜索团队"));
     const teamList = await screen.findByTestId("paginated-multi-select-list");
@@ -565,7 +557,7 @@ describe("ShadowEvalSection", () => {
     await chooseSelectOption(user, screen.getByPlaceholderText("最多选择 4 个自动路由"), "gpt-auto");
     await user.click(screen.getByPlaceholderText("选择评审模型"));
     await user.click(await screen.findByRole("option", { name: /prod-judge/ }));
-    await user.click(screen.getByText("Start shadow eval"));
+    await user.click(screen.getByText("开始影子评估"));
 
     const expectedBody = {
       api_key_ids: [],
@@ -594,7 +586,7 @@ describe("ShadowEvalSection", () => {
     await chooseSelectOption(user, screen.getByPlaceholderText("最多选择 4 个自动路由"), "gpt-auto");
     await user.click(screen.getByPlaceholderText("选择评审模型"));
     await user.click(await screen.findByRole("option", { name: /prod-judge/ }));
-    await user.click(screen.getByText("Start shadow eval"));
+    await user.click(screen.getByText("开始影子评估"));
 
     expect(start.mutate).toHaveBeenCalledWith(
       expect.objectContaining({ team_ids: ["team-eng"], models: ["prod-claude"] }),
@@ -614,11 +606,7 @@ describe("ShadowEvalSection", () => {
     expect(screen.queryByPlaceholderText("选择基线模型")).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText("目标使用的所有模型")).toBeInTheDocument();
 
-    await chooseSelectOption(
-      user,
-      screen.getByText("Adoption check: key's traffic vs the router"),
-      "Regression check: router's picks vs a baseline",
-    );
+    await chooseSelectOption(user, screen.getByText("采用检查：密钥流量 vs 路由"), "回归检查：路由选择 vs 基线");
     expect(screen.queryByPlaceholderText("目标使用的所有模型")).not.toBeInTheDocument();
     await user.click(screen.getByPlaceholderText("按别名搜索密钥"));
     const keyList = await screen.findByTestId("paginated-multi-select-list");
@@ -627,12 +615,12 @@ describe("ShadowEvalSection", () => {
     await user.click(screen.getByPlaceholderText("选择评审模型"));
     await user.click(await screen.findByRole("option", { name: /prod-judge/ }));
 
-    expect(screen.getByText("Start shadow eval")).toBeDisabled();
+    expect(screen.getByText("开始影子评估")).toBeDisabled();
 
     await user.click(screen.getByPlaceholderText("选择基线模型"));
     expect(screen.queryByRole("option", { name: /openai\/gpt-4o/ })).not.toBeInTheDocument();
     await user.click(screen.getByRole("option", { name: /prod-claude/ }));
-    await user.click(screen.getByText("Start shadow eval"));
+    await user.click(screen.getByText("开始影子评估"));
 
     const expectedBody = {
       api_key_ids: ["hash-alpha"],
@@ -663,12 +651,10 @@ describe("ShadowEvalSection", () => {
     await user.click(await screen.findByText("gpt-auto"));
     await user.click(routerInput);
     await user.click(await screen.findByText("claude-auto"));
-    expect(
-      screen.getByText("每个路由看到相同的抽样请求，并基于相同的实时响应进行评判"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("每个路由看到相同的抽样请求，并基于相同的实时响应进行评判")).toBeInTheDocument();
     await user.click(screen.getByPlaceholderText("选择评审模型"));
     await user.click(await screen.findByRole("option", { name: /prod-judge/ }));
-    await user.click(screen.getByText("Start shadow eval"));
+    await user.click(screen.getByText("开始影子评估"));
 
     const expectedBody = {
       api_key_ids: ["hash-alpha"],
@@ -698,18 +684,14 @@ describe("ShadowEvalSection", () => {
     await user.click(await screen.findByText("gpt-auto"));
     await user.click(routerInput);
     await user.click(await screen.findByText("claude-auto"));
-    await chooseSelectOption(
-      user,
-      screen.getByText("Adoption check: key's traffic vs the router"),
-      "Regression check: router's picks vs a baseline",
-    );
+    await chooseSelectOption(user, screen.getByText("采用检查：密钥流量 vs 路由"), "回归检查：路由选择 vs 基线");
     await user.click(screen.getByPlaceholderText("选择评审模型"));
     await user.click(await screen.findByRole("option", { name: /prod-judge/ }));
     await user.click(screen.getByPlaceholderText("选择基线模型"));
     await user.click(screen.getByRole("option", { name: /prod-claude/ }));
 
     expect(screen.getByText("回归检查会将一个路由与其基线进行对比")).toBeInTheDocument();
-    expect(screen.getByText("Start shadow eval")).toBeDisabled();
+    expect(screen.getByText("开始影子评估")).toBeDisabled();
   });
 
   it("renders a per-router comparison table only when the job ran several routers", () => {

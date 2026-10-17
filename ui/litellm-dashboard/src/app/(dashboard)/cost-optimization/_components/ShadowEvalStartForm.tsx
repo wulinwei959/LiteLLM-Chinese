@@ -32,24 +32,33 @@ const MAX_ROUTERS = 4;
 const MAX_MODELS = 100;
 const RECOMMENDED_JUDGE_MODELS = ["anthropic/claude-sonnet-5", "openai/gpt-4o", "gemini/gemini-2.5-pro"] as const;
 
-const DIRECTION_OPTIONS: readonly { value: ShadowEvalDirection; label: string }[] = [
-  { value: "forward", label: "Adoption check: key's traffic vs the router" },
-  { value: "reverse", label: "Regression check: router's picks vs a baseline" },
+const DIRECTION_OPTIONS: readonly {
+  value: ShadowEvalDirection;
+  labelKey: "shadowEval.directionForward" | "shadowEval.directionReverse";
+}[] = [
+  { value: "forward", labelKey: "shadowEval.directionForward" },
+  { value: "reverse", labelKey: "shadowEval.directionReverse" },
 ] as const;
 
-const START_FORM_DESCRIPTION: Record<ShadowEvalDirection, string> = {
-  forward:
-    "Duplicates a sampled slice of the selected targets' traffic (keys, teams, or users) through the auto-router and has an LLM judge compare both answers blind. Each target gets its own spend budget. The router's answers are never served to users; judge calls bill to the sampled traffic's own identity.",
-  reverse:
-    "Duplicates a sampled slice of the traffic the auto-router already serves against a fixed baseline model and has an LLM judge compare both answers blind. Each target gets its own spend budget. The baseline's answers are never served to users; judge calls bill to the sampled traffic's own identity.",
+const START_FORM_DESCRIPTION: Record<ShadowEvalDirection, "shadowEval.descForward" | "shadowEval.descReverse"> = {
+  forward: "shadowEval.descForward",
+  reverse: "shadowEval.descReverse",
 };
 
-const DURATION_OPTIONS = [
-  { value: "1", label: "1 day" },
-  { value: "3", label: "3 days" },
-  { value: "7", label: "7 days" },
-  { value: "14", label: "14 days" },
-  { value: "30", label: "30 days" },
+const DURATION_OPTIONS: readonly {
+  value: string;
+  labelKey:
+    | "shadowEval.duration1d"
+    | "shadowEval.duration3d"
+    | "shadowEval.duration7d"
+    | "shadowEval.duration14d"
+    | "shadowEval.duration30d";
+}[] = [
+  { value: "1", labelKey: "shadowEval.duration1d" },
+  { value: "3", labelKey: "shadowEval.duration3d" },
+  { value: "7", labelKey: "shadowEval.duration7d" },
+  { value: "14", labelKey: "shadowEval.duration14d" },
+  { value: "30", labelKey: "shadowEval.duration30d" },
 ] as const;
 
 const Field: React.FC<{ label: string; htmlFor?: string; className?: string; children: React.ReactNode }> = ({
@@ -265,9 +274,9 @@ export const StartForm: React.FC = () => {
   const judgeOptions = useMemo(
     () =>
       chatOptions.map((option) =>
-        recommendedJudgeModels.has(option.value) ? { ...option, sublabel: "Recommended" } : option,
+        recommendedJudgeModels.has(option.value) ? { ...option, sublabel: t("shadowEval.recommended") } : option,
       ),
-    [chatOptions, recommendedJudgeModels],
+    [chatOptions, recommendedJudgeModels, t],
   );
   const start = useStartShadowEval();
 
@@ -292,6 +301,8 @@ export const StartForm: React.FC = () => {
     maxBudget,
   };
   const { parsedPct, parsedMaxBudget, percentageValid, maxBudgetValid, valid } = startFormValidity(validityInputs);
+  const directionLabelKey = DIRECTION_OPTIONS.find((o) => o.value === direction)?.labelKey;
+  const durationLabelKey = DURATION_OPTIONS.find((o) => o.value === durationDays)?.labelKey;
   const handleStart = () => {
     if (!valid || !judgeModel) return;
     const bodyInputs: StartBodyInputs = {
@@ -314,38 +325,38 @@ export const StartForm: React.FC = () => {
     <Card size="sm">
       <CardHeader>
         <CardTitle className="text-sm font-medium text-foreground">{t("shadowEval.startBtn")}</CardTitle>
-        <p className="text-xs text-muted-foreground">{START_FORM_DESCRIPTION[direction]}</p>
+        <p className="text-xs text-muted-foreground">{t(START_FORM_DESCRIPTION[direction])}</p>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="grid gap-3 sm:grid-cols-3">
-          <Field label="Direction">
+          <Field label={t("shadowEval.fieldDirection")}>
             <Select
               value={direction}
               onValueChange={(v: string | null) => setDirection(v === "reverse" ? "reverse" : "forward")}
             >
               <SelectTrigger className="w-full">
-                <SelectValue>{DIRECTION_OPTIONS.find((o) => o.value === direction)?.label}</SelectValue>
+                <SelectValue>{directionLabelKey ? t(directionLabelKey) : null}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {DIRECTION_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                    {t(option.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </Field>
-          <Field label="Keys to shadow" htmlFor="shadow-eval-key">
+          <Field label={t("shadowEval.fieldKeys")} htmlFor="shadow-eval-key">
             <KeySelect value={apiKeyIds} onChange={setApiKeyIds} />
           </Field>
-          <Field label="Teams to shadow">
+          <Field label={t("shadowEval.fieldTeams")}>
             <TeamMultiSelect value={teamIds} onChange={setTeamIds} placeholder={t("shadowEval.searchTeams")} />
           </Field>
-          <Field label="Users to shadow" htmlFor="shadow-eval-user">
+          <Field label={t("shadowEval.fieldUsers")} htmlFor="shadow-eval-user">
             <UserSelect value={userIds} onChange={setUserIds} />
           </Field>
           {direction === "forward" && (
-            <Field label="Only on models">
+            <Field label={t("shadowEval.fieldModels")}>
               <MultiSelect
                 options={modelOptions}
                 value={models}
@@ -366,7 +377,7 @@ export const StartForm: React.FC = () => {
             onChange={setRouterNames}
             direction={direction}
           />
-          <Field label="Traffic sampled" htmlFor="shadow-eval-pct">
+          <Field label={t("shadowEval.fieldTraffic")} htmlFor="shadow-eval-pct">
             <div className="flex items-center gap-2">
               <Input
                 id="shadow-eval-pct"
@@ -378,7 +389,7 @@ export const StartForm: React.FC = () => {
                 value={percentage}
                 onChange={(e) => setPercentage(e.target.value)}
               />
-              <span className="text-sm text-muted-foreground">% of traffic</span>
+              <span className="text-sm text-muted-foreground">{t("shadowEval.pctOfTraffic")}</span>
             </div>
             <div>
               {percentage.trim() !== "" && !percentageValid && (
@@ -386,21 +397,21 @@ export const StartForm: React.FC = () => {
               )}
             </div>
           </Field>
-          <Field label="Duration">
+          <Field label={t("shadowEval.fieldDuration")}>
             <Select value={durationDays} onValueChange={(v: string | null) => setDurationDays(v ?? "7")}>
               <SelectTrigger className="w-full">
-                <SelectValue>{DURATION_OPTIONS.find((o) => o.value === durationDays)?.label}</SelectValue>
+                <SelectValue>{durationLabelKey ? t(durationLabelKey) : null}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {DURATION_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                    {t(option.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </Field>
-          <Field label="Spend budget">
+          <Field label={t("shadowEval.fieldBudget")}>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">$</span>
               <Input
@@ -412,35 +423,35 @@ export const StartForm: React.FC = () => {
                 value={maxBudget}
                 onChange={(e) => setMaxBudget(e.target.value)}
               />
-              <span className="text-sm text-muted-foreground">max shadow + judge spend, per target</span>
+              <span className="text-sm text-muted-foreground">{t("shadowEval.budgetHint")}</span>
             </div>
             {maxBudget.trim() !== "" && !maxBudgetValid && (
               <p className="text-xs text-destructive">{t("shadowEval.maxRangeHint")}</p>
             )}
           </Field>
           {direction === "reverse" && (
-            <Field label="Baseline model">
+            <Field label={t("shadowEval.fieldBaseline")}>
               <SearchSelect
                 options={chatOptions}
                 value={baselineModel}
                 onValueChange={setBaselineModel}
                 placeholder={t("shadowEval.selectBaseline")}
-                emptyText="No chat models available"
+                emptyText={t("shadowEval.noChatModels")}
               />
             </Field>
           )}
-          <Field label="Judge model" className="sm:col-span-2">
+          <Field label={t("shadowEval.fieldJudge")} className="sm:col-span-2">
             <SearchSelect
               options={judgeOptions}
               value={judgeModel}
               onValueChange={setJudgeModel}
               placeholder={t("shadowEval.selectJudge")}
-              emptyText="No chat models available"
+              emptyText={t("shadowEval.noChatModels")}
             />
           </Field>
         </div>
         <Button disabled={!valid || start.isPending} onClick={handleStart}>
-          {start.isPending ? "Starting..." : "Start shadow eval"}
+          {start.isPending ? t("shadowEval.starting") : t("shadowEval.startSubmit")}
         </Button>
       </CardContent>
     </Card>
