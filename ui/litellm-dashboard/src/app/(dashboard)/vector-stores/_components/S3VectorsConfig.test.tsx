@@ -27,10 +27,10 @@ describe("S3VectorsConfig", () => {
     render(<S3VectorsConfig {...defaultProps} />);
 
     expect(screen.getByText("AWS S3 Vectors 设置")).toBeInTheDocument();
-    expect(screen.getByText("Vector Bucket Name")).toBeInTheDocument();
-    expect(screen.getByText("Index Name")).toBeInTheDocument();
-    expect(screen.getByText("AWS Region")).toBeInTheDocument();
-    expect(screen.getByText("Embedding Model")).toBeInTheDocument();
+    expect(screen.getByText("向量存储桶名称")).toBeInTheDocument();
+    expect(screen.getByText("索引名称")).toBeInTheDocument();
+    expect(screen.getByText("AWS 区域")).toBeInTheDocument();
+    expect(screen.getByText("嵌入模型")).toBeInTheDocument();
   });
 
   it("should display setup instructions", () => {
@@ -38,11 +38,13 @@ describe("S3VectorsConfig", () => {
 
     render(<S3VectorsConfig {...defaultProps} />);
 
-    expect(
-      screen.getByText(/AWS S3 Vectors allows you to store and query vector embeddings directly in S3/),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/Vector buckets and indexes will be automatically created/)).toBeInTheDocument();
-    expect(screen.getByText(/Vector dimensions are auto-detected/)).toBeInTheDocument();
+    expect(screen.getByText(/AWS S3 Vectors 支持直接在 S3 中存储与查询向量嵌入/)).toBeInTheDocument();
+    expect(screen.getByText(/向量存储桶与索引不存在时会自动创建/)).toBeInTheDocument();
+    expect(screen.getByText(/向量维度会根据所选嵌入模型自动检测/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "AWS S3 Vectors 文档" })).toHaveAttribute(
+      "href",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vector-buckets.html",
+    );
   });
 
   it("should fetch embedding models on mount", async () => {
@@ -80,7 +82,7 @@ describe("S3VectorsConfig", () => {
 
     // The component should filter to only embedding models internally
     // We can verify this by checking the component loaded successfully
-    expect(screen.getByText("Embedding Model")).toBeInTheDocument();
+    expect(screen.getByText("嵌入模型")).toBeInTheDocument();
   });
 
   it("should call onParamsChange when vector bucket name changes", async () => {
@@ -88,7 +90,7 @@ describe("S3VectorsConfig", () => {
 
     render(<S3VectorsConfig {...defaultProps} />);
 
-    const bucketInput = screen.getByPlaceholderText("my-vector-bucket (min 3 chars)");
+    const bucketInput = screen.getByPlaceholderText("my-vector-bucket（至少 3 个字符）");
 
     await act(async () => {
       fireEvent.change(bucketInput, { target: { value: "test-bucket" } });
@@ -138,7 +140,7 @@ describe("S3VectorsConfig", () => {
     });
 
     // The component should handle the selection
-    expect(screen.getByText("Embedding Model")).toBeInTheDocument();
+    expect(screen.getByText("嵌入模型")).toBeInTheDocument();
   });
 
   it("should preserve existing params when updating a field", async () => {
@@ -151,7 +153,7 @@ describe("S3VectorsConfig", () => {
 
     render(<S3VectorsConfig {...defaultProps} providerParams={existingParams} />);
 
-    const indexInput = screen.getByPlaceholderText("my-vector-index (optional, min 3 chars)");
+    const indexInput = screen.getByPlaceholderText("my-vector-index（可选，至少 3 个字符）");
 
     await act(async () => {
       fireEvent.change(indexInput, { target: { value: "my-index" } });
@@ -179,6 +181,15 @@ describe("S3VectorsConfig", () => {
     expect(screen.getByDisplayValue("my-bucket")).toBeInTheDocument();
     expect(screen.getByDisplayValue("my-index")).toBeInTheDocument();
     expect(screen.getByDisplayValue("eu-west-1")).toBeInTheDocument();
+  });
+
+  it("should show localized validation messages when names are too short", () => {
+    vi.spyOn(fetchModels, "fetchAvailableModels").mockResolvedValue([]);
+
+    render(<S3VectorsConfig {...defaultProps} providerParams={{ vector_bucket_name: "ab", index_name: "xy" }} />);
+
+    expect(screen.getByText("存储桶名称至少需要 3 个字符")).toBeInTheDocument();
+    expect(screen.getByText("索引名称如填写，需至少 3 个字符")).toBeInTheDocument();
   });
 
   it("should handle model fetch error gracefully", async () => {

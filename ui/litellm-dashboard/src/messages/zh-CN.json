@@ -9177,7 +9177,20 @@
     "selectFieldRequired": "请选择 {field}",
     "inputFieldRequired": "请输入 {field}",
     "providerFieldMissing": "请填写 {field}",
-    "selectorPlaceholder": "选择向量库"
+    "selectorPlaceholder": "选择向量库",
+    "s3Desc": "AWS S3 Vectors 支持直接在 S3 中存储与查询向量嵌入：",
+    "s3AutoCreate": "向量存储桶与索引不存在时会自动创建",
+    "s3AutoDimensions": "向量维度会根据所选嵌入模型自动检测",
+    "s3Permissions": "请确保你的 AWS 凭证具有 S3 Vectors 操作权限",
+    "s3LearnMore": "了解更多：<link>AWS S3 Vectors 文档</link>",
+    "s3BucketTooltip": "用于向量存储的 S3 存储桶名称（至少 3 个字符，只能包含小写字母、数字、连字符和点）",
+    "s3IndexTooltip": "向量索引名称（可选，不填将自动生成）。如填写，需至少 3 个字符。",
+    "s3BucketPlaceholder": "my-vector-bucket（至少 3 个字符）",
+    "s3IndexPlaceholder": "my-vector-index（可选，至少 3 个字符）",
+    "bucketTooShort": "存储桶名称至少需要 3 个字符",
+    "indexTooShort": "索引名称如填写，需至少 3 个字符",
+    "loadingModels": "正在加载模型...",
+    "noEmbeddingModels": "未找到嵌入模型。"
   },
   "modelHub": {
     "showingModels": "已显示 {shown}，共 {total} 个模型",

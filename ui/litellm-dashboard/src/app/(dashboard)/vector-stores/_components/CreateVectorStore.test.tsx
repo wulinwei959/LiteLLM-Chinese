@@ -38,25 +38,25 @@ vi.mock("@/components/vector_store_providers", () => ({
       return [
         {
           name: "vector_bucket_name",
-          label: "Vector Bucket Name",
-          tooltip: "S3 bucket name for vector storage",
-          placeholder: "my-vector-bucket",
+          labelKey: "fields.s3Vectors.vectorBucketName.label",
+          tooltipKey: "fields.s3Vectors.vectorBucketName.tooltip",
+          placeholderKey: "fields.s3Vectors.vectorBucketName.placeholder",
           required: true,
           type: "text",
         },
         {
           name: "aws_region_name",
-          label: "AWS Region",
-          tooltip: "AWS region",
-          placeholder: "us-west-2",
+          labelKey: "fields.s3Vectors.awsRegion.label",
+          tooltipKey: "fields.s3Vectors.awsRegion.tooltip",
+          placeholderKey: "fields.s3Vectors.awsRegion.placeholder",
           required: true,
           type: "text",
         },
         {
           name: "embedding_model",
-          label: "Embedding Model",
-          tooltip: "Embedding model to use",
-          placeholder: "text-embedding-3-small",
+          labelKey: "fields.s3Vectors.embeddingModel.label",
+          tooltipKey: "fields.s3Vectors.embeddingModel.tooltip",
+          placeholderKey: "fields.s3Vectors.embeddingModel.placeholder",
           required: true,
           type: "select",
         },
@@ -244,9 +244,9 @@ describe("CreateVectorStore", () => {
 
     // Check if S3-specific fields are displayed
     await waitFor(() => {
-      expect(screen.getByText("Vector Bucket Name")).toBeInTheDocument();
-      expect(screen.getByText("AWS Region")).toBeInTheDocument();
-      expect(screen.getByText("Embedding Model")).toBeInTheDocument();
+      expect(screen.getByText("向量存储桶名称")).toBeInTheDocument();
+      expect(screen.getByText("AWS 区域")).toBeInTheDocument();
+      expect(screen.getByText("嵌入模型")).toBeInTheDocument();
     });
   });
 

@@ -68,11 +68,8 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({ accessToken, provider
 
   const bucketName = asText(providerParams.vector_bucket_name);
   const indexName = asText(providerParams.index_name);
-  const bucketNameError = bucketName && bucketName.length < 3 ? "Bucket name must be at least 3 characters" : undefined;
-  const indexNameError =
-    indexName && indexName.length > 0 && indexName.length < 3
-      ? "Index name must be at least 3 characters if provided"
-      : undefined;
+  const bucketNameError = bucketName && bucketName.length < 3 ? t("bucketTooShort") : undefined;
+  const indexNameError = indexName && indexName.length > 0 && indexName.length < 3 ? t("indexTooShort") : undefined;
 
   return (
     <TooltipProvider>
@@ -81,20 +78,23 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({ accessToken, provider
         <AlertTitle>{t("s3Setup")}</AlertTitle>
         <AlertDescription>
           <div>
-            <p>AWS S3 Vectors allows you to store and query vector embeddings directly in S3:</p>
+            <p>{t("s3Desc")}</p>
             <ul style={{ marginLeft: "16px", marginTop: "8px" }}>
-              <li>Vector buckets and indexes will be automatically created if they don&apos;t exist</li>
-              <li>Vector dimensions are auto-detected from your selected embedding model</li>
-              <li>Ensure your AWS credentials have permissions for S3 Vectors operations</li>
+              <li>{t("s3AutoCreate")}</li>
+              <li>{t("s3AutoDimensions")}</li>
+              <li>{t("s3Permissions")}</li>
               <li>
-                Learn more:{" "}
-                <a
-                  href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vector-buckets.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  AWS S3 Vectors Documentation
-                </a>
+                {t.rich("s3LearnMore", {
+                  link: (chunks) => (
+                    <a
+                      href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vector-buckets.html"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {chunks}
+                    </a>
+                  ),
+                })}
               </li>
             </ul>
           </div>
@@ -103,16 +103,13 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({ accessToken, provider
 
       <Field data-invalid={bucketNameError !== undefined || undefined}>
         <FieldLabel htmlFor="s3-vector-bucket-name">
-          {labelWithHint(
-            "Vector Bucket Name",
-            "S3 bucket name for vector storage (must be at least 3 characters, lowercase letters, numbers, hyphens, and periods only)",
-          )}
+          {labelWithHint(t("fields.s3Vectors.vectorBucketName.label"), t("s3BucketTooltip"))}
         </FieldLabel>
         <Input
           id="s3-vector-bucket-name"
           value={bucketName}
           onChange={(e) => handleFieldChange("vector_bucket_name", e.target.value)}
-          placeholder="my-vector-bucket (min 3 chars)"
+          placeholder={t("s3BucketPlaceholder")}
           aria-invalid={bucketNameError !== undefined || undefined}
         />
         <FieldError>{bucketNameError}</FieldError>
@@ -120,16 +117,13 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({ accessToken, provider
 
       <Field data-invalid={indexNameError !== undefined || undefined}>
         <FieldLabel htmlFor="s3-index-name">
-          {labelWithHint(
-            "Index Name",
-            "Name for the vector index (optional, will be auto-generated if not provided). If provided, must be at least 3 characters.",
-          )}
+          {labelWithHint(t("fields.s3Vectors.indexName.label"), t("s3IndexTooltip"))}
         </FieldLabel>
         <Input
           id="s3-index-name"
           value={indexName}
           onChange={(e) => handleFieldChange("index_name", e.target.value)}
-          placeholder="my-vector-index (optional, min 3 chars)"
+          placeholder={t("s3IndexPlaceholder")}
           aria-invalid={indexNameError !== undefined || undefined}
         />
         <FieldError>{indexNameError}</FieldError>
@@ -137,19 +131,19 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({ accessToken, provider
 
       <Field>
         <FieldLabel htmlFor="s3-aws-region-name">
-          {labelWithHint("AWS Region", "AWS region where the S3 bucket is located (e.g., us-west-2)")}
+          {labelWithHint(t("fields.s3Vectors.awsRegion.label"), t("fields.s3Vectors.awsRegion.tooltip"))}
         </FieldLabel>
         <Input
           id="s3-aws-region-name"
           value={asText(providerParams.aws_region_name)}
           onChange={(e) => handleFieldChange("aws_region_name", e.target.value)}
-          placeholder="us-west-2"
+          placeholder={t("fields.s3Vectors.awsRegion.placeholder")}
         />
       </Field>
 
       <Field>
         <FieldLabel htmlFor="s3-embedding-model">
-          {labelWithHint("Embedding Model", "Select the embedding model to use for vector generation")}
+          {labelWithHint(t("fields.s3Vectors.embeddingModel.label"), t("fields.s3Vectors.embeddingModel.tooltip"))}
         </FieldLabel>
         <Combobox
           value={asText(providerParams.embedding_model) || null}
@@ -158,7 +152,7 @@ const S3VectorsConfig: React.FC<S3VectorsConfigProps> = ({ accessToken, provider
         >
           <ComboboxInput id="s3-embedding-model" placeholder={t("selectEmbeddingModel")} />
           <ComboboxContent>
-            <ComboboxEmpty>{isLoadingModels ? "Loading models..." : "No embedding models found."}</ComboboxEmpty>
+            <ComboboxEmpty>{isLoadingModels ? t("loadingModels") : t("noEmbeddingModels")}</ComboboxEmpty>
             <ComboboxList>
               {(model: string) => (
                 <ComboboxItem key={model} value={model}>
