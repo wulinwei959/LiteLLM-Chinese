@@ -8516,7 +8516,182 @@
     "docIdCopied": "文档 ID 已复制到剪贴板",
     "removeDoc": "移除",
     "indexesErrorPrefix": "获取索引失败：",
-    "indexesIntro": "通过 <code>/v1/indexes</code> API 注册到本代理的向量存储索引。工作原理见<docsLink>向量存储索引文档</docsLink>。目前索引透传支持 Azure AI Search 与 Milvus；如需支持更多供应商，欢迎<issueLink>提交 GitHub issue</issueLink>。"
+    "indexesIntro": "通过 <code>/v1/indexes</code> API 注册到本代理的向量存储索引。工作原理见<docsLink>向量存储索引文档</docsLink>。目前索引透传支持 Azure AI Search 与 Milvus；如需支持更多供应商，欢迎<issueLink>提交 GitHub issue</issueLink>。",
+    "fields": {
+        "pgVector": {
+            "apiBase": {
+                "label": "API 基础地址",
+                "tooltip": "请输入你部署的 litellm-pgvector 服务器的基础地址（例如 http://your-server:8000）",
+                "placeholder": "http://your-deployed-server:8000"
+            },
+            "apiKey": {
+                "label": "API 密钥",
+                "tooltip": "请输入你部署的 litellm-pgvector 服务器的 API 密钥",
+                "placeholder": "你的已部署 API 密钥"
+            }
+        },
+        "vertexSearchApi": {
+            "vertexProject": {
+                "label": "Vertex 项目",
+                "tooltip": "承载 Vertex AI Search 数据存储的 Google Cloud 项目 ID。",
+                "placeholder": "my-gcp-project-id"
+            },
+            "vertexLocation": {
+                "label": "Vertex 区域",
+                "tooltip": "Vertex AI Search 数据存储所在的区域，必须是 global、us 或 eu 之一。"
+            },
+            "collectionId": {
+                "label": "集合 ID（可选）",
+                "tooltip": "Discovery Engine 的集合 ID。留空则使用默认集合。",
+                "placeholder": "例如 my-custom-collection"
+            },
+            "engineId": {
+                "label": "引擎 ID（可选）",
+                "tooltip": "搜索应用（引擎）ID。网站、医疗健康以及基于连接器的数据存储（Workspace、Slack、Jira 等）必须填写，因为这些数据源通过引擎路由搜索。留空则直接查询数据存储。",
+                "placeholder": "例如 my-search-app_1234567890"
+            }
+        },
+        "openai": {
+            "apiKey": {
+                "label": "API 密钥",
+                "tooltip": "请输入你的 OpenAI API 密钥",
+                "placeholder": "sk-..."
+            }
+        },
+        "azure": {
+            "apiKey": {
+                "label": "API 密钥",
+                "tooltip": "请输入你的 Azure OpenAI API 密钥",
+                "placeholder": "你的 Azure API 密钥"
+            },
+            "apiBase": {
+                "label": "API 基础地址",
+                "tooltip": "请输入你的 Azure OpenAI 终结点（例如 https://your-resource.openai.azure.com/）",
+                "placeholder": "https://your-resource.openai.azure.com/"
+            }
+        },
+        "milvus": {
+            "apiKey": {
+                "label": "API 密钥",
+                "tooltip": "要获取令牌，请用冒号（:）把访问 Milvus 实例所用的用户名与密码拼接起来（例如 username:password）",
+                "placeholder": "username:password 或 API 密钥"
+            },
+            "apiBase": {
+                "label": "API 基础地址",
+                "tooltip": "请输入你的 Milvus 终结点（例如 https://your-milvus-endpoint.com/）",
+                "placeholder": "https://your-milvus-endpoint.com/"
+            },
+            "embeddingModel": {
+                "label": "嵌入模型",
+                "tooltip": "选择要使用的嵌入模型",
+                "placeholder": "text-embedding-3-small"
+            }
+        },
+        "mongodb": {
+            "apiBase": {
+                "label": "Sidecar 地址",
+                "tooltip": "远程 Sidecar 请用 HTTPS；与宿主机或 Pod 同机的 Sidecar 请用回环 IP 的 HTTP",
+                "placeholder": "http://127.0.0.1:8080"
+            },
+            "apiKey": {
+                "label": "Sidecar API 密钥",
+                "tooltip": "你的 MongoDB Sidecar 中配置的 MONGODB_SIDECAR_API_KEY",
+                "placeholder": "请输入 Sidecar API 密钥"
+            },
+            "database": {
+                "label": "数据库",
+                "tooltip": "存放你要搜索的集合的 MongoDB 数据库",
+                "placeholder": "sample_mflix"
+            },
+            "collection": {
+                "label": "集合",
+                "tooltip": "MongoDB Vector Search 索引所在的集合",
+                "placeholder": "embedded_movies"
+            },
+            "embeddingModel": {
+                "label": "嵌入模型",
+                "tooltip": "本代理上用于生成你集合中已有向量的嵌入模型。LiteLLM 用它来嵌入每条搜索查询，因此必须是同一个模型。换一个同样大小的模型不会报错，只会返回错误结果。如果列表里没有它，请先到模型页添加。",
+                "placeholder": "text-embedding-3-small"
+            },
+            "vectorFieldName": {
+                "label": "向量字段名",
+                "tooltip": "每个文档中存放嵌入值的字段，必须与 MongoDB Vector Search 索引创建时的路径一致（默认 embedding）",
+                "placeholder": "embedding"
+            },
+            "textField": {
+                "label": "文本字段",
+                "tooltip": "每个文档中存放可读文本的字段。LiteLLM 会在搜索结果里返回该文本，支持 metadata.body 这样的点分路径（默认 text）",
+                "placeholder": "text"
+            },
+            "candidatesConsidered": {
+                "label": "候选数量",
+                "tooltip": "MongoDB 在返回最相似结果前会检查多少个近邻。数值越大越精确也越慢。留空则由 LiteLLM 按请求的结果数量自动伸缩。",
+                "placeholder": "100"
+            }
+        },
+        "valkey": {
+            "valkeyHost": {
+                "label": "Valkey 主机",
+                "tooltip": "你的 Valkey 服务器主机名或 IP，不带 redis:// 协议头和端口（例如 my-valkey.example.com）",
+                "placeholder": "my-valkey.example.com"
+            },
+            "valkeyPort": {
+                "label": "Valkey 端口",
+                "tooltip": "你的 Valkey 服务器监听的端口。除非改过，否则保持 6379。",
+                "placeholder": "6379"
+            },
+            "valkeyPassword": {
+                "label": "Valkey 密码",
+                "tooltip": "登录 Valkey 服务器所用的密码。若该服务器没有密码则留空。"
+            },
+            "useTls": {
+                "label": "使用 TLS",
+                "tooltip": "若你的 Valkey 服务器要求加密（TLS）连接则设为 true，例如开启了传输中加密的 AWS ElastiCache。"
+            },
+            "embeddingModel": {
+                "label": "嵌入模型",
+                "tooltip": "本代理上用于生成你 Valkey 索引中已有嵌入值的嵌入模型。LiteLLM 用它来嵌入每条搜索查询，因此必须是同一个模型，否则结果会出错。如果列表里没有它，请先到模型页添加。",
+                "placeholder": "text-embedding-3-small"
+            },
+            "valkeyTextField": {
+                "label": "文本字段",
+                "tooltip": "每个已存文档中存放可读文本的字段。LiteLLM 会在搜索结果里返回该文本，必须与文档的存储方式一致（默认 text）。",
+                "placeholder": "text"
+            },
+            "valkeyEmbeddingField": {
+                "label": "向量字段名",
+                "tooltip": "每个已存文档中存放嵌入值的字段。LiteLLM 在该字段上做向量检索，因此必须与索引创建时的字段一致（默认 embedding）。",
+                "placeholder": "embedding"
+            }
+        },
+        "s3Vectors": {
+            "vectorBucketName": {
+                "label": "向量存储桶名称",
+                "tooltip": "用于向量存储的 S3 存储桶名称（不存在时将自动创建）",
+                "placeholder": "my-vector-bucket"
+            },
+            "indexName": {
+                "label": "索引名称",
+                "tooltip": "向量索引名称（可选，不填将自动生成）",
+                "placeholder": "my-vector-index"
+            },
+            "awsRegion": {
+                "label": "AWS 区域",
+                "tooltip": "S3 存储桶所在的 AWS 区域（例如 us-west-2）",
+                "placeholder": "us-west-2"
+            },
+            "embeddingModel": {
+                "label": "嵌入模型",
+                "tooltip": "选择用于生成向量的嵌入模型",
+                "placeholder": "text-embedding-3-small"
+            }
+        }
+    },
+    "providerRequired": "请选择供应商",
+    "idRequired": "请输入你的 API 供应商提供的向量存储 ID",
+    "selectFieldRequired": "请选择 {field}",
+    "inputFieldRequired": "请输入 {field}",
+    "providerFieldMissing": "请填写 {field}"
   },
   "modelHub": {
     "showingModels": "已显示 {shown}，共 {total} 个模型",

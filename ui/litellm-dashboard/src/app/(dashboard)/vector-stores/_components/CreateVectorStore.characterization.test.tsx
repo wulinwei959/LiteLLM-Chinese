@@ -35,25 +35,25 @@ vi.mock("@/components/vector_store_providers", () => ({
       return [
         {
           name: "api_base",
-          label: "API Base",
-          tooltip: "Base URL of the pgvector server",
-          placeholder: "http://localhost:8000",
+          labelKey: "fields.pgVector.apiBase.label",
+          tooltipKey: "fields.pgVector.apiBase.tooltip",
+          placeholderKey: "fields.pgVector.apiBase.placeholder",
           required: true,
           type: "text",
         },
         {
           name: "api_key",
-          label: "API Key",
-          tooltip: "Secret for the pgvector server",
-          placeholder: "sk-...",
+          labelKey: "fields.pgVector.apiKey.label",
+          tooltipKey: "fields.pgVector.apiKey.tooltip",
+          placeholderKey: "fields.openai.apiKey.placeholder",
           required: false,
           type: "password",
         },
         {
           name: "embedding_model",
-          label: "Embedding Model",
-          tooltip: "Model used to embed documents",
-          placeholder: "text-embedding-3-small",
+          labelKey: "fields.milvus.embeddingModel.label",
+          tooltipKey: "fields.milvus.embeddingModel.tooltip",
+          placeholderKey: "fields.milvus.embeddingModel.placeholder",
           required: false,
           type: "select",
         },
@@ -144,7 +144,7 @@ describe("CreateVectorStore submit payload characterization", () => {
     await uploadFile();
     await pickProvider("PG Vector");
 
-    fireEvent.change(screen.getByPlaceholderText("http://localhost:8000"), {
+    fireEvent.change(screen.getByPlaceholderText("http://your-deployed-server:8000"), {
       target: { value: "http://pg.internal:8000" },
     });
     fireEvent.change(screen.getByPlaceholderText("sk-..."), { target: { value: "sk-secret" } });

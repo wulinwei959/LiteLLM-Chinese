@@ -175,15 +175,15 @@ describe("VectorStoreManagement Indexes tab", () => {
     mockIndexesListCall.mockResolvedValue({ object: "list", data: [] });
     render(<VectorStoreManagement accessToken="sk-test" userID="user-1" userRole="Admin" isViewOnly={false} />);
     await user.click(screen.getByRole("tab", { name: "Indexes" }));
-    expect(screen.getByRole("link", { name: "vector store index docs" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "向量存储索引文档" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/providers/azure_ai/azure_ai_vector_stores_passthrough",
     );
-    expect(screen.getByRole("link", { name: "file a GitHub issue" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "提交 GitHub issue" })).toHaveAttribute(
       "href",
       "https://github.com/BerriAI/litellm/issues",
     );
-    expect(screen.getByText(/supported for Azure AI Search and Milvus today/)).toBeInTheDocument();
+    expect(screen.getByText(/目前索引透传支持 Azure AI Search 与 Milvus/)).toBeInTheDocument();
   });
 
   it("should not call indexesListCall until the Indexes tab is clicked", async () => {

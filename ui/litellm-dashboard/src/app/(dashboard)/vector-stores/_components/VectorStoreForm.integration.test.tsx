@@ -114,7 +114,7 @@ describe("VectorStoreForm submit payload", () => {
 
     await chooseProvider(user, "Milvus");
     await user.type(screen.getByPlaceholderText("Enter vector store ID from your provider"), "vs-milvus");
-    await user.type(screen.getByPlaceholderText("username:password or api key"), "user:pass");
+    await user.type(screen.getByPlaceholderText("username:password 或 API 密钥"), "user:pass");
     await user.type(screen.getByPlaceholderText("https://your-milvus-endpoint.com/"), "https://milvus.example.com");
     await chooseFromSelect(user, 1, "text-embedding-3-small");
     await submit(user);
@@ -155,7 +155,7 @@ describe("VectorStoreForm submit payload", () => {
 
     await chooseProvider(user, "PostgreSQL pgvector (LiteLLM Connector)");
     await user.type(screen.getByPlaceholderText("http://your-deployed-server:8000"), "http://pg:8000");
-    await user.type(screen.getByPlaceholderText("your-deployed-api-key"), "pg-key");
+    await user.type(screen.getByPlaceholderText("你的已部署 API 密钥"), "pg-key");
     await chooseProvider(user, "Azure OpenAI");
     await user.type(screen.getByPlaceholderText("Enter vector store ID from your provider"), "vs-azure");
     await submit(user);
@@ -186,7 +186,7 @@ describe("VectorStoreForm submit payload", () => {
 
     await submit(user);
 
-    expect(await screen.findByText("Please input the vector store ID from your api provider")).toBeInTheDocument();
+    expect(await screen.findByText("请输入你的 API 供应商提供的向量存储 ID")).toBeInTheDocument();
     expect(mockCreate).not.toHaveBeenCalled();
   });
 });

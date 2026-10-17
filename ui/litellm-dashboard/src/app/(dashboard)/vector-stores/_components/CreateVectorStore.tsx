@@ -153,7 +153,7 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
     const requiredFields = getProviderSpecificFields(selectedProvider).filter((field) => field.required);
     for (const field of requiredFields) {
       if (!providerParams[field.name]) {
-        toast.warning(`Please provide ${field.label}`);
+        toast.warning(t("providerFieldMissing", { field: t(field.labelKey) }));
         return;
       }
     }
@@ -368,14 +368,14 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
                 getProviderSpecificFields(selectedProvider).map((field: VectorStoreFieldConfig) => (
                   <Field key={field.name}>
                     <FieldLabel htmlFor={`vector-store-${field.name}`}>
-                      {labelWithHint(field.label, field.tooltip)}
+                      {labelWithHint(t(field.labelKey), t(field.tooltipKey))}
                     </FieldLabel>
                     <Input
                       id={`vector-store-${field.name}`}
                       type={field.type === "password" ? "password" : "text"}
                       value={asText(providerParams[field.name])}
                       onChange={(e) => setProviderParams((prev) => ({ ...prev, [field.name]: e.target.value }))}
-                      placeholder={field.placeholder}
+                      placeholder={field.placeholderKey ? t(field.placeholderKey) : undefined}
                     />
                   </Field>
                 ))}
