@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 192 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10582、中英同值 138）。第 93 到 192 簇（184、189、190、191 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 193 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10603、中英同值 138）。第 93 到 193 簇（184、189、190、191 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 193 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `src/utils/mcpToolCrudClassification.ts`，MCP 工具 CRUD 风险分组模块（正则分类加组元数据），扫描器 5 条命中是 `CRUD_GROUP_META` 的五条 description。模块在 React 上下文外，按第 192 簇返回值即键名路子把 `label`/`description` 裸字符串改成 `CrudGroupLabelKey`（groupRead 等五键）与 `CrudGroupDescriptionKey`（descRead 等五键）联合字面量，`risk` 保持 wire 值并导出 `CrudRiskLevel` 类型。唯一消费方 `McpCrudPermissionPanel.tsx` 整片未接线，本簇一并接线：补 `useTranslations("mcpToolPermissions")`（该命名空间此前只有 MCPToolPermissions.tsx 的 6 条加载失败键），分组标题 `t(meta.labelKey)`、描述行 `t(meta.descriptionKey)`、风险徽标新增 `RISK_LABEL_KEY: Record<CrudRiskLevel, RiskLabelKey>` 映射四档（riskSafe/riskMedium/riskHigh/riskUnclassified），计数改带 `{allowed}/{total}` 参数的 `allowedCount`，开关态三串 `allOn`/`partial`/`allOff`，组级勾选 aria 改带 `{name}` 参数的 `allowAllTools`（name 传 `t(meta.labelKey)`），单工具 on/off 徽标 `toolOn`/`toolOff`。工具名与描述、`RISK_BADGE` 类名表均数据值不动。新开 21 键（叶子 10582 涨到 10603，同值 138 持平），en 侧逐字保留（含 em dash 原文案），zh 侧破折号句式改冒号引导枚举。锚点 `noTools` 在目录里有五处同名键，插入脚本要先定位 `"mcpToolPermissions": {` 块再在块内找锚，否则会插错命名空间。
+
+测试迁移：`mcpToolCrudClassification.test.ts` 只测分类函数不碰元数据，零改动；`MCPToolPermissions.test.tsx` 三处组级勾选 aria 选择器 `Allow all Read tools` 换 `允许全部 读取 工具`，`crudTools` 夹具（delete_document、"Destroy a document"）是测试数据保持英文。面板同时被 mcp_tool_configuration 与 agents 三个测试文件消费，跑 mcp-servers 目录加 mcp_server_management 加 agents 三文件加 utils 加 i18n 共 77 文件 1470 例全绿（2 例预期失败）、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径三文件两侧均 0/0（组件内箭头参数 `t` 与译器 `t` 同名不构成 shadow 报错），prettier 三文件 HEAD 均干净、`--write` 只重排本簇长行、复跑仍绿；21 键 42 侧 `IntlMessageFormat` 实跑（两条带参数逐侧渲染逐字相等），`npm run build` 过，扫描器两文件归零。面板接线后接入文件 686 涨到 687（75.3%）。下一簇按队列取 `src/components/user_agent_activity.tsx`（5 条）。
 
 ## 2026-10-18 第 192 簇更新
 
