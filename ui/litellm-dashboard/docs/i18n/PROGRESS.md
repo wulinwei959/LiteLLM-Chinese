@@ -1,10 +1,18 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 173 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10401、中英同值 137）。第 93 到 173 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 174 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10401、中英同值 137）。第 93 到 174 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 174 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `playground/components/chat_ui/AgentBuilderView.tsx`，智能体构建器整页。`playground.agentBuilder` 目录块在前面的批次已经铺满（61 键、中英逐字对应），这一簇只是把组件里硬编码的文案接上现成键，零新叶：11 条 toast（loadError/createError/updateError/deleteError/nameRequired/savedToast/deletedToast/keyCreated/keyCreatedButNoValue/keyCreateError）、空态与页签（signIn/noAgents/noAgentForChat/noAgentForTest/noAgentForConnect/configureTab/chatTab/testTab/connectTab）、按钮（saveAgent/updateAgent/delete/cancel/testInChat/connectCreateKeyBtn）、两处 aria-label（addAgent/underlyingLlm）、mcpPlaceholder、missingModelId、keyCreationDisabled、connectKeyCreated 全走 `t()`；`experimentalBanner` 改 `<link>` 标签形态走 `t.rich`，`toolsSaved`（带 `{count}` 与 `<code>`）、`connectCreateKeyDesc`、`deleteConfirmBody`（带 `{name}`）同理。
+
+两处目录侧改写：`experimentalBanner` 中英的 `{link}` 参数改成 `<link>product@berri.ai</link>` 标签（实测 intl-messageformat 允许撇号后跟标签，"We'd" 不吃掉尖括号）；`connectCreateKeyDesc` 原值里糊了一段字面 JSX（`'<span className=\"font-mono...\">'{agentName}'</span>'`），改成 `<code>{agentName}</code>`，消费方把 code 处理器指回原来的 `font-mono text-foreground` span。`setDraftSystemPrompt("You are a helpful assistant.")` 是发给模型的提示词种子值，curl 示例与 `product@berri.ai` 邮件地址是上游既有产品内容，`console.error` 三条，照旧不翻；扫描器本文件只剩 329 行这条既定不翻。
+
+测试迁移：`AgentBuilderView.test.tsx` 裸 `renderWithProviders` 走中文目录，登录提示、新建/保存/更新/删除/取消按钮 regex、页签（配置/聊天/批量测试/连接）、删除确认句式、创建密钥按钮与实验横幅共 20+ 处断言换中文，`getByDisplayValue("You are a helpful assistant.")` 与 mock 内部 label（chat scratch/batch scratch）不动；prettier 证 HEAD 干净后对测试文件 `--write`。验证：本测试加 `src/lib/i18n` 4 文件 32 例全绿（missingKeys 与 messagesParity 的标签规则同时过了改写后的两条消息）、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径组件 14 problems、测试 3 problems 与 HEAD 逐条同数，prettier 组件与目录 HEAD 本就脏按口径不跑 `--write`，四条接线消息中英 8 侧 `IntlMessageFormat` 实跑渲染含标签处理器全通过，`npm run build` 过。接入文件持平 686/912。
 
 ## 2026-10-18 第 173 簇更新
 
