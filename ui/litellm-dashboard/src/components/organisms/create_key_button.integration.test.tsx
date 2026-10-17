@@ -119,14 +119,14 @@ const OPENAPI_SCHEMA = {
 };
 
 const SECTIONS = {
-  mcp: /MCP Settings/i,
-  agent: /Agent Settings/i,
-  skill: /Skill Settings/i,
-  logging: /Logging Settings/i,
-  router: /Router Settings/i,
-  aliases: /Model Aliases/i,
-  lifecycle: /Key Lifecycle/i,
-  advanced: /Advanced Settings/i,
+  mcp: /MCP 设置/,
+  agent: /智能体设置/,
+  skill: /技能设置/,
+  logging: /日志设置/,
+  router: /路由设置/,
+  aliases: /模型别名/,
+  lifecycle: /密钥生命周期/,
+  advanced: /高级设置/,
 } as const;
 
 const ALL_CLOSED_PAYLOAD = {
@@ -200,23 +200,23 @@ const renderCreateKey = (props: Partial<React.ComponentProps<typeof CreateKey>> 
 const openModal = async (props: Partial<React.ComponentProps<typeof CreateKey>> = {}) => {
   const view = renderCreateKey(props);
   await userEvent.click(screen.getByTestId("create-key-button"));
-  await screen.findByRole("button", { name: /^create key$/i });
+  await screen.findByRole("button", { name: /^创建密钥$/ });
   return view;
 };
 
 const userSearchInput = (): Promise<HTMLElement> =>
-  screen.findByPlaceholderText("Type email or user ID to search for users");
+  screen.findByPlaceholderText("输入邮箱或用户 ID 以搜索用户");
 
 const openSection = async (name: RegExp) => {
   await userEvent.click(await screen.findByRole("button", { name }));
 };
 
 const nameTheKey = async (alias = "contract-key") => {
-  await userEvent.type(await screen.findByLabelText(/Key Name/), alias);
+  await userEvent.type(await screen.findByLabelText(/密钥名称/), alias);
 };
 
 const submit = async () => {
-  await userEvent.click(screen.getByRole("button", { name: /^create key$/i }));
+  await userEvent.click(screen.getByRole("button", { name: /^创建密钥$/ }));
 };
 
 const createdPayload = async () => {
@@ -274,7 +274,7 @@ describe("CreateKey", () => {
     it("registers the Optional Settings fields as undefined-valued keys once that section is open", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await submit();
 
       expect(await createdPayload()).toStrictEqual(OPTIONAL_OPEN_PAYLOAD);
@@ -283,7 +283,7 @@ describe("CreateKey", () => {
     it("sends the full mounted field set when every section is open", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       for (const trigger of Object.values(SECTIONS)) {
         await openSection(trigger);
       }
@@ -298,7 +298,7 @@ describe("CreateKey", () => {
       async (section) => {
         await openModal();
         await nameTheKey();
-        await openSection(/Optional Settings/i);
+        await openSection(/可选设置/);
         await openSection(SECTIONS[section]);
         if (section === "advanced") {
           await screen.findByLabelText("Soft Budget");
@@ -337,7 +337,7 @@ describe("CreateKey", () => {
       await openModal();
       await nameTheKey();
       if (openOptional) {
-        await openSection(/Optional Settings/i);
+        await openSection(/可选设置/);
       }
       await submit();
 
@@ -348,9 +348,9 @@ describe("CreateKey", () => {
     it("moves a picked private skill under object_permission.skills and off the top level", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await openSection(SECTIONS.skill);
-      await userEvent.click(await screen.findByRole("combobox", { name: "Select skills (optional)" }));
+      await userEvent.click(await screen.findByRole("combobox", { name: "选择技能（可选）" }));
       await userEvent.click(await screen.findByRole("option", { name: "private-skill (私有)" }));
       await userEvent.keyboard("{Escape}");
       await submit();
@@ -363,9 +363,9 @@ describe("CreateKey", () => {
     it("omits a budget typed into a section the user closed again, rather than sending it as null", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText(/Max Budget \(USD\)/), "150.75");
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
+      await userEvent.type(await screen.findByLabelText(/最大预算（USD）/), "150.75");
+      await openSection(/可选设置/);
       await submit();
 
       const payload = await createdPayload();
@@ -376,12 +376,12 @@ describe("CreateKey", () => {
     it("restores the typed budget when the closed section is expanded again before submit", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText(/Max Budget \(USD\)/), "150.75");
-      await openSection(/Optional Settings/i);
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
+      await userEvent.type(await screen.findByLabelText(/最大预算（USD）/), "150.75");
+      await openSection(/可选设置/);
+      await openSection(/可选设置/);
 
-      expect(await screen.findByLabelText(/Max Budget \(USD\)/)).toHaveValue(150.75);
+      expect(await screen.findByLabelText(/最大预算（USD）/)).toHaveValue(150.75);
 
       await submit();
 
@@ -391,8 +391,8 @@ describe("CreateKey", () => {
     it("sends a typed max budget as a string, not a number", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText(/Max Budget \(USD\)/), "150.75");
+      await openSection(/可选设置/);
+      await userEvent.type(await screen.findByLabelText(/最大预算（USD）/), "150.75");
       await submit();
 
       const payload = await createdPayload();
@@ -400,13 +400,13 @@ describe("CreateKey", () => {
     });
 
     it.each([
-      ["Tokens per minute Limit (TPM)", "tpm_limit"],
-      ["Requests per minute Limit (RPM)", "rpm_limit"],
-      ["Tokens per day Limit (TPD)", "tpd_limit"],
+      ["每分钟令牌数上限（TPM）", "tpm_limit"],
+      ["每分钟请求数上限（RPM）", "rpm_limit"],
+      ["每天令牌数上限（TPD）", "tpd_limit"],
     ])("routes a typed %s into the %s payload key", async (label, key) => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await userEvent.type(await screen.findByLabelText(label), "42");
       await submit();
 
@@ -416,7 +416,7 @@ describe("CreateKey", () => {
     it("routes the shared rate-limit-type control into its own payload key", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await userEvent.click(await screen.findByLabelText(/TPM 速率限制类型/));
       await userEvent.click(await screen.findByRole("option", { name: /保证吞吐/ }));
       await submit();
@@ -429,7 +429,7 @@ describe("CreateKey", () => {
     it("routes a typed expiry into duration, which is otherwise coalesced to null", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await openSection(SECTIONS.lifecycle);
       await userEvent.type(await screen.findByLabelText("密钥过期时间"), "45d");
       await submit();
@@ -440,7 +440,7 @@ describe("CreateKey", () => {
     it("drops a typed expiry back to null when its section is collapsed before submit", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await openSection(SECTIONS.lifecycle);
       await userEvent.type(await screen.findByLabelText("密钥过期时间"), "45d");
       await openSection(SECTIONS.lifecycle);
@@ -452,8 +452,8 @@ describe("CreateKey", () => {
     it("routes a selected budget reset window into budget_duration", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
-      await userEvent.click(await screen.findByLabelText("Reset Budget"));
+      await openSection(/可选设置/);
+      await userEvent.click(await screen.findByLabelText("重置预算"));
       await userEvent.click(await screen.findByRole("option", { name: "每日" }));
       await submit();
 
@@ -463,8 +463,8 @@ describe("CreateKey", () => {
     it("sends an explicit null budget_duration when the never-resets window is chosen", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
-      await userEvent.click(await screen.findByLabelText("Reset Budget"));
+      await openSection(/可选设置/);
+      await userEvent.click(await screen.findByLabelText("重置预算"));
       await userEvent.click(await screen.findByRole("option", { name: "从不重置" }));
       await submit();
 
@@ -477,8 +477,8 @@ describe("CreateKey", () => {
       state.tags = { production: { name: "production" } };
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText("Tags"), "production{Enter}");
+      await openSection(/可选设置/);
+      await userEvent.type(await screen.findByLabelText("标签"), "production{Enter}");
       await submit();
 
       expect((await createdPayload()).tags).toStrictEqual(["production"]);
@@ -488,9 +488,9 @@ describe("CreateKey", () => {
       state.accessGroups = [{ access_group_id: "ag-1", access_group_name: "Group One" }];
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
 
-      await userEvent.click(await screen.findByLabelText("Select access groups (optional)"));
+      await userEvent.click(await screen.findByLabelText("选择访问组（可选）"));
       await userEvent.click(await screen.findByRole("option", { name: /Group One/ }));
       await userEvent.keyboard("{Escape}");
       await submit();
@@ -501,7 +501,7 @@ describe("CreateKey", () => {
     it("moves the schema-driven Advanced Settings fields onto the payload under their own keys", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await openSection(SECTIONS.advanced);
       await userEvent.type(await screen.findByLabelText("Soft Budget"), "12");
       await submit();
@@ -515,7 +515,7 @@ describe("CreateKey", () => {
       state.uiSettings = { disable_custom_api_keys: true };
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await openSection(SECTIONS.advanced);
       await screen.findByLabelText("Soft Budget");
       await submit();
@@ -529,7 +529,7 @@ describe("CreateKey", () => {
       state.can = { viewPolicies: false, viewPrompts: false };
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await submit();
 
       const payload = await createdPayload();
@@ -550,7 +550,7 @@ describe("CreateKey", () => {
     it("keeps disable_global_guardrails out of the payload while the switch is off", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await submit();
 
       expect(await createdPayload()).not.toHaveProperty("disable_global_guardrails");
@@ -560,8 +560,8 @@ describe("CreateKey", () => {
       state.authorized = { ...state.authorized, premiumUser: true };
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
-      await userEvent.click(await screen.findByRole("switch", { name: /Disable Global Guardrails/ }));
+      await openSection(/可选设置/);
+      await userEvent.click(await screen.findByRole("switch", { name: /禁用全局护栏/ }));
       await submit();
 
       expect((await createdPayload()).disable_global_guardrails).toBe(true);
@@ -570,23 +570,23 @@ describe("CreateKey", () => {
     it("hides the disable_global_guardrails switch from a non-admin", async () => {
       state.authorized = { ...state.authorized, userRole: "Internal User" };
       await openModal();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
 
-      expect(screen.queryByRole("switch", { name: /Disable Global Guardrails/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("switch", { name: /禁用全局护栏/ })).not.toBeInTheDocument();
     });
 
     it("shows the disable_global_guardrails switch to a proxy admin", async () => {
       await openModal();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
 
-      expect(await screen.findByRole("switch", { name: /Disable Global Guardrails/i })).toBeInTheDocument();
+      expect(await screen.findByRole("switch", { name: /禁用全局护栏/ })).toBeInTheDocument();
     });
 
     it("folds a metadata JSON string back through JSON.stringify", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText("Metadata"), '{{"team":"research"}');
+      await openSection(/可选设置/);
+      await userEvent.type(await screen.findByLabelText("元数据"), '{{"team":"research"}');
       await submit();
 
       expect((await createdPayload()).metadata).toBe('{"team":"research"}');
@@ -596,7 +596,7 @@ describe("CreateKey", () => {
       state.teams = [{ team_id: "team-1", team_alias: "Team One", models: [] }];
       await openModal({ teams: state.teams as unknown as Team[] });
       await nameTheKey("wire-alias");
-      await userEvent.click(await screen.findByLabelText("Team"));
+      await userEvent.click(await screen.findByLabelText("团队"));
       await userEvent.click(await screen.findByRole("option", { name: /Team One/ }));
       await submit();
 
@@ -616,7 +616,7 @@ describe("CreateKey", () => {
       async () => {
         await openModal();
         await nameTheKey();
-        await openSection(/Optional Settings/i);
+        await openSection(/可选设置/);
         await submit();
 
         expect(await createdPayload()).toStrictEqual(ALL_CLOSED_PAYLOAD);
@@ -635,9 +635,9 @@ describe("CreateKey", () => {
 
     it("mounts the user search control only once Another User is chosen", async () => {
       await openModal();
-      expect(screen.queryByPlaceholderText("Type email or user ID to search for users")).not.toBeInTheDocument();
+      expect(screen.queryByPlaceholderText("输入邮箱或用户 ID 以搜索用户")).not.toBeInTheDocument();
 
-      await userEvent.click(screen.getByRole("radio", { name: "Another User" }));
+      await userEvent.click(screen.getByRole("radio", { name: "其他用户" }));
 
       expect(await userSearchInput()).toBeInTheDocument();
     });
@@ -646,16 +646,16 @@ describe("CreateKey", () => {
       state.authorized = { ...state.authorized, userRole: "Internal User" };
       await openModal();
 
-      expect(screen.queryByRole("radio", { name: "Another User" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("radio", { name: "其他用户" })).not.toBeInTheDocument();
     });
 
     it("routes a service account through the service account endpoint and stamps the alias into metadata", async () => {
       state.teams = [{ team_id: "team-1", team_alias: "Team One", models: [] }];
       await openModal({ teams: state.teams as unknown as Team[] });
-      await userEvent.click(screen.getByRole("radio", { name: "Service Account" }));
-      await userEvent.type(await screen.findByLabelText(/Service Account ID/), "svc-account-1");
+      await userEvent.click(screen.getByRole("radio", { name: "服务账号" }));
+      await userEvent.type(await screen.findByLabelText(/服务账号 ID/), "svc-account-1");
 
-      await userEvent.click(await screen.findByLabelText("Team"));
+      await userEvent.click(await screen.findByLabelText("团队"));
       await userEvent.click(await screen.findByRole("option", { name: /Team One/ }));
 
       await submit();
@@ -672,11 +672,11 @@ describe("CreateKey", () => {
     it("sends the chosen default customer budget with a service account", async () => {
       state.teams = [{ team_id: "team-1", team_alias: "Team One", models: [] }];
       await openModal({ teams: state.teams as unknown as Team[] });
-      await userEvent.click(screen.getByRole("radio", { name: "Service Account" }));
-      await userEvent.type(await screen.findByLabelText(/Service Account ID/), "svc-account-1");
-      await userEvent.click(await screen.findByLabelText("Team"));
+      await userEvent.click(screen.getByRole("radio", { name: "服务账号" }));
+      await userEvent.type(await screen.findByLabelText(/服务账号 ID/), "svc-account-1");
+      await userEvent.click(await screen.findByLabelText("团队"));
       await userEvent.click(await screen.findByRole("option", { name: /Team One/ }));
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await userEvent.click(await screen.findByRole("combobox", { name: "默认客户预算" }));
       await userEvent.click(await screen.findByRole("option", { name: /svc-a-budget/ }));
 
@@ -691,21 +691,21 @@ describe("CreateKey", () => {
 
     it("offers the default customer budget only to admins creating a service account", async () => {
       await openModal();
-      await openSection(/Optional Settings/i);
-      await screen.findByLabelText(/Max Budget/);
+      await openSection(/可选设置/);
+      await screen.findByLabelText(/最大预算/);
       expect(screen.queryByRole("combobox", { name: "默认客户预算" })).not.toBeInTheDocument();
 
-      await userEvent.click(screen.getByRole("radio", { name: "Service Account" }));
+      await userEvent.click(screen.getByRole("radio", { name: "服务账号" }));
       expect(await screen.findByRole("combobox", { name: "默认客户预算" })).toBeInTheDocument();
     });
 
     it("hides the default customer budget from a non-admin creating a service account", async () => {
       state.authorized = { ...state.authorized, userRole: "Internal User" };
       await openModal();
-      await userEvent.click(screen.getByRole("radio", { name: "Service Account" }));
-      await openSection(/Optional Settings/i);
+      await userEvent.click(screen.getByRole("radio", { name: "服务账号" }));
+      await openSection(/可选设置/);
 
-      await screen.findByLabelText(/Max Budget/);
+      await screen.findByLabelText(/最大预算/);
       expect(screen.queryByRole("combobox", { name: "默认客户预算" })).not.toBeInTheDocument();
     });
   });
@@ -716,7 +716,7 @@ describe("CreateKey", () => {
       await submit();
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/Key Name/)).toHaveAttribute("aria-invalid", "true");
+        expect(screen.getByLabelText(/密钥名称/)).toHaveAttribute("aria-invalid", "true");
       });
       expect(vi.mocked(keyCreateCall)).not.toHaveBeenCalled();
     });
@@ -726,24 +726,24 @@ describe("CreateKey", () => {
       await submit();
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/Key Name/)).toHaveAttribute("aria-invalid", "true");
+        expect(screen.getByLabelText(/密钥名称/)).toHaveAttribute("aria-invalid", "true");
       });
-      expect(screen.queryByText("Please input a key name")).not.toBeInTheDocument();
-      expect(screen.getByText("required")).toBeInTheDocument();
+      expect(screen.queryByText("请输入密钥名称")).not.toBeInTheDocument();
+      expect(screen.getByText("必填")).toBeInTheDocument();
     });
 
     it("blocks a service account submit until a team is chosen, then lets it through", async () => {
       state.teams = [{ team_id: "team-1", team_alias: "Team One", models: [] }];
       await openModal({ teams: state.teams as unknown as Team[] });
-      await userEvent.click(screen.getByRole("radio", { name: "Service Account" }));
-      await userEvent.type(await screen.findByLabelText(/Service Account ID/), "svc-account-1");
+      await userEvent.click(screen.getByRole("radio", { name: "服务账号" }));
+      await userEvent.type(await screen.findByLabelText(/服务账号 ID/), "svc-account-1");
       await submit();
 
       await waitFor(() => {
         expect(vi.mocked(keyCreateServiceAccountCall)).not.toHaveBeenCalled();
       });
 
-      await userEvent.click(await screen.findByLabelText("Team"));
+      await userEvent.click(await screen.findByLabelText("团队"));
       await userEvent.click(await screen.findByRole("option", { name: /Team One/ }));
       await submit();
 
@@ -755,12 +755,12 @@ describe("CreateKey", () => {
     it("blocks the submit when the budget exceeds the team ceiling", async () => {
       await openModal({ team: { team_id: "team-1", max_budget: 10 } as unknown as Team });
       await nameTheKey();
-      await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText(/Max Budget \(USD\)/), "50");
+      await openSection(/可选设置/);
+      await userEvent.type(await screen.findByLabelText(/最大预算（USD）/), "50");
       await submit();
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/Max Budget \(USD\)/)).toHaveAttribute("aria-invalid", "true");
+        expect(screen.getByLabelText(/最大预算（USD）/)).toHaveAttribute("aria-invalid", "true");
       });
       expect(vi.mocked(keyCreateCall)).not.toHaveBeenCalled();
     });
@@ -770,7 +770,7 @@ describe("CreateKey", () => {
     it("prefills the key alias", async () => {
       renderCreateKey({ autoOpenCreate: true, prefillData: { key_alias: "prefilled-key" } });
 
-      expect(await screen.findByLabelText(/Key Name/)).toHaveValue("prefilled-key");
+      expect(await screen.findByLabelText(/密钥名称/)).toHaveValue("prefilled-key");
     });
 
     it("prefills models once the available model list arrives", async () => {
@@ -786,7 +786,7 @@ describe("CreateKey", () => {
         prefillData: { team_id: "team-404", key_alias: "example-key" },
       });
 
-      await userEvent.type(await screen.findByLabelText(/Key Name/), "-suffix");
+      await userEvent.type(await screen.findByLabelText(/密钥名称/), "-suffix");
       await submit();
 
       const payload = await createdPayload();
@@ -798,20 +798,20 @@ describe("CreateKey", () => {
       state.authorized = { ...state.authorized, userRole: "Internal User" };
       renderCreateKey({ autoOpenCreate: true, prefillData: { owned_by: "another_user", key_alias: "example-key" } });
 
-      expect(await screen.findByRole("radio", { name: "You" })).toBeChecked();
+      expect(await screen.findByRole("radio", { name: "你" })).toBeChecked();
     });
 
     it("applies another_user for an admin", async () => {
       renderCreateKey({ autoOpenCreate: true, prefillData: { owned_by: "another_user" } });
 
-      expect(await screen.findByRole("radio", { name: "Another User" })).toBeChecked();
+      expect(await screen.findByRole("radio", { name: "其他用户" })).toBeChecked();
     });
 
     it("prefills the key type", async () => {
       renderCreateKey({ autoOpenCreate: true, prefillData: { key_type: "management" } });
 
-      await screen.findByLabelText(/Key Name/);
-      await userEvent.type(await screen.findByLabelText(/Key Name/), "prefilled-type");
+      await screen.findByLabelText(/密钥名称/);
+      await userEvent.type(await screen.findByLabelText(/密钥名称/), "prefilled-type");
       await submit();
 
       expect((await createdPayload()).key_type).toBe("management");
@@ -821,23 +821,23 @@ describe("CreateKey", () => {
   describe("models dropdown team gating", () => {
     it("offers all-proxy-models but not all-team-models when no team is selected", async () => {
       await openModal();
-      await userEvent.click(await screen.findByLabelText("Models"));
+      await userEvent.click(await screen.findByLabelText("模型"));
 
-      expect(await screen.findByRole("option", { name: "All Proxy Models" })).toBeInTheDocument();
-      expect(screen.queryByRole("option", { name: "All Team Models" })).not.toBeInTheDocument();
+      expect(await screen.findByRole("option", { name: "所有代理模型" })).toBeInTheDocument();
+      expect(screen.queryByRole("option", { name: "所有团队模型" })).not.toBeInTheDocument();
     });
 
     it("offers all-team-models but hides all-proxy-models once a team is selected", async () => {
       state.teams = [{ team_id: "team-1", team_alias: "Team One", models: ["team-model-1"] }];
       await openModal({ teams: state.teams as unknown as Team[] });
 
-      await userEvent.click(await screen.findByLabelText("Team"));
+      await userEvent.click(await screen.findByLabelText("团队"));
       await userEvent.click(await screen.findByRole("option", { name: /Team One/ }));
 
-      await userEvent.click(await screen.findByLabelText("Models"));
+      await userEvent.click(await screen.findByLabelText("模型"));
 
-      expect(await screen.findByRole("option", { name: "All Team Models" })).toBeInTheDocument();
-      expect(screen.queryByRole("option", { name: "All Proxy Models" })).not.toBeInTheDocument();
+      expect(await screen.findByRole("option", { name: "所有团队模型" })).toBeInTheDocument();
+      expect(screen.queryByRole("option", { name: "所有代理模型" })).not.toBeInTheDocument();
     });
   });
 
@@ -846,7 +846,7 @@ describe("CreateKey", () => {
       state.organizations = [{ organization_id: "org-1", organization_alias: "Engineering" }];
       await openModal();
 
-      expect(await screen.findByLabelText("Organization")).not.toHaveAttribute("data-disabled");
+      expect(await screen.findByLabelText("组织")).not.toHaveAttribute("data-disabled");
     });
 
     it("is read-only for a non-admin", async () => {
@@ -854,7 +854,7 @@ describe("CreateKey", () => {
       state.organizations = [{ organization_id: "org-1", organization_alias: "Engineering" }];
       await openModal();
 
-      expect(await screen.findByLabelText("Organization")).toHaveAttribute("data-disabled", "");
+      expect(await screen.findByLabelText("组织")).toHaveAttribute("data-disabled", "");
     });
 
     it("routes a chosen organization into organization_id", async () => {
@@ -862,7 +862,7 @@ describe("CreateKey", () => {
       await openModal();
       await nameTheKey();
 
-      await userEvent.click(await screen.findByLabelText("Organization"));
+      await userEvent.click(await screen.findByLabelText("组织"));
       await userEvent.click(await screen.findByRole("option", { name: /Engineering/ }));
       await submit();
 
@@ -879,18 +879,18 @@ describe("CreateKey", () => {
       state.projects = [{ project_id: "project-orbit", project_alias: "Orbit", team_id: "group-maple", models: [] }];
       await openModal({ teams: state.teams as Team[] });
       await nameTheKey();
-      await userEvent.click(await screen.findByLabelText("Organization"));
+      await userEvent.click(await screen.findByLabelText("组织"));
       await userEvent.click(await screen.findByRole("option", { name: /Silver/ }));
-      await userEvent.click(await screen.findByLabelText("Project"));
+      await userEvent.click(await screen.findByLabelText("项目"));
       await userEvent.click(await screen.findByRole("option", { name: /Orbit/ }));
-      await waitFor(() => expect(screen.getByLabelText("Team")).toHaveValue("Maple"));
-      expect(screen.getByLabelText("Team")).toBeDisabled();
+      await waitFor(() => expect(screen.getByLabelText("团队")).toHaveValue("Maple"));
+      expect(screen.getByLabelText("团队")).toBeDisabled();
 
-      await userEvent.click(screen.getByLabelText("Organization"));
+      await userEvent.click(screen.getByLabelText("组织"));
       await userEvent.click(await screen.findByRole("option", { name: /Copper/ }));
-      expect(screen.getByLabelText("Project")).toHaveValue("");
-      expect(screen.getByLabelText("Team")).toHaveValue("");
-      expect(screen.getByLabelText("Team")).toBeEnabled();
+      expect(screen.getByLabelText("项目")).toHaveValue("");
+      expect(screen.getByLabelText("团队")).toHaveValue("");
+      expect(screen.getByLabelText("团队")).toBeEnabled();
       await submit();
 
       const payload = JSON.parse(JSON.stringify(await createdPayload()));
@@ -904,7 +904,7 @@ describe("CreateKey", () => {
       await openModal();
       await nameTheKey();
 
-      await userEvent.click(await screen.findByLabelText("Organization"));
+      await userEvent.click(await screen.findByLabelText("组织"));
       await userEvent.click(await screen.findByRole("option", { name: /Engineering/ }));
       await userEvent.click(await screen.findByRole("button", { name: "Clear" }));
       await submit();
@@ -916,20 +916,20 @@ describe("CreateKey", () => {
   describe("policy and prompt fields", () => {
     it("loads and offers both selectors for a role that can see them", async () => {
       await openModal();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
 
-      expect(await screen.findByLabelText("Policies")).toBeInTheDocument();
-      expect(await screen.findByLabelText("Prompts")).toBeInTheDocument();
+      expect(await screen.findByLabelText("策略")).toBeInTheDocument();
+      expect(await screen.findByLabelText("提示词")).toBeInTheDocument();
     });
 
     it("omits both selectors for a role that cannot see them", async () => {
       state.can = { viewPolicies: false, viewPrompts: false };
       await openModal();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
 
-      await screen.findByLabelText("Guardrails");
-      expect(screen.queryByLabelText("Policies")).not.toBeInTheDocument();
-      expect(screen.queryByLabelText("Prompts")).not.toBeInTheDocument();
+      await screen.findByLabelText("护栏");
+      expect(screen.queryByLabelText("策略")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("提示词")).not.toBeInTheDocument();
     });
   });
 
@@ -937,9 +937,9 @@ describe("CreateKey", () => {
     it("offers the tags returned by the tags hook", async () => {
       state.tags = { production: { name: "production" }, staging: { name: "staging" } };
       await openModal();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
 
-      await userEvent.click(await screen.findByLabelText("Tags"));
+      await userEvent.click(await screen.findByLabelText("标签"));
 
       expect(await screen.findByTitle("production")).toBeInTheDocument();
       expect(await screen.findByTitle("staging")).toBeInTheDocument();
@@ -1039,17 +1039,17 @@ describe("CreateKey", () => {
 
       await user.type(search, "ali");
       await waitFor(() => expect(answers.has("ali")).toBe(true), { timeout: 3000 });
-      await screen.findByText("Searching...");
+      await screen.findByText("正在搜索...");
 
       await user.clear(search);
-      await screen.findByText("No users found");
+      await screen.findByText("未找到用户");
 
       await act(async () => {
         answers.get("ali")?.([{ user_id: "u-jones", user_email: "alice.jones@example.com" }]);
       });
 
       expect(screen.queryByRole("option", { name: "alice.jones@example.com (u-jones)" })).not.toBeInTheDocument();
-      expect(screen.getByText("No users found")).toBeInTheDocument();
+      expect(screen.getByText("未找到用户")).toBeInTheDocument();
     });
 
     it("keeps searching while a newer search is still in flight", async () => {
@@ -1075,8 +1075,8 @@ describe("CreateKey", () => {
         answers.get("ali")?.([]);
       });
 
-      expect(screen.getByText("Searching...")).toBeInTheDocument();
-      expect(screen.queryByText("No users found")).not.toBeInTheDocument();
+      expect(screen.getByText("正在搜索...")).toBeInTheDocument();
+      expect(screen.queryByText("未找到用户")).not.toBeInTheDocument();
 
       await act(async () => {
         answers.get("alice.smith@example.com")?.([{ user_id: "u-smith", user_email: "alice.smith@example.com" }]);
@@ -1175,7 +1175,7 @@ describe("CreateKey", () => {
       await submit();
       await createdPayload();
 
-      expect(await screen.findByText("Save your Key")).toBeInTheDocument();
+      expect(await screen.findByText("保存你的密钥")).toBeInTheDocument();
     });
 
     it("rejects a duplicate alias within the same team without calling the API", async () => {
@@ -1184,7 +1184,7 @@ describe("CreateKey", () => {
       await submit();
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /^create key$/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /^创建密钥$/ })).toBeInTheDocument();
       });
       expect(vi.mocked(keyCreateCall)).not.toHaveBeenCalled();
     });
@@ -1203,17 +1203,17 @@ describe("CreateKey", () => {
       await submit();
       await createdPayload();
 
-      expect(await screen.findByRole("dialog", { name: "Save your Key" })).toBeInTheDocument();
+      expect(await screen.findByRole("dialog", { name: "保存你的密钥" })).toBeInTheDocument();
     });
   });
 
   describe("key type gating", () => {
     it("labels the llm_api option AI APIs", async () => {
       await openModal();
-      await userEvent.click(await screen.findByLabelText("Key Type"));
+      await userEvent.click(await screen.findByLabelText("密钥类型"));
 
       expect(
-        await screen.findByText("Can call only AI API routes (chat/completions, embeddings, etc.)"),
+        await screen.findByText("只能调用 AI API 路由（chat/completions、embeddings 等）"),
       ).toBeInTheDocument();
       expect(screen.queryByText("LLM API")).not.toBeInTheDocument();
     });
@@ -1222,8 +1222,8 @@ describe("CreateKey", () => {
       await openModal();
       await nameTheKey();
 
-      await userEvent.click(await screen.findByLabelText("Key Type"));
-      await userEvent.click(await screen.findByRole("option", { name: /^Management/ }));
+      await userEvent.click(await screen.findByLabelText("密钥类型"));
+      await userEvent.click(await screen.findByRole("option", { name: /^管理/ }));
       await submit();
 
       const payload = await createdPayload();
@@ -1236,7 +1236,7 @@ describe("CreateKey", () => {
     it("keeps the MCP tool permissions key out of the payload even with its section open", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
       await openSection(SECTIONS.mcp);
       await submit();
 
@@ -1250,9 +1250,9 @@ describe("CreateKey", () => {
       renderCreateKey();
       await userEvent.click(screen.getByTestId("create-key-button"));
 
-      expect(await screen.findByText(/Please select a team to continue/)).toBeInTheDocument();
-      expect(screen.queryByLabelText(/Key Name/)).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /Optional Settings/i })).not.toBeInTheDocument();
+      expect(await screen.findByText(/请先选择团队/)).toBeInTheDocument();
+      expect(screen.queryByLabelText(/密钥名称/)).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /可选设置/ })).not.toBeInTheDocument();
     });
   });
 
@@ -1263,7 +1263,7 @@ describe("CreateKey", () => {
       ] as unknown as Awaited<ReturnType<typeof userFilterUICall>>);
 
       await openModal();
-      await userEvent.click(screen.getByRole("radio", { name: "Another User" }));
+      await userEvent.click(screen.getByRole("radio", { name: "其他用户" }));
       await nameTheKey();
 
       await userEvent.type(await userSearchInput(), "alice");
@@ -1275,12 +1275,12 @@ describe("CreateKey", () => {
 
     it("surfaces the required message on a field that carries no help text", async () => {
       await openModal();
-      await userEvent.click(screen.getByRole("radio", { name: "Another User" }));
+      await userEvent.click(screen.getByRole("radio", { name: "其他用户" }));
       await nameTheKey();
       await submit();
 
       expect(
-        await screen.findByText("Please input the user ID of the user you are assigning the key to"),
+        await screen.findByText("请输入此密钥分配给的用户的用户 ID"),
       ).toBeInTheDocument();
       expect(vi.mocked(keyCreateCall)).not.toHaveBeenCalled();
     });
@@ -1290,9 +1290,9 @@ describe("CreateKey", () => {
     it("submits an over-ceiling budget typed into a section the user closed again, omitting the key", async () => {
       await openModal({ team: { team_id: "team-1", max_budget: 10 } as unknown as Team });
       await nameTheKey();
-      await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText(/Max Budget \(USD\)/), "50");
-      await openSection(/Optional Settings/i);
+      await openSection(/可选设置/);
+      await userEvent.type(await screen.findByLabelText(/最大预算（USD）/), "50");
+      await openSection(/可选设置/);
       await submit();
 
       const payload = await createdPayload();
@@ -1304,7 +1304,7 @@ describe("CreateKey", () => {
   describe("submit gestures", () => {
     it("creates the key when Enter is pressed inside a text field", async () => {
       await openModal();
-      await userEvent.type(await screen.findByLabelText(/Key Name/), "enter-key{Enter}");
+      await userEvent.type(await screen.findByLabelText(/密钥名称/), "enter-key{Enter}");
 
       expect((await createdPayload()).key_alias).toBe("enter-key");
     });
@@ -1314,8 +1314,8 @@ describe("CreateKey", () => {
     it("sends enable_prompt_caching as a boolean once the switch is on", async () => {
       await openModal();
       await nameTheKey();
-      await openSection(/Optional Settings/i);
-      await userEvent.click(await screen.findByRole("switch", { name: /Enable Prompt Caching/ }));
+      await openSection(/可选设置/);
+      await userEvent.click(await screen.findByRole("switch", { name: /启用提示缓存/ }));
       await submit();
 
       expect((await createdPayload()).enable_prompt_caching).toBe(true);
