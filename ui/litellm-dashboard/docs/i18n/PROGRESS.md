@@ -1,10 +1,22 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 167 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10352、中英同值 137）。第 93 到 167 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 168 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10354、中英同值 137）。第 93 到 168 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 168 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `caching/_components/coordination_redis_settings/coordinationRedisFields.ts`，协调 Redis 设置的数据文件。它的兄弟模块 `cache_settings/cacheSettingsFields.ts` 早已键名化，且两侧字段的英文值几乎逐字相同，本轮新增键只有两个：`cacheSettings.coordination.urlHelp`（优先级说明后缀是"主机、端口、用户名与密码"，与响应缓存侧的"数据库序号"版本语义不同，不能复用）和 `coordination.startupNodesHelp`（示例端口 7001 不带引号，与 `redis_startup_nodes.help` 非严格同值）。其余全部命中现成键：十个字段的 label/help、`redisTypes.*` 三个类型名、`redisTypeDescriptions.*` 三条描述、`rules.portRange`/`validJsonArray`/`jsonArray` 三条校验消息、`secretAlreadySet` 占位符，`startup_nodes` 的 label 直接借用 `fields.redis_startup_nodes.label`（同值）。叶子 10352 涨到 10354，同值持平。
+
+数据文件改法与 cache_settings 对齐：`CoordinationMessageKey` 字面量 union（注释标明全部在 `cacheSettings` 命名空间下解析），`CoordinationField` 的 `label`/`helpText` 换成 `labelKey`/`helpKey`，`CoordinationFieldRule` 返回 `CoordinationMessageKey | null`，两个 LABELS/DESCRIPTIONS 常量改名 `_KEYS`。`SECRET_ALREADY_SET_PLACEHOLDER` 常量删除（导出无消费方），改在 `CoordinationRedisFormField.tsx` 里 `cacheT("secretAlreadySet")`。消费接线三处：FormField 解 label/description/placeholder，TypeSelector 解类型名与描述，`index.tsx` 的 validate 把规则键过 `cacheT` 再进 `form.setError`（与 cache_settings/index.tsx 第 89 行同款）。index.tsx 剩下的三个命中（来源徽章、按钮、toast）与 `coordinationRedisUtils.ts` 的 5 个命中留给后续簇。
+
+ICU 花括号这簇真炸出一次教训：新键 `startupNodesHelp` 内嵌 JSON 示例 `[{"host": ..., "port": 7001}]`，裸花括号 `IntlMessageFormat` 直接 `MALFORMED_ARGUMENT`，而 `messagesParity` 的花括号守卫放过了它（分支体含逗号即视为合法），肉眼看目录根本发现不了。按 WORKFLOW 的 ICU 速查把花括号用 `'{'`/`'}'` 括起来，`intl-messageformat` 实跑渲染回原文。中文侧初版在示例外加的包裹撇号 `'[` 与转义三元组 `'{'` 粘连（`'[{'` 里的 `'` 提前开引号），又炸一次，逐字符重拼后两侧渲染 OK。守卫脚本只能拦"解析失败"，拦不住守卫盲区，凡带字面花括号的新消息必须过真实 parser 的渲染等值断言。
+
+测试迁移：`CoordinationRedisTypeSelector.test.tsx` 从 `COORDINATION_REDIS_TYPE_DESCRIPTIONS` 常量断言改用 `zhCN.cacheSettings` 为根的 `zh(key)` 解析器（沿用第 167 簇 `UnifiedSelector.test.tsx` 先例），标签、描述、下拉选项名五处改读键。`index.test.tsx` 与 integration 测试整体绿不用动：它们包了 `LocaleProvider`，渲染口径是英文目录。
+
+验证：coordination_redis_settings 目录 4 文件 46 例绿，caching 加 `src/lib/i18n` 14 文件 124 例绿，tsc 无本簇文件报错，eslint stdin 口径五个改动文件与 HEAD 逐一持平（index.tsx 那条 error 是 HEAD 既有），prettier 五个文件全干净，两条新消息两侧 `IntlMessageFormat` 渲染等值通过，`npm run build` 过，扫描器 `coordinationRedisFields.ts` 归零。接入文件 685 涨到 686（FormField 新挂 hook）。
 
 ## 2026-10-17 第 167 簇更新
 
