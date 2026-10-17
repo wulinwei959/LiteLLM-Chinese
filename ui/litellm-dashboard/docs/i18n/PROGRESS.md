@@ -1,10 +1,18 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 169 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10362、中英同值 137）。第 93 到 169 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 170 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10372、中英同值 137）。第 93 到 170 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 170 簇更新
+
+继续串行推进，没有派子代理。这一簇把 `coordination_redis_settings/index.tsx` 整片收尾（扫描器只数到 3 条 toast，但它还有跨行 JSX 文本和按钮三元这类扫描器盲区，实际清了 11 处）：四个区块标题复用 `cacheSettings.sections.connection`/`cluster`/`sentinel`/`ssl`（英文逐字同值，且该文件本已挂 `cacheT`），"Saving..." 复用 `common.saving`（补了 `commonT`），新开 `caching` 四条平铺动作键 `testConnection`/`testing`/`saveChanges`/`unknownError`（目录里 "Save Changes" 与 "Unknown error" 的现成键全在别的页面命名空间，沿用第 169 簇"不跨页借键"的判定）与 `caching.coordination` 下 `intro` 说明段加 `toast.*` 五条，共 10 键（叶子 10362 涨到 10372）。`Connection test failed: {reason}` 两条拼接合并成一条带参消息，兜底 `Unknown error` 传参。至此 coordination Redis 设置整页在扫描器归零。
+
+测试零改动：`index.test.tsx` 与 integration 都包 `LocaleProvider` 走英文目录，10 条 en 值与原文逐字一致（`Connection Settings`→`sections.connection`、`/successful/i`、`/restart/i`、`stringContaining("connection refused")` 全绿）。
+
+验证：caching 加 `src/lib/i18n` 14 文件 124 例绿，tsc 无本簇文件报错，eslint stdin 口径 index.tsx 与 HEAD 同为 1 error（既有），prettier 干净，10 条新消息两侧 `IntlMessageFormat` 解析通过、`testFailed` 实跑渲染 `Connection test failed: boom`，`npm run build` 过。接入文件持平 686/912。协调 Redis 三簇（168 数据文件、169 徽章、170 页面壳）合计把这一页全部接入，新增键 18、其余 38 处复用现成键。
 
 ## 2026-10-18 第 169 簇更新
 
