@@ -1,10 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 148 簇后（非测试 `.tsx` 912 个接入 647 个、70.9%，目录叶子 9650、中英同值 130）。第 93 到 148 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 150 簇后（非测试 `.tsx` 912 个接入 654 个、71.7%，目录叶子 9683、中英同值 130）。第 93 到 150 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 149-150 簇更新
+
+继续串行推进，没有派子代理。这一批把范围从 `src/components` 换到 `src/app`。
+
+第 149 簇表格列定义与小控件（九个文件）：`AgentsTableColumns` 的 JWT 徽标接 `agents.jwtConfigured`，行操作的删除项复用既有 `agents.deleteButton`；`PluginTableColumns` 的未分类、复制技能 ID、无描述、无版本四处新键，触发器与删除项复用既有 `skills.openActions`/`skills.deleteButton`，是否徽标走 `common.yes`/`common.no`；`MemoryTableColumns` 的查看/编辑/删除全走 `common`，触发器新开 `memory.openActions`，两个调用方补挂 `common` 翻译器；`EndpointUsageTable` 新开 `usage.endpointUsage` 八键；`ModelViewToggle` 的选项从英文 `label` 改存受限 union 的键名；`DocLink` 新开 `apiReference` 三键；`CoordinationRedisTypeSelector` 复用既有 `caching.redisType`。`ProjectsTableColumns` 扫出来的 "ID" 是误报，那个文件的文案早已全部接键。
+
+第 150 簇 `chat/page.tsx` + `TopModelView.tsx` + `OnboardingLoadingView.tsx`：`chat.page` 新开 13 键。四条建议词从模块级英文数组改成受限 union 的键名，建议词的标签与拼进输入框的前缀都用同一个翻译结果，这样中文用户点"写作"拿到的是中文前缀而不是标签中文、提示词英文；`getGreeting` 改成收翻译器的纯函数，顺带给拉模型列表那个 effect 补上 `t` 依赖（eslint 的 exhaustive-deps 报的）。`usage.topModelView` 新开 9 键。`OnboardingLoadingView` 复用既有 `onboarding.loadingInvitation`。
+
+这一段合计：非测试 `.tsx` 912 接入 647→654（70.9%→71.7%），目录叶子 9650→9683（+33），中英同值 130 持平。候选文件 56→46。
+
+这一段修掉一处此前一直没人注意的隐藏失败：`src/app/chat/page.integration.test.tsx` 里有六处 `chatUi` 标签断言（`Total: 20`、`Total Latency: 1.20s`、`In: 12`、`Out: 8`、`Cost: $0.000063`）还写着英文，`git stash` 对照确认它在本次改动之前就已经在挂，只是每次都被同文件里更早的失败盖住。教训是"同一份测试文件里有多个失败"时，先把整份文件里所有英文断言一次性比对完再跑，否则会一个一个冒出来。
+
+`src/app` 剩余候选里最大的是 `MCPStandardsSettings.tsx`（14 处），但它的键名 `mcpStandards.*` 第 141 簇已就位、目录里既没有该命名空间也没有组件消费，属于已知的"键先行、组件未接线"状态，动它之前得先确认 `MCPServerSelector` 那次的接线是否漏了。`networking.tsx` 仍单独记账。
 
 ## 2026-10-17 第 147-148 簇更新
 
@@ -467,6 +481,7 @@
 - 顺手纠正第 68 簇写歪的 30 行嵌套键缩进（4 空格→房内 6 空格），消息目录本次 +41/−30 里的 30 行删除就是这次纠正；两个消息目录的 prettier 欠账从 150/156 行收敛到 90/96 行，剩下的都是这批簇之前就有的旧块，本簇没有新增
 - 测试接线：`Fallbacks.test.tsx` 三条真实渲染的英文断言换中文（"确定删除该回退吗？"与两条空态正则）；`AddFallbacks`、`DeleteResourceModal` 仍是桩件，其按钮断言保持英文
 - 门禁：守卫 16 例全绿；`Fallbacks` 目录 8 文件 62 例；消费方 12 文件 100 例（含 `router-settings/_components` 的集成测试）；`tsc --noEmit` 总数 880、非测试 0，与基线持平；本簇源文件 eslint 与 HEAD 逐条一致（首轮多出一条 `local/no-large-inline-object-arg`，把四个属性的 `t.rich` 参数提成命名变量 `toastValues` 后消除）；`npm run build` 通过；四片全量 886 文件 11581 例、8 失败 + 9 例预期失败，与基线逐例一致；接入数 479→480/912、52.5%→52.6%
+
 ## 2026-10-15 第 68 簇更新
 
 批次 24 第 68 簇：`Settings/RouterSettings/Fallbacks/` 的五张回退配置卡（`AddFallbacks.tsx`、`AddFallbacksModal.tsx`、`FallbackSelectionForm.tsx`、`FallbackGroupConfig.tsx`、`EditFallbacks.tsx`）。12 个文件 +199/−113，两个消息目录各 +33/−1
@@ -509,7 +524,7 @@
 - 新开 29 键：`virtualKeys.lifecycle` 21 键（两节的标题、`expireKey`/`neverExpire`/`enableAutoRotation`/`rotationInterval`/`selectInterval` 五个控件名、三条 tooltip 长提示 `expireHint`/`enableHint`/`intervalHint`、两个占位符 `createPlaceholder`/`editPlaceholder` 与自定义输入的 `customPlaceholder`、`supportedFormats`、`rotationNotice`，以及 `interval7d`/`interval30d`/`interval90d`/`interval180d`/`interval365d`/`intervalCustom` 六个周期名）与 `virtualKeys.autoRotation` 8 键（`title` 三处共用、`cardDescription`、带 `{interval}` 的 `everyInterval`、`lastRotation`/`nextRotation`/`noHistory`/`notEnabled`、带 `{date}`/`{time}` 的 `atTime`）；目录叶子 7154→7183
 - 启用/禁用徽标逐字节复用 `common.enabled`/`common.disabled`，不再新开键
 - 模块级 `INTERVAL_LABELS` 常量拿不到 `t`，按第 54、55 簇的老办法下沉为组件内 `intervalLabels`；下拉显示态保留了 `intervalLabels[selected] ?? selected` 的原兜底——自定义周期（如 `14d`）不在表里，必须显示原始值而不是"自定义周期"，本簇一度把它误写成 `?? intervalLabels.custom`，靠读代码纠回
-- `formatTimestamp` 里的 ` at ` 连接词是文案、接成 `atTime` 的 `{date}`/`{time}`；`toLocaleDateString("en-US")` 的英文日期与时分 AM/PM 格式记为格式债留下
+- `formatTimestamp` 里的 `at` 连接词是文案、接成 `atTime` 的 `{date}`/`{time}`；`toLocaleDateString("en-US")` 的英文日期与时分 AM/PM 格式记为格式债留下
 - 断言同步 3 个测试文件 28 处：`KeyLifecycleSettings.test.tsx` 24 处（含两个占位符常量、`getByLabelText("密钥过期时间")`、`getAllByTitle("90 天")`、`chooseSelectOption` 的"自定义周期"），`create_key_button.integration.test.tsx` 2 处 `findByLabelText`，`key_edit_view.integration.test.tsx` 2 处（`"例如 30d"` 与把 `/never expire/i` 正则改为整串 `"永不过期"`）
 - 连带成本为零：`key_info_view.tsx` 与 `key_edit_view.tsx` 的两处挂载点，其 4 个测试文件本就全用 `renderWithProviders`（191 例 + 2 例预期失败画像不变）；`RegenerateKeyModal.tsx` 自己另有一个 `label="Expire Key"`，属未接线文件、不受本簇影响
 - 全量复跑 886 文件 11581 例、8 失败 + 9 例预期失败，与第 62、63、64 簇逐条一致；`npm run build` 通过，`tsc` 非测试报错 0，5 个文件的 eslint 与 HEAD 画像相同（8 条既有警告）
@@ -640,20 +655,20 @@
 
 批次 24 第 53 到 55 簇之后做一次全量：`npx vitest run --shard=k/4` 四片串行，得 **886 文件 11577 例、27 失败 + 9 例预期失败**、`Type Errors no errors`。比第 53 簇那次的 56 失败少 29 例，几乎全部来自第 54 簇修掉的决策模型集成测试。27 例逐个归因如下（按失败数降序）：
 
-| 文件 | 例 | 归因 |
-| --- | --- | --- |
-| `cost-tracking/_components/cost_tracking_settings.test.tsx` | 7 | 上游既有失败，非汉化欠账（下方单列） |
-| `components/model_add/CredentialModal.test.tsx` | 5 | 断言欠账：`useTranslations` 缺 `NextIntlClientProvider` 上下文 |
-| `organizations/_components/OrganizationsTable.test.tsx` | 3 | 断言欠账 + **组件残留 2 处**（下方单列） |
-| `agents/_components/agent_info.integration.test.tsx` | 3 | 断言欠账：`Agent Name`、`Display Name` |
-| `access-groups/…/AccessGroupEditModal.integration.test.tsx` | 2 | 断言欠账：选项卡名 `/MCP Servers/` |
-| `components/templates/key_info_view.test.tsx` | 1 | 断言欠账：第 53 簇 `DeleteResourceModal` 11 个消费者里漏掉的一个 `/^delete$/i` |
-| `components/shared/DataTable/DataTable.test.tsx` | 1 | 早前迁 `renderWithProviders` 时漏改的裸 `render`（同第 54 簇 `guardrail_info` 那一类） |
-| `lens/_components/LensSetup.integration.test.tsx` | 1 | 上游断言与格式化函数对不上，非汉化欠账（下方单列） |
-| `agents/_components/agent_info.test.tsx` | 1 | 断言欠账：`Edit Settings`、`Description`、`TPM Limit` |
-| `agents/_components/add_agent_form.integration.test.tsx` | 1 | 断言欠账：`Agent Name`、`Display Name`、描述占位符 |
-| `agents/_components/AgentsTable.test.tsx` | 1 | 断言欠账：表头「消费（美元）」「智能体名称」 |
-| `access-groups/…/AccessGroupCreateDialog.test.tsx` | 1 | 断言欠账：名称、MCP/代理选项卡、创建按钮 |
+| 文件                                                        | 例  | 归因                                                                                   |
+| ----------------------------------------------------------- | --- | -------------------------------------------------------------------------------------- |
+| `cost-tracking/_components/cost_tracking_settings.test.tsx` | 7   | 上游既有失败，非汉化欠账（下方单列）                                                   |
+| `components/model_add/CredentialModal.test.tsx`             | 5   | 断言欠账：`useTranslations` 缺 `NextIntlClientProvider` 上下文                         |
+| `organizations/_components/OrganizationsTable.test.tsx`     | 3   | 断言欠账 + **组件残留 2 处**（下方单列）                                               |
+| `agents/_components/agent_info.integration.test.tsx`        | 3   | 断言欠账：`Agent Name`、`Display Name`                                                 |
+| `access-groups/…/AccessGroupEditModal.integration.test.tsx` | 2   | 断言欠账：选项卡名 `/MCP Servers/`                                                     |
+| `components/templates/key_info_view.test.tsx`               | 1   | 断言欠账：第 53 簇 `DeleteResourceModal` 11 个消费者里漏掉的一个 `/^delete$/i`         |
+| `components/shared/DataTable/DataTable.test.tsx`            | 1   | 早前迁 `renderWithProviders` 时漏改的裸 `render`（同第 54 簇 `guardrail_info` 那一类） |
+| `lens/_components/LensSetup.integration.test.tsx`           | 1   | 上游断言与格式化函数对不上，非汉化欠账（下方单列）                                     |
+| `agents/_components/agent_info.test.tsx`                    | 1   | 断言欠账：`Edit Settings`、`Description`、`TPM Limit`                                  |
+| `agents/_components/add_agent_form.integration.test.tsx`    | 1   | 断言欠账：`Agent Name`、`Display Name`、描述占位符                                     |
+| `agents/_components/AgentsTable.test.tsx`                   | 1   | 断言欠账：表头「消费（美元）」「智能体名称」                                           |
+| `access-groups/…/AccessGroupCreateDialog.test.tsx`          | 1   | 断言欠账：名称、MCP/代理选项卡、创建按钮                                               |
 
 上表 12 个文件已全部在本次清扫中改绿；第 53 簇记下的 `mcp_server_edit` 那 1 例这次没有复现。清扫与门禁明细见"## 2026-10-15 断言欠账清扫"。
 
@@ -935,6 +950,7 @@
 - 不动的：`(${filteredData.length})` 计数、`console.error("Error making model groups public:", error)`、`Badge` 里的 `mode` 与 `providers` 取值，口径同第 42 簇
 
 测试侧同步：`MakeModelPublicForm.test.tsx` 的 17 处裸 `render` 全部换成 `renderWithProviders`，断言串同步为中文——`Make Models Public`→将模型设为公开、`Select Models to Make Public`→选择要公开的模型、`Confirm Making Models Public`→确认公开这些模型、`Next`→下一步、`Previous`→上一步、`Cancel`→取消、`Make Public`→公开、`Select All (2)`→全选 (2)、`No models match the current filters.`→没有符合当前筛选条件的模型。
+
 - 选中计数那条断言换了写法：原来是 `getByText("model selected")` + `toHaveTextContent("1 model selected")`。`getByText` 比较的是元素的**直接文本子节点**拼接（`getNodeText` 不含子元素），英文 JSX 里 `<strong>{n}</strong> model selected` 的 `<p>` 恰好有一个 `" model selected"` 文本节点，归一化后就是那个匹配串；中文把量词放在数字后面（`已选择 <strong>1</strong> 个模型`），`<p>` 的直接文本变成"已选择 "与" 个模型"两段，整串再也不是任何元素的直接文本，于是改成 `getByText(/个模型/)` 定位、`toHaveTextContent("已选择 1 个模型")` 断言完整渲染值。步骤二里另有"共计 …个模型将被公开"，但那条用例停在步骤一，正则不冲突
 - `/Warning:/` 改 `/警告/`，仍能命中 `<strong>`；`/model_hub_table/` 不动，仍命中 `<code>`；17 例数量与含义未增删，只换语言
 
@@ -953,7 +969,7 @@
 - 步骤按钮复用 `common`：`common.cancel` / `common.previous` / `common.next`（取消、上一步、下一步）取值与概念都对得上，且这三个键本已被向导与分页用着
 - 计数与富文本三处用 `t.rich`：`selectedInfo`、`totalInfo`、`confirmWarning`。ICU 的复数分支里不能嵌标签——parity 守卫按 `\{([^}]*)\}` 取到的第二段是 `other {<strong>#</strong> agents selected}` 之类"既不是 `# 空格`、也不是标识符、又不含逗号"的残片，会被判成裸花括号，所以写成 `<strong>{count}</strong> {count, plural, one {agent} other {agents}} selected`，标签留在复数外面，加粗范围与旧 JSX 一致
 - toast 的成功文案由 `agent(s)` 改成真正的复数：`toastSuccess` EN `Successfully made {count} {count, plural, one {agent} other {agents}} public!`，node + `intl-messageformat` 实测 `count=2` 渲染为 `Successfully made 2 agents public!`，与旧的模板串在同一取值上只差 `(s)`；中文为"已成功公开 {count, number} 个智能体！"，两侧参数名同为 `count`，复数在中文里退化成量词
-- `Select All {n > 0 && \`(${n})\`}` 的括号计数留作数据：与第 39 簇的 `Connected (${n})` 同一口径，JSX 里 `{t} {' '}{cond}` 保住原来那个空格，accessible name 仍是 `全选 (2)`
+- `Select All {n > 0 && \`(${n})\`}`的括号计数留作数据：与第 39 簇的`Connected (${n})`同一口径，JSX 里`{t} {' '}{cond}`保住原来那个空格，accessible name 仍是`全选 (2)`
 - `console.error("Error making agents public:", error)` 与 `Badge` 里的 `v{agent.version}` 不动，前者是开发日志、后者是版本号数据
 
 测试侧同步：`MakeAgentPublicForm.test.tsx` 用裸 `render` 的 15 处全部换成 `renderWithProviders`（默认钉 `zh-CN`），断言串同步为中文——`Make Agents Public`→将智能体设为公开、`Select Agents to Make Public`→选择要公开的智能体、`Confirm Making Agents Public`→确认公开这些智能体、`Next`→下一步、`Previous`→上一步、`Cancel`→取消、`Make Public`→公开、`Select All (2)`→全选 (2)、`No agents available.`→暂无可公开的智能体。、`+2 more`→还有 2 个。`getByRole` 的 `name` 是整串匹配，"公开"只命中提交按钮，不会误取"将智能体设为公开"（那是 `getByText` 的标题）。步骤二的用例会一路点进来，`confirmWarning` 与 `totalInfo` 两条 `t.rich` 因此在测试里真实渲染过
@@ -1021,7 +1037,7 @@
 
 改造形态：
 
-- `DateGroup` 是内部桶名——`getDateGroup` 的返回值、`DATE_GROUP_ORDER` 的排序与 `map` 的 key 都靠这几个英文串，只有落到分组标题那一刻才翻译。`dateGroupLabel(t, group)` 用 switch 逐分支写 `t("conversationList.dateGroup.recents")` 这样的字面量：写成 `t(\`conversationList.dateGroup.${slug}\`)` 的话 `missingKeys` 守卫（只匹配 `\bt\(\s*"…"`）看不见，键 union 也接不住模板串
+- `DateGroup` 是内部桶名——`getDateGroup` 的返回值、`DATE_GROUP_ORDER` 的排序与 `map` 的 key 都靠这几个英文串，只有落到分组标题那一刻才翻译。`dateGroupLabel(t, group)` 用 switch 逐分支写 `t("conversationList.dateGroup.recents")` 这样的字面量：写成 `t(\`conversationList.dateGroup.${slug}\`)`的话`missingKeys`守卫（只匹配`\bt\(\s*"…"`）看不见，键 union 也接不住模板串
 - 分组标签没有借 `logs.timeRange.last7Days`（同为 `Last 7 Days`）：那边是筛选下拉的区间选项，这边是历史列表的时间桶，概念不同，且跨命名空间借要把整棵列表挂第二个翻译器，按第 29、33、36 簇的口径另开本命名空间键
 - 复用 3 个 `common` 键：`rename`、`delete`、`cancel`。`delete` 在同一条目的 tooltip 与确认弹窗的 action 各出现一次，两处取值 `Delete` / `删除` 相同，没有开第二个键
 - 删除确认的说明句没有借 `prompts.info.deleteWarn`：取值差一个句号（`This action cannot be undone.` 对 `This action cannot be undone`），且不在 `common`。ZH 写成不带句号的 `此操作无法撤销`，与本簇 EN 对齐
@@ -1043,7 +1059,7 @@
 - 复用 3 个 `common` 键：`success`、`status`、`retry`（取值 `Success`/`成功`、`Status`/`状态`、`Retry`/`重试` 逐字节相同）。`common.previous`、`common.next` 没复用：英文同为 `Previous`/`Next`，中文是向导步骤的 `上一步`/`下一步`，概念不同，按"概念与取值都相同才复用"另开 `previousPage`/`nextPage`（`上一页`/`下一页`）
 - `colModel`、`colCost`、`colTokens`、`colDuration` 四个键在表头与详情卡的四个小标题各用一次——同一字段的两种排版，取值相同，没有为卡片另开一组
 - 计数行 `chat` 里第一条复数消息：`{count, plural, one {# request} other {# requests}}`。`# request` 的 `#` 后带空格，落进 `messagesParity` 的 `^#\s+\S` 合法形态；`intl-messageformat` 直测 `count: 1500` 渲染成 `1,500 requests`，带千位分隔，与原来 `total.toLocaleString()` + `request{s}` 逐字节相同（`count: 1` → `1 request`）。中文不复数，写 `{count, number} 次请求`。曾考虑把已有的 `{total}` 嵌进复数分支，`messagesParity` 会把嵌套括号判成未加引号的非占位符，作罢
-- `pageOf` 的取值以 ` · ` 开头（` · Page {page} of {totalPages}` / ` · 第 {page} 页，共 {totalPages} 页`）：原来是模板串拼在计数后面，分隔符属于这句而不是那句，两个表达式相邻时 JSX 吃掉换行空白，拼接结果必须逐字节等于旧渲染
+- `pageOf` 的取值以 `·` 开头（` · Page {page} of {totalPages}` / ` · 第 {page} 页，共 {totalPages} 页`）：原来是模板串拼在计数后面，分隔符属于这句而不是那句，两个表达式相邻时 JSX 吃掉换行空白，拼接结果必须逐字节等于旧渲染
 - 详情卡的 token 行拆成 `formatTokens(total)` 与括号外的 `tokensInAndOut`（`{prompt} in / {completion} out`），左括号跟着前一段文本、右括号单独一行；`LogsPanel.test.tsx` 里补了一条 `1,500 (输入 1,000 / 输出 500)` 断言盯这个拼接，用例数没变
 
 判为数据不接键：时间范围胶囊的 `24h`/`7d`/`30d`、`moment` 的 `MMM D, HH:mm:ss`、`formatCost` 的 `$` 与 `toFixed`、`formatDuration` 的 `s` 与 `-`，归货币/数字与日期格式欠账
@@ -1170,7 +1186,7 @@
 
 判为数据、不译：`RequestLogsTableColumns.tsx:154` 的 `"Success"` 是 `status` 字段的兜底值，只参与 `status.toLowerCase() !== "failure"` 判断，渲染走 `t("success")` / `t("failure")`；`AuditLogDrawer.tsx:50` 的 `console.error("Copy failed:", e)` 不是用户可见文案。这两条此前被记在漏网清单里，本簇核实后划掉
 
-共享组件欠账（本簇绕开、没在原地修）：`DataTableToolbar.tsx:78` 的 `aria-label={\`Remove ${label} filter\`}` 模板本身是英文，标签翻完之后按钮可及名成了 `Remove 搜索 filter`；`DataTableFilterDrawer.tsx:49` 的默认 `title = "Filters"` 同理。后者本簇在调用点显式传 `logs.table.filtersTitle`，前者留给 `common_components` 长尾，改它要先决定模板进哪个命名空间
+共享组件欠账（本簇绕开、没在原地修）：`DataTableToolbar.tsx:78` 的 `aria-label={\`Remove ${label} filter\`}`模板本身是英文，标签翻完之后按钮可及名成了`Remove 搜索 filter`；`DataTableFilterDrawer.tsx:49`的默认`title = "Filters"`同理。后者本簇在调用点显式传`logs.table.filtersTitle`，前者留给 `common_components` 长尾，改它要先决定模板进哪个命名空间
 
 测试同步：`RequestLogsPanel.test.tsx` 改 2 处（chip 文本 `搜索:sess-42` 与上面的按钮名），用例数不增不减。`log_filter_logic.test.tsx` 与 `RequestLogsTable` 没有测试依赖 `LOG_FILTER_LABELS`（该目录不存在 `RequestLogsTable.test.tsx`，面板测试走的是渲染结果）
 
@@ -1422,7 +1438,6 @@
 
 覆盖率复测：两侧叶子键 6141 到 6157；非测试 `.tsx` 912 个不变，已接入 380 到 381，41.8%；`components/view_logs` 71 个里接入 23 个；抽屉目录 19 个里接入 17 个，展示文案清零
 
-
 ## 2026-10-14 第 20 簇更新
 
 批次 24 第 20 簇：`LogDetailsDrawer/RoutingDecisionCard.tsx`（自动路由决策卡，368 行）接入 `logs`，新增 `logs.routing.*` 75 键，按 `routerTypes` / `bands` / `rows` / `sections` / `causes` / `planMode` / `housekeeping` / `escalation` 分组，两个消息目录各 +93 行、仍是纯增
@@ -1576,24 +1591,24 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 其余 16 个文件不是本批的账，单跑均稳定失败，逐条如下（错误信息取单跑首条）：
 
-| 文件 | 首条错误 | 归类 |
-| ---- | -------- | ---- |
-| `guardrails/_components/add_guardrail_form.decision_model.integration.test.tsx` | 找不到标签 `Guardrail Name` | 第六类，guardrails 批次遗留 |
-| `guardrails/_components/guardrail_info.test.tsx` | `Guardrail stale-id not found` | 非 i18n，取值/mock 问题 |
-| `guardrails/_components/guardrail_garden_detail.test.tsx` | 找不到行 `Provider Decision Model` | 第六类 |
-| `agents/_components/AgentsTable.test.tsx` | 找不到列头 `Spend (USD)` | 第六类 |
-| `agents/_components/add_agent_form.integration.test.tsx` | 找不到标签 `Agent Name` | 第六类 |
-| `agents/_components/agent_info.integration.test.tsx` | 找不到标签 `Agent Name` | 第六类 |
-| `agents/_components/agent_info.test.tsx` | 找不到按钮 `Edit Settings` | 第六类 |
-| `access-groups/.../AccessGroupEditModal.integration.test.tsx` | 找不到 tab `/MCP Servers/` | 第六类 |
-| `access-groups/.../AccessGroupCreateDialog.test.tsx` | 找不到标签 `Group Name` | 第六类 |
-| `model_add/CredentialModal.test.tsx` | `useTranslations` 上下文缺失 | 第一类，测试缺 `NextIntlClientProvider` |
-| `view_logs/index.test.tsx` | 找不到 tab `Request Logs` | 第六类，2026-10-14 第 13 簇已修 |
-| `organizations/_components/OrganizationsTable.test.tsx` | 找不到文本 `创建时间` | 需复查：断言已中文化但组件未渲染中文表头，或渲染路径不同 |
-| `shared/DataTable/DataTable.test.tsx` | `render is not defined` | 非 i18n，测试缺 import |
-| `mcp-servers/_components/mcp_server_edit.test.tsx` | 取值失败 | 非 i18n，既有技术债（见 `FIXES.md`） |
-| `UsagePage/components/KeyActivityPanel.integration.test.tsx` | 重试行为 | 非 i18n，疑似时序 |
-| `lens/_components/LensSetup.integration.test.tsx` | 找不到日期 `/2026-09-30/` | 非 i18n，日期/数据 |
+| 文件                                                                            | 首条错误                           | 归类                                                     |
+| ------------------------------------------------------------------------------- | ---------------------------------- | -------------------------------------------------------- |
+| `guardrails/_components/add_guardrail_form.decision_model.integration.test.tsx` | 找不到标签 `Guardrail Name`        | 第六类，guardrails 批次遗留                              |
+| `guardrails/_components/guardrail_info.test.tsx`                                | `Guardrail stale-id not found`     | 非 i18n，取值/mock 问题                                  |
+| `guardrails/_components/guardrail_garden_detail.test.tsx`                       | 找不到行 `Provider Decision Model` | 第六类                                                   |
+| `agents/_components/AgentsTable.test.tsx`                                       | 找不到列头 `Spend (USD)`           | 第六类                                                   |
+| `agents/_components/add_agent_form.integration.test.tsx`                        | 找不到标签 `Agent Name`            | 第六类                                                   |
+| `agents/_components/agent_info.integration.test.tsx`                            | 找不到标签 `Agent Name`            | 第六类                                                   |
+| `agents/_components/agent_info.test.tsx`                                        | 找不到按钮 `Edit Settings`         | 第六类                                                   |
+| `access-groups/.../AccessGroupEditModal.integration.test.tsx`                   | 找不到 tab `/MCP Servers/`         | 第六类                                                   |
+| `access-groups/.../AccessGroupCreateDialog.test.tsx`                            | 找不到标签 `Group Name`            | 第六类                                                   |
+| `model_add/CredentialModal.test.tsx`                                            | `useTranslations` 上下文缺失       | 第一类，测试缺 `NextIntlClientProvider`                  |
+| `view_logs/index.test.tsx`                                                      | 找不到 tab `Request Logs`          | 第六类，2026-10-14 第 13 簇已修                          |
+| `organizations/_components/OrganizationsTable.test.tsx`                         | 找不到文本 `创建时间`              | 需复查：断言已中文化但组件未渲染中文表头，或渲染路径不同 |
+| `shared/DataTable/DataTable.test.tsx`                                           | `render is not defined`            | 非 i18n，测试缺 import                                   |
+| `mcp-servers/_components/mcp_server_edit.test.tsx`                              | 取值失败                           | 非 i18n，既有技术债（见 `FIXES.md`）                     |
+| `UsagePage/components/KeyActivityPanel.integration.test.tsx`                    | 重试行为                           | 非 i18n，疑似时序                                        |
+| `lens/_components/LensSetup.integration.test.tsx`                               | 找不到日期 `/2026-09-30/`          | 非 i18n，日期/数据                                       |
 
 这些失败此前被各批次各自的"只跑本目录"验证漏掉，且 `PROGRESS.md` 顶部"1 失败"的旧快照是更早提交上的数字，已经过时。修一批就跨目录复跑一次全量，或至少把改动文件的下游消费方一起跑，才能及时抓到这一类
 
@@ -1607,13 +1622,13 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 ## 目录规模
 
-| 项                       | 数值                                                 |
-| ------------------------ | ---------------------------------------------------- |
-| 命名空间                 | 40（此前记 39 是数错，`en.json` 顶层键实际一直是 40 个）|
-| `en.json` 叶子键          | 6748（2026-10-15 第 38 簇；6738 是第 37 簇后，6719 是第 36 簇后，6685 是第 35 簇后，6675 是第 34 簇后，6646 是第 33 簇后，6632 是第 32 簇后，6584 是第 31 簇后，6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后）|
-| `zh-CN.json` 叶子键       | 6748                                                 |
-| 键树一致性               | 一致，`messagesParity` 通过                           |
-| 中英文取值完全相同的键    | 86（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）      |
+| 项                     | 数值                                                                                                                                                                                                                                                            |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 命名空间               | 40（此前记 39 是数错，`en.json` 顶层键实际一直是 40 个）                                                                                                                                                                                                        |
+| `en.json` 叶子键       | 6748（2026-10-15 第 38 簇；6738 是第 37 簇后，6719 是第 36 簇后，6685 是第 35 簇后，6675 是第 34 簇后，6646 是第 33 簇后，6632 是第 32 簇后，6584 是第 31 簇后，6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后） |
+| `zh-CN.json` 叶子键    | 6748                                                                                                                                                                                                                                                            |
+| 键树一致性             | 一致，`messagesParity` 通过                                                                                                                                                                                                                                     |
+| 中英文取值完全相同的键 | 86（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）                                                                                                                                                                                                               |
 
 中英文取值相同的那 86 个不是漏翻。产品名、缩写、`CSV` 这类不需要翻译的词保留英文是刻意的，`GLOSSARY.md` 里有对应条目
 
@@ -1625,24 +1640,24 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 "未接入/总数"指该目录下的 `.tsx`，数字越小越接近完成
 
-| 路由                       | 未接入/总数 | 路由               | 未接入/总数 |
-| -------------------------- | ----------- | ------------------ | ----------- |
-| mcp-servers                | 5/43        | access-groups      | 2/8         |
-| guardrails                 | 4/35        | guardrails-monitor | 2/7         |
-| playground                 | 14/37       | budgets            | 2/6         |
-| prompts                    | 5/27        | memory             | 2/6         |
-| models-and-endpoints       | 2/21        | tag-management     | 2/6         |
-| policies                   | 3/18        | organizations      | 1/5         |
-| agents                     | 4/15        | skills             | 2/5         |
-| vector-stores              | 5/15        | change-password    | 1/2         |
-| caching                    | 6/13        | router-settings    | 1/2         |
-| usage                      | 6/13        | transform-request  | 1/2         |
-| cost-optimization          | 1/11        | ui-theme           | 1/2         |
-| projects                   | 3/11        | workflows          | 1/2         |
-| cost-tracking              | 3/10        | api-keys           | 2/2         |
-| search-tools               | 4/10        | old-usage          | 1/2         |
-| users                      | 2/9         | 其余单文件路由      | 各 1/1      |
-| **共享 `src` 目录**        | **435/482** |                    |             |
+| 路由                 | 未接入/总数 | 路由               | 未接入/总数 |
+| -------------------- | ----------- | ------------------ | ----------- |
+| mcp-servers          | 5/43        | access-groups      | 2/8         |
+| guardrails           | 4/35        | guardrails-monitor | 2/7         |
+| playground           | 14/37       | budgets            | 2/6         |
+| prompts              | 5/27        | memory             | 2/6         |
+| models-and-endpoints | 2/21        | tag-management     | 2/6         |
+| policies             | 3/18        | organizations      | 1/5         |
+| agents               | 4/15        | skills             | 2/5         |
+| vector-stores        | 5/15        | change-password    | 1/2         |
+| caching              | 6/13        | router-settings    | 1/2         |
+| usage                | 6/13        | transform-request  | 1/2         |
+| cost-optimization    | 1/11        | ui-theme           | 1/2         |
+| projects             | 3/11        | workflows          | 1/2         |
+| cost-tracking        | 3/10        | api-keys           | 2/2         |
+| search-tools         | 4/10        | old-usage          | 1/2         |
+| users                | 2/9         | 其余单文件路由     | 各 1/1      |
+| **共享 `src` 目录**  | **435/482** |                    |             |
 
 共享 `src` 目录那一行是长尾，也就是批次 24。它贡献了 435 个未接入文件，占全部 556 个未接入文件的绝大多数，不过里面混着大量本来就不含文案的文件（hooks、types、纯逻辑封装），不能直接按这个数字估工作量
 
@@ -1652,12 +1667,12 @@ mcp-servers 名义上剩 5 个未接入文件，但其中 4 个本来就没有�
 
 命令：`npx vitest run --reporter=json`，全项目，2026-10-12 实测
 
-| 指标             | 数值                     |
-| ---------------- | ------------------------ |
-| 用例总数         | 11306                    |
-| 通过             | 10856（96.0%）           |
-| 失败             | 450                      |
-| 有失败的测试文件 | 96                       |
+| 指标             | 数值           |
+| ---------------- | -------------- |
+| 用例总数         | 11306          |
+| 通过             | 10856（96.0%） |
+| 失败             | 450            |
+| 有失败的测试文件 | 96             |
 
 起始基线是 1323 失败，此后 team 批次（`deab7e7`）、Provider 批次（`6d06b7b`）、guardrails 与 policies 两族收口累计消掉 873 例
 
@@ -1678,12 +1693,12 @@ mcp-servers 名义上剩 5 个未接入文件，但其中 4 个本来就没有�
 
 按错误文本聚合
 
-| 失败用例数 | 错误文本                                      |
-| ---------- | --------------------------------------------- |
+| 失败用例数 | 错误文本                                       |
+| ---------- | ---------------------------------------------- |
 | 383        | `Unable to find ...` 各类元素找不到            |
 | 32         | `toHaveTextContent` / `toHaveValue` 等内容断言 |
 | 24         | `toBeEnabled` / `toBeDisabled` / `toBeChecked` |
-| 11         | 其他（数组深比对、`toBeVisible`、守卫测试等）   |
+| 11         | 其他（数组深比对、`toBeVisible`、守卫测试等）  |
 
 223 条缺 `NextIntlClientProvider` 已清零。剩下的主力是 383 条"找不到元素"，绝大多数是断言停在英文（第六类），但其中混有与翻译无关的既有失败，处理时要逐文件回 HEAD 基线确认，不要一律当成翻译的账
 
@@ -1697,12 +1712,12 @@ mcp-servers 名义上剩 5 个未接入文件，但其中 4 个本来就没有�
 
 但不是所有集中失败都是假的。2026-10-12 逐个单文件复跑了失败最多的四个文件，结果与全量一致，都是真失败
 
-| 文件                                                                   | 全量 | 单跑 |
-| ---------------------------------------------------------------------- | ---- | ---- |
-| `cost-tracking/_components/cost_tracking_settings.test.tsx`            | 14   | 14   |
-| `projects/.../EditProjectModal.integration.test.tsx`                   | 13   | 13   |
-| `agents/_components/agent_info.integration.test.tsx`                   | 12   | 12   |
-| `add_pass_through.integration.test.tsx`                                | 12   | 12   |
+| 文件                                                        | 全量 | 单跑 |
+| ----------------------------------------------------------- | ---- | ---- |
+| `cost-tracking/_components/cost_tracking_settings.test.tsx` | 14   | 14   |
+| `projects/.../EditProjectModal.integration.test.tsx`        | 13   | 13   |
+| `agents/_components/agent_info.integration.test.tsx`        | 12   | 12   |
+| `add_pass_through.integration.test.tsx`                     | 12   | 12   |
 
 这四个都是第六类：断言停在 `Save Changes`、`Advanced Settings`、`Project Name`、`Edit Settings` 这些已经变成中文的文案上
 
@@ -1710,32 +1725,32 @@ mcp-servers 名义上剩 5 个未接入文件，但其中 4 个本来就没有�
 
 失败最集中的单文件
 
-| 文件                                                                       | 失败用例数 |
-| -------------------------------------------------------------------------- | ---------- |
-| `src/components/edit_auto_router/edit_auto_router_modal.integration.test.tsx` | 23      |
-| `src/app/(dashboard)/cost-tracking/_components/cost_tracking_settings.test.tsx` | 14    |
-| `src/app/(dashboard)/projects/_components/ProjectsPage.test.tsx`            | 13         |
-| `src/app/(dashboard)/projects/_components/ProjectModals/EditProjectModal.integration.test.tsx` | 13 |
-| `src/components/view_logs/index.test.tsx`                                   | 12         |
-| `src/components/add_pass_through.integration.test.tsx`                      | 12         |
-| `src/app/(dashboard)/agents/_components/agent_info.integration.test.tsx`    | 12         |
-| `src/app/(dashboard)/projects/_components/ProjectModals/CreateProjectModal.integration.test.tsx` | 12 |
-| `src/app/(dashboard)/prompts/_components/prompt_editor_view/VersionHistorySidePanel.test.tsx` | 11 |
-| `src/app/(dashboard)/usage/_components/components/UsagePageView.test.tsx`   | 11         |
+| 文件                                                                                             | 失败用例数 |
+| ------------------------------------------------------------------------------------------------ | ---------- |
+| `src/components/edit_auto_router/edit_auto_router_modal.integration.test.tsx`                    | 23         |
+| `src/app/(dashboard)/cost-tracking/_components/cost_tracking_settings.test.tsx`                  | 14         |
+| `src/app/(dashboard)/projects/_components/ProjectsPage.test.tsx`                                 | 13         |
+| `src/app/(dashboard)/projects/_components/ProjectModals/EditProjectModal.integration.test.tsx`   | 13         |
+| `src/components/view_logs/index.test.tsx`                                                        | 12         |
+| `src/components/add_pass_through.integration.test.tsx`                                           | 12         |
+| `src/app/(dashboard)/agents/_components/agent_info.integration.test.tsx`                         | 12         |
+| `src/app/(dashboard)/projects/_components/ProjectModals/CreateProjectModal.integration.test.tsx` | 12         |
+| `src/app/(dashboard)/prompts/_components/prompt_editor_view/VersionHistorySidePanel.test.tsx`    | 11         |
+| `src/app/(dashboard)/usage/_components/components/UsagePageView.test.tsx`                        | 11         |
 
 ### 各路由的测试状态
 
-| 路由               | 失败用例 | 失败文件 | 路由            | 失败用例 | 失败文件 |
-| ------------------ | -------- | -------- | --------------- | -------- | -------- |
-| projects           | 82       | 10       | tag-management  | 11       | 3        |
-| （非路由）          | 81       | 19       | users           | 9        | 1        |
-| prompts            | 56       | 18       | router-settings | 8        | 1        |
-| agents             | 55       | 10       | memory          | 7        | 2        |
-| cost-tracking      | 36       | 6        | skills          | 6        | 3        |
-| playground         | 27       | 9        | change-password | 5        | 1        |
-| usage              | 27       | 5        | mcp-servers     | 1        | 1        |
-| budgets            | 21       | 4        |                 |          |          |
-| caching            | 18       | 3        |                 |          |          |
+| 路由          | 失败用例 | 失败文件 | 路由            | 失败用例 | 失败文件 |
+| ------------- | -------- | -------- | --------------- | -------- | -------- |
+| projects      | 82       | 10       | tag-management  | 11       | 3        |
+| （非路由）    | 81       | 19       | users           | 9        | 1        |
+| prompts       | 56       | 18       | router-settings | 8        | 1        |
+| agents        | 55       | 10       | memory          | 7        | 2        |
+| cost-tracking | 36       | 6        | skills          | 6        | 3        |
+| playground    | 27       | 9        | change-password | 5        | 1        |
+| usage         | 27       | 5        | mcp-servers     | 1        | 1        |
+| budgets       | 21       | 4        |                 |          |          |
+| caching       | 18       | 3        |                 |          |          |
 
 "（非路由）"指 `src/components` 与 `tests` 下不属于任何 dashboard 路由的测试，其中 `edit_auto_router` 占 23、`view_logs/index` 占 12、`add_pass_through` 占 12
 
@@ -1765,15 +1780,15 @@ i18n 基础设施完整可用：语言解析、切换器、状态传播、类型
 
 七个核心模块的测试全绿，数字来自上面那份全量基线
 
-| 模块                 | 用例数 | 结果      |
-| -------------------- | ------ | --------- |
-| cost-optimization    | 216    | 216 通过  |
-| models-and-endpoints | 196    | 196 通过  |
-| access-groups        | 73     | 73 通过   |
-| organizations        | 37     | 37 通过   |
-| workflows            | 16     | 16 通过   |
-| transform-request    | 7      | 7 通过    |
-| ui-theme             | 6      | 6 通过    |
+| 模块                 | 用例数 | 结果     |
+| -------------------- | ------ | -------- |
+| cost-optimization    | 216    | 216 通过 |
+| models-and-endpoints | 196    | 196 通过 |
+| access-groups        | 73     | 73 通过  |
+| organizations        | 37     | 37 通过  |
+| workflows            | 16     | 16 通过  |
+| transform-request    | 7      | 7 通过   |
+| ui-theme             | 6      | 6 通过   |
 
 i18n 自身的三条守卫也是全绿，16 个用例
 
@@ -1783,12 +1798,12 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 对 `src` 下 1232 个非测试 `.tsx` / `.ts` 做了一次启发式扫描：找未接入 `next-intl`、且含 JSX 文本节点或 `placeholder` / `aria-label` / `title` / `label` / `alt` 英文字面量的文件
 
-| 项                                 | 数量 |
-| ---------------------------------- | ---- |
-| 非测试源文件                       | 1232 |
-| 已接入 `next-intl`                 | 309  |
-| 含用户可见英文且未接入             | 232  |
-| 已接入但仍有英文字面量             | 44   |
+| 项                     | 数量 |
+| ---------------------- | ---- |
+| 非测试源文件           | 1232 |
+| 已接入 `next-intl`     | 309  |
+| 含用户可见英文且未接入 | 232  |
+| 已接入但仍有英文字面量 | 44   |
 
 232 个里有 230 个被其他源码 import，另 2 个是 `app/chat/page.tsx` 与 `app/mcp/oauth/callback/page.tsx` 这类路由入口（Next 直接挂载，不需要被 import），所以**全部是活代码**，不是死文件。抽查确认不是误报：`components/activity_metrics.tsx` 里直接写 `<p className="text-sm text-muted-foreground">Total Requests</p>`
 
@@ -1843,11 +1858,11 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 按上面的建议在 `f4fb7c2` 上跑了一次四片全量：11307 个用例，11303 通过，4 失败（99.96%），文件覆盖 858 个。上面"第六类归零"的结论成立，另抓到一条不在清单里的漏网断言
 
-| 失败项 | 性质 | 处置 |
-| ------ | ---- | ---- |
-| `DeletedKeysPage/DeletedKeysTable.test.tsx :: should show the total count in the pagination footer` | 第六类漏网。同一用例的 `pagination-range` 已改中文，紧邻的 `pagination-page` 停在 `Page 1 of 3` | 已改中文，单文件复跑 8 例全绿 |
-| `mcp_server_edit.test.tsx :: preserves a stored client_id ...` | 取值失败，非 i18n | 保留，见技术债 |
-| `LanguageSwitcher.test.tsx` 2 例 | 设计冲突 | 已修，helper 加 `locale: null` 出口 |
+| 失败项                                                                                              | 性质                                                                                            | 处置                                |
+| --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `DeletedKeysPage/DeletedKeysTable.test.tsx :: should show the total count in the pagination footer` | 第六类漏网。同一用例的 `pagination-range` 已改中文，紧邻的 `pagination-page` 停在 `Page 1 of 3` | 已改中文，单文件复跑 8 例全绿       |
+| `mcp_server_edit.test.tsx :: preserves a stored client_id ...`                                      | 取值失败，非 i18n                                                                               | 保留，见技术债                      |
+| `LanguageSwitcher.test.tsx` 2 例                                                                    | 设计冲突                                                                                        | 已修，helper 加 `locale: null` 出口 |
 
 同一次复核还发现 `ProjectDetailsPage.tsx` 的项目状态徽标写死 `"Blocked" : "Active"`，而 `projects.statusBlocked` / `projects.statusActive` 两个键早就存在于两侧目录（`活跃` / `已封禁`），属于"键已存在但调用点没接"，是 `AgentsTableColumns` / `TeamGuardrailsTab` 那一类的残留。接上 `t()` 并同步两条断言后，该文件 22 例全绿
 
