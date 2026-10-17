@@ -1,10 +1,18 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 182 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10497、中英同值 138）。第 93 到 182 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 183 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10503、中英同值 138）。第 93 到 183 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 183 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `mcp-servers/_components/mcp_connect.tsx`，MCP 客户端连接页（OpenAI API / LiteLLM 代理 / Cursor / Streamable HTTP 四个页签）。页面主体早已接 `mcpConnect.*`，扫描器 7 条里 5 条是 curl/JSON 示例里的 `Bearer YOUR_LITELLM_*` 占位值（含 `getHeadersConfig` 注入的一处，示例内容既定不翻），真缺口全在盲区：文件自带的 `FeatureCard`/`CodeBlock` 组件把 `title` 当裸字符串 prop 传进 `<h5>`/`<strong>` 渲染，14 个调用点（8 个 FeatureCard 标题、6 个 CodeBlock 标题）全是没接线的英文字面量；另有开关说明 Label、Alert 三行（`Get a specific server:` 等）、OpenAI 密钥引导段（"Get your API key from the" 加外链）、游标与 HTTP 传输两段说明共 5 段裸英文。
+
+按第 177 簇键名化路子把两个组件的 `title` 改成 `titleKey` 联合类型（`FeatureCardTitleKey` 六键、`CodeBlockTitleKey` 三键），标题在组件内 `t(titleKey)` 渲染；`FeatureCard` 里 `title === "Implementation Example" || title === "Configuration"` 的功能比较随之改成键名比较。标题 12 处调用点复用 8 个已铺好的既有键（virtualKeySetup/mcpServerInfo/environmentVariable/serverUrl/apiKeySetup/configuration/universalMcpConnection/headersConfiguration），新开 6 键（叶子 10497 涨到 10503，同值持平 138）：`implementationExample`、带 `<code>` rich 标签的 `limitToolsHint`、`getSpecificServer`/`getMcpGroup`/`mixBoth`、带 `<link>` 标签与 `{platform}` 参数的 `getApiKeyFrom`（消费侧保留原 `<a>` 的 href/target/rel 并把 `openaiPlatform` 作参数传入，外链图标留在处理器内）。游标与传输两段复用逐字同值的 `cursorDesc`/`differentTransports`。Alert 里 `"dev-group"`、`"Server1,dev-group"` 与服务器名示例仍是样本值不翻。
+
+测试零改动：`mcp_connect.test.tsx` 断言的是页签中文名（`LiteLLM 代理`/`Cursor`，既有键）、StepCard 中文标题与 `"x-mcp-servers"` JSON 代码内容，键名化后标题渲染值不变、开关比较逻辑等价，全部照常绿。验证：mcp-servers 目录 41 文件 756 例全绿（2 例预期失败）加 `src/lib/i18n` 4 文件 18 例、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径 7/7 与 HEAD 逐条同数（既有欠账），prettier 先证 HEAD 本就脏（23 脏行）按口径不跑 `--write`，把手工新写的 union 类型、条件块与两个 CodeBlock 调用点逐段换成 prettier 的规范形态，剩余脏行 20 恰为 HEAD 基线减去被本次接线消掉的英文裸串那一处 hunk，其余五个 hunk 与 HEAD 逐条相同；6 键 12 侧 `IntlMessageFormat` 实跑，limitToolsHint 带 code 处理器、getApiKeyFrom 带 link 处理器加 `{platform}` 参数与去标签目标串逐字相等，`npm run build` 过，扫描器本文件只剩 5 条 Bearer 示例既定不翻。接入文件持平 686/912。
 
 ## 2026-10-18 第 182 簇更新
 
