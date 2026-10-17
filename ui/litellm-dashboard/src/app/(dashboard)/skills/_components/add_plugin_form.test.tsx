@@ -22,7 +22,7 @@ const DEFAULT_PROPS = {
 
 const URL_PLACEHOLDER = "https://github.com/org/repo or https://bucket.s3.amazonaws.com/my-skill.zip";
 const SUBPATH_PLACEHOLDER = "plugins/my-skill";
-const SHA256_PLACEHOLDER = "64 hex characters";
+const SHA256_PLACEHOLDER = "64 位十六进制字符";
 const S3_ZIP_URL = "https://skills-bucket.s3.us-east-1.amazonaws.com/plugins/s3-skill-1.0.0.zip";
 const DIGEST = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
@@ -36,7 +36,7 @@ describe("AddPluginForm", () => {
 
     expect(screen.getByText("来源 URL")).toBeInTheDocument();
     expect(screen.getByPlaceholderText(URL_PLACEHOLDER)).toBeInTheDocument();
-    expect(screen.getByText("Subfolder path (Optional)")).toBeInTheDocument();
+    expect(screen.getByText("子目录路径（可选）")).toBeInTheDocument();
     expect(screen.getByPlaceholderText(SUBPATH_PLACEHOLDER)).toBeInTheDocument();
     expect(screen.queryByPlaceholderText(SHA256_PLACEHOLDER)).not.toBeInTheDocument();
   });
@@ -164,7 +164,7 @@ describe("AddPluginForm", () => {
 
   const submit = async () => {
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Add Skill" }));
+      fireEvent.click(screen.getByRole("button", { name: "添加技能" }));
     });
   };
 
@@ -266,7 +266,7 @@ describe("AddPluginForm", () => {
 
     expect(await screen.findByText(/Zip archive/)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(SUBPATH_PLACEHOLDER)).toBeDisabled();
-    expect(screen.getByText("A zip archive is installed as a whole, so this field is disabled")).toBeInTheDocument();
+    expect(screen.getByText("zip 压缩包会整体安装，所以这个字段已禁用")).toBeInTheDocument();
     expect(screen.getByPlaceholderText(SHA256_PLACEHOLDER)).toBeInTheDocument();
     expect((screen.getByPlaceholderText("my-skill") as HTMLInputElement).value).toBe("s3-skill-1-0-0");
   });
@@ -334,7 +334,7 @@ describe("AddPluginForm", () => {
     });
     await submit();
 
-    expect(await screen.findByText("SHA-256 must be a 64-character hex digest")).toBeInTheDocument();
+    expect(await screen.findByText("SHA-256 必须是 64 位十六进制摘要")).toBeInTheDocument();
     expect(mockRegister).not.toHaveBeenCalled();
   });
 

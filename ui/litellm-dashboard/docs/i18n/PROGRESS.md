@@ -1,10 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 163 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10249、中英同值 137）。第 93 到 163 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 164 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10272、中英同值 137）。第 93 到 164 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 164 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `skills/_components/add_plugin_form.tsx`，技能注册弹窗。它的字段标签在前几批已经接了 25 个 `skills` 键，本轮补上剩下的：子目录与压缩包摘要两个字段、识别结果行、两条字段禁用说明、七个校验 toast、两个按钮、六条 zod 校验消息，共新增 23 个键（叶子 10249 涨到 10272）。
+
+schema 按第四步改工厂。`addPluginShape` 一度直接内联进 `z.object({...})` 传给工厂，撞上 `local/no-large-inline-object-arg` 告警（HEAD 用拆开的 shape 常量所以没有），恢复成 `buildAddPluginShape(t)` 加 `z.object(buildAddPluginShape(t))` 的两段式。`SUB_PATH_LOCK_REASON` 按第 155/156 簇的键名化改成 `SUB_PATH_LOCK_KEY`，值就是 `skills` 下两个键名，union 有限，`t(SUB_PATH_LOCK_KEY[subPathLock])` 类型检查能覆盖。取消按钮复用 `skills.cancel`（英文原文逐字相同）。
+
+本轮撞了两次目录插键的坑，都值得记。第一次：插入脚本用 `strip() == "}"` 找块尾，结果命中嵌套 `skills.selector` 的收口行，23 个键插进了 selector 里，parse 和键集合断言都过了、取值才暴露（中英两侧一起错所以 parity 抓不住）。改成从 `"skills": {` 起做花括号深度跟踪找块尾，并给原末条补逗号、新末条不带逗号。第二次是第 162 簇记过的锚点问题换了个形态：不是键名撞名，是结构撞名。插完必须做"新键在目标命名空间顶层可见"的取值断言，不能只断言 parse 成功。
+
+不翻的：`PREDEFINED_CATEGORIES` 八个分类值是原样提交后端并进 marketplace.json 的数据值（跟第 159 簇角色枚举同判据）；来源 URL 占位符是两个 URL 示例加 "or"、`my-skill`/`Productivity`/`workflows`/`search, web, api`/`1.0.0`/`author@example.com` 都是格式示例，中英同值；识别结果行里的预览标签（`GitHub repo — …` 等）产自 `claude_code_plugins/helpers.ts`，纯函数没有 hook，要接翻译器得把 `t` 注进 `parseSkillSource` 并波及全部调用方，留给该文件自己那一簇；`console.error` 开发日志。
+
+`add_plugin_form.test.tsx` 迁移 5 处（摘要占位符、子目录标签、按钮名、压缩包禁用说明、zod 摘要消息）。`/GitHub repo/` 这类正则在加前缀后仍命中，未动。
+
+覆盖率：接入文件持平 685/912、75.1%，消息叶子 10249 涨到 10272（+23），中英同值 137 持平。验证：skills 三份测试加 `messagesParity`、`missingKeys` 共 5 份文件 43 例全绿，重构 schema 后复跑 28 例仍全绿且类型检查无错；46 条新消息过 `intl-messageformat`、48 处 `t()` 调用点参数对齐；`tsc` 0 错；eslint 路径形式 0 告警，stdin 形式当前与 HEAD 同为 1 错（该文件名非 PascalCase，基线既有）；`npm run build` 通过。
 
 ## 2026-10-17 第 163 簇更新
 

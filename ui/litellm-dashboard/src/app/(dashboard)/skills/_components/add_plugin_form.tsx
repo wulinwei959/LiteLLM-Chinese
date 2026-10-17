@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { CircleHelp } from "lucide-react";
 import { z } from "zod/v4";
 import { toast } from "@/lib/toast";
+import type { SkillsTranslator } from "@/lib/i18n/translators";
 import { registerClaudeCodePlugin } from "@/components/networking";
 import { FieldGroup } from "@/components/ui/field";
 import { FormField } from "@/components/shared/form/FormField";
@@ -42,19 +43,19 @@ interface AddPluginFormProps {
   onSuccess: () => void;
 }
 
-const addPluginShape = {
-  skillUrl: z.string().min(1, "Please enter a repository or zip archive URL"),
+const buildAddPluginShape = (t: SkillsTranslator) => ({
+  skillUrl: z.string().min(1, t("urlRequired")),
   subPath: z
     .string()
     .refine(
       (value) => !value || isValidSubPath(value),
-      "Subfolder must be a relative path like plugins/my-skill (letters, numbers, dots, hyphens, underscores)",
+      t("subPathInvalid"),
     ),
-  sha256: z.string().refine(isValidSha256, "SHA-256 must be a 64-character hex digest"),
+  sha256: z.string().refine(isValidSha256, t("sha256Invalid")),
   name: z
     .string()
-    .min(1, "Please enter skill name")
-    .regex(/^[a-z0-9-]+$/, "Name must be kebab-case (lowercase, numbers, hyphens only)"),
+    .min(1, t("nameRequired"))
+    .regex(/^[a-z0-9-]+$/, t("nameKebab")),
   domain: z.string(),
   namespace: z.string(),
   description: z.string(),
@@ -64,12 +65,12 @@ const addPluginShape = {
   authorName: z.string(),
   authorEmail: z
     .string()
-    .refine((value) => value === "" || z.email().safeParse(value).success, "Please enter a valid email"),
-};
+    .refine((value) => value === "" || z.email().safeParse(value).success, t("emailInvalid")),
+});
 
-const addPluginSchema = z.object(addPluginShape);
+const buildAddPluginSchema = (t: SkillsTranslator) => z.object(buildAddPluginShape(t));
 
-type AddPluginFormValues = z.infer<typeof addPluginSchema>;
+type AddPluginFormValues = z.infer<ReturnType<typeof buildAddPluginSchema>>;
 
 const EMPTY_VALUES: AddPluginFormValues = {
   skillUrl: "",
@@ -129,12 +130,12 @@ const PREDEFINED_CATEGORIES = [
   "Documentation",
 ];
 
-const SUB_PATH_LOCK_REASON = {
-  "git-subdir": "The URL already points to a subfolder, so this field is disabled",
-  archive: "A zip archive is installed as a whole, so this field is disabled",
+const SUB_PATH_LOCK_KEY = {
+  "git-subdir": "subPathLockGitSubdir",
+  archive: "subPathLockArchive",
 } as const;
 
-type SubPathLock = keyof typeof SUB_PATH_LOCK_REASON;
+type SubPathLock = keyof typeof SUB_PATH_LOCK_KEY;
 
 const subPathLockFor = (source: PluginSource["source"] | undefined): SubPathLock | null =>
   source === "git-subdir" || source === "archive" ? source : null;
@@ -151,7 +152,7 @@ const labelWithHint = (label: string, hint: string): React.ReactNode => (
 
 const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessToken, onSuccess }) => {
   const t = useTranslations("skills");
-  const form = useZodForm(addPluginSchema, { defaultValues: EMPTY_VALUES });
+  const form = useZodForm(buildAddPluginSchema(t), { defaultValues: EMPTY_VALUES });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [urlPreview, setUrlPreview] = useState<SkillSourcePreview | null>(null);
   const [subPathLock, setSubPathLock] = useState<SubPathLock | null>(null);
@@ -174,34 +175,34 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
 
   const handleSubmit = async (values: AddPluginFormValues) => {
     if (!accessToken) {
-      toast.error("No access token available");
+      toast.error(t("noAccessToken"));
       return;
     }
 
     if (!urlPreview) {
-      toast.error("Please enter a valid repository or zip archive URL");
+      toast.error(t("invalidSourceUrl"));
       return;
     }
 
     if (!validatePluginName(values.name)) {
-      toast.error("Skill name must be kebab-case (lowercase letters, numbers, and hyphens only)");
+      toast.error(t("skillNameKebabToast"));
       return;
     }
 
     if (values.version && !isValidSemanticVersion(values.version)) {
-      toast.error("Version must be in semantic versioning format (e.g., 1.0.0)");
+      toast.error(t("semverToast"));
       return;
     }
 
     if (values.authorEmail && !isValidEmail(values.authorEmail)) {
-      toast.error("Invalid email format");
+      toast.error(t("invalidEmailToast"));
       return;
     }
 
     setIsSubmitting(true);
     try {
       await registerClaudeCodePlugin(accessToken, buildRegisterRequest(values, urlPreview.parsed));
-      toast.success("Skill registered successfully");
+      toast.success(t("registeredToast"));
       form.reset(EMPTY_VALUES);
       setUrlPreview(null);
       setSubPathLock(null);
@@ -209,7 +210,7 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
       onClose();
     } catch (error) {
       console.error("Error registering skill:", error);
-      toast.error(error instanceof Error && error.message ? error.message : "Failed to register skill");
+      toast.error(error instanceof Error && error.message ? error.message : t("registerFailedToast"));
     } finally {
       setIsSubmitting(false);
     }
@@ -253,11 +254,8 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
               <FormField
                 control={form.control}
                 name="subPath"
-                label={labelWithHint(
-                  "Subfolder path (Optional)",
-                  "Path within the repository where the skill lives (e.g., plugins/my-skill). Leave empty if the skill is at the repo root.",
-                )}
-                description={subPathLock ? SUB_PATH_LOCK_REASON[subPathLock] : undefined}
+                label={labelWithHint(t("subPathLabel"), t("subPathHint"))}
+                description={subPathLock ? t(SUB_PATH_LOCK_KEY[subPathLock]) : undefined}
               >
                 {({ ref, onChange, ...field }) => (
                   <Input
@@ -278,20 +276,17 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
                 <FormField
                   control={form.control}
                   name="sha256"
-                  label={labelWithHint(
-                    "Archive SHA-256 (Optional)",
-                    "Hex digest of the zip file. Claude Code refuses to install the archive if its checksum does not match.",
-                  )}
+                  label={labelWithHint(t("sha256Label"), t("sha256Hint"))}
                 >
                   {({ ref, ...field }) => (
-                    <Input {...field} ref={ref} placeholder="64 hex characters" className="rounded-lg font-mono" />
+                    <Input {...field} ref={ref} placeholder={t("sha256Placeholder")} className="rounded-lg font-mono" />
                   )}
                 </FormField>
               )}
 
               {urlPreview && (
                 <div className="rounded-lg border border-info/20 bg-info/10 px-3 py-2 text-sm text-info">
-                  Detected: {urlPreview.label}
+                  {t("detected", { label: urlPreview.label })}
                 </div>
               )}
 
@@ -411,11 +406,11 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
 
             <div className="mt-6 flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={handleCancel} disabled={isSubmitting}>
-                Cancel
+                {t("cancel")}
               </Button>
               <Button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
                 {isSubmitting && <UiLoadingSpinner className="size-4" />}
-                {isSubmitting ? "Adding..." : "Add Skill"}
+                {isSubmitting ? t("adding") : t("addSkill")}
               </Button>
             </div>
           </form>
