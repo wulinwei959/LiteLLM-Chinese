@@ -6,6 +6,12 @@
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
 
+## 中心网络层的处置决定
+
+`src/components/networking.tsx` 的四条英文 toast（`Field reset on proxy`、`Pass through endpoint updated successfully`、`Successfully updated value!`、`UI Session Expired. Logging out.`）暂时不动，这是 2026-10-17 与维护者确认过的决定：这个文件是所有数据请求的中心网络层，穿透成本大于收益，改它要连带复核的调用点以百计，而且这四条文案只在操作失败或会话过期的边缘路径上出现，不是日常主路径。其余候选清完后，再回头评估是否值得为这四条文案单独改造，还是继续记账。
+
+顺带把候选清单里剩下的判定为不翻的几类一并定案，避免以后重复排查：`add_model_modes.tsx` 的 `AUTO_ROUTER_MODES` 是无消费者的死代码；`vector_store_providers.tsx` 剩下五处是 `global`/`us`/`eu`/`true`/`false` 这类接口枚举取值；`teamTableColumns` 的 `TPM`/`RPM` 是缩写；`src/app/layout.tsx` 的 `metadata` 是 `export const` 静态元数据，不在 React 树里，`next-intl` 的 hook 取不到；`useUserMcpOAuthFlow`/`useTestMCPConnection`/`useToolsOAuthFlow` 里的 `Promise` 是扫描器把 TypeScript 泛型当成了文案。
+
 ## 2026-10-17 第 154 簇更新
 
 继续串行推进，没有派子代理。这一簇把候选清单里剩下的单文件小控件一次清掉。
