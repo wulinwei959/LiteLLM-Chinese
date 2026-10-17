@@ -4687,6 +4687,17 @@
     "modelViewToggle": {
         "publicName": "公开模型名",
         "litellmName": "LiteLLM 模型名"
+    },
+    "topModelView": {
+        "colModel": "模型",
+        "colSpend": "花费（美元）",
+        "colSuccessful": "成功",
+        "colFailed": "失败",
+        "colTokens": "Token 数",
+        "modelCountAria": "要展示的模型数量",
+        "viewModeAria": "头部模型视图模式",
+      "tableView": "表格视图",
+      "chartView": "图表视图"
     }
   },
   "logs": {
@@ -7320,6 +7331,26 @@
       "navApiKeys": "API 密钥",
       "navLogs": "日志",
       "navUsage": "用量"
+    },
+    "page": {
+        "suggestions": {
+            "write": "写作",
+            "learn": "学习",
+            "code": "写代码",
+            "brainstorm": "头脑风暴"
+        },
+        "greetingMorning": "早上好",
+        "greetingAfternoon": "下午好",
+        "greetingEvening": "晚上好",
+        "modelsLoadFailed": "无法加载模型",
+        "modelSearchPlaceholder": "搜索模型...",
+        "sendPlaceholder": "输入消息...",
+        "emptyStateHint": "今天有什么可以帮你的？",
+        "scrollToBottom": "滚动到底部",
+      "selectModel": "选择模型",
+      "send": "发送",
+      "historyNotSaved": "本次浏览器会话不会保存聊天记录",
+      "openIntegrations": "打开集成 ->"
     }
   },
   "playground": {

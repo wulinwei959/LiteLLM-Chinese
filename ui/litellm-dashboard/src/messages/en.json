@@ -4687,6 +4687,17 @@
     "modelViewToggle": {
         "publicName": "Public Model Name",
         "litellmName": "Litellm Model Name"
+    },
+    "topModelView": {
+        "colModel": "Model",
+        "colSpend": "Spend (USD)",
+        "colSuccessful": "Successful",
+        "colFailed": "Failed",
+        "colTokens": "Tokens",
+        "modelCountAria": "Number of models to show",
+        "viewModeAria": "Top model view mode",
+      "tableView": "Table View",
+      "chartView": "Chart View"
     }
   },
   "logs": {
@@ -7320,6 +7331,26 @@
       "navApiKeys": "API Keys",
       "navLogs": "Logs",
       "navUsage": "Usage"
+    },
+    "page": {
+        "suggestions": {
+            "write": "Write",
+            "learn": "Learn",
+            "code": "Code",
+            "brainstorm": "Brainstorm"
+        },
+        "greetingMorning": "Good morning",
+        "greetingAfternoon": "Good afternoon",
+        "greetingEvening": "Good evening",
+        "modelsLoadFailed": "Could not load models",
+        "modelSearchPlaceholder": "Search models...",
+        "sendPlaceholder": "Send a message...",
+        "emptyStateHint": "How can I help you today?",
+        "scrollToBottom": "Scroll to bottom",
+      "selectModel": "Select model",
+      "send": "Send",
+      "historyNotSaved": "Chat history won't be saved in this browser session",
+      "openIntegrations": "Open Integrations ->"
     }
   },
   "playground": {

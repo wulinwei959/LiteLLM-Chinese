@@ -76,10 +76,10 @@ async function sendOneMessage(): Promise<void> {
     </LocaleProvider>,
   );
   expect(await screen.findByRole("button", { name: /gpt-5\.4-mini/ })).toBeInTheDocument();
-  fireEvent.change(screen.getByPlaceholderText("How can I help you today?"), {
+  fireEvent.change(screen.getByPlaceholderText("今天有什么可以帮你的？"), {
     target: { value: "How much did this cost?" },
   });
-  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  fireEvent.click(screen.getByRole("button", { name: "发送" }));
   await waitFor(() => expect(mockMakeOpenAIResponsesRequest).toHaveBeenCalledTimes(1));
 }
 
@@ -105,12 +105,12 @@ describe("/ui/chat request metrics", () => {
 
     await sendOneMessage();
 
-    expect(await screen.findByLabelText("Total: 20")).toBeInTheDocument();
+    expect(await screen.findByLabelText("总计: 20")).toBeInTheDocument();
     expect(screen.getByLabelText("TTFT: 0.25s")).toBeInTheDocument();
-    expect(screen.getByLabelText("Total Latency: 1.20s")).toBeInTheDocument();
-    expect(screen.getByLabelText("In: 12")).toBeInTheDocument();
-    expect(screen.getByLabelText("Out: 8")).toBeInTheDocument();
-    expect(screen.getByLabelText("Cost: $0.000063")).toBeInTheDocument();
+    expect(screen.getByLabelText("总延迟: 1.20s")).toBeInTheDocument();
+    expect(screen.getByLabelText("输入: 12")).toBeInTheDocument();
+    expect(screen.getByLabelText("输出: 8")).toBeInTheDocument();
+    expect(screen.getByLabelText("成本: $0.000063")).toBeInTheDocument();
   });
 
   it("supplies the timing, usage and latency callbacks at the positional slots the Responses helper reads", async () => {
@@ -152,7 +152,7 @@ describe("/ui/chat storage banner", () => {
       </LocaleProvider>,
     );
 
-    const banner = await screen.findByText("Chat history won't be saved in this browser session");
+    const banner = await screen.findByText("本次浏览器会话不会保存聊天记录");
     const dismiss = within(banner.parentElement!).getByRole("button");
     expect(dismiss).toHaveClass("hover:text-warning/80");
     expect(dismiss).not.toHaveClass("hover:text-foreground");
