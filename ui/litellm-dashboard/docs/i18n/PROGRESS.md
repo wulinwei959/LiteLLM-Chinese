@@ -1,10 +1,26 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 151 簇后（非测试 `.tsx` 912 个接入 658 个、72.1%，目录叶子 9736、中英同值 131）。第 93 到 151 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 152 簇后（非测试 `.tsx` 912 个接入 665 个、72.9%，目录叶子 9771、中英同值 132）。第 93 到 152 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 152 簇更新
+
+继续串行推进，没有派子代理。这一簇清掉候选清单里的三个多选器、两个导出组件与表格勾选列。
+
+`SkillSelector.tsx` 与 `SearchToolSelector.tsx`：占位符原来是解构默认值里的英文（`placeholder = "Select skills (optional)"`），改成把 `placeholder` 留成可选 prop、组件内 `placeholder ?? t("placeholder")` 解析。这样调用方显式传值时不白翻译，也不用把默认值挂在消息里。`SkillSelector` 的空态与加载文案复用既有 `skills.loadingSkills`/`skills.noSkills`（同一命名空间挂第二把 `skillsT`）；`SearchToolSelector` 的两条搜索工具专有文案新开 `searchTools.selector`。`SkillSelector` 里 `private` 出现两次（可访问名与徽标），合成一键。
+
+`AgentSelector.tsx`：接 `agents.selector`，顺带把 `MultiSelect` 的 `emptyText="No agents found"` 也接了键——它原本没进扫描器（属性值赋给了组件 prop，`label` 模式只匹配 `label:`/`label=`）。
+
+`ExportTypeSelector.tsx`：新开 `entityUsageExport`。六个实体名单独成 `entityNames` 子表，八个标题/说明按整句取键、实体名走 `{entity}` 入参。中文侧把"按{entity}逐日拆分"这种语序写进消息，实体名只管填，这样 `{entity}` 是"团队"还是"Key 归属者"都不会破坏语序。
+
+`DataTableSelectionColumn.tsx`：新开 `dataTableSelection`。`meta.title` 与逐行 `rowAriaLabel` 都是模块级工厂产物拿不到 hook，改为 `SelectionColumnOptions` 新收一个 `title`、逐行标签由调用方给，两个调用方（`UsersTableColumns`、`HealthChecksTableColumns`）各挂一把 `dataTableSelection` 翻译器并通过 deps 传下去。`SelectionTranslator` 从 `DataTableSelectionColumn` 导出、`index.ts` 再导出，调用方只 import 类型不引运行时值。
+
+这一段合计：非测试 `.tsx` 912 接入 658→665（72.1%→72.9%），消息叶子 9736→9771（+35），中英同值 131→132（`entityNames` 里六个英文实体名，中文侧译成"用户/团队/标签/组织/客户/Agent"）。候选文件 42→39 上下。
+
+整包（`src/components` + `src/app`，825 文件 10525 例）只剩 5 例红灯：`add_auto_router_tab`、`KeyActivityPanel` 两例仍是已知的并发假失败（单跑全绿），`LensSetup` 一例仍是 `Asia/Shanghai` 时区断言，另两例是本簇引入的 `create_key_button` 私有技能可访问名断言，同批修掉。
 
 ## 2026-10-17 第 151 簇更新
 
