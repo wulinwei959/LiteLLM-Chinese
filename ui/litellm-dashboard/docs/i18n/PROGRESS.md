@@ -1,10 +1,18 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 172 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10391、中英同值 137）。第 93 到 172 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 173 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10401、中英同值 137）。第 93 到 173 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 173 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `playground/components/chat_ui/chatConstants.ts`，语音选择的标签数据文件。模块级常量拿不到 `t()`，按第 169/168 簇的键名化做法：删掉 `OPEN_AI_VOICE_LABELS`，新增 `PlaygroundVoiceMessageKey` 十字面量 union（注释标明在 `playground` 命名空间下解析）与 `OPEN_AI_VOICE_LABEL_KEYS` 映射，`OPEN_AI_VOICE_SELECT_OPTIONS` 改产出 `{ value, labelKey }`；`OPEN_AI_VOICES` 的 wire 值（alloy 等）与 `ENDPOINT_OPTIONS` 的 API 路径照旧不翻。`playground.voices` 新开 10 键（叶子 10391 涨到 10401），zh 侧如 "Alloy - 专业自信"。消费接线两处：`ChatUI.tsx` 的下拉 `items` 与 `SelectItem` 都改 `t(v.labelKey)`；`RealtimePlayground.tsx` 把选中项提成 `selectedVoiceOption` 再渲染 `t(...labelKey)`，`aria-label="Voice"` 复用现成的 `config.voice`（en "Voice"/zh "语音"）。
+
+顺带修掉 `bd3def8d` 那批的遗留账：`realtime.clickConnectDesc` 两条消息都带 `<b>` 标签，组件里却用裸 `t()` 渲染，测试常年往 stderr 喷 FORMATTING_ERROR，改成 `t.rich(..., { b: (chunks) => <strong>{chunks}</strong> })`，与同命名空间 `ChatUI.tsx` 的 `<strong>` 先例一致。
+
+测试迁移：`ChatUI.integration.test.tsx` 语音内容断言换 "Alloy - 专业自信"。验证：RealtimePlayground + ChatUI 集成 2 文件 38 例全绿（改 t.rich 后 RealtimePlayground 单跑 15 例 stderr 噪声归零）、Type Errors no errors，tsc 报的 14 处 RegExp 参数错逐行与 HEAD 相同（既有基线，不在本簇改动行），eslint stdin 口径四个文件与 HEAD 逐条同数（chatConstants 两侧均 0），prettier 先证 HEAD：chatConstants 与集成测试干净且当前保持干净，另两文件 HEAD 本就脏按口径不跑 `--write`；10 条消息 20 侧 `IntlMessageFormat` 解析渲染逐字相等，`npm run build` 过，扫描器本文件只剩 endpoint 路径一条既定不翻。接入文件持平 686/912。
 
 ## 2026-10-18 第 172 簇更新
 
