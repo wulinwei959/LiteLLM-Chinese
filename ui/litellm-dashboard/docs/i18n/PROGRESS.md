@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 174 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10401、中英同值 137）。第 93 到 174 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 175 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10415、中英同值 138）。第 93 到 175 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 175 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `search-tools/_components/SearchTools.tsx`，搜索工具列表页与编辑弹窗。模块级 zod schema 首次在本轮走 `editAutoRouterFormSchema.ts` 的翻译器工厂先例（上游既有文件）：`editSearchToolShape(t)` 返回四个字段、`editSearchToolSchema(t)` 包 `z.object`，消费方 `useZodForm(useMemo(() => editSearchToolSchema(t), [t]), ...)`，两条必填消息（`nameRequired`/`providerRequired`）随语言切换。新开 14 键（叶子 10401 涨到 10415）：五条 toast（deletedToast/deleteError/updatedToast/updateError）、删除弹窗三件套（deleteTitle/deleteConfirm/resourceInfoTitle）、四个表单标签（searchToolName/providerLabel/apiKeyDesc/nameExample）、两条校验。`apiKeyCol`/`descriptionCol`/`providerCol`/`nameCol`/`addNew`/`idLabel` 全部同命名空间复用，取消/确定用 `common.cancel`/`common.ok`（本页第二个 `useTranslations` 钩子取名 `commonT`，沿 `commonT` 先例）。`nameExample` 保持资源名示例英文化，只把 `e.g.,` 换成 `例如：`（第 171 簇示例占位符教条）；`idLabel` 中英同值 "ID"/"ID"（同值 137 涨到 138，非漏翻）。`console.error` 三条照旧不翻。
+
+测试迁移：`SearchTools.integration.test.tsx` 的 `getByLabelText`（搜索工具名称/描述）与 `getByRole("确定")` 共 11 处、必填提示断言 1 处换中文；`SearchTools.test.tsx` 的 `/add new search tool/i` 4 处换 `/新建搜索工具/`，mock 里 DeleteResourceModal 自有的 Confirm Delete/Cancel Delete 按钮不受影响不动。验证：两测试加 `src/lib/i18n` 5 文件 33 例全绿、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径组件 3 problems 与 HEAD 逐条同数（先挤掉一个本簇自造的 no-large-inline-object-arg 告警，改成具名 shape），两个测试文件两侧均 0；prettier 先证 HEAD：三个 tsx 文件 HEAD 全干净，组件当前脏，`--write` 后复跑测试仍绿，目录两侧 HEAD 本就脏按口径不跑 `--write`；14 键 28 侧 `IntlMessageFormat` 实跑逐字相等（全部无 ICU 特殊字符），`npm run build` 过，扫描器本文件归零。接入文件持平 686/912。
 
 ## 2026-10-18 第 174 簇更新
 
