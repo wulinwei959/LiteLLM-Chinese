@@ -205,7 +205,7 @@ describe("MultiCostResults", () => {
 
     it("should show the Export button when results are available", () => {
       renderWithProviders(<MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />);
-      expect(screen.getByRole("button", { name: /export/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "导出" })).toBeInTheDocument();
     });
 
     it("should render a column header for each summary column", () => {

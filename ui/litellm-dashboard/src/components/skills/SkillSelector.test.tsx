@@ -27,7 +27,7 @@ describe("SkillSelector", () => {
     await user.click(screen.getByRole("combobox"));
 
     expect(await screen.findByRole("option", { name: "public-skill" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "private-skill (private)" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "private-skill (私有)" })).toBeInTheDocument();
     expect(getClaudeCodePluginsList).toHaveBeenCalledWith("token");
   });
 
@@ -37,7 +37,7 @@ describe("SkillSelector", () => {
     renderWithProviders(<SkillSelector accessToken="token" onChange={onChange} />);
 
     await user.click(screen.getByRole("combobox"));
-    await user.click(await screen.findByRole("option", { name: "private-skill (private)" }));
+    await user.click(await screen.findByRole("option", { name: "private-skill (私有)" }));
 
     expect(onChange).toHaveBeenCalledWith(["private-skill"]);
   });
@@ -47,7 +47,7 @@ describe("SkillSelector", () => {
     const onChange = vi.fn();
     renderWithProviders(<SkillSelector accessToken="" value={["public-skill"]} onChange={onChange} />);
 
-    await user.click(screen.getByRole("button", { name: "Clear all skills" }));
+    await user.click(screen.getByRole("button", { name: "清空全部技能" }));
 
     expect(onChange).toHaveBeenCalledWith([]);
   });

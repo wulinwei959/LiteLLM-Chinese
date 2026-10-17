@@ -37,7 +37,7 @@ describe("SearchToolSelector", () => {
     const onChange = vi.fn();
     renderWithProviders(<SearchToolSelector accessToken="" value={["search-one", "search-two"]} onChange={onChange} />);
 
-    await user.click(screen.getByRole("button", { name: "Clear all search tools" }));
+    await user.click(screen.getByRole("button", { name: "清空全部搜索工具" }));
 
     expect(onChange).toHaveBeenCalledWith([]);
   });

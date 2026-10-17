@@ -1,6 +1,7 @@
 import type { DateRangePickerValue } from "@/components/shared/date_picker_types";
 import { Download } from "lucide-react";
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Combobox,
@@ -52,6 +53,7 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
   teams = [],
 }) => {
   const anchor = useComboboxAnchor();
+  const t = useTranslations("entityUsageExport");
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   const hasFilters = filterSlot != null || showFilters;
@@ -65,7 +67,7 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
 
   const filterList = (
     <ComboboxContent anchor={anchor}>
-      <ComboboxEmpty>No options found</ComboboxEmpty>
+      <ComboboxEmpty>{t("noOptions")}</ComboboxEmpty>
       <ComboboxList>
         {(value: string) => (
           <ComboboxItem key={value} value={value}>
@@ -123,7 +125,7 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
           <div className="justify-self-end">
             <Button onClick={() => setIsExportModalOpen(true)}>
               <Download />
-              Export Data
+              {t("exportData")}
             </Button>
           </div>
         </div>

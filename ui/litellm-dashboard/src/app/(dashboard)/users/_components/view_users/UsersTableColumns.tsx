@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import type { UsersTranslator } from "@/lib/i18n/translators";
 
 import { UserInfo } from "@/components/networking";
-import { createSelectionColumn, DataTableSortHeader } from "@/components/shared/DataTable";
+import { createSelectionColumn, DataTableSortHeader, type SelectionTranslator } from "@/components/shared/DataTable";
 import { CellTooltip, DateCell, IdentityCell, MoneyCell, StatusBadge } from "@/components/shared/table_cells";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -82,6 +82,7 @@ export interface UsersTableColumnsDeps {
   onDeleteUser: (user: UserInfo) => void;
   onResetPassword: (userId: string) => void;
   t: UsersTranslator;
+  selectionT: SelectionTranslator;
 }
 
 export const getUsersTableColumns = ({
@@ -91,6 +92,7 @@ export const getUsersTableColumns = ({
   onDeleteUser,
   onResetPassword,
   t,
+  selectionT,
 }: UsersTableColumnsDeps): ColumnDef<UserInfo>[] => {
   const baseColumns: ColumnDef<UserInfo>[] = [
     {
@@ -279,7 +281,8 @@ export const getUsersTableColumns = ({
 
   return [
     createSelectionColumn<UserInfo>({
-      rowAriaLabel: (row) => `Select ${row.original.user_email || row.original.user_id}`,
+      title: selectionT("columnTitle"),
+      rowAriaLabel: (row) => selectionT("selectNamed", { name: row.original.user_email || row.original.user_id }),
     }),
     ...baseColumns,
   ];

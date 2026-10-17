@@ -56,6 +56,7 @@ export function HealthChecksTable({
   teams,
 }: HealthChecksTableProps) {
   const t = useTranslations("models.health");
+  const selectionT = useTranslations("dataTableSelection");
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const columns = useMemo(() => {
@@ -67,9 +68,20 @@ export function HealthChecksTable({
       onShowSuccess,
       onSelectModel,
       teams,
+      selectionT,
     };
     return getHealthChecksTableColumns(columnDeps, t);
-  }, [modelHealthStatuses, getDisplayModelName, onRunHealthCheck, onShowError, onShowSuccess, onSelectModel, teams, t]);
+  }, [
+    modelHealthStatuses,
+    getDisplayModelName,
+    onRunHealthCheck,
+    onShowError,
+    onShowSuccess,
+    onSelectModel,
+    teams,
+    t,
+    selectionT,
+  ]);
 
   return (
     <DataTable

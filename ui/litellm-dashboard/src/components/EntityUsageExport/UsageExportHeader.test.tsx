@@ -21,20 +21,20 @@ const defaultProps = {
 describe("UsageExportHeader", () => {
   it("should render", () => {
     renderWithProviders(<UsageExportHeader {...defaultProps} />);
-    expect(screen.getByRole("button", { name: /export data/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /导出数据/ })).toBeInTheDocument();
   });
 
   it("should open the export modal when the export button is clicked", async () => {
     const user = userEvent.setup();
     renderWithProviders(<UsageExportHeader {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /export data/i }));
+    await user.click(screen.getByRole("button", { name: /导出数据/ }));
     expect(screen.getByTestId("export-modal")).toBeInTheDocument();
   });
 
   it("should close the export modal when onClose is called", async () => {
     const user = userEvent.setup();
     renderWithProviders(<UsageExportHeader {...defaultProps} />);
-    await user.click(screen.getByRole("button", { name: /export data/i }));
+    await user.click(screen.getByRole("button", { name: /导出数据/ }));
     await user.click(screen.getByRole("button", { name: /close/i }));
     expect(screen.queryByTestId("export-modal")).not.toBeInTheDocument();
   });

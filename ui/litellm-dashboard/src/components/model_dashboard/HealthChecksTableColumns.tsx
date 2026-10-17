@@ -5,7 +5,7 @@ import { Info, Play, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Team } from "@/components/key_team_helpers/key_list";
-import { createSelectionColumn, DataTableSortHeader } from "@/components/shared/DataTable";
+import { createSelectionColumn, DataTableSortHeader, type SelectionTranslator } from "@/components/shared/DataTable";
 import { IdentityCell, StatusBadge, type StatusTone } from "@/components/shared/table_cells";
 import { cn } from "@/lib/cva.config";
 
@@ -212,6 +212,7 @@ export interface HealthChecksTableColumnsDeps {
   onShowSuccess: (modelName: string, response: unknown) => void;
   onSelectModel?: (modelId: string) => void;
   teams?: Team[] | null;
+  selectionT: SelectionTranslator;
 }
 
 export const getHealthChecksTableColumns = (
@@ -223,12 +224,15 @@ export const getHealthChecksTableColumns = (
     onShowSuccess,
     onSelectModel,
     teams,
+    selectionT,
   }: HealthChecksTableColumnsDeps,
   t: HealthTranslator,
 ): ColumnDef<HealthCheckData>[] => {
   return [
     createSelectionColumn<HealthCheckData>({
-      rowAriaLabel: (row) => `Select ${row.original.model_info?.id ?? row.original.model_name}`,
+      title: selectionT("columnTitle"),
+      rowAriaLabel: (row) =>
+        selectionT("selectNamed", { name: row.original.model_info?.id ?? row.original.model_name }),
     }),
     {
       id: "model_id",

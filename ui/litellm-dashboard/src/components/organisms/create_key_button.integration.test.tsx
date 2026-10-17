@@ -351,7 +351,7 @@ describe("CreateKey", () => {
       await openSection(/Optional Settings/i);
       await openSection(SECTIONS.skill);
       await userEvent.click(await screen.findByRole("combobox", { name: "Select skills (optional)" }));
-      await userEvent.click(await screen.findByRole("option", { name: "private-skill (private)" }));
+      await userEvent.click(await screen.findByRole("option", { name: "private-skill (私有)" }));
       await userEvent.keyboard("{Escape}");
       await submit();
 

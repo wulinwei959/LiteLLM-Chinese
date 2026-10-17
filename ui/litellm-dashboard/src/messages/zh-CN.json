@@ -8004,7 +8004,12 @@
     "na": "无",
     "noDescription": "暂无描述",
     "copyId": "复制技能 ID",
-    "idCopied": "技能 ID 已复制"
+    "idCopied": "技能 ID 已复制",
+    "selector": {
+        "placeholder": "选择技能（可选）",
+        "clearAll": "清空全部技能",
+        "private": "私有"
+    }
   },
   "memory": {
     "title": "记忆",
@@ -8251,6 +8256,12 @@
         "evidenceNote": "近期的凭据来自与该绑定匹配的、经验证的 Entra 令牌。它会跨重启持久保存，并在绑定变更时清除。工具与模型权限是单独校验的。",
         "refreshButton": "刷新认证凭据",
         "viewLogsLink": "查看请求日志"
+    },
+    "selector": {
+        "placeholder": "选择 Agent",
+        "accessGroupDesc": "访问组",
+        "agentDesc": "Agent",
+      "noAgents": "未找到 Agent"
     }
   },
   "costTracking": {
@@ -8330,7 +8341,12 @@
     "perDay": "每天",
     "perMonth": "每月",
     "daily": "每天",
-    "monthly": "每月"
+    "monthly": "每月",
+    "multiExport": {
+        "trigger": "导出",
+        "asPdf": "导出为 PDF",
+        "asCsv": "导出为 CSV"
+    }
   },
   "cloudZero": {
     "notConfigured": "未配置",
@@ -8453,7 +8469,13 @@
     "deleteTool": "删除搜索工具",
     "configEditHint": "配置文件中的搜索工具无法在管理面板编辑，请直接修改配置文件。",
     "configDeleteHint": "配置文件中的搜索工具无法在管理面板删除，请直接修改配置文件。",
-    "loadingMessage": "正在加载搜索工具…"
+    "loadingMessage": "正在加载搜索工具…",
+    "selector": {
+        "placeholder": "选择搜索工具（可选）",
+        "clearAll": "清空全部搜索工具",
+        "loading": "正在加载搜索工具…",
+        "noTools": "未找到搜索工具"
+    }
   },
   "vectorStores": {
     "createdSuccess": "向量存储创建成功",
@@ -10656,5 +10678,32 @@
     "fetchFailed": "获取 schema 失败",
     "schemaComponentMissing": "未找到 schema 组件「{name}」",
     "errorLine": "错误：{message}"
+  },
+  "entityUsageExport": {
+    "exportData": "导出数据",
+    "noOptions": "没有可用选项",
+    "exportType": "导出类型",
+    "entityNames": {
+      "user": "用户",
+      "team": "团队",
+      "tag": "标签",
+      "organization": "组织",
+      "customer": "客户",
+      "agent": "Agent"
+    },
+    "dailyTitle": "按{entity}逐日拆分",
+    "dailyDesc": "每个{entity}的每日指标",
+    "dailyWithKeysTitle": "按{entity}与 Key 逐日拆分",
+    "dailyWithKeysDesc": "每个{entity}的每日指标，按 API Key 拆分",
+    "dailyWithModelsTitle": "按{entity}与模型逐日统计",
+    "dailyWithModelsDesc": "按模型拆分的每日指标",
+    "dailyWithUsersTitle": "按{entity}与用户逐日拆分",
+    "dailyWithUsersDesc": "每个{entity}的每日指标，按 Key 归属者拆分"
+  },
+  "dataTableSelection": {
+    "selectAll": "选中所有行",
+    "selectRow": "选中该行",
+    "columnTitle": "选择",
+    "selectNamed": "选中 {name}"
   }
 }

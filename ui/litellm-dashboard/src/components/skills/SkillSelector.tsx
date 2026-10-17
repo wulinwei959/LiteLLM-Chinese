@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Combobox,
   ComboboxChip,
@@ -45,9 +46,12 @@ const SkillSelector: React.FC<SkillSelectorProps> = ({
   value,
   className,
   accessToken,
-  placeholder = "Select skills (optional)",
+  placeholder,
   disabled = false,
 }) => {
+  const t = useTranslations("skills.selector");
+  const skillsT = useTranslations("skills");
+  const placeholderText = placeholder ?? t("placeholder");
   const anchor = useComboboxAnchor();
   const [options, setOptions] = useState<SkillOption[]>([]);
   const [loading, setLoading] = useState(false);
@@ -85,18 +89,18 @@ const SkillSelector: React.FC<SkillSelectorProps> = ({
             ))
           }
         </ComboboxValue>
-        <ComboboxChipsInput placeholder={placeholder} aria-label={placeholder} disabled={disabled} />
-        {value && value.length > 0 && <ComboboxClear aria-label="Clear all skills" disabled={disabled} />}
+        <ComboboxChipsInput placeholder={placeholderText} aria-label={placeholderText} disabled={disabled} />
+        {value && value.length > 0 && <ComboboxClear aria-label={t("clearAll")} disabled={disabled} />}
       </ComboboxChips>
       <ComboboxContent anchor={anchor}>
-        <ComboboxEmpty>{loading ? "Loading skills…" : "No skills found"}</ComboboxEmpty>
+        <ComboboxEmpty>{loading ? skillsT("loadingSkills") : skillsT("noSkills")}</ComboboxEmpty>
         <ComboboxList>
           {(skill: string) => {
             const isPrivate = options.some((option) => option.name === skill && !option.enabled);
             return (
-              <ComboboxItem key={skill} value={skill} aria-label={isPrivate ? `${skill} (private)` : skill}>
+              <ComboboxItem key={skill} value={skill} aria-label={isPrivate ? `${skill} (${t("private")})` : skill}>
                 {skill}
-                {isPrivate && <span className="ml-2 text-xs text-muted-foreground">private</span>}
+                {isPrivate && <span className="ml-2 text-xs text-muted-foreground">{t("private")}</span>}
               </ComboboxItem>
             );
           }}

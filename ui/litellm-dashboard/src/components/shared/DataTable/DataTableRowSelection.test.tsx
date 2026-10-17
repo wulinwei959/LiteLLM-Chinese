@@ -1,9 +1,10 @@
 import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
 
+import { renderWithProviders as render } from "../../../../tests/test-utils";
 import { createSelectionColumn, DataTable } from "./index";
 
 interface Model {
@@ -18,7 +19,7 @@ const data: Model[] = [
 ];
 
 const columns: ColumnDef<Model, unknown>[] = [
-  createSelectionColumn<Model>({ rowAriaLabel: (row) => `Select ${row.original.name}` }),
+  createSelectionColumn<Model>({ rowAriaLabel: (row) => `选中 ${row.original.name}` }),
   { id: "name", accessorKey: "name", header: "Name", enableSorting: false },
 ];
 

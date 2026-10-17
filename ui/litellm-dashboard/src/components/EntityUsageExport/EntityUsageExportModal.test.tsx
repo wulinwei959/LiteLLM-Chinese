@@ -45,7 +45,7 @@ describe("EntityUsageExportModal", () => {
 
     renderWithProviders(<EntityUsageExportModal {...baseProps} />);
 
-    await user.click(screen.getByRole("radio", { name: /Day-by-day breakdown by tag and key/i }));
+    await user.click(screen.getByRole("radio", { name: /按标签与 Key 逐日拆分/i }));
     await user.click(screen.getByRole("button", { name: /Export CSV/i }));
 
     expect(baseProps.onExport).toHaveBeenCalledWith("daily_with_keys", "csv");

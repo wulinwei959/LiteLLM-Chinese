@@ -85,6 +85,7 @@ export function UsersTable({
   onResetPassword,
 }: UsersTableProps) {
   const t = useTranslations("users");
+  const selectionT = useTranslations("dataTableSelection");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const columns = useMemo(() => {
@@ -95,9 +96,10 @@ export function UsersTable({
       onDeleteUser,
       onResetPassword,
       t,
+      selectionT,
     };
     return getUsersTableColumns(columnDeps);
-  }, [possibleUIRoles, selectionEnabled, onUserClick, onDeleteUser, onResetPassword, t]);
+  }, [possibleUIRoles, selectionEnabled, onUserClick, onDeleteUser, onResetPassword, t, selectionT]);
 
   const roleOptions = useMemo(
     () =>

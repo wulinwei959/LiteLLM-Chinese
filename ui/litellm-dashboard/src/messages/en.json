@@ -8008,7 +8008,12 @@
     "na": "N/A",
     "noDescription": "No description",
     "copyId": "Copy skill ID",
-    "idCopied": "Skill ID copied"
+    "idCopied": "Skill ID copied",
+    "selector": {
+        "placeholder": "Select skills (optional)",
+        "clearAll": "Clear all skills",
+        "private": "private"
+    }
   },
   "memory": {
     "title": "Memory",
@@ -8255,6 +8260,12 @@
         "evidenceNote": "Recent evidence comes from a validated Entra token matching this binding. It is persisted across restarts and cleared when the binding changes. Tool and model permissions are checked separately.",
         "refreshButton": "Refresh authentication evidence",
         "viewLogsLink": "View request logs"
+    },
+    "selector": {
+        "placeholder": "Select agents",
+        "accessGroupDesc": "Access Group",
+        "agentDesc": "Agent",
+      "noAgents": "No agents found"
     }
   },
   "costTracking": {
@@ -8334,7 +8345,12 @@
     "perDay": "Per Day",
     "perMonth": "Per Month",
     "daily": "Daily",
-    "monthly": "Monthly"
+    "monthly": "Monthly",
+    "multiExport": {
+        "trigger": "Export",
+        "asPdf": "Export as PDF",
+        "asCsv": "Export as CSV"
+    }
   },
   "cloudZero": {
     "notConfigured": "Not configured",
@@ -8457,7 +8473,13 @@
     "deleteTool": "Delete search tool",
     "configEditHint": "Config search tools cannot be edited on the dashboard. Please edit the config file.",
     "configDeleteHint": "Config search tools cannot be deleted on the dashboard. Please edit the config file.",
-    "loadingMessage": "Loading search tools…"
+    "loadingMessage": "Loading search tools…",
+    "selector": {
+        "placeholder": "Select search tools (optional)",
+        "clearAll": "Clear all search tools",
+        "loading": "Loading search tools…",
+        "noTools": "No search tools found"
+    }
   },
   "vectorStores": {
     "createdSuccess": "Vector Store Created Successfully",
@@ -10660,5 +10682,32 @@
     "fetchFailed": "Failed to fetch schema",
     "schemaComponentMissing": "Schema component \"{name}\" not found",
     "errorLine": "Error: {message}"
+  },
+  "entityUsageExport": {
+    "exportData": "Export Data",
+    "noOptions": "No options found",
+    "exportType": "Export type",
+    "entityNames": {
+      "user": "user",
+      "team": "team",
+      "tag": "tag",
+      "organization": "organization",
+      "customer": "customer",
+      "agent": "agent"
+    },
+    "dailyTitle": "Day-by-day breakdown by {entity}",
+    "dailyDesc": "Daily metrics for each {entity}",
+    "dailyWithKeysTitle": "Day-by-day breakdown by {entity} and key",
+    "dailyWithKeysDesc": "Daily metrics for each {entity}, split by API key",
+    "dailyWithModelsTitle": "Day-by-day by {entity} and model",
+    "dailyWithModelsDesc": "Daily metrics split by model",
+    "dailyWithUsersTitle": "Day-by-day breakdown by {entity} and user",
+    "dailyWithUsersDesc": "Daily metrics for each {entity}, split by key owner"
+  },
+  "dataTableSelection": {
+    "selectAll": "Select all rows",
+    "selectRow": "Select row",
+    "columnTitle": "Select",
+    "selectNamed": "Select {name}"
   }
 }

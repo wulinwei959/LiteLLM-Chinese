@@ -59,7 +59,7 @@ describe("AgentSelector", () => {
     // Resolve to clean up
     resolve({ agents: [] });
     await waitFor(() => {
-      expect(screen.getByRole("combobox")).toHaveAttribute("placeholder", "Select agents");
+      expect(screen.getByRole("combobox")).toHaveAttribute("placeholder", "选择 Agent");
     });
   });
 
@@ -113,7 +113,7 @@ describe("AgentSelector", () => {
     mockGetAgentsList.mockResolvedValue(null);
     render(<AgentSelector {...defaultProps} />);
     await waitFor(() => {
-      expect(screen.getByRole("combobox")).toHaveAttribute("placeholder", "Select agents");
+      expect(screen.getByRole("combobox")).toHaveAttribute("placeholder", "选择 Agent");
     });
   });
 });

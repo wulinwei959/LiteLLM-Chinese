@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { ExportType, EntityType } from "./types";
 
@@ -9,33 +10,35 @@ interface ExportTypeSelectorProps {
 }
 
 const ExportTypeSelector: React.FC<ExportTypeSelectorProps> = ({ value, onChange, entityType }) => {
-  const allScopes: { value: ExportType; title: string; description: string }[] = [
+  const t = useTranslations("entityUsageExport");
+  const entity = t(`entityNames.${entityType}`);
+  const allScopes: readonly { value: ExportType; title: string; description: string }[] = [
     {
       value: "daily",
-      title: `Day-by-day breakdown by ${entityType}`,
-      description: `Daily metrics for each ${entityType}`,
+      title: t("dailyTitle", { entity }),
+      description: t("dailyDesc", { entity }),
     },
     {
       value: "daily_with_keys",
-      title: `Day-by-day breakdown by ${entityType} and key`,
-      description: `Daily metrics for each ${entityType}, split by API key`,
+      title: t("dailyWithKeysTitle", { entity }),
+      description: t("dailyWithKeysDesc", { entity }),
     },
     {
       value: "daily_with_models",
-      title: `Day-by-day by ${entityType} and model`,
-      description: "Daily metrics split by model",
+      title: t("dailyWithModelsTitle", { entity }),
+      description: t("dailyWithModelsDesc"),
     },
     {
       value: "daily_with_users",
-      title: `Day-by-day breakdown by ${entityType} and user`,
-      description: `Daily metrics for each ${entityType}, split by key owner`,
+      title: t("dailyWithUsersTitle", { entity }),
+      description: t("dailyWithUsersDesc", { entity }),
     },
   ];
   const scopes = allScopes.filter((scope) => scope.value !== "daily_with_users" || entityType !== "user");
 
   return (
     <div>
-      <label className="text-sm font-medium text-foreground block mb-2">Export type</label>
+      <label className="text-sm font-medium text-foreground block mb-2">{t("exportType")}</label>
       <RadioGroup value={value} onValueChange={(next) => onChange(next as ExportType)} className="gap-2">
         {scopes.map((scope) => (
           <label
