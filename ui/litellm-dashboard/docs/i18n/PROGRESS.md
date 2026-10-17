@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 180 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10482、中英同值 138）。第 93 到 180 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 181 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10492、中英同值 138）。第 93 到 181 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 181 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `src/components/model_info_view.tsx`，模型详情弹层页。扫描器 7 条命中里 4 条是 `console.error` 前缀串（`Failed to fetch guardrails:` 等，目录里躺着同值的 `fetchGuardrailsFailed`/`deleteError` 键但没有任何消费方引用，属早前批次给 console 消息预铺的死键，按教条不接不删）、2 条 SVG path 数据（既定不翻），加上 1 条真文案（`SimpleTooltip` 的 "Only DB models can be edited..."）；同段盲区还有一批两三个词的短文案扫描器抓不到：`Back to Models` 三处、`Public Model Name:`、`Test Connection`、`Update API Key`、`Re-use Credentials`、页签 `Overview`/`Raw JSON`、裸 `<p>Provider</p>`、`Created At`、`Edit Auto Router`、`Edit Settings`、对话框 `Cancel`/`Close`，连同 tooltip 一并接线共 16 处。新开 10 个 modelInfo 键（叶子 10482 涨到 10492，同值持平 138），中文措辞全部对齐既有同概念键：`更新 API 密钥`、`测试连接`、`原始 JSON`、`创建时间`、`编辑设置`、`公共模型名称` 取自其他命名空间同值先例，`返回模型列表` 对齐 `virtualKeys.header.backToKeys` 的构词，`编辑自动路由器` 对齐本页 `deleteAutoRouter`。`Overview`/`Cancel`/`Close` 复用 `common.overview`/`common.cancel`/`common.close`（本页首个 `commonT`），裸 `Provider` 标签复用同命名空间 `provider`。`updateModelCredentials.title` 等跨命名空间同值键按教条不复用。
+
+测试迁移：`model_info_view.test.tsx` 65 处英文选择器换中文正则（`edit settings` 47 处、`raw json` 3 处、`edit auto router` 3 处、`test connection` 4 处等，另两处 getByText 字面量），it 描述照旧保持英文。验证：`model_info_view.test.tsx` 108 例加 models-and-endpoints 两页签目录与 `src/lib/i18n` 共 20 文件 324 例全绿（4 例预期失败）、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径组件 20/20、测试 5/5 与 HEAD 逐条同数（既有欠账），prettier 两文件 HEAD 均干净，`--write` 后复跑仍绿；10 键 20 侧 `IntlMessageFormat` 实跑全过，`npm run build` 过，扫描器本文件只剩 console.error 与 SVG path 既定不翻。接入文件持平 686/912。
 
 ## 2026-10-18 第 180 簇更新
 
