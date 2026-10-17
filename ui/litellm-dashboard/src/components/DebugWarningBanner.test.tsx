@@ -18,7 +18,7 @@ describe("DebugWarningBanner", () => {
   it("should show warning when detailed debug mode is active", () => {
     vi.mocked(useHealthReadinessDetails).mockReturnValue({ data: { is_detailed_debug: true } } as any);
     renderWithProviders(<DebugWarningBanner accessToken="token" />);
-    expect(screen.getByText(/Performance Warning: Detailed Debug Mode Active/i)).toBeInTheDocument();
+    expect(screen.getByText(/性能警告：详细调试模式已开启/)).toBeInTheDocument();
   });
 
   it("should mention LITELLM_LOG=DEBUG in the description", () => {

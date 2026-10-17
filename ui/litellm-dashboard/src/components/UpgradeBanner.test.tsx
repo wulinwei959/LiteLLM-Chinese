@@ -1,7 +1,16 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders as render } from "../../tests/test-utils";
+import { createTranslator } from "next-intl";
+
+import en from "@/messages/en.json";
+import zhCN from "@/messages/zh-CN.json";
+
 import { describeRelease, UpgradeBanner, UpgradeBannerView } from "./UpgradeBanner";
+
+const tEn = createTranslator({ locale: "en", messages: en, namespace: "banners.upgrade" });
+const tZh = createTranslator({ locale: "zh-CN", messages: zhCN, namespace: "banners.upgrade" });
 import type { LatestReleaseInfo } from "@/app/(dashboard)/hooks/latestRelease/useLatestReleaseInfo";
 
 vi.mock("@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails", () => ({
@@ -24,12 +33,13 @@ const RELEASE: LatestReleaseInfo = {
 
 describe("describeRelease", () => {
   it("lists features, fixes, and other updates in the agreed order", () => {
-    expect(describeRelease(RELEASE)).toBe("12 new features, 30 fixes, and 8 other updates");
+    expect(describeRelease(RELEASE, tEn)).toBe("12 new features, 30 fixes, and 8 other updates");
   });
 
   it("singularises counts of one", () => {
     const singularCounts = { ...RELEASE, new_features: 1, bug_fixes: 1, other_updates: 1 };
-    expect(describeRelease(singularCounts)).toBe("1 new feature, 1 fix, and 1 other update");
+    expect(describeRelease(singularCounts, tEn)).toBe("1 new feature, 1 fix, and 1 other update");
+    expect(describeRelease(singularCounts, tZh)).toBe("1 项新功能，1 项修复，以及 1 项其他更新");
   });
 });
 
@@ -59,14 +69,14 @@ describe("UpgradeBannerView", () => {
   it("shows the latest version, the stat line, and the current version when behind", () => {
     render(<UpgradeBannerView currentVersion="1.102.0" latestRelease={RELEASE} />);
     const alert = screen.getByRole("status");
-    expect(alert).toHaveTextContent("The latest version is v1.103.0: 12 new features, 30 fixes, and 8 other updates");
-    expect(alert).toHaveTextContent("Your current version is v1.102.0");
+    expect(alert).toHaveTextContent("最新版本为 v1.103.0：12 项新功能，30 项修复，以及 8 项其他更新");
+    expect(alert).toHaveTextContent("你当前的版本是 v1.102.0");
     expect(screen.getByRole("link", { name: "v1.103.0" })).toHaveAttribute("href", RELEASE.release_url);
   });
 
   it("dismissing hides the banner and keeps it hidden on remount for the same release", () => {
     const { unmount } = render(<UpgradeBannerView currentVersion="1.102.0" latestRelease={RELEASE} />);
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭" }));
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     unmount();
 
@@ -76,19 +86,19 @@ describe("UpgradeBannerView", () => {
 
   it("reappears once a newer release ships after a dismissal", () => {
     const { unmount } = render(<UpgradeBannerView currentVersion="1.102.0" latestRelease={RELEASE} />);
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭" }));
     unmount();
 
     render(<UpgradeBannerView currentVersion="1.102.0" latestRelease={{ ...RELEASE, version: "1.104.0" }} />);
-    expect(screen.getByRole("status")).toHaveTextContent("The latest version is v1.104.0");
+    expect(screen.getByRole("status")).toHaveTextContent("最新版本为 v1.104.0");
   });
 
   it("shows a newer release after the current one was dismissed without remounting", () => {
     const { rerender } = render(<UpgradeBannerView currentVersion="1.102.0" latestRelease={RELEASE} />);
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭" }));
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     rerender(<UpgradeBannerView currentVersion="1.102.0" latestRelease={{ ...RELEASE, version: "1.104.0" }} />);
-    expect(screen.getByRole("status")).toHaveTextContent("The latest version is v1.104.0");
+    expect(screen.getByRole("status")).toHaveTextContent("最新版本为 v1.104.0");
   });
 });
 
@@ -113,7 +123,7 @@ describe("UpgradeBanner", () => {
     render(<UpgradeBanner accessToken="token" />);
     expect(useHealthReadinessDetails).toHaveBeenCalledWith("token");
     expect(useLatestReleaseInfo).toHaveBeenCalledWith("token");
-    expect(screen.getByRole("status")).toHaveTextContent("The latest version is v1.103.0");
+    expect(screen.getByRole("status")).toHaveTextContent("最新版本为 v1.103.0");
   });
 
   it("renders nothing when the release endpoint returns null", () => {

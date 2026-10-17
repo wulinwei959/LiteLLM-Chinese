@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { screen, fireEvent } from "@testing-library/react";
+import { renderWithProviders as render } from "../../tests/test-utils";
 import { LicenseExpiryBannerView } from "./LicenseExpiryBanner";
 import { LicenseInfo } from "./networking";
 
@@ -46,9 +47,9 @@ describe("LicenseExpiryBannerView", () => {
     const { container } = render(<LicenseExpiryBannerView licenseInfo={licenseWith(daysFromNow(20))} />);
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(container.querySelector(".lucide-triangle-alert")).toBeInTheDocument();
-    expect(screen.getByText(/expires in 20 days/)).toBeInTheDocument();
-    expect(screen.getByText(/Renew before it lapses to keep enterprise features/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /close/i })).toBeInTheDocument();
+    expect(screen.getByText(/将在 20 天后到期/)).toBeInTheDocument();
+    expect(screen.getByText(/请在失效前完成续订，以保留企业版功能/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /关闭/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "sales@berri.ai" })).toHaveAttribute("href", "mailto:sales@berri.ai");
   });
 
@@ -56,40 +57,40 @@ describe("LicenseExpiryBannerView", () => {
     const { container } = render(<LicenseExpiryBannerView licenseInfo={licenseWith(daysFromNow(5))} />);
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(container.querySelector(".lucide-circle-alert")).toBeInTheDocument();
-    expect(screen.getByText(/expires in 5 days/)).toBeInTheDocument();
-    expect(screen.getByText(/Renew now to avoid losing enterprise features/)).toBeInTheDocument();
+    expect(screen.getByText(/将在 5 天后到期/)).toBeInTheDocument();
+    expect(screen.getByText(/请立即续订，以免失去企业版功能/)).toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("says 'expires today' on the expiration day", () => {
     render(<LicenseExpiryBannerView licenseInfo={licenseWith(daysFromNow(0))} />);
-    expect(screen.getByText(/expires today/)).toBeInTheDocument();
+    expect(screen.getByText(/今天到期/)).toBeInTheDocument();
   });
 
   it("shows a non-dismissible expired alert stating features are disabled", () => {
     const { container } = render(<LicenseExpiryBannerView licenseInfo={licenseWith(daysFromNow(-3))} />);
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(container.querySelector(".lucide-circle-alert")).toBeInTheDocument();
-    expect(screen.getByText(/expired on/)).toBeInTheDocument();
-    expect(screen.getByText(/features are now disabled/i)).toBeInTheDocument();
+    expect(screen.getByText(/已于/)).toBeInTheDocument();
+    expect(screen.getByText(/企业版功能现已停用/)).toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("hides the warning after dismissal and stays hidden within the session", () => {
     const expiration = daysFromNow(20);
     const { unmount } = render(<LicenseExpiryBannerView licenseInfo={licenseWith(expiration)} />);
-    fireEvent.click(screen.getByRole("button", { name: /close/i }));
-    expect(screen.queryByText(/expires in 20 days/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /关闭/i }));
+    expect(screen.queryByText(/将在 20 天后到期/)).not.toBeInTheDocument();
 
     unmount();
     render(<LicenseExpiryBannerView licenseInfo={licenseWith(expiration)} />);
-    expect(screen.queryByText(/expires in 20 days/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/将在 20 天后到期/)).not.toBeInTheDocument();
   });
 
   it("still shows a critical alert even when its date was previously dismissed", () => {
     const expiration = daysFromNow(5);
     sessionStorage.setItem(`litellm:licenseExpiryBannerDismissed:${expiration}`, "true");
     render(<LicenseExpiryBannerView licenseInfo={licenseWith(expiration)} />);
-    expect(screen.getByText(/expires in 5 days/)).toBeInTheDocument();
+    expect(screen.getByText(/将在 5 天后到期/)).toBeInTheDocument();
   });
 });

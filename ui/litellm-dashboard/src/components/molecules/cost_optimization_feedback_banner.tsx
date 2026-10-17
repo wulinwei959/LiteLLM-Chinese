@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ExternalLink, MessageSquare, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ const STORAGE_KEY = "hideCostOptimizationFeedbackBanner";
 const DISCUSSION_URL = "https://github.com/BerriAI/litellm/discussions/32172";
 
 const CostOptimizationFeedbackBanner: React.FC = () => {
+  const t = useTranslations("banners.costOptimizationFeedback");
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem(STORAGE_KEY) === "true";
@@ -24,18 +26,15 @@ const CostOptimizationFeedbackBanner: React.FC = () => {
         <MessageSquare className="size-4 text-muted-foreground" />
       </div>
       <div className="min-w-0 flex-1">
-        <h4 className="m-0 text-sm font-semibold text-foreground">Help shape cost optimization</h4>
-        <p className="m-0 mt-0.5 text-xs text-muted-foreground">
-          We&apos;re collecting suggestions for cost optimization improvements across routing, budgets, and more. Let us
-          know what you&apos;d like to see.
-        </p>
+        <h4 className="m-0 text-sm font-semibold text-foreground">{t("title")}</h4>
+        <p className="m-0 mt-0.5 text-xs text-muted-foreground">{t("description")}</p>
       </div>
       <Button
         className="shrink-0"
         nativeButton={false}
         render={<a href={DISCUSSION_URL} target="_blank" rel="noopener noreferrer" />}
       >
-        Share Feedback
+        {t("cta")}
         <ExternalLink />
       </Button>
       <Button
@@ -47,7 +46,7 @@ const CostOptimizationFeedbackBanner: React.FC = () => {
           localStorage.setItem(STORAGE_KEY, "true");
         }}
         className="shrink-0"
-        aria-label="Dismiss banner"
+        aria-label={t("dismiss")}
       >
         <X />
       </Button>

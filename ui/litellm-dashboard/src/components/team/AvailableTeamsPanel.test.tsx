@@ -87,7 +87,7 @@ describe("AvailableTeamsPanel", () => {
     renderWithProviders(<AvailableTeamsPanel accessToken="token-123" userID="user-123" />);
 
     await waitFor(() => {
-      expect(screen.getByText("All Proxy Models")).toBeInTheDocument();
+      expect(screen.getByText("所有代理模型")).toBeInTheDocument();
     });
   });
 

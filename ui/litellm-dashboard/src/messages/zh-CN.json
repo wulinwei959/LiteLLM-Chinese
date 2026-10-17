@@ -10496,5 +10496,47 @@
       "ariaLabel": "Worker",
       "noMatching": "没有匹配的 Worker"
     }
+  },
+  "banners": {
+    "licenseExpiry": {
+      "expiredOn": "你的 LiteLLM 企业版许可证已于 {date} 过期",
+      "expiresToday": "你的 LiteLLM 企业版许可证今天到期（{date}）",
+      "expiresInDays": "你的 LiteLLM 企业版许可证将在 {days} 天后到期（{date}）",
+      "descExpired": "企业版功能现已停用。请联系 <link>sales@berri.ai</link> 以恢复访问权限",
+      "descCritical": "请立即续订，以免失去企业版功能。请联系 <link>sales@berri.ai</link>",
+      "descWarning": "请在失效前完成续订，以保留企业版功能。请联系 <link>sales@berri.ai</link>",
+      "close": "关闭"
+    },
+    "upgrade": {
+      "latestIs": "最新版本为 <link>v{version}</link>：{release}",
+      "currentVersion": "你当前的版本是 v{version}",
+      "newFeatures": "{count} 项新功能",
+      "fixes": "{count} 项修复",
+      "otherUpdates": "{count} 项其他更新",
+      "and": "以及",
+      "listSeparator": "，",
+      "close": "关闭"
+    },
+    "deprecation": {
+      "title": "{feature} 已列入草案废弃清单",
+      "body": "{feature} 是我们正在考虑移除的多个实验特性之一，最早可能于 {date} 移除。这份清单仍是草案，尚未定稿。如果你依赖该特性，请在<link>废弃讨论</link>里分享你的反馈。",
+      "close": "关闭"
+    },
+    "debugWarning": {
+      "title": "性能警告：详细调试模式已开启",
+      "description": "详细调试日志（<code>LITELLM_LOG=DEBUG</code>）当前处于启用状态。该模式会记录大量诊断信息，并显著拖慢性能。它只应用于排查问题，生产环境应关闭。"
+    },
+    "user": {
+      "dismiss": "关闭横幅"
+    },
+    "beta": {
+      "label": "Beta"
+    },
+    "costOptimizationFeedback": {
+      "title": "帮助改进成本优化",
+      "description": "我们正在收集关于路由、预算等成本优化改进的建议。告诉我们你希望看到哪些能力。",
+      "cta": "分享反馈",
+      "dismiss": "关闭横幅"
+    }
   }
 }

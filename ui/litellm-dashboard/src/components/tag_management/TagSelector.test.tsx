@@ -1,4 +1,5 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
+import { renderWithProviders as render } from "../../../tests/test-utils";
 import { describe, expect, it } from "vitest";
 import TagSelector from "./TagSelector";
 

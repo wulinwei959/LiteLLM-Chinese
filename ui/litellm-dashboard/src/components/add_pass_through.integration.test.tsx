@@ -59,9 +59,9 @@ const fillRequiredFields = async (user: User, values: RequiredFieldValues = {}) 
 };
 
 const addQueryParam = async (user: User, name: string, value: string) => {
-  await user.click(screen.getByRole("button", { name: /add query parameter/i }));
-  fireEvent.change(screen.getByPlaceholderText("Parameter Name (e.g., version)"), { target: { value: name } });
-  fireEvent.change(screen.getByPlaceholderText("Parameter Value (e.g., v1)"), { target: { value } });
+  await user.click(screen.getByRole("button", { name: /添加查询参数/i }));
+  fireEvent.change(screen.getByPlaceholderText("参数名（例如 version）"), { target: { value: name } });
+  fireEvent.change(screen.getByPlaceholderText("参数值（例如 v1）"), { target: { value } });
 };
 
 const submit = async (user: User) => user.click(screen.getByRole("button", { name: "添加直通端点" }));
@@ -268,7 +268,7 @@ describe("add_pass_through submit payload", () => {
     await openModal(user);
 
     expect(screen.queryByPlaceholderText("请求头名称")).not.toBeInTheDocument();
-    expect(screen.queryByPlaceholderText("Parameter Name (e.g., version)")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("参数名（例如 version）")).not.toBeInTheDocument();
   });
 
   it("submits the reopened endpoint instead of rejecting it as missing headers", async () => {

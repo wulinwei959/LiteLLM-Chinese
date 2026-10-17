@@ -10500,5 +10500,47 @@
       "ariaLabel": "Worker",
       "noMatching": "No matching workers"
     }
+  },
+  "banners": {
+    "licenseExpiry": {
+      "expiredOn": "Your LiteLLM Enterprise license expired on {date}",
+      "expiresToday": "Your LiteLLM Enterprise license expires today ({date})",
+      "expiresInDays": "Your LiteLLM Enterprise license expires in {days} {days, plural, one {day} other {days}} ({date})",
+      "descExpired": "Enterprise features are now disabled. Reach out to <link>sales@berri.ai</link> to restore access",
+      "descCritical": "Renew now to avoid losing enterprise features. Reach out to <link>sales@berri.ai</link>",
+      "descWarning": "Renew before it lapses to keep enterprise features. Reach out to <link>sales@berri.ai</link>",
+      "close": "Close"
+    },
+    "upgrade": {
+      "latestIs": "The latest version is <link>v{version}</link>: {release}",
+      "currentVersion": "Your current version is v{version}",
+      "newFeatures": "{count} new {count, plural, one {feature} other {features}}",
+      "fixes": "{count} {count, plural, one {fix} other {fixes}}",
+      "otherUpdates": "{count} other {count, plural, one {update} other {updates}}",
+      "and": "and",
+      "listSeparator": ", ",
+      "close": "Close"
+    },
+    "deprecation": {
+      "title": "{feature} is on a draft deprecation list",
+      "body": "{feature} is one of several experimental features we're considering removing, potentially as early as {date}. This list is a draft and is not final. If you rely on this feature, please share feedback on the <link>deprecation discussion</link>.",
+      "close": "Close"
+    },
+    "debugWarning": {
+      "title": "Performance Warning: Detailed Debug Mode Active",
+      "description": "Detailed debug logging (<code>LITELLM_LOG=DEBUG</code>) is currently enabled. This mode logs extensive diagnostic information and will significantly degrade performance. It should only be used for troubleshooting and disabled in production environments."
+    },
+    "user": {
+      "dismiss": "Dismiss banner"
+    },
+    "beta": {
+      "label": "Beta"
+    },
+    "costOptimizationFeedback": {
+      "title": "Help shape cost optimization",
+      "description": "We're collecting suggestions for cost optimization improvements across routing, budgets, and more. Let us know what you'd like to see.",
+      "cta": "Share Feedback",
+      "dismiss": "Dismiss banner"
+    }
   }
 }

@@ -69,7 +69,7 @@ describe("UserBanner", () => {
   it("hides the banner when dismissed and stays hidden for the same content", () => {
     mockBanner(publishedBanner);
     const first = renderWithProviders(<UserBanner accessToken="token" />);
-    fireEvent.click(screen.getByRole("button", { name: "Dismiss banner" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭横幅" }));
     expect(first.container).toBeEmptyDOMElement();
 
     first.unmount();
@@ -80,7 +80,7 @@ describe("UserBanner", () => {
   it("reappears when the banner content changes after a dismissal", () => {
     mockBanner(publishedBanner);
     const first = renderWithProviders(<UserBanner accessToken="token" />);
-    fireEvent.click(screen.getByRole("button", { name: "Dismiss banner" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭横幅" }));
     first.unmount();
 
     mockBanner({ ...publishedBanner, message: "All clear, maintenance is done.", revision: "rev-b" });
@@ -92,7 +92,7 @@ describe("UserBanner", () => {
   it("reappears when identical content is republished under a new revision", () => {
     mockBanner(publishedBanner);
     const first = renderWithProviders(<UserBanner accessToken="token" />);
-    fireEvent.click(screen.getByRole("button", { name: "Dismiss banner" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭横幅" }));
     first.unmount();
 
     mockBanner({ ...publishedBanner, revision: "rev-b" });
