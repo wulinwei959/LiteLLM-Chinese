@@ -5553,6 +5553,7 @@
       "endpointTraces": "Traces endpoint (POST)",
       "endpointAuth": "Auth header",
       "endpointProtocol": "Protocol",
+      "protocolValue": "OTLP/HTTP, protobuf or JSON (gRPC not supported)",
       "stepOneClick": "See it work in one click",
       "oneClickBody": "Send a small sample run (an agent, an LLM call and a tool call) to confirm tracing works end to end.",
       "frameworkLabel": "Your agent framework",

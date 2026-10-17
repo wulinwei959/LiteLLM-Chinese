@@ -70,6 +70,7 @@ describe("TracingSetupCard", () => {
     const { card } = renderCard();
     const text = card.textContent ?? "";
     expect(text.indexOf("OpenTelemetry（OTEL）接收端点")).toBeLessThan(text.indexOf("你的智能体框架"));
+    expect(card).toHaveTextContent("OTLP/HTTP、protobuf 或 JSON（不支持 gRPC）");
     await user.click(screen.getByRole("button", { name: "复制 http://proxy.test/v1/traces" }));
     expect(copyToClipboard).toHaveBeenLastCalledWith("http://proxy.test/v1/traces");
   });

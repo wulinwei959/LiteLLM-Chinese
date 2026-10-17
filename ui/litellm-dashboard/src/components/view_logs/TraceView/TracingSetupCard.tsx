@@ -227,7 +227,7 @@ export const otlpEndpoints = (t: LogsTranslator, proxyUrl: string): readonly (re
   [t("traceSetup.endpointTraces"), `${proxyUrl}/v1/traces`, true],
   ["OTEL_EXPORTER_OTLP_ENDPOINT", proxyUrl, true],
   [t("traceSetup.endpointAuth"), "Authorization: Bearer <LiteLLM virtual key>", true],
-  [t("traceSetup.endpointProtocol"), "OTLP/HTTP, protobuf or JSON (gRPC not supported)", false],
+  [t("traceSetup.endpointProtocol"), t("traceSetup.protocolValue"), false],
 ];
 
 export const PROXY_CONFIG_SNIPPET = [

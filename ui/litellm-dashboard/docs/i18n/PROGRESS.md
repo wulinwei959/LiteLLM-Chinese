@@ -1,10 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 162 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10248、中英同值 137）。第 93 到 162 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 163 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10249、中英同值 137）。第 93 到 163 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 163 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `view_logs/TraceView/TracingSetupCard.tsx`，Lens 调用链页面的接入引导卡。
+
+这一簇工作量比扫描器报的小得多：卡片的界面文案在前几批已经整体键名化（`logs.traceSetup` 五十多个键全接了中文），本轮把 17 处命中逐条判了归属，真正落 DOM 的英文只剩协议行 `OTLP/HTTP, protobuf or JSON (gRPC not supported)`。新增 `traceSetup.protocolValue` 一个键（叶子 10248 涨到 10249），它 `copyable=false`、不进剪贴板，翻成中文没有副作用；端点表测试补了一条该行的断言。
+
+其余命中的判据还是第 160 簇那条"追消费者"，但有一个新场景：`codingAgentPrompt` 是喂给 Claude Code / Codex 这类编码智能体的 prompt，`codingAgentCommand` 是带它的 shell 命令，两块都渲染在复制按钮后面的 `<pre>` 里。DOM 上唯一面向人的那句说明（`codingAgentBody`）已经是中文，指令正文按模型输入处理，不翻。同样不翻的：`tracingEnvSnippet` 的三条 `export OTEL_*` 和端点表里 `Authorization: Bearer <LiteLLM virtual key>`，这些走复制、要逐字进用户的环境配置，中文占位符会被直接粘进去；九个框架的 quickstart 是代码示例；`pip`/`uv`/`npm`、框架 label、`config.yaml` 这类文件名是产品标识；`TRACING_KEY_REQUEST.key_alias: "Agent tracing"` 是发给后端的取值，`tracingKeyBody` 的中文版引用它时保留了英文原字，前一批在这点上已经做对。
+
+覆盖率：接入文件持平 685/912、75.1%（本文件原本已挂 hook），消息叶子 10248 涨到 10249（+1），中英同值 137 持平。验证：TracingSetupCard 测试加 `messagesParity`、`missingKeys` 共 3 份文件 23 例全绿且类型检查无错；`tsc` 对改动文件 0 错；`eslint` 0 错误 / 6 警告（全是该文件既有的 `no-img-element`）；`npm run build` 通过。
 
 ## 2026-10-17 第 162 簇更新
 

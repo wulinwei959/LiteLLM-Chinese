@@ -5553,6 +5553,7 @@
       "endpointTraces": "调用链接收地址（POST）",
       "endpointAuth": "认证头",
       "endpointProtocol": "协议",
+      "protocolValue": "OTLP/HTTP、protobuf 或 JSON（不支持 gRPC）",
       "stepOneClick": "一键看到效果",
       "oneClickBody": "发送一条很小的示例运行（一个智能体、一次 LLM 调用和一次工具调用），用来确认端到端的调用链都正常。",
       "frameworkLabel": "你的智能体框架",
