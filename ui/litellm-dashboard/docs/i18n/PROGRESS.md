@@ -1,8 +1,22 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 146 簇后（非测试 `.tsx` 912 个接入 634 个、69.5%，目录叶子 9604、中英同值 128）。第 93 到 146 簇均按 `WORKFLOW.md` 第六步只跑定向文件与消费者，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。顺带修好的存量红灯：`OrganizationFilters.test.tsx` 的 `Filters`/`Reset Filters` 英文断言（第 92 簇改过 `FiltersButton` 默认文案后未同步）、`TeamInfo.test.tsx` 里因 `permissions` 簇与护栏翻译而过期的四处断言（第 133 簇顺手修）、`vector-stores/_components/index.test.tsx` 里因第 137 簇索引说明走 `t.rich` 而过期的三处英文断言（第 146 簇发现）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 148 簇后（非测试 `.tsx` 912 个接入 647 个、70.9%，目录叶子 9650、中英同值 130）。第 93 到 148 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+
+第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 147-148 簇更新
+
+继续串行推进，没有派子代理。
+
+第 147 簇 `Navbar/` 六个文件：新开 `navbar` 命名空间并按组件分子对象（viewSwitcher、docsLink、community、notifications、blog、worker）。`ViewSwitcher` 的 AI Gateway 复用既有 `nav.aiGateway` 而不是新开同值键。`CommunityEngagementButtons` 的链接表改存受限 union 的键名，GitHub 的标签与提示文案逐字相同因此共用一键。`DocsLink`、`NotificationsBell`、`BlogDropdown`、`WorkerDropdown` 的文案全部接键。`ViewSwitcher`、`DocsLink`、`WorkerDropdown` 三份测试原本用裸 `render`，换 `renderWithProviders` 后要重新核一遍断言。
+
+第 148 簇横幅一族（`LicenseExpiryBanner`、`UpgradeBanner`、`DeprecationBanner`、`DebugWarningBanner`、`UserBanner`、`BetaBadge`、`cost_optimization_feedback_banner`）：新开 `banners` 命名空间，同样按组件分子对象。`LicenseExpiryBanner` 原本把 `describeCountdown` 返回的英文倒计时片段拼进英文句子，翻译时不能只翻片段，改成按 tier 与天数取整句消息（`expiredOn`/`expiresToday`/`expiresInDays` 三键）。`UpgradeBanner` 的 `describeRelease` 改为收翻译器，三段复数、连接词与分隔符各自接键（`and` 与 `listSeparator` 两键让中文能用"，"而不是硬编码英文逗号加空格）。`DeprecationBanner` 与 `DebugWarningBanner` 的正文走 `t.rich`。
+
+这一段合计：非测试 `.tsx` 912 接入 634→647（69.5%→70.9%），目录叶子 9604→9650（+46），中英同值 128→130（`Beta` 徽标两条）。候选文件 69→56。
+
+这一段还顺带修好第 132 簇起的六处遗留账：`DataTableToolbar.test.tsx`、`DataTableFilterDrawer.test.tsx`、`AgentSelector.test.tsx`、`TagSelector.test.tsx`、`GuardrailSelector.test.tsx`、`cost_optimization_feedback_banner.test.tsx` 六份测试用裸 `render` 渲染已接线组件，整包复跑才暴露出来；`add_pass_through.integration.test.tsx` 与 `AvailableTeamsPanel.test.tsx` 的过时断言同一批修掉。
 
 ## 2026-10-17 第 145-146 簇更新
 

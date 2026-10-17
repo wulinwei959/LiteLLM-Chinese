@@ -229,6 +229,15 @@ next-intl 的 `t.rich` 只会对消息串里出现的字面量标签（`<code>`�
 
 另一个连带问题：`DefaultUserSettingsForm` 原来在模块顶层用 `MODEL_SENTINEL_OPTIONS` 建了一张 value 到英文 label 的表，改键名后这张表拿不到 `t`，只能下沉进组件体、用第二把 `modelSelect` 翻译器即时解析。模块级常量承载文案是同一个病根，键名化之后自然要把翻译点挪到组件里。
 
+## 2026-10-17 第 148 簇：ICU 复数的分支臂必须保持单词
+
+`messagesParity` 的"该给花括号加引号没加"那条守卫会把 `{count, plural, one {new feature} other {new features}}` 里臂内的 `{new feature}` 判成未加引号的占位符并报错，因为 `new feature` 既不是裸标识符、也不带逗号。写法上要么把臂保持单词、把修饰词提到 plural 外面（`"{count} new {count, plural, one {feature} other {features}}"`），要么给整个臂加引号。前者更干净，和 `roiCalculator.prCount` 的做法一致。
+
+另两条：
+
+- **拼进句子的片段不能只翻片段**。`LicenseExpiryBanner` 原本有一个 `describeCountdown(days)` 返回 `expires in 20 days` 之类的英文片段，再拼成 `Your LiteLLM Enterprise license ${countdown} (${date})`。中文里这两种语序不同，只翻片段必然拼出病句；正确做法是按分支取整句消息（今天到期 / N 天后到期 / 已过期三键），删掉那个片段函数
+- **列表连接词与分隔符也是文案**。`describeRelease` 把三段用 `", "` 拼起来、并在第三段前加 `and`。要中文读得通就得把 `and` 和 `listSeparator` 各接一键，否则中文会变成"，以及 3 项其他更新"这种半中半英的句子
+
 ## 2026-10-17 第 145-146 簇：配置表键名化时让 id 或字段名本身当键名，别写查表函数
 
 `CALLBACK_CONFIGS` 的 17 条描述与 `vectorStoreProviderFields` 的 31 个字段都是"数据表 + 文案"的结构。做法上可以写一个 `switch` 或映射函数把 id 翻译成 i18n key，也可以让 id（回调）与 `<provider>.<field>`（字段）**本身就是键名**。后者明显更好：不用维护查表函数，新增一条只改数据表一处，键名会同步出现在联合类型里，漏写会在 `t()` 上编译报错。联合类型还能按规则生成（遍历数据表收集 `label`、`tooltip`、`placeholder` 三个 part），不会出现"声明了 93 个键、目录里其实只有 90 个"的漂移。生成时记得 `placeholder` 只在该字段真的有占位符时才加进去，我第一版给每个字段都补齐三个 part，多声明了 3 个不存在的键。
