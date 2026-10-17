@@ -50,7 +50,7 @@ describe("VectorStoreForm", () => {
     const user = userEvent.setup();
     renderForm();
 
-    fireEvent.change(screen.getByLabelText(/Vector Store ID/), { target: { value: "vs-created" } });
+    fireEvent.change(screen.getByLabelText(/向量存储 ID/), { target: { value: "vs-created" } });
     await user.click(screen.getByRole("button", { name: "创建" }));
 
     await vi.waitFor(() => expect(vectorStoreCreateCall).toHaveBeenCalledTimes(1));
@@ -62,8 +62,8 @@ describe("VectorStoreForm", () => {
     const onCancel = vi.fn();
     renderForm(onCancel);
 
-    fireEvent.change(screen.getByLabelText(/Vector Store ID/), { target: { value: "vs-abandoned" } });
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    fireEvent.change(screen.getByLabelText(/向量存储 ID/), { target: { value: "vs-abandoned" } });
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
     expect(onCancel).toHaveBeenCalledTimes(1);
     expect(vectorStoreCreateCall).not.toHaveBeenCalled();

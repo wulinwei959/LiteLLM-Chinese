@@ -66,7 +66,7 @@ describe("VectorStoreForm submit payload", () => {
     const user = setupUser();
     renderForm();
 
-    await user.type(screen.getByPlaceholderText("Enter vector store ID from your provider"), "vs-bedrock");
+    await user.type(screen.getByPlaceholderText("输入来自你的供应商的向量存储 ID"), "vs-bedrock");
     await submit(user);
 
     await vi.waitFor(() => expect(mockCreate).toHaveBeenCalledTimes(1));
@@ -87,7 +87,7 @@ describe("VectorStoreForm submit payload", () => {
     const user = setupUser();
     renderForm();
 
-    await user.type(screen.getByPlaceholderText("Enter vector store ID from your provider"), "vs-full");
+    await user.type(screen.getByPlaceholderText("输入来自你的供应商的向量存储 ID"), "vs-full");
     const textboxes = screen.getAllByRole("textbox");
     await user.type(textboxes[1], "Support docs");
     await user.type(textboxes[2], "Docs for the support team");
@@ -113,7 +113,7 @@ describe("VectorStoreForm submit payload", () => {
     renderForm();
 
     await chooseProvider(user, "Milvus");
-    await user.type(screen.getByPlaceholderText("Enter vector store ID from your provider"), "vs-milvus");
+    await user.type(screen.getByPlaceholderText("输入来自你的供应商的向量存储 ID"), "vs-milvus");
     await user.type(screen.getByPlaceholderText("username:password 或 API 密钥"), "user:pass");
     await user.type(screen.getByPlaceholderText("https://your-milvus-endpoint.com/"), "https://milvus.example.com");
     await chooseFromSelect(user, 1, "text-embedding-3-small");
@@ -134,7 +134,7 @@ describe("VectorStoreForm submit payload", () => {
 
     await chooseProvider(user, "Vertex AI Search");
     await user.type(
-      screen.getByPlaceholderText('my-datastore_1234567890 (data store ID from Vertex AI / "Agent Search" console)'),
+      screen.getByPlaceholderText('my-datastore_1234567890（Vertex AI / "Agent Search" 控制台中的数据商店 ID）'),
       "vs-vertex",
     );
     await user.type(screen.getByPlaceholderText("my-gcp-project-id"), "gcp-proj");
@@ -157,7 +157,7 @@ describe("VectorStoreForm submit payload", () => {
     await user.type(screen.getByPlaceholderText("http://your-deployed-server:8000"), "http://pg:8000");
     await user.type(screen.getByPlaceholderText("你的已部署 API 密钥"), "pg-key");
     await chooseProvider(user, "Azure OpenAI");
-    await user.type(screen.getByPlaceholderText("Enter vector store ID from your provider"), "vs-azure");
+    await user.type(screen.getByPlaceholderText("输入来自你的供应商的向量存储 ID"), "vs-azure");
     await submit(user);
 
     await vi.waitFor(() => expect(mockCreate).toHaveBeenCalledTimes(1));
@@ -171,12 +171,12 @@ describe("VectorStoreForm submit payload", () => {
     const user = setupUser();
     renderForm();
 
-    await user.type(screen.getByPlaceholderText("Enter vector store ID from your provider"), "vs-bad-json");
+    await user.type(screen.getByPlaceholderText("输入来自你的供应商的向量存储 ID"), "vs-bad-json");
     await user.clear(screen.getByPlaceholderText('{"key": "value"}'));
     await user.type(screen.getByPlaceholderText('{"key": "value"}'), "not json");
     await submit(user);
 
-    await vi.waitFor(() => expect(mockToast.fromError).toHaveBeenCalledWith("Invalid JSON in metadata field"));
+    await vi.waitFor(() => expect(mockToast.fromError).toHaveBeenCalledWith("元数据字段中的 JSON 无效"));
     expect(mockCreate).not.toHaveBeenCalled();
   });
 
