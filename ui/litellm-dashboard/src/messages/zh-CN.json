@@ -6417,7 +6417,14 @@
       "close": "关闭",
       "importing": "正在导入...",
       "import": "导入",
-      "countToast": "已导入 {count} 个 MCP 服务器"
+      "countToast": "已导入 {count} 个 MCP 服务器",
+      "pasteFirst": "请先粘贴连接器 JSON 再导入。",
+      "invalidJson": "JSON 无效，请检查是否缺少引号、逗号或括号。",
+      "expectedServersKey": "需要一个包含 mcpServers 或 mcp_servers 键的 JSON 对象。",
+      "serversNotObject": "mcpServers 必须是连接器名称到定义的映射对象。",
+      "serversEmpty": "mcpServers 中没有任何连接器。",
+      "serversListNotArray": "mcp_servers 必须是由连接器定义组成的数组。",
+      "serversListEmpty": "mcp_servers 中没有任何连接器。"
     },
     "toolArgs": {
       "true": "是",

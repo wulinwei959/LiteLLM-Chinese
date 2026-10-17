@@ -6417,7 +6417,14 @@
       "close": "Close",
       "importing": "Importing...",
       "import": "Import",
-      "countToast": "Imported {count, plural, one {# MCP server} other {# MCP servers}}"
+      "countToast": "Imported {count, plural, one {# MCP server} other {# MCP servers}}",
+      "pasteFirst": "Paste your connector JSON before importing.",
+      "invalidJson": "Invalid JSON. Check for missing quotes, commas, or brackets.",
+      "expectedServersKey": "Expected a JSON object with an mcpServers or mcp_servers key.",
+      "serversNotObject": "mcpServers must be an object mapping connector names to definitions.",
+      "serversEmpty": "mcpServers contains no connectors.",
+      "serversListNotArray": "mcp_servers must be an array of connector definitions.",
+      "serversListEmpty": "mcp_servers contains no connectors."
     },
     "toolArgs": {
       "true": "True",

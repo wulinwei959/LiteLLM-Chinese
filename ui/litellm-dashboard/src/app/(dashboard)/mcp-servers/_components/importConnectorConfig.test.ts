@@ -39,36 +39,36 @@ describe("parseConnectorConfig", () => {
   it("rejects empty input", () => {
     const result = parseConnectorConfig("   ");
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error).toContain("Paste your connector JSON");
+    if (!result.ok) expect(result.error).toBe("import.pasteFirst");
   });
 
   it("rejects malformed JSON", () => {
     const result = parseConnectorConfig("{ not json");
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error).toContain("Invalid JSON");
+    if (!result.ok) expect(result.error).toBe("import.invalidJson");
   });
 
   it("rejects objects without a recognized key", () => {
     const result = parseConnectorConfig(JSON.stringify({ servers: {} }));
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error).toContain("mcpServers or mcp_servers");
+    if (!result.ok) expect(result.error).toBe("import.expectedServersKey");
   });
 
   it("rejects an empty mcpServers mapping", () => {
     const result = parseConnectorConfig(JSON.stringify({ mcpServers: {} }));
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error).toContain("no connectors");
+    if (!result.ok) expect(result.error).toBe("import.serversEmpty");
   });
 
   it("rejects a non-array mcp_servers", () => {
     const result = parseConnectorConfig(JSON.stringify({ mcp_servers: { a: 1 } }));
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error).toContain("must be an array");
+    if (!result.ok) expect(result.error).toBe("import.serversListNotArray");
   });
 
   it("rejects an array mcpServers", () => {
     const result = parseConnectorConfig(JSON.stringify({ mcpServers: [] }));
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error).toContain("must be an object");
+    if (!result.ok) expect(result.error).toBe("import.serversNotObject");
   });
 });
