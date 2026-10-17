@@ -1,10 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 164 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10272、中英同值 137）。第 93 到 164 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 165 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10319、中英同值 137）。第 93 到 165 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 165 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `agents/_components/add_agent_form.tsx`，新建智能体五步弹窗。它前几批已接了 26 个 `agents` 键，本轮补剩下的：步骤条、四个失败 toast、entitlements 步整段（说明句、两组标签与提示、两组占位符）、治理步的 trace-id 开关两条标签与提示、预算标题与警示句、护栏说明、配置步的 "Not listed?"、GENERIC 徽章、custom 说明、动态凭据区标题与必填校验、密钥管理步的团队选择、推荐徽章、密钥搜索占位符、两个跳过选项、结果页四句、页脚按钮，共新增 47 个键（叶子 10272 涨到 10319）。
+
+复用优先。速率限制四个标签、`accessGroups`、`allowedMcpServers`、`description`、`cancel`、`loadingKeys`、动态必填的 `pleaseEnter`（"请输入{field}"）都命中现成键，一个没新建。页脚返回/下一步复用 `common.back`/`common.next`，箭头符号留在 JSX 里（`← {commonT("back")}`、`{commonT("next")} →`），不必造 "← Back" 这种带箭头的重复键。`Loading keys…`（省略号字符）与既有 `loadingKeys`（"Loading keys..."）只差省略号写法，判定复用后者、统一成三点。`STEP_TITLES` 按第 155/156 簇键名化改成 `STEP_TITLE_KEYS`，union 有限，`StepProgress` 内部自取 `useTranslations("agents")` 后 `t(key)` 类型检查能覆盖。`keyAssignedBody` 是本轮第一个 `t.rich` 消息，`<b>` 在白名单内，formatter 键取标签名 `b`、`alias` 作值传入。
+
+不翻的：`e.g. 25`、`e.g. my-agent-key` 等八个数字/命名格式示例（中英同值，进的是后端字段），`your-agent` 兜底名（参与拼 `${agentName}-key` 发后端），句中的 `x-litellm-trace-id` 是报头名，`agent_type_display_name` 与 `field.label` 是后端数据值，`console.error` 开发日志，选项截断用的 `…`。`GENERIC` 徽章英文原样、中文翻「通用」。
+
+插键脚本又踩一次坑：第 164 簇那版手写花括号深度计数在 `agents` 块上找到的块尾不对，插出来 trailing comma 报错。改用 `json.JSONDecoder().raw_decode(text, brace_pos)` 直接从 `"agents": {` 的 `{` 定位块收口，判据记进 WORKFLOW 第二步。
+
+测试迁移：`add_agent_form.test.tsx` 14 处（按钮名 `Next →`/`Create Agent →`、跳过链接、`Agent logo` 的 alt 三处随 `logoAltAgent` 变「智能体 logo」、字母头像断言从 "A" 改「智」），`add_agent_form.integration.test.tsx` 26 处（`/^Next/` 到 `/^下一步/`、`/Create Agent/` 到 `/创建智能体/`、entitlements 两处标签、TPM/会话 RPM 标签、密钥搜索占位符、结果页两句、`Agent Created!`）。
+
+覆盖率：接入文件持平 685/912、75.1%，消息叶子 10272 涨到 10319（+47），中英同值 137 持平。验证：两份 add_agent_form 测试加 `messagesParity`、`missingKeys` 共 4 份 27 例全绿（首轮 1 红即字母头像那处，改断言后复跑 18 例全绿）；agents 命名空间 448 条字符串消息全部过 `intl-messageformat`，三个带参键（`createAgentFailedReason`、`typeSettings`、`keyAssignedBody`）调用点参数对齐；`tsc` 相关文件 0 错；eslint stdin 形式当前与 HEAD 完全同为 12 项（7 错 5 警，均基线既有）；`npm run build` 通过；扫描器里 `add_agent_form.tsx` 已 0 命中。
 
 ## 2026-10-17 第 164 簇更新
 

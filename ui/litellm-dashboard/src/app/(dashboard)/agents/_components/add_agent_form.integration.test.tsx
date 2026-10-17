@@ -63,10 +63,10 @@ const openAgentTypeMenu = async (user: ReturnType<typeof userEvent.setup>) => {
 const createdPayload = () => vi.mocked(networking.createAgentCall).mock.calls[0][1] as Record<string, unknown>;
 
 const goToLastStepAndCreate = async (user: ReturnType<typeof userEvent.setup>) => {
-  await user.click(await screen.findByRole("button", { name: /^Next/ }));
-  await user.click(await screen.findByRole("button", { name: /^Next/ }));
-  await user.click(await screen.findByRole("button", { name: /^Next/ }));
-  await user.click(await screen.findByRole("button", { name: /Create Agent/ }));
+  await user.click(await screen.findByRole("button", { name: /^下一步/ }));
+  await user.click(await screen.findByRole("button", { name: /^下一步/ }));
+  await user.click(await screen.findByRole("button", { name: /^下一步/ }));
+  await user.click(await screen.findByRole("button", { name: /创建智能体/ }));
   await waitFor(() => expect(networking.createAgentCall).toHaveBeenCalledTimes(1));
 };
 
@@ -138,11 +138,11 @@ describe("AddAgentForm submit payload", () => {
     fireEvent.change(screen.getByLabelText("企业应用程序对象 ID"), {
       target: { value: "33333333-3333-4333-8333-333333333333" },
     });
-    await user.click(screen.getByRole("button", { name: /^Next/ }));
-    await user.click(screen.getByRole("button", { name: /^Next/ }));
-    await user.click(screen.getByRole("button", { name: /^Next/ }));
-    await user.click(screen.getByRole("button", { name: "Use Entra JWT authentication" }));
-    await user.click(screen.getByRole("button", { name: /Create Agent/ }));
+    await user.click(screen.getByRole("button", { name: /^下一步/ }));
+    await user.click(screen.getByRole("button", { name: /^下一步/ }));
+    await user.click(screen.getByRole("button", { name: /^下一步/ }));
+    await user.click(screen.getByRole("button", { name: "使用 Entra JWT 认证" }));
+    await user.click(screen.getByRole("button", { name: /创建智能体/ }));
     await waitFor(() => expect(networking.createAgentCall).toHaveBeenCalledTimes(1));
     expect(createdPayload().agent_name).toBe("Readable agent");
     const expectedIdentity = {
@@ -158,7 +158,7 @@ describe("AddAgentForm submit payload", () => {
     expect(networking.keyCreateForAgentCall).not.toHaveBeenCalled();
     expect(
       screen.getByText(
-        "Microsoft Entra ID is configured. Send an authenticated agent request to verify the connection.",
+        "Microsoft Entra ID 已配置。发送一个经过认证的调用请求以验证连接。",
       ),
     ).toBeInTheDocument();
   });
@@ -274,7 +274,7 @@ describe("AddAgentForm submit payload", () => {
     renderForm();
 
     await screen.findByLabelText("智能体名称");
-    await user.click(screen.getByRole("button", { name: /^Next/ }));
+    await user.click(screen.getByRole("button", { name: /^下一步/ }));
 
     expect(await screen.findByText("请输入唯一的智能体名称")).toBeInTheDocument();
     expect(screen.getByLabelText("智能体名称")).toBeInTheDocument();
@@ -377,21 +377,21 @@ describe("AddAgentForm submit payload", () => {
     await user.type(await screen.findByLabelText("智能体名称"), "entitled-agent");
     await user.type(screen.getByLabelText("显示名称"), "Entitled");
     await user.type(screen.getByPlaceholderText("描述这个智能体的用途..."), "d");
-    await user.click(screen.getByRole("button", { name: /^Next/ }));
+    await user.click(screen.getByRole("button", { name: /^下一步/ }));
 
-    await user.type(await screen.findByLabelText("Allowed Models"), "gpt-4o,");
+    await user.type(await screen.findByLabelText("允许的模型"), "gpt-4o,");
     await user.keyboard("{Escape}");
-    await chooseSelectOption(user, screen.getByLabelText("Allowed Agents (Sub-Agents)"), "Sub Agent One");
+    await chooseSelectOption(user, screen.getByLabelText("允许的智能体（子智能体）"), "Sub Agent One");
     await user.keyboard("{Escape}");
-    await user.click(screen.getByText(/Configure which models, agents, and MCP tools/));
-    await user.click(screen.getByRole("button", { name: /^Next/ }));
+    await user.click(screen.getByText(/配置该智能体允许使用的模型/));
+    await user.click(screen.getByRole("button", { name: /^下一步/ }));
 
     await user.click((await screen.findAllByRole("switch"))[1]);
-    await user.type(screen.getByLabelText("TPM Limit"), "1000");
-    await user.type(screen.getByLabelText("Session RPM Limit"), "20");
-    await user.click(screen.getByRole("button", { name: /^Next/ }));
+    await user.type(screen.getByLabelText("TPM 限制"), "1000");
+    await user.type(screen.getByLabelText("会话 RPM 限制"), "20");
+    await user.click(screen.getByRole("button", { name: /^下一步/ }));
 
-    await user.click(await screen.findByRole("button", { name: /Create Agent/ }));
+    await user.click(await screen.findByRole("button", { name: /创建智能体/ }));
     await waitFor(() => expect(networking.createAgentCall).toHaveBeenCalledTimes(1));
 
     const payload = createdPayload();
@@ -419,8 +419,8 @@ describe("AddAgentForm submit payload", () => {
       undefined,
       null,
     );
-    expect(await screen.findByText("Agent Created!")).toBeInTheDocument();
-    expect(within(screen.getByText("Agent Created!").parentElement!).getByText("created-agent")).toBeInTheDocument();
+    expect(await screen.findByText("智能体已创建！")).toBeInTheDocument();
+    expect(within(screen.getByText("智能体已创建！").parentElement!).getByText("created-agent")).toBeInTheDocument();
   });
   it("blocks creation after clearing the existing key and assigns the reselected key", async () => {
     vi.mocked(networking.keyListCall).mockResolvedValue({
@@ -432,17 +432,17 @@ describe("AddAgentForm submit payload", () => {
     await user.type(screen.getByLabelText("显示名称"), "Key selection");
     await user.type(screen.getByPlaceholderText("描述这个智能体的用途..."), "d");
     for (let step = 0; step < 3; step++) {
-      await user.click(screen.getByRole("button", { name: /^Next/ }));
+      await user.click(screen.getByRole("button", { name: /^下一步/ }));
     }
     await user.click(screen.getByRole("radio", { name: "分配现有密钥" }));
-    const keySelector = await screen.findByPlaceholderText("Search by key name…");
+    const keySelector = await screen.findByPlaceholderText("按密钥名称搜索…");
     await chooseSelectOption(user, keySelector, "Maple key");
     await user.click(screen.getByRole("button", { name: "Clear" }));
-    await user.click(screen.getByRole("button", { name: /Create Agent/ }));
+    await user.click(screen.getByRole("button", { name: /创建智能体/ }));
     expect(networking.createAgentCall).not.toHaveBeenCalled();
     expect(networking.keyUpdateCall).not.toHaveBeenCalled();
     await chooseSelectOption(user, keySelector, "Maple key");
-    await user.click(screen.getByRole("button", { name: /Create Agent/ }));
+    await user.click(screen.getByRole("button", { name: /创建智能体/ }));
     await waitFor(() =>
       expect(networking.keyUpdateCall).toHaveBeenCalledWith("tok", {
         key: "key-maple",

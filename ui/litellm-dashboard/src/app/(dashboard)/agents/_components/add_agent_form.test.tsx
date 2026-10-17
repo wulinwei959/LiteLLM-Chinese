@@ -80,7 +80,7 @@ describe("AddAgentForm logos", () => {
   it("renders the modal title and agent type selection logos as images from logo_url", async () => {
     renderForm();
 
-    const titleLogo = await screen.findByAltText("Agent logo");
+    const titleLogo = await screen.findByAltText("智能体 logo");
     expect(titleLogo).toBeInstanceOf(HTMLImageElement);
     expect(titleLogo).toHaveAttribute("src", expect.stringContaining("assets/logos/a2a_agent.png"));
 
@@ -118,13 +118,13 @@ describe("AddAgentForm logos", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     renderForm();
 
-    const titleLogo = await screen.findByAltText("Agent logo");
+    const titleLogo = await screen.findByAltText("智能体 logo");
     const header = screen.getByText("新建智能体").parentElement!;
     fireEvent.error(titleLogo);
 
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("assets/logos/a2a_agent.png"));
-    expect(screen.queryByAltText("Agent logo")).not.toBeInTheDocument();
-    expect(within(header).getByText("A")).toBeInTheDocument();
+    expect(screen.queryByAltText("智能体 logo")).not.toBeInTheDocument();
+    expect(within(header).getByText("智")).toBeInTheDocument();
 
     const trigger = screen.getByRole("combobox", { name: "智能体类型" });
     fireEvent.error(within(trigger).getByAltText("A2A Agent logo"));
@@ -142,12 +142,12 @@ describe("AddAgentForm logos", () => {
     vi.mocked(networking.keyListCall).mockResolvedValue({ keys: [] });
 
     renderForm();
-    await user.click(screen.getByRole("button", { name: "Next →" }));
+    await user.click(screen.getByRole("button", { name: "下一步 →" }));
     await user.click(screen.getByTestId("select-mcp-toolset"));
-    await user.click(screen.getByRole("button", { name: "Next →" }));
-    await user.click(screen.getByRole("button", { name: "Next →" }));
-    await user.click(screen.getByText(/Skip for now/));
-    await user.click(screen.getByRole("button", { name: "Create Agent →" }));
+    await user.click(screen.getByRole("button", { name: "下一步 →" }));
+    await user.click(screen.getByRole("button", { name: "下一步 →" }));
+    await user.click(screen.getByText(/暂时跳过/));
+    await user.click(screen.getByRole("button", { name: "创建智能体 →" }));
 
     await vi.waitFor(() => expect(networking.createAgentCall).toHaveBeenCalled());
     const [, payload] = vi.mocked(networking.createAgentCall).mock.calls[0];
@@ -166,12 +166,12 @@ describe("AddAgentForm logos", () => {
     vi.mocked(networking.keyListCall).mockResolvedValue({ keys: [] });
 
     renderForm();
-    await user.click(screen.getByRole("button", { name: "Next →" }));
+    await user.click(screen.getByRole("button", { name: "下一步 →" }));
     await user.click(screen.getByTestId("select-access-group"));
-    await user.click(screen.getByRole("button", { name: "Next →" }));
-    await user.click(screen.getByRole("button", { name: "Next →" }));
-    await user.click(screen.getByText(/Skip for now/));
-    await user.click(screen.getByRole("button", { name: "Create Agent →" }));
+    await user.click(screen.getByRole("button", { name: "下一步 →" }));
+    await user.click(screen.getByRole("button", { name: "下一步 →" }));
+    await user.click(screen.getByText(/暂时跳过/));
+    await user.click(screen.getByRole("button", { name: "创建智能体 →" }));
 
     await vi.waitFor(() => expect(networking.createAgentCall).toHaveBeenCalled());
     const [, payload] = vi.mocked(networking.createAgentCall).mock.calls[0];
