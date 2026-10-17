@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 188 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10575、中英同值 138）。第 93 到 191 簇（184、189、190、191 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 192 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10582、中英同值 138）。第 93 到 192 簇（184、189、190、191 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 192 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `mcp-servers/_components/importConnectorConfig.ts`，连接器 JSON 导入的纯解析校验函数。它拿不到 React 上下文，`ParsedConnectorConfig` 的 `error: string` 按模块数据键名化路子改成 `ConnectorConfigErrorKey` 七个键字面量联合（`import.pasteFirst`/`invalidJson`/`expectedServersKey`/`serversNotObject`/`serversEmpty`/`serversListNotArray`/`serversListEmpty`），返回值即键名；消费侧 `ImportMCPServers.tsx` 早已整片接 `mcpServers.import.*`，`setParseError(parsed.error)` 改 `t(parsed.error)` 一处。同文件 `PLACEHOLDER` 的 JSON 样本、`console.error("Failed to import MCP servers:")` 与后端 `skipped.reason`/`errors.error` 数据值均不翻。新开 7 键插到 `mcpServers.import.countToast` 之后（叶子 10575 涨到 10582，同值 138 持平），en 侧逐字保留原错误串（两处重复的 `Expected a JSON object...` 收敛成一个键），zh 侧 `mcpServers`/`mcp_servers`/JSON 是 wire 键名与格式名原样保留；该锚点是 import 子块末键（无尾逗号），目录插入脚本要按锚点是否带逗号决定新块末行加不加逗号。测试迁移：`importConnectorConfig.test.ts` 六处 `toContain(英文子串)` 改成键名 `toBe` 逐字相等；无 ImportMCPServers 组件测试。验证：mcp-servers 目录加 `src/lib/i18n` 44 文件 772 例全绿（2 例预期失败）、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径三文件两侧均 0/0，prettier 三文件 HEAD 与当前均干净零改写；7 键 14 侧 `IntlMessageFormat` 实跑逐字相等，`npm run build` 过，扫描器本文件归零（全队列带命中的文件数 288 降到 287）。`.ts` 文件不计覆盖率，接入文件持平 686/912。下一簇按队列取 `src/utils/mcpToolCrudClassification.ts`（5 条）。
 
 ## 2026-10-18 第 191 簇更新
 
