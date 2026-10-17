@@ -42,7 +42,7 @@ describe("BulkCreateUsersButton", () => {
   it("parses a CSV dropped onto the drop zone", async () => {
     await openUploadStep();
 
-    const dropZone = screen.getByLabelText(/drag and drop your csv file here/i).closest("label");
+    const dropZone = screen.getByLabelText(/把 CSV 文件拖到这里/).closest("label");
     fireEvent.drop(dropZone as HTMLLabelElement, { dataTransfer: { files: [csvFile()], types: ["Files"] } });
 
     expect(await screen.findByText("new.hire@example.com")).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe("BulkCreateUsersButton", () => {
   it("exposes the drop zone as a label for a keyboard-reachable file input", async () => {
     await openUploadStep();
 
-    const fileInput = screen.getByLabelText(/drag and drop your csv file here/i) as HTMLInputElement;
+    const fileInput = screen.getByLabelText(/把 CSV 文件拖到这里/) as HTMLInputElement;
     expect(fileInput).toHaveAttribute("type", "file");
     expect(fileInput).toHaveAttribute("accept", ".csv");
     expect(fileInput).toBeVisible();
