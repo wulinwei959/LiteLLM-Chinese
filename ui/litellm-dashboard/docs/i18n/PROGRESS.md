@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 186 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10537、中英同值 138）。第 93 到 186 簇（184 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 187 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10543、中英同值 138）。第 93 到 187 簇（184 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 187 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `cost-tracking/_components/use_discount_config.ts`，成本折扣配置的 hook，与第 185 簇的加成 hook 同构（fetch/save 两条 REST 加增删改回调）。扫描器 6 条里 1 条是 `console.error("Failed to fetch discount config")`（既定不翻，另两条 `Error ...:` 前缀形态扫描器不报），5 条 toast 接线；盲区补三条：保存成功 toast、`Invalid provider selected`、模板串 `Discount for ${...} already exists. Edit it in the table above.`。八条用户可见 toast 全部键化，其中 `Invalid provider selected` 与 detail 缺失兜底 `Failed to update settings` 逐字同值复用同 ns 既有键 `invalidProviderSelected`/`updateSettingsFailed`，新开 6 键（叶子 10537 涨到 10543，同值 138 持平）：`fetchDiscountConfigFailed`/`discountConfigUpdated`/`updateDiscountConfigFailed`/`selectProviderAndDiscountRequired`/`discountPercentRange`/带 `{name}` 的 `discountExists`，中文措辞对齐第 185 簇加成侧先例（获取折扣配置失败、`{name} 的折扣已存在，请在上方的表格中编辑。`、`折扣必须在 0% 到 100% 之间`）。`.ts` hook 体内 `useTranslations("costTracking")`，三个 `useCallback` 依赖补 `t`。
+
+测试迁移：`use_discount_config.test.ts` 按第 185 簇 wrapper 先例包 `LocaleProvider locale="zh-CN"`（`React.createElement` 免 JSX、children 进 props 对象），11 处 `renderHook` 统一加 `{ wrapper }`，6 处断言换中文逐字面量（`/failed to fetch/i`、两处必选提示、`/0%.*100%/i`、`/already exists/i` 带 OpenAI 名、成功 toast）。children-as-props 触发 `react/no-children-prop` 一条新错：eslint 指令行不允许尾随 reason（会被当成第二个规则名报 rule not found），按仓库惯例改成分两行，reason 独立注释在上、裸指令在下压制。`use_margin_config.test.ts` 同款错误是第 185 簇遗留已提交，本簇不动。验证：cost-tracking 目录 20 文件 222 例全绿、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径 hook 2/2（raw fetch 既有欠账）与 HEAD 逐条同数、测试 0/0，prettier 两文件 HEAD 与当前均干净零改写；6 键 12 侧 `IntlMessageFormat` 实跑（`discountExists` 带 `{name}` 渲染逐字相等，`0%`/`100%` 百分号非 ICU 特殊字符），`npm run build` 过，扫描器本文件只剩 1 条 console.error 既定不翻。hook 是 `.ts` 不计入非测试 `.tsx` 覆盖率，接入文件持平 686/912。下一簇按队列取 `src/components/settings.tsx`。
 
 ## 2026-10-18 第 186 簇更新
 
