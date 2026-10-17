@@ -6908,7 +6908,9 @@
       "embeddedResource": "Embedded Resource",
       "resourceType": "Resource Type: {type}",
       "viewResource": "View Resource",
-      "jsonView": "JSON"
+      "jsonView": "JSON",
+      "inputFieldDescription": "Input for this tool",
+      "providerLine": "Provider: {server}"
     },
     "mcpStandards": {
       "documentation": "Documentation",

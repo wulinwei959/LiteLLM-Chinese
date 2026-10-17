@@ -26,6 +26,7 @@ export function ToolTestPanel({
   onClose: () => void;
 }) {
   const t = useTranslations("mcpServers");
+  const commonT = useTranslations("common");
   const [viewMode, setViewMode] = React.useState<"formatted" | "json">("formatted");
   const [startTime, setStartTime] = React.useState<number | null>(null);
   const [duration, setDuration] = React.useState<number | null>(null);
@@ -39,14 +40,14 @@ export function ToolTestPanel({
         properties: {
           input: {
             type: "string",
-            description: "Input for this tool",
+            description: t("toolTest.inputFieldDescription"),
           },
         },
         required: ["input"],
       };
     }
     return tool.inputSchema as InputSchema;
-  }, [tool.inputSchema]);
+  }, [tool.inputSchema, t]);
 
   // Check if this is a nested params structure and extract the actual parameters
   const actualSchema: InputSchema = React.useMemo(() => {
@@ -144,7 +145,7 @@ export function ToolTestPanel({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={resolveLogoSrc(tool.mcp_info.logo_url)}
-              alt={`${tool.mcp_info.server_name} logo`}
+              alt={t("tools.serverLogoAlt", { server: tool.mcp_info.server_name })}
               className="w-6 h-6 object-contain"
             />
           )}
@@ -173,14 +174,16 @@ export function ToolTestPanel({
               </div>
             </div>
             <p className="text-xs text-muted-foreground">{tool.description}</p>
-            <p className="text-xs text-muted-foreground">Provider: {tool.mcp_info.server_name}</p>
+            <p className="text-xs text-muted-foreground">
+              {t("toolTest.providerLine", { server: tool.mcp_info.server_name })}
+            </p>
           </div>
         </div>
         <Button
           onClick={onClose}
           variant="ghost"
           size="icon-sm"
-          aria-label="Close"
+          aria-label={commonT("close")}
           className="text-muted-foreground hover:text-foreground"
         >
           <X className="size-4" />
@@ -280,7 +283,7 @@ export function ToolTestPanel({
                                 : "text-success hover:text-success/80"
                             }`}
                           >
-                            Formatted
+                            {t("toolTest.formatted")}
                           </button>
                           <button
                             onClick={() => setViewMode("json")}
@@ -288,7 +291,7 @@ export function ToolTestPanel({
                               viewMode === "json" ? "bg-success/15 text-success" : "text-success hover:text-success/80"
                             }`}
                           >
-                            JSON
+                            {t("toolTest.json")}
                           </button>
                         </div>
 
@@ -473,7 +476,7 @@ export function ToolTestPanel({
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                       src={content.url}
-                                      alt="Tool result"
+                                      alt={t("toolTest.toolResult")}
                                       className="max-w-full h-auto rounded-sm shadow-xs"
                                     />
                                   </div>
