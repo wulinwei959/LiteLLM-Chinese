@@ -102,7 +102,7 @@ describe("AgentBuilderView", () => {
   it("asks the visitor to sign in when there is no session", () => {
     render(<AgentBuilderView accessToken={null} token={null} userID={null} userRole={null} />);
 
-    expect(screen.getByText("Sign in to use Agent Builder.")).toBeInTheDocument();
+    expect(screen.getByText("请登录以使用智能体构建器。")).toBeInTheDocument();
     expect(fetchAvailableAgentModels).not.toHaveBeenCalled();
   });
 
@@ -149,11 +149,11 @@ describe("AgentBuilderView", () => {
     renderView();
     await waitForRoster();
 
-    await user.click(screen.getByRole("button", { name: /New agent/i }));
+    await user.click(screen.getByRole("button", { name: /新建智能体/ }));
 
-    expect(screen.getByRole("button", { name: /Save Agent/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /保存智能体/ })).toBeInTheDocument();
     expect(screen.getByDisplayValue("You are a helpful assistant.")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Update Agent/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /更新智能体/ })).not.toBeInTheDocument();
   });
 
   it("creates the agent under the litellm_agent prefix", async () => {
@@ -161,9 +161,9 @@ describe("AgentBuilderView", () => {
     renderView();
     await waitForRoster();
 
-    await user.click(screen.getByRole("button", { name: /New agent/i }));
+    await user.click(screen.getByRole("button", { name: /新建智能体/ }));
     fireEvent.change(screen.getByPlaceholderText("我的智能体"), { target: { value: "billing-agent" } });
-    await user.click(screen.getByRole("button", { name: /Save Agent/i }));
+    await user.click(screen.getByRole("button", { name: /保存智能体/ }));
 
     await waitFor(() => expect(modelCreateCall).toHaveBeenCalled());
     const payload = modelCreateCall.mock.calls[0][1];
@@ -176,8 +176,8 @@ describe("AgentBuilderView", () => {
     renderView();
     await waitForRoster();
 
-    await user.click(screen.getByRole("button", { name: /New agent/i }));
-    await user.click(screen.getByRole("button", { name: /Save Agent/i }));
+    await user.click(screen.getByRole("button", { name: /新建智能体/ }));
+    await user.click(screen.getByRole("button", { name: /保存智能体/ }));
 
     expect(modelCreateCall).not.toHaveBeenCalled();
   });
@@ -188,7 +188,7 @@ describe("AgentBuilderView", () => {
     await waitForRoster();
     await screen.findByDisplayValue("support-agent");
 
-    await user.click(screen.getByRole("button", { name: /Update Agent/i }));
+    await user.click(screen.getByRole("button", { name: /更新智能体/ }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(modelPatchUpdateCall.mock.calls[0][2]).toBe("agent-1");
@@ -200,12 +200,12 @@ describe("AgentBuilderView", () => {
     await waitForRoster();
     await screen.findByDisplayValue("support-agent");
 
-    await user.click(screen.getAllByRole("button", { name: /Delete$/ })[0]);
+    await user.click(screen.getAllByRole("button", { name: /删除$/ })[0]);
 
-    expect(await screen.findByText(/Are you sure you want to delete "support-agent"/)).toBeInTheDocument();
+    expect(await screen.findByText(/确定要删除 "support-agent"/)).toBeInTheDocument();
     expect(modelDeleteCall).not.toHaveBeenCalled();
 
-    const confirmations = screen.getAllByRole("button", { name: /Delete$/ });
+    const confirmations = screen.getAllByRole("button", { name: /删除$/ });
     await user.click(confirmations[confirmations.length - 1]);
 
     await waitFor(() => expect(modelDeleteCall).toHaveBeenCalledWith("sk-access", "agent-1"));
@@ -217,13 +217,11 @@ describe("AgentBuilderView", () => {
     await waitForRoster();
     await screen.findByDisplayValue("support-agent");
 
-    await user.click(screen.getAllByRole("button", { name: /Delete$/ })[0]);
-    await screen.findByText(/Are you sure you want to delete "support-agent"/);
-    await user.click(screen.getAllByRole("button", { name: /Cancel$/ }).at(-1)!);
+    await user.click(screen.getAllByRole("button", { name: /删除$/ })[0]);
+    await screen.findByText(/确定要删除 "support-agent"/);
+    await user.click(screen.getAllByRole("button", { name: /取消$/ }).at(-1)!);
 
-    await waitFor(() =>
-      expect(screen.queryByText(/Are you sure you want to delete "support-agent"/)).not.toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.queryByText(/确定要删除 "support-agent"/)).not.toBeInTheDocument());
     expect(modelDeleteCall).not.toHaveBeenCalled();
   });
 
@@ -232,7 +230,7 @@ describe("AgentBuilderView", () => {
     renderView();
     await waitForRoster();
 
-    await user.click(screen.getByRole("tab", { name: /Connect/i }));
+    await user.click(screen.getByRole("tab", { name: /连接/ }));
 
     const snippet = await screen.findByTestId("code-block");
     expect(snippet).toHaveTextContent("https://proxy.example.com/v1/chat/completions");
@@ -245,8 +243,8 @@ describe("AgentBuilderView", () => {
     renderView();
     await waitForRoster();
 
-    await user.click(screen.getByRole("tab", { name: /Connect/i }));
-    await user.click(await screen.findByRole("button", { name: /Create key for this agent/i }));
+    await user.click(screen.getByRole("tab", { name: /连接/ }));
+    await user.click(await screen.findByRole("button", { name: /为此智能体创建密钥/ }));
 
     await waitFor(() => expect(keyCreateCall).toHaveBeenCalled());
     expect(keyCreateCall.mock.calls[0][2].models).toEqual(["support-agent"]);
@@ -258,15 +256,15 @@ describe("AgentBuilderView", () => {
     renderView();
     await waitForRoster();
 
-    await user.click(screen.getByRole("tab", { name: /Chat/i }));
+    await user.click(screen.getByRole("tab", { name: /聊天/ }));
     const scratch = await screen.findByLabelText("chat scratch");
     fireEvent.change(scratch, { target: { value: "half a thought" } });
     expect(scratch).toHaveValue("half a thought");
 
-    await user.click(screen.getByRole("tab", { name: /Configure/i }));
+    await user.click(screen.getByRole("tab", { name: /配置/ }));
     await screen.findByDisplayValue("support-agent");
 
-    await user.click(screen.getByRole("tab", { name: /Chat/i }));
+    await user.click(screen.getByRole("tab", { name: /聊天/ }));
     expect(await screen.findByLabelText("chat scratch")).toHaveValue("half a thought");
   });
 
@@ -275,13 +273,13 @@ describe("AgentBuilderView", () => {
     renderView();
     await waitForRoster();
 
-    await user.click(screen.getByRole("tab", { name: /Batch Test/i }));
+    await user.click(screen.getByRole("tab", { name: /批量测试/ }));
     fireEvent.change(await screen.findByLabelText("batch scratch"), { target: { value: "seven cases" } });
 
-    await user.click(screen.getByRole("tab", { name: /Connect/i }));
+    await user.click(screen.getByRole("tab", { name: /连接/ }));
     await screen.findByTestId("code-block");
 
-    await user.click(screen.getByRole("tab", { name: /Batch Test/i }));
+    await user.click(screen.getByRole("tab", { name: /批量测试/ }));
     expect(await screen.findByLabelText("batch scratch")).toHaveValue("seven cases");
   });
 
@@ -297,7 +295,7 @@ describe("AgentBuilderView", () => {
     await user.click(options[options.length - 1]);
     await user.keyboard("{Escape}");
 
-    await user.click(screen.getByRole("button", { name: /Update Agent/i }));
+    await user.click(screen.getByRole("button", { name: /更新智能体/ }));
 
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalled());
     expect(modelPatchUpdateCall.mock.calls[0][1].litellm_params.tools).toEqual([
@@ -309,8 +307,8 @@ describe("AgentBuilderView", () => {
     renderView();
     await waitForRoster();
 
-    expect(screen.getByText(/Agent Builder is experimental/)).toBeInTheDocument();
-    expect(within(screen.getByText(/Agent Builder is experimental/)).getByRole("link")).toHaveAttribute(
+    expect(screen.getByText(/智能体构建器为实验性功能/)).toBeInTheDocument();
+    expect(within(screen.getByText(/智能体构建器为实验性功能/)).getByRole("link")).toHaveAttribute(
       "href",
       "mailto:product@berri.ai",
     );
