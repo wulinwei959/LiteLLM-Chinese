@@ -18,20 +18,20 @@ npx vitest run "<路径>" --reporter=json --outputFile="$TEMP/fails.json"
 
 ## 缺陷分类表
 
-| 症状                                                       | 根因                                             | 修法                                                     |
-| ---------------------------------------------------------- | ------------------------------------------------ | -------------------------------------------------------- |
-| 抛 `context from NextIntlClientProvider was not found`      | 测试用普通 `render`，组件调 `useTranslations`     | 改用 `renderWithProviders`                                |
-| 界面显示点分键名，如 `playground.compliance.stop`           | `t("x")` 指向的键在目录里不存在                   | 补键，两侧同时补                                         |
-| 控制台 `IntlError: MISSING_MESSAGE`                         | 同上                                             | 同上                                                     |
-| `messagesParity` 报键树不一致                               | 一侧多键或少键                                   | 找出多/少的那条，对齐                                     |
-| 界面空白，控制台 `INVALID_MESSAGE: UNCLOSED_TAG`            | 消息里有未加引号的尖括号                          | 用单引号把尖括号括起来                                   |
-| 界面空白，控制台 `INVALID_MESSAGE: MALFORMED_ARGUMENT`      | 消息里有未加引号的花括号                          | 用单引号把花括号括起来                                   |
-| React 报 `Do not call Hooks inside useMemo`                 | 列定义工厂里调了 `useTranslations`                | 把 `t` 作为参数传进工厂，并进 `useMemo` 依赖              |
-| tsc 报 `TS2345` / 裸 `Translator` 判定不可靠                | props 用了 `ReturnType<typeof useTranslations>`   | 换成 `translators.ts` 里的具体类型                        |
-| 测试报 `Found multiple elements`                            | 两处不同英文被映射到同一个已存在的键              | 各开各的键                                               |
-| 测试断言失败，实际界面已变中文                              | 断言还是英文原文                                 | 更新断言                                                 |
-| 用例要验证的正是被测试 helper 钉住的那条链路                | helper 固定了环境值，把被测链路短路              | 给 helper 加"不钉"出口，用 `null` 而不是省略             |
-| ESLint 报 `rules-of-hooks` 说 hook 被条件调用               | `cond ?? useHook()` 这类短路写法                 | hook 无条件调用，取值时再在候选值之间选                   |
+| 症状                                                   | 根因                                            | 修法                                         |
+| ------------------------------------------------------ | ----------------------------------------------- | -------------------------------------------- |
+| 抛 `context from NextIntlClientProvider was not found` | 测试用普通 `render`，组件调 `useTranslations`   | 改用 `renderWithProviders`                   |
+| 界面显示点分键名，如 `playground.compliance.stop`      | `t("x")` 指向的键在目录里不存在                 | 补键，两侧同时补                             |
+| 控制台 `IntlError: MISSING_MESSAGE`                    | 同上                                            | 同上                                         |
+| `messagesParity` 报键树不一致                          | 一侧多键或少键                                  | 找出多/少的那条，对齐                        |
+| 界面空白，控制台 `INVALID_MESSAGE: UNCLOSED_TAG`       | 消息里有未加引号的尖括号                        | 用单引号把尖括号括起来                       |
+| 界面空白，控制台 `INVALID_MESSAGE: MALFORMED_ARGUMENT` | 消息里有未加引号的花括号                        | 用单引号把花括号括起来                       |
+| React 报 `Do not call Hooks inside useMemo`            | 列定义工厂里调了 `useTranslations`              | 把 `t` 作为参数传进工厂，并进 `useMemo` 依赖 |
+| tsc 报 `TS2345` / 裸 `Translator` 判定不可靠           | props 用了 `ReturnType<typeof useTranslations>` | 换成 `translators.ts` 里的具体类型           |
+| 测试报 `Found multiple elements`                       | 两处不同英文被映射到同一个已存在的键            | 各开各的键                                   |
+| 测试断言失败，实际界面已变中文                         | 断言还是英文原文                                | 更新断言                                     |
+| 用例要验证的正是被测试 helper 钉住的那条链路           | helper 固定了环境值，把被测链路短路             | 给 helper 加"不钉"出口，用 `null` 而不是省略 |
+| ESLint 报 `rules-of-hooks` 说 hook 被条件调用          | `cond ?? useHook()` 这类短路写法                | hook 无条件调用，取值时再在候选值之间选      |
 
 ## 缺 Provider（第一类）
 
@@ -101,10 +101,10 @@ console.log('zh 有 en 无:',[...z].filter(k=>!e.has(k)));"
 
 尖括号与花括号两类问题都在 `messagesParity.test.ts` 里有守卫，所以它们不会跑到生产环境，但加新消息时容易踩
 
-| 场景           | 写法                                        |
-| -------------- | ------------------------------------------- |
-| RFC 里的尖括号 | `api://'<app-id>'/.default`                 |
-| 内嵌 JSON      | `(e.g. '{'"organization": "my-org"'}')`     |
+| 场景           | 写法                                         |
+| -------------- | -------------------------------------------- |
+| RFC 里的尖括号 | `api://'<app-id>'/.default`                  |
+| 内嵌 JSON      | `(e.g. '{'"organization": "my-org"'}')`      |
 | 富文本         | `请查看 <link>文档</link>`，用 `t.rich` 渲染 |
 
 三个细节
@@ -339,10 +339,10 @@ const namespaces = NAMESPACES.has(explicitRoot) ? [explicitRoot] : [...scopes];
 
 两个 bug 都修好后，守卫从"永远绿"变成"报出 47 条真实缺失"，集中在两个文件
 
-| 文件                        | 缺失键                                              |
-| --------------------------- | --------------------------------------------------- |
-| `MCPGatewaySessionsTab.tsx` | `mcpServers.actions`（zh 有、en 没有）               |
-| `ComplianceUI.tsx`          | `playground.compliance.*` 46 个                     |
+| 文件                        | 缺失键                                 |
+| --------------------------- | -------------------------------------- |
+| `MCPGatewaySessionsTab.tsx` | `mcpServers.actions`（zh 有、en 没有） |
+| `ComplianceUI.tsx`          | `playground.compliance.*` 46 个        |
 
 这 47 个键当天已经补齐，守卫转绿。**这条守卫现在是有牙齿的**：它在目录缺键时红、补齐后绿，两个方向都实测过。补键时英文按 `610473c` 逐字恢复，中文按 `GLOSSARY.md` 定译
 
@@ -360,13 +360,13 @@ const namespaces = NAMESPACES.has(explicitRoot) ? [explicitRoot] : [...scopes];
 
 `dd32399`（翻译大屏合并提交）把 `add_model/cache_control_settings.tsx` 里的英文常量换成 `t()` 调用，顺手删掉了 `CACHE_CONTROL_LABEL` / `CACHE_CONTROL_TOOLTIP` 等五个导出，但没查引用方。`ModelInfoEditForm.tsx`（上游快照带来的未翻译文件）仍在 import 其中两个，生产构建从那时起就是红的，到本次发现已隔 23 个提交。这还没完：修掉缺导出的报错后构建推进到下一层，`Failed to type check` 又停在 `layout.tsx` 的 `Cannot find name 't'`。同一提交在非测试文件里共留下五类错误、22 条、9 个文件
 
-| 类 | 例子 | 修法 |
-| -- | ---- | ---- |
-| 删掉的导出仍被引用 | `ModelInfoEditForm.tsx` 引用 `CACHE_CONTROL_LABEL`/`CACHE_CONTROL_TOOLTIP` | 接入 `models.addModel.cacheControlLabel` 与 `cacheControlTooltipDesc`（后者此前是死键） |
-| `t()` 调用处没有 hook | `layout.tsx` 的 `AgentControlPlaneView`、`MCPToolsetsTab.tsx` 的 `MCPToolList`、`A2AMetrics.tsx` 共 10 条 TS2304 | 补 `useTranslations("nav")` / `("mcpServers")` / `("playground")`；`layout.tsx` 的键名同步从 `t("nav.plugin")` 改回 `t("plugin")` |
-| `keyof typeof` 指向不存在的名字 | `models-and-endpoints/page.tsx` 的 `keyof typeof models.tabs` 里 `models` 未定义 | `import type enMessages from "@/messages/en.json"`，改 `keyof typeof enMessages.models.tabs` |
-| 重复的 interface 声明 | `AccessGroupBudgetColumns.tsx` 残留了导出接口的旧副本，TS2395/TS2339 | 删掉本地重复声明，保留带 `t` 字段的导出版本 |
-| 无意义的解构 | `ui/input.tsx`、`ui/input-group.tsx`、`PasswordInput.tsx` 里 `"data-testid": testId` 解构后原样再传，React 19 的 `ComponentProps` 不认带连字符的键 | 退回上游的 `{...props}` 透传写法；调用点 `data-testid` 本就经 spread 落到 DOM，行为不变 |
+| 类                              | 例子                                                                                                                                               | 修法                                                                                                                              |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| 删掉的导出仍被引用              | `ModelInfoEditForm.tsx` 引用 `CACHE_CONTROL_LABEL`/`CACHE_CONTROL_TOOLTIP`                                                                         | 接入 `models.addModel.cacheControlLabel` 与 `cacheControlTooltipDesc`（后者此前是死键）                                           |
+| `t()` 调用处没有 hook           | `layout.tsx` 的 `AgentControlPlaneView`、`MCPToolsetsTab.tsx` 的 `MCPToolList`、`A2AMetrics.tsx` 共 10 条 TS2304                                   | 补 `useTranslations("nav")` / `("mcpServers")` / `("playground")`；`layout.tsx` 的键名同步从 `t("nav.plugin")` 改回 `t("plugin")` |
+| `keyof typeof` 指向不存在的名字 | `models-and-endpoints/page.tsx` 的 `keyof typeof models.tabs` 里 `models` 未定义                                                                   | `import type enMessages from "@/messages/en.json"`，改 `keyof typeof enMessages.models.tabs`                                      |
+| 重复的 interface 声明           | `AccessGroupBudgetColumns.tsx` 残留了导出接口的旧副本，TS2395/TS2339                                                                               | 删掉本地重复声明，保留带 `t` 字段的导出版本                                                                                       |
+| 无意义的解构                    | `ui/input.tsx`、`ui/input-group.tsx`、`PasswordInput.tsx` 里 `"data-testid": testId` 解构后原样再传，React 19 的 `ComponentProps` 不认带连字符的键 | 退回上游的 `{...props}` 透传写法；调用点 `data-testid` 本就经 spread 落到 DOM，行为不变                                           |
 
 三个信号里只有构建能看见这一整类。`npx vitest run` 什么都不报，Vite 对缺失的具名导出解析为 `undefined`，测试照常绿；`npx tsc --noEmit` 会报，但 22 条混在 928 条存量里没人逐条比对；`npm run build` 才会硬失败，且一次只报第一个错（先是 Turbopack 的 `Export CACHE_CONTROL_LABEL doesn't exist in target module`，修完再报 `Failed to type check … layout.tsx:78 Cannot find name 't'`）
 
@@ -417,28 +417,28 @@ projects（82）、prompts（56）、agents（55）、cost-tracking（36）四�
 
 2026-10-12 修 Provider 批次和 team 批次时实测确认：以下位置的组件仍输出硬编码英文，对应测试断言保留英文原文。批次 24 收口时先把这些字符串接入 `t()`，再把断言同步为中文
 
-| 文件 | 硬编码内容 | 状态 |
-| ---- | ---------- | ---- |
-| `common_components/budget_duration_dropdown.tsx` | `Never resets` 与 hourly/daily/weekly/monthly 选项文案（路径在 `common_components` 下，不是 `shared`） | 已修 `dfcf2ca` |
-| `team/useMemberBudgetReset.ts` | toast 文案（`Reset N member budgets to the team default`、`... the rest could not be reset`、`Team updated, but member budgets could not be reset`） | 已修 `78024a5` |
-| `shared/ScopedSavingsTab.tsx` | `Loading savings...` 与 `No usage recorded for this ...` 空态文案（路径在 `shared` 下，不是 `templates`） | 已修 `45c7998` |
-| `add_model/cache_control_settings.tsx` | aria-label 拼接 `${label} help`，`label` 已翻译（角色/索引）但 ` help` 后缀是英文，整名混语（"角色 help"） | 已修 `1abc26d` |
-| `public_model_hub` 分页脚 | 实际写死的是 `Showing {n} of {m} agents` 与 `Showing {n} of {m} MCP servers`，与共享表格的"第 X 页，共 Y 页"不一致 | 已修（本次提交）。`AIHub/ModelHubTable.tsx` 有一份同样的脚注（多一条 models），一并接入 `modelHub` 命名空间 |
-| `templates/key_edit_view.tsx` | budget duration 选择框的 placeholder `Never resets` | 已修 `dfcf2ca`。该文件已接近 800 行上限，改用共享下拉的 `emptyMeansNeverResets` 表达空值，不在这文件里加引词代码 |
-| `components/GuardrailsMonitor/usageUnits.ts` | `unpricedSummary()` 的 `N units unpriced`、`counterLabel()` 由驼峰键派生的计数器名（`Content Policy`）、`counterMathRow()` 的 `no known price, left out` 与 `N unpriced units left out`，中文下仍渲染英文 | 已修（本次提交） |
-| `guardrails-monitor/_components/ScoreChart.tsx` | 图例 `categories={["passed", "blocked"]}` 写死英文 | 已修（本次提交） |
-| `guardrails/_components/custom_code/CustomCodeModal.tsx` | 名称输入框 placeholder `e.g., block-pii-custom` | 已修（本次提交） |
-| `guardrails/_components/TeamGuardrailsTab.tsx` | 提交弹窗的 `https://your-guardrail-api.com/v1/check`、两个 JSON 示例 placeholder 与"等效配置"YAML 片段 | 已修（本次提交）。YAML 注释接入 `t()`；示例 URL 与 JSON 示例值保留英文 |
+| 文件                                                     | 硬编码内容                                                                                                                                                                                                | 状态                                                                                                             |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `common_components/budget_duration_dropdown.tsx`         | `Never resets` 与 hourly/daily/weekly/monthly 选项文案（路径在 `common_components` 下，不是 `shared`）                                                                                                    | 已修 `dfcf2ca`                                                                                                   |
+| `team/useMemberBudgetReset.ts`                           | toast 文案（`Reset N member budgets to the team default`、`... the rest could not be reset`、`Team updated, but member budgets could not be reset`）                                                      | 已修 `78024a5`                                                                                                   |
+| `shared/ScopedSavingsTab.tsx`                            | `Loading savings...` 与 `No usage recorded for this ...` 空态文案（路径在 `shared` 下，不是 `templates`）                                                                                                 | 已修 `45c7998`                                                                                                   |
+| `add_model/cache_control_settings.tsx`                   | aria-label 拼接 `${label} help`，`label` 已翻译（角色/索引）但 ` help` 后缀是英文，整名混语（"角色 help"）                                                                                                | 已修 `1abc26d`                                                                                                   |
+| `public_model_hub` 分页脚                                | 实际写死的是 `Showing {n} of {m} agents` 与 `Showing {n} of {m} MCP servers`，与共享表格的"第 X 页，共 Y 页"不一致                                                                                        | 已修（本次提交）。`AIHub/ModelHubTable.tsx` 有一份同样的脚注（多一条 models），一并接入 `modelHub` 命名空间      |
+| `templates/key_edit_view.tsx`                            | budget duration 选择框的 placeholder `Never resets`                                                                                                                                                       | 已修 `dfcf2ca`。该文件已接近 800 行上限，改用共享下拉的 `emptyMeansNeverResets` 表达空值，不在这文件里加引词代码 |
+| `components/GuardrailsMonitor/usageUnits.ts`             | `unpricedSummary()` 的 `N units unpriced`、`counterLabel()` 由驼峰键派生的计数器名（`Content Policy`）、`counterMathRow()` 的 `no known price, left out` 与 `N unpriced units left out`，中文下仍渲染英文 | 已修（本次提交）                                                                                                 |
+| `guardrails-monitor/_components/ScoreChart.tsx`          | 图例 `categories={["passed", "blocked"]}` 写死英文                                                                                                                                                        | 已修（本次提交）                                                                                                 |
+| `guardrails/_components/custom_code/CustomCodeModal.tsx` | 名称输入框 placeholder `e.g., block-pii-custom`                                                                                                                                                           | 已修（本次提交）                                                                                                 |
+| `guardrails/_components/TeamGuardrailsTab.tsx`           | 提交弹窗的 `https://your-guardrail-api.com/v1/check`、两个 JSON 示例 placeholder 与"等效配置"YAML 片段                                                                                                    | 已修（本次提交）。YAML 注释接入 `t()`；示例 URL 与 JSON 示例值保留英文                                           |
 
 批次 24 扫 `add_model` / `edit_auto_router` 时又实测到五处残留硬编码英文，均已在 `63c381eb` 接入 `t()` 并把断言同步中文
 
-| 文件 | 硬编码内容 | 状态 |
-| ---- | ---------- | ---- |
-| `add_model/RouterConfigBuilder.tsx` | `serializeRouterConfig` 在路由缺模型时 `throw new Error("Please select a model for every route")`，经 `edit_auto_router_modal` 的 `handleSubmit` catch 走 `toast.fromError`，英文直接进弹窗 | 已修 `63c381eb`。`serializeRouterConfig(t, config)` 首参翻译器，键 `routerRouteModelRequired` |
-| `edit_auto_router/edit_auto_router_modal.tsx` | 第二处保存成功 `toast.success("Auto router configuration updated successfully")` 漏改（同文件另一处已接 `editModalSaved`） | 已修 `63c381eb` |
-| `add_model/auto_router_connection_test.tsx` | `role="status"` 的 `aria-label="Jev connection"` | 已修 `63c381eb`，键 `connJevStatusLabel` |
-| `add_model/cache_control_settings.tsx` | 角色下拉的 `<SelectItem value={null}>None</SelectItem>` | 已修 `63c381eb`，键 `cacheControlNone` |
-| `add_model/handle_add_model_submit.tsx` | 两处 JSON 解析失败 `throw new Error("Failed to parse litellm_extra_params: " + error)`，内层 toast 已翻，但外层 catch 的 `{ suffix: 占位 error}` 会把英文再拼进 toast | 已修 `63c381eb`，改用 `failedParseExtraParams` |
+| 文件                                          | 硬编码内容                                                                                                                                                                                  | 状态                                                                                          |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `add_model/RouterConfigBuilder.tsx`           | `serializeRouterConfig` 在路由缺模型时 `throw new Error("Please select a model for every route")`，经 `edit_auto_router_modal` 的 `handleSubmit` catch 走 `toast.fromError`，英文直接进弹窗 | 已修 `63c381eb`。`serializeRouterConfig(t, config)` 首参翻译器，键 `routerRouteModelRequired` |
+| `edit_auto_router/edit_auto_router_modal.tsx` | 第二处保存成功 `toast.success("Auto router configuration updated successfully")` 漏改（同文件另一处已接 `editModalSaved`）                                                                  | 已修 `63c381eb`                                                                               |
+| `add_model/auto_router_connection_test.tsx`   | `role="status"` 的 `aria-label="Jev connection"`                                                                                                                                            | 已修 `63c381eb`，键 `connJevStatusLabel`                                                      |
+| `add_model/cache_control_settings.tsx`        | 角色下拉的 `<SelectItem value={null}>None</SelectItem>`                                                                                                                                     | 已修 `63c381eb`，键 `cacheControlNone`                                                        |
+| `add_model/handle_add_model_submit.tsx`       | 两处 JSON 解析失败 `throw new Error("Failed to parse litellm_extra_params: " + error)`，内层 toast 已翻，但外层 catch 的 `{ suffix: 占位 error}` 会把英文再拼进 toast                       | 已修 `63c381eb`，改用 `failedParseExtraParams`                                                |
 
 `serializeRouterConfig` 是纯函数，调用点只有 `edit_auto_router_modal` 一处，加首参翻译器即可，注意它的单测 `RouterConfigBuilder.test.ts` 同步改 `serializeRouterConfig(t, ...)` 与中文断言。`handle_add_model_submit` 那条要注意双 toast：139/155 行先 `toast.fromError(t("failedParseExtraParams", ...))` 再 throw，外层 catch 又 `t("failedToCreateModel", { suffix: 占位 error })`；把 throw 的文案也换成 `failedParseExtraParams` 后两条 toast 才都全中文
 
@@ -563,7 +563,6 @@ e2e 里这些筛选器是按 placeholder 文本给 combobox 命名来寻址的�
 
 顺带记一笔没动的债：`SSOModals.tsx` 自带一份 `detectSSOProvider` 与一份 clear payload 手搭逻辑，和 `SSOSettings/utils.ts` 的同名实现重复（字段集合已不一致，老的少 `team_mappings`），新弹窗走 `useEditSSOSettings` hook、老的直连 `updateSSOSettings`。合并两套 SSO 弹窗属于功能重构，不该混进汉化簇
 
-
 ## 2026-10-16 第 83 簇：数据模块改接翻译要回溯渲染处的拼装规则，按键名查表的表别用 `as const`
 
 `SSOSettings/constants.ts` 的两张展示名表（五个 provider、四个默认角色）是这一片 SSO 文案最后的英文来源，接键之后连带影响三个消费方与四份测试。三条值得固化：
@@ -607,7 +606,7 @@ provider 展示名（`ssoProviderDisplayNames` 的 "Google SSO"/"SAML SSO"）连
 
 症状很有辨识度：组件测试把 `t("ssoSettings.configureSso")` 渲染成**裸键** `adminPanel.ssoSettings.configureSso`（next-intl 找不到就回显全键路径），而不是抛错。此时守卫可能是绿的——因为 `missingKeys` 只查"代码引用的键在 scope 里存不存在"，若接线前先跑守卫（键还没被引用）就查不出来
 
-规矩：往顶层命名空间里加**兄弟**块时，锚点必须含**下一层级的兄弟行的开头**（本项目是 `  },\n  "usage": {\n    "title": `，比 `pageVisibility` 的 `}` 低一层），落表后用 `json.load` 断言 `d["adminPanel"]["ssoSettings"]` 存在且键数正确，而不是只看 JSON 合法——合法 JSON 插错父级一样合法
+规矩：往顶层命名空间里加**兄弟**块时，锚点必须含**下一层级的兄弟行的开头**（本项目是 ` },\n  "usage": {\n    "title":`，比 `pageVisibility` 的 `}` 低一层），落表后用 `json.load` 断言 `d["adminPanel"]["ssoSettings"]` 存在且键数正确，而不是只看 JSON 合法——合法 JSON 插错父级一样合法
 
 测试里 `queryByText("<英文空态语>")` 这类**负向**断言（断言某文案不存在）在文案翻中文后会**假绿**：英文串永远查不到。翻文案时要把这类负向断言一起翻成新串，否则测的是"这句话不存在"这件恒真的事
 
@@ -654,6 +653,19 @@ zh 目录里给标签配的**全角冒号**（`源修订版本：`/`ETag：`/`�
 模块级常量持有文案时，改成接收 translator（或接收 `messages` 对象）的工厂：`keyEditFormSchema`→`buildKeyEditFormSchema(estimateMessages)`、`estimateRules(messages)`、`estimateTooltips(canEdit, t)`。这和第 59、71 簇把列定义/schema 改成工厂是同一类改法
 
 `useEffect` 里从写死英文改成调 translator 后，`react-hooks/exhaustive-deps` 会立刻报"缺依赖"。**别用 disable 注释压**：`use-intl` 的 `useTranslations` 内部是 `useMemo(() => createBaseTranslator(...))`，返回的引用在一次挂载内稳定，把它补进依赖数组既消警告又不会造成重跑
+
+## 2026-10-17 第 151 簇：调用方已翻好的标签参与组句时，整句必须由消息产出
+
+`DataTableMultiSortHeader` 收的 `fields[].label` 是调用方已经翻好的文案，组件内部再拼方向词：`${field.label} ascending`。这种"一半是数据、一半是文案"的句子有两种错法：
+
+- 只把方向词接键（`t("ascending")`），中文侧就渲染成"花费 升序"这种半中半英的碎片，因为词序在中文里变了
+- 整句拼好再交给翻译器，入参是标签本身，消息形如 `"{field} ascending"`。中文侧用 `{field} 升序`，词序由消息决定，入参只管填
+
+规矩是凡是"某个已翻译值 + 固定词"组成的句子，一律取整句消息，让消息负责词序。同类的还有 `join(" or ")` 这种连接词，以及多字段表头里 `join(" / ")` 出来的分隔符，两者都接键，中文侧分别是"或"与保留原样的 `/`
+
+另一处：`Execution: {execution} · Mode: {mode}` 这种一行里塞两个标签加一个分隔符的写法，不要在 JSX 里各自出文案再靠 `·` 缝起来，而是整行进消息。中文侧的冒号是全角、`·` 的前后也不该留空格，逐段拼的结果几乎总是标点错位
+
+`check_openapi_schema.tsx` 的四条 JSON 示例（`{"team": "research"}` 这类）搬进消息目录后触发 `messagesParity` 的花括号守卫：这些字面量原先在 TSX 字符串里不受约束，进目录就被当成未加引号的占位符。加单引号即可，中英两侧都要加
 
 ## 回归守卫
 

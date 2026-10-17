@@ -1,10 +1,28 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 150 簇后（非测试 `.tsx` 912 个接入 654 个、71.7%，目录叶子 9683、中英同值 130）。第 93 到 150 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 151 簇后（非测试 `.tsx` 912 个接入 658 个、72.1%，目录叶子 9736、中英同值 131）。第 93 到 151 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 151 簇更新
+
+继续串行推进，没有派子代理。这一簇清掉候选清单里四个共享组件。
+
+`DataTableSortHeader.tsx`：新开 `dataTableSortHeader` 八键。多字段合并表头的菜单项是"`{字段}` 升序/降序"，这类"调用方已翻好的标签 + 方向词"拼出来的句子必须按字段名取整句消息，不能只翻方向词再拼；连接词 `or` 也接键，中文侧是"或"，`/` 分隔符同样接键。菜单里的 `Reset` 复用既有 `common.reset`。
+
+`check_openapi_schema.tsx`：新开 `checkOpenapiSchema`，把 14 条字段帮助文案键名化成 `help.<字段名>`，类型默认帮助（文本/数值/整数/布尔）合并进同一张键名表，运行时按 `Object.keys` 建的 `Set` 判定字段名是否在表内，避免 `as const` 与 `Record` 双写。这个文件的四条 JSON 示例搬进消息目录后立刻撞上 `messagesParity` 的花括号守卫（原文在 TSX 里不受约束），按既有规矩给示例花括号加单引号。
+
+`AgentIdentityDetails.tsx`：新开 `agents.identity` 15 键。执行状态复用 `common.enabled`/`common.disabled`，认证结论三条按分支取整句消息而不是翻片段，`Execution`/`Mode` 那行连中间的 `·` 一起进消息，避免中文侧标点错位。
+
+`APIReferenceView.tsx`：标题与说明两键接进既有的 `apiReference`。
+
+`DataTableSortHeader.test.tsx` 用裸 `render` 渲染已接线组件，换 `renderWithProviders`。`DataTable.test.tsx` 里多字段表头的字段标签是测试自己硬写的英文 `Spend`/`Budget`，菜单项因此渲染成"Spend 升序"这种混合，断言按实际渲染改。
+
+顺带修好三份与本簇无关的过时英文断言：`BudgetTable.test.tsx` 的 `Copy ID`、`AllModelsTable.test.tsx` 的列菜单按钮、`ChatUI.integration.test.tsx` 的模拟失败与流式响应两处。
+
+这一段合计：非测试 `.tsx` 912 接入 654→658（71.7%→72.1%），消息叶子 9683→9736（+53），中英同值 130→131（`fieldSeparator` 的 `/`，中文侧保留同样的分隔符）。候选文件 46→42。`src/app` 整包 4405 例只剩 `LensSetup` 那两例已知的时区假失败。
 
 ## 2026-10-17 第 149-150 簇更新
 
