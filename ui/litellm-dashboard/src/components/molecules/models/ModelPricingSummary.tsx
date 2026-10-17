@@ -1,6 +1,7 @@
 import { ModelData, ModelInfo } from "@/components/model_dashboard/types";
 import { Badge } from "@/components/ui/badge";
 import { formatPerSecondCost } from "@/utils/dataUtils";
+import { useTranslations } from "next-intl";
 
 type PricingFields = Pick<
   ModelData,
@@ -8,16 +9,17 @@ type PricingFields = Pick<
 > & { model_info?: Pick<ModelInfo, "pricing_overrides"> };
 
 function PricingSource({ overrides }: { overrides: string[] | undefined }) {
+  const t = useTranslations("models.pricingSummary");
   if (overrides === undefined) return null;
   if (overrides.length === 0) {
-    return <p className="mt-2 text-xs text-muted-foreground">Follows the model cost map</p>;
+    return <p className="mt-2 text-xs text-muted-foreground">{t("followsCostMap")}</p>;
   }
   return (
     <p className="mt-2 text-xs text-muted-foreground">
       <Badge variant="outline" className="mr-1">
-        Custom pricing
+        {t("customPricing")}
       </Badge>
-      Overrides the model cost map for {overrides.join(", ")}
+      {t("overridesCostMap", { fields: overrides.join(", ") })}
     </p>
   );
 }

@@ -1754,7 +1754,7 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
 
-      expect(screen.getByText("Select a team")).toBeInTheDocument();
+      expect(screen.getByText("选择一个团队")).toBeInTheDocument();
     });
 
     it.each(["Internal User", "Org Admin"])("only offers a %s the teams they administer", async (userRole) => {

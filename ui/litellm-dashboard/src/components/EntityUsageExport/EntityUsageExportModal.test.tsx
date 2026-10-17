@@ -19,7 +19,7 @@ describe("EntityUsageExportModal", () => {
     onExport: vi.fn().mockResolvedValue(new Blob(["data"])),
     dateRange: { from: new Date("2025-10-01"), to: new Date("2025-10-14") },
     selectedFilters: [],
-    customTitle: "Export Tag Usage",
+    customTitle: "导出Tag Usage",
   };
 
   beforeEach(() => {
@@ -32,8 +32,8 @@ describe("EntityUsageExportModal", () => {
 
     renderWithProviders(<EntityUsageExportModal {...baseProps} />);
 
-    expect(screen.getByRole("button", { name: /Export CSV/i })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /Export CSV/i }));
+    expect(screen.getByRole("button", { name: /导出 CSV/i })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /导出 CSV/i }));
 
     expect(baseProps.onExport).toHaveBeenCalledWith("daily", "csv");
     expect(downloadBlob).toHaveBeenCalledWith(expect.any(Blob), "tag_usage_daily_2025-10-01_2025-10-14.csv");
@@ -46,19 +46,19 @@ describe("EntityUsageExportModal", () => {
     renderWithProviders(<EntityUsageExportModal {...baseProps} />);
 
     await user.click(screen.getByRole("radio", { name: /按标签与 Key 逐日拆分/i }));
-    await user.click(screen.getByRole("button", { name: /Export CSV/i }));
+    await user.click(screen.getByRole("button", { name: /导出 CSV/i }));
 
     expect(baseProps.onExport).toHaveBeenCalledWith("daily_with_keys", "csv");
     expect(baseProps.onClose).toHaveBeenCalled();
   });
 
-  it("keeps the modal open and reports the error when onExport rejects", async () => {
+  it("keeps the modal open and reports the error when onExportrejects", async () => {
     const user = userEvent.setup();
     baseProps.onExport.mockRejectedValueOnce(new Error("export failed"));
 
     renderWithProviders(<EntityUsageExportModal {...baseProps} />);
 
-    await user.click(screen.getByRole("button", { name: /Export CSV/i }));
+    await user.click(screen.getByRole("button", { name: /导出 CSV/i }));
 
     expect(baseProps.onExport).toHaveBeenCalled();
     expect(downloadBlob).not.toHaveBeenCalled();

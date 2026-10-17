@@ -220,7 +220,10 @@
     "selectAll": "全选",
     "enterpriseFeatureBadge": "✨ 企业版功能",
     "resetField": "重置 {field}",
-    "notSet": "未设置"
+    "notSet": "未设置",
+    "comingSoonEnterprise": "即将纳入企业版",
+    "deletedKeysAuditBody": "已删除 Key 的审计功能正从 beta 毕业，正式进入企业版的审计与合规套件。",
+    "deletedTeamsAuditBody": "已删除团队的审计功能正从 beta 毕业，正式进入企业版的审计与合规套件。"
   },
   "nav": {
     "aiGateway": "AI 网关",
@@ -1962,7 +1965,12 @@
     "clearBudget": "清除预算",
     "noBudgetToClear": "无预算可清除",
     "budgetSaved": "{name} 的预算已保存",
-    "budgetCleared": "{name} 的预算已清除"
+    "budgetCleared": "{name} 的预算已清除",
+    "pricingSummary": {
+        "followsCostMap": "沿用模型成本表",
+        "customPricing": "自定义定价",
+        "overridesCostMap": "为 {fields} 覆盖模型成本表"
+    }
   },
   "teams": {
     "title": "团队",
@@ -7942,7 +7950,8 @@
     "budgetRateLimitsOptional": "预算与速率限制（可选）",
     "allowedModelsCreateDesc": "选择允许处理来自此标签请求的模型",
     "maxBudgetCreateDesc": "此标签最多可消费的金额（美元）。达到上限后，带此标签的请求将被拦截",
-    "resetBudgetCreateDesc": "预算的重置频率。例如设为 daily 则每 24 小时重置一次预算"
+    "resetBudgetCreateDesc": "预算的重置频率。例如设为 daily 则每 24 小时重置一次预算",
+    "selectorPlaceholder": "选择或新建标签"
   },
   "skills": {
     "addNew": "新建技能",
@@ -8791,7 +8800,8 @@
     "idRequired": "请输入你的 API 供应商提供的向量存储 ID",
     "selectFieldRequired": "请选择 {field}",
     "inputFieldRequired": "请输入 {field}",
-    "providerFieldMissing": "请填写 {field}"
+    "providerFieldMissing": "请填写 {field}",
+    "selectorPlaceholder": "选择向量库"
   },
   "modelHub": {
     "showingModels": "已显示 {shown}，共 {total} 个模型",
@@ -10715,7 +10725,16 @@
     "dailyWithModelsTitle": "按{entity}与模型逐日统计",
     "dailyWithModelsDesc": "按模型拆分的每日指标",
     "dailyWithUsersTitle": "按{entity}与用户逐日拆分",
-    "dailyWithUsersDesc": "每个{entity}的每日指标，按 Key 归属者拆分"
+    "dailyWithUsersDesc": "每个{entity}的每日指标，按 Key 归属者拆分",
+    "format": "格式",
+    "formatCsv": "CSV（Excel、Google Sheets）",
+    "formatJson": "JSON（含元数据）",
+    "modalTitle": "导出{entity}用量",
+    "cancel": "取消",
+    "exporting": "导出中...",
+    "exportFormat": "导出 {format}",
+    "successToast": "已成功导出{entity}用量数据，格式为 {format}",
+    "errorToast": "导出数据失败"
   },
   "dataTableSelection": {
     "selectAll": "选中所有行",
@@ -10727,5 +10746,14 @@
     "storedInDb": "存于数据库",
     "inConfig": "来自配置",
     "updateSettings": "更新设置"
+  },
+  "codeBlock": {
+    "copyAria": "复制代码"
+  },
+  "modelsTeamSelect": {
+    "placeholder": "选择一个团队"
+  },
+  "keyProjectField": {
+    "projectLabel": "项目"
   }
 }

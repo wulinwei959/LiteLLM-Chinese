@@ -238,7 +238,7 @@ describe("MakeMCPPublicForm", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("明确的公开状态");
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
     expect(screen.queryByText("在 YAML 中配置")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Copy code" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "复制代码" })).not.toBeInTheDocument();
     const nextButton = screen.getByRole("button", { name: "下一步" });
     expect(nextButton).toBeDisabled();
     fireEvent.click(nextButton);
@@ -260,7 +260,7 @@ describe("MakeMCPPublicForm", () => {
     expect(saveButton).toBeDisabled();
     fireEvent.click(saveButton);
     expect(mockMakeMCPPublicCall).not.toHaveBeenCalled();
-    expect(screen.queryByRole("button", { name: "Copy code" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "复制代码" })).not.toBeInTheDocument();
 
     const refreshedCatalog = [
       { ...mockProps.mcpHubData[0], mcp_info: { is_public: true, is_public_explicit: true } },
@@ -278,14 +278,14 @@ describe("MakeMCPPublicForm", () => {
     renderWithProviders(<MakeMCPPublicForm {...mockProps} />);
 
     await user.click(screen.getByText("在 YAML 中配置"));
-    await user.click(screen.getByRole("button", { name: "Copy code" }));
+    await user.click(screen.getByRole("button", { name: "复制代码" }));
 
     expect(await navigator.clipboard.readText()).toBe(
       'litellm_settings:\n  public_mcp_hub_strict_whitelist: true\n  public_mcp_servers:\n    - "server-2"',
     );
 
     await user.click(screen.getByRole("checkbox", { name: "公开 Test Server 2" }));
-    await user.click(screen.getByRole("button", { name: "Copy code" }));
+    await user.click(screen.getByRole("button", { name: "复制代码" }));
     expect(await navigator.clipboard.readText()).toBe(
       "litellm_settings:\n  public_mcp_hub_strict_whitelist: true\n  public_mcp_servers: []",
     );

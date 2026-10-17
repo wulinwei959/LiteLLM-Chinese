@@ -91,10 +91,8 @@ it("offers the shared page sizes and refetches with the selected one", async () 
 it("should show the enterprise notice for a non-premium user", () => {
   renderWithProviders(<DeletedTeamsPage />);
 
-  expect(screen.getByText("Coming soon to Enterprise")).toBeInTheDocument();
-  expect(
-    screen.getByText("Deleted team auditing is graduating from beta into our Enterprise audit & compliance suite."),
-  ).toBeInTheDocument();
+  expect(screen.getByText("即将纳入企业版")).toBeInTheDocument();
+  expect(screen.getByText("已删除团队的审计功能正从 beta 毕业，正式进入企业版的审计与合规套件。")).toBeInTheDocument();
 });
 
 it("should show skeleton rows while the initial load is pending", () => {

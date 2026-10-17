@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Tag } from "./types";
 import { tagListCall } from "../networking";
 import { MultiSelect } from "@/components/shared/MultiSelect";
@@ -11,6 +12,7 @@ interface TagSelectorProps {
 }
 
 const TagSelector: React.FC<TagSelectorProps> = ({ onChange, value, className, accessToken }) => {
+  const t = useTranslations("tagManagement");
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -33,7 +35,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({ onChange, value, className, a
 
   return (
     <MultiSelect
-      placeholder="Select or create tags"
+      placeholder={t("selectorPlaceholder")}
       onValueChange={onChange}
       value={value}
       loading={loading}

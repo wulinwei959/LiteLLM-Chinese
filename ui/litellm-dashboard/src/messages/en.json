@@ -220,7 +220,10 @@
     "selectAll": "Select All",
     "enterpriseFeatureBadge": "✨ Enterprise Feature",
     "resetField": "Reset {field}",
-    "notSet": "Not Set"
+    "notSet": "Not Set",
+    "comingSoonEnterprise": "Coming soon to Enterprise",
+    "deletedKeysAuditBody": "Deleted key auditing is graduating from beta into our Enterprise audit & compliance suite.",
+    "deletedTeamsAuditBody": "Deleted team auditing is graduating from beta into our Enterprise audit & compliance suite."
   },
   "nav": {
     "aiGateway": "AI Gateway",
@@ -1962,7 +1965,12 @@
     "clearBudget": "Clear budget",
     "noBudgetToClear": "No budget to clear",
     "budgetSaved": "Budget saved for {name}",
-    "budgetCleared": "Budget cleared for {name}"
+    "budgetCleared": "Budget cleared for {name}",
+    "pricingSummary": {
+        "followsCostMap": "Follows the model cost map",
+        "customPricing": "Custom pricing",
+        "overridesCostMap": "Overrides the model cost map for {fields}"
+    }
   },
   "teams": {
     "title": "Teams",
@@ -7946,7 +7954,8 @@
     "budgetRateLimitsOptional": "Budget & Rate Limits (Optional)",
     "allowedModelsCreateDesc": "Select which models are allowed to process requests from this tag",
     "maxBudgetCreateDesc": "Maximum amount in USD this tag can spend. When reached, requests with this tag will be blocked",
-    "resetBudgetCreateDesc": "How often the budget should reset. For example, setting 'daily' will reset the budget every 24 hours"
+    "resetBudgetCreateDesc": "How often the budget should reset. For example, setting 'daily' will reset the budget every 24 hours",
+    "selectorPlaceholder": "Select or create tags"
   },
   "skills": {
     "addNew": "Add New Skill",
@@ -8795,7 +8804,8 @@
     "idRequired": "Please input the vector store ID from your api provider",
     "selectFieldRequired": "Please select the {field}",
     "inputFieldRequired": "Please input the {field}",
-    "providerFieldMissing": "Please provide {field}"
+    "providerFieldMissing": "Please provide {field}",
+    "selectorPlaceholder": "Select vector stores"
   },
   "modelHub": {
     "showingModels": "Showing {shown} of {total, plural, one {# model} other {# models}}",
@@ -10719,7 +10729,16 @@
     "dailyWithModelsTitle": "Day-by-day by {entity} and model",
     "dailyWithModelsDesc": "Daily metrics split by model",
     "dailyWithUsersTitle": "Day-by-day breakdown by {entity} and user",
-    "dailyWithUsersDesc": "Daily metrics for each {entity}, split by key owner"
+    "dailyWithUsersDesc": "Daily metrics for each {entity}, split by key owner",
+    "format": "Format",
+    "formatCsv": "CSV (Excel, Google Sheets)",
+    "formatJson": "JSON (includes metadata)",
+    "modalTitle": "Export {entity} Usage",
+    "cancel": "Cancel",
+    "exporting": "Exporting...",
+    "exportFormat": "Export {format}",
+    "successToast": "{entity} usage data exported successfully as {format}",
+    "errorToast": "Failed to export data"
   },
   "dataTableSelection": {
     "selectAll": "Select all rows",
@@ -10731,5 +10750,14 @@
     "storedInDb": "In DB",
     "inConfig": "In Config",
     "updateSettings": "Update Settings"
+  },
+  "codeBlock": {
+    "copyAria": "Copy code"
+  },
+  "modelsTeamSelect": {
+    "placeholder": "Select a team"
+  },
+  "keyProjectField": {
+    "projectLabel": "Project"
   }
 }

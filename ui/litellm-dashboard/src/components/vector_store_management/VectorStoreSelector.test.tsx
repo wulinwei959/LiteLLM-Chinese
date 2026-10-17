@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { VectorStore } from "./types";
 import VectorStoreSelector from "./VectorStoreSelector";
@@ -126,7 +127,7 @@ describe("VectorStoreSelector", () => {
 
     it("should render with default placeholder", () => {
       renderComponent();
-      expect(getSelectElement()).toHaveAttribute("data-placeholder", "Select vector stores");
+      expect(getSelectElement()).toHaveAttribute("data-placeholder", "选择向量库");
     });
 
     it("should render with custom placeholder", () => {

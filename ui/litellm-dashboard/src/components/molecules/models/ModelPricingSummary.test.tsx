@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "@/../tests/test-utils";
 import { ModelPricingSummary } from "./ModelPricingSummary";
 
 const tokenPriced = { input_cost: "1.50", output_cost: "2.00" };
@@ -62,21 +63,19 @@ describe("ModelPricingSummary", () => {
         }}
       />,
     );
-    expect(screen.getByText("Custom pricing")).toBeInTheDocument();
-    expect(
-      screen.getByText("Overrides the model cost map for input_cost_per_token, output_cost_per_token"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("自定义定价")).toBeInTheDocument();
+    expect(screen.getByText("为 input_cost_per_token, output_cost_per_token 覆盖模型成本表")).toBeInTheDocument();
   });
 
   it("says the price follows the cost map when nothing is overridden", () => {
     render(<ModelPricingSummary model={{ ...tokenPriced, model_info: { pricing_overrides: [] } }} />);
-    expect(screen.getByText("Follows the model cost map")).toBeInTheDocument();
-    expect(screen.queryByText("Custom pricing")).not.toBeInTheDocument();
+    expect(screen.getByText("沿用模型成本表")).toBeInTheDocument();
+    expect(screen.queryByText("自定义定价")).not.toBeInTheDocument();
   });
 
   it("says nothing about the source when the proxy did not report it", () => {
     render(<ModelPricingSummary model={{ ...tokenPriced, model_info: {} }} />);
     expect(screen.queryByText(/cost map/)).not.toBeInTheDocument();
-    expect(screen.queryByText("Custom pricing")).not.toBeInTheDocument();
+    expect(screen.queryByText("自定义定价")).not.toBeInTheDocument();
   });
 });
