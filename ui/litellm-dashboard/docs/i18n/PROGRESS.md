@@ -1,10 +1,18 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 175 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10415、中英同值 138）。第 93 到 175 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 176 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10427、中英同值 138）。第 93 到 176 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 176 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `search-tools/_components/CreateSearchTools.tsx`，新建搜索工具弹窗，第 175 簇 schema 工厂路子在本轮的第二次复用：`createSearchToolShape(t)`/`createSearchToolSchema(t)`，消费方 `useZodForm(useMemo(() => createSearchToolSchema(t), [t]), ...)`。三条校验全键化：`nameRequired`/`providerRequired` 与第 175 簇 en 值逐字相同直接复用，正则消息新开 `namePattern`；`EMPTY_VALUES` 的类型推导随之改成 `z.input<ReturnType<typeof createSearchToolSchema>>`。新开 12 键（叶子 10415 涨到 10427，同值持平 138）：三条 toast（createdToast/createErrorToast/testFieldsRequired，其中 createErrorToast 把原先 `"Error creating search tool: " + error` 的字符串拼接改成 ICU 参数 `{error}`，消费方传 `String(error)`）、三个字段 tooltip（nameHint/providerHint/apiKeyHint）、示例占位符 `createNameExample`（资源名保持英文只译 `例如：`）、`descriptionOptional`/`needHelp`/`testConnection`/`addTool` 四个按钮与链接文案；标签四个复用（searchToolName/providerLabel/apiKeyCol + DialogTitle 既有 addNew），Close 走 `common.close`。Combobox 清除按钮的 "Clear" 是 `ui/combobox.tsx` 里 `aria-label = "Clear"` 的默认形参，属共享基础组件不在本簇接线，测试保持英文断言；`throw new Error("Access Token required")` 是内部异常消息不翻。
+
+目录插入踩了一次锚点坑：searchTools 块的收尾 `}` 与最后一个键同行（第 175 簇插入留下的现状行），按"收尾行上一行"找插入点的行式配方把逗号加到了倒数第二键上产生双逗号、en.json 一度写坏。回滚用 `git checkout --`（当时工作区对 HEAD 的 diff 只有那次坏插入，无其他未提交内容），改用从收尾花括号反向跳过空白定位的写法后两个目录各插 12 键，json.load 与逐键读回全过。
+
+测试迁移：`CreateSearchTools.integration.test.tsx` 的 `/Search Tool Name/` `/API Key/` `/Description/` regex、"添加搜索工具"/"测试连接"按钮名与四条校验/必填消息换中文（sed 首轮把捕获组连同前斜杠一起留下产生 `//` 尾巴，二轮修净后 esbuild 才过）。验证：CreateSearchTools 两测试 + SearchTools 两测试 + `src/lib/i18n` 6 文件 45 例全绿、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径组件 0/0、integration 0/0、测试 2/2 与 HEAD 逐条同数，prettier 先证 HEAD 三文件全干净，组件与 integration 当前脏 `--write` 后复跑全绿；12 键 24 侧 `IntlMessageFormat` 实跑（createErrorToast 带 `{error}` 渲染、nameHint 的孤立撇号实测按字面处理），`npm run build` 过，扫描器本文件归零。接入文件持平 686/912。
 
 ## 2026-10-18 第 175 簇更新
 
