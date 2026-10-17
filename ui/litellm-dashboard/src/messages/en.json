@@ -10802,5 +10802,129 @@
     "router-settings": "Configure routing and load balancing settings",
     "logging-and-alerts": "Set up logging and alert configurations",
     "admin-panel": "Access admin panel and settings"
+  },
+  "cacheSettings": {
+    "redisTypes": {
+      "node": "Node (Single Instance)",
+      "cluster": "Cluster",
+      "sentinel": "Sentinel",
+      "semantic": "Semantic"
+    },
+    "redisTypeDescriptions": {
+      "node": "Standard Redis node/single instance",
+      "cluster": "Redis Cluster mode for high availability and horizontal scaling",
+      "sentinel": "Redis Sentinel mode for high availability with automatic failover",
+      "semantic": "Semantic caching that reuses responses for similar prompts"
+    },
+    "redisTypeFallback": "Select the type of Redis deployment you're using",
+    "sections": {
+      "connection": "Connection Settings",
+      "cluster": "Cluster Configuration",
+      "sentinel": "Sentinel Configuration",
+      "semantic": "Semantic Configuration",
+      "ssl": "SSL Settings",
+      "cacheManagement": "Cache Management",
+      "gcp": "GCP Authentication"
+    },
+    "fieldOptions": {
+      "semantic_cache_scope": {
+        "key": "Key (shared by all end users of the key/team/org)",
+        "end_user": "End user (isolated per end user)"
+      }
+    },
+    "rules": {
+      "portRange": "Port must be an integer between 1 and 65535",
+      "validJsonArray": "Must be a valid JSON array (use double quotes)",
+      "jsonArray": "Must be a JSON array",
+      "nonNegativeInteger": "Must be a non-negative integer",
+      "number": "Must be a number"
+    },
+    "secretAlreadySet": "Already set. Enter a new value to replace it.",
+    "fields": {
+      "url": {
+        "label": "Redis URL",
+        "help": "Full Redis/Valkey connection URL (e.g. redis://:password@host:6379/1). When set, it takes precedence over Host, Port, Password, and Database Index."
+      },
+      "host": {
+        "label": "Host",
+        "help": "Redis server hostname or IP address"
+      },
+      "port": {
+        "label": "Port",
+        "help": "Redis server port number"
+      },
+      "db": {
+        "label": "Database Index",
+        "help": "Logical database index to isolate the cache (e.g. 1 for redis://host:6379/1)"
+      },
+      "password": {
+        "label": "Password",
+        "help": "Redis server password"
+      },
+      "username": {
+        "label": "Username",
+        "help": "Redis server username (if required)"
+      },
+      "redis_startup_nodes": {
+        "label": "Startup Nodes",
+        "help": "List of startup nodes for Redis Cluster (e.g., [{\"host\": \"127.0.0.1\", \"port\": \"7001\"}])"
+      },
+      "sentinel_nodes": {
+        "label": "Sentinel Nodes",
+        "help": "List of Sentinel nodes (e.g., [[\"localhost\", 26379]])"
+      },
+      "service_name": {
+        "label": "Service Name",
+        "help": "Master service name for Redis Sentinel"
+      },
+      "sentinel_password": {
+        "label": "Sentinel Password",
+        "help": "Password for Redis Sentinel authentication"
+      },
+      "similarity_threshold": {
+        "label": "Similarity Threshold",
+        "help": "Similarity threshold for semantic cache"
+      },
+      "redis_semantic_cache_embedding_model": {
+        "label": "Embedding Model",
+        "help": "Embedding model for semantic cache"
+      },
+      "semantic_cache_scope": {
+        "label": "Semantic Cache Scope",
+        "help": "Who can share a semantic cache hit. Key shares hits between all end users of a key/team/org. End user also isolates per end user; requests without an end user fall back to the key scope."
+      },
+      "ssl": {
+        "label": "SSL",
+        "help": "Enable SSL/TLS connection"
+      },
+      "ssl_cert_reqs": {
+        "label": "SSL Cert Reqs",
+        "help": "SSL certificate requirements (None, CERT_REQUIRED, CERT_OPTIONAL)"
+      },
+      "ssl_check_hostname": {
+        "label": "SSL Check Hostname",
+        "help": "Enable SSL hostname verification"
+      },
+      "namespace": {
+        "label": "Namespace",
+        "help": "Namespace prefix for cache keys"
+      },
+      "ttl": {
+        "label": "TTL (seconds)",
+        "help": "Time-to-live for cached items in seconds"
+      },
+      "max_connections": {
+        "label": "Max Connections",
+        "help": "Maximum number of connections in the connection pool"
+      },
+      "gcp_service_account": {
+        "label": "GCP Service Account",
+        "help": "GCP service account for IAM authentication (e.g., projects/-/serviceAccounts/your-sa@project.iam.gserviceaccount.com)"
+      },
+      "gcp_ssl_ca_certs": {
+        "label": "GCP SSL CA Certs",
+        "help": "Path to SSL CA certificate file for GCP Memorystore Redis"
+      }
+    }
   }
 }

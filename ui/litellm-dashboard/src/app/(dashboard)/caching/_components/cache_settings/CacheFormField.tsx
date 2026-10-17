@@ -26,8 +26,6 @@ export interface EmbeddingModelOption {
   label: string;
 }
 
-export const SECRET_ALREADY_SET_PLACEHOLDER = "Already set. Enter a new value to replace it.";
-
 interface CacheFormFieldProps {
   field: CacheField;
   embeddingModels: EmbeddingModelOption[];
@@ -37,10 +35,12 @@ interface CacheFormFieldProps {
 const CacheFormField: React.FC<CacheFormFieldProps> = ({ field, embeddingModels, isSecretConfigured = false }) => {
   const form = useFormContext<CacheFormValues>();
   const t = useTranslations("caching");
-  const placeholder = isSecretConfigured ? SECRET_ALREADY_SET_PLACEHOLDER : field.helpText;
+  const cacheT = useTranslations("cacheSettings");
+  const help = cacheT(field.helpKey);
+  const placeholder = isSecretConfigured ? cacheT("secretAlreadySet") : help;
 
   return (
-    <FormField control={form.control} name={field.name} label={field.label} description={field.helpText}>
+    <FormField control={form.control} name={field.name} label={cacheT(field.labelKey)} description={help}>
       {({ ref, value, onChange, ...rest }) => {
         if (field.type === "boolean") {
           return <Switch {...rest} checked={value === true} onCheckedChange={(checked) => onChange(checked)} />;
@@ -74,7 +74,7 @@ const CacheFormField: React.FC<CacheFormFieldProps> = ({ field, embeddingModels,
           const { id, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy, name, onBlur, disabled } = rest;
           return (
             <Select
-              items={options.map((option) => ({ label: option.label, value: option.value }))}
+              items={options.map((option) => ({ label: cacheT(option.labelKey), value: option.value }))}
               name={name}
               disabled={disabled}
               value={typeof value === "string" && value !== "" ? value : null}
@@ -92,7 +92,7 @@ const CacheFormField: React.FC<CacheFormFieldProps> = ({ field, embeddingModels,
               <SelectContent>
                 {options.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                    {cacheT(option.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>

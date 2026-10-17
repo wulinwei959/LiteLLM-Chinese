@@ -3,40 +3,33 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CacheMessageKey, REDIS_TYPE_LABEL_KEYS, type RedisType } from "./cacheSettingsFields";
 
 interface RedisTypeSelectorProps {
-  redisType: string;
-  redisTypeDescriptions: Readonly<Record<string, string>>;
-  onTypeChange: (type: string) => void;
+  redisType: RedisType;
+  redisTypeDescriptions: Readonly<Record<RedisType, CacheMessageKey>>;
+  onTypeChange: (type: RedisType) => void;
 }
-
-const REDIS_TYPE_LABELS: Readonly<Record<string, string>> = {
-  node: "Node (Single Instance)",
-  cluster: "Cluster",
-  sentinel: "Sentinel",
-  semantic: "Semantic",
-};
 
 const RedisTypeSelector: React.FC<RedisTypeSelectorProps> = ({ redisType, redisTypeDescriptions, onTypeChange }) => {
   const t = useTranslations("caching");
+  const cacheT = useTranslations("cacheSettings");
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">{t("redisType")}</label>
-      <Select value={redisType} onValueChange={(value) => value !== null && onTypeChange(value)}>
+      <Select value={redisType} onValueChange={(value) => value !== null && onTypeChange(value as RedisType)}>
         <SelectTrigger className="w-full">
-          <SelectValue>{REDIS_TYPE_LABELS[redisType] ?? redisType}</SelectValue>
+          <SelectValue>{cacheT(REDIS_TYPE_LABEL_KEYS[redisType])}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {Object.entries(REDIS_TYPE_LABELS).map(([value, label]) => (
+          {Object.entries(REDIS_TYPE_LABEL_KEYS).map(([value, labelKey]) => (
             <SelectItem key={value} value={value}>
-              {label}
+              {cacheT(labelKey)}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      <p className="text-xs text-muted-foreground">
-        {redisTypeDescriptions[redisType] || "Select the type of Redis deployment you're using"}
-      </p>
+      <p className="text-xs text-muted-foreground">{cacheT(redisTypeDescriptions[redisType])}</p>
     </div>
   );
 };

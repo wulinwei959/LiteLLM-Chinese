@@ -10798,5 +10798,129 @@
     "router-settings": "配置路由与负载均衡",
     "logging-and-alerts": "设置日志与告警配置",
     "admin-panel": "访问管理面板与设置"
+  },
+  "cacheSettings": {
+    "redisTypes": {
+      "node": "节点（单实例）",
+      "cluster": "集群",
+      "sentinel": "哨兵",
+      "semantic": "语义"
+    },
+    "redisTypeDescriptions": {
+      "node": "标准 Redis 节点/单实例",
+      "cluster": "Redis Cluster 模式，用于高可用与水平扩展",
+      "sentinel": "Redis Sentinel 模式，用于高可用与自动故障转移",
+      "semantic": "语义缓存，为相似提示词复用已有响应"
+    },
+    "redisTypeFallback": "请选择你使用的 Redis 部署形态",
+    "sections": {
+      "connection": "连接设置",
+      "cluster": "集群配置",
+      "sentinel": "Sentinel 配置",
+      "semantic": "语义缓存配置",
+      "ssl": "SSL 设置",
+      "cacheManagement": "缓存管理",
+      "gcp": "GCP 认证"
+    },
+    "fieldOptions": {
+      "semantic_cache_scope": {
+        "key": "Key（该 Key/团队/组织的所有终端用户共享）",
+        "end_user": "终端用户（按终端用户隔离）"
+      }
+    },
+    "rules": {
+      "portRange": "端口必须是 1 到 65535 之间的整数",
+      "validJsonArray": "必须是合法的 JSON 数组（使用双引号）",
+      "jsonArray": "必须是 JSON 数组",
+      "nonNegativeInteger": "必须是非负整数",
+      "number": "必须是数字"
+    },
+    "secretAlreadySet": "已设置。输入新值即可替换。",
+    "fields": {
+      "url": {
+        "label": "Redis URL",
+        "help": "完整的 Redis/Valkey 连接 URL（例如 redis://:password@host:6379/1）。设置后它的优先级高于主机、端口、密码与数据库序号。"
+      },
+      "host": {
+        "label": "主机",
+        "help": "Redis 服务器的主机名或 IP 地址"
+      },
+      "port": {
+        "label": "端口",
+        "help": "Redis 服务器端口号"
+      },
+      "db": {
+        "label": "数据库序号",
+        "help": "用于隔离缓存的逻辑数据库序号（例如 redis://host:6379/1 中的 1）"
+      },
+      "password": {
+        "label": "密码",
+        "help": "Redis 服务器密码"
+      },
+      "username": {
+        "label": "用户名",
+        "help": "Redis 服务器用户名（如需要）"
+      },
+      "redis_startup_nodes": {
+        "label": "启动节点",
+        "help": "Redis Cluster 的启动节点列表（例如 '[{\"host\": \"127.0.0.1\", \"port\": \"7001\"}]'）"
+      },
+      "sentinel_nodes": {
+        "label": "Sentinel 节点",
+        "help": "Sentinel 节点列表（例如 '[[\"localhost\", 26379]]'）"
+      },
+      "service_name": {
+        "label": "服务名",
+        "help": "Redis Sentinel 的主服务名"
+      },
+      "sentinel_password": {
+        "label": "Sentinel 密码",
+        "help": "Redis Sentinel 认证用的密码"
+      },
+      "similarity_threshold": {
+        "label": "相似度阈值",
+        "help": "语义缓存的相似度阈值"
+      },
+      "redis_semantic_cache_embedding_model": {
+        "label": "嵌入模型",
+        "help": "语义缓存使用的嵌入模型"
+      },
+      "semantic_cache_scope": {
+        "label": "语义缓存作用域",
+        "help": "谁能共享一次语义缓存命中。Key 表示该 Key/团队/组织的所有终端用户共享命中结果；End user 则按终端用户隔离；没有终端用户的请求回退到 Key 作用域。"
+      },
+      "ssl": {
+        "label": "SSL",
+        "help": "启用 SSL/TLS 连接"
+      },
+      "ssl_cert_reqs": {
+        "label": "SSL 证书要求",
+        "help": "SSL 证书要求（None、CERT_REQUIRED、CERT_OPTIONAL）"
+      },
+      "ssl_check_hostname": {
+        "label": "SSL 主机名校验",
+        "help": "启用 SSL 主机名校验"
+      },
+      "namespace": {
+        "label": "命名空间",
+        "help": "缓存键的命名空间前缀"
+      },
+      "ttl": {
+        "label": "TTL（秒）",
+        "help": "缓存项的存活时间，单位为秒"
+      },
+      "max_connections": {
+        "label": "最大连接数",
+        "help": "连接池中的最大连接数"
+      },
+      "gcp_service_account": {
+        "label": "GCP 服务账号",
+        "help": "用于 IAM 认证的 GCP 服务账号（例如 projects/-/serviceAccounts/your-sa@project.iam.gserviceaccount.com）"
+      },
+      "gcp_ssl_ca_certs": {
+        "label": "GCP SSL CA 证书",
+        "help": "GCP Memorystore Redis 的 SSL CA 证书文件路径"
+      }
+    }
   }
 }

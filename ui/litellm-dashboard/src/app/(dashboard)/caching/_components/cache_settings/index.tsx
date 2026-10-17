@@ -12,7 +12,7 @@ import { toast } from "@/lib/toast";
 import RedisTypeSelector from "./RedisTypeSelector";
 import CacheFieldSection from "./CacheFieldSection";
 import { EmbeddingModelOption } from "./CacheFormField";
-import { CACHE_FIELDS, REDIS_TYPES, REDIS_TYPE_DESCRIPTIONS, RedisType } from "./cacheSettingsFields";
+import { CACHE_FIELDS, REDIS_TYPES, REDIS_TYPE_DESCRIPTION_KEYS, RedisType } from "./cacheSettingsFields";
 import {
   buildCachePayload,
   buildInitialValues,
@@ -35,6 +35,7 @@ const toRedisType = (value: unknown): RedisType =>
 const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
   const form = useForm<CacheFormValues>({ defaultValues: buildInitialValues({}) });
   const t = useTranslations("caching");
+  const cacheT = useTranslations("cacheSettings");
   const [redisType, setRedisType] = useState<RedisType>("node");
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [embeddingModels, setEmbeddingModels] = useState<EmbeddingModelOption[]>([]);
@@ -85,7 +86,7 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
         (advancedOpen || !ADVANCED_SECTIONS.some((section) => section === field.section)),
     ).flatMap((field) => {
       const message = field.rules?.map((rule) => rule(values[field.name])).find((result) => result !== null);
-      return message === undefined || message === null ? [] : [[field.name, message] as const];
+      return message === undefined || message === null ? [] : [[field.name, cacheT(message)] as const];
     });
 
     form.clearErrors();
@@ -158,13 +159,13 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
 
           <RedisTypeSelector
             redisType={redisType}
-            redisTypeDescriptions={REDIS_TYPE_DESCRIPTIONS}
+            redisTypeDescriptions={REDIS_TYPE_DESCRIPTION_KEYS}
             onTypeChange={(type) => setRedisType(toRedisType(type))}
           />
 
           <div className="pt-4 border-t border-border">
             <CacheFieldSection
-              title="Connection Settings"
+              title={cacheT("sections.connection")}
               section="connection"
               redisType={redisType}
               embeddingModels={embeddingModels}
@@ -175,7 +176,7 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
           {redisType === "cluster" && (
             <div className="pt-4 border-t border-border">
               <CacheFieldSection
-                title="Cluster Configuration"
+                title={cacheT("sections.cluster")}
                 section="cluster"
                 redisType={redisType}
                 embeddingModels={embeddingModels}
@@ -187,7 +188,7 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
           {redisType === "sentinel" && (
             <div className="pt-4 border-t border-border">
               <CacheFieldSection
-                title="Sentinel Configuration"
+                title={cacheT("sections.sentinel")}
                 section="sentinel"
                 redisType={redisType}
                 embeddingModels={embeddingModels}
@@ -199,7 +200,7 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
           {redisType === "semantic" && (
             <div className="pt-4 border-t border-border">
               <CacheFieldSection
-                title="Semantic Configuration"
+                title={cacheT("sections.semantic")}
                 section="semantic"
                 redisType={redisType}
                 embeddingModels={embeddingModels}
@@ -215,21 +216,21 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
             <CollapsibleContent>
               <div className="space-y-6">
                 <CacheFieldSection
-                  title="SSL Settings"
+                  title={cacheT("sections.ssl")}
                   section="ssl"
                   redisType={redisType}
                   embeddingModels={embeddingModels}
                   headingLevel="h5"
                 />
                 <CacheFieldSection
-                  title="Cache Management"
+                  title={cacheT("sections.cacheManagement")}
                   section="cacheManagement"
                   redisType={redisType}
                   embeddingModels={embeddingModels}
                   headingLevel="h5"
                 />
                 <CacheFieldSection
-                  title="GCP Authentication"
+                  title={cacheT("sections.gcp")}
                   section="gcp"
                   redisType={redisType}
                   embeddingModels={embeddingModels}
