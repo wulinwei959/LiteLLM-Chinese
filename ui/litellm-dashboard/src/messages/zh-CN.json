@@ -8790,6 +8790,10 @@
     "redisType": "Redis 类型",
     "coordinationRedis": "协调 Redis",
     "restartNote": "保存的更改会在代理重启后生效。",
+    "testConnection": "测试连接",
+    "testing": "测试中...",
+    "saveChanges": "保存更改",
+    "unknownError": "未知错误",
     "coordination": {
       "badge": {
         "configuredHere": "在此配置",
@@ -8802,6 +8806,14 @@
         "borrowedFromCache": "未配置协调 Redis，代理复用响应缓存的 Redis 连接。",
         "fromEnvironment": "未配置协调 Redis，代理回退到 REDIS_* 环境变量。",
         "notConfigured": "跨 Pod 限流、消费跟踪与 Pod 锁管理器没有可用于协调的 Redis。"
+      },
+      "intro": "Redis 用于在多个代理 Pod 之间协调工作：跨 Pod 限流、消费跟踪与 Pod 锁管理器。它的配置与响应缓存相互独立。",
+      "toast": {
+        "loadFailed": "加载协调 Redis 设置失败",
+        "testSuccess": "协调 Redis 连接测试成功！",
+        "testFailed": "连接测试失败：{reason}",
+        "saveSuccess": "协调 Redis 设置已保存，重启代理后生效。",
+        "updateFailed": "更新协调 Redis 设置失败"
       }
     }
   },

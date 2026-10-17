@@ -29,6 +29,7 @@ const CoordinationRedisSettings: React.FC = () => {
   const form = useForm<CoordinationFormValues>({ defaultValues: buildInitialValues({}) });
   const t = useTranslations("caching");
   const cacheT = useTranslations("cacheSettings");
+  const commonT = useTranslations("common");
   const [selectedRedisType, setSelectedRedisType] = useState<CoordinationRedisType | null>(null);
 
   const { data, isLoading, isError } = useCoordinationRedisSettings();
@@ -45,9 +46,9 @@ const CoordinationRedisSettings: React.FC = () => {
 
   useEffect(() => {
     if (isError) {
-      toast.fromError("Failed to load coordination Redis settings");
+      toast.fromError(t("coordination.toast.loadFailed"));
     }
-  }, [isError]);
+  }, [isError, t]);
 
   const validate = (): CoordinationFormValues | null => {
     const values = form.getValues();
@@ -70,12 +71,16 @@ const CoordinationRedisSettings: React.FC = () => {
     try {
       const result = await testConnection.mutateAsync(buildCoordinationPayload(redisType, values));
       if (result.status === "healthy") {
-        toast.success("Coordination Redis connection test successful!");
+        toast.success(t("coordination.toast.testSuccess"));
       } else {
-        toast.fromError(`Connection test failed: ${result.error ?? "Unknown error"}`);
+        toast.fromError(t("coordination.toast.testFailed", { reason: result.error ?? t("unknownError") }));
       }
     } catch (error) {
-      toast.fromError(`Connection test failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+      toast.fromError(
+        t("coordination.toast.testFailed", {
+          reason: error instanceof Error ? error.message : t("unknownError"),
+        }),
+      );
     }
   };
 
@@ -87,9 +92,9 @@ const CoordinationRedisSettings: React.FC = () => {
 
     try {
       await updateSettings.mutateAsync(buildCoordinationPayload(redisType, values));
-      toast.success("Coordination Redis settings saved. Restart the proxy to apply them.");
+      toast.success(t("coordination.toast.saveSuccess"));
     } catch {
-      toast.fromError("Failed to update coordination Redis settings");
+      toast.fromError(t("coordination.toast.updateFailed"));
     }
   };
 
@@ -107,10 +112,7 @@ const CoordinationRedisSettings: React.FC = () => {
                 <StatusBadge tone={badge.tone} label={t(badge.labelKey)} dataTestId="coordination-redis-source" />
               )}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Redis used to coordinate work across proxy pods: cross-pod rate limits, spend tracking, and the pod lock
-              manager. It is configured independently of the response cache.
-            </p>
+            <p className="text-xs text-muted-foreground">{t("coordination.intro")}</p>
             <p className="text-xs text-muted-foreground">{t(badge.tooltipKey)}</p>
             <p className="text-xs text-warning">{t("restartNote")}</p>
           </div>
@@ -119,7 +121,7 @@ const CoordinationRedisSettings: React.FC = () => {
 
           <div className="pt-4 border-t border-border">
             <CoordinationRedisFieldSection
-              title="Connection Settings"
+              title={cacheT("sections.connection")}
               section="connection"
               redisType={redisType}
               configuredSecrets={configuredSecrets}
@@ -129,7 +131,7 @@ const CoordinationRedisSettings: React.FC = () => {
           {redisType === "cluster" && (
             <div className="pt-4 border-t border-border">
               <CoordinationRedisFieldSection
-                title="Cluster Configuration"
+                title={cacheT("sections.cluster")}
                 section="cluster"
                 redisType={redisType}
                 configuredSecrets={configuredSecrets}
@@ -141,7 +143,7 @@ const CoordinationRedisSettings: React.FC = () => {
           {redisType === "sentinel" && (
             <div className="pt-4 border-t border-border">
               <CoordinationRedisFieldSection
-                title="Sentinel Configuration"
+                title={cacheT("sections.sentinel")}
                 section="sentinel"
                 redisType={redisType}
                 configuredSecrets={configuredSecrets}
@@ -151,7 +153,7 @@ const CoordinationRedisSettings: React.FC = () => {
 
           <div className="pt-4 border-t border-border">
             <CoordinationRedisFieldSection
-              title="SSL Settings"
+              title={cacheT("sections.ssl")}
               section="ssl"
               redisType={redisType}
               configuredSecrets={configuredSecrets}
@@ -163,11 +165,11 @@ const CoordinationRedisSettings: React.FC = () => {
       <div className="border-t border-border pt-6 flex justify-end gap-3">
         <Button variant="outline" onClick={handleTestConnection} disabled={testConnection.isPending}>
           {testConnection.isPending && <UiLoadingSpinner className="size-4" />}
-          {testConnection.isPending ? "Testing..." : "Test Connection"}
+          {testConnection.isPending ? t("testing") : t("testConnection")}
         </Button>
         <Button onClick={handleSaveChanges} disabled={updateSettings.isPending}>
           {updateSettings.isPending && <UiLoadingSpinner className="size-4" />}
-          {updateSettings.isPending ? "Saving..." : "Save Changes"}
+          {updateSettings.isPending ? commonT("saving") : t("saveChanges")}
         </Button>
       </div>
     </div>

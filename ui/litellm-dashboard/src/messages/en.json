@@ -8794,6 +8794,10 @@
     "redisType": "Redis Type",
     "coordinationRedis": "Coordination Redis",
     "restartNote": "Saved changes take effect on proxy restart.",
+    "testConnection": "Test Connection",
+    "testing": "Testing...",
+    "saveChanges": "Save Changes",
+    "unknownError": "Unknown error",
     "coordination": {
       "badge": {
         "configuredHere": "Configured here",
@@ -8806,6 +8810,14 @@
         "borrowedFromCache": "No coordination Redis is configured; the proxy reuses the response cache's Redis connection.",
         "fromEnvironment": "No coordination Redis is configured; the proxy falls back to the REDIS_* environment variables.",
         "notConfigured": "Cross-pod rate limits, spend tracking, and the pod lock manager have no Redis to coordinate through."
+      },
+      "intro": "Redis used to coordinate work across proxy pods: cross-pod rate limits, spend tracking, and the pod lock manager. It is configured independently of the response cache.",
+      "toast": {
+        "loadFailed": "Failed to load coordination Redis settings",
+        "testSuccess": "Coordination Redis connection test successful!",
+        "testFailed": "Connection test failed: {reason}",
+        "saveSuccess": "Coordination Redis settings saved. Restart the proxy to apply them.",
+        "updateFailed": "Failed to update coordination Redis settings"
       }
     }
   },
