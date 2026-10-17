@@ -69,7 +69,7 @@ const uploadFile = async (name = "test.pdf") => {
   await act(async () => {
     fireEvent.change(uploadInput, { target: { files: [file] } });
   });
-  await screen.findByText(/Uploaded Documents \(1\)/);
+  await screen.findByText(/已上传文档（1）/);
 };
 
 const pickProvider = async (label: string) => {
@@ -82,7 +82,7 @@ const pickProvider = async (label: string) => {
 
 const clickCreate = async () => {
   await act(async () => {
-    fireEvent.click(screen.getByRole("button", { name: /Create Vector Store/i }));
+    fireEvent.click(screen.getByRole("button", { name: /创建向量存储/ }));
   });
 };
 
@@ -119,10 +119,10 @@ describe("CreateVectorStore submit payload characterization", () => {
     render(<CreateVectorStore accessToken="test-token" />);
     await uploadFile();
 
-    fireEvent.change(screen.getByPlaceholderText("e.g., Product Documentation, Customer Support KB"), {
+    fireEvent.change(screen.getByPlaceholderText("例如：Product Documentation, Customer Support KB"), {
       target: { value: "  Product Docs  " },
     });
-    fireEvent.change(screen.getByPlaceholderText("e.g., Contains all product documentation and user guides"), {
+    fireEvent.change(screen.getByPlaceholderText("例如：包含全部产品文档与用户指南"), {
       target: { value: "All the guides" },
     });
     await clickCreate();
@@ -215,7 +215,7 @@ describe("CreateVectorStore submit payload characterization", () => {
     await act(async () => {
       fireEvent.change(uploadInput, { target: { files } });
     });
-    await screen.findByText(/Uploaded Documents \(2\)/);
+    await screen.findByText(/已上传文档（2）/);
     await clickCreate();
 
     await waitFor(() => expect(networking.ragIngestCall).toHaveBeenCalledTimes(2));

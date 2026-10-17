@@ -74,7 +74,7 @@ describe("CreateVectorStore", () => {
   it("should render the component successfully", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
-    expect(screen.getAllByText("Create Vector Store").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("创建向量存储").length).toBeGreaterThan(0);
     expect(screen.getByText("步骤 1：上传文档")).toBeInTheDocument();
     expect(screen.getByText("步骤 2：配置向量存储")).toBeInTheDocument();
   });
@@ -83,32 +83,32 @@ describe("CreateVectorStore", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
     expect(screen.getByText("点击或拖拽文件到此处上传")).toBeInTheDocument();
-    expect(screen.getByText(/Support for single or bulk upload/)).toBeInTheDocument();
+    expect(screen.getByText(/支持单个或批量上传/)).toBeInTheDocument();
   });
 
   it("should show the provider display name on the trigger rather than its wire value", async () => {
     const user = userEvent.setup();
     render(<CreateVectorStore accessToken="test-token" />);
 
-    const providerSelect = screen.getByRole("combobox", { name: /Provider/ });
+    const providerSelect = screen.getByRole("combobox", { name: /供应商/ });
     expect(providerSelect).toHaveTextContent("Amazon Bedrock");
 
     await user.click(providerSelect);
     await user.click(await screen.findByText("AWS S3 Vectors"));
 
-    expect(screen.getByRole("combobox", { name: /Provider/ })).toHaveTextContent("AWS S3 Vectors");
+    expect(screen.getByRole("combobox", { name: /供应商/ })).toHaveTextContent("AWS S3 Vectors");
   });
 
   it("should have provider selection dropdown", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
-    expect(screen.getByText("Provider")).toBeInTheDocument();
+    expect(screen.getByText("供应商")).toBeInTheDocument();
   });
 
   it("should have create button disabled initially when no documents", () => {
     render(<CreateVectorStore accessToken="test-token" />);
 
-    const createButton = screen.getByRole("button", { name: /Create Vector Store/i });
+    const createButton = screen.getByRole("button", { name: /创建向量存储/ });
     expect(createButton).toBeDisabled();
   });
 
@@ -128,7 +128,7 @@ describe("CreateVectorStore", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Uploaded Documents (1)")).toBeInTheDocument();
+      expect(screen.getByText("已上传文档（1）")).toBeInTheDocument();
     });
   });
 
@@ -156,11 +156,11 @@ describe("CreateVectorStore", () => {
 
     // Wait for file to be added
     await waitFor(() => {
-      expect(screen.getByText("Uploaded Documents (1)")).toBeInTheDocument();
+      expect(screen.getByText("已上传文档（1）")).toBeInTheDocument();
     });
 
     // Click create button
-    const createButton = screen.getByRole("button", { name: /Create Vector Store/i });
+    const createButton = screen.getByRole("button", { name: /创建向量存储/ });
 
     await act(async () => {
       fireEvent.click(createButton);
@@ -201,11 +201,11 @@ describe("CreateVectorStore", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Uploaded Documents (1)")).toBeInTheDocument();
+      expect(screen.getByText("已上传文档（1）")).toBeInTheDocument();
     });
 
     // Click create button
-    const createButton = screen.getByRole("button", { name: /Create Vector Store/i });
+    const createButton = screen.getByRole("button", { name: /创建向量存储/ });
 
     await act(async () => {
       fireEvent.click(createButton);
@@ -264,7 +264,7 @@ describe("CreateVectorStore", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Uploaded Documents (1)")).toBeInTheDocument();
+      expect(screen.getByText("已上传文档（1）")).toBeInTheDocument();
     });
 
     // Select S3 Vectors provider
@@ -275,7 +275,7 @@ describe("CreateVectorStore", () => {
     await userEvent.click(await screen.findByText("AWS S3 Vectors"));
 
     // Try to create without filling required fields
-    const createButton = screen.getByRole("button", { name: /Create Vector Store/i });
+    const createButton = screen.getByRole("button", { name: /创建向量存储/ });
 
     await act(async () => {
       fireEvent.click(createButton);
