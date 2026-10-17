@@ -57,6 +57,10 @@ const buildXSchema = (t: ReturnType<typeof useTranslations>) =>
 
 断言要跟着改。中文目录补齐后，测试里断言的英文文案要换成中文。这一步容易漏，跑一遍就能发现
 
+漏的多是 `getByLabelText(/metadata/i)` 这种正则断言，英文串埋在正则里，按纯英文串 grep 抓不到，换语言才红
+
+改断言前先确认这份测试挂的是哪套 provider。`tests/test-utils.tsx` 的 `renderWithProviders` 把语言钉在 `zh-CN`；自己写包裹层、只包 `LocaleProvider` 而不传 `locale` 的，会按 jsdom 的 `navigator.language`（`en-US`）渲染英文目录，此时把断言换成中文必然全红。碰到这种给 `LocaleProvider` 传 `locale="zh-CN"`，别把断言留回英文，那样测的只是文案没接翻译的旧状态
+
 测试分层按 [`AGENTS.md`](../../AGENTS.md) 的约定：`Foo.test.tsx` 是单元测试，一个模块、毫秒级；`Foo.integration.test.tsx` 是集成测试，渲染真实组件树、只打桩网络边界；浏览器级测试在 `tests/e2e/ui/`。改动哪个文件就归类哪个文件
 
 ### 第六步：验证
@@ -73,6 +77,8 @@ npm run build
 `npm run build` 的 TypeScript 阶段比 `npx tsc --noEmit` 更严，两个都要跑
 
 不要跑全量单元测试（`npx vitest run` 不带路径）。380 个文件会把机器占满好几分钟，CI 会跑。只跑本次改动触及的文件，加上任何本次改动**有可能**解释其失败的文件
+
+新增键较多的批次，再补两道静态校验，覆盖测试没渲染到的键。一道是用 `intl-messageformat` 把本批每条中英消息各解析一遍，抓 ICU 语法错；另一道是把组件里 `t("key", { a, b })` 传的参数名和消息里的 `{arg}`、`<tag>` 逐个对一遍，名字不一致要到运行期才抛错。两道都是临时脚本，跑完即删
 
 ### 第七步：提交
 

@@ -1,10 +1,30 @@
 # 开发进度
 
-数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 158 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10064、中英同值 137）。第 93 到 158 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-17，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 159 簇后（非测试 `.tsx` 912 个接入 685 个、75.1%，目录叶子 10145、中英同值 137）。第 93 到 159 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-17 第 159 簇更新
+
+继续串行推进，没有派子代理。这一簇是用户创建这一对按钮：`bulk_create_users_button.tsx`（批量导入，880 行）和 `CreateUserButton.tsx`（邀请单个用户，446 行）。
+
+先记一个扫描器的坑：`bulk_create_users_button.tsx` 只报了 24 条命中，实际该文件有 78 处取词。原因是 `is_english_sentence()` 用停用词表和词数阈值筛候选，单词标签（`Back`、`Email`、`Role`、`Status`、`Next` 这一类）全被滤掉了。所以扫描器的单文件计数只是下界，不能拿它当工作量，也不能拿它当完成判据，收尾还是得整文件过一遍。
+
+`users` 命名空间本簇新增 81 个键，插在该块末尾，`users` 叶子 198 涨到 279。批量那份沿用既有的 `bulk*` 平铺前缀（`bulkCreate`、`bulkEdit`、`bulkInviteUsersButton` 已经在那儿），没有为三步向导另开嵌套子对象，跟目录里现有的形状一致。校验报错、解析结果、汇总计数这些带数字和列表的都写成 ICU 参数（`bulkInvalidFileType` 带 `{name}`、`bulkRowsWithErrors` 带 `{invalid}`/`{total}`、`bulkCreateUsers` 带 `{count}`），不再用模板字面量拼。
+
+复用清单：`users` 侧按值查到 `userEmail`、`infoTeam`、`metadata`、`enterMetadataAsJson`、`userRole`、`createUser`、`inviteUser`、`globalProxyRole`、`allProxyModels`、`noDefaultModels`、`selectModels`、`email`、`status`、`budget`、`infoTeams`、`filterLabels.role`；通用词整把挂 `commonT`，用掉 `back`、`next`、`previous`、`copy`、`remove`、`pending`、`success`、`failed`、`processing` 和 `pagination.pageOf`。`CreateUserButton` 的邮件邀请提示原来是把 `<a>` 硬写在 JSX 里，改成 `t.rich` 配 `link` formatter，链接文字与前后句一起交给消息决定。
+
+不翻的：CSV 列名 `user_email`/`user_role`/`teams`/`max_budget`/`budget_duration`/`models` 是解析器逐字匹配的表头，模板里也只翻列的说明不翻列名；四个角色枚举取值、`all-proxy-models`/`no-default-models` 两个哨兵值、`bulk_users_results.csv` 这个下载文件名、`"userData" + userID` 这个存储键、两条 `console.error`。
+
+ICU 撇号规则这回真用上了：`as a 'user' role` 和 `your users' information` 都不用转义，因为 `'` 只有紧跟 `{`、`}`、`#`、`|`、`<`、`'` 时才开引号。
+
+`CreateUserButton.test.tsx` 踩到一个更值钱的问题。这份文件自带一个手写的 `renderWithProviders`，只包了 `LocaleProvider` 但没传 `locale`，于是按 jsdom 的 `navigator.language`（`en-US`）渲染英文目录。断言换中文后 41 例红了 28 例，一开始看着像改错文案，实际是这份测试从来没测过中文。修的是包裹层，给 `LocaleProvider` 传 `locale="zh-CN"`，跟 `tests/test-utils.tsx` 里钉死的默认测试语言对齐，而不是把断言留回英文。剩下 1 例是 `getByLabelText(/metadata/i)`，英文串埋在正则里，按纯英文串 grep 抓不到，只有跑测试才暴露。这两条都写进了 `WORKFLOW.md` 第五步。
+
+补了两道静态校验，写进 `WORKFLOW.md` 第六步：本批每条中英消息各过一遍 `intl-messageformat` 解析，抓 ICU 语法错，162 条全过；再把组件里 `t("key", { … })` 传的参数名和消息里的 `{arg}`、`<tag>` 逐个对一遍，零不一致。这两道覆盖的是测试没渲染到的键，光靠 vitest 发现不了。
+
+覆盖率：文件接入数不变（685/912、75.1%，两个文件原本都已挂 hook），消息叶子 10064 涨到 10145（+81），中英同值 137 持平。另外把这两个指标的口径固定下来，避免下次再对不上：接入 = 非测试 `.tsx` 文件正文含 `useTranslations` 子串（不是按调用形式匹配）；叶子 = 目录全部叶子，数组值按 1 个叶子计。按这个口径回测 HEAD 得到 685 与 10064，与文档一致。验证：相关 5 份文件 48 例全绿且类型检查无错，`messagesParity` 与 `missingKeys` 通过，`tsc` 对改动文件无错，`eslint` 0 错误 / 7 + 2 警告与基线同数，`npm run build` 通过。
 
 ## 2026-10-17 第 158 簇更新
 
