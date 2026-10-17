@@ -191,7 +191,7 @@ describe("Settings", () => {
 
     await user.clear(screen.getByLabelText("Host"));
     fireEvent.change(screen.getByLabelText("Host"), { target: { value: "https://edited.langfuse.com" } });
-    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Save Changes" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(vi.mocked(setCallbacksCall)).toHaveBeenCalledWith("token", {
@@ -214,9 +214,9 @@ describe("Settings", () => {
     });
 
     await user.clear(screen.getByLabelText("Public Key"));
-    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Save Changes" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "保存更改" }));
 
-    expect(await screen.findByText("Please enter the public key")).toBeInTheDocument();
+    expect(await screen.findByText("请输入public key")).toBeInTheDocument();
     expect(vi.mocked(setCallbacksCall)).not.toHaveBeenCalled();
   });
 
@@ -266,7 +266,7 @@ describe("Settings", () => {
     await user.click(await screen.findByRole("option", { name: "http/json" }));
     expect(screen.getByLabelText("Export Protocol")).toHaveTextContent("http/json");
 
-    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Save Changes" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(vi.mocked(setCallbacksCall)).toHaveBeenCalledWith(
@@ -289,7 +289,7 @@ describe("Settings", () => {
     expect(await screen.findByLabelText("Endpoint URL")).toHaveValue("http://collector:4318");
     expect(screen.getByLabelText("Export Protocol")).toHaveTextContent("http/json");
 
-    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Save Changes" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(vi.mocked(setCallbacksCall)).toHaveBeenCalledWith("token", {
@@ -356,7 +356,7 @@ describe("Settings", () => {
 
     await user.click(promptsOnlySwitch);
     expect(promptsOnlySwitch).not.toBeChecked();
-    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Save Changes" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(vi.mocked(setCallbacksCall)).toHaveBeenCalledWith(
@@ -376,7 +376,7 @@ describe("Settings", () => {
     expect(promptsOnlySwitch).not.toBeChecked();
 
     await user.click(promptsOnlySwitch);
-    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Save Changes" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(vi.mocked(setCallbacksCall)).toHaveBeenCalledWith(
@@ -404,7 +404,7 @@ describe("Settings", () => {
     expect(within(screen.getByRole("dialog")).getByRole("combobox", { name: "回调" })).toHaveValue("S3");
 
     await user.click(promptsOnlySwitch);
-    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Save Changes" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(vi.mocked(setCallbacksCall)).toHaveBeenCalledWith(
@@ -427,7 +427,7 @@ describe("Settings", () => {
 
     await user.click(partitioning);
     await user.click(await screen.findByRole("option", { name: "day" }));
-    await user.click(within(dialog).getByRole("button", { name: "Save Changes" }));
+    await user.click(within(dialog).getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(vi.mocked(setCallbacksCall)).toHaveBeenCalledWith(
@@ -448,7 +448,7 @@ describe("Settings", () => {
     const partitioning = await within(dialog).findByRole("combobox", { name: "Folder Partitioning" });
     expect(partitioning).toHaveTextContent("hour");
 
-    await user.click(await within(dialog).findByRole("button", { name: "Save Changes" }));
+    await user.click(await within(dialog).findByRole("button", { name: "保存更改" }));
     await waitFor(() => {
       expect(vi.mocked(setCallbacksCall)).toHaveBeenCalledTimes(1);
     });
@@ -462,10 +462,10 @@ describe("Settings", () => {
 
     const dialog = screen.getByRole("dialog");
     const partitioning = await within(dialog).findByRole("combobox", { name: "Folder Partitioning" });
-    expect(partitioning).toHaveTextContent("Select folder partitioning");
+    expect(partitioning).toHaveTextContent("选择 folder partitioning");
     expect(partitioning).not.toHaveTextContent(/day|hour/i);
 
-    await user.click(await within(dialog).findByRole("button", { name: "Save Changes" }));
+    await user.click(await within(dialog).findByRole("button", { name: "保存更改" }));
     await waitFor(() => {
       expect(vi.mocked(setCallbacksCall)).toHaveBeenCalledTimes(1);
     });
@@ -482,7 +482,7 @@ describe("Settings", () => {
     await within(dialog).findByRole("switch", { name: "Log Prompts Only" });
     expect(within(dialog).queryByRole("combobox", { name: "Folder Partitioning" })).not.toBeInTheDocument();
 
-    await user.click(within(dialog).getByRole("button", { name: "Save Changes" }));
+    await user.click(within(dialog).getByRole("button", { name: "保存更改" }));
     await waitFor(() => {
       expect(vi.mocked(setCallbacksCall)).toHaveBeenCalledTimes(1);
     });
@@ -501,7 +501,7 @@ describe("Settings", () => {
     expect(webhookInput).not.toBeNull();
     fireEvent.change(webhookInput, { target: { value: "https://hooks.example.com/llm-exceptions" } });
 
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => {
       expect(vi.mocked(setCallbacksCall)).toHaveBeenCalledWith("token", {
