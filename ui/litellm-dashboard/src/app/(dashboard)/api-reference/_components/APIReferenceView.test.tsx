@@ -50,8 +50,8 @@ describe("APIReferenceView", () => {
   it("renders the page title, blurb and docs link", () => {
     render(<APIReferenceView proxySettings={{ PROXY_BASE_URL: "https://proxy.litellm.test" }} />);
 
-    expect(screen.getByText("OpenAI Compatible Proxy: API Reference")).toBeInTheDocument();
-    expect(screen.getByText(/LiteLLM is OpenAI Compatible/)).toBeInTheDocument();
+    expect(screen.getByText("OpenAI 兼容代理：API 参考")).toBeInTheDocument();
+    expect(screen.getByText(/LiteLLM 与 OpenAI 兼容/)).toBeInTheDocument();
 
     const docsLink = screen.getByRole("link", { name: /API 参考文档/ });
     expect(docsLink).toHaveAttribute("href", "https://docs.litellm.ai/docs/proxy/user_keys");

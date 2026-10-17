@@ -202,13 +202,13 @@ describe("DataTable sorting", () => {
     const user = userEvent.setup();
     renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={dropdownSortColumns} sortingMode="client" />);
 
-    await chooseSelectOption(user, screen.getByTestId("sort-trigger-name"), "Ascending", "menuitem");
+    await chooseSelectOption(user, screen.getByTestId("sort-trigger-name"), "升序", "menuitem");
     expect(names()).toEqual(["Alice", "Bob", "Charlie"]);
 
-    await chooseSelectOption(user, screen.getByTestId("sort-trigger-name"), "Descending", "menuitem");
+    await chooseSelectOption(user, screen.getByTestId("sort-trigger-name"), "降序", "menuitem");
     expect(names()).toEqual(["Charlie", "Bob", "Alice"]);
 
-    await chooseSelectOption(user, screen.getByTestId("sort-trigger-name"), "Reset", "menuitem");
+    await chooseSelectOption(user, screen.getByTestId("sort-trigger-name"), "重置", "menuitem");
     expect(names()).toEqual(["Charlie", "Alice", "Bob"]);
   });
 
@@ -225,10 +225,10 @@ describe("DataTable sorting", () => {
       />,
     );
 
-    await chooseSelectOption(user, screen.getByTestId("sort-trigger-spend"), "Budget descending", "menuitem");
+    await chooseSelectOption(user, screen.getByTestId("sort-trigger-spend"), "Budget 降序", "menuitem");
     expect(onSortingChange).toHaveBeenLastCalledWith([{ id: "max_budget", desc: true }]);
 
-    await chooseSelectOption(user, screen.getByTestId("sort-trigger-spend"), "Spend ascending", "menuitem");
+    await chooseSelectOption(user, screen.getByTestId("sort-trigger-spend"), "Spend 升序", "menuitem");
     expect(onSortingChange).toHaveBeenLastCalledWith([{ id: "spend", desc: false }]);
   });
 
@@ -249,7 +249,7 @@ describe("DataTable sorting", () => {
     // The header trigger shows the active (descending) indicator while sorted by a field it owns.
     expect(screen.getByTestId("sort-trigger-spend").querySelector("[data-sort-indicator='desc']")).not.toBeNull();
 
-    await user.click(await screen.findByText("Reset"));
+    await user.click(await screen.findByText("重置"));
     expect(onSortingChange).toHaveBeenLastCalledWith([]);
   });
 });
@@ -268,7 +268,9 @@ describe("DataTable pagination", () => {
 
   it("client mode slices rows and advances pages", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<DataTable data={fivePeople} columns={nameCellColumns} paginationMode="client" pageSizeOptions={[2]} />);
+    renderWithProviders(
+      <DataTable data={fivePeople} columns={nameCellColumns} paginationMode="client" pageSizeOptions={[2]} />,
+    );
 
     expect(names()).toEqual(["P0", "P1"]);
     expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 1-2 条，共 5 条");
@@ -360,7 +362,9 @@ describe("DataTable pagination", () => {
 
   it("server mode leaves the page index alone while loading and clamps once the response lands", async () => {
     const onChange = vi.fn();
-    const { rerender } = renderWithProviders(<ServerPageHarness rowCount={0} isLoading initialPageIndex={2} onChange={onChange} />);
+    const { rerender } = renderWithProviders(
+      <ServerPageHarness rowCount={0} isLoading initialPageIndex={2} onChange={onChange} />,
+    );
 
     expect(screen.getByText("第 3 页，共 1 页")).toBeInTheDocument();
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -411,7 +415,9 @@ describe("DataTable pagination", () => {
 
   it("client mode keeps a controlled page when rows arrive after loading and when they are refetched", async () => {
     const onChange = vi.fn();
-    const { rerender } = renderWithProviders(<ClientPageHarness data={[]} isLoading initialPageIndex={1} onChange={onChange} />);
+    const { rerender } = renderWithProviders(
+      <ClientPageHarness data={[]} isLoading initialPageIndex={1} onChange={onChange} />,
+    );
 
     rerender(<ClientPageHarness data={fivePeople} initialPageIndex={1} onChange={onChange} />);
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -457,7 +463,9 @@ describe("DataTable pagination", () => {
 
   it("server mode resumes clamping once the error clears and a real rowCount arrives", async () => {
     const onChange = vi.fn();
-    const { rerender } = renderWithProviders(<ServerPageHarness rowCount={0} isError initialPageIndex={2} onChange={onChange} />);
+    const { rerender } = renderWithProviders(
+      <ServerPageHarness rowCount={0} isError initialPageIndex={2} onChange={onChange} />,
+    );
 
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(onChange).not.toHaveBeenCalled();
@@ -557,7 +565,9 @@ describe("DataTable filtering", () => {
 
 describe("DataTable loading", () => {
   it("renders skeleton rows while loading and real rows once loaded", () => {
-    const { rerender } = renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} isLoading />);
+    const { rerender } = renderWithProviders(
+      <DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} isLoading />,
+    );
     expect(screen.getAllByTestId("skeleton-row").length).toBeGreaterThan(0);
     expect(screen.queryByTestId("name-cell")).not.toBeInTheDocument();
 
@@ -580,7 +590,9 @@ describe("DataTable loading", () => {
   });
 
   it("does not force the compact height on default-size skeleton rows", () => {
-    const { rerender } = renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} isLoading />);
+    const { rerender } = renderWithProviders(
+      <DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} isLoading />,
+    );
     const skeletonHeight = heightClassesOf(screen.getAllByRole("row").at(-1));
 
     rerender(<DataTable data={CHARLIE_ALICE_BOB} columns={nameCellColumns} size="compact" isLoading />);
@@ -882,7 +894,9 @@ describe("DataTable row styling and footer", () => {
 
 describe("DataTable layout", () => {
   it("exposes resize handles with stable selectors only when resizing is enabled", () => {
-    const { rerender } = renderWithProviders(<DataTable data={CHARLIE_ALICE_BOB} columns={nameEmailColumns} enableColumnResizing />);
+    const { rerender } = renderWithProviders(
+      <DataTable data={CHARLIE_ALICE_BOB} columns={nameEmailColumns} enableColumnResizing />,
+    );
     expect(screen.getByTestId("column-resizer-name")).toBeInTheDocument();
     expect(screen.getByTestId("column-resizer-email")).toBeInTheDocument();
 

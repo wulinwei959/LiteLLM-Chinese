@@ -8238,7 +8238,24 @@
     "viewDetails": "View details",
     "copyAgentName": "Copy agent name",
     "agentNameCopied": "Agent name copied",
-    "jwtConfigured": "JWT configured"
+    "jwtConfigured": "JWT configured",
+    "identity": {
+        "sectionAria": "Agent Identity",
+        "heading": "Agent Identity: Microsoft Entra ID",
+        "tenantLabel": "Tenant",
+        "appIdLabel": "Application (Client) ID",
+        "servicePrincipalLabel": "Enterprise application Object ID",
+        "notConfigured": "Not configured",
+        "executionModeLine": "Execution: {execution} · Mode: {mode}",
+        "loadingValue": "Loading",
+        "identityUnbound": "Identity unbound; execution is disabled",
+        "authEvidenceFailed": "Could not load authentication evidence",
+        "lastAuthenticated": "Last authenticated identity match: {timestamp}",
+        "awaitingAuth": "Configured, awaiting an authenticated request",
+        "evidenceNote": "Recent evidence comes from a validated Entra token matching this binding. It is persisted across restarts and cleared when the binding changes. Tool and model permissions are checked separately.",
+        "refreshButton": "Refresh authentication evidence",
+        "viewLogsLink": "View request logs"
+    }
   },
   "costTracking": {
     "globalAll": "Global (All Providers)",
@@ -10598,6 +10615,50 @@
   "apiReference": {
     "docsLinkTitle": "Open documentation in a new tab",
     "docsLinkLabel": "API Reference Docs",
-    "docsLinkOpensInNewTab": "(opens in a new tab)"
+    "docsLinkOpensInNewTab": "(opens in a new tab)",
+    "pageTitle": "OpenAI Compatible Proxy: API Reference",
+    "blurb": "LiteLLM is OpenAI Compatible. This means your API Key works with the OpenAI SDK. Just replace the base_url to point to your litellm proxy. Example Below "
+  },
+  "dataTableSortHeader": {
+    "sortOptionsFor": "Sort options for {column}",
+    "sortOptionsForFields": "Sort options for {fields}",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "fieldAscending": "{field} ascending",
+    "fieldDescending": "{field} descending",
+    "fieldSeparator": " / ",
+    "orSeparator": " or "
+  },
+  "checkOpenapiSchema": {
+    "help": {
+      "text": "Text input",
+      "number": "Numeric input",
+      "integer": "Whole number input",
+      "boolean": "True/False value",
+      "max_budget": "Enter maximum budget in USD (e.g., 100.50)",
+      "budget_duration": "Select a time period for budget reset",
+      "tpm_limit": "Enter maximum tokens per minute (whole number)",
+      "rpm_limit": "Enter maximum requests per minute (whole number)",
+      "duration": "Enter duration (e.g., 30s, 24h, 7d)",
+      "metadata": "Enter JSON object with key-value pairs\nExample: '{\"team\": \"research\", \"project\": \"nlp\"}'",
+      "config": "Enter configuration as JSON object\nExample: '{\"setting\": \"value\"}'",
+      "permissions": "Enter comma-separated permission strings",
+      "enforced_params": "Enter parameters as JSON object\nExample: '{\"param\": \"value\"}'",
+      "blocked": "Enter true/false or specific block conditions",
+      "aliases": "Enter aliases as JSON object\nExample: '{\"alias1\": \"value1\", \"alias2\": \"value2\"}'",
+      "models": "Select one or more model names",
+      "key_alias": "Enter a unique identifier for this key",
+      "tags": "Enter comma-separated tag strings"
+    },
+    "jsonFormatNote": "Must be valid JSON format",
+    "selectFromOptions": "Select from available options",
+    "allowedValues": "Allowed values: {values}",
+    "requiredField": "{field} is required",
+    "invalidJson": "Please enter valid JSON",
+    "jsonPlaceholder": "Enter as JSON",
+    "durationPlaceholder": "eg: 30s, 30h, 30d",
+    "fetchFailed": "Failed to fetch schema",
+    "schemaComponentMissing": "Schema component \"{name}\" not found",
+    "errorLine": "Error: {message}"
   }
 }

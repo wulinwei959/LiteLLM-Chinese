@@ -8234,7 +8234,24 @@
     "viewDetails": "查看详情",
     "copyAgentName": "复制智能体名称",
     "agentNameCopied": "智能体名称已复制",
-    "jwtConfigured": "已配置 JWT"
+    "jwtConfigured": "已配置 JWT",
+    "identity": {
+        "sectionAria": "Agent 身份",
+        "heading": "Agent 身份：Microsoft Entra ID",
+        "tenantLabel": "租户",
+        "appIdLabel": "应用程序（客户端）ID",
+        "servicePrincipalLabel": "企业应用程序对象 ID",
+        "notConfigured": "未配置",
+        "executionModeLine": "执行：{execution} · 模式：{mode}",
+        "loadingValue": "加载中",
+        "identityUnbound": "身份未绑定，执行已禁用",
+        "authEvidenceFailed": "无法加载认证凭据",
+        "lastAuthenticated": "最近一次认证通过的身份匹配：{timestamp}",
+        "awaitingAuth": "已配置，等待一次通过认证的请求",
+        "evidenceNote": "近期的凭据来自与该绑定匹配的、经验证的 Entra 令牌。它会跨重启持久保存，并在绑定变更时清除。工具与模型权限是单独校验的。",
+        "refreshButton": "刷新认证凭据",
+        "viewLogsLink": "查看请求日志"
+    }
   },
   "costTracking": {
     "globalAll": "全局（所有供应商）",
@@ -10594,6 +10611,50 @@
   "apiReference": {
     "docsLinkTitle": "在新标签页打开文档",
     "docsLinkLabel": "API 参考文档",
-    "docsLinkOpensInNewTab": "（在新标签页打开）"
+    "docsLinkOpensInNewTab": "（在新标签页打开）",
+    "pageTitle": "OpenAI 兼容代理：API 参考",
+    "blurb": "LiteLLM 与 OpenAI 兼容，也就是说你的 API Key 可以直接配合 OpenAI SDK 使用，只需把 base_url 替换成你的 litellm 代理地址。示例如下 "
+  },
+  "dataTableSortHeader": {
+    "sortOptionsFor": "{column} 的排序选项",
+    "sortOptionsForFields": "{fields} 的排序选项",
+    "ascending": "升序",
+    "descending": "降序",
+    "fieldAscending": "{field} 升序",
+    "fieldDescending": "{field} 降序",
+    "fieldSeparator": " / ",
+    "orSeparator": " 或 "
+  },
+  "checkOpenapiSchema": {
+    "help": {
+      "text": "文本输入",
+      "number": "数值输入",
+      "integer": "整数输入",
+      "boolean": "True/False 取值",
+      "max_budget": "输入以美元计的最大预算（例如 100.50）",
+      "budget_duration": "选择预算重置的时间周期",
+      "tpm_limit": "输入每分钟的最大 Token 数（整数）",
+      "rpm_limit": "输入每分钟的最大请求数（整数）",
+      "duration": "输入时长（例如 30s、24h、7d）",
+      "metadata": "以 JSON 对象输入键值对\n示例：'{\"team\": \"research\", \"project\": \"nlp\"}'",
+      "config": "以 JSON 对象输入配置\n示例：'{\"setting\": \"value\"}'",
+      "permissions": "输入以逗号分隔的权限字符串",
+      "enforced_params": "以 JSON 对象输入参数\n示例：'{\"param\": \"value\"}'",
+      "blocked": "输入 true/false 或具体的拦截条件",
+      "aliases": "以 JSON 对象输入别名\n示例：'{\"alias1\": \"value1\", \"alias2\": \"value2\"}'",
+      "models": "选择一个或多个模型名",
+      "key_alias": "为该 Key 输入一个唯一标识",
+      "tags": "输入以逗号分隔的标签字符串"
+    },
+    "jsonFormatNote": "必须是合法的 JSON 格式",
+    "selectFromOptions": "从可用选项中选择",
+    "allowedValues": "可选值：{values}",
+    "requiredField": "{field} 为必填项",
+    "invalidJson": "请输入合法的 JSON",
+    "jsonPlaceholder": "以 JSON 格式输入",
+    "durationPlaceholder": "例如 30s、30h、30d",
+    "fetchFailed": "获取 schema 失败",
+    "schemaComponentMissing": "未找到 schema 组件「{name}」",
+    "errorLine": "错误：{message}"
   }
 }

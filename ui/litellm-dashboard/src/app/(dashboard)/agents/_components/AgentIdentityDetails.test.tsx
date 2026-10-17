@@ -27,9 +27,9 @@ describe("agent identity evidence", () => {
   it("shows persisted application identity evidence and links to the current logs route", async () => {
     vi.mocked(apiClient.get).mockResolvedValue(status);
     renderWithProviders(<AgentIdentityDetails agentId="native" identity={identity} accessToken="admin" isAdmin />);
-    expect(await screen.findByText(/Last authenticated identity match:/)).toBeInTheDocument();
-    expect(screen.getByText(/Application \(Client\) ID:/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "View request logs" })).toHaveAttribute("href", "/ui/logs/");
+    expect(await screen.findByText(/最近一次认证通过的身份匹配：/)).toBeInTheDocument();
+    expect(screen.getByText(/应用程序（客户端）ID:/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "查看请求日志" })).toHaveAttribute("href", "/ui/logs/");
     expect(apiClient.get).toHaveBeenCalledWith("/v1/agents/native/identity", { accessToken: "admin" });
   });
 

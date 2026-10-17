@@ -100,7 +100,7 @@ describe("AllModelsTable", () => {
     expect(screen.queryByRole("columnheader", { name: /^状态$/i })).not.toBeInTheDocument();
     expect(screen.queryByText("DB Model")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /columns/i }));
+    await user.click(screen.getByRole("button", { name: "列" }));
     expect(screen.queryByRole("menuitemcheckbox", { name: /状态/i })).not.toBeInTheDocument();
     await user.click(await screen.findByRole("menuitemcheckbox", { name: /^来源$/i }));
 

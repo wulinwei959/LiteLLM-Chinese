@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -67,49 +68,68 @@ const toSchemaNumber = (raw: string, isInteger: boolean): number | null => {
 
 const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
 
-const getFieldHelp = (key: string, property: SchemaProperty, type: string): string => {
-  // Default help text based on type
-  const defaultHelp =
-    {
-      string: "Text input",
-      number: "Numeric input",
-      integer: "Whole number input",
-      boolean: "True/False value",
-    }[type] || "Text input";
+type FieldHelpKey =
+  | "max_budget"
+  | "budget_duration"
+  | "tpm_limit"
+  | "rpm_limit"
+  | "duration"
+  | "metadata"
+  | "config"
+  | "permissions"
+  | "enforced_params"
+  | "blocked"
+  | "aliases"
+  | "models"
+  | "key_alias"
+  | "tags";
 
-  // Specific field help text
-  const specificHelp: { [key: string]: string } = {
-    max_budget: "Enter maximum budget in USD (e.g., 100.50)",
-    budget_duration: "Select a time period for budget reset",
-    tpm_limit: "Enter maximum tokens per minute (whole number)",
-    rpm_limit: "Enter maximum requests per minute (whole number)",
-    duration: "Enter duration (e.g., 30s, 24h, 7d)",
-    metadata: 'Enter JSON object with key-value pairs\nExample: {"team": "research", "project": "nlp"}',
-    config: 'Enter configuration as JSON object\nExample: {"setting": "value"}',
-    permissions: "Enter comma-separated permission strings",
-    enforced_params: 'Enter parameters as JSON object\nExample: {"param": "value"}',
-    blocked: "Enter true/false or specific block conditions",
-    aliases: 'Enter aliases as JSON object\nExample: {"alias1": "value1", "alias2": "value2"}',
-    models: "Select one or more model names",
-    key_alias: "Enter a unique identifier for this key",
-    tags: "Enter comma-separated tag strings",
-  };
+type SchemaTranslator = ReturnType<typeof useTranslations<"checkOpenapiSchema">>;
 
-  // Get specific help text or use default based on type
-  const helpText = specificHelp[key] || defaultHelp;
+type SchemaHelpKey = "help.text" | "help.number" | "help.integer" | "help.boolean" | `help.${FieldHelpKey}`;
 
-  // Add format requirements for special cases
+const FIELD_HELP_KEYS: Readonly<Record<FieldHelpKey, SchemaHelpKey>> = {
+  max_budget: "help.max_budget",
+  budget_duration: "help.budget_duration",
+  tpm_limit: "help.tpm_limit",
+  rpm_limit: "help.rpm_limit",
+  duration: "help.duration",
+  metadata: "help.metadata",
+  config: "help.config",
+  permissions: "help.permissions",
+  enforced_params: "help.enforced_params",
+  blocked: "help.blocked",
+  aliases: "help.aliases",
+  models: "help.models",
+  key_alias: "help.key_alias",
+  tags: "help.tags",
+};
+
+const TYPE_HELP_KEYS: Readonly<Record<string, SchemaHelpKey>> = {
+  string: "help.text",
+  number: "help.number",
+  integer: "help.integer",
+  boolean: "help.boolean",
+};
+
+const FIELD_HELP_KEY_NAMES: ReadonlySet<string> = new Set(Object.keys(FIELD_HELP_KEYS));
+
+const getFieldHelp = (t: SchemaTranslator, key: string, property: SchemaProperty, type: string): string => {
+  const helpKey = FIELD_HELP_KEY_NAMES.has(key)
+    ? FIELD_HELP_KEYS[key as FieldHelpKey]
+    : TYPE_HELP_KEYS[type] ?? "help.text";
+  const helpText = t(helpKey);
+
   if (isJSONField(key, property)) {
-    return `${helpText}\nMust be valid JSON format`;
+    return `${helpText}\n${t("jsonFormatNote")}`;
   }
 
   if (property.enum) {
-    return `Select from available options\nAllowed values: ${property.enum.join(", ")}`;
+    return `${t("selectFromOptions")}\n${t("allowedValues", { values: property.enum.join(", ") })}`;
   }
 
   return helpText;
 };
-
 const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
   schemaComponent,
   excludedFields = [],
@@ -119,6 +139,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
   customValidation = {},
   defaultValues = {},
 }) => {
+  const t = useTranslations("checkOpenapiSchema");
   const [schemaProperties, setSchemaProperties] = useState<OpenAPISchema | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -129,7 +150,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
         const componentSchema = schema.components.schemas[schemaComponent];
 
         if (!componentSchema) {
-          throw new Error(`Schema component "${schemaComponent}" not found`);
+          throw new Error(t("schemaComponentMissing", { name: schemaComponent }));
         }
 
         setSchemaProperties(componentSchema);
@@ -141,12 +162,12 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
           });
       } catch (error) {
         console.error("Schema fetch error:", error);
-        setError(error instanceof Error ? error.message : "Failed to fetch schema");
+        setError(error instanceof Error ? error.message : t("fetchFailed"));
       }
     };
 
     fetchOpenAPISchema();
-  }, [schemaComponent, setValue, excludedFields]);
+  }, [schemaComponent, setValue, excludedFields, t]);
 
   const getPropertyType = (property: SchemaProperty): string => {
     if (property.type) {
@@ -169,7 +190,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
 
     const validate = {
       ...(isRequired && {
-        required: (value: unknown) => (isBlank(value) ? `${label} is required` : true),
+        required: (value: unknown) => (isBlank(value) ? t("requiredField", { field: label }) : true),
       }),
       ...(customValidation[key] && {
         custom: async (value: unknown) => {
@@ -182,8 +203,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
         },
       }),
       ...(isJSONField(key, property) && {
-        json: (value: unknown) =>
-          value && !validateJSON(value as string) ? "Please enter valid JSON" : (true as const),
+        json: (value: unknown) => (value && !validateJSON(value as string) ? t("invalidJson") : (true as const)),
       }),
     };
 
@@ -207,7 +227,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
         required={isRequired}
         rules={Object.keys(validate).length > 0 ? { validate } : undefined}
         defaultValue={defaultValues[key]}
-        help={<div className="text-xs text-muted-foreground">{getFieldHelp(key, property, type)}</div>}
+        help={<div className="text-xs text-muted-foreground">{getFieldHelp(t, key, property, type)}</div>}
       >
         {(control) => {
           if (isJSONField(key, property)) {
@@ -216,7 +236,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
                 {...control}
                 value={control.value as string | undefined}
                 rows={4}
-                placeholder="Enter as JSON"
+                placeholder={t("jsonPlaceholder")}
                 className="font-mono"
               />
             );
@@ -256,7 +276,11 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
           }
           if (key === "duration") {
             return (
-              <Input {...control} value={(control.value as string | undefined) ?? ""} placeholder="eg: 30s, 30h, 30d" />
+              <Input
+                {...control}
+                value={(control.value as string | undefined) ?? ""}
+                placeholder={t("durationPlaceholder")}
+              />
             );
           }
           return <Input {...control} value={(control.value as string | undefined) ?? ""} placeholder={tooltip || ""} />;
@@ -266,7 +290,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
   };
 
   if (error) {
-    return <div className="text-destructive">Error: {error}</div>;
+    return <div className="text-destructive">{t("errorLine", { message: error })}</div>;
   }
 
   if (!schemaProperties?.properties) {

@@ -176,7 +176,9 @@ describe("ChatUI", () => {
       expect(screen.getAllByText("Model 1").length).toBeGreaterThan(0);
     });
     await user.click(screen.getByRole("option", { name: "Model 1Mode: chat" }));
-    expect(screen.getByPlaceholderText(/选择模型|enter custom model|输入自定义模型名称|Select Model/)).toHaveValue("Model 1");
+    expect(screen.getByPlaceholderText(/选择模型|enter custom model|输入自定义模型名称|Select Model/)).toHaveValue(
+      "Model 1",
+    );
 
     await user.click(screen.getAllByRole("button", { name: "Clear" })[0]);
     const input = screen.getByPlaceholderText(/Describe the image|描述您想生成的图片/);
@@ -338,18 +340,18 @@ describe("ChatUI", () => {
 
     await waitFor(() => {
       expect(screen.getByText("模型设置")).toBeInTheDocument();
-      expect(screen.getByText(/Simulate failure to test fallbacks/i)).toBeInTheDocument();
+      expect(screen.getByText(/模拟失败以测试回退/)).toBeInTheDocument();
     });
 
     const fallbacksCheckbox = screen.getByRole("checkbox", {
-      name: /Simulate failure to test fallbacks/i,
+      name: /模拟失败以测试回退/,
     });
     expect(fallbacksCheckbox).not.toBeChecked();
 
     await user.click(fallbacksCheckbox);
 
     await waitFor(() => {
-      expect(screen.getByRole("checkbox", { name: /Simulate failure to test fallbacks/i })).toBeChecked();
+      expect(screen.getByRole("checkbox", { name: /模拟失败以测试回退/ })).toBeChecked();
     });
   });
 
@@ -377,13 +379,13 @@ describe("ChatUI", () => {
 
     await user.click(screen.getByTestId("model-settings-button"));
 
-    const streamingCheckbox = await screen.findByRole("checkbox", { name: /Stream responses/i });
+    const streamingCheckbox = await screen.findByRole("checkbox", { name: /流式响应/ });
     expect(streamingCheckbox).toBeChecked();
 
     await user.click(streamingCheckbox);
 
     await waitFor(() => {
-      expect(screen.getByRole("checkbox", { name: /Stream responses/i })).not.toBeChecked();
+      expect(screen.getByRole("checkbox", { name: /流式响应/ })).not.toBeChecked();
     });
 
     const messageInput = screen.getByPlaceholderText("输入消息... (Shift+Enter 换行)");
@@ -424,12 +426,12 @@ describe("ChatUI", () => {
 
     await user.click(await screen.findByTestId("model-settings-button"));
 
-    const streamingCheckbox = await screen.findByRole("checkbox", { name: /Stream responses/i });
+    const streamingCheckbox = await screen.findByRole("checkbox", { name: /流式响应/ });
     expect(streamingCheckbox).toBeChecked();
     await user.click(streamingCheckbox);
 
     await waitFor(() => {
-      expect(screen.getByRole("checkbox", { name: /Stream responses/i })).not.toBeChecked();
+      expect(screen.getByRole("checkbox", { name: /流式响应/ })).not.toBeChecked();
     });
 
     const messageInput = screen.getByPlaceholderText("输入消息... (Shift+Enter 换行)");
@@ -572,7 +574,7 @@ describe("ChatUI", () => {
 
     await user.click(screen.getByTestId("model-settings-button"));
 
-    expect(await screen.findByRole("checkbox", { name: /Stream responses/i })).toBeChecked();
+    expect(await screen.findByRole("checkbox", { name: /流式响应/ })).toBeChecked();
     expect(screen.queryByText("Temperature")).not.toBeInTheDocument();
     expect(screen.queryByText("Use Advanced Parameters")).not.toBeInTheDocument();
   });
@@ -612,9 +614,7 @@ describe("ChatUI", () => {
       expect(screen.queryByText("Fill")).not.toBeInTheDocument();
     });
 
-    const customProxyInput = screen.getByPlaceholderText(
-      /Optional: Enter custom proxy URL|可选：输入自定义代理 URL/,
-    );
+    const customProxyInput = screen.getByPlaceholderText(/Optional: Enter custom proxy URL|可选：输入自定义代理 URL/);
     expect(customProxyInput).toHaveValue(testProxyUrl);
   });
 

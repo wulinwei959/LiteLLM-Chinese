@@ -186,7 +186,7 @@ describe("AgentInfoView update payload", () => {
         : { last_authenticated_at: null },
     );
     renderView();
-    expect(await screen.findByText("Configured, awaiting an authenticated request")).toBeInTheDocument();
+    expect(await screen.findByText("已配置，等待一次通过认证的请求")).toBeInTheDocument();
     await openEditor(user);
     expect(screen.getByLabelText("应用程序（客户端）ID")).toHaveValue(identity.client_id);
     expect(screen.getByRole("combobox", { name: "身份提供商" })).toHaveTextContent("Microsoft Entra ID");

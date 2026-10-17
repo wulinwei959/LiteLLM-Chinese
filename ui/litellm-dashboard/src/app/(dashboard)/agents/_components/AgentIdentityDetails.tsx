@@ -1,14 +1,17 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import type { components } from "@/lib/http/schema";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/components/networking";
 import { Button } from "@/components/ui/button";
 import { readAgentIdentity } from "./agent_identity";
 
-const authenticationMessage = (error: boolean, lastAuthenticated?: string | null): string => {
-  if (error) return "Could not load authentication evidence";
-  if (lastAuthenticated) return `Last authenticated identity match: ${new Date(lastAuthenticated).toLocaleString()}`;
-  return "Configured, awaiting an authenticated request";
+type IdentityTranslator = ReturnType<typeof useTranslations<"agents.identity">>;
+
+const authenticationMessage = (t: IdentityTranslator, error: boolean, lastAuthenticated?: string | null): string => {
+  if (error) return t("authEvidenceFailed");
+  if (lastAuthenticated) return t("lastAuthenticated", { timestamp: new Date(lastAuthenticated).toLocaleString() });
+  return t("awaitingAuth");
 };
 
 export const AgentIdentityDetails = ({
@@ -22,6 +25,8 @@ export const AgentIdentityDetails = ({
   accessToken: string | null;
   isAdmin: boolean;
 }) => {
+  const t = useTranslations("agents.identity");
+  const commonT = useTranslations("common");
   const identity = readAgentIdentity(value);
   const { data, isError, isFetching, refetch } = useQuery({
     queryKey: ["agent-identity", agentId, identity],
@@ -36,31 +41,33 @@ export const AgentIdentityDetails = ({
   });
 
   if (!identity || !isAdmin) return null;
-  const executionLabel = data?.enabled ? "Enabled" : "Disabled";
+  const executionLabel = data?.enabled ? commonT("enabled") : commonT("disabled");
   return (
-    <section aria-label="Agent Identity" className="mb-6 space-y-2 rounded-lg border border-border p-4">
-      <h3 className="font-medium">Agent Identity: Microsoft Entra ID</h3>
+    <section aria-label={t("sectionAria")} className="mb-6 space-y-2 rounded-lg border border-border p-4">
+      <h3 className="font-medium">{t("heading")}</h3>
       <p className="text-sm">
-        Tenant: <span className="font-mono">{identity.tenant_id}</span>
+        {t("tenantLabel")}: <span className="font-mono">{identity.tenant_id}</span>
       </p>
       <>
         <p className="text-sm">
-          Application (Client) ID: <span className="font-mono">{identity.client_id}</span>
+          {t("appIdLabel")}: <span className="font-mono">{identity.client_id}</span>
         </p>
-        <p className="text-sm">Enterprise application Object ID: {identity.service_principal_id || "Not configured"}</p>
+        <p className="text-sm">
+          {t("servicePrincipalLabel")}: {identity.service_principal_id || t("notConfigured")}
+        </p>
       </>
       <p className="text-sm">
-        Execution: {data ? executionLabel : "Loading"} · Mode: {data?.execution_mode ?? "Loading"}
+        {t("executionModeLine", {
+          execution: data ? executionLabel : t("loadingValue"),
+          mode: data?.execution_mode ?? t("loadingValue"),
+        })}
       </p>
       <p className="text-sm">
         {data?.identity?.active === false
-          ? "Identity unbound; execution is disabled"
-          : authenticationMessage(isError, data?.last_authenticated_at)}
+          ? t("identityUnbound")
+          : authenticationMessage(t, isError, data?.last_authenticated_at)}
       </p>
-      <p className="text-xs text-muted-foreground">
-        Recent evidence comes from a validated Entra token matching this binding. It is persisted across restarts and
-        cleared when the binding changes. Tool and model permissions are checked separately.
-      </p>
+      <p className="text-xs text-muted-foreground">{t("evidenceNote")}</p>
       <div className="flex items-center gap-4">
         <Button
           variant="outline"
@@ -70,10 +77,10 @@ export const AgentIdentityDetails = ({
             void refetch();
           }}
         >
-          Refresh authentication evidence
+          {t("refreshButton")}
         </Button>
         <a className="text-sm underline" href="/ui/logs/">
-          View request logs
+          {t("viewLogsLink")}
         </a>
       </div>
     </section>

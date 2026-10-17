@@ -121,7 +121,7 @@ describe("BudgetTable", () => {
     const budgetId = "ecc1869c-6231-4380-a56d-1a0be457477d";
     const list = makeList({ rows: [makeBudget({ budget_id: budgetId })] });
     renderWithProviders(<BudgetTable {...defaultProps} list={list} />);
-    await user.click(screen.getByRole("button", { name: "Copy ID" }));
+    await user.click(screen.getByRole("button", { name: "复制 ID" }));
     expect(copyToClipboardMock).toHaveBeenCalledWith(budgetId);
   });
 
