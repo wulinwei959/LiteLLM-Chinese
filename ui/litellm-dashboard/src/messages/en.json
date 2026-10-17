@@ -10466,5 +10466,39 @@
     "updated": "Model storage settings updated successfully",
     "saveFailedPrefix": "Failed to save model storage settings: ",
     "saveSettings": "Save Settings"
+  },
+  "navbar": {
+    "viewSwitcher": {
+      "chat": "Chat",
+      "chatDisabledHint": "Admins can enable in Settings"
+    },
+    "docsLink": {
+      "docs": "Docs"
+    },
+    "community": {
+      "linksAria": "Community links",
+      "slack": "Join Slack",
+      "slackTooltip": "LiteLLM Slack community",
+      "github": "LiteLLM on GitHub"
+    },
+    "notifications": {
+      "title": "LiteLLM Auto Router",
+      "description": "Route every request to the cheapest model that can handle it, no prompt changes needed.",
+      "readDocs": "Read the docs",
+      "markAsRead": "Mark as read",
+      "ariaLabel": "Notifications"
+    },
+    "blog": {
+      "loadingAria": "loading",
+      "loadFailed": "Failed to load posts",
+      "retry": "Retry",
+      "empty": "No posts available",
+      "viewAll": "View all posts",
+      "title": "Blog"
+    },
+    "worker": {
+      "ariaLabel": "Worker",
+      "noMatching": "No matching workers"
+    }
   }
 }

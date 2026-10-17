@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Server } from "lucide-react";
 import {
   Combobox,
@@ -24,6 +25,7 @@ interface WorkerOption {
 }
 
 const WorkerDropdown: React.FC<WorkerDropdownProps> = ({ onWorkerSwitch }) => {
+  const t = useTranslations("navbar.worker");
   const { isControlPlane, selectedWorker, workers } = useWorker();
 
   if (!isControlPlane || !selectedWorker) return null;
@@ -45,13 +47,13 @@ const WorkerDropdown: React.FC<WorkerDropdownProps> = ({ onWorkerSwitch }) => {
         }
       }}
     >
-      <ComboboxInput className="min-w-[180px]" aria-label="Worker">
+      <ComboboxInput className="min-w-[180px]" aria-label={t("ariaLabel")}>
         <InputGroupAddon align="inline-start">
           <Server className="size-4" />
         </InputGroupAddon>
       </ComboboxInput>
       <ComboboxContent>
-        <ComboboxEmpty>No matching workers</ComboboxEmpty>
+        <ComboboxEmpty>{t("noMatching")}</ComboboxEmpty>
         <ComboboxList>
           {(option: WorkerOption) => (
             <ComboboxItem key={option.value} value={option} disabled={option.disabled}>

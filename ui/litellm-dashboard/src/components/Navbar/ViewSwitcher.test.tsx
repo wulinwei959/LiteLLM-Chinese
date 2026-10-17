@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders as render } from "../../../tests/test-utils";
 import ViewSwitcher from "./ViewSwitcher";
 
 const { mockUsePluginMode, mockUseUISettings, mockUsePathname, state } = vi.hoisted(() => {
@@ -53,16 +54,16 @@ describe("ViewSwitcher", () => {
     render(<ViewSwitcher />);
 
     const button = screen.getByRole("button");
-    expect(button).toHaveTextContent("AI Gateway");
+    expect(button).toHaveTextContent("AI 网关");
 
     act(() => {
       fireEvent.click(button);
     });
-    expect(await screen.findByText("Chat")).toBeInTheDocument();
-    expect(screen.getByText(/Admins can enable in Settings/i)).toBeInTheDocument();
+    expect(await screen.findByText("对话")).toBeInTheDocument();
+    expect(screen.getByText(/管理员可在设置中启用/)).toBeInTheDocument();
 
     act(() => {
-      fireEvent.click(screen.getByText("Chat"));
+      fireEvent.click(screen.getByText("对话"));
     });
     expect(assignSpy).not.toHaveBeenCalled();
     expect(state.setMode).not.toHaveBeenCalled();
@@ -81,7 +82,7 @@ describe("ViewSwitcher", () => {
     act(() => {
       fireEvent.click(screen.getByRole("button"));
     });
-    expect(await screen.findByText("AI Gateway")).toBeInTheDocument();
+    expect(await screen.findByText("AI 网关")).toBeInTheDocument();
     expect(screen.getByText("Observability")).toBeInTheDocument();
   });
 
@@ -108,11 +109,11 @@ describe("ViewSwitcher", () => {
     act(() => {
       fireEvent.click(screen.getByRole("button"));
     });
-    expect(await screen.findByText("Chat")).toBeInTheDocument();
-    expect(screen.queryByText(/Admins can enable in Settings/i)).not.toBeInTheDocument();
+    expect(await screen.findByText("对话")).toBeInTheDocument();
+    expect(screen.queryByText(/管理员可在设置中启用/)).not.toBeInTheDocument();
 
     act(() => {
-      fireEvent.click(screen.getByText("Chat"));
+      fireEvent.click(screen.getByText("对话"));
     });
     expect(assignSpy).toHaveBeenCalledWith("/ui/chat");
     expect(state.setMode).not.toHaveBeenCalled();
@@ -127,9 +128,9 @@ describe("ViewSwitcher", () => {
     act(() => {
       fireEvent.click(screen.getByRole("button"));
     });
-    expect(await screen.findByText("AI Gateway")).toBeInTheDocument();
+    expect(await screen.findByText("AI 网关")).toBeInTheDocument();
     act(() => {
-      fireEvent.click(screen.getByText("AI Gateway"));
+      fireEvent.click(screen.getByText("AI 网关"));
     });
     expect(state.setMode).toHaveBeenCalledWith("ai-gateway");
     expect(assignSpy).toHaveBeenCalledWith("/ui/");
@@ -144,11 +145,11 @@ describe("ViewSwitcher", () => {
       fireEvent.click(screen.getByRole("button"));
     });
     expect(await screen.findByText("Observability")).toBeInTheDocument();
-    expect(screen.getByText("Chat")).toBeInTheDocument();
-    expect(screen.getByText(/Admins can enable in Settings/i)).toBeInTheDocument();
+    expect(screen.getByText("对话")).toBeInTheDocument();
+    expect(screen.getByText(/管理员可在设置中启用/)).toBeInTheDocument();
 
     act(() => {
-      fireEvent.click(screen.getByText("Chat"));
+      fireEvent.click(screen.getByText("对话"));
     });
     expect(assignSpy).not.toHaveBeenCalled();
   });

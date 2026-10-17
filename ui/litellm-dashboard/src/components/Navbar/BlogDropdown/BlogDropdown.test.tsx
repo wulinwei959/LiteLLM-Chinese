@@ -36,7 +36,7 @@ const MOCK_POSTS = [
 
 async function openDropdown() {
   const user = userEvent.setup();
-  await user.hover(screen.getByRole("button", { name: /blog/i }));
+  await user.hover(screen.getByRole("button", { name: /博客/i }));
 }
 
 describe("BlogDropdown", () => {
@@ -63,13 +63,13 @@ describe("BlogDropdown", () => {
   describe("when blog posts are enabled", () => {
     it("should render the Blog trigger button", () => {
       renderWithProviders(<BlogDropdown />);
-      expect(screen.getByRole("button", { name: /blog/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /博客/i })).toBeInTheDocument();
     });
 
     it("should keep the shared hover highlight rather than pinning the background transparent", () => {
       renderWithProviders(<BlogDropdown />);
 
-      const trigger = screen.getByRole("button", { name: /blog/i });
+      const trigger = screen.getByRole("button", { name: /博客/i });
       expect(trigger).toHaveClass("hover:bg-accent");
       expect(trigger.className).not.toMatch(/\bbg-\S*!/);
     });
@@ -78,7 +78,7 @@ describe("BlogDropdown", () => {
       mockUseBlogPostsResult = { ...mockUseBlogPostsResult, data: { posts: MOCK_POSTS.slice(0, 1) } };
       renderWithProviders(<BlogDropdown />);
 
-      expect(screen.queryByRole("link", { name: /view all posts/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: /查看全部文章/i })).not.toBeInTheDocument();
       expect(screen.queryByText("Post One")).not.toBeInTheDocument();
     });
 
@@ -103,7 +103,7 @@ describe("BlogDropdown", () => {
         await openDropdown();
 
         await waitFor(() => {
-          expect(screen.getByRole("img", { name: /loading/i })).toBeInTheDocument();
+          expect(screen.getByRole("img", { name: /加载中/ })).toBeInTheDocument();
         });
       });
     });
@@ -119,7 +119,7 @@ describe("BlogDropdown", () => {
         await openDropdown();
 
         await waitFor(() => {
-          expect(screen.getByText("Failed to load posts")).toBeInTheDocument();
+          expect(screen.getByText("加载文章失败")).toBeInTheDocument();
         });
       });
 
@@ -129,7 +129,7 @@ describe("BlogDropdown", () => {
         await openDropdown();
 
         await waitFor(() => {
-          expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
+          expect(screen.getByRole("button", { name: /重试/i })).toBeInTheDocument();
         });
       });
 
@@ -137,13 +137,13 @@ describe("BlogDropdown", () => {
         const user = userEvent.setup();
         renderWithProviders(<BlogDropdown />);
 
-        await user.hover(screen.getByRole("button", { name: /blog/i }));
+        await user.hover(screen.getByRole("button", { name: /博客/i }));
 
         await waitFor(() => {
-          expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
+          expect(screen.getByRole("button", { name: /重试/i })).toBeInTheDocument();
         });
 
-        await user.click(screen.getByRole("button", { name: /retry/i }));
+        await user.click(screen.getByRole("button", { name: /重试/i }));
 
         expect(mockRefetch).toHaveBeenCalledTimes(1);
       });
@@ -157,7 +157,7 @@ describe("BlogDropdown", () => {
         await openDropdown();
 
         await waitFor(() => {
-          expect(screen.getByText("No posts available")).toBeInTheDocument();
+          expect(screen.getByText("暂无文章")).toBeInTheDocument();
         });
       });
 
@@ -168,7 +168,7 @@ describe("BlogDropdown", () => {
         await openDropdown();
 
         await waitFor(() => {
-          expect(screen.getByText("No posts available")).toBeInTheDocument();
+          expect(screen.getByText("暂无文章")).toBeInTheDocument();
         });
       });
     });
@@ -232,7 +232,7 @@ describe("BlogDropdown", () => {
 
         await openDropdown();
 
-        const viewAllLink = await screen.findByRole("link", { name: /view all posts/i });
+        const viewAllLink = await screen.findByRole("link", { name: /查看全部文章/i });
         expect(viewAllLink).toHaveAttribute("href", "https://docs.litellm.ai/blog");
         expect(viewAllLink).toHaveAttribute("rel", "noopener noreferrer");
         expect(viewAllLink).toHaveAttribute("target", "_blank");

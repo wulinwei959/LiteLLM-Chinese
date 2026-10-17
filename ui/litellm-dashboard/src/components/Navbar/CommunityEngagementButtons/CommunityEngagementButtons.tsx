@@ -5,23 +5,32 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { cn } from "@/lib/cva.config";
 import { Github, Slack } from "lucide-react";
 import React from "react";
+import { useTranslations } from "next-intl";
 
-const COMMUNITY_LINKS = [
+type CommunityLinkLabelKey = "slack" | "github";
+
+const COMMUNITY_LINKS: ReadonlyArray<{
+  href: string;
+  labelKey: CommunityLinkLabelKey;
+  tooltipKey: CommunityLinkLabelKey | "slackTooltip";
+  Icon: typeof Slack;
+}> = [
   {
     href: "https://www.litellm.ai/support",
-    label: "Join Slack",
-    tooltip: "LiteLLM Slack community",
+    labelKey: "slack",
+    tooltipKey: "slackTooltip",
     Icon: Slack,
   },
   {
     href: "https://github.com/BerriAI/litellm",
-    label: "LiteLLM on GitHub",
-    tooltip: "LiteLLM on GitHub",
+    labelKey: "github",
+    tooltipKey: "github",
     Icon: Github,
   },
-] as const;
+];
 
 export const CommunityEngagementButtons: React.FC = () => {
+  const t = useTranslations("navbar.community");
   const disableShowPrompts = useDisableShowPrompts();
 
   if (disableShowPrompts) {
@@ -30,8 +39,8 @@ export const CommunityEngagementButtons: React.FC = () => {
 
   return (
     <TooltipProvider>
-      <ButtonGroup aria-label="Community links">
-        {COMMUNITY_LINKS.map(({ href, label, tooltip, Icon }) => (
+      <ButtonGroup aria-label={t("linksAria")}>
+        {COMMUNITY_LINKS.map(({ href, labelKey, tooltipKey, Icon }) => (
           <Tooltip key={href}>
             <TooltipTrigger
               render={
@@ -39,14 +48,14 @@ export const CommunityEngagementButtons: React.FC = () => {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={label}
+                  aria-label={t(labelKey)}
                   className={cn(buttonVariants({ variant: "outline", size: "icon" }), "text-muted-foreground")}
                 />
               }
             >
               <Icon />
             </TooltipTrigger>
-            <TooltipContent>{tooltip}</TooltipContent>
+            <TooltipContent>{t(tooltipKey)}</TooltipContent>
           </Tooltip>
         ))}
       </ButtonGroup>

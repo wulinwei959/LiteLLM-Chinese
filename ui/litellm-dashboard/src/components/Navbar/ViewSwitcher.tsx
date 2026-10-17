@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import {
   DropdownMenu,
@@ -22,6 +23,8 @@ interface ViewSwitcherItem {
 }
 
 export default function ViewSwitcher() {
+  const t = useTranslations("navbar.viewSwitcher");
+  const navT = useTranslations("nav");
   const { mode, setMode, plugins } = usePluginMode();
   const { data: uiSettings } = useUISettings();
   const pathname = usePathname();
@@ -32,10 +35,10 @@ export default function ViewSwitcher() {
   const normalizedPathname = (pathname ?? "").replace(/\/+$/, "");
   const isChatRoute = chatEnabled && (normalizedPathname === chatHref || normalizedPathname.startsWith(`${chatHref}/`));
 
-  const activeLabel = isChatRoute ? "Chat" : plugins.find((p) => p.name === mode)?.display_name ?? "AI Gateway";
+  const activeLabel = isChatRoute ? t("chat") : plugins.find((p) => p.name === mode)?.display_name ?? navT("aiGateway");
 
   const modeEntries = [
-    { key: GATEWAY, label: "AI Gateway" },
+    { key: GATEWAY, label: navT("aiGateway") },
     ...plugins.map((p) => ({ key: p.name, label: p.display_name })),
   ];
 
@@ -53,7 +56,7 @@ export default function ViewSwitcher() {
         key: CHAT,
         label: (
           <div className="flex items-center justify-between gap-6 py-0.5">
-            <span className="font-medium">Chat</span>
+            <span className="font-medium">{t("chat")}</span>
             {isChatRoute && <Check className="size-4 text-info" />}
           </div>
         ),
@@ -64,9 +67,9 @@ export default function ViewSwitcher() {
         disabled: true,
         label: (
           <div className="flex max-w-[220px] flex-col py-0.5">
-            <span className="font-medium">Chat</span>
+            <span className="font-medium">{t("chat")}</span>
             <span className="whitespace-normal text-xs leading-snug text-muted-foreground">
-              Admins can enable in Settings
+              {t("chatDisabledHint")}
             </span>
           </div>
         ),

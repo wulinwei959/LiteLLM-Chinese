@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "../../../../tests/test-utils";
 import { describe, expect, it } from "vitest";
 import { NAV_PRODUCT_LINK_CLASS } from "@/components/Navbar/navProductLinkClass";
 import { DocsLink } from "./DocsLink";
@@ -9,7 +10,7 @@ describe("DocsLink", () => {
   it("opens the docs in a new tab without leaking the opener", () => {
     render(<DocsLink />);
 
-    const link = screen.getByRole("link", { name: "Docs" });
+    const link = screen.getByRole("link", { name: "文档" });
     expect(link).toHaveAttribute("href", "https://docs.litellm.ai/docs/");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
@@ -18,7 +19,7 @@ describe("DocsLink", () => {
   it("carries the same product-link styling as the Blog trigger, so the two never drift apart", () => {
     render(<DocsLink />);
 
-    const link = screen.getByRole("link", { name: "Docs" });
+    const link = screen.getByRole("link", { name: "文档" });
     for (const cls of sharedClasses) {
       expect(link).toHaveClass(cls);
     }
@@ -28,7 +29,7 @@ describe("DocsLink", () => {
   it("carries a focus ring, so tabbing to Docs looks like tabbing to Blog", () => {
     render(<DocsLink />);
 
-    const link = screen.getByRole("link", { name: "Docs" });
+    const link = screen.getByRole("link", { name: "文档" });
     expect(link).toHaveClass("focus-visible:ring-3");
     expect(link).toHaveClass("focus-visible:ring-ring/50");
   });
@@ -36,7 +37,7 @@ describe("DocsLink", () => {
   it("stays a link rather than being relabelled as a button by the Button primitive", () => {
     render(<DocsLink />);
 
-    expect(screen.getByRole("link", { name: "Docs" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Docs" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "文档" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "文档" })).not.toBeInTheDocument();
   });
 });

@@ -10462,5 +10462,39 @@
     "updated": "模型存储设置更新成功",
     "saveFailedPrefix": "保存模型存储设置失败：",
     "saveSettings": "保存设置"
+  },
+  "navbar": {
+    "viewSwitcher": {
+      "chat": "对话",
+      "chatDisabledHint": "管理员可在设置中启用"
+    },
+    "docsLink": {
+      "docs": "文档"
+    },
+    "community": {
+      "linksAria": "社区链接",
+      "slack": "加入 Slack",
+      "slackTooltip": "LiteLLM Slack 社区",
+      "github": "LiteLLM 的 GitHub 仓库"
+    },
+    "notifications": {
+      "title": "LiteLLM 自动路由",
+      "description": "把每个请求路由到能处理它的最便宜模型，无需改动提示词。",
+      "readDocs": "阅读文档",
+      "markAsRead": "标记为已读",
+      "ariaLabel": "通知"
+    },
+    "blog": {
+      "loadingAria": "加载中",
+      "loadFailed": "加载文章失败",
+      "retry": "重试",
+      "empty": "暂无文章",
+      "viewAll": "查看全部文章",
+      "title": "博客"
+    },
+    "worker": {
+      "ariaLabel": "Worker",
+      "noMatching": "没有匹配的 Worker"
+    }
   }
 }
