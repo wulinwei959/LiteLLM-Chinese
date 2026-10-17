@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
+import React, { ReactNode } from "react";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { useDiscountConfig } from "./use_discount_config";
 import { toast } from "@/lib/toast";
 
@@ -25,6 +27,11 @@ vi.mock("@/components/provider_info_helpers", () => ({
   },
 }));
 
+const wrapper = ({ children }: { children: ReactNode }) =>
+  // LocaleProviderProps.children 为必填，children 作 createElement 第三参传会 TS2769
+  // eslint-disable-next-line react/no-children-prop
+  React.createElement(LocaleProvider, { locale: "zh-CN", children });
+
 describe("useDiscountConfig", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -37,7 +44,7 @@ describe("useDiscountConfig", () => {
         json: async () => ({ values: { openai: 0.05, anthropic: 0.1 } }),
       } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -52,7 +59,7 @@ describe("useDiscountConfig", () => {
         json: async () => ({ values: {} }),
       } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -64,19 +71,19 @@ describe("useDiscountConfig", () => {
     it("should show an error notification when the fetch throws", async () => {
       vi.spyOn(global, "fetch").mockRejectedValueOnce(new Error("Network error"));
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
       });
 
-      expect(toast.fromError).toHaveBeenCalledWith(expect.stringMatching(/failed to fetch/i));
+      expect(toast.fromError).toHaveBeenCalledWith("获取折扣配置失败");
     });
   });
 
   describe("handleAddProvider", () => {
     it("should return false and notify when no provider is selected", async () => {
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       let success: boolean;
       await act(async () => {
@@ -84,11 +91,11 @@ describe("useDiscountConfig", () => {
       });
 
       expect(success!).toBe(false);
-      expect(toast.fromError).toHaveBeenCalledWith("Please select a provider and enter discount percentage");
+      expect(toast.fromError).toHaveBeenCalledWith("请选择供应商并输入折扣百分比");
     });
 
     it("should return false and notify when no discount is provided", async () => {
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       let success: boolean;
       await act(async () => {
@@ -96,11 +103,11 @@ describe("useDiscountConfig", () => {
       });
 
       expect(success!).toBe(false);
-      expect(toast.fromError).toHaveBeenCalledWith("Please select a provider and enter discount percentage");
+      expect(toast.fromError).toHaveBeenCalledWith("请选择供应商并输入折扣百分比");
     });
 
     it("should return false and notify when the discount exceeds 100", async () => {
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       let success: boolean;
       await act(async () => {
@@ -108,7 +115,7 @@ describe("useDiscountConfig", () => {
       });
 
       expect(success!).toBe(false);
-      expect(toast.fromError).toHaveBeenCalledWith(expect.stringMatching(/0%.*100%/i));
+      expect(toast.fromError).toHaveBeenCalledWith("折扣必须在 0% 到 100% 之间");
     });
 
     it("should return false and notify when the provider already exists in the config", async () => {
@@ -119,7 +126,7 @@ describe("useDiscountConfig", () => {
         } as Response)
         .mockResolvedValue({ ok: true, json: async () => ({}) } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -131,7 +138,7 @@ describe("useDiscountConfig", () => {
       });
 
       expect(success!).toBe(false);
-      expect(toast.fromError).toHaveBeenCalledWith(expect.stringMatching(/already exists/i));
+      expect(toast.fromError).toHaveBeenCalledWith("OpenAI 的折扣已存在，请在上方的表格中编辑。");
     });
 
     it("should save the config and return true on a valid new provider", async () => {
@@ -140,7 +147,7 @@ describe("useDiscountConfig", () => {
         .mockResolvedValueOnce({ ok: true, json: async () => ({}) } as Response)
         .mockResolvedValueOnce({ ok: true, json: async () => ({ values: { openai: 0.05 } }) } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -152,7 +159,7 @@ describe("useDiscountConfig", () => {
       });
 
       expect(success!).toBe(true);
-      expect(toast.success).toHaveBeenCalledWith("Discount configuration updated successfully");
+      expect(toast.success).toHaveBeenCalledWith("折扣配置更新成功");
     });
   });
 
@@ -169,7 +176,7 @@ describe("useDiscountConfig", () => {
           json: async () => ({ values: { anthropic: 0.1 } }),
         } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -199,7 +206,7 @@ describe("useDiscountConfig", () => {
           json: async () => ({ values: { openai: 0.1 } }),
         } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -219,7 +226,7 @@ describe("useDiscountConfig", () => {
         json: async () => ({ values: { openai: 0.05 } }),
       } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();

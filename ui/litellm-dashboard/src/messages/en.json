@@ -8789,6 +8789,12 @@
     "marginExists": "Margin for {name} already exists. Edit it in the table above.",
     "marginPercentRange": "Percentage must be between 0% and 1000%",
     "fixedAmountNonNegative": "Fixed amount must be non-negative",
+    "fetchDiscountConfigFailed": "Failed to fetch discount configuration",
+    "discountConfigUpdated": "Discount configuration updated successfully",
+    "updateDiscountConfigFailed": "Failed to update discount configuration",
+    "selectProviderAndDiscountRequired": "Please select a provider and enter discount percentage",
+    "discountPercentRange": "Discount must be between 0% and 100%",
+    "discountExists": "Discount for {name} already exists. Edit it in the table above.",
     "multiExport": {
         "trigger": "Export",
         "asPdf": "Export as PDF",

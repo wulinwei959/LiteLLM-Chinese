@@ -8785,6 +8785,12 @@
     "marginExists": "{name} 的加成已存在，请在上方的表格中编辑。",
     "marginPercentRange": "百分比必须在 0% 到 1000% 之间",
     "fixedAmountNonNegative": "固定金额必须为非负数",
+    "fetchDiscountConfigFailed": "获取折扣配置失败",
+    "discountConfigUpdated": "折扣配置更新成功",
+    "updateDiscountConfigFailed": "更新折扣配置失败",
+    "selectProviderAndDiscountRequired": "请选择供应商并输入折扣百分比",
+    "discountPercentRange": "折扣必须在 0% 到 100% 之间",
+    "discountExists": "{name} 的折扣已存在，请在上方的表格中编辑。",
     "multiExport": {
         "trigger": "导出",
         "asPdf": "导出为 PDF",
