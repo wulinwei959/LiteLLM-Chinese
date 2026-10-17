@@ -1,10 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 168 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10354、中英同值 137）。第 93 到 168 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 169 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10362、中英同值 137）。第 93 到 169 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 169 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `coordinationRedisUtils.ts`，收尾 coordination Redis 设置剩下的来源徽章。`SourceBadgeDescriptor` 的 `label`/`tooltip` 键名化为 `labelKey`/`tooltipKey`，新开 `CoordinationBadgeMessageKey` 八字面量 union（注释标明在 `caching` 命名空间下解析），`caching.coordination` 新增 badge/tooltip 两组共 8 键（叶子 10354 涨到 10362）。目录里另有四处现成的 "Not configured"（adminPanel/agents/cloudZero/secretManager），判定不跨页借用，避免不相干页面互相绑键。`general_settings.coordination_redis` 是配置路径、`REDIS_*` 是环境变量名，句中保留原文。消费接线两处：`index.tsx` 的 `StatusBadge label={t(badge.labelKey)}` 与说明行 `{t(badge.tooltipKey)}`。index.tsx 剩余 3 处命中（加载失败 toast、连接测试与保存按钮、说明段）留给下一簇。
+
+插键又踩一次结构撞名：`text.index('"caching": {')` 命中的是别的命名空间里嵌套的 `caching` 子对象（prompt 缓存页的 `loadFailed`/`rangeNote`），键插进了错误命名空间，`"coordination" not in obj` 和 parse 断言都没拦住，取值才暴露（`coordination` 恰好也没在错的块里，判据只查了新键不存在）。正确锚点是 `\n  "caching": {`（两个空格缩进=顶层），锚点唯一性断言 + 用该块必须已有的旧键（如 `restartNote`）双重确认后再插。错插的 en.json 用 `git restore` 回滚重做，判据补进 WORKFLOW 第二步。
+
+测试迁移：`coordinationRedisUtils.test.ts` 的 sourceBadge 三个 describe 从 `.label` 英文值断言改为 `.labelKey`/`.tooltipKey` 键名断言，fallback 例顺带补了 tooltipKey 等值断言。`index.test.tsx` 不用动：它包 `LocaleProvider` 走英文目录，8 条 en 值与原文逐字一致，徽章文案断言原样绿。
+
+验证：caching 加 `src/lib/i18n` 14 文件 124 例绿，tsc 无本簇文件报错，eslint stdin 口径三个改动文件与 HEAD 逐一持平（index.tsx 那条 error 既有），prettier 三文件干净，8 条新消息两侧 `IntlMessageFormat` 解析通过，`npm run build` 过，扫描器 `coordinationRedisUtils.ts` 归零。接入文件数持平（686/912，utils 是 `.ts` 不计入）。
 
 ## 2026-10-18 第 168 簇更新
 
