@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 177 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10459、中英同值 138）。第 93 到 177 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 178 簇后（非测试 `.tsx` 912 个接入 686 个、75.2%，目录叶子 10475、中英同值 138）。第 93 到 178 簇均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 178 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `vector-stores/_components/CreateVectorStore.tsx`，创建向量存储页签（上传文档加 RAG 逐文件 ingest）。扫描器只报 9 条，算上模板字符串与跨行 JSX 实际清了 22 处：两条文件校验 toast 从 `${file.name}` 拼接改成 `{name}` 参数消息，成功 toast `document(s)`/`Vector Store ID: ${id}` 拆成 `{count}`/`{storeId}` 双参（`String(vectorStoreId)` 保住 undefined 时的原渲染），失败 toast 与第 177 簇同法参数化 `{error}`。复用六处逐字同值：`providerRequired`、`indexTooShort`、`nameFieldLabel`/`descriptionShort`/`providerShort` 三个标签、按钮 "Create Vector Store" 借页头标题键 `createTitle`（同页同值，沿第 177 簇 `table.columnId` 跨角色复用判定）；`bucketTooShort` 因 en 值少 "Vector" 前缀不算同值，另开 `vectorBucketTooShort`。新开 16 键（叶子 10459 涨到 10475，同值持平 138），两个示例占位符按第 171 簇教条处理：名称示例只译 `例如：` 保留 "Product Documentation" 等资源名，描述示例整句翻译。`console.error` 与代码注释照旧不翻，页签标签 "Create Vector Store" 硬编码在同页 `index.tsx`（扫描器另有 1 条命中）留给下一簇。
+
+目录插入这次栽在 join 上：16 行键值用 `"\n".join` 拼行忘了行尾逗号，json.loads 在写入前就炸，文件未受影响，补成 `",\n".join` 后 en/zh 各插 16 键逐键读回全过（brace 定位法本身没骗人，收尾 `}` 停在 vertexSearchStep4 后一行）。测试迁移：`CreateVectorStore.test.tsx` 的标题/上传说明/供应商标签与 combobox aria regex、按钮 regex、已上传文档计数共 12 处换中文；characterization 测试的上传断言、按钮 regex 与两个占位符 6 处同步。验证：vector-stores 目录 13 测试文件加 `src/lib/i18n` 共 16 文件 129 例全绿、Type Errors no errors，tsc 无本簇文件报错，eslint stdin 口径组件 1/1（既有 complexity 告警）、主测试 10/10、characterization 4/4 与 HEAD 逐条同数，prettier 三文件 HEAD 与当前均干净零改写；16 键 32 侧 `IntlMessageFormat` 实跑渲染与去参数目标串逐字相等，`npm run build` 过，扫描器本文件归零。接入文件持平 686/912。
 
 ## 2026-10-18 第 177 簇更新
 
