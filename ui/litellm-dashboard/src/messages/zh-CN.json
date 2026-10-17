@@ -8789,7 +8789,21 @@
     "advancedSettings": "高级设置",
     "redisType": "Redis 类型",
     "coordinationRedis": "协调 Redis",
-    "restartNote": "保存的更改会在代理重启后生效。"
+    "restartNote": "保存的更改会在代理重启后生效。",
+    "coordination": {
+      "badge": {
+        "configuredHere": "在此配置",
+        "borrowedFromCache": "借用响应缓存",
+        "fromEnvironment": "来自 REDIS_* 环境变量",
+        "notConfigured": "未配置"
+      },
+      "tooltip": {
+        "configuredHere": "general_settings.coordination_redis 已设置，协调功能使用自己的 Redis 连接。",
+        "borrowedFromCache": "未配置协调 Redis，代理复用响应缓存的 Redis 连接。",
+        "fromEnvironment": "未配置协调 Redis，代理回退到 REDIS_* 环境变量。",
+        "notConfigured": "跨 Pod 限流、消费跟踪与 Pod 锁管理器没有可用于协调的 Redis。"
+      }
+    }
   },
   "searchTools": {
     "addNew": "新建搜索工具",

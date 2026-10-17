@@ -104,14 +104,14 @@ const CoordinationRedisSettings: React.FC = () => {
             <div className="flex items-center gap-3">
               <h3 className="text-sm font-medium text-foreground">{t("coordinationRedis")}</h3>
               {!isLoading && (
-                <StatusBadge tone={badge.tone} label={badge.label} dataTestId="coordination-redis-source" />
+                <StatusBadge tone={badge.tone} label={t(badge.labelKey)} dataTestId="coordination-redis-source" />
               )}
             </div>
             <p className="text-xs text-muted-foreground">
               Redis used to coordinate work across proxy pods: cross-pod rate limits, spend tracking, and the pod lock
               manager. It is configured independently of the response cache.
             </p>
-            <p className="text-xs text-muted-foreground">{badge.tooltip}</p>
+            <p className="text-xs text-muted-foreground">{t(badge.tooltipKey)}</p>
             <p className="text-xs text-warning">{t("restartNote")}</p>
           </div>
 

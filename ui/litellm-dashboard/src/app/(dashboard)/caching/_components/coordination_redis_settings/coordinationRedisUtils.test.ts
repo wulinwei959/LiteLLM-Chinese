@@ -135,10 +135,13 @@ describe("buildCoordinationPayload", () => {
 
 describe("sourceBadge", () => {
   it("should label each backend source value", () => {
-    expect(sourceBadge("coordination_redis").label).toBe("Configured here");
-    expect(sourceBadge("cache_backend").label).toBe("Borrowed from response cache");
-    expect(sourceBadge("environment").label).toBe("From REDIS_* environment");
-    expect(sourceBadge(null).label).toBe("Not configured");
+    expect(sourceBadge("coordination_redis").labelKey).toBe("coordination.badge.configuredHere");
+    expect(sourceBadge("coordination_redis").tooltipKey).toBe("coordination.tooltip.configuredHere");
+    expect(sourceBadge("cache_backend").labelKey).toBe("coordination.badge.borrowedFromCache");
+    expect(sourceBadge("cache_backend").tooltipKey).toBe("coordination.tooltip.borrowedFromCache");
+    expect(sourceBadge("environment").labelKey).toBe("coordination.badge.fromEnvironment");
+    expect(sourceBadge("environment").tooltipKey).toBe("coordination.tooltip.fromEnvironment");
+    expect(sourceBadge(null).labelKey).toBe("coordination.badge.notConfigured");
   });
 
   it("should tone only a dedicated coordination Redis as success", () => {
@@ -149,6 +152,7 @@ describe("sourceBadge", () => {
   });
 
   it("should fall back to not configured for an unrecognized source", () => {
-    expect(sourceBadge("something_new").label).toBe("Not configured");
+    expect(sourceBadge("something_new").labelKey).toBe("coordination.badge.notConfigured");
+    expect(sourceBadge("something_new").tooltipKey).toBe("coordination.tooltip.notConfigured");
   });
 });

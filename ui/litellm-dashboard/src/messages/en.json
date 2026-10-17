@@ -8793,7 +8793,21 @@
     "advancedSettings": "Advanced Settings",
     "redisType": "Redis Type",
     "coordinationRedis": "Coordination Redis",
-    "restartNote": "Saved changes take effect on proxy restart."
+    "restartNote": "Saved changes take effect on proxy restart.",
+    "coordination": {
+      "badge": {
+        "configuredHere": "Configured here",
+        "borrowedFromCache": "Borrowed from response cache",
+        "fromEnvironment": "From REDIS_* environment",
+        "notConfigured": "Not configured"
+      },
+      "tooltip": {
+        "configuredHere": "general_settings.coordination_redis is set, so coordination uses its own Redis connection.",
+        "borrowedFromCache": "No coordination Redis is configured; the proxy reuses the response cache's Redis connection.",
+        "fromEnvironment": "No coordination Redis is configured; the proxy falls back to the REDIS_* environment variables.",
+        "notConfigured": "Cross-pod rate limits, spend tracking, and the pod lock manager have no Redis to coordinate through."
+      }
+    }
   },
   "searchTools": {
     "addNew": "Add New Search Tool",

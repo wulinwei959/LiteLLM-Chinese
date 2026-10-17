@@ -112,34 +112,45 @@ export const buildCoordinationPayload = (
   return Object.fromEntries(entries);
 };
 
+/** Every key here resolves under the `caching` namespace. */
+export type CoordinationBadgeMessageKey =
+  | "coordination.badge.borrowedFromCache"
+  | "coordination.badge.configuredHere"
+  | "coordination.badge.fromEnvironment"
+  | "coordination.badge.notConfigured"
+  | "coordination.tooltip.borrowedFromCache"
+  | "coordination.tooltip.configuredHere"
+  | "coordination.tooltip.fromEnvironment"
+  | "coordination.tooltip.notConfigured";
+
 export interface SourceBadgeDescriptor {
   readonly tone: StatusTone;
-  readonly label: string;
-  readonly tooltip: string;
+  readonly labelKey: CoordinationBadgeMessageKey;
+  readonly tooltipKey: CoordinationBadgeMessageKey;
 }
 
 const SOURCE_BADGES: Readonly<Record<CoordinationRedisSource, SourceBadgeDescriptor>> = {
   coordination_redis: {
     tone: "success",
-    label: "Configured here",
-    tooltip: "general_settings.coordination_redis is set, so coordination uses its own Redis connection.",
+    labelKey: "coordination.badge.configuredHere",
+    tooltipKey: "coordination.tooltip.configuredHere",
   },
   cache_backend: {
     tone: "info",
-    label: "Borrowed from response cache",
-    tooltip: "No coordination Redis is configured; the proxy reuses the response cache's Redis connection.",
+    labelKey: "coordination.badge.borrowedFromCache",
+    tooltipKey: "coordination.tooltip.borrowedFromCache",
   },
   environment: {
     tone: "info",
-    label: "From REDIS_* environment",
-    tooltip: "No coordination Redis is configured; the proxy falls back to the REDIS_* environment variables.",
+    labelKey: "coordination.badge.fromEnvironment",
+    tooltipKey: "coordination.tooltip.fromEnvironment",
   },
 };
 
 const NOT_CONFIGURED_BADGE: SourceBadgeDescriptor = {
   tone: "neutral",
-  label: "Not configured",
-  tooltip: "Cross-pod rate limits, spend tracking, and the pod lock manager have no Redis to coordinate through.",
+  labelKey: "coordination.badge.notConfigured",
+  tooltipKey: "coordination.tooltip.notConfigured",
 };
 
 export const sourceBadge = (source: string | null | undefined): SourceBadgeDescriptor => {
