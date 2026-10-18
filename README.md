@@ -47,8 +47,8 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 | 项目 | 状态 |
 |---|---|
 | **分支** | `main` |
-| **汉化完成度** | 批次 0-14 (核心管理页) 完成，批次 24 (共享组件长尾) 按簇推进到第 237 簇。非测试 `.tsx` 912 个中接入翻译 689 个 (75.5%)，扫描器仍标记 269 个含用户可见英文且未接入 |
-| **目录规模** | 中英消息各 10764 个叶子，键树完全对齐 (parity 守卫 0 缺失)，中英同值 139 个 (多为 URL、模型名等格式示例，非漏翻) |
+| **汉化完成度** | 批次 0-14 (核心管理页) 完成，批次 24 (共享组件长尾) 按簇推进到第 248 簇。非测试 `.tsx` 912 个中接入翻译 689 个 (75.5%)，扫描器仍标记 269 个含用户可见英文且未接入 |
+| **目录规模** | 中英消息各 10855 个叶子，键树完全对齐 (parity 守卫 0 缺失)，中英同值 139 个 (多为 URL、模型名等格式示例，非漏翻) |
 | **测试** | 最新全量 (第 85 簇四片) 886 文件 11583 例，1 失败 + 9 例预期失败；逐簇只跑定向文件，全绿 |
 | **类型检查** | 非测试文件 0 错误，`npm run build` 绿色；测试文件有 904 条存量类型债 (vitest 全局类型缺失等)，不阻塞构建 |
 | **i18n 守卫** | 3 条全部通过 (`locales.test.ts` 7 + `messagesParity.test.ts` 8 + `missingKeys.test.ts` 1) |
@@ -66,5 +66,5 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 
 ### 剩余工作
 
-- **批次 24 长尾按簇推进**：`components/add_model`、`components/view_logs` 等此前最密的目录已逐簇文案清零；剩余是 `usage`、`EntityUsage` 等仍含硬编码英文 (列头、tooltip、告警、动态拼装串) 的组件，按 `files with hits` 队列逐文件收
+- **批次 24 长尾按簇推进**：`components/add_model`、`components/view_logs` 等此前最密的目录已逐簇文案清零，`usage/EntityUsage`、`caching`、`vector-stores`、`tag-management`、`organization`、`claude_code_plugins` 等也已逐文件收过；剩余多是 `mcp-servers`、`search-tools`、`agents`、`guardrails` 等仍含硬编码英文 (列头、tooltip、告警、动态拼装串、复数计数句) 的组件，按 `files with hits` 队列逐文件收
 - **永久挂在上游名下的失败**：`cost_tracking_settings.test.tsx` 7 例 (与导入快照逐行相同的既有失败) 与 `LensSetup.integration.test.tsx` 的 `/2026-09-30/` 日期断言 (任何 locale 下 `toLocaleString` 都渲染英文月名)，已从汉化账摘出，不再重复排查
