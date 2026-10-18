@@ -85,7 +85,7 @@ function emptyMultiResult(): MultiModelResult {
   };
 }
 
-const expandToggle = (): HTMLElement => screen.getByRole("button", { name: /cost breakdown for / });
+const expandToggle = (): HTMLElement => screen.getByRole("button", { name: /成本明细/ });
 
 const shownBreakdown = (): HTMLElement | null => {
   const label = screen.queryByText("合计/请求");
@@ -171,7 +171,7 @@ describe("MultiCostResults", () => {
 
     it("should display Total Daily statistic when timePeriod is day", () => {
       renderWithProviders(<MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />);
-      expect(screen.getByText("Total Daily")).toBeInTheDocument();
+      expect(screen.getByText("每天总计")).toBeInTheDocument();
     });
 
     it("should display Total Monthly statistic when timePeriod is month", () => {
@@ -190,7 +190,7 @@ describe("MultiCostResults", () => {
           timePeriod="month"
         />,
       );
-      expect(screen.getByText("Total Monthly")).toBeInTheDocument();
+      expect(screen.getByText("每月总计")).toBeInTheDocument();
     });
 
     it("should show the model name in the summary table", () => {
@@ -214,7 +214,7 @@ describe("MultiCostResults", () => {
       expect(screen.getByRole("columnheader", { name: "模型" })).toBeInTheDocument();
       expect(screen.getByRole("columnheader", { name: "每请求" })).toBeInTheDocument();
       expect(screen.getByRole("columnheader", { name: "加成费用" })).toBeInTheDocument();
-      expect(screen.getByRole("columnheader", { name: "Daily" })).toBeInTheDocument();
+      expect(screen.getByRole("columnheader", { name: "每天" })).toBeInTheDocument();
     });
 
     it("should not show the model breakdown before the row is expanded", () => {
@@ -229,7 +229,7 @@ describe("MultiCostResults", () => {
       await user.click(expandToggle());
 
       expect(shownBreakdown()).toBeVisible();
-      expect(screen.getByText("每天 Total (100 req)")).toBeInTheDocument();
+      expect(screen.getByText("每天总计（100 次请求）")).toBeInTheDocument();
     });
 
     it("should collapse the model breakdown again on a second click", async () => {
@@ -247,12 +247,12 @@ describe("MultiCostResults", () => {
       const user = userEvent.setup();
       renderWithProviders(<MultiCostResults multiResult={makeMultiResult()} timePeriod="day" />);
 
-      const toggle = screen.getByRole("button", { name: "Show cost breakdown for gpt-4" });
+      const toggle = screen.getByRole("button", { name: "展开 gpt-4 的成本明细" });
       expect(toggle).toHaveAttribute("aria-expanded", "false");
 
       await user.click(toggle);
 
-      const collapseToggle = screen.getByRole("button", { name: "Hide cost breakdown for gpt-4" });
+      const collapseToggle = screen.getByRole("button", { name: "收起 gpt-4 的成本明细" });
       expect(collapseToggle).toHaveAttribute("aria-expanded", "true");
     });
 
@@ -279,7 +279,7 @@ describe("MultiCostResults", () => {
         />,
       );
 
-      expect(screen.getAllByRole("button", { name: /cost breakdown for / })).toHaveLength(1);
+      expect(screen.getAllByRole("button", { name: /成本明细/ })).toHaveLength(1);
     });
   });
 

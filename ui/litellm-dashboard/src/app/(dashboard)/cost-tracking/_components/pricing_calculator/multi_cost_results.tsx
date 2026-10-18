@@ -79,7 +79,7 @@ const SingleModelBreakdown: React.FC<{
         <div className="grid grid-cols-4 gap-4 pt-2 border-t border-border">
           <div className="min-w-0">
             <p className="text-xs text-muted-foreground block">
-              {periodLabel} Total ({formatRequests(periodRequests)} req)
+              {t("totalWithReq", { period: periodLabel, count: String(periodRequests) })}
             </p>
             <p
               className={`text-base font-semibold break-words ${timePeriod === "day" ? "text-success" : "text-purple-600 dark:text-purple-300"}`}
@@ -165,7 +165,7 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
             key={e.entry.id}
             className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg border border-destructive/20"
           >
-            <span className="font-medium">{e.entry.model || "Unknown model"}: </span>
+            <span className="font-medium">{e.entry.model || t("unknownModel")}: </span>
             {e.error}
           </div>
         ))}
@@ -187,7 +187,7 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
 
   const hasMargin = multiResult.totals.margin_per_request > 0;
 
-  const periodLabel = timePeriod === "day" ? "Daily" : "Monthly";
+  const periodLabel = timePeriod === "day" ? t("daily") : t("monthly");
 
   // Include both valid results and errors in the table data
   const allEntriesWithModels = multiResult.entries.filter((e) => e.entry.model);
@@ -226,7 +226,7 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
             </div>
           </div>
           <div className="min-w-0">
-            <span className="text-xs text-muted-foreground">Total {periodLabel}</span>
+            <span className="text-xs text-muted-foreground">{t("totalForPeriod", { period: periodLabel })}</span>
             <div
               className={`text-lg font-mono break-words ${timePeriod === "day" ? "text-success" : "text-purple-600 dark:text-purple-300"}`}
             >
@@ -328,7 +328,11 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
                           variant="ghost"
                           size="icon-xs"
                           aria-expanded={isExpanded}
-                          aria-label={`${isExpanded ? "Hide" : "Show"} cost breakdown for ${record.model}`}
+                          aria-label={
+                            isExpanded
+                              ? t("hideBreakdownFor", { model: String(record.model) })
+                              : t("showBreakdownFor", { model: String(record.model) })
+                          }
                           onClick={() => toggleExpanded(record.id)}
                           className="text-muted-foreground hover:text-foreground"
                         >

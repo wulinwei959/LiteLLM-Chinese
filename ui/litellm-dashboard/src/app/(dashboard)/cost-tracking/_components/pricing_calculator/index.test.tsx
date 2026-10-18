@@ -74,7 +74,7 @@ describe("PricingCalculator", () => {
 
   it("should show the Requests/Month column header by default", () => {
     renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
-    expect(screen.getByText("Requests/Month")).toBeInTheDocument();
+    expect(screen.getByText("请求/月")).toBeInTheDocument();
   });
 
   it("should add a new row when Add Another Model is clicked", async () => {
@@ -117,7 +117,7 @@ describe("PricingCalculator", () => {
 
       await user.click(screen.getByText("每天"));
 
-      expect(screen.getByText("Requests/Day")).toBeInTheDocument();
+      expect(screen.getByText("请求/天")).toBeInTheDocument();
     });
 
     it("should switch the column header back to Requests/Month when Per Month is selected", async () => {
@@ -125,10 +125,10 @@ describe("PricingCalculator", () => {
       renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
 
       await user.click(screen.getByText("每天"));
-      expect(screen.getByText("Requests/Day")).toBeInTheDocument();
+      expect(screen.getByText("请求/天")).toBeInTheDocument();
 
       await user.click(screen.getByText("每月"));
-      expect(screen.getByText("Requests/Month")).toBeInTheDocument();
+      expect(screen.getByText("请求/月")).toBeInTheDocument();
     });
   });
 

@@ -99,7 +99,7 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ accessToken, mode
             <TableHead className="w-[35%]">{t("modelCol")}</TableHead>
             <TableHead className="w-[18%]">{t("inputTokensCol")}</TableHead>
             <TableHead className="w-[18%]">{t("outputTokensCol")}</TableHead>
-            <TableHead className="w-[20%]">{`Requests/${timePeriod === "day" ? "Day" : "Month"}`}</TableHead>
+            <TableHead className="w-[20%]">{timePeriod === "day" ? t("requestsPerDay") : t("requestsPerMonth")}</TableHead>
             <TableHead className="w-[50px]">
               <span className="sr-only">{t("actionsCol")}</span>
             </TableHead>
@@ -158,7 +158,7 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ accessToken, mode
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label={`Remove model row ${index + 1}`}
+                  aria-label={t("removeModelRow", { index: index + 1 })}
                   onClick={() => handleRemoveEntry(record.id)}
                   disabled={entries.length === 1}
                   className="text-destructive"
