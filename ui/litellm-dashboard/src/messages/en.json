@@ -10834,6 +10834,8 @@
     "narrowDownHint": "Narrow down discovered tools",
     "inputPolicy": "Input Policy",
     "outputPolicy": "Output Policy",
+    "inputPolicyDesc": "Controls what data this tool is allowed to accept.",
+    "outputPolicyDesc": "Controls how the output of this tool is trusted by downstream tools.",
     "teamName": "Team Name",
     "keyName": "Key Name",
     "colUser": "User",

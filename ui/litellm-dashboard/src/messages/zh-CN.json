@@ -10830,6 +10830,8 @@
     "narrowDownHint": "收窄已发现工具的范围",
     "inputPolicy": "输入策略",
     "outputPolicy": "输出策略",
+    "inputPolicyDesc": "控制此工具允许接受哪些数据。",
+    "outputPolicyDesc": "控制下游工具如何信任此工具的输出。",
     "teamName": "团队名称",
     "keyName": "密钥名称",
     "colUser": "用户",

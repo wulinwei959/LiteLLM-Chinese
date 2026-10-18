@@ -286,9 +286,7 @@ export function ToolDetail({ toolName, onBack, accessToken }: ToolDetailProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <section className="rounded-lg border border-border bg-card p-5 shadow-xs">
             <h2 className="mb-1 text-sm font-semibold">{t("inputPolicy")}</h2>
-            <p className="mb-3 text-xs text-muted-foreground">
-              {inputDesc ?? "Controls what data this tool is allowed to accept."}
-            </p>
+            <p className="mb-3 text-xs text-muted-foreground">{inputDesc ?? t("inputPolicyDesc")}</p>
             <PolicySelect
               value={tool.input_policy}
               toolName={tool.tool_name}
@@ -303,9 +301,7 @@ export function ToolDetail({ toolName, onBack, accessToken }: ToolDetailProps) {
 
           <section className="rounded-lg border border-border bg-card p-5 shadow-xs">
             <h2 className="mb-1 text-sm font-semibold">{t("outputPolicy")}</h2>
-            <p className="mb-3 text-xs text-muted-foreground">
-              {outputDesc ?? "Controls how this tool's output is trusted by downstream tools."}
-            </p>
+            <p className="mb-3 text-xs text-muted-foreground">{outputDesc ?? t("outputPolicyDesc")}</p>
             <PolicySelect
               value={tool.output_policy}
               toolName={tool.tool_name}
