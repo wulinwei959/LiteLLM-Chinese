@@ -10,8 +10,6 @@ import { enableClaudeCodePlugin, disableClaudeCodePlugin } from "../networking";
 import { toast } from "@/lib/toast";
 import { Plugin } from "./types";
 
-const STEP_TITLES = ["Select Skills", "Confirm"];
-
 interface MakeSkillPublicFormProps {
   visible: boolean;
   onClose: () => void;
@@ -28,9 +26,11 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
   onSuccess,
 }) => {
   const t = useTranslations("claudeCodePlugins");
+  const commonT = useTranslations("common");
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedSkills, setSelectedSkills] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
+  const stepTitles = [t("stepSelectSkills"), commonT("confirm")];
 
   const handleClose = () => {
     setCurrentStep(0);
@@ -73,7 +73,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
 
   const handleSubmit = async () => {
     if (selectedSkills.size === 0) {
-      toast.fromError("Please select at least one skill");
+      toast.fromError(t("selectAtLeastOne"));
       return;
     }
 
@@ -93,7 +93,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
         }),
       );
 
-      toast.success(`Skill Hub updated — ${selectedSkills.size} skill(s) published`);
+      toast.success(t("publishSuccess", { count: selectedSkills.size }));
       handleClose();
       onSuccess();
     } catch (error) {
@@ -118,13 +118,11 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
             onCheckedChange={(checked) => handleSelectAll(checked === true)}
             disabled={skillsList.length === 0}
           />
-          Select All ({skillsList.length})
+          {t("selectAllWithCount", { count: skillsList.length })}
         </label>
       </div>
 
-      <p className="text-sm text-muted-foreground">
-        Selected skills will be visible to all users in the Skill Hub. Deselected skills will be unpublished.
-      </p>
+      <p className="text-sm text-muted-foreground">{t("publishHint")}</p>
 
       <div className="max-h-96 overflow-y-auto border rounded-lg p-4">
         <div className="space-y-3">
@@ -159,7 +157,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
       {selectedSkills.size > 0 && (
         <div className="bg-info/10 border border-info/20 rounded-lg p-3">
           <p className="text-sm text-info">
-            <strong>{selectedSkills.size}</strong> skill{selectedSkills.size !== 1 ? "s" : ""} will be published
+            {t.rich("countWillPublish", { count: selectedSkills.size, strong: (chunks) => <strong>{chunks}</strong> })}
           </p>
         </div>
       )}
@@ -195,7 +193,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
 
       <div className="bg-info/10 border border-info/20 rounded-lg p-3">
         <p className="text-sm text-info">
-          Total: <strong>{selectedSkills.size}</strong> skill{selectedSkills.size !== 1 ? "s" : ""} will be published
+          {t.rich("totalWillPublish", { count: selectedSkills.size, strong: (chunks) => <strong>{chunks}</strong> })}
         </p>
       </div>
     </div>
@@ -210,7 +208,7 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
 
         <div>
           <ol className="mb-6 flex items-center gap-6">
-            {STEP_TITLES.map((title, index) => (
+            {stepTitles.map((title, index) => (
               <li
                 key={title}
                 className="flex items-center gap-2"
@@ -237,18 +235,18 @@ const MakeSkillPublicForm: React.FC<MakeSkillPublicFormProps> = ({
 
           <div className="flex justify-between mt-6">
             <Button variant="outline" onClick={currentStep === 0 ? handleClose : () => setCurrentStep(0)}>
-              {currentStep === 0 ? "Cancel" : "Previous"}
+              {currentStep === 0 ? commonT("cancel") : commonT("previous")}
             </Button>
             <div className="flex space-x-2">
               {currentStep === 0 && (
                 <Button onClick={handleNext} disabled={selectedSkills.size === 0}>
-                  Next
+                  {commonT("next")}
                 </Button>
               )}
               {currentStep === 1 && (
                 <Button onClick={handleSubmit} disabled={loading}>
                   {loading && <Loader2 className="size-4 animate-spin" />}
-                  Publish to Hub
+                  {t("publishToHub")}
                 </Button>
               )}
             </div>

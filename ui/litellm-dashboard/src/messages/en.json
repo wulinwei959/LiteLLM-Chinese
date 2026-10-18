@@ -11127,7 +11127,13 @@
     "noteLabel": "Note:",
     "skillsToPublish": "Skills to be published:",
     "publishToHub": "Publish to Skill Hub",
-    "publishNoteBody": "Published skills will be visible to all users in the Skill Hub tab. Skills not in the list below will be unpublished."
+    "publishNoteBody": "Published skills will be visible to all users in the Skill Hub tab. Skills not in the list below will be unpublished.",
+    "stepSelectSkills": "Select Skills",
+    "selectAllWithCount": "Select All ({count})",
+    "publishHint": "Selected skills will be visible to all users in the Skill Hub. Deselected skills will be unpublished.",
+    "countWillPublish": "<strong>{count, plural, one {# skill} other {# skills}}</strong> will be published",
+    "totalWillPublish": "Total: <strong>{count, plural, one {# skill} other {# skills}}</strong> will be published",
+    "publishSuccess": "Skill Hub updated — {count, plural, one {# skill} other {# skills}} published"
   },
   "agentIdentity": {
     "sectionAria": "Agent Identity",

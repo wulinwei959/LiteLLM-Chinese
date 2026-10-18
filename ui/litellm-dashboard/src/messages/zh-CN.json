@@ -11123,7 +11123,13 @@
     "noteLabel": "注意：",
     "skillsToPublish": "将要发布的技能：",
     "publishToHub": "发布到技能中心",
-    "publishNoteBody": "已发布的技能将在技能中心页签对所有用户可见。不在下列列表中的技能将被取消发布。"
+    "publishNoteBody": "已发布的技能将在技能中心页签对所有用户可见。不在下列列表中的技能将被取消发布。",
+    "stepSelectSkills": "选择技能",
+    "selectAllWithCount": "全选（{count}）",
+    "publishHint": "已选技能将对技能中心的所有用户可见。取消选择的技能将被撤回发布。",
+    "countWillPublish": "将发布 <strong>{count, plural, other {# 个技能}}</strong>",
+    "totalWillPublish": "总计将发布 <strong>{count, plural, other {# 个技能}}</strong>",
+    "publishSuccess": "技能中心已更新，共发布 {count, plural, other {# 个技能}}"
   },
   "agentIdentity": {
     "sectionAria": "智能体身份",
