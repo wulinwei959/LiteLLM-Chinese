@@ -155,19 +155,20 @@ const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) =>
           </div>
 
           <div className="mb-4 text-sm">
-            Click on a tag name to view and edit its details.
+            {t("listHint")}
             <p>
-              You can use tags to restrict the usage of certain LLMs based on tags passed in the request. Read more
-              about tag routing{" "}
-              <a href="https://docs.litellm.ai/docs/proxy/tag_routing" target="_blank" rel="noopener noreferrer">
-                here
-              </a>
-              .
+              {t.rich("tagRoutingHelp", {
+                link: (chunks) => (
+                  <a href="https://docs.litellm.ai/docs/proxy/tag_routing" target="_blank" rel="noopener noreferrer">
+                    {chunks}
+                  </a>
+                ),
+              })}
             </p>
           </div>
 
           <Button className="mb-4 self-start" onClick={() => setIsCreateModalVisible(true)}>
-            + Create New Tag
+            {t("createNewTagBtn")}
           </Button>
 
           <div className="mt-2 flex min-h-0 flex-1 flex-col">
@@ -194,10 +195,10 @@ const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) =>
           {/* Delete Confirmation Modal */}
           <DeleteResourceModal
             isOpen={isDeleteModalOpen}
-            title="Delete Tag"
-            message="Are you sure you want to delete this tag? This action cannot be undone."
-            resourceInformationTitle="Tag Information"
-            resourceInformation={[{ label: "Tag Name", value: tagToDelete, code: true }]}
+            title={t("deleteTagTitle")}
+            message={t("deleteConfirmMessage")}
+            resourceInformationTitle={t("tagInformationTitle")}
+            resourceInformation={[{ label: t("tagName"), value: tagToDelete, code: true }]}
             onCancel={() => {
               setIsDeleteModalOpen(false);
               setTagToDelete(null);
