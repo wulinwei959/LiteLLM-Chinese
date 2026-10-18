@@ -168,6 +168,10 @@ describe("message syntax", () => {
     // 例如 vectorStores.indexesIntro 的 docsLink 与 issueLink。
     "docslink",
     "issuelink",
+    // t.rich 的行内等宽插槽标签，例如 costOptimization.shadowEval 的标题与模型范围。
+    "m",
+    "r",
+    "tg",
   ]);
   const pairs = [...collectEntries(en, ""), ...collectEntries(zhCN, "")];
 

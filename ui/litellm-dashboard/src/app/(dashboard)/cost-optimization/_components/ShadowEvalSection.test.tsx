@@ -354,15 +354,15 @@ describe("ShadowEvalSection", () => {
       ],
     });
     render(<ShadowEvalSection />);
-    expect(screen.getAllByRole("button", { name: "Stop" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "停止" })).toHaveLength(2);
     expect(screen.getByText("发起影子评估")).toBeInTheDocument();
-    expect(screen.queryByText(/Previous evaluations/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/历史评估/)).not.toBeInTheDocument();
   });
 
   it("renders the active card from the list row while its detail is still loading", () => {
     mockHooks({ jobs: [job({ status: "running" })], detailsById: {} });
     render(<ShadowEvalSection />);
-    expect(screen.getByRole("button", { name: "Stop" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "停止" })).toBeInTheDocument();
   });
 
   it("hides the start form and stop button from view-only admins", () => {
@@ -370,8 +370,8 @@ describe("ShadowEvalSection", () => {
     mockHooks({ jobs: [job({ status: "running" })] });
     render(<ShadowEvalSection />);
     expect(screen.queryByText("发起影子评估")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Stop" })).not.toBeInTheDocument();
-    expect(screen.getByText("running")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "停止" })).not.toBeInTheDocument();
+    expect(screen.getByText("运行中")).toBeInTheDocument();
   });
 
   it("never labels a collapsed previous eval as empty from a countless list row", () => {
@@ -385,16 +385,16 @@ describe("ShadowEvalSection", () => {
     };
     mockHooks({ jobs: [job({ status: "running" }), job(countlessListRow)] });
     render(<ShadowEvalSection />);
-    fireEvent.click(screen.getByRole("button", { name: /Previous evaluations/ }));
-    expect(screen.getByText("view results")).toBeInTheDocument();
-    expect(screen.queryByText("no verdicts")).not.toBeInTheDocument();
-    expect(screen.queryByText(/0 judged/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /历史评估/ }));
+    expect(screen.getByText("查看结果")).toBeInTheDocument();
+    expect(screen.queryByText("无裁决")).not.toBeInTheDocument();
+    expect(screen.queryByText(/已评 0/)).not.toBeInTheDocument();
   });
 
   it("surfaces a non-403 list failure instead of posing as an empty state", () => {
     mockHooks({ error: new Error("boom") });
     render(<ShadowEvalSection />);
-    expect(screen.getByText(/Existing evaluations could not be loaded/)).toBeInTheDocument();
+    expect(screen.getByText(/既有评估加载失败/)).toBeInTheDocument();
     expect(screen.getByText("发起影子评估")).toBeInTheDocument();
   });
 
@@ -405,22 +405,22 @@ describe("ShadowEvalSection", () => {
       detailError: true,
     });
     render(<ShadowEvalSection />);
-    expect(screen.getByText(/Results could not be loaded/)).toBeInTheDocument();
-    expect(screen.queryByText("Loading results...")).not.toBeInTheDocument();
+    expect(screen.getByText(/结果加载失败/)).toBeInTheDocument();
+    expect(screen.queryByText("正在加载结果...")).not.toBeInTheDocument();
   });
 
   it("shows the failure line over the collecting copy when an active job's detail errors", () => {
     mockHooks({ jobs: [job({ status: "running", results: null })], detailsById: {}, detailError: true });
     render(<ShadowEvalSection />);
-    expect(screen.getByText(/Results could not be loaded/)).toBeInTheDocument();
-    expect(screen.queryByText(/Collecting verdicts/)).not.toBeInTheDocument();
+    expect(screen.getByText(/结果加载失败/)).toBeInTheDocument();
+    expect(screen.queryByText(/正在收集裁决/)).not.toBeInTheDocument();
   });
 
   it("never claims no verdicts for a judged job whose results have not loaded yet", () => {
     mockHooks({ jobs: [job({ status: "completed", judged_count: 12, results: null })], detailsById: {} });
     render(<ShadowEvalSection />);
-    expect(screen.getByText("Loading results...")).toBeInTheDocument();
-    expect(screen.queryByText(/No verdicts were recorded/)).not.toBeInTheDocument();
+    expect(screen.getByText("正在加载结果...")).toBeInTheDocument();
+    expect(screen.queryByText(/该评估尚未记录任何裁决/)).not.toBeInTheDocument();
   });
 
   it("shows the start form when there are no jobs", () => {
@@ -435,11 +435,11 @@ describe("ShadowEvalSection", () => {
     mockHooks({ jobs: [j], detailsById: { "job-1": j } });
     render(<ShadowEvalSection />);
 
-    expect(screen.getByText("Router matched or beat your current model")).toBeInTheDocument();
+    expect(screen.getByText("路由持平或优于当前模型")).toBeInTheDocument();
     expect(screen.getByText("70.0%")).toBeInTheDocument();
-    expect(screen.getByText("of 42 judged responses")).toBeInTheDocument();
-    expect(screen.getByText(/Tie 22.0%/)).toBeInTheDocument();
-    expect(screen.getByText(/Current model won 30.0%/)).toBeInTheDocument();
+    expect(screen.getByText("共 42 条已评回答")).toBeInTheDocument();
+    expect(screen.getByText(/平局 22.0%/)).toBeInTheDocument();
+    expect(screen.getByText(/当前模型 胜出 30.0%/)).toBeInTheDocument();
     expect(screen.getByText("gpt-4o")).toBeInTheDocument();
     expect(screen.getByText("SIMPLE")).toBeInTheDocument();
     expect(screen.getByText("REASONING")).toBeInTheDocument();
@@ -450,29 +450,29 @@ describe("ShadowEvalSection", () => {
     const j = job({ ends_at: new Date(Date.now() + 3 * 86_400_000).toISOString() });
     mockHooks({ jobs: [j], detailsById: { "job-1": j } });
     render(<ShadowEvalSection />);
-    expect(screen.getByText(/ends in 3 days/)).toBeInTheDocument();
+    expect(screen.getByText(/3 天后结束/)).toBeInTheDocument();
   });
 
   it("shows recorded eval spend against the job's dollar budget", () => {
     const j = job();
     mockHooks({ jobs: [j], detailsById: { "job-1": j } });
     render(<ShadowEvalSection />);
-    expect(screen.getByText(/\$3\.21 of \$10\.00 eval spend/)).toBeInTheDocument();
+    expect(screen.getByText(/评估花费 \$3\.21（预算 \$10\.00）/)).toBeInTheDocument();
   });
 
   it("shows spend without a budget cap for a job from before spend budgets existed", () => {
     const j = job({ targets: [targetEntry("hashed-key-abc", { max_budget: null, spend: 3.21 })] });
     mockHooks({ jobs: [j], detailsById: { "job-1": j } });
     render(<ShadowEvalSection />);
-    expect(screen.getByText(/\$3\.21 eval spend/)).toBeInTheDocument();
-    expect(screen.queryByText(/of \$/)).not.toBeInTheDocument();
+    expect(screen.getByText(/评估花费 \$3\.21/)).toBeInTheDocument();
+    expect(screen.queryByText(/预算 \$/)).not.toBeInTheDocument();
   });
 
   it("flags rows with fewer than 30 judged turns as low sample", () => {
     const j = job();
     mockHooks({ jobs: [j], detailsById: { "job-1": j } });
     render(<ShadowEvalSection />);
-    expect(screen.getAllByText("(low sample)")).toHaveLength(1);
+    expect(screen.getAllByText("（样本偏少）")).toHaveLength(1);
   });
 
   it("surfaces the last failure so a growing error_count is diagnosable", () => {
@@ -488,7 +488,7 @@ describe("ShadowEvalSection", () => {
     const { stop } = mockHooks({ jobs: [j], detailsById: { "job-1": j } });
     render(<ShadowEvalSection />);
 
-    await user.click(screen.getByText("Stop"));
+    await user.click(screen.getByText("停止"));
 
     expect(stop.mutate).toHaveBeenCalledWith("job-1");
   });
@@ -497,7 +497,7 @@ describe("ShadowEvalSection", () => {
     const done = job({ status: "completed" });
     mockHooks({ jobs: [done], detailsById: { "job-1": done } });
     render(<ShadowEvalSection />);
-    expect(screen.queryByText("Stop")).not.toBeInTheDocument();
+    expect(screen.queryByText("停止")).not.toBeInTheDocument();
     expect(screen.getByText("发起影子评估")).toBeInTheDocument();
   });
 
@@ -714,14 +714,14 @@ describe("ShadowEvalSection", () => {
     mockHooks({ jobs: [multi], detailsById: { "job-1": multi } });
     render(<ShadowEvalSection />);
 
-    expect(screen.getByText("Router")).toBeInTheDocument();
+    expect(screen.getByText("路由")).toBeInTheDocument();
     const rows = screen.getAllByRole("row").map((row) => row.textContent ?? "");
     expect(rows.some((text) => text.includes("claude-auto") && text.includes("40.0%"))).toBe(true);
     expect(rows.some((text) => text.includes("gpt-auto") && text.includes("70.0%"))).toBe(true);
     expect(
       screen.getByText(
         (_, element) =>
-          element?.textContent === "Shadowing 10% of prod-alpha traffic via claude-auto, gpt-auto" &&
+          element?.textContent === "经由 claude-auto, gpt-auto 对 prod-alpha 的 10% 流量执行影子评估" &&
           element.tagName === "P",
       ),
     ).toBeInTheDocument();
@@ -735,7 +735,7 @@ describe("ShadowEvalSection", () => {
     expect(
       screen.getByText(
         (_, element) =>
-          element?.textContent === "Shadowing 10% of prod-alpha traffic via claude-auto" && element.tagName === "P",
+          element?.textContent === "经由 claude-auto 对 prod-alpha 的 10% 流量执行影子评估" && element.tagName === "P",
       ),
     ).toBeInTheDocument();
   });
@@ -746,7 +746,7 @@ describe("ShadowEvalSection", () => {
     mockHooks({ jobs: [single], detailsById: { "job-1": single } });
     render(<ShadowEvalSection />);
 
-    expect(screen.queryByText("Router")).not.toBeInTheDocument();
+    expect(screen.queryByText("路由")).not.toBeInTheDocument();
   });
 
   it("flips the arm labels and headline for a reverse job's results", () => {
@@ -756,17 +756,17 @@ describe("ShadowEvalSection", () => {
 
     expect(
       screen.getByText(
-        (_, element) => element?.textContent === "Comparing claude-auto to openai/gpt-4o on 10% of prod-alpha traffic",
+        (_, element) => element?.textContent === "在 prod-alpha 的 10% 流量上，对比 claude-auto 与 openai/gpt-4o",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText("Router matched or beat the baseline")).toBeInTheDocument();
+    expect(screen.getByText("路由持平或优于基线")).toBeInTheDocument();
     expect(screen.getByText("52.0%")).toBeInTheDocument();
-    expect(screen.getByText(/Router won 30.0%/)).toBeInTheDocument();
-    expect(screen.getByText(/Baseline won 48.0%/)).toBeInTheDocument();
-    expect(screen.getAllByText("Baseline wins")).toHaveLength(2);
-    expect(screen.getByText("Router pick")).toBeInTheDocument();
-    expect(screen.queryByText(/Current model/)).not.toBeInTheDocument();
-    expect(screen.queryByText("Compared against")).not.toBeInTheDocument();
+    expect(screen.getByText(/路由胜出 30.0%/)).toBeInTheDocument();
+    expect(screen.getByText(/基线 胜出 48.0%/)).toBeInTheDocument();
+    expect(screen.getAllByText("基线 胜出")).toHaveLength(2);
+    expect(screen.getByText("路由选择")).toBeInTheDocument();
+    expect(screen.queryByText(/当前模型/)).not.toBeInTheDocument();
+    expect(screen.queryByText("对比对象")).not.toBeInTheDocument();
   });
 
   it("labels the shadowed key by alias, then masked name, then truncated hash", () => {
@@ -820,17 +820,17 @@ describe("ShadowEvalSection", () => {
     const hungry = screen.getByText("hash-hungr…").closest("tr");
     if (!spent || !hungry) throw new Error("expected a table row per scoped key");
 
-    expect(within(spent).getByText("stopped")).toBeInTheDocument();
+    expect(within(spent).getByText("已停止")).toBeInTheDocument();
     expect(within(spent).getByText("$1.50 / $2.00")).toBeInTheDocument();
     expect(within(spent).getByText("60.0%")).toBeInTheDocument();
 
-    expect(within(hungry).getByText("running")).toBeInTheDocument();
+    expect(within(hungry).getByText("运行中")).toBeInTheDocument();
     expect(within(hungry).getByText("$0.2000 / $5.00")).toBeInTheDocument();
-    expect(within(hungry).getByText("No verdicts yet")).toBeInTheDocument();
+    expect(within(hungry).getByText("暂无裁决结果")).toBeInTheDocument();
 
-    expect(screen.getByText(/205 turns judged/)).toBeInTheDocument();
-    expect(screen.getByText(/Shadowing 10% of/)).toBeInTheDocument();
-    expect(screen.getByText("2 targets")).toBeInTheDocument();
+    expect(screen.getByText(/已评 205 轮/)).toBeInTheDocument();
+    expect(screen.getByText(/10% 流量执行影子评估/)).toBeInTheDocument();
+    expect(screen.getByText("2 个目标")).toBeInTheDocument();
   });
 
   it("reads a key that spent its budget as completed even before the sweep stamps it", () => {
@@ -850,10 +850,10 @@ describe("ShadowEvalSection", () => {
     const spent = screen.getByText("hash-spent…").closest("tr");
     const hungry = screen.getByText("hash-hungr…").closest("tr");
     if (!spent || !hungry) throw new Error("expected a table row per scoped key");
-    expect(within(spent).getByText("completed")).toBeInTheDocument();
+    expect(within(spent).getByText("已完成")).toBeInTheDocument();
     expect(within(spent).getByText("$2.00 / $2.00")).toBeInTheDocument();
-    expect(within(hungry).getByText("running")).toBeInTheDocument();
-    expect(within(hungry).getByText("3 / 500 turns")).toBeInTheDocument();
+    expect(within(hungry).getByText("运行中")).toBeInTheDocument();
+    expect(within(hungry).getByText("3 / 500 轮")).toBeInTheDocument();
   });
 
   it("shows the per-key table while a multi-key job is still collecting, before any verdicts exist", () => {
@@ -873,11 +873,11 @@ describe("ShadowEvalSection", () => {
 
     const spent = screen.getByText("hash-spent…").closest("tr");
     if (!spent) throw new Error("expected a per-key row before verdicts exist");
-    expect(within(spent).getByText("completed")).toBeInTheDocument();
+    expect(within(spent).getByText("已完成")).toBeInTheDocument();
     expect(within(spent).getByText("$0.5000 / $0.5000")).toBeInTheDocument();
     expect(screen.getByText("已用预算")).toBeInTheDocument();
-    expect(screen.queryByText("Judged turns")).not.toBeInTheDocument();
-    expect(screen.getByText(/Collecting verdicts/)).toBeInTheDocument();
+    expect(screen.queryByText("已评轮次")).not.toBeInTheDocument();
+    expect(screen.getByText(/正在收集裁决/)).toBeInTheDocument();
   });
 
   it("reads every key as completed once the job's window closes, whatever its own stop state", () => {
@@ -896,20 +896,18 @@ describe("ShadowEvalSection", () => {
 
     const hungry = screen.getByText("hash-hungr…").closest("tr");
     if (!hungry) throw new Error("expected a table row per scoped key");
-    expect(within(hungry).getByText("completed")).toBeInTheDocument();
-    expect(within(hungry).queryByText("running")).not.toBeInTheDocument();
+    expect(within(hungry).getByText("已完成")).toBeInTheDocument();
+    expect(within(hungry).queryByText("运行中")).not.toBeInTheDocument();
   });
 
   it("shows the measured cost comparison with savings and both arm totals", () => {
     const j = job({});
     mockHooks({ jobs: [j], detailsById: { "job-1": j } });
     render(<ShadowEvalSection />);
-    expect(screen.getByText("Router cost vs your current model")).toBeInTheDocument();
+    expect(screen.getByText("路由花费 vs 当前模型")).toBeInTheDocument();
     expect(screen.getByText("-50.0%")).toBeInTheDocument();
-    expect(
-      screen.getByText("$0.3000 vs $0.6000 on the same judged turns; 2 cache-served turns excluded"),
-    ).toBeInTheDocument();
-    expect(screen.getAllByText("Router cost").length).toBeGreaterThan(0);
+    expect(screen.getByText("同一批已评轮次上 $0.3000 vs $0.6000; 已排除 2 个缓存命中轮次")).toBeInTheDocument();
+    expect(screen.getAllByText("路由花费").length).toBeGreaterThan(0);
   });
 
   it("hides the cost tile when either arm has no measured spend, so a pre-measurement job never reads as a free incumbent", () => {
@@ -922,16 +920,16 @@ describe("ShadowEvalSection", () => {
     };
     mockHooks({ jobs: [legacy], detailsById: { "job-1": legacy } });
     render(<ShadowEvalSection />);
-    expect(screen.queryByText(/Router cost vs/)).not.toBeInTheDocument();
-    expect(screen.getByText("Router matched or beat your current model")).toBeInTheDocument();
+    expect(screen.queryByText(/路由花费 vs/)).not.toBeInTheDocument();
+    expect(screen.getByText("路由持平或优于当前模型")).toBeInTheDocument();
   });
 
   it("flips the cost comparison arms for a reverse job", () => {
     const reverse = job({ direction: "reverse", baseline_model: "gpt-4o-mini" });
     mockHooks({ jobs: [reverse], detailsById: { "job-1": reverse } });
     render(<ShadowEvalSection />);
-    expect(screen.getByText("Router cost vs the baseline")).toBeInTheDocument();
-    expect(screen.getByText(/\$0\.6000 vs \$0\.3000 on the same judged turns/)).toBeInTheDocument();
+    expect(screen.getByText("路由花费 vs 基线")).toBeInTheDocument();
+    expect(screen.getByText(/同一批已评轮次上 \$0\.6000 vs \$0\.3000/)).toBeInTheDocument();
     expect(screen.getByText("+100.0%")).toBeInTheDocument();
   });
 
@@ -951,9 +949,9 @@ describe("ShadowEvalSection", () => {
 
     expect(screen.queryByText("SIMPLE")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /Previous evaluations \(1\)/ }));
-    expect(screen.getByText("view results")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /10% of prod-alpha traffic via claude-auto/ }));
+    await user.click(screen.getByRole("button", { name: /历史评估（1）/ }));
+    expect(screen.getByText("查看结果")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /对 prod-alpha 的 10% 流量执行影子评估/ }));
 
     expect(await screen.findByText("SIMPLE")).toBeInTheDocument();
     expect(screen.getByText("REASONING")).toBeInTheDocument();
