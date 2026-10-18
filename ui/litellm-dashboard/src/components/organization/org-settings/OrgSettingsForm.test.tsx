@@ -207,7 +207,7 @@ describe("OrgSettingsForm", () => {
     fireEvent.change(screen.getByLabelText("元数据"), { target: { value: "not json" } });
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Metadata must be a valid JSON object");
+    expect(await screen.findByRole("alert")).toHaveTextContent("元数据必须是有效的 JSON 对象");
     expect(patchOrganization).not.toHaveBeenCalled();
   });
 

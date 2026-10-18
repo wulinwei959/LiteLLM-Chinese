@@ -44,7 +44,7 @@ export const OrgCreateDialog = ({
   const t = useTranslations("organizations.orgForm");
   const orgT = useTranslations("organizations");
   const queryClient = useQueryClient();
-  const form = useZodForm(orgSettingsSchema, { defaultValues: emptyOrgFormValues });
+  const form = useZodForm(orgSettingsSchema(t), { defaultValues: emptyOrgFormValues });
 
   const closeAndReset = () => {
     form.reset(emptyOrgFormValues);

@@ -60,7 +60,7 @@ export const OrgSettingsForm = ({
   const t = useTranslations("organizations.orgForm");
   const orgT = useTranslations("organizations");
   const queryClient = useQueryClient();
-  const form = useZodForm(orgSettingsSchema, { defaultValues: orgToForm(org) });
+  const form = useZodForm(orgSettingsSchema(t), { defaultValues: orgToForm(org) });
   const { isDirty } = form.formState;
 
   const mutation = useMutation({

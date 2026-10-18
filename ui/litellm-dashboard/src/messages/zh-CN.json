@@ -3198,7 +3198,11 @@
       "daily": "每天",
       "weekly": "每周",
       "monthly": "每月",
-      "metadata": "元数据"
+      "metadata": "元数据",
+      "nameRequired": "请输入组织名称",
+      "nonNegativeWholeNumber": "必须为非负整数",
+      "nonNegativeNumber": "必须为非负数",
+      "metadataInvalidJson": "元数据必须是有效的 JSON 对象"
     }
   },
   "budgets": {

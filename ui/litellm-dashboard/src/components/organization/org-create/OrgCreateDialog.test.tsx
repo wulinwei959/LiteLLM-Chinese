@@ -65,7 +65,7 @@ describe("OrgCreateDialog", () => {
 
     await user.click(screen.getByRole("button", { name: "Create Organization" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Please input an organization name");
+    expect(await screen.findByRole("alert")).toHaveTextContent("请输入组织名称");
     expect(createOrganization).not.toHaveBeenCalled();
   });
 
@@ -136,7 +136,7 @@ describe("OrgCreateDialog", () => {
     await user.type(screen.getByLabelText("元数据"), "not json");
     await user.click(screen.getByRole("button", { name: "Create Organization" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Metadata must be a valid JSON object");
+    expect(await screen.findByRole("alert")).toHaveTextContent("元数据必须是有效的 JSON 对象");
     expect(createOrganization).not.toHaveBeenCalled();
   });
 

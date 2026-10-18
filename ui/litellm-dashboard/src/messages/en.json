@@ -3198,7 +3198,11 @@
       "daily": "daily",
       "weekly": "weekly",
       "monthly": "monthly",
-      "metadata": "Metadata"
+      "metadata": "Metadata",
+      "nameRequired": "Please input an organization name",
+      "nonNegativeWholeNumber": "Must be a non-negative whole number",
+      "nonNegativeNumber": "Must be a non-negative number",
+      "metadataInvalidJson": "Metadata must be a valid JSON object"
     }
   },
   "budgets": {
