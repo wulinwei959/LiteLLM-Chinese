@@ -66,12 +66,11 @@ export const OrgSettingsForm = ({
   const mutation = useMutation({
     mutationFn: (body: OrgPatchBody) => patchOrganization(organizationId, body),
     onSuccess: () => {
-      toast.success("Organization settings updated successfully");
+      toast.success(orgT("updateSuccess"));
       queryClient.invalidateQueries({ queryKey: organizationKeys.all });
       onSaved();
     },
-    onError: (error: unknown) =>
-      toast.fromError(error instanceof Error ? error.message : "Failed to update organization settings"),
+    onError: (error: unknown) => toast.fromError(error instanceof Error ? error.message : orgT("updateFailed")),
   });
 
   const onSubmit = form.handleSubmit((values) => {
@@ -135,7 +134,7 @@ export const OrgSettingsForm = ({
               value={field.value}
               onChange={field.onChange}
               accessToken={accessToken}
-              placeholder="Select vector stores"
+              placeholder={t("vectorStoresPlaceholder")}
             />
           )}
         </FormField>
@@ -146,7 +145,7 @@ export const OrgSettingsForm = ({
               value={field.value}
               onChange={field.onChange}
               accessToken={accessToken}
-              placeholder="Select MCP servers and access groups"
+              placeholder={t("mcpServersPlaceholder")}
             />
           )}
         </FormField>
@@ -162,7 +161,7 @@ export const OrgSettingsForm = ({
             {orgT("cancel")}
           </Button>
           <Button type="submit" disabled={!isDirty || mutation.isPending}>
-            {mutation.isPending ? "Saving..." : "Save Changes"}
+            {mutation.isPending ? orgT("saving") : orgT("saveChanges")}
           </Button>
         </div>
       </div>

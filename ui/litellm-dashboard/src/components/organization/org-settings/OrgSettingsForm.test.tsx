@@ -91,7 +91,7 @@ describe("OrgSettingsForm", () => {
   it("disables Save while the form is pristine", () => {
     renderForm();
 
-    expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "保存更改" })).toBeDisabled();
   });
 
   it("sends only the edited field", async () => {
@@ -100,7 +100,7 @@ describe("OrgSettingsForm", () => {
 
     await user.clear(screen.getByLabelText("组织名称"));
     fireEvent.change(screen.getByLabelText("组织名称"), { target: { value: "acme-2" } });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(patchOrganization).toHaveBeenCalledTimes(1));
     expect(patchOrganization).toHaveBeenCalledWith("org-1", { organization_alias: "acme-2" });
@@ -118,7 +118,7 @@ describe("OrgSettingsForm", () => {
     // enforces before handleSubmit ever runs
     expect(budget.checkValidity()).toBe(true);
 
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(patchOrganization).toHaveBeenCalledTimes(1));
     expect(patchOrganization).toHaveBeenCalledWith("org-1", { max_budget: 0.001 });
@@ -129,7 +129,7 @@ describe("OrgSettingsForm", () => {
     const { patchOrganization } = renderForm();
 
     await user.clear(screen.getByLabelText("每分钟令牌上限（TPM）"));
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(patchOrganization).toHaveBeenCalledTimes(1));
     expect(patchOrganization).toHaveBeenCalledWith("org-1", { tpm_limit: null });
@@ -140,7 +140,7 @@ describe("OrgSettingsForm", () => {
     const { patchOrganization } = renderForm();
 
     await user.click(screen.getByRole("button", { name: "clear-models" }));
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(patchOrganization).toHaveBeenCalledTimes(1));
     expect(patchOrganization).toHaveBeenCalledWith("org-1", { models: [] });
@@ -151,7 +151,7 @@ describe("OrgSettingsForm", () => {
     const { patchOrganization } = renderForm();
 
     await user.click(screen.getByRole("button", { name: "set-vector-stores" }));
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(patchOrganization).toHaveBeenCalledTimes(1));
     expect(patchOrganization).toHaveBeenCalledWith("org-1", {
@@ -164,7 +164,7 @@ describe("OrgSettingsForm", () => {
     const { patchOrganization } = renderForm();
 
     await user.click(screen.getByRole("button", { name: "set-mcp" }));
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(patchOrganization).toHaveBeenCalledTimes(1));
     expect(patchOrganization).toHaveBeenCalledWith("org-1", {
@@ -181,7 +181,7 @@ describe("OrgSettingsForm", () => {
     const { patchOrganization } = renderForm({ org: orgWithToolsets });
 
     await user.click(screen.getByRole("button", { name: "set-mcp" }));
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(patchOrganization).toHaveBeenCalledTimes(1));
     expect(patchOrganization).toHaveBeenCalledWith("org-1", {
@@ -197,7 +197,7 @@ describe("OrgSettingsForm", () => {
     await user.clear(alias);
     fireEvent.change(alias, { target: { value: "acme" } });
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeDisabled());
   });
 
   it("blocks submit and shows an error for invalid metadata JSON", async () => {
@@ -205,7 +205,7 @@ describe("OrgSettingsForm", () => {
     const { patchOrganization } = renderForm();
 
     fireEvent.change(screen.getByLabelText("元数据"), { target: { value: "not json" } });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("元数据必须是有效的 JSON 对象");
     expect(patchOrganization).not.toHaveBeenCalled();
@@ -221,7 +221,7 @@ describe("OrgSettingsForm", () => {
 
     await user.clear(screen.getByLabelText("组织名称"));
     fireEvent.change(screen.getByLabelText("组织名称"), { target: { value: "acme-2" } });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(patchOrganization).toHaveBeenCalledTimes(1));
     expect(onSaved).not.toHaveBeenCalled();
@@ -234,7 +234,7 @@ describe("OrgSettingsForm", () => {
 
     await user.clear(screen.getByLabelText("每分钟请求上限（RPM）"));
     fireEvent.change(screen.getByLabelText("每分钟请求上限（RPM）"), { target: { value: "75" } });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(onSaved).toHaveBeenCalledTimes(1));
   });
