@@ -5509,6 +5509,8 @@
       "runsAria": "Agent runs",
       "loadingRuns": "Loading runs…",
       "loadRunsError": "Could not load runs: {message}",
+      "sessionExpired": "Your session is no longer valid. Sign out and sign in again.",
+      "noTracesAccess": "Your account does not have access to these traces.",
       "noRunsMatch": "No runs match these filters.",
       "loadMore": "Load more",
       "statusSucceeded": "Succeeded",

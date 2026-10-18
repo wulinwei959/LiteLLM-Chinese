@@ -5509,6 +5509,8 @@
       "runsAria": "智能体运行列表",
       "loadingRuns": "正在加载运行记录…",
       "loadRunsError": "无法加载运行记录：{message}",
+      "sessionExpired": "你的登录会话已失效，请退出后重新登录。",
+      "noTracesAccess": "你的账号无权查看这些调用链。",
       "noRunsMatch": "没有符合这些筛选条件的运行记录。",
       "loadMore": "加载更多",
       "statusSucceeded": "成功",

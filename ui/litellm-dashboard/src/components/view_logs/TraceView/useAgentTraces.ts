@@ -1,8 +1,10 @@
 import { useInfiniteQuery, useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import moment from "moment";
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 import { ApiError } from "@/lib/http/client";
+import type { LogsTranslator } from "@/lib/i18n/translators";
 
 import { agentTraceListCall, apiClient } from "../../networking";
 import { LIVE_TAIL_INTERVAL_MS } from "../log_filter_logic";
@@ -21,10 +23,10 @@ const requiresUserAction = (error: unknown): boolean => {
   return isTracingNotEnabled(error) || error.status === 401 || error.status === 403;
 };
 
-const displayError = (error: Error | null): Error | null => {
+const displayError = (error: Error | null, t: LogsTranslator): Error | null => {
   if (!(error instanceof ApiError)) return error;
-  if (error.status === 401) return new Error("Your session is no longer valid. Sign out and sign in again.");
-  if (error.status === 403) return new Error("Your account does not have access to these traces.");
+  if (error.status === 401) return new Error(t("traceList.sessionExpired"));
+  if (error.status === 403) return new Error(t("traceList.noTracesAccess"));
   return error;
 };
 
@@ -65,6 +67,7 @@ export function useAgentTraces({
   isLiveTail,
   enabled,
 }: UseAgentTracesOptions): AgentTracesResult {
+  const t = useTranslations("logs");
   const fetchPage = (pageParam: unknown): Promise<TracePage> => {
     const nowMs = Date.now();
     const listOptions: Parameters<typeof agentTraceListCall>[0] = {
@@ -98,7 +101,7 @@ export function useAgentTraces({
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     notEnabledDetail: notEnabled ? query.error?.message || "Agent tracing is not enabled" : null,
-    error: notEnabled ? null : displayError(query.error),
+    error: notEnabled ? null : displayError(query.error, t),
     hasMore: query.hasNextPage,
     loadMore: () => void query.fetchNextPage(),
     refetch: () => void query.refetch(),

@@ -84,8 +84,8 @@ describe("AgentTracesSection", () => {
   });
 
   it.each([
-    [401, "Your session is no longer valid. Sign out and sign in again."],
-    [403, "Your account does not have access to these traces."],
+    [401, "你的登录会话已失效，请退出后重新登录。"],
+    [403, "你的账号无权查看这些调用链。"],
   ])("stops live polling after HTTP %s and explains how to recover", async (status, message) => {
     vi.useFakeTimers();
     vi.mocked(agentTraceListCall).mockRejectedValue(new ApiError("Private token details", Number(status), {}));
