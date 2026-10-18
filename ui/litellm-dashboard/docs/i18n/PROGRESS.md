@@ -1,10 +1,18 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 211 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10640、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 211 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 213 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10641、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 213 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 213 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `models-and-endpoints/components/AccessGroupBudgetModal.tsx`，模型访问组共享预算弹窗。扫描器 4 条命中（`requireAtLeastOne` 校验消息加三条 tooltip 说明）只是冰山一角：整个片此前完全没接线，标题、说明段、三个字段标签、留空提示、取消/保存按钮全是裸字面量，扫描器漏掉是因为它们精确值早被批次 15 的机翻预置进目录了（`models.accessGroupBudgetModal` 15 个键零消费方，本簇是首个）。盲区复查把这 12 处一次性全部接上，只新开 1 键。校验模式按第 209/211 簇工厂化：`budgetSchema` 改 `(t) => z.object(...).refine(...)`，翻译器类型走本文件局部 `BudgetModalTranslator = ReturnType<typeof useTranslations<"models.accessGroupBudgetModal">>`（`translators.ts` 只有父域 `ModelsTranslator`，子命名空间另起别名沿用 `passThroughTableTranslator` 形态），消费处 `useZodForm(budgetSchema(t), ...)` 每渲染新建无环。说明段目录值带字面 `<code>all-proxy-models</code>`，按 `WORKFLOW.md` 富文本口径用 `t.rich("description", { code: (chunks) => <code>{chunks}</code> })` 渲染，标签名落在白名单内，`all-proxy-models` 与撇号 `group's` 由真实 parser 复跑确认不炸。标题是唯一新开键：预置的 `editBudget`/`setBudget`/`budgetFor` 三键组合起来在任一侧都会拼出重复词（en "Edit budget budget for X"、zh "编辑 为 X 设置预算"），故加 `title` 用 `{action}` 参数穿两个既有动词键（en `{action} for "{group}"`、zh `为 "{group}" {action}`），两侧顶层参数名一致过 `messagesParity`，预置的 `budgetFor` 留作未消费不删（叶子 10640 涨到 10641）。测试面：`AccessGroupBudgetsPanel.integration.test.tsx` 五条断言改钉 zh 目录值（`/最大预算/`、`保存预算`、`/请至少设置最大预算/`），菜单项两侧正则早已兼容。门禁：本片 9 例全绿、Type Errors 无报错，`models-and-endpoints` 整包 196 例 1 失败为 HEAD 既有红灯（`AddModelPanel` PTU Effective From 一例，`git stash` 复测 HEAD 同样失败，与本簇无关），tsc 锚定零命中，eslint 两文件零告警，prettier 两代码文件 HEAD 干净当前即干净（两份目录 HEAD 即脏不改写），ICU 守卫 7 键 14 侧通过，`next build` 通过（日志里的 `ENVIRONMENT_FALLBACK` 是静态生成的既有噪声，exit 0），扫描器本文件归零（files with hits 277 降到 276）。覆盖率接入数不动（本文件早已接入）。下一簇按队列取 `mcp-servers/_components/mcp_servers.tsx`（4 条）。
+
+## 2026-10-18 第 212 簇更新
+
+继续串行推进，没有派子代理。这一簇是纯判定簇：`policies/_components/policy_test_panel.tsx`，策略模拟器面板。扫描器 4 条命中全判不翻登记：`Failed to load teams:`/`Failed to load keys:`/`Failed to load models:` 与 `Error resolving policies:` 是 console.error 前缀（第 195/208/210 簇口径，开发者面向、不入目录），SVG `path d` 矢量 `d` 属性是 wire 值。盲区复查发现本片用户可见文案早在上一轮就整片接好了（`sim.*` 15 个键全覆盖，含 `sim.intro`/`sim.emptyDesc` 带 `{simulate}` 参数的两处），本轮无改动，测试面 9 例 HEAD 即全绿、无断言改写。门禁：tsc 锚定零命中，eslint 4 warning 与 HEAD 逐规则持平（3 条 `no-explicit-any` 加 1 条 `local/no-long-condition-chain`，均为本文件既有账），prettier 不改写未动文件，`next build` 通过，files with hits 277 不动（登记不翻不入清零口径）。覆盖率不动。下一簇按队列取 `models-and-endpoints/components/AccessGroupBudgetModal.tsx`（4 条）。
 
 ## 2026-10-18 第 211 簇更新
 
