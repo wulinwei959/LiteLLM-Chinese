@@ -2224,6 +2224,7 @@
     "listSubtitle": "Manage teams, members, and their access to models and budgets",
     "listTeamCreated": "Team created",
     "listTeamId": "Team ID",
+    "listTeamAlias": "Team alias",
     "listTeamIdDescription": "ID of the team you want to create. If not provided, it will be generated automatically.",
     "listTeamInformation": "Team Information",
     "listTeamMemberBudget": "Team Member Budget (USD)",

@@ -43,6 +43,7 @@ const mockTranslations: Record<string, string> = {
     "Are you sure you want to delete this team, all its keys, and any models created for it? This action cannot be undone.",
   "teams.listTeamInformation": "Team Information",
   "teams.listTeamId": "Team ID",
+  "teams.listTeamAlias": "Team alias",
   "teams.listTeamName": "Team Name",
   "teams.listOrganization": "Organization",
   "teams.listOrganizationHint": "Organizations can have multiple teams. Learn more about the user management hierarchy",

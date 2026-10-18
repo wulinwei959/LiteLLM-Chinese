@@ -2224,6 +2224,7 @@
     "listSubtitle": "管理团队、成员及其对模型和预算的访问权限",
     "listTeamCreated": "团队已创建",
     "listTeamId": "团队 ID",
+    "listTeamAlias": "团队别名",
     "listTeamIdDescription": "你要创建的团队的 ID。如未提供，将自动生成。",
     "listTeamInformation": "团队信息",
     "listTeamMemberBudget": "团队成员预算（USD）",

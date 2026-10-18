@@ -39,12 +39,6 @@ const toSortOrder = (sorting: SortingState): "asc" | "desc" | undefined => {
   return active.desc ? "desc" : "asc";
 };
 
-const FILTER_LABELS: Record<string, string> = {
-  org_id: "Organization",
-  alias: "Team alias",
-  team_id: "Team ID",
-};
-
 export function TeamsTable({ userRole, userID, onSelectTeam, onEditTeam, onDeleteTeam }: TeamsTableProps) {
   const { data: fetchedOrganizations } = useOrganizations();
   const organizations = useMemo(() => fetchedOrganizations ?? [], [fetchedOrganizations]);
@@ -180,7 +174,11 @@ export function TeamsTable({ userRole, userID, onSelectTeam, onEditTeam, onDelet
             onRefresh={() => refetch?.()}
             isRefreshing={isFetching}
             onOpenFilters={() => setFiltersOpen(true)}
-            filterLabels={FILTER_LABELS}
+            filterLabels={{
+              org_id: t("listOrganization"),
+              alias: t("listTeamAlias"),
+              team_id: t("listTeamId"),
+            }}
             formatFilterValue={formatFilterValue}
           >
             <Button
