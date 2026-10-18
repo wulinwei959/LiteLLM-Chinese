@@ -1,10 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 244 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10832、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 244 簇减 7。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 244 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 245 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10837、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 245 簇减 8。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 245 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 245 簇更新
+
+继续串行推进。这一簇是 `src/components/model_group_alias_settings.tsx`（模型组别名设置，已挂 `modelGroupAlias`，长尾）。收口 5 处：`Add Alias` 按钮、行内 `Save`/`Cancel`、空态 `No aliases added yet. Add a new alias above.`、配置示例说明句 `Here's how your current aliases would look in the config.yaml:`。新增 5 键（addAliasBtn/save/cancel/noAliases/configExampleIntro）
+
+判据两处：按钮 `Add Alias` 与既有标签键 `addAlias`（"Add New Alias"）英文不同，按口径分键 `addAliasBtn` 不复用；下方 `router_settings:` / `model_group_alias:` / `# No aliases configured yet` 是示例 config.yaml 的代码内容，按第 222 簇"示例代码内容判不翻"的口径整块保留英文，只翻它外面的说明句
+
+测试：本组件无同目录测试，唯一消费者 `models-and-endpoints/panels/ModelGroupAliasPanel.tsx` 在 `page.test.tsx`/`page.integration.test.tsx` 里被 `vi.mock` 成 `<div data-testid="panel-alias">`，真实 DOM 从不在测试里渲染，全库 grep 也确认没有别的用例钉这 5 个串（其他测试里的 `Save`/`Cancel` 是各自组件、与本组件无关）。所以本簇是纯展示串替换，无断言可同步；验证靠 `missingKeys` 静态扫（已收录这 5 个 `t("...")` 调用点）+ `messagesParity` + 生产构建三道关，不新增空断言测试凑数
+
+验证：`messagesParity` + `missingKeys` 全绿、Type Errors 无报错；eslint 0 问题、prettier 净、tsc 真路径本文件零命中；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子涨到 10837（+5），同值 139 不变
 
 ## 2026-10-18 第 244 簇更新
 
