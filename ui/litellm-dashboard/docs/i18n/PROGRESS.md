@@ -1,10 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 246 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10849、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 246 簇减 9。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇净增 4 片至 10849）。第 93 到 246 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 247 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10849、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 247 簇减 10（第 247 簇为纯复用零新键，只把一个文件的残留英文清零，叶子总数不动）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇净增 4 片至 10849，第 247 簇零新增仍 10849）。第 93 到 247 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 247 簇更新
+
+继续串行推进。这一簇是 `src/components/organization/org-settings/OrgSettingsForm.tsx`（组织设置表单，早挂 `organizations.orgForm` 与 `organizations` 两个 ns，长尾漏接）。收口 5 处，全是"目录里键已建好、调用点却写死英文"的典型漏接，零新键纯复用：成功 toast `Organization settings updated successfully`→`orgT("updateSuccess")`、失败兜底 `Failed to update organization settings`→`orgT("updateFailed")`、存 vector-store 选择器占位符 `Select vector stores`→`t("vectorStoresPlaceholder")`、MCP 选择器占位符 `Select MCP servers and access groups`→`t("mcpServersPlaceholder")`、提交按钮 `Saving...`/`Save Changes`→`orgT("saving")`/`orgT("saveChanges")`
+
+判据：`orgT("updateFailed")` 只换 `error instanceof Error` 假分支的兜底字面量，真分支仍透传后端 `error.message`（动态值不翻）；两个 placeholder 现成键比硬编码串多一个 `(optional)` 尾，但这是同 ns 内为这两个可选选择器预备的规范文案，`org-create/OrgCreateDialog.tsx` 已用同名键，对齐复用、不改语义，"optional"本就属实（字段确为可选）；`vectorStores`/`mcpServersAndAccessGroups` 是这些字段的标签键（早接），占位符走各自的 `*Placeholder` 键，不混用
+
+测试：`OrgSettingsForm.test.tsx` 走 `renderWithProviders`（默认钉 zh），两个选择器被 `vi.mock` 成按钮、placeholder 从不渲染，四条 toast 无断言，故只有提交按钮受影响——原先按钮写死英文，12 处 `getByRole("button", { name: "Save Changes" })` 一并改 `{ name: "保存更改" }`；`it()` 标题里的 "Save Changes" 是描述文本、不动。消费者 `organization_view.tsx` 的真测试 `organization_view.test.tsx` 不钉这些串（已 grep 确认），`OrganizationsPanel.test.tsx` 把 organization_view 整个 `vi.mock` 掉，不受影响；其余命中 `Save Changes` 的是 project/users/agent/router_settings 各自组件、与本簇无关
+
+验证：`OrgSettingsForm.test.tsx` + parity + missingKeys 三文件 21 例全绿、Type Errors 无报错；eslint 真路径 0 问题；prettier 净（`onError` 兜底改短后 prettier 要求单行收齐）；tsc 真路径本文件零命中（全量 tsc 报的是 HEAD 既有他文件错）；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；零新键，目录叶子仍 10849、同值 139 不变；本簇把 1 个"已接入仍有英文"文件清零，长尾减 1
 
 ## 2026-10-18 第 246 簇更新
 
