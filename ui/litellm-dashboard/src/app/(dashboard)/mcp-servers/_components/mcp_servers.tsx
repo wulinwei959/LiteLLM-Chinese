@@ -329,7 +329,7 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
   const teamSelectItems = React.useMemo(
     () => ({
       all: isInternalUser ? t("allAvailableServers") : t("allServers"),
-      personal: "Personal",
+      personal: t("personal"),
       ...Object.fromEntries(uniqueTeams.map((team) => [team.team_id, team.team_alias || team.team_id])),
     }),
     [isInternalUser, uniqueTeams, t],
