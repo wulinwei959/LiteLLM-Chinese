@@ -36,7 +36,7 @@ const mockCredentialListCall = vi.mocked(credentialListCall);
 const mockIndexesListCall = vi.mocked(indexesListCall);
 
 const openManageTab = async (user: ReturnType<typeof userEvent.setup>) => {
-  await user.click(screen.getByRole("tab", { name: "Manage Vector Stores" }));
+  await user.click(screen.getByRole("tab", { name: "管理向量存储" }));
 };
 
 describe("VectorStoreManagement loading state", () => {
@@ -89,10 +89,10 @@ describe("VectorStoreManagement create flow visibility", () => {
         <VectorStoreManagement accessToken="sk-test" userID="user-1" userRole={userRole} isViewOnly={isViewOnly} />,
       );
       await waitFor(() => expect(mockVectorStoreListCall).toHaveBeenCalledWith("sk-test"));
-      expect(screen.queryByRole("tab", { name: "Create Vector Store" })).not.toBeInTheDocument();
-      expect(screen.getByRole("tab", { name: "Manage Vector Stores" })).toHaveAttribute("aria-selected", "true");
+      expect(screen.queryByRole("tab", { name: "创建向量存储" })).not.toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "管理向量存储" })).toHaveAttribute("aria-selected", "true");
       expect(await screen.findByText("table-loaded")).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: "+ Add Vector Store" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "+ 添加向量存储" })).not.toBeInTheDocument();
       expect(mockCredentialListCall).not.toHaveBeenCalled();
     },
   );
@@ -101,9 +101,9 @@ describe("VectorStoreManagement create flow visibility", () => {
     const user = userEvent.setup();
     render(<VectorStoreManagement accessToken="sk-test" userID="user-1" userRole="Admin" isViewOnly={false} />);
     await waitFor(() => expect(mockCredentialListCall).toHaveBeenCalledWith("sk-test"));
-    expect(screen.getByRole("tab", { name: "Create Vector Store" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "创建向量存储" })).toHaveAttribute("aria-selected", "true");
     await openManageTab(user);
-    expect(screen.getByRole("button", { name: "+ Add Vector Store" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "+ 添加向量存储" })).toBeInTheDocument();
   });
 });
 
@@ -127,7 +127,7 @@ describe("VectorStoreManagement Indexes tab", () => {
       ],
     });
     render(<VectorStoreManagement accessToken="sk-test" userID="user-1" userRole="Admin" isViewOnly={false} />);
-    await user.click(screen.getByRole("tab", { name: "Indexes" }));
+    await user.click(screen.getByRole("tab", { name: "索引" }));
     expect(await screen.findByText("support-docs-index")).toBeInTheDocument();
     expect(screen.getByText("support-docs-store")).toBeInTheDocument();
     expect(mockIndexesListCall).toHaveBeenCalledWith("sk-test");
@@ -136,8 +136,8 @@ describe("VectorStoreManagement Indexes tab", () => {
   it("should not render the Indexes tab for an Admin Viewer", async () => {
     render(<VectorStoreManagement accessToken="sk-test" userID="user-1" userRole="Admin Viewer" isViewOnly={true} />);
     await waitFor(() => expect(mockVectorStoreListCall).toHaveBeenCalledWith("sk-test"));
-    expect(screen.getByRole("tab", { name: "Manage Vector Stores" })).toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: "Indexes" })).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "管理向量存储" })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "索引" })).not.toBeInTheDocument();
   });
 
   it("should swap to the vector store info view when an index's vector store name is clicked", async () => {
@@ -164,7 +164,7 @@ describe("VectorStoreManagement Indexes tab", () => {
       ],
     });
     render(<VectorStoreManagement accessToken="sk-test" userID="user-1" userRole="Admin" isViewOnly={false} />);
-    await user.click(screen.getByRole("tab", { name: "Indexes" }));
+    await user.click(screen.getByRole("tab", { name: "索引" }));
     await user.click(await screen.findByRole("button", { name: "support-docs-store" }));
     expect(await screen.findByTestId("vector-store-info-view")).toHaveTextContent("vs-1");
     expect(screen.queryByText("Vector Store Management")).not.toBeInTheDocument();
@@ -174,7 +174,7 @@ describe("VectorStoreManagement Indexes tab", () => {
     const user = userEvent.setup();
     mockIndexesListCall.mockResolvedValue({ object: "list", data: [] });
     render(<VectorStoreManagement accessToken="sk-test" userID="user-1" userRole="Admin" isViewOnly={false} />);
-    await user.click(screen.getByRole("tab", { name: "Indexes" }));
+    await user.click(screen.getByRole("tab", { name: "索引" }));
     expect(screen.getByRole("link", { name: "向量存储索引文档" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/providers/azure_ai/azure_ai_vector_stores_passthrough",
@@ -189,7 +189,7 @@ describe("VectorStoreManagement Indexes tab", () => {
   it("should not call indexesListCall until the Indexes tab is clicked", async () => {
     render(<VectorStoreManagement accessToken="sk-test" userID="user-1" userRole="Admin" isViewOnly={false} />);
     await waitFor(() => expect(mockVectorStoreListCall).toHaveBeenCalledWith("sk-test"));
-    expect(screen.getByRole("tab", { name: "Indexes" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "索引" })).toBeInTheDocument();
     expect(mockIndexesListCall).not.toHaveBeenCalled();
   });
 });
