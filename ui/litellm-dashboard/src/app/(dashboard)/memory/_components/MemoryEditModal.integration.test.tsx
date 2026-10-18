@@ -36,10 +36,10 @@ describe("MemoryEditModal payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await fill(user, /^Key/, "  user_role  ");
-    await fill(user, /^Value/, "Remembers the user is an admin");
-    await fill(user, /^Metadata/, '{"tags": ["example"]}');
-    await user.click(screen.getByRole("button", { name: "Create" }));
+    await fill(user, /^键/, "  user_role  ");
+    await fill(user, /^内容/, "Remembers the user is an admin");
+    await fill(user, /^元数据/, '{"tags": ["example"]}');
+    await user.click(screen.getByRole("button", { name: "创建" }));
 
     expect(onSave).toHaveBeenCalledTimes(1);
     expect(onSave).toHaveBeenCalledWith("user_role", "Remembers the user is an admin", '{"tags": ["example"]}', true);
@@ -50,9 +50,9 @@ describe("MemoryEditModal payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await fill(user, /^Key/, "user_role");
-    await fill(user, /^Value/, "Remembers the user is an admin");
-    await user.click(screen.getByRole("button", { name: "Create" }));
+    await fill(user, /^键/, "user_role");
+    await fill(user, /^内容/, "Remembers the user is an admin");
+    await user.click(screen.getByRole("button", { name: "创建" }));
 
     expect(onSave).toHaveBeenCalledWith("user_role", "Remembers the user is an admin", "", true);
   });
@@ -61,14 +61,14 @@ describe("MemoryEditModal payload", () => {
     const user = userEvent.setup();
     renderModal({ mode: "edit", initialRow: existingRow });
 
-    expect(await screen.findByLabelText(/^Key/)).toHaveValue("user:profile");
-    expect(screen.getByLabelText(/^Key/)).toBeDisabled();
-    expect(screen.getByLabelText(/^Value/)).toHaveValue("The user prefers concise answers.");
-    expect(screen.getByLabelText(/^Metadata/)).toHaveValue('{\n  "tags": [\n    "example"\n  ]\n}');
+    expect(await screen.findByLabelText(/^键/)).toHaveValue("user:profile");
+    expect(screen.getByLabelText(/^键/)).toBeDisabled();
+    expect(screen.getByLabelText(/^内容/)).toHaveValue("The user prefers concise answers.");
+    expect(screen.getByLabelText(/^元数据/)).toHaveValue('{\n  "tags": [\n    "example"\n  ]\n}');
 
-    await user.clear(screen.getByLabelText(/^Value/));
-    await fill(user, /^Value/, "The user prefers long answers.");
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.clear(screen.getByLabelText(/^内容/));
+    await fill(user, /^内容/, "The user prefers long answers.");
+    await user.click(screen.getByRole("button", { name: "保存" }));
 
     expect(onSave).toHaveBeenCalledWith(
       "user:profile",
@@ -82,9 +82,9 @@ describe("MemoryEditModal payload", () => {
     const user = userEvent.setup();
     renderModal({ mode: "edit", initialRow: { ...existingRow, metadata: null } });
 
-    expect(await screen.findByLabelText(/^Metadata/)).toHaveValue("");
+    expect(await screen.findByLabelText(/^元数据/)).toHaveValue("");
 
-    await user.click(screen.getByRole("button", { name: "Save" }));
+    await user.click(screen.getByRole("button", { name: "保存" }));
 
     expect(onSave).toHaveBeenCalledWith("user:profile", "The user prefers concise answers.", "", false);
   });
@@ -94,9 +94,9 @@ describe("MemoryEditModal payload", () => {
     onSave.mockResolvedValue(false);
     renderModal();
 
-    await fill(user, /^Key/, "user_role");
-    await fill(user, /^Value/, "Remembers the user is an admin");
-    await user.click(screen.getByRole("button", { name: "Create" }));
+    await fill(user, /^键/, "user_role");
+    await fill(user, /^内容/, "Remembers the user is an admin");
+    await user.click(screen.getByRole("button", { name: "创建" }));
 
     expect(onSave).toHaveBeenCalledTimes(1);
     expect(onClose).not.toHaveBeenCalled();
@@ -106,15 +106,15 @@ describe("MemoryEditModal payload", () => {
     const user = userEvent.setup();
     renderModal();
 
-    await fill(user, /^Key/, "user_role");
-    await fill(user, /^Value/, "Remembers the user is an admin");
-    expect(screen.queryByText("Key is required")).not.toBeInTheDocument();
+    await fill(user, /^键/, "user_role");
+    await fill(user, /^内容/, "Remembers the user is an admin");
+    expect(screen.queryByText("请输入键名")).not.toBeInTheDocument();
 
-    await user.clear(screen.getByLabelText(/^Key/));
-    expect(await screen.findByText("Key is required")).toBeInTheDocument();
+    await user.clear(screen.getByLabelText(/^键/));
+    expect(await screen.findByText("请输入键名")).toBeInTheDocument();
 
-    await user.clear(screen.getByLabelText(/^Value/));
-    expect(await screen.findByText("Value is required")).toBeInTheDocument();
+    await user.clear(screen.getByLabelText(/^内容/));
+    expect(await screen.findByText("请输入内容")).toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
   });
 });
