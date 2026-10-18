@@ -4853,7 +4853,14 @@
       "topKeys": "热门虚拟密钥",
       "topAgents": "热门智能体",
       "topAgentsDrivingSpend": "消费最高的智能体",
-      "providerUsage": "供应商用量"
+      "providerUsage": "供应商用量",
+      "totalCost": "总成本",
+      "totalSpend": "总消费",
+      "requestCost": "请求成本",
+      "flatCost": "固定成本",
+      "totalCostTooltip": "请求成本加上预留容量的固定成本。选中此卡片查看明细。",
+      "requestCostTooltip": "该实体在所选时间段内发送请求的用量成本，按令牌计价。",
+      "flatCostTooltip": "预留的预配置吞吐量，无论是否发送请求都按小时计费。仅在此处展示，不计入团队、密钥、用户或组织的预算。"
     },
     "provider": {
       "title": "按供应商统计消费",

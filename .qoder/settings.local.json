@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"下一步优先级\" -A 15 /home/wlw/qoder/LiteLLM-Chinese/ui/litellm-dashboard/docs/i18n/PROGRESS.md | head -30)",
+      "Bash(git pull:*)",
+      "Bash(git pull --ff-only 2>&1 | tail -20)",
+      "Bash(ls docs/ 2>/dev/null; find . -maxdepth 2 -iname \"*i18n*\" -o -maxdepth 2 -iname \"*汉化*\" 2>/dev/null | grep -v node_modules | head -30)"
+    ]
+  }
+}

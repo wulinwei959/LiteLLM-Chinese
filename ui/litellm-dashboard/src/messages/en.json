@@ -4853,7 +4853,14 @@
       "topKeys": "Top Virtual Keys",
       "topAgents": "Top Agents",
       "topAgentsDrivingSpend": "Top Agents Driving Spend",
-      "providerUsage": "Provider Usage"
+      "providerUsage": "Provider Usage",
+      "totalCost": "Total Cost",
+      "totalSpend": "Total Spend",
+      "requestCost": "Request Cost",
+      "flatCost": "Flat Cost",
+      "totalCostTooltip": "Request cost plus flat cost for reserved capacity. Select this tile to see the breakdown.",
+      "requestCostTooltip": "Usage-based cost of the requests this entity sent during the selected period, priced per token.",
+      "flatCostTooltip": "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets."
     },
     "provider": {
       "title": "Spend by Provider",

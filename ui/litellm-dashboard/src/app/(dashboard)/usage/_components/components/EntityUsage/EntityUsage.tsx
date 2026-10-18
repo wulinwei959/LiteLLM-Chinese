@@ -409,8 +409,8 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     </ShadcnCard>
   );
 
-  const breakdownTiles = showFlatCost && showCostBreakdown ? buildCostBreakdownTiles(spendData.metadata) : [];
-  const summaryTiles = [...buildSummaryTiles(spendData.metadata, showFlatCost), ...breakdownTiles];
+  const breakdownTiles = showFlatCost && showCostBreakdown ? buildCostBreakdownTiles(usageT, spendData.metadata) : [];
+  const summaryTiles = [...buildSummaryTiles(usageT, spendData.metadata, showFlatCost), ...breakdownTiles];
 
   const modelViewTitle = modelViewType === "groups" ? usageT("topModelGroups") : usageT("topModelSingle");
 

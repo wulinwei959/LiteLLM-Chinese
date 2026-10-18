@@ -558,7 +558,7 @@ describe("EntityUsage", () => {
     });
 
     expect(screen.getByText("Tag Spend Overview")).toBeInTheDocument();
-    expect(screen.getByText("Total Spend")).toBeInTheDocument();
+    expect(screen.getByText("总消费")).toBeInTheDocument();
 
     await waitFor(() => {
       const spendElements = screen.getAllByText("$100.50");
@@ -809,7 +809,7 @@ describe("EntityUsage", () => {
 
     expect(await screen.findByText("Tag Spend Overview")).toBeInTheDocument();
     expect(await screen.findByText("$0.00")).toBeInTheDocument();
-    expect(screen.getByText("Total Spend")).toBeInTheDocument();
+    expect(screen.getByText("总消费")).toBeInTheDocument();
     expect(screen.getAllByText("0")[0]).toBeInTheDocument();
   });
 
@@ -1022,7 +1022,7 @@ describe("EntityUsage", () => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
     expect(screen.getAllByText("Loading chart data...")).toHaveLength(2);
-    expect(screen.queryByText("Total Spend")).not.toBeInTheDocument();
+    expect(screen.queryByText("总消费")).not.toBeInTheDocument();
     expect(screen.queryByText("Overall Usage")).not.toBeInTheDocument();
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
 
@@ -1032,7 +1032,7 @@ describe("EntityUsage", () => {
 
     expect(screen.queryByText("Loading chart data...")).not.toBeInTheDocument();
     expect(screen.getByText("Overall Usage")).toBeInTheDocument();
-    expect(screen.getByText("Total Spend")).toBeInTheDocument();
+    expect(screen.getByText("总消费")).toBeInTheDocument();
     expect(screen.getAllByText("$100.50").length).toBeGreaterThan(0);
   });
 
