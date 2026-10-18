@@ -11228,7 +11228,11 @@
     "executionEnabled": "Enabled",
     "executionDisabled": "Disabled",
     "tenantLoadFailed": "Failed to load tenants",
-    "providersLoadFailed": "Could not load the gateway's trusted identity providers"
+    "providersLoadFailed": "Could not load the gateway's trusted identity providers",
+    "trustedTenantRequired": "Select a trusted tenant",
+    "tenantEmptyHint": "No trusted Entra tenant is available. Configure JWT issuer and audience validation on the gateway first. Dashboard Microsoft SSO is configured separately.",
+    "principalUuidInvalid": "Enter a valid service principal UUID",
+    "identityBindingHint": "LiteLLM verifies the Entra token of the agent before matching this identity. Saving these fields configures the binding; an authenticated request provides verification. Runtime authentication headers are configured separately."
   },
   "byokModal": {
     "provideApiKey": "Provide API Key",

@@ -11224,7 +11224,11 @@
     "executionEnabled": "启用",
     "executionDisabled": "禁用",
     "tenantLoadFailed": "加载租户失败",
-    "providersLoadFailed": "无法加载网关的受信任身份提供商"
+    "providersLoadFailed": "无法加载网关的受信任身份提供商",
+    "trustedTenantRequired": "请选择受信任的租户",
+    "tenantEmptyHint": "暂无受信任的 Entra 租户。请先在网关上配置 JWT 签发者与受众校验。仪表盘的 Microsoft SSO 另行配置。",
+    "principalUuidInvalid": "请输入合法的服务主体 UUID",
+    "identityBindingHint": "LiteLLM 在匹配此身份前会校验智能体的 Entra 令牌。保存这些字段即配置绑定；已认证的请求即完成校验。运行时认证请求头另行配置。"
   },
   "byokModal": {
     "provideApiKey": "提供 API 密钥",

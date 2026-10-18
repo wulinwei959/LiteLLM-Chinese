@@ -85,7 +85,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
             <AgentFormField
               name="identity_tenant_id"
               label={t("trustedTenant")}
-              rules={{ required: "Select a trusted tenant" }}
+              rules={{ required: t("trustedTenantRequired") }}
             >
               {({ value, onChange, id }) => (
                 <Select value={typeof value === "string" ? value : ""} onValueChange={onChange}>
@@ -107,12 +107,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
                 {error}
               </p>
             )}
-            {!error && tenants.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                No trusted Entra tenant is available. Configure JWT issuer and audience validation on the gateway first.
-                Dashboard Microsoft SSO is configured separately.
-              </p>
-            )}
+            {!error && tenants.length === 0 && <p className="text-sm text-muted-foreground">{t("tenantEmptyHint")}</p>}
             <AgentFormField
               name="identity_client_id"
               label={t("clientId")}
@@ -165,7 +160,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
               label={t("enterpriseObjectId")}
               rules={{
                 required: mode !== "delegated" ? t("enterpriseObjectIdRequired") : false,
-                pattern: { value: IDENTITY_UUID_PATTERN, message: "Enter a valid service principal UUID" },
+                pattern: { value: IDENTITY_UUID_PATTERN, message: t("principalUuidInvalid") },
               }}
               description={
                 <>
@@ -244,11 +239,7 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
                 </Select>
               )}
             </AgentFormField>
-            <p className="text-sm text-muted-foreground">
-              LiteLLM verifies the agent&apos;s Entra token before matching this identity. Saving these fields
-              configures the binding; an authenticated request provides verification. Runtime authentication headers are
-              configured separately.
-            </p>
+            <p className="text-sm text-muted-foreground">{t("identityBindingHint")}</p>
           </>
         )}
       </section>
