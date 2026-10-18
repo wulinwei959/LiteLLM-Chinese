@@ -28,6 +28,8 @@
 
 `useTranslations` 只能放在 React 组件或自定义 Hook 里。列定义工厂这类普通函数拿不到 Hook，要把 `t` 作为参数传进去，并进 `useMemo` 的依赖数组
 
+不过 React Compiler 开着时另有一条冲突：把 `t()` 的返回值（或 `t` 本身）放进组件内 `useMemo` 的依赖数组会触发 `react-hooks/preserve-manual-memoization` 的 **error**（不是 warning），编译器判定该依赖"may be modified later"、拒绝保留手工 memo，纯字符串方法链则不受影响。碰到"列定义 `useMemo` 依赖来自 `useTranslations`"直接去掉那层 `useMemo`、写成普通数组常量，让编译器自行 memo；不要在 deps 上跟编译器较劲。详见 `PROGRESS.md` 第 238 簇
+
 替换的对象要想清楚。只替换**传给组件的字符串**，不要替换组件本身。列定义里
 
 ```tsx

@@ -1,10 +1,22 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 237 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10764、中英同值 139，files with hits 269。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 237 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 238 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10780、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 簇 `EntityUsage.tsx` 文案清零减 1。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 238 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 238 簇更新
+
+继续串行推进。这一簇是 `src/app/(dashboard)/usage/_components/components/EntityUsage/EntityUsage.tsx`，第 237 簇的直接消费者，属"已接入但仍有英文"长尾（早已挂 `t = useTranslations("usage.entity")` 与 `usageT = useTranslations("usage")`，但 JSX 里仍写死一批文案）。收口的面向用户字符串：三张表共 9 个列头（实体细分表 `capitalizedEntityLabel` 改译出的实体标签，其余 Spend/Successful/Failed/Tokens/Provider 复用现成的 `usage.provider.*` 四键 + `provider.provider`）、日消费图与每实体图两处 `customTooltip` 的行标签（复用 `entity.{requestCost,flatCost,totalCost,totalSpend}`、`usage.{totalRequests,totalTokens}`、`usage.provider.{successful,failed}`、`teamUserSpend.requests`，新增 `totalEntities`/`spendByEntity`/`andMore`）、三处"目录有键但 JSX 漏接"的活账（`spendOverview`/`spendPerEntity`/`getStarted` 三键本就在两侧，JSX 却写死英文，现接回并传入译出的 `{label}`）、两张 DataTable 的 `noDataMessage`、agent 页签的 `Request / Token Consumption`、两条失败告警、`getFilterLabel`/`getFilterPlaceholder` 的 `Filter by`/`Select ... to filter`
+
+实体类型标签此前根本没有定译：`capitalizedEntityLabel = entityType.charAt(0).toUpperCase() + ...` 把技术 id（user/team/tag/organization/customer/agent）直接首字母大写当文案。新增 `usage.entity.type` 子对象六键（`用户/团队/标签/组织/客户/智能体`），用 `as const satisfies Record<EntityType, string>` 的 `ENTITY_TYPE_KEYS` 映射，`entityLabel = t(ENTITY_TYPE_KEYS[entityType])`，替换所有 `capitalizedEntityLabel` 用处。图表 `categories`/dataKey（`"Request cost"`、`"Flat cost"`）按既有口径保持英文不动（是序列名不是文案，要译得走 `bar_chart` 的 `categoryLabels`，留给后续）
+
+**踩到新坑：React Compiler 的 `react-hooks/preserve-manual-memoization`。** 把 `t()` 的结果（`entityLabel`、或整个 `usageT` 函数）放进 `useMemo` 依赖数组会报 error（不是 warning），编译器认定该依赖"may be modified later"、拒绝保留手工 memo。HEAD 的 `[capitalizedEntityLabel]` 是纯字符串方法链、不报错，一旦依赖变成 `t()` 产物就触发。修法不是把 `t` 塞进 deps（WORKFLOW 第三步那条在这台 React 编译配置下会撞 error），而是**去掉这两个列定义的 `useMemo`、改成普通数组常量**，让编译器自行 memo。先把表头解析成 `colSpend` 等字符串常量、再连同 `entityLabel` 一起进 deps 也仍报同一 error（被标记的是 `t()` 来源值本身），所以最终是删 memo。后续凡是"列定义 useMemo + 依赖来自 useTranslations"的文件，优先直接不手写 memo，别在 deps 上跟编译器较劲
+
+测试同步：`EntityUsage.test.tsx` 里 16 处 `"<X> Spend Overview"`（Tag/Team/Organization/Customer/Agent/User，含 `NON_TEAM_PANELS`/`TEAM_PANELS` 两处数组与 capability gating 的 it.each）改为 `"<中文实体标签> 消费总览"`，`Request / Token Consumption` 改 `请求 / Token 消耗`，正则 `/Fetching spend data failed/` 改 `/消费数据拉取失败/`。消费者侧 `UsageExportHeader.test.tsx` 的 `Select tag to filter...` 是它自己 mock 传的字面 prop、与本簇无关；`ProjectDetailsPage.test.tsx` 的 `Spend by Model` 只是 describe 名；`EntityUsage.test.tsx` 的 `UsageExportHeader` mock 渲染 `filterLabel` 但没有任何用例断言其值，故零改。全库复扫确认这些串无其他钉点
+
+验证：`entityUsageSummary.test.ts` + `EntityUsage.test.tsx` + parity + missingKeys 四文件 80 例全绿、Type Errors 无报错；tsc 全量本簇文件零命中；eslint 改动文件 5 警告 0 错误，与 HEAD 基线持平（此前一度冒出 1 条 `preserve-manual-memoization` error，按上法删 memo 后归零）；prettier 只改动本簇 tooltip/anchor 区（`{t("here")}</a>` 那条既有脏行正落在本簇改动的 getStarted div 内，一并收齐），不碰其他 hunk；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 不动、接入计数 912/689 不动；目录叶子 10764 涨到 10780（新增 10 平铺键 + `type` 子对象 6 键），中英同值 139 不变。下一簇仍按"已接入但仍有英文"长尾与未接入命中并行取，候选可回到 `EntityUsage` 同目录的 `TeamUserSpendCard`、`TopModelView` 等，或按未接入命中队列取 `components/Settings` 一带
 
 ## 2026-10-18 第 237 簇更新
 
