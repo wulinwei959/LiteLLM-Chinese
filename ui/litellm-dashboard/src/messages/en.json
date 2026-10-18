@@ -11271,7 +11271,8 @@
     "stateLost": "OAuth session state was lost. This can happen if you have strict browser privacy settings. Please try again and ensure cookies/storage is enabled.",
     "stateMismatch": "OAuth state mismatch. Please retry.",
     "codeMissing": "Authorization code missing in callback.",
-    "success": "OAuth token retrieved successfully"
+    "success": "OAuth token retrieved successfully",
+    "connectedSuccess": "Connected successfully"
   },
   "modelSelect": {
     "allProxyModels": "All Proxy Models",

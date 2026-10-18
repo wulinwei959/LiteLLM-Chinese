@@ -11267,7 +11267,8 @@
     "stateLost": "OAuth 会话状态丢失。浏览器隐私设置过于严格时可能出现这种情况，请重试并确保已启用 Cookie/存储。",
     "stateMismatch": "OAuth state 不匹配，请重试。",
     "codeMissing": "回调中缺少授权码。",
-    "success": "OAuth 令牌获取成功"
+    "success": "OAuth 令牌获取成功",
+    "connectedSuccess": "连接成功"
   },
   "modelSelect": {
     "allProxyModels": "所有代理模型",
