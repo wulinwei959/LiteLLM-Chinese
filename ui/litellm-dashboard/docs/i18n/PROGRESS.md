@@ -1,10 +1,22 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 251 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10869、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 251 簇减 14）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇 +4 至 10849，第 247 簇零新增仍 10849，第 248 簇 +6 至 10855，第 249 簇 +7 至 10862，第 250 簇 +2 至 10864，第 251 簇 +5 至 10869）。第 93 到 251 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 252 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10872、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 252 簇减 15）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇 +4 至 10849，247 零新增 10849，248 +6 至 10855，249 +7 至 10862，250 +2 至 10864，251 +5 至 10869，252 +3 至 10872）。第 93 到 252 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 252 簇更新
+
+继续串行推进。这一簇是 `src/app/(dashboard)/search-tools/_components/SearchToolView.tsx`（搜索工具详情视图，已挂 `searchTools`，长尾漏接）。收口 5 处：`Back to All Search Tools` 返回钮、两个复制钮的 `aria-label`（Copy search tool name/ID）、API Key 缺省文案 `Not set`、created_at 缺省文案 `Unknown`。新增 3 键（backToAll/copyNameAria/copyIdAria），复用 2 处
+
+复用：`Not set`→`common.notSet`、`Unknown`→`common.unknown`（现成通用键，不另开）。`common.notSet` 值是 "Not Set"（大写 S），与写死的 "Not set"（小写）仅大小写之差，按"同概念归一到规范键"复用、不再为这点差异留一个长尾串。两个 `aria-label` 与 `Back to All Search Tools` 是搜索工具专属、`searchTools` 内无现成键，新增
+
+判据：卡片列头 `{t("providerCol")}`/`apiKeyCol`/`createdAtCol`/`descriptionCol` 早已接好；`api_key ? "****" : ...` 的 `****` 是掩码、技术占位、不翻；`search_tool_name`/`search_tool_id`/`description`/provider 友好名都是后端数据，不动
+
+测试：`SearchToolView.test.tsx` 走 `renderWithProviders`（钉 zh），三处断言随接线改中——`getByText("Not set")`→`未设置`、`getByText("Unknown")`→`未知`、返回钮 `getByRole("button", { name: /back to all search tools/i })`→`/返回所有搜索工具/`（本就在 zh locale 下钉英文正则，正是漏接信号）。两个复制钮的测试用 `within(container).getByRole("button")` 取钮、不按 aria-label 名查，故 aria-label 改动对测试不可见；`it()` 标题里的 'Not set'/'Unknown' 是描述文本、不动。两个消费者 `SearchTools.test.tsx`/`SearchTools.integration.test.tsx` 都把 `./SearchToolView` 整个 `vi.mock` 掉，真实 DOM 从不渲染，无外部断言受影响
+
+验证：`SearchToolView.test.tsx`(19) + parity + missingKeys 三文件 28 例全绿、Type Errors 无报错；eslint 真路径 0 错误 11 警告，全是测试里既有 `.closest("div")`/`.querySelector` 的 node-access（HEAD 既有、本簇只改 3 个串字面量、零新增），组件文件本身 0 问题；prettier 净；tsc 真路径本文件零命中；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子复算 +3 至 10872（en/zh 双侧一致），同值 139 不变；本簇把 1 个"已接入仍有英文"文件清零，长尾减 1
 
 ## 2026-10-18 第 251 簇更新
 
