@@ -33,22 +33,22 @@ describe("AgentsPanel", () => {
 
   it("should show Add New Agent button for admin users", () => {
     render(<AgentsPanel accessToken="test-token" userRole="Admin" />);
-    expect(screen.getByText("Add New Agent")).toBeInTheDocument();
+    expect(screen.getByText("新建智能体")).toBeInTheDocument();
   });
 
   it("should show Add New Agent button for proxy_admin users", () => {
     render(<AgentsPanel accessToken="test-token" userRole="proxy_admin" />);
-    expect(screen.getByText("Add New Agent")).toBeInTheDocument();
+    expect(screen.getByText("新建智能体")).toBeInTheDocument();
   });
 
   it("should not show Add New Agent button for internal_user role", () => {
     render(<AgentsPanel accessToken="test-token" userRole="Internal User" />);
-    expect(screen.queryByText("Add New Agent")).not.toBeInTheDocument();
+    expect(screen.queryByText("新建智能体")).not.toBeInTheDocument();
   });
 
   it("should not show Add New Agent button for internal_user_viewer role", () => {
     render(<AgentsPanel accessToken="test-token" userRole="Internal Viewer" />);
-    expect(screen.queryByText("Add New Agent")).not.toBeInTheDocument();
+    expect(screen.queryByText("新建智能体")).not.toBeInTheDocument();
   });
 
   it("should show the Actions column for admin role", async () => {
