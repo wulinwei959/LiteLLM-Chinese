@@ -1,10 +1,18 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 240 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10797、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238、239、240 簇减 3。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 240 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 241 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10804、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 241 簇减 4。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 241 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 241 簇更新
+
+继续串行推进。这一簇是 `src/components/mcp_tools/ByokCredentialModal.tsx`（BYOK 凭据弹窗，早已挂 `t = useTranslations("byokModal")`，长尾漏接）。收口 8 处：标题 `Connect {server}`、`LiteLLM needs access to {server}...`、主按钮 `Continue to Authentication`、`Cancel`、`Where do I find my API key?`、可见的 `Save key for future use`、安全说明句、`Connect & Authorize` 按钮。新增 7 个 `byokModal` 键；可见的"Save key for future use"与同义 `saveKeyAria` 是同一句英文，复用现成 `saveKeyAria` 不另开键。`&` 在 ICU 里是普通字面量，`Connect & Authorize` 直接进目录，JSX 原 `&amp;` 实体随之去掉
+
+测试：`ByokCredentialModal.test.tsx` 走 `renderWithProviders`，仅两步操作断言 `getByText("Continue to Authentication")` 与 `getByRole("button", { name: /Connect & Authorize/ })` 改中文（`前往身份验证`、`/连接并授权/`）。全库扫确认无其他用例钉这些串，无外部消费者 import 此 modal
+
+验证：`ByokCredentialModal.test.tsx` + parity + missingKeys 三文件 11 例全绿、Type Errors 无报错；eslint 0 问题（prettier 要求标题行换行，按本簇改动行收齐）；tsc 真路径本文件零命中；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子涨到 10804（+7），同值 139 不变。另注：本簇前用启发式扫"已接入仍有英文"长尾时命中过 `add_model_modes.tsx` 的 `AUTO_ROUTER_MODES`，但 grep 确认它零消费者、零测试（死导出），不产生用户可见英文，故不翻也不作候选
 
 ## 2026-10-18 第 240 簇更新
 
