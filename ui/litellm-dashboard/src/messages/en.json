@@ -8990,6 +8990,13 @@
     "testing": "Testing...",
     "saveChanges": "Save Changes",
     "unknownError": "Unknown error",
+    "toast": {
+      "loadFailed": "Failed to load cache settings",
+      "testSuccess": "Cache connection test successful!",
+      "testFailed": "Connection test failed: {reason}",
+      "saveSuccess": "Cache settings updated successfully",
+      "updateFailed": "Failed to update cache settings"
+    },
     "coordination": {
       "badge": {
         "configuredHere": "Configured here",

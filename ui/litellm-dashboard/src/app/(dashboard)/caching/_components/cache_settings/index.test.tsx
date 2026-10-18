@@ -81,7 +81,7 @@ describe("CacheSettings", () => {
       const port = await screen.findByLabelText("端口");
       await user.clear(port);
       fireEvent.change(port, { target: { value: "99999" } });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       expect(await screen.findByText(/端口必须是 1 到 65535 之间的整数/)).toBeInTheDocument();
       expect(updateCacheSettingsCall).not.toHaveBeenCalled();
@@ -94,7 +94,7 @@ describe("CacheSettings", () => {
 
       const startupNodes = await screen.findByLabelText("启动节点");
       fireEvent.change(startupNodes, { target: { value: "not json" } });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       expect(await screen.findByText(/必须是合法的 JSON 数组/i)).toBeInTheDocument();
       expect(updateCacheSettingsCall).not.toHaveBeenCalled();
@@ -106,7 +106,7 @@ describe("CacheSettings", () => {
 
       const db = await screen.findByLabelText("数据库序号");
       fireEvent.change(db, { target: { value: "redis://host:6379/1" } });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       expect(await screen.findByText(/必须是非负整数/)).toBeInTheDocument();
       expect(updateCacheSettingsCall).not.toHaveBeenCalled();
@@ -120,7 +120,7 @@ describe("CacheSettings", () => {
 
       const host = await screen.findByLabelText("主机");
       fireEvent.change(host, { target: { value: "localhost" } });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() =>
         expect(updateCacheSettingsCall).toHaveBeenCalledWith("sk-test", {
@@ -139,7 +139,7 @@ describe("CacheSettings", () => {
 
       fireEvent.change(await screen.findByLabelText("Redis URL"), { target: { value: "redis://host:6379/1" } });
       fireEvent.change(await screen.findByLabelText("数据库序号"), { target: { value: "2" } });
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => expect(updateCacheSettingsCall).toHaveBeenCalled());
       expect(updateCacheSettingsCall.mock.calls[0][1]).toMatchObject({ db: 2, url: "redis://host:6379/1" });

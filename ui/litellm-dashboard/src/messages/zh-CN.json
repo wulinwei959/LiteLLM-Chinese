@@ -8986,6 +8986,13 @@
     "testing": "测试中...",
     "saveChanges": "保存更改",
     "unknownError": "未知错误",
+    "toast": {
+      "loadFailed": "加载缓存设置失败",
+      "testSuccess": "缓存连接测试成功！",
+      "testFailed": "连接测试失败：{reason}",
+      "saveSuccess": "缓存设置更新成功",
+      "updateFailed": "更新缓存设置失败"
+    },
     "coordination": {
       "badge": {
         "configuredHere": "在此配置",

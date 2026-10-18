@@ -33,7 +33,7 @@ const LOADED_WITH_ADVANCED = {
 const renderSettings = () => renderWithProviders(<CacheSettings accessToken="sk-test" userRole="Admin" userID="u1" />);
 
 const save = async (user: ReturnType<typeof userEvent.setup>) =>
-  user.click(screen.getByRole("button", { name: /save changes/i }));
+  user.click(screen.getByRole("button", { name: /保存更改/ }));
 
 describe("CacheSettings advanced settings round-trip", () => {
   beforeEach(() => {
@@ -206,7 +206,7 @@ describe("CacheSettings advanced settings round-trip", () => {
       ttl: 0,
       namespace: "synthetic-cache",
     };
-    await user.click(screen.getByRole("button", { name: "Test Connection" }));
+    await user.click(screen.getByRole("button", { name: "测试连接" }));
     await waitFor(() => expect(testCacheConnectionCall).toHaveBeenCalledWith("sk-test", expected));
     await save(user);
     await waitFor(() =>

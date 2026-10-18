@@ -36,6 +36,7 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
   const form = useForm<CacheFormValues>({ defaultValues: buildInitialValues({}) });
   const t = useTranslations("caching");
   const cacheT = useTranslations("cacheSettings");
+  const commonT = useTranslations("common");
   const [redisType, setRedisType] = useState<RedisType>("node");
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [embeddingModels, setEmbeddingModels] = useState<EmbeddingModelOption[]>([]);
@@ -55,9 +56,9 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
       setRedisType(toRedisType(currentValues.redis_type));
     } catch (error) {
       console.error("Failed to load cache settings:", error);
-      toast.fromError("Failed to load cache settings");
+      toast.fromError(t("toast.loadFailed"));
     }
-  }, [accessToken, form]);
+  }, [accessToken, form, t]);
 
   useEffect(() => {
     loadCacheSettings();
@@ -110,13 +111,13 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
         buildCachePayload(redisType, values, { forTesting: true }),
       );
       if (result.status === "success") {
-        toast.success("Cache connection test successful!");
+        toast.success(t("toast.testSuccess"));
       } else {
-        toast.fromError(`Connection test failed: ${result.message || result.error}`);
+        toast.fromError(t("toast.testFailed", { reason: result.message || result.error }));
       }
     } catch (error) {
       console.error("Test connection error:", error);
-      toast.fromError(`Connection test failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+      toast.fromError(t("toast.testFailed", { reason: error instanceof Error ? error.message : t("unknownError") }));
     } finally {
       setIsTesting(false);
     }
@@ -134,11 +135,11 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
     setIsSaving(true);
     try {
       await updateCacheSettingsCall(accessToken, buildCachePayload(redisType, values, { forTesting: false }));
-      toast.success("Cache settings updated successfully");
+      toast.success(t("toast.saveSuccess"));
       await loadCacheSettings();
     } catch (error) {
       console.error("Failed to save cache settings:", error);
-      toast.fromError("Failed to update cache settings");
+      toast.fromError(t("toast.updateFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -244,10 +245,10 @@ const CacheSettings: React.FC<CacheSettingsProps> = ({ accessToken }) => {
 
       <div className="border-t border-border pt-6 flex justify-end gap-3">
         <Button variant="secondary" size="sm" onClick={handleTestConnection} disabled={isTesting} className="text-sm">
-          {isTesting ? "Testing..." : "Test Connection"}
+          {isTesting ? t("testing") : t("testConnection")}
         </Button>
         <Button size="sm" onClick={handleSaveChanges} disabled={isSaving} className="text-sm font-medium">
-          {isSaving ? "Saving..." : "Save Changes"}
+          {isSaving ? commonT("saving") : t("saveChanges")}
         </Button>
       </div>
     </div>
