@@ -63,7 +63,7 @@ describe("OrgCreateDialog", () => {
     const user = userEvent.setup();
     const { createOrganization } = renderDialog();
 
-    await user.click(screen.getByRole("button", { name: "Create Organization" }));
+    await user.click(screen.getByRole("button", { name: "创建组织" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("请输入组织名称");
     expect(createOrganization).not.toHaveBeenCalled();
@@ -74,7 +74,7 @@ describe("OrgCreateDialog", () => {
     const { createOrganization } = renderDialog();
 
     await user.type(screen.getByLabelText("组织名称"), "new-org");
-    await user.click(screen.getByRole("button", { name: "Create Organization" }));
+    await user.click(screen.getByRole("button", { name: "创建组织" }));
 
     await waitFor(() => expect(createOrganization).toHaveBeenCalledTimes(1));
     expect(createOrganization.mock.calls[0][0]).toStrictEqual({ organization_alias: "new-org", models: [] });
@@ -93,7 +93,7 @@ describe("OrgCreateDialog", () => {
     // enforces before handleSubmit ever runs
     expect(budget.checkValidity()).toBe(true);
 
-    await user.click(screen.getByRole("button", { name: "Create Organization" }));
+    await user.click(screen.getByRole("button", { name: "创建组织" }));
 
     await waitFor(() => expect(createOrganization).toHaveBeenCalledTimes(1));
     expect(createOrganization.mock.calls[0][0]).toStrictEqual({
@@ -112,7 +112,7 @@ describe("OrgCreateDialog", () => {
     await user.type(screen.getByLabelText("每分钟令牌上限（TPM）"), "1000");
     await user.click(screen.getByRole("button", { name: "set-vector-stores" }));
     await user.click(screen.getByRole("button", { name: "set-mcp" }));
-    await user.click(screen.getByRole("button", { name: "Create Organization" }));
+    await user.click(screen.getByRole("button", { name: "创建组织" }));
 
     await waitFor(() => expect(createOrganization).toHaveBeenCalledTimes(1));
     const expectedBody = {
@@ -134,7 +134,7 @@ describe("OrgCreateDialog", () => {
 
     await user.type(screen.getByLabelText("组织名称"), "new-org");
     await user.type(screen.getByLabelText("元数据"), "not json");
-    await user.click(screen.getByRole("button", { name: "Create Organization" }));
+    await user.click(screen.getByRole("button", { name: "创建组织" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("元数据必须是有效的 JSON 对象");
     expect(createOrganization).not.toHaveBeenCalled();
@@ -147,7 +147,7 @@ describe("OrgCreateDialog", () => {
     });
 
     await user.type(screen.getByLabelText("组织名称"), "new-org");
-    await user.click(screen.getByRole("button", { name: "Create Organization" }));
+    await user.click(screen.getByRole("button", { name: "创建组织" }));
 
     await waitFor(() => expect(createOrganization).toHaveBeenCalledTimes(1));
     expect(screen.getByLabelText("组织名称")).toHaveValue("new-org");

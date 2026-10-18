@@ -54,12 +54,11 @@ export const OrgCreateDialog = ({
   const mutation = useMutation({
     mutationFn: (body: OrgCreateBody) => createOrganization(body),
     onSuccess: () => {
-      toast.success("Organization created successfully");
+      toast.success(orgT("createdToast"));
       queryClient.invalidateQueries({ queryKey: organizationKeys.all });
       closeAndReset();
     },
-    onError: (error: unknown) =>
-      toast.fromError(error instanceof Error ? error.message : "Failed to create organization"),
+    onError: (error: unknown) => toast.fromError(error instanceof Error ? error.message : orgT("createFailed")),
   });
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -179,7 +178,7 @@ export const OrgCreateDialog = ({
               {orgT("cancel")}
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? "Creating..." : "Create Organization"}
+              {mutation.isPending ? orgT("creating") : orgT("createOrganization")}
             </Button>
           </DialogFooter>
         </form>
