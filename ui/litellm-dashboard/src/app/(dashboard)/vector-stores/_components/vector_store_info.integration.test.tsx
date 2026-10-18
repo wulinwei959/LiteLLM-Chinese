@@ -143,7 +143,7 @@ describe("VectorStoreInfoView save payload", () => {
     fireEvent.change(metadataInput, { target: { value: "not json" } });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
-    await vi.waitFor(() => expect(mockToast.fromError).toHaveBeenCalledWith("Invalid JSON in metadata field"));
+    await vi.waitFor(() => expect(mockToast.fromError).toHaveBeenCalledWith("元数据字段中的 JSON 无效"));
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
@@ -155,7 +155,7 @@ describe("VectorStoreInfoView save payload", () => {
     await screen.findByDisplayValue("support-docs-store");
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
-    expect(await screen.findByText("Please input a vector store ID")).toBeInTheDocument();
+    expect(await screen.findByText("请输入向量存储 ID")).toBeInTheDocument();
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 });

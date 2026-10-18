@@ -82,7 +82,7 @@ describe("VectorStoreInfoView", () => {
     );
     expect(await screen.findByText(/向量存储 ID：vs-config/)).toBeInTheDocument();
     expect(screen.getByText("只读：在配置文件中定义")).toBeInTheDocument();
-    expect(screen.getByText("Config")).toBeInTheDocument();
+    expect(screen.getByText("配置文件")).toBeInTheDocument();
     expect(screen.queryByText("DB")).not.toBeInTheDocument();
     expect(screen.getByText("向量存储详情")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "编辑向量存储" })).not.toBeInTheDocument();
@@ -131,7 +131,7 @@ describe("VectorStoreInfoView", () => {
     expect(await screen.findByText("未找到向量存储")).toBeInTheDocument();
     expect(screen.getByText(/无法加载/)).toBeInTheDocument();
     expect(screen.queryByText("加载中...")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /Back to Vector Stores/ }));
+    await user.click(screen.getByRole("button", { name: /返回向量存储列表/ }));
     expect(onClose).toHaveBeenCalled();
   });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, CircleHelp, Lock } from "lucide-react";
 import { z } from "zod/v4";
@@ -46,17 +46,19 @@ interface VectorStoreInfoViewProps {
   editVectorStore: boolean;
 }
 
-const vectorStoreEditShape = {
-  vector_store_id: z.string().min(1, "Please input a vector store ID"),
+type VectorStoreTranslator = ReturnType<typeof useTranslations<"vectorStores">>;
+
+const vectorStoreEditShape = (t: VectorStoreTranslator) => ({
+  vector_store_id: z.string().min(1, t("idFieldRequired")),
   vector_store_name: z.string().nullish(),
   vector_store_description: z.string().nullish(),
-  custom_llm_provider: z.string().min(1, "Please select a provider"),
+  custom_llm_provider: z.string().min(1, t("providerRequired")),
   litellm_credential_name: z.string().nullable().optional(),
-};
+});
 
-const vectorStoreEditSchema = z.object(vectorStoreEditShape);
+const vectorStoreEditSchema = (t: VectorStoreTranslator) => z.object(vectorStoreEditShape(t));
 
-type VectorStoreEditValues = z.output<typeof vectorStoreEditSchema>;
+type VectorStoreEditValues = z.infer<ReturnType<typeof vectorStoreEditSchema>>;
 
 const EMPTY_VALUES: VectorStoreEditValues = {
   vector_store_id: "",
@@ -94,7 +96,11 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
   editVectorStore,
 }) => {
   const t = useTranslations("vectorStores");
-  const form = useZodForm(vectorStoreEditSchema, { defaultValues: EMPTY_VALUES });
+  const commonT = useTranslations("common");
+  const form = useZodForm(
+    useMemo(() => vectorStoreEditSchema(t), [t]),
+    { defaultValues: EMPTY_VALUES },
+  );
   const [vectorStoreDetails, setVectorStoreDetails] = useState<VectorStore | null>(null);
   const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(editVectorStore);
@@ -123,7 +129,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       form.reset(toFormValues(response.vector_store));
     } catch (error) {
       console.error("Error fetching vector store details:", error);
-      toast.fromError("Error fetching vector store details: " + error);
+      toast.fromError(t("fetchDetailsFailed", { error: String(error) }));
       setLoadFailed(true);
     }
   };
@@ -157,7 +163,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       try {
         metadata = metadataString ? JSON.parse(metadataString) : {};
       } catch (e) {
-        toast.fromError("Invalid JSON in metadata field");
+        toast.fromError(t("metadataJsonInvalid"));
         return;
       }
 
@@ -170,7 +176,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       };
 
       await vectorStoreUpdateCall(accessToken, updateData);
-      toast.success("Vector store updated successfully");
+      toast.success(t("updatedToast"));
       setIsEditing(false);
       fetchVectorStoreDetails();
     } catch (error) {
@@ -192,7 +198,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       <div className="p-4 max-w-full">
         <Button variant="ghost" className="mb-4" onClick={onClose}>
           <ArrowLeft />
-          Back to Vector Stores
+          {t("backToList")}
         </Button>
         <h1 className="text-xl font-semibold">{t("notFound")}</h1>
         <p className="text-sm text-muted-foreground">{t("loadFailedDesc", { id: vectorStoreId })}</p>
@@ -219,7 +225,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
             <h1 className="text-xl font-semibold">{`${t("idLabel")}${vectorStoreDetails.vector_store_id}`}</h1>
             <StatusBadge
               tone={vectorStoreDetails.is_config ? "neutral" : "info"}
-              label={vectorStoreDetails.is_config ? "Config" : "DB"}
+              label={vectorStoreDetails.is_config ? t("table.sourceConfig") : "DB"}
             />
           </div>
           <p className="text-sm text-muted-foreground">
@@ -273,7 +279,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                         <FormField
                           control={form.control}
                           name="custom_llm_provider"
-                          label={labelWithHint("Provider", "Select the provider for this vector store")}
+                          label={labelWithHint(t("providerShort"), t("providerHint"))}
                         >
                           {({
                             id,
@@ -315,9 +321,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                           )}
                         </FormField>
 
-                        <p className="text-sm text-muted-foreground">
-                          Either select existing credentials OR enter provider credentials below
-                        </p>
+                        <p className="text-sm text-muted-foreground">{t("credsChoiceHint")}</p>
 
                         <FormField control={form.control} name="litellm_credential_name" label={t("existingCreds")}>
                           {({
@@ -362,13 +366,13 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
 
                         <div className="flex items-center">
                           <div className="grow border-t border-border"></div>
-                          <span className="px-4 text-muted-foreground text-sm">OR</span>
+                          <span className="px-4 text-muted-foreground text-sm">{t("orDivider")}</span>
                           <div className="grow border-t border-border"></div>
                         </div>
 
                         <div role="group" className="flex w-full flex-col gap-3">
                           <span className="flex w-fit gap-2 text-sm leading-snug font-medium">
-                            {labelWithHint("Metadata", "JSON metadata for the vector store")}
+                            {labelWithHint(t("metadataLabel"), t("metadataFieldHint"))}
                           </span>
                           <Textarea
                             rows={4}
@@ -381,7 +385,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
 
                       <div className="mt-6 flex justify-end space-x-2">
                         <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                          Cancel
+                          {commonT("cancel")}
                         </Button>
                         <Button type="submit">{t("saveChanges")}</Button>
                       </div>
