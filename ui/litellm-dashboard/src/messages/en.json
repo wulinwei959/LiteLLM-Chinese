@@ -7842,6 +7842,9 @@
     }
   },
   "playground": {
+    "uploadPreviewAlt": "Upload preview",
+    "removeAttachmentAria": "Remove attachment",
+    "sessionManagementAria": "About session management",
     "codeInterpreterOpenaiOnly": "Code Interpreter is only available for OpenAI models",
     "title": "Playground",
     "subtitle": "Test and experiment with models and endpoints",
@@ -11382,6 +11385,7 @@
     "description": "Global and team-specific guardrails applied to this team"
   },
   "routePreview": {
+    "forwardsTo": "Forwards to",
     "title": "Route Preview",
     "description": "How your requests will be routed",
     "basicRouting": "Basic routing:",

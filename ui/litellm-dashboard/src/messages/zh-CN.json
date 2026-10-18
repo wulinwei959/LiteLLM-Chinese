@@ -7842,6 +7842,9 @@
     }
   },
   "playground": {
+    "uploadPreviewAlt": "上传预览图",
+    "removeAttachmentAria": "移除附件",
+    "sessionManagementAria": "关于会话管理",
     "codeInterpreterOpenaiOnly": "代码解释器仅支持 OpenAI 模型",
     "title": "游乐场",
     "subtitle": "测试和体验模型与端点",
@@ -11378,6 +11381,7 @@
     "description": "应用到该团队的全局与团队专属护栏"
   },
   "routePreview": {
+    "forwardsTo": "转发至",
     "title": "路由预览",
     "description": "您的请求将如何被路由",
     "basicRouting": "基础路由：",

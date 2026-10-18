@@ -52,7 +52,7 @@ const RoutePreview: React.FC<RoutePreviewProps> = ({ pathValue, targetValue, inc
                 <span className="text-primary">/v1/text-to-image/base/model</span>
               </Endpoint>
               <ArrowRight className="size-5 shrink-0 self-center text-muted-foreground max-sm:rotate-90" />
-              <Endpoint label="Forwards to">
+              <Endpoint label={t("forwardsTo")}>
                 {targetValue}
                 <span className="text-primary">/v1/text-to-image/base/model</span>
               </Endpoint>

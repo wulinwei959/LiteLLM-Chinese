@@ -38,7 +38,9 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
 
   const getSessionDisplay = () => {
     if (!responsesSessionId) {
-      return useApiSessionManagement ? t("sessionManagement.sessionStatus.apiReady") : t("sessionManagement.sessionStatus.uiReady");
+      return useApiSessionManagement
+        ? t("sessionManagement.sessionStatus.apiReady")
+        : t("sessionManagement.sessionStatus.uiReady");
     }
 
     return useApiSessionManagement
@@ -65,12 +67,10 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-foreground">{t("sessionManagement.title")}</span>
           <Tooltip>
-            <TooltipTrigger aria-label="About session management">
+            <TooltipTrigger aria-label={t("sessionManagementAria")}>
               <Info className="size-3 text-muted-foreground" />
             </TooltipTrigger>
-            <TooltipContent>
-              {t("sessionManagement.about")}
-            </TooltipContent>
+            <TooltipContent>{t("sessionManagement.about")}</TooltipContent>
           </Tooltip>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">

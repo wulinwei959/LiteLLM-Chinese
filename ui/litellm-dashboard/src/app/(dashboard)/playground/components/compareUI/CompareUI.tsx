@@ -752,7 +752,9 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {comparisons.length >= maxComparisons ? t("compare.maxComparisonsReached") : t("compare.addAnotherComparison")}
+                  {comparisons.length >= maxComparisons
+                    ? t("compare.maxComparisonsReached")
+                    : t("compare.addAnotherComparison")}
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -831,7 +833,7 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
                       ) : (
                         <img
                           src={uploadedFilePreviewUrl || ""}
-                          alt="Upload preview"
+                          alt={t("uploadPreviewAlt")}
                           className="w-10 h-10 rounded-md border border-border object-cover"
                         />
                       )}
@@ -843,7 +845,7 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
                     <button
                       className="flex items-center justify-center w-6 h-6 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors"
                       onClick={handleRemoveFile}
-                      aria-label="Remove attachment"
+                      aria-label={t("removeAttachmentAria")}
                     >
                       <Trash2 className="size-3" />
                     </button>
