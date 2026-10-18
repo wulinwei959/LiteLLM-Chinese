@@ -1,10 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 238 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10780、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 簇 `EntityUsage.tsx` 文案清零减 1。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 238 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 239 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10786、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238、239 簇减 2。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 239 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 239 簇更新
+
+继续串行推进。这一簇是 `src/app/(dashboard)/tag-management/_components/TagTable.tsx`（早已接入 `tagManagement`，属"已接入但仍有英文"长尾）。收口四处：`NoMatchingTags` 空态两句、`TagFilters` 两个输入框的 `aria-label` 与 `placeholder`。`NoMatchingTags` 与 `TagFilters` 都是 React 组件，直接各自 `useTranslations("tagManagement")` 即可（不像列定义工厂要走首参）。新增 6 个键：`noMatchingTags`/`noMatchingTagsDesc` + `filterByName`/`filterByNamePlaceholder`/`filterByDescription`/`filterByDescriptionPlaceholder`。placeholder 与 aria-label 英文只差结尾省略号，属语义有别的两处，按 WORKFLOW 不并键、各开一个，中文 placeholder 也带 `…`
+
+测试：`TagTable.test.tsx` 走 `renderWithProviders` 钉 zh-CN，9 处 `getByRole("textbox", { name: "Filter by tag name"/"Filter by description" })` 与 1 处 `getByText("No matching tags")` 改中文（`getByRole` 的 `name` 命中 `aria-label`，与 placeholder 无关，故只动 aria 对应值）。该测试文件无对 placeholder 的断言
+
+踩到的取舍：本想找 `caching/cache_dashboard.tsx` 当目标（同属"已接入仍有英文"且串多），但其 `cache_dashboard.test.tsx` 深测图表内部——按英文 dataKey 断言 `Bar` 的 `name` 与颜色映射（`{"Generated Completion Tokens": ...}`）。给图表接 `categoryLabels` 会把 `Bar name` 换成中文（`bar_chart.tsx:126`），连锁改一片颜色/图例断言，收益风险不划算，遂改挑串少、测试轻的 `TagTable.tsx`。`cache_dashboard.tsx` 仍挂在"已接入仍有英文"账上，做它时要么走 `categoryLabels` 并连带同步图表内部断言，要么只翻统计卡与文案、暂留图例英文
+
+验证：`TagTable.test.tsx` + parity + missingKeys 三文件 29 例全绿、Type Errors 无报错；eslint 改动文件 0 错误 1 警告，且该警告与 prettier 待改行（第 76 行 `columns = useMemo`）都是 HEAD 既有、本簇未碰，按口径不 `--write` 整文件；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数 912/689 不动；目录叶子 10780 涨到 10786（新增 6 键），中英同值 139 不变。下一簇按"已接入仍有英文"长尾取串少测试轻者（如 `GuardrailsMonitor/LogViewer.tsx`、`models-and-endpoints/components/AllModelsTab.tsx`），或回到按命中数排序的未接入队列
 
 ## 2026-10-18 第 238 簇更新
 
