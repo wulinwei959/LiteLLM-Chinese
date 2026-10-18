@@ -1,10 +1,22 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 259 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10903、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 259 簇减 22）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇 +4 至 10849，247 零新增 10849，248 +6 至 10855，249 +7 至 10862，250 +2 至 10864，251 +5 至 10869，252 +3 至 10872，253 +1 至 10873，254 +2 至 10875，255 +5 至 10880，256 零新增 10880，257 +11 至 10891，258 +4 至 10895，259 +8 至 10903）。第 93 到 259 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247、256 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 260 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10905、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 260 簇减 23）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇 +4 至 10849，247 零新增 10849，248 +6 至 10855，249 +7 至 10862，250 +2 至 10864，251 +5 至 10869，252 +3 至 10872，253 +1 至 10873，254 +2 至 10875，255 +5 至 10880，256 零新增 10880，257 +11 至 10891，258 +4 至 10895，259 +8 至 10903，260 +2 至 10905）。第 93 到 260 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247、256 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 260 簇更新
+
+继续串行推进。这一簇是 `src/app/(dashboard)/mcp-servers/_components/MCPToolsetsTab.tsx`（MCP 工具集标签页，已挂 `mcpServers`，长尾漏接）。新增 2 键（`toolsets.nameRequired`、`toolsets.clearSearch`），复用 1 处（`toolsets.copy`），另修 1 处上游坏 ICU 标签
+
+复用与判据：模块级 zod 的 `"Please enter a toolset name"` 按 246 簇工厂化模式改成 `buildToolsetSchema(nameRequired)` + `z.infer<ReturnType<...>>`，组件内把 `t` 声明提前、`useZodForm(buildToolsetSchema(t("toolsets.nameRequired")), ...)`；`aria-label="Clear search"` 加 `toolsets.clearSearch`（与 projects/access-groups/skills/agents/modelHub/routingGroups 六个同值 `clearSearch` 键同型，zh "清空搜索"）；配置片段的 `copy` 钮复用现键 `toolsets.copy`（"copy"/"复制"），扫描正则此前漏掉这个小写单词
+
+坏 ICU 标签修复：`toolsets.guideBody` 消息写成 `{link}…</link>`（参数占位符配游离闭合标签），next-intl 把 rich 回调函数当参数塞进 React 子节点——控制台报 "Functions are not valid as a React child"，且两种语言下强调的 "API Keys → Edit Key → MCP Servers" 段一直没渲染。双侧改 `<link>…</link>`（`link` 在 parity RICH_TAGS 白名单，消费方本就传 `link` 回调）后 stderr 消失、强调段恢复渲染。同病的 `playground.toolsets.guideBody` 与 `playground.agentBuilder.experimentalWarning` 是无消费方的孤儿键（不渲染、无此告警），不在本簇动
+
+测试：`MCPToolsetsTab.integration.test.tsx`（6 例）走 `renderWithProviders`（钉 zh），114 行 `findByText("Please enter a toolset name")` 随接线改 `"请输入工具集名称"`；aria-label 与 copy 钮无测试钉（grep 确认）
+
+验证：integration(6) + parity(8) + missingKeys(1) 三文件 15 例全绿、Type Errors 无报错、stderr 清零；tsc 真路径两文件零命中；eslint 组件 3 条与 HEAD 基线一致（any、no-large-inline-object-arg）、测试的 prefer-screen-queries 全既有，零新增；prettier 组件整文件绿（我首版 aria-label 行超宽被 prettier 打回，已按其输出重排）；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数 689 不动；目录叶子复算 +2 至 10905（en/zh 双侧一致），同值 139 不变；本簇把 1 个"已接入仍有英文"文件清零，长尾减 1
 
 ## 2026-10-18 第 259 簇更新
 
