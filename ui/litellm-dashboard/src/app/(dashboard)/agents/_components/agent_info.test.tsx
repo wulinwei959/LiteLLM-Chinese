@@ -195,9 +195,9 @@ describe("AgentInfoView settings", () => {
     });
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
-    const dangerZone = await screen.findByRole("region", { name: "Danger Zone" });
+    const dangerZone = await screen.findByRole("region", { name: "危险区域" });
     expect(dangerZone).toHaveTextContent("DELETE https://ops.example.com/kill");
-    expect(screen.getByRole("button", { name: "Fire Kill Switch" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "触发紧急停止开关" })).toBeInTheDocument();
     expect(screen.queryByText("Kill Switch")).not.toBeInTheDocument();
   });
 
@@ -209,7 +209,7 @@ describe("AgentInfoView settings", () => {
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={false} />);
 
     expect(await screen.findByRole("heading", { name: "support-agent" })).toBeInTheDocument();
-    expect(screen.queryByRole("region", { name: "Danger Zone" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Fire Kill Switch" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "危险区域" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "触发紧急停止开关" })).not.toBeInTheDocument();
   });
 });

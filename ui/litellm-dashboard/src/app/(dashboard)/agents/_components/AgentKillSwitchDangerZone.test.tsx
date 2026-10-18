@@ -29,11 +29,11 @@ const renderZone = (props: Partial<React.ComponentProps<typeof AgentKillSwitchDa
   );
 
 const openDialog = () => {
-  fireEvent.click(screen.getByRole("button", { name: "Fire Kill Switch" }));
+  fireEvent.click(screen.getByRole("button", { name: "触发紧急停止开关" }));
   return screen.getByRole("dialog");
 };
 
-const dialogFireButton = () => within(screen.getByRole("dialog")).getByRole("button", { name: "Fire Kill Switch" });
+const dialogFireButton = () => within(screen.getByRole("dialog")).getByRole("button", { name: "触发紧急停止开关" });
 
 describe("AgentKillSwitchDangerZone", () => {
   beforeEach(() => {
@@ -51,17 +51,17 @@ describe("AgentKillSwitchDangerZone", () => {
   it("shows the webhook target and an outage warning inside a Danger Zone region", () => {
     renderZone();
 
-    const region = screen.getByRole("region", { name: "Danger Zone" });
+    const region = screen.getByRole("region", { name: "危险区域" });
     expect(region).toHaveTextContent("DELETE https://ops.example.com/kill");
-    expect(region).toHaveTextContent("这可能导致服务中断");
-    expect(screen.getByRole("button", { name: "Fire Kill Switch" })).toBeEnabled();
+    expect(region).toHaveTextContent("停止该智能体的上游运行时");
+    expect(screen.getByRole("button", { name: "触发紧急停止开关" })).toBeEnabled();
   });
 
   it("shows an unconfigured notice without a fire button when no kill switch is set", () => {
     renderZone({ killSwitch: null });
 
-    expect(screen.getByRole("region", { name: "Danger Zone" })).toHaveTextContent("Not configured");
-    expect(screen.queryByRole("button", { name: "Fire Kill Switch" })).not.toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "危险区域" })).toHaveTextContent("尚未配置");
+    expect(screen.queryByRole("button", { name: "触发紧急停止开关" })).not.toBeInTheDocument();
   });
 
   it("keeps the confirm button disabled until the exact agent name is typed", () => {
@@ -93,10 +93,10 @@ describe("AgentKillSwitchDangerZone", () => {
     fireEvent.change(screen.getByLabelText("确认智能体名称"), { target: { value: "support-agent" } });
     fireEvent.click(dialogFireButton());
 
-    expect(await screen.findByRole("status")).toHaveTextContent('Last result: HTTP 202 {"stopped": true}');
+    expect(await screen.findByRole("status")).toHaveTextContent('上次结果：HTTP 202 {"stopped": true}');
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(networking.triggerAgentKillSwitchCall).toHaveBeenCalledWith("sk-test", "agent-1");
-    expect(toast.success).toHaveBeenCalledWith("Kill switch fired (HTTP 202)");
+    expect(toast.success).toHaveBeenCalledWith("紧急停止开关已触发（HTTP 202）");
   });
 
   it("does not call the webhook when the dialog is cancelled", () => {
@@ -104,7 +104,7 @@ describe("AgentKillSwitchDangerZone", () => {
     openDialog();
 
     fireEvent.change(screen.getByLabelText("确认智能体名称"), { target: { value: "support-agent" } });
-    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    fireEvent.click(screen.getByRole("button", { name: "取消" }));
 
     expect(networking.triggerAgentKillSwitchCall).not.toHaveBeenCalled();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
