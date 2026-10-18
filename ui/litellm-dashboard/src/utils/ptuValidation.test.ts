@@ -1,22 +1,26 @@
 import { describe, expect, it } from "vitest";
+import { enMessagesFor } from "@tests/i18nStub";
 import {
   PTU_COUNT_FIELD,
   PTU_RATE_FIELD,
-  ptuCountRules,
+  ptuCountRule,
   ptuNoUsageCostRule,
   ptuPairRule,
-  ptuRateRules,
+  ptuRateRule,
   ptuStartRequiredRule,
   ptuWindowOrderRule,
   PTU_END_FIELD,
   PTU_START_FIELD,
   MAX_PTU_COUNT,
   MAX_COST_PER_PTU_PER_HOUR,
+  type PtuTranslator,
 } from "./ptuValidation";
 
-const validate = (value: unknown) => ptuCountRules[0].validator(null, value);
+const t = enMessagesFor("models.addModel") as unknown as PtuTranslator;
 
-describe("ptuCountRules", () => {
+const validate = (value: unknown) => ptuCountRule(t).validator(null, value);
+
+describe("ptuCountRule", () => {
   it("accepts positive whole numbers and empty values", async () => {
     await expect(validate(5)).resolves.toBeUndefined();
     await expect(validate("15")).resolves.toBeUndefined();
@@ -43,7 +47,7 @@ describe("ptuCountRules", () => {
 
 describe("ptuNoUsageCostRule", () => {
   const check = (value: unknown, count: unknown) =>
-    ptuNoUsageCostRule(PTU_COUNT_FIELD)({ getFieldValue: () => count }).validator(null, value);
+    ptuNoUsageCostRule(PTU_COUNT_FIELD, t)({ getFieldValue: () => count }).validator(null, value);
 
   it("leaves a deployment without PTU config free to carry any price", async () => {
     await expect(check("2.5", "")).resolves.toBeUndefined();
@@ -64,7 +68,10 @@ describe("ptuNoUsageCostRule", () => {
 
   it("reads the count by the field name it was given", () => {
     const seen: string[] = [];
-    ptuNoUsageCostRule(PTU_COUNT_FIELD)({
+    ptuNoUsageCostRule(
+      PTU_COUNT_FIELD,
+      t,
+    )({
       getFieldValue: (name: string) => {
         seen.push(name);
         return 15;
@@ -75,7 +82,7 @@ describe("ptuNoUsageCostRule", () => {
 });
 
 describe("ptuPairRule", () => {
-  const rule = (sibling: unknown) => ptuPairRule(PTU_RATE_FIELD)({ getFieldValue: () => sibling });
+  const rule = (sibling: unknown) => ptuPairRule(PTU_RATE_FIELD, t)({ getFieldValue: () => sibling });
   const check = (value: unknown, sibling: unknown) => rule(sibling).validator(null, value);
 
   it("accepts both set and both cleared, the only shapes the backend stores", async () => {
@@ -92,7 +99,10 @@ describe("ptuPairRule", () => {
 
   it("reads the sibling by the field name it was given", () => {
     const seen: string[] = [];
-    ptuPairRule(PTU_COUNT_FIELD)({
+    ptuPairRule(
+      PTU_COUNT_FIELD,
+      t,
+    )({
       getFieldValue: (name: string) => {
         seen.push(name);
         return 1;
@@ -102,8 +112,8 @@ describe("ptuPairRule", () => {
   });
 });
 
-describe("ptuRateRules", () => {
-  const validate = (value: unknown) => ptuRateRules[0].validator(null, value);
+describe("ptuRateRule", () => {
+  const validate = (value: unknown) => ptuRateRule(t).validator(null, value);
 
   it("rejects a negative rate, which the backend answers with a 400", async () => {
     await expect(validate(-1)).rejects.toThrow("must be between 0 and");
@@ -134,7 +144,7 @@ describe("ptuRateRules", () => {
 
 describe("ptuStartRequiredRule", () => {
   const rule = (count: unknown, start: unknown) =>
-    ptuStartRequiredRule(PTU_COUNT_FIELD)({ getFieldValue: () => count }).validator(null, start);
+    ptuStartRequiredRule(PTU_COUNT_FIELD, t)({ getFieldValue: () => count }).validator(null, start);
 
   it("rejects PTU config with no effective start, which the backend answers with a 400", async () => {
     await expect(rule(10, undefined)).rejects.toThrow("PTU Effective From is required when PTU Count is set");
@@ -157,48 +167,50 @@ describe("ptuWindowOrderRule", () => {
 
   it("accepts an ordered window from either bound", async () => {
     await expect(
-      ptuWindowOrderRule(PTU_END_FIELD, "start")(form({ [PTU_END_FIELD]: end })).validator(null, start),
+      ptuWindowOrderRule(PTU_END_FIELD, "start", t)(form({ [PTU_END_FIELD]: end })).validator(null, start),
     ).resolves.toBeUndefined();
     await expect(
-      ptuWindowOrderRule(PTU_START_FIELD, "end")(form({ [PTU_START_FIELD]: start })).validator(null, end),
+      ptuWindowOrderRule(PTU_START_FIELD, "end", t)(form({ [PTU_START_FIELD]: start })).validator(null, end),
     ).resolves.toBeUndefined();
   });
 
   it("rejects an inverted window from either bound", async () => {
     await expect(
-      ptuWindowOrderRule(PTU_END_FIELD, "start")(form({ [PTU_END_FIELD]: start })).validator(null, end),
+      ptuWindowOrderRule(PTU_END_FIELD, "start", t)(form({ [PTU_END_FIELD]: start })).validator(null, end),
     ).rejects.toThrow("PTU Effective To must be after PTU Effective From");
     await expect(
-      ptuWindowOrderRule(PTU_START_FIELD, "end")(form({ [PTU_START_FIELD]: end })).validator(null, start),
+      ptuWindowOrderRule(PTU_START_FIELD, "end", t)(form({ [PTU_START_FIELD]: end })).validator(null, start),
     ).rejects.toThrow("PTU Effective To must be after PTU Effective From");
   });
 
   it("rejects a zero-length window, which the backend also refuses", async () => {
     await expect(
-      ptuWindowOrderRule(PTU_END_FIELD, "start")(form({ [PTU_END_FIELD]: start })).validator(null, start),
+      ptuWindowOrderRule(PTU_END_FIELD, "start", t)(form({ [PTU_END_FIELD]: start })).validator(null, start),
     ).rejects.toThrow("must be after");
   });
 
   it("stays silent while either bound is empty, since the window is optional", async () => {
-    await expect(ptuWindowOrderRule(PTU_END_FIELD, "start")(form({})).validator(null, start)).resolves.toBeUndefined();
     await expect(
-      ptuWindowOrderRule(PTU_START_FIELD, "end")(form({ [PTU_START_FIELD]: start })).validator(null, ""),
+      ptuWindowOrderRule(PTU_END_FIELD, "start", t)(form({})).validator(null, start),
+    ).resolves.toBeUndefined();
+    await expect(
+      ptuWindowOrderRule(PTU_START_FIELD, "end", t)(form({ [PTU_START_FIELD]: start })).validator(null, ""),
     ).resolves.toBeUndefined();
   });
 });
 
 describe("backend maximums are mirrored in the form", () => {
   it("rejects a count above the cap and accepts one at it", async () => {
-    await expect(ptuCountRules[0].validator(null, String(MAX_PTU_COUNT + 1))).rejects.toThrow("1,000,000");
-    await expect(ptuCountRules[0].validator(null, String(MAX_PTU_COUNT))).resolves.toBeUndefined();
+    await expect(ptuCountRule(t).validator(null, String(MAX_PTU_COUNT + 1))).rejects.toThrow("1,000,000");
+    await expect(ptuCountRule(t).validator(null, String(MAX_PTU_COUNT))).resolves.toBeUndefined();
   });
 
   it("rejects a rate above the cap and accepts one at it", async () => {
-    await expect(ptuRateRules[0].validator(null, String(MAX_COST_PER_PTU_PER_HOUR + 1))).rejects.toThrow("1,000,000");
-    await expect(ptuRateRules[0].validator(null, String(MAX_COST_PER_PTU_PER_HOUR))).resolves.toBeUndefined();
+    await expect(ptuRateRule(t).validator(null, String(MAX_COST_PER_PTU_PER_HOUR + 1))).rejects.toThrow("1,000,000");
+    await expect(ptuRateRule(t).validator(null, String(MAX_COST_PER_PTU_PER_HOUR))).resolves.toBeUndefined();
   });
 
   it("still accepts a zero rate, which the backend allows", async () => {
-    await expect(ptuRateRules[0].validator(null, "0")).resolves.toBeUndefined();
+    await expect(ptuRateRule(t).validator(null, "0")).resolves.toBeUndefined();
   });
 });

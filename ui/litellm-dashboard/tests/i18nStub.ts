@@ -16,7 +16,11 @@ export const enMessagesFor =
     const segments = (key.startsWith(`${namespace}.`) ? key.slice(namespace.length + 1) : key).split(".");
     const resolved = segments.reduce<Catalog | string | undefined>(
       (node, segment) => (typeof node === "object" ? node[segment] : undefined),
-      (en as unknown as Catalog)[namespace] as Catalog,
+      namespace
+        .split(".")
+        .reduce<
+          Catalog | string | undefined
+        >((node, segment) => (typeof node === "object" ? node[segment] : undefined), en as unknown as Catalog) as Catalog,
     );
 
     if (typeof resolved !== "string") {

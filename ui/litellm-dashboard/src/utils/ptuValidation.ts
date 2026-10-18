@@ -1,3 +1,5 @@
+import type { useTranslations } from "next-intl";
+
 interface ValidatorRule {
   validator: (rule: unknown, value: unknown) => Promise<void>;
 }
@@ -6,6 +8,8 @@ interface FormInstance {
   getFieldValue: (name: string) => unknown;
   isFieldTouched?: (name: string) => boolean;
 }
+
+export type PtuTranslator = ReturnType<typeof useTranslations<"models.addModel">>;
 
 export const PTU_COUNT_FIELD = "ptu_count";
 export const PTU_RATE_FIELD = "cost_per_ptu_per_hour";
@@ -29,14 +33,12 @@ export const isPositiveWholePtuCount = (value: unknown): boolean => {
 };
 
 /** Mirrors the backend contract, which rejects a ptu_count that is not a positive integer. */
-export const ptuCountRules: ValidatorRule[] = [
-  {
-    validator: (_, value) =>
-      isPositiveWholePtuCount(value)
-        ? Promise.resolve()
-        : Promise.reject(new Error(`PTU Count must be a whole number between 1 and ${MAX_PTU_COUNT.toLocaleString()}`)),
-  },
-];
+export const ptuCountRule = (t: PtuTranslator): ValidatorRule => ({
+  validator: (_, value) =>
+    isPositiveWholePtuCount(value)
+      ? Promise.resolve()
+      : Promise.reject(new Error(t("ptuCountRange", { max: MAX_PTU_COUNT.toLocaleString() }))),
+});
 
 export const isNonNegativePtuRate = (value: unknown): boolean => {
   if (!isFilledPtuValue(value)) {
@@ -47,16 +49,12 @@ export const isNonNegativePtuRate = (value: unknown): boolean => {
 };
 
 /** Mirrors the backend contract, which rejects a negative cost_per_ptu_per_hour. */
-export const ptuRateRules: ValidatorRule[] = [
-  {
-    validator: (_, value) =>
-      isNonNegativePtuRate(value)
-        ? Promise.resolve()
-        : Promise.reject(
-            new Error(`Cost per PTU / Hour must be between 0 and ${MAX_COST_PER_PTU_PER_HOUR.toLocaleString()}`),
-          ),
-  },
-];
+export const ptuRateRule = (t: PtuTranslator): ValidatorRule => ({
+  validator: (_, value) =>
+    isNonNegativePtuRate(value)
+      ? Promise.resolve()
+      : Promise.reject(new Error(t("ptuRateRange", { max: MAX_COST_PER_PTU_PER_HOUR.toLocaleString() }))),
+});
 
 /**
  * The backend rejects a half-set pair with "ptu_count and cost_per_ptu_per_hour must be set
@@ -64,12 +62,12 @@ export const ptuRateRules: ValidatorRule[] = [
  * this with `dependencies` on the sibling field so its error clears when the pair is resolved.
  */
 export const ptuPairRule =
-  (siblingField: string) =>
+  (siblingField: string, t: PtuTranslator) =>
   ({ getFieldValue }: FormInstance): ValidatorRule => ({
     validator: (_, value) =>
       isFilledPtuValue(value) === isFilledPtuValue(getFieldValue(siblingField))
         ? Promise.resolve()
-        : Promise.reject(new Error("PTU Count and Cost per PTU / Hour must be set together")),
+        : Promise.reject(new Error(t("ptuPairRequired"))),
   });
 
 /**
@@ -78,7 +76,7 @@ export const ptuPairRule =
  * with `dependencies` on the count so the error clears once the price or the PTU config goes.
  */
 export const ptuNoUsageCostRule =
-  (countField: string, thisField?: string) =>
+  (countField: string, t: PtuTranslator, thisField?: string) =>
   ({ getFieldValue, isFieldTouched }: FormInstance): ValidatorRule => ({
     validator: (_, value) => {
       // A cost the operator never typed was seeded from the rate /model/info resolved, which
@@ -87,7 +85,7 @@ export const ptuNoUsageCostRule =
       const echoed = thisField !== undefined && isFieldTouched !== undefined && !isFieldTouched(thisField);
       return echoed || !isFilledPtuValue(getFieldValue(countField)) || !isFilledPtuValue(value) || Number(value) === 0
         ? Promise.resolve()
-        : Promise.reject(new Error("A PTU deployment bills by reserved capacity, so this cost must be 0 or blank"));
+        : Promise.reject(new Error(t("ptuCostReservedOnly")));
     },
   });
 
@@ -97,12 +95,12 @@ export const ptuNoUsageCostRule =
  * exist. Pair this with `dependencies` on the count so the error clears when both resolve.
  */
 export const ptuStartRequiredRule =
-  (countField: string) =>
+  (countField: string, t: PtuTranslator) =>
   ({ getFieldValue }: FormInstance): ValidatorRule => ({
     validator: (_, value) =>
       isFilledPtuValue(value) || !isFilledPtuValue(getFieldValue(countField))
         ? Promise.resolve()
-        : Promise.reject(new Error("PTU Effective From is required when PTU Count is set")),
+        : Promise.reject(new Error(t("ptuStartRequired"))),
   });
 
 /** Milliseconds for a picker value, which arrives as a Dayjs (or a Date/ISO string in tests). */
@@ -128,14 +126,12 @@ export const ptuWindowIsOrdered = (start: unknown, end: unknown): boolean => {
 };
 
 export const ptuWindowOrderRule =
-  (siblingField: string, thisBound: "start" | "end") =>
+  (siblingField: string, thisBound: "start" | "end", t: PtuTranslator) =>
   ({ getFieldValue }: FormInstance): ValidatorRule => ({
     validator: (_, value) => {
       const sibling = getFieldValue(siblingField);
       const start = thisBound === "start" ? value : sibling;
       const end = thisBound === "start" ? sibling : value;
-      return ptuWindowIsOrdered(start, end)
-        ? Promise.resolve()
-        : Promise.reject(new Error("PTU Effective To must be after PTU Effective From"));
+      return ptuWindowIsOrdered(start, end) ? Promise.resolve() : Promise.reject(new Error(t("ptuWindowOrder")));
     },
   });

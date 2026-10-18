@@ -23,10 +23,10 @@ import {
   PTU_COUNT_FIELD,
   PTU_RATE_FIELD,
   PTU_START_FIELD,
-  ptuCountRules,
+  ptuCountRule,
   ptuNoUsageCostRule,
   ptuPairRule,
-  ptuRateRules,
+  ptuRateRule,
   ptuStartRequiredRule,
   ptuWindowOrderRule,
   PTU_END_FIELD,
@@ -67,7 +67,7 @@ const validateNumber = (t: AdvancedSettingsTranslator) => (_: unknown, value: un
 
 const usageCostRules = (t: AdvancedSettingsTranslator) => ({
   deps: [PTU_COUNT_FIELD],
-  validate: validatorRules({ validator: validateNumber(t) }, ptuNoUsageCostRule(PTU_COUNT_FIELD)),
+  validate: validatorRules({ validator: validateNumber(t) }, ptuNoUsageCostRule(PTU_COUNT_FIELD, t)),
 });
 
 const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
@@ -213,8 +213,8 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                     deps: REVALIDATED_WHEN_PTU_COUNT_CHANGES,
                     validate: validatorRules(
                       { validator: validateNumber(t) },
-                      ...ptuCountRules,
-                      ptuPairRule(PTU_RATE_FIELD),
+                      ptuCountRule(t),
+                      ptuPairRule(PTU_RATE_FIELD, t),
                     ),
                   }}
                   className="mb-4"
@@ -240,8 +240,8 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                     deps: [PTU_COUNT_FIELD],
                     validate: validatorRules(
                       { validator: validateNumber(t) },
-                      ...ptuRateRules,
-                      ptuPairRule(PTU_COUNT_FIELD),
+                      ptuRateRule(t),
+                      ptuPairRule(PTU_COUNT_FIELD, t),
                     ),
                   }}
                   className="mb-4"
@@ -266,8 +266,8 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                   rules={{
                     deps: [PTU_END_FIELD],
                     validate: validatorRules(
-                      ptuStartRequiredRule(PTU_COUNT_FIELD),
-                      ptuWindowOrderRule(PTU_END_FIELD, "start"),
+                      ptuStartRequiredRule(PTU_COUNT_FIELD, t),
+                      ptuWindowOrderRule(PTU_END_FIELD, "start", t),
                     ),
                   }}
                   className="mb-4"
@@ -290,7 +290,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                   )}
                   rules={{
                     deps: [PTU_START_FIELD],
-                    validate: validatorRules(ptuWindowOrderRule(PTU_START_FIELD, "end")),
+                    validate: validatorRules(ptuWindowOrderRule(PTU_START_FIELD, "end", t)),
                   }}
                   className="mb-4"
                 >
