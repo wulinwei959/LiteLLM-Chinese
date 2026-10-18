@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 197 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10612、中英同值 138）。第 93 到 199 簇（184、189、190、191、194、198、199 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 197 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10612、中英同值 138）。第 93 到 200 簇（184、189、190、191、194、198、199、200 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 200 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `mcp-servers/_components/mcp_connect.tsx`，MCP 连接方式说明页（Cursor/Claude Code/curl/Streamable HTTP 等页签），早前批次只在盲区复查时判过 Bearer 样本、未整片过，本簇按复判计划整片过一遍，结论是纯判定簇，零接线、零改动（覆盖率沿用第 197 簇后口径：非测试 `.tsx` 912 个接入 687 个、75.3%，叶子 10612、同值 138）。页面全部 UI 文案早已接 `mcpServers.mcpConnect.*`：FeatureCard 走 `titleKey` + `t(titleKey)`，描述、传输方式、页签、服务器地址小节、限制工具开关（t.rich limitToolsHint）、twoOptions/option1/option2 提示与 mixBoth 等全部就位；placeholder/aria-label/title/label 属性别搜零裸串，全文件无 console 调用。扫描器 5 条命中逐条判定：4 条在 `CodeBlock` 的 curl/JSON 代码样本内（`Bearer YOUR_LITELLM_VIRTUAL_KEY`、`Bearer YOUR_LITELLM_API_KEY`），1 条在 `getHeadersConfig()`，该函数唯一消费方是把 `"x-litellm-api-key": "Bearer ..."` 回填进代码样本的 headers 占位（cloneElement 正则替换），同属样本负载，按第 183/197 簇样本教条与第 190 簇 Bearer 先例登记不翻。`Zapier_MCP`、`dev-group`、`"Server1,dev-group"` 是示例值/wire 值不动，`Run available tools` 等是 curl 样本 payload。本文件扫描器 5 条登记为不翻。下一簇按队列取 `mcp-servers/_components/editServerPayload.ts`（5 条，fixtures 早前登记过不碰，届时复判坐实）。
 
 ## 2026-10-18 第 199 簇更新
 
