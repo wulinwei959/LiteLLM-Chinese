@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 201 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10615、中英同值 138）。第 93 到 201 簇（184、189、190、191、194、198、199、200 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 202 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10621、中英同值 134，同值按 HEAD 重测修正此前 138 的旧口径）。第 93 到 202 簇（184、189、190、191、194、198、199、200 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 202 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `mcp-servers/_components/MCPSubmissionsTab.tsx`，MCP 服务器提交审核页（规则面板、统计卡、提交卡片与确认弹窗）。页面骨架早前已接 `mcpServers.submissions.*`，本簇接线的是四处盲区：`ConfirmDialog` 标题两条裸串、`Are you sure you want to {action}` 把 approve/reject 英文动作词裸插进整句（连 rejectBody 三元与 approve 详情串一起），改组为三条整句键并用 `t.rich` 的 `<b>` 标签保留服务器名强调样式；`MCPServerCard` 无规则分支的 `Re-approve` 裸串复用既有 `submissions.reapprove`（此前只接在 checks 头部）；`` `${failCount} check${...} failed` `` 与 `{pass} passing, {fail} failing` 复用早前预置、零消费者的 `checksFailed`/`passingFailing`，其中 `checksFailed` 中英两侧升级为 ICU 复数（原英文实现有 `1 check failed` 单数语法，普通 `{count}` 键会退化）。扫描器 5 条命中：确认弹窗 3 条如上接线，`Failed to load submissions` 是 `setError` 兜底、渲染进错误占位 div，接新开 `loadFailed` 键（`err.message` 分支属后端透传通道不翻），`console.warn` 前缀不翻。顺手修掉一处既有 bug：`StatCard` 收了字典键 `label` 却裸渲染（页面显示 `submissions.totalSubmitted` 原始键名且 `t` 挂空），改为 `t(label)` 并把 prop 类型收紧为键名联合。新开 6 键插在 `submissions` 块尾 `rulesSaveFailedToast` 后（`confirmApproveTitle`、`confirmRejectTitle`、`confirmApproveBody`、`confirmRejectBodyLive`、`confirmRejectBodyPending`、`loadFailed`，叶子 10615 涨到 10621；`fetchData` 回调新增 `t` 依赖，next-intl 的 `t` 随上下文 memo，不会引发重取循环）。本组件无测试文件，`messagesParity`/`locales` 15 例全绿、Type Errors 无报错，tsc 锚定零命中，eslint 与 HEAD 双侧持平 PARITY-OK，prettier 本文件与两份目录 HEAD 即脏、按教条不改写，ICU 守卫 8 键 16 侧通过（富文本键补 `b` 标签回调），`next build` 通过，扫描器本文件剩 1 条 `console.warn` 登记不翻。另按 HEAD 重测中英同值实为 134，此前记录的 138 是旧口径，头部一并修正。下一簇按队列取 `hooks/cloudzero/useCloudZeroSettings.ts`（5 条）。
 
 ## 2026-10-18 第 201 簇更新
 
