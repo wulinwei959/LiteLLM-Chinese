@@ -1,10 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 241 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10804、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 241 簇减 4。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 241 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 242 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10814、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 242 簇减 5。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 242 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 242 簇更新
+
+继续串行推进。这一簇是 `src/app/(dashboard)/caching/_components/cache_health.tsx`（健康检查页，已挂 `caching`，长尾漏接）。收口：`Run Health Check`/`Running Health Check...` 按钮、`Summary`/`Raw Response` 页签、`Cache Status:` 标签、`Error Details`/`Cache Details`/`Redis Details` 三个分区标题、错误回退 `Unknown error`（复用现成 `caching.unknownError`）、`No traceback available`、`Error parsing details`。共 10 个新键
+
+判据：分区标题、页签、按钮、标签是展示文案，翻；`Cache Status: ` 后面跟的 `response?.status`（`healthy`/`unhealthy`）是后端状态值、保留英文不动（与 `N/A` 同理）；`litellm_settings.cache_params` 这个字段标签是点号配置路径、是技术标识不翻；`deepParse`/`redisDetails` 里的 `"N/A"` 兜底是通用占位、不翻。`CacheHealthDetails` 在 `try`/`catch` 顶层拿 `t`（L81 已 `useTranslations`），回退文案直接 `t(...)`
+
+测试：`cache_health.test.tsx` 走 `renderWithProviders`，原本就中英混钉（已翻的 `Ping 响应`/`Redis 主机` 钉中文，未翻的钉英文）。把 8 类断言改中：`Run Health Check`→`运行健康检查`、`Running Health Check...`→`健康检查运行中...`、`/Cache Status:/`→`/缓存状态:/`、`Cache Status: healthy`/`unhealthy`→`缓存状态: healthy`/`unhealthy`（状态值仍英文）、`Cache Details`→`缓存详情`、`Redis Details`→`Redis 详情`、`Error Details`→`错误详情`、`Summary`→`摘要`、`Raw Response`→`原始响应`。mock 数据 `success`/`Connection refused`/`redis.internal`/`7.2.1`/`litellm-ns` 是后端值，不动。消费者 `cache_dashboard.tsx` 只传 props 不钉这些串，无外部测试受影响
+
+验证：`cache_health.test.tsx` + parity + missingKeys 三文件 19 例全绿、Type Errors 无报错；eslint 真路径 0 错误 11 警告，与 HEAD 基线 11 警告持平（temp 路径多出的 1 error 是文件名解析假象）；prettier 净；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子涨到 10814（+10），同值 139 不变。再记一条目录命名坑：`caching` 这个顶层 ns 之外，`coordination` 子对象里还有个嵌套 `"caching"`（只含 `loadFailed`/`rangeNote`），按整行 `"caching": {` 匹配会先命中嵌套块、把键插错；本簇改用 `caching.unknownError` + 紧邻 `toast` 子对象作锚才落到顶层 ns（与 WORKFLOW 第二步"锚点带顶层缩进并断言唯一"同源）
 
 ## 2026-10-18 第 241 簇更新
 
