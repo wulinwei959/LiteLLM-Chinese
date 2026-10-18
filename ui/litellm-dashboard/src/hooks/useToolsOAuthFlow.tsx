@@ -14,6 +14,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { buildMcpOAuthAuthorizeUrl, exchangeMcpOAuthToken, registerMcpOAuthClient } from "@/components/networking";
 import { toast } from "@/lib/toast";
 import { extractErrorMessage } from "@/utils/errorUtils";
@@ -71,6 +72,7 @@ export const useToolsOAuthFlow = ({
   gatewayMintsClient,
   onSuccess,
 }: UseToolsOAuthFlowOptions): UseToolsOAuthFlowResult => {
+  const t = useTranslations("mcpOauthFlow");
   const [status, setStatus] = useState<ToolsOAuthStatus>("idle");
   const [error, setError] = useState<string | null>(null);
   const processingRef = useRef(false);
@@ -173,7 +175,7 @@ export const useToolsOAuthFlow = ({
       payload = JSON.parse(storedResult);
       flowState = peeked;
     } catch (_) {
-      setError("Failed to resume OAuth flow. Please retry.");
+      setError(t("resumeFailed"));
       setStatus("error");
       processingRef.current = false;
       clearStorage(FLOW_STATE_KEY);
@@ -182,16 +184,16 @@ export const useToolsOAuthFlow = ({
 
     try {
       if (!flowState?.state || !flowState.codeVerifier || !flowState.serverId) {
-        throw new Error("OAuth session state was lost. Please retry.");
+        throw new Error(t("stateLost"));
       }
       if (!payload?.state || payload.state !== flowState.state) {
-        throw new Error("OAuth state mismatch. Please retry.");
+        throw new Error(t("stateMismatch"));
       }
       if (payload.error) {
         throw new Error((payload.error_description as string) || (payload.error as string));
       }
       if (!payload.code) {
-        throw new Error("Authorization code missing in callback.");
+        throw new Error(t("codeMissing"));
       }
 
       setStatus("exchanging");
@@ -218,7 +220,7 @@ export const useToolsOAuthFlow = ({
 
       setStatus("success");
       setError(null);
-      toast.success("Connected successfully");
+      toast.success(t("connectedSuccess"));
       onSuccessRef.current(token.access_token);
     } catch (err) {
       const msg = extractErrorMessage(err);
@@ -231,7 +233,7 @@ export const useToolsOAuthFlow = ({
         processingRef.current = false;
       }, 1000);
     }
-  }, [accessToken, serverId, userId]);
+  }, [accessToken, serverId, userId, t]);
 
   useEffect(() => {
     resumeOAuthFlow();

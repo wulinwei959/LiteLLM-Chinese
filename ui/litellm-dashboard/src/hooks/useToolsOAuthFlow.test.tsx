@@ -1,6 +1,11 @@
-import { act, renderHook } from "@testing-library/react";
+import React from "react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "@/components/networking";
+import { LocaleProvider } from "@/contexts/LocaleContext";
+import { toast } from "@/lib/toast";
+import { setSecureItem } from "@/utils/secureStorage";
+import zhMessages from "@/messages/zh-CN.json";
 import { useToolsOAuthFlow } from "./useToolsOAuthFlow";
 
 vi.mock("@/components/networking", () => ({
@@ -11,21 +16,31 @@ vi.mock("@/components/networking", () => ({
   serverRootPath: "",
 }));
 
+vi.mock("@/lib/toast", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}));
+
 vi.mock("@/utils/pkce", () => ({
   generateCodeVerifier: () => "verifier-1",
   generateCodeChallenge: async () => "challenge-1",
 }));
 
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <LocaleProvider locale="zh-CN">{children}</LocaleProvider>
+);
+
 function renderFlow(options: { gatewayMintsClient?: boolean }) {
-  return renderHook(() =>
-    useToolsOAuthFlow({
-      accessToken: "user-token",
-      serverId: "server-1",
-      serverAlias: "server one",
-      userId: "user-1",
-      gatewayMintsClient: options.gatewayMintsClient,
-      onSuccess: vi.fn(),
-    }),
+  return renderHook(
+    () =>
+      useToolsOAuthFlow({
+        accessToken: "user-token",
+        serverId: "server-1",
+        serverAlias: "server one",
+        userId: "user-1",
+        gatewayMintsClient: options.gatewayMintsClient,
+        onSuccess: vi.fn(),
+      }),
+    { wrapper },
   );
 }
 
@@ -81,5 +96,58 @@ describe("useToolsOAuthFlow client registration", () => {
     expect(networking.buildMcpOAuthAuthorizeUrl).toHaveBeenCalledWith(
       expect.objectContaining({ serverId: "server-1", clientId: "reg-client-1" }),
     );
+  });
+});
+
+const FLOW_STATE_KEY = "litellm-tools-mcp-oauth-flow-state";
+const RESULT_KEY = "litellm-tools-mcp-oauth-result";
+
+function seedFlowState() {
+  const flowState = {
+    state: "state-1",
+    codeVerifier: "verifier-1",
+    serverId: "server-1",
+    redirectUri: "https://app.example.com/ui/mcp/oauth/callback",
+  };
+  setSecureItem(FLOW_STATE_KEY, JSON.stringify(flowState));
+}
+
+function renderResumeFlow(onSuccess = vi.fn()) {
+  const options = {
+    accessToken: "user-token",
+    serverId: "server-1",
+    userId: "user-1",
+    onSuccess,
+  };
+  return renderHook(() => useToolsOAuthFlow(options), { wrapper });
+}
+
+describe("useToolsOAuthFlow localized resume messages", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    window.sessionStorage.clear();
+    window.localStorage.clear();
+  });
+
+  it("surfaces the localized state mismatch message through the error state and the toast", async () => {
+    seedFlowState();
+    setSecureItem(RESULT_KEY, JSON.stringify({ state: "state-2", code: "code-1" }));
+    const { result } = renderResumeFlow();
+
+    await waitFor(() => expect(result.current.status).toBe("error"));
+    expect(result.current.error).toBe(zhMessages.mcpOauthFlow.stateMismatch);
+    expect(toast.error).toHaveBeenCalledWith(zhMessages.mcpOauthFlow.stateMismatch);
+  });
+
+  it("surfaces the localized connected toast after the token is stored", async () => {
+    vi.mocked(networking.exchangeMcpOAuthToken).mockResolvedValue({ access_token: "tok-9" });
+    seedFlowState();
+    setSecureItem(RESULT_KEY, JSON.stringify({ state: "state-1", code: "code-1" }));
+    const onSuccess = vi.fn();
+    const { result } = renderResumeFlow(onSuccess);
+
+    await waitFor(() => expect(result.current.status).toBe("success"));
+    expect(toast.success).toHaveBeenCalledWith(zhMessages.mcpOauthFlow.connectedSuccess);
+    expect(onSuccess).toHaveBeenCalledWith("tok-9");
   });
 });
