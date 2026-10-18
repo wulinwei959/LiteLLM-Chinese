@@ -10861,6 +10861,7 @@
     "connectionIdLabel": "Connection ID",
     "connectionIdPlaceholder": "Enter CloudZero connection ID",
     "csvExport": "CSV Export",
+    "csvExportDescription": "Export your usage data as a CSV file for analysis in spreadsheet applications.",
     "exportCsvBtn": "Export CSV",
     "savedSuccess": "CloudZero settings saved successfully",
     "exportCloudZeroSuccess": "Export to CloudZero completed successfully",

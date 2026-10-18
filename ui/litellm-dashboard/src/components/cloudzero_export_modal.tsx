@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { CircleCheck, FileDown } from "lucide-react";
 import { z } from "zod/v4";
 import { getGlobalLitellmHeaderName } from "@/components/networking";
+import type { CloudZeroTranslator } from "@/lib/i18n/translators";
 import { toast } from "@/lib/toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
 import { PasswordInput } from "@/components/shared/PasswordInput";
@@ -15,10 +16,11 @@ import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { useZodForm } from "@/lib/forms/useZodForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const cloudZeroSettingsSchema = z.object({
-  api_key: z.string().min(1, "Please enter your CloudZero API key"),
-  connection_id: z.string().min(1, "Please enter the CloudZero connection ID"),
-});
+const buildExportSchema = (t: CloudZeroTranslator) =>
+  z.object({
+    api_key: z.string().min(1, t("apiKeyRequired")),
+    connection_id: z.string().min(1, t("connectionIdRequired")),
+  });
 
 interface CloudZeroExportModalProps {
   isOpen: boolean;
@@ -26,7 +28,7 @@ interface CloudZeroExportModalProps {
   accessToken: string | null;
 }
 
-type CloudZeroSettings = z.output<typeof cloudZeroSettingsSchema>;
+type CloudZeroSettings = z.output<ReturnType<typeof buildExportSchema>>;
 
 interface CloudZeroSettingsView {
   api_key_masked: string;
@@ -38,7 +40,9 @@ type ExportType = "cloudzero" | "csv";
 
 const CloudZeroExportModal: React.FC<CloudZeroExportModalProps> = ({ isOpen, onClose, accessToken }) => {
   const t = useTranslations("cloudZeroExport");
-  const form = useZodForm(cloudZeroSettingsSchema, {
+  const czT = useTranslations("cloudZero");
+  const commonT = useTranslations("common");
+  const form = useZodForm(buildExportSchema(czT), {
     defaultValues: { api_key: "", connection_id: "" },
   });
   const [loading, setLoading] = useState(false);
@@ -281,9 +285,9 @@ const CloudZeroExportModal: React.FC<CloudZeroExportModalProps> = ({ isOpen, onC
                       <CircleCheck />
                       <AlertTitle>{t("existingConfig")}</AlertTitle>
                       <AlertDescription>
-                        API Key: {existingSettings.api_key_masked}
+                        {czT("apiKeyRedacted")}: {existingSettings.api_key_masked}
                         <br />
-                        Connection ID: {existingSettings.connection_id}
+                        {czT("connectionIdLabel")}: {existingSettings.connection_id}
                       </AlertDescription>
                     </Alert>
                   )}
@@ -315,16 +319,14 @@ const CloudZeroExportModal: React.FC<CloudZeroExportModalProps> = ({ isOpen, onC
             <Alert variant="info">
               <FileDown />
               <AlertTitle>{t("csvExport")}</AlertTitle>
-              <AlertDescription>
-                Export your usage data as a CSV file for analysis in spreadsheet applications.
-              </AlertDescription>
+              <AlertDescription>{t("csvExportDescription")}</AlertDescription>
             </Alert>
           )}
 
           {/* Action Buttons */}
           <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="secondary" onClick={handleModalClose}>
-              Cancel
+              {commonT("cancel")}
             </Button>
             <Button
               type="button"

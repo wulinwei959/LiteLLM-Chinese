@@ -82,7 +82,7 @@ describe("CloudZeroExportModal", () => {
     fireEvent.change(await screen.findByLabelText("CloudZero API 密钥"), { target: { value: "cz-key-123" } });
     await user.click(screen.getByRole("button", { name: "导出到 CloudZero" }));
 
-    await screen.findByText("Please enter the CloudZero connection ID");
+    await screen.findByText("请输入你的 CloudZero 连接 ID");
     expect(callsTo(fetchMock, "/cloudzero/init")).toHaveLength(0);
     expect(callsTo(fetchMock, "/cloudzero/export")).toHaveLength(0);
   });
@@ -94,8 +94,8 @@ describe("CloudZeroExportModal", () => {
     await screen.findByLabelText("CloudZero API 密钥");
     await user.click(screen.getByRole("button", { name: "导出到 CloudZero" }));
 
-    expect(await screen.findByText("Please enter your CloudZero API key")).toBeInTheDocument();
-    expect(screen.getByText("Please enter the CloudZero connection ID")).toBeInTheDocument();
+    expect(await screen.findByText("请输入你的 CloudZero API 密钥")).toBeInTheDocument();
+    expect(screen.getByText("请输入你的 CloudZero 连接 ID")).toBeInTheDocument();
     expect(callsTo(fetchMock, "/cloudzero/init")).toHaveLength(0);
   });
 

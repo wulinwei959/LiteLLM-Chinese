@@ -10857,6 +10857,7 @@
     "connectionIdLabel": "连接 ID",
     "connectionIdPlaceholder": "请输入 CloudZero 连接 ID",
     "csvExport": "CSV 导出",
+    "csvExportDescription": "将用量数据导出为 CSV 文件，便于在电子表格应用中分析",
     "exportCsvBtn": "导出 CSV",
     "savedSuccess": "CloudZero 设置保存成功",
     "exportCloudZeroSuccess": "导出到 CloudZero 已成功完成",
