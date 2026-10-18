@@ -1,10 +1,22 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 247 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10849、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 247 簇减 10（第 247 簇为纯复用零新键，只把一个文件的残留英文清零，叶子总数不动）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇净增 4 片至 10849，第 247 簇零新增仍 10849）。第 93 到 247 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 248 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10855、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 248 簇减 11）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇净增 4 片至 10849，第 247 簇零新增仍 10849，第 248 簇净增 6 片至 10855）。第 93 到 248 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 248 簇更新
+
+继续串行推进。这一簇是 `src/components/claude_code_plugins/MakeSkillPublicForm.tsx`（把技能发布到技能中心的向导弹窗，已挂 `claudeCodePlugins`，长尾漏接）。收口 11 处：两步指示器标题、`Select All (N)`、说明句、`N skill(s) will be published` 两行（步骤一与步骤二，后者带 `Total:` 前缀）、成功 toast、空选 toast、底部 `Cancel`/`Previous`/`Next`/`Publish to Hub` 四钮
+
+手法：复用优先。空选 toast 与 `handleNext` 早用的 `selectAtLeastOne` 同串，写死处直接改接该键；`Cancel`/`Previous`/`Next` 走现成 `common` ns（新增 `commonT = useTranslations("common")`），步骤二标题 `Confirm` 复用 `common.confirm`；`Publish to Hub` 与已有 `publishToHub`（值"Publish to Skill Hub"，作 DialogTitle）语义同一动作，按钮直接并给该键、不再为短一点的字面量另开近似键。新增 6 键：stepSelectSkills、selectAllWithCount、publishHint、countWillPublish、totalWillPublish、publishSuccess
+
+两条 `will be published` 是「数字 + 英文复数 s」的句，且把数量加粗在 `<strong>` 里，不能拆成 prefix/suffix 碎片（会丢 ICU 语序自由，见第 244 簇教训）。走 `t.rich(key,{count, strong:(c)=><strong>{c}</strong>})`，消息里 `<strong>{count, plural, one {# skill} other {# skills}}</strong> ...`，中文写成"将发布 <strong>{count, plural, other {# 个技能}}</strong>"（中文无复数，只留 `other` 臂）。`<strong>` 在 parity 测试的 `RICH_TAGS` 白名单内，`#` 后紧跟文本（`# 个技能`）合 `^#\s+\S`，`{count}` 两侧同名、复数臂带逗号，全过 `messagesParity` 的语法关；成功 toast 同理用复数键 `publishSuccess`。`skill(s)` 这种"字面括号"弃用，统一走 ICU 复数，渲染更准
+
+测试：本组件无同目录测试，唯一消费者 `AIHub/ModelHubTable.tsx` 在弹窗 `visible` 时才挂载其内部，`ModelHubTable.test.tsx` 不深渲染、不钉这些串（已 grep 确认无测试钉 `Publish to Hub`/`Select All (`/`will be published`/`Skill Hub updated` 等旧英文），故本簇无断言可同步；验证靠 `missingKeys` 静态收这 11 个 `t(...)`/`t.rich(...)` 调用点 + `messagesParity`（含新复数/rich 键的语法与中英对齐）+ 消费者 `ModelHubTable.test.tsx` + 生产构建
+
+验证：`messagesParity` + `missingKeys` 两文件 9 例全绿、Type Errors 无报错；消费者 `ModelHubTable.test.tsx` 14 例全绿；eslint 真路径 0 问题；prettier 本组件净（两个 JSON 目录在 HEAD 即不过 prettier、非 prettier 托管，按既有 4 空格缩进对齐本簇新增行、不整文件重排）；tsc 真路径本文件零命中；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子复算 +6 至 10855（en/zh 双侧一致），同值 139 不变；本簇把 1 个"已接入仍有英文"文件清零，长尾减 1
 
 ## 2026-10-18 第 247 簇更新
 
