@@ -6836,7 +6836,9 @@
       "headerValuePlaceholder": "Header value",
       "clearHeaderName": "Clear header name",
       "clearHeaderValue": "Clear header value",
-      "addStaticHeader": "Add Static Header"
+      "addStaticHeader": "Add Static Header",
+      "headerNameRequired": "Header name is required",
+      "headerValueRequired": "Header value is required"
     },
     "submissions": {
       "statusActive": "Active",

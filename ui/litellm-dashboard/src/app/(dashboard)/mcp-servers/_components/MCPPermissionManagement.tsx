@@ -66,7 +66,7 @@ const StaticHeadersFieldArray: React.FC = () => {
           <MountedFormField
             name={["static_headers", String(index), "header"]}
             className="flex-1"
-            rules={{ validate: { required: requiredRule("Header name is required") } }}
+            rules={{ validate: { required: requiredRule(t("permissionMgmt.headerNameRequired")) } }}
           >
             {(headerControl) => (
               <ClearableInput
@@ -79,7 +79,7 @@ const StaticHeadersFieldArray: React.FC = () => {
           <MountedFormField
             name={["static_headers", String(index), "value"]}
             className="flex-1"
-            rules={{ validate: { required: requiredRule("Header value is required") } }}
+            rules={{ validate: { required: requiredRule(t("permissionMgmt.headerValueRequired")) } }}
           >
             {(valueControl) => (
               <ClearableInput control={valueControl} placeholder={t("permissionMgmt.headerValuePlaceholder")} clearLabel={t("permissionMgmt.clearHeaderValue")} />
@@ -219,7 +219,7 @@ const MCPPermissionManagement: React.FC<MCPPermissionManagementProps> = ({
           <div className="flex items-start justify-between gap-4">
             <div>
               <span className="text-sm font-medium text-foreground flex items-center">
-                Internal network only
+                {t("permissionMgmt.internalNetworkOnly")}
                 <SimpleTooltip content={t("permissionMgmt.internalNetworkTooltip")}>
                   <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
                 </SimpleTooltip>

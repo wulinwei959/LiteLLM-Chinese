@@ -6836,7 +6836,9 @@
       "headerValuePlaceholder": "请求头的值",
       "clearHeaderName": "清除请求头名称",
       "clearHeaderValue": "清除请求头的值",
-      "addStaticHeader": "添加静态请求头"
+      "addStaticHeader": "添加静态请求头",
+      "headerNameRequired": "请求头名称必填",
+      "headerValueRequired": "请求头的值必填"
     },
     "submissions": {
       "statusActive": "活跃",
