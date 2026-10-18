@@ -95,8 +95,8 @@ describe("AccessGroupBudgetsPanel", () => {
     await openActions("shared");
     await userEvent.click(await screen.findByText("设置预算"));
 
-    fireEvent.change(await screen.findByLabelText(/Max Budget/), { target: { value: "12.5" } });
-    await userEvent.click(screen.getByRole("button", { name: "Save Budget" }));
+    fireEvent.change(await screen.findByLabelText(/最大预算/), { target: { value: "12.5" } });
+    await userEvent.click(screen.getByRole("button", { name: "保存预算" }));
 
     await waitFor(() =>
       expect(PUT).toHaveBeenCalledWith("/access_group/{access_group}/budget", {
@@ -111,16 +111,16 @@ describe("AccessGroupBudgetsPanel", () => {
     await openActions("premium");
     await userEvent.click(await screen.findByRole("menuitem", { name: /Edit budget|编辑预算/ }));
 
-    expect(await screen.findByLabelText(/Max Budget/)).toHaveValue(2.5);
+    expect(await screen.findByLabelText(/最大预算/)).toHaveValue(2.5);
   });
 
   it("refuses to save a budget with every field blank", async () => {
     renderPanel();
     await openActions("shared");
     await userEvent.click(await screen.findByText("设置预算"));
-    await userEvent.click(await screen.findByRole("button", { name: "Save Budget" }));
+    await userEvent.click(await screen.findByRole("button", { name: "保存预算" }));
 
-    expect(await screen.findByText(/Set at least one of max budget/)).toBeInTheDocument();
+    expect(await screen.findByText(/请至少设置最大预算/)).toBeInTheDocument();
     expect(PUT).not.toHaveBeenCalled();
   });
 

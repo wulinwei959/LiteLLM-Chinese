@@ -2104,7 +2104,8 @@
       "cancel": "取消",
       "saving": "保存中...",
       "saveBudget": "保存预算",
-      "requireAtLeastOne": "请至少设置最大预算、软预算或重置窗口中的一项"
+      "requireAtLeastOne": "请至少设置最大预算、软预算或重置窗口中的一项",
+      "title": "为 \"{group}\" {action}"
     },
     "setBudget": "设置预算",
     "editBudget": "编辑预算",

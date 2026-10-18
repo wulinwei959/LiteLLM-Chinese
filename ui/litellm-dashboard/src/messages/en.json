@@ -2104,7 +2104,8 @@
       "cancel": "Cancel",
       "saving": "Saving...",
       "saveBudget": "Save Budget",
-      "requireAtLeastOne": "Set at least one of max budget, soft budget or reset window"
+      "requireAtLeastOne": "Set at least one of max budget, soft budget or reset window",
+      "title": "{action} for \"{group}\""
     },
     "setBudget": "Set budget",
     "editBudget": "Edit budget",
