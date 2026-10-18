@@ -105,11 +105,11 @@ describe("CostTrackingSettings submit paths", () => {
 
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.click((await screen.findAllByRole("option"))[0]);
-    fireEvent.change(screen.getByLabelText(/Margin Percentage/i), { target: { value: "10" } });
+    fireEvent.change(screen.getByLabelText(/加成百分比/), { target: { value: "10" } });
 
     const submit = screen
       .getAllByRole("button")
-      .filter((button) => (button.textContent || "").trim() === "Add Provider Margin")
+      .filter((button) => (button.textContent || "").trim() === "添加供应商加成")
       .pop()!;
     await user.click(submit);
 
@@ -140,7 +140,7 @@ describe("CostTrackingSettings submit paths", () => {
 
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.click((await screen.findAllByRole("option"))[0]);
-    await user.type(screen.getByLabelText(/Margin Percentage/i), "10{Enter}");
+    await user.type(screen.getByLabelText(/加成百分比/), "10{Enter}");
 
     await waitFor(() => expect(stableMarginCallbacks.handleAddMargin).toHaveBeenCalled());
     expect(stableMarginCallbacks.handleAddMargin).toHaveBeenCalledTimes(1);
