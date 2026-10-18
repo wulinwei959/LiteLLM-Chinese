@@ -103,7 +103,7 @@ describe("TransformRequestPanel", () => {
     await user.type(textarea, "not json");
     await user.click(getTransformButton());
 
-    await waitFor(() => expect(notify.fromError).toHaveBeenCalledWith("Invalid JSON in request body"));
+    await waitFor(() => expect(notify.fromError).toHaveBeenCalledWith("请求体中的 JSON 无效"));
     expect(transformRequestCallMock).not.toHaveBeenCalled();
   });
 
@@ -114,7 +114,7 @@ describe("TransformRequestPanel", () => {
 
     await user.click(getTransformButton());
 
-    await waitFor(() => expect(notify.fromError).toHaveBeenCalledWith("No access token found"));
+    await waitFor(() => expect(notify.fromError).toHaveBeenCalledWith("未找到访问令牌"));
     expect(transformRequestCallMock).not.toHaveBeenCalled();
   });
 

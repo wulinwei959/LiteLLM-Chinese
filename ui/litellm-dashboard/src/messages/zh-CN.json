@@ -6036,6 +6036,8 @@
     "copiedToClipboard": "已复制到剪贴板",
     "foundError": "发现问题?请提交 issue",
     "foundErrorHere": "这里",
+    "invalidJsonBody": "请求体中的 JSON 无效",
+    "noAccessToken": "未找到访问令牌",
     "transformSuccess": "请求转换成功",
     "transformUnexpectedFormat": "转换后的请求格式不符合预期",
     "transformFailed": "转换请求失败"

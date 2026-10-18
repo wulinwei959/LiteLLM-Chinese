@@ -71,7 +71,7 @@ ${formattedBody}
       try {
         requestBody = JSON.parse(originalRequestJSON);
       } catch (e) {
-        toast.fromError("Invalid JSON in request body");
+        toast.fromError(t("invalidJsonBody"));
         setIsLoading(false);
         return;
       }
@@ -84,7 +84,7 @@ ${formattedBody}
 
       // Make the API call using fetch
       if (!accessToken) {
-        toast.fromError("No access token found");
+        toast.fromError(t("noAccessToken"));
         setIsLoading(false);
         return;
       }

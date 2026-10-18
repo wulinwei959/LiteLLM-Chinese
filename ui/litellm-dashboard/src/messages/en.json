@@ -6036,6 +6036,8 @@
     "copiedToClipboard": "Copied to clipboard",
     "foundError": "Found an error? File an issue",
     "foundErrorHere": "here",
+    "invalidJsonBody": "Invalid JSON in request body",
+    "noAccessToken": "No access token found",
     "transformSuccess": "Request transformed successfully",
     "transformUnexpectedFormat": "Transformed request received in unexpected format",
     "transformFailed": "Failed to transform request"
