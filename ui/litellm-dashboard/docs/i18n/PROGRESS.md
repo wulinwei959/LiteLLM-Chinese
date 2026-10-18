@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 195 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10604、中英同值 138）。第 93 到 195 簇（184、189、190、191、194 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 196 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10610、中英同值 138）。第 93 到 196 簇（184、189、190、191、194 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 196 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `vector-stores/_components/vector_store_info.tsx`，向量存储详情页（查看/编辑两个形态加测试页签）。文件在早前批次已接 `vectorStores.*` 大半，本簇把剩余裸串整片清零：扫描器 5 条里两条 zod 必填消息走 `SearchTools.tsx` 的翻译器工厂先例（`vectorStoreEditSchema(t)` 包 `z.object`，消费方 `useZodForm(useMemo(() => vectorStoreEditSchema(t), [t]), ...)`，类型改 `z.infer<ReturnType<...>>`），metadata JSON 非法 toast 与 Provider 标签/提示直接复用同命名空间精确同值的 `metadataJsonInvalid`/`providerShort`/`providerHint`；`Metadata` 标签复用 `metadataLabel`，但同值 `metadataHint` 带"(optional)"尾巴不可复用，新开 `metadataFieldHint`。盲区补线更多：两处 `Back to Vector Stores` 复用同值 `backToList`，Config 徽标复用 `table.sourceConfig`（列表列同款接法），拉取失败 toast 新开带参 `fetchDetailsFailed`，更新成功新开 `updatedToast`（对齐既有 `createdToast`），凭据二选一提示新开 `credsChoiceHint`，OR 分隔线新开 `orDivider`（或），Cancel 走第二钩子 `commonT("cancel")`。不翻登记：`"DB"` 徽标沿用 `VectorStoreTableColumns.tsx` 列表列字面量与测试断言先例（`ID`/TTFT 同级缩写），详情视图 `ID` 短标签、`{"key": "value"}` JSON 占位符同理。新开 6 键插在 `updateFailed` 之后（叶子 10604 涨到 10610，同值持平 138，覆盖率持平 687/912）。测试 4 处选择器迁移中文（Config、Back、Invalid JSON toast、ID 必填），vector-stores 整包加 i18n 129 例全绿、Type Errors 无报错，tsc 锚定零命中，eslint 与 HEAD 持平 PARITY-OK，prettier HEAD 干净、改写 1 处后归零，ICU 守卫 13 键 26 侧通过（首轮 PARAM-DROPPED 是守卫自身大小写误报，改按渲染值断言），`next build` 通过，扫描器本文件归零。下一簇按队列取 `transform-request/TransformRequestPanel.tsx`（5 条）。
 
 ## 2026-10-18 第 195 簇更新
 
