@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 222 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10720、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 222 簇（184、189、190、191、194、198、199、200、203、212、217、222 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 223 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10732、中英同值 139。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 223 簇（184、189、190、191、194、198、199、200、203、212、217、222 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 223 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `agents/_components/agent_card_discovery.tsx`，智能体卡片发现面板（早已接 `agents`，`discoverFromUrl`/`discoveryFailed`/`upstreamLoaded` 等键在用）。扫描器 4 条命中全是 `setError` 裸文案，用户可见，全部接线：`No access token available` 盲区反查精确撞同域现成键 `agents.noAccessToken` 直接复用（218/219 簇现成键归并同款），另两条条件错误与失败兜底新开 `fillConnectionFirst`/`enterBaseUrlFirst`/`discoverCardFailed`。盲区整片复查再捞出九处硬编码英文：按钮 `Discover`/`Re-discover` 撞的是 `policies.ai.discover`/`rediscover` 外域键，按只复用同域或 common 键的口径新开本域 `discover`/`reDiscover`（中文对齐 policies 同款译法"发现"/"重新发现"），两处 `TooltipContent`、两段说明、`{selected} / {total} selected` 计数徽标与 `not advertised upstream` 徽标一并接线为 `discoverTooltip`/`usingConnectionDetails`/`manualUrlHint`/`skillsSelected`/`capabilitiesTooltip`/`notAdvertisedUpstream`。`manualUrlHint` 含三个行内 `<code>` 路径插槽走 `t.rich`，标签名 `code` 本就在 `messagesParity` 的 RICH_TAGS 白名单、无需登记。共新开 12 键（插在 `capabilities` 后）。不翻登记四处：能力开关 `{key}` 是 `ALLOWED_CAPABILITY_KEYS` 后端线值（capitalize 展示）、`e?.message` 是上游报错透传、技能名/标签/provider 组织名/版本号是上游卡片数据、占位符 `https://upstream-agent.example.com` 是格式样例（两侧同值入目录 `phUpstreamUrl`，沿用同域 `phIcon`/`phDocs` 先例，中英同值 138 涨到 139）。`handleDiscover` 的 useCallback 依赖加入 `t`（协调 Redis 页 `[accessToken, t]` 先例）。测试面：`agent_card_discovery.test.tsx` 四处按钮与错误断言改钉 zh（`发现`、`重新发现`、`请先输入智能体的基础 URL`、`没有可用的访问令牌`），新增 `已选 2 / 2` 计数徽标断言；占位符因两侧同值未动，`/^streaming$/i` 因线值不翻未动。agents 整包 16 文件 150 例全绿、`src/lib/i18n` 三守卫全绿、Type Errors 无报错。门禁：tsc 锚定零命中，eslint stash 路径级双侧对拉持平（3 条 warning 均为既有账：complexity 21 与两处 `no-explicit-any`，仅行号漂移），prettier 组件 HEAD 即脏（`nameShownToClients` 标签的可折叠段系上游既有排法，工作树与之唯一差异即该处）、本簇改动区干净未越界重排，测试文件双侧干净，目录双侧各 23 处既有缩进脏块不在本簇插入区、未顺手重排，ICU 守卫 12 键 24 侧通过（`t.rich` 需同时传 `code` 恒等渲染函数），`next build` 通过，扫描器本文件归零（files with hits 273 降到 272）。覆盖率：叶子 10720 涨到 10732，接入数不动（本文件早已接入）。下一簇按队列取 `src/components/team/TeamInfo.tsx`（4 条）。
 
 ## 2026-10-18 第 222 簇更新
 
