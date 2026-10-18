@@ -11054,7 +11054,14 @@
     "accessToken": "SCIM 访问令牌",
     "yourToken": "您的 SCIM 令牌",
     "tokenCopied": "令牌已复制到剪贴板",
-    "createButton": "创建 SCIM 令牌"
+    "createButton": "创建 SCIM 令牌",
+    "nameRequired": "请输入令牌名称",
+    "intro": "跨域身份管理系统 (SCIM) 可让您自动配置和管理 LiteLLM 中的用户与用户组。",
+    "tenantUrl": "SCIM 租户地址",
+    "tenantUrlHint": "请在您的身份提供程序的 SCIM 集成设置中使用此地址。",
+    "authToken": "身份验证令牌",
+    "tokenWarning": "请立即复制此令牌，之后将无法再次查看。",
+    "createAnotherToken": "创建另一个令牌"
   },
   "mcpToolPermissions": {
     "loadServersFailed": "无法加载 MCP 服务器",

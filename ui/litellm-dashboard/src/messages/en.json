@@ -11058,7 +11058,14 @@
     "accessToken": "SCIM Access Token",
     "yourToken": "Your SCIM Token",
     "tokenCopied": "Token copied to clipboard",
-    "createButton": "Create SCIM Token"
+    "createButton": "Create SCIM Token",
+    "nameRequired": "Please enter a name for your token",
+    "intro": "System for Cross-domain Identity Management (SCIM) allows you to automatically provision and manage users and groups in LiteLLM.",
+    "tenantUrl": "SCIM Tenant URL",
+    "tenantUrlHint": "Use this URL in your identity provider SCIM integration settings.",
+    "authToken": "Authentication Token",
+    "tokenWarning": "Make sure to copy this token now. You will not be able to see it again.",
+    "createAnotherToken": "Create Another Token"
   },
   "mcpToolPermissions": {
     "loadServersFailed": "Unable to load MCP servers",

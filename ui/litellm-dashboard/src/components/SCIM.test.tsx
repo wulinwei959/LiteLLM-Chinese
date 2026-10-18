@@ -38,7 +38,7 @@ describe("SCIMConfig", () => {
     renderSCIM();
 
     fireEvent.change(screen.getByLabelText("令牌名称"), { target: { value: "My SCIM Token" } });
-    await user.click(screen.getByRole("button", { name: /create scim token/i }));
+    await user.click(screen.getByRole("button", { name: "创建 SCIM 令牌" }));
 
     await waitFor(() => {
       expect(keyCreateCall).toHaveBeenCalledWith(ACCESS_TOKEN, USER_ID, {
@@ -54,9 +54,9 @@ describe("SCIMConfig", () => {
     const user = userEvent.setup();
     renderSCIM();
 
-    await user.click(screen.getByRole("button", { name: /create scim token/i }));
+    await user.click(screen.getByRole("button", { name: "创建 SCIM 令牌" }));
 
-    expect(await screen.findByText("Please enter a name for your token")).toBeInTheDocument();
+    expect(await screen.findByText("请输入令牌名称")).toBeInTheDocument();
     expect(keyCreateCall).not.toHaveBeenCalled();
   });
 
@@ -83,7 +83,7 @@ describe("SCIMConfig", () => {
     renderSCIM();
 
     fireEvent.change(screen.getByLabelText("令牌名称"), { target: { value: "My SCIM Token" } });
-    await user.click(screen.getByRole("button", { name: /create scim token/i }));
+    await user.click(screen.getByRole("button", { name: "创建 SCIM 令牌" }));
 
     expect(await screen.findByText("您的 SCIM 令牌")).toBeInTheDocument();
     expect(screen.queryByLabelText("令牌名称")).not.toBeInTheDocument();
@@ -96,8 +96,8 @@ describe("SCIMConfig", () => {
     renderSCIM();
 
     fireEvent.change(screen.getByLabelText("令牌名称"), { target: { value: "My SCIM Token" } });
-    await user.click(screen.getByRole("button", { name: /create scim token/i }));
-    await user.click(await screen.findByRole("button", { name: /create another token/i }));
+    await user.click(screen.getByRole("button", { name: "创建 SCIM 令牌" }));
+    await user.click(await screen.findByRole("button", { name: "创建另一个令牌" }));
 
     expect(await screen.findByLabelText("令牌名称")).toBeInTheDocument();
   });
@@ -107,7 +107,7 @@ describe("SCIMConfig", () => {
     renderSCIM({ accessToken: null });
 
     fireEvent.change(screen.getByLabelText("令牌名称"), { target: { value: "My SCIM Token" } });
-    await user.click(screen.getByRole("button", { name: /create scim token/i }));
+    await user.click(screen.getByRole("button", { name: "创建 SCIM 令牌" }));
 
     await waitFor(() => {
       expect(toast.fromError).toHaveBeenCalledWith("您需要登录后才能创建 SCIM 令牌");
@@ -121,7 +121,7 @@ describe("SCIMConfig", () => {
     renderSCIM();
 
     fireEvent.change(screen.getByLabelText("令牌名称"), { target: { value: "My SCIM Token" } });
-    await user.click(screen.getByRole("button", { name: /create scim token/i }));
+    await user.click(screen.getByRole("button", { name: "创建 SCIM 令牌" }));
 
     await waitFor(() => {
       expect(toast.fromError).toHaveBeenCalledWith("创建 SCIM 令牌失败：boom");
