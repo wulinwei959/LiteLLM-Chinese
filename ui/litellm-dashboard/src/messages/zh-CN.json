@@ -11771,7 +11771,9 @@
     "placeholder": "选择一个团队"
   },
   "keyProjectField": {
-    "projectLabel": "项目"
+    "projectLabel": "项目",
+    "detach": "移出项目",
+    "keep": "保留项目"
   },
   "pageMetadata": {
     "noDescriptionAvailable": "暂无说明",

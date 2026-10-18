@@ -33,7 +33,7 @@ export function KeyProjectField({ projectId, canDetach, pending, disabled, onTog
             </p>
           )}
           <Button type="button" variant="outline" disabled={disabled} onClick={onToggle}>
-            {pending ? "Keep project" : "Detach from project"}
+            {pending ? t("keep") : t("detach")}
           </Button>
         </>
       )}

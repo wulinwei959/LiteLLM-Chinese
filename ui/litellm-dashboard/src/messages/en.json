@@ -11775,7 +11775,9 @@
     "placeholder": "Select a team"
   },
   "keyProjectField": {
-    "projectLabel": "Project"
+    "projectLabel": "Project",
+    "detach": "Detach from project",
+    "keep": "Keep project"
   },
   "pageMetadata": {
     "noDescriptionAvailable": "No description available",

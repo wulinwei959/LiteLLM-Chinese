@@ -1568,14 +1568,14 @@ describe("KeyEditView", () => {
         />
       );
       const view = renderWithProviders(renderEditor());
-      await userEvent.click(await screen.findByRole("button", { name: "Detach from project" }));
+      await userEvent.click(await screen.findByRole("button", { name: "移出项目" }));
       expect(screen.getByRole("combobox", { name: "组织" })).toBeDisabled();
       expect(screen.getByRole("combobox", { name: "团队 ID" })).toBeDisabled();
       await userEvent.click(screen.getByRole("button", { name: "取消" }));
       expect(onCancel).toHaveBeenCalledOnce();
       expect(onSubmit).not.toHaveBeenCalled();
       view.rerender(renderEditor({ ...key }));
-      await userEvent.click(await screen.findByRole("button", { name: "Detach from project" }));
+      await userEvent.click(await screen.findByRole("button", { name: "移出项目" }));
       await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
       const expectedDetach = { project_id: null, organization_id: "org-1", team_id: "group-maple", models: key.models };
       await waitFor(() =>
@@ -1584,20 +1584,20 @@ describe("KeyEditView", () => {
       expect(screen.getByRole("combobox", { name: "团队 ID" })).toBeDisabled();
       view.rerender(renderEditor({ ...key, project_id: null }));
       expect(screen.getByRole("combobox", { name: "团队 ID" })).toBeEnabled();
-      expect(screen.queryByRole("button", { name: "Detach from project" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "移出项目" })).not.toBeInTheDocument();
       view.rerender(renderEditor(key, "Internal User"));
-      expect(screen.queryByRole("button", { name: "Detach from project" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "移出项目" })).not.toBeInTheDocument();
       view.rerender(renderEditor(key, "Org Admin"));
-      expect(screen.queryByRole("button", { name: "Detach from project" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "移出项目" })).not.toBeInTheDocument();
       const memberTeam = { ...team, members_with_roles: [{ user_id: "user-orbit", role: "user" }] };
       view.rerender(renderEditor(key, "Org Admin", memberTeam));
-      expect(screen.queryByRole("button", { name: "Detach from project" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "移出项目" })).not.toBeInTheDocument();
       const permittedTeam = { ...memberTeam, team_member_permissions: ["/key/update"] };
       view.rerender(renderEditor(key, "Org Admin", permittedTeam));
-      expect(await screen.findByRole("button", { name: "Detach from project" })).toBeInTheDocument();
+      expect(await screen.findByRole("button", { name: "移出项目" })).toBeInTheDocument();
       const adminTeam = { ...team, members_with_roles: [{ user_id: "user-orbit", role: "admin" }] };
       view.rerender(renderEditor(key, "Internal User", adminTeam));
-      expect(await screen.findByRole("button", { name: "Detach from project" })).toBeInTheDocument();
+      expect(await screen.findByRole("button", { name: "移出项目" })).toBeInTheDocument();
     });
 
     it("keeps project key relationships locked and omits project updates when the project UI is disabled", async () => {
