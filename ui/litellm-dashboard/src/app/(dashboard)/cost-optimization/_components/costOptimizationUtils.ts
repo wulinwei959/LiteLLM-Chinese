@@ -11,11 +11,11 @@ export const usd = (value: number): string => {
   return `${value < 0 ? "-" : ""}$${formatNumberWithCommas(magnitude, decimals)}`;
 };
 
-export const classificationRatePer1kTurns = (classifierCost: number, turns: number): string => {
-  if (turns <= 0) return `(${usd(0)} / 1K turns)`;
+export const classificationRatePer1k = (classifierCost: number, turns: number): string => {
+  if (turns <= 0) return usd(0);
   const rate = (classifierCost * 1000) / turns;
-  if (rate > 0 && rate < 0.0001) return "(<$0.0001 / 1K turns)";
-  return `(${usd(rate)} / 1K turns)`;
+  if (rate > 0 && rate < 0.0001) return "<$0.0001";
+  return usd(rate);
 };
 
 export const pct = (ratio: number): string => `${formatNumberWithCommas(ratio * 100, 1)}%`;

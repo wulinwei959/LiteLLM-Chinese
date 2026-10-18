@@ -7496,6 +7496,7 @@
       "actualSpendTooltip": "Auto-routed spend in the range, including classification costs, for complexity routers. Adaptive and quality routers are excluded. Baseline is this spend plus recorded savings.",
       "llmSpend": "LLM spend",
       "classificationCost": "Classification cost",
+      "per1kTurns": "({rate} / 1K turns)",
       "breakdownUnavailable": "Breakdown unavailable because some usage predates classification-cost tracking.",
       "baselineSpend": "Estimated baseline spend",
       "turnsByBucketAria": "Share of turns by bucket",

@@ -32,7 +32,7 @@ import {
   type BenchmarkView,
   type BucketRow,
 } from "./autoRouterBenchmarks";
-import { classificationRatePer1kTurns, formatRangeLabel, usd } from "./costOptimizationUtils";
+import { classificationRatePer1k, formatRangeLabel, usd } from "./costOptimizationUtils";
 import ShadowEvalSection from "./ShadowEvalSection";
 import TierTurnsChart from "./TierTurnsChart";
 import { useAutoRouterBenchmarks } from "./useAutoRouterBenchmarks";
@@ -143,7 +143,9 @@ const HeroCard: React.FC<{ view: BenchmarkView }> = ({ view }) => {
               hint={
                 classifierCost == null
                   ? undefined
-                  : classificationRatePer1kTurns(classifierCost, stats.savings_estimated_turns)
+                  : t("autoRouter.per1kTurns", {
+                      rate: classificationRatePer1k(classifierCost, stats.savings_estimated_turns),
+                    })
               }
             />
           </div>

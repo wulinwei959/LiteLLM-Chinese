@@ -210,17 +210,9 @@ describe("AutoRouterBenchmarksTab", () => {
     renderTab();
 
     const labels = screen
-      .getAllByText(
-        /预计总节省|会话平均节省|会话平均轮次|会话平均时长|会话平均 Token 数/,
-      )
+      .getAllByText(/预计总节省|会话平均节省|会话平均轮次|会话平均时长|会话平均 Token 数/)
       .map((node) => node.textContent);
-    expect(labels).toEqual([
-      "预计总节省",
-      "会话平均节省",
-      "会话平均轮次",
-      "会话平均时长",
-      "会话平均 Token 数",
-    ]);
+    expect(labels).toEqual(["预计总节省", "会话平均节省", "会话平均轮次", "会话平均时长", "会话平均 Token 数"]);
   });
 
   it("renders the headline numbers the tiles exist for", () => {
@@ -253,7 +245,7 @@ describe("AutoRouterBenchmarksTab", () => {
         .map((node) => node.textContent)
         .slice(1, 3),
     ).toEqual([llm, cost]);
-    expect(screen.getByText(`(${rate} / 1K turns)`)).toBeInTheDocument();
+    expect(screen.getByText(`（${rate} / 千轮）`)).toBeInTheDocument();
     expect(screen.getAllByText("$10,126.28").length).toBeGreaterThan(0);
   });
 
@@ -265,7 +257,7 @@ describe("AutoRouterBenchmarksTab", () => {
       renderTab();
 
       expect(screen.getAllByText("不可用")).toHaveLength(2);
-      expect(screen.queryByText(/\/ 1K turns/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/千轮/)).not.toBeInTheDocument();
       expect(screen.getByText("$359.86")).toBeInTheDocument();
       expect(screen.getByText("$2,174.59")).toBeInTheDocument();
       expect(screen.getByText(/部分用量早于分类成本统计上线/)).toBeInTheDocument();
@@ -289,12 +281,7 @@ describe("AutoRouterBenchmarksTab", () => {
 
     const terms = screen.getAllByRole("term").map((node) => node.textContent);
     const values = screen.getAllByRole("definition").map((node) => node.textContent);
-    expect(terms).toEqual([
-      "自动路由实际支出",
-      "LLM 支出",
-      "分类成本($2.00 / 1K turns)",
-      "估算基线支出",
-    ]);
+    expect(terms).toEqual(["自动路由实际支出", "LLM 支出", "分类成本（$2.00 / 千轮）", "估算基线支出"]);
     expect(values).toEqual(["$359.86", "$353.71", "$6.15", "$2,534.45"]);
   });
 

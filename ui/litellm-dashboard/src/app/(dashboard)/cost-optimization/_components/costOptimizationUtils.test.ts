@@ -7,7 +7,7 @@ import {
   SAVINGS_DRIVERS,
   SAVINGS_SERIES,
   buildDailyToolSeries,
-  classificationRatePer1kTurns,
+  classificationRatePer1k,
   computeCacheLeakage,
   formatRangeLabel,
   localIsoDay,
@@ -436,20 +436,20 @@ describe("usd", () => {
   });
 });
 
-describe("classificationRatePer1kTurns", () => {
+describe("classificationRatePer1k", () => {
   it("normalizes total classification cost to one thousand turns", () => {
-    expect(classificationRatePer1kTurns(342.18, 140815)).toBe("($2.43 / 1K turns)");
-    expect(classificationRatePer1kTurns(0.0004, 100)).toBe("($0.0040 / 1K turns)");
+    expect(classificationRatePer1k(342.18, 140815)).toBe("$2.43");
+    expect(classificationRatePer1k(0.0004, 100)).toBe("$0.0040");
   });
 
   it("shows a floor instead of rounding a real cost down to zero", () => {
-    expect(classificationRatePer1kTurns(0.00001, 1000)).toBe("(<$0.0001 / 1K turns)");
-    expect(classificationRatePer1kTurns(0.0001, 1000)).toBe("($0.0001 / 1K turns)");
+    expect(classificationRatePer1k(0.00001, 1000)).toBe("<$0.0001");
+    expect(classificationRatePer1k(0.0001, 1000)).toBe("$0.0001");
   });
 
   it("reports zero when there are no turns or no classification cost", () => {
-    expect(classificationRatePer1kTurns(0, 0)).toBe("($0.00 / 1K turns)");
-    expect(classificationRatePer1kTurns(0, 100)).toBe("($0.00 / 1K turns)");
+    expect(classificationRatePer1k(0, 0)).toBe("$0.00");
+    expect(classificationRatePer1k(0, 100)).toBe("$0.00");
   });
 });
 
