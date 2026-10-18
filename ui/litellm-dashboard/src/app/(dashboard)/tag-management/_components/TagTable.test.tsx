@@ -161,7 +161,7 @@ describe("TagTable", () => {
     it("should narrow rows by tag name containing the text, ignoring case", async () => {
       const user = userEvent.setup();
       render(<TagTable {...defaultProps} data={data} />);
-      await user.type(screen.getByRole("textbox", { name: "Filter by tag name" }), "PROD");
+      await user.type(screen.getByRole("textbox", { name: "按标签名筛选" }), "PROD");
       expect(screen.getByText("Prod-Billing")).toBeInTheDocument();
       expect(screen.getByText("prod-search")).toBeInTheDocument();
       expect(screen.queryByText("dev-billing")).not.toBeInTheDocument();
@@ -170,7 +170,7 @@ describe("TagTable", () => {
     it("should match the name anywhere in the string, not only as a prefix", async () => {
       const user = userEvent.setup();
       render(<TagTable {...defaultProps} data={data} />);
-      await user.type(screen.getByRole("textbox", { name: "Filter by tag name" }), "billing");
+      await user.type(screen.getByRole("textbox", { name: "按标签名筛选" }), "billing");
       expect(screen.getByText("Prod-Billing")).toBeInTheDocument();
       expect(screen.getByText("dev-billing")).toBeInTheDocument();
       expect(screen.queryByText("prod-search")).not.toBeInTheDocument();
@@ -179,7 +179,7 @@ describe("TagTable", () => {
     it("should narrow rows by description containing the text", async () => {
       const user = userEvent.setup();
       render(<TagTable {...defaultProps} data={data} />);
-      await user.type(screen.getByRole("textbox", { name: "Filter by description" }), "invoice");
+      await user.type(screen.getByRole("textbox", { name: "按描述筛选" }), "invoice");
       expect(screen.getByText("Prod-Billing")).toBeInTheDocument();
       expect(screen.queryByText("dev-billing")).not.toBeInTheDocument();
       expect(screen.queryByText("prod-search")).not.toBeInTheDocument();
@@ -188,8 +188,8 @@ describe("TagTable", () => {
     it("should require both filters to match when both are set", async () => {
       const user = userEvent.setup();
       render(<TagTable {...defaultProps} data={data} />);
-      await user.type(screen.getByRole("textbox", { name: "Filter by tag name" }), "billing");
-      await user.type(screen.getByRole("textbox", { name: "Filter by description" }), "sandbox");
+      await user.type(screen.getByRole("textbox", { name: "按标签名筛选" }), "billing");
+      await user.type(screen.getByRole("textbox", { name: "按描述筛选" }), "sandbox");
       expect(screen.getByText("dev-billing")).toBeInTheDocument();
       expect(screen.queryByText("Prod-Billing")).not.toBeInTheDocument();
       expect(screen.queryByText("prod-search")).not.toBeInTheDocument();
@@ -198,7 +198,7 @@ describe("TagTable", () => {
     it("should restore every row when the filters are cleared", async () => {
       const user = userEvent.setup();
       render(<TagTable {...defaultProps} data={data} />);
-      const nameFilter = screen.getByRole("textbox", { name: "Filter by tag name" });
+      const nameFilter = screen.getByRole("textbox", { name: "按标签名筛选" });
       await user.type(nameFilter, "dev");
       expect(screen.queryByText("Prod-Billing")).not.toBeInTheDocument();
       await user.clear(nameFilter);
@@ -210,8 +210,8 @@ describe("TagTable", () => {
     it("should show a no-matching message rather than the empty state when nothing matches", async () => {
       const user = userEvent.setup();
       render(<TagTable {...defaultProps} data={data} />);
-      await user.type(screen.getByRole("textbox", { name: "Filter by tag name" }), "zzz");
-      expect(screen.getByText("No matching tags")).toBeInTheDocument();
+      await user.type(screen.getByRole("textbox", { name: "按标签名筛选" }), "zzz");
+      expect(screen.getByText("无匹配标签")).toBeInTheDocument();
       expect(screen.queryByText("No tags yet")).not.toBeInTheDocument();
     });
 
@@ -219,7 +219,7 @@ describe("TagTable", () => {
       const user = userEvent.setup();
       const noDescription: Tag = { ...mockTag, name: "bare", description: undefined };
       render(<TagTable {...defaultProps} data={[noDescription, prodTag]} />);
-      await user.type(screen.getByRole("textbox", { name: "Filter by description" }), "invoice");
+      await user.type(screen.getByRole("textbox", { name: "按描述筛选" }), "invoice");
       expect(screen.getByText("Prod-Billing")).toBeInTheDocument();
       expect(screen.queryByText("bare")).not.toBeInTheDocument();
     });
