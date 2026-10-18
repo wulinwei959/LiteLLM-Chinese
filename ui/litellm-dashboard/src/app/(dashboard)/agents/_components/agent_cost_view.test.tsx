@@ -27,28 +27,28 @@ describe("AgentCostView", () => {
     renderWithProviders(<AgentCostView agent={makeAgent(fullyPricedParams)} />);
 
     expect(screen.getByText("成本配置")).toBeInTheDocument();
-    expect(screen.getByText("Cost Per Query")).toBeInTheDocument();
+    expect(screen.getByText("每次查询费用")).toBeInTheDocument();
     expect(screen.getByText("$0.05")).toBeInTheDocument();
-    expect(screen.getByText("Input Cost Per Token")).toBeInTheDocument();
+    expect(screen.getByText("输入每 token 费用")).toBeInTheDocument();
     expect(screen.getByText("$0.000012")).toBeInTheDocument();
-    expect(screen.getByText("Output Cost Per Token")).toBeInTheDocument();
+    expect(screen.getByText("输出每 token 费用")).toBeInTheDocument();
     expect(screen.getByText("$0.000034")).toBeInTheDocument();
   });
 
   it("omits the rows whose cost is not configured", () => {
     renderWithProviders(<AgentCostView agent={makeAgent({ model: "gpt-4", cost_per_query: 0.25 })} />);
 
-    expect(screen.getByText("Cost Per Query")).toBeInTheDocument();
+    expect(screen.getByText("每次查询费用")).toBeInTheDocument();
     expect(screen.getByText("$0.25")).toBeInTheDocument();
-    expect(screen.queryByText("Input Cost Per Token")).not.toBeInTheDocument();
-    expect(screen.queryByText("Output Cost Per Token")).not.toBeInTheDocument();
+    expect(screen.queryByText("输入每 token 费用")).not.toBeInTheDocument();
+    expect(screen.queryByText("输出每 token 费用")).not.toBeInTheDocument();
   });
 
   it("still renders a zero cost rather than treating it as unset", () => {
     renderWithProviders(<AgentCostView agent={makeAgent({ model: "gpt-4", cost_per_query: 0 })} />);
 
     expect(screen.getByText("成本配置")).toBeInTheDocument();
-    expect(screen.getByText("Cost Per Query")).toBeInTheDocument();
+    expect(screen.getByText("每次查询费用")).toBeInTheDocument();
     expect(screen.getByText("$0")).toBeInTheDocument();
   });
 });

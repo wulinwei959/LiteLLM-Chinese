@@ -350,7 +350,7 @@ export const getHealthChecksTableColumns = (
         const healthStatus = modelHealthStatuses[modelId];
 
         if (!healthStatus?.error) {
-          return <span className="text-sm text-muted-foreground">No errors</span>;
+          return <span className="text-sm text-muted-foreground">{t("noErrors")}</span>;
         }
 
         const cleanedError = healthStatus.error;

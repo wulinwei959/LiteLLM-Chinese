@@ -22,9 +22,9 @@ const AgentCostView: React.FC<AgentCostViewProps> = ({ agent }) => {
 
   const rows = (
     [
-      ["Cost Per Query", params.cost_per_query],
-      ["Input Cost Per Token", params.input_cost_per_token],
-      ["Output Cost Per Token", params.output_cost_per_token],
+      [t("rowCostPerQuery"), params.cost_per_query],
+      [t("rowInputCostPerToken"), params.input_cost_per_token],
+      [t("rowOutputCostPerToken"), params.output_cost_per_token],
     ] as const
   ).filter(([, value]) => value !== undefined);
 
