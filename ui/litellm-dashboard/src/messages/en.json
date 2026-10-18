@@ -4860,7 +4860,25 @@
       "flatCost": "Flat Cost",
       "totalCostTooltip": "Request cost plus flat cost for reserved capacity. Select this tile to see the breakdown.",
       "requestCostTooltip": "Usage-based cost of the requests this entity sent during the selected period, priced per token.",
-      "flatCostTooltip": "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets."
+      "flatCostTooltip": "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets.",
+      "requestTokenConsumption": "Request / Token Consumption",
+      "filterBy": "Filter by {entity}",
+      "selectToFilter": "Select {entity} to filter...",
+      "noEntitySpendData": "No {entity} spend data",
+      "noProviderData": "No provider usage data",
+      "totalEntities": "Total {entity}s",
+      "spendByEntity": "Spend by {entity}",
+      "andMore": "...and {count} more",
+      "spendFetchFailed": "Fetching spend data failed, so the totals below may be empty rather than final. Reload the page to try again.",
+      "agentFetchFailed": "Fetching agent data failed, so the totals below may be empty rather than final. Reload the page to try again.",
+      "type": {
+        "user": "User",
+        "team": "Team",
+        "tag": "Tag",
+        "organization": "Organization",
+        "customer": "Customer",
+        "agent": "Agent"
+      }
     },
     "provider": {
       "title": "Spend by Provider",

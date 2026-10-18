@@ -4860,7 +4860,25 @@
       "flatCost": "固定成本",
       "totalCostTooltip": "请求成本加上预留容量的固定成本。选中此卡片查看明细。",
       "requestCostTooltip": "该实体在所选时间段内发送请求的用量成本，按令牌计价。",
-      "flatCostTooltip": "预留的预配置吞吐量，无论是否发送请求都按小时计费。仅在此处展示，不计入团队、密钥、用户或组织的预算。"
+      "flatCostTooltip": "预留的预配置吞吐量，无论是否发送请求都按小时计费。仅在此处展示，不计入团队、密钥、用户或组织的预算。",
+      "requestTokenConsumption": "请求 / Token 消耗",
+      "filterBy": "按{entity}筛选",
+      "selectToFilter": "选择{entity}以筛选...",
+      "noEntitySpendData": "无{entity}消费数据",
+      "noProviderData": "无供应商用量数据",
+      "totalEntities": "{entity}总数",
+      "spendByEntity": "按 {entity} 统计消费",
+      "andMore": "...另有 {count} 个",
+      "spendFetchFailed": "消费数据拉取失败，下方合计可能为空而非最终值。请重新加载页面重试。",
+      "agentFetchFailed": "智能体数据拉取失败，下方合计可能为空而非最终值。请重新加载页面重试。",
+      "type": {
+        "user": "用户",
+        "team": "团队",
+        "tag": "标签",
+        "organization": "组织",
+        "customer": "客户",
+        "agent": "智能体"
+      }
     },
     "provider": {
       "title": "按供应商统计消费",

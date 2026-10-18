@@ -82,6 +82,15 @@ const ENTITY_CAPABILITIES: Partial<Record<EntityType, Capability>> = {
   agent: "viewAgentUsage",
 };
 
+const ENTITY_TYPE_KEYS = {
+  user: "type.user",
+  team: "type.team",
+  tag: "type.tag",
+  organization: "type.organization",
+  customer: "type.customer",
+  agent: "type.agent",
+} as const satisfies Record<EntityType, string>;
+
 const EntityUsage: React.FC<EntityUsageProps> = ({
   accessToken,
   entityType,
@@ -284,13 +293,11 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     }));
   };
 
-  const getFilterLabel = (entityType: string) => {
-    return `Filter by ${entityType}`;
-  };
+  const entityLabel = t(ENTITY_TYPE_KEYS[entityType]);
 
-  const getFilterPlaceholder = (entityType: string) => {
-    return `Select ${entityType} to filter...`;
-  };
+  const getFilterLabel = () => t("filterBy", { entity: entityLabel });
+
+  const getFilterPlaceholder = () => t("selectToFilter", { entity: entityLabel });
 
   const entityFilterSlots: Partial<Record<EntityType, ReactNode>> = {
     team: <TeamMultiSelect value={selectedTags} onChange={setSelectedTags} />,
@@ -300,7 +307,6 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   };
   const filterSlot = entityFilterSlots[entityType];
 
-  const capitalizedEntityLabel = entityType.charAt(0).toUpperCase() + entityType.slice(1);
   const showFlatCost = entityType === "team" && hasFlatCost(spendData.metadata);
   const userSpendTeamIds = useMemo(
     () =>
@@ -310,79 +316,78 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     [selectedTags, teams],
   );
   const providerSpend = useMemo(() => getProviderSpend(spendData.results), [spendData.results]);
-  const entityBreakdownColumns = useMemo<ColumnDef<EntityMetricWithMetadata>[]>(
-    () => [
-      {
-        header: capitalizedEntityLabel,
-        accessorKey: "metadata.alias",
-        cell: ({ row }) => row.original.metadata.alias,
-      },
-      {
-        header: "Spend",
-        accessorKey: "metrics.spend",
-        meta: { numeric: true },
-        cell: ({ row }) => <MoneyCell value={row.original.metrics.spend} decimals={4} />,
-      },
-      {
-        header: "Successful",
-        accessorKey: "metrics.successful_requests",
-        meta: { numeric: true, className: "text-success" },
-        cell: ({ row }) => row.original.metrics.successful_requests.toLocaleString(),
-      },
-      {
-        header: "Failed",
-        accessorKey: "metrics.failed_requests",
-        meta: { numeric: true, className: "text-destructive" },
-        cell: ({ row }) => row.original.metrics.failed_requests.toLocaleString(),
-      },
-      {
-        header: "Tokens",
-        accessorKey: "metrics.total_tokens",
-        meta: { numeric: true },
-        cell: ({ row }) => row.original.metrics.total_tokens.toLocaleString(),
-      },
-    ],
-    [capitalizedEntityLabel],
-  );
-  const providerSpendColumns = useMemo<ColumnDef<ProviderSpendRow>[]>(
-    () => [
-      {
-        header: "Provider",
-        accessorKey: "provider",
-        cell: ({ row }) => (
-          <div className="flex items-center space-x-2">
-            {row.original.provider && <Logo provider={row.original.provider} className="size-4" />}
-            <span>{row.original.provider}</span>
-          </div>
-        ),
-      },
-      {
-        header: "Spend",
-        accessorKey: "spend",
-        meta: { numeric: true },
-        cell: ({ row }) => <MoneyCell value={row.original.spend} decimals={2} />,
-      },
-      {
-        header: "Successful",
-        accessorKey: "successful_requests",
-        meta: { numeric: true, className: "text-success" },
-        cell: ({ row }) => row.original.successful_requests.toLocaleString(),
-      },
-      {
-        header: "Failed",
-        accessorKey: "failed_requests",
-        meta: { numeric: true, className: "text-destructive" },
-        cell: ({ row }) => row.original.failed_requests.toLocaleString(),
-      },
-      {
-        header: "Tokens",
-        accessorKey: "tokens",
-        meta: { numeric: true },
-        cell: ({ row }) => row.original.tokens.toLocaleString(),
-      },
-    ],
-    [],
-  );
+  const colSpend = usageT("provider.spend");
+  const colSuccessful = usageT("provider.successful");
+  const colFailed = usageT("provider.failed");
+  const colTokens = usageT("provider.tokens");
+  const colProvider = usageT("provider.provider");
+  const entityBreakdownColumns: ColumnDef<EntityMetricWithMetadata>[] = [
+    {
+      header: entityLabel,
+      accessorKey: "metadata.alias",
+      cell: ({ row }) => row.original.metadata.alias,
+    },
+    {
+      header: colSpend,
+      accessorKey: "metrics.spend",
+      meta: { numeric: true },
+      cell: ({ row }) => <MoneyCell value={row.original.metrics.spend} decimals={4} />,
+    },
+    {
+      header: colSuccessful,
+      accessorKey: "metrics.successful_requests",
+      meta: { numeric: true, className: "text-success" },
+      cell: ({ row }) => row.original.metrics.successful_requests.toLocaleString(),
+    },
+    {
+      header: colFailed,
+      accessorKey: "metrics.failed_requests",
+      meta: { numeric: true, className: "text-destructive" },
+      cell: ({ row }) => row.original.metrics.failed_requests.toLocaleString(),
+    },
+    {
+      header: colTokens,
+      accessorKey: "metrics.total_tokens",
+      meta: { numeric: true },
+      cell: ({ row }) => row.original.metrics.total_tokens.toLocaleString(),
+    },
+  ];
+  const providerSpendColumns: ColumnDef<ProviderSpendRow>[] = [
+    {
+      header: colProvider,
+      accessorKey: "provider",
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-2">
+          {row.original.provider && <Logo provider={row.original.provider} className="size-4" />}
+          <span>{row.original.provider}</span>
+        </div>
+      ),
+    },
+    {
+      header: colSpend,
+      accessorKey: "spend",
+      meta: { numeric: true },
+      cell: ({ row }) => <MoneyCell value={row.original.spend} decimals={2} />,
+    },
+    {
+      header: colSuccessful,
+      accessorKey: "successful_requests",
+      meta: { numeric: true, className: "text-success" },
+      cell: ({ row }) => row.original.successful_requests.toLocaleString(),
+    },
+    {
+      header: colFailed,
+      accessorKey: "failed_requests",
+      meta: { numeric: true, className: "text-destructive" },
+      cell: ({ row }) => row.original.failed_requests.toLocaleString(),
+    },
+    {
+      header: colTokens,
+      accessorKey: "tokens",
+      meta: { numeric: true },
+      cell: ({ row }) => row.original.tokens.toLocaleString(),
+    },
+  ];
 
   const chev = "size-3 text-muted-foreground";
   const expandIcon = showCostBreakdown ? <ChevronDown className={chev} /> : <ChevronRight className={chev} />;
@@ -421,7 +426,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
       <div className="col-span-2">
         <ShadcnCard>
           <CardContent>
-            <h3 className="text-lg font-medium text-foreground">{capitalizedEntityLabel} Spend Overview</h3>
+            <h3 className="text-lg font-medium text-foreground">{t("spendOverview", { label: entityLabel })}</h3>
             <div className="grid grid-cols-5 gap-4 mt-4">{summaryTiles.map(renderSummaryTile)}</div>
           </CardContent>
         </ShadcnCard>
@@ -460,24 +465,38 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
                     <p className="font-bold">{data.date}</p>
                     {showFlatCost ? (
                       <>
-                        <p className="text-info">Request cost: ${formatNumberWithCommas(requestSpend, 2)}</p>
-                        <p className="text-violet-500">Flat cost: ${formatNumberWithCommas(flatCost, 2)}</p>
+                        <p className="text-info">
+                          {t("requestCost")}: ${formatNumberWithCommas(requestSpend, 2)}
+                        </p>
+                        <p className="text-violet-500">
+                          {t("flatCost")}: ${formatNumberWithCommas(flatCost, 2)}
+                        </p>
                         <p className="font-semibold">
-                          Total cost: ${formatNumberWithCommas(requestSpend + flatCost, 2)}
+                          {t("totalCost")}: ${formatNumberWithCommas(requestSpend + flatCost, 2)}
                         </p>
                       </>
                     ) : (
-                      <p className="text-info">Total Spend: ${formatNumberWithCommas(data.metrics.spend, 2)}</p>
+                      <p className="text-info">
+                        {t("totalSpend")}: ${formatNumberWithCommas(data.metrics.spend, 2)}
+                      </p>
                     )}
-                    <p className="text-muted-foreground">Total Requests: {data.metrics.api_requests}</p>
-                    <p className="text-muted-foreground">Successful: {data.metrics.successful_requests}</p>
-                    <p className="text-muted-foreground">Failed: {data.metrics.failed_requests}</p>
-                    <p className="text-muted-foreground">Total Tokens: {data.metrics.total_tokens}</p>
                     <p className="text-muted-foreground">
-                      Total {capitalizedEntityLabel}s: {entityCount}
+                      {usageT("totalRequests")}: {data.metrics.api_requests}
+                    </p>
+                    <p className="text-muted-foreground">
+                      {usageT("provider.successful")}: {data.metrics.successful_requests}
+                    </p>
+                    <p className="text-muted-foreground">
+                      {usageT("provider.failed")}: {data.metrics.failed_requests}
+                    </p>
+                    <p className="text-muted-foreground">
+                      {usageT("totalTokens")}: {data.metrics.total_tokens}
+                    </p>
+                    <p className="text-muted-foreground">
+                      {t("totalEntities", { entity: entityLabel })}: {entityCount}
                     </p>
                     <div className="mt-2 border-t pt-2">
-                      <p className="font-semibold">Spend by {capitalizedEntityLabel}:</p>
+                      <p className="font-semibold">{t("spendByEntity", { entity: entityLabel })}:</p>
                       {Object.entries(data.breakdown.entities || {})
                         .sort(([, a], [, b]) => {
                           const spendA = (a as EntityMetrics).metrics.spend;
@@ -495,7 +514,9 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
                           );
                         })}
                       {entityCount > 5 && (
-                        <p className="text-sm text-muted-foreground italic">...and {entityCount - 5} more</p>
+                        <p className="text-sm text-muted-foreground italic">
+                          {t("andMore", { count: entityCount - 5 })}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -511,14 +532,16 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         <ShadcnCard>
           <CardContent className="flex flex-col space-y-4">
             <div className="flex flex-col space-y-2">
-              <h3 className="text-lg font-medium text-foreground">Spend Per {capitalizedEntityLabel}</h3>
+              <h3 className="text-lg font-medium text-foreground">{t("spendPerEntity", { label: entityLabel })}</h3>
               <p className="text-xs text-muted-foreground">{t("showingTop5")}</p>
               <div className="flex items-center text-sm text-muted-foreground">
-                <span>Get Started by Tracking cost per {capitalizedEntityLabel} </span>
+                <span>{t("getStarted", { label: entityLabel })} </span>
                 <a
                   href="https://docs.litellm.ai/docs/proxy/enterprise#spend-tracking"
                   className="text-info hover:text-info/80 ml-1"
-                >{t("here")}</a>
+                >
+                  {t("here")}
+                </a>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-6">
@@ -539,11 +562,21 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
                     return (
                       <div className="bg-card p-4 shadow-lg rounded-lg border">
                         <p className="font-bold">{data.metadata.alias}</p>
-                        <p className="text-info">Spend: ${formatNumberWithCommas(data.metrics.spend, 4)}</p>
-                        <p className="text-muted-foreground">Requests: {data.metrics.api_requests.toLocaleString()}</p>
-                        <p className="text-success">Successful: {data.metrics.successful_requests.toLocaleString()}</p>
-                        <p className="text-destructive">Failed: {data.metrics.failed_requests.toLocaleString()}</p>
-                        <p className="text-muted-foreground">Tokens: {data.metrics.total_tokens.toLocaleString()}</p>
+                        <p className="text-info">
+                          {usageT("provider.spend")}: ${formatNumberWithCommas(data.metrics.spend, 4)}
+                        </p>
+                        <p className="text-muted-foreground">
+                          {usageT("teamUserSpend.requests")}: {data.metrics.api_requests.toLocaleString()}
+                        </p>
+                        <p className="text-success">
+                          {usageT("provider.successful")}: {data.metrics.successful_requests.toLocaleString()}
+                        </p>
+                        <p className="text-destructive">
+                          {usageT("provider.failed")}: {data.metrics.failed_requests.toLocaleString()}
+                        </p>
+                        <p className="text-muted-foreground">
+                          {usageT("provider.tokens")}: {data.metrics.total_tokens.toLocaleString()}
+                        </p>
                       </div>
                     );
                   }}
@@ -555,7 +588,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
                   data={getEntityBreakdown().filter((entity) => entity.metrics.spend > 0)}
                   getRowId={(row) => row.metadata.id}
                   maxBodyHeight={208}
-                  noDataMessage={`No ${entityType} spend data`}
+                  noDataMessage={t("noEntitySpendData", { entity: entityLabel })}
                   size="compact"
                 />
               </div>
@@ -653,7 +686,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
                   columns={providerSpendColumns}
                   data={providerSpend}
                   getRowId={(row) => row.provider}
-                  noDataMessage="No provider usage data"
+                  noDataMessage={t("noProviderData")}
                   size="compact"
                 />
               </div>
@@ -668,7 +701,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     { key: "cost", label: usageT("tabs.cost"), content: costPanel },
     {
       key: "models",
-      label: entityType === "agent" ? "Request / Token Consumption" : usageT("tabs.models"),
+      label: entityType === "agent" ? t("requestTokenConsumption") : usageT("tabs.models"),
       content: (
         <>
           <div className="flex justify-end mt-2 mb-4">
@@ -713,18 +746,12 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     <div style={{ width: "100%" }} className="relative">
       {failed && (
         <Alert variant="error" className="mb-2">
-          <AlertDescription className="text-inherit">
-            Fetching spend data failed, so the totals below may be empty rather than final. Reload the page to try
-            again.
-          </AlertDescription>
+          <AlertDescription className="text-inherit">{t("spendFetchFailed")}</AlertDescription>
         </Alert>
       )}
       {showAgentBreakdown && agentFailed && (
         <Alert variant="error" className="mb-2">
-          <AlertDescription className="text-inherit">
-            Fetching agent data failed, so the totals below may be empty rather than final. Reload the page to try
-            again.
-          </AlertDescription>
+          <AlertDescription className="text-inherit">{t("agentFetchFailed")}</AlertDescription>
         </Alert>
       )}
       <UsageExportHeader
@@ -737,8 +764,8 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         }
         showFilters={filterSlot === undefined && entityList !== null}
         filterSlot={filterSlot}
-        filterLabel={getFilterLabel(entityType)}
-        filterPlaceholder={getFilterPlaceholder(entityType)}
+        filterLabel={getFilterLabel()}
+        filterPlaceholder={getFilterPlaceholder()}
         selectedFilters={selectedTags}
         onFiltersChange={setSelectedTags}
         filterOptions={getAllTags() || undefined}
