@@ -101,7 +101,7 @@ describe("VectorStoreTester", () => {
     await user.type(queryInput(), "   ");
     await user.type(queryInput(), "{Enter}");
 
-    expect(mockWarning).toHaveBeenCalledWith("Please enter a search query");
+    expect(mockWarning).toHaveBeenCalledWith("请输入搜索查询");
     expect(mockSearch).not.toHaveBeenCalled();
   });
 

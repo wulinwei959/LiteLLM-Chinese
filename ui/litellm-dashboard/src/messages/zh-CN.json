@@ -7829,6 +7829,7 @@
     }
   },
   "playground": {
+    "codeInterpreterOpenaiOnly": "代码解释器仅支持 OpenAI 模型",
     "title": "游乐场",
     "subtitle": "测试和体验模型与端点",
     "tabs": {
@@ -8418,6 +8419,12 @@
   },
   "tagManagement": {
     "title": "标签管理",
+    "tagCreated": "标签创建成功",
+    "tagDeleted": "标签删除成功",
+    "fetchTagsFailed": "获取标签失败：{error}",
+    "createTagFailed": "创建标签失败：{error}",
+    "deleteTagFailed": "删除标签失败：{error}",
+    "fetchModelsFailed": "获取模型失败：{error}",
     "noTags": "暂无标签",
     "noTagsDesc": "创建一个标签，开始路由和限制模型使用。",
     "noMatchingTags": "无匹配标签",
@@ -8492,6 +8499,7 @@
     "selectorPlaceholder": "选择或新建标签"
   },
   "skills": {
+    "deleteFailed": "删除技能失败",
     "addNew": "新建技能",
     "sourceUrlLabel": "来源 URL",
     "sourceUrlHint": "粘贴来自 GitHub、GitLab、Bitbucket 或自建托管的 HTTPS git 仓库地址（如 github.com/org/repo 或 github.com/org/repo/tree/main/my-skill），或指向托管在 S3 或任意静态文件服务器上的技能 .zip 压缩包的 HTTPS 链接。私有仓库请使用其 SSH 克隆地址（git@ghe.example.com:org/repo.git），以便 Claude Code 用你自己的 SSH 密钥克隆。",
@@ -9280,6 +9288,8 @@
   },
   "vectorStores": {
     "search": "搜索",
+    "queryRequired": "请输入搜索查询",
+    "historyCleared": "搜索历史已清空",
     "createdSuccess": "向量存储创建成功",
     "vectorStoreId": "向量存储 ID：",
     "documentsIngested": "已摄入文档数：",

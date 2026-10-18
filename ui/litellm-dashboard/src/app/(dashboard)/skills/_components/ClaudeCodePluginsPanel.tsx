@@ -74,7 +74,7 @@ const ClaudeCodePluginsPanel: React.FC<ClaudeCodePluginsPanelProps> = ({ accessT
       fetchPlugins();
     } catch (error) {
       console.error("Error deleting skill:", error);
-      toast.error("Failed to delete skill");
+      toast.error(t("deleteFailed"));
     } finally {
       setIsDeleting(false);
       setPluginToDelete(null);

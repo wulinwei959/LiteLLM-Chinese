@@ -52,7 +52,7 @@ const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) =>
       setTags(Object.values(response));
     } catch (error) {
       console.error("Error fetching tags:", error);
-      toast.fromError("Error fetching tags: " + error);
+      toast.fromError(t("fetchTagsFailed", { error: String(error) }));
     } finally {
       setIsLoadingTags(false);
     }
@@ -77,12 +77,12 @@ const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) =>
         rpm_limit: formValues.rpm_limit,
         budget_duration: formValues.budget_duration,
       });
-      toast.success("Tag created successfully");
+      toast.success(t("tagCreated"));
       setIsCreateModalVisible(false);
       fetchTags();
     } catch (error) {
       console.error("Error creating tag:", error);
-      toast.fromError("Error creating tag: " + error);
+      toast.fromError(t("createTagFailed", { error: String(error) }));
     }
   };
 
@@ -96,11 +96,11 @@ const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) =>
     setIsDeleting(true);
     try {
       await tagDeleteCall(accessToken, tagToDelete);
-      toast.success("Tag deleted successfully");
+      toast.success(t("tagDeleted"));
       fetchTags();
     } catch (error) {
       console.error("Error deleting tag:", error);
-      toast.fromError("Error deleting tag: " + error);
+      toast.fromError(t("deleteTagFailed", { error: String(error) }));
     } finally {
       setIsDeleting(false);
       setIsDeleteModalOpen(false);
@@ -118,12 +118,12 @@ const TagManagement: React.FC<TagProps> = ({ accessToken, userID, userRole }) =>
           }
         } catch (error) {
           console.error("Error fetching models:", error);
-          toast.fromError("Error fetching models: " + error);
+          toast.fromError(t("fetchModelsFailed", { error: String(error) }));
         }
       };
       fetchModels();
     }
-  }, [accessToken, userID, userRole]);
+  }, [accessToken, userID, userRole, t]);
 
   useEffect(() => {
     fetchTags();

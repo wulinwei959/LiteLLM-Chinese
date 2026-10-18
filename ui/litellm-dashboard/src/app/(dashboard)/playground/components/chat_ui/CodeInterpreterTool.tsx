@@ -41,7 +41,7 @@ const CodeInterpreterTool: React.FC<CodeInterpreterToolProps> = ({
 
   const handleToggle = (checked: boolean) => {
     if (checked && !isOpenAI) {
-      toast.warning("Code Interpreter is only available for OpenAI models");
+      toast.warning(t("codeInterpreterOpenaiOnly"));
       return;
     }
     onEnabledChange(checked);
@@ -57,9 +57,7 @@ const CodeInterpreterTool: React.FC<CodeInterpreterToolProps> = ({
             <TooltipTrigger aria-label={t("codeInterpreterTool.tooltip")}>
               <Info className="size-3 text-muted-foreground" />
             </TooltipTrigger>
-            <TooltipContent>
-              {t("codeInterpreterTool.about")}
-            </TooltipContent>
+            <TooltipContent>{t("codeInterpreterTool.about")}</TooltipContent>
           </Tooltip>
         </div>
         <Switch

@@ -7829,6 +7829,7 @@
     }
   },
   "playground": {
+    "codeInterpreterOpenaiOnly": "Code Interpreter is only available for OpenAI models",
     "title": "Playground",
     "subtitle": "Test and experiment with models and endpoints",
     "tabs": {
@@ -8422,6 +8423,12 @@
   },
   "tagManagement": {
     "title": "Tag Management",
+    "tagCreated": "Tag created successfully",
+    "tagDeleted": "Tag deleted successfully",
+    "fetchTagsFailed": "Error fetching tags: {error}",
+    "createTagFailed": "Error creating tag: {error}",
+    "deleteTagFailed": "Error deleting tag: {error}",
+    "fetchModelsFailed": "Error fetching models: {error}",
     "noTags": "No tags yet",
     "noTagsDesc": "Create a tag to start routing and restricting model usage.",
     "noMatchingTags": "No matching tags",
@@ -8496,6 +8503,7 @@
     "selectorPlaceholder": "Select or create tags"
   },
   "skills": {
+    "deleteFailed": "Failed to delete skill",
     "addNew": "Add New Skill",
     "sourceUrlLabel": "Source URL",
     "sourceUrlHint": "Paste an HTTPS git repository URL from GitHub, GitLab, Bitbucket, or a self-hosted host (e.g. github.com/org/repo or github.com/org/repo/tree/main/my-skill), or an HTTPS link to a .zip archive of the skill hosted on S3 or any static file server. For a private repository use its SSH clone URL (git@ghe.example.com:org/repo.git) so Claude Code clones it with your own SSH key.",
@@ -9284,6 +9292,8 @@
   },
   "vectorStores": {
     "search": "Search",
+    "queryRequired": "Please enter a search query",
+    "historyCleared": "Search history cleared",
     "createdSuccess": "Vector Store Created Successfully",
     "vectorStoreId": "Vector Store ID:",
     "documentsIngested": "Documents Ingested:",
