@@ -34,7 +34,7 @@ describe("MCPToolConfiguration", () => {
   it("shows legacy unrestricted edit tools enabled in flat view", async () => {
     const onAllowedToolsChange = renderToolConfiguration();
 
-    fireEvent.click(screen.getByText("Flat List"));
+    fireEvent.click(screen.getByText("平铺列表"));
 
     expect(screen.getByText("已启用 2/2 个工具供用户访问")).toBeInTheDocument();
     expect(screen.getAllByText("已启用")).toHaveLength(2);
@@ -101,7 +101,7 @@ describe("MCPToolConfiguration", () => {
 
     renderWithProviders(<Wrapper />);
 
-    fireEvent.click(screen.getByText("Flat List"));
+    fireEvent.click(screen.getByText("平铺列表"));
     fireEvent.click(screen.getByText("read_user"));
     fireEvent.click(screen.getByText("delete_user"));
 
@@ -135,8 +135,8 @@ describe("MCPToolConfiguration", () => {
 
     renderWithProviders(<Wrapper />);
 
-    fireEvent.click(screen.getByText("Flat List"));
-    fireEvent.click(screen.getAllByTitle("Edit display name and description")[0]);
+    fireEvent.click(screen.getByText("平铺列表"));
+    fireEvent.click(screen.getAllByTitle("编辑显示名称与描述")[0]);
 
     const input = screen.getByPlaceholderText("read_user");
     fireEvent.change(input, { target: { value: "Browse Repo Docs" } });
@@ -172,8 +172,8 @@ describe("MCPToolConfiguration", () => {
 
     renderWithProviders(<Wrapper />);
 
-    fireEvent.click(screen.getByText("Flat List"));
-    fireEvent.click(screen.getAllByTitle("Edit display name and description")[0]);
+    fireEvent.click(screen.getByText("平铺列表"));
+    fireEvent.click(screen.getAllByTitle("编辑显示名称与描述")[0]);
 
     const input = screen.getByPlaceholderText("read_user");
     fireEvent.change(input, { target: { value: "browse_repo_docs" } });

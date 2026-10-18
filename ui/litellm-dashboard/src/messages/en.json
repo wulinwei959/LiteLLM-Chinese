@@ -6961,7 +6961,8 @@
       "enabledCount": "{enabled} of {total} {count, plural, one {tool} other {tools}} enabled for user access",
       "riskGroups": "Risk Groups",
       "flatList": "Flat List",
-      "noToolsFound": "No tools found matching \"{term}\""
+      "noToolsFound": "No tools found matching \"{term}\"",
+      "editTooltip": "Edit display name and description"
     },
     "toolTest": {
       "testTool": "Test Tool:",

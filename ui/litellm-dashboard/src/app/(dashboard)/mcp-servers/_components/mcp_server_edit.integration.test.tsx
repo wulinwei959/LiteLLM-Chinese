@@ -406,7 +406,7 @@ describe("MCPServerEdit live tool preview", () => {
     expect(screen.queryByText("Saved credentials rejected")).not.toBeInTheDocument();
     expect(screen.getByText("正在加载工具...")).toBeInTheDocument();
     expect(networking.testMCPToolsListRequest).not.toHaveBeenCalled();
-    fireEvent.click(await screen.findByRole("button", { name: "Flat List" }));
+    fireEvent.click(await screen.findByRole("button", { name: "平铺列表" }));
     expect(screen.getByText("echo")).toBeInTheDocument();
     const expectedConfig = {
       server_id: BASE.server_id,
@@ -425,7 +425,7 @@ describe("MCPServerEdit live tool preview", () => {
     renderEditor({ ...BASE, static_headers: { "X-Preview-Key": "wrong" } });
     expect(await screen.findByText("Saved credentials rejected")).toBeInTheDocument();
     fireEvent.change(screen.getByPlaceholderText("请求头的值"), { target: { value: "correct" } });
-    fireEvent.click(await screen.findByRole("button", { name: "Flat List" }));
+    fireEvent.click(await screen.findByRole("button", { name: "平铺列表" }));
     expect(screen.getByText("echo")).toBeInTheDocument();
     expect(networking.testMCPToolsListRequest).toHaveBeenCalledExactlyOnceWith(
       "access-token",
@@ -444,7 +444,7 @@ describe("MCPServerEdit live tool preview", () => {
     await user.clear(screen.getByLabelText(/MCP Server URL|MCP 服务器 URL/));
     await user.type(screen.getByLabelText(/MCP Server URL|MCP 服务器 URL/), "https://latest.example/mcp");
     expect(networking.testMCPToolsListRequest).toHaveBeenCalledTimes(1);
-    fireEvent.click(await screen.findByRole("button", { name: "Flat List" }));
+    fireEvent.click(await screen.findByRole("button", { name: "平铺列表" }));
     expect(screen.getByText("echo")).toBeInTheDocument();
     expect(networking.testMCPToolsListRequest).toHaveBeenCalledTimes(2);
     expect(networking.testMCPToolsListRequest).toHaveBeenLastCalledWith(
@@ -462,7 +462,7 @@ describe("MCPServerEdit live tool preview", () => {
     renderEditor();
     await waitFor(() => expect(networking.listMCPTools).toHaveBeenCalledTimes(1));
     fireEvent.change(screen.getByLabelText(/MCP Server URL|MCP 服务器 URL/), { target: { value: "https://correct.example/mcp" } });
-    fireEvent.click(await screen.findByRole("button", { name: "Flat List" }));
+    fireEvent.click(await screen.findByRole("button", { name: "平铺列表" }));
     expect(screen.getByText("echo")).toBeInTheDocument();
     await act(async () => saved.resolve({ tools: [], error: "connection_error", message: "Stale saved response" }));
     expect(screen.getByText("echo")).toBeInTheDocument();

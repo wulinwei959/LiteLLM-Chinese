@@ -103,7 +103,7 @@ const ToolRow: React.FC<ToolRowProps> = ({
             variant="ghost"
             size="icon-sm"
             onClick={(e) => onToggleExpand(tool.name, e)}
-            title="Edit display name and description"
+            title={t("toolConfig.editTooltip")}
           >
             <Pencil />
           </Button>
@@ -411,14 +411,14 @@ const MCPToolConfiguration: React.FC<MCPToolConfigurationProps> = ({
                 variant={viewMode === "crud" ? "default" : "outline"}
                 onClick={() => setViewMode("crud")}
               >
-                Risk Groups
+                {t("toolConfig.riskGroups")}
               </Button>
               <Button
                 size="sm"
                 variant={viewMode === "flat" ? "default" : "outline"}
                 onClick={() => setViewMode("flat")}
               >
-                Flat List
+                {t("toolConfig.flatList")}
               </Button>
             </div>
           )}

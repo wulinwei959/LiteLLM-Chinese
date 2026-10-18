@@ -6961,7 +6961,8 @@
       "enabledCount": "已启用 {enabled}/{total} 个工具供用户访问{count, plural, other {}}",
       "riskGroups": "风险分组",
       "flatList": "平铺列表",
-      "noToolsFound": "没有匹配\"{term}\"的工具"
+      "noToolsFound": "没有匹配\"{term}\"的工具",
+      "editTooltip": "编辑显示名称与描述"
     },
     "toolTest": {
       "testTool": "测试工具：",
