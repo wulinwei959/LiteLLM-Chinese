@@ -437,8 +437,8 @@ describe("TeamInfoView", () => {
 
       renderWithProviders(<TeamInfoView {...defaultProps} />);
 
-      expect(await screen.findByText("All proxy models")).toBeInTheDocument();
-      expect(screen.queryByRole("link", { name: "All proxy models" })).not.toBeInTheDocument();
+      expect(await screen.findByText("所有代理模型")).toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: "所有代理模型" })).not.toBeInTheDocument();
     });
 
     it("should display loading state while fetching team data", () => {

@@ -1375,7 +1375,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
           <Card className="block p-6">
             <p>{t("models")}</p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {computeTeamModelBadges(info.models, info.access_group_models || [], info.access_group_details).map(
+              {computeTeamModelBadges(info.models, info.access_group_models || [], info.access_group_details, t).map(
                 (badge, index) => (
                   <SimpleTooltip key={`${badge.kind}-${badge.label}-${index}`} content={badge.tooltip}>
                     <span>

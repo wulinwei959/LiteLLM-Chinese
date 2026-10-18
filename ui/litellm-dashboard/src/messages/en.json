@@ -2739,7 +2739,18 @@
     },
     "listEditTeam": "Edit team",
     "listCopyTeamId": "Copy team ID",
-    "listDeleteTeam": "Delete team"
+    "listDeleteTeam": "Delete team",
+    "badgeAllProxy": "All proxy models",
+    "badgeNoDefault": "No default models",
+    "tooltipAllProxyEntry": "Granted by the All Proxy Models entry in the team's model list",
+    "tooltipAllProxyEmpty": "The team's model list is empty, so it can access every model on the proxy",
+    "tooltipNoDefault": "No models are granted directly. Access comes only from access groups",
+    "tooltipDirect": "Granted directly in the team's model list",
+    "tooltipDirectAndGroups": "Granted directly in the team's model list, and also via {groups}",
+    "tooltipViaGroups": "Granted via {groups}",
+    "groupsOne": "access group {names}",
+    "groupsMany": "access groups {names}",
+    "oneAccessGroup": "an access group"
   },
   "userAgentActivity": {
     "summaryTitle": "Summary by User Agent",

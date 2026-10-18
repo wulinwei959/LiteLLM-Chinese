@@ -2739,7 +2739,18 @@
     },
     "listEditTeam": "编辑团队",
     "listCopyTeamId": "复制团队 ID",
-    "listDeleteTeam": "删除团队"
+    "listDeleteTeam": "删除团队",
+    "badgeAllProxy": "所有代理模型",
+    "badgeNoDefault": "无默认模型",
+    "tooltipAllProxyEntry": "由团队模型列表中的“所有代理模型”条目授予。",
+    "tooltipAllProxyEmpty": "团队的模型列表为空，因此可访问代理上的所有模型。",
+    "tooltipNoDefault": "没有直接授予的模型，访问权限仅来自访问组。",
+    "tooltipDirect": "直接在团队的模型列表中授予。",
+    "tooltipDirectAndGroups": "直接在团队的模型列表中授予，同时也通过{groups}授予。",
+    "tooltipViaGroups": "通过{groups}授予。",
+    "groupsOne": "访问组 {names}",
+    "groupsMany": "访问组 {names}",
+    "oneAccessGroup": "某个访问组"
   },
   "userAgentActivity": {
     "summaryTitle": "按用户代理汇总",
