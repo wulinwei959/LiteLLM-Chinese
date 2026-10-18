@@ -2968,6 +2968,8 @@
     "infoAddUserToTeam": "将用户添加到团队",
     "infoTeam": "团队",
     "infoSelectTeam": "选择团队",
+    "nonNegativeNumber": "必须为非负数",
+    "teamAlreadyListed": "该团队已在列表中",
     "infoMemberRole": "成员角色",
     "infoMemberRoleUserHint": "可以查看团队信息，但不能管理团队",
     "infoMemberRoleAdminHint": "可以创建团队密钥、添加成员并管理设置",

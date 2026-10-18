@@ -248,7 +248,7 @@ interface SettingsFormProps {
 const SettingsForm = ({ initialValues, roleOptions, updateSettings, onCancel, onSaved }: SettingsFormProps) => {
   const t = useTranslations("users");
   const queryClient = useQueryClient();
-  const form = useZodForm(defaultUserSettingsSchema, { defaultValues: initialValues });
+  const form = useZodForm(defaultUserSettingsSchema(t), { defaultValues: initialValues });
   const { isDirty } = form.formState;
 
   const mutation = useMutation({

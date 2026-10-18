@@ -1,6 +1,11 @@
+import { enMessagesFor } from "@tests/i18nStub";
 import { describe, expect, it } from "vitest";
 
+import type { UsersTranslator } from "@/lib/i18n/translators";
 import { defaultUserSettingsSchema, type DefaultUserSettingsFormValues } from "./schema";
+
+const t = enMessagesFor("users") as unknown as UsersTranslator;
+const schema = defaultUserSettingsSchema(t);
 
 const values = (overrides: Partial<DefaultUserSettingsFormValues> = {}): DefaultUserSettingsFormValues => ({
   user_role: "internal_user",
@@ -12,13 +17,13 @@ const values = (overrides: Partial<DefaultUserSettingsFormValues> = {}): Default
 });
 
 const issuesFor = (input: DefaultUserSettingsFormValues) => {
-  const result = defaultUserSettingsSchema.safeParse(input);
+  const result = schema.safeParse(input);
   return result.success ? [] : result.error.issues.map((issue) => ({ path: issue.path, message: issue.message }));
 };
 
 describe("defaultUserSettingsSchema", () => {
   it("accepts settings with no default teams", () => {
-    expect(defaultUserSettingsSchema.safeParse(values()).success).toBe(true);
+    expect(schema.safeParse(values()).success).toBe(true);
   });
 
   it("rejects a team row that has no team selected", () => {

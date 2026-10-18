@@ -77,6 +77,9 @@ const mockTranslations: Record<string, string> = {
   "users.editSettings": "Edit Settings",
   "modelSelect.allProxyModels": "All Proxy Models",
   "modelSelect.noDefaultModels": "No Default Models",
+  "users.infoSelectTeam": "选择团队",
+  "users.teamAlreadyListed": "该团队已在列表中",
+  "users.nonNegativeNumber": "必须为非负数",
 };
 
 vi.mock("next-intl", () => ({
@@ -280,7 +283,7 @@ describe("DefaultUserSettingsForm", () => {
     await user.keyboard("{Escape}");
     await user.click(await saveButton());
 
-    expect(await screen.findByText("Select a team")).toBeInTheDocument();
+    expect(await screen.findByText("选择团队")).toBeInTheDocument();
     expect(screen.getAllByLabelText("Team")[1]).toHaveValue("");
     expect(updateSettings).not.toHaveBeenCalled();
   });
@@ -295,7 +298,7 @@ describe("DefaultUserSettingsForm", () => {
     await user.click(await screen.findByText("Alpha"));
     await user.click(await saveButton());
 
-    expect(await screen.findByText("This team is already listed")).toBeInTheDocument();
+    expect(await screen.findByText("该团队已在列表中")).toBeInTheDocument();
     expect(updateSettings).not.toHaveBeenCalled();
   });
 

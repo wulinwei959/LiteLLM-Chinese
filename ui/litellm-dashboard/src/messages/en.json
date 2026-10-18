@@ -2968,6 +2968,8 @@
     "infoAddUserToTeam": "Add User to Team",
     "infoTeam": "Team",
     "infoSelectTeam": "Select a team",
+    "nonNegativeNumber": "Must be a non-negative number",
+    "teamAlreadyListed": "This team is already listed",
     "infoMemberRole": "Member Role",
     "infoMemberRoleUserHint": "Can view team info, but not manage it",
     "infoMemberRoleAdminHint": "Can create team keys, add members, and manage settings",
