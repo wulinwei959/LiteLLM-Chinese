@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 219 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10655、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 219 簇（184、189、190、191、194、198、199、200、203、212、217 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 220 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10715、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 220 簇（184、189、190、191、194、198、199、200、203、212、217 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 220 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `cost-optimization/_components/ShadowEvalSection.tsx`，影子评估区（上游新功能整片，早只用着 `shadowEval.title`/`loading` 等少数键）。扫描器 4 条命中只是冰山一角，按"上游新功能文件做全量盲区复查"口径把整片界面文案一次接线：区块说明、作业卡标题行与元信息、状态徽章、分层表头、成本对比块、裁决分布条、每密钥目标表、空态文案、历史评估折叠等，新插 60 键（插在 `duration30d` 后）。两条 headline 键与模型范围键走 `t.rich` 等宽插槽 `<m>`/`<r>`/`<b>`/`<tg>`（LoginPage `ssoRedirectNotice` 与 vectorStores 语义标签先例同款），`b` 本就在 `messagesParity` 的 RICH_TAGS 白名单，`m`/`r`/`tg` 三个标签名带注释登记进白名单。状态、目标类型与另一侧臂标签都用显式键名联合（`StatusLabelKey`/`TargetTypeLabelKey`/`otherArmLabelKey`）加原值兜底，不碰 155-156 簇模板字面量教训；reverse 分支 `baseline_model` 可空，传值处 `?? ""` 收口类型。`t.rich` 的 7 属性内联字面量触发 `local/no-large-inline-object-arg` 新警告，提名为 `headlineValues` 构造函数后组件 0 警告。纯函数 `shadowedTargetLabel` 返回的是数据标识（别名/掩码名/截断 hash）不接线。测试面：`ShadowEvalSection.test.tsx` 约四十处英文断言改钉 zh（headline textContent 全文、表头、裁决条正则、预算/轮次/成本行、停止按钮、历史评估折叠等），StartForm 侧断言本就是 zh 未动；tsc 里该片测试的 9 条红灯（fixture 缺 `by_router` 字段 2 条、`getByRole` option 重载 7 条）经 stash 对拉与 HEAD 逐条一致，系上游既有账不计本簇。门禁：cost-optimization 整包加 `src/lib/i18n` 三守卫 20 文件 228 例全绿（本片 42 例）、Type Errors 无报错；tsc 锚定组件与守卫零命中；eslint stash 双侧对拉持平（守卫 2 条既有账）；prettier 组件 HEAD 即脏，本簇改动区内 3 处折叠/展开差异已按 prettier 输出落净，测试与守卫文件 HEAD 干净、当前仍干净，目录两侧各自 11 处既有 4 空格缩进脏块不在本簇插入区、未顺手重排；ICU 守卫 60 键 120 侧通过（`t.rich` 标签名需同时传恒等函数值），`next build` 通过，扫描器本文件归零（files with hits 274 降到 273）。覆盖率：叶子 10655 涨到 10715，同值 138 不动（60 新键两侧全不同值），接入数不动（本文件早已接入）。下一簇按队列取 `caching/_components/cache_settings/index.tsx`（4 条）。
 
 ## 2026-10-18 第 219 簇更新
 
