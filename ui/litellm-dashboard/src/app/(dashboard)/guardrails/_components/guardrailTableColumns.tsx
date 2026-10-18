@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/cva.config";
-import type { GuardrailsTranslator } from "@/lib/i18n/translators";
+import type { CommonTranslator, GuardrailsTranslator } from "@/lib/i18n/translators";
 
 import { formatGuardrailMode, getGuardrailLogoAndName } from "./guardrail_info_helpers";
 import { Logo } from "@/components/molecules/logo/Logo";
@@ -68,12 +68,14 @@ interface GuardrailTableColumnsDeps {
   onGuardrailClick: (guardrailId: string) => void;
   onDeleteClick: (guardrailId: string, guardrailName: string) => void;
   t: GuardrailsTranslator;
+  commonT: CommonTranslator;
 }
 
 export const getGuardrailTableColumns = ({
   onGuardrailClick,
   onDeleteClick,
   t,
+  commonT,
 }: GuardrailTableColumnsDeps): ColumnDef<Guardrail>[] => [
   {
     id: "guardrail_id",
@@ -121,7 +123,7 @@ export const getGuardrailTableColumns = ({
     size: 130,
     enableSorting: false,
     cell: ({ row }) => {
-      const mode = formatGuardrailMode(row.original.litellm_params.mode);
+      const mode = formatGuardrailMode(row.original.litellm_params.mode, commonT);
       return (
         <span className="font-mono text-xs text-muted-foreground" title={mode || undefined}>
           {mode || "-"}

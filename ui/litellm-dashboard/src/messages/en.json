@@ -220,6 +220,7 @@
     "hoursAgo": "{count, number}h ago",
     "daysAgo": "{count, number}d ago",
     "tokensInAndOut": "{prompt} in / {completion} out",
+    "tagBased": "tag-based",
     "selectAll": "Select All",
     "enterpriseFeatureBadge": "✨ Enterprise Feature",
     "resetField": "Reset {field}",

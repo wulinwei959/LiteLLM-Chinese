@@ -69,6 +69,7 @@ export interface GuardrailInfoProps {
 
 const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose, accessToken, isAdmin }) => {
   const t = useTranslations("guardrails");
+  const commonT = useTranslations("common");
   const [guardrailData, setGuardrailData] = useState<any>(null);
   const [guardrailProviderSpecificParams, setGuardrailProviderSpecificParams] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -568,7 +569,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                 <p>{t("info.mode")}</p>
                 <div className="mt-2">
                   <h3 className="text-lg font-medium">
-                    {formatGuardrailMode(guardrailData.litellm_params?.mode) || "-"}
+                    {formatGuardrailMode(guardrailData.litellm_params?.mode, commonT) || "-"}
                   </h3>
                   <Badge variant={guardrailData.litellm_params?.default_on ? "secondary" : "outline"}>
                     {guardrailData.litellm_params?.default_on ? t("info.defaultOn") : t("info.defaultOff")}
@@ -864,7 +865,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                     </div>
                     <div>
                       <p className="font-medium">{t("info.modeRow")}</p>
-                      <div>{formatGuardrailMode(guardrailData.litellm_params?.mode) || "-"}</div>
+                      <div>{formatGuardrailMode(guardrailData.litellm_params?.mode, commonT) || "-"}</div>
                     </div>
                     <div>
                       <p className="font-medium">{t("info.defaultOnRow")}</p>

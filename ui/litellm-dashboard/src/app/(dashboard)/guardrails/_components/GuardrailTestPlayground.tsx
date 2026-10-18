@@ -54,6 +54,7 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
   const [testErrors, setTestErrors] = useState<TestError[]>([]);
   const [isTesting, setIsTesting] = useState(false);
   const t = useTranslations("guardrails");
+  const commonT = useTranslations("common");
 
   const filteredGuardrails = guardrailsList.filter((guardrail) =>
     guardrail.guardrail_name?.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -176,7 +177,7 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
                           <div>
                             <span className="font-medium">{t("test.modeLabel")}: </span>
                             <span className="text-muted-foreground">
-                              {formatGuardrailMode(guardrail.litellm_params.mode)}
+                              {formatGuardrailMode(guardrail.litellm_params.mode, commonT)}
                             </span>
                           </div>
                         </div>

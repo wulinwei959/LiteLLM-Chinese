@@ -40,11 +40,12 @@ const GuardrailTable: React.FC<GuardrailTableProps> = ({
 }) => {
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
   const t = useTranslations("guardrails");
+  const commonT = useTranslations("common");
 
-  const columns = useMemo(
-    () => getGuardrailTableColumns({ onGuardrailClick, onDeleteClick, t }),
-    [onGuardrailClick, onDeleteClick, t],
-  );
+  const columns = useMemo(() => {
+    const columnDeps = { onGuardrailClick, onDeleteClick, t, commonT };
+    return getGuardrailTableColumns(columnDeps);
+  }, [onGuardrailClick, onDeleteClick, t, commonT]);
 
   return (
     <DataTable

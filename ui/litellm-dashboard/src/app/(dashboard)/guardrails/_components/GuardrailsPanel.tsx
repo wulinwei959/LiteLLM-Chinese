@@ -36,6 +36,7 @@ interface GuardrailsResponse {
 
 const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({ accessToken, userRole }) => {
   const t = useTranslations("guardrails");
+  const commonT = useTranslations("common");
   const [guardrailsList, setGuardrailsList] = useState<Guardrail[]>([]);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isCustomCodeModalVisible, setIsCustomCodeModalVisible] = useState(false);
@@ -221,7 +222,7 @@ const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({ accessToken, userRole
                   { label: t("name"), value: guardrailToDelete?.guardrail_name },
                   { label: t("id"), value: guardrailToDelete?.guardrail_id, code: true },
                   { label: t("provider"), value: providerDisplayName },
-                  { label: t("mode"), value: formatGuardrailMode(guardrailToDelete?.litellm_params.mode) },
+                  { label: t("mode"), value: formatGuardrailMode(guardrailToDelete?.litellm_params.mode, commonT) },
                   {
                     label: t("defaultOn"),
                     value: guardrailToDelete?.litellm_params.default_on ? t("yes") : t("no"),

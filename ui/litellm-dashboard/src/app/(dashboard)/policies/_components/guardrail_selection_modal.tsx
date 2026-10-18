@@ -43,6 +43,7 @@ const GuardrailSelectionModal: React.FC<GuardrailSelectionModalProps> = ({
 }) => {
   const [selectedGuardrails, setSelectedGuardrails] = useState<Set<string>>(new Set());
   const t = useTranslations("policies");
+  const commonT = useTranslations("common");
 
   // Prepare guardrail info with existence status
   const guardrailsInfo: GuardrailInfo[] = (template?.guardrailDefinitions || []).map((def: any) => ({
@@ -167,7 +168,7 @@ const GuardrailSelectionModal: React.FC<GuardrailSelectionModalProps> = ({
                     <div className="flex gap-2 mt-2">
                       <Badge variant="outline">{guardrail.definition?.litellm_params?.guardrail || t("select.unknown")}</Badge>
                       <Badge variant="secondary">
-                        {formatGuardrailMode(guardrail.definition?.litellm_params?.mode) || t("select.unknown")}
+                        {formatGuardrailMode(guardrail.definition?.litellm_params?.mode, commonT) || t("select.unknown")}
                       </Badge>
                       {guardrail.definition?.litellm_params?.patterns && (
                         <Badge variant="secondary">

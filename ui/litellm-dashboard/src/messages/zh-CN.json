@@ -220,6 +220,7 @@
     "hoursAgo": "{count, number} 小时前",
     "daysAgo": "{count, number} 天前",
     "tokensInAndOut": "输入 {prompt} / 输出 {completion}",
+    "tagBased": "按标签",
     "selectAll": "全选",
     "enterpriseFeatureBadge": "✨ 企业版功能",
     "resetField": "重置 {field}",

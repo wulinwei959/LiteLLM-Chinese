@@ -27,6 +27,7 @@ import repelloAiLogo from "../../../../../public/assets/logos/repelloai.png";
 import straikerLogo from "../../../../../public/assets/logos/straiker.svg";
 import xecguardLogo from "../../../../../public/assets/logos/xecguard.svg";
 import zscalerLogo from "../../../../../public/assets/logos/zscaler.svg";
+import type { CommonTranslator } from "@/lib/i18n/translators";
 
 // Legacy enum - keeping for backward compatibility
 export enum GuardrailProviders {
@@ -120,7 +121,7 @@ export const toModeArray = (raw: unknown): string[] => {
   return [];
 };
 
-export const formatGuardrailMode = (raw: unknown): string => {
+export const formatGuardrailMode = (raw: unknown, commonT: CommonTranslator): string => {
   const flat: string[] = toModeArray(raw);
   if (flat.length > 0) return flat.join(", ");
   if (raw === null || typeof raw !== "object") return "";
@@ -128,7 +129,7 @@ export const formatGuardrailMode = (raw: unknown): string => {
   const { tags, default: fallback } = raw as { tags?: Record<string, unknown>; default?: unknown };
   const tagged: string[] = tags && typeof tags === "object" ? Object.values(tags).flatMap(toModeArray) : [];
   const modes: string[] = Array.from(new Set([...toModeArray(fallback), ...tagged]));
-  return modes.length > 0 ? `${modes.join(", ")} (tag-based)` : "";
+  return modes.length > 0 ? `${modes.join(", ")} (${commonT("tagBased")})` : "";
 };
 
 // Resolves the supported modes for the selected provider, falling back to the global list

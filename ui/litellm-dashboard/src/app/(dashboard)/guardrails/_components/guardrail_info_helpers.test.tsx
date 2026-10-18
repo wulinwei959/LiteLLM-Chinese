@@ -1,4 +1,5 @@
 import { describe, expect, it, beforeEach } from "vitest";
+import type { CommonTranslator } from "@/lib/i18n/translators";
 import {
   populateGuardrailProviders,
   populateGuardrailProviderMap,
@@ -212,9 +213,11 @@ describe("guardrail_info_helpers", () => {
   });
 
   describe("formatGuardrailMode", () => {
+    const commonT = ((key: string) => (key === "tagBased" ? "tag-based" : key)) as unknown as CommonTranslator;
+
     it("renders a single mode and a list of modes", () => {
-      expect(formatGuardrailMode("pre_call")).toBe("pre_call");
-      expect(formatGuardrailMode(["pre_call", "post_call"])).toBe("pre_call, post_call");
+      expect(formatGuardrailMode("pre_call", commonT)).toBe("pre_call");
+      expect(formatGuardrailMode(["pre_call", "post_call"], commonT)).toBe("pre_call, post_call");
     });
 
     it("flattens a tag-based mode object into deduped modes instead of returning it verbatim", () => {
@@ -223,19 +226,19 @@ describe("guardrail_info_helpers", () => {
         default: ["pre_call", "post_call"],
       };
 
-      expect(formatGuardrailMode(mode)).toBe("pre_call, post_call, during_call (tag-based)");
+      expect(formatGuardrailMode(mode, commonT)).toBe("pre_call, post_call, during_call (tag-based)");
     });
 
     it("handles a tag-based mode with no default and with no tags", () => {
-      expect(formatGuardrailMode({ tags: { "team: a": "post_call" } })).toBe("post_call (tag-based)");
-      expect(formatGuardrailMode({ default: "pre_call" })).toBe("pre_call (tag-based)");
+      expect(formatGuardrailMode({ tags: { "team: a": "post_call" } }, commonT)).toBe("post_call (tag-based)");
+      expect(formatGuardrailMode({ default: "pre_call" }, commonT)).toBe("pre_call (tag-based)");
     });
 
     it("returns an empty string for missing or unusable modes", () => {
-      expect(formatGuardrailMode(undefined)).toBe("");
-      expect(formatGuardrailMode(null)).toBe("");
-      expect(formatGuardrailMode({})).toBe("");
-      expect(formatGuardrailMode({ tags: {}, default: null })).toBe("");
+      expect(formatGuardrailMode(undefined, commonT)).toBe("");
+      expect(formatGuardrailMode(null, commonT)).toBe("");
+      expect(formatGuardrailMode({}, commonT)).toBe("");
+      expect(formatGuardrailMode({ tags: {}, default: null }, commonT)).toBe("");
     });
   });
 
