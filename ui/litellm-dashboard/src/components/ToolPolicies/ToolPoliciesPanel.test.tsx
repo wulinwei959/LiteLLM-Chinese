@@ -170,7 +170,7 @@ describe("ToolPoliciesPanel data loading", () => {
 
     await waitFor(() => expect(screen.queryAllByTestId("skeleton-row")).toHaveLength(0));
     expect(fetchToolsList).not.toHaveBeenCalled();
-    expect(screen.getByText("No tools discovered")).toBeInTheDocument();
+    expect(screen.getByText("尚未发现工具")).toBeInTheDocument();
   });
 
   it("should surface a load failure without wedging the skeleton", async () => {

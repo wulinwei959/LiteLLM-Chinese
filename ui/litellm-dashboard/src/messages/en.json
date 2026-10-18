@@ -10741,7 +10741,13 @@
     "colUserAgent": "User Agent",
     "needsReviewBody": "{count, plural, one {# new tool} other {# new tools}} discovered that require policy decisions.",
     "loadToolsFailed": "Failed to load tools",
-    "colUserTooltip": "The user who owns the key that discovered this tool. Displays the first available value: User Alias, User Email, or User ID."
+    "colUserTooltip": "The user who owns the key that discovered this tool. Displays the first available value: User Alias, User Email, or User ID.",
+    "emptyNoMatchTitle": "No matching tools",
+    "emptyNoneTitle": "No tools discovered",
+    "emptyNoMatchBody": "No tools match your search or filters.",
+    "emptyNoneBody": "Make a chat completion that returns tool_calls to start auto-discovery.",
+    "loadingTools": "Loading tools…",
+    "searchByToolName": "Search by Tool Name"
   },
   "settings": {
     "callback": "Callback",

@@ -114,7 +114,7 @@ describe("ToolPoliciesTable search", () => {
     fireEvent.change(screen.getByTestId("datatable-search"), { target: { value: "curl" } });
 
     await waitFor(() => expect(rowIds()).toEqual([]));
-    expect(screen.getByText("No matching tools")).toBeInTheDocument();
+    expect(screen.getByText("没有匹配的工具")).toBeInTheDocument();
   });
 });
 
@@ -190,14 +190,14 @@ describe("ToolPoliciesTable chrome", () => {
   it("should explain how discovery works when there are no tools at all", () => {
     renderTable({ data: [] });
 
-    expect(screen.getByText("No tools discovered")).toBeInTheDocument();
-    expect(screen.getByText(/tool_calls to start auto-discovery/)).toBeInTheDocument();
+    expect(screen.getByText("尚未发现工具")).toBeInTheDocument();
+    expect(screen.getByText(/tool_calls.*自动发现/)).toBeInTheDocument();
   });
 
   it("should show skeleton rows while the first load is in flight", () => {
     renderTable({ data: [], isLoading: true });
 
     expect(screen.getAllByTestId("skeleton-row").length).toBeGreaterThan(0);
-    expect(screen.queryByText("No tools discovered")).not.toBeInTheDocument();
+    expect(screen.queryByText("尚未发现工具")).not.toBeInTheDocument();
   });
 });

@@ -10737,7 +10737,13 @@
     "colUserAgent": "用户代理",
     "needsReviewBody": "发现 {count} 个新工具，需要做出策略决定。",
     "loadToolsFailed": "无法加载工具",
-    "colUserTooltip": "拥有发现此工具的密钥的用户。按可用值依次显示：用户别名、用户邮箱或用户 ID。"
+    "colUserTooltip": "拥有发现此工具的密钥的用户。按可用值依次显示：用户别名、用户邮箱或用户 ID。",
+    "emptyNoMatchTitle": "没有匹配的工具",
+    "emptyNoneTitle": "尚未发现工具",
+    "emptyNoMatchBody": "没有符合你搜索或筛选条件的工具。",
+    "emptyNoneBody": "发起一次返回 tool_calls 的聊天补全即可开始自动发现。",
+    "loadingTools": "正在加载工具...",
+    "searchByToolName": "按工具名称搜索"
   },
   "settings": {
     "callback": "回调",
