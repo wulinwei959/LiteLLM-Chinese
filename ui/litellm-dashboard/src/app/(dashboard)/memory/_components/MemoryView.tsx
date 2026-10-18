@@ -74,11 +74,11 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
       return createMemory(accessToken, args);
     },
     onSuccess: (row) => {
-      toast.success(`Created ${row.key}`);
+      toast.success(t("createdToast", { key: row.key }));
       invalidateList();
     },
     onError: (err: Error) => {
-      toast.error(`Save failed: ${err.message}`);
+      toast.error(t("saveFailedToast", { message: err.message }));
     },
   });
 
@@ -89,11 +89,11 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
       return updateMemory(accessToken, key, payload);
     },
     onSuccess: (row) => {
-      toast.success(`Updated ${row.key}`);
+      toast.success(t("updatedToast", { key: row.key }));
       invalidateList();
     },
     onError: (err: Error) => {
-      toast.error(`Save failed: ${err.message}`);
+      toast.error(t("saveFailedToast", { message: err.message }));
     },
   });
 
@@ -103,11 +103,11 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
       return deleteMemory(accessToken, key).then(() => key);
     },
     onSuccess: (key) => {
-      toast.success(`Deleted ${key}`);
+      toast.success(t("deletedToast", { key }));
       invalidateList();
     },
     onError: (err: Error) => {
-      toast.error(`Delete failed: ${err.message}`);
+      toast.error(t("deleteFailedToast", { message: err.message }));
     },
   });
 
@@ -149,7 +149,7 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
       try {
         metadataPayload = JSON.parse(metadataText);
       } catch {
-        toast.error("Metadata must be valid JSON (or leave empty).");
+        toast.error(t("metadataInvalid"));
         return false;
       }
     }
