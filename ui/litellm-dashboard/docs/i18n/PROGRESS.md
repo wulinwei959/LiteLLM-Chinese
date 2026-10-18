@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 228 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10732、中英同值 139。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 228 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 229 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10734、中英同值 139。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 229 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 229 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `src/components/view_logs/TraceView/useAgentTraces.ts`，Logs 页调用链数据 hook（纯逻辑 `.ts`，接线前无翻译钩子，不计入 912 非测试 `.tsx` 口径）。扫描器 3 条命中逐条判定：26/27 行 401/403 展示文案经 `displayError` 造的 Error 会进 `traces.error`、由 `AgentTracesTable` 包在 `t("traceList.loadRunsError", {message})` 里上屏（集成测试钉着断言），用户可见，接线。`useAgentTraces` 内加 `useTranslations("logs")`，`displayError` 提为收 `LogsTranslator`（`@/lib/i18n/translators` 现成别名）双参函数，新开 `logs.traceList.sessionExpired`/`noTracesAccess` 两键（插在 `loadRunsError` 后）。100 行 `Agent tracing is not enabled` 兜底串判定不翻：`notEnabledDetail` 流向 `TracingSetupCard` 的 `detail` prop，该 prop 只做 `detail === null` 判空与 memo 比较、内容从不渲染（消费链 `useTracingSetup` -> `disabledDetail` -> `TracingSetupCard` 逐点核实），纯标记串，回退了先接 `t("traceList.agentTracingNotEnabled")` 的初稿并删掉该键。测试面：`AgentTracesSection.test.tsx` it.each 两例断言改钉 zh（`你的登录会话已失效，请退出后重新登录。`、`你的账号无权查看这些调用链。`），曾加过 fallback 可见性新用例、因上述判空结论撤回；TraceView 整包 11 文件 114 例全绿、`src/lib/i18n` 三守卫全绿、Type Errors 无报错。门禁：tsc 锚定零命中，eslint 两改动文件 0 条（本簇无新增警告账），prettier 双侧干净、目录新键区干净，ICU 守卫 2 键 4 侧通过，`next build` 通过，扫描器本文件剩 1 条即登记不翻的兜底标记串（files with hits 272 不动）。覆盖率：叶子 10732 涨到 10734，同值 139 不动，接入数不动（`.ts` 不在口径）。下一簇按队列取 `src/components/ui/button-group.tsx`（3 条）。
 
 ## 2026-10-18 第 228 簇更新
 
