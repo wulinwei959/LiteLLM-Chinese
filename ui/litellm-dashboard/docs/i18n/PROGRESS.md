@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 203 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10621、中英同值 134，同值按 HEAD 重测修正此前 138 的旧口径）。第 93 到 203 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 204 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10621、中英同值 134，同值按 HEAD 重测修正此前 138 的旧口径）。第 93 到 204 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 204 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `utils/ptuValidation.ts`，PTU（预留容量）定价表单的校验规则模块，四条扫描命中加两条模板串盲区（`ptuCountRules`/`ptuRateRules` 的带参消息）。第 192/201 簇"纯模块翻译器注入"教条第三次落地：六条 `Promise.reject(new Error(...))` 全部改为按 `PtuTranslator`（`ReturnType<typeof useTranslations<"models.addModel">>`，`import type` 仅取类型）参数化，消息零新开，全部精确同值复用 `models.addModel` 既有键：`ptuCountRange`/`ptuRateRange`（带 `{max}`，与 `ModelInfoEditForm.tsx` 的用法逐字对齐）、`ptuPairRequired`、`ptuStartRequired`、`ptuWindowOrder`、`ptuCostReservedOnly`，中英两侧早前已备（这些键正是 ModelInfoEditForm 一簇预置的）。API 形态：`ptuCountRules`/`ptuRateRules` 模块级数组改 `(t) => ValidatorRule` 工厂（数组本是单元素包装的遗留），`ptuPairRule(siblingField, t)`、`ptuNoUsageCostRule(countField, t, thisField?)`、`ptuStartRequiredRule(countField, t)`、`ptuWindowOrderRule(siblingField, thisBound, t)` 追加 t 参，唯一消费方 `advanced_settings.tsx` 八处调用点随之穿入现成的 `t = useTranslations("models.addModel")`（其 `AdvancedSettingsTranslator` 本地别名与 `PtuTranslator` 同型）。测试迁移走 `tests/i18nStub.ts` 通道：把桩的命名空间解析泛化为点分路径 walk（单段命名空间行为不变），测试注入 `enMessagesFor("models.addModel")` 渲染 en.json 真实英文，既有英文子串断言（"whole number between 1 and"、"1,000,000" 等）一字不动仍然成立，27 例全绿。覆盖率不动（本文件是 `.ts`，目录叶子与同值零变化：10621/134）。门禁：add_model 整包加 ModelInfoEditForm 加两个桩消费测试共 44 文件 1016 例全绿、Type Errors 无报错，tsc 锚定零命中（`import type` 值命名空间供 `typeof` 查询可行），eslint 四文件与 HEAD 持平（advanced_settings 少一条属改善），prettier 三文件 HEAD 干净改写归零、advanced_settings HEAD 即脏不改写，`next build` 通过，扫描器本文件归零（files with hits 283 降到 282）。下一簇按队列取 `hooks/useUserMcpOAuthFlow.tsx`（4 条）。
 
 ## 2026-10-18 第 203 簇更新
 
