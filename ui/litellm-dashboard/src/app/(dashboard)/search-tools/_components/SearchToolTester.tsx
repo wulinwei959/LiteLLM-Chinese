@@ -29,6 +29,7 @@ interface SearchToolTesterProps {
 export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolName, accessToken, className = "" }) => {
   const [query, setQuery] = useState("");
   const t = useTranslations("searchTools");
+  const commonT = useTranslations("common");
   const [isLoading, setIsLoading] = useState(false);
   const [searchHistory, setSearchHistory] = useState<
     {
@@ -42,7 +43,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
 
   const handleSearch = async () => {
     if (!query.trim()) {
-      toast.warning("Please enter a search query");
+      toast.warning(t("queryRequired"));
       return;
     }
 
@@ -64,7 +65,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
       setSearchHistory((prev) => [historyEntry, ...prev]);
     } catch (error) {
       console.error("Error querying search tool:", error);
-      toast.fromError("Failed to query search tool");
+      toast.fromError(t("queryFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +78,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
   const clearHistory = () => {
     setSearchHistory([]);
     setExpandedResults({});
-    toast.success("Search history cleared");
+    toast.success(t("historyCleared"));
   };
 
   const toggleResultExpansion = (historyIndex: number, resultIndex: number) => {
@@ -117,7 +118,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
             </div>
             <Button onClick={handleSearch} disabled={isLoading || !query.trim()} className="h-12 px-6 text-[15px]">
               {isLoading ? <UiLoadingSpinner className="size-4" /> : <Search className="size-4" />}
-              Search
+              {commonT("search")}
             </Button>
           </div>
         </div>
@@ -146,7 +147,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                          Search Query
+                          {t("searchQueryLabel")}
                         </p>
                         <div className="mt-1.5 text-base font-semibold text-foreground">{latestResults.query}</div>
                       </div>
@@ -154,8 +155,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
                         <p className="text-xs text-muted-foreground">{formatTimestamp(latestResults.timestamp)}</p>
                         <div className="mt-1 flex items-center gap-3">
                           <div className="text-sm font-semibold text-primary">
-                            {latestResults.response?.results?.length || 0}{" "}
-                            {latestResults.response?.results?.length === 1 ? "result" : "results"}
+                            {t("resultCount", { count: latestResults.response?.results?.length || 0 })}
                           </div>
                           {latestResults.latency !== undefined && (
                             <>
@@ -193,7 +193,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
                                 <Button
                                   variant="ghost"
                                   size="icon-sm"
-                                  aria-label="Open result in new tab"
+                                  aria-label={t("openResultAria")}
                                   className="shrink-0 text-muted-foreground"
                                   onClick={() => window.open(result.url, "_blank")}
                                 >
@@ -216,7 +216,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
                                   className="mt-3 h-auto p-0"
                                   onClick={() => toggleResultExpansion(0, resultIndex)}
                                 >
-                                  {isResultExpanded ? "Show less" : "Show more"}
+                                  {isResultExpanded ? t("showLess") : t("showMore")}
                                 </Button>
                               )}
                             </div>
@@ -241,7 +241,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
                   <div className="mb-4 flex items-center justify-between">
                     <p className="text-sm font-semibold text-foreground">{t("previousSearches")}</p>
                     <Button variant="link" size="sm" className="h-auto p-0" onClick={clearHistory}>
-                      Clear All
+                      {commonT("clearAll")}
                     </Button>
                   </div>
                   <div className="space-y-2">
@@ -256,8 +256,7 @@ export const SearchToolTester: React.FC<SearchToolTesterProps> = ({ searchToolNa
                         <div className="truncate text-sm font-medium text-foreground">{entry.query}</div>
                         <div className="mt-1.5 flex items-center gap-2 text-xs text-muted-foreground">
                           <span className="font-medium text-primary">
-                            {entry.response?.results?.length || 0}{" "}
-                            {entry.response?.results?.length === 1 ? "result" : "results"}
+                            {t("resultCount", { count: entry.response?.results?.length || 0 })}
                           </span>
                           {entry.latency !== undefined && (
                             <>
