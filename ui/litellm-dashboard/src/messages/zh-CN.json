@@ -6802,7 +6802,7 @@
       "submittedBy": "提交者：{by}",
       "rejectionReason": "拒绝原因：{reason}",
       "allChecksPassed": "全部检查通过",
-      "checksFailed": "{count} 项检查未通过",
+      "checksFailed": "{count, plural, other {# 项检查未通过}}",
       "passingFailing": "{pass} 项通过，{fail} 项未通过",
       "passes": "通过",
       "missing": "缺失",
@@ -6820,7 +6820,13 @@
       "rejectedToast": "MCP 服务器\"{serverName}\"已拒绝",
       "rejectFailedToast": "拒绝 MCP 服务器失败",
       "rulesSavedToast": "提交规则已保存",
-      "rulesSaveFailedToast": "保存提交规则失败"
+      "rulesSaveFailedToast": "保存提交规则失败",
+      "confirmApproveTitle": "通过 MCP 服务器",
+      "confirmRejectTitle": "拒绝 MCP 服务器",
+      "confirmApproveBody": "确定要通过 <b>\"{serverName}\"</b> 吗？这会激活该服务器，审核通过后提交用户即可在其 MCP 服务器列表中看到它。",
+      "confirmRejectBodyLive": "确定要拒绝 <b>\"{serverName}\"</b> 吗？该服务器当前处于线上状态，拒绝会立即将其从代理运行时中移除。",
+      "confirmRejectBodyPending": "确定要拒绝 <b>\"{serverName}\"</b> 吗？这会将该提交标记为已拒绝。",
+      "loadFailed": "加载提交列表失败"
     },
     "mcpConnect": {
       "connectToClient": "连接到您的 MCP 客户端",

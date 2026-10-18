@@ -6802,7 +6802,7 @@
       "submittedBy": "Submitted by: {by}",
       "rejectionReason": "Rejection reason: {reason}",
       "allChecksPassed": "All checks passed",
-      "checksFailed": "{count} checks failed",
+      "checksFailed": "{count, plural, one {# check failed} other {# checks failed}}",
       "passingFailing": "{pass} passing, {fail} failing",
       "passes": "Passes",
       "missing": "Missing",
@@ -6820,7 +6820,13 @@
       "rejectedToast": "MCP server \"{serverName}\" rejected",
       "rejectFailedToast": "Failed to reject MCP server",
       "rulesSavedToast": "Submission rules saved",
-      "rulesSaveFailedToast": "Failed to save submission rules"
+      "rulesSaveFailedToast": "Failed to save submission rules",
+      "confirmApproveTitle": "Approve MCP Server",
+      "confirmRejectTitle": "Reject MCP Server",
+      "confirmApproveBody": "Are you sure you want to approve <b>\"{serverName}\"</b>? This will activate the server. The submitting user will see it in their MCP Servers list once approved.",
+      "confirmRejectBodyLive": "Are you sure you want to reject <b>\"{serverName}\"</b>? This server is currently live. Rejecting it will immediately remove it from the proxy runtime.",
+      "confirmRejectBodyPending": "Are you sure you want to reject <b>\"{serverName}\"</b>? This will mark the submission as rejected.",
+      "loadFailed": "Failed to load submissions"
     },
     "mcpConnect": {
       "connectToClient": "Connect to your MCP client",

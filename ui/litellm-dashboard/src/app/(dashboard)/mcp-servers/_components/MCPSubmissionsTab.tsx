@@ -59,12 +59,18 @@ function formatDate(value: string | null | undefined): string {
   }
 }
 
-function StatCard({ label, value, color }: { label: string; value: number; color: string }) {
+type StatCardLabel =
+  | "submissions.totalSubmitted"
+  | "submissions.pendingReview"
+  | "submissions.active"
+  | "submissions.rejected";
+
+function StatCard({ label, value, color }: { label: StatCardLabel; value: number; color: string }) {
   const t = useTranslations("mcpServers");
   return (
     <div className="bg-card border border-border rounded-lg px-4 py-3">
       <div className={`text-2xl font-bold ${color}`}>{value}</div>
-      <div className="text-xs text-muted-foreground mt-0.5">{label}</div>
+      <div className="text-xs text-muted-foreground mt-0.5">{t(label)}</div>
     </div>
   );
 }
@@ -81,9 +87,11 @@ function ConfirmDialog({ action, serverName, isCurrentlyActive, onConfirm, onCan
   const t = useTranslations("mcpServers");
   const [reviewNotes, setReviewNotes] = useState("");
   const isApprove = action === "approve";
-  const rejectBody = isCurrentlyActive
-    ? "This server is currently live. Rejecting it will immediately remove it from the proxy runtime."
-    : "This will mark the submission as rejected.";
+  const bodyKey = isApprove
+    ? "submissions.confirmApproveBody"
+    : isCurrentlyActive
+      ? "submissions.confirmRejectBodyLive"
+      : "submissions.confirmRejectBodyPending";
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-overlay">
       <div className="bg-card rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
@@ -99,14 +107,13 @@ function ConfirmDialog({ action, serverName, isCurrentlyActive, onConfirm, onCan
           )}
         </div>
         <h3 className="text-base font-semibold text-foreground mb-1">
-          {isApprove ? "Approve MCP Server" : "Reject MCP Server"}
+          {isApprove ? t("submissions.confirmApproveTitle") : t("submissions.confirmRejectTitle")}
         </h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Are you sure you want to {action}{" "}
-          <span className="font-medium text-foreground">&quot;{serverName}&quot;</span>?{" "}
-          {isApprove
-            ? "This will activate the server. The submitting user will see it in their MCP Servers list once approved."
-            : rejectBody}
+          {t.rich(bodyKey, {
+            serverName,
+            b: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+          })}
         </p>
         {!isApprove && (
           <textarea
@@ -352,7 +359,7 @@ function MCPServerCard({ server, onApprove, onReject, requiredFields }: MCPServe
                 onClick={onApprove}
                 className="text-xs bg-success hover:bg-success/80 text-success-foreground px-3 py-1.5 rounded-md transition-colors font-medium"
               >
-                Re-approve
+                {t("submissions.reapprove")}
               </button>
             </div>
           )}
@@ -384,10 +391,10 @@ function MCPServerCard({ server, onApprove, onReject, requiredFields }: MCPServe
             </div>
             <div className="flex-1 min-w-0">
               <div className={`text-sm font-semibold leading-tight ${allPassed ? "text-success" : "text-destructive"}`}>
-                {allPassed ? t("submissions.allChecksPassed") : `${failCount} check${failCount !== 1 ? "s" : ""} failed`}
+                {allPassed ? t("submissions.allChecksPassed") : t("submissions.checksFailed", { count: failCount })}
               </div>
               <div className="text-xs text-muted-foreground mt-0.5">
-                {passCount} passing, {failCount} failing
+                {t("submissions.passingFailing", { pass: passCount, fail: failCount })}
               </div>
             </div>
             {/* Approve / Reject in header */}
@@ -502,11 +509,11 @@ export function MCPSubmissionsTab({ accessToken }: MCPSubmissionsTabProps) {
         }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load submissions");
+      setError(err instanceof Error ? err.message : t("submissions.loadFailed"));
     } finally {
       setIsLoading(false);
     }
-  }, [accessToken]);
+  }, [accessToken, t]);
 
   useEffect(() => {
     fetchData();
