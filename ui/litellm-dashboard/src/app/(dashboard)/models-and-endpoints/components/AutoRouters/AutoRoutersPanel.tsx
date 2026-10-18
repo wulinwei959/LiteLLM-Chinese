@@ -123,12 +123,12 @@ export function AutoRoutersPanel({
       {deletingRouter && (
         <DeleteResourceModal
           isOpen
-          title="Delete Auto Router"
-          message={`Are you sure you want to delete "${deletingRouter.name}"? Any client still calling this model name will start failing.`}
-          resourceInformationTitle="Auto router"
+          title={t("deleteTitle")}
+          message={t("deleteBody", { name: deletingRouter.name })}
+          resourceInformationTitle={t("resourceTitle")}
           resourceInformation={[
-            { label: "Name", value: deletingRouter.name },
-            { label: "Type", value: deletingRouter.typeLabel },
+            { label: t("table.name"), value: deletingRouter.name },
+            { label: t("table.type"), value: deletingRouter.typeLabel },
             { label: "ID", value: deletingRouter.id },
           ]}
           onCancel={() => setDeletingRouter(null)}

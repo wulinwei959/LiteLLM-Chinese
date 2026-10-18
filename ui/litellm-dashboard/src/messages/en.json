@@ -1950,6 +1950,9 @@
         "title": "Add Auto Router",
         "description": "Choose a classifier to route each request to a model. Called like any other model, so clients keep using a single model name."
       },
+      "deleteTitle": "Delete Auto Router",
+      "deleteBody": "Are you sure you want to delete \"{name}\"? Any client still calling this model name will start failing.",
+      "resourceTitle": "Auto router",
       "table": {
         "name": "Name",
         "type": "Type",
