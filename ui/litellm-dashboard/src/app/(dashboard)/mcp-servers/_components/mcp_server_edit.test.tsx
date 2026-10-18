@@ -2058,7 +2058,7 @@ describe("MCPServerEdit (max concurrent requests)", () => {
       />,
     );
 
-    const limitInput = screen.getByPlaceholderText("e.g. 10") as HTMLInputElement;
+    const limitInput = screen.getByPlaceholderText("例如 10") as HTMLInputElement;
     expect(limitInput.value).toBe("5");
 
     fireEvent.change(limitInput, { target: { value: "2" } });
@@ -2092,7 +2092,7 @@ describe("MCPServerEdit (max concurrent requests)", () => {
       />,
     );
 
-    const limitInput = screen.getByPlaceholderText("e.g. 10") as HTMLInputElement;
+    const limitInput = screen.getByPlaceholderText("例如 10") as HTMLInputElement;
     expect(limitInput.value).toBe("5");
 
     fireEvent.change(limitInput, { target: { value: "" } });
@@ -2303,7 +2303,7 @@ describe("MCPServerEdit (tab mount contract)", () => {
       />,
     );
 
-    fireEvent.change(screen.getByPlaceholderText("e.g. 10"), { target: { value: "2" } });
+    fireEvent.change(screen.getByPlaceholderText("例如 10"), { target: { value: "2" } });
 
     await userEvent.click(screen.getByRole("tab", { name: "费用配置" }));
     expect(await screen.findByTestId("mcp-cost-config")).toBeInTheDocument();

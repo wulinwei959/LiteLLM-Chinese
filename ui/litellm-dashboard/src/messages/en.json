@@ -6551,6 +6551,7 @@
       "serverUrl": "MCP Server URL",
       "urlRequired": "Please enter a server URL",
       "maxConcurrent": "Max Concurrent Requests (optional)",
+      "maxConcurrentPlaceholder": "e.g. 10",
       "maxConcurrentTooltip": "Maximum number of tool calls LiteLLM will run against this server at the same time. Additional calls wait for a free slot. Leave blank for no limit.",
       "authSettings": "Authentication settings",
       "authRequired": "Please select an auth type",

@@ -6551,6 +6551,7 @@
       "serverUrl": "MCP 服务器 URL",
       "urlRequired": "请输入服务器 URL",
       "maxConcurrent": "最大并发请求数（可选）",
+      "maxConcurrentPlaceholder": "例如 10",
       "maxConcurrentTooltip": "LiteLLM 同时对 此服务器 发起的工具调用上限。超出后需等待空闲位。留空表示不限制。",
       "authSettings": "认证设置",
       "authRequired": "请选择认证方式",
