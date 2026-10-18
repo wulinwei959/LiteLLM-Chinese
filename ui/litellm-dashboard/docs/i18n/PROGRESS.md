@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 230 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10734、中英同值 139。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 230 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 231 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10734、中英同值 139。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 231 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 231 簇更新
+
+继续串行推进，没有派子代理。这一簇是纯判定簇：`src/components/templates/key_info_view.tsx`，密钥详情视图（早已整片接 `virtualKeys`/`common`/`budgets` 多钩子，`info*` 键体系齐全）。扫描器 3 条命中全部判不翻登记：165/415 行 `Failed to fetch policy guardrails:`/`Error deleting the key:` 是 console.error 前缀（195/208/210/212 簇口径，删除失败的用户可见面走 `toast.fromError(error)`），77 行 `send only when changed` 出自 `PREMIUM_METADATA_FIELDS` 上方的代码注释散文（227 簇注释口径）。盲区反查同判不翻：364 行 `30d`/`1h`/`24h`/`7d` 是 `wordToCanonical` 的 budget_duration 线值映射表（217 簇线值口径），379 行 `blocked` 是 `teamAdminMemberKeyPayload` 返回的判别联合 kind 内部标记（展示文案早已 `t("info.teamAdminFieldsBlocked")`），478 行 `userRole !== "Internal Viewer"` 是后端角色线值比较（224/225 簇 `Admin` 同款），542/761/766/770 行 `unlimited` 撞库处实际代码早已 `commonT("unlimited")` 接线、撞的是键值本身。代码零改动，工作树与 HEAD 逐字节一致，tsc/eslint/prettier/build 门禁由构造持平（仅按第六步单跑本片测试 `key_info_view.test.tsx` + `key_info_view.budget_display.test.tsx` 2 文件 72 例全绿、Type Errors 无报错）。files with hits 272 不动，覆盖率三项不动（912/689、10734、139）。下一簇按队列取 `src/components/mcp_server_management/MCPToolPermissions.tsx`（3 条）。
 
 ## 2026-10-18 第 230 簇更新
 
