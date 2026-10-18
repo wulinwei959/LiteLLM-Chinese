@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 196 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10610、中英同值 138）。第 93 到 196 簇（184、189、190、191、194 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 197 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10612、中英同值 138）。第 93 到 197 簇（184、189、190、191、194 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 197 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `transform-request/TransformRequestPanel.tsx`，请求转换演练场页。页面主体早前已接 `transformRequest.*`，本簇真文案只有两条失败 toast：JSON 解析失败 `fromError("Invalid JSON in request body")` 与令牌缺失 `fromError("No access token found")`，各新开 1 键（`invalidJsonBody`、`noAccessToken`，插在 `foundErrorHere` 之后保持字母序，叶子 10610 涨到 10612）。扫描器其余 3 条命中（`You are a helpful assistant.` ×2、`Explain quantum computing in simple terms`）分别在 `useState` 默认请求 JSON 样本与 `<pre>` 里的 curl 兜底样本内，属可编辑的请求负载示例（与第 183 簇 testInputExamples、curl 样本教条同级）登记不翻，`Error transforming request:` console.error 同判。测试 2 处 `fromError` 断言迁移中文，23 例全绿、Type Errors 无报错，tsc 锚定零命中，eslint 与 HEAD 双侧持平 PARITY-OK，prettier 双侧零脏行未改写，ICU 守卫 4 侧通过，`next build` 通过，扫描器本文件剩 3 条全部登记为不翻。下一簇按队列取 `policies/_components/add_attachment_form.tsx`（5 条）。
 
 ## 2026-10-18 第 196 簇更新
 
