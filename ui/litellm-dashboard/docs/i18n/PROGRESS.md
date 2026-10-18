@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 233 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10751、中英同值 139。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 233 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 234 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10757、中英同值 139。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 234 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 234 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `src/components/ToolPolicies/ToolPoliciesTable.tsx`，工具策略表主体（早已接 `toolPolicies` 域，列定义表在第 139 簇收过）。扫描器 3 条命中之外，实际没接线的有 6 句：空态组件 `ToolPoliciesEmptyState` 的两标题两正文（它是纯函数式组件，直接在内部挂本域钩子）、`loadingMessage="Loading tools…"` 与 `searchPlaceholder="Search by Tool Name"`。新开 6 键：`tool_calls` 保持线值原样进句，"chat completion" 按 `playground.agentBuilder` 既有术语译"聊天补全"，"Loading tools…" 中文取主流的 `正在加载工具...`（ASCII 三点），搜索占位按列名 `colToolName` 对齐"按工具名称搜索"。测试同步：本文件 117/193/194/201 行与消费者 `ToolPoliciesPanel.test.tsx` 173 行翻中，正则 `/tool_calls to start auto-discovery/` 改 `/tool_calls.*自动发现/`。验证：`src/components/ToolPolicies` + `src/lib/i18n` 8 文件 72 例全绿、Type Errors 无报错；eslint 路径 stash 前后均 10 警告 0 错误持平；三个代码文件 HEAD 与工作树 prettier 双净（本簇无需 `--write`），目录插入区不在脏 hunk 内；tsc 锚定本片无错；`npm run build` 绿。扫描器本片清零，files with hits 271 → 270，目录叶子 10751 → 10757（+6），覆盖率 912/689 与同值 139 不动。下一簇按队列取 `src/app/(dashboard)/users/_components/view_users/user_info_view.tsx`（3 条）。
 
 ## 2026-10-18 第 233 簇更新
 
