@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 193 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10603、中英同值 138）。第 93 到 194 簇（184、189、190、191、194 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 195 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10604、中英同值 138）。第 93 到 195 簇（184、189、190、191、194 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 195 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `src/components/Teams.tsx`，团队管理页。该文件在早前批次已整片接 `teams.*`，本簇只剩一条真文案：catch 里 `throw new Error("Failed to parse secret manager settings: " + e)` 的抛出串。追了消费链路确认是用户可见文本：创建团队失败时该 Error 经 `extractProxyErrorMessage`（`src/lib/http/client.ts`，对 Error 直接取 `.message`）灌进 `listCreateError` toast，故改为 `t("secretManagerParseFailed", { error: String(e) })`，中英各新开 1 键、插在 `teams.listCreateError` 之后（叶子 10603 涨到 10604，同值持平 138）。文件其余 4 条 `console.error` 前缀（guardrails/policies/user models/创建团队日志）照旧登记不翻。Teams.tsx 早已接入翻译器，覆盖率持平 687/912、75.3%。定向 vitest 95 例全绿、Type Errors 无报错，tsc/eslint 与 HEAD 持平 0/0，prettier 双侧零脏行未改写，ICU 守卫中英 2 侧通过，`next build` 通过。下一簇按队列取 `vector-stores/_components/vector_store_info.tsx`（5 条）。
 
 ## 2026-10-18 第 194 簇更新
 
