@@ -11012,6 +11012,11 @@
     "manageAliases": "管理已有别名",
     "actions": "操作",
     "configExample": "配置示例",
+    "addAliasBtn": "添加别名",
+    "save": "保存",
+    "cancel": "取消",
+    "noAliases": "尚未添加别名。请在上方添加新别名。",
+    "configExampleIntro": "以下是你当前别名在 config.yaml 中的样子：",
     "description": "为您的模型组创建别名以简化 API 调用。例如，可以创建一个指向 &apos;gpt-4o-mini-openai&apos; 模型组的别名 &apos;gpt-4o&apos;。"
   },
   "cloudZeroExport": {

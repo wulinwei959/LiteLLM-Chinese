@@ -208,7 +208,7 @@ const ModelGroupAliasSettings: React.FC<ModelGroupAliasSettingsProps> = ({
                   className={`flex items-center px-4 py-2 rounded-md text-sm ${!newAlias.aliasName || !newAlias.targetModelGroup ? "bg-border text-muted-foreground cursor-not-allowed" : "bg-success text-success-foreground hover:bg-success/80"}`}
                 >
                   <PlusCircleIcon className="w-4 h-4 mr-1" />
-                  Add Alias
+                  {t("addAliasBtn")}
                 </button>
               </div>
             </div>
@@ -262,13 +262,13 @@ const ModelGroupAliasSettings: React.FC<ModelGroupAliasSettingsProps> = ({
                                 onClick={handleUpdateAlias}
                                 className="text-xs bg-info/10 text-info px-2 py-1 rounded-sm hover:bg-info/15"
                               >
-                                Save
+                                {t("save")}
                               </button>
                               <button
                                 onClick={handleCancelEdit}
                                 className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-sm hover:bg-accent"
                               >
-                                Cancel
+                                {t("cancel")}
                               </button>
                             </div>
                           </TableCell>
@@ -307,7 +307,7 @@ const ModelGroupAliasSettings: React.FC<ModelGroupAliasSettingsProps> = ({
                         colSpan={3}
                         className="py-0.5 text-sm whitespace-normal text-muted-foreground text-center"
                       >
-                        No aliases added yet. Add a new alias above.
+                        {t("noAliases")}
                       </TableCell>
                     </TableRow>
                   )}
@@ -319,9 +319,7 @@ const ModelGroupAliasSettings: React.FC<ModelGroupAliasSettingsProps> = ({
           {/* Configuration Example */}
           <Card className="px-6">
             <CardTitle className="mb-4">{t("configExample")}</CardTitle>
-            <p className="text-muted-foreground mb-4">
-              Here&apos;s how your current aliases would look in the config.yaml:
-            </p>
+            <p className="text-muted-foreground mb-4">{t("configExampleIntro")}</p>
             <div className="bg-muted rounded-lg p-4 font-mono text-sm">
               <div className="text-foreground">
                 router_settings:
