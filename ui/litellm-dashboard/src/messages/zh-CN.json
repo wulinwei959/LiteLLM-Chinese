@@ -7126,7 +7126,18 @@
       "summary": "{count, number} 个单位未定价"
     },
     "log": {
-      "sample": "示例："
+      "sample": "示例：",
+      "all": "全部",
+      "blocked": "拦截",
+      "passed": "通过",
+      "flagged": "标记",
+      "notRun": "未运行",
+      "requestLogs": "请求日志",
+      "titleWithGuardrail": "{name} 日志",
+      "loading": "加载中…",
+      "showingEntries": "显示 {total} 条中的 {shown} 条",
+      "noLogsForPeriod": "此时间段暂无日志。请选择护栏和日期范围。",
+      "noLogsDisplay": "无可显示的日志。请调整筛选条件或日期范围。"
     },
     "counters": {
       "automatedReasoningPolicy": "自动推理策略",

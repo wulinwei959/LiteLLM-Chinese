@@ -103,8 +103,8 @@ describe("GuardrailsMonitor LogViewer not_run rows", () => {
     );
 
     const row = screen.getByRole("button", { name: /system prompt only/ });
-    expect(within(row).getByText("Not run")).toHaveClass("text-muted-foreground");
-    expect(within(row).queryByText("Passed")).not.toBeInTheDocument();
-    expect(within(row).queryByText("Blocked")).not.toBeInTheDocument();
+    expect(within(row).getByText("未运行")).toHaveClass("text-muted-foreground");
+    expect(within(row).queryByText("通过")).not.toBeInTheDocument();
+    expect(within(row).queryByText("拦截")).not.toBeInTheDocument();
   });
 });

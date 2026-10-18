@@ -7126,7 +7126,18 @@
       "summary": "{count, plural, one {# unit unpriced} other {# units unpriced}}"
     },
     "log": {
-      "sample": "Sample:"
+      "sample": "Sample:",
+      "all": "All",
+      "blocked": "Blocked",
+      "passed": "Passed",
+      "flagged": "Flagged",
+      "notRun": "Not run",
+      "requestLogs": "Request Logs",
+      "titleWithGuardrail": "Logs — {name}",
+      "loading": "Loading…",
+      "showingEntries": "Showing {shown} of {total} entries",
+      "noLogsForPeriod": "No logs for this period. Select a guardrail and date range.",
+      "noLogsDisplay": "No logs to display. Adjust filters or date range."
     },
     "counters": {
       "automatedReasoningPolicy": "Automated Reasoning Policy",

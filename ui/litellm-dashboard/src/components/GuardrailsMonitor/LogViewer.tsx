@@ -12,37 +12,47 @@ import type { LogEntry } from "./mockData";
 
 const actionConfig: Record<
   "blocked" | "passed" | "flagged" | "not_run",
-  { icon: React.ElementType; color: string; bg: string; border: string; label: string }
+  { icon: React.ElementType; color: string; bg: string; border: string }
 > = {
   not_run: {
     icon: MinusCircle,
     color: "text-muted-foreground",
     bg: "bg-muted",
     border: "border-border",
-    label: "Not run",
   },
   blocked: {
     icon: X,
     color: "text-destructive",
     bg: "bg-destructive/10",
     border: "border-destructive/20",
-    label: "Blocked",
   },
   passed: {
     icon: CircleCheck,
     color: "text-success",
     bg: "bg-success/10",
     border: "border-success/20",
-    label: "Passed",
   },
   flagged: {
     icon: TriangleAlert,
     color: "text-warning",
     bg: "bg-warning/10",
     border: "border-warning/20",
-    label: "Flagged",
   },
 };
+
+const ACTION_LABEL_KEYS = {
+  not_run: "log.notRun",
+  blocked: "log.blocked",
+  passed: "log.passed",
+  flagged: "log.flagged",
+} as const satisfies Record<keyof typeof actionConfig, string>;
+
+const FILTER_LABEL_KEYS = {
+  all: "log.all",
+  blocked: "log.blocked",
+  flagged: "log.flagged",
+  passed: "log.passed",
+} as const satisfies Record<"all" | "blocked" | "flagged" | "passed", string>;
 
 interface LogViewerProps {
   guardrailName?: string;
@@ -120,14 +130,14 @@ export function LogViewer({
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <h3 className="text-base font-semibold text-foreground">
-              {guardrailName ? `Logs — ${guardrailName}` : "Request Logs"}
+              {guardrailName ? t("log.titleWithGuardrail", { name: guardrailName }) : t("log.requestLogs")}
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
               {logsLoading
-                ? "Loading…"
+                ? t("log.loading")
                 : logs.length > 0
-                  ? `Showing ${displayLogs.length} of ${total} entries`
-                  : "No logs for this period. Select a guardrail and date range."}
+                  ? t("log.showingEntries", { shown: displayLogs.length, total })
+                  : t("log.noLogsForPeriod")}
             </p>
           </div>
           {logs.length > 0 && (
@@ -140,7 +150,7 @@ export function LogViewer({
                     size="sm"
                     onClick={() => setActiveFilter(f)}
                   >
-                    {f.charAt(0).toUpperCase() + f.slice(1)}
+                    {t(FILTER_LABEL_KEYS[f])}
                   </Button>
                 ))}
               </div>
@@ -169,9 +179,7 @@ export function LogViewer({
         </div>
       )}
       {!logsLoading && displayLogs.length === 0 && (
-        <div className="py-12 text-center text-sm text-muted-foreground">
-          No logs to display. Adjust filters or date range.
-        </div>
+        <div className="py-12 text-center text-sm text-muted-foreground">{t("log.noLogsDisplay")}</div>
       )}
       {!logsLoading && displayLogs.length > 0 && (
         <div className="divide-y divide-border">
@@ -191,7 +199,7 @@ export function LogViewer({
                     <span
                       className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-sm border ${config.bg} ${config.color} ${config.border}`}
                     >
-                      {config.label}
+                      {t(ACTION_LABEL_KEYS[log.action])}
                     </span>
                     <span className="text-xs text-muted-foreground">{log.timestamp}</span>
                     <span className="text-xs text-muted-foreground">·</span>
