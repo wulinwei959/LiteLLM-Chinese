@@ -222,12 +222,12 @@ const AllModelsTab = ({
 
   const teamOptions = useMemo(
     () => [
-      { value: PERSONAL_TEAM_VALUE, label: "Personal" },
+      { value: PERSONAL_TEAM_VALUE, label: t("personalTeam") },
       ...(teams ?? [])
         .filter((team) => team.team_id)
         .map((team) => ({ value: team.team_id, label: team.team_alias ? team.team_alias : team.team_id })),
     ],
-    [teams],
+    [teams, t],
   );
 
   const selectedTeam = useMemo(
@@ -245,7 +245,7 @@ const AllModelsTab = ({
     try {
       setDeleteLoading(true);
       await modelDeleteCall(accessToken, deleteModalModelId);
-      toast.success("Model deleted successfully");
+      toast.success(t("deletedToast"));
       queryClient.invalidateQueries({ queryKey: ["models", "list"] });
       refetchModels();
     } catch (error) {
@@ -263,7 +263,7 @@ const AllModelsTab = ({
       try {
         setPausingModelId(modelId);
         await modelPatchUpdateCall(accessToken, { blocked }, modelId);
-        toast.success(blocked ? "Model paused" : "Model resumed");
+        toast.success(blocked ? t("pausedToast") : t("resumedToast"));
         // invalidateQueries already schedules a refetch for active observers
         // on this key — no need to also call refetchModels() (would double-fetch).
         queryClient.invalidateQueries({ queryKey: ["models", "list"] });
@@ -274,7 +274,7 @@ const AllModelsTab = ({
         setPausingModelId(null);
       }
     },
-    [accessToken, queryClient],
+    [accessToken, queryClient, t],
   );
 
   const handleRefresh = useCallback(() => {
@@ -354,28 +354,28 @@ const AllModelsTab = ({
 
       <DeleteResourceModal
         isOpen={!!deleteModalModelId}
-        title="Delete Model"
-        alertMessage="This action cannot be undone."
-        message="Are you sure you want to delete this model?"
-        resourceInformationTitle="Model Information"
+        title={t("deleteTitle")}
+        alertMessage={t("deleteWarning")}
+        message={t("deleteConfirm")}
+        resourceInformationTitle={t("resourceInfoTitle")}
         resourceInformation={
           modelToDelete
             ? [
                 {
-                  label: "Model Name",
-                  value: modelToDelete.model_name || "Not Set",
+                  label: t("modelNameLabel"),
+                  value: modelToDelete.model_name || t("notSet"),
                 },
                 {
-                  label: "LiteLLM Model Name",
-                  value: modelToDelete.litellm_model_name || "Not Set",
+                  label: t("litellmModelNameLabel"),
+                  value: modelToDelete.litellm_model_name || t("notSet"),
                 },
                 {
-                  label: "Provider",
-                  value: modelToDelete.provider || "Not Set",
+                  label: t("providerLabel"),
+                  value: modelToDelete.provider || t("notSet"),
                 },
                 {
-                  label: "Created By",
-                  value: modelToDelete.model_info?.created_by || "Not Set",
+                  label: t("createdByLabel"),
+                  value: modelToDelete.model_info?.created_by || t("notSet"),
                 },
               ]
             : []

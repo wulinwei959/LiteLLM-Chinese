@@ -481,7 +481,7 @@ describe("AllModelsTab", () => {
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
     await user.click(await screen.findByTestId("model-delete-model-1"));
-    expect(await screen.findByText("Delete Model")).toBeInTheDocument();
+    expect(await screen.findByText("删除模型")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /^删除$/ }));
 
