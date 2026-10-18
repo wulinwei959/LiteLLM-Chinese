@@ -219,7 +219,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
         <div>
           <Button variant="ghost" className="mb-4" onClick={onClose}>
             <ArrowLeft />
-            Back to Vector Stores
+            {t("backToList")}
           </Button>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-semibold">{`${t("idLabel")}${vectorStoreDetails.vector_store_id}`}</h1>
