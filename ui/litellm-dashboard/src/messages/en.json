@@ -11870,7 +11870,8 @@
   "alerting": {
     "storedInDb": "In DB",
     "inConfig": "In Config",
-    "updateSettings": "Update Settings"
+    "updateSettings": "Update Settings",
+    "proxyUpdateWait": "Wait 10s for proxy to update."
   },
   "codeBlock": {
     "copyAria": "Copy code"

@@ -11866,7 +11866,8 @@
   "alerting": {
     "storedInDb": "存于数据库",
     "inConfig": "来自配置",
-    "updateSettings": "更新设置"
+    "updateSettings": "更新设置",
+    "proxyUpdateWait": "请等待 10 秒让代理生效"
   },
   "codeBlock": {
     "copyAria": "复制代码"
