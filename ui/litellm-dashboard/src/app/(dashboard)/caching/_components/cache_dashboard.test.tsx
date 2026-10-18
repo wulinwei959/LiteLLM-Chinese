@@ -60,7 +60,7 @@ const renderDashboard = () =>
   );
 
 const REQUESTS_CHART_TITLE = "缓存命中与 API 请求数";
-const TOKENS_CHART_TITLE = "Cached Completion Tokens vs Generated Completion Tokens";
+const TOKENS_CHART_TITLE = "缓存补全 Token 数对比生成补全 Token 数";
 
 // Anchored on each chart's own title rather than on a global card count, so
 // adding cards elsewhere on the page cannot silently repoint these assertions.
@@ -101,23 +101,23 @@ describe("CacheDashboard cache analytics charts", () => {
     renderDashboard();
 
     expect(await screen.findByText("缓存命中与 API 请求数")).toBeInTheDocument();
-    expect(screen.getByText("Cached Completion Tokens vs Generated Completion Tokens")).toBeInTheDocument();
+    expect(screen.getByText(TOKENS_CHART_TITLE)).toBeInTheDocument();
   });
 
   it("scopes the analytics tab to the response cache, not provider prompt caching", async () => {
     renderDashboard();
 
-    expect(await screen.findByText(/is not shown here/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "response cache" })).toHaveAttribute(
+    expect(await screen.findByText(/不在此显示/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "响应缓存" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/proxy/caching",
     );
-    expect(screen.getByRole("link", { name: "prompt caching" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "提示缓存" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/completion/prompt_caching",
     );
     expect(screen.queryByText("Cached Tokens")).not.toBeInTheDocument();
-    expect(screen.getAllByText("Cached Completion Tokens").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("缓存补全 Token 数").length).toBeGreaterThan(0);
   });
 
   it("renders the requests chart with each category legend-bound to its fill and stacked in order", async () => {
@@ -125,9 +125,9 @@ describe("CacheDashboard cache analytics charts", () => {
     const { requestsCard } = await findChartCards();
 
     expect(legendFillByCategory(requestsCard)).toEqual({
-      "LLM API requests": "var(--color-sky-500, #0ea5e9)",
-      "Cache hit": "var(--color-teal-500, #14b8a6)",
-      "Failed requests": "var(--color-red-500, #ef4444)",
+      "LLM API 请求数": "var(--color-sky-500, #0ea5e9)",
+      "缓存命中": "var(--color-teal-500, #14b8a6)",
+      "失败请求数": "var(--color-red-500, #ef4444)",
     });
     expect(barFills(requestsCard)).toEqual([
       "var(--color-sky-500, #0ea5e9)",
@@ -141,8 +141,8 @@ describe("CacheDashboard cache analytics charts", () => {
     const { tokensCard } = await findChartCards();
 
     expect(legendFillByCategory(tokensCard)).toEqual({
-      "Generated Completion Tokens": "var(--color-sky-500, #0ea5e9)",
-      "Cached Completion Tokens": "var(--color-teal-500, #14b8a6)",
+      "生成补全 Token 数": "var(--color-sky-500, #0ea5e9)",
+      "缓存补全 Token 数": "var(--color-teal-500, #14b8a6)",
     });
     expect(barFills(tokensCard)).toEqual(["var(--color-sky-500, #0ea5e9)", "var(--color-teal-500, #14b8a6)"]);
   });
@@ -198,17 +198,17 @@ describe("CacheDashboard cache analytics charts", () => {
       bar.querySelector("path.recharts-rectangle")?.getAttribute("fill")?.includes("red"),
     );
     expect(redBar).toBeDefined();
-    expect(screen.queryByText(/Failed requests by error code/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/按错误码细分的失败请求/)).not.toBeInTheDocument();
 
     fireEvent.click(redBar!.querySelectorAll("path.recharts-rectangle")[0]);
 
-    const drilldownCard = cardTitled("Failed requests by error code: acompletion");
+    const drilldownCard = cardTitled("按错误码细分的失败请求：acompletion");
     expect(within(drilldownCard).getAllByText("429").length).toBeGreaterThan(0);
     expect(within(drilldownCard).getAllByText("401").length).toBeGreaterThan(0);
     expect(within(drilldownCard).queryByText("500")).not.toBeInTheDocument();
 
     fireEvent.click(within(drilldownCard).getByRole("button", { name: "关闭错误细分" }));
-    expect(screen.queryByText(/Failed requests by error code/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/按错误码细分的失败请求/)).not.toBeInTheDocument();
   });
 
   it("dismisses an open drilldown when refetched data no longer has failures for that call_type", async () => {
@@ -219,7 +219,7 @@ describe("CacheDashboard cache analytics charts", () => {
       bar.querySelector("path.recharts-rectangle")?.getAttribute("fill")?.includes("red"),
     );
     fireEvent.click(redBar!.querySelectorAll("path.recharts-rectangle")[0]);
-    expect(screen.getByText("Failed requests by error code: acompletion")).toBeInTheDocument();
+    expect(screen.getByText("按错误码细分的失败请求：acompletion")).toBeInTheDocument();
 
     useCacheActivity.mockReturnValue({
       data: {
@@ -233,13 +233,13 @@ describe("CacheDashboard cache analytics charts", () => {
     });
     rerender(<CacheDashboard accessToken="sk-test" token="tok" userRole="Admin" userID="u1" premiumUser={false} />);
 
-    expect(screen.queryByText(/Failed requests by error code/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/按错误码细分的失败请求/)).not.toBeInTheDocument();
   });
 
   it("explains the Unknown bucket only when a group has no recorded endpoint", async () => {
     const { rerender } = renderDashboard();
     await screen.findByText(REQUESTS_CHART_TITLE);
-    expect(screen.queryByText(/recorded no endpoint/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/未记录端点/)).not.toBeInTheDocument();
 
     useCacheActivity.mockReturnValue({
       data: {
@@ -261,8 +261,8 @@ describe("CacheDashboard cache analytics charts", () => {
     rerender(<CacheDashboard accessToken="sk-test" token="tok" userRole="Admin" userID="u1" premiumUser={false} />);
 
     expect(
-      within(cardTitled(REQUESTS_CHART_TITLE)).getByText(/Unknown groups spend logs that recorded no endpoint/),
-    ).toHaveTextContent("not necessarily LLM API requests");
+      within(cardTitled(REQUESTS_CHART_TITLE)).getByText(/Unknown 分桶来自未记录端点/),
+    ).toHaveTextContent("不一定是 LLM API 请求数");
   });
 
   it("formats y-axis ticks with compact notation", async () => {
