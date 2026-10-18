@@ -9178,7 +9178,11 @@
     "descriptionOptional": "Description (Optional)",
     "needHelp": "Need Help?",
     "testConnection": "Test Connection",
-    "addTool": "Add Search Tool"  },
+    "addTool": "Add Search Tool",
+    "backToAll": "Back to All Search Tools",
+    "copyNameAria": "Copy search tool name",
+    "copyIdAria": "Copy search tool ID"
+  },
   "vectorStores": {
     "createdSuccess": "Vector Store Created Successfully",
     "vectorStoreId": "Vector Store ID:",

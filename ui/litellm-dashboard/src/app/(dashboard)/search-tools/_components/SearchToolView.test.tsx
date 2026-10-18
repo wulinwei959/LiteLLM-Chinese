@@ -103,7 +103,7 @@ describe("SearchToolView", () => {
     };
 
     render(<SearchToolView {...defaultProps} searchTool={searchToolWithoutApiKey} />);
-    expect(screen.getByText("Not set")).toBeInTheDocument();
+    expect(screen.getByText("未设置")).toBeInTheDocument();
   });
 
   it("should display formatted created_at date", () => {
@@ -119,7 +119,7 @@ describe("SearchToolView", () => {
     };
 
     render(<SearchToolView {...defaultProps} searchTool={searchToolWithoutDate} />);
-    expect(screen.getByText("Unknown")).toBeInTheDocument();
+    expect(screen.getByText("未知")).toBeInTheDocument();
   });
 
   it("should display description when search_tool_info.description is provided", () => {
@@ -142,7 +142,7 @@ describe("SearchToolView", () => {
     const onBack = vi.fn();
     render(<SearchToolView {...defaultProps} onBack={onBack} />);
 
-    const backButton = screen.getByRole("button", { name: /back to all search tools/i });
+    const backButton = screen.getByRole("button", { name: /返回所有搜索工具/ });
     await user.click(backButton);
 
     expect(onBack).toHaveBeenCalledTimes(1);

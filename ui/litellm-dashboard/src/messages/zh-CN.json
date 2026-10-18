@@ -9174,7 +9174,11 @@
     "descriptionOptional": "描述（可选）",
     "needHelp": "需要帮助？",
     "testConnection": "测试连接",
-    "addTool": "添加搜索工具"  },
+    "addTool": "添加搜索工具",
+    "backToAll": "返回所有搜索工具",
+    "copyNameAria": "复制搜索工具名称",
+    "copyIdAria": "复制搜索工具 ID"
+  },
   "vectorStores": {
     "createdSuccess": "向量存储创建成功",
     "vectorStoreId": "向量存储 ID：",
