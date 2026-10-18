@@ -1,10 +1,22 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 253 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10873、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 253 簇减 16）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇 +4 至 10849，247 零新增 10849，248 +6 至 10855，249 +7 至 10862，250 +2 至 10864，251 +5 至 10869，252 +3 至 10872，253 +1 至 10873）。第 93 到 253 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 254 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10875、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 254 簇减 17）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇 +4 至 10849，247 零新增 10849，248 +6 至 10855，249 +7 至 10862，250 +2 至 10864，251 +5 至 10869，252 +3 至 10872，253 +1 至 10873，254 +2 至 10875）。第 93 到 254 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 254 簇更新
+
+继续串行推进。这一簇是 `src/app/(dashboard)/mcp-servers/_components/MCPPermissionManagement.tsx`（MCP 权限管理折叠面板，已挂 `mcpServers`，`permissionMgmt` 子 ns 接得很满，长尾零星漏接）。收口 3 处：可见标签 `Internal network only`、两个静态请求头必填校验文案。新增 2 键（permissionMgmt.headerNameRequired/headerValueRequired），复用 1 处
+
+复用：可见标签 `Internal network only`（222 行）直接接现成 `t("permissionMgmt.internalNetworkOnly")`（"Internal network only"/"仅限内部网络"，EXACT），该键本就用在同排开关的 aria-label（232 行）上——又是"键齐了、可见文案漏接"。两个校验：`requiredRule("Header name is required")`/`("Header value is required")` 在 `StaticHeadersFieldArray` 里（57 行有 `t`），把字面量换成 `requiredRule(t("permissionMgmt.headerNameRequired"))` 等，`requiredRule` 收已译串（同 CredentialModal/OrgSettingsForm 的接法，JSX 内联、无需工厂）；其占位符 `headerNamePlaceholder` 等早已接好，只缺 required 两个键
+
+测试：`MCPPermissionManagement.test.tsx` 走 `renderWithProviders`，但本簇 3 个串全无断言（grep `Internal network only`/`仅限内部网络`/`…必填` 零命中），无消费者测试钉，纯展示串+校验文案接线；`mountedAuthType` 的注释、`authorization`/`public_mcp_servers` 等技术串不动
+
+既有漂移不动：本 .tsx 在 HEAD 即不过 prettier（85 行 ClearableInput 超长、194/210/227/245/270/288 等一堆 `<p>{t(...)}</p>` 三段式块、232 行 aria-label 行——全是前几轮既有的同款写法、我一行没碰），且我改的 `requiredRule(t(...))` 与标签行 prettier 自净，不在 diff 里，故不对 300 行大文件做无关重排。eslint 真路径 0 问题、tsc 真路径本文件零命中
+
+验证：`MCPPermissionManagement.test.tsx`(5) + parity + missingKeys 三文件 14 例全绿、Type Errors 无报错；prettier 本簇改动行净；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子复算 +2 至 10875（en/zh 双侧一致），同值 139 不变；本簇把 1 个"已接入仍有英文"文件清零，长尾减 1
 
 ## 2026-10-18 第 253 簇更新
 
