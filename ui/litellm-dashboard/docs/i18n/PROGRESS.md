@@ -1,10 +1,16 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 234 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10757、中英同值 139。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 234 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 235 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10757、中英同值 139。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 235 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 235 簇更新
+
+继续串行推进，没有派子代理。这一簇主体文件是 `src/app/(dashboard)/users/_components/view_users/user_info_view.tsx`，用户详情视图（早已整片接 `users` 域与 `common.budgetDuration`，`info*` 键体系齐全）。扫描器 3 条命中全部判不翻登记：163/228/269 行 `Error fetching user data:`/`Error adding user to team:`/`Error removing user from team:` 是 console.error 前缀（195/208/210/212/231/233 簇口径，失败的用户可见面走 `toast.fromError(...)`），阅读时顺带确认 187/311/359 行还有三条同款前缀（扫描器因单词数不够没报）。盲区反查本片零命中：828 行 `{option.value}` 渲染的成员角色 `user`/`admin` 是线值比较与透传（224/225 簇 `Admin` 口径）。本文件代码零改动，与 HEAD 逐字节一致，tsc/eslint/prettier/build 门禁对主体文件由构造持平。
+
+这一簇真正的活是补第 232 簇的消费者测试欠账，教训记一下：翻共享组件的字符串必须全库扫消费者测试，第 232 簇当时只定向 grep 了手头点名的几个文件，漏了两处。`user_info_view.test.tsx` 是裸 `render` 加 `vi.mock("next-intl")` 的英文字典 mock，未登记的键查不到会原样回落到键名本身，所以把断言翻成中文反而必红。正确修法是往 mock 字典补 `mcpToolPermissions.selectAll`/`deselectAll`/`loadingTools` 三条命名空间英文键，按钮断言保持英文。`user_edit_view.test.tsx` 走 `renderWithProviders` 钉 zh-CN，两条继承徽章断言直接翻中（`经由访问组：group-a`、`经由工具集：Toolset A`）。全库复扫确认剩余同类命中都不是欠账：`mcp_tool_configuration.test.tsx` 的 `Flat List` 钉的是仍未接线的 `mcp_tool_configuration.tsx`（它自己那簇的活），`guardrail_selection_modal` 的 `Deselect All` 与 `page_utils.test.ts` 的 `No description available` 是别的组件。验证：`view_users` 目录 + `src/lib/i18n` 7 文件 111 例全绿、`user_edit_view.test.tsx` 42 例全绿、Type Errors 无报错；两个测试文件 eslint 路径 stash 前后均 19 警告 0 错误持平，prettier HEAD 与工作树双净。扫描器本片留 3 条登记不翻，files with hits 270 不动；目录零改动，覆盖率三项不动（912/689、10757、139）。下一簇按队列取 `src/app/(dashboard)/usage/_components/components/UsageAIChatPanel.tsx`（3 条）。
 
 ## 2026-10-18 第 234 簇更新
 
