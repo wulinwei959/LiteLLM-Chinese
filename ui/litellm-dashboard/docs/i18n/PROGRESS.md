@@ -1,10 +1,22 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 248 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10855、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 248 簇减 11）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇净增 4 片至 10849，第 247 簇零新增仍 10849，第 248 簇净增 6 片至 10855）。第 93 到 248 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 249 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10862、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 249 簇减 12）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇净增 4 片至 10849，第 247 簇零新增仍 10849，第 248 簇净增 6 片至 10855，第 249 簇净增 7 片至 10862）。第 93 到 249 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 249 簇更新
+
+继续串行推进。这一簇是 `src/components/SCIM.tsx`（SCIM 配置页，已挂 `scim`，长尾漏接）。收口 10 处：zod 校验文案、SCIM 简介句、两步标题（SCIM Tenant URL / Authentication Token）、URL 说明句、`Copy` 两钮、`Create SCIM Token` 钮、令牌警示句、`Create Another Token` 钮。新增 7 键（nameRequired/intro/tenantUrl/tenantUrlHint/authToken/tokenWarning/createAnotherToken），复用 2 处
+
+判据与复用：`Create SCIM Token` 早有一模一样的现成键 `createButton`，组件却写死英文串，直接并到 `t("createButton")`（这正印证扫描器"已接入仍有英文"口径——键齐了但调用点没接）；两个 `Copy` 走现成 `common.copy`，新增 `commonT = useTranslations("common")`。`SCIM`、`LiteLLM`、URL 模板 `<your_proxy_base_url>`、`console.error("Error creating SCIM token:", ...)` 前缀、后端派生的 `error.message` 都是技术标识/动态值/日志前缀，按口径不翻
+
+zod 校验文案同第 246 簇：模块级 `scimTokenSchema` 拿不到 `t`，改工厂 `buildScimTokenSchema(nameRequired)`，组件内 `useZodForm(buildScimTokenSchema(t("nameRequired")), ...)`，类型走 `z.infer<ReturnType<typeof buildScimTokenSchema>>`
+
+测试：`SCIM.test.tsx` 走 `renderWithProviders`（默认钉 zh）。原先按钮写死英文，测试用 `/create scim token/i`（大小写无关的英文正则）点按钮、用 `"Please enter a name for your token"` 钉校验——这些在 zh locale 下能命中，恰因组件没接 t。接好后改中：6 处 `{ name: /create scim token/i }`→`{ name: "创建 SCIM 令牌" }`、1 处 `{ name: /create another token/i }`→`{ name: "创建另一个令牌" }`、校验 `findByText`→`请输入令牌名称`。`fireEvent.change(...{ value: "My SCIM Token" })` 是用户手填的 key_alias 输入值、不是 UI 文案，且随后断言 `keyCreateCall` 收到同名，保留英文；`getByDisplayValue("https://proxy.example.com/scim/v2")` 钉 URL、不动。消费者 `AdminPanel.tsx` 在 `AdminPanel.test.tsx` 里把 `@/components/SCIM` 整个 `vi.mock` 掉，全库 grep 确认无其他测试钉这些串
+
+验证：`SCIM.test.tsx` + parity + missingKeys 三文件 17 例全绿、Type Errors 无报错（失败用例的 stderr 是 `console.error` 打的被 catch 报错、属预期）；eslint 真路径 0 错误 5 警告，全是 HEAD 既有（`proxySettings: any`/`useState<any>`/`catch(error:any)` 三处 any + 测试两处内联对象），本簇零新增；prettier 本组件与测试净；tsc 真路径本文件零命中；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子复算 +7 至 10862（en/zh 双侧一致），同值 139 不变；本簇把 1 个"已接入仍有英文"文件清零，长尾减 1
 
 ## 2026-10-18 第 248 簇更新
 
