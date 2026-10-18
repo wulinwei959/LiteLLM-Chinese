@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 220 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10715、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 220 簇（184、189、190、191、194、198、199、200、203、212、217 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 221 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10720、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 221 簇（184、189、190、191、194、198、199、200、203、212、217 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 221 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `caching/_components/cache_settings/index.tsx`，Redis 缓存设置页（早已接 `caching` 与 `cacheSettings` 双命名空间，`settingsTitle`/`sections.*` 等在用）。扫描器 4 条命中：两条 `Failed to load/save cache settings:` 是 console.error 前缀（195/208/210/212 簇口径，登记不翻），两条 `toast.fromError` 用户可见，接线。盲区复查按上游新功能口径整片扫：按钮四段 JSX 文本 `Testing...`/`Test Connection`/`Saving...`/`Save Changes` 竟是硬编码英文，而 `caching.testConnection`/`testing`/`saveChanges` 与 `common.saving` 现成键早已被姊妹页 `coordination_redis_settings/index.tsx` 消费，本簇直接复用对齐（218/219 簇现成键归并同款）；`Unknown error` 兜底复用现成 `caching.unknownError`；五条 toast 新开嵌套 `caching.toast.loadFailed/testSuccess/testFailed{reason}/saveSuccess/updateFailed`（插在 `unknownError` 与 `coordination` 之间，镜像 `coordination.toast.*` 结构，`testFailed` 与协调页同句式）。`loadCacheSettings` 的 useCallback 依赖加入 `t`（协调页 `[accessToken, t]` 先例，无重启循环账）。console 前缀之外另登记两条不翻：L75 `"embedding"` 是 `model.mode` 后端线值，测试面：`index.integration.test.tsx` 的按钮名两处（`Test Connection` 与 `/save changes/i`）与 `index.test.tsx` 五处 `/save changes/i` 正则改钉 zh（`测试连接`、`保存更改`）；caching 整包 11 文件 108 例全绿、`src/lib/i18n` 三守卫全绿、Type Errors 无报错。门禁：tsc 锚定与 HEAD 对拉同为 2 条（`RedisTypeSelector.test.tsx` 既有账，不在本簇文件），eslint stash 双侧对拉持平（两测试文件各 1 条 `no-large-inline-object-arg` 既有账，本簇组件改动区 0 警告），prettier 三文件 HEAD 干净、接线后被 `toast.fromError` 长行触发折叠已 `--write` 复净，ICU 守卫 5 键 10 侧通过，`next build` 通过，扫描器本文件剩 2 条均为登记不翻的 console 前缀（files with hits 273 不动）。覆盖率：叶子 10715 涨到 10720，同值 138 不动（5 新键两侧全不同值），接入数不动（本文件早已接入）。下一簇按队列取 `api-reference/_components/APIReferenceView.tsx`（4 条）。
 
 ## 2026-10-18 第 220 簇更新
 
