@@ -310,7 +310,7 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({ open, onClose, acce
               />
             </svg>
             <p className="text-sm font-medium">{t("emptyTitle")}</p>
-            <p className="text-xs mt-1">e.g. &quot;Which model costs me the most?&quot;</p>
+            <p className="text-xs mt-1">{t("emptyExample")}</p>
           </div>
         )}
 
