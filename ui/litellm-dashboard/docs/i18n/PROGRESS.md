@@ -1,10 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 245 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10837、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 245 簇减 8。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 245 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 246 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10849、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 246 簇减 9。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇净增 4 片至 10849）。第 93 到 246 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 246 簇更新
+
+继续串行推进。这一簇是 `src/components/model_add/reuse_credentials.tsx`（复用凭据弹窗，已挂 `reuseCredentials`，长尾漏接）。收口 4 处：zod 校验失败文案 `Credential name is required`、存值只读输入框的占位符 `Enter ${key}`、外链 `Need Help?`、`Cancel` 按钮。新增 4 键（nameRequired/enterField/needHelp/cancel），标题与提交按钮沿用现成 `title`/`submit`/`nameLabel`/`githubHelp`
+
+判据与手法：校验文案不是 JSX 串，藏在模块级 `z.object(...).min(1, "字面量")` 里，拿不到 `t`。把该 schema 改成工厂 `buildReuseCredentialsSchema(nameRequired)`，在校验消息位收一个已译好的串参数，组件内 `useZodForm(buildReuseCredentialsSchema(t("nameRequired")), {...})` 现取现用；`ReuseCredentialsFormValues` 类型随之走 `z.infer<ReturnType<typeof buildReuseCredentialsSchema>>`，不丢推断。占位符 `Enter {field}` 做成带 `{field}` 参数的键（两侧都声明 `{field}`，符合"占位符只增不改"），`FieldLabel` 里裸显示的 `{key}`（`api_key` 之类）是后端字段名/技术标识、按口径不翻也不套 t。`Need Help?` 与 `githubHelp` tooltip 是两句不同串，分键不复用
+
+测试：`reuse_credentials.test.tsx` 走 `renderWithProviders`（默认钉 zh），把两处英文断言改中——校验失败 `findByText("Credential name is required")`→`请输入凭据名称`，取消按钮 `getByRole("button", { name: "Cancel" })`→`取消`。`it()` 标题里的 "Cancel is clicked" 是描述文本、非查询串，不动；`getByLabelText("api_key")`/`api_base` 钉的是 `FieldLabel` 里的技术字段名（本就不翻），不动；其余断言（`复用凭据` 提交、`凭据名称：` 标签）早已中文，不改
+
+验证：`reuse_credentials.test.tsx` + parity + missingKeys 三文件 16 例全绿、Type Errors 无报错；eslint 真路径 0 问题；prettier 净；tsc 真路径本文件零命中（全量 tsc 报的是 `returnUrlUtils.test.ts`/`roles.test.ts`/`top_key_view.test.tsx` 等 HEAD 既有错，与本簇无关）；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子复算 +4 至 10849（同法复测 HEAD 为 10845），同值 139 不变
 
 ## 2026-10-18 第 245 簇更新
 
