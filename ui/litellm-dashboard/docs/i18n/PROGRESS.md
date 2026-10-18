@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 208 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10633、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 208 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 209 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10637、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 209 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 209 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `components/organization/org-settings/schema.ts`，组织设置表单与新建组织弹窗共用的 zod 校验模式（纯 `.ts`，模块级常量）。扫描器 4 条命中全是校验消息，用户可见（走 `useZodForm`/`zodResolver` 渲进字段 `role="alert"`），全部接线。纯模块翻译器注入教条第五次落地，且直接命中同仓现成先例 `edit_auto_router/editAutoRouterFormSchema.ts`：整个模式改 `(t) => z.object(...)` 工厂，`OrgFormTranslator = ReturnType<typeof useTranslations<"organizations.orgForm">>`（`import type` 仅取类型），模块级校验器 `wholeNumberOrEmpty`/`amountOrEmpty` 同步改 `(t) =>` 工厂。两个消费方 `OrgSettingsForm.tsx` 与 `OrgCreateDialog.tsx` 各自把现成的 `t = useTranslations("organizations.orgForm")` 穿进 `useZodForm(orgSettingsSchema(t), ...)`，`useZodForm` 只是把模式实例交给 `zodResolver` 供 react-hook-form 每渲染消费，工厂每渲染新建无环、不必上 `useMemo`（先例弹窗上 memo 是因为它按模式条件二选一）。类型导出 `OrgSettingsFormValues` 改 `z.output<ReturnType<typeof orgSettingsSchema>>` 保持形状不变，两份 mapper 只有类型导入零涟漪。四条消息在 `organizations.orgForm` 块尾新开 4 键（`nameRequired`/`nonNegativeWholeNumber`/`nonNegativeNumber`/`metadataInvalidJson`，叶子 10633 涨到 10637），英文原句逐字进目录；队列次一位的姊妹片 `default-user-settings/schema.ts` 有一条精确同值的 "Must be a non-negative number"，下一簇可直接照本簇键名形态对齐。测试面：套件 `DEFAULT_TEST_LOCALE` 钉 zh-CN，`OrgSettingsForm.test.tsx` 一条与 `OrgCreateDialog.test.tsx` 两条 alert 断言（缺组织名、元数据非法 JSON）改钉 zh 目录值，等价于工厂本地化渲染的端到端回归。门禁：org 四文件 36 例加 `messagesParity`/`locales` 15 例全绿、Type Errors 无报错，tsc 锚定零命中，eslint 五文件零告警（新写 schema 无历史账），prettier 五文件 HEAD 干净当前即干净，ICU 守卫 4 键 8 侧通过，`next build` 通过，扫描器本文件归零（files with hits 279 降到 278，队尾浮出 `guardrails/_components/custom_code/CustomCodeModal.tsx` 4 条）。覆盖率接入数不动（本文件是 `.ts`）。下一簇按队列取 `components/cloudzero_export_modal.tsx`（4 条）。
 
 ## 2026-10-18 第 208 簇更新
 
