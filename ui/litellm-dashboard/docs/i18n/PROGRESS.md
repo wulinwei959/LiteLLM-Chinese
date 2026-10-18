@@ -1,10 +1,24 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 256 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10880、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 256 簇减 19）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇 +4 至 10849，247 零新增 10849，248 +6 至 10855，249 +7 至 10862，250 +2 至 10864，251 +5 至 10869，252 +3 至 10872，253 +1 至 10873，254 +2 至 10875，255 +5 至 10880，256 零新增 10880）。第 93 到 256 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247、256 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 257 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10891、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 257 簇减 20）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇 +4 至 10849，247 零新增 10849，248 +6 至 10855，249 +7 至 10862，250 +2 至 10864，251 +5 至 10869，252 +3 至 10872，253 +1 至 10873，254 +2 至 10875，255 +5 至 10880，256 零新增 10880，257 +11 至 10891）。第 93 到 257 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247、256 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 257 簇更新
+
+继续串行推进。这一簇是 `src/app/(dashboard)/agents/_components/AgentKillSwitchDangerZone.tsx`（智能体"紧急停止"危险区，已挂 `agents`，长尾漏接）。新增 11 键（dangerZone/fireKillSwitch/firing/killSwitchFired/killSwitchFireFailed/killSwitchDesc/killSwitchNotConfigured/lastResult/fireKillSwitchForAgent/fireConfirmWarning/typeToConfirm），复用 3 处（cancel、killSwitchWarning、confirmAgentName）。
+
+复用与判据：zh 术语沿用现键 `killSwitch`="紧急停止开关"（非"熔断"），所有新句统一叫"紧急停止开关"。"Danger Zone" heading 经 `aria-labelledby` 成为 region 的可访问名，接线即连带改 region 名。`status_code` 是生成 schema 的可空字段，next-intl 参数类型只收 `string|number|Date`，用 `String(...)` 兜住——原模板串 `` `HTTP ${status_code}` `` 本就是同一隐式转换，不动 `schema.d.ts`
+
+ICU 与拼接：`killSwitchFired`/`lastResult` 带 `{code}`、`fireKillSwitchForAgent` 带 `{agentName}`、`fireConfirmWarning` 带 `{method}{url}`，双侧同名。`typeToConfirm` 用 `t.rich` 把 `<strong>{agentName}</strong>` 映射到红字 `<span>`，保住原"输入名称确认"的强调样式（`strong` 在 parity RICH_TAGS 白名单）。原描述句把 `killSwitchWarning` 夹在硬编码前后拼出来，改写成整句 `killSwitchDesc` 避免前/后缀拼接丢 ICU 语序自由，新句不含旧子串
+
+测试：`AgentKillSwitchDangerZone.test.tsx` 与消费者 `agent_info.test.tsx` 都走 `renderWithProviders`（钉 zh），6 处英文查询随接线翻中——`Fire Kill Switch`→`触发紧急停止开关`（4 正向 + 2 负向）、`Danger Zone` region→`危险区域`、`Not configured`→`尚未配置`、`Last result` 前缀→`上次结果`、`toast.success` 实参→`紧急停止开关已触发（HTTP 202）`、`Cancel`→`取消`。负向断言（非管理员、无 killSwitch）一并翻中，免得"英文永不出"空过。`DELETE https://...`、response_body、`toast.error` 走 error.message 动态分支、`queryByText("Kill Switch")`（早接的 `killSwitch` 键、与本簇无关）、`it()` 标题里的 "Danger Zone"（描述文本、非带引号串）均不动
+
+既有漂移不动：三 .tsx prettier 整文件 `--check` 绿；eslint 0 problem（本簇只接线与翻中查询串，未引入新警告）
+
+验证：parity(8) + missingKeys(1) + `AgentKillSwitchDangerZone`(7) + `agent_info`(9) 四文件 25 例全绿（修 `String()` 后重跑两组件测试 16 例复绿）；tsc 真路径三文件零命中；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数 689 不动；目录叶子复算 +11 至 10891（en/zh 双侧一致），同值 139 不变（新键皆非中英同值）；本簇把 1 个"已接入仍有英文"文件清零，长尾减 1
 
 ## 2026-10-18 第 256 簇更新
 
