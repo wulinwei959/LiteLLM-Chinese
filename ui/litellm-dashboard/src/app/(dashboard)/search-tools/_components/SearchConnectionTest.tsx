@@ -34,12 +34,12 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
         const result = await testSearchToolConnection(accessToken, litellmParams);
         setTestResult(result);
         if (result.status === "success") {
-          toast.success("Connection test successful!");
+          toast.success(t("testSuccessToast"));
         }
       } catch (error) {
         setTestResult({
           status: "error",
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message: error instanceof Error ? error.message : t("unknownErrorOccurred"),
           error_type: "NetworkError",
         });
       } finally {
@@ -51,10 +51,10 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
     };
 
     runTest();
-  }, [accessToken, litellmParams, onTestComplete]);
+  }, [accessToken, litellmParams, onTestComplete, t]);
 
   const getCleanErrorMessage = (errorMsg: string) => {
-    if (!errorMsg) return "Unknown error";
+    if (!errorMsg) return t("unknownError");
 
     const mainError = errorMsg.split("stack trace:")[0].trim();
 
@@ -68,9 +68,9 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
         return titleMatch[1];
       }
       if (finalError.includes("401") || finalError.includes("Authorization Required")) {
-        return "Authentication failed: Invalid API key or credentials";
+        return t("authFailedDetail");
       }
-      return "Authentication error - please check your API key";
+      return t("authErrorGeneric");
     }
 
     if (finalError.length > 200) {
@@ -80,7 +80,7 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
     return finalError;
   };
 
-  const errorMessage = testResult?.message ? getCleanErrorMessage(testResult.message) : "Unknown error";
+  const errorMessage = testResult?.message ? getCleanErrorMessage(testResult.message) : t("unknownError");
 
   if (isLoading) {
     return (
@@ -88,7 +88,7 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
         <div className="flex flex-col items-center justify-center px-5 py-8">
           <UiLoadingSpinner className="mb-4 size-8 text-primary" />
           <p className="text-base text-foreground">
-            Testing connection to {litellmParams.search_provider || "search provider"}...
+            {t("testingConnection", { provider: litellmParams.search_provider || t("searchProviderFallback") })}
           </p>
         </div>
       </div>
@@ -106,15 +106,17 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
           <CheckCircle2 className="size-6 text-success" />
           <div className="ml-3">
             <p className="text-lg font-medium text-success">
-              Connection to {litellmParams.search_provider} successful!
+              {t("connectionSuccess", { provider: litellmParams.search_provider })}
             </p>
             {testResult.test_query && (
               <p className="mt-2 text-sm text-muted-foreground">
-                Test query: <code className="rounded bg-muted px-1.5 py-0.5">{testResult.test_query}</code>
+                {t("testQueryLabel")} <code className="rounded bg-muted px-1.5 py-0.5">{testResult.test_query}</code>
               </p>
             )}
             {testResult.results_count !== undefined && (
-              <p className="text-sm text-muted-foreground">Results retrieved: {testResult.results_count}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("resultsRetrieved", { count: testResult.results_count })}
+              </p>
             )}
           </div>
         </div>
@@ -123,7 +125,7 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
           <div className="mb-5 flex items-center">
             <AlertTriangle className="mr-3 size-6 text-destructive" />
             <p className="text-lg font-medium text-destructive">
-              Connection to {litellmParams.search_provider || "search provider"} failed
+              {t("connectionFailed", { provider: litellmParams.search_provider || t("searchProviderFallback") })}
             </p>
           </div>
 
@@ -134,7 +136,7 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
             {testResult.error_type && (
               <div className="mt-2">
                 <p className="text-[13px] text-muted-foreground">
-                  Error type:{" "}
+                  {t("errorTypeLabel")}{" "}
                   <code className="rounded bg-destructive/10 px-1.5 py-0.5 text-destructive">
                     {testResult.error_type}
                   </code>
@@ -145,7 +147,7 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
             {testResult.message && (
               <div className="mt-3">
                 <Button variant="link" size="sm" className="h-auto p-0" onClick={() => setShowDetails(!showDetails)}>
-                  {showDetails ? "Hide Details" : "Show Details"}
+                  {showDetails ? t("hideDetails") : t("showDetailsLabel")}
                 </Button>
               </div>
             )}
@@ -166,7 +168,7 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
               <li className="mb-1.5">{t("tipKey")}</li>
               <li className="mb-1.5">{t("tipService")}</li>
               <li className="mb-1.5">{t("tipQuota")}</li>
-              <li className="mb-1.5">Review the provider&apos;s documentation for any additional requirements</li>
+              <li className="mb-1.5">{t("tipDocs")}</li>
             </ul>
           </div>
         </div>
@@ -180,7 +182,7 @@ const SearchConnectionTest: React.FC<SearchConnectionTestProps> = ({ litellmPara
           className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
         >
           <Info className="size-4" />
-          View Search Documentation
+          {t("viewSearchDocs")}
         </a>
       </div>
     </div>

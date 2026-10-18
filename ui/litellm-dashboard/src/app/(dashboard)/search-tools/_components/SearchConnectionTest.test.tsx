@@ -41,7 +41,7 @@ describe("SearchConnectionTest", () => {
 
     render(<SearchConnectionTest {...defaultProps} />);
 
-    expect(screen.getByText(/Testing connection to tavily/i)).toBeInTheDocument();
+    expect(screen.getByText(/正在测试到 tavily 的连接/)).toBeInTheDocument();
   });
 
   it("renders a success state with the test query and result count", async () => {
@@ -54,9 +54,9 @@ describe("SearchConnectionTest", () => {
 
     render(<SearchConnectionTest {...defaultProps} />);
 
-    expect(await screen.findByText(/Connection to tavily successful/i)).toBeInTheDocument();
+    expect(await screen.findByText(/到 tavily 的连接成功/)).toBeInTheDocument();
     expect(screen.getByText("hello world")).toBeInTheDocument();
-    expect(screen.getByText(/Results retrieved: 3/i)).toBeInTheDocument();
+    expect(screen.getByText(/取回结果：3 条/)).toBeInTheDocument();
   });
 
   it("fires a success notification and completion callback on a successful test", async () => {
@@ -69,7 +69,7 @@ describe("SearchConnectionTest", () => {
     render(<SearchConnectionTest {...defaultProps} onTestComplete={onTestComplete} />);
 
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith("Connection test successful!");
+      expect(toast.success).toHaveBeenCalledWith("连接测试成功！");
     });
     expect(onTestComplete).toHaveBeenCalledTimes(1);
   });
@@ -83,7 +83,7 @@ describe("SearchConnectionTest", () => {
 
     render(<SearchConnectionTest {...defaultProps} />);
 
-    expect(await screen.findByText(/Connection to tavily failed/i)).toBeInTheDocument();
+    expect(await screen.findByText(/到 tavily 的连接失败/)).toBeInTheDocument();
     expect(screen.getByText("Invalid API key")).toBeInTheDocument();
     expect(screen.getByText("AuthenticationError")).toBeInTheDocument();
     expect(screen.getByText("确认 API 密钥正确且有效")).toBeInTheDocument();
@@ -99,7 +99,7 @@ describe("SearchConnectionTest", () => {
 
     render(<SearchConnectionTest {...defaultProps} />);
 
-    const toggle = await screen.findByRole("button", { name: /show details/i });
+    const toggle = await screen.findByRole("button", { name: /查看详情/ });
     expect(screen.queryByText("完整错误详情")).not.toBeInTheDocument();
 
     await user.click(toggle);
@@ -113,7 +113,7 @@ describe("SearchConnectionTest", () => {
 
     render(<SearchConnectionTest {...defaultProps} />);
 
-    expect(await screen.findByText(/Connection to tavily failed/i)).toBeInTheDocument();
+    expect(await screen.findByText(/到 tavily 的连接失败/)).toBeInTheDocument();
     expect(screen.getByText("network down")).toBeInTheDocument();
   });
 
@@ -125,7 +125,7 @@ describe("SearchConnectionTest", () => {
 
     render(<SearchConnectionTest {...defaultProps} />);
 
-    const docLink = await screen.findByRole("link", { name: /View Search Documentation/i });
+    const docLink = await screen.findByRole("link", { name: /查看搜索文档/ });
     expect(docLink).toHaveAttribute("href", "https://docs.litellm.ai/docs/search");
   });
 });
