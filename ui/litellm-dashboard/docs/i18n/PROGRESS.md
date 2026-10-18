@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 209 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10637、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 209 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 210 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10638、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 210 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 210 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `components/cloudzero_export_modal.tsx`，用量数据导出弹窗（页面骨架早前已接 `cloudZeroExport`）。扫描器 4 条命中两接两判不翻登记：`Error exporting to CloudZero:` 是 console.error 前缀（第 195/208 簇口径），SVG `path d` 属性是矢量绘制的 wire 值。盲区复查四处全部接线，口径整片复用同域姊妹组件 `CloudZeroCreateModal`/`CloudZeroUpdateModal` 的先例：校验模式从模块级常量改 `buildExportSchema(t)` 工厂，翻译器类型用 `@/lib/i18n/translators` 的现成共享别名 `CloudZeroTranslator`，两条消息直接挪用 `cloudZero.apiKeyRequired`/`connectionIdRequired` 零新开键，其中 "Please enter **the** CloudZero connection ID" 归并进姊妹的 "your" 版，三个 CloudZero 弹窗校验文案就此一致（与第 205 簇 `stateLost` 同失效成因归并口径）。已有配置告警的裸 JSX 标签行 "API Key:"/"Connection ID:" 复用 `cloudZero.apiKeyRedacted`/`connectionIdLabel`，密钥行英文显示从 "API Key:" 升级为 "API Key (Redacted):"，与集成详情页脱敏行对齐；Cancel 按钮接 `common.cancel`（姊妹的 `commonT` 用法）。全簇新开仅一键：`cloudZeroExport.csvExportDescription`（CSV 说明整句，插在 `csvExport` 键后，叶子 10637 涨到 10638），zh 值为"将用量数据导出为 CSV 文件，便于在电子表格应用中分析"。测试面：套件钉 zh-CN，integration 三条英文校验断言改钉 zh 目录值，integration 8 例加 usage 消费侧 `UsagePageView` 40 例加 parity/locales 15 例全绿、Type Errors 无报错。覆盖率接入数不动（本文件早已接入）。门禁：tsc 锚定零命中，eslint 本文件 2 warning 与 HEAD 逐规则持平（HEAD 副本多报的 4 条 raw-fetch error 系临时目录路径效应，本文件在白名单），prettier 两代码文件 HEAD 与当前均干净、两份目录 HEAD 即脏不改写，ICU 守卫 5 键 10 侧通过，`next build` 通过，扫描器本文件剩 2 条登记不翻（不入清零口径，files with hits 278 不动，队尾浮出 `cost-tracking/_components/add_margin_form.tsx` 4 条）。下一簇按队列取 `users/_components/default-user-settings/schema.ts`（4 条，本簇已备好同款校验消息的复用口径）。
 
 ## 2026-10-18 第 209 簇更新
 
