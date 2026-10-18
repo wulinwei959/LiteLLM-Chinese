@@ -4839,6 +4839,7 @@
     "topKeys": "热门虚拟密钥",
     "viewAll": "查看全部",
     "exportData": "导出用量数据",
+    "selectRangeToExport": "请先选择日期范围再导出",
     "dateRange": "日期范围",
     "last7Days": "最近 7 天",
     "last30Days": "最近 30 天",
@@ -8646,6 +8647,7 @@
     "keyRequired": "请输入键名",
     "valueRequired": "请输入内容",
     "createdToast": "已创建 {key}",
+    "accessTokenRequired": "需要访问令牌",
     "updatedToast": "已更新 {key}",
     "deletedToast": "已删除 {key}",
     "saveFailedToast": "保存失败：{message}",
@@ -11790,6 +11792,8 @@
     },
     "brandAlt": "LiteLLM 品牌标识",
     "moonTitle": "感谢使用 LiteLLM！",
+    "expandSidebar": "展开侧边栏",
+    "collapseSidebar": "收起侧边栏",
     "docsNavAria": "产品文档"
   },
   "banners": {

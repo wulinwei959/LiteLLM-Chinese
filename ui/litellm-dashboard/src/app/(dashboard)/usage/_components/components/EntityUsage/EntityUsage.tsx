@@ -444,11 +444,12 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
                 .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                 .map((row) => ({
                   ...row,
-                  "Request cost": row.metrics.spend ?? 0,
-                  "Flat cost": row.metrics.flat_cost ?? 0,
+                  request_cost: row.metrics.spend ?? 0,
+                  flat_cost: row.metrics.flat_cost ?? 0,
                 }))}
               index="date"
-              categories={showFlatCost ? ["Request cost", "Flat cost"] : ["metrics.spend"]}
+              categories={showFlatCost ? ["request_cost", "flat_cost"] : ["metrics.spend"]}
+              categoryLabels={{ request_cost: t("requestCost"), flat_cost: t("flatCost") }}
               colors={showFlatCost ? ["cyan", "violet"] : ["cyan"]}
               stack={showFlatCost}
               valueFormatter={valueFormatterSpend}
@@ -760,7 +761,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         onExport={(exportType, format) =>
           request
             ? api.exportRows(request, exportType, format)
-            : Promise.reject(new Error("Select a date range to export"))
+            : Promise.reject(new Error(usageT("selectRangeToExport")))
         }
         showFilters={filterSlot === undefined && entityList !== null}
         filterSlot={filterSlot}

@@ -44,7 +44,7 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
   const { data, isLoading, isFetching } = useQuery({
     queryKey: [MEMORY_LIST_KEY, debouncedSearch, pagination.pageIndex, pagination.pageSize],
     queryFn: () => {
-      if (!accessToken) throw new Error("Access token required");
+      if (!accessToken) throw new Error(t("accessTokenRequired"));
       return fetchMemoryList(accessToken, {
         search: debouncedSearch || undefined,
         page: pagination.pageIndex + 1,
@@ -70,7 +70,7 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
 
   const createMutation = useMutation({
     mutationFn: (args: { key: string; value: string; metadata: unknown }) => {
-      if (!accessToken) throw new Error("Access token required");
+      if (!accessToken) throw new Error(t("accessTokenRequired"));
       return createMemory(accessToken, args);
     },
     onSuccess: (row) => {
@@ -84,7 +84,7 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
 
   const updateMutation = useMutation({
     mutationFn: (args: { key: string; value?: string; metadata: unknown }) => {
-      if (!accessToken) throw new Error("Access token required");
+      if (!accessToken) throw new Error(t("accessTokenRequired"));
       const { key, ...payload } = args;
       return updateMemory(accessToken, key, payload);
     },
@@ -99,7 +99,7 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ accessToken }) => {
 
   const deleteMutation = useMutation({
     mutationFn: (key: string) => {
-      if (!accessToken) throw new Error("Access token required");
+      if (!accessToken) throw new Error(t("accessTokenRequired"));
       return deleteMemory(accessToken, key).then(() => key);
     },
     onSuccess: (key) => {

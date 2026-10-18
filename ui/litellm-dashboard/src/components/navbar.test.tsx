@@ -186,7 +186,7 @@ describe("Navbar", () => {
     const mockToggle = vi.fn();
     renderWithProviders(<Navbar {...defaultProps} onToggleSidebar={mockToggle} />);
 
-    const toggleButton = screen.getByTitle("Collapse sidebar");
+    const toggleButton = screen.getByTitle("收起侧边栏");
     expect(toggleButton).toBeInTheDocument();
   });
 
@@ -195,7 +195,7 @@ describe("Navbar", () => {
     const user = userEvent.setup();
     renderWithProviders(<Navbar {...defaultProps} onToggleSidebar={mockToggle} />);
 
-    const toggleButton = screen.getByTitle("Collapse sidebar");
+    const toggleButton = screen.getByTitle("收起侧边栏");
     await user.click(toggleButton);
 
     expect(mockToggle).toHaveBeenCalledTimes(1);

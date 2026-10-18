@@ -67,7 +67,7 @@ const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={onToggleSidebar}
                 className="mr-2 flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                title={sidebarCollapsed ? t("expandSidebar") : t("collapseSidebar")}
               >
                 <span className="text-lg">
                   {sidebarCollapsed ? (

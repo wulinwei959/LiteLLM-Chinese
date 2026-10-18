@@ -4839,6 +4839,7 @@
     "topKeys": "Top Virtual Keys",
     "viewAll": "View All",
     "exportData": "Export Usage Data",
+    "selectRangeToExport": "Select a date range to export",
     "dateRange": "Date Range",
     "last7Days": "Last 7 days",
     "last30Days": "Last 30 days",
@@ -8650,6 +8651,7 @@
     "keyRequired": "Key is required",
     "valueRequired": "Value is required",
     "createdToast": "Created {key}",
+    "accessTokenRequired": "Access token required",
     "updatedToast": "Updated {key}",
     "deletedToast": "Deleted {key}",
     "saveFailedToast": "Save failed: {message}",
@@ -11794,6 +11796,8 @@
     },
     "brandAlt": "LiteLLM Brand",
     "moonTitle": "Thanks for using LiteLLM!",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
     "docsNavAria": "Product documentation"
   },
   "banners": {
