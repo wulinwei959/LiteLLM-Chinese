@@ -6530,6 +6530,8 @@
       "issuerTooltip": "OAuth 2.0 授权服务器的签发方（RFC 8414）。留空则从上游资源发现端点；填写则固定信任锚点，此后仅以该签发方的文档作为端点来源（RFC 8414 §3.3），覆盖上方的授权/令牌/注册 URL，且在取不到其元数据时直接失败。",
       "authorizationUrl": "授权 URL（可选）",
       "authorizationUrlTooltip": "授权端点的可选覆盖值。",
+      "tokenUrl": "令牌 URL",
+      "tokenStorageTtlPlaceholder": "如 3600",
       "tokenUrlOptional": "令牌 URL（可选）",
       "tokenUrlOptionalTooltip": "令牌端点的可选覆盖值。",
       "registrationUrl": "注册 URL（可选）",

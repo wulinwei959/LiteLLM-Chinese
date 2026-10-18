@@ -6530,6 +6530,8 @@
       "issuerTooltip": "OAuth 2.0 authorization server issuer (RFC 8414). Leave empty to discover endpoints from the upstream resource; set it to pin the trust anchor, which makes this issuer's document the only endpoint source (RFC 8414 §3.3), overriding the Authorization/Token/Registration URLs above and failing closed if its metadata cannot be fetched.",
       "authorizationUrl": "Authorization URL (optional)",
       "authorizationUrlTooltip": "Optional override for the authorization endpoint.",
+      "tokenUrl": "Token URL",
+      "tokenStorageTtlPlaceholder": "e.g. 3600",
       "tokenUrlOptional": "Token URL (optional)",
       "tokenUrlOptionalTooltip": "Optional override for the token endpoint.",
       "registrationUrl": "Registration URL (optional)",

@@ -144,7 +144,7 @@ const OAuthFormFields: React.FC<OAuthFormFieldsProps> = ({
             )}
           </MountedFormField>
           <MountedFormField
-            label={<FieldLabel label="Token URL" tooltip={t("oauth.m2mTokenUrlTooltip")} />}
+            label={<FieldLabel label={t("oauth.tokenUrl")} tooltip={t("oauth.m2mTokenUrlTooltip")} />}
             name="token_url"
             required={!isEditing}
             rules={requiredWhenCreating(t("oauth.m2mTokenUrlRequired"))}
@@ -286,7 +286,12 @@ const OAuthFormFields: React.FC<OAuthFormFieldsProps> = ({
             name="token_storage_ttl_seconds"
           >
             {(control) => (
-              <Input {...numberControl(control)} min={1} placeholder="e.g. 3600" className="w-full rounded-lg" />
+              <Input
+                {...numberControl(control)}
+                min={1}
+                placeholder={t("oauth.tokenStorageTtlPlaceholder")}
+                className="w-full rounded-lg"
+              />
             )}
           </MountedFormField>
           {oauthFlow && (

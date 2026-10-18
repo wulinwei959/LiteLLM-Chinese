@@ -130,7 +130,7 @@ describe("OAuthFormFields", () => {
         </WithForm>,
       );
       expect(screen.getByText("客户端 ID")).toBeInTheDocument();
-      expect(screen.getByText("Token URL")).toBeInTheDocument();
+      expect(screen.getByText("令牌 URL")).toBeInTheDocument();
     });
   });
 
@@ -152,7 +152,7 @@ describe("OAuthFormFields", () => {
           <OAuthFormFields isM2M={true} />
         </WithForm>,
       );
-      const tokenUrlLabel = screen.getByText("Token URL");
+      const tokenUrlLabel = screen.getByText("令牌 URL");
       const authMethodLabel = screen.getByText(/令牌端点认证方式（可选）|令牌端点认证方法/);
       expect(tokenUrlLabel.compareDocumentPosition(authMethodLabel) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
