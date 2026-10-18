@@ -11137,7 +11137,14 @@
     "saveKeyAria": "保存密钥以供后续使用",
     "requestedAccess": "请求的权限",
     "connectFailed": "连接失败",
-    "requestedAccessTitle": "请求的权限"
+    "requestedAccessTitle": "请求的权限",
+    "connectTitle": "连接{server}",
+    "needsAccess": "LiteLLM 需要访问 {server} 才能完成你的请求。",
+    "continueToAuth": "前往身份验证",
+    "cancel": "取消",
+    "whereFindKey": "在哪里找到我的 API 密钥？",
+    "connectAuthorize": "连接并授权",
+    "securityNote": "你的密钥会被安全存储并通过 HTTPS 传输，绝不会与第三方共享。"
   },
   "modelInsights": {
     "loadFailed": "无法加载模型洞察",

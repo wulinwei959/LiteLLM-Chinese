@@ -11141,7 +11141,14 @@
     "saveKeyAria": "Save key for future use",
     "requestedAccess": "Requested access",
     "connectFailed": "Failed to connect",
-    "requestedAccessTitle": "Requested Access"
+    "requestedAccessTitle": "Requested Access",
+    "connectTitle": "Connect {server}",
+    "needsAccess": "LiteLLM needs access to {server} to complete your request.",
+    "continueToAuth": "Continue to Authentication",
+    "cancel": "Cancel",
+    "whereFindKey": "Where do I find my API key?",
+    "connectAuthorize": "Connect & Authorize",
+    "securityNote": "Your key is stored securely and transmitted over HTTPS. It is never shared with third parties."
   },
   "modelInsights": {
     "loadFailed": "Could not load model insights",

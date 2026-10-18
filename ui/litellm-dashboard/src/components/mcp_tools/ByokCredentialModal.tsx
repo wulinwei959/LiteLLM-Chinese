@@ -109,10 +109,10 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
                 </div>
               </div>
 
-              <h2 className="text-2xl font-bold text-foreground mb-2">Connect {serverDisplayName}</h2>
-              <p className="text-muted-foreground mb-6">
-                LiteLLM needs access to {serverDisplayName} to complete your request.
-              </p>
+              <h2 className="text-2xl font-bold text-foreground mb-2">
+                {t("connectTitle", { server: serverDisplayName })}
+              </h2>
+              <p className="text-muted-foreground mb-6">{t("needsAccess", { server: serverDisplayName })}</p>
 
               {/* How it works */}
               <div className="bg-muted rounded-xl p-4 text-left mb-4">
@@ -157,13 +157,13 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
                 onClick={() => setStep(2)}
                 className="w-full bg-gray-900 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-colors"
               >
-                Continue to Authentication <ArrowRight className="size-4" />
+                {t("continueToAuth")} <ArrowRight className="size-4" />
               </button>
               <button
                 onClick={handleClose}
                 className="mt-3 w-full text-muted-foreground hover:text-foreground text-sm py-2"
               >
-                Cancel
+                {t("cancel")}
               </button>
             </div>
           ) : (
@@ -194,7 +194,7 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
                     rel="noopener noreferrer"
                     className="text-info hover:text-info/80 text-sm mt-2 flex items-center gap-1"
                   >
-                    Where do I find my API key? <Link2 className="size-3.5" />
+                    {t("whereFindKey")} <Link2 className="size-3.5" />
                   </a>
                 )}
               </div>
@@ -208,7 +208,7 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
                       fill="currentColor"
                     />
                   </svg>
-                  <span className="text-sm font-medium text-foreground">Save key for future use</span>
+                  <span className="text-sm font-medium text-foreground">{t("saveKeyAria")}</span>
                 </div>
                 <Switch checked={saveKey} onCheckedChange={setSaveKey} aria-label={t("saveKeyAria")} />
               </div>
@@ -216,9 +216,7 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
               {/* Security note */}
               <div className="bg-info/10 rounded-xl p-4 flex items-start gap-3 mb-6">
                 <Lock className="mt-0.5 size-4 shrink-0 text-info" />
-                <p className="text-sm text-info">
-                  Your key is stored securely and transmitted over HTTPS. It is never shared with third parties.
-                </p>
+                <p className="text-sm text-info">{t("securityNote")}</p>
               </div>
 
               <button
@@ -226,7 +224,7 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
                 disabled={loading}
                 className="w-full bg-info hover:bg-info/80 disabled:opacity-60 text-info-foreground font-medium py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-colors"
               >
-                <Lock className="size-4" /> Connect &amp; Authorize
+                <Lock className="size-4" /> {t("connectAuthorize")}
               </button>
             </div>
           )}
