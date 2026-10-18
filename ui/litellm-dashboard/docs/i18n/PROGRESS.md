@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 215 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10642、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 215 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 216 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10643、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 216 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 216 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `guardrails/_components/guardrail_info_helpers.tsx`，护栏提供商常量与格式化 helpers 模块。扫描器 4 条命中（`LiteLLM LLM as a Judge` ×2、`llm_as_a_judge` ×2）与盲区复查浮出的 3 条（`LiteLLM Content Filter` ×2、`Decision Model`）全部判定不翻登记：前者是 `populateGuardrailProviders` 写入的提供商显示名与 `guardrail_provider_map` 的后端线值，会被 API 返回的 `ui_friendly_name` 覆盖，属显示名兼匹配字面量；后两者是 `guardrailLogoMap` 的查表键与 `shouldRender*ConfigSettings` 系函数的后端值比较对象，本地化会断查表与判定。真正的接线点是盲区脚本看不到的模板尾巴：`formatGuardrailMode` 对 tag-based 模式对象拼的 `` ` (tag-based)` `` 是纯展示文案（拼接式、非精确整值，扫描器与反向脚本都漏），六个消费点（`guardrailTableColumns`、`GuardrailsPanel` 删除弹窗、`guardrail_info` 两处、`GuardrailTestPlayground`、policies 侧 `guardrail_selection_modal`）全部把它渲进界面。跨 guardrails 与 policies 两个域，按口径落 `common.tagBased`（en "tag-based"、zh "按标签"，括号留在模板里两侧共用，与目录既有 `自动路由器 (Beta)` 的半角括号先例一致），helpers 改注入现成共享别名 `CommonTranslator`，消费点各补一行 `useTranslations("common")`。`guardrail_table.tsx` 的列依赖对象因加 `commonT` 到 4 属性触发 `local/no-large-inline-object-arg`，照 `MemoryTable.tsx` 先例抽 `columnDeps` 具名中间变量后归静。测试面：helpers 单测 `formatGuardrailMode` 块改用 `((key) => key === "tagBased" ? "tag-based" : key) as unknown as CommonTranslator` 回显翻译器（沿用 `teamAdminEditAccess.test.ts` 的 echo 形态），英文断言零改写；组件测试走真实 zh 目录，`guardrail_table.test.tsx` 与 `guardrail_info.test.tsx` 各一条 `(tag-based)` 断言改钉 `(按标签)`。门禁：guardrails 与 policies 两目录 57 文件 527 例全绿、Type Errors 无报错，`src/lib/i18n` 三守卫套件加三个消费方测试文件另跑 6 文件 37 例全绿，tsc 锚定 1 条与本簇无关（HEAD 复测同位既有 `CustomGuardrail` 断言，行号仅因导入行偏移），eslint 经 stash 双侧对拉逐规则逐文件完全持平（首轮 `.tmp` 副本少报 typed 规则与 `max-lines` 系未入 tsconfig 的路径效应，改 stash 复测排除；`guardrail_info.tsx` 的 `max-lines` 806>800 为 HEAD 既有账），prettier 三文件 HEAD 即脏不改写、新写行与 prettier 输出逐字一致，ICU 守卫 1 键 2 侧通过，`next build` 通过，扫描器本文件剩 4 条登记不翻（files with hits 276 不动）。覆盖率：叶子 10642 涨到 10643，同值 138 不动，接入数不动（消费文件早已接入）。下一簇按队列取 `guardrails/_components/custom_code/CustomCodeModal.tsx`（4 条）。
 
 ## 2026-10-18 第 215 簇更新
 
