@@ -111,7 +111,7 @@ describe("MCPToolsetsTab create/edit toolset form", () => {
     const dialog = await openCreate(user);
     await user.click(dialog.getByRole("button", { name: "创建工具集" }));
 
-    expect(await dialog.findByText("Please enter a toolset name")).toBeInTheDocument();
+    expect(await dialog.findByText("请输入工具集名称")).toBeInTheDocument();
     expect(networking.createMCPToolset).not.toHaveBeenCalled();
   });
 

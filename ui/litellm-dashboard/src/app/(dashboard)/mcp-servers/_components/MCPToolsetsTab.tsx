@@ -33,12 +33,13 @@ interface MCPToolsetsTabProps {
   userRole: string | null;
 }
 
-const toolsetSchema = z.object({
-  toolset_name: z.string().min(1, "Please enter a toolset name"),
-  description: z.string(),
-});
+const buildToolsetSchema = (nameRequired: string) =>
+  z.object({
+    toolset_name: z.string().min(1, nameRequired),
+    description: z.string(),
+  });
 
-type ToolsetFormValues = z.infer<typeof toolsetSchema>;
+type ToolsetFormValues = z.infer<ReturnType<typeof buildToolsetSchema>>;
 
 interface MCPToolListProps {
   serverId: string;
@@ -158,13 +159,13 @@ interface CreateToolsetModalProps {
 }
 
 function CreateToolsetModal({ open, onClose, onSave, accessToken, initialToolset }: CreateToolsetModalProps) {
-  const form = useZodForm(toolsetSchema, {
+  const t = useTranslations("mcpServers");
+  const form = useZodForm(buildToolsetSchema(t("toolsets.nameRequired")), {
     defaultValues: {
       toolset_name: initialToolset?.toolset_name || "",
       description: initialToolset?.description || "",
     },
   });
-  const t = useTranslations("mcpServers");
   const [selectedTools, setSelectedTools] = useState<MCPToolsetTool[]>(initialToolset?.tools || []);
   const [saving, setSaving] = useState(false);
   const [serverSearch, setServerSearch] = useState("");
@@ -240,7 +241,11 @@ function CreateToolsetModal({ open, onClose, onSave, accessToken, initialToolset
               />
               {serverSearch && (
                 <InputGroupAddon align="inline-end">
-                  <InputGroupButton size="icon-xs" aria-label="Clear search" onClick={() => setServerSearch("")}>
+                  <InputGroupButton
+                    size="icon-xs"
+                    aria-label={t("toolsets.clearSearch")}
+                    onClick={() => setServerSearch("")}
+                  >
                     <X />
                   </InputGroupButton>
                 </InputGroupAddon>
@@ -375,7 +380,7 @@ function ToolsetUsageGuide() {
           onClick={copy}
           className="absolute top-2 right-2 px-2 py-1 text-xs rounded-sm border bg-card hover:bg-muted text-muted-foreground hover:text-foreground border-border transition-colors"
         >
-          {copied ? "✓" : "copy"}
+          {copied ? "✓" : t("toolsets.copy")}
         </button>
       </div>
     </div>

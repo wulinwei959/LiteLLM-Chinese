@@ -6719,6 +6719,8 @@
       "editToolset": "编辑工具集",
       "toolsetName": "工具集名称",
       "namePlaceholder": "例如 github-linear-tools",
+      "nameRequired": "请输入工具集名称",
+      "clearSearch": "清空搜索",
       "description": "描述",
       "optionalDescription": "可选的描述",
       "availableTools": "可用工具",
@@ -6734,7 +6736,7 @@
       "emptyTitle": "暂无工具集",
       "emptyBody": "创建一个工具集，为密钥和团队提供精选的 MCP 工具集合。",
       "guideTitle": "工具集的工作方式",
-      "guideBody": "创建工具集后，通过 {link}API Keys → Edit Key → MCP Servers 把它分配给某个密钥，再让你的 MCP 客户端指向该工具集的 URL。客户端只能看到你挑选的工具。",
+      "guideBody": "创建工具集后，通过 <link>API Keys → Edit Key → MCP Servers</link> 把它分配给某个密钥，再让你的 MCP 客户端指向该工具集的 URL。客户端只能看到你挑选的工具。",
       "configSnippetLabel": "Claude Code / Cursor 配置",
       "copy": "复制"
     },

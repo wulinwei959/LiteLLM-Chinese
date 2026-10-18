@@ -6719,6 +6719,8 @@
       "editToolset": "Edit Toolset",
       "toolsetName": "Toolset Name",
       "namePlaceholder": "e.g. github-linear-tools",
+      "nameRequired": "Please enter a toolset name",
+      "clearSearch": "Clear search",
       "description": "Description",
       "optionalDescription": "Optional description",
       "availableTools": "Available Tools",
@@ -6734,7 +6736,7 @@
       "emptyTitle": "No toolsets yet",
       "emptyBody": "Create a toolset to give keys and teams a curated set of MCP tools.",
       "guideTitle": "How toolsets work",
-      "guideBody": "Create a toolset, assign it to a key via {link}API Keys → Edit Key → MCP Servers</link>, then point your MCP client at the toolset URL. The client only sees the tools you picked.",
+      "guideBody": "Create a toolset, assign it to a key via <link>API Keys → Edit Key → MCP Servers</link>, then point your MCP client at the toolset URL. The client only sees the tools you picked.",
       "configSnippetLabel": "Claude Code / Cursor config",
       "copy": "copy"
     },
