@@ -1,10 +1,48 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 284 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 11048、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 271 簇减 33）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇 +4 至 10849，247 零新增 10849，248 +6 至 10855，249 +7 至 10862，250 +2 至 10864，251 +5 至 10869，252 +3 至 10872，253 +1 至 10873，254 +2 至 10875，255 +5 至 10880，256 零新增 10880，257 +11 至 10891，258 +4 至 10895，259 +8 至 10903，260 +2 至 10905，261 +2 至 10907，262 +3 至 10910，263 +2 至 10912，264 +2 至 10914，265 +3 至 10917，266 零新增 10917，267 +4 至 10921，268 零新增 10921，269 +2 至 10923，270 +1 至 10924；第 271 簇以同法复测 HEAD 得 10916（此前正文 10924 系混入早期空串口径的临时账），其后 +6 至 10922，历史绝对数不回改、以复算增量为准），272 +31 至 10953，273 +1 至 10954，274 +6 至 10960，275 +9 至 10969，276 +2 至 10971，277 +8 至 10979，278 +10 至 10989，279 +13 至 11002，280 +6 至 11008，281 +1 至 11009，282 +3 至 11012，283 +20 至 11032，284 +16 至 11048）。第 93 到 271 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247、256、266 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-19，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 285 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 11063、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 271 簇减 33）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇 +4 至 10849，247 零新增 10849，248 +6 至 10855，249 +7 至 10862，250 +2 至 10864，251 +5 至 10869，252 +3 至 10872，253 +1 至 10873，254 +2 至 10875，255 +5 至 10880，256 零新增 10880，257 +11 至 10891，258 +4 至 10895，259 +8 至 10903，260 +2 至 10905，261 +2 至 10907，262 +3 至 10910，263 +2 至 10912，264 +2 至 10914，265 +3 至 10917，266 零新增 10917，267 +4 至 10921，268 零新增 10921，269 +2 至 10923，270 +1 至 10924；第 271 簇以同法复测 HEAD 得 10916（此前正文 10924 系混入早期空串口径的临时账），其后 +6 至 10922，历史绝对数不回改、以复算增量为准），272 +31 至 10953，273 +1 至 10954，274 +6 至 10960，275 +9 至 10969，276 +2 至 10971，277 +8 至 10979，278 +10 至 10989，279 +13 至 11002，280 +6 至 11008，281 +1 至 11009，282 +3 至 11012，283 +20 至 11032，284 +16 至 11048，第 285 簇以同法复测 HEAD 得 11056（较前记 11048 差 8 系数组终端计片口径，不回改历史），+7 至 11063）。第 93 到 271 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247、256、266 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-19 第 285 簇更新
+
+继续串行推进。这一簇是四个文件的属性字面量长尾：`cost_tracking_settings.tsx`（成本追踪设置页）、`WorkflowRuns.tsx`（工作流运行页）、`HealthChecksTable.tsx`（模型健康空态）、`ChatMessageBubble.tsx`（聊天气泡生成图 alt）
+
+复用与判据：cost_tracking 五处全复用现成键（`customPricingLabel`/`spendTrackingLabel` 接回 DocsMenu、`getStartedDiscounts`/`getStartedMargins` 接回两处空态、`addMarginDesc` 接回加成弹窗描述，均为早先预置未接的漏账），`REMOVAL_COPY` 常量只剩 `keyof typeof` 用途、title/noun 英文字段是死代码，删除并把 `kind` 改为字面量联合；WorkflowRuns 的 Type/Status 列头复用 `typeLabel`/`statusLabel`；新增 7 键（`workflows.colRun`/`colCreated`/`messagesSection`/`noMessages`、`models.health.noModelsFound`/`emptyHint`、`playground.chat.generatedImageAlt`）。`"proxy_admin" || "Admin"` 角色比较值是后端枚举不翻。UsefulLinksManagement/MemberTable 的 `variant="Open|Edit|Delete"` 与 `e.key === "Enter"` 一类命中经核查是组件 API 与按键码，扫描误报不接
+
+测试：五文件 59 例 + parity + missingKeys 全绿、消费者侧 HealthCheckComponent 与 workflows page.integration 17 例全绿；翻钉三处（WorkflowRuns 抽屉按钮 `/Messages/i`→`/消息/i`、HealthChecksTable `未找到模型`、ChatMessageBubble 两处 `生成的图片`），cost_tracking 测试钉本就在 zh 侧无需动
+
+验证：tsc 本簇文件零新增命中（WorkflowRuns.test.tsx TS2352 为 HEAD 存量，stash 复测同报）；eslint 只减不增（cost_tracking 5→2、ChatMessageBubble 8→7）；prettier 三文件本簇整文件 --write 归零；`npm run build` 绿。目录叶子以新脚本同法复测 HEAD 得 11056（较旧记 11048 差 8 系数组终端计片口径，不回改历史），复算 +7 至 11063（en/zh 双侧一致），同值 139 不变；本簇把 4 个"已接入仍有英文"文件清零，长尾计减 4 至 14
+
+## 2026-10-19 第 284 簇更新
+
+继续串行推进（补记：本簇当时只更新了头部叶子链，正文条目漏写，现回补）。这一簇是 `SearchConnectionTest.tsx`（搜索工具连接测试页）。新增 16 键（`testSuccessToast`/`unknownErrorOccurred`/`unknownError`/`authFailedDetail`/`authErrorGeneric`/`testingConnection`/`searchProviderFallback`/`connectionSuccess`/`testQueryLabel`/`resultsRetrieved`/`connectionFailed`/`errorTypeLabel`/`hideDetails`/`showDetailsLabel`/`tipDocs`/`viewSearchDocs`）
+
+判据与插曲：`getCleanErrorMessage` 的兜底返回值是用户可见错误文本，接线；ICU 无内联默认值，`search_provider` 缺失走 `t("searchProviderFallback")` 兜底键；`useEffect` 补 `t` 依赖。zh 目录插入时锚点 `"historyCleared"` 在 searchTools 与 vectorStores 两命名空间撞值，块误落 vectorStores，按连续切片重插到 searchTools 并双侧校验归属。目录键值复用核查中 `unknownError` 等值在 caching/modelInfo 等命名空间另有同值键，不跨命名空间借用
+
+验证：SearchConnectionTest 8 例 + parity + missingKeys 全绿，tsc 零命中，eslint 2/2 持平，prettier 绿，build 绿。叶子 +16 至 11048，同值 139 不变，长尾减 1 至 18
+
+## 2026-10-19 第 283 簇更新
+
+继续串行推进（补记同上）。这一簇是缓存分析页两文件：`cache_dashboard.tsx` 与 `ErrorDrilldown.tsx`。新增 20 键（`caching` 命名空间：四页签、`analyticsIntro` 的 t.rich link/docslink、统计卡、图表系列标签、`drilldownTitle`、`errorCodeTooltip`、健康检查 toast 等）
+
+口径：BarChart 用 `categoryLabels` 属性把图表数据键改为稳定 id（api_requests/cache_hits 等），系列名与 `FAILED_REQUESTS_SERIES` 跨组件常量同改 id；`ErrorCodeTooltip` 的 `useTranslations` 提到所有提前返回之前（rules-of-hooks）；下钻点击判定 `item.categoryClicked === "failed_requests"`
+
+验证：cache_dashboard.test 与 ErrorDrilldown.test 全绿（zh 钉全为本地），tsc 零命中，eslint complexity 存量 25 无新增，prettier 两文件 --write 归零，build 绿。叶子 +20 至 11032，同值 139 不变，长尾减 2 至 19
+
+## 2026-10-19 第 282 簇更新
+
+继续串行推进（补记同上）。这一簇是 playground 对比模式与路由预览三个属性字面量：`SessionManagement.tsx`、`CompareUI.tsx`、`route_preview.tsx`。新增 3 键（alt/aria/label 各一）
+
+验证：相关测试全绿，tsc 零命中，eslint 持平，prettier 三文件 HEAD 即脏处不整写、本簇行干净，build 绿。叶子 +3 至 11012，同值 139 不变，长尾减 3 至 21
+
+## 2026-10-19 第 281 簇更新
+
+继续串行推进（补记同上）。这一簇是 `alerting_settings.tsx` 的代理生效提示 toast。补 `useTranslations("alerting")`，新增 1 键 `proxyUpdateWait`
+
+验证：alerting 测试 + parity + missingKeys 全绿，tsc 零命中，eslint 持平，prettier 绿（zh 插入产生的前置逗号风格已归一），build 绿。叶子 +1 至 11009，同值 139 不变，长尾减 1 至 24
 
 ## 2026-10-19 第 280 簇更新
 
