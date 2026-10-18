@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 206 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10622、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 206 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 207 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10633、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 207 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 207 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `components/team/teamModelAccess.ts`，团队详情页模型徽标的计算模块（纯 `.ts`，无 React）。扫描器 4 条命中是四段静态 tooltip，盲区复查另逮到两处徽标标签（`All proxy models`/`No default models`）、`viaGroups` 兜底 `an access group`、`describeGroups` 的两条模板串和 `Granted directly ... and also via ${...}`/`Granted via ${...}` 两条动态拼接，全部一并键名化。翻译器注入教条第四次落地：`TeamBadgeTranslator = ReturnType<typeof useTranslations<"teams">>`（`import type`），`computeTeamModelBadges(models, accessGroupModels, accessGroupDetails, t)` 与 `describeGroups(names, t)` 尾参穿入，唯一消费方 `TeamInfo.tsx` 的调用点直接吃组件里现成的 `t = useTranslations("teams")`。中英两侧在 `teams` 块尾新开 11 键（叶子 10622 涨到 10633）：两条标签、五条静态 tooltip、`tooltipDirectAndGroups`/`tooltipViaGroups` 带 `{groups}`、`groupsOne`/`groupsMany` 带 `{names}`、`oneAccessGroup`；单复数没上 ICU 而复数形态留在代码侧按键选择，因为 `@tests/i18nStub` 的正值插桩渲染不了嵌套 plural，代码本来就拿着 `names.length`，键名化不引入新判定。zh 标签与 `modelSelect.allProxyModels`/`noDefaultModels` 的既有中文（所有代理模型/无默认模型）对齐，`tooltipAllProxyEntry` 里引用的条目名同步。测试迁移零断言改写：`teamModelAccess.test.ts` 注入 `enMessagesFor("teams")` 桩后，六处调用点补 `t`，英文等值断言原样成立（8 例）；`TeamInfo.test.tsx` 钉 "All proxy models" 标签的两行断言改钉 zh 值（测试套件 `DEFAULT_TEST_LOCALE` 是 zh-CN，本地化后页面渲染中文）。目录插入第一次踩出教条补丁：批量键尾行不带逗号（锚是块尾键时留逗号即非法 JSON），脚本按锚行逗号有无分流、末行统一收口。门禁：team 三文件 144 例加 parity 15 例全绿、Type Errors 无报错，tsc 锚定零命中，eslint 四文件 84 warning 与 HEAD 逐规则持平（HEAD 副本多报的 6 error 系临时目录文件名与位置效应），prettier 三文件 HEAD 干净、测试文件本轮改写归零、TeamInfo.tsx HEAD 即脏不改写，ICU 守卫 4 键 8 侧通过，`next build` 通过，扫描器本文件归零（files with hits 280 降到 279），覆盖率接入数不动（本文件是 `.ts`）。下一簇按队列取 `components/team/TeamInfo.tsx`（4 条）。
 
 ## 2026-10-18 第 206 簇更新
 
