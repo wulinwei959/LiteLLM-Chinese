@@ -756,7 +756,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
         removeStoredApp,
       });
       if (built.kind !== "ok") {
-        toast.fromError(editPayloadErrorMessage(built));
+        toast.fromError(editPayloadErrorMessage(built, t));
         return;
       }
       const payload = built.payload;

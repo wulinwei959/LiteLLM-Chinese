@@ -14,6 +14,7 @@ import {
 } from "@/components/mcp_tools/types";
 import { AUTH_TYPES_REQUIRING_CREDENTIALS, reduceStaticHeaders } from "./createServerPayload";
 import { TOOL_DISPLAY_NAME_PATTERN, normalizeEnvVars } from "./utils";
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 
 export type MCPAccessGroupValue = string | { readonly name?: string };
 
@@ -112,20 +113,23 @@ const assertNever = (value: never): never => {
   throw new Error(`unhandled edit payload result: ${JSON.stringify(value)}`);
 };
 
-export const editPayloadErrorMessage = (result: Exclude<BuildEditPayloadResult, { kind: "ok" }>): string => {
+export const editPayloadErrorMessage = (
+  result: Exclude<BuildEditPayloadResult, { kind: "ok" }>,
+  t: McpServersTranslator,
+): string => {
   switch (result.kind) {
     case "invalid_tool_display_name":
-      return `Tool display name "${result.displayName}" is invalid. Only letters, digits, underscores, and hyphens are allowed (no spaces).`;
+      return t("create.invalidToolDisplayName", { name: result.displayName });
     case "stdio_config_missing_command":
-      return "Stdio configuration must include a command";
+      return t("edit.stdioConfigMissingCommand");
     case "invalid_stdio_json":
-      return "Invalid JSON in stdio configuration";
+      return t("create.invalidStdioJson");
     case "invalid_stdio_env_json":
-      return "Invalid JSON in stdio env configuration";
+      return t("edit.invalidStdioEnvJson");
     case "stdio_command_required":
-      return "Stdio transport requires a command";
+      return t("edit.stdioCommandRequired");
     case "invalid_token_validation_json":
-      return "Invalid JSON in Token Validation Rules";
+      return t("create.invalidTokenValidationJson");
     default:
       return assertNever(result);
   }
