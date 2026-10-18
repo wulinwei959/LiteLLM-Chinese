@@ -1394,9 +1394,9 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
           <Card className="block p-6">
             <p className="font-semibold text-foreground">{t("infoVirtualKeys")}</p>
             <div className="mt-2">
-              <p>User Keys: {teamData.keys.filter((key) => key.user_id).length}</p>
-              <p>Service Account Keys: {teamData.keys.filter((key) => !key.user_id).length}</p>
-              <p className="text-muted-foreground">Total: {teamData.keys.length}</p>
+              <p>{t("infoUserKeys", { value: teamData.keys.filter((key) => key.user_id).length })}</p>
+              <p>{t("infoServiceAccountKeys", { value: teamData.keys.filter((key) => !key.user_id).length })}</p>
+              <p className="text-muted-foreground">{t("infoTotal", { value: teamData.keys.length })}</p>
             </div>
           </Card>
 
@@ -1803,7 +1803,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                       schemaLoading={isTeamMetadataSchemaLoading}
                     />
                     <FieldDescription>
-                      Values are saved as text. Enter JSON for typed values, e.g. 3, true, or {'{"region": "us"}'}.
+                      {t("infoMetadataDescription", { example: '{"region": "us"}' })}
                     </FieldDescription>
                   </Field>
 
@@ -2328,17 +2328,25 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               </div>
               <div>
                 <p className="font-medium">
-                  Team Member Settings{" "}
+                  {t("infoTeamMemberSettings")}{" "}
                   <SimpleTooltip content={t("infoTheseAreMemberLimits")}>
                     <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
                 </p>
                 <div>{t("infoMaxBudgetValue", { value: info.team_member_budget_table?.max_budget ?? t("infoNoLimit") })}</div>
-                <div>Budget Duration: {info.team_member_budget_table?.budget_duration || t("infoNoLimit")}</div>
-                <div>Key Duration: {info.metadata?.team_member_key_duration || t("infoNoLimit")}</div>
+                <div>
+                  {t("infoBudgetDurationValue", { value: info.team_member_budget_table?.budget_duration || t("infoNoLimit") })}
+                </div>
+                <div>
+                  {t("infoKeyDurationValue", { value: info.metadata?.team_member_key_duration || t("infoNoLimit") })}
+                </div>
                 <div>{t("infoTpmLimitValue", { value: info.team_member_budget_table?.tpm_limit ?? t("infoNoLimit") })}</div>
                 <div>{t("infoRpmLimitValue", { value: info.team_member_budget_table?.rpm_limit ?? t("infoNoLimit") })}</div>
-                <div>Budget Alert Thresholds: {teamMemberBudgetAlertSummary(info.metadata).join("; ") || t("infoNone")}</div>
+                <div>
+                  {t("infoBudgetAlertThresholdsValue", {
+                    value: teamMemberBudgetAlertSummary(info.metadata).join("; ") || t("infoNone"),
+                  })}
+                </div>
               </div>
               <div>
                 <p className="font-medium">{t("listRouterSettings")}</p>
@@ -2352,22 +2360,24 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                       </div>
                     )}
                     {info.router_settings.num_retries != null && (
-                      <div>Number of Retries: {info.router_settings.num_retries}</div>
+                      <div>{t("infoNumberOfRetries", { value: info.router_settings.num_retries })}</div>
                     )}
                     {info.router_settings.allowed_fails != null && (
-                      <div>Allowed Failures: {info.router_settings.allowed_fails}</div>
+                      <div>{t("infoAllowedFailures", { value: info.router_settings.allowed_fails })}</div>
                     )}
                     {info.router_settings.cooldown_time != null && (
-                      <div>Cooldown Time: {info.router_settings.cooldown_time}s</div>
+                      <div>{t("infoCooldownTime", { value: info.router_settings.cooldown_time })}</div>
                     )}
-                    {info.router_settings.timeout != null && <div>Timeout: {info.router_settings.timeout}s</div>}
+                    {info.router_settings.timeout != null && (
+                      <div>{t("infoTimeout", { value: info.router_settings.timeout })}</div>
+                    )}
                     {info.router_settings.retry_after != null && (
-                      <div>Retry After: {info.router_settings.retry_after}s</div>
+                      <div>{t("infoRetryAfter", { value: info.router_settings.retry_after })}</div>
                     )}
                     {info.router_settings.fallbacks &&
                       Array.isArray(info.router_settings.fallbacks) &&
                       info.router_settings.fallbacks.length > 0 && (
-                        <div>Fallbacks: {info.router_settings.fallbacks.length} configured</div>
+                        <div>{t("infoFallbacks", { count: info.router_settings.fallbacks.length })}</div>
                       )}
                     {info.router_settings.enable_tag_filtering && <div>{t("infoTagFilteringEnabled")}</div>}
                   </div>
@@ -2489,7 +2499,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               name: "max_budget_in_team",
               label: (
                 <span>
-                  Team Member Budget (USD){" "}
+                  {t("infoTeamMemberBudgetUsd")}{" "}
                   <SimpleTooltip content={t("infoTeamMemberBudgetTooltip")}>
                     <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
@@ -2504,7 +2514,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               name: "budget_duration",
               label: (
                 <span>
-                  Budget Reset Period{" "}
+                  {t("infoBudgetResetPeriod")}{" "}
                   <SimpleTooltip content={t("infoBudgetResetPeriodTooltip")}>
                     <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
@@ -2516,7 +2526,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               name: "temp_budget_increase",
               label: (
                 <span>
-                  Temporary Budget Increase (USD){" "}
+                  {t("infoTemporaryBudgetIncreaseUsd")}{" "}
                   <SimpleTooltip content={t("infoTemporaryBudgetIncreaseTooltip")}>
                     <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
@@ -2531,7 +2541,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               name: "temp_budget_expiry",
               label: (
                 <span>
-                  Temporary Budget Expiry (UTC){" "}
+                  {t("infoTemporaryBudgetExpiryUtc")}{" "}
                   <SimpleTooltip content={t("infoTemporaryBudgetExpiryTooltip")}>
                     <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
@@ -2573,7 +2583,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               name: "allowed_models",
               label: (
                 <span>
-                  Allowed Models{" "}
+                  {t("infoAllowedModels")}{" "}
                   <SimpleTooltip content={t("infoAllowedModelsTooltip")}>
                     <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
