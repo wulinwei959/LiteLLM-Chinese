@@ -1,10 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 239 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10786、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238、239 簇减 2。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 239 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 240 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10797、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238、239、240 簇减 3。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 240 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 240 簇更新
+
+继续串行推进。这一簇是 `src/components/GuardrailsMonitor/LogViewer.tsx`（已接入 `guardrailsMonitor.log`，长尾）。收口：护栏动作徽标四类（Blocked/Passed/Flagged/Not run）、筛选按钮四枚（All/Blocked/Flagged/Passed）、`Logs — {name}` 与 `Request Logs` 标题、`Loading…`/`Showing {shown} of {total} entries`/两条空态。共新增 12 个 `guardrailsMonitor.log` 键
+
+判定口径：`actionConfig` 里的 `label` 是纯展示串，比对走的是枚举键 `log.action === activeFilter`（值 `"blocked"` 等），与 `label` 文案无关，所以 label 可放心翻。`actionConfig` 是模块级常量拿不到 `t`，且 WORKFLOW 已禁止给它注入翻译器到模型驱动层——这里不是喂模型，只是渲染层，做法是把 `label` 字段从 `actionConfig` 摘掉，另立 `ACTION_LABEL_KEYS`/`FILTER_LABEL_KEYS` 两份 `as const satisfies` 映射（键取自动作/筛选枚举，值是 `log.*` 键名），渲染处写 `t(ACTION_LABEL_KEYS[log.action])`/`t(FILTER_LABEL_KEYS[f])`。动词译法对齐同命名空间既有 `guardrailsMonitor.chart.blocked="拦截"`/`chart.passed="通过"`，新键取 拦截/通过/标记/未运行/全部
+
+测试：`LogViewer.test.tsx` 走 `renderWithProviders` 钉 zh-CN，仅徽标那条用例（`it("renders a not_run log as a neutral Not run badge...")` 标题不改）里 3 处 `getByText("Not run")`/`queryByText("Passed")`/`queryByText("Blocked")` 改为 `未运行`/`通过`/`拦截`。全库扫 `GuardrailsMonitorView.test.tsx`/`GuardrailDetail.test.tsx` 确认没别的用例钉这些串
+
+验证：`LogViewer.test.tsx` + parity + missingKeys 三文件 12 例全绿、Type Errors 无报错；eslint 真路径 0 错误 2 警告（complexity 28 与 inline-object，均 HEAD 既有、计数持平），temp 拷贝路径冒出的 2 error 是 eslint 按文件名解析的老假象，不在真路径复现；prettier 改动区净；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子涨到 10797，同值 139 不变。下一簇仍按"已接入仍有英文"长尾取轻测试者（`AllModelsTab.tsx` 等），或转按命中数排未接入队列
 
 ## 2026-10-18 第 239 簇更新
 
