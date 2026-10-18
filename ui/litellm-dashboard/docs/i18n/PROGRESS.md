@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 218 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10652、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 218 簇（184、189、190、191、194、198、199、200、203、212、217 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 219 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10655、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 219 簇（184、189、190、191、194、198、199、200、203、212、217 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 219 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `cost-tracking/_components/add_provider_form.tsx`，折扣添加表单（218 簇姊妹片，早已接 `costTracking`，`selectProvider`/`noProviders` 占位符键在用）。扫描器 2 条命中全是 `labelWithHint` 的 tooltip 提示语，用户可见，全部接线；顺带把同一批两个裸标签与底部按钮一起键名化：`Provider` 复用现成 `common.provider`（218 簇同款口径），按钮 `Add Provider Discount` 复用同域现成 `addProviderDiscount`（该键早已被折扣弹窗标题 `cost_tracking_settings.tsx` 消费，本簇把表单底部按钮也对齐同一键，218 簇 `addProviderMargin` 同款归并），其余新开 3 键（`discountProviderHint`/`discountPercentageLabel`/`discountPercentageHint`，插在 `fixedMarginAmountHint` 后）。数字占位符 `5` 与 `%` 前缀是纯格式样例与币种符号，不翻（218 簇口径）。`provider_discount_table.test.tsx` 里 columnheader "Discount Percentage" 断言出自设置页折扣表格的裸表头渲染，那是另一片、不在本轮队列，未触碰。测试面：`add_provider_form.test.tsx` 六处断言改钉 zh（`添加供应商折扣`、`折扣百分比`），`add_provider_form.integration.test.tsx` 一处、`cost_tracking_settings.integration.test.tsx` 三处相应改钉 zh；cost-tracking 与 `src/lib/i18n` 守卫 20 文件 222 例全绿、Type Errors 无报错。门禁：tsc 锚定零命中，eslint stash 双侧对拉持平（`cost_tracking_settings.integration.test.tsx` 的 `no-node-access` 6 条为既有账），prettier 本文件 HEAD 干净、接线后短行未触发重排、当前仍干净，ICU 守卫 3 键 6 侧通过，`next build` 通过，扫描器本文件归零（files with hits 275 降到 274）。覆盖率：叶子 10652 涨到 10655，同值 138 不动，接入数不动（本文件早已接入）。下一簇按队列取 `cost-optimization/_components/ShadowEvalSection.tsx`（4 条）。
 
 ## 2026-10-18 第 218 簇更新
 
