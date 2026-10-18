@@ -129,7 +129,7 @@ describe("ChatMessageBubble", () => {
       />,
     );
 
-    expect(screen.getByAltText("Generated image")).toHaveAttribute("src", "https://example.com/img.png");
+    expect(screen.getByAltText("生成的图片")).toHaveAttribute("src", "https://example.com/img.png");
   });
 
   it("should render AudioRenderer when isAudio is true", () => {
@@ -277,7 +277,7 @@ describe("ChatMessageBubble", () => {
       />,
     );
 
-    const images = screen.getAllByAltText("Generated image");
+    const images = screen.getAllByAltText("生成的图片");
     expect(images.some((img) => img.getAttribute("src") === "https://example.com/generated.png")).toBe(true);
   });
 });

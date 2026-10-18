@@ -453,8 +453,8 @@ const WorkflowRuns: React.FC<WorkflowRunsProps> = ({ accessToken }) => {
       {
         id: "run",
         accessorFn: (row) => `${runTitle(row)} ${row.run_id}`,
-        header: "Run",
-        meta: { title: "Run", skeleton: "twoLine" },
+        header: t("colRun"),
+        meta: { title: t("colRun"), skeleton: "twoLine" },
         cell: ({ row }) => {
           const run = row.original;
           return (
@@ -470,8 +470,8 @@ const WorkflowRuns: React.FC<WorkflowRunsProps> = ({ accessToken }) => {
       },
       {
         accessorKey: "workflow_type",
-        header: "Type",
-        meta: { title: "Type" },
+        header: t("typeLabel"),
+        meta: { title: t("typeLabel") },
         filterFn: "includesString",
         cell: ({ row }) => (
           <span className="font-mono text-xs text-muted-foreground">{row.original.workflow_type}</span>
@@ -480,8 +480,8 @@ const WorkflowRuns: React.FC<WorkflowRunsProps> = ({ accessToken }) => {
       {
         id: "status",
         accessorKey: "status",
-        header: "Status",
-        meta: { title: "Status" },
+        header: t("statusLabel"),
+        meta: { title: t("statusLabel") },
         filterFn: "equalsString",
         cell: ({ row }) => {
           const run = row.original;
@@ -495,12 +495,12 @@ const WorkflowRuns: React.FC<WorkflowRunsProps> = ({ accessToken }) => {
       },
       {
         accessorKey: "created_at",
-        header: "Created",
-        meta: { title: "Created" },
+        header: t("colCreated"),
+        meta: { title: t("colCreated") },
         cell: ({ row }) => <span className="text-xs text-muted-foreground">{timeAgo(row.original.created_at)}</span>,
       },
     ],
-    [],
+    [t],
   );
 
   return (
@@ -508,9 +508,7 @@ const WorkflowRuns: React.FC<WorkflowRunsProps> = ({ accessToken }) => {
       {/* page header */}
       <div className="mb-5">
         <div className="text-lg font-semibold text-foreground">{t("title")}</div>
-        <div className="mt-0.5 text-[13px] text-muted-foreground">
-          {t("subtitle")}
-        </div>
+        <div className="mt-0.5 text-[13px] text-muted-foreground">{t("subtitle")}</div>
       </div>
 
       <DataTable
@@ -589,9 +587,7 @@ const WorkflowRuns: React.FC<WorkflowRunsProps> = ({ accessToken }) => {
           className="overflow-y-auto p-0 data-[side=right]:w-full data-[side=right]:sm:max-w-[680px]"
         >
           <SheetTitle className="sr-only">{t("detailsTitle")}</SheetTitle>
-          <SheetDescription className="sr-only">
-            {t("detailsDesc")}
-          </SheetDescription>
+          <SheetDescription className="sr-only">{t("detailsDesc")}</SheetDescription>
           {!selectedRun ? null : loadingDetail ? (
             <div className="flex justify-center py-20">
               <UiLoadingSpinner className="size-8 text-muted-foreground" />
@@ -622,18 +618,14 @@ const WorkflowRuns: React.FC<WorkflowRunsProps> = ({ accessToken }) => {
               <div className="divide-y overflow-hidden rounded-lg border">
                 <DetailSection
                   title={t("timeline")}
-                  meta={
-                    <>
-                      {t("eventsCount", { count: events.length })}
-                    </>
-                  }
+                  meta={<>{t("eventsCount", { count: events.length })}</>}
                   defaultOpen
                 >
                   <GanttTimeline run={selectedRun} events={events} />
                 </DetailSection>
-                <DetailSection title="Messages" meta={messages.length}>
+                <DetailSection title={t("messagesSection")} meta={messages.length}>
                   {messages.length === 0 ? (
-                    <div className="py-3 font-mono text-xs text-muted-foreground">No messages</div>
+                    <div className="py-3 font-mono text-xs text-muted-foreground">{t("noMessages")}</div>
                   ) : (
                     <div>
                       {messages.map((msg) => (

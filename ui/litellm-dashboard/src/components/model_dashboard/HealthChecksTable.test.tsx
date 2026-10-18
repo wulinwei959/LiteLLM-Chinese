@@ -171,6 +171,6 @@ describe("HealthChecksTable rows", () => {
   it("renders the empty state when the page has no models", () => {
     renderWithProviders(<Harness data={[]} />);
 
-    expect(screen.getByText("No models found")).toBeInTheDocument();
+    expect(screen.getByText("未找到模型")).toBeInTheDocument();
   });
 });

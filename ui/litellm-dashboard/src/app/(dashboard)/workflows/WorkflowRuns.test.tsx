@@ -220,7 +220,7 @@ describe("WorkflowRuns detail drawer", () => {
 
     expect(within(drawer).queryByText("kick off the run")).not.toBeInTheDocument();
 
-    await user.click(within(drawer).getByRole("button", { name: /Messages/i }));
+    await user.click(within(drawer).getByRole("button", { name: /消息/i }));
 
     expect(await within(drawer).findByText("kick off the run")).toBeInTheDocument();
     expect(within(drawer).getByText("[user]")).toBeInTheDocument();

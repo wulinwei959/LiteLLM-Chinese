@@ -68,8 +68,8 @@ function ChatMessageBubble({
             )}
           </div>
           <strong className="text-sm capitalize">
-              {message.role === "assistant" ? t("chatMessageBubble.assistant") : t("chatMessageBubble.user")}
-            </strong>
+            {message.role === "assistant" ? t("chatMessageBubble.assistant") : t("chatMessageBubble.user")}
+          </strong>
           {message.role === "assistant" && message.model && (
             <span className="max-w-48 truncate rounded-sm bg-muted px-2 py-0.5 text-xs font-normal text-muted-foreground sm:max-w-80">
               {message.model}
@@ -121,7 +121,7 @@ function ChatMessageBubble({
           {message.isImage ? (
             <img
               src={typeof message.content === "string" ? message.content : ""}
-              alt="Generated image"
+              alt={t("chat.generatedImageAlt")}
               className="max-w-full rounded-md border border-border shadow-xs"
               style={{ maxHeight: "500px" }}
             />
@@ -179,7 +179,7 @@ function ChatMessageBubble({
                 <div className="mt-3">
                   <img
                     src={message.image.url}
-                    alt="Generated image"
+                    alt={t("chat.generatedImageAlt")}
                     className="max-w-full rounded-md border border-border shadow-xs"
                     style={{ maxHeight: "500px" }}
                   />
