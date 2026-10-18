@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 202 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10621、中英同值 134，同值按 HEAD 重测修正此前 138 的旧口径）。第 93 到 202 簇（184、189、190、191、194、198、199、200 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 203 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10621、中英同值 134，同值按 HEAD 重测修正此前 138 的旧口径）。第 93 到 203 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 203 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `hooks/cloudzero/useCloudZeroSettings.ts`，CloudZero 集成的 react-query 钩子模块（非组件，本文件无钩子可用的翻译器），纯判定簇，零接线、零改动（覆盖率沿用第 202 簇后口径：非测试 `.tsx` 912 个接入 687 个、75.3%，叶子 10621、同值 134）。扫描器 5 条命中逐条判定：`Failed to fetch/update/delete CloudZero settings` 三条与两条 `Access token is required` 全是错误归一化阶梯里的本地兜底（后端 `errorData.error.message/detail/statusText` 取不到时才落到这些串），消费链路查实为整通道原样透传：`CloudZeroCostTracking.tsx` 渲染 `t("loadError") + error.message`（前缀已汉化、消息体透传），三个模态的 `onError` 走 `toast.error(error.message || t("…FailedToast"))`（兜底 toast 已各自键名化），与第 199 簇 A2A 通道同构，整通道按 backend 数据透教条不翻。接线成本另有一档：模块函数在 React 树外拿不到 `useTranslations`，要么把翻译器作参穿进三个公开钩子签名（波及 3 个消费组件与 7 个按英文消息文本做等值断言的测试文件，含 sso/uiSettings/projects 同款 `Access token is required` 断言先例），要么在无 Provider 的 renderHook 测试里引钩子直接崩，超出汉化簇最小改动边界。`cloudZero`/`cloudZeroExport` 命名空间 UI 文案早已齐备，同值的 `updateFailedToast`/`deleteFailedToast` 说的是 integration 不是 settings，精确同值教条下不可挪用。盲区复查：`Bearer ${accessToken}` 头、`application/json`、`GET/PUT/DELETE` 与 query key 全是 wire 值，注释非 UI。本文件扫描器 5 条登记为不翻。下一簇按队列取 `utils/ptuValidation.ts`（4 条）。
 
 ## 2026-10-18 第 202 簇更新
 
