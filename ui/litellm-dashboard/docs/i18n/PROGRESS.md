@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 214 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10641、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 214 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 215 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10642、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 215 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 215 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `mcp-servers/_components/mcp_server_edit.tsx`，MCP 服务器编辑表单（1336 行，早已接 `mcpServers` 93 处）。扫描器 4 条命中两判两接：`Failed to persist MCP edit state`（console.warn）与 `Failed to restore MCP edit state`（console.error）按第 195/208/210/212 簇口径判不翻登记，值得一提的是目录里 `mcpServers.edit.failedToPersistState`/`failedToRestoreState` 两键早被机翻预置好却无人消费，正好印证 console 前缀不入门禁口径；两处 `Failed to load tools` 是 `setToolsError` 的用户可见兜底（渲进工具页签 `externalError`），复用现成键 `edit.failedToLoadTools` 零新开。盲区复查是本簇主战场，脚本改成"字面量精确值命中目录即报"后揪出四处：`label="Alias"`/`label="Description"` 复用同域 `create.alias`/`create.description`（新建表单同款字段标签先例），`placeholder="e.g. 10"` 新开 `create.maxConcurrentPlaceholder`（中英 "e.g. 10"/"例如 10"，沿用 `commandPlaceholder`"例如 npx" 与 `teams.infoPlaceholderEg100` 的格式示例也翻口径），另两处 `placeholder="https://..."` 是纯 URL 样例照第 146 簇口径两侧同值不翻。代码注释与 `rel="noopener noreferrer"`、JSON 样例 `{\n "KEY": "value"\n}` 均不翻。同片浮出候选留给后续：`CreateMCPServer.tsx` 第 825 行同一处 `placeholder="e.g. 10"` 仍是裸值。测试面：`mcp_server_edit.test.tsx` 三处 `getByPlaceholderText("e.g. 10")` 改钉 "例如 10"，本文件 81 例加姊妹 `mcp_server_view.test.tsx` 20 例加 `messagesParity`/`locales`/`missingKeys` 16 例全绿、Type Errors 无报错。门禁：tsc 锚定 11 条与本簇无关（HEAD 复测同为 11 条，全是 `getByPlaceholderText` 传正则的既有账），eslint 非 testing-library 规则计数与 HEAD 副本逐规则持平（any 10、内联大对象 6、复杂度 3、exhaustive-deps 2、incompatible-library 1），real 路径多出的 10 条 no-node-access 是双重上报的路径效应，prettier 两文件 HEAD 即脏不改写，ICU 守卫 4 键 8 侧通过，`next build` 通过，扫描器本文件剩 2 条登记不翻（files with hits 276 不动）。覆盖率接入数不动（本文件早已接入，叶子 10641 涨到 10642）。下一簇按队列取 `guardrails/_components/guardrail_info_helpers.tsx`（4 条）。
 
 ## 2026-10-18 第 214 簇更新
 
