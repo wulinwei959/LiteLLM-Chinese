@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 221 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10720、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 221 簇（184、189、190、191、194、198、199、200、203、212、217 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 222 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10720、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 222 簇（184、189、190、191、194、198、199、200、203、212、217、222 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 222 簇更新
+
+继续串行推进，没有派子代理。这一簇是纯判定簇：`api-reference/_components/APIReferenceView.tsx`，OpenAI 兼容代理 API 参考页（早已接 `apiReference`，`pageTitle`/`blurb`/DocLink 三键全覆盖）。扫描器 4 条命中全部落在三个 Python 示例代码模板串内部的请求内容里（`"content": "this is a test request, write a short poem"`、`query("What did the author do growing up?")`、`SystemMessage`/`HumanMessage` 的 content），与 216/217 簇 `CODE_TEMPLATES` 口径同款：示例代码是用户复制即跑的内容，本地化会教出带中文的 API 示例，全判不翻。盲区复查 1 条同判不翻：64 行 `"role": "user"` 是 OpenAI 消息线值精确撞库（`costOptimization.shadowEval.typeUser` 等值 strip 后同词）。另登记三处一贯口径：三个 tab 标签 `OpenAI Python SDK`/`LlamaIndex`/`Langchain Py` 是产品与框架专名（测试也钉着这三个名字断言 tab 顺序与选中态）、`<your_proxy_base_url>`/`<your-master-key>` 是占位符样例、示例代码里的 `# model to send to the proxy` 等行尾注释随代码整体不翻。代码零改动，工作树与 HEAD 逐字节一致，tsc/eslint/prettier/build 门禁由构造持平（复跑无信息量，仅按第六步单跑本片测试 8 例全绿、Type Errors 无报错）。files with hits 273 不动，覆盖率三项不动（912/689、10720、138）。下一簇按队列取 `agents/_components/agent_card_discovery.tsx`（4 条）。
 
 ## 2026-10-18 第 221 簇更新
 
