@@ -2172,6 +2172,7 @@
     "listBudgetDurationDefault": "默认：{label}（{duration}）",
     "listBudgetDurationNotAvailable": "不适用",
     "listCreateError": "创建团队时出错：{error}",
+    "secretManagerParseFailed": "解析密钥管理设置失败：{error}",
     "listCreatingTeam": "正在创建团队",
     "listDefaultTeamSettings": "默认团队设置",
     "listDeleteConfirmMessage": "你确定要删除此团队、其所有密钥以及为其创建的任何模型吗？此操作无法撤销。",

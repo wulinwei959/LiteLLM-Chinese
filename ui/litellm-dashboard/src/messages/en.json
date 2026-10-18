@@ -2172,6 +2172,7 @@
     "listBudgetDurationDefault": "Default: {label} ({duration})",
     "listBudgetDurationNotAvailable": "n/a",
     "listCreateError": "Error creating the team: {error}",
+    "secretManagerParseFailed": "Failed to parse secret manager settings: {error}",
     "listCreatingTeam": "Creating Team",
     "listDefaultTeamSettings": "Default Team Settings",
     "listDeleteConfirmMessage": "Are you sure you want to delete this team, all its keys, and any models created for it? This action cannot be undone.",

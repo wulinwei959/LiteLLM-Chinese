@@ -447,7 +447,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
               try {
                 formValues.secret_manager_settings = JSON.parse(formValues.secret_manager_settings);
               } catch (e) {
-                throw new Error("Failed to parse secret manager settings: " + e);
+                throw new Error(t("secretManagerParseFailed", { error: String(e) }));
               }
             }
           }
