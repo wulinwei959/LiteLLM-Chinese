@@ -41,8 +41,8 @@ describe("CacheHealthTab", () => {
   it("offers a health check button and no results before one is run", () => {
     renderTab();
 
-    expect(screen.getByRole("button", { name: "Run Health Check" })).toBeInTheDocument();
-    expect(screen.queryByText(/Cache Status:/)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "运行健康检查" })).toBeInTheDocument();
+    expect(screen.queryByText(/缓存状态:/)).not.toBeInTheDocument();
   });
 
   it("runs the health check when the button is clicked", async () => {
@@ -50,7 +50,7 @@ describe("CacheHealthTab", () => {
     const user = userEvent.setup();
     renderTab({ runCachingHealthCheck });
 
-    await user.click(screen.getByRole("button", { name: "Run Health Check" }));
+    await user.click(screen.getByRole("button", { name: "运行健康检查" }));
 
     expect(runCachingHealthCheck).toHaveBeenCalledTimes(1);
   });
@@ -60,17 +60,17 @@ describe("CacheHealthTab", () => {
     const user = userEvent.setup();
     renderTab({ runCachingHealthCheck });
 
-    await user.click(screen.getByRole("button", { name: "Run Health Check" }));
+    await user.click(screen.getByRole("button", { name: "运行健康检查" }));
 
-    const button = await screen.findByRole("button", { name: "Running Health Check..." });
+    const button = await screen.findByRole("button", { name: "健康检查运行中..." });
     expect(button).toBeDisabled();
   });
 
   it("reports a healthy cache with its ping and set-cache results", async () => {
     renderTab({ healthCheckResponse: healthyResponse });
 
-    expect(await screen.findByText("Cache Status: healthy")).toBeInTheDocument();
-    expect(screen.getByText("Cache Details")).toBeInTheDocument();
+    expect(await screen.findByText("缓存状态: healthy")).toBeInTheDocument();
+    expect(screen.getByText("缓存详情")).toBeInTheDocument();
     expect(screen.getByText("Ping 响应")).toBeInTheDocument();
     expect(screen.getByText("Set Cache 响应")).toBeInTheDocument();
     expect(screen.getByText("success")).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe("CacheHealthTab", () => {
   it("shows the Redis detail rows when the cache type is redis", async () => {
     renderTab({ healthCheckResponse: healthyResponse });
 
-    expect(await screen.findByText("Redis Details")).toBeInTheDocument();
+    expect(await screen.findByText("Redis 详情")).toBeInTheDocument();
     expect(screen.getByText("Redis 主机")).toBeInTheDocument();
     expect(screen.getByText("redis.internal")).toBeInTheDocument();
     expect(screen.getByText("Redis 端口")).toBeInTheDocument();
@@ -99,24 +99,24 @@ describe("CacheHealthTab", () => {
       },
     });
 
-    expect(await screen.findByText("Cache Status: healthy")).toBeInTheDocument();
-    expect(screen.queryByText("Redis Details")).not.toBeInTheDocument();
+    expect(await screen.findByText("缓存状态: healthy")).toBeInTheDocument();
+    expect(screen.queryByText("Redis 详情")).not.toBeInTheDocument();
   });
 
   it("surfaces the error message and traceback when the check fails", async () => {
     renderTab({ healthCheckResponse: errorResponse });
 
-    expect(await screen.findByText("Error Details")).toBeInTheDocument();
+    expect(await screen.findByText("错误详情")).toBeInTheDocument();
     expect(screen.getByText("错误信息")).toBeInTheDocument();
     expect(screen.getByText("Connection refused")).toBeInTheDocument();
     expect(screen.getByText("调用栈")).toBeInTheDocument();
-    expect(screen.getByText("Cache Status: unhealthy")).toBeInTheDocument();
+    expect(screen.getByText("缓存状态: unhealthy")).toBeInTheDocument();
   });
 
   it("still shows the cache details section when the check failed", async () => {
     renderTab({ healthCheckResponse: errorResponse });
 
-    expect(await screen.findByText("Cache Details")).toBeInTheDocument();
+    expect(await screen.findByText("缓存详情")).toBeInTheDocument();
   });
 
   it("truncates a long value and expands it to the full value on click", async () => {
@@ -142,7 +142,7 @@ describe("CacheHealthTab", () => {
   it("offers both the summary and raw response views", async () => {
     renderTab({ healthCheckResponse: healthyResponse });
 
-    expect(await screen.findByText("Summary")).toBeInTheDocument();
-    expect(screen.getByText("Raw Response")).toBeInTheDocument();
+    expect(await screen.findByText("摘要")).toBeInTheDocument();
+    expect(screen.getByText("原始响应")).toBeInTheDocument();
   });
 });
