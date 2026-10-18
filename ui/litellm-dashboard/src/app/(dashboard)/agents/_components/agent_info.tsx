@@ -143,7 +143,7 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
       }
     } catch (error) {
       console.error("Error fetching agent info:", error);
-      toast.error("Failed to load agent information");
+      toast.error(t("loadInfoFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -252,12 +252,12 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
         object_permission: buildMcpObjectPermission(values),
         access_group_ids: values.access_group_ids ?? [],
       });
-      toast.success("Agent updated successfully");
+      toast.success(t("updateSuccess"));
       setIsEditing(false);
       fetchAgentInfo();
     } catch (error) {
       console.error("Error updating agent:", error);
-      toast.error("Failed to update agent");
+      toast.error(t("updateFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -317,7 +317,7 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
           refetchAgentKeys();
         }}
         teams={null}
-        backButtonText="Back to Agent"
+        backButtonText={t("backToAgent")}
       />
     );
   }
