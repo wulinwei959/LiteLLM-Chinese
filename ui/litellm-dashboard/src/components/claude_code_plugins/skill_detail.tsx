@@ -71,8 +71,8 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
   ];
 
   const tabs = [
-    { key: "overview", label: "Overview" },
-    { key: "usage", label: "How to Use" },
+    { key: "overview", label: t("tabOverview") },
+    { key: "usage", label: t("tabUsage") },
   ];
 
   return (
@@ -149,7 +149,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
                   skill.enabled ? "bg-success/10 text-success" : "bg-muted text-muted-foreground",
                 )}
               >
-                {skill.enabled ? "Public" : "Draft"}
+                {skill.enabled ? t("statusPublic") : t("statusDraft")}
               </span>
             </div>
 
@@ -199,7 +199,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
                 )}
               >
                 {copiedKey === "install" ? <Check className="size-3" /> : <Copy className="size-3" />}
-                {copiedKey === "install" ? "Copied" : "Copy"}
+                {copiedKey === "install" ? t("copied") : t("copy")}
               </button>
             </div>
             <pre className="m-0 bg-card px-4 py-3.5 font-mono text-sm text-foreground">{installCommand}</pre>
@@ -247,7 +247,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
                 )}
               >
                 {copiedKey === "marketplace-cmd" ? <Check className="size-3" /> : <Copy className="size-3" />}
-                {copiedKey === "marketplace-cmd" ? "Copied" : "Copy"}
+                {copiedKey === "marketplace-cmd" ? t("copied") : t("copy")}
               </button>
             </div>
             <pre className="m-0 bg-card px-4 py-3.5 font-mono text-[13px] text-foreground">
@@ -272,7 +272,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
                 )}
               >
                 {copiedKey === "settings" ? <Check className="size-3" /> : <Copy className="size-3" />}
-                {copiedKey === "settings" ? "Copied" : "Copy"}
+                {copiedKey === "settings" ? t("copied") : t("copy")}
               </button>
             </div>
             <pre className="m-0 bg-card px-4 py-3.5 font-mono text-[13px] text-foreground">{settingsSnippet}</pre>
