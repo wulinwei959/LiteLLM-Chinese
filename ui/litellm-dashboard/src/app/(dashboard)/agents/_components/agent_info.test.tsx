@@ -101,7 +101,7 @@ describe("AgentInfoView settings", () => {
     const tpmLimit = await screen.findByLabelText("TPM 限制");
     fireEvent.change(tpmLimit, { target: { value: "42" } });
 
-    fireEvent.click(screen.getByRole("button", { name: /Save Changes/ }));
+    fireEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => expect(networking.patchAgentCall).toHaveBeenCalledTimes(1));
     const [token, agentId, payload] = vi.mocked(networking.patchAgentCall).mock.calls[0];
@@ -123,7 +123,7 @@ describe("AgentInfoView settings", () => {
     fireEvent.click(screen.getByRole("button", { name: "编辑设置" }));
     expect(await screen.findByLabelText("描述")).toHaveValue("");
     fireEvent.change(screen.getByLabelText("TPM 限制"), { target: { value: "42" } });
-    fireEvent.click(screen.getByRole("button", { name: /Save Changes/ }));
+    fireEvent.click(screen.getByRole("button", { name: /保存更改/ }));
     await waitFor(() => expect(networking.patchAgentCall).toHaveBeenCalledOnce());
     const [, , payload] = vi.mocked(networking.patchAgentCall).mock.calls[0];
     expect(payload.tpm_limit).toBe(42);
@@ -138,7 +138,7 @@ describe("AgentInfoView settings", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Attach ag-1" }));
     expect(screen.getByTestId("selected-access-groups")).toHaveTextContent("ag-1");
 
-    fireEvent.click(screen.getByRole("button", { name: /Save Changes/ }));
+    fireEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => expect(networking.patchAgentCall).toHaveBeenCalledTimes(1));
     const [, , payload] = vi.mocked(networking.patchAgentCall).mock.calls[0];
@@ -154,7 +154,7 @@ describe("AgentInfoView settings", () => {
     expect(await screen.findByTestId("selected-access-groups")).toHaveTextContent("ag-1");
 
     fireEvent.click(screen.getByRole("button", { name: "Detach all access groups" }));
-    fireEvent.click(screen.getByRole("button", { name: /Save Changes/ }));
+    fireEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => expect(networking.patchAgentCall).toHaveBeenCalledTimes(1));
     const [, , payload] = vi.mocked(networking.patchAgentCall).mock.calls[0];
@@ -185,7 +185,7 @@ describe("AgentInfoView settings", () => {
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
     expect(await screen.findByText("访问组")).toBeInTheDocument();
-    expect(screen.getByText("None")).toBeInTheDocument();
+    expect(screen.getByText("无")).toBeInTheDocument();
   });
 
   it("renders the kill switch Danger Zone for admins with the configured webhook", async () => {

@@ -8636,6 +8636,8 @@
     "updateSuccess": "Agent updated successfully",
     "updateFailed": "Failed to update agent",
     "backToAgent": "Back to Agent",
+    "saveChanges": "Save Changes",
+    "editHint": "Click \"Edit Settings\" to modify agent configuration.",
     "panelDesc": "List of A2A-spec agents that are available to be used in your organization. Go to AI Hub, to make agents public.",
     "authQTitle": "How do agents authenticate?",
     "authQBody": "Agents can authenticate with a virtual key or a trusted identity provider using JWT. Configure an identity binding when adding or editing an agent. JWT authentication does not require a virtual key.",

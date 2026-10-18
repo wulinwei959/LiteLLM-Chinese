@@ -83,6 +83,7 @@ const DetailItem: React.FC<{ label: React.ReactNode; children: React.ReactNode }
 const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessToken, isAdmin }) => {
   const [agent, setAgent] = useState<Agent | null>(null);
   const t = useTranslations("agents");
+  const commonT = useTranslations("common");
   const [selectedKey, setSelectedKey] = useState<KeyResponse | null>(null);
   const { data: keysData, isLoading: keysLoading, refetch: refetchAgentKeys } = useKeys(1, 100, { agentID: agentId });
   const agentKeys = keysData?.keys ?? [];
@@ -363,7 +364,7 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
               <DetailItem label={t("version")}>{agent.agent_card_params?.version || "-"}</DetailItem>
               <DetailItem label={t("protocolVersion")}>{agent.agent_card_params?.protocolVersion || "-"}</DetailItem>
               <DetailItem label={t("streaming")}>
-                {agent.agent_card_params?.capabilities?.streaming ? "Yes" : "No"}
+                {agent.agent_card_params?.capabilities?.streaming ? t("yes") : t("no")}
               </DetailItem>
               {agent.agent_card_params?.capabilities?.pushNotifications && (
                 <DetailItem label={t("pushNotifications")}>{t("yes")}</DetailItem>
@@ -394,7 +395,7 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
                     ))}
                   </div>
                 ) : (
-                  "None"
+                  commonT("none")
                 )}
               </DetailItem>
               <DetailItem label={t("createdAt")}>{formatDate(agent.created_at)}</DetailItem>
@@ -605,18 +606,18 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
                               fetchAgentInfo();
                             }}
                           >
-                            Cancel
+                            {t("cancel")}
                           </Button>
                           <Button type="submit" disabled={isSaving} aria-busy={isSaving}>
                             {isSaving && <UiLoadingSpinner className="size-4" />}
-                            Save Changes
+                            {t("saveChanges")}
                           </Button>
                         </div>
                       </form>
                     </FormProvider>
                   </TooltipProvider>
                 ) : (
-                  <p>Click &quot;Edit Settings&quot; to modify agent configuration.</p>
+                  <p>{t("editHint")}</p>
                 )}
               </Card>
             </TabsContent>
