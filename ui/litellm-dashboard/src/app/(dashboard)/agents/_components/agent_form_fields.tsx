@@ -202,7 +202,7 @@ const StaticHeadersFieldArray = () => {
       ))}
       <Button type="button" variant="outline" className="w-full border-dashed" onClick={() => append({})}>
         <Plus />
-        Add Static Header
+        {t("addStaticHeader")}
       </Button>
     </>
   );
@@ -426,14 +426,9 @@ const AgentFormFields: React.FC<AgentFormFieldsProps> = ({ panels, showAgentName
         )}
 
         {shouldShow(AUTH_HEADERS_PANEL_KEY) && (
-          <AgentFormPanel panelKey={AUTH_HEADERS_PANEL_KEY} title="Authentication Headers" panels={panels}>
+          <AgentFormPanel panelKey={AUTH_HEADERS_PANEL_KEY} title={t("panelAuthHeadersTitle")} panels={panels}>
             <Field>
-              <FieldTitle>
-                {labelWithHint(
-                  "Static Headers",
-                  "Headers always sent to the backend agent, regardless of the client request. Admin-configured, static wins on conflict.",
-                )}
-              </FieldTitle>
+              <FieldTitle>{labelWithHint(t("staticHeadersLabel"), t("staticHeadersHint"))}</FieldTitle>
               <div className="flex flex-col gap-2">
                 <StaticHeadersFieldArray />
               </div>
@@ -441,10 +436,7 @@ const AgentFormFields: React.FC<AgentFormFieldsProps> = ({ panels, showAgentName
 
             <AgentFormField
               name="extra_headers"
-              label={labelWithHint(
-                "Forward Client Headers",
-                "Header names to extract from the client's request and forward to the agent. Type a name and press Enter.",
-              )}
+              label={labelWithHint(t("forwardHeadersLabel"), t("forwardHeadersHint"))}
             >
               {({ id, value, onChange }) => (
                 <AgentTagsInput
@@ -459,7 +451,7 @@ const AgentFormFields: React.FC<AgentFormFieldsProps> = ({ panels, showAgentName
         )}
 
         {shouldShow(KILL_SWITCH_PANEL_KEY) && (
-          <AgentFormPanel panelKey={KILL_SWITCH_PANEL_KEY} title="Kill Switch" panels={panels}>
+          <AgentFormPanel panelKey={KILL_SWITCH_PANEL_KEY} title={t("killSwitch")} panels={panels}>
             <KillSwitchFormFields />
           </AgentFormPanel>
         )}

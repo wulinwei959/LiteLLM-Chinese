@@ -198,11 +198,11 @@ describe("AddAgentForm submit payload", () => {
     await user.type(await screen.findByLabelText("Model (Optional)"), "gpt-4o");
     await user.click(screen.getByRole("switch", { name: "Make Public" }));
 
-    await user.click(await panel(/Authentication Headers/));
-    await user.click(await screen.findByRole("button", { name: /Add Static Header/ }));
+    await user.click(await panel(/认证请求头/));
+    await user.click(await screen.findByRole("button", { name: /添加静态请求头/ }));
     await user.type(await screen.findByPlaceholderText("请求头名称（如 Authorization）"), "X-Tenant");
     await user.type(screen.getByPlaceholderText("值（如 Bearer token123）"), "acme");
-    await user.type(screen.getByLabelText("Forward Client Headers"), "x-api-key,");
+    await user.type(screen.getByLabelText("转发客户端请求头"), "x-api-key,");
     await user.click(screen.getByLabelText("智能体名称"));
 
     await goToLastStepAndCreate(user);

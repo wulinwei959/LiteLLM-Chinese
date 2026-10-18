@@ -142,7 +142,7 @@ const openEditor = async (user: ReturnType<typeof setup>) => {
 const patchedPayload = () => vi.mocked(networking.patchAgentCall).mock.calls[0][2] as Record<string, unknown>;
 
 const save = async (user: ReturnType<typeof setup>) => {
-  await user.click(screen.getByRole("button", { name: "Save Changes" }));
+  await user.click(screen.getByRole("button", { name: "保存更改" }));
   await waitFor(() => expect(networking.patchAgentCall).toHaveBeenCalledTimes(1));
 };
 
@@ -255,8 +255,8 @@ describe("AgentInfoView update payload", () => {
     await user.click(screen.getByRole("button", { name: /可选设置/ }));
     await user.click(screen.getByRole("button", { name: /成本配置/ }));
     await user.click(screen.getByRole("button", { name: /LiteLLM 参数/ }));
-    await user.click(screen.getByRole("button", { name: /Authentication Headers/ }));
-    await screen.findByLabelText("Forward Client Headers");
+    await user.click(screen.getByRole("button", { name: /认证请求头/ }));
+    await screen.findByLabelText("转发客户端请求头");
 
     await save(user);
 
@@ -326,7 +326,7 @@ describe("AgentInfoView update payload", () => {
     await openEditor(user);
 
     await user.clear(screen.getByLabelText("智能体名称"));
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     expect(await screen.findByText("请输入唯一的智能体名称")).toBeInTheDocument();
     expect(networking.patchAgentCall).not.toHaveBeenCalled();
@@ -414,7 +414,7 @@ describe("AgentInfoView update payload", () => {
     fireEvent.change(arnField, {
       target: { value: "arn:aws:bedrock-agentcore:eu-central-1:123456789012:runtime" },
     });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     expect(
       await screen.findByText(
@@ -455,7 +455,7 @@ describe("AgentInfoView update payload", () => {
     await openEditor(user);
     expect(networking.getAgentInfo).toHaveBeenCalledTimes(1);
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
     expect(await screen.findByRole("button", { name: "编辑设置" })).toBeInTheDocument();
     expect(networking.getAgentInfo).toHaveBeenCalledTimes(2);

@@ -149,10 +149,10 @@ const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({ agentTy
     </FieldGroup>
 
     <div className="mb-4 rounded-md border border-border px-4">
-      <AgentFormPanel panelKey={AGENT_FORM_CONFIG.cost.key} title={AGENT_FORM_CONFIG.cost.title} panels={panels}>
+      <AgentFormPanel panelKey={AGENT_FORM_CONFIG.cost.key} title={t("costConfigTitle")} panels={panels}>
         <CostConfigFields />
       </AgentFormPanel>
-      <AgentFormPanel panelKey={KILL_SWITCH_PANEL_KEY} title="Kill Switch" panels={panels}>
+      <AgentFormPanel panelKey={KILL_SWITCH_PANEL_KEY} title={t("killSwitch")} panels={panels}>
         <KillSwitchFormFields />
       </AgentFormPanel>
     </div>
