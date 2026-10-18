@@ -79,7 +79,7 @@ describe("ReuseCredentialsModal", () => {
     await user.clear(screen.getByLabelText("凭据名称："));
     await submit(user);
 
-    expect(await screen.findByText("Credential name is required")).toBeInTheDocument();
+    expect(await screen.findByText("请输入凭据名称")).toBeInTheDocument();
     expect(onAddCredential).not.toHaveBeenCalled();
   });
 
@@ -100,7 +100,7 @@ describe("ReuseCredentialsModal", () => {
     const user = userEvent.setup();
     const { onAddCredential, onCancel } = renderModal();
 
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(screen.getByRole("button", { name: "取消" }));
 
     expect(onCancel).toHaveBeenCalledTimes(1);
     expect(onAddCredential).not.toHaveBeenCalled();

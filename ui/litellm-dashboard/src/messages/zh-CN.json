@@ -11228,7 +11228,11 @@
     "nameLabel": "凭据名称：",
     "namePlaceholder": "请为这些凭据输入一个易记的名称",
     "githubHelp": "在 GitHub 上获取帮助",
-    "submit": "复用凭据"
+    "submit": "复用凭据",
+    "nameRequired": "请输入凭据名称",
+    "enterField": "输入 {field}",
+    "needHelp": "需要帮助？",
+    "cancel": "取消"
   },
   "loggingSettingsView": {
     "integrations": "日志集成",

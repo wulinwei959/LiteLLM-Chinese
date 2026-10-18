@@ -11232,7 +11232,11 @@
     "nameLabel": "Credential Name:",
     "namePlaceholder": "Enter a friendly name for these credentials",
     "githubHelp": "Get help on our github",
-    "submit": "Reuse Credentials"
+    "submit": "Reuse Credentials",
+    "nameRequired": "Please enter a credential name",
+    "enterField": "Enter {field}",
+    "needHelp": "Need Help?",
+    "cancel": "Cancel"
   },
   "loggingSettingsView": {
     "integrations": "Logging Integrations",

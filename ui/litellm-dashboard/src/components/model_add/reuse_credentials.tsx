@@ -18,11 +18,12 @@ interface ReuseCredentialsModalProps {
   setIsCredentialModalOpen: (isVisible: boolean) => void;
 }
 
-const reuseCredentialsSchema = z.object({
-  credential_name: z.string().min(1, "Credential name is required"),
-});
+const buildReuseCredentialsSchema = (nameRequired: string) =>
+  z.object({
+    credential_name: z.string().min(1, nameRequired),
+  });
 
-type ReuseCredentialsFormValues = z.infer<typeof reuseCredentialsSchema>;
+type ReuseCredentialsFormValues = z.infer<ReturnType<typeof buildReuseCredentialsSchema>>;
 
 const storedValuesOf = (existingCredential: CredentialItem | null): Record<string, unknown> => {
   const values: unknown = existingCredential?.credential_values;
@@ -39,7 +40,7 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
   const t = useTranslations("reuseCredentials");
   const fieldIdPrefix = React.useId();
   const storedValues = storedValuesOf(existingCredential);
-  const form = useZodForm(reuseCredentialsSchema, {
+  const form = useZodForm(buildReuseCredentialsSchema(t("nameRequired")), {
     defaultValues: { credential_name: existingCredential?.credential_name ?? "" },
   });
 
@@ -73,7 +74,7 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
                   <Input
                     id={`${fieldIdPrefix}-${key}`}
                     value={String(value)}
-                    placeholder={`Enter ${key}`}
+                    placeholder={t("enterField", { field: key })}
                     disabled
                     readOnly
                   />
@@ -88,7 +89,7 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
                         href="https://github.com/BerriAI/litellm/issues"
                         className="text-sm text-primary underline-offset-4 hover:underline"
                       >
-                        Need Help?
+                        {t("needHelp")}
                       </a>
                     }
                   />
@@ -97,7 +98,7 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
 
                 <div className="flex gap-2.5">
                   <Button type="button" variant="outline" onClick={handleCancel}>
-                    Cancel
+                    {t("cancel")}
                   </Button>
                   <Button type="submit">{t("submit")}</Button>
                 </div>
