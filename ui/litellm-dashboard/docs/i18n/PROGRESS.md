@@ -1,10 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 250 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10864、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 250 簇减 13）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇净增 4 片至 10849，第 247 簇零新增仍 10849，第 248 簇净增 6 片至 10855，第 249 簇净增 7 片至 10862，第 250 簇净增 2 片至 10864）。第 93 到 250 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 251 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10869、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 251 簇减 14）。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改；叶子总数改用「对象值以外的所有终端计一片」的即时 node 复算，同法复测 HEAD 得 10845（正文旧记 10837 系更早期口径，差在空串终端的取舍，不再回改历史行，以复算增量为准），第 246 簇 +4 至 10849，第 247 簇零新增仍 10849，第 248 簇 +6 至 10855，第 249 簇 +7 至 10862，第 250 簇 +2 至 10864，第 251 簇 +5 至 10869）。第 93 到 251 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交，247 为纯复用零新键簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 251 簇更新
+
+继续串行推进。这一簇是 `src/components/TeamsPage/TeamsTable.tsx`（团队表筛选抽屉，已挂 `teams` 与 `teams.teamsTable` 两路、`common`，长尾漏接）。收口筛选抽屉 7 处：三个 `DataTableFilterField` 标签、两个 `Input` 占位符、`SearchSelect` 的占位符与 emptyText。新增 5 键（teamsTable 下 filterTeamAlias/selectOrgPlaceholder/noOrganizationsFound/enterTeamAliasPlaceholder/enterTeamIdPlaceholder），复用 2 处
+
+复用：`Organization` 标签直接接现成 `t("listOrganization")`（"Organization"/"组织"，EXACT）、`Team ID` 接 `t("listTeamId")`（"Team ID"/"团队 ID"，EXACT）。`Select an organization…` 虽与 `infoSelectOrganization`（"Select an organization"）近义但带省略号、且属另一上下文，按 sibling 占位符在 `teamsTable.searchPlaceholder`（"Search teams by name or ID…"）同款「… 收尾」约定，单开带省略号键、不硬凑复用。`Team alias` 全 ns 无 EXACT 键，新键
+
+测试耦合（本簇最重要的教训）：先前用 `grep -rn TeamsTable ... | grep -v TeamsPage/TeamsTable` 排消费者，结果把同目录的 `TeamsPage/TeamsTable.test.tsx` 也一起 `-v` 掉了，一度误判"无耦合"。真跑 `tsc` 时它报了本文件外的一条既有 null 错，顺带暴露了这个被漏看的同目录测试。读它发现：它走 `renderWithProviders`（钉 zh）、真渲染 TeamsTable 并 `openFilters()`，用 `findByPlaceholderText(/Enter team alias/)`、`/Enter team ID/` 两条英文正则定位筛选输入框——这正是"测试在 zh locale 下按英文串查 UI"的漏接信号（组件没接键时它才命中英文）。接好后这两条正则必断：改 `/输入团队别名/`、`/输入团队 ID/`（正则不含省略号，命中"输入团队别名…"）。其余断言（筛选钮"筛选"、列头"团队/创建时间"、单元格、动作菜单等）早中文、不动；标签、emptyText 无断言。教训回记：找同目录测试别用会被自身路径误伤的 `grep -v`，改用更精确的负向或直接读目录 `ls`
+
+验证：`TeamsTable.test.tsx`(27) + parity + missingKeys 三文件 36 例全绿、Type Errors 无报错（全量 `tsc` 报的 172 行 `queryByText().closest` 可空错是该测试 HEAD 既有类型债、vitest 类型测未拦、非本簇引入）；eslint 真路径 0 错误 5 警告（一处 `any` + 四处 `.closest` node-access，全既有、本簇 2 行正则改动零新增）；prettier 净；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子复算 +5 至 10869（en/zh 双侧一致），同值 139 不变；本簇把 1 个"已接入仍有英文"文件清零，长尾减 1
 
 ## 2026-10-18 第 250 簇更新
 
