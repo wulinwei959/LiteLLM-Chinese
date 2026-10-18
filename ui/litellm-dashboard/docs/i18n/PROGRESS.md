@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 197 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10612、中英同值 138）。第 93 到 200 簇（184、189、190、191、194、198、199、200 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 201 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10615、中英同值 138）。第 93 到 201 簇（184、189、190、191、194、198、199、200 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 201 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `mcp-servers/_components/editServerPayload.ts`，编辑 MCP 服务器弹窗的纯 payload 构建模块。早前只在 fixtures 层面登记过不碰，本簇整片复判坐实：`editPayloadErrorMessage` 五条校验消息全是用户可见（唯一调用方 `mcp_server_edit.tsx` L759 `toast.fromError`），第 192 簇"纯函数返回值键名化"教条的变体落地：纯模块无法自持钩子，改按 `translators.ts` 的 `McpServersTranslator` 类型参数化翻译器注入（`editPayloadErrorMessage(built, t)`），函数体从返回英文串改为返回 `t(...)` 渲染值。三条与创建流精确同值直接复用：`create.invalidToolDisplayName`（模板串盲区补线，带 name 参数）、`create.invalidStdioJson`、`create.invalidTokenValidationJson`；三条新开插 `mcpServers.edit` 块 `authorizeInAuthSection` 后（`stdioConfigMissingCommand`、`invalidStdioEnvJson`、`stdioCommandRequired`，叶子 10612 涨到 10615）。`assertNever` 的开发态抛出与 `unknown` 兜底名是内部断言非 UI，differential cases/fixtures 早前登记不碰。differential 与 edit 测试零消息文本断言、签名变更无涟漪，159 例全绿 + 2 例预期失败（既有），Type Errors 无报错，tsc 锚定零命中，eslint 双侧持平 PARITY-OK，prettier HEAD 脏 1 行按教条不改写，ICU 守卫 6 键 12 侧通过，`next build` 通过，扫描器本文件归零。下一簇按队列取 `mcp-servers/_components/MCPSubmissionsTab.tsx`（5 条）。
 
 ## 2026-10-18 第 200 簇更新
 
