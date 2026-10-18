@@ -618,8 +618,8 @@ describe("UserEditView", () => {
         />,
       );
 
-      expect(await screen.findByText("Via access group: group-a")).toBeInTheDocument();
-      expect(await screen.findByText("Via toolset: Toolset A")).toBeInTheDocument();
+      expect(await screen.findByText("经由访问组：group-a")).toBeInTheDocument();
+      expect(await screen.findByText("经由工具集：Toolset A")).toBeInTheDocument();
       expect(networking.listMCPTools).toHaveBeenCalledWith("test-token", "srv-group");
       expect(networking.listMCPTools).toHaveBeenCalledWith("test-token", "srv-toolset");
     });

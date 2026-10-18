@@ -5,6 +5,9 @@ import UserInfoView from "./user_info_view";
 import { extractMcpEntitlement } from "@/components/mcp_server_management/mcpEntitlement";
 
 const mockTranslations: Record<string, string> = {
+  "mcpToolPermissions.deselectAll": "Deselect All",
+  "mcpToolPermissions.loadingTools": "Loading tools...",
+  "mcpToolPermissions.selectAll": "Select All",
   accessTokenNotFound: "Access token not found",
   actions: "Actions",
   deleteConfirmMessage: "Are you sure you want to delete this user? This action cannot be undone.",
