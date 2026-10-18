@@ -186,7 +186,7 @@ describe("server-side filtering maps controls to the right query params", () => 
     renderTable();
     openFilters();
 
-    fireEvent.change(await screen.findByPlaceholderText(/Enter team alias/), { target: { value: "acme" } });
+    fireEvent.change(await screen.findByPlaceholderText(/输入团队别名/), { target: { value: "acme" } });
     fireEvent.click(screen.getByTestId("filter-drawer-apply"));
 
     await waitFor(() => {
@@ -198,7 +198,7 @@ describe("server-side filtering maps controls to the right query params", () => 
     renderTable();
     openFilters();
 
-    fireEvent.change(await screen.findByPlaceholderText(/Enter team ID/), { target: { value: "team-xyz" } });
+    fireEvent.change(await screen.findByPlaceholderText(/输入团队 ID/), { target: { value: "team-xyz" } });
     fireEvent.click(screen.getByTestId("filter-drawer-apply"));
 
     await waitFor(() => {

@@ -2737,7 +2737,12 @@
       "loading": "Loading teams...",
       "searchPlaceholder": "Search teams by name or ID…",
       "filters": "Filters",
-      "filtersDesc": "Narrow down your teams"
+      "filtersDesc": "Narrow down your teams",
+      "filterTeamAlias": "Team alias",
+      "selectOrgPlaceholder": "Select an organization…",
+      "noOrganizationsFound": "No organizations found",
+      "enterTeamAliasPlaceholder": "Enter team alias…",
+      "enterTeamIdPlaceholder": "Enter team ID…"
     },
     "listEditTeam": "Edit team",
     "listCopyTeamId": "Copy team ID",

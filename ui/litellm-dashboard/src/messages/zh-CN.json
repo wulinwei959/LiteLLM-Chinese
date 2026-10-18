@@ -2737,7 +2737,12 @@
       "loading": "正在加载团队...",
       "searchPlaceholder": "按名称或 ID 搜索团队…",
       "filters": "筛选",
-      "filtersDesc": "缩小团队范围"
+      "filtersDesc": "缩小团队范围",
+      "filterTeamAlias": "团队别名",
+      "selectOrgPlaceholder": "选择组织…",
+      "noOrganizationsFound": "未找到组织",
+      "enterTeamAliasPlaceholder": "输入团队别名…",
+      "enterTeamIdPlaceholder": "输入团队 ID…"
     },
     "listEditTeam": "编辑团队",
     "listCopyTeamId": "复制团队 ID",
