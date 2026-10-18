@@ -279,7 +279,7 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
             </div>
             <Button onClick={handleSearch} disabled={isLoading || !query.trim()}>
               {isLoading ? <UiLoadingSpinner className="size-4" /> : <Send className="size-4" />}
-              Search
+              {t("search")}
             </Button>
           </div>
         </div>

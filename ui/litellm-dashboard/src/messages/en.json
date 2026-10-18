@@ -9275,6 +9275,7 @@
     "copyIdAria": "Copy search tool ID"
   },
   "vectorStores": {
+    "search": "Search",
     "createdSuccess": "Vector Store Created Successfully",
     "vectorStoreId": "Vector Store ID:",
     "documentsIngested": "Documents Ingested:",
@@ -10905,6 +10906,7 @@
     "blockedForScope": "Blocked for team or key",
     "remove": "Remove",
     "blockForScope": "Block for team or key",
+    "blockFor": "Block for {scope}",
     "scope": "Scope",
     "team": "Team",
     "key": "Key",

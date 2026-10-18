@@ -363,7 +363,7 @@ export function ToolDetail({ toolName, onBack, accessToken }: ToolDetailProps) {
               </div>
             </div>
             <div>
-              <span className="mb-2 block text-sm font-medium">{blockScope === "team" ? "Team" : "Key"}</span>
+              <span className="mb-2 block text-sm font-medium">{blockScope === "team" ? t("team") : t("key")}</span>
               {blockScope === "team" ? (
                 <TeamDropdown value={blockTeamId ?? undefined} onChange={(id) => setBlockTeamId(id || null)} />
               ) : (
@@ -393,7 +393,7 @@ export function ToolDetail({ toolName, onBack, accessToken }: ToolDetailProps) {
               disabled={overrideSaving || (blockScope === "team" ? !blockTeamId : !blockKey?.token)}
               onClick={handleAddOverride}
             >
-              Block for {blockScope}
+              {t("blockFor", { scope: blockScope === "team" ? t("team") : t("key") })}
             </Button>
           </div>
         </section>

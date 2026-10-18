@@ -36,7 +36,7 @@ const EMPTY_STATE = "在下方输入搜索查询以测试向量存储";
 const renderTester = () => render(<VectorStoreTester vectorStoreId="vs_123" accessToken="sk-test" />);
 
 const queryInput = () => screen.getByPlaceholderText(/输入搜索查询/i);
-const searchButton = () => screen.getByRole("button", { name: /search/i });
+const searchButton = () => screen.getByRole("button", { name: /搜索/ });
 
 describe("VectorStoreTester", () => {
   beforeEach(() => {

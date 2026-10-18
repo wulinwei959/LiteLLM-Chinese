@@ -9271,6 +9271,7 @@
     "copyIdAria": "复制搜索工具 ID"
   },
   "vectorStores": {
+    "search": "搜索",
     "createdSuccess": "向量存储创建成功",
     "vectorStoreId": "向量存储 ID：",
     "documentsIngested": "已摄入文档数：",
@@ -10901,6 +10902,7 @@
     "blockedForScope": "已为团队或密钥阻止",
     "remove": "移除",
     "blockForScope": "为团队或密钥阻止",
+    "blockFor": "为{scope}阻止",
     "scope": "作用域",
     "team": "团队",
     "key": "密钥",
