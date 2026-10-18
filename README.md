@@ -42,28 +42,29 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 
 基于 [BerriAI/litellm](https://github.com/BerriAI/litellm) 的 `ui/litellm-dashboard` 展开
 
-## 当前状态 (2026-10-13)
+## 当前状态 (2026-10-18)
 
 | 项目 | 状态 |
 |---|---|
-| **分支** | `main` (已同步上游 v1.105.0) |
-| **汉化完成度** | 核心管理页面完成，批次 24 (共享组件长尾) 进行中 |
-| **测试** | 11308 用例，11307 通过 (99.99%)，1 失败 (上游既有缺陷 `mcp_server_edit`) |
-| **类型检查** | 非测试文件 0 错误，`npm run build` 绿色 |
-| **i18n 守卫** | 3 条全部通过 (16 用例) |
-| **Lint** | 36 个预存错误 (代码库原有，非新增) |
-| **Docker 构建** | ✅ 修复完成 (`"use client"` 指令位置) |
+| **分支** | `main` |
+| **汉化完成度** | 批次 0-14 (核心管理页) 完成，批次 24 (共享组件长尾) 按簇推进到第 237 簇。非测试 `.tsx` 912 个中接入翻译 689 个 (75.5%)，扫描器仍标记 269 个含用户可见英文且未接入 |
+| **目录规模** | 中英消息各 10764 个叶子，键树完全对齐 (parity 守卫 0 缺失)，中英同值 139 个 (多为 URL、模型名等格式示例，非漏翻) |
+| **测试** | 最新全量 (第 85 簇四片) 886 文件 11583 例，1 失败 + 9 例预期失败；逐簇只跑定向文件，全绿 |
+| **类型检查** | 非测试文件 0 错误，`npm run build` 绿色；测试文件有 904 条存量类型债 (vitest 全局类型缺失等)，不阻塞构建 |
+| **i18n 守卫** | 3 条全部通过 (`locales.test.ts` 7 + `messagesParity.test.ts` 8 + `missingKeys.test.ts` 1) |
+
+进度、逐簇账与口径以 [`ui/litellm-dashboard/docs/i18n/PROGRESS.md`](ui/litellm-dashboard/docs/i18n/PROGRESS.md) 为准；实施流程见同目录 `WORKFLOW.md`
 
 ### 已修复的关键问题
 
 1. **Docker 构建阻断**：`ModelsTableColumns.tsx` 的 `"use client"` 指令位置错误 → 已修复并合并至 `main`
-2. **构建时类型错误**：`dd32399` 遗留的 22 处非测试文件类型错误 → 全部修复，非测试文件清零
+2. **构建时类型错误**：`dd32399` 遗留的非测试文件类型错误 → 全部清零，`npm run build` 恢复绿色
 3. **缺 Provider 测试失败**：223 例 → 全部修复
 4. **缺键**：47 条真实缺失 (被 `missingKeys` 守卫拦截) → 全部补齐
 5. **断言过时**：第六类失败 (断言停在英文) → 在观测范围内归零
+6. **`mcp_server_edit` OAuth 恢复取值失败**：根因是测试占位符正则写错，非组件缺陷 → 已在 `f3b21f32` 修复
 
 ### 剩余工作
 
-- **批次 24 共享组件长尾**：`components/add_model` (43 文件)、`components/Settings` (27 文件)、`components/view_logs` (22 文件)、`components/chat` (10 文件)、`components/AIHub` (9 文件) 等含用户可见英文且未接入翻译的文件
-- **技术债**：`mcp_server_edit.test.tsx` 1 例稳定失败 (OAuth 恢复取值失败，与翻译无关)，`AutoRoutersPanel` 2 例、`AccessGroupBudgetsPanel` 2 例 (既有问题)
-- **测试文件类型债**：904 条错误全部在测试文件中 (vitest 全局类型缺失等)，不阻塞构建
+- **批次 24 长尾按簇推进**：`components/add_model`、`components/view_logs` 等此前最密的目录已逐簇文案清零；剩余是 `usage`、`EntityUsage` 等仍含硬编码英文 (列头、tooltip、告警、动态拼装串) 的组件，按 `files with hits` 队列逐文件收
+- **永久挂在上游名下的失败**：`cost_tracking_settings.test.tsx` 7 例 (与导入快照逐行相同的既有失败) 与 `LensSetup.integration.test.tsx` 的 `/2026-09-30/` 日期断言 (任何 locale 下 `toLocaleString` 都渲染英文月名)，已从汉化账摘出，不再重复排查
