@@ -67,15 +67,15 @@ describe("AgentCardDiscovery", () => {
     await vi.advanceTimersByTimeAsync(500);
 
     await waitFor(() => expect(mockDiscover).toHaveBeenCalled());
-    expect(await screen.findByRole("button", { name: /re-discover/i })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "重新发现" })).toBeInTheDocument();
   });
 
   it("shows an error when re-discover is clicked without a URL", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     renderWithProviders(<AgentCardDiscovery accessToken="tok" onApply={vi.fn()} />);
 
-    await user.click(screen.getByRole("button", { name: /discover/i }));
-    expect(await screen.findByText(/Enter the agent's base URL first/i)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "发现" }));
+    expect(await screen.findByText("请先输入智能体的基础 URL")).toBeInTheDocument();
     expect(mockDiscover).not.toHaveBeenCalled();
   });
 
@@ -93,6 +93,7 @@ describe("AgentCardDiscovery", () => {
     await vi.advanceTimersByTimeAsync(500);
 
     expect(await screen.findByText("已加载上游卡片")).toBeInTheDocument();
+    expect(screen.getByText("已选 2 / 2")).toBeInTheDocument();
     expect(screen.getByText("Search")).toBeInTheDocument();
     expect(screen.getByText("Summarize")).toBeInTheDocument();
     expect(screen.getByText(/^streaming$/i)).toBeInTheDocument();
@@ -205,7 +206,7 @@ describe("AgentCardDiscovery", () => {
 
     expect(
       screen.getByRole("button", {
-        name: /discover/i,
+        name: "发现",
       }),
     ).toBeDisabled();
     expect(mockDiscover).not.toHaveBeenCalled();
@@ -301,9 +302,9 @@ describe("AgentCardDiscovery", () => {
     fireEvent.change(screen.getByPlaceholderText("https://upstream-agent.example.com"), {
       target: { value: "https://upstream.example.com" },
     });
-    await user.click(screen.getByRole("button", { name: /discover/i }));
+    await user.click(screen.getByRole("button", { name: "发现" }));
 
-    expect(await screen.findByText(/No access token available/i)).toBeInTheDocument();
+    expect(await screen.findByText("没有可用的访问令牌")).toBeInTheDocument();
     expect(mockDiscover).not.toHaveBeenCalled();
   });
 });

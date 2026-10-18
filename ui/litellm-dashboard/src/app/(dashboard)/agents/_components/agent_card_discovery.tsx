@@ -119,15 +119,13 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
 
   const handleDiscover = useCallback(async () => {
     if (!accessToken) {
-      setError("No access token available");
+      setError(t("noAccessToken"));
       onApplyRef.current(null);
       return;
     }
     const trimmed = effectiveUrl.trim();
     if (!trimmed) {
-      setError(
-        isParentDriven ? "Fill in the agent's connection details above first" : "Enter the agent's base URL first",
-      );
+      setError(isParentDriven ? t("fillConnectionFirst") : t("enterBaseUrlFirst"));
       setCard(null);
       onApplyRef.current(null);
       return;
@@ -154,7 +152,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
       resetSelections(response.agent_card);
     } catch (e: any) {
       if (requestId !== discoverRequestIdRef.current) return;
-      setError(e?.message ? String(e.message) : "Failed to discover agent card");
+      setError(e?.message ? String(e.message) : t("discoverCardFailed"));
       setCard(null);
       lastSyncedSelectionRef.current = null;
       onApplyRef.current(null);
@@ -173,7 +171,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
     // during editing), which would re-fire the auto-discover effect and
     // wipe in-progress user selections.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, effectiveUrl, isParentDriven, discoveryMode, discoveryParamsKey]);
+  }, [accessToken, effectiveUrl, isParentDriven, discoveryMode, discoveryParamsKey, t]);
 
   const debouncedDiscover = useDebouncedCallback(
     () => {
@@ -249,7 +247,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
     if (card) return <RotateCw />;
     return <Search />;
   };
-  const discoverLabel = card ? "Re-discover" : "Discover";
+  const discoverLabel = card ? t("reDiscover") : t("discover");
 
   return (
     <div className="mb-4 rounded-lg border border-border bg-muted/50 p-4">
@@ -265,18 +263,13 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
                 </span>
               }
             />
-            <TooltipContent>
-              LiteLLM will fetch /.well-known/agent-card.json from this URL and let you pick which skills and
-              capabilities to expose through the proxy.
-            </TooltipContent>
+            <TooltipContent>{t("discoverTooltip")}</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
       {isParentDriven ? (
         <>
-          <p className="mb-2 text-xs text-muted-foreground">
-            Using the connection details you entered above. We&apos;ll fetch:
-          </p>
+          <p className="mb-2 text-xs text-muted-foreground">{t("usingConnectionDetails")}</p>
           <div className="mb-3 rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs break-all text-foreground">
             {discoveryRequest!.display_url || effectiveUrl || (
               <span className="text-muted-foreground italic">{t("fillFieldsFirst")}</span>
@@ -292,13 +285,12 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
       ) : (
         <>
           <p className="mb-3 text-xs text-muted-foreground">
-            Paste the upstream agent&apos;s base URL. We&apos;ll try <code>/.well-known/agent-card.json</code>,{" "}
-            <code>/.well-known/agent.json</code>, and <code>/agent.json</code> in order.
+            {t.rich("manualUrlHint", { code: (chunks) => <code>{chunks}</code> })}
           </p>
 
           <div className="flex w-full items-center gap-2">
             <Input
-              placeholder="https://upstream-agent.example.com"
+              placeholder={t("phUpstreamUrl")}
               value={manualUrl}
               onChange={(e) => setManualUrl(e.target.value)}
               onKeyDown={(e) => {
@@ -373,7 +365,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
                   }
                 />
                 <Badge variant="secondary">
-                  {selectedSkillCount} / {skillCount} selected
+                  {t("skillsSelected", { selected: selectedSkillCount, total: skillCount })}
                 </Badge>
               </div>
               <CollapsibleContent className="pt-2">
@@ -433,10 +425,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
                         </span>
                       }
                     />
-                    <TooltipContent>
-                      Only capabilities LiteLLM can faithfully proxy today are listed. Others (push notifications,
-                      extensions) are coming soon.
-                    </TooltipContent>
+                    <TooltipContent>{t("capabilitiesTooltip")}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
@@ -451,7 +440,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
                       >
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium text-foreground capitalize">{key}</span>
-                          {!upstreamHas && <Badge variant="outline">not advertised upstream</Badge>}
+                          {!upstreamHas && <Badge variant="outline">{t("notAdvertisedUpstream")}</Badge>}
                         </div>
                         <Switch
                           checked={Boolean(selectedCapabilities[key])}
