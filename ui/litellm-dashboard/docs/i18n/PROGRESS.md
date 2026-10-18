@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 207 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10633、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 207 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 208 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10633、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 208 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 208 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `components/team/TeamInfo.tsx`，团队详情页（2600 行，早前已大面积接入 `teams` 命名空间）。扫描器 4 条命中判定不翻并登记：`Failed to fetch policies:`/`Failed to fetch policy guardrails:` 是 console.error 前缀（同第 195/198 簇口径），两处 `Assigning team admins is a premium feature` 更关键，它们不是展示文案而是拿 `error?.raw?.detail...includes(...)` 与后端错误报文做检测比对的线值字面量，本地化会直接破坏 premium 判定（分支命中后展示的 `infoAdminsEnterpriseOnly` 早已键名化）。真正的工作量在盲区：扫描器只盯字符串字面量，漏掉十九处裸 JSX 文本节点，逐处键名化接线。全部零新开键，十九处全部命中 `teams` 里早前预置、此前零或少消费者的既有键，两种键形态沿用文件内已有用法：纯标签（`infoTeamMemberSettings`/`infoBudgetResetPeriod`/`infoAllowedModels` 等六处，配 `{" "}` 保留与 Info 图标的间距）和带 `{value}`/`{count}`/`{example}` 的内插整句（`infoUserKeys`/`infoTotal`/`infoCooldownTime`/`infoFallbacks`/`infoMetadataDescription` 等十三处，`infoMetadataDescription` 的示例参数就传原字面量 `{"region": "us"}`）。ICU 守卫 13 键 26 侧通过。`{" -> "}` 回退链箭头是排版符号保留。测试面核查：套件 `DEFAULT_TEST_LOCALE` 为 zh-CN，`TeamInfo.test.tsx`/`integration` 均以中文文案交互（"团队成员设置"等），无断言钉住本簇接线前的英文；`EditMembership.integration.test.tsx` 的英文 label 是它自己 mock 的 schema 夹具，与本文件无关。覆盖率三项不动（912/689、10633、138）。门禁：team 与 parity 五文件 159 例全绿、Type Errors 无报错，tsc 锚定零命中，eslint 23 warning 与 HEAD 逐规则持平，prettier 本文件 HEAD 即脏不改写，`next build` 通过，扫描器本文件仍显示这 4 条（登记不翻项不入清零口径）。下一簇按队列取 `organization/org-settings/schema.ts`（4 条）。
 
 ## 2026-10-18 第 207 簇更新
 
