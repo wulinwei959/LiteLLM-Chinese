@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 205 簇后（非测试 `.tsx` 912 个接入 688 个、75.4%，目录叶子 10622、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 205 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 206 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10622、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 206 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 206 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `hooks/useToolsOAuthFlow.tsx`，Tools 页重连路径的 OAuth2 PKCE 钩子，与第 205 簇的用户连接钩子同构（四条恢复链路命中加一处 `toast.success("Connected successfully")` 盲区，RESULT/FLOW_STATE 键位不同）。全部按 205 确立的口径接线 `mcpOauthFlow` 命名空间：`resumeFailed`/`stateLost`/`stateMismatch`/`codeMissing`/`connectedSuccess` 五处零新开键（`connectedSuccess` 上簇预置，本簇补上第二个消费者），`resumeOAuthFlow` 依赖数组补 `t`。短版 "OAuth session state was lost. Please retry." 在此也归并进目录长版，三个 OAuth 钩子文案就此完全一致。既有测试 `useToolsOAuthFlow.test.tsx` 原本裸 `renderHook`，接线后 `useTranslations` 无 Provider 即崩，按管理员/用户钩子测试先例补 `LocaleProvider locale="zh-CN"` 包裹；另新增两条 zh-CN 等值回归（state 不匹配走 error 态加 toast，成功路径断 `connectedSuccess` 文案与 `onSuccess` 收到新令牌），未接线必红。盲区复查：`startOAuthFlow` 的 catch 与 payload.error 分支是后端透传通道不翻。覆盖率：叶子 10622、同值 138 不动，非测试 `.tsx` 接入 688 升到 689、75.5%。门禁：tools 加 user 钩子 7 例、消费侧 mcp_tools 与 parity 与管理员共 4 文件 37 例、复跑 tools 单文件 4 例全绿、Type Errors 无报错，tsc 锚定零命中，eslint 本文件 3 warning 与 HEAD 持平、测试文件复跑只剩 1 条既有同款（新 render 帮助函数的内联对象告警已改具名变量消掉），prettier 两文件 HEAD 干净且当前即干净，`next build` 通过，扫描器本文件归零（files with hits 281 降到 280）。下一簇按队列取 `components/team/teamModelAccess.ts`（4 条）。
 
 ## 2026-10-18 第 205 簇更新
 
