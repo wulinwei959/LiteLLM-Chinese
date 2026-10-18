@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 197 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10612、中英同值 138）。第 93 到 198 簇（184、189、190、191、194、198 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 197 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10612、中英同值 138）。第 93 到 199 簇（184、189、190、191、194、198、199 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 199 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `playground/llm_calls/a2a_send_message.tsx`，A2A JSON-RPC 2.0 请求模块（非组件、无钩子可用），纯判定簇，零接线、零改动（覆盖率沿用第 197 簇后口径：非测试 `.tsx` 912 个接入 687 个、75.3%，叶子 10612、同值 138）。扫描器 5 条命中逐条判定：4 条开发日志前缀（提取失败与流式 chunk 解析失败两条 `console.warn`、发送/流式两条 `console.error`）照旧不翻；`Unknown A2A error` 是 JSON-RPC 错误 chunk 缺 `message` 时的抛出兜底，消费链路查实为 ChatUI `catch` 里 `String(error)` 原样灌进聊天文本、CompareUI `catch` 里 `error.message` 灌进 `compare.errorFetching` toast，同一条透传通道还携带后端 `error.message`、`errorData.detail` 与 `HTTP {status}` 码，整通道按 backend 数据透教条不翻，本地兜底一词单独键名化要跨两个消费方设计错误通道映射，超出汉化簇最小改动边界，一并登记不翻。盲区复查：`No response body`、`HTTP ${response.status}` 同理走该透传通道不翻，`parseError.message.includes("JSON")` 是解析分流逻辑非文案，文件头与函数注释非 UI。本文件扫描器 5 条登记为不翻。下一簇按队列取 `mcp-servers/_components/mcp_connect.tsx`（5 条，早前盲区判过 Bearer 样本，届时整片复判）。
 
 ## 2026-10-18 第 198 簇更新
 
