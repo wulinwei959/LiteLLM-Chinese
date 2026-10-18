@@ -78,7 +78,7 @@ describe("CostTrackingSettings submit paths", () => {
   const submitDiscount = () =>
     screen
       .getAllByRole("button")
-      .filter((button) => (button.textContent || "").trim() === "Add Provider Discount")
+      .filter((button) => (button.textContent || "").trim() === "添加供应商折扣")
       .pop()!;
 
   it("requests the discount exactly once per click", async () => {
@@ -87,7 +87,7 @@ describe("CostTrackingSettings submit paths", () => {
 
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.click((await screen.findAllByRole("option"))[0]);
-    fireEvent.change(screen.getByLabelText(/Discount Percentage/i), { target: { value: "5" } });
+    fireEvent.change(screen.getByLabelText(/折扣百分比/), { target: { value: "5" } });
     await user.click(submitDiscount());
 
     await waitFor(() => expect(stableDiscountCallbacks.handleAddProvider).toHaveBeenCalled());
@@ -123,7 +123,7 @@ describe("CostTrackingSettings submit paths", () => {
 
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.click((await screen.findAllByRole("option"))[0]);
-    await user.type(screen.getByLabelText(/Discount Percentage/i), "5{Enter}");
+    await user.type(screen.getByLabelText(/折扣百分比/), "5{Enter}");
 
     await waitFor(() => expect(stableDiscountCallbacks.handleAddProvider).toHaveBeenCalled());
     expect(stableDiscountCallbacks.handleAddProvider).toHaveBeenCalledTimes(1);

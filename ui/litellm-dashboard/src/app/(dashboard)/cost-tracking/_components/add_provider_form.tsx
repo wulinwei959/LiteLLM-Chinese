@@ -73,6 +73,7 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
   onAddProvider,
 }) => {
   const t = useTranslations("costTracking");
+  const commonT = useTranslations("common");
   const options = providerOptionsWithoutDiscount(discountConfig);
   const selectedOption = selectedProviderOption(selectedProvider);
 
@@ -82,7 +83,7 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
         <FieldGroup>
           <Field>
             <FieldLabel htmlFor={PROVIDER_FIELD_ID}>
-              {labelWithHint("Provider", "Select the LLM provider you want to configure a discount for")}
+              {labelWithHint(commonT("provider"), t("discountProviderHint"))}
             </FieldLabel>
             <Combobox
               items={options}
@@ -116,7 +117,7 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
 
           <Field>
             <FieldLabel htmlFor={DISCOUNT_FIELD_ID}>
-              {labelWithHint("Discount Percentage", "Enter a percentage value (e.g., 5 for 5% discount)")}
+              {labelWithHint(t("discountPercentageLabel"), t("discountPercentageHint"))}
             </FieldLabel>
             <div className="flex items-center gap-2">
               <Input
@@ -133,7 +134,7 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
 
         <div className="flex items-center justify-end space-x-3 pt-6 border-t border-border">
           <Button type="submit" onClick={onAddProvider} disabled={!selectedProvider || !newDiscount}>
-            Add Provider Discount
+            {t("addProviderDiscount")}
           </Button>
         </div>
       </div>
