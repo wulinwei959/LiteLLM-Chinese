@@ -284,3 +284,8 @@ function useRoutingGroupsTranslator() {
   return useTranslations("routingGroups");
 }
 export type RoutingGroupsTranslator = ReturnType<typeof useRoutingGroupsTranslator>;
+
+function useMcpToolPermissionsTranslator() {
+  return useTranslations("mcpToolPermissions");
+}
+export type McpToolPermissionsTranslator = ReturnType<typeof useMcpToolPermissionsTranslator>;
