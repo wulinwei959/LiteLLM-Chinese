@@ -1,10 +1,20 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 243 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10826、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 243 簇减 6。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 243 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 244 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10832、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 244 簇减 7。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 244 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 244 簇更新
+
+继续串行推进。这一簇是 `src/app/(dashboard)/tag-management/_components/index.tsx`（标签主页，已挂 `tagManagement`，长尾，和第 239 簇同 ns）。收口：页首提示 `Click on a tag name...`、带文档链接的标签路由说明句、`+ Create New Tag` 按钮、删除弹窗的 title/message/resourceInformationTitle/字段标签。`Tag Name` 复用现成 `tagName`；新增 6 键（deleteTagTitle/deleteConfirmMessage/tagInformationTitle/listHint/tagRoutingHelp/createNewTagBtn）
+
+说明句 `...Read more about tag routing here.` 里 `here` 是个外链，走 `t.rich("tagRoutingHelp",{ link:(chunks)=><a href=...>{chunks}</a> })`，`<link>` 在富文本白名单内、无需登记；链接文本 `here` 连同整句一起进消息，不再拆成 prefix/suffix 碎片（碎体会丢 ICU 的语序自由，中文可把"请阅读此处"放到句尾自然位置）。`+ Create New Tag` 与既有 `createTitle`（"Create New Tag"，无加号）语义有别，按口径分键 `createNewTagBtn`，不把 `+` 拼在 JSX 里
+
+测试：`index.test.tsx` 走 `renderWithProviders`，只 3 处 `findByText/queryByText("Tag Information")` 改 `标签信息`；其删除按钮断言本就是 `/删除/`、取消是 `取消`（`DeleteResourceModal` 的内建按钮早被翻好，非本簇 props），不动。说明句、提示、创建按钮、message 无断言覆盖，全库扫无其他钉点。`CreateTagModal`/`TagTable`/`TagInfo` 是各自子组件，不经这层
+
+验证：`index.test.tsx` + parity + missingKeys 三文件 13 例全绿、Type Errors 无报错；eslint 真路径 0 错误 3 警告（any/inline-object/exhaustive-deps，均 HEAD 既有、本簇未碰，与 HEAD 基线 3 警告持平）；prettier 净（t.rich 块本已合规）；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子涨到 10832（+6），同值 139 不变
 
 ## 2026-10-18 第 243 簇更新
 
