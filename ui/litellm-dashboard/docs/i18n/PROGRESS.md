@@ -1,10 +1,14 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 204 簇后（非测试 `.tsx` 912 个接入 687 个、75.3%，目录叶子 10621、中英同值 134，同值按 HEAD 重测修正此前 138 的旧口径）。第 93 到 204 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 205 簇后（非测试 `.tsx` 912 个接入 688 个、75.4%，目录叶子 10622、中英同值 138。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 205 簇（184、189、190、191、194、198、199、200、203 为纯判定簇）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 205 簇更新
+
+继续串行推进，没有派子代理。这一簇是 `hooks/useUserMcpOAuthFlow.tsx`，聊天面板（`MCPAppsPanel`）与服务器工具页（`mcp_tools`）共用的用户侧 OAuth2 PKCE 连接钩子。四条扫描命中全在 `resumeOAuthFlow` 的回跳恢复链路：`resumeFailed` 走 `setError`，另三条 `throw` 被本地 catch 经 `extractErrorMessage` 同时灌进错误态与 `toast.error`，均为用户可见，与第 203 簇的纯透传通道不同，本簇全部接线。复用管理员钩子 `useMcpOAuthFlow` 已接入的顶层 `mcpOauthFlow` 命名空间：`resumeFailed`/`stateMismatch`/`codeMissing` 精确同值直接挪用；`stateLost` 原文是短版 "OAuth session state was lost. Please retry."，目录里是带浏览器隐私设置提示的长版，同一失效成因、提示对本场景同样成立，三个 OAuth 钩子就此口径统一，接受这条英文文案归并（本簇唯一一处非纯翻译改动）。盲区 `toast.success("Connected successfully")` 不复用 `success`（"OAuth token retrieved successfully" 面向管理员取令牌场景，非同值），新开 `connectedSuccess` 键（连接成功，叶子 10621 涨到 10622），`resumeOAuthFlow` 依赖数组补 `t`。新开测试 `useUserMcpOAuthFlow.test.tsx`：仿管理员测试的 `LocaleProvider locale="zh-CN"` 包裹，三条用例分别锁定解析失败、state 不匹配、连接成功三条路径的 error 态与 toast 等值断言（对照 zh-CN.json 目录值），未接线时必红。同值口径复测：同一扁平化脚本对 HEAD 与当前双侧均 138，第 202 簇记的 134 无法复现，头部回改。门禁：新测试 3 例加 OAuth 相关消费侧 6 文件 48 例加 `messagesParity`/`locales` 15 例全绿、Type Errors 无报错，tsc 锚定零命中，eslint 本文件 5 条 warning 与 HEAD 持平、测试文件零告警（HEAD 副本复测报出的 2 条 error 系临时目录文件名规则与副本位置效应，真实文件无），prettier 两份目录 HEAD 即脏不改写、代码文件干净，`next build` 通过，扫描器本文件归零（files with hits 282 降到 281），非测试 `.tsx` 接入升到 688/912、75.4%。下一簇按队列取 `hooks/useToolsOAuthFlow.tsx`（4 条，同款字符串，本簇已备好复用口径；注意其现有测试 `renderHook` 未包 Provider，接线后要补 wrapper）。
 
 ## 2026-10-18 第 204 簇更新
 
