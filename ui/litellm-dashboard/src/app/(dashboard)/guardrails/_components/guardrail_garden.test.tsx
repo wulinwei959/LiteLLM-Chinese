@@ -26,19 +26,17 @@ describe("GuardrailGarden", () => {
   const renderGarden = () =>
     renderWithProviders(<GuardrailGarden accessToken="test-token" onGuardrailCreated={vi.fn()} />);
 
-  it("should render both sections with their descriptions", () => {
+  it("should render all three sections with their titles and descriptions", () => {
     renderGarden();
 
     expect(screen.getByText("LiteLLM 内容过滤器")).toBeInTheDocument();
+    expect(screen.getByText("LiteLLM 内置护栏。零延迟，无外部依赖，无额外成本。")).toBeInTheDocument();
+    expect(screen.getByText("决策模型")).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "LiteLLM 内置护栏。零延迟，无外部依赖，无额外成本。",
-      ),
+      screen.getByText("向决策模型就每个请求或响应提出是/否问题，当某个分数达到其阈值时予以拦截或记录。"),
     ).toBeInTheDocument();
     expect(screen.getByText("合作伙伴护栏")).toBeInTheDocument();
-    expect(
-      screen.getByText("来自领先 AI 安全提供商的第三方护栏集成。"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("来自领先 AI 安全提供商的第三方护栏集成。")).toBeInTheDocument();
   });
 
   it("should show a capped set of litellm cards behind a show all toggle", async () => {

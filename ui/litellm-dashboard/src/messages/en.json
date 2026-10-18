@@ -3636,6 +3636,8 @@
       "litellmDesc": "Built-in guardrails powered by LiteLLM. Zero latency, no external dependencies, no additional cost.",
       "partnerTitle": "Partner Guardrails",
       "partnerDesc": "Third-party guardrail integrations from leading AI security providers.",
+      "decisionModelTitle": "Decision Model",
+      "decisionModelDesc": "Ask a decision model yes/no questions about each request or response, and block or log when a score reaches its threshold.",
       "showAll": "Show all ({count})",
       "showLess": "Show less",
       "tabEval": "Eval Results",

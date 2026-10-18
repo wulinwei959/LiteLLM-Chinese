@@ -3636,6 +3636,8 @@
       "litellmDesc": "LiteLLM 内置护栏。零延迟，无外部依赖，无额外成本。",
       "partnerTitle": "合作伙伴护栏",
       "partnerDesc": "来自领先 AI 安全提供商的第三方护栏集成。",
+      "decisionModelTitle": "决策模型",
+      "decisionModelDesc": "向决策模型就每个请求或响应提出是/否问题，当某个分数达到其阈值时予以拦截或记录。",
       "showAll": "显示全部（{count}）",
       "showLess": "收起",
       "tabEval": "评测结果",

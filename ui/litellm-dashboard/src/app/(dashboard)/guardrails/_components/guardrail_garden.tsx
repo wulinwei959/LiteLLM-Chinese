@@ -61,7 +61,9 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
 
       <section className="mb-10" aria-labelledby="guardrail-garden-litellm">
         <div className="mb-1 flex items-center justify-between">
-          <h2 id="guardrail-garden-litellm" className="m-0 text-xl font-semibold text-foreground">{t("garden.litellmTitle")}</h2>
+          <h2 id="guardrail-garden-litellm" className="m-0 text-xl font-semibold text-foreground">
+            {t("garden.litellmTitle")}
+          </h2>
           <span
             className="inline-flex cursor-pointer items-center gap-1.5 text-sm text-primary"
             onClick={() => setShowAllLitellm(!showAllLitellm)}
@@ -76,9 +78,7 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
             )}
           </span>
         </div>
-        <p className="mt-1 mb-5 text-[13px] text-muted-foreground">
-          {t("garden.litellmDesc")}
-        </p>
+        <p className="mt-1 mb-5 text-[13px] text-muted-foreground">{t("garden.litellmDesc")}</p>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
           {(showAllLitellm ? litellmCards : litellmCards.slice(0, CARDS_PER_ROW * VISIBLE_ROWS)).map((card) => (
             <GuardrailCard key={card.id} card={card} onClick={() => setSelectedCard(card)} />
@@ -88,12 +88,9 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
 
       <section className="mb-10" aria-labelledby="guardrail-garden-decision-model">
         <h2 id="guardrail-garden-decision-model" className="mt-0 mb-1 text-xl font-semibold text-foreground">
-          Decision Model
+          {t("garden.decisionModelTitle")}
         </h2>
-        <p className="mt-1 mb-5 text-[13px] text-muted-foreground">
-          Ask a decision model yes/no questions about each request or response, and block or log when a score reaches
-          its threshold.
-        </p>
+        <p className="mt-1 mb-5 text-[13px] text-muted-foreground">{t("garden.decisionModelDesc")}</p>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
           {decisionModelCards.map((card) => (
             <GuardrailCard key={card.id} card={card} onClick={() => setSelectedCard(card)} />
@@ -102,10 +99,10 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
       </section>
 
       <section className="mb-10" aria-labelledby="guardrail-garden-partner">
-        <h2 id="guardrail-garden-partner" className="mt-0 mb-1 text-xl font-semibold text-foreground">{t("garden.partnerTitle")}</h2>
-        <p className="mt-1 mb-5 text-[13px] text-muted-foreground">
-          {t("garden.partnerDesc")}
-        </p>
+        <h2 id="guardrail-garden-partner" className="mt-0 mb-1 text-xl font-semibold text-foreground">
+          {t("garden.partnerTitle")}
+        </h2>
+        <p className="mt-1 mb-5 text-[13px] text-muted-foreground">{t("garden.partnerDesc")}</p>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
           {partnerCards.map((card) => (
             <GuardrailCard key={card.id} card={card} onClick={() => setSelectedCard(card)} />
