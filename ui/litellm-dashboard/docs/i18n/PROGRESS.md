@@ -1,10 +1,22 @@
 # 开发进度
 
-数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 242 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10814、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 242 簇减 5。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 242 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
+数据快照 2026-10-18，分支 `main`。**汉化尚未完成**，剩余量见"## 汉化完成度实测"；目录规模、欠账清单与文件覆盖率随每次提交更新。覆盖率最新一次是第 243 簇后（非测试 `.tsx` 912 个接入 689 个、75.5%，目录叶子 10826、中英同值 139，files with hits 269；"已接入但仍有英文"长尾随第 238 到 243 簇减 6。同值口径以同一扁平化脚本对 HEAD 与当前双侧复测为准：第 205 簇复测两侧均 138，第 202 簇记的 134 无法复现，回改）。第 93 到 243 簇（184、189、190、191、194、198、199、200、203、212、217、222、224、225、226、227、228、230、231、233 为纯判定簇，235 主体纯判定但带第 232 簇消费者测试补账的 feat 提交）均按 `WORKFLOW.md` 第六步跑定向文件，第 148 簇例外跑了 `src/components` 整包，未起全量；期间 `LensSetup.integration.test.tsx` 在 `Asia/Shanghai` 下的 `/2026-09-30/` 日期断言仍会挂（上游既有，`TZ=UTC` 单跑全绿）。最新的四片全量仍是第 85 簇（886 文件 11583 例、1 失败 + 9 例预期失败，那 1 例即上述时区断言）。
 
 第 148 簇把 `src/components` 整包（6116 例）跑了一遍，暴露并修掉 26 处红灯，剩下 3 例（`add_auto_router_tab`、`KeyActivityPanel`）单跑全绿，是已知的并发假失败。修掉的这些里有一部分是本轮之前几簇的遗留账，逐条记在下面各簇里。
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
+
+## 2026-10-18 第 243 簇更新
+
+继续串行推进。这一簇是 `src/app/(dashboard)/vector-stores/_components/index.tsx`（向量存储主页，已挂 `vectorStores`，长尾）。收口：四个页签（Create/Manage/Test/Indexes）、`+ Add Vector Store` 按钮、`Last Refreshed:` 标签、页首说明句、删除弹窗的 title/message/resourceInformationTitle/字段标签、以及四条 toast（fetchList/fetchCreds 失败、delete 成功/失败）
+
+`vectorStores` 是已建得很全的 ns，本簇大量复用现成键：`createTitle`（创建向量存储）、`testerTitle`（测试向量存储）、`deleteConfirmTitle`（删除向量存储）直接接给页签与弹窗标题，不另开键；只新增 12 个（manageTab/indexesTab/addVectorStore/pageIntro/lastRefreshed/deleteConfirmMessage/deleteInfoTitle/vectorStoreIdShort + 四条 toast 前缀）。删除弹窗的 message 与既有 `deleteConfirmBody`（含 `{name}`）语义不同（这处不带 name），故新键而非硬塞 name
+
+toast 的 `"前缀 " + error` 拼接改成带 `{error}` 参数的单条消息（`t("fetchListFailed",{error:String(error)})`），既避免把英文冒号前缀留在译文里，也满足"占位符只增不改"：两侧都声明 `{error}`。`console.error(...)` 前缀按口径不动。`toast.fromError` 收 string 也收 Error，传 t 的结果安全
+
+测试：`index.test.tsx` 走 `renderWithProviders`，把四个按角色名查的页签与按钮改中（`getByRole/queryByRole("tab",{name})` 的 `Manage Vector Stores`→`管理向量存储`、`Create Vector Store`→`创建向量存储`、`Indexes`→`索引`，`button name "+ Add Vector Store"`→`+ 添加向量存储`）。只改 `name:` 实参、不动 `it()` 标题里的同名串。四条 toast 与删除弹窗文案本文件无断言覆盖，全库扫确认无其他钉点（`Vector Store Management` 那条 `queryByText` 负向断言仍成立，因 `pageTitle` 早已是中文）。其余 `vector-stores` 测试渲染的是各自子组件、不经这层 tabs
+
+验证：`index.test.tsx` + parity + missingKeys 三文件 21 例全绿（一条 loading 用例的 stderr 是被 catch 的 fetch 报错、属预期）、Type Errors 无报错；eslint 真路径 0 错误 1 警告（`useEffect` deps，HEAD 既有、本簇未碰），temp 路径多出的 2 error 是文件名解析假象；prettier 改动区收齐；`npm run build` 绿。扫描器口径：本文件本就接入，files with hits 269 与接入计数不动；目录叶子涨到 10826（+12），同值 139 不变。下一簇可继续 `vectorStores` 邻近子组件，或转按命中数排未接入队列
 
 ## 2026-10-18 第 242 簇更新
 
