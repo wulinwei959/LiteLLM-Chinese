@@ -5092,6 +5092,7 @@
     "filterByUser": "Filter by user",
     "reusableCredentialsTagTitle": "Reusable credentials are automatically tracked as tags",
     "reusableCredentialsTagBody": "When a reusable credential is used, it will appear as a tag prefixed with",
+    "reusableCredentialsHint": "When a reusable credential is used, it will appear as a tag prefixed with <code>{prefix}</code> in this view.",
     "closeBanner": "Close",
     "aiChat": {
       "title": "Ask AI",

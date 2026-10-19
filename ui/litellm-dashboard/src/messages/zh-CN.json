@@ -5091,6 +5091,7 @@
     "filterByUser": "按用户筛选",
     "reusableCredentialsTagTitle": "可复用凭据会自动作为标签统计",
     "reusableCredentialsTagBody": "使用可复用凭据时,它会以此前缀显示为标签",
+    "reusableCredentialsHint": "使用可复用凭据时，它会在此视图中显示为以 <code>{prefix}</code> 为前缀的标签。",
     "closeBanner": "关闭",
     "aiChat": {
       "title": "AI 问答",

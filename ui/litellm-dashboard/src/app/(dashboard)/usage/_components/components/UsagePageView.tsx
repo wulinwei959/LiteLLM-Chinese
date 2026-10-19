@@ -962,11 +962,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                 <Alert variant="info" className="mb-5">
                   <AlertTitle>{usageT("reusableCredentialsTagTitle")}</AlertTitle>
                   <AlertDescription className="text-inherit">
-                    When a reusable credential is used, it will appear as a tag prefixed with{" "}
-                    <code className="rounded bg-black/5 px-1 py-0.5 font-mono text-xs">
-                      {usageT("credentialPrefix")}
-                    </code>
-                    in this view.
+                    {usageT.rich("reusableCredentialsHint", {
+                      prefix: usageT("credentialPrefix"),
+                      code: (chunks) => (
+                        <code className="rounded bg-black/5 px-1 py-0.5 font-mono text-xs">{chunks}</code>
+                      ),
+                    })}
                   </AlertDescription>
                   <AlertAction>
                     <Button
