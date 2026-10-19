@@ -3688,7 +3688,23 @@
       "noMatch": "没有符合筛选条件的 PII 类型"
     },
     "garden": {
-      "cards": {},
+      "cards": {
+        "dm_typesafe_jev": {
+          "description": "TypeSafe 的 Jev 决策模型会针对每个请求回答你是或非的问题，例如提示注入或策略检查。"
+        },
+        "dm_perplexity": {
+          "description": "Perplexity 的 pplx-decider 模型会针对每个请求或响应回答你是或非的问题。"
+        },
+        "dm_microsoft": {
+          "description": "Microsoft Foundry 决策模型（例如 Microsoft-Decision-1）会针对每个请求或响应回答你是或非的问题。"
+        },
+        "dm_openai": {
+          "description": "OpenAI 决策模型（例如 gpt-6-luna）会针对每个请求或响应回答你是或非的问题。"
+        },
+        "dm_databricks": {
+          "description": "部署在 Databricks 上的决策模型（例如 OpenJev）会针对每个请求或响应回答你是或非的问题。"
+        }
+      },
       "search": "搜索护栏",
       "litellmTitle": "LiteLLM 内容过滤器",
       "litellmDesc": "LiteLLM 内置护栏。零延迟，无外部依赖，无额外成本。",

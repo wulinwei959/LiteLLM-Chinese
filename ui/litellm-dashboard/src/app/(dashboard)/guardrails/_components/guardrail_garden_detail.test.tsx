@@ -35,6 +35,18 @@ describe("GuardrailDetailView logo", () => {
 });
 
 describe("GuardrailDetailView decision model card", () => {
+  it("renders the catalog description over the raw card text for known card ids", () => {
+    renderDetail(
+      makeCard({
+        id: "dm_perplexity",
+        description: "Perplexity's pplx-decider model answers your yes/no questions about each request or response.",
+      }),
+    );
+    expect(
+      screen.getAllByText("Perplexity 的 pplx-decider 模型会针对每个请求或响应回答你是或非的问题。").length,
+    ).toBeGreaterThan(0);
+  });
+
   it("labels a decision model card as a billed Decision Model guardrail", () => {
     renderDetail(makeCard({ id: "dm_perplexity", name: "Perplexity Decision", category: "decision_model" }));
 

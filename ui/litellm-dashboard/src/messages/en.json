@@ -3689,7 +3689,23 @@
       "noMatch": "No PII types match your filter criteria"
     },
     "garden": {
-      "cards": {},
+      "cards": {
+        "dm_typesafe_jev": {
+          "description": "The Jev decision model from TypeSafe answers your yes/no questions about each request, such as prompt injection or policy checks."
+        },
+        "dm_perplexity": {
+          "description": "The pplx-decider model from Perplexity answers your yes/no questions about each request or response."
+        },
+        "dm_microsoft": {
+          "description": "Microsoft Foundry decision models, such as Microsoft-Decision-1, answer your yes/no questions about each request or response."
+        },
+        "dm_openai": {
+          "description": "OpenAI decision models, such as gpt-6-luna, answer your yes/no questions about each request or response."
+        },
+        "dm_databricks": {
+          "description": "Decision models served on Databricks, such as OpenJev, answer your yes/no questions about each request or response."
+        }
+      },
       "search": "Search guardrails",
       "litellmTitle": "LiteLLM Content Filter",
       "litellmDesc": "Built-in guardrails powered by LiteLLM. Zero latency, no external dependencies, no additional cost.",
