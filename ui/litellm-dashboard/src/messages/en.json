@@ -246,6 +246,8 @@
     "deletedTeamsAuditBody": "Deleted team auditing is graduating from beta into our Enterprise audit & compliance suite."
   },
   "nav": {
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
     "homeAria": "LiteLLM home",
     "homeAria": "LiteLLM home",
     "aiGateway": "AI Gateway",
@@ -2053,6 +2055,8 @@
       "deleteTooltip": "Delete model",
       "pauseTooltip": "Pause model",
       "resumeTooltip": "Resume model",
+      "pauseTooltipNormal": "Pause model — stop routing requests until resumed.",
+      "resumeTooltipNormal": "Resume model — restore normal routing.",
       "publicModelNameLabel": "Public Model Name",
       "editModel": "Edit model",
       "deleteModel": "Delete model",

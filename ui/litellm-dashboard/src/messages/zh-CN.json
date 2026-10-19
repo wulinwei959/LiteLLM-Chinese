@@ -246,6 +246,8 @@
     "deletedTeamsAuditBody": "已删除团队的审计功能正从 beta 毕业，正式进入企业版的审计与合规套件。"
   },
   "nav": {
+    "expandSidebar": "展开侧边栏",
+    "collapseSidebar": "收起侧边栏",
     "homeAria": "LiteLLM 首页",
     "aiGateway": "AI 网关",
     "observability": "可观测性",
@@ -2051,6 +2053,8 @@
       "deleteTooltip": "删除模型",
       "pauseTooltip": "暂停模型",
       "resumeTooltip": "恢复模型",
+      "pauseTooltipNormal": "暂停模型,在恢复前停止路由请求。",
+      "resumeTooltipNormal": "恢复模型,恢复正常路由。",
       "publicModelNameLabel": "公共模型名称",
       "litellmModelNameTooltip": "LiteLLM 模型名称",
       "editModel": "编辑模型",

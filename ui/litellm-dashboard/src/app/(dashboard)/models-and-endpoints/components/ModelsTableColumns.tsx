@@ -291,7 +291,7 @@ function ModelRowActions({
     if (!isAdmin) {
       return t("modelTable.pauseTooltipAdmin");
     }
-    return isBlocked ? "Resume model — restore normal routing." : "Pause model — stop routing requests until resumed.";
+    return isBlocked ? t("modelTable.resumeTooltipNormal") : t("modelTable.pauseTooltipNormal");
   };
 
   const deleteTooltip = isConfigModel
