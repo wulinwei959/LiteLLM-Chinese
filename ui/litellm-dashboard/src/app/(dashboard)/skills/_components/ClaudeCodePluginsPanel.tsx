@@ -70,7 +70,7 @@ const ClaudeCodePluginsPanel: React.FC<ClaudeCodePluginsPanelProps> = ({ accessT
     setIsDeleting(true);
     try {
       await deleteClaudeCodePlugin(accessToken, pluginToDelete.name);
-      toast.success(`Skill "${pluginToDelete.displayName}" deleted successfully`);
+      toast.success(t("deletedToast", { name: pluginToDelete.displayName }));
       fetchPlugins();
     } catch (error) {
       console.error("Error deleting skill:", error);

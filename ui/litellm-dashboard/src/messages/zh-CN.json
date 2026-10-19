@@ -8766,6 +8766,7 @@
   },
   "skills": {
     "deleteFailed": "删除技能失败",
+    "deletedToast": "技能 \"{name}\" 删除成功",
     "addNew": "新建技能",
     "sourceUrlLabel": "来源 URL",
     "sourceUrlHint": "粘贴来自 GitHub、GitLab、Bitbucket 或自建托管的 HTTPS git 仓库地址（如 github.com/org/repo 或 github.com/org/repo/tree/main/my-skill），或指向托管在 S3 或任意静态文件服务器上的技能 .zip 压缩包的 HTTPS 链接。私有仓库请使用其 SSH 克隆地址（git@ghe.example.com:org/repo.git），以便 Claude Code 用你自己的 SSH 密钥克隆。",
