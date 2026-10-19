@@ -1,27 +1,28 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { ChartLoader } from "./chart_loader";
 
 describe("ChartLoader", () => {
   it("should render", () => {
-    render(<ChartLoader />);
-    expect(screen.getByText("Loading chart data...")).toBeInTheDocument();
+    renderWithProviders(<ChartLoader />);
+    expect(screen.getByText("正在加载图表数据...")).toBeInTheDocument();
   });
 
   it("should show loading text by default", () => {
-    render(<ChartLoader />);
-    expect(screen.getByText("Fetching your data")).toBeInTheDocument();
+    renderWithProviders(<ChartLoader />);
+    expect(screen.getByText("正在获取你的数据")).toBeInTheDocument();
   });
 
   it("should show date-changing text when isDateChanging is true", () => {
-    render(<ChartLoader isDateChanging />);
-    expect(screen.getByText("Processing date selection...")).toBeInTheDocument();
-    expect(screen.getByText("This will only take a moment")).toBeInTheDocument();
+    renderWithProviders(<ChartLoader isDateChanging />);
+    expect(screen.getByText("正在处理日期选择...")).toBeInTheDocument();
+    expect(screen.getByText("稍等片刻即可完成")).toBeInTheDocument();
   });
 
   it("should not show default loading text when isDateChanging is true", () => {
-    render(<ChartLoader isDateChanging />);
-    expect(screen.queryByText("Loading chart data...")).not.toBeInTheDocument();
-    expect(screen.queryByText("Fetching your data")).not.toBeInTheDocument();
+    renderWithProviders(<ChartLoader isDateChanging />);
+    expect(screen.queryByText("正在加载图表数据...")).not.toBeInTheDocument();
+    expect(screen.queryByText("正在获取你的数据")).not.toBeInTheDocument();
   });
 });
