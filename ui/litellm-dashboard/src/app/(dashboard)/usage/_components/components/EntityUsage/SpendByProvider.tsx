@@ -132,7 +132,7 @@ const SpendByProvider: React.FC<SpendByProviderProps> = ({ loading, isDateChangi
               columns={columns}
               data={filteredProviderSpend}
               getRowId={(row) => row.provider}
-              noDataMessage="No provider usage data"
+              noDataMessage={t("noDataMessage")}
               size="compact"
             />
           </div>

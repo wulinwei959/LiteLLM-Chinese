@@ -5147,6 +5147,7 @@
     },
     "provider": {
       "title": "按供应商统计消费",
+      "noDataMessage": "暂无供应商用量数据",
       "provider": "供应商",
       "spend": "消费",
       "successful": "成功",
