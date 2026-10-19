@@ -1991,6 +1991,8 @@
       },
       "deleteTitle": "Delete Auto Router",
       "deleteBody": "Are you sure you want to delete \"{name}\"? Any client still calling this model name will start failing.",
+      "deletedToast": "Deleted auto router: {name}",
+      "deleteFailedToast": "Failed to delete auto router: {error}",
       "resourceTitle": "Auto router",
       "table": {
         "name": "Name",

@@ -67,11 +67,11 @@ export function AutoRoutersPanel({
     setIsDeleting(true);
     try {
       await modelDeleteCall(accessToken, deletingRouter.id);
-      toast.success(`Deleted auto router: ${deletingRouter.name}`);
+      toast.success(t("deletedToast", { name: deletingRouter.name }));
       setDeletingRouter(null);
       await invalidateAutoRouters();
     } catch (error) {
-      toast.fromError(`Failed to delete auto router: ${error}`);
+      toast.fromError(t("deleteFailedToast", { error: String(error) }));
     } finally {
       setIsDeleting(false);
     }

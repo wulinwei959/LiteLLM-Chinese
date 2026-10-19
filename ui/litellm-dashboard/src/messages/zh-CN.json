@@ -1990,6 +1990,8 @@
       },
       "deleteTitle": "删除自动路由器",
       "deleteBody": "确定删除“{name}”吗？仍在调用此模型名的客户端将开始失败。",
+      "deletedToast": "已删除自动路由器：{name}",
+      "deleteFailedToast": "删除自动路由器失败：{error}",
       "resourceTitle": "自动路由器",
       "table": {
         "name": "名称",
