@@ -289,3 +289,8 @@ function useMcpToolPermissionsTranslator() {
   return useTranslations("mcpToolPermissions");
 }
 export type McpToolPermissionsTranslator = ReturnType<typeof useMcpToolPermissionsTranslator>;
+
+function usePlaygroundTranslator() {
+  return useTranslations("playground");
+}
+export type PlaygroundTranslator = ReturnType<typeof usePlaygroundTranslator>;

@@ -8082,6 +8082,11 @@
   },
   "playground": {
     "uploadPreviewAlt": "上传预览图",
+    "uploadTooLarge": "「{name}」文件过大，最大允许 {max}。",
+    "attachmentUnsupported": "「{name}」不是受支持的附件。请使用 PNG、JPEG、GIF、WebP 或 PDF。",
+    "imageEditLimitReached": "最多可上传 {count} 张图片。",
+    "imageEditUnsupported": "「{name}」不是受支持的图片。请使用 PNG、JPEG、GIF 或 WebP。",
+    "audioUnsupported": "「{name}」不是受支持的音频文件。请使用 MP3、MP4、MPEG、MPGA、M4A、WAV 或 WEBM。",
     "removeAttachmentAria": "移除附件",
     "sessionManagementAria": "关于会话管理",
     "codeInterpreterOpenaiOnly": "代码解释器仅支持 OpenAI 模型",

@@ -33,7 +33,7 @@ const ResponsesImageUpload: React.FC<ResponsesImageUploadProps> = ({
     if (!file) {
       return;
     }
-    const result = validateChatAttachment(file);
+    const result = validateChatAttachment(t, file);
     if (!result.ok) {
       toast.error(result.error);
       return;

@@ -8083,6 +8083,11 @@
   },
   "playground": {
     "uploadPreviewAlt": "Upload preview",
+    "uploadTooLarge": "\"{name}\" is too large. Maximum size is {max}.",
+    "attachmentUnsupported": "\"{name}\" is not a supported attachment. Use PNG, JPEG, GIF, WebP, or PDF.",
+    "imageEditLimitReached": "You can upload at most {count} images.",
+    "imageEditUnsupported": "\"{name}\" is not a supported image. Use PNG, JPEG, GIF, or WebP.",
+    "audioUnsupported": "\"{name}\" is not a supported audio file. Use MP3, MP4, MPEG, MPGA, M4A, WAV, or WEBM.",
     "removeAttachmentAria": "Remove attachment",
     "sessionManagementAria": "About session management",
     "codeInterpreterOpenaiOnly": "Code Interpreter is only available for OpenAI models",

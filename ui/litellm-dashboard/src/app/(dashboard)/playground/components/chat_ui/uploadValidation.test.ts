@@ -7,6 +7,11 @@ import {
   validateChatAttachment,
   validateImageEditFile,
 } from "./uploadValidation";
+import { createTranslator } from "next-intl";
+import en from "@/messages/en.json";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
+
+const t = createTranslator({ locale: "en", messages: en, namespace: "playground" }) as unknown as PlaygroundTranslator;
 
 function makeFile(name: string, type: string, sizeBytes = 1024): File {
   const content = new Uint8Array(sizeBytes);
@@ -15,18 +20,18 @@ function makeFile(name: string, type: string, sizeBytes = 1024): File {
 
 describe("validateChatAttachment", () => {
   it("accepts supported image types", () => {
-    expect(validateChatAttachment(makeFile("a.png", "image/png"))).toEqual({ ok: true });
-    expect(validateChatAttachment(makeFile("a.jpg", "image/jpeg"))).toEqual({ ok: true });
-    expect(validateChatAttachment(makeFile("a.webp", "image/webp"))).toEqual({ ok: true });
+    expect(validateChatAttachment(t, makeFile("a.png", "image/png"))).toEqual({ ok: true });
+    expect(validateChatAttachment(t, makeFile("a.jpg", "image/jpeg"))).toEqual({ ok: true });
+    expect(validateChatAttachment(t, makeFile("a.webp", "image/webp"))).toEqual({ ok: true });
   });
 
   it("accepts PDF by mime type or extension", () => {
-    expect(validateChatAttachment(makeFile("doc.pdf", "application/pdf"))).toEqual({ ok: true });
-    expect(validateChatAttachment(makeFile("doc.PDF", ""))).toEqual({ ok: true });
+    expect(validateChatAttachment(t, makeFile("doc.pdf", "application/pdf"))).toEqual({ ok: true });
+    expect(validateChatAttachment(t, makeFile("doc.PDF", ""))).toEqual({ ok: true });
   });
 
   it("rejects unsupported types", () => {
-    const result = validateChatAttachment(makeFile("notes.txt", "text/plain"));
+    const result = validateChatAttachment(t, makeFile("notes.txt", "text/plain"));
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.error).toContain("not a supported attachment");
@@ -34,7 +39,7 @@ describe("validateChatAttachment", () => {
   });
 
   it("rejects files over the size limit", () => {
-    const result = validateChatAttachment(makeFile("huge.png", "image/png", MAX_CHAT_ATTACHMENT_BYTES + 1));
+    const result = validateChatAttachment(t, makeFile("huge.png", "image/png", MAX_CHAT_ATTACHMENT_BYTES + 1));
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.error).toContain("too large");
@@ -44,11 +49,11 @@ describe("validateChatAttachment", () => {
 
 describe("validateImageEditFile", () => {
   it("accepts images under the count limit", () => {
-    expect(validateImageEditFile(makeFile("a.png", "image/png"), 0)).toEqual({ ok: true });
+    expect(validateImageEditFile(t, makeFile("a.png", "image/png"), 0)).toEqual({ ok: true });
   });
 
   it("rejects when the count limit is reached", () => {
-    const result = validateImageEditFile(makeFile("a.png", "image/png"), MAX_IMAGE_EDIT_COUNT);
+    const result = validateImageEditFile(t, makeFile("a.png", "image/png"), MAX_IMAGE_EDIT_COUNT);
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.error).toContain(`at most ${MAX_IMAGE_EDIT_COUNT}`);
@@ -56,7 +61,7 @@ describe("validateImageEditFile", () => {
   });
 
   it("rejects PDFs for image edits", () => {
-    const result = validateImageEditFile(makeFile("doc.pdf", "application/pdf"), 0);
+    const result = validateImageEditFile(t, makeFile("doc.pdf", "application/pdf"), 0);
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.error).toContain("not a supported image");
@@ -66,13 +71,13 @@ describe("validateImageEditFile", () => {
 
 describe("validateAudioFile", () => {
   it("accepts common audio types", () => {
-    expect(validateAudioFile(makeFile("a.mp3", "audio/mpeg"))).toEqual({ ok: true });
-    expect(validateAudioFile(makeFile("a.wav", "audio/wav"))).toEqual({ ok: true });
-    expect(validateAudioFile(makeFile("a.webm", ""))).toEqual({ ok: true });
+    expect(validateAudioFile(t, makeFile("a.mp3", "audio/mpeg"))).toEqual({ ok: true });
+    expect(validateAudioFile(t, makeFile("a.wav", "audio/wav"))).toEqual({ ok: true });
+    expect(validateAudioFile(t, makeFile("a.webm", ""))).toEqual({ ok: true });
   });
 
   it("rejects non-audio files and oversized files", () => {
-    expect(validateAudioFile(makeFile("a.png", "image/png")).ok).toBe(false);
-    expect(validateAudioFile(makeFile("a.mp3", "audio/mpeg", MAX_AUDIO_BYTES + 1)).ok).toBe(false);
+    expect(validateAudioFile(t, makeFile("a.png", "image/png")).ok).toBe(false);
+    expect(validateAudioFile(t, makeFile("a.mp3", "audio/mpeg", MAX_AUDIO_BYTES + 1)).ok).toBe(false);
   });
 });

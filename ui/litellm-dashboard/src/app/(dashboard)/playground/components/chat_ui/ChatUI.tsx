@@ -553,7 +553,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
     const accepted: File[] = [];
     const previews: string[] = [];
     for (const file of files) {
-      const result = validateImageEditFile(file, nextCount);
+      const result = validateImageEditFile(t, file, nextCount);
       if (!result.ok) {
         toast.error(result.error);
         continue;
@@ -590,7 +590,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
   };
 
   const handleResponsesImageUpload = (file: File): void => {
-    const result = validateChatAttachment(file);
+    const result = validateChatAttachment(t, file);
     if (!result.ok) {
       toast.error(result.error);
       return;
@@ -608,7 +608,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
   };
 
   const handleChatImageUpload = (file: File): void => {
-    const result = validateChatAttachment(file);
+    const result = validateChatAttachment(t, file);
     if (!result.ok) {
       toast.error(result.error);
       return;
@@ -626,7 +626,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
   };
 
   const handleAudioUpload = (file: File): void => {
-    const result = validateAudioFile(file);
+    const result = validateAudioFile(t, file);
     if (!result.ok) {
       toast.error(result.error);
       return;
