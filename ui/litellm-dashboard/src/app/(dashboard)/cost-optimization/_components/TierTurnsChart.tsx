@@ -107,10 +107,7 @@ const TierTurnsChart: React.FC<TierTurnsChartProps> = ({ view, autoRouters }) =>
     <Card>
       <CardHeader>
         <CardTitle>{t("autoRouter.routingByTier")}</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Turns each tier served. Turns the classifier sent to the default model belong to no tier and are not counted
-          here, so this can total less than the router&apos;s turns.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("autoRouter.tierTurnsDesc")}</p>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-2">

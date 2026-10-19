@@ -7634,7 +7634,8 @@
       "tabAutoRouter": "Auto-Router",
       "experimental": "This is an experimental dashboard",
       "feedbackPre": "Have feedback? Join the discussion",
-      "feedbackLink": "here"
+      "feedbackLink": "here",
+      "spendFetchFailedAlert": "Fetching spend data failed, so the savings below may be empty rather than final. Reload the page to try again."
     },
     "caching": {
       "loadFailed": "Failed to load prompt caching settings",

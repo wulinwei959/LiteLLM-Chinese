@@ -88,10 +88,7 @@ const CostOptimizationView: React.FC<CostOptimizationViewProps> = ({ accessToken
 
         {activity.failed && (
           <Alert variant="error">
-            <AlertDescription className="text-inherit">
-              Fetching spend data failed, so the savings below may be empty rather than final. Reload the page to try
-              again.
-            </AlertDescription>
+            <AlertDescription className="text-inherit">{t("view.spendFetchFailedAlert")}</AlertDescription>
           </Alert>
         )}
         <TabsContent value="usage" keepMounted={visitedTabs.includes("usage")}>

@@ -83,6 +83,6 @@ describe("CostOptimizationView daily activity", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByText(/Fetching spend data failed/)).toBeInTheDocument();
+    expect(await screen.findByText(/拉取消耗数据失败/)).toBeInTheDocument();
   });
 });

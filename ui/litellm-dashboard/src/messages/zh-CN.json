@@ -7633,7 +7633,8 @@
       "tabAutoRouter": "自动路由",
       "experimental": "这是实验性控制台",
       "feedbackPre": "有反馈？参与讨论",
-      "feedbackLink": "这里"
+      "feedbackLink": "这里",
+      "spendFetchFailedAlert": "拉取消耗数据失败，下方节省额可能为空而非最终值。请重新加载页面后重试。"
     },
     "caching": {
       "loadFailed": "加载提示词缓存设置失败",
