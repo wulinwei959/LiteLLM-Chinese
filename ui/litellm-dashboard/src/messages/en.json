@@ -4610,6 +4610,7 @@
       "upTo": "up to ",
       "keysLine": "{count, plural, one {# key} other {# keys}}",
       "teamsLine": "{count, plural, one {# team} other {# teams}}",
+      "affectedSummary": "This attachment would affect {upTo}<strong>{keys}</strong> and <strong>{teams}</strong>.",
       "defaultNote": "Default attachments only apply to requests no non-default attachment matches, so fewer may be affected.",
       "keysLabel": "Keys",
       "teamsLabel": "Teams",

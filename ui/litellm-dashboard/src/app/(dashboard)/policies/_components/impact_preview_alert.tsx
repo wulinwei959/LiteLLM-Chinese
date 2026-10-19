@@ -42,6 +42,12 @@ const SampleList: React.FC<SampleListProps> = ({ label, samples, totalCount }) =
 const ImpactPreviewAlert: React.FC<ImpactPreviewAlertProps> = ({ impactResult, isDefault = false }) => {
   const t = useTranslations("policies");
   const isGlobal = impactResult.affected_keys_count === -1;
+  const affectedSummary = {
+    upTo: isDefault ? t("impact.upTo") : "",
+    keys: t("impact.keysLine", { count: impactResult.affected_keys_count }),
+    teams: t("impact.teamsLine", { count: impactResult.affected_teams_count }),
+    strong: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
+  };
 
   return (
     <Alert className="mb-4">
@@ -54,17 +60,7 @@ const ImpactPreviewAlert: React.FC<ImpactPreviewAlertProps> = ({ impactResult, i
           </span>
         ) : (
           <div>
-            <span>
-              This attachment would affect {isDefault ? t("impact.upTo") : ""}
-              <strong>
-                {t("impact.keysLine", { count: impactResult.affected_keys_count })}
-              </strong>{" "}
-              and{" "}
-              <strong>
-                {t("impact.teamsLine", { count: impactResult.affected_teams_count })}
-              </strong>
-              .
-            </span>
+            <span>{t.rich("impact.affectedSummary", affectedSummary)}</span>
             {isDefault && (
               <div className="text-xs text-muted-foreground">
                 {t("impact.defaultNote")}

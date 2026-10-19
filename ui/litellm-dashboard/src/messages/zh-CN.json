@@ -4609,6 +4609,7 @@
       "upTo": "至多 ",
       "keysLine": "{count} 个密钥",
       "teamsLine": "{count} 个团队",
+      "affectedSummary": "此附件将影响{upTo}<strong>{keys}</strong>以及<strong>{teams}</strong>。",
       "defaultNote": "默认附件仅应用于没有非默认附件匹配的请求，因此实际影响可能更少。",
       "keysLabel": "密钥",
       "teamsLabel": "团队",
