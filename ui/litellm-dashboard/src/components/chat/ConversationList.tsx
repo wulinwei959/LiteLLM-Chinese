@@ -21,6 +21,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ScrollArea } from "@/components/ui/scroll-area";
 import dayjs from "dayjs";
 import { Conversation } from "./types";
+import { DEFAULT_CONVERSATION_TITLE } from "./useChatHistory";
 import type { ChatTranslator } from "@/lib/i18n/translators";
 
 interface Props {
@@ -128,7 +129,8 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
     }
   };
 
-  const truncatedTitle = conv.title.length > 40 ? conv.title.slice(0, 40) + "\u2026" : conv.title;
+  const displayTitle = conv.title === DEFAULT_CONVERSATION_TITLE ? t("conversationList.newTitle") : conv.title;
+  const truncatedTitle = displayTitle.length > 40 ? displayTitle.slice(0, 40) + "\u2026" : displayTitle;
 
   return (
     <div
@@ -153,7 +155,7 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
             className={`flex-1 text-[13px] overflow-hidden whitespace-nowrap text-ellipsis ${
               isActive ? "font-medium" : ""
             }`}
-            title={conv.title}
+            title={displayTitle}
           >
             {truncatedTitle}
           </span>
@@ -241,7 +243,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect
   }
 
   const filtered = query.trim()
-    ? conversations.filter((c) => c.title.toLowerCase().includes(query.trim().toLowerCase()))
+    ? conversations.filter((c) =>
+        (c.title === DEFAULT_CONVERSATION_TITLE ? t("conversationList.newTitle") : c.title)
+          .toLowerCase()
+          .includes(query.trim().toLowerCase()),
+      )
     : conversations;
 
   const handleSelect = (id: string) => {

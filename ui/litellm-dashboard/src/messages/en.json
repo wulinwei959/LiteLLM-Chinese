@@ -7802,6 +7802,7 @@
       "nextPage": "Next"
     },
     "conversationList": {
+      "newTitle": "New conversation",
       "dateGroup": {
         "recents": "Recents",
         "yesterday": "Yesterday",

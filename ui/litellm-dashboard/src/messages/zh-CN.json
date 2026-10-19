@@ -7801,6 +7801,7 @@
       "nextPage": "下一页"
     },
     "conversationList": {
+      "newTitle": "新对话",
       "dateGroup": {
         "recents": "最近",
         "yesterday": "昨天",

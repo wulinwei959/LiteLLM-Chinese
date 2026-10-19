@@ -5,6 +5,9 @@ const STORAGE_KEY_PREFIX = "litellm_chat_history_v1";
 const MAX_CONVERSATIONS = 100;
 const TITLE_MAX_LENGTH = 40;
 
+/** Seed title kept verbatim in storage; only the display layer localizes it. */
+export const DEFAULT_CONVERSATION_TITLE = "New conversation";
+
 function generateTitle(firstUserMessage: string): string {
   const trimmed = firstUserMessage.trim();
   if (trimmed.length <= TITLE_MAX_LENGTH) {
@@ -110,7 +113,7 @@ export function useChatHistory(
     const now = Date.now();
     const newConversation: Conversation = {
       id,
-      title: "New conversation",
+      title: DEFAULT_CONVERSATION_TITLE,
       model,
       messages: [],
       mcpServerNames: [],
@@ -135,7 +138,7 @@ export function useChatHistory(
         const updatedMessages = [...conv.messages, newMessage];
         let title = conv.title;
         if (
-          title === "New conversation" &&
+          title === DEFAULT_CONVERSATION_TITLE &&
           newMessage.role === "user" &&
           conv.messages.filter((m) => m.role === "user").length === 0
         ) {
