@@ -1971,6 +1971,17 @@
       "cancelFailedRetry": "Failed to cancel periodic reload. Please try again."
     },
     "autoRouters": {
+      "typeSemantic": "Semantic",
+      "typeAdaptive": "Adaptive",
+      "typeQuality": "Quality",
+      "typeHeuristic": "Heuristic",
+      "typeLlmClassifier": "LLM Classifier",
+      "typeJevClassifier": "JEV Classifier",
+      "typeCapability": "Capability",
+      "typeFuseV2": "Fuse v2",
+      "typeHeuristicFirst": "Heuristic first",
+      "typeHybrid": "Hybrid",
+      "typeCustomClassifier": "Custom classifier",
       "title": "Auto Routers",
       "description": "Auto routers sit above your deployments and pick a model per request. They are called like any other model, so clients keep using a single model name.",
       "addButton": "Add Auto Router",

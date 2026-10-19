@@ -18,13 +18,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/cva.config";
 
-import { AutoRouterRow } from "./autoRouterRows";
+import { AutoRouterRow, autoRouterTypeLabelKey } from "./autoRouterRows";
 import { fitPills } from "./fitPills";
 
 function TypeCell({ row }: { row: AutoRouterRow }) {
+  const t = useTranslations("models.autoRouters");
+  const labelKey = autoRouterTypeLabelKey(row.typeLabel);
   return (
     <Badge variant="secondary" className="font-normal">
-      {row.typeLabel}
+      {labelKey ? t(labelKey) : row.typeLabel}
     </Badge>
   );
 }

@@ -16,7 +16,7 @@ import { type ModelWriteScope } from "@/utils/modelPermissions";
 import { Team } from "@/components/networking";
 
 import { AutoRoutersTable } from "./AutoRoutersTable";
-import { AutoRouterRow, toAutoRouterRows } from "./autoRouterRows";
+import { AutoRouterRow, autoRouterTypeLabelKey, toAutoRouterRows } from "./autoRouterRows";
 
 interface AutoRoutersPanelProps {
   accessToken: string;
@@ -37,6 +37,10 @@ export function AutoRoutersPanel({
   createScope,
 }: AutoRoutersPanelProps) {
   const t = useTranslations("models.autoRouters");
+  const renderTypeLabel = (row: AutoRouterRow): string => {
+    const labelKey = autoRouterTypeLabelKey(row.typeLabel);
+    return labelKey ? t(labelKey) : row.typeLabel;
+  };
   const canCreate = createScope !== "forbidden";
   const { data: deployments, isLoading } = useAutoRouters();
   const invalidateAutoRouters = useInvalidateAutoRouters();
@@ -128,7 +132,7 @@ export function AutoRoutersPanel({
           resourceInformationTitle={t("resourceTitle")}
           resourceInformation={[
             { label: t("table.name"), value: deletingRouter.name },
-            { label: t("table.type"), value: deletingRouter.typeLabel },
+            { label: t("table.type"), value: renderTypeLabel(deletingRouter) },
             { label: "ID", value: deletingRouter.id },
           ]}
           onCancel={() => setDeletingRouter(null)}

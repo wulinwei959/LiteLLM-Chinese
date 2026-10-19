@@ -1970,6 +1970,17 @@
       "cancelFailedRetry": "取消周期重载失败，请重试。"
     },
     "autoRouters": {
+      "typeSemantic": "语义",
+      "typeAdaptive": "自适应",
+      "typeQuality": "质量",
+      "typeHeuristic": "启发式",
+      "typeLlmClassifier": "LLM 分类器",
+      "typeJevClassifier": "JEV 分类器",
+      "typeCapability": "能力",
+      "typeFuseV2": "Fuse v2",
+      "typeHeuristicFirst": "启发式优先",
+      "typeHybrid": "混合",
+      "typeCustomClassifier": "自定义分类器",
       "title": "自动路由器",
       "description": "自动路由器位于部署之上，为每个请求选择一个模型。它们像任何其他模型一样被调用，因此客户端可以继续使用单一模型名称。",
       "addButton": "添加自动路由器",

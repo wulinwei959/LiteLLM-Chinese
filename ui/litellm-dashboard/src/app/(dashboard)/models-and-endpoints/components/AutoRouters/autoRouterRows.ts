@@ -68,6 +68,25 @@ const COMPLEXITY_TYPE_LABELS: Record<string, string> = {
 export const complexityTypeLabel = (config: Record<string, unknown>): string =>
   (typeof config.classifier_type === "string" && COMPLEXITY_TYPE_LABELS[config.classifier_type]) || "Heuristic";
 
+const TYPE_LABEL_KEYS = {
+  Semantic: "typeSemantic",
+  Adaptive: "typeAdaptive",
+  Quality: "typeQuality",
+  Heuristic: "typeHeuristic",
+  "LLM Classifier": "typeLlmClassifier",
+  "JEV Classifier": "typeJevClassifier",
+  Capability: "typeCapability",
+  "Fuse v2": "typeFuseV2",
+  "Heuristic first": "typeHeuristicFirst",
+  Hybrid: "typeHybrid",
+  "Custom classifier": "typeCustomClassifier",
+} as const;
+
+export type AutoRouterTypeLabelKey = (typeof TYPE_LABEL_KEYS)[keyof typeof TYPE_LABEL_KEYS];
+
+export const autoRouterTypeLabelKey = (label: string): AutoRouterTypeLabelKey | undefined =>
+  TYPE_LABEL_KEYS[label as keyof typeof TYPE_LABEL_KEYS];
+
 interface Presentation {
   typeLabel: string;
   targets: string[];
