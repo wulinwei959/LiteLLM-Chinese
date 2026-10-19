@@ -8636,6 +8636,8 @@
       "errorGeneratingResponse": "Error occurred while generating model response. Please try again. Error: {error}",
       "errorGeneratingImage": "Error occurred while generating image. Please try again. Error: {error}",
       "errorGeneratingAudio": "Error occurred while generating audio. Please try again. Error: {error}",
+      "errorGeneratingSpeech": "Error occurred while generating speech. Please try again. Error: {error}",
+      "errorMakingEmbeddingsRequest": "Error occurred while making embeddings request. Please try again. Error: {error}",
       "errorTranscribingAudio": "Error occurred while transcribing audio. Please try again. Error: {error}",
       "errorGeneratingEmbeddings": "Error occurred while generating embeddings. Please try again. Error: {error}",
       "errorFetchingAgents": "Error occurred while fetching agents. Please try again. Error: {error}",

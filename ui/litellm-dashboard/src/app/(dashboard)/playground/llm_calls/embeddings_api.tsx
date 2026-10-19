@@ -5,8 +5,10 @@ import {
   type CustomHeaders,
   withRequiredHeaders,
 } from "@/components/llm_calls/request_headers";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 
 export async function makeOpenAIEmbeddingsRequest(
+  t: PlaygroundTranslator,
   input: string,
   updateEmbeddingsUI: (embeddings: string, model?: string) => void,
   selectedModel: string,
@@ -58,7 +60,7 @@ export async function makeOpenAIEmbeddingsRequest(
 
     updateEmbeddingsUI(JSON.stringify(embedding), responseData?.model ?? selectedModel);
   } catch (error: unknown) {
-    toast.fromError(`Error occurred while making embeddings request. Please try again. Error: ${error}`);
+    toast.fromError(t("llmCalls.errorMakingEmbeddingsRequest", { error: String(error) }));
 
     throw error; // Re-throw to allow the caller to handle the error
   }

@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { makeOpenAIEmbeddingsRequest } from "./embeddings_api";
 
+import { createTranslator } from "next-intl";
+import en from "@/messages/en.json";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
+
+const t = createTranslator({ locale: "en", messages: en, namespace: "playground" }) as unknown as PlaygroundTranslator;
+
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => "https://example.com"),
   getGlobalLitellmHeaderName: vi.fn(() => "Authorization"),
@@ -37,6 +43,7 @@ describe("embeddings_api", () => {
 
   it("should make a request to the embeddings endpoint", async () => {
     await makeOpenAIEmbeddingsRequest(
+      t,
       "Hello, world!",
       mockUpdateEmbeddingsUI,
       "text-embedding-3-small",
@@ -63,7 +70,7 @@ describe("embeddings_api", () => {
   });
 
   it("should not include encoding_format when making the request", async () => {
-    await makeOpenAIEmbeddingsRequest("Sample text", mockUpdateEmbeddingsUI, "text-embedding-3-small", "abcdef", []);
+    await makeOpenAIEmbeddingsRequest(t, "Sample text", mockUpdateEmbeddingsUI, "text-embedding-3-small", "abcdef", []);
 
     const fetchCall = mockFetch.mock.calls[0];
     const options = fetchCall[1] as RequestInit;
@@ -79,6 +86,7 @@ describe("embeddings_api", () => {
 
   it("sends custom headers on the fetch request, letting them override the tags header", async () => {
     await makeOpenAIEmbeddingsRequest(
+      t,
       "Sample text",
       mockUpdateEmbeddingsUI,
       "text-embedding-3-small",
@@ -99,6 +107,7 @@ describe("embeddings_api", () => {
 
   it("does not let custom headers replace the gateway auth or content-type headers", async () => {
     await makeOpenAIEmbeddingsRequest(
+      t,
       "Sample text",
       mockUpdateEmbeddingsUI,
       "text-embedding-3-small",

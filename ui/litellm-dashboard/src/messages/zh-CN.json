@@ -8631,6 +8631,8 @@
       "errorGeneratingResponse": "生成模型响应时出错。请重试。错误: {error}",
       "errorGeneratingImage": "生成图片时出错。请重试。错误: {error}",
       "errorGeneratingAudio": "生成音频时出错。请重试。错误: {error}",
+      "errorGeneratingSpeech": "生成语音时出错。请重试。错误: {error}",
+      "errorMakingEmbeddingsRequest": "发起嵌入请求时出错。请重试。错误: {error}",
       "errorTranscribingAudio": "转录音频时出错。请重试。错误: {error}",
       "errorGeneratingEmbeddings": "生成嵌入向量时出错。请重试。错误: {error}",
       "errorFetchingAgents": "获取智能体时出错。请重试。错误: {error}",

@@ -2,8 +2,10 @@ import openai from "openai";
 import { getProxyBaseUrl } from "@/components/networking";
 import { buildPlaygroundHeaders, type CustomHeaders } from "@/components/llm_calls/request_headers";
 import { toast } from "@/lib/toast";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 
 export async function makeOpenAIImageGenerationRequest(
+  t: PlaygroundTranslator,
   prompt: string,
   updateUI: (imageUrl: string, model: string) => void,
   selectedModel: string,
@@ -53,7 +55,7 @@ export async function makeOpenAIImageGenerationRequest(
   } catch (error) {
     if (signal?.aborted) {
     } else {
-      toast.fromError(`Error occurred while generating image. Please try again. Error: ${error}`);
+      toast.fromError(t("llmCalls.errorGeneratingImage", { error: String(error) }));
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

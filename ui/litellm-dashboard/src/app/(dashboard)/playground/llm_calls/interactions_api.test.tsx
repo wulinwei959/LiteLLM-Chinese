@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { makeInteractionsRequest } from "./interactions_api";
 
+import { createTranslator } from "next-intl";
+import en from "@/messages/en.json";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
+
+const t = createTranslator({ locale: "en", messages: en, namespace: "playground" }) as unknown as PlaygroundTranslator;
+
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => "https://example.com"),
   getGlobalLitellmHeaderName: vi.fn(() => "Authorization"),
@@ -46,7 +52,7 @@ describe("interactions_api", () => {
 
     mockFetch.mockResolvedValue({ ok: true, body: sseBody(sse) } as Response);
 
-    await makeInteractionsRequest("hi", mockUpdateUI, "gemini-flash", "token");
+    await makeInteractionsRequest(t, "hi", mockUpdateUI, "gemini-flash", "token");
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
     expect(mockFetch.mock.calls[0][0]).toBe("https://example.com/v1beta/interactions");
@@ -67,7 +73,7 @@ describe("interactions_api", () => {
 
     mockFetch.mockResolvedValue({ ok: true, body: sseBody(sse) } as Response);
 
-    await makeInteractionsRequest("hi", mockUpdateUI, "gpt-mini", "token");
+    await makeInteractionsRequest(t, "hi", mockUpdateUI, "gpt-mini", "token");
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
     expect(mockFetch.mock.calls[0][0]).toBe("https://example.com/v1beta/interactions");

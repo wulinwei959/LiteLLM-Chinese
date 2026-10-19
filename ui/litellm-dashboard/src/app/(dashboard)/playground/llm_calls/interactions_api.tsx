@@ -5,8 +5,10 @@ import {
   type CustomHeaders,
   withRequiredHeaders,
 } from "@/components/llm_calls/request_headers";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 
 export async function makeInteractionsRequest(
+  t: PlaygroundTranslator,
   input: string,
   updateUI: (text: string, model?: string) => void,
   selectedModel: string,
@@ -113,7 +115,7 @@ export async function makeInteractionsRequest(
     if (signal?.aborted) {
       throw error;
     }
-    toast.fromError(`Error occurred while making Interactions API request. Error: ${error}`);
+    toast.fromError(t("llmCalls.errorInteractionsApi", { error: String(error) }));
     throw error;
   }
 }

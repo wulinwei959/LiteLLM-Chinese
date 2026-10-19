@@ -4,6 +4,12 @@ import { makeOpenAIResponsesRequest } from "./responses_api";
 import { MessageType } from "../chat_ui/types";
 import type { TokenUsage } from "../chat_ui/ResponseMetrics";
 
+import { createTranslator } from "next-intl";
+import en from "@/messages/en.json";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
+
+const t = createTranslator({ locale: "en", messages: en, namespace: "playground" }) as unknown as PlaygroundTranslator;
+
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => "https://example.com"),
 }));
@@ -57,7 +63,7 @@ describe("responses_api", () => {
   });
 
   it("should send a basic responses request", async () => {
-    await makeOpenAIResponsesRequest(messages, mockUpdateTextUI, "gpt-4", "test-token");
+    await makeOpenAIResponsesRequest(t, messages, mockUpdateTextUI, "gpt-4", "test-token");
 
     expect(mockResponsesCreate).toHaveBeenCalledTimes(1);
     expect(mockResponsesCreate).toHaveBeenCalledWith(
@@ -99,6 +105,7 @@ describe("responses_api", () => {
     const onResponseId = vi.fn();
 
     await makeOpenAIResponsesRequest(
+      t,
       messages,
       mockUpdateTextUI,
       "gpt-4",
@@ -140,6 +147,7 @@ describe("responses_api", () => {
     const onTotalLatency = vi.fn();
     const callWithStreaming = (streamingEnabled: boolean) =>
       makeOpenAIResponsesRequest(
+        t,
         messages,
         mockUpdateTextUI,
         "gpt-4",
@@ -199,6 +207,7 @@ describe("responses_api", () => {
     const onUsageData = vi.fn();
 
     await makeOpenAIResponsesRequest(
+      t,
       messages,
       mockUpdateTextUI,
       "gpt-4",
@@ -220,6 +229,7 @@ describe("responses_api", () => {
     const onUsageData = vi.fn();
 
     await makeOpenAIResponsesRequest(
+      t,
       messages,
       mockUpdateTextUI,
       "gpt-4",
@@ -249,6 +259,7 @@ describe("responses_api", () => {
     const onUsageData = vi.fn();
 
     await makeOpenAIResponsesRequest(
+      t,
       messages,
       mockUpdateTextUI,
       "gpt-4",
@@ -278,6 +289,7 @@ describe("responses_api", () => {
     const onUsageData = vi.fn();
 
     await makeOpenAIResponsesRequest(
+      t,
       messages,
       mockUpdateTextUI,
       "gpt-4",
@@ -308,6 +320,7 @@ describe("responses_api", () => {
     const onUsageData = vi.fn();
 
     await makeOpenAIResponsesRequest(
+      t,
       messages,
       mockUpdateTextUI,
       "gpt-4",
@@ -373,6 +386,7 @@ describe("responses_api", () => {
     };
 
     await makeOpenAIResponsesRequest(
+      t,
       messages,
       mockUpdateTextUI,
       "gpt-4",
@@ -433,6 +447,7 @@ describe("responses_api prompt cache usage", () => {
 
     const onUsageData = vi.fn();
     await makeOpenAIResponsesRequest(
+      t,
       [{ role: "user", content: "Hello" }],
       vi.fn(),
       "gpt-4",
@@ -513,6 +528,7 @@ describe("responses_api response cache", () => {
     const onUsageData = vi.fn();
 
     await makeOpenAIResponsesRequest(
+      t,
       messages,
       mockUpdateTextUI,
       "gpt-4",
@@ -557,6 +573,7 @@ describe("responses_api response cache", () => {
     const onUsageData = vi.fn();
 
     await makeOpenAIResponsesRequest(
+      t,
       messages,
       mockUpdateTextUI,
       "gpt-4",
@@ -598,6 +615,7 @@ describe("responses_api response cache", () => {
     const onUsageData = vi.fn();
 
     await makeOpenAIResponsesRequest(
+      t,
       messages,
       mockUpdateTextUI,
       "gpt-4",
@@ -622,6 +640,7 @@ describe("responses_api custom headers", () => {
     mockResponsesCreate.mockReturnValueOnce(nonStreamingResponse({ id: "resp_1", output: [] }));
 
     await makeOpenAIResponsesRequest(
+      t,
       [{ role: "user", content: "Hello" }],
       vi.fn(),
       "gpt-4",

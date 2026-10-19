@@ -55,6 +55,7 @@ function getProviderFromModelName(modelName: string): string {
 export default function ChatConversationPage() {
   const router = useRouter();
   const t = useTranslations("chat.page");
+  const llmT = useTranslations("playground");
   const {
     accessToken,
     userId,
@@ -194,6 +195,7 @@ export default function ChatConversationPage() {
 
       try {
         await makeOpenAIResponsesRequest(
+          llmT,
           history,
           (_role: string, chunk: string) => {
             accumulatedContent += chunk;
@@ -257,6 +259,7 @@ export default function ChatConversationPage() {
       selectedModel,
       selectedMCPServers,
       accessToken,
+      llmT,
       createConversation,
       appendMessage,
       updateLastAssistantMessage,

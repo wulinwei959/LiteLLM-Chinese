@@ -2,9 +2,11 @@ import openai from "openai";
 import { getProxyBaseUrl } from "@/components/networking";
 import { buildPlaygroundHeaders, type CustomHeaders } from "@/components/llm_calls/request_headers";
 import { toast } from "@/lib/toast";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 import type { OpenAIVoice } from "../components/chat_ui/chatConstants";
 
 export async function makeOpenAIAudioSpeechRequest(
+  t: PlaygroundTranslator,
   input: string,
   voice: OpenAIVoice,
   updateUI: (audioUrl: string, model: string) => void,
@@ -51,7 +53,7 @@ export async function makeOpenAIAudioSpeechRequest(
   } catch (error) {
     if (signal?.aborted) {
     } else {
-      toast.fromError(`Error occurred while generating speech. Please try again. Error: ${error}`);
+      toast.fromError(t("llmCalls.errorGeneratingSpeech", { error: String(error) }));
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

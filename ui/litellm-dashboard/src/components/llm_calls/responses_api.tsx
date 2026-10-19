@@ -3,6 +3,7 @@ import { MessageType } from "../chat_ui/types";
 import { TokenUsage } from "../chat_ui/ResponseMetrics";
 import { getProxyBaseUrl } from "@/components/networking";
 import { toast } from "@/lib/toast";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 import { extractPromptCacheTokens } from "@/utils/promptCacheUsage";
 import { parseUsageCost } from "./usage_cost";
 import { buildPlaygroundHeaders, type CustomHeaders } from "./request_headers";
@@ -61,6 +62,7 @@ const responseAsEvents = (response: NonStreamedResponse): SynthesizedResponseEve
 };
 
 export async function makeOpenAIResponsesRequest(
+  t: PlaygroundTranslator,
   messages: MessageType[],
   updateTextUI: (role: string, delta: string, model?: string) => void,
   selectedModel: string,
@@ -329,7 +331,7 @@ export async function makeOpenAIResponsesRequest(
   } catch (error) {
     if (signal?.aborted) {
     } else {
-      toast.fromError(`Error occurred while generating model response. Please try again. Error: ${error}`);
+      toast.fromError(t("llmCalls.errorGeneratingResponse", { error: String(error) }));
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

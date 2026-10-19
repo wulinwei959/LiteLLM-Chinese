@@ -3,6 +3,12 @@ import Anthropic from "@anthropic-ai/sdk";
 import { makeAnthropicMessagesRequest } from "./anthropic_messages";
 import type { TokenUsage } from "@/components/chat_ui/ResponseMetrics";
 
+import { createTranslator } from "next-intl";
+import en from "@/messages/en.json";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
+
+const t = createTranslator({ locale: "en", messages: en, namespace: "playground" }) as unknown as PlaygroundTranslator;
+
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => "https://example.com"),
 }));
@@ -41,6 +47,7 @@ describe("anthropic_messages prompt cache usage", () => {
 
     const onUsageData = vi.fn();
     await makeAnthropicMessagesRequest(
+      t,
       [{ role: "user", content: "Hello" }],
       vi.fn(),
       "claude-haiku-4-5",
@@ -93,6 +100,7 @@ describe("anthropic_messages non-streaming", () => {
     const onUsageData = vi.fn();
 
     await makeAnthropicMessagesRequest(
+      t,
       [{ role: "user", content: "Hello" }],
       updateTextUI,
       "claude-haiku-4-5",
@@ -118,7 +126,7 @@ describe("anthropic_messages non-streaming", () => {
     async function* emptyStream() {}
     mockMessagesStream.mockReturnValue(emptyStream());
 
-    await makeAnthropicMessagesRequest([{ role: "user", content: "Hello" }], vi.fn(), "claude-haiku-4-5", "test-token");
+    await makeAnthropicMessagesRequest(t, [{ role: "user", content: "Hello" }], vi.fn(), "claude-haiku-4-5", "test-token");
 
     expect(mockMessagesCreate).not.toHaveBeenCalled();
     expect(mockMessagesStream.mock.calls[0][0]).toMatchObject({ stream: true });
@@ -128,6 +136,7 @@ describe("anthropic_messages non-streaming", () => {
     mockMessagesCreate.mockResolvedValue({ content: [{ type: "text", text: "OK" }], usage: {} });
 
     await makeAnthropicMessagesRequest(
+      t,
       [{ role: "user", content: "Hello" }],
       vi.fn(),
       "claude-haiku-4-5",

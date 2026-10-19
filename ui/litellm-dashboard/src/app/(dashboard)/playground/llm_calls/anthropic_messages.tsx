@@ -6,6 +6,7 @@ import { buildPlaygroundHeaders, type CustomHeaders } from "@/components/llm_cal
 import { MCPServer, MCPToolset } from "@/components/mcp_tools/types";
 import { getProxyBaseUrl } from "@/components/networking";
 import { toast } from "@/lib/toast";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 import { extractPromptCacheTokens } from "@/utils/promptCacheUsage";
 
 const toTokenUsage = (usage: Anthropic.Usage): TokenUsage => ({
@@ -16,6 +17,7 @@ const toTokenUsage = (usage: Anthropic.Usage): TokenUsage => ({
 });
 
 export async function makeAnthropicMessagesRequest(
+  t: PlaygroundTranslator,
   messages: MessageType[],
   updateTextUI: (role: string, delta: string, model?: string) => void,
   selectedModel: string,
@@ -131,7 +133,7 @@ export async function makeAnthropicMessagesRequest(
   } catch (error) {
     if (signal?.aborted) {
     } else {
-      toast.fromError(`Error occurred while generating model response. Please try again. Error: ${error}`);
+      toast.fromError(t("llmCalls.errorGeneratingResponse", { error: String(error) }));
     }
     throw error;
   }

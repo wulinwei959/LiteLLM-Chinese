@@ -943,6 +943,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
         } else if (endpointType === EndpointType.IMAGE) {
           // For image generation
           await makeOpenAIImageGenerationRequest(
+            t,
             inputMessage,
             (imageUrl, model) => updateImageUI(imageUrl, model),
             selectedModel,
@@ -955,6 +956,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
         } else if (endpointType === EndpointType.SPEECH) {
           // For audio speech
           await makeOpenAIAudioSpeechRequest(
+            t,
             inputMessage,
             selectedVoice,
             (audioUrl, model) => updateAudioUI(audioUrl, model),
@@ -1001,6 +1003,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
           }
 
           await makeOpenAIResponsesRequest(
+            t,
             apiChatHistory,
             (role, delta, model) => updateTextUI(role, delta, model),
             selectedModel,
@@ -1037,6 +1040,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
           ];
 
           await makeAnthropicMessagesRequest(
+            t,
             apiChatHistory,
             (role, delta, model) => updateTextUI(role, delta, model),
             selectedModel,
@@ -1060,6 +1064,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
           );
         } else if (endpointType === EndpointType.EMBEDDINGS) {
           await makeOpenAIEmbeddingsRequest(
+            t,
             inputMessage,
             (embeddings, model) => updateEmbeddingsUI(embeddings, model),
             selectedModel,
@@ -1089,6 +1094,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
           }
         } else if (endpointType === EndpointType.INTERACTIONS) {
           await makeInteractionsRequest(
+            t,
             inputMessage,
             (text, model) => updateTextUI("assistant", text, model),
             selectedModel,
