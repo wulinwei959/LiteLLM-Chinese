@@ -3,6 +3,7 @@
  */
 
 import { PluginSource } from "./types";
+import type { SkillsTranslator } from "@/lib/i18n/translators";
 
 export interface SkillSourcePreview {
   parsed: PluginSource;
@@ -88,7 +89,7 @@ const toKebabCase = (value: string): string =>
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-const parseGitHubSource = (url: URL, subPath?: string): SkillSourcePreview | null => {
+const parseGitHubSource = (t: SkillsTranslator, url: URL, subPath?: string): SkillSourcePreview | null => {
   const parts = pathSegments(url);
   if (parts.length < 2) {
     return null;
@@ -103,7 +104,7 @@ const parseGitHubSource = (url: URL, subPath?: string): SkillSourcePreview | nul
   const repoUrl = `https://github.com/${repoFull}`;
   const repoPreview: SkillSourcePreview = {
     parsed: { source: "github", repo: repoFull },
-    label: `GitHub repo — ${repoFull}`,
+    label: t("sourceLabel.githubRepo", { name: repoFull }),
     suggestedName: toKebabCase(repoBase),
   };
 
@@ -121,7 +122,7 @@ const parseGitHubSource = (url: URL, subPath?: string): SkillSourcePreview | nul
     }
     return {
       parsed: { source: "git-subdir", url: repoUrl, path },
-      label: `GitHub subdir — ${repoFull} @ ${path}`,
+      label: t("sourceLabel.githubSubdir", { repo: repoFull, path }),
       suggestedName: toKebabCase(lastSegment(path)),
     };
   }
@@ -137,7 +138,7 @@ const parseGitHubSource = (url: URL, subPath?: string): SkillSourcePreview | nul
     }
     return {
       parsed: { source: "git-subdir", url: repoUrl, path: normalized },
-      label: `GitHub subdir — ${repoFull} @ ${normalized}`,
+      label: t("sourceLabel.githubSubdir", { repo: repoFull, path: normalized }),
       suggestedName: toKebabCase(lastSegment(normalized)),
     };
   }
@@ -146,9 +147,8 @@ const parseGitHubSource = (url: URL, subPath?: string): SkillSourcePreview | nul
 };
 
 const buildGitSourcePreview = (
-  kind: "Git" | "SSH",
-  repoUrl: string,
-  repoName: string,
+  t: SkillsTranslator,
+  repo: { kind: "Git" | "SSH"; url: string; name: string },
   subPath?: string,
 ): SkillSourcePreview | null => {
   const normalized = normalizeSubPath(subPath ?? "");
@@ -157,25 +157,25 @@ const buildGitSourcePreview = (
       return null;
     }
     return {
-      parsed: { source: "git-subdir", url: repoUrl, path: normalized },
-      label: `${kind} subdir — ${repoUrl} @ ${normalized}`,
+      parsed: { source: "git-subdir", url: repo.url, path: normalized },
+      label: t("sourceLabel.gitSubdir", { brand: repo.kind, repo: repo.url, path: normalized }),
       suggestedName: toKebabCase(lastSegment(normalized)),
     };
   }
 
   return {
-    parsed: { source: "url", url: repoUrl },
-    label: `${kind} repo — ${repoUrl}`,
-    suggestedName: toKebabCase(repoName),
+    parsed: { source: "url", url: repo.url },
+    label: t("sourceLabel.gitRepo", { brand: repo.kind, url: repo.url }),
+    suggestedName: toKebabCase(repo.name),
   };
 };
 
-const parseRawGitSource = (url: URL, subPath?: string): SkillSourcePreview | null => {
+const parseRawGitSource = (t: SkillsTranslator, url: URL, subPath?: string): SkillSourcePreview | null => {
   if (pathSegments(url).length < 2) {
     return null;
   }
   const repoName = lastSegment(url.pathname).replace(/\.git$/, "");
-  return buildGitSourcePreview("Git", buildRepoUrl(url), repoName, subPath);
+  return buildGitSourcePreview(t, { kind: "Git", url: buildRepoUrl(url), name: repoName }, subPath);
 };
 
 /**
@@ -185,7 +185,7 @@ const parseRawGitSource = (url: URL, subPath?: string): SkillSourcePreview | nul
  * rewritten to `ssh://` only to reuse the https host and credential rules, and only a URL that
  * survives that round trip unchanged is accepted, which keeps traversal segments off the feed.
  */
-const parseSshSource = (raw: string, subPath?: string): SkillSourcePreview | null => {
+const parseSshSource = (t: SkillsTranslator, raw: string, subPath?: string): SkillSourcePreview | null => {
   const trimmed = raw.trim();
   const scp = SSH_SCP_REGEX.exec(trimmed);
   const candidate = scp ? `${SSH_SCHEME}${scp[1]}@${scp[2]}/${scp[3]}` : trimmed;
@@ -200,12 +200,16 @@ const parseSshSource = (raw: string, subPath?: string): SkillSourcePreview | nul
   if (pathStart === -1 || url.pathname !== candidate.slice(pathStart) || pathSegments(url).length < 2) {
     return null;
   }
-  return buildGitSourcePreview("SSH", trimmed, lastSegment(url.pathname).replace(/\.git$/i, ""), subPath);
+  return buildGitSourcePreview(
+    t,
+    { kind: "SSH", url: trimmed, name: lastSegment(url.pathname).replace(/\.git$/i, "") },
+    subPath,
+  );
 };
 
-const parseArchiveSource = (url: URL): SkillSourcePreview => ({
+const parseArchiveSource = (t: SkillsTranslator, url: URL): SkillSourcePreview => ({
   parsed: { source: "archive", url: url.href },
-  label: `Zip archive — ${url.host}${url.pathname}`,
+  label: t("sourceLabel.zipArchive", { path: `${url.host}${url.pathname}` }),
   suggestedName: toKebabCase(lastSegment(url.pathname).replace(ZIP_ARCHIVE_REGEX, "")),
 });
 
@@ -216,8 +220,8 @@ const parseArchiveSource = (url: URL): SkillSourcePreview => ({
  * authenticates with the user's own key; every other host is treated as a raw repo URL,
  * with an optional subfolder turning it into git-subdir.
  */
-export const parseSkillSource = (rawUrl: string, subPath?: string): SkillSourcePreview | null => {
-  const ssh = parseSshSource(rawUrl, subPath);
+export const parseSkillSource = (t: SkillsTranslator, rawUrl: string, subPath?: string): SkillSourcePreview | null => {
+  const ssh = parseSshSource(t, rawUrl, subPath);
   if (ssh) {
     return ssh;
   }
@@ -226,12 +230,12 @@ export const parseSkillSource = (rawUrl: string, subPath?: string): SkillSourceP
     return null;
   }
   if (ZIP_ARCHIVE_REGEX.test(url.pathname)) {
-    return parseArchiveSource(url);
+    return parseArchiveSource(t, url);
   }
   if (url.hostname.replace(/^www\./, "") === GITHUB_HOST) {
-    return parseGitHubSource(url, subPath);
+    return parseGitHubSource(t, url, subPath);
   }
-  return parseRawGitSource(url, subPath);
+  return parseRawGitSource(t, url, subPath);
 };
 
 /**
@@ -277,7 +281,7 @@ export const validatePluginName = (name: string): boolean => {
 /**
  * Get human-readable source display text
  */
-export const getSourceDisplayText = (source: PluginSource): string => {
+export const getSourceDisplayText = (t: SkillsTranslator, source: PluginSource): string => {
   if (source.source === "github" && source.repo) {
     return `GitHub: ${source.repo}`;
   }
@@ -287,7 +291,7 @@ export const getSourceDisplayText = (source: PluginSource): string => {
   if ((source.source === "url" || source.source === "archive") && source.url) {
     return source.url;
   }
-  return "Unknown source";
+  return t("sourceUnknown");
 };
 
 /**

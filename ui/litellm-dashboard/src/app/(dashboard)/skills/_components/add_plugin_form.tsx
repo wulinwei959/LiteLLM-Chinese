@@ -158,12 +158,12 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
   const [subPathLock, setSubPathLock] = useState<SubPathLock | null>(null);
 
   const recomputePreview = (skillUrl: string, subPath: string) => {
-    const lock = subPathLockFor(parseSkillSource(skillUrl)?.parsed.source);
+    const lock = subPathLockFor(parseSkillSource(t, skillUrl)?.parsed.source);
     setSubPathLock(lock);
     if (lock && form.getValues("subPath")) {
       form.setValue("subPath", "");
     }
-    const preview = parseSkillSource(skillUrl, lock ? undefined : subPath);
+    const preview = parseSkillSource(t, skillUrl, lock ? undefined : subPath);
     if (archiveUrlOf(preview) !== archiveUrlOf(urlPreview) && form.getValues("sha256")) {
       form.setValue("sha256", "");
     }

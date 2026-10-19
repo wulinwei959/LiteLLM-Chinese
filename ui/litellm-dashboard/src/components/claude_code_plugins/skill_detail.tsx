@@ -7,6 +7,7 @@ import { Plugin, PluginSource } from "./types";
 
 const SkillSource: React.FC<{ source: PluginSource }> = ({ source }) => {
   const t = useTranslations("claudeCodePlugins");
+  const skillsT = useTranslations("skills");
   const link = getSourceLink(source);
   const href = link && source.source === "git-subdir" && source.path ? `${link}/tree/main/${source.path}` : link;
   if (href) {
@@ -31,7 +32,7 @@ const SkillSource: React.FC<{ source: PluginSource }> = ({ source }) => {
   return (
     <div className="mb-6">
       <div className="mb-1 text-xs text-muted-foreground">{t("source")}</div>
-      <div className="break-all text-[13px] text-foreground">{getSourceDisplayText(source)}</div>
+      <div className="break-all text-[13px] text-foreground">{getSourceDisplayText(skillsT, source)}</div>
     </div>
   );
 };

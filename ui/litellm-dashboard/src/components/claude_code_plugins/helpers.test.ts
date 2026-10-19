@@ -14,6 +14,11 @@ import {
   isValidSha256,
   buildMarketplaceSettingsSnippet,
 } from "./helpers";
+import { createTranslator } from "next-intl";
+import en from "@/messages/en.json";
+import type { SkillsTranslator } from "@/lib/i18n/translators";
+
+const t = createTranslator({ locale: "en", messages: en, namespace: "skills" }) as unknown as SkillsTranslator;
 
 describe("buildMarketplaceSettingsSnippet", () => {
   it("nests the url under a source object so Claude Code accepts the marketplace", () => {
@@ -68,33 +73,33 @@ describe("validatePluginName", () => {
 
 describe("getSourceDisplayText", () => {
   it("shows github repo", () => {
-    expect(getSourceDisplayText({ source: "github", repo: "org/repo" })).toBe("GitHub: org/repo");
+    expect(getSourceDisplayText(t, { source: "github", repo: "org/repo" })).toBe("GitHub: org/repo");
   });
 
   it("shows url", () => {
-    expect(getSourceDisplayText({ source: "url", url: "https://example.com" })).toBe("https://example.com");
+    expect(getSourceDisplayText(t, { source: "url", url: "https://example.com" })).toBe("https://example.com");
   });
 
   it("shows git-subdir as url @ path for a github subdir", () => {
-    expect(getSourceDisplayText({ source: "git-subdir", url: "https://github.com/org/repo", path: "plugins/x" })).toBe(
-      "https://github.com/org/repo @ plugins/x",
-    );
+    expect(
+      getSourceDisplayText(t, { source: "git-subdir", url: "https://github.com/org/repo", path: "plugins/x" }),
+    ).toBe("https://github.com/org/repo @ plugins/x");
   });
 
   it("shows git-subdir as url @ path for a gitlab subdir", () => {
-    expect(getSourceDisplayText({ source: "git-subdir", url: "https://gitlab.com/org/repo", path: "sub/dir" })).toBe(
+    expect(getSourceDisplayText(t, { source: "git-subdir", url: "https://gitlab.com/org/repo", path: "sub/dir" })).toBe(
       "https://gitlab.com/org/repo @ sub/dir",
     );
   });
 
   it("shows the archive url for an archive source", () => {
-    expect(getSourceDisplayText({ source: "archive", url: "https://bucket.s3.amazonaws.com/skill.zip" })).toBe(
+    expect(getSourceDisplayText(t, { source: "archive", url: "https://bucket.s3.amazonaws.com/skill.zip" })).toBe(
       "https://bucket.s3.amazonaws.com/skill.zip",
     );
   });
 
   it("returns unknown for missing data", () => {
-    expect(getSourceDisplayText({ source: "github" })).toBe("Unknown source");
+    expect(getSourceDisplayText(t, { source: "github" })).toBe("Unknown source");
   });
 });
 
@@ -263,18 +268,18 @@ describe("parseKeywords", () => {
 
 describe("parseSkillSource", () => {
   it("parses a plain github repo", () => {
-    expect(parseSkillSource("github.com/org/repo")?.parsed).toEqual({ source: "github", repo: "org/repo" });
+    expect(parseSkillSource(t, "github.com/org/repo")?.parsed).toEqual({ source: "github", repo: "org/repo" });
   });
 
   it("strips a .git suffix from the github repo shorthand", () => {
-    expect(parseSkillSource("https://github.com/org/repo.git")?.parsed).toEqual({
+    expect(parseSkillSource(t, "https://github.com/org/repo.git")?.parsed).toEqual({
       source: "github",
       repo: "org/repo",
     });
   });
 
   it("parses a github tree URL into a git-subdir", () => {
-    expect(parseSkillSource("github.com/org/repo/tree/main/plugins/x")?.parsed).toEqual({
+    expect(parseSkillSource(t, "github.com/org/repo/tree/main/plugins/x")?.parsed).toEqual({
       source: "git-subdir",
       url: "https://github.com/org/repo",
       path: "plugins/x",
@@ -282,7 +287,7 @@ describe("parseSkillSource", () => {
   });
 
   it("drops a trailing file segment from a github blob URL", () => {
-    expect(parseSkillSource("github.com/org/repo/blob/main/x/SKILL.md")?.parsed).toEqual({
+    expect(parseSkillSource(t, "github.com/org/repo/blob/main/x/SKILL.md")?.parsed).toEqual({
       source: "git-subdir",
       url: "https://github.com/org/repo",
       path: "x",
@@ -290,7 +295,7 @@ describe("parseSkillSource", () => {
   });
 
   it("combines a github repo with an explicit subfolder", () => {
-    expect(parseSkillSource("github.com/org/repo", "plugins/x")?.parsed).toEqual({
+    expect(parseSkillSource(t, "github.com/org/repo", "plugins/x")?.parsed).toEqual({
       source: "git-subdir",
       url: "https://github.com/org/repo",
       path: "plugins/x",
@@ -298,21 +303,21 @@ describe("parseSkillSource", () => {
   });
 
   it("treats a gitlab repo as a raw url source", () => {
-    expect(parseSkillSource("gitlab.com/org/repo")?.parsed).toEqual({
+    expect(parseSkillSource(t, "gitlab.com/org/repo")?.parsed).toEqual({
       source: "url",
       url: "https://gitlab.com/org/repo",
     });
   });
 
   it("keeps the .git suffix on raw urls", () => {
-    expect(parseSkillSource("https://gitlab.com/org/repo.git")?.parsed).toEqual({
+    expect(parseSkillSource(t, "https://gitlab.com/org/repo.git")?.parsed).toEqual({
       source: "url",
       url: "https://gitlab.com/org/repo.git",
     });
   });
 
   it("combines a gitlab repo with an explicit subfolder", () => {
-    expect(parseSkillSource("gitlab.com/org/repo", "plugins/x")?.parsed).toEqual({
+    expect(parseSkillSource(t, "gitlab.com/org/repo", "plugins/x")?.parsed).toEqual({
       source: "git-subdir",
       url: "https://gitlab.com/org/repo",
       path: "plugins/x",
@@ -320,7 +325,7 @@ describe("parseSkillSource", () => {
   });
 
   it("combines a self-hosted host with an explicit subfolder", () => {
-    expect(parseSkillSource("https://git.acme.com/team/repo", "sub/dir")?.parsed).toEqual({
+    expect(parseSkillSource(t, "https://git.acme.com/team/repo", "sub/dir")?.parsed).toEqual({
       source: "git-subdir",
       url: "https://git.acme.com/team/repo",
       path: "sub/dir",
@@ -328,7 +333,7 @@ describe("parseSkillSource", () => {
   });
 
   it("lets a github URL-encoded subdir win over an also-provided subfolder", () => {
-    expect(parseSkillSource("github.com/org/repo/tree/main/plugins/x", "ignored/path")?.parsed).toEqual({
+    expect(parseSkillSource(t, "github.com/org/repo/tree/main/plugins/x", "ignored/path")?.parsed).toEqual({
       source: "git-subdir",
       url: "https://github.com/org/repo",
       path: "plugins/x",
@@ -336,17 +341,17 @@ describe("parseSkillSource", () => {
   });
 
   it("rejects traversal, absolute, and double-slash subfolders", () => {
-    expect(parseSkillSource("gitlab.com/org/repo", "../etc")).toBeNull();
-    expect(parseSkillSource("gitlab.com/org/repo", "/abs")).toBeNull();
-    expect(parseSkillSource("gitlab.com/org/repo", "a//b")).toBeNull();
+    expect(parseSkillSource(t, "gitlab.com/org/repo", "../etc")).toBeNull();
+    expect(parseSkillSource(t, "gitlab.com/org/repo", "/abs")).toBeNull();
+    expect(parseSkillSource(t, "gitlab.com/org/repo", "a//b")).toBeNull();
   });
 
   it("keeps an scp-style ssh clone url so private hosts authenticate with the user's key", () => {
-    expect(parseSkillSource("git@ghe.example.com:org/repo.git")?.parsed).toEqual({
+    expect(parseSkillSource(t, "git@ghe.example.com:org/repo.git")?.parsed).toEqual({
       source: "url",
       url: "git@ghe.example.com:org/repo.git",
     });
-    expect(parseSkillSource("git@ghe.example.com:org/repo.git")?.suggestedName).toBe("repo");
+    expect(parseSkillSource(t, "git@ghe.example.com:org/repo.git")?.suggestedName).toBe("repo");
   });
 
   it("stores an ssh clone url exactly as typed, so a forced .git suffix cannot break azure devops or codecommit", () => {
@@ -357,62 +362,62 @@ describe("parseSkillSource", () => {
       "ssh://apka1234@git-codecommit.us-east-1.amazonaws.com/v1/repos/my-repo",
       "ssh://git@ghe.example.com:2222/org/nested/repo.git",
     ]) {
-      expect(parseSkillSource(url)?.parsed).toEqual({ source: "url", url });
+      expect(parseSkillSource(t, url)?.parsed).toEqual({ source: "url", url });
     }
-    expect(parseSkillSource("git@ssh.dev.azure.com:v3/org/project/repo")?.suggestedName).toBe("repo");
+    expect(parseSkillSource(t, "git@ssh.dev.azure.com:v3/org/project/repo")?.suggestedName).toBe("repo");
   });
 
   it("accepts an internal host whose last label is not alphabetic, matching the https rule", () => {
-    expect(parseSkillSource("git@gitlab.internal.k8s2:org/repo.git")?.parsed).toEqual({
+    expect(parseSkillSource(t, "git@gitlab.internal.k8s2:org/repo.git")?.parsed).toEqual({
       source: "url",
       url: "git@gitlab.internal.k8s2:org/repo.git",
     });
-    expect(parseSkillSource("https://gitlab.internal.k8s2/org/repo")?.parsed).toEqual({
+    expect(parseSkillSource(t, "https://gitlab.internal.k8s2/org/repo")?.parsed).toEqual({
       source: "url",
       url: "https://gitlab.internal.k8s2/org/repo",
     });
   });
 
   it("combines an ssh clone url with an explicit subfolder", () => {
-    expect(parseSkillSource("git@ghe.example.com:org/repo.git", "plugins/my-skill")?.parsed).toEqual({
+    expect(parseSkillSource(t, "git@ghe.example.com:org/repo.git", "plugins/my-skill")?.parsed).toEqual({
       source: "git-subdir",
       url: "git@ghe.example.com:org/repo.git",
       path: "plugins/my-skill",
     });
-    expect(parseSkillSource("git@ghe.example.com:org/repo.git", "../etc")).toBeNull();
+    expect(parseSkillSource(t, "git@ghe.example.com:org/repo.git", "../etc")).toBeNull();
   });
 
   it("rejects ssh-looking input without a host or repo path", () => {
-    expect(parseSkillSource("git@ghe.example.com:repo.git")).toBeNull();
-    expect(parseSkillSource("git@localhost:org/repo.git")).toBeNull();
-    expect(parseSkillSource("git@:org/repo.git")).toBeNull();
-    expect(parseSkillSource("ssh://ghe.example.com/org/repo.git")).toBeNull();
+    expect(parseSkillSource(t, "git@ghe.example.com:repo.git")).toBeNull();
+    expect(parseSkillSource(t, "git@localhost:org/repo.git")).toBeNull();
+    expect(parseSkillSource(t, "git@:org/repo.git")).toBeNull();
+    expect(parseSkillSource(t, "ssh://ghe.example.com/org/repo.git")).toBeNull();
   });
 
   it("rejects ssh remotes with ip hosts or traversal segments", () => {
-    expect(parseSkillSource("git@10.0.0.5:org/repo.git")).toBeNull();
-    expect(parseSkillSource("ssh://git@169.254.169.254/org/repo")).toBeNull();
-    expect(parseSkillSource("git@ghe.example.com:../etc")).toBeNull();
-    expect(parseSkillSource("ssh://git@ghe.example.com/org/../repo")).toBeNull();
-    expect(parseSkillSource("git@ghe.example.com:org/../../etc/passwd")).toBeNull();
-    expect(parseSkillSource("git@ghe.example.com:org/.github")?.parsed).toEqual({
+    expect(parseSkillSource(t, "git@10.0.0.5:org/repo.git")).toBeNull();
+    expect(parseSkillSource(t, "ssh://git@169.254.169.254/org/repo")).toBeNull();
+    expect(parseSkillSource(t, "git@ghe.example.com:../etc")).toBeNull();
+    expect(parseSkillSource(t, "ssh://git@ghe.example.com/org/../repo")).toBeNull();
+    expect(parseSkillSource(t, "git@ghe.example.com:org/../../etc/passwd")).toBeNull();
+    expect(parseSkillSource(t, "git@ghe.example.com:org/.github")?.parsed).toEqual({
       source: "url",
       url: "git@ghe.example.com:org/.github",
     });
   });
 
   it("rejects an ssh remote carrying a password, which would publish a secret on the feed", () => {
-    expect(parseSkillSource("ssh://git:s3cret@ghe.example.com/org/repo.git")).toBeNull();
+    expect(parseSkillSource(t, "ssh://git:s3cret@ghe.example.com/org/repo.git")).toBeNull();
   });
 
   it("returns null for empty and garbage input", () => {
-    expect(parseSkillSource("")).toBeNull();
-    expect(parseSkillSource("   ")).toBeNull();
-    expect(parseSkillSource("not a url")).toBeNull();
+    expect(parseSkillSource(t, "")).toBeNull();
+    expect(parseSkillSource(t, "   ")).toBeNull();
+    expect(parseSkillSource(t, "not a url")).toBeNull();
   });
 
   it("parses an S3 zip URL into an archive source and names the skill after the file", () => {
-    expect(parseSkillSource("https://skills-bucket.s3.us-east-1.amazonaws.com/plugins/My_Skill-1.0.0.zip")).toEqual({
+    expect(parseSkillSource(t, "https://skills-bucket.s3.us-east-1.amazonaws.com/plugins/My_Skill-1.0.0.zip")).toEqual({
       parsed: { source: "archive", url: "https://skills-bucket.s3.us-east-1.amazonaws.com/plugins/My_Skill-1.0.0.zip" },
       label: "Zip archive — skills-bucket.s3.us-east-1.amazonaws.com/plugins/My_Skill-1.0.0.zip",
       suggestedName: "my-skill-1-0-0",
@@ -420,70 +425,73 @@ describe("parseSkillSource", () => {
   });
 
   it("keeps the query string of a zip URL so versioned or signed object links still resolve", () => {
-    expect(parseSkillSource("https://bucket.s3.amazonaws.com/skill.ZIP?versionId=abc")?.parsed).toEqual({
+    expect(parseSkillSource(t, "https://bucket.s3.amazonaws.com/skill.ZIP?versionId=abc")?.parsed).toEqual({
       source: "archive",
       url: "https://bucket.s3.amazonaws.com/skill.ZIP?versionId=abc",
     });
   });
 
   it("ignores the subfolder for a zip URL since the archive is installed whole", () => {
-    expect(parseSkillSource("https://artifacts.example.com/skill.zip", "plugins/x")?.parsed).toEqual({
+    expect(parseSkillSource(t, "https://artifacts.example.com/skill.zip", "plugins/x")?.parsed).toEqual({
       source: "archive",
       url: "https://artifacts.example.com/skill.zip",
     });
   });
 
   it("rejects a plain http zip URL", () => {
-    expect(parseSkillSource("http://artifacts.example.com/skill.zip")).toBeNull();
+    expect(parseSkillSource(t, "http://artifacts.example.com/skill.zip")).toBeNull();
   });
 
   it("treats a github zip download URL as an archive rather than a repo path", () => {
-    expect(parseSkillSource("https://github.com/org/repo/releases/download/v1/skill.zip")?.parsed).toEqual({
+    expect(parseSkillSource(t, "https://github.com/org/repo/releases/download/v1/skill.zip")?.parsed).toEqual({
       source: "archive",
       url: "https://github.com/org/repo/releases/download/v1/skill.zip",
     });
   });
 
   it("suggests a kebab-friendly name from the last path segment", () => {
-    expect(parseSkillSource("github.com/org/my-awesome-skill")?.suggestedName).toBe("my-awesome-skill");
-    expect(parseSkillSource("github.com/org/repo/tree/main/plugins/cool-skill")?.suggestedName).toBe("cool-skill");
-    expect(parseSkillSource("gitlab.com/org/repo", "plugins/x")?.suggestedName).toBe("x");
+    expect(parseSkillSource(t, "github.com/org/my-awesome-skill")?.suggestedName).toBe("my-awesome-skill");
+    expect(parseSkillSource(t, "github.com/org/repo/tree/main/plugins/cool-skill")?.suggestedName).toBe("cool-skill");
+    expect(parseSkillSource(t, "gitlab.com/org/repo", "plugins/x")?.suggestedName).toBe("x");
   });
 
   it("rejects a bad explicit subfolder for a github repo", () => {
-    expect(parseSkillSource("github.com/org/repo", "../etc")).toBeNull();
-    expect(parseSkillSource("github.com/org/repo", "/abs")).toBeNull();
-    expect(parseSkillSource("github.com/org/repo", "a//b")).toBeNull();
+    expect(parseSkillSource(t, "github.com/org/repo", "../etc")).toBeNull();
+    expect(parseSkillSource(t, "github.com/org/repo", "/abs")).toBeNull();
+    expect(parseSkillSource(t, "github.com/org/repo", "a//b")).toBeNull();
   });
 
   it("treats a blob URL pointing at a root file as the plain repo", () => {
-    expect(parseSkillSource("github.com/org/repo/blob/main/SKILL.md")?.parsed).toEqual({
+    expect(parseSkillSource(t, "github.com/org/repo/blob/main/SKILL.md")?.parsed).toEqual({
       source: "github",
       repo: "org/repo",
     });
   });
 
   it("strips query strings and fragments before parsing", () => {
-    expect(parseSkillSource("github.com/org/repo?tab=readme")?.parsed).toEqual({ source: "github", repo: "org/repo" });
-    expect(parseSkillSource("github.com/org/repo#section")?.parsed).toEqual({ source: "github", repo: "org/repo" });
+    expect(parseSkillSource(t, "github.com/org/repo?tab=readme")?.parsed).toEqual({
+      source: "github",
+      repo: "org/repo",
+    });
+    expect(parseSkillSource(t, "github.com/org/repo#section")?.parsed).toEqual({ source: "github", repo: "org/repo" });
   });
 
   it("rejects a tree URL whose folder has a space or percent-encoded segment", () => {
-    expect(parseSkillSource("github.com/org/repo/tree/main/a b")).toBeNull();
-    expect(parseSkillSource("github.com/org/repo/tree/main/a%20b")).toBeNull();
+    expect(parseSkillSource(t, "github.com/org/repo/tree/main/a b")).toBeNull();
+    expect(parseSkillSource(t, "github.com/org/repo/tree/main/a%20b")).toBeNull();
   });
 
   it("routes uppercase and www github hosts through the github shorthand", () => {
-    expect(parseSkillSource("GitHub.com/org/repo/tree/main/x")?.parsed).toEqual({
+    expect(parseSkillSource(t, "GitHub.com/org/repo/tree/main/x")?.parsed).toEqual({
       source: "git-subdir",
       url: "https://github.com/org/repo",
       path: "x",
     });
-    expect(parseSkillSource("www.github.com/org/repo")?.parsed).toEqual({ source: "github", repo: "org/repo" });
+    expect(parseSkillSource(t, "www.github.com/org/repo")?.parsed).toEqual({ source: "github", repo: "org/repo" });
   });
 
   it("keeps a dotted folder name as the subdir path", () => {
-    expect(parseSkillSource("github.com/org/repo/blob/main/my.skill")?.parsed).toEqual({
+    expect(parseSkillSource(t, "github.com/org/repo/blob/main/my.skill")?.parsed).toEqual({
       source: "git-subdir",
       url: "https://github.com/org/repo",
       path: "my.skill",
@@ -491,16 +499,19 @@ describe("parseSkillSource", () => {
   });
 
   it("falls back to the repo for a tree URL with a branch but no folder", () => {
-    expect(parseSkillSource("github.com/org/repo/tree/main")?.parsed).toEqual({ source: "github", repo: "org/repo" });
+    expect(parseSkillSource(t, "github.com/org/repo/tree/main")?.parsed).toEqual({
+      source: "github",
+      repo: "org/repo",
+    });
   });
 
   it("kebab-cases the suggested name from a mixed-case repo", () => {
-    expect(parseSkillSource("github.com/Org/My_Repo")?.suggestedName).toBe("my-repo");
+    expect(parseSkillSource(t, "github.com/Org/My_Repo")?.suggestedName).toBe("my-repo");
   });
 
   it("rejects a bare host or single-segment raw git url", () => {
-    expect(parseSkillSource("gitlab.com")).toBeNull();
-    expect(parseSkillSource("gitlab.com/org")).toBeNull();
+    expect(parseSkillSource(t, "gitlab.com")).toBeNull();
+    expect(parseSkillSource(t, "gitlab.com/org")).toBeNull();
   });
 });
 
@@ -519,15 +530,15 @@ describe("parseSkillSource — security boundary", () => {
       "data:text/plain,hi",
       "//gitlab.com/org/repo",
     ]) {
-      expect(parseSkillSource(url)).toBeNull();
+      expect(parseSkillSource(t, url)).toBeNull();
     }
   });
 
   it("rejects URLs with embedded credentials", () => {
-    expect(parseSkillSource("https://user:token@gitlab.com/org/repo")).toBeNull();
-    expect(parseSkillSource("https://user@gitlab.com/org/repo")).toBeNull();
+    expect(parseSkillSource(t, "https://user:token@gitlab.com/org/repo")).toBeNull();
+    expect(parseSkillSource(t, "https://user@gitlab.com/org/repo")).toBeNull();
     // userinfo confusion: the real host is evil.com, not github.com
-    expect(parseSkillSource("https://github.com@evil.com/org/repo")).toBeNull();
+    expect(parseSkillSource(t, "https://github.com@evil.com/org/repo")).toBeNull();
   });
 
   it("rejects IP-literal hosts (loopback, private, metadata, obfuscated, IPv6)", () => {
@@ -538,20 +549,20 @@ describe("parseSkillSource — security boundary", () => {
       "https://2130706433/org/repo",
       "https://[::ffff:127.0.0.1]/org/repo",
     ]) {
-      expect(parseSkillSource(url)).toBeNull();
+      expect(parseSkillSource(t, url)).toBeNull();
     }
   });
 
   it("does not grant GitHub shorthand to a look-alike host", () => {
-    expect(parseSkillSource("https://github.com.evil.com/org/repo")?.parsed).toEqual({
+    expect(parseSkillSource(t, "https://github.com.evil.com/org/repo")?.parsed).toEqual({
       source: "url",
       url: "https://github.com.evil.com/org/repo",
     });
   });
 
   it("rejects GitHub org/repo segments with illegal characters", () => {
-    expect(parseSkillSource("github.com/o@x/repo")).toBeNull();
-    expect(parseSkillSource("github.com/org/..%2f..%2fx")).toBeNull();
+    expect(parseSkillSource(t, "github.com/o@x/repo")).toBeNull();
+    expect(parseSkillSource(t, "github.com/org/..%2f..%2fx")).toBeNull();
   });
 });
 

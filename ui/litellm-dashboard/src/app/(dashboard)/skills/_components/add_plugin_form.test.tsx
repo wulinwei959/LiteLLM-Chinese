@@ -53,7 +53,7 @@ describe("AddPluginForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/GitHub repo/)).toBeInTheDocument();
+      expect(screen.getByText(/claude-code 仓库/)).toBeInTheDocument();
     });
   });
 
@@ -71,7 +71,7 @@ describe("AddPluginForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/GitHub subdir/)).toBeInTheDocument();
+      expect(screen.getByText(/claude-code 子目录/)).toBeInTheDocument();
     });
     expect(screen.getByPlaceholderText(SUBPATH_PLACEHOLDER)).toBeDisabled();
   });
@@ -88,7 +88,7 @@ describe("AddPluginForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/Git repo/)).toBeInTheDocument();
+      expect(screen.getByText(/Git 仓库/)).toBeInTheDocument();
     });
     expect(screen.getByPlaceholderText(SUBPATH_PLACEHOLDER)).toBeEnabled();
   });
@@ -109,7 +109,7 @@ describe("AddPluginForm", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/Git subdir/)).toBeInTheDocument();
+      expect(screen.getByText(/Git 子目录/)).toBeInTheDocument();
       expect(screen.getByText(/plugins\/x/)).toBeInTheDocument();
     });
   });
@@ -264,7 +264,7 @@ describe("AddPluginForm", () => {
 
     await typeUrl(S3_ZIP_URL);
 
-    expect(await screen.findByText(/Zip archive/)).toBeInTheDocument();
+    expect(await screen.findByText(/Zip 压缩包/)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(SUBPATH_PLACEHOLDER)).toBeDisabled();
     expect(screen.getByText("zip 压缩包会整体安装，所以这个字段已禁用")).toBeInTheDocument();
     expect(screen.getByPlaceholderText(SHA256_PLACEHOLDER)).toBeInTheDocument();

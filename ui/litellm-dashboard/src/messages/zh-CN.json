@@ -8870,6 +8870,14 @@
     "adding": "正在添加…",
     "noAccessToken": "没有可用的访问令牌",
     "invalidSourceUrl": "请输入有效的仓库或 zip 压缩包 URL",
+    "sourceUnknown": "未知来源",
+    "sourceLabel": {
+      "githubRepo": "{name} 仓库",
+      "githubSubdir": "{repo} 子目录 — {path}",
+      "gitRepo": "{brand} 仓库 — {url}",
+      "gitSubdir": "{brand} 子目录 — {repo} @ {path}",
+      "zipArchive": "Zip 压缩包 — {path}"
+    },
     "skillNameKebabToast": "技能名称必须是 kebab-case（只能包含小写字母、数字和连字符）",
     "semverToast": "版本必须符合语义化版本格式（如 1.0.0）",
     "invalidEmailToast": "邮箱格式无效",

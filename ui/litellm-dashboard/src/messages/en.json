@@ -8875,6 +8875,14 @@
     "adding": "Adding...",
     "noAccessToken": "No access token available",
     "invalidSourceUrl": "Please enter a valid repository or zip archive URL",
+    "sourceUnknown": "Unknown source",
+    "sourceLabel": {
+      "githubRepo": "GitHub repo — {name}",
+      "githubSubdir": "GitHub subdir — {repo} @ {path}",
+      "gitRepo": "{brand} repo — {url}",
+      "gitSubdir": "{brand} subdir — {repo} @ {path}",
+      "zipArchive": "Zip archive — {path}"
+    },
     "skillNameKebabToast": "Skill name must be kebab-case (lowercase letters, numbers, and hyphens only)",
     "semverToast": "Version must be in semantic versioning format (e.g., 1.0.0)",
     "invalidEmailToast": "Invalid email format",
