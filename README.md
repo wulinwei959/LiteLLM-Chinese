@@ -47,8 +47,8 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 | 项目 | 状态 |
 |---|---|
 | **分支** | `main` |
-| **汉化完成度** | 批次 0-14 (核心管理页) 完成，批次 24 (共享组件长尾) 按簇推进到第 310 簇。非测试 `.tsx` 912 个中接入翻译 693 个 (76.0%，带括号调用口径)，未接入宽口径命中 11 个全为误报或判定账；此前唯一剩余的真实翻译目标 `guardrail_garden_data.ts` (55 张护栏卡) 已铺好目录查表回退管道，decision_model、litellm、partner 三片全部接完，显示层收口，partner 与 decision_model 的卡名是品牌/模型标识按判定账保留原值走回退。第 306 簇复扫新查出的 `mcp-servers/toolCallArguments.ts` 表单校验句已在第 307 簇接进目录，工具测试面板中文界面不再出英文。第 308 簇补了第四条「模板串」扫描口径后，剩余真实账只剩 3 个文件排队 (TierTurnsChart、claude_code_plugins helpers、networking toast)；扫描仍是启发式的，不能据此宣布收口 |
-| **目录规模** | 中英消息各 11222 个叶子，键树完全对齐 (parity 守卫 0 缺失)，中英同值 141 个 (多为 URL、模型名等格式示例，非漏翻) |
+| **汉化完成度** | 批次 0-14 (核心管理页) 完成，批次 24 (共享组件长尾) 按簇推进到第 311 簇。非测试 `.tsx` 912 个中接入翻译 693 个 (76.0%，带括号调用口径)，未接入宽口径命中 11 个全为误报或判定账；此前唯一剩余的真实翻译目标 `guardrail_garden_data.ts` (55 张护栏卡) 已铺好目录查表回退管道，decision_model、litellm、partner 三片全部接完，显示层收口，partner 与 decision_model 的卡名是品牌/模型标识按判定账保留原值走回退。第 306 簇复扫新查出的 `mcp-servers/toolCallArguments.ts` 表单校验句已在第 307 簇接进目录，工具测试面板中文界面不再出英文。第 308 簇补了第四条「模板串」扫描口径后，剩余真实账只剩 2 个文件排队 (networking toast、claude_code_plugins helpers)；扫描仍是启发式的，不能据此宣布收口 |
+| **目录规模** | 中英消息各 11223 个叶子，键树完全对齐 (parity 守卫 0 缺失)，中英同值 141 个 (多为 URL、模型名等格式示例，非漏翻) |
 | **测试** | 最近一次全量 (第 307 簇后，`src/components` + `src/app`) 826 文件 10530 例，仅 2 例失败且单跑全绿 (已知并发假失败)，与第 305 簇后那轮形状相同，零翻译回归；逐簇只跑定向文件，全绿 |
 | **类型检查** | 非测试文件 0 错误，`npm run build` 绿色；测试文件有 904 条存量类型债 (vitest 全局类型缺失等)，不阻塞构建 |
 | **i18n 守卫** | 3 条全部通过 (`locales.test.ts` 7 + `messagesParity.test.ts` 8 + `missingKeys.test.ts` 1) |
