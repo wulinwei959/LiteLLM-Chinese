@@ -10902,7 +10902,10 @@
     "failedRequests": "Failed Requests",
     "avgResponseTimeMs": "Avg Response Time Ms",
     "cacheReadInputTokens": "Cache Read Input Tokens",
-    "cacheCreationInputTokens": "Cache Creation Input Tokens"
+    "cacheCreationInputTokens": "Cache Creation Input Tokens",
+    "compression": "Compression",
+    "promptCaching": "Prompt Caching",
+    "autoRouter": "Auto Router"
   },
   "activityMetrics": {
     "topKeysTitle": "Top Virtual Keys by Spend",

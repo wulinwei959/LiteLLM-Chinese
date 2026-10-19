@@ -30,6 +30,9 @@ const CATEGORY_LABEL_KEYS = {
   "metrics.avg_response_time_ms": "avgResponseTimeMs",
   "metrics.cache_read_input_tokens": "cacheReadInputTokens",
   "metrics.cache_creation_input_tokens": "cacheCreationInputTokens",
+  Compression: "compression",
+  "Prompt caching": "promptCaching",
+  "Auto-router": "autoRouter",
 } as const;
 
 export const useCategoryName = (): ((name: string) => string) => {

@@ -10897,7 +10897,10 @@
     "failedRequests": "失败请求",
     "avgResponseTimeMs": "平均响应时间 (ms)",
     "cacheReadInputTokens": "缓存读取令牌",
-    "cacheCreationInputTokens": "缓存写入令牌"
+    "cacheCreationInputTokens": "缓存写入令牌",
+    "compression": "压缩",
+    "promptCaching": "提示词缓存",
+    "autoRouter": "自动路由"
   },
   "activityMetrics": {
     "topKeysTitle": "花费最高的头部虚拟密钥",
