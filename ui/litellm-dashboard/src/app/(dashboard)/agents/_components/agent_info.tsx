@@ -249,7 +249,7 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
           .some((field) => form.getFieldState(field.name).isDirty);
 
       await patchAgentCall(accessToken, agentId, {
-        ...withAgentIdentity(updateData, values, agent, cardEdited),
+        ...withAgentIdentity(t, updateData, values, { existing: agent, cardEdited }),
         object_permission: buildMcpObjectPermission(values),
         access_group_ids: values.access_group_ids ?? [],
       });

@@ -1,4 +1,5 @@
 import type { components } from "@/lib/http/schema";
+import type { AgentsTranslator } from "@/lib/i18n/translators";
 
 export type KillSwitchConfig = components["schemas"]["AgentKillSwitchConfig"];
 export type KillSwitchAuth = NonNullable<KillSwitchConfig["auth"]>;
@@ -46,22 +47,27 @@ const pairsToRecord = (pairs: readonly KeyValueFormValue[] | undefined): Record<
 const recordToPairs = (record: Record<string, string> | undefined | null): KeyValueFormValue[] =>
   Object.entries(record ?? {}).map(([key, value]) => ({ key, value }));
 
+const BODY_NOT_OBJECT = "Body must be a JSON object";
+
 export const parseKillSwitchBody = (text: string | undefined): Record<string, unknown> | null => {
   const trimmed = text?.trim() ?? "";
   if (trimmed.length === 0) return null;
   const parsed: unknown = JSON.parse(trimmed);
   if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
-    throw new Error("Body must be a JSON object");
+    throw new Error(BODY_NOT_OBJECT);
   }
   return parsed as Record<string, unknown>;
 };
 
-export const validateKillSwitchBody = (text: string | undefined): true | string => {
+export const validateKillSwitchBody = (t: AgentsTranslator, text: string | undefined): true | string => {
   try {
     parseKillSwitchBody(text);
     return true;
   } catch (error) {
-    return error instanceof Error ? error.message : "Body must be valid JSON";
+    if (error instanceof Error && error.message === BODY_NOT_OBJECT) {
+      return t("bodyObjectError");
+    }
+    return error instanceof Error ? error.message : t("bodyJsonError");
   }
 };
 

@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "next-intl";
+import en from "@/messages/en.json";
+import type { AgentsTranslator } from "@/lib/i18n/translators";
 import {
   buildIdentityParams,
   entraTenantFromIssuer,
@@ -6,6 +9,8 @@ import {
   readAgentIdentity,
   withAgentIdentity,
 } from "./agent_identity";
+
+const t = createTranslator({ locale: "en", messages: en, namespace: "agents" }) as unknown as AgentsTranslator;
 
 const identity = {
   provider: "microsoft_entra",
@@ -25,11 +30,11 @@ describe("agent identity configuration", () => {
       agent_name: "Renamed",
       url: "https://new-runtime.example",
     };
-    expect(buildIdentityParams(values)).toEqual({ identity });
+    expect(buildIdentityParams(t, values)).toEqual({ identity });
   });
   it("preserves untouched bindings and explicitly clears a removed binding", () => {
-    expect(buildIdentityParams({ agent_name: "legacy" })).toEqual({});
-    expect(buildIdentityParams({ identity_provider: "none" }, identity)).toEqual({ identity: null });
+    expect(buildIdentityParams(t, { agent_name: "legacy" })).toEqual({});
+    expect(buildIdentityParams(t, { identity_provider: "none" }, identity)).toEqual({ identity: null });
     expect(parseIdentityForForm({}).identity_provider).toBe("none");
   });
   it.each([
@@ -43,7 +48,7 @@ describe("agent identity configuration", () => {
     expect(readAgentIdentity(value)).toBeNull();
   });
   it("rejects incomplete submissions", () => {
-    expect(() => buildIdentityParams({ identity_provider: "microsoft_entra" })).toThrow("Enter valid Entra");
+    expect(() => buildIdentityParams(t, { identity_provider: "microsoft_entra" })).toThrow("Enter valid Entra");
   });
   it("submits identity as top-level settings without changing runtime parameters", () => {
     const formValues = {
@@ -54,7 +59,7 @@ describe("agent identity configuration", () => {
       execution_mode: "both",
       enabled: false,
     };
-    const payload = withAgentIdentity({ litellm_params: { model: "runtime" } }, formValues);
+    const payload = withAgentIdentity(t, { litellm_params: { model: "runtime" } }, formValues);
     expect(payload.litellm_params).toEqual({ model: "runtime" });
     expect(payload.identity).toMatchObject({
       client_id: identity.client_id,
@@ -70,7 +75,7 @@ describe("agent identity configuration", () => {
       identity_client_id: identity.client_id,
       execution_mode: "autonomous",
     };
-    expect(() => buildIdentityParams(values)).toThrow("Enterprise application Object ID");
+    expect(() => buildIdentityParams(t, values)).toThrow("Enterprise application Object ID");
   });
 
   it("only offers tenant-specific Microsoft issuers", () => {

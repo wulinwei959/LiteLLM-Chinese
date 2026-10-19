@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { components } from "@/lib/http/schema";
+import type { AgentsTranslator } from "@/lib/i18n/translators";
 import type { AgentFormValues, AgentRequestPayload } from "./AgentFormKit";
 
 export type EntraAgentIdentity = components["schemas"]["EntraIdentityConfig"];
@@ -59,6 +60,7 @@ const splitGrants = (value: unknown, fallback: string[]): string[] =>
     : fallback;
 
 export const buildIdentityParams = (
+  t: AgentsTranslator,
   values: AgentFormValues,
   existingIdentity?: unknown,
 ): { identity?: EntraAgentIdentity | null } => {
@@ -77,9 +79,8 @@ export const buildIdentityParams = (
     required_scopes: splitGrants(values.identity_required_scopes, ["user_impersonation"]),
   };
   const identity = readAgentIdentity(candidate);
-  if (!identity) throw new Error("Enter valid Entra tenant, application client and service principal IDs");
-  if (values.execution_mode !== "delegated" && !identity.service_principal_id)
-    throw new Error("Autonomous agents require the Enterprise application Object ID");
+  if (!identity) throw new Error(t("identityFieldsRequired"));
+  if (values.execution_mode !== "delegated" && !identity.service_principal_id) throw new Error(t("identitySpRequired"));
   return { identity };
 };
 
@@ -89,14 +90,16 @@ export const entraTenantFromIssuer = (issuer: string): string | null => {
 };
 
 export const withAgentIdentity = (
+  t: AgentsTranslator,
   payload: AgentRequestPayload,
   values: AgentFormValues,
-  existing?: Partial<AgentIdentityState>,
-  cardEdited = false,
+  state?: { existing?: Partial<AgentIdentityState>; cardEdited?: boolean },
 ): AgentRequestPayload => {
+  const existing = state?.existing;
+  const cardEdited = state?.cardEdited ?? false;
   const { agent_card_params, ...settings } = payload;
   const hasCard = !existing || cardEdited || Object.keys(existing.agent_card_params ?? {}).length > 0;
-  const identityFields = buildIdentityParams(values, existing?.identity);
+  const identityFields = buildIdentityParams(t, values, existing?.identity);
   const managed = values.identity_provider === "microsoft_entra" || Boolean(readAgentIdentity(existing?.identity));
   return {
     ...settings,

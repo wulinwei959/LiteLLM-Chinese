@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "next-intl";
+import en from "@/messages/en.json";
+import type { AgentsTranslator } from "@/lib/i18n/translators";
 import {
   EMPTY_KILL_SWITCH_FORM,
   buildKillSwitchFromForm,
@@ -7,6 +10,8 @@ import {
   type KillSwitchConfig,
   type KillSwitchFormValue,
 } from "./kill_switch_config";
+
+const t = createTranslator({ locale: "en", messages: en, namespace: "agents" }) as unknown as AgentsTranslator;
 
 const fullConfig: KillSwitchConfig = {
   url: "https://ops.example.com/kill?env=prod",
@@ -83,15 +88,15 @@ describe("buildKillSwitchFromForm", () => {
 
 describe("validateKillSwitchBody", () => {
   it.each(["", "   ", undefined, '{"a": 1}'])("accepts %j", (text) => {
-    expect(validateKillSwitchBody(text)).toBe(true);
+    expect(validateKillSwitchBody(t, text)).toBe(true);
   });
 
   it.each(["[1, 2]", '"text"', "42", "null"])("rejects non-object JSON %s", (text) => {
-    expect(validateKillSwitchBody(text)).toBe("Body must be a JSON object");
+    expect(validateKillSwitchBody(t, text)).toBe("Body must be a JSON object");
   });
 
   it("rejects malformed JSON with the parser message", () => {
-    expect(validateKillSwitchBody("{not json")).toMatch(/JSON/);
+    expect(validateKillSwitchBody(t, "{not json")).toMatch(/JSON/);
   });
 });
 

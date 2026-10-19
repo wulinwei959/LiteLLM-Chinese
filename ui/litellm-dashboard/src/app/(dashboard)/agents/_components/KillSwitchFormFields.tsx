@@ -205,7 +205,7 @@ const KillSwitchFormFields = () => {
       <AgentFormField
         name="kill_switch.body"
         label={labelWithHint(t("jsonBodyLabel"), t("jsonBodyHint"))}
-        rules={{ validate: (value) => validateKillSwitchBody(typeof value === "string" ? value : "") }}
+        rules={{ validate: (value) => validateKillSwitchBody(t, typeof value === "string" ? value : "") }}
       >
         {({ value, onChange, ref, ...control }) => (
           <Textarea

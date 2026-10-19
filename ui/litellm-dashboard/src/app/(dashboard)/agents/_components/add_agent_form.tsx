@@ -370,7 +370,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
         setIsSubmitting(false);
         return;
       }
-      const agentData = withAgentIdentity(built, values);
+      const agentData = withAgentIdentity(t, built, values);
 
       // Build object_permission from MCP Tools step (allowed_mcp_servers_and_groups, mcp_tool_permissions)
       const mcpServersAndGroups = values.allowed_mcp_servers_and_groups ?? {};
