@@ -328,9 +328,9 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
       <div>
         <Button variant="ghost" onClick={onClose} className="mb-4">
           <ArrowLeft className="size-4" />
-          Back to Agents
+          {t("backToAgents")}
         </Button>
-        <h1 className="text-2xl font-semibold">{agent.agent_name || "Unnamed Agent"}</h1>
+        <h1 className="text-2xl font-semibold">{agent.agent_name || t("unnamedAgent")}</h1>
         <p className="text-sm text-muted-foreground font-mono">{agent.agent_id}</p>
       </div>
 

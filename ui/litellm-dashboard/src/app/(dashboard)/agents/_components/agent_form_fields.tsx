@@ -142,13 +142,13 @@ const SkillsFieldArray = () => {
             onClick={() => remove(index)}
           >
             <Trash2 />
-            Remove Skill
+            {t("removeSkill")}
           </Button>
         </div>
       ))}
       <Button type="button" variant="outline" className="w-full border-dashed" onClick={() => append({})}>
         <Plus />
-        Add Skill
+        {t("addSkill")}
       </Button>
     </>
   );

@@ -175,7 +175,7 @@ describe("AddAgentForm submit payload", () => {
     await user.type(screen.getByLabelText("版本"), "2.0.0");
 
     await user.click(await panel(/技能/));
-    await user.click(screen.getByRole("button", { name: /Add Skill/ }));
+    await user.click(screen.getByRole("button", { name: /添加技能/ }));
     await user.type(await screen.findByLabelText("技能 ID"), "hello");
     await user.type(screen.getByLabelText("技能名称"), "Hello");
     await user.type(screen.getByPlaceholderText("这个技能的作用"), "greets");
