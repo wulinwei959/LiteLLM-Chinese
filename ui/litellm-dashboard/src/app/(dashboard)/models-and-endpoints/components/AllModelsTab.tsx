@@ -333,19 +333,24 @@ const AllModelsTab = ({
             <Info className="mt-0.5 size-3.5 shrink-0" />
             {selectedTeamValue === PERSONAL_TEAM_VALUE ? (
               <span>
-                To access these models, create a Virtual Key without selecting a team on the{" "}
-                <a href={uiHref("api-keys")} className="font-medium text-info hover:underline">
-                  Virtual Keys page
-                </a>
-                .
+                {t.rich("accessViaKeyNoTeam", {
+                  link: (chunks) => (
+                    <a href={uiHref("api-keys")} className="font-medium text-info hover:underline">
+                      {chunks}
+                    </a>
+                  ),
+                })}
               </span>
             ) : (
               <span>
-                To access these models, create a Virtual Key and select Team as &quot;{teamAccessLabel}&quot; on the{" "}
-                <a href={uiHref("api-keys")} className="font-medium text-info hover:underline">
-                  Virtual Keys page
-                </a>
-                .
+                {t.rich("accessViaKeyWithTeam", {
+                  team: teamAccessLabel,
+                  link: (chunks) => (
+                    <a href={uiHref("api-keys")} className="font-medium text-info hover:underline">
+                      {chunks}
+                    </a>
+                  ),
+                })}
               </span>
             )}
           </div>

@@ -532,13 +532,13 @@ describe("AllModelsTab", () => {
     it("explains personal key creation while viewing current team models", () => {
       renderWithProviders(<AllModelsTab {...defaultProps} />);
 
-      expect(screen.getByText(/create a Virtual Key without selecting a team/i)).toBeInTheDocument();
+      expect(screen.getByText(/不选择团队的虚拟密钥/)).toBeInTheDocument();
     });
 
     it("links the Virtual Keys page through the migrated /ui route", () => {
       renderWithProviders(<AllModelsTab {...defaultProps} />);
 
-      expect(screen.getByRole("link", { name: "Virtual Keys page" })).toHaveAttribute("href", "/ui/api-keys");
+      expect(screen.getByRole("link", { name: "虚拟密钥页面" })).toHaveAttribute("href", "/ui/api-keys");
     });
 
     it("links the team hint's Virtual Keys page through the migrated /ui route", async () => {
@@ -548,8 +548,8 @@ describe("AllModelsTab", () => {
       await user.click(screen.getByTestId("models-team-select"));
       await user.click(await screen.findByRole("option", { name: "Engineering" }));
 
-      await screen.findByText(/select Team as "Engineering"/i);
-      expect(screen.getByRole("link", { name: "Virtual Keys page" })).toHaveAttribute("href", "/ui/api-keys");
+      await screen.findByText(/团队设为“Engineering”/);
+      expect(screen.getByRole("link", { name: "虚拟密钥页面" })).toHaveAttribute("href", "/ui/api-keys");
     });
 
     it("names the selected team in the hint", async () => {
@@ -559,7 +559,7 @@ describe("AllModelsTab", () => {
       await user.click(screen.getByTestId("models-team-select"));
       await user.click(await screen.findByRole("option", { name: "Engineering" }));
 
-      expect(await screen.findByText(/select Team as "Engineering"/i)).toBeInTheDocument();
+      expect(await screen.findByText(/团队设为“Engineering”/)).toBeInTheDocument();
     });
 
     it("hides the hint when viewing all available models", async () => {

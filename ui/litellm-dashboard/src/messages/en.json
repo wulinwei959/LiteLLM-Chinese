@@ -745,6 +745,8 @@
     "lastRefreshedLabel": "Last Refreshed: {time}",
     "title": "Model Management",
     "personalTeam": "Personal",
+    "accessViaKeyNoTeam": "To access these models, create a Virtual Key without selecting a team on the <link>Virtual Keys page</link>.",
+    "accessViaKeyWithTeam": "To access these models, create a Virtual Key and select Team as \"{team}\" on the <link>Virtual Keys page</link>.",
     "deletedToast": "Model deleted successfully",
     "pausedToast": "Model paused",
     "resumedToast": "Model resumed",

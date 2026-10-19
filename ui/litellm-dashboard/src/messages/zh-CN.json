@@ -744,6 +744,8 @@
     "lastRefreshedLabel": "最近刷新：{time}",
     "title": "模型管理",
     "personalTeam": "个人团队",
+    "accessViaKeyNoTeam": "要访问这些模型，请在<link>虚拟密钥页面</link>创建一个不选择团队的虚拟密钥。",
+    "accessViaKeyWithTeam": "要访问这些模型，请在<link>虚拟密钥页面</link>创建一个虚拟密钥，并将团队设为“{team}”。",
     "deletedToast": "模型删除成功",
     "pausedToast": "模型已暂停",
     "resumedToast": "模型已恢复",
