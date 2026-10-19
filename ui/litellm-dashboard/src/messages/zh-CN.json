@@ -11660,6 +11660,7 @@
     "saveKeyAria": "保存密钥以供后续使用",
     "requestedAccess": "请求的权限",
     "connectFailed": "连接失败",
+    "connectSuccessToast": "已连接到{server}",
     "requestedAccessTitle": "请求的权限",
     "connectTitle": "连接{server}",
     "needsAccess": "LiteLLM 需要访问 {server} 才能完成你的请求。",

@@ -11665,6 +11665,7 @@
     "saveKeyAria": "Save key for future use",
     "requestedAccess": "Requested access",
     "connectFailed": "Failed to connect",
+    "connectSuccessToast": "Connected to {server}",
     "requestedAccessTitle": "Requested Access",
     "connectTitle": "Connect {server}",
     "needsAccess": "LiteLLM needs access to {server} to complete your request.",

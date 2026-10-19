@@ -58,7 +58,7 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
         params: { path: { server_id: server.server_id } },
         body: { credential: apiKey.trim(), save: saveKey },
       });
-      toast.success(`Connected to ${serverDisplayName}`);
+      toast.success(t("connectSuccessToast", { server: serverDisplayName }));
       onSuccess(server.server_id);
       handleClose();
     } catch (e) {
