@@ -4551,6 +4551,8 @@
       "openActions": "Open attachment actions",
       "copyId": "Copy attachment ID",
       "copiedToast": "Attachment ID copied",
+      "deletedToast": "Attachment deleted successfully",
+      "deleteFailedToast": "Failed to delete attachment",
       "configHint": "Config attachments are defined in the config file and cannot be deleted from the dashboard.",
       "delete": "Delete attachment",
       "emptyTitle": "No attachments found",

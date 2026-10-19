@@ -221,6 +221,7 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({ accessToken, userRole }) 
 
   const deleteAttachmentMutation = useDeletePolicyAttachment({
     accessToken,
+    t,
     onSuccess: fetchAttachments,
   });
 

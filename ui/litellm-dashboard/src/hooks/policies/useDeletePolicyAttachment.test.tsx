@@ -1,15 +1,24 @@
 import React from "react";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createTranslator } from "next-intl";
 import { useDeletePolicyAttachment } from "./useDeletePolicyAttachment";
 import { deletePolicyAttachmentCall } from "@/components/networking";
 import { toast } from "@/lib/toast";
+import en from "@/messages/en.json";
+import type { PoliciesTranslator } from "@/lib/i18n/translators";
 import { vi, describe, beforeEach, it, expect } from "vitest";
 
 // Mock dependencies
 vi.mock("@/components/networking", () => ({
   deletePolicyAttachmentCall: vi.fn(),
 }));
+
+const t = createTranslator({
+  locale: "en",
+  messages: en,
+  namespace: "policies",
+}) as unknown as PoliciesTranslator;
 
 describe("useDeletePolicyAttachment", () => {
   let queryClient: QueryClient;
@@ -31,6 +40,7 @@ describe("useDeletePolicyAttachment", () => {
       () =>
         useDeletePolicyAttachment({
           accessToken: "test-token",
+          t,
           onSuccess: mockOnSuccess,
         }),
       { wrapper },
@@ -56,6 +66,7 @@ describe("useDeletePolicyAttachment", () => {
       () =>
         useDeletePolicyAttachment({
           accessToken: "test-token",
+          t,
           onError: mockOnError,
         }),
       { wrapper },

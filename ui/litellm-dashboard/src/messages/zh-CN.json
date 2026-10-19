@@ -4550,6 +4550,8 @@
       "openActions": "打开附件操作",
       "copyId": "复制附件 ID",
       "copiedToast": "附件 ID 已复制",
+      "deletedToast": "附件删除成功",
+      "deleteFailedToast": "删除附件失败",
       "configHint": "配置文件中定义的附件无法在控制台删除。",
       "delete": "删除附件",
       "emptyTitle": "未找到附件",
