@@ -11575,6 +11575,7 @@
     "title": "SCIM Configuration",
     "urlCopied": "URL copied to clipboard",
     "usingScim": "Using SCIM",
+    "usingScimDesc": "You need a SCIM token to authenticate with the SCIM API. Create one below and use it in your SCIM provider configuration.",
     "tokenName": "Token Name",
     "accessToken": "SCIM Access Token",
     "yourToken": "Your SCIM Token",
@@ -11732,6 +11733,7 @@
     "loadFailed": "Could not load model insights",
     "leaderboardTitle": "Model Leaderboard",
     "leaderboardSubtitle": "See which models your gateway used from {start} through {end}",
+    "sessionHint": "Add a stable session_id to requests to unlock accurate session-level model comparisons in a future bounded session rollup",
     "gatewayTotal": "{label} · Gateway total {total}",
     "topModels": "Top models",
     "bucketSizeAria": "Bucket size",
@@ -11796,7 +11798,8 @@
     "disabledForKey": "Disabled for this key",
     "disabled": "Disabled",
     "noDisabledCallbacks": "No callbacks disabled",
-    "title": "Logging Settings"
+    "title": "Logging Settings",
+    "subtitle": "Active logging integrations and disabled callbacks for this key"
   },
   "mcpToolArgs": {
     "emptyString": "Empty string",
@@ -12277,7 +12280,8 @@
   "keyProjectField": {
     "projectLabel": "Project",
     "detach": "Detach from project",
-    "keep": "Keep project"
+    "keep": "Keep project",
+    "pendingHint": "The project will be removed when you save. Team, organization, and key limits will stay the same."
   },
   "pageMetadata": {
     "noDescriptionAvailable": "No description available",

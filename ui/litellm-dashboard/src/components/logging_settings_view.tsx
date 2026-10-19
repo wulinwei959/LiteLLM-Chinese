@@ -156,9 +156,7 @@ export function LoggingSettingsView({
         <div className="flex items-center gap-2 mb-6">
           <div>
             <span className="block font-semibold text-foreground">{t("title")}</span>
-            <span className="block text-xs text-muted-foreground">
-              Active logging integrations and disabled callbacks for this key
-            </span>
+            <span className="block text-xs text-muted-foreground">{t("subtitle")}</span>
           </div>
         </div>
         {content}

@@ -27,11 +27,7 @@ export function KeyProjectField({ projectId, canDetach, pending, disabled, onTog
       <Input id={id} value={display ?? ""} disabled readOnly />
       {canDetach && (
         <>
-          {pending && (
-            <p className="text-sm text-muted-foreground">
-              The project will be removed when you save. Team, organization, and key limits will stay the same.
-            </p>
-          )}
+          {pending && <p className="text-sm text-muted-foreground">{t("pendingHint")}</p>}
           <Button type="button" variant="outline" disabled={disabled} onClick={onToggle}>
             {pending ? t("keep") : t("detach")}
           </Button>

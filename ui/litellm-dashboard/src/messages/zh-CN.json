@@ -11570,6 +11570,7 @@
     "title": "SCIM 配置",
     "urlCopied": "地址已复制到剪贴板",
     "usingScim": "使用 SCIM",
+    "usingScimDesc": "需要用 SCIM 令牌向 SCIM API 进行身份验证。请在下方创建令牌，并在你的 SCIM 服务商配置中使用它。",
     "tokenName": "令牌名称",
     "accessToken": "SCIM 访问令牌",
     "yourToken": "您的 SCIM 令牌",
@@ -11727,6 +11728,7 @@
     "loadFailed": "无法加载模型洞察",
     "leaderboardTitle": "模型排行榜",
     "leaderboardSubtitle": "你的网关在 {start} 至 {end} 期间用过的模型",
+    "sessionHint": "为请求添加稳定的 session_id，即可在后续的有界会话汇总中解锁按会话精确的模型对比",
     "gatewayTotal": "{label} · 网关合计 {total}",
     "topModels": "热门模型",
     "bucketSizeAria": "时间粒度",
@@ -11791,7 +11793,8 @@
     "disabledForKey": "该密钥已禁用",
     "disabled": "已禁用",
     "noDisabledCallbacks": "没有禁用的回调",
-    "title": "日志设置"
+    "title": "日志设置",
+    "subtitle": "此密钥当前启用的日志集成与已禁用的回调"
   },
   "mcpToolArgs": {
     "emptyString": "空字符串",
@@ -12272,7 +12275,8 @@
   "keyProjectField": {
     "projectLabel": "项目",
     "detach": "移出项目",
-    "keep": "保留项目"
+    "keep": "保留项目",
+    "pendingHint": "保存后该项目将被移除。团队、组织和密钥限制保持不变。"
   },
   "pageMetadata": {
     "noDescriptionAvailable": "暂无说明",

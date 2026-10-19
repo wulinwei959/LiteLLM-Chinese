@@ -125,10 +125,7 @@ const SCIMConfig: React.FC<SCIMConfigProps> = ({ accessToken, userID, proxySetti
               <Alert variant="info" className="mb-4">
                 <Info />
                 <AlertTitle>{t("usingScim")}</AlertTitle>
-                <AlertDescription>
-                  You need a SCIM token to authenticate with the SCIM API. Create one below and use it in your SCIM
-                  provider configuration.
-                </AlertDescription>
+                <AlertDescription>{t("usingScimDesc")}</AlertDescription>
               </Alert>
 
               {!tokenData ? (

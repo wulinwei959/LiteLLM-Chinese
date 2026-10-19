@@ -377,10 +377,7 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
           <CardDescription>{t("sessionCostNote")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Add a stable session_id to requests to unlock accurate session-level model comparisons in a future bounded
-            session rollup
-          </p>
+          <p className="text-sm text-muted-foreground">{t("sessionHint")}</p>
         </CardContent>
       </Card>
     </main>
