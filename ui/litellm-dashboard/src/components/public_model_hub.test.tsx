@@ -490,7 +490,7 @@ describe("public hub MCP details modal", () => {
     fireEvent.click(await screen.findByRole("button", { name: "exa_test" }));
     await screen.findByText("服务器概览");
 
-    fireEvent.click(screen.getByRole("button", { name: /close/i }));
+    fireEvent.click(screen.getByRole("button", { name: /关闭/ }));
 
     await waitFor(() => expect(screen.queryByText("服务器概览")).not.toBeInTheDocument());
   });

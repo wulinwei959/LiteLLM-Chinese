@@ -409,7 +409,7 @@ describe("UserInfoView auto-router usage", () => {
       const params = new URL(request.url).searchParams;
       expect(params.get("user_id")).toBe("user-123");
       expect(params.has("api_key")).toBe(false);
-      expect(screen.getByText(/Older sessions recorded without a user ID are not included/)).toBeInTheDocument();
+      expect(screen.getByText(/未记录用户 ID 的历史会话不计入/)).toBeInTheDocument();
     },
   );
 

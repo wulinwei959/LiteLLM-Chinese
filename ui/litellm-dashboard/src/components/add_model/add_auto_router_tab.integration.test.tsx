@@ -1482,7 +1482,7 @@ describe("AddAutoRouterTab", () => {
       await user.click(screen.getByTestId("auto-router-routing-test-send"));
       expect(await screen.findByTestId("auto-router-routing-test-result")).toBeInTheDocument();
 
-      await user.click(screen.getAllByRole("button", { name: /^close$/i }).at(-1)!);
+      await user.click(screen.getAllByRole("button", { name: /关闭/ }).at(-1)!);
       await user.click(screen.getByTestId("auto-router-test-routing-btn"));
 
       expect(await screen.findByTestId("auto-router-routing-test-prompt")).toHaveValue("");

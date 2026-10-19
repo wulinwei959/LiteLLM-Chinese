@@ -76,7 +76,7 @@ describe("ModelSettingsModal", () => {
     const user = userEvent.setup();
     renderWithProviders(<ModelSettingsModal {...defaultProps} />);
 
-    const closeButton = screen.getByRole("button", { name: /close/i });
+    const closeButton = screen.getByRole("button", { name: /关闭/ });
     await user.click(closeButton);
 
     expect(mockOnCancel).toHaveBeenCalledTimes(1);

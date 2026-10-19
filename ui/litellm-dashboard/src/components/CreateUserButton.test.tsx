@@ -123,7 +123,7 @@ describe("CreateUserButton", () => {
       expect(screen.getByRole("dialog", { name: /邀请用户/ })).toBeInTheDocument();
 
       const dialog = screen.getByRole("dialog", { name: /邀请用户/ });
-      await user.click(within(dialog).getByRole("button", { name: /close/i }));
+      await user.click(within(dialog).getByRole("button", { name: /关闭/ }));
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
   });

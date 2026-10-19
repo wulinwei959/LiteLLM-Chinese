@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 
 import { cn } from "@/lib/cva.config";
@@ -49,6 +50,7 @@ function DialogContent({
   showCloseButton?: boolean;
   overlayClassName?: string;
 }) {
+  const t = useTranslations("common");
   return (
     <DialogPortal>
       <DialogOverlay className={overlayClassName} forceRender={Boolean(overlayClassName)} />
@@ -67,7 +69,7 @@ function DialogContent({
             render={<Button variant="ghost" className="absolute top-4 right-4" size="icon-sm" />}
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{t("close")}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Popup>
@@ -87,6 +89,7 @@ function DialogFooter({
 }: React.ComponentProps<"div"> & {
   showCloseButton?: boolean;
 }) {
+  const t = useTranslations("common");
   return (
     <div
       data-slot="dialog-footer"
@@ -94,7 +97,9 @@ function DialogFooter({
       {...props}
     >
       {children}
-      {showCloseButton && <DialogPrimitive.Close render={<Button variant="outline" />}>Close</DialogPrimitive.Close>}
+      {showCloseButton && (
+        <DialogPrimitive.Close render={<Button variant="outline" />}>{t("close")}</DialogPrimitive.Close>
+      )}
     </div>
   );
 }

@@ -252,7 +252,7 @@ it("guides a first-time administrator into worker connection and lens setup", as
   await user.click(guide.getByRole("button", { name: "连接工作进程" }));
   const connection = within(await screen.findByRole("dialog", { name: "连接工作进程" }));
   expect(connection.getByRole("button", { name: "获取安装命令" })).toBeVisible();
-  await user.click(connection.getByRole("button", { name: "Close" }));
+  await user.click(connection.getByRole("button", { name: "关闭" }));
   expect(guide.getByRole("button", { name: "新建调查" })).toBeDisabled();
   await act(async () => {
     testQueryClient.setQueryData(["lenses", "test"], {

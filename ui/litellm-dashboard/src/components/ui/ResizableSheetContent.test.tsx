@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { Sheet, SheetTitle } from "@/components/ui/sheet";
 import { ResizableSheetContent } from "./ResizableSheetContent";
 
@@ -15,11 +16,13 @@ describe("ResizableSheetContent", () => {
 
   it("resizes by dragging the handle, clamps to the minimum, and persists on release", () => {
     render(
-      <Sheet open>
-        <ResizableSheetContent storageKey="k">
-          <SheetTitle>t</SheetTitle>
-        </ResizableSheetContent>
-      </Sheet>,
+      <LocaleProvider locale="zh-CN">
+        <Sheet open>
+          <ResizableSheetContent storageKey="k">
+            <SheetTitle>t</SheetTitle>
+          </ResizableSheetContent>
+        </Sheet>
+      </LocaleProvider>,
     );
 
     fireEvent.pointerDown(screen.getByRole("separator"));
@@ -35,11 +38,13 @@ describe("ResizableSheetContent", () => {
 
   it("resizes from the keyboard and exposes the width via aria-valuenow", () => {
     render(
-      <Sheet open>
-        <ResizableSheetContent storageKey="k">
-          <SheetTitle>t</SheetTitle>
-        </ResizableSheetContent>
-      </Sheet>,
+      <LocaleProvider locale="zh-CN">
+        <Sheet open>
+          <ResizableSheetContent storageKey="k">
+            <SheetTitle>t</SheetTitle>
+          </ResizableSheetContent>
+        </Sheet>
+      </LocaleProvider>,
     );
 
     const sep = screen.getByRole("separator");
@@ -61,11 +66,13 @@ describe("ResizableSheetContent", () => {
   it("clamps the End key to the 720px floor when it exceeds the percentage minimum", () => {
     Object.defineProperty(window, "innerWidth", { value: 1000, configurable: true, writable: true });
     render(
-      <Sheet open>
-        <ResizableSheetContent storageKey="k">
-          <SheetTitle>t</SheetTitle>
-        </ResizableSheetContent>
-      </Sheet>,
+      <LocaleProvider locale="zh-CN">
+        <Sheet open>
+          <ResizableSheetContent storageKey="k">
+            <SheetTitle>t</SheetTitle>
+          </ResizableSheetContent>
+        </Sheet>
+      </LocaleProvider>,
     );
 
     const sep = screen.getByRole("separator");
@@ -79,11 +86,13 @@ describe("ResizableSheetContent", () => {
     localStorage.setItem("k", "40");
     Object.defineProperty(window, "innerWidth", { value: 1000, configurable: true, writable: true });
     render(
-      <Sheet open>
-        <ResizableSheetContent storageKey="k">
-          <SheetTitle>t</SheetTitle>
-        </ResizableSheetContent>
-      </Sheet>,
+      <LocaleProvider locale="zh-CN">
+        <Sheet open>
+          <ResizableSheetContent storageKey="k">
+            <SheetTitle>t</SheetTitle>
+          </ResizableSheetContent>
+        </Sheet>
+      </LocaleProvider>,
     );
 
     const sep = screen.getByRole("separator");

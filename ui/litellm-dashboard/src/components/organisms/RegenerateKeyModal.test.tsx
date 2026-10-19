@@ -88,7 +88,7 @@ describe("RegenerateKeyModal", () => {
     const user = userEvent.setup();
     renderWithProviders(<RegenerateKeyModal {...defaultProps} />);
 
-    await user.click(screen.getByRole("button", { name: "Close" }));
+    await user.click(screen.getByRole("button", { name: "关闭" }));
     expect(mockOnClose).toHaveBeenCalledOnce();
   });
 

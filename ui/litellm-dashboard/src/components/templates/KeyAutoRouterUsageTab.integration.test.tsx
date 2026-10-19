@@ -86,14 +86,14 @@ describe("KeyAutoRouterUsageTab", () => {
     renderWithProviders(<KeyAutoRouterUsageTab accessToken="test-token" keyToken="key-hash-1" activity={activity} />);
 
     expect(await screen.findByText("$8.75")).toBeInTheDocument();
-    expect(screen.getByText("Actual auto-router spend")).toBeInTheDocument();
+    expect(screen.getByText("自动路由实际支出")).toBeInTheDocument();
     expect(screen.getByText("$1.25")).toBeInTheDocument();
-    expect(screen.getByText("LLM spend")).toBeInTheDocument();
+    expect(screen.getByText("LLM 支出")).toBeInTheDocument();
     expect(screen.getByText("$1.00")).toBeInTheDocument();
-    expect(screen.getByText("Classification cost")).toBeInTheDocument();
+    expect(screen.getByText("分类成本")).toBeInTheDocument();
     expect(screen.getByText("$0.2500")).toBeInTheDocument();
-    expect(screen.getByText("($62.50 / 1K turns)")).toBeInTheDocument();
-    expect(screen.getByText("Estimated baseline spend")).toBeInTheDocument();
+    expect(screen.getByText("（$62.50 / 千轮）")).toBeInTheDocument();
+    expect(screen.getByText("估算基线支出")).toBeInTheDocument();
     expect(screen.getByText("$10.00")).toBeInTheDocument();
     expect(screen.getByText("自动路由提示缓存")).toBeInTheDocument();
     expect(screen.getAllByText("50.0%").length).toBeGreaterThan(0);
