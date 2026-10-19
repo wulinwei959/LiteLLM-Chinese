@@ -370,14 +370,14 @@ const MCPToolArgumentsForm = forwardRef<MCPToolArgumentsFormRef, MCPToolArgument
                             className="w-full"
                           >
                             <SelectValue placeholder={t("selectKeyPlaceholder", { key })}>
-                              {field.value === "" ? "Empty string" : undefined}
+                              {field.value === "" ? t("emptyString") : undefined}
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
                             {!required && <SelectItem value={null}>Select {key}</SelectItem>}
                             {prop.enum.map((v) => (
                               <SelectItem key={v} value={v}>
-                                {v === "" ? "Empty string" : v}
+                                {v === "" ? t("emptyString") : v}
                               </SelectItem>
                             ))}
                           </SelectContent>

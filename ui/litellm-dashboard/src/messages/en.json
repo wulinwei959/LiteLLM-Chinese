@@ -730,6 +730,8 @@
     }
   },
   "models": {
+    "refreshModelsAria": "Refresh models",
+    "lastRefreshedLabel": "Last Refreshed: {time}",
     "title": "Model Management",
     "personalTeam": "Personal",
     "deletedToast": "Model deleted successfully",
@@ -4819,6 +4821,7 @@
     }
   },
   "usage": {
+    "missingTokenOrRange": "Missing access token or date range",
     "title": "Usage",
     "tabs": {
       "cost": "Cost",
@@ -11485,6 +11488,7 @@
     "title": "Logging Settings"
   },
   "mcpToolArgs": {
+    "emptyString": "Empty string",
     "toolInputDesc": "Input for this tool",
     "enterInputRequired": "Please enter input for this tool",
     "enterField": "Please enter {key}",

@@ -729,6 +729,8 @@
     }
   },
   "models": {
+    "refreshModelsAria": "刷新模型列表",
+    "lastRefreshedLabel": "最近刷新：{time}",
     "title": "模型管理",
     "personalTeam": "个人团队",
     "deletedToast": "模型删除成功",
@@ -4818,6 +4820,7 @@
     }
   },
   "usage": {
+    "missingTokenOrRange": "缺少访问令牌或日期范围",
     "title": "用量",
     "tabs": {
       "cost": "成本",
@@ -11480,6 +11483,7 @@
     "title": "日志设置"
   },
   "mcpToolArgs": {
+    "emptyString": "空字符串",
     "toolInputDesc": "该工具的输入",
     "enterInputRequired": "请输入该工具的输入内容",
     "enterField": "请输入 {key}",

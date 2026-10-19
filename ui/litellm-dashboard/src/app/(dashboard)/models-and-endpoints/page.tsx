@@ -173,9 +173,7 @@ export default function ModelsAndEndpointsPage() {
             {isAdmin ? (
               <p className="text-sm text-muted-foreground">{isAdmin ? t("subtitleAdmin") : t("subtitleUser")}</p>
             ) : (
-              <p className="text-sm text-muted-foreground">
-                {t("subtitleUser")}
-              </p>
+              <p className="text-sm text-muted-foreground">{t("subtitleUser")}</p>
             )}
           </div>
         </div>
@@ -210,9 +208,11 @@ export default function ModelsAndEndpointsPage() {
               </div>
               <div className="flex shrink-0 items-center gap-2 pb-1">
                 {lastRefreshed && (
-                  <span className="text-xs text-muted-foreground">Last Refreshed: {lastRefreshed}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {t("lastRefreshedLabel", { time: lastRefreshed })}
+                  </span>
                 )}
-                <Button variant="ghost" size="icon-sm" onClick={handleRefreshClick} aria-label="Refresh models">
+                <Button variant="ghost" size="icon-sm" onClick={handleRefreshClick} aria-label={t("refreshModelsAria")}>
                   <RefreshCw />
                 </Button>
               </div>

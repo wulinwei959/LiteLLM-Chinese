@@ -338,7 +338,7 @@ describe("AddModelPanel validation gates", () => {
     await openAdvanced();
     await user.type(screen.getByLabelText("PTU 数量"), "15");
     await user.type(screen.getByLabelText("计算的 PTU 每小时成本 (USD)"), "2");
-    await submitExpectingRejection("PTU Effective From is required when PTU Count is set");
+    await submitExpectingRejection("填写 PTU 数量后必须填写 PTU 生效起始时间");
 
     expect(modelCreateCall).not.toHaveBeenCalled();
   });
