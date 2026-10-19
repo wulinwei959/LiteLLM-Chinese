@@ -8117,6 +8117,7 @@
   },
   "playground": {
     "uploadPreviewAlt": "Upload preview",
+    "generatedChart": "Generated chart",
     "uploadTooLarge": "\"{name}\" is too large. Maximum size is {max}.",
     "attachmentUnsupported": "\"{name}\" is not a supported attachment. Use PNG, JPEG, GIF, WebP, or PDF.",
     "imageEditLimitReached": "You can upload at most {count} images.",
@@ -9016,6 +9017,7 @@
     "backToAgent": "Back to Agent",
     "backToAgents": "Back to Agents",
     "unnamedAgent": "Unnamed Agent",
+    "unnamedKey": "Unnamed key",
     "addSkill": "Add Skill",
     "removeSkill": "Remove Skill",
     "saveChanges": "Save Changes",

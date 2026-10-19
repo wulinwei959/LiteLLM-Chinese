@@ -106,7 +106,7 @@ export function MessageDisplay({ messages, isLoading }: MessageDisplayProps) {
     <div className="flex flex-col gap-6 min-w-0 w-full p-4">
       {conversationBlocks.map((block, blockIndex) => {
         const assistantMessage = block.assistant;
-        const displayModel = assistantMessage?.model || "Assistant";
+        const displayModel = assistantMessage?.model || t("chatMessageBubble.assistant");
         return (
           <div key={blockIndex} className="space-y-4">
             {block.user && (

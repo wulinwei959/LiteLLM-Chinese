@@ -179,7 +179,7 @@ const CodeInterpreterOutput: React.FC<CodeInterpreterOutputProps> = ({ code, ann
             <div>
               <img
                 src={imageUrls[annotation.file_id]}
-                alt={annotation.filename || "Generated chart"}
+                alt={annotation.filename || t("generatedChart")}
                 className="max-h-[400px] max-w-full"
               />
               <div className="flex items-center justify-between border-t border-border bg-muted px-3 py-2">

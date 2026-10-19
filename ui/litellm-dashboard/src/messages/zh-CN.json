@@ -8116,6 +8116,7 @@
   },
   "playground": {
     "uploadPreviewAlt": "上传预览图",
+    "generatedChart": "生成的图表",
     "uploadTooLarge": "「{name}」文件过大，最大允许 {max}。",
     "attachmentUnsupported": "「{name}」不是受支持的附件。请使用 PNG、JPEG、GIF、WebP 或 PDF。",
     "imageEditLimitReached": "最多可上传 {count} 张图片。",
@@ -9011,6 +9012,7 @@
     "backToAgent": "返回智能体",
     "backToAgents": "返回智能体列表",
     "unnamedAgent": "未命名智能体",
+    "unnamedKey": "未命名密钥",
     "addSkill": "添加技能",
     "removeSkill": "移除技能",
     "saveChanges": "保存更改",

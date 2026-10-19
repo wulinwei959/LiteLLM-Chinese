@@ -27,7 +27,7 @@ const AgentVirtualKeys: React.FC<AgentVirtualKeysProps> = ({ keys, isLoading, on
           {keys.map((key) => (
             <div key={key.token} className="flex items-center gap-3 rounded-sm border border-border px-3 py-2">
               <KeyRound className="size-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-foreground">{key.key_alias || "Unnamed key"}</span>
+              <span className="text-sm font-medium text-foreground">{key.key_alias || t("unnamedKey")}</span>
               {key.key_name && <span className="font-mono text-xs text-muted-foreground">{key.key_name}</span>}
               <TooltipProvider delay={300}>
                 <Tooltip>
