@@ -183,7 +183,7 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
     () => keyList.find((key) => key.token === selectedKeyId),
     [keyList, selectedKeyId],
   );
-  const { data: fetchedSelectedKey, isError: selectedKeyLoadFailed } = useKeyInfo(selectedKeyId, {
+  const { data: fetchedSelectedKey, isError: selectedKeyLoadFailed } = useKeyInfo(t, selectedKeyId, {
     enabled: !selectedKeyFromList,
   });
   const selectedKey = selectedKeyFromList ?? fetchedSelectedKey;

@@ -217,7 +217,7 @@ describe("TopKeyView", () => {
     fireEvent.click(bars[0]);
 
     await waitFor(() => {
-      expect(mockKeyInfoV1Call).toHaveBeenCalledWith("test-token", "key-123");
+      expect(mockKeyInfoV1Call).toHaveBeenCalledWith(expect.any(Function), "test-token", "key-123");
     });
 
     await waitFor(() => {
@@ -486,7 +486,7 @@ describe("TopKeyView", () => {
     }
 
     await waitFor(() => {
-      expect(mockKeyInfoV1Call).toHaveBeenCalledWith("test-token", "key-123");
+      expect(mockKeyInfoV1Call).toHaveBeenCalledWith(expect.any(Function), "test-token", "key-123");
     });
 
     await waitFor(() => {
@@ -520,7 +520,7 @@ describe("TopKeyView", () => {
 
     expect(await screen.findByText("Key Info View for stored-key")).toBeInTheDocument();
     expect(mockKeyInfoV1Call).toHaveBeenCalledTimes(1);
-    expect(mockKeyInfoV1Call).toHaveBeenCalledWith("test-token", "stored-key");
+    expect(mockKeyInfoV1Call).toHaveBeenCalledWith(expect.any(Function), "test-token", "stored-key");
   });
 
   it("should close modal when close button is clicked", async () => {

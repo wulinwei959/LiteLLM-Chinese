@@ -3,6 +3,7 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { KeyResponse } from "@/components/key_team_helpers/key_list";
 import { keyInfoV1Call, userGetInfoV2 } from "@/components/networking";
+import type { VirtualKeysTranslator } from "@/lib/i18n/translators";
 
 import { keyKeys } from "./useKeys";
 
@@ -21,14 +22,18 @@ const fetchOwner = async (accessToken: string, userId: string): Promise<KeyRespo
   }
 };
 
-export function useKeyInfo(keyId: string | null, options?: { enabled?: boolean }): UseQueryResult<KeyResponse> {
+export function useKeyInfo(
+  t: VirtualKeysTranslator,
+  keyId: string | null,
+  options?: { enabled?: boolean },
+): UseQueryResult<KeyResponse> {
   const { accessToken } = useAuthorized();
 
   return useQuery<KeyResponse>({
     queryKey: [...keyKeys.detail(keyId ?? ""), accessToken],
     queryFn: async () => {
       if (!accessToken || !keyId) throw new Error("Missing access token or key id");
-      const keyData = await keyInfoV1Call(accessToken, keyId);
+      const keyData = await keyInfoV1Call(t, accessToken, keyId);
       const info = keyData["info"];
       const owner =
         typeof info.user_id === "string" && info.user_id !== ""

@@ -43,6 +43,7 @@ interface RequestLogsPanelProps {
 
 export default function RequestLogsPanel({ accessToken, token, userRole, userID, isActive }: RequestLogsPanelProps) {
   const t = useTranslations("logs");
+  const keysT = useTranslations("virtualKeys");
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: PAGE_SIZE });
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_LOGS_SORTING);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -121,7 +122,7 @@ export default function RequestLogsPanel({ accessToken, token, userRole, userID,
     queryKey: ["requestLogsKeyInfo", selectedKeyIdInfoView, accessToken],
     queryFn: async () => {
       if (selectedKeyIdInfoView === null) return null;
-      const keyData = await keyInfoV1Call(accessToken, selectedKeyIdInfoView);
+      const keyData = await keyInfoV1Call(keysT, accessToken, selectedKeyIdInfoView);
       return {
         ...keyData["info"],
         token: selectedKeyIdInfoView,

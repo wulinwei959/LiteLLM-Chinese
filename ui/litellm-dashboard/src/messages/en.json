@@ -347,6 +347,7 @@
   "ssoEnabledNotice": "Single Sign-On (SSO) is enabled. LiteLLM no longer automatically redirects to the SSO login flow upon loading this page. To re-enable auto-redirect-to-SSO, set AUTO_REDIRECT_UI_LOGIN_TO_SSO=true in your environment configuration.",
   "virtualKeys": {
     "title": "Virtual Keys",
+    "keyInfoFailed": "Failed to fetch key info - {error}",
     "searchPlaceholder": "Search keys...",
     "filter": {
       "team": "Team",

@@ -38,6 +38,7 @@ interface TopKeyViewProps {
 const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = false, topKeysLimit, setTopKeysLimit }) => {
   const { accessToken } = useAuthorized();
   const t = useTranslations("topKeyView");
+  const keysT = useTranslations("virtualKeys");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [keyData, setKeyData] = useState<any | undefined>(undefined);
@@ -60,7 +61,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
     if (!accessToken || !canOpenKeyInfo(item)) return;
 
     try {
-      const keyInfo = await keyInfoV1Call(accessToken, item.api_key);
+      const keyInfo = await keyInfoV1Call(keysT, accessToken, item.api_key);
       const transformedKeyData = transformKeyInfo(keyInfo);
 
       setKeyData(transformedKeyData);

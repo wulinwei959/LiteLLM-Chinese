@@ -87,7 +87,7 @@ export const getAutoRouterAssembledPromptCall = async (
  * Helper file for calls being made to proxy
  */
 import { toast } from "@/lib/toast";
-import type { PassThroughTranslator, TeamsTranslator } from "@/lib/i18n/translators";
+import type { PassThroughTranslator, TeamsTranslator, VirtualKeysTranslator } from "@/lib/i18n/translators";
 import { clearTokenCookies, getCookie, storeLoginToken } from "@/utils/cookieUtils";
 import { decodeToken } from "@/utils/jwtUtils";
 import { TagNewRequest, TagUpdateRequest, TagListResponse, TagInfoResponse } from "./tag_management/types";
@@ -2339,7 +2339,7 @@ export const validateAutoRouterConfig = async (
 };
 
 // ... existing code ...
-export const keyInfoV1Call = async (accessToken: string, key: string) => {
+export const keyInfoV1Call = async (t: VirtualKeysTranslator, accessToken: string, key: string) => {
   try {
     let url = proxyBaseUrl ? `${proxyBaseUrl}/key/info` : `/key/info`;
     url = `${url}?key=${key}`; // Add key as query parameter
@@ -2356,7 +2356,7 @@ export const keyInfoV1Call = async (accessToken: string, key: string) => {
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      toast.fromError("Failed to fetch key info - " + errorData);
+      toast.fromError(t("keyInfoFailed", { error: errorData }));
     }
 
     const data = await response.json();

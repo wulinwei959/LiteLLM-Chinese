@@ -346,6 +346,7 @@
   "ssoEnabledNotice": "单点登录 (SSO) 已启用。LiteLLM 加载此页面时不再自动重定向到 SSO 登录流程。如需重新启用自动重定向到 SSO，请在环境配置中设置 AUTO_REDIRECT_UI_LOGIN_TO_SSO=true。",
   "virtualKeys": {
     "title": "虚拟密钥",
+    "keyInfoFailed": "获取密钥信息失败：{error}",
     "searchPlaceholder": "搜索密钥...",
     "filter": {
       "team": "团队",

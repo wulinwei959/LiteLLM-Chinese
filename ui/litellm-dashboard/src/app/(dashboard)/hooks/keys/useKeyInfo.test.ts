@@ -4,8 +4,17 @@ import React, { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { keyInfoV1Call, userGetInfoV2 } from "@/components/networking";
+import en from "@/messages/en.json";
+import type { VirtualKeysTranslator } from "@/lib/i18n/translators";
+import { createTranslator } from "next-intl";
 
 import { useKeyInfo } from "./useKeyInfo";
+
+const t = createTranslator({
+  locale: "en",
+  messages: en,
+  namespace: "virtualKeys",
+}) as unknown as VirtualKeysTranslator;
 
 vi.mock("@/components/networking", () => ({
   keyInfoV1Call: vi.fn(),
@@ -61,7 +70,7 @@ describe("useKeyInfo", () => {
     mockUserGetInfoV2.mockResolvedValue(OWNER);
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useKeyInfo(KEY_ID), { wrapper });
+    const { result } = renderHook(() => useKeyInfo(t, KEY_ID), { wrapper });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockUserGetInfoV2).toHaveBeenCalledWith(ACCESS_TOKEN, "user-1");
@@ -79,7 +88,7 @@ describe("useKeyInfo", () => {
     mockKeyInfoV1Call.mockResolvedValue(keyInfoResponse({ user_id: null, key_alias: "service-key" }));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useKeyInfo(KEY_ID), { wrapper });
+    const { result } = renderHook(() => useKeyInfo(t, KEY_ID), { wrapper });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockUserGetInfoV2).not.toHaveBeenCalled();
@@ -91,7 +100,7 @@ describe("useKeyInfo", () => {
     mockUserGetInfoV2.mockRejectedValue(new Error("403"));
     const { wrapper } = createWrapper();
 
-    const { result } = renderHook(() => useKeyInfo(KEY_ID), { wrapper });
+    const { result } = renderHook(() => useKeyInfo(t, KEY_ID), { wrapper });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.token).toBe(KEY_ID);
