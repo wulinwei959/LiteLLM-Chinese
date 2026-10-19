@@ -162,21 +162,18 @@ export const AgentIdentityFields = ({ accessToken }: { accessToken: string | nul
                 required: mode !== "delegated" ? t("enterpriseObjectIdRequired") : false,
                 pattern: { value: IDENTITY_UUID_PATTERN, message: t("principalUuidInvalid") },
               }}
-              description={
-                <>
-                  Open{" "}
+              description={t.rich("enterpriseObjectIdHelp", {
+                link: (chunks) => (
                   <a
                     className="underline"
                     href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/~/AppAppsPreview"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Entra Enterprise applications
+                    {chunks}
                   </a>
-                  , select this application, and copy its Object ID. The App registrations Object ID is a different
-                  value.
-                </>
-              }
+                ),
+              })}
             >
               {({ value, onChange, ref, ...control }) => (
                 <Input {...control} ref={ref} value={typeof value === "string" ? value : ""} onChange={onChange} />

@@ -11703,6 +11703,7 @@
     "clientIdDescAfter": "中找到：选择您的智能体应用，然后进入概述。此处不需要客户端密钥。",
     "enterpriseObjectId": "企业应用程序对象 ID",
     "enterpriseObjectIdRequired": "请输入服务主体对象 ID",
+    "enterpriseObjectIdHelp": "打开<link>Entra 企业应用程序</link>，选择此应用并复制其对象 ID。应用注册的对象 ID 是另一个值。",
     "executionMode": "执行模式",
     "modeAutonomous": "自主执行",
     "modeDelegated": "代表用户执行",

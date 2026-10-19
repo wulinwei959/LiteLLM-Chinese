@@ -11708,6 +11708,7 @@
     "clientIdDescAfter": ", select your agent application, then Overview. No client secret is required here.",
     "enterpriseObjectId": "Enterprise Application Object ID",
     "enterpriseObjectIdRequired": "Enter the service principal Object ID",
+    "enterpriseObjectIdHelp": "Open <link>Entra Enterprise applications</link>, select this application, and copy its Object ID. The App registrations Object ID is a different value.",
     "executionMode": "Execution Mode",
     "modeAutonomous": "Autonomous",
     "modeDelegated": "On behalf of a user",
