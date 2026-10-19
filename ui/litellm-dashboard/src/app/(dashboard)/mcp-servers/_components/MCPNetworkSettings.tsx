@@ -164,6 +164,7 @@ const AllowedClientDialog: React.FC<AllowedClientDialogProps> = ({ draft, onChan
 const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) => {
   const t = useTranslations("mcpServers");
   const bannersT = useTranslations("banners");
+  const commonT = useTranslations("common");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [privateRanges, setPrivateRanges] = useState<string[]>([]);
@@ -219,11 +220,11 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
   const persistRanges = async (token: string) => {
     if (unchangedSinceLoad(privateRanges, storedRanges)) return;
     if (privateRanges.length > 0) {
-      await updateConfigFieldSetting(token, "mcp_internal_ip_ranges", privateRanges);
+      await updateConfigFieldSetting(commonT, token, "mcp_internal_ip_ranges", privateRanges);
       setStoredRanges(privateRanges);
       return;
     }
-    await deleteConfigFieldSetting(token, "mcp_internal_ip_ranges");
+    await deleteConfigFieldSetting(commonT, token, "mcp_internal_ip_ranges");
     setStoredRanges(null);
   };
 
@@ -231,11 +232,11 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
     const clients = allowedClients.map(({ alias, value }) => ({ alias, value }));
     if (clientsUnchangedSinceLoad(clients, storedClients)) return;
     if (clients.length > 0) {
-      await updateConfigFieldSetting(token, "mcp_allowed_clients", clients);
+      await updateConfigFieldSetting(commonT, token, "mcp_allowed_clients", clients);
       setStoredClients({ kind: "clients", clients });
       return;
     }
-    await deleteConfigFieldSetting(token, "mcp_allowed_clients");
+    await deleteConfigFieldSetting(commonT, token, "mcp_allowed_clients");
     setStoredClients(ABSENT);
   };
 
@@ -243,11 +244,11 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
     const value = clientIdHeader.trim();
     if (headerUnchangedSinceLoad(value, storedClientIdHeader)) return;
     if (value !== "") {
-      await updateConfigFieldSetting(token, "mcp_client_id_header", value);
+      await updateConfigFieldSetting(commonT, token, "mcp_client_id_header", value);
       setStoredClientIdHeader(value);
       return;
     }
-    await deleteConfigFieldSetting(token, "mcp_client_id_header");
+    await deleteConfigFieldSetting(commonT, token, "mcp_client_id_header");
     setStoredClientIdHeader(null);
   };
 

@@ -44,6 +44,7 @@ describe("PluginSettings config payload", () => {
 
     await waitFor(() => expect(updateConfigFieldSettingMock).toHaveBeenCalledTimes(1));
     expect(savedPayload()).toStrictEqual([
+      expect.any(Function),
       "123",
       "plugins",
       [
@@ -70,6 +71,7 @@ describe("PluginSettings config payload", () => {
 
     await waitFor(() => expect(updateConfigFieldSettingMock).toHaveBeenCalledTimes(1));
     expect(savedPayload()).toStrictEqual([
+      expect.any(Function),
       "123",
       "plugins",
       [
@@ -95,6 +97,7 @@ describe("PluginSettings config payload", () => {
 
     await waitFor(() => expect(updateConfigFieldSettingMock).toHaveBeenCalledTimes(1));
     expect(savedPayload()).toStrictEqual([
+      expect.any(Function),
       "123",
       "plugins",
       [

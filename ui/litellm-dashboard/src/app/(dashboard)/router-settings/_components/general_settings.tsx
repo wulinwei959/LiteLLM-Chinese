@@ -142,6 +142,7 @@ export const PromptCachingPanel: React.FC<{
   onChange: (fieldName: string, newValue: any) => void;
 }> = ({ accessToken, settings, onChange }) => {
   const t = useTranslations("routerSettings");
+  const commonT = useTranslations("common");
   const enableSetting = settings.find((s) => s.field_name === ENABLE_ANTHROPIC_PROMPT_CACHING);
   const ttlSetting = settings.find((s) => s.field_name === ANTHROPIC_PROMPT_CACHING_TTL);
   const systemFirstSetting = settings.find((s) => s.field_name === OPENAI_SYSTEM_MESSAGES_FIRST);
@@ -159,9 +160,9 @@ export const PromptCachingPanel: React.FC<{
   const persist = (fieldName: string, value: any) => {
     onChange(fieldName, value);
     if (value === "" || value === null || value === undefined) {
-      deleteConfigFieldSetting(accessToken, fieldName);
+      deleteConfigFieldSetting(commonT, accessToken, fieldName);
     } else {
-      updateConfigFieldSetting(accessToken, fieldName, value);
+      updateConfigFieldSetting(commonT, accessToken, fieldName, value);
     }
   };
 
@@ -224,6 +225,7 @@ export const PromptCachingPanel: React.FC<{
 
 const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, userRole, userID }) => {
   const t = useTranslations("routerSettings");
+  const commonT = useTranslations("common");
   const [generalSettings, setGeneralSettings] = useState<generalSettingsItem[]>([]);
 
   useEffect(() => {
@@ -257,7 +259,7 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
       return;
     }
     try {
-      updateConfigFieldSetting(accessToken, fieldName, fieldValue);
+      updateConfigFieldSetting(commonT, accessToken, fieldName, fieldValue);
       // update value in state
 
       const updatedSettings = generalSettings.map((setting) =>
@@ -275,7 +277,7 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
     }
 
     try {
-      deleteConfigFieldSetting(accessToken, fieldName);
+      deleteConfigFieldSetting(commonT, accessToken, fieldName);
       // update value in state
 
       const updatedSettings = generalSettings.map((setting) =>

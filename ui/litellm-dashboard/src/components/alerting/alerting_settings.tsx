@@ -25,6 +25,7 @@ interface AlertingSettingsProps {
 
 const AlertingSettings: React.FC<AlertingSettingsProps> = ({ accessToken, premiumUser }) => {
   const t = useTranslations("alerting");
+  const commonT = useTranslations("common");
   const [alertingSettings, setAlertingSettings] = useState<alertingSettingsItem[]>([]);
 
   useEffect(() => {
@@ -67,12 +68,12 @@ const AlertingSettings: React.FC<AlertingSettingsProps> = ({ accessToken, premiu
     const mergedFormValues = { ...formValues, ...initialFormValues };
     const { slack_alerting, ...alertingArgs } = mergedFormValues;
     try {
-      await updateConfigFieldSetting(accessToken, "alerting_args", alertingArgs);
+      await updateConfigFieldSetting(commonT, accessToken, "alerting_args", alertingArgs);
       if (typeof slack_alerting === "boolean") {
         if (slack_alerting == true) {
-          await updateConfigFieldSetting(accessToken, "alerting", ["slack"]);
+          await updateConfigFieldSetting(commonT, accessToken, "alerting", ["slack"]);
         } else {
-          await updateConfigFieldSetting(accessToken, "alerting", []);
+          await updateConfigFieldSetting(commonT, accessToken, "alerting", []);
         }
       }
       // update value in state

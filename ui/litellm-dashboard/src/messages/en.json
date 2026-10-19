@@ -1,5 +1,7 @@
 {
   "common": {
+    "configValueUpdated": "Successfully updated value!",
+    "configFieldReset": "Field reset on proxy",
     "helpIcon": "Help",
     "keyScopeManagement": "Management",
     "keyScopeReadOnly": "Read-only",

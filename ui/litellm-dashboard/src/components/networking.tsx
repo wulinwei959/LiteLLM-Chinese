@@ -88,6 +88,7 @@ export const getAutoRouterAssembledPromptCall = async (
  */
 import { toast } from "@/lib/toast";
 import type {
+  CommonTranslator,
   ModelsAddModelTranslator,
   PassThroughTranslator,
   TeamsTranslator,
@@ -3331,7 +3332,12 @@ export const createPassThroughEndpoint = async (accessToken: string, formValues:
   }
 };
 
-export const updateConfigFieldSetting = async (accessToken: string, fieldName: string, fieldValue: any) => {
+export const updateConfigFieldSetting = async (
+  t: CommonTranslator,
+  accessToken: string,
+  fieldName: string,
+  fieldValue: any,
+) => {
   try {
     let formData = {
       field_name: fieldName,
@@ -3339,7 +3345,7 @@ export const updateConfigFieldSetting = async (accessToken: string, fieldName: s
       config_type: "general_settings",
     };
     const data = await apiClient.post(`/config/field/update`, { accessToken, body: formData });
-    toast.success("Successfully updated value!");
+    toast.success(t("configValueUpdated"));
     return data;
     // Handle success - you might want to update some state or UI based on the created key
   } catch (error) {
@@ -3348,14 +3354,14 @@ export const updateConfigFieldSetting = async (accessToken: string, fieldName: s
   }
 };
 
-export const deleteConfigFieldSetting = async (accessToken: string, fieldName: string) => {
+export const deleteConfigFieldSetting = async (t: CommonTranslator, accessToken: string, fieldName: string) => {
   try {
     let formData = {
       field_name: fieldName,
       config_type: "general_settings",
     };
     const data = await apiClient.post(`/config/field/delete`, { accessToken, body: formData });
-    toast.success("Field reset on proxy");
+    toast.success(t("configFieldReset"));
     return data;
     // Handle success - you might want to update some state or UI based on the created key
   } catch (error) {

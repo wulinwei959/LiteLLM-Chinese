@@ -464,6 +464,7 @@ interface MCPSubmissionsTabProps {
 
 export function MCPSubmissionsTab({ accessToken }: MCPSubmissionsTabProps) {
   const t = useTranslations("mcpServers");
+  const commonT = useTranslations("common");
   const [summary, setSummary] = useState<MCPSubmissionsSummary>({
     total: 0,
     pending_review: 0,
@@ -523,7 +524,7 @@ export function MCPSubmissionsTab({ accessToken }: MCPSubmissionsTabProps) {
     if (!accessToken) return;
     setIsSavingRules(true);
     try {
-      await updateConfigFieldSetting(accessToken, SETTINGS_KEY, requiredFields);
+      await updateConfigFieldSetting(commonT, accessToken, SETTINGS_KEY, requiredFields);
       toast.success(t("submissions.rulesSavedToast"));
     } catch {
       toast.fromError(t("submissions.rulesSaveFailedToast"));

@@ -1,5 +1,7 @@
 {
   "common": {
+    "configValueUpdated": "值更新成功！",
+    "configFieldReset": "字段已在代理端重置",
     "helpIcon": "帮助",
     "keyScopeManagement": "管理",
     "keyScopeReadOnly": "只读",

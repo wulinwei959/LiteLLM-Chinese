@@ -118,12 +118,12 @@ describe("MCPNetworkSettings", () => {
     await userEvent.click(await screen.findByRole("button", { name: /Save|保存/ }));
 
     await waitFor(() =>
-      expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_internal_ip_ranges", [
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_internal_ip_ranges", [
         "10.0.0.0/8",
         "203.0.113.0/24",
       ]),
     );
-    expect(deleteConfigFieldSetting).not.toHaveBeenCalledWith("tok", "mcp_internal_ip_ranges");
+    expect(deleteConfigFieldSetting).not.toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_internal_ip_ranges");
   });
 
   it("clears a stored range setting instead of saving an empty list", async () => {
@@ -135,7 +135,9 @@ describe("MCPNetworkSettings", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Remove 10.0.0.0/8" }));
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
-    await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_internal_ip_ranges"));
+    await waitFor(() =>
+      expect(deleteConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_internal_ip_ranges"),
+    );
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
   });
 
@@ -184,12 +186,16 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
 
-    expect(await screen.findByText(/存储的允许列表不是别名与值的配对列表|stored allowlist is not a list/)).toBeVisible();
+    expect(
+      await screen.findByText(/存储的允许列表不是别名与值的配对列表|stored allowlist is not a list/),
+    ).toBeVisible();
     expect(screen.queryByText("antigravity-cli")).not.toBeInTheDocument();
 
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
-    await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients"));
+    await waitFor(() =>
+      expect(deleteConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients"),
+    );
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.queryByText(/stored allowlist is not a list/)).not.toBeInTheDocument());
   });
@@ -206,9 +212,11 @@ describe("MCPNetworkSettings", () => {
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
-      expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [ANTIGRAVITY]),
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients", [
+        ANTIGRAVITY,
+      ]),
     );
-    expect(deleteConfigFieldSetting).not.toHaveBeenCalledWith("tok", "mcp_allowed_clients");
+    expect(deleteConfigFieldSetting).not.toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients");
     await waitFor(() => expect(screen.queryByText(/stored allowlist is not a list/)).not.toBeInTheDocument());
   });
 
@@ -219,7 +227,9 @@ describe("MCPNetworkSettings", () => {
 
     renderSettings();
 
-    expect(await screen.findByText(/存储的允许列表不是别名与值的配对列表|stored allowlist is not a list/)).toBeVisible();
+    expect(
+      await screen.findByText(/存储的允许列表不是别名与值的配对列表|stored allowlist is not a list/),
+    ).toBeVisible();
     expect(screen.queryByRole("button", { name: /^Antigravity CLI/ })).not.toBeInTheDocument();
   });
 
@@ -232,9 +242,12 @@ describe("MCPNetworkSettings", () => {
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
-      expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [ANTIGRAVITY, CODEX]),
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients", [
+        ANTIGRAVITY,
+        CODEX,
+      ]),
     );
-    expect(deleteConfigFieldSetting).not.toHaveBeenCalledWith("tok", "mcp_allowed_clients");
+    expect(deleteConfigFieldSetting).not.toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients");
   });
 
   it("edits a stored client's value through its dialog and saves the new value", async () => {
@@ -256,7 +269,7 @@ describe("MCPNetworkSettings", () => {
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
-      expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients", [
         { alias: "Antigravity CLI", value: "0oa1b2c3d4e5f6g7h8i9" },
       ]),
     );
@@ -330,7 +343,10 @@ describe("MCPNetworkSettings", () => {
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
-      expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [ANTIGRAVITY, CODEX]),
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients", [
+        ANTIGRAVITY,
+        CODEX,
+      ]),
     );
   });
 
@@ -349,8 +365,15 @@ describe("MCPNetworkSettings", () => {
 
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
-    await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients"));
-    expect(updateConfigFieldSetting).not.toHaveBeenCalledWith("tok", "mcp_allowed_clients", expect.anything());
+    await waitFor(() =>
+      expect(deleteConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients"),
+    );
+    expect(updateConfigFieldSetting).not.toHaveBeenCalledWith(
+      expect.any(Function),
+      "tok",
+      "mcp_allowed_clients",
+      expect.anything(),
+    );
   });
 
   it("warns that a stored empty allowlist denies every client and lets Save remove it", async () => {
@@ -362,7 +385,9 @@ describe("MCPNetworkSettings", () => {
 
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
-    await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients"));
+    await waitFor(() =>
+      expect(deleteConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients"),
+    );
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.queryByText(/当前存储了空的允许列表/)).not.toBeInTheDocument());
   });
@@ -403,9 +428,19 @@ describe("MCPNetworkSettings", () => {
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
-      expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_client_id_header", "x-mcp-client"),
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(
+        expect.any(Function),
+        "tok",
+        "mcp_client_id_header",
+        "x-mcp-client",
+      ),
     );
-    expect(updateConfigFieldSetting).not.toHaveBeenCalledWith("tok", "mcp_allowed_clients", expect.anything());
+    expect(updateConfigFieldSetting).not.toHaveBeenCalledWith(
+      expect.any(Function),
+      "tok",
+      "mcp_allowed_clients",
+      expect.anything(),
+    );
     expect(deleteConfigFieldSetting).not.toHaveBeenCalled();
   });
 
@@ -421,7 +456,9 @@ describe("MCPNetworkSettings", () => {
 
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
-    await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_client_id_header"));
+    await waitFor(() =>
+      expect(deleteConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_client_id_header"),
+    );
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
   });
 
@@ -451,9 +488,17 @@ describe("MCPNetworkSettings", () => {
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
-      expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [ANTIGRAVITY, CODEX]),
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients", [
+        ANTIGRAVITY,
+        CODEX,
+      ]),
     );
-    expect(updateConfigFieldSetting).not.toHaveBeenCalledWith("tok", "mcp_internal_ip_ranges", expect.anything());
+    expect(updateConfigFieldSetting).not.toHaveBeenCalledWith(
+      expect.any(Function),
+      "tok",
+      "mcp_internal_ip_ranges",
+      expect.anything(),
+    );
     expect(deleteConfigFieldSetting).not.toHaveBeenCalled();
   });
 
@@ -469,7 +514,11 @@ describe("MCPNetworkSettings", () => {
     await addClient("Codex", "codex-mcp-client");
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
-    await waitFor(() => expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [CODEX]));
+    await waitFor(() =>
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients", [
+        CODEX,
+      ]),
+    );
     await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith(rangeFailure));
     expect(toast.success).not.toHaveBeenCalled();
   });
@@ -478,7 +527,7 @@ describe("MCPNetworkSettings", () => {
     vi.mocked(fetchMCPClientIp).mockResolvedValue("203.0.113.45");
     let finishRangeWrite: (() => void) | undefined;
     vi.mocked(updateConfigFieldSetting).mockImplementation(
-      (_token, fieldName) =>
+      (_t, _token, fieldName) =>
         new Promise<void>((resolve) => {
           if (fieldName === "mcp_internal_ip_ranges") {
             finishRangeWrite = resolve;
@@ -494,12 +543,23 @@ describe("MCPNetworkSettings", () => {
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
-      expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_internal_ip_ranges", ["203.0.113.0/24"]),
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_internal_ip_ranges", [
+        "203.0.113.0/24",
+      ]),
     );
-    expect(updateConfigFieldSetting).not.toHaveBeenCalledWith("tok", "mcp_allowed_clients", expect.anything());
+    expect(updateConfigFieldSetting).not.toHaveBeenCalledWith(
+      expect.any(Function),
+      "tok",
+      "mcp_allowed_clients",
+      expect.anything(),
+    );
 
     finishRangeWrite?.();
-    await waitFor(() => expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_allowed_clients", [CODEX]));
+    await waitFor(() =>
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_allowed_clients", [
+        CODEX,
+      ]),
+    );
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("MCP 网络设置已保存"));
   });
 });

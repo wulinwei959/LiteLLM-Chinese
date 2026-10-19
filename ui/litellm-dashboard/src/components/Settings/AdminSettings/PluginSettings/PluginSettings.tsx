@@ -56,7 +56,7 @@ export default function PluginSettings() {
     if (!accessToken) return;
     setSaving(true);
     try {
-      await updateConfigFieldSetting(accessToken, "plugins", updated);
+      await updateConfigFieldSetting(tc, accessToken, "plugins", updated);
       setPlugins(updated);
     } finally {
       setSaving(false);

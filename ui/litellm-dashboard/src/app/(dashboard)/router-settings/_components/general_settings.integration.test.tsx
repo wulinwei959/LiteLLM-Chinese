@@ -89,7 +89,7 @@ describe("GeneralSettings General tab", () => {
 
     await user.click(within(row).getByRole("button", { name: /更新/ }));
 
-    expect(updateConfigFieldSetting).toHaveBeenCalledWith("token", "max_ui_session_budget", 7.5);
+    expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "token", "max_ui_session_budget", 7.5);
   });
 
   it("reset shows the field's default value instead of an empty input", async () => {
@@ -105,7 +105,7 @@ describe("GeneralSettings General tab", () => {
     expect(resetIcon).not.toBeNull();
     await user.click(resetIcon as unknown as Element);
 
-    expect(deleteConfigFieldSetting).toHaveBeenCalledWith("token", "max_ui_session_budget");
+    expect(deleteConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "token", "max_ui_session_budget");
     expect(numericValueIn(row)).toBe(1);
   });
 });
@@ -128,7 +128,12 @@ describe("GeneralSettings Prompt Caching tab", () => {
     await user.click(toggle);
 
     expect(toggle).toBeChecked();
-    expect(updateConfigFieldSetting).toHaveBeenCalledWith("token", "openai_system_messages_first", true);
+    expect(updateConfigFieldSetting).toHaveBeenCalledWith(
+      expect.any(Function),
+      "token",
+      "openai_system_messages_first",
+      true,
+    );
     expect(deleteConfigFieldSetting).not.toHaveBeenCalled();
   });
 
@@ -180,7 +185,7 @@ it("persists a List setting typed as comma-separated text as a trimmed string ar
     within(screen.getByRole("row", { name: /transcribe_media_buckets/ })).getByRole("button", { name: "更新" }),
   );
   expect(vi.mocked(updateConfigFieldSetting).mock.calls).toEqual([
-    ["token", "transcribe_media_buckets", ["team-audio", "shared.audio"]],
+    [expect.any(Function), "token", "transcribe_media_buckets", ["team-audio", "shared.audio"]],
   ]);
 });
 
@@ -204,7 +209,9 @@ it("clears a stored List setting when Update is clicked on an emptied input", as
   await user.click(
     within(screen.getByRole("row", { name: /transcribe_media_buckets/ })).getByRole("button", { name: "更新" }),
   );
-  expect(vi.mocked(deleteConfigFieldSetting).mock.calls).toEqual([["token", "transcribe_media_buckets"]]);
+  expect(vi.mocked(deleteConfigFieldSetting).mock.calls).toEqual([
+    [expect.any(Function), "token", "transcribe_media_buckets"],
+  ]);
   expect(updateConfigFieldSetting).not.toHaveBeenCalled();
   expect(screen.getByRole("textbox", { name: "transcribe_media_buckets" })).toHaveValue("");
 });
@@ -244,12 +251,10 @@ it("should delete only the Default setting and retain explicit false and zero", 
   await user.click(await screen.findByRole("option", { name: "默认" }));
   await user.click(within(row).getByRole("button", { name: "更新" }));
   await user.click(within(screen.getByRole("row", { name: /synthetic_flag/ })).getByRole("button", { name: "更新" }));
-  await user.click(
-    within(screen.getByRole("row", { name: /synthetic_count/ })).getByRole("button", { name: "更新" }),
-  );
-  expect(vi.mocked(deleteConfigFieldSetting).mock.calls).toEqual([["token", "synthetic_choice"]]);
+  await user.click(within(screen.getByRole("row", { name: /synthetic_count/ })).getByRole("button", { name: "更新" }));
+  expect(vi.mocked(deleteConfigFieldSetting).mock.calls).toEqual([[expect.any(Function), "token", "synthetic_choice"]]);
   expect(vi.mocked(updateConfigFieldSetting).mock.calls).toEqual([
-    ["token", "synthetic_flag", false],
-    ["token", "synthetic_count", 0],
+    [expect.any(Function), "token", "synthetic_flag", false],
+    [expect.any(Function), "token", "synthetic_count", 0],
   ]);
 });
