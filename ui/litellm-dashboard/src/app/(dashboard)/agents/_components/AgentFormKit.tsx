@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { ChevronRight, CircleHelp } from "lucide-react";
 import {
   Controller,
@@ -282,9 +283,11 @@ export const AgentTagsInput = ({
   value,
   onValueChange,
   placeholder,
-  emptyText = "No matching options",
+  emptyText: emptyTextProp,
   ...props
 }: AgentTagsInputProps) => {
+  const t = useTranslations("agents");
+  const emptyText = emptyTextProp ?? t("noMatchingOptions");
   const anchor = useComboboxAnchor();
   const [query, setQuery] = React.useState("");
   const pendingRef = React.useRef("");
@@ -396,9 +399,11 @@ export const AgentMultiSelect = ({
   value,
   onValueChange,
   placeholder,
-  emptyText = "No matching options",
+  emptyText: emptyTextProp,
   ...props
 }: AgentMultiSelectProps) => {
+  const t = useTranslations("agents");
+  const emptyText = emptyTextProp ?? t("noMatchingOptions");
   const anchor = useComboboxAnchor();
   const items = [...options];
   const selected = value.map((item) => items.find((option) => option.value === item) ?? { label: item, value: item });

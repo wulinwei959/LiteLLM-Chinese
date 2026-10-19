@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import {
   Combobox,
@@ -46,12 +47,14 @@ export const TagsInput = ({
   onValueChange,
   options = [],
   placeholder,
-  emptyText = "No matching options",
+  emptyText: emptyTextProp,
   tokenSeparators = [],
   loading = false,
   disabled = false,
   id,
 }: TagsInputProps) => {
+  const t = useTranslations("guardrails");
+  const emptyText = emptyTextProp ?? t("noMatchingOptions");
   const anchor = useComboboxAnchor();
   const [query, setQuery] = useState("");
 

@@ -80,7 +80,7 @@ const AgentsTable: React.FC<AgentsTableProps> = ({
       sorting={sorting}
       onSortingChange={setSorting}
       isLoading={isLoading}
-      loadingMessage="Loading agents…"
+      loadingMessage={t("tableLoading")}
       noDataMessage={<EmptyState isFiltered={agents.length > 0} />}
       size="compact"
       toolbar={() => (

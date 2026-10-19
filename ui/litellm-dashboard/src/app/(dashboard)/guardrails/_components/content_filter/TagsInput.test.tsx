@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import { TagsInput, type TagsInputOption } from "./TagsInput";
 
 const Harness = ({
@@ -33,7 +34,7 @@ describe("TagsInput", () => {
   it("commits each token separated value and keeps the unterminated remainder in the field", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
-    render(<Harness onValueChange={onValueChange} />);
+    renderWithProviders(<Harness onValueChange={onValueChange} />);
 
     const input = screen.getByRole("combobox");
     await user.type(input, "acme,globex,initech");
@@ -45,7 +46,7 @@ describe("TagsInput", () => {
   it("commits the pending value when the field loses focus", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
-    render(<Harness onValueChange={onValueChange} />);
+    renderWithProviders(<Harness onValueChange={onValueChange} />);
 
     await user.type(screen.getByRole("combobox"), "acme");
     await user.tab();
@@ -57,7 +58,7 @@ describe("TagsInput", () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn((event: React.FormEvent) => event.preventDefault());
     const onValueChange = vi.fn();
-    render(
+    renderWithProviders(
       <form onSubmit={onSubmit}>
         <Harness onValueChange={onValueChange} />
         <button type="submit">Save</button>
@@ -73,7 +74,7 @@ describe("TagsInput", () => {
   it("ignores a value that is already a tag", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
-    render(<Harness initial={["acme"]} onValueChange={onValueChange} />);
+    renderWithProviders(<Harness initial={["acme"]} onValueChange={onValueChange} />);
 
     await user.type(screen.getByRole("combobox"), "acme,");
 
@@ -81,7 +82,9 @@ describe("TagsInput", () => {
   });
 
   it("labels a chip with the matching option label rather than the raw value", () => {
-    render(<Harness initial={["qatar airways"]} options={[{ value: "qatar airways", label: "Qatar Airways (qr)" }]} />);
+    renderWithProviders(
+      <Harness initial={["qatar airways"]} options={[{ value: "qatar airways", label: "Qatar Airways (qr)" }]} />,
+    );
 
     expect(screen.getByLabelText("Qatar Airways (qr)")).toBeInTheDocument();
   });
