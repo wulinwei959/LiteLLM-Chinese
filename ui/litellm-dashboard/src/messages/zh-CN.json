@@ -3689,6 +3689,90 @@
     },
     "garden": {
       "cards": {
+        "presidio": {
+          "description": "基于 Microsoft Presidio 的 PII 检测与匿名化，支持 30 余种实体类型和可配置动作。"
+        },
+        "bedrock": {
+          "description": "AWS Bedrock Guardrails，用于内容过滤、话题回避与敏感信息检测。"
+        },
+        "lakera": {
+          "description": "AI 安全平台，防范提示注入、数据泄露与有害内容。"
+        },
+        "openai_moderation": {
+          "description": "OpenAI 内容审核 API，可检测多种类别的有害内容。"
+        },
+        "google_model_armor": {
+          "description": "Google Cloud 模型保护服务，助力安全、负责任的 AI 部署。"
+        },
+        "guardrails_ai": {
+          "description": "开源框架，为 LLM 输出添加结构、类型与质量保障。"
+        },
+        "zscaler": {
+          "description": "Zscaler 企业级 AI 安全方案，监控并保护 AI/ML 工作负载。"
+        },
+        "panw": {
+          "description": "Palo Alto Networks Prisma AI 运行时安全，保护生产环境中的 AI 应用。"
+        },
+        "cisco_ai_defense": {
+          "description": "Cisco AI Defense 检测 API，提供运行时防护：提示注入、PII/PCI/PHI、骚扰、仇恨言论、脏话、暴力与代码检测。"
+        },
+        "noma": {
+          "description": "AI 安全平台，检测并防范 AI 特有的威胁与漏洞。"
+        },
+        "aporia": {
+          "description": "实时 AI 护栏，用于幻觉检测、话题控制与策略执行。"
+        },
+        "aim": {
+          "description": "AIM Security 护栏，全面检测并缓解 AI 威胁。"
+        },
+        "cato_networks": {
+          "description": "Cato Networks 护栏，全面检测并缓解 AI 威胁。"
+        },
+        "prompt_security": {
+          "description": "防范提示注入攻击、数据泄露及其他 LLM 安全威胁。"
+        },
+        "lasso": {
+          "description": "内容审核与安全护栏，助力负责任的 AI 部署。"
+        },
+        "pangea": {
+          "description": "Pangea AI 护栏，构建安全、合规、可信的 AI 应用。"
+        },
+        "enkryptai": {
+          "description": "AI 安全与治理平台，满足企业 AI 安全与合规要求。"
+        },
+        "javelin": {
+          "description": "内置护栏的 AI 网关，实现安全合规的 AI 运营。"
+        },
+        "pillar": {
+          "description": "AI 安全平台，用于监控、测试并保护 AI 系统。"
+        },
+        "akto": {
+          "description": "来自 Akto.io 的 AI 安全平台，为 AI/ML 应用提供自动监控与护栏。"
+        },
+        "promptguard": {
+          "description": "AI 安全网关，具备提示注入检测、PII 脱敏、话题过滤、实体黑名单与幻觉检测，可自托管并提供即插即用的代理集成。"
+        },
+        "xecguard": {
+          "description": "CyCraft XecGuard AI 安全网关，多策略扫描（提示注入、有害内容、PII、系统提示词强制）并支持 RAG 上下文接地。"
+        },
+        "deepkeep": {
+          "description": "DeepKeep AI 防火墙为 LLM 提供全面安全防护：提示注入检测、PII 保护、内容审核与策略执行，护栏流水线可自由配置。"
+        },
+        "repelloai": {
+          "description": "RepelloAI Argus 按 Repello 控制台里为每个资产配置的策略，扫描提示与响应。"
+        },
+        "straiker": {
+          "description": "Defend AI 智能体护栏：间接/直接提示注入、工具滥用、恶意 MCP 与技能。"
+        },
+        "alice": {
+          "description": "基于策略的提示与模型响应护栏，按应用维度评估，一个代理即可为不同团队或产品执行不同策略集。"
+        },
+        "agent_365": {
+          "description": "Microsoft Agent 365 工具调用治理：以登录用户身份对 MCP 工具调用进行 Defender 威胁评估与可观测。"
+        },
+        "conduct": {
+          "description": "Conduct Guard 在模型调用前按工作区规则评估提示：提示注入、PII 与自定义策略，给出拦截、警告与放行裁决。"
+        },
         "cf_denied_financial": {
           "name": "拒绝金融建议",
           "description": "检测寻求个性化金融建议、投资推荐或财务规划的请求。"

@@ -3690,6 +3690,90 @@
     },
     "garden": {
       "cards": {
+        "presidio": {
+          "description": "Microsoft Presidio for PII detection and anonymization. Supports 30+ entity types with configurable actions."
+        },
+        "bedrock": {
+          "description": "AWS Bedrock Guardrails for content filtering, topic avoidance, and sensitive information detection."
+        },
+        "lakera": {
+          "description": "AI security platform protecting against prompt injections, data leakage, and harmful content."
+        },
+        "openai_moderation": {
+          "description": "The OpenAI content moderation API for detecting harmful content across multiple categories."
+        },
+        "google_model_armor": {
+          "description": "Google Cloud model protection service for safe and responsible AI deployments."
+        },
+        "guardrails_ai": {
+          "description": "Open-source framework for adding structural, type, and quality guarantees to LLM outputs."
+        },
+        "zscaler": {
+          "description": "Enterprise AI security from Zscaler for monitoring and protecting AI/ML workloads."
+        },
+        "panw": {
+          "description": "Palo Alto Networks Prisma AI Runtime Security for securing AI applications in production."
+        },
+        "cisco_ai_defense": {
+          "description": "Cisco AI Defense Inspection API for runtime protection: prompt injection, PII/PCI/PHI, harassment, hate speech, profanity, violence, and code detection."
+        },
+        "noma": {
+          "description": "AI security platform for detecting and preventing AI-specific threats and vulnerabilities."
+        },
+        "aporia": {
+          "description": "Real-time AI guardrails for hallucination detection, topic control, and policy enforcement."
+        },
+        "aim": {
+          "description": "AIM Security guardrails for comprehensive AI threat detection and mitigation."
+        },
+        "cato_networks": {
+          "description": "Cato Networks guardrails for comprehensive AI threat detection and mitigation."
+        },
+        "prompt_security": {
+          "description": "Protect against prompt injection attacks, data leakage, and other LLM security threats."
+        },
+        "lasso": {
+          "description": "Content moderation and safety guardrails for responsible AI deployments."
+        },
+        "pangea": {
+          "description": "Pangea AI guardrails for secure, compliant, and trustworthy AI applications."
+        },
+        "enkryptai": {
+          "description": "AI security and governance platform for enterprise AI safety and compliance."
+        },
+        "javelin": {
+          "description": "AI gateway with built-in guardrails for secure and compliant AI operations."
+        },
+        "pillar": {
+          "description": "AI safety platform for monitoring, testing, and securing AI systems."
+        },
+        "akto": {
+          "description": "AI security platform from Akto.io with automatic monitoring and guardrails for AI/ML applications."
+        },
+        "promptguard": {
+          "description": "AI security gateway with prompt injection detection, PII redaction, topic filtering, entity blocklists, and hallucination detection. Self-hostable with drop-in proxy integration."
+        },
+        "xecguard": {
+          "description": "CyCraft XecGuard AI security gateway. Multi-policy scanning (prompt injection, harmful content, PII, system-prompt enforcement) plus RAG context grounding."
+        },
+        "deepkeep": {
+          "description": "DeepKeep AI Firewall for comprehensive LLM security: prompt injection detection, PII protection, content moderation, and policy enforcement with configurable guardrail pipelines."
+        },
+        "repelloai": {
+          "description": "RepelloAI Argus scans prompts and responses against policies configured per asset in the Repello dashboard."
+        },
+        "straiker": {
+          "description": "Defend AI Agentic Guardrails: Indirect/Direct Prompt Injection, Tool Misuse, Malicious MCP and Skills"
+        },
+        "alice": {
+          "description": "Policy-based guardrails for prompts and model responses, evaluated per application so one proxy can enforce a different policy set per team or product."
+        },
+        "agent_365": {
+          "description": "Microsoft Agent 365 tool-call governance: Defender threat evaluation and observability for MCP tool calls, acting on behalf of the signed-in user"
+        },
+        "conduct": {
+          "description": "Conduct Guard evaluates prompts against workspace rules before the model call: prompt injection, PII, and custom policies, with block, warning, and approval verdicts."
+        },
         "cf_denied_financial": {
           "name": "Denied Financial Advice",
           "description": "Detects requests for personalized financial advice, investment recommendations, or financial planning."
