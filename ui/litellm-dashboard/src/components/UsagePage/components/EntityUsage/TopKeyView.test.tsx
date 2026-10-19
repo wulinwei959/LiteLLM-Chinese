@@ -67,17 +67,17 @@ describe("TopKeyView", () => {
 
   it("should render", () => {
     renderWithProviders(<TopKeyView {...baseProps} />);
-    expect(screen.getByRole("button", { name: "Table View" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "表格视图" })).toBeInTheDocument();
   });
 
   it("should display table view button", () => {
     renderWithProviders(<TopKeyView {...baseProps} />);
-    expect(screen.getByRole("button", { name: "Table View" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "表格视图" })).toBeInTheDocument();
   });
 
   it("should display chart view button", () => {
     renderWithProviders(<TopKeyView {...baseProps} />);
-    expect(screen.getByRole("button", { name: "Chart View" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "图表视图" })).toBeInTheDocument();
   });
 
   it("should display base table column headers", () => {
@@ -180,7 +180,7 @@ describe("TopKeyView", () => {
     const user = userEvent.setup();
     renderWithProviders(<TopKeyView {...baseProps} />);
 
-    const chartViewButton = screen.getByRole("button", { name: "Chart View" });
+    const chartViewButton = screen.getByRole("button", { name: "图表视图" });
     await user.click(chartViewButton);
 
     expect(chartViewButton).toHaveClass("bg-info/15");
@@ -207,7 +207,7 @@ describe("TopKeyView", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "Chart View" }));
+    await user.click(screen.getByRole("button", { name: "图表视图" }));
 
     const bars = chartBars(container);
     expect(bars).toHaveLength(1);
@@ -230,8 +230,8 @@ describe("TopKeyView", () => {
     const user = userEvent.setup();
     renderWithProviders(<TopKeyView {...baseProps} />);
 
-    const chartViewButton = screen.getByRole("button", { name: "Chart View" });
-    const tableViewButton = screen.getByRole("button", { name: "Table View" });
+    const chartViewButton = screen.getByRole("button", { name: "图表视图" });
+    const tableViewButton = screen.getByRole("button", { name: "表格视图" });
 
     await user.click(chartViewButton);
     await user.click(tableViewButton);
@@ -513,7 +513,7 @@ describe("TopKeyView", () => {
     expect(screen.queryByRole("button", { name: "session-key" })).not.toBeInTheDocument();
     await user.click(screen.getByText("session-key"));
 
-    await user.click(screen.getByRole("button", { name: "Chart View" }));
+    await user.click(screen.getByRole("button", { name: "图表视图" }));
     const bars = chartBars(container);
     expect(bars).toHaveLength(2);
     bars.forEach((bar) => fireEvent.click(bar));

@@ -1125,7 +1125,7 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(screen.getByText("Export Data")).toBeInTheDocument();
+      expect(screen.getByText("导出数据")).toBeInTheDocument();
     });
   });
 

@@ -219,13 +219,13 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
             onClick={() => setViewMode("table")}
             className={`px-3 py-1 text-sm rounded-md ${viewMode === "table" ? "bg-info/15 text-info" : "bg-muted text-foreground"}`}
           >
-            Table View
+            {t("tableView")}
           </button>
           <button
             onClick={() => setViewMode("chart")}
             className={`px-3 py-1 text-sm rounded-md ${viewMode === "chart" ? "bg-info/15 text-info" : "bg-muted text-foreground"}`}
           >
-            Chart View
+            {t("chartView")}
           </button>
         </div>
       </div>

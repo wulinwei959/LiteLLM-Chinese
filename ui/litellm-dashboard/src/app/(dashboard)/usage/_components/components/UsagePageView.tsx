@@ -503,7 +503,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                     </Button>
                     <Button variant="outline" onClick={() => setIsGlobalExportModalOpen(true)}>
                       <Download />
-                      Export Data
+                      {t("exportButton")}
                     </Button>
                   </div>
                 </div>
@@ -514,7 +514,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                     <div className="col-span-2">
                       <div className="flex items-center gap-4 mt-2 mb-2">
                         <p className="text-lg text-muted-foreground">
-                          Project Spend{" "}
+                          {t("projectSpend")}{" "}
                           {dateValue.from && dateValue.to && (
                             <>
                               {dateValue.from.toLocaleDateString("en-US", {
