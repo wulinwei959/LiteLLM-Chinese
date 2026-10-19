@@ -19,6 +19,7 @@ const WILDCARD_MODEL = "all-proxy-models";
 
 export function ModelsCell({ models, maxVisible = 3, allowedRoutes, keyType }: ModelsCellProps) {
   const t = useTranslations("tableCells");
+  const commonT = useTranslations("common");
   const formatModel = (model: string): string => {
     if (model === WILDCARD_MODEL) {
       return t("allProxyModels");
@@ -28,7 +29,7 @@ export function ModelsCell({ models, maxVisible = 3, allowedRoutes, keyType }: M
   };
 
   if (!Array.isArray(models) || models.length === 0) {
-    const scope = deriveKeyModelScope(allowedRoutes, keyType);
+    const scope = deriveKeyModelScope(commonT, allowedRoutes, keyType);
     if (!scope.hasModelAccess) {
       return (
         <CellTooltip

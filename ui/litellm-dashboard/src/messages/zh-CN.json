@@ -1,6 +1,9 @@
 {
   "common": {
     "helpIcon": "帮助",
+    "keyScopeManagement": "管理",
+    "keyScopeReadOnly": "只读",
+    "keyScopeScim": "SCIM",
     "breadcrumbAria": "面包屑导航",
     "resizeDrawerAria": "调整抽屉宽度",
     "collapseDrawerAria": "收起抽屉",

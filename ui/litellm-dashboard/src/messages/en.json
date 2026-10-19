@@ -1,6 +1,9 @@
 {
   "common": {
     "helpIcon": "Help",
+    "keyScopeManagement": "Management",
+    "keyScopeReadOnly": "Read-only",
+    "keyScopeScim": "SCIM",
     "breadcrumbAria": "Breadcrumb",
     "resizeDrawerAria": "Resize drawer",
     "collapseDrawerAria": "Collapse drawer",
