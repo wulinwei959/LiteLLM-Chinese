@@ -11651,6 +11651,8 @@
   "modelInsights": {
     "loadFailed": "无法加载模型洞察",
     "leaderboardTitle": "模型排行榜",
+    "leaderboardSubtitle": "你的网关在 {start} 至 {end} 期间用过的模型",
+    "gatewayTotal": "{label} · 网关合计 {total}",
     "topModels": "热门模型",
     "bucketSizeAria": "时间粒度",
     "leaderboard": "排行榜",

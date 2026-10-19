@@ -79,6 +79,9 @@ describe("ModelInsightsView", () => {
     render(<ModelInsightsView accessToken="token" />);
 
     expect(await screen.findByText("fast-chat")).toBeInTheDocument();
+    expect(
+      screen.getByText(`你的网关在 ${response.start_date} 至 ${response.end_date} 期间用过的模型`),
+    ).toBeInTheDocument();
     expect(screen.getByText("by openai")).toBeInTheDocument();
     expect(await screen.findByText("Code")).toBeInTheDocument();
     expect(screen.getAllByText("100.0%")).toHaveLength(2);

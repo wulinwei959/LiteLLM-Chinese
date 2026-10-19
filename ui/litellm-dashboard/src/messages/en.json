@@ -11656,6 +11656,8 @@
   "modelInsights": {
     "loadFailed": "Could not load model insights",
     "leaderboardTitle": "Model Leaderboard",
+    "leaderboardSubtitle": "See which models your gateway used from {start} through {end}",
+    "gatewayTotal": "{label} · Gateway total {total}",
     "topModels": "Top models",
     "bucketSizeAria": "Bucket size",
     "leaderboard": "Leaderboard",

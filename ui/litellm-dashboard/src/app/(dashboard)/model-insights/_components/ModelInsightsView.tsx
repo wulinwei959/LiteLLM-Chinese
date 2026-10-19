@@ -223,7 +223,7 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
       <PageHeader
         icon={<BarChart3 />}
         title={t("leaderboardTitle")}
-        subtitle={`See which models your gateway used from ${data.start_date} through ${data.end_date}`}
+        subtitle={t("leaderboardSubtitle", { start: data.start_date, end: data.end_date })}
       />
 
       <Card aria-busy={isStale} className={isStale ? "opacity-60 transition-opacity" : "transition-opacity"}>
@@ -281,7 +281,10 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
                 content={
                   <ChartTooltipContent
                     labelFormatter={(label) =>
-                      `${label} · Gateway total ${formatMetric(bucketTotals.get(String(label)) ?? 0, shown)}`
+                      t("gatewayTotal", {
+                        label,
+                        total: formatMetric(bucketTotals.get(String(label)) ?? 0, shown),
+                      })
                     }
                   />
                 }
