@@ -1,5 +1,7 @@
 {
   "common": {
+    "helpIcon": "Help",
+    "breadcrumbAria": "Breadcrumb",
     "resizeDrawerAria": "Resize drawer",
     "collapseDrawerAria": "Collapse drawer",
     "expandDrawerAria": "Expand drawer",

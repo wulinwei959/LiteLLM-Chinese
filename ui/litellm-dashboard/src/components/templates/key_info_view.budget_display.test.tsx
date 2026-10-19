@@ -256,7 +256,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
     });
     expect(screen.queryByText(/上限 \$1,200\.00/)).not.toBeInTheDocument();
     expect(screen.queryByText(/\(Team: Test Budget/)).not.toBeInTheDocument();
-    await userEvent.setup().hover(screen.getByLabelText("question-circle"));
+    await userEvent.setup().hover(screen.getByLabelText("帮助"));
     expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("团队 Test Budget：$1,200.00 / 30d");
   });
 
@@ -278,7 +278,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
     await waitFor(() => {
       expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
-    await userEvent.setup().hover(screen.getByLabelText("question-circle"));
+    await userEvent.setup().hover(screen.getByLabelText("帮助"));
     expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("组织 Acme Org：$5,000.00");
     expect(screen.getByTestId("inherited-budget-hint")).not.toHaveTextContent("团队 Org Team");
   });
@@ -309,7 +309,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
     await waitFor(() => {
       expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
-    await userEvent.setup().hover(screen.getByLabelText("question-circle"));
+    await userEvent.setup().hover(screen.getByLabelText("帮助"));
     expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("用户 Budget Owner：$1,500.00 / 1mo");
   });
 
@@ -330,7 +330,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
     await waitFor(() => {
       expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
-    await userEvent.setup().hover(screen.getByLabelText("question-circle"));
+    await userEvent.setup().hover(screen.getByLabelText("帮助"));
     expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("团队 Test Budget：$1,200.00 / 30d");
     expect(screen.getByTestId("inherited-budget-hint")).not.toHaveTextContent("用户 Budget Owner");
   });
@@ -353,7 +353,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
     await waitFor(() => {
       expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
-    await userEvent.setup().hover(screen.getByLabelText("question-circle"));
+    await userEvent.setup().hover(screen.getByLabelText("帮助"));
     expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("团队 Test Budget：$1,200.00 / 30d");
     expect(screen.getByTestId("inherited-budget-hint")).toHaveTextContent("用户 Budget Owner：$1,500.00 / 1mo");
   });
@@ -375,7 +375,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
     await waitFor(() => {
       expect(screen.getByText(/上限 无限制/)).toBeInTheDocument();
     });
-    expect(screen.queryByLabelText("question-circle")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("帮助")).not.toBeInTheDocument();
   });
 
   it("shows no hint when the key has its own budget even if the team has one", async () => {
@@ -395,7 +395,7 @@ describe("KeyInfoView overview budget display (LIT-2845)", () => {
     await waitFor(() => {
       expect(screen.getByText(/上限 \$25\.00/)).toBeInTheDocument();
     });
-    expect(screen.queryByLabelText("question-circle")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("帮助")).not.toBeInTheDocument();
   });
 });
 

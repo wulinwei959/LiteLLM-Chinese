@@ -76,7 +76,7 @@ describe("AuditLogDrawer", () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
     renderWithProviders(<AuditLogDrawer {...defaultProps} onClose={onClose} />);
-    await user.click(screen.getByRole("button", { name: /close/i }));
+    await user.click(screen.getByRole("button", { name: /关闭/ }));
     expect(onClose).toHaveBeenCalledOnce();
   });
 

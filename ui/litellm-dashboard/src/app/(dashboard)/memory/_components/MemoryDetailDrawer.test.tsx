@@ -82,7 +82,7 @@ describe("MemoryDetailDrawer", () => {
     const onClose = vi.fn();
     render(<MemoryDetailDrawer row={makeMemory()} onClose={onClose} />);
 
-    await user.click(screen.getByRole("button", { name: /close/i }));
+    await user.click(screen.getByRole("button", { name: /关闭/ }));
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });

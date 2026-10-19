@@ -192,7 +192,7 @@ describe("AutoRouterBenchmarksTab", () => {
         : ["不可用", "不可用", "不可用", "不可用"],
     );
     expect(screen.queryByText(/Matching cost details are unavailable/)).not.toBeInTheDocument();
-    expect(screen.getByLabelText("question-circle")).toBeInTheDocument();
+    expect(screen.getByLabelText("帮助")).toBeInTheDocument();
     const partial = estimatedTurns > 0 && estimatedTurns < 3073;
     expect(screen.queryByText(/自适应与质量路由不计入/) != null).toBe(partial);
     if (partial) {

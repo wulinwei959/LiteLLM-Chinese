@@ -59,18 +59,18 @@ describe("SpendBudgetCell", () => {
     expect(screen.getByText("· 无限制")).toBeInTheDocument();
     expect(screen.queryByText(/\(Team\)/)).not.toBeInTheDocument();
     expect(screen.queryByRole("meter")).not.toBeInTheDocument();
-    expect(screen.getByLabelText("question-circle")).toBeInTheDocument();
+    expect(screen.getByLabelText("帮助")).toBeInTheDocument();
   });
 
   it("shows no inherited-budget hint when there is nothing to inherit", () => {
     renderWithProviders(<SpendBudgetCell spend={10} maxBudget={null} inheritedGates={[]} />);
-    expect(screen.queryByLabelText("question-circle")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("帮助")).not.toBeInTheDocument();
   });
 
   it("shows no inherited-budget hint when the key has its own budget", () => {
     const gates = [{ scope: "Team" as const, alias: "Team A", maxBudget: 200, budgetDuration: null }];
     renderWithProviders(<SpendBudgetCell spend={10} maxBudget={50} inheritedGates={gates} />);
     expect(screen.getByText("共 $50")).toBeInTheDocument();
-    expect(screen.queryByLabelText("question-circle")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("帮助")).not.toBeInTheDocument();
   });
 });

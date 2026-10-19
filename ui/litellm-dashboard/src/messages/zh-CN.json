@@ -1,5 +1,7 @@
 {
   "common": {
+    "helpIcon": "帮助",
+    "breadcrumbAria": "面包屑导航",
     "resizeDrawerAria": "调整抽屉宽度",
     "collapseDrawerAria": "收起抽屉",
     "expandDrawerAria": "展开抽屉",
