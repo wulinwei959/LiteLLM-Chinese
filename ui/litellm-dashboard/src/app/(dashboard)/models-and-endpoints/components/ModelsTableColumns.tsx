@@ -214,7 +214,7 @@ function CostsCell({ model }: { model: ModelData }) {
       content={hasPerSecond ? t("table.costTooltipPerSecond") : t("table.costTooltip")}
       trigger={
         <div className="flex flex-col gap-0.5 whitespace-nowrap">
-          {showInput && <CostRow label="IN" value={`$${inputCost}`} />}
+          {showInput && <CostRow label={t("table.costIn")} value={`$${inputCost}`} />}
           {showOutput && <CostRow label={t("table.costOut")} value={`$${outputCost}`} />}
           {hasPerSecond && <CostRow label={t("table.costOut")} value={formatPerSecondCost(perSecond)} />}
         </div>
