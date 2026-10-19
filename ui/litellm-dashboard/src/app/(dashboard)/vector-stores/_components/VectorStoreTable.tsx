@@ -28,9 +28,7 @@ function EmptyState() {
         <Inbox className="size-5 text-muted-foreground" />
       </div>
       <div className="text-sm font-medium text-foreground">{t("noVectorStoresList")}</div>
-      <div className="text-sm text-muted-foreground">
-        Connect a vector store to enable retrieval-augmented generation.
-      </div>
+      <div className="text-sm text-muted-foreground">{t("noVectorStoresHint")}</div>
     </div>
   );
 }

@@ -9709,6 +9709,7 @@
     "vertexSearchSetup": "Vertex AI Search 设置",
     "vertexSearchDesc": "要使用 Vertex AI Search (Discovery Engine)：",
     "noVectorStoresList": "暂无向量存储",
+    "noVectorStoresHint": "连接向量存储即可启用检索增强生成。",
     "openActions": "打开向量存储操作",
     "testerTitle": "测试向量存储",
     "testerDesc": "在下方输入搜索查询以测试向量存储",

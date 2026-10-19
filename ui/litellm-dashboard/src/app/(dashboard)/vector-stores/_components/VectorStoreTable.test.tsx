@@ -68,6 +68,7 @@ describe("VectorStoreTable", () => {
   it("should display the empty state when data is empty", () => {
     render(<VectorStoreTable {...defaultProps} data={[]} />);
     expect(screen.getByText("暂无向量存储")).toBeInTheDocument();
+    expect(screen.getByText("连接向量存储即可启用检索增强生成。")).toBeInTheDocument();
   });
 
   it("should sort by created date descending by default", () => {

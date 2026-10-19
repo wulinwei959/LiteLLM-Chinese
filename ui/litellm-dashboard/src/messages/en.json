@@ -9714,6 +9714,7 @@
     "vertexSearchSetup": "Vertex AI Search Setup",
     "vertexSearchDesc": "To use Vertex AI Search (Discovery Engine):",
     "noVectorStoresList": "No vector stores",
+    "noVectorStoresHint": "Connect a vector store to enable retrieval-augmented generation.",
     "openActions": "Open vector store actions",
     "testerTitle": "Test Vector Store",
     "testerDesc": "Test your vector store by entering a search query below",
