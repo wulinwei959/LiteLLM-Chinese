@@ -171,7 +171,7 @@ describe("CostTrackingSettings", () => {
     it("should ask to confirm before removing a discount", async () => {
       mockDiscountConfig.mockReturnValue({ openai: 0.05 });
 
-      await expandAndRemove("供应商折扣", "Remove discount for openai");
+      await expandAndRemove("供应商折扣", "移除 openai 的折扣");
 
       expect(await screen.findByRole("button", { name: "移除" })).toBeInTheDocument();
       expect(screen.getByText(/确定要移除 openai 的折扣吗/)).toBeInTheDocument();
@@ -181,7 +181,7 @@ describe("CostTrackingSettings", () => {
     it("should remove the discount once removal is confirmed", async () => {
       mockDiscountConfig.mockReturnValue({ openai: 0.05 });
 
-      const user = await expandAndRemove("供应商折扣", "Remove discount for openai");
+      const user = await expandAndRemove("供应商折扣", "移除 openai 的折扣");
       await user.click(await screen.findByRole("button", { name: "移除" }));
 
       expect(mockRemoveDiscount).toHaveBeenCalledWith("openai");
@@ -190,7 +190,7 @@ describe("CostTrackingSettings", () => {
     it("should leave the discount in place when the confirmation is cancelled", async () => {
       mockDiscountConfig.mockReturnValue({ openai: 0.05 });
 
-      const user = await expandAndRemove("供应商折扣", "Remove discount for openai");
+      const user = await expandAndRemove("供应商折扣", "移除 openai 的折扣");
       await user.click(await screen.findByRole("button", { name: "取消" }));
 
       expect(mockRemoveDiscount).not.toHaveBeenCalled();
@@ -202,7 +202,7 @@ describe("CostTrackingSettings", () => {
       const { promise, resolve: settleRemoval } = Promise.withResolvers<void>();
       mockRemoveDiscount.mockReturnValue(promise);
 
-      const user = await expandAndRemove("供应商折扣", "Remove discount for openai");
+      const user = await expandAndRemove("供应商折扣", "移除 openai 的折扣");
       await user.click(await screen.findByRole("button", { name: "移除" }));
 
       const removing = await screen.findByRole("button", { name: "移除中…" });

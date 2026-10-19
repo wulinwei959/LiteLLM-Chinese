@@ -154,12 +154,12 @@ describe("AuditLogDrawer", () => {
       const user = userEvent.setup();
       renderWithProviders(<AuditLogDrawer {...defaultProps} />);
 
-      await user.click(screen.getByRole("button", { name: /expand drawer/i }));
+      await user.click(screen.getByRole("button", { name: /展开抽屉/ }));
       expect(sheetContent().style.getPropertyValue("--sheet-width")).toBe("100%");
 
-      await user.click(screen.getByRole("button", { name: /collapse drawer/i }));
+      await user.click(screen.getByRole("button", { name: /收起抽屉/ }));
       expect(sheetContent().style.getPropertyValue("--sheet-width")).toBe("75%");
-      expect(screen.getByRole("button", { name: /expand drawer/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /展开抽屉/ })).toBeInTheDocument();
     });
 
     it("restores a stored width", () => {
@@ -173,11 +173,11 @@ describe("AuditLogDrawer", () => {
       localStorage.setItem("litellm:auditLogDrawerWidth", "58");
       renderWithProviders(<AuditLogDrawer {...defaultProps} />);
 
-      await user.click(screen.getByRole("button", { name: /expand drawer/i }));
+      await user.click(screen.getByRole("button", { name: /展开抽屉/ }));
       expect(sheetContent().style.getPropertyValue("--sheet-width")).toBe("100%");
       expect(localStorage.getItem("litellm:auditLogDrawerWidth")).toBe("58");
 
-      await user.click(screen.getByRole("button", { name: /collapse drawer/i }));
+      await user.click(screen.getByRole("button", { name: /收起抽屉/ }));
       expect(sheetContent().style.getPropertyValue("--sheet-width")).toBe("58%");
       expect(localStorage.getItem("litellm:auditLogDrawerWidth")).toBe("58");
     });

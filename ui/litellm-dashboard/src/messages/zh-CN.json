@@ -1,5 +1,8 @@
 {
   "common": {
+    "resizeDrawerAria": "调整抽屉宽度",
+    "collapseDrawerAria": "收起抽屉",
+    "expandDrawerAria": "展开抽屉",
     "language": "语言",
     "defaultProxyAdmin": "默认代理管理员",
     "adminOnlyNotice": "{pageTitle}仅管理员可用。",
@@ -9010,6 +9013,12 @@
     "skillExamplesPlaceholder": "输入示例后按回车"
   },
   "costTracking": {
+    "colProvider": "提供方",
+    "colActions": "操作",
+    "ariaSaveDiscount": "保存 {name} 的折扣",
+    "ariaCancelDiscount": "取消编辑 {name} 的折扣",
+    "ariaEditDiscount": "编辑 {name} 的折扣",
+    "ariaRemoveDiscount": "移除 {name} 的折扣",
     "globalAll": "全局（所有供应商）",
     "selectProviderOrGlobal": "选择供应商或“全局”",
     "noMatchingProviders": "没有匹配的供应商",

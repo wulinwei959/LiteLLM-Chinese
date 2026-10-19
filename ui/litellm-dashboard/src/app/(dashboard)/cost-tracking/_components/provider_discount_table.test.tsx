@@ -11,10 +11,10 @@ const DEFAULT_DISCOUNT_CONFIG = {
 };
 
 const ROW_ACTION_NAME = {
-  edit: /^Edit discount for /,
-  save: /^Save discount for /,
-  cancel: /^Cancel editing discount for /,
-  remove: /^Remove discount for /,
+  edit: /^编辑 .+ 的折扣$/,
+  save: /^保存 .+ 的折扣$/,
+  cancel: /^取消编辑 .+ 的折扣$/,
+  remove: /^移除 .+ 的折扣$/,
 } as const;
 
 const rowAction = (action: keyof typeof ROW_ACTION_NAME): HTMLElement =>
@@ -47,11 +47,11 @@ describe("ProviderDiscountTable", () => {
         onRemoveProvider={onRemoveProvider}
       />,
     );
-    expect(screen.getByRole("columnheader", { name: "Provider" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Discount Percentage" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Discount Percentage" })).toHaveClass("text-right");
-    expect(screen.getByRole("columnheader", { name: "Provider" })).not.toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "提供方" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "折扣百分比" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "操作" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "折扣百分比" })).toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "提供方" })).not.toHaveClass("text-right");
   });
 
   it("should display provider display names in the table", () => {
@@ -286,13 +286,13 @@ describe("ProviderDiscountTable", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Edit discount for OpenAI" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Remove discount for OpenAI" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "编辑 OpenAI 的折扣" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "移除 OpenAI 的折扣" })).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Edit discount for OpenAI" }));
+    await user.click(screen.getByRole("button", { name: "编辑 OpenAI 的折扣" }));
 
-    expect(screen.getByRole("button", { name: "Save discount for OpenAI" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cancel editing discount for OpenAI" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "保存 OpenAI 的折扣" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消编辑 OpenAI 的折扣" })).toBeInTheDocument();
   });
 
   it("should render the empty message when no discounts are configured", () => {
@@ -303,6 +303,6 @@ describe("ProviderDiscountTable", () => {
         onRemoveProvider={onRemoveProvider}
       />,
     );
-    expect(screen.getByText("No provider discounts configured")).toBeInTheDocument();
+    expect(screen.getByText("尚未配置供应商折扣")).toBeInTheDocument();
   });
 });

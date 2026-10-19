@@ -1,5 +1,8 @@
 {
   "common": {
+    "resizeDrawerAria": "Resize drawer",
+    "collapseDrawerAria": "Collapse drawer",
+    "expandDrawerAria": "Expand drawer",
     "language": "Language",
     "defaultProxyAdmin": "Default Proxy Admin",
     "adminOnlyNotice": "{pageTitle} is only available to admin users.",
@@ -9015,6 +9018,12 @@
     "skillExamplesPlaceholder": "Type an example and press Enter"
   },
   "costTracking": {
+    "colProvider": "Provider",
+    "colActions": "Actions",
+    "ariaSaveDiscount": "Save discount for {name}",
+    "ariaCancelDiscount": "Cancel editing discount for {name}",
+    "ariaEditDiscount": "Edit discount for {name}",
+    "ariaRemoveDiscount": "Remove discount for {name}",
     "globalAll": "Global (All Providers)",
     "selectProviderOrGlobal": "Select provider or 'Global'",
     "noMatchingProviders": "No matching providers",
