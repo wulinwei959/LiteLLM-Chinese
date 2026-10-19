@@ -9,6 +9,7 @@ import useCan from "@/app/(dashboard)/hooks/useCan";
 
 export default function Workflows() {
   const t = useTranslations("workflows");
+  const bannersT = useTranslations("banners");
   const { accessToken } = useAuthorized();
   const canViewWorkflowRuns = useCan("viewWorkflowRuns");
 
@@ -18,7 +19,7 @@ export default function Workflows() {
 
   return (
     <>
-      <DeprecationBanner featureName="Workflows" />
+      <DeprecationBanner featureName={bannersT("deprecation.featureWorkflows")} />
       <WorkflowRuns accessToken={accessToken} />
     </>
   );

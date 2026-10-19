@@ -163,6 +163,7 @@ const AllowedClientDialog: React.FC<AllowedClientDialogProps> = ({ draft, onChan
 
 const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) => {
   const t = useTranslations("mcpServers");
+  const bannersT = useTranslations("banners");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [privateRanges, setPrivateRanges] = useState<string[]>([]);
@@ -319,7 +320,7 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
 
   return (
     <div className="space-y-6 p-4">
-      <DeprecationBanner featureName="MCP Network Settings and the internal-network-only flag" />
+      <DeprecationBanner featureName={bannersT("deprecation.featureMcpNetwork")} />
       <div>
         <p className="text-lg font-semibold">{t("networkSettings.privateIpRangesTitle")}</p>
         <p className="mt-1 text-sm text-muted-foreground">

@@ -9,6 +9,7 @@ import useCan from "@/app/(dashboard)/hooks/useCan";
 
 export default function Memory() {
   const t = useTranslations("memory");
+  const bannersT = useTranslations("banners");
   const { accessToken, userRole, userId } = useAuthorized();
   const canViewMemory = useCan("viewMemory");
 
@@ -18,7 +19,7 @@ export default function Memory() {
 
   return (
     <>
-      <DeprecationBanner featureName="Memory" />
+      <DeprecationBanner featureName={bannersT("deprecation.featureMemory")} />
       <MemoryView accessToken={accessToken} userID={userId} userRole={userRole} />
     </>
   );

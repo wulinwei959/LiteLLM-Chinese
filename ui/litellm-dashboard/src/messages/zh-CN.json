@@ -12118,6 +12118,13 @@
     },
     "deprecation": {
       "title": "{feature} 已列入草案废弃清单",
+    "featureWorkflows": "工作流",
+    "featurePrompts": "提示词管理",
+    "featureMemory": "记忆",
+    "featureOldUsage": "旧版用量页",
+    "featureApiReference": "API 参考页签",
+    "featureAgentBuilder": "游乐场的智能体构建器",
+    "featureMcpNetwork": "MCP 网络设置与仅限内网标志",
       "body": "{feature} 是我们正在考虑移除的多个实验特性之一，最早可能于 {date} 移除。这份清单仍是草案，尚未定稿。如果你依赖该特性，请在<link>废弃讨论</link>里分享你的反馈。",
       "close": "关闭"
     },

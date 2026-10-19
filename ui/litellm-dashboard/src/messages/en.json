@@ -12123,6 +12123,13 @@
     },
     "deprecation": {
       "title": "{feature} is on a draft deprecation list",
+    "featureWorkflows": "Workflows",
+    "featurePrompts": "Prompt Management",
+    "featureMemory": "Memory",
+    "featureOldUsage": "The old Usage page",
+    "featureApiReference": "The API Reference tab",
+    "featureAgentBuilder": "The Playground's Agent Builder",
+    "featureMcpNetwork": "MCP Network Settings and the internal-network-only flag",
       "body": "{feature} is one of several experimental features we're considering removing, potentially as early as {date}. This list is a draft and is not final. If you rely on this feature, please share feedback on the <link>deprecation discussion</link>.",
       "close": "Close"
     },
