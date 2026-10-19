@@ -2482,6 +2482,7 @@
     "infoTeamNotFound": "Team not found",
     "infoTeamSettings": "Team Settings",
     "infoTeamSettingsUpdated": "Team settings updated successfully",
+    "updateFailedToast": "Failed to update team settings: {error}",
     "infoTemporaryBudgetExpiryTooltip": "When the temporary budget increase stops applying. Required whenever a temporary budget increase is set.",
     "infoTemporaryBudgetExpiryUtc": "Temporary Budget Expiry (UTC)",
     "infoTemporaryBudgetIncreaseTooltip": "Extra USD added on top of the team member budget until the expiry below. The permanent budget is left unchanged and the increase stops applying at expiry.",

@@ -2481,6 +2481,7 @@
     "infoTeamNotFound": "未找到团队",
     "infoTeamSettings": "团队设置",
     "infoTeamSettingsUpdated": "团队设置更新成功",
+    "updateFailedToast": "更新团队设置失败：{error}",
     "infoTemporaryBudgetExpiryTooltip": "临时预算增加停止生效的时间。只要设置了临时预算增加，此项就为必填。",
     "infoTemporaryBudgetExpiryUtc": "临时预算到期时间（UTC）",
     "infoTemporaryBudgetIncreaseTooltip": "在下方到期时间之前，在团队成员预算之上额外增加的 USD 金额。永久预算保持不变，增加部分在到期后停止生效。",

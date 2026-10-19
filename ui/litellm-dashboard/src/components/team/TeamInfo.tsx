@@ -915,7 +915,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   };
 
   const persistTeamUpdate = async (token: string, updateData: Record<string, unknown>) => {
-    await teamUpdateCall(token, updateData);
+    await teamUpdateCall(t, token, updateData);
     void queryClient.invalidateQueries({ queryKey: organizationKeys.all });
     void invalidateTeamQueries(queryClient);
     setIsEditing(false);

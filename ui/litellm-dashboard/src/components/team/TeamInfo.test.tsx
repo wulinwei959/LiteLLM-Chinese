@@ -1136,6 +1136,7 @@ describe("TeamInfoView", () => {
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalledWith(
+          expect.any(Function),
           "test-token",
           expect.objectContaining({
             access_group_ids: accessGroupIds,
@@ -1186,7 +1187,7 @@ describe("TeamInfoView", () => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
       });
 
-      const updateArg = vi.mocked(networking.teamUpdateCall).mock.calls[0][1];
+      const updateArg = vi.mocked(networking.teamUpdateCall).mock.calls[0][2];
       expect(updateArg.budget_duration).toBeNull();
       expect(JSON.stringify(updateArg)).toContain('"budget_duration":null');
     });
@@ -1201,7 +1202,7 @@ describe("TeamInfoView", () => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
       });
 
-      expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].budget_duration).toBe("30d");
+      expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][2].budget_duration).toBe("30d");
     });
 
     it("should send the newly picked budget_duration when one is selected", async () => {
@@ -1216,7 +1217,7 @@ describe("TeamInfoView", () => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
       });
 
-      expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].budget_duration).toBe("7d");
+      expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][2].budget_duration).toBe("7d");
     });
   });
 
@@ -1273,7 +1274,7 @@ describe("TeamInfoView", () => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
       });
 
-      const updateArg = vi.mocked(networking.teamUpdateCall).mock.calls[0][1];
+      const updateArg = vi.mocked(networking.teamUpdateCall).mock.calls[0][2];
       expect(updateArg.metadata).toMatchObject({
         department: "research",
         tier: 3,
@@ -1315,7 +1316,7 @@ describe("TeamInfoView", () => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
       });
 
-      const updateArg = vi.mocked(networking.teamUpdateCall).mock.calls[0][1];
+      const updateArg = vi.mocked(networking.teamUpdateCall).mock.calls[0][2];
       expect(updateArg.metadata.default_estimated_output_tokens).toBe(999);
       expect(updateArg.metadata.default_estimated_output_tokens_per_model).toEqual({ "gpt-4": 4096 });
     });
@@ -1334,7 +1335,7 @@ describe("TeamInfoView", () => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
       });
 
-      const updateArg = vi.mocked(networking.teamUpdateCall).mock.calls[0][1];
+      const updateArg = vi.mocked(networking.teamUpdateCall).mock.calls[0][2];
       expect(updateArg.metadata).not.toHaveProperty("default_estimated_output_tokens");
       expect(updateArg.metadata).not.toHaveProperty("default_estimated_output_tokens_per_model");
     });
@@ -1367,7 +1368,7 @@ describe("TeamInfoView", () => {
           expect(networking.teamUpdateCall).toHaveBeenCalled();
         });
 
-        const updateArg = vi.mocked(networking.teamUpdateCall).mock.calls[0][1];
+        const updateArg = vi.mocked(networking.teamUpdateCall).mock.calls[0][2];
         expect(updateArg.metadata.default_estimated_output_tokens).toBe(512);
         expect(updateArg.metadata.default_estimated_output_tokens_per_model).toEqual({ "gpt-4": 4096 });
       },
@@ -1422,7 +1423,7 @@ describe("TeamInfoView", () => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
       });
 
-      expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].metadata).toMatchObject({
+      expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][2].metadata).toMatchObject({
         cost_center: "CC-NEW",
         department: "research",
         app_name: "",
@@ -1558,6 +1559,7 @@ describe("TeamInfoView", () => {
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalledWith(
+          expect.any(Function),
           "test-token",
           expect.objectContaining({
             team_id: "123",
@@ -1588,7 +1590,7 @@ describe("TeamInfoView", () => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
       });
 
-      const payload = vi.mocked(networking.teamUpdateCall).mock.calls[0][1] as Record<string, unknown>;
+      const payload = vi.mocked(networking.teamUpdateCall).mock.calls[0][2] as Record<string, unknown>;
       expect(payload.model_aliases).toEqual({});
     });
 
@@ -1609,7 +1611,7 @@ describe("TeamInfoView", () => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
       });
 
-      const payload = vi.mocked(networking.teamUpdateCall).mock.calls[0][1] as Record<string, unknown>;
+      const payload = vi.mocked(networking.teamUpdateCall).mock.calls[0][2] as Record<string, unknown>;
       expect(payload).not.toHaveProperty("model_aliases");
     });
   });
@@ -1635,7 +1637,7 @@ describe("TeamInfoView", () => {
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalled();
       });
-      return vi.mocked(networking.teamUpdateCall).mock.calls[0][1] as Record<string, unknown>;
+      return vi.mocked(networking.teamUpdateCall).mock.calls[0][2] as Record<string, unknown>;
     };
 
     it("shows the stored per-model budget and its current spend in the read-only settings view", async () => {
@@ -1857,6 +1859,7 @@ describe("TeamInfoView", () => {
 
       await waitFor(() => {
         expect(networking.teamUpdateCall).toHaveBeenCalledWith(
+          expect.any(Function),
           "test-token",
           expect.objectContaining({
             team_id: "123",
@@ -1918,7 +1921,7 @@ describe("TeamInfoView", () => {
       await user.click(screen.getByRole("button", { name: "保存更改" }));
 
       await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalledTimes(1));
-      expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1]).toStrictEqual({ team_id: "123", tpm_limit: 5000 });
+      expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][2]).toStrictEqual({ team_id: "123", tpm_limit: 5000 });
       expect(toast.success).toHaveBeenCalledWith("团队设置更新成功");
       expect(toast.error).not.toHaveBeenCalled();
     });
@@ -2021,7 +2024,7 @@ describe("TeamInfoView - which team member fields reach the update payload depen
   const save = async (user: ReturnType<typeof userEvent.setup>) => {
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
-    return vi.mocked(networking.teamUpdateCall).mock.calls[0][1] as Record<string, unknown>;
+    return vi.mocked(networking.teamUpdateCall).mock.calls[0][2] as Record<string, unknown>;
   };
 
   it("omits every stored team member field when Team Member Settings is left closed", async () => {
@@ -2161,7 +2164,7 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
   const save = async (user: ReturnType<typeof userEvent.setup>) => {
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
-    return vi.mocked(networking.teamUpdateCall).mock.calls[0][1] as Record<string, unknown>;
+    return vi.mocked(networking.teamUpdateCall).mock.calls[0][2] as Record<string, unknown>;
   };
 
   const wireBody = (payload: Record<string, unknown>) => JSON.parse(JSON.stringify(payload)) as Record<string, unknown>;
@@ -2714,7 +2717,7 @@ describe("TeamInfo MCP permission retention", () => {
     await user.click(screen.getByRole("button", { name: "保存更改" }));
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
     const calls = vi.mocked(networking.teamUpdateCall).mock.calls;
-    const [, payload] = calls[calls.length - 1];
+    const [, , payload] = calls[calls.length - 1];
     return payload.object_permission.mcp_tool_permissions;
   };
 
@@ -3021,7 +3024,7 @@ describe("TeamInfo MCP permission retention", () => {
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
-    const [, payload] = vi.mocked(networking.teamUpdateCall).mock.calls[0];
+    const [, , payload] = vi.mocked(networking.teamUpdateCall).mock.calls[0];
     expect(payload.object_permission.mcp_tool_permissions).toEqual({
       "direct-server": ["create_issue"],
       "perm-only-server": ["list_issues"],

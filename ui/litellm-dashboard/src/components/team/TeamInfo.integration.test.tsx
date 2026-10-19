@@ -449,7 +449,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await user.click(await screen.findByRole("button", { name: "保留自定义预算" }));
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
-    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].team_member_budget).toBe(20);
+    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][2].team_member_budget).toBe(20);
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument());
   });
@@ -471,7 +471,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     await waitFor(() => expect(bulkUpdatePOST).toHaveBeenCalledTimes(1));
     expect(networking.teamUpdateCall).toHaveBeenCalled();
-    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].team_member_budget).toBe(20);
+    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][2].team_member_budget).toBe(20);
     expect(bulkUpdatePOST).toHaveBeenCalledWith("/management/v1/teams/{team_id}/members/bulk_update", {
       params: { path: { team_id: "123" } },
       body: {
@@ -623,7 +623,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await submitNewDefault(user, input, "20");
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
-    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].team_member_budget).toBe(20);
+    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][2].team_member_budget).toBe(20);
     expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument();
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
   });
@@ -635,7 +635,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
-    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].team_member_budget).toBe(10);
+    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][2].team_member_budget).toBe(10);
     expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument();
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
   });
@@ -716,7 +716,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await submitNewDefault(user, input, "20");
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
-    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].team_member_budget).toBe(20);
+    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][2].team_member_budget).toBe(20);
     expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument();
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
   });

@@ -87,7 +87,7 @@ export const getAutoRouterAssembledPromptCall = async (
  * Helper file for calls being made to proxy
  */
 import { toast } from "@/lib/toast";
-import type { PassThroughTranslator } from "@/lib/i18n/translators";
+import type { PassThroughTranslator, TeamsTranslator } from "@/lib/i18n/translators";
 import { clearTokenCookies, getCookie, storeLoginToken } from "@/utils/cookieUtils";
 import { decodeToken } from "@/utils/jwtUtils";
 import { TagNewRequest, TagUpdateRequest, TagListResponse, TagInfoResponse } from "./tag_management/types";
@@ -2664,6 +2664,7 @@ export const keyUpdateCall = async (
 };
 
 export const teamUpdateCall = async (
+  t: TeamsTranslator,
   accessToken: string,
   formValues: Record<string, any>, // Assuming formValues is an object
 ) => {
@@ -2684,7 +2685,7 @@ export const teamUpdateCall = async (
       const errorData = await response.text();
       handleError(errorData);
       console.error("Error response from the server:", errorData);
-      toast.fromError("Failed to update team settings: " + unwrapProxyErrorMessage(errorData));
+      toast.fromError(t("updateFailedToast", { error: unwrapProxyErrorMessage(errorData) }));
       throw new Error(errorData);
     }
     const data = (await response.json()) as { data: Team; team_id: string };
