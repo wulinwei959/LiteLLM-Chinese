@@ -184,19 +184,19 @@ describe("AddAgentForm submit payload", () => {
     await user.click(screen.getByLabelText("智能体名称"));
 
     await user.click(await panel(/能力/));
-    await user.click(await screen.findByRole("switch", { name: "Streaming" }));
-    await user.click(screen.getByRole("switch", { name: "Push Notifications" }));
+    await user.click(await screen.findByRole("switch", { name: "流式" }));
+    await user.click(screen.getByRole("switch", { name: "推送通知" }));
 
     await user.click(await panel(/可选设置/));
-    await user.type(await screen.findByLabelText("Icon URL"), "https://example.com/icon.png");
+    await user.type(await screen.findByLabelText("图标 URL"), "https://example.com/icon.png");
 
     await user.click(await panel(/成本配置/));
     await user.type(await screen.findByLabelText("每次查询成本（美元）"), "0.25");
     await user.type(screen.getByLabelText("输入 Token 成本（美元）"), "0.000002");
 
     await user.click(await panel(/LiteLLM 参数/));
-    await user.type(await screen.findByLabelText("Model (Optional)"), "gpt-4o");
-    await user.click(screen.getByRole("switch", { name: "Make Public" }));
+    await user.type(await screen.findByLabelText("模型（可选）"), "gpt-4o");
+    await user.click(screen.getByRole("switch", { name: "公开" }));
 
     await user.click(await panel(/认证请求头/));
     await user.click(await screen.findByRole("button", { name: /添加静态请求头/ }));

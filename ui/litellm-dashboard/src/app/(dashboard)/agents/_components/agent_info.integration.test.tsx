@@ -424,6 +424,33 @@ describe("AgentInfoView update payload", () => {
     expect(networking.patchAgentCall).not.toHaveBeenCalled();
   });
 
+  it("shows a localized fallback validation message when the field metadata omits one", async () => {
+    const infoWithoutMessage: AgentCreateInfo = {
+      ...bedrockAgentcoreInfo,
+      credential_fields: [
+        {
+          ...bedrockAgentcoreInfo.credential_fields[0],
+          validation_message: null,
+        },
+      ],
+    };
+    vi.mocked(networking.getAgentCreateMetadata).mockResolvedValue([infoWithoutMessage]);
+    vi.mocked(networking.getAgentInfo).mockResolvedValue(BEDROCK_AGENTCORE_AGENT as never);
+    const user = setup();
+    renderView();
+    await openEditor(user);
+
+    const arnField = await screen.findByLabelText("Agent Runtime ARN");
+    await user.clear(arnField);
+    fireEvent.change(arnField, {
+      target: { value: "arn:aws:bedrock-agentcore:eu-central-1:123456789012:runtime" },
+    });
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
+
+    expect(await screen.findByText("Agent Runtime ARN 看起来不完整或格式有误")).toBeInTheDocument();
+    expect(networking.patchAgentCall).not.toHaveBeenCalled();
+  });
+
   it("renders and saves normally when a field's validation_pattern is not a valid regex", async () => {
     const infoWithBadPattern: AgentCreateInfo = {
       ...bedrockAgentcoreInfo,

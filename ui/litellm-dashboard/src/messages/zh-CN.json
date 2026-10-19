@@ -9133,6 +9133,7 @@
     "addStaticHeader": "添加静态请求头",
     "costConfigTitle": "成本配置",
     "pleaseEnter": "请输入{field}",
+    "fieldMalformed": "{field} 看起来不完整或格式有误",
     "colProtocol": "协议",
     "colPublic": "公开",
     "colIoModes": "输入输出模式",

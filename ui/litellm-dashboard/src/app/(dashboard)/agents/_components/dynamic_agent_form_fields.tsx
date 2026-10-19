@@ -35,12 +35,13 @@ export const unmountedDynamicFieldNames = (mountedPanels: readonly string[]): re
 // validation rather than throwing during render and taking the whole form down with it.
 const buildValidationPatternRule = (
   field: AgentCredentialFieldMetadata,
+  fallbackMessage: string,
 ): { value: RegExp; message: string } | undefined => {
   if (!field.validation_pattern) return undefined;
   try {
     return {
       value: new RegExp(field.validation_pattern),
-      message: field.validation_message || `${field.label} looks incomplete or malformed`,
+      message: field.validation_message || fallbackMessage,
     };
   } catch {
     return undefined;
@@ -48,14 +49,15 @@ const buildValidationPatternRule = (
 };
 
 const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => {
-  const patternRule = buildValidationPatternRule(field);
+  const t = useTranslations("agents");
+  const patternRule = buildValidationPatternRule(field, t("fieldMalformed", { field: field.label }));
   return (
     <AgentFormField
       name={field.key}
       label={field.tooltip ? labelWithHint(field.label, field.tooltip) : field.label}
       defaultValue={field.default_value ?? undefined}
       rules={{
-        ...(field.required ? { required: `Please enter ${field.label}` } : {}),
+        ...(field.required ? { required: t("pleaseEnter", { field: field.label }) } : {}),
         ...(patternRule ? { pattern: patternRule } : {}),
       }}
     >

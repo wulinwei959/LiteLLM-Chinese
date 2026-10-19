@@ -9138,6 +9138,7 @@
     "addStaticHeader": "Add Static Header",
     "costConfigTitle": "Cost Configuration",
     "pleaseEnter": "Please enter {field}",
+    "fieldMalformed": "{field} looks incomplete or malformed",
     "colProtocol": "Protocol",
     "colPublic": "Public",
     "colIoModes": "I/O Modes",
