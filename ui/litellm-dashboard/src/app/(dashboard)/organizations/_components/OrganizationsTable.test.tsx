@@ -252,10 +252,10 @@ describe("OrganizationsTable", () => {
     const { rerender } = renderWithProviders(
       <OrganizationsTable {...baseProps} searchActive={false} organizations={[]} />,
     );
-    expect(screen.getByText("No organizations yet")).toBeInTheDocument();
+    expect(screen.getByText("暂无组织")).toBeInTheDocument();
 
     rerender(<OrganizationsTable {...baseProps} searchActive={true} organizations={[]} />);
-    expect(screen.getByText("No matching organizations")).toBeInTheDocument();
+    expect(screen.getByText("没有匹配的组织")).toBeInTheDocument();
   });
 });
 

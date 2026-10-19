@@ -84,9 +84,7 @@ const TeamUserSpendCard: React.FC<TeamUserSpendCardProps> = ({ accessToken, star
         <div className="flex items-start justify-between">
           <div className="flex flex-col space-y-2">
             <h3 className="text-lg font-medium text-foreground">{t("title")}</h3>
-            <p className="text-xs text-muted-foreground">
-              {t("subtitle")}
-            </p>
+            <p className="text-xs text-muted-foreground">{t("subtitle")}</p>
           </div>
           <Button
             variant="outline"
@@ -104,7 +102,7 @@ const TeamUserSpendCard: React.FC<TeamUserSpendCardProps> = ({ accessToken, star
           getRowId={teamUserSpendRowId}
           isLoading={isLoading}
           maxBodyHeight={320}
-          noDataMessage={teamIds.length === 0 ? "Select a team to see spend per user" : "No user spend in this range"}
+          noDataMessage={teamIds.length === 0 ? t("selectTeamHint") : t("noUserSpend")}
           size="compact"
         />
       </CardContent>

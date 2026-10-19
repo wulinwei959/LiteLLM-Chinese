@@ -3089,6 +3089,10 @@
     "bulkDownloadUserCredentials": "Download User Credentials"
   },
   "organizations": {
+    "noOrganizationsYet": "No organizations yet",
+    "noMatchingOrganizations": "No matching organizations",
+    "searchNoMatchHint": "No organizations match your search. Try a different name or ID.",
+    "createOrgHint": "Create an organization to group teams, models, and budgets.",
     "title": "Organizations",
     "subtitle": "Manage organizations and their members",
     "createOrganization": "Create Organization",
@@ -3240,6 +3244,8 @@
     }
   },
   "budgets": {
+    "rangeBetween": "{from} to {to}",
+    "anyValue": "any",
     "title": "Budgets",
     "subtitle": "Spend, TPM and RPM limits you can assign to customers.",
     "createBudget": "Create Budget",
@@ -4925,6 +4931,8 @@
       "unknownHint": "Requests that failed to route to a provider"
     },
     "teamUserSpend": {
+      "selectTeamHint": "Select a team to see spend per user",
+      "noUserSpend": "No user spend in this range",
       "title": "Spend Per User Within Team",
       "subtitle": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key",
       "downloadCsv": "Download CSV",
@@ -11465,6 +11473,9 @@
     "cancel": "Cancel"
   },
   "loggingSettingsView": {
+    "successOnly": "Success Only",
+    "failureOnly": "Failure Only",
+    "successAndFailure": "Success & Failure",
     "integrations": "Logging Integrations",
     "noIntegrations": "No logging integrations configured",
     "disabledCallbacks": "Disabled Callbacks",

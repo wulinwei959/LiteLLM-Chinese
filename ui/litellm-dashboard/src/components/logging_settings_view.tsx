@@ -47,11 +47,11 @@ export function LoggingSettingsView({
   const getEventTypeLabel = (eventType: string) => {
     switch (eventType) {
       case "success":
-        return "Success Only";
+        return t("successOnly");
       case "failure":
-        return "Failure Only";
+        return t("failureOnly");
       case "success_and_failure":
-        return "Success & Failure";
+        return t("successAndFailure");
       default:
         return eventType;
     }
