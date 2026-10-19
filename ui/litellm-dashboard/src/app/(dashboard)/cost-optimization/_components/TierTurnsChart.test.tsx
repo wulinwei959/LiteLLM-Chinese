@@ -83,7 +83,7 @@ describe("TierTurnsChart", () => {
 
     expect(screen.getByText("Cheap 75%")).toBeInTheDocument();
     expect(screen.getByText("复杂 25%")).toBeInTheDocument();
-    expect(screen.getByTestId("donut")).toHaveTextContent("4 total turns");
+    expect(screen.getByTestId("donut")).toHaveTextContent("共 4 次对话");
   });
 
   it("reads tier_labels out of a config stored as a JSON string", () => {

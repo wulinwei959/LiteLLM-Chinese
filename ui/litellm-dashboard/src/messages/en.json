@@ -7601,6 +7601,7 @@
     }
   },
   "costOptimization": {
+    "totalTurnsLabel": "{total, number} total turns",
     "view": {
       "title": "Cost Optimization",
       "subtitle": "Track and configure the mechanisms that save you money: prompt compression and prompt caching. Auto routers live under Models + Endpoints, on the Auto-Routers tab",

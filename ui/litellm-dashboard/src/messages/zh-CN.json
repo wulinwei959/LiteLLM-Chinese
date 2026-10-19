@@ -7600,6 +7600,7 @@
     }
   },
   "costOptimization": {
+    "totalTurnsLabel": "共 {total, number} 次对话",
     "view": {
       "title": "成本优化",
       "subtitle": "跟踪并配置省钱机制：提示词压缩与提示词缓存。自动路由在“模型与端点”的自动路由页。",
