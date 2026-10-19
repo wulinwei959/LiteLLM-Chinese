@@ -10,8 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Field, FieldGroup, FieldTitle } from "@/components/ui/field";
-import { AGENT_FORM_CONFIG, SKILL_FIELD_CONFIG } from "./agent_config";
-import type { AgentsTranslator } from "@/lib/i18n/translators";
+import { AGENT_FORM_CONFIG, SKILL_FIELD_CONFIG, configText } from "./agent_config";
 import CostConfigFields, { COST_FIELD_NAMES } from "./cost_config_fields";
 import KillSwitchFormFields from "./KillSwitchFormFields";
 import { KILL_SWITCH_PANEL_KEY } from "./kill_switch_config";
@@ -207,59 +206,6 @@ const StaticHeadersFieldArray = () => {
     </>
   );
 };
-
-const FIELD_TEXT_KEYS: Record<string, string> = {
-  "Agent Name": "agentName",
-  "Unique identifier for the agent": "nameFieldHint",
-  "Display Name": "displayName",
-  "URL": "url",
-  "Version": "version",
-  "Protocol Version": "protocolVersion",
-  "The A2A protocol version LiteLLM serves to clients for this agent. LiteLLM converts the upstream agent's responses to this version, so clients always see the version you pick here regardless of the original agent's version.":
-    "protocolVersionTooltip",
-  "LiteLLM serves this version to clients and converts the upstream agent's responses to match it, regardless of the original agent's version.":
-    "protocolVersionHelpText",
-  "Skill ID": "skillIdLabel",
-  "Skill Name": "skillNameLabel",
-  "Description": "skillDescLabel",
-  "Tags": "skillTagsLabel",
-  "Examples": "skillExamplesLabel",
-  "What this skill does": "skillDescPlaceholder",
-  "Type a tag and press Enter": "skillTagsPlaceholder",
-  "Type an example and press Enter": "skillExamplesPlaceholder",
-  "Streaming": "streaming",
-  "Push Notifications": "pushNotifications",
-  "State Transition History": "stateTransitionHistory",
-  "Icon URL": "iconUrl",
-  "Documentation URL": "documentationUrl",
-  "Supports Authenticated Extended Card": "supportsAuthExtendedCard",
-  "Model (Optional)": "modelOptional",
-  "Make Public": "makePublic",
-  "Cost Per Query ($)": "costPerQuery",
-  "Input Cost Per Token ($)": "inputCostPerToken",
-  "Output Cost Per Token ($)": "outputCostPerToken",
-  "Enable Tracing": "enableTracing",
-  "Base URL where the agent is hosted (optional)": "urlTooltip",
-  "Fixed cost per query": "costPerQueryTooltip",
-  "Cost per input token": "inputCostTooltip",
-  "Cost per output token": "outputCostTooltip",
-  "Enable request tracing for this agent": "enableTracingTooltip",
-  "e.g., Customer Support Agent": "phNameExample",
-  "Describe what this agent does...": "phDesc",
-  "http://localhost:9999/": "url",
-  "https://example.com/icon.png": "phIcon",
-  "https://docs.example.com": "phDocs",
-  "Basic Information": "panelBasicTitle",
-  "Skills": "panelSkillsTitle",
-  "Capabilities": "panelCapabilitiesTitle",
-  "Optional Settings": "panelOptionalTitle",
-  "LiteLLM Parameters": "panelLitellmTitle",
-  "Cost Configuration": "costConfigTitle",
-  "Tracing": "panelTracingTitle",
-};
-
-const configText = (t: AgentsTranslator, text?: string): string =>
-  text && FIELD_TEXT_KEYS[text] ? t(FIELD_TEXT_KEYS[text] as never) : (text ?? "");
 
 const AgentFormFields: React.FC<AgentFormFieldsProps> = ({ panels, showAgentName = true, visiblePanels }) => {
   const t = useTranslations("agents");

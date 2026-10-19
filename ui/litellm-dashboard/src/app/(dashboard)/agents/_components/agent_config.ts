@@ -1,3 +1,4 @@
+import type { AgentsTranslator } from "@/lib/i18n/translators";
 import { parseIdentityForForm } from "./agent_identity";
 /**
  * Shared configuration for agent form fields
@@ -410,3 +411,56 @@ export const parseAgentForForm = (agent: any) => {
     ...parseAccessGroupIdsForForm(agent),
   };
 };
+
+const FIELD_TEXT_KEYS: Record<string, string> = {
+  "Agent Name": "agentName",
+  "Unique identifier for the agent": "nameFieldHint",
+  "Display Name": "displayName",
+  URL: "url",
+  Version: "version",
+  "Protocol Version": "protocolVersion",
+  "The A2A protocol version LiteLLM serves to clients for this agent. LiteLLM converts the upstream agent's responses to this version, so clients always see the version you pick here regardless of the original agent's version.":
+    "protocolVersionTooltip",
+  "LiteLLM serves this version to clients and converts the upstream agent's responses to match it, regardless of the original agent's version.":
+    "protocolVersionHelpText",
+  "Skill ID": "skillIdLabel",
+  "Skill Name": "skillNameLabel",
+  Description: "skillDescLabel",
+  Tags: "skillTagsLabel",
+  Examples: "skillExamplesLabel",
+  "What this skill does": "skillDescPlaceholder",
+  "Type a tag and press Enter": "skillTagsPlaceholder",
+  "Type an example and press Enter": "skillExamplesPlaceholder",
+  Streaming: "streaming",
+  "Push Notifications": "pushNotifications",
+  "State Transition History": "stateTransitionHistory",
+  "Icon URL": "iconUrl",
+  "Documentation URL": "documentationUrl",
+  "Supports Authenticated Extended Card": "supportsAuthExtendedCard",
+  "Model (Optional)": "modelOptional",
+  "Make Public": "makePublic",
+  "Cost Per Query ($)": "costPerQuery",
+  "Input Cost Per Token ($)": "inputCostPerToken",
+  "Output Cost Per Token ($)": "outputCostPerToken",
+  "Enable Tracing": "enableTracing",
+  "Base URL where the agent is hosted (optional)": "urlTooltip",
+  "Fixed cost per query": "costPerQueryTooltip",
+  "Cost per input token": "inputCostTooltip",
+  "Cost per output token": "outputCostTooltip",
+  "Enable request tracing for this agent": "enableTracingTooltip",
+  "e.g., Customer Support Agent": "phNameExample",
+  "Describe what this agent does...": "phDesc",
+  "http://localhost:9999/": "url",
+  "https://example.com/icon.png": "phIcon",
+  "https://docs.example.com": "phDocs",
+  "Basic Information": "panelBasicTitle",
+  Skills: "panelSkillsTitle",
+  Capabilities: "panelCapabilitiesTitle",
+  "Optional Settings": "panelOptionalTitle",
+  "LiteLLM Parameters": "panelLitellmTitle",
+  "Cost Configuration": "costConfigTitle",
+  Tracing: "panelTracingTitle",
+};
+
+export const configText = (t: AgentsTranslator, text?: string): string =>
+  text && FIELD_TEXT_KEYS[text] ? t(FIELD_TEXT_KEYS[text] as never) : text ?? "";

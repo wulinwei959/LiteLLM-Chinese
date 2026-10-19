@@ -191,8 +191,8 @@ describe("AddAgentForm submit payload", () => {
     await user.type(await screen.findByLabelText("Icon URL"), "https://example.com/icon.png");
 
     await user.click(await panel(/成本配置/));
-    await user.type(await screen.findByLabelText("Cost Per Query ($)"), "0.25");
-    await user.type(screen.getByLabelText("Input Cost Per Token ($)"), "0.000002");
+    await user.type(await screen.findByLabelText("每次查询成本（美元）"), "0.25");
+    await user.type(screen.getByLabelText("输入 Token 成本（美元）"), "0.000002");
 
     await user.click(await panel(/LiteLLM 参数/));
     await user.type(await screen.findByLabelText("Model (Optional)"), "gpt-4o");
@@ -249,7 +249,7 @@ describe("AddAgentForm submit payload", () => {
     await user.type(screen.getByPlaceholderText("描述这个智能体的用途..."), "d");
 
     await user.click(await panel(/成本配置/));
-    await user.type(await screen.findByLabelText("Cost Per Query ($)"), "0.75");
+    await user.type(await screen.findByLabelText("每次查询成本（美元）"), "0.75");
     await user.click(await panel(/成本配置/));
 
     await goToLastStepAndCreate(user);
@@ -262,11 +262,11 @@ describe("AddAgentForm submit payload", () => {
     renderForm();
 
     await user.click(await panel(/成本配置/));
-    await user.type(await screen.findByLabelText("Cost Per Query ($)"), "0.75");
+    await user.type(await screen.findByLabelText("每次查询成本（美元）"), "0.75");
     await user.click(await panel(/成本配置/));
     await user.click(await panel(/成本配置/));
 
-    expect(await screen.findByLabelText("Cost Per Query ($)")).toHaveValue(0.75);
+    expect(await screen.findByLabelText("每次查询成本（美元）")).toHaveValue(0.75);
   });
 
   it("blocks the first step until the required agent name is filled", async () => {
