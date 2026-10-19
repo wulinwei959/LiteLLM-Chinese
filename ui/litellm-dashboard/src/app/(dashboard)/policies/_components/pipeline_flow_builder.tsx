@@ -830,16 +830,10 @@ function complianceMatchExpected(expected: "pass" | "fail", terminalAction: stri
   return terminalAction === "block";
 }
 
-const testSourceOptions = [
-  { value: TEST_SOURCE_QUICK, label: "Quick chat (custom message)" },
-  ...getFrameworks().map((f) => ({ value: f.name, label: f.name })),
-  { value: TEST_SOURCE_ALL, label: "All compliance datasets" },
-];
-
 const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({ pipeline, accessToken, onClose }) => {
   const t = useTranslations("policies");
   const [testSource, setTestSource] = useState<string>(TEST_SOURCE_QUICK);
-  const [testMessage, setTestMessage] = useState("Hello, can you help me?");
+  const [testMessage, setTestMessage] = useState(t("flow.defaultTestMessage"));
   const [isRunning, setIsRunning] = useState(false);
   const [result, setResult] = useState<PipelineTestResult | null>(null);
   const [error, setError] = useState<string | null>(null);

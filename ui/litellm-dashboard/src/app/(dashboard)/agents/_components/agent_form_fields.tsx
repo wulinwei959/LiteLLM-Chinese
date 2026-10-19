@@ -63,7 +63,7 @@ const SkillsFieldArray = () => {
             <AgentFormField
               name={`skills.${index}.id`}
               label={configText(t, SKILL_FIELD_CONFIG.id.label)}
-              rules={SKILL_FIELD_CONFIG.id.required ? { required: "Required" } : undefined}
+              rules={SKILL_FIELD_CONFIG.id.required ? { required: t("fieldRequired") } : undefined}
             >
               {({ value, onChange, ref, ...control }) => (
                 <Input
@@ -79,7 +79,7 @@ const SkillsFieldArray = () => {
             <AgentFormField
               name={`skills.${index}.name`}
               label={configText(t, SKILL_FIELD_CONFIG.name.label)}
-              rules={SKILL_FIELD_CONFIG.name.required ? { required: "Required" } : undefined}
+              rules={SKILL_FIELD_CONFIG.name.required ? { required: t("fieldRequired") } : undefined}
             >
               {({ value, onChange, ref, ...control }) => (
                 <Input
@@ -95,7 +95,7 @@ const SkillsFieldArray = () => {
             <AgentFormField
               name={`skills.${index}.description`}
               label={configText(t, SKILL_FIELD_CONFIG.description.label)}
-              rules={SKILL_FIELD_CONFIG.description.required ? { required: "Required" } : undefined}
+              rules={SKILL_FIELD_CONFIG.description.required ? { required: t("fieldRequired") } : undefined}
             >
               {({ value, onChange, ref, ...control }) => (
                 <Textarea
@@ -112,7 +112,7 @@ const SkillsFieldArray = () => {
             <AgentFormField
               name={`skills.${index}.tags`}
               label={configText(t, SKILL_FIELD_CONFIG.tags.label)}
-              rules={SKILL_FIELD_CONFIG.tags.required ? { required: "Required" } : undefined}
+              rules={SKILL_FIELD_CONFIG.tags.required ? { required: t("fieldRequired") } : undefined}
             >
               {({ id, value, onChange }) => (
                 <AgentTagsInput
