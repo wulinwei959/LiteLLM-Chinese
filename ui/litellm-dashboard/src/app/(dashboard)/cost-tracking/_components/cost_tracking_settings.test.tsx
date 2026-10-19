@@ -33,6 +33,15 @@ vi.mock("./use_margin_config", () => ({
   useMarginConfig: () => ({ marginConfig: mockMarginConfig(), ...stableMarginCallbacks }),
 }));
 
+vi.mock("./use_block_unpriced_config", () => ({
+  useBlockUnpricedConfig: () => ({
+    blockUnpriced: false,
+    isUpdating: false,
+    fetchBlockUnpriced: vi.fn().mockResolvedValue(undefined),
+    setBlockUnpriced: vi.fn().mockResolvedValue(undefined),
+  }),
+}));
+
 vi.mock("./pricing_calculator/index", () => ({
   default: () => <div data-testid="pricing-calculator">Pricing Calculator</div>,
 }));

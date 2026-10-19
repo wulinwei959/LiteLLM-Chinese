@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
 import { CostEstimateRequest, CostEstimateResponse } from "../types";
 import { ModelEntry, MultiModelResult } from "./types";
+import type { CostTrackingTranslator } from "@/lib/i18n/translators";
 
 const DEBOUNCE_MS = 500;
 
@@ -12,7 +13,7 @@ interface EntryResult {
   error: string | null;
 }
 
-export function useMultiCostEstimate(accessToken: string | null) {
+export function useMultiCostEstimate(accessToken: string | null, t: CostTrackingTranslator) {
   const [entryResults, setEntryResults] = useState<Map<string, EntryResult>>(new Map());
   const debounceRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
@@ -79,7 +80,7 @@ export function useMultiCostEstimate(accessToken: string | null) {
           });
         } else {
           const errorData = await response.json();
-          const errorMessage = errorData.detail?.error || errorData.detail || "Failed to estimate cost";
+          const errorMessage = errorData.detail?.error || errorData.detail || t("estimateFailed");
           setEntryResults((prev) => {
             const next = new Map(prev);
             next.set(entry.id, {
@@ -99,13 +100,13 @@ export function useMultiCostEstimate(accessToken: string | null) {
             entry,
             result: null,
             loading: false,
-            error: "Network error",
+            error: t("networkError"),
           });
           return next;
         });
       }
     },
-    [accessToken],
+    [accessToken, t],
   );
 
   const debouncedFetchForEntry = useCallback(

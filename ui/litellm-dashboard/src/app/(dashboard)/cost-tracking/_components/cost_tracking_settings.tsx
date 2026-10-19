@@ -90,7 +90,7 @@ const CostTrackingSettings: React.FC<CostTrackingSettingsProps> = ({ userID, use
     isUpdating: isUpdatingBlockUnpriced,
     fetchBlockUnpriced,
     setBlockUnpriced,
-  } = useBlockUnpricedConfig({ accessToken });
+  } = useBlockUnpricedConfig({ accessToken, t });
 
   useEffect(() => {
     if (accessToken) {

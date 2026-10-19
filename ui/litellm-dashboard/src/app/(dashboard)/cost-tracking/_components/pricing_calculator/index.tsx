@@ -29,7 +29,7 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ accessToken, mode
   const [entries, setEntries] = useState<ModelEntry[]>([createDefaultEntry()]);
   const t = useTranslations("costTracking");
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
-  const { debouncedFetchForEntry, removeEntry, getMultiModelResult } = useMultiCostEstimate(accessToken);
+  const { debouncedFetchForEntry, removeEntry, getMultiModelResult } = useMultiCostEstimate(accessToken, t);
 
   const handleEntryChange = useCallback(
     (id: string, field: keyof ModelEntry, value: string | number | null | undefined) => {

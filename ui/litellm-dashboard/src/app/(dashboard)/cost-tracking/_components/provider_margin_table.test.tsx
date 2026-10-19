@@ -300,7 +300,7 @@ describe("ProviderMarginTable", () => {
     renderWithProviders(
       <ProviderMarginTable marginConfig={{}} onMarginChange={onMarginChange} onRemoveProvider={onRemoveProvider} />,
     );
-    expect(screen.getByText("No provider margins configured")).toBeInTheDocument();
+    expect(screen.getByText("尚未配置供应商加成")).toBeInTheDocument();
   });
 
   describe("when both percentage and fixed amount are entered", () => {
