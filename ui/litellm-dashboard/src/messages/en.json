@@ -1808,6 +1808,7 @@
       "targetRequiredError": "Please input a target URL",
       "invalidHeadersJson": "Invalid JSON format for headers",
       "updateFailedToast": "Failed to update pass through endpoint",
+      "updatedToast": "Pass through endpoint updated successfully",
       "deletedToast": "Pass through endpoint deleted successfully",
       "deleteFailedToast": "Failed to delete pass through endpoint",
       "hideHeadersAria": "Hide headers",

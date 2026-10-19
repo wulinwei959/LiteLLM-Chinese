@@ -65,6 +65,11 @@ function useModelsTranslator() {
 }
 export type ModelsTranslator = ReturnType<typeof useModelsTranslator>;
 
+function usePassThroughTranslator() {
+  return useTranslations("models.passThrough");
+}
+export type PassThroughTranslator = ReturnType<typeof usePassThroughTranslator>;
+
 function usePassThroughTableTranslator() {
   return useTranslations("models.passThrough.table");
 }

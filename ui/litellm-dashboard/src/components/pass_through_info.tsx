@@ -200,7 +200,7 @@ const PassThroughInfoView: React.FC<PassThroughInfoProps> = ({
         guardrails: guardrails && Object.keys(guardrails).length > 0 ? guardrails : undefined,
       };
 
-      await updatePassThroughEndpoint(accessToken, endpointData.id, updateData);
+      await updatePassThroughEndpoint(t, accessToken, endpointData.id, updateData);
 
       setEndpointData({
         ...endpointData,

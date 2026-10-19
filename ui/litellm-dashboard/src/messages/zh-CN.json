@@ -1807,6 +1807,7 @@
       "targetRequiredError": "请输入目标 URL",
       "invalidHeadersJson": "请求头 JSON 格式无效",
       "updateFailedToast": "更新直通端点失败",
+      "updatedToast": "直通端点更新成功",
       "deletedToast": "直通端点删除成功",
       "deleteFailedToast": "删除直通端点失败",
       "hideHeadersAria": "隐藏请求头",

@@ -50,7 +50,7 @@ const openEditForm = async (user: User) => {
 
 const save = async (user: User) => user.click(screen.getByRole("button", { name: "保存更改" }));
 
-const lastPayload = () => updatePassThroughEndpoint.mock.calls.at(-1)?.[2] as Record<string, unknown>;
+const lastPayload = () => updatePassThroughEndpoint.mock.calls.at(-1)?.[3] as Record<string, unknown>;
 
 describe("pass_through_info update payload", () => {
   beforeEach(() => {
@@ -68,8 +68,8 @@ describe("pass_through_info update payload", () => {
     await waitFor(() => expect(updatePassThroughEndpoint).toHaveBeenCalled());
 
     expect(updatePassThroughEndpoint).toHaveBeenCalledTimes(1);
-    expect(updatePassThroughEndpoint.mock.calls[0][0]).toBe("test-token");
-    expect(updatePassThroughEndpoint.mock.calls[0][1]).toBe("ep-1");
+    expect(updatePassThroughEndpoint.mock.calls[0][1]).toBe("test-token");
+    expect(updatePassThroughEndpoint.mock.calls[0][2]).toBe("ep-1");
     expect(lastPayload()).toStrictEqual({
       path: "/bria",
       target: "https://engine.prod.bria-api.com",

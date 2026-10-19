@@ -87,6 +87,7 @@ export const getAutoRouterAssembledPromptCall = async (
  * Helper file for calls being made to proxy
  */
 import { toast } from "@/lib/toast";
+import type { PassThroughTranslator } from "@/lib/i18n/translators";
 import { clearTokenCookies, getCookie, storeLoginToken } from "@/utils/cookieUtils";
 import { decodeToken } from "@/utils/jwtUtils";
 import { TagNewRequest, TagUpdateRequest, TagListResponse, TagInfoResponse } from "./tag_management/types";
@@ -6564,6 +6565,7 @@ export const getLicenseInfo = async (accessToken: string): Promise<LicenseInfo |
 };
 
 export const updatePassThroughEndpoint = async (
+  t: PassThroughTranslator,
   accessToken: string,
   endpointPath: string,
   formValues: Record<string, any>,
@@ -6590,7 +6592,7 @@ export const updatePassThroughEndpoint = async (
     }
 
     const data = await response.json();
-    toast.success("Pass through endpoint updated successfully");
+    toast.success(t("updatedToast"));
     return data;
   } catch (error) {
     console.error("Failed to update pass through endpoint:", error);
