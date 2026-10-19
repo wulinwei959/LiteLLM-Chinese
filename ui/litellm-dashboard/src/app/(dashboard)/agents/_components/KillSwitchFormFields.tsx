@@ -11,7 +11,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Field, FieldTitle } from "@/components/ui/field";
 import { PasswordInput } from "@/components/shared/PasswordInput";
 import { AgentFormField, AgentFormValues, labelWithHint } from "./AgentFormKit";
-import { KILL_SWITCH_AUTH_TYPES, KILL_SWITCH_METHODS, validateKillSwitchBody } from "./kill_switch_config";
+import {
+  KILL_SWITCH_AUTH_TYPES,
+  KILL_SWITCH_METHODS,
+  validateKillSwitchBody,
+  type KillSwitchAuthType,
+} from "./kill_switch_config";
+
+const AUTH_TYPE_LABEL_KEYS = {
+  none: "authTypeNone",
+  bearer: "bearerToken",
+  api_key: "authTypeApiKey",
+  basic: "authTypeBasic",
+} as const satisfies Record<KillSwitchAuthType, string>;
 
 const KeyValueFieldArray = ({
   name,
@@ -214,9 +226,9 @@ const KillSwitchFormFields = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {KILL_SWITCH_AUTH_TYPES.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+              {KILL_SWITCH_AUTH_TYPES.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {t(AUTH_TYPE_LABEL_KEYS[value])}
                 </SelectItem>
               ))}
             </SelectContent>
