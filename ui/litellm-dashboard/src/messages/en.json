@@ -3689,6 +3689,7 @@
       "noMatch": "No PII types match your filter criteria"
     },
     "garden": {
+      "cards": {},
       "search": "Search guardrails",
       "litellmTitle": "LiteLLM Content Filter",
       "litellmDesc": "Built-in guardrails powered by LiteLLM. Zero latency, no external dependencies, no additional cost.",

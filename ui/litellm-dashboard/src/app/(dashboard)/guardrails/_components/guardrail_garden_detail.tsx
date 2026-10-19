@@ -6,7 +6,7 @@ import { cn } from "@/lib/cva.config";
 import AddGuardrailForm from "./add_guardrail_form";
 import { Logo } from "@/components/molecules/logo/Logo";
 import { GUARDRAIL_PRESETS } from "./guardrail_garden_configs";
-import { GuardrailCardInfo } from "./guardrail_garden_data";
+import { GuardrailCardInfo, localizeGuardrailCard } from "./guardrail_garden_data";
 
 interface GuardrailDetailViewProps {
   card: GuardrailCardInfo;
@@ -19,6 +19,7 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
   const [isAddFormVisible, setIsAddFormVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const t = useTranslations("guardrails");
+  const view = localizeGuardrailCard(t, card);
 
   const categoryLabels: Record<GuardrailCardInfo["category"], { provider: string; type: string }> = {
     litellm: { provider: t("garden.litellmTitle"), type: t("garden.typeContent") },
@@ -28,7 +29,7 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
 
   const detailRows = [
     { property: t("info.provider"), value: categoryLabels[card.category].provider },
-    ...(card.subcategory ? [{ property: t("garden.rowSubcategory"), value: card.subcategory }] : []),
+    ...(view.subcategory ? [{ property: t("garden.rowSubcategory"), value: view.subcategory }] : []),
     ...(card.category === "decision_model"
       ? [{ property: t("garden.rowCost"), value: t("garden.costDecisionModel") }]
       : []),
@@ -62,16 +63,16 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
         className="mb-6 inline-flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground"
       >
         <ArrowLeft className="size-3" />
-        <span>{card.name}</span>
+        <span>{view.name}</span>
       </div>
 
       {/* ── Header block (Vertex-style) ── */}
       <div className="mb-2 flex items-center gap-4">
-        <Logo src={card.logo} label={card.name} className="w-10 h-10 rounded-lg object-contain shrink-0" />
-        <h1 className="m-0 text-[28px] font-normal leading-tight text-foreground">{card.name}</h1>
+        <Logo src={view.logo} label={view.name} className="w-10 h-10 rounded-lg object-contain shrink-0" />
+        <h1 className="m-0 text-[28px] font-normal leading-tight text-foreground">{view.name}</h1>
       </div>
 
-      <p className="m-0 mb-5 text-sm leading-relaxed text-muted-foreground">{card.description}</p>
+      <p className="m-0 mb-5 text-sm leading-relaxed text-muted-foreground">{view.description}</p>
 
       {/* Action buttons — outlined style like Vertex */}
       <div className="mb-8 flex gap-2.5">
@@ -106,7 +107,7 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
           {/* Left column — overview + details table */}
           <div className="min-w-0 flex-1">
             <h2 className="m-0 mb-3 text-lg font-normal text-foreground">{t("info.tabOverview")}</h2>
-            <p className="m-0 mb-8 text-sm leading-[1.7] text-foreground">{card.description}</p>
+            <p className="m-0 mb-8 text-sm leading-[1.7] text-foreground">{view.description}</p>
 
             <h2 className="m-0 mb-1 text-lg font-normal text-foreground">{t("garden.detailsTitle")}</h2>
             <p className="m-0 mb-4 text-[13px] text-muted-foreground">{t("garden.detailsSub")}</p>
@@ -115,7 +116,7 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
               <thead>
                 <tr className="border-b border-border">
                   <th className="w-50 py-3 text-left font-medium text-muted-foreground">{t("garden.propHeader")}</th>
-                  <th className="py-3 text-left font-medium text-muted-foreground">{card.name}</th>
+                  <th className="py-3 text-left font-medium text-muted-foreground">{view.name}</th>
                 </tr>
               </thead>
               <tbody>
@@ -144,11 +145,11 @@ const GuardrailDetailView: React.FC<GuardrailDetailViewProps> = ({ card, onBack,
             </div>
 
             {/* Tags — pill style like Vertex */}
-            {card.tags.length > 0 && (
+            {view.tags.length > 0 && (
               <div className="mb-7">
                 <div className="mb-2 text-xs text-muted-foreground">{t("garden.tagsLabel")}</div>
                 <div className="flex flex-wrap gap-1.5">
-                  {card.tags.map((tag) => (
+                  {view.tags.map((tag) => (
                     <span
                       key={tag}
                       className="rounded-2xl border border-border bg-card px-3 py-1 text-xs text-foreground"

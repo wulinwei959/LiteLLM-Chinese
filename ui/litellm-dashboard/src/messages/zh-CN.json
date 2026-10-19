@@ -3688,6 +3688,7 @@
       "noMatch": "没有符合筛选条件的 PII 类型"
     },
     "garden": {
+      "cards": {},
       "search": "搜索护栏",
       "litellmTitle": "LiteLLM 内容过滤器",
       "litellmDesc": "LiteLLM 内置护栏。零延迟，无外部依赖，无额外成本。",

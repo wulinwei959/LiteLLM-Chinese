@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowRight, Search } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { GuardrailCardInfo, ALL_CARDS } from "./guardrail_garden_data";
+import { GuardrailCardInfo, ALL_CARDS, localizeGuardrailCard } from "./guardrail_garden_data";
 import GuardrailCard from "./guardrail_garden_card";
 import GuardrailDetailView from "./guardrail_garden_detail";
 
@@ -19,13 +19,15 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
   const CARDS_PER_ROW = 5;
   const VISIBLE_ROWS = 2;
 
-  const filteredCards = ALL_CARDS.filter((card) => {
+  const cards = useMemo(() => ALL_CARDS.map((card) => localizeGuardrailCard(t, card)), [t]);
+
+  const filteredCards = cards.filter((card) => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
       card.name.toLowerCase().includes(q) ||
       card.description.toLowerCase().includes(q) ||
-      card.tags.some((t) => t.toLowerCase().includes(q))
+      card.tags.some((tag) => tag.toLowerCase().includes(q))
     );
   });
 

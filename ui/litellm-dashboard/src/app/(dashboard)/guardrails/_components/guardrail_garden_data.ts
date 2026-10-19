@@ -1,3 +1,4 @@
+import type { GuardrailsTranslator } from "@/lib/i18n/translators";
 import { Providers, providerLogoMap } from "@/components/provider_info_helpers";
 import typesafeLogo from "../../../../../public/assets/logos/typesafe.png";
 import { guardrailLogoMap } from "./guardrail_info_helpers";
@@ -551,3 +552,23 @@ export const PARTNER_GUARDRAIL_CARDS: GuardrailCardInfo[] = [
 ];
 
 export const ALL_CARDS = [...LITELLM_CONTENT_FILTER_CARDS, ...DECISION_MODEL_CARDS, ...PARTNER_GUARDRAIL_CARDS];
+
+/**
+ * The static card rows are data: id keys GUARDRAIL_PRESETS, `litellm/{id}` is the model string,
+ * and raw English stays the search fallback. Display fields render through a catalog entry at
+ * guardrails.garden.cards.<id>; missing entries fall back to the data values.
+ */
+type LocalizableCardFields = Pick<GuardrailCardInfo, "name" | "description" | "subcategory" | "tags">;
+
+export const localizeGuardrailCard = (t: GuardrailsTranslator, card: GuardrailCardInfo): GuardrailCardInfo => {
+  const catalog = t.raw("garden.cards" as never) as Record<string, Partial<LocalizableCardFields> | undefined>;
+  const entry = catalog[card.id];
+  if (!entry) return card;
+  return {
+    ...card,
+    name: entry.name ?? card.name,
+    description: entry.description ?? card.description,
+    subcategory: entry.subcategory ?? card.subcategory,
+    tags: entry.tags ?? card.tags,
+  };
+};
