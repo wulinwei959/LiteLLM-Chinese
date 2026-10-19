@@ -155,7 +155,7 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label={`Save margin for ${displayName}`}
+                      aria-label={t("ariaSaveMargin", { name: displayName })}
                       onClick={() => handleSaveEdit(row.provider)}
                       className="cursor-pointer text-success hover:text-success/80"
                     >
@@ -164,7 +164,7 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label={`Cancel editing margin for ${displayName}`}
+                      aria-label={t("ariaCancelMargin", { name: displayName })}
                       onClick={handleCancelEdit}
                       className="cursor-pointer text-muted-foreground hover:text-foreground"
                     >
@@ -177,7 +177,7 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label={`Edit margin for ${displayName}`}
+                      aria-label={t("ariaEditMargin", { name: displayName })}
                       onClick={() => handleStartEdit(row.provider, row.margin)}
                       className="cursor-pointer text-info hover:text-info/80"
                     >
@@ -198,7 +198,7 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label={`Remove margin for ${displayName}`}
+                aria-label={t("ariaRemoveMargin", { name: displayName })}
                 onClick={() => onRemoveProvider(row.provider, displayName)}
                 className="cursor-pointer hover:text-destructive"
               >

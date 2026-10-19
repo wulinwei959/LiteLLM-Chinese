@@ -222,7 +222,7 @@ describe("CostTrackingSettings", () => {
     it("should remove the margin once removal is confirmed", async () => {
       mockMarginConfig.mockReturnValue({ openai: 0.1 });
 
-      const user = await expandAndRemove("费用/价格加成", "Remove margin for openai");
+      const user = await expandAndRemove("费用/价格加成", "移除 openai 的加成");
       expect(screen.getByText(/确定要移除 openai 的加成吗/)).toBeInTheDocument();
       await user.click(await screen.findByRole("button", { name: "移除" }));
 

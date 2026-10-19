@@ -7,10 +7,10 @@ import ProviderMarginTable from "./provider_margin_table";
 import { Providers, providerLogoMap } from "@/components/provider_info_helpers";
 
 const ROW_ACTION_NAME = {
-  edit: /^Edit margin for /,
-  save: /^Save margin for /,
-  cancel: /^Cancel editing margin for /,
-  remove: /^Remove margin for /,
+  edit: /^编辑 .+ 的加成/,
+  save: /^保存 .+ 的加成/,
+  cancel: /^取消编辑 .+ 的加成/,
+  remove: /^移除 .+ 的加成/,
 } as const;
 
 const rowAction = (action: keyof typeof ROW_ACTION_NAME): HTMLElement =>
@@ -274,13 +274,13 @@ describe("ProviderMarginTable", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Edit margin for OpenAI" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Remove margin for OpenAI" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "编辑 OpenAI 的加成" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "移除 OpenAI 的加成" })).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Edit margin for OpenAI" }));
+    await user.click(screen.getByRole("button", { name: "编辑 OpenAI 的加成" }));
 
-    expect(screen.getByRole("button", { name: "Save margin for OpenAI" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cancel editing margin for OpenAI" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "保存 OpenAI 的加成" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消编辑 OpenAI 的加成" })).toBeInTheDocument();
   });
 
   it("should name the global row's actions after the global provider", () => {
@@ -292,8 +292,8 @@ describe("ProviderMarginTable", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Edit margin for Global" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Remove margin for Global" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "编辑 Global 的加成" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "移除 Global 的加成" })).toBeInTheDocument();
   });
 
   it("should render the empty message when no margins are configured", () => {
