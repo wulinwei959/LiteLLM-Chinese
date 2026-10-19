@@ -6729,6 +6729,11 @@
       "serversListEmpty": "mcp_servers 中没有任何连接器。"
     },
     "toolArgs": {
+      "requiredArgument": "请输入 {key}",
+      "invalidEnumValue": "请选择有效的 {key}",
+      "invalidJson": "JSON 无效",
+      "objectRequired": "请输入 JSON 对象",
+      "arrayRequired": "请输入 JSON 数组",
       "true": "是",
       "false": "否",
       "jsonObjectPlaceholder": "为 {key} 输入 JSON 对象",

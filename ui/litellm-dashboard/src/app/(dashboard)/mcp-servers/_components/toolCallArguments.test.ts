@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "next-intl";
 
+import en from "@/messages/en.json";
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { InputSchema, InputSchemaProperty } from "@/components/mcp_tools/types";
 import {
   ToolArgumentField,
@@ -23,6 +26,12 @@ const field = (
   prop: { type, ...extra },
   required,
 });
+
+const t = createTranslator({
+  locale: "en",
+  messages: en,
+  namespace: "mcpServers",
+}) as unknown as McpServersTranslator;
 
 describe("toolArgumentFields", () => {
   it("preserves schema property order and marks required entries", () => {
@@ -112,32 +121,32 @@ describe("buildToolCallArguments", () => {
 
 describe("validateToolArgument", () => {
   it("reports the required message for a blank required field", () => {
-    expect(validateToolArgument(field("name", "string", true), "   ")).toBe("Please enter name");
+    expect(validateToolArgument(t, field("name", "string", true), "   ")).toBe("Please enter name");
   });
 
   it("accepts a populated required field", () => {
-    expect(validateToolArgument(field("name", "string", true), "x")).toBeUndefined();
+    expect(validateToolArgument(t, field("name", "string", true), "x")).toBeUndefined();
   });
 
   it("ignores an empty optional JSON field", () => {
-    expect(validateToolArgument(field("o", "object"), "")).toBeUndefined();
+    expect(validateToolArgument(t, field("o", "object"), "")).toBeUndefined();
   });
 
   it("reports malformed JSON", () => {
-    expect(validateToolArgument(field("o", "object"), "{oops")).toBe("Invalid JSON");
+    expect(validateToolArgument(t, field("o", "object"), "{oops")).toBe("Invalid JSON");
   });
 
   it("reports an array supplied to an object field", () => {
-    expect(validateToolArgument(field("o", "object"), "[1,2]")).toBe("Please enter a JSON object");
+    expect(validateToolArgument(t, field("o", "object"), "[1,2]")).toBe("Please enter a JSON object");
   });
 
   it("reports an object supplied to an array field", () => {
-    expect(validateToolArgument(field("a", "array"), '{"k":1}')).toBe("Please enter a JSON array");
+    expect(validateToolArgument(t, field("a", "array"), '{"k":1}')).toBe("Please enter a JSON array");
   });
 
   it("accepts well-formed values for both JSON field types", () => {
-    expect(validateToolArgument(field("o", "object"), '{"k":1}')).toBeUndefined();
-    expect(validateToolArgument(field("a", "array"), "[1]")).toBeUndefined();
+    expect(validateToolArgument(t, field("o", "object"), '{"k":1}')).toBeUndefined();
+    expect(validateToolArgument(t, field("a", "array"), "[1]")).toBeUndefined();
   });
 });
 
@@ -146,7 +155,9 @@ describe("toolArgumentsResolver", () => {
     const fields = [field("a", "string", true), field("o", "object")];
     const values = { args: ["x", '{"k":1}'] };
 
-    expect(toolArgumentsResolver(fields)(values, undefined, { fields: {}, shouldUseNativeValidation: false })).toEqual({
+    expect(
+      toolArgumentsResolver(t, fields)(values, undefined, { fields: {}, shouldUseNativeValidation: false }),
+    ).toEqual({
       values,
       errors: {},
     });
@@ -155,7 +166,7 @@ describe("toolArgumentsResolver", () => {
   it("reports each failing field under its own index", async () => {
     const fields = [field("a", "string", true), field("o", "object"), field("b", "string")];
 
-    const result = await toolArgumentsResolver(fields)({ args: ["", "{oops", "fine"] }, undefined, {
+    const result = await toolArgumentsResolver(t, fields)({ args: ["", "{oops", "fine"] }, undefined, {
       fields: {},
       shouldUseNativeValidation: false,
     });
@@ -392,20 +403,22 @@ describe("union-typed properties", () => {
 
   describe("validateToolArgument", () => {
     it("reports an object supplied to an optional array parameter", () => {
-      expect(validateToolArgument(unionField("tags", optionalArray), '{"k":1}')).toBe("Please enter a JSON array");
+      expect(validateToolArgument(t, unionField("tags", optionalArray), '{"k":1}')).toBe("Please enter a JSON array");
     });
 
     it("reports an array supplied to an optional object parameter", () => {
-      expect(validateToolArgument(unionField("payload", optionalObject), "[1,2]")).toBe("Please enter a JSON object");
+      expect(validateToolArgument(t, unionField("payload", optionalObject), "[1,2]")).toBe(
+        "Please enter a JSON object",
+      );
     });
 
     it("reports the comma-separated text a plain input would have produced as invalid JSON", () => {
-      expect(validateToolArgument(unionField("tags", optionalArray), "a,b")).toBe("Invalid JSON");
+      expect(validateToolArgument(t, unionField("tags", optionalArray), "a,b")).toBe("Invalid JSON");
     });
 
     it("accepts a well-formed value and an empty optional value", () => {
-      expect(validateToolArgument(unionField("tags", optionalArray), '["a","b"]')).toBeUndefined();
-      expect(validateToolArgument(unionField("tags", optionalArray), "")).toBeUndefined();
+      expect(validateToolArgument(t, unionField("tags", optionalArray), '["a","b"]')).toBeUndefined();
+      expect(validateToolArgument(t, unionField("tags", optionalArray), "")).toBeUndefined();
     });
   });
 

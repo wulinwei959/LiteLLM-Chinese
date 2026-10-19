@@ -227,7 +227,7 @@ export const ToolArgumentsForm: React.FC<{
   const t = useTranslations("mcpServers");
   const form = useForm<ToolArgumentsFormValues>({
     defaultValues: { args: initialArgumentValues(fields) },
-    resolver: toolArgumentsResolver(fields),
+    resolver: toolArgumentsResolver(t, fields),
   });
 
   const submit = form.handleSubmit((values) => onRun(buildToolCallArguments(fields, values.args)));

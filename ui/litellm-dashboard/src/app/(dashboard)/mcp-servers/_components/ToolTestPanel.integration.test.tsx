@@ -309,7 +309,7 @@ describe("ToolTestPanel argument payload", () => {
       required: ["message"],
     });
 
-    expect(await screen.findByText("Please enter message")).toBeInTheDocument();
+    expect(await screen.findByText("请输入 message")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -322,7 +322,7 @@ describe("ToolTestPanel argument payload", () => {
       },
     );
 
-    expect(await screen.findByText("Invalid JSON")).toBeInTheDocument();
+    expect(await screen.findByText("JSON 无效")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -467,7 +467,7 @@ describe("ToolTestPanel optional union-typed parameters", () => {
       fireEvent.change(screen.getByTestId("textarea-tags"), { target: { value: "a,b" } });
     });
 
-    expect(await screen.findByText("Invalid JSON")).toBeInTheDocument();
+    expect(await screen.findByText("JSON 无效")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 });

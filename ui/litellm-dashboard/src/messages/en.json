@@ -6730,6 +6730,11 @@
       "serversListEmpty": "mcp_servers contains no connectors."
     },
     "toolArgs": {
+      "requiredArgument": "Please enter {key}",
+      "invalidEnumValue": "Please select a valid {key}",
+      "invalidJson": "Invalid JSON",
+      "objectRequired": "Please enter a JSON object",
+      "arrayRequired": "Please enter a JSON array",
       "true": "True",
       "false": "False",
       "jsonObjectPlaceholder": "Enter JSON object for {key}",

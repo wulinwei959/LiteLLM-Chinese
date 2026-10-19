@@ -1,6 +1,7 @@
 import type { Resolver, ResolverResult } from "react-hook-form";
 
 import { InputSchema, InputSchemaProperty } from "@/components/mcp_tools/types";
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 
 export interface ToolArgumentField {
   readonly key: string;
@@ -51,27 +52,31 @@ const isBlank = (value: unknown): boolean => value === undefined || value === nu
 const isUnsetArgument = (prop: InputSchemaProperty, value: unknown): boolean =>
   prop.type === "string" && prop.enum ? value == null : isBlank(typeof value === "string" ? value.trim() : value);
 
-export const validateToolArgument = (field: ToolArgumentField, value: unknown): string | undefined => {
+export const validateToolArgument = (
+  t: McpServersTranslator,
+  field: ToolArgumentField,
+  value: unknown,
+): string | undefined => {
   const prop = resolveSchemaProperty(field.prop);
   if (field.required && isUnsetArgument(prop, value)) {
-    return `Please enter ${field.key}`;
+    return t("toolArgs.requiredArgument", { key: field.key });
   }
   if (prop.type === "string" && prop.enum) {
     if (!isUnsetArgument(prop, value) && !prop.enum.includes(String(value)))
-      return `Please select a valid ${field.key}`;
+      return t("toolArgs.invalidEnumValue", { key: field.key });
   }
   if (!isJsonField(prop) || (isBlank(value) && !field.required)) {
     return undefined;
   }
   const parsed = parseJson(value);
   if (parsed.kind === "invalid") {
-    return "Invalid JSON";
+    return t("toolArgs.invalidJson");
   }
   if (prop.type === "object" && !isPlainObject(parsed.value)) {
-    return "Please enter a JSON object";
+    return t("toolArgs.objectRequired");
   }
   if (prop.type === "array" && !Array.isArray(parsed.value)) {
-    return "Please enter a JSON array";
+    return t("toolArgs.arrayRequired");
   }
   return undefined;
 };
@@ -115,10 +120,10 @@ export const buildToolCallArguments = (
   );
 
 export const toolArgumentsResolver =
-  (fields: readonly ToolArgumentField[]): Resolver<ToolArgumentsFormValues> =>
+  (t: McpServersTranslator, fields: readonly ToolArgumentField[]): Resolver<ToolArgumentsFormValues> =>
   (values): ResolverResult<ToolArgumentsFormValues> => {
     const issues = fields
-      .map((field, index) => ({ index, message: validateToolArgument(field, values.args[index]) }))
+      .map((field, index) => ({ index, message: validateToolArgument(t, field, values.args[index]) }))
       .filter((issue): issue is { index: number; message: string } => issue.message !== undefined);
 
     if (issues.length === 0) {
