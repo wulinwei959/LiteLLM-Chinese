@@ -7451,6 +7451,7 @@
     }
   },
   "prompts": {
+    "unnamedTool": "Unnamed Tool",
     "conversation": {
       "accessTokenRequired": "Access token is required",
       "fillAllVariables": "Please fill in all template variables",
@@ -11746,6 +11747,7 @@
     "connectSuccessToast": "Connected to {server}",
     "requestedAccessTitle": "Requested Access",
     "connectTitle": "Connect {server}",
+    "service": "Service",
     "needsAccess": "LiteLLM needs access to {server} to complete your request.",
     "continueToAuth": "Continue to Authentication",
     "cancel": "Cancel",

@@ -7450,6 +7450,7 @@
     }
   },
   "prompts": {
+    "unnamedTool": "未命名工具",
     "conversation": {
       "accessTokenRequired": "需要访问令牌",
       "fillAllVariables": "请填写所有模板变量",
@@ -11741,6 +11742,7 @@
     "connectSuccessToast": "已连接到{server}",
     "requestedAccessTitle": "请求的权限",
     "connectTitle": "连接{server}",
+    "service": "服务",
     "needsAccess": "LiteLLM 需要访问 {server} 才能完成你的请求。",
     "continueToAuth": "前往身份验证",
     "cancel": "取消",

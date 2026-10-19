@@ -122,7 +122,7 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
     try {
       const parsed = JSON.parse(json);
       const tool: Tool = {
-        name: parsed.function?.name || "Unnamed Tool",
+        name: parsed.function?.name || t("unnamedTool"),
         description: parsed.function?.description || "",
         json: json,
       };

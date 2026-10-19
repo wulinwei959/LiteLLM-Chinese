@@ -36,7 +36,7 @@ export const ByokCredentialModal: React.FC<ByokCredentialModalProps> = ({ server
   const [loading, setLoading] = useState(false);
   const apiKeyInputId = useId();
 
-  const serverDisplayName = server.alias || server.server_name || "Service";
+  const serverDisplayName = server.alias || server.server_name || t("service");
   const firstLetter = serverDisplayName.charAt(0).toUpperCase();
 
   const handleClose = () => {
