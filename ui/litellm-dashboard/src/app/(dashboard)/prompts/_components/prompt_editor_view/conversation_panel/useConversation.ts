@@ -4,8 +4,9 @@ import { TokenUsage } from "@/components/chat_ui/ResponseMetrics";
 import { Message } from "./types";
 import { convertToDotPrompt, extractVariables } from "../utils";
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import type { PromptsTranslator } from "@/lib/i18n/translators";
 
-export const useConversation = (prompt: any, accessToken: string | null) => {
+export const useConversation = (prompt: any, accessToken: string | null, t: PromptsTranslator) => {
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -37,12 +38,12 @@ export const useConversation = (prompt: any, accessToken: string | null) => {
 
   const handleSendMessage = async () => {
     if (!accessToken) {
-      toast.fromError("Access token is required");
+      toast.fromError(t("conversation.accessTokenRequired"));
       return;
     }
 
     if (extractedVariables.length > 0 && !allVariablesFilled) {
-      toast.fromError("Please fill in all template variables");
+      toast.fromError(t("conversation.fillAllVariables"));
       return;
     }
 
@@ -198,14 +199,14 @@ export const useConversation = (prompt: any, accessToken: string | null) => {
       abortController.abort();
       setAbortController(null);
       setIsLoading(false);
-      toast.info("Request cancelled");
+      toast.info(t("conversation.requestCancelled"));
     }
   };
 
   const handleClearConversation = () => {
     setMessages([]);
     setVariablesFilled(false);
-    toast.success("Chat history cleared.");
+    toast.success(t("conversation.historyCleared"));
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {

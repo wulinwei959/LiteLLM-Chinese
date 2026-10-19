@@ -7431,6 +7431,12 @@
     }
   },
   "prompts": {
+    "conversation": {
+      "accessTokenRequired": "Access token is required",
+      "fillAllVariables": "Please fill in all template variables",
+      "requestCancelled": "Request cancelled",
+      "historyCleared": "Chat history cleared."
+    },
     "form": {
       "title": "Add New Prompt",
       "idLabel": "Prompt ID",

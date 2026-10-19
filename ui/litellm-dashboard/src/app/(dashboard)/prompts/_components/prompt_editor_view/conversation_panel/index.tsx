@@ -10,6 +10,7 @@ import VariableWarning from "./VariableWarning";
 import MessageInput from "./MessageInput";
 
 const ConversationPanel: React.FC<ConversationPanelProps> = ({ prompt, accessToken }) => {
+  const t = useTranslations("prompts");
   const {
     isLoading,
     messages,
@@ -25,8 +26,7 @@ const ConversationPanel: React.FC<ConversationPanelProps> = ({ prompt, accessTok
     handleClearConversation,
     handleKeyDown,
     handleVariableChange,
-  } = useConversation(prompt, accessToken);
-  const t = useTranslations("prompts");
+  } = useConversation(prompt, accessToken, t);
 
   return (
     <div className="flex flex-col h-full bg-background">

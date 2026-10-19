@@ -7430,6 +7430,12 @@
     }
   },
   "prompts": {
+    "conversation": {
+      "accessTokenRequired": "需要访问令牌",
+      "fillAllVariables": "请填写所有模板变量",
+      "requestCancelled": "请求已取消",
+      "historyCleared": "聊天历史已清空。"
+    },
     "form": {
       "title": "新增提示词",
       "idLabel": "提示词 ID",
