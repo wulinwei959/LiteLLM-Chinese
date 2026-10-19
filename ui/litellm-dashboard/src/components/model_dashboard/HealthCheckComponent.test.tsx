@@ -81,10 +81,8 @@ describe("HealthCheckComponent", () => {
   it("should render the health check section", async () => {
     await renderHealthCheck({ modelData: { data: [makeModel("deployment-1")] }, allModelsOnProxy: ["deployment-1"] });
 
-    expect(screen.getByText("Model Health Status")).toBeInTheDocument();
-    expect(
-      screen.getByText("Run health checks on individual models to verify they are working correctly"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("模型健康状态")).toBeInTheDocument();
+    expect(screen.getByText("对单个模型运行健康检查，确认其正常工作")).toBeInTheDocument();
   });
 
   it("should call individualModelHealthCheckCall with model id when run health check is triggered", async () => {

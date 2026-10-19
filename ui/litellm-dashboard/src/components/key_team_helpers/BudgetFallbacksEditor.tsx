@@ -74,9 +74,7 @@ export function BudgetFallbacksEditor({ value, onChange, availableModels }: Budg
 
   return (
     <div className="space-y-4">
-      <div className="text-xs text-muted-foreground">
-        When a model exceeds its per-model budget, requests automatically reroute to fallback models
-      </div>
+      <div className="text-xs text-muted-foreground">{t("blurb")}</div>
       {entries.map((entry) => {
         const availablePrimaryOptions = availableModels.filter(
           (m) => m === entry.primaryModel || !usedPrimaryModels.has(m),

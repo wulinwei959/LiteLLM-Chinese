@@ -1653,6 +1653,8 @@
     "health": {
       "title": "健康状态",
       "description": "监控模型部署的健康状况",
+      "pageHeading": "模型健康状态",
+      "pageSubtitle": "对单个模型运行健康检查，确认其正常工作",
       "runCheck": "运行检查",
       "checking": "检查中...",
       "healthy": "健康",

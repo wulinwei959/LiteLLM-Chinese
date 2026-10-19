@@ -1654,6 +1654,8 @@
     "health": {
       "title": "Health Status",
       "description": "Monitor the health of your model deployments",
+      "pageHeading": "Model Health Status",
+      "pageSubtitle": "Run health checks on individual models to verify they are working correctly",
       "runCheck": "Run Check",
       "checking": "Checking...",
       "healthy": "Healthy",
