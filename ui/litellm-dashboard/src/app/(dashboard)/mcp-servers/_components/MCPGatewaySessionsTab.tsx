@@ -83,7 +83,7 @@ function DisconnectUserButton({
       aria-label={t("gatewaySessions.disconnectAllSessions", { user: groupLabel(userId, t("gatewaySessions.unknown")) })}
     >
       <Unplug className="size-4" />
-      Disconnect all
+      {t("gatewaySessions.disconnectAll")}
     </Button>
   );
 }

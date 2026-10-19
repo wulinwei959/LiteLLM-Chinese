@@ -69,7 +69,7 @@ describe("PricingCalculator", () => {
 
   it("should render an Add Another Model button", () => {
     renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
-    expect(screen.getByRole("button", { name: /add another model/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /添加另一个模型/ })).toBeInTheDocument();
   });
 
   it("should show the Requests/Month column header by default", () => {
@@ -84,7 +84,7 @@ describe("PricingCalculator", () => {
     const table = screen.getByRole("table");
     const initialRows = within(table).getAllByRole("row");
 
-    await user.click(screen.getByRole("button", { name: /add another model/i }));
+    await user.click(screen.getByRole("button", { name: /添加另一个模型/ }));
 
     const updatedRows = within(table).getAllByRole("row");
     // One new data row added (header row + data rows)
@@ -102,7 +102,7 @@ describe("PricingCalculator", () => {
     const user = userEvent.setup();
     renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
 
-    await user.click(screen.getByRole("button", { name: /add another model/i }));
+    await user.click(screen.getByRole("button", { name: /添加另一个模型/ }));
 
     // With two rows, no delete buttons should be disabled
     const allButtons = screen.getAllByRole("button");
@@ -153,7 +153,7 @@ describe("PricingCalculator", () => {
     const user = userEvent.setup();
     renderWithProviders(<PricingCalculator {...DEFAULT_PROPS} />);
 
-    await user.click(screen.getByRole("button", { name: /add another model/i }));
+    await user.click(screen.getByRole("button", { name: /添加另一个模型/ }));
     const withTwoRows = dataRows();
     expect(withTwoRows).toHaveLength(2);
 

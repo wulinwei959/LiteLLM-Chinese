@@ -116,7 +116,7 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
           </div>
           {searchHistory.length > 0 && (
             <Button variant="outline" size="sm" onClick={clearHistory}>
-              Clear History
+              {t("clearHistory")}
             </Button>
           )}
         </div>

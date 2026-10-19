@@ -47,7 +47,7 @@ describe("VectorStoreTester", () => {
   it("shows the empty state before any search has run", () => {
     renderTester();
     expect(screen.getByText(EMPTY_STATE)).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /clear history/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /清空历史/ })).not.toBeInTheDocument();
   });
 
   it("does not search until a non-blank query is entered", async () => {
@@ -154,7 +154,7 @@ describe("VectorStoreTester", () => {
     await user.click(searchButton());
     expect(await screen.findByText("Result 1")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /clear history/i }));
+    await user.click(screen.getByRole("button", { name: /清空历史/ }));
 
     expect(screen.queryByText("Result 1")).not.toBeInTheDocument();
     expect(screen.getByText(EMPTY_STATE)).toBeInTheDocument();
