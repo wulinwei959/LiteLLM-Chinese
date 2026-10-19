@@ -5069,6 +5069,8 @@
       "cacheWriteTokens": "Cache Write Tokens"
     },
     "totalRequests": "Total Requests",
+    "gatewayRequestsByEndpoint": "Gateway Requests by Endpoint",
+    "gatewayRequestsByEndpointHint": "Counted by the gateway middleware as each request is answered. Covers LLM, MCP and A2A endpoints across the whole deployment.",
     "totalTokens": "Total Tokens",
     "dailySpend": "Daily Spend",
     "spend": "Spend",

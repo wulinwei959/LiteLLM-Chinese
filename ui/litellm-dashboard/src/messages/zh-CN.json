@@ -5068,6 +5068,8 @@
       "cacheWriteTokens": "缓存写入 Token"
     },
     "totalRequests": "总请求数",
+    "gatewayRequestsByEndpoint": "按端点统计的网关请求",
+    "gatewayRequestsByEndpointHint": "由网关中间件在应答每个请求时统计，涵盖整个部署的 LLM、MCP 与 A2A 端点。",
     "totalTokens": "总令牌数",
     "dailySpend": "每日花费",
     "spend": "花费",

@@ -465,10 +465,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
           </div>
           {aggregatedFailed && (
             <Alert variant="error" className="mb-2">
-              <AlertDescription className="text-inherit">
-                Fetching spend data failed, so the totals below may be empty rather than final. Reload the page to try
-                again.
-              </AlertDescription>
+              <AlertDescription className="text-inherit">{t("entity.spendFetchFailed")}</AlertDescription>
             </Alert>
           )}
           {/* Your Usage / Global Usage Panel */}
@@ -573,10 +570,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                                       <TooltipTrigger
                                         render={<Info className="size-4 text-muted-foreground hover:text-foreground" />}
                                       />
-                                      <TooltipContent>
-                                        Counted by the gateway when it answers a request, independent of spend logging.
-                                        Deployment-wide, so it will not match the per-key or per-model breakdowns below.
-                                      </TooltipContent>
+                                      <TooltipContent>{usageT("metrics.successfulHint")}</TooltipContent>
                                     </Tooltip>
                                   )}
                                 </div>
@@ -753,17 +747,14 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                         <ShadcnCard data-testid="gateway-requests-by-endpoint">
                           <CardHeader>
                             <CardTitle className="text-base font-semibold">
-                              Gateway Requests by Endpoint
+                              {usageT("gatewayRequestsByEndpoint")}
                               <Tooltip>
                                 <TooltipTrigger
                                   render={
                                     <Info className="ml-2 inline size-4 text-muted-foreground hover:text-foreground" />
                                   }
                                 />
-                                <TooltipContent>
-                                  Counted by the gateway middleware as each request is answered. Covers LLM, MCP and A2A
-                                  endpoints across the whole deployment.
-                                </TooltipContent>
+                                <TooltipContent>{usageT("gatewayRequestsByEndpointHint")}</TooltipContent>
                               </Tooltip>
                             </CardTitle>
                           </CardHeader>

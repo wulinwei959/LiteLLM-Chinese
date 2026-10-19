@@ -1079,7 +1079,7 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
       expect(mockDailyActivityAggregatedCall.mock.calls.filter((c) => c[0] === "user")).toHaveLength(1);
-      expect(await screen.findByText(/Fetching spend data failed/)).toBeInTheDocument();
+      expect(await screen.findByText(/消费数据拉取失败/)).toBeInTheDocument();
     });
   });
 
