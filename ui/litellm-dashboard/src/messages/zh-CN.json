@@ -8637,6 +8637,12 @@
       "errorGeneratingImageEdit": "生成图片编辑时出错。请重试。错误: {error}",
       "errorInteractionsApi": "发起 Interactions API 请求时出错。错误: {error}",
       "errorA2ASendMessage": "发送 A2A 消息时出错。错误: {error}",
+      "imageEditsSuccessToast": "成功处理 {count} 张图片",
+      "imageEditsFailedToast": "图片编辑失败: {error}",
+      "imageEditsDefaultError": "图片编辑失败",
+      "audioTranscriptionSuccessToast": "音频转录成功",
+      "audioTranscriptionFailedToast": "音频转录失败: {error}",
+      "audioTranscriptionDefaultError": "转录音频失败",
       "a2a": {
         "httpError": "HTTP {status}",
         "a2aError": "A2A 错误: {message}",

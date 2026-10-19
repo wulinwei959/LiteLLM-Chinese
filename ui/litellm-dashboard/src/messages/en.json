@@ -8642,6 +8642,12 @@
       "errorGeneratingImageEdit": "Error occurred while generating image edit. Please try again. Error: {error}",
       "errorInteractionsApi": "Error occurred while making Interactions API request. Error: {error}",
       "errorA2ASendMessage": "Error occurred while sending A2A message. Error: {error}",
+      "imageEditsSuccessToast": "Successfully processed {count, plural, one {# image} other {# images}}",
+      "imageEditsFailedToast": "Image edit failed: {error}",
+      "imageEditsDefaultError": "Failed to edit image(s)",
+      "audioTranscriptionSuccessToast": "Audio transcribed successfully",
+      "audioTranscriptionFailedToast": "Audio transcription failed: {error}",
+      "audioTranscriptionDefaultError": "Failed to transcribe audio",
       "a2a": {
         "httpError": "HTTP {status}",
         "a2aError": "A2A error: {message}",

@@ -971,6 +971,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
           // For image edits
           if (uploadedImages.length > 0) {
             await makeOpenAIImageEditsRequest(
+              t,
               uploadedImages.length === 1 ? uploadedImages[0] : uploadedImages,
               inputMessage,
               (imageUrl, model) => updateImageUI(imageUrl, model),
@@ -1071,6 +1072,7 @@ const ChatUI: React.FC<ChatUIProps> = ({
           // For audio transcriptions
           if (uploadedAudio) {
             await makeOpenAIAudioTranscriptionRequest(
+              t,
               uploadedAudio,
               (transcription, model) => updateTextUI("assistant", transcription, model),
               selectedModel,

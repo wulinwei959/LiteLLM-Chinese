@@ -2,8 +2,10 @@ import openai from "openai";
 import { getProxyBaseUrl } from "@/components/networking";
 import { buildPlaygroundHeaders, type CustomHeaders } from "@/components/llm_calls/request_headers";
 import { toast } from "@/lib/toast";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 
 export async function makeOpenAIAudioTranscriptionRequest(
+  t: PlaygroundTranslator,
   audioFile: File,
   updateUI: (transcription: string, model: string) => void,
   selectedModel: string,
@@ -47,7 +49,7 @@ export async function makeOpenAIAudioTranscriptionRequest(
     // The response is a transcription object with a text field
     if (response && response.text) {
       updateUI(response.text, selectedModel);
-      toast.success(`Audio transcribed successfully`);
+      toast.success(t("llmCalls.audioTranscriptionSuccessToast"));
     } else {
       throw new Error("No transcription text in response");
     }
@@ -56,7 +58,7 @@ export async function makeOpenAIAudioTranscriptionRequest(
 
     if (signal?.aborted) {
     } else {
-      let errorMessage = "Failed to transcribe audio";
+      let errorMessage = t("llmCalls.audioTranscriptionDefaultError");
 
       if (error?.error?.message) {
         errorMessage = error.error.message;
@@ -64,7 +66,7 @@ export async function makeOpenAIAudioTranscriptionRequest(
         errorMessage = error.message;
       }
 
-      toast.fromError(`Audio transcription failed: ${errorMessage}`);
+      toast.fromError(t("llmCalls.audioTranscriptionFailedToast", { error: errorMessage }));
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

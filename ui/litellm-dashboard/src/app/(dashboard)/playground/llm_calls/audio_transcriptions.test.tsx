@@ -1,8 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { makeOpenAIAudioTranscriptionRequest } from "./audio_transcriptions";
 import OpenAI from "openai";
+import { createTranslator } from "next-intl";
+import en from "@/messages/en.json";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 
 vi.mock("openai");
+
+const t = createTranslator({ locale: "en", messages: en, namespace: "playground" }) as unknown as PlaygroundTranslator;
 
 describe("audio_transcription", () => {
   const mockCreate = vi.fn();
@@ -41,7 +46,7 @@ describe("audio_transcription", () => {
       type: "audio/wav",
     });
 
-    await makeOpenAIAudioTranscriptionRequest(mockFile, mockUpdateUI, "whisper-1", "sk-1234567890", []);
+    await makeOpenAIAudioTranscriptionRequest(t, mockFile, mockUpdateUI, "whisper-1", "sk-1234567890", []);
 
     expect(mockCreate).toHaveBeenCalledWith(
       {
@@ -61,6 +66,7 @@ describe("audio_transcription", () => {
     const signal = abortController.signal;
 
     await makeOpenAIAudioTranscriptionRequest(
+      t,
       mockFile,
       mockUpdateUI,
       "whisper-1",
@@ -95,7 +101,7 @@ describe("audio_transcription", () => {
     });
 
     await expect(
-      makeOpenAIAudioTranscriptionRequest(mockFile, mockUpdateUI, "whisper-1", "sk-1234567890", []),
+      makeOpenAIAudioTranscriptionRequest(t, mockFile, mockUpdateUI, "whisper-1", "sk-1234567890", []),
     ).rejects.toThrow("API Error");
 
     expect(mockUpdateUI).not.toHaveBeenCalled();
@@ -108,7 +114,7 @@ describe("audio_transcription", () => {
     });
 
     await expect(
-      makeOpenAIAudioTranscriptionRequest(mockFile, mockUpdateUI, "whisper-1", "sk-1234567890", []),
+      makeOpenAIAudioTranscriptionRequest(t, mockFile, mockUpdateUI, "whisper-1", "sk-1234567890", []),
     ).rejects.toThrow("No transcription text in response");
 
     expect(mockUpdateUI).not.toHaveBeenCalled();

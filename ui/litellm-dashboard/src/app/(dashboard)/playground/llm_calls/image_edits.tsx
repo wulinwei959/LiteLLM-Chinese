@@ -2,8 +2,10 @@ import openai from "openai";
 import { getProxyBaseUrl } from "@/components/networking";
 import { buildPlaygroundHeaders, type CustomHeaders } from "@/components/llm_calls/request_headers";
 import { toast } from "@/lib/toast";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 
 export async function makeOpenAIImageEditsRequest(
+  t: PlaygroundTranslator,
   imageFiles: File | File[],
   prompt: string,
   updateUI: (imageUrl: string, model: string) => void,
@@ -65,14 +67,14 @@ export async function makeOpenAIImageEditsRequest(
     }
 
     if (results.length > 1) {
-      toast.success(`Successfully processed ${results.length} images`);
+      toast.success(t("llmCalls.imageEditsSuccessToast", { count: results.length }));
     }
   } catch (error: any) {
     console.error("Error making image edit request:", error);
 
     if (signal?.aborted) {
     } else {
-      let errorMessage = "Failed to edit image(s)";
+      let errorMessage = t("llmCalls.imageEditsDefaultError");
 
       if (error?.error?.message) {
         errorMessage = error.error.message;
@@ -80,7 +82,7 @@ export async function makeOpenAIImageEditsRequest(
         errorMessage = error.message;
       }
 
-      toast.fromError(`Image edit failed: ${errorMessage}`);
+      toast.fromError(t("llmCalls.imageEditsFailedToast", { error: errorMessage }));
     }
     throw error; // Re-throw to allow the caller to handle the error
   }
