@@ -483,15 +483,27 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
               <Tabs defaultValue="cost">
                 <div className="flex justify-between items-center">
                   <TabsList className="mt-1">
-                    <TabsTrigger value="cost" className="flex-none px-3">{usageT("tabs.cost")}</TabsTrigger>
-                    <TabsTrigger value="models" className="flex-none px-3">{usageT("tabs.models")}</TabsTrigger>
-                    <TabsTrigger value="keys" className="flex-none px-3">{usageT("tabs.keys")}</TabsTrigger>
-                    <TabsTrigger value="mcp" className="flex-none px-3">{usageT("tabs.mcp")}</TabsTrigger>
-                    <TabsTrigger value="endpoints" className="flex-none px-3">{usageT("tabs.endpoints")}</TabsTrigger>
+                    <TabsTrigger value="cost" className="flex-none px-3">
+                      {usageT("tabs.cost")}
+                    </TabsTrigger>
+                    <TabsTrigger value="models" className="flex-none px-3">
+                      {usageT("tabs.models")}
+                    </TabsTrigger>
+                    <TabsTrigger value="keys" className="flex-none px-3">
+                      {usageT("tabs.keys")}
+                    </TabsTrigger>
+                    <TabsTrigger value="mcp" className="flex-none px-3">
+                      {usageT("tabs.mcp")}
+                    </TabsTrigger>
+                    <TabsTrigger value="endpoints" className="flex-none px-3">
+                      {usageT("tabs.endpoints")}
+                    </TabsTrigger>
                   </TabsList>
                   <div className="flex items-center gap-2">
                     <Button variant="outline" onClick={() => setIsAiChatOpen(true)}>
-                      <Sparkles />{t("aiChat.title")}</Button>
+                      <Sparkles />
+                      {t("aiChat.title")}
+                    </Button>
                     <Button variant="outline" onClick={() => setIsGlobalExportModalOpen(true)}>
                       <Download />
                       Export Data
@@ -553,7 +565,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                             <ShadcnCard>
                               <CardContent>
                                 <div className="flex items-center gap-2">
-                                  <h3 className="text-lg font-medium text-foreground">{usageT("metrics.successfulRequests")}</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {usageT("metrics.successfulRequests")}
+                                  </h3>
                                   {gatewayActivity && (
                                     <Tooltip>
                                       <TooltipTrigger
@@ -586,7 +600,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                             <ShadcnCard>
                               <CardContent>
                                 <div className="flex items-center gap-2">
-                                  <h3 className="text-lg font-medium text-foreground">{usageT("metrics.failedRequests")}</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {usageT("metrics.failedRequests")}
+                                  </h3>
                                   <Tooltip>
                                     <TooltipTrigger
                                       render={<Info className="size-4 text-muted-foreground hover:text-foreground" />}
@@ -613,7 +629,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                             </ShadcnCard>
                             <ShadcnCard>
                               <CardContent>
-                                <h3 className="text-lg font-medium text-foreground">{usageT("metrics.avgCostPerRequest")}</h3>
+                                <h3 className="text-lg font-medium text-foreground">
+                                  {usageT("metrics.avgCostPerRequest")}
+                                </h3>
                                 <MetricValue pending={loading} className="text-2xl font-bold mt-2">
                                   $
                                   {formatNumberWithCommas(
@@ -646,7 +664,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                             <div className="grid grid-cols-4 gap-4 mt-4">
                               <ShadcnCard>
                                 <CardContent>
-                                  <h3 className="text-lg font-medium text-foreground">{usageT("metrics.inputTokens")}</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {usageT("metrics.inputTokens")}
+                                  </h3>
                                   <MetricValue pending={loading} className="text-2xl font-bold mt-2 text-info">
                                     {(userSpendData.metadata?.total_prompt_tokens || 0).toLocaleString()}
                                   </MetricValue>
@@ -654,7 +674,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                               </ShadcnCard>
                               <ShadcnCard>
                                 <CardContent>
-                                  <h3 className="text-lg font-medium text-foreground">{usageT("metrics.outputTokens")}</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {usageT("metrics.outputTokens")}
+                                  </h3>
                                   <MetricValue pending={loading} className="text-2xl font-bold mt-2 text-info">
                                     {userSpendData.metadata?.total_completion_tokens?.toLocaleString() || 0}
                                   </MetricValue>
@@ -662,7 +684,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                               </ShadcnCard>
                               <ShadcnCard>
                                 <CardContent>
-                                  <h3 className="text-lg font-medium text-foreground">{usageT("metrics.cacheReadTokens")}</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {usageT("metrics.cacheReadTokens")}
+                                  </h3>
                                   <MetricValue pending={loading} className="text-2xl font-bold mt-2 text-success">
                                     {userSpendData.metadata?.total_cache_read_input_tokens?.toLocaleString() || 0}
                                   </MetricValue>
@@ -670,7 +694,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                               </ShadcnCard>
                               <ShadcnCard>
                                 <CardContent>
-                                  <h3 className="text-lg font-medium text-foreground">{usageT("metrics.cacheWriteTokens")}</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {usageT("metrics.cacheWriteTokens")}
+                                  </h3>
                                   <MetricValue pending={loading} className="text-2xl font-bold mt-2 text-purple-600">
                                     {userSpendData.metadata?.total_cache_creation_input_tokens?.toLocaleString() || 0}
                                   </MetricValue>
@@ -946,7 +972,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                   <AlertTitle>{usageT("reusableCredentialsTagTitle")}</AlertTitle>
                   <AlertDescription className="text-inherit">
                     When a reusable credential is used, it will appear as a tag prefixed with{" "}
-                    <code className="rounded bg-black/5 px-1 py-0.5 font-mono text-xs">{usageT("credentialPrefix")}</code>
+                    <code className="rounded bg-black/5 px-1 py-0.5 font-mono text-xs">
+                      {usageT("credentialPrefix")}
+                    </code>
                     in this view.
                   </AlertDescription>
                   <AlertAction>
@@ -1019,7 +1047,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
         onExport={(exportType, format) =>
           dailyActivityRequest
             ? ENTITY_API.user.exportRows(dailyActivityRequest, exportType, format)
-            : Promise.reject(new Error("Missing access token or date range"))
+            : Promise.reject(new Error(t("missingTokenOrRange")))
         }
         dateRange={dateValue}
         selectedFilters={[]}
