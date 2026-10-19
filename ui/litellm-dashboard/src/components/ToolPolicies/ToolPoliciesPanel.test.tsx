@@ -269,7 +269,7 @@ describe("ToolPoliciesPanel inline policy editing", () => {
 
     await chooseSelectOption(user, policySelect("tool-1", "input"), "受信任");
 
-    await waitFor(() => expect(fromBackend).toHaveBeenCalledWith("Failed to update input policy: nope"));
+    await waitFor(() => expect(fromBackend).toHaveBeenCalledWith("更新输入策略失败：nope"));
     expect(policyValue("tool-1", "input")).toBe("untrusted");
   });
 

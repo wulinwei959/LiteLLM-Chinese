@@ -8,6 +8,7 @@ import useCan from "@/app/(dashboard)/hooks/useCan";
 import { MetricCard } from "@/components/GuardrailsMonitor/MetricCard";
 import { toast } from "@/lib/toast";
 import { ToolRow, updateToolPolicy } from "@/components/networking";
+import type { ToolPoliciesTranslator } from "@/lib/i18n/translators";
 
 import { toolPoliciesListOptions } from "./toolPoliciesQueries";
 import { ToolPoliciesTable } from "./ToolPoliciesTable";
@@ -29,10 +30,10 @@ function countToolsInUTCDay(tools: ToolRow[], utcDateKey: string): number {
   return tools.filter((tool) => isCreatedInUTCDay(tool.created_at, utcDateKey)).length;
 }
 
-function getTrendSubtitle(newToday: number, newYesterday: number): string | undefined {
+function getTrendSubtitle(t: ToolPoliciesTranslator, newToday: number, newYesterday: number): string | undefined {
   const diff = newToday - newYesterday;
   if (diff === 0) return undefined;
-  return diff > 0 ? `+${diff} since yesterday` : `${diff} since yesterday`;
+  return t("trendSinceYesterday", { diff: diff > 0 ? `+${diff}` : diff });
 }
 
 function toMessage(error: unknown, fallback: string): string {
@@ -50,6 +51,7 @@ interface ToolPoliciesPanelProps {
 }
 
 export const ToolPoliciesPanel: React.FC<ToolPoliciesPanelProps> = ({ accessToken, onSelectTool }) => {
+  const t = useTranslations("toolPolicies");
   const queryClient = useQueryClient();
   const canViewToolPolicies = useCan("viewToolPolicies");
   const [savingInput, setSavingInput] = useState<ReadonlySet<string>>(() => new Set());
@@ -80,12 +82,12 @@ export const ToolPoliciesPanel: React.FC<ToolPoliciesPanelProps> = ({ accessToke
         await updateToolPolicy(accessToken, toolName, { input_policy: newPolicy });
         await patchTool(toolName, { input_policy: newPolicy });
       } catch (e) {
-        toast.fromError(`Failed to update input policy: ${toMessage(e, "unknown error")}`);
+        toast.fromError(t("updateInputPolicyFailed", { message: toMessage(e, t("unknownError")) }));
       } finally {
         setSavingInput((previous) => withoutTool(previous, toolName));
       }
     },
-    [accessToken, patchTool],
+    [accessToken, patchTool, t],
   );
 
   const handleOutputPolicyChange = useCallback(
@@ -96,12 +98,12 @@ export const ToolPoliciesPanel: React.FC<ToolPoliciesPanelProps> = ({ accessToke
         await updateToolPolicy(accessToken, toolName, { output_policy: newPolicy });
         await patchTool(toolName, { output_policy: newPolicy });
       } catch (e) {
-        toast.fromError(`Failed to update output policy: ${toMessage(e, "unknown error")}`);
+        toast.fromError(t("updateOutputPolicyFailed", { message: toMessage(e, t("unknownError")) }));
       } finally {
         setSavingOutput((previous) => withoutTool(previous, toolName));
       }
     },
-    [accessToken, patchTool],
+    [accessToken, patchTool, t],
   );
 
   const { newToday, trendSubtitle, totalTools, blockedCount, activeTeamsCount, needsReviewTools } = useMemo(() => {
@@ -113,7 +115,7 @@ export const ToolPoliciesPanel: React.FC<ToolPoliciesPanelProps> = ({ accessToke
 
     return {
       newToday: today,
-      trendSubtitle: getTrendSubtitle(today, countToolsInUTCDay(tools, getUTCDateKey(yesterday))),
+      trendSubtitle: getTrendSubtitle(t, today, countToolsInUTCDay(tools, getUTCDateKey(yesterday))),
       totalTools: tools.length,
       blockedCount: tools.filter((tool) => tool.input_policy === "blocked").length,
       activeTeamsCount: new Set(tools.map((tool) => tool.team_id).filter(Boolean)).size,
@@ -121,7 +123,7 @@ export const ToolPoliciesPanel: React.FC<ToolPoliciesPanelProps> = ({ accessToke
         (tool) => isCreatedInUTCDay(tool.created_at, todayKey) && tool.input_policy === "untrusted",
       ),
     };
-  }, [tools]);
+  }, [tools, t]);
 
   const scrollToToolRow = (toolId: string) => {
     document.querySelector(`[data-row-id="${CSS.escape(toolId)}"]`)?.scrollIntoView({
@@ -129,8 +131,6 @@ export const ToolPoliciesPanel: React.FC<ToolPoliciesPanelProps> = ({ accessToke
       block: "center",
     });
   };
-
-  const t = useTranslations("toolPolicies");
 
   return (
     <div className="w-full">
