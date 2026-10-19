@@ -231,7 +231,7 @@ export const handleAddModelSubmit = async (
         model_info: modelInfoObj,
       };
 
-      await modelCreateCall(accessToken, new_model);
+      await modelCreateCall(t, accessToken, new_model);
     }
 
     hooks.callback && hooks.callback();

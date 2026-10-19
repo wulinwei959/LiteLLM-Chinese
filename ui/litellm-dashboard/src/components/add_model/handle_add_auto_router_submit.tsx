@@ -50,7 +50,7 @@ export const handleAddAutoRouterSubmit = async (
       },
     };
 
-    await modelCreateCall(accessToken, autoRouterConfig);
+    await modelCreateCall(t, accessToken, autoRouterConfig);
 
     toast.success(t("autoRouterCreateSuccess", { name: values.auto_router_name }));
 

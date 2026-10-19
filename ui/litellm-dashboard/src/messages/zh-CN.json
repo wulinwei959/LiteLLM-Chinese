@@ -980,6 +980,7 @@
       "noneCredential": "无",
       "failedParseExtraParams": "解析 LiteLLM 额外参数失败{suffix}",
       "failedToCreateModel": "创建模型失败{suffix}",
+      "createdToast": "模型 {name} 创建成功",
       "failedToAddModel": "添加模型失败{suffix}",
       "routerUnlimited": "不限",
       "talkToTeam": "联系我们的团队",

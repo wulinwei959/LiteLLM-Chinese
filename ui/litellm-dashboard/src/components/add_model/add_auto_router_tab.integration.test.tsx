@@ -807,7 +807,7 @@ describe("AddAutoRouterTab", () => {
     await user.click(screen.getByRole("button", { name: "添加自动路由" }));
 
     await waitFor(() => expect(modelCreateCall).toHaveBeenCalled());
-    expect(modelCreateCall).toHaveBeenLastCalledWith("token", {
+    expect(modelCreateCall).toHaveBeenLastCalledWith(expect.any(Function), "token", {
       model_name: "my-router",
       model_info: { team_id: "team-1" },
       litellm_params: {

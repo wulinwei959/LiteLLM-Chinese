@@ -87,7 +87,12 @@ export const getAutoRouterAssembledPromptCall = async (
  * Helper file for calls being made to proxy
  */
 import { toast } from "@/lib/toast";
-import type { PassThroughTranslator, TeamsTranslator, VirtualKeysTranslator } from "@/lib/i18n/translators";
+import type {
+  ModelsAddModelTranslator,
+  PassThroughTranslator,
+  TeamsTranslator,
+  VirtualKeysTranslator,
+} from "@/lib/i18n/translators";
 import { clearTokenCookies, getCookie, storeLoginToken } from "@/utils/cookieUtils";
 import { decodeToken } from "@/utils/jwtUtils";
 import { TagNewRequest, TagUpdateRequest, TagListResponse, TagInfoResponse } from "./tag_management/types";
@@ -668,7 +673,7 @@ export const getModelCostMapReloadStatus = async (accessToken: string) => {
     throw error;
   }
 };
-export const modelCreateCall = async (accessToken: string, formValues: Model) => {
+export const modelCreateCall = async (t: ModelsAddModelTranslator, accessToken: string, formValues: Model) => {
   try {
     const data = await apiClient.post(`/model/new`, {
       accessToken,
@@ -681,7 +686,7 @@ export const modelCreateCall = async (accessToken: string, formValues: Model) =>
     toast.dismiss();
 
     // Sequential success messages
-    toast.success(`Model ${formValues.model_name} created successfully`);
+    toast.success(t("createdToast", { name: formValues.model_name }));
 
     return data;
   } catch (error) {

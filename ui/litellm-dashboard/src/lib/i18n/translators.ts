@@ -65,6 +65,11 @@ function useModelsTranslator() {
 }
 export type ModelsTranslator = ReturnType<typeof useModelsTranslator>;
 
+function useModelsAddModelTranslator() {
+  return useTranslations("models.addModel");
+}
+export type ModelsAddModelTranslator = ReturnType<typeof useModelsAddModelTranslator>;
+
 function usePassThroughTranslator() {
   return useTranslations("models.passThrough");
 }

@@ -166,7 +166,7 @@ describe("AgentBuilderView", () => {
     await user.click(screen.getByRole("button", { name: /保存智能体/ }));
 
     await waitFor(() => expect(modelCreateCall).toHaveBeenCalled());
-    const payload = modelCreateCall.mock.calls[0][1];
+    const payload = modelCreateCall.mock.calls[0][2];
     expect(payload.model_name).toBe("billing-agent");
     expect(payload.litellm_params.model).toBe("litellm_agent/gpt-4o");
   });

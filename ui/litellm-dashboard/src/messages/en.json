@@ -981,6 +981,7 @@
       "noneCredential": "None",
       "failedParseExtraParams": "Failed to parse LiteLLM Extra Params{suffix}",
       "failedToCreateModel": "Failed to create model{suffix}",
+      "createdToast": "Model {name} created successfully",
       "failedToAddModel": "Failed to add model{suffix}",
       "routerUnlimited": "Unlimited",
       "talkToTeam": "Talk to our team",

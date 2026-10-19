@@ -11,7 +11,7 @@ vi.mock("@/components/networking", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/components/networking")>();
   return {
     ...actual,
-    modelCreateCall: (accessToken: string, model: unknown) => modelCreateCall(accessToken, model),
+    modelCreateCall: (t: unknown, accessToken: string, model: unknown) => modelCreateCall(t, accessToken, model),
     modelAvailableCall: vi.fn().mockResolvedValue({ data: [{ id: "group-a" }] }),
   };
 });
@@ -70,7 +70,7 @@ vi.mock("@/components/vector_store_management/VectorStoreSelector", () => ({
   default: () => <div data-testid="vector-store-selector" />,
 }));
 
-const lastCreatedModel = () => modelCreateCall.mock.calls.at(-1)?.[1];
+const lastCreatedModel = () => modelCreateCall.mock.calls.at(-1)?.[2];
 
 const PROXY_ADMIN = {
   token: "t",

@@ -197,6 +197,7 @@ export default function AgentBuilderView({
   customProxyBaseUrl,
 }: AgentBuilderViewProps) {
   const t = useTranslations("playground");
+  const addModelT = useTranslations("models.addModel");
   const [agentModels, setAgentModels] = useState<AgentModel[]>([]);
   const [modelGroups, setModelGroups] = useState<ModelGroup[]>([]);
   const [loadingAgents, setLoadingAgents] = useState(true);
@@ -341,7 +342,7 @@ export default function AgentBuilderView({
     }
     setSaving(true);
     try {
-      const response = await modelCreateCall(accessToken, {
+      const response = await modelCreateCall(addModelT, accessToken, {
         model_name: draftName.trim(),
         litellm_params: {
           model: `litellm_agent/${draftUnderlyingModel}`,
