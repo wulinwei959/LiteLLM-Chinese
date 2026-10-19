@@ -2061,6 +2061,7 @@
       "lastRefreshed": "最后刷新: {time}",
       "refreshAriaLabel": "刷新模型",
       "allAccessGroups": "全部模型访问组",
+      "allProxyModels": "所有代理模型",
       "configModel": "在配置文件中定义",
       "copied": "已复制 LiteLLM 模型名称",
       "copyTooltip": "复制 LiteLLM 模型名称",

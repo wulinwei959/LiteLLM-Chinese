@@ -2062,6 +2062,7 @@
       "lastRefreshed": "Last Refreshed: {time}",
       "refreshAriaLabel": "Refresh models",
       "allAccessGroups": "All Model Access Groups",
+      "allProxyModels": "All Proxy Models",
       "configModel": "Defined in config",
       "copied": "LiteLLM model name copied",
       "copyTooltip": "Copy LiteLLM model name",

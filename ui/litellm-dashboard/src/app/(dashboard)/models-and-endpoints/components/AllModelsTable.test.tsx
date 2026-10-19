@@ -415,7 +415,7 @@ describe("AllModelsTable", () => {
       expect(onOpenModelSettings).toHaveBeenCalled();
 
       expect(screen.getByTestId("models-team-select")).toHaveTextContent("Personal");
-      expect(screen.getByTestId("models-view-select")).toHaveTextContent("Current Team Models");
+      expect(screen.getByTestId("models-view-select")).toHaveTextContent("当前团队模型");
     });
 
     it("switches the current team", async () => {
