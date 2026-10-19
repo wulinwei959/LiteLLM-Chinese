@@ -1854,6 +1854,7 @@
       "costChargedHelp": "The cost charged for each request through this endpoint",
       "creating": "Creating...",
       "table": {
+        "loadingMessage": "Loading pass-through endpoints…",
         "emptyTitle": "No pass-through endpoints configured",
         "emptyBody": "Add a pass-through endpoint to route custom paths.",
         "openRowActions": "Open endpoint actions",
@@ -3117,6 +3118,7 @@
     "bulkDownloadUserCredentials": "Download User Credentials"
   },
   "organizations": {
+    "tableLoading": "Loading organizations…",
     "noOrganizationsYet": "No organizations yet",
     "noMatchingOrganizations": "No matching organizations",
     "searchNoMatchHint": "No organizations match your search. Try a different name or ID.",
@@ -8900,6 +8902,7 @@
     "emailInvalid": "Please enter a valid email"
   },
   "memory": {
+    "tableLoading": "Loading memories…",
     "title": "Memory",
     "memoryId": "Memory ID",
     "userId": "User ID",
@@ -9668,6 +9671,7 @@
     "copyIdAria": "Copy search tool ID"
   },
   "vectorStores": {
+    "tableLoading": "Loading vector stores…",
     "search": "Search",
     "queryRequired": "Please enter a search query",
     "historyCleared": "Search history cleared",

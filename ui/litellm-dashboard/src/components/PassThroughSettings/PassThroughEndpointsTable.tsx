@@ -49,7 +49,7 @@ export function PassThroughEndpointsTable({
       columns={columns}
       getRowId={(endpoint, index) => endpoint.id || endpoint.path || String(index)}
       isLoading={isLoading}
-      loadingMessage="Loading pass-through endpoints…"
+      loadingMessage={t("loadingMessage")}
       noDataMessage={<EmptyState />}
       size="compact"
     />

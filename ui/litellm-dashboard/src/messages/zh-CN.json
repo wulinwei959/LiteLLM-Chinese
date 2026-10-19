@@ -1853,6 +1853,7 @@
       "costChargedHelp": "经过该端点的每个请求所收取的成本",
       "creating": "创建中……",
       "table": {
+        "loadingMessage": "正在加载直通端点…",
         "emptyTitle": "尚未配置直通端点",
         "emptyBody": "添加一个直通端点以路由自定义路径。",
         "openRowActions": "打开端点操作菜单",
@@ -3116,6 +3117,7 @@
     "bulkDownloadUserCredentials": "下载用户凭据"
   },
   "organizations": {
+    "tableLoading": "正在加载组织…",
     "noOrganizationsYet": "暂无组织",
     "noMatchingOrganizations": "没有匹配的组织",
     "searchNoMatchHint": "没有匹配您搜索的组织，试试其他名称或 ID。",
@@ -8895,6 +8897,7 @@
     "emailInvalid": "请输入有效的邮箱地址"
   },
   "memory": {
+    "tableLoading": "正在加载记忆…",
     "title": "记忆",
     "memoryId": "记忆 ID",
     "userId": "用户 ID",
@@ -9663,6 +9666,7 @@
     "copyIdAria": "复制搜索工具 ID"
   },
   "vectorStores": {
+    "tableLoading": "正在加载向量存储…",
     "search": "搜索",
     "queryRequired": "请输入搜索查询",
     "historyCleared": "搜索历史已清空",

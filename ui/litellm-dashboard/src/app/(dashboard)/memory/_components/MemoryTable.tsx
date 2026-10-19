@@ -71,7 +71,7 @@ export function MemoryTable({
       onPaginationChange={onPaginationChange}
       rowCount={rowCount}
       isLoading={isLoading}
-      loadingMessage="Loading memories…"
+      loadingMessage={t("tableLoading")}
       noDataMessage={<MemoryEmptyState hasActiveSearch={hasActiveSearch} />}
       size="compact"
       toolbar={(table) => (

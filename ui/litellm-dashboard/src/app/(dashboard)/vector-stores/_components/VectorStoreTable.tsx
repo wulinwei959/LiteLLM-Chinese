@@ -56,7 +56,7 @@ const VectorStoreTable: React.FC<VectorStoreTableProps> = ({ data, onView, onEdi
       sorting={sorting}
       onSortingChange={setSorting}
       isLoading={isLoading}
-      loadingMessage="Loading vector stores…"
+      loadingMessage={t("tableLoading")}
       noDataMessage={<EmptyState />}
       size="compact"
     />

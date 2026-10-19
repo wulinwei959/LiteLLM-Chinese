@@ -65,7 +65,7 @@ const OrganizationsTable: React.FC<OrganizationsTableProps> = ({
       sorting={sorting}
       onSortingChange={onSortingChange}
       isLoading={isLoading}
-      loadingMessage="Loading organizations…"
+      loadingMessage={t("tableLoading")}
       noDataMessage={<EmptyState searchActive={searchActive} />}
       size="compact"
     />
