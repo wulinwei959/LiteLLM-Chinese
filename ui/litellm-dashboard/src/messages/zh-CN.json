@@ -9323,6 +9323,8 @@
     "addProviderDiscount": "添加供应商折扣",
     "addProviderMargin": "添加供应商加成",
     "calcTitle": "成本计算",
+    "calcDiscountAppliedTo": "折扣应用于供应商成本：",
+    "calcVerifyHint": "填入响应头中的数值以验证折扣：",
     "example": "示例",
     "validRange": "有效范围",
     "validRangeDesc": "折扣百分比必须在 0% 到 100% 之间",

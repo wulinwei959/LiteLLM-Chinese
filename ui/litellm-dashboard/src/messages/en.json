@@ -9328,6 +9328,8 @@
     "addProviderDiscount": "Add Provider Discount",
     "addProviderMargin": "Add Provider Margin",
     "calcTitle": "Cost Calculation",
+    "calcDiscountAppliedTo": "Discounts are applied to provider costs:",
+    "calcVerifyHint": "Enter values from your response headers to verify the discount:",
     "example": "Example",
     "validRange": "Valid Range",
     "validRangeDesc": "Discount percentages must be between 0% and 100%",

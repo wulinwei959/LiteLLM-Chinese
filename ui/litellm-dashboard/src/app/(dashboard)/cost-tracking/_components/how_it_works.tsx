@@ -37,7 +37,7 @@ const HowItWorks: React.FC = () => {
       <div>
         <h3 className="mb-1 text-sm font-medium text-foreground">{t("calcTitle")}</h3>
         <p className="text-xs text-muted-foreground">
-          Discounts are applied to provider costs:{" "}
+          {t("calcDiscountAppliedTo")}{" "}
           <code className="rounded-sm bg-muted px-1.5 py-0.5 text-xs text-foreground">
             final_cost = base_cost × (1 - discount%/100)
           </code>
@@ -94,9 +94,7 @@ const HowItWorks: React.FC = () => {
 
       <div className="border-t border-border pt-4">
         <h3 className="mb-3 text-sm font-medium text-foreground">{t("calcSection")}</h3>
-        <p className="mb-3 text-xs text-muted-foreground">
-          Enter values from your response headers to verify the discount:
-        </p>
+        <p className="mb-3 text-xs text-muted-foreground">{t("calcVerifyHint")}</p>
         <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <Label htmlFor="response-cost" className="mb-1 block text-xs">
