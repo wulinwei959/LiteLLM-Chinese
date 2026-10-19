@@ -4236,6 +4236,7 @@
     "fetchPoliciesFailed": "获取策略失败",
     "fetchAttachmentsFailed": "获取附件失败",
     "deletedSuccessfully": "策略删除成功",
+    "deletedNamedSuccessfully": "策略 \"{name}\" 删除成功",
     "deleteFailed": "删除策略失败",
     "deleteConfirmTitle": "删除策略",
     "deleteConfirmMessage": "确定要删除此策略吗？此操作无法撤销。",
@@ -4649,6 +4650,8 @@
       "loadFailed": "加载护栏失败，请重试。",
       "configFailed": "配置模板失败，请重试。",
       "readyToast": "模板就绪！请完成策略表单后保存。",
+      "createdToast": "已创建 {count} 个护栏，请完成策略表单后保存。",
+      "createdFailedToast": "创建 {count} 个护栏失败：{names}，你可能需要手动创建。",
       "createFailed": "创建护栏失败，请重试。"
     },
     "deleteConfirmNamedMessage": "确定要删除策略：{name} 吗？此操作无法撤销。"

@@ -202,7 +202,7 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({ accessToken, userRole }) 
     setIsDeleting(true);
     try {
       await deletePolicyCall(accessToken, policyToDelete.policy_id);
-      toast.success(`Policy "${policyToDelete.policy_name}" deleted successfully`);
+      toast.success(t("deletedNamedSuccessfully", { name: policyToDelete.policy_name }));
       await fetchPolicies();
     } catch (error) {
       console.error("Error deleting policy:", error);
@@ -375,16 +375,17 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({ accessToken, userRole }) 
 
       // Show success message
       if (createdGuardrails.length > 0) {
-        toast.success(
-          `Created ${createdGuardrails.length} guardrail${createdGuardrails.length > 1 ? "s" : ""}! Complete the policy form to save.`,
-        );
+        toast.success(t("select.createdToast", { count: createdGuardrails.length }));
       } else {
         toast.success(t("select.readyToast"));
       }
 
       if (failedGuardrails.length > 0) {
         toast.warning(
-          `Failed to create ${failedGuardrails.length} guardrail(s): ${failedGuardrails.join(", ")}. You may need to create them manually.`,
+          t("select.createdFailedToast", {
+            count: failedGuardrails.length,
+            names: failedGuardrails.join(", "),
+          }),
         );
       }
 
