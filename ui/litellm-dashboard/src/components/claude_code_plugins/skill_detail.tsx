@@ -215,10 +215,13 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
           </div>
 
           <p className="m-0 text-[13px] leading-relaxed text-muted-foreground">
-            Don&apos;t have the marketplace configured yet?{" "}
-            <span onClick={() => setActiveTab("setup")} className="cursor-pointer text-info">
-              See one-time setup →
-            </span>
+            {t.rich("needMarketplaceSetupHint", {
+              link: (chunks) => (
+                <span onClick={() => setActiveTab("setup")} className="cursor-pointer text-info">
+                  {chunks}
+                </span>
+              ),
+            })}
           </p>
         </div>
       )}
@@ -255,8 +258,9 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
           {/* Option 2: settings.json — for persistent config or managed deployments.
               extraKnownMarketplaces requires source to be a nested object, not a flat string. */}
           <p className="m-0 mb-3 text-sm leading-relaxed text-muted-foreground">
-            Or add this to <code className="rounded bg-muted px-1.5 py-px text-[13px]">~/.claude/settings.json</code>{" "}
-            for a persistent configuration:
+            {t.rich("addToSettingsHint", {
+              code: (chunks) => <code className="rounded bg-muted px-1.5 py-px text-[13px]">{chunks}</code>,
+            })}
           </p>
           <div className="overflow-hidden rounded-lg border border-border">
             <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2.5">

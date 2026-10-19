@@ -11656,6 +11656,8 @@
     "enableSkillCommandIntro": "将你的代理设为 marketplace 后，用一条命令即可在 Claude Code 中启用此技能：",
     "staleCatalogHint": "如果看到“Plugin {name} not found in marketplace”，请先更新目录：",
     "registerMarketplaceIntro": "在 Claude Code 中运行此命令以注册 marketplace：",
+    "needMarketplaceSetupHint": "还没有配置好 marketplace？<link>查看一次性设置 →</link>",
+    "addToSettingsHint": "或将以下内容加入 <code>~/.claude/settings.json</code> 作持久配置：",
     "selectAtLeastOne": "请至少选择一个技能",
     "updateFailed": "更新技能失败，请重试。",
     "selectSkillsToPublish": "选择要发布的技能",

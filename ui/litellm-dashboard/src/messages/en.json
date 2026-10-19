@@ -11661,6 +11661,8 @@
     "enableSkillCommandIntro": "Once your proxy is set as a marketplace, enable this skill in Claude Code with one command:",
     "staleCatalogHint": "If you see \"Plugin {name} not found in marketplace\", update the catalog first:",
     "registerMarketplaceIntro": "Run this command in Claude Code to register the marketplace:",
+    "needMarketplaceSetupHint": "Don't have the marketplace configured yet? <link>See one-time setup →</link>",
+    "addToSettingsHint": "Or add this to <code>~/.claude/settings.json</code> for a persistent configuration:",
     "selectAtLeastOne": "Please select at least one skill",
     "updateFailed": "Failed to update skills. Please try again.",
     "selectSkillsToPublish": "Select Skills to Publish",
