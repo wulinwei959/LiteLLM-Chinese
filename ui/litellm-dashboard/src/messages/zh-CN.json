@@ -3689,6 +3689,94 @@
     },
     "garden": {
       "cards": {
+        "cf_denied_financial": {
+          "name": "拒绝金融建议",
+          "description": "检测寻求个性化金融建议、投资推荐或财务规划的请求。"
+        },
+        "cf_denied_insults": {
+          "name": "侮辱与人身攻击",
+          "description": "检测针对聊天机器人、员工或其他人的侮辱、辱骂和人身攻击。"
+        },
+        "cf_denied_legal": {
+          "name": "拒绝法律建议",
+          "description": "检测寻求未经授权的法律建议、案件分析或法律推荐的请求。"
+        },
+        "cf_denied_medical": {
+          "name": "拒绝医疗建议",
+          "description": "检测寻求医疗诊断、治疗建议或健康建议的请求。"
+        },
+        "cf_harmful_violence": {
+          "name": "暴力伤害",
+          "description": "检测与暴力、犯罪策划、袭击和暴力威胁相关的内容。"
+        },
+        "cf_harmful_self_harm": {
+          "name": "自残行为",
+          "description": "检测与自残、自杀及危险自我伤害行为相关的内容。"
+        },
+        "cf_harmful_child_safety": {
+          "name": "儿童安全",
+          "description": "检测可能危害儿童安全或剥削未成年人的内容。"
+        },
+        "cf_harmful_illegal_weapons": {
+          "name": "非法武器",
+          "description": "检测与非法武器制造、分销或获取相关的内容。"
+        },
+        "cf_bias_gender": {
+          "name": "偏见：性别",
+          "description": "检测基于性别的歧视、刻板印象和有偏见的语言。"
+        },
+        "cf_bias_racial": {
+          "name": "偏见：种族",
+          "description": "检测种族歧视、刻板印象和带有种族偏见的内容。"
+        },
+        "cf_bias_religious": {
+          "name": "偏见：宗教",
+          "description": "检测宗教歧视、不宽容和带有宗教偏见的内容。"
+        },
+        "cf_bias_sexual_orientation": {
+          "name": "偏见：性取向",
+          "description": "检测针对性取向的歧视及相关偏见内容。"
+        },
+        "cf_prompt_injection_jailbreak": {
+          "name": "提示注入：越狱",
+          "description": "检测旨在绕过 AI 安全准则与限制的越狱尝试。"
+        },
+        "cf_prompt_injection_data_exfil": {
+          "name": "提示注入：数据外泄",
+          "description": "检测通过提示操纵窃取敏感数据的尝试。"
+        },
+        "cf_prompt_injection_sql": {
+          "name": "提示注入：SQL",
+          "description": "检测嵌入在提示中的 SQL 注入尝试。"
+        },
+        "cf_prompt_injection_malicious_code": {
+          "name": "提示注入：恶意代码",
+          "description": "检测通过提示注入恶意代码的尝试。"
+        },
+        "cf_prompt_injection_system_prompt": {
+          "name": "提示注入：系统提示词",
+          "description": "检测提取或覆盖系统提示词的尝试。"
+        },
+        "cf_toxic_abuse": {
+          "name": "辱骂与攻击性语言",
+          "description": "检测多语言（EN、AU、DE、ES、FR）中的有毒、辱骂和仇恨语言。"
+        },
+        "cf_patterns": {
+          "name": "模式匹配",
+          "description": "检测并拦截敏感数据模式，如社保号、信用卡号、API 密钥及自定义正则模式。"
+        },
+        "cf_keywords": {
+          "name": "关键词拦截",
+          "description": "拦截或掩码包含特定关键词或短语的内容。可上传自定义词表或逐个添加词条。"
+        },
+        "block_code_execution": {
+          "name": "拦截代码执行",
+          "description": "检测请求与响应中的 Markdown 围栏代码块，可按语言并配置置信度拦截或掩码可执行代码（如 Python、JavaScript、Bash）。"
+        },
+        "cf_competitor_intent": {
+          "name": "竞品名称拦截",
+          "description": "拦截或改写竞品对比与排名意图。当用户请求对比或推荐竞品（航空公司列表或通用竞品列表）时检测。"
+        },
         "dm_typesafe_jev": {
           "description": "TypeSafe 的 Jev 决策模型会针对每个请求回答你是或非的问题，例如提示注入或策略检查。"
         },

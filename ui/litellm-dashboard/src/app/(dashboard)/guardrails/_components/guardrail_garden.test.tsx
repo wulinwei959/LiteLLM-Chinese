@@ -44,13 +44,13 @@ describe("GuardrailGarden", () => {
     renderGarden();
 
     expect(screen.getByText(`显示全部（${LITELLM_CARDS.length}）`)).toBeInTheDocument();
-    expect(screen.getByText(LITELLM_CARDS[0].name)).toBeInTheDocument();
-    expect(screen.queryByText(LITELLM_CARDS[LITELLM_CARDS.length - 1].name)).not.toBeInTheDocument();
+    expect(screen.getByText("拒绝金融建议")).toBeInTheDocument();
+    expect(screen.queryByText("竞品名称拦截")).not.toBeInTheDocument();
 
     await user.click(screen.getByText(`显示全部（${LITELLM_CARDS.length}）`));
 
     expect(screen.getByText("收起")).toBeInTheDocument();
-    expect(screen.getByText(LITELLM_CARDS[LITELLM_CARDS.length - 1].name)).toBeInTheDocument();
+    expect(screen.getByText("竞品名称拦截")).toBeInTheDocument();
   });
 
   it("should always render every partner card", () => {
