@@ -184,9 +184,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
       {activeTab === "usage" && (
         <div className="max-w-[640px]">
           <h2 className="m-0 mb-2 text-lg font-normal text-foreground">{t("usingThisSkill")}</h2>
-          <p className="m-0 mb-6 text-sm leading-relaxed text-muted-foreground">
-            Once your proxy is set as a marketplace, enable this skill in Claude Code with one command:
-          </p>
+          <p className="m-0 mb-6 text-sm leading-relaxed text-muted-foreground">{t("enableSkillCommandIntro")}</p>
 
           {/* Install command */}
           <div className="mb-6 overflow-hidden rounded-lg border border-border">
@@ -209,7 +207,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
           {/* Shown when the marketplace catalog is stale and the plugin isn't found yet */}
           <div className="mb-4 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3">
             <p className="m-0 mb-2 text-[13px] leading-relaxed text-muted-foreground">
-              If you see &quot;Plugin {skill.name} not found in marketplace&quot;, update the catalog first:
+              {t("staleCatalogHint", { name: skill.name })}
             </p>
             <pre className="m-0 bg-transparent font-mono text-[13px] text-foreground">
               /plugin marketplace update litellm
@@ -231,9 +229,7 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
           <h2 className="m-0 mb-2 text-lg font-normal text-foreground">{t("marketplaceSetup")}</h2>
 
           {/* Option 1: single command — fastest path for most users */}
-          <p className="m-0 mb-3 text-sm leading-relaxed text-muted-foreground">
-            Run this command in Claude Code to register the marketplace:
-          </p>
+          <p className="m-0 mb-3 text-sm leading-relaxed text-muted-foreground">{t("registerMarketplaceIntro")}</p>
           <div className="mb-6 overflow-hidden rounded-lg border border-border">
             <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2.5">
               <span className="text-[13px] font-medium text-foreground">{t("runInClaudeCode")}</span>
