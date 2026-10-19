@@ -230,6 +230,8 @@
     "deletedTeamsAuditBody": "Deleted team auditing is graduating from beta into our Enterprise audit & compliance suite."
   },
   "nav": {
+    "homeAria": "LiteLLM home",
+    "homeAria": "LiteLLM home",
     "aiGateway": "AI Gateway",
     "observability": "Observability",
     "accessControl": "Access Control",

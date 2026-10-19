@@ -119,13 +119,13 @@ describe("Sidebar (leftnav)", () => {
   it("should link the logo to the UI home route rather than the proxy origin", () => {
     renderWithProviders(<Sidebar {...defaultProps} />);
 
-    expect(screen.getByRole("link", { name: /litellm home/i })).toHaveAttribute("href", "/ui");
+    expect(screen.getByRole("link", { name: /litellm 首页/i })).toHaveAttribute("href", "/ui");
   });
 
   it("pairs the logo with a dark-mode variant that swaps on the dark class", () => {
     renderWithProviders(<Sidebar {...defaultProps} />);
 
-    const [light, dark] = Array.from(screen.getByRole("link", { name: /litellm home/i }).querySelectorAll("img"));
+    const [light, dark] = Array.from(screen.getByRole("link", { name: /litellm 首页/i }).querySelectorAll("img"));
     const classesOf = (el: Element) => new Set(el.className.split(/\s+/));
 
     const lightSrc = light.getAttribute("src") ?? "";
@@ -145,7 +145,7 @@ describe("Sidebar (leftnav)", () => {
     });
     renderWithProviders(<Sidebar {...defaultProps} />);
 
-    const [light, dark] = Array.from(screen.getByRole("link", { name: /litellm home/i }).querySelectorAll("img"));
+    const [light, dark] = Array.from(screen.getByRole("link", { name: /litellm 首页/i }).querySelectorAll("img"));
 
     expect(light).toHaveAttribute("src", "https://cdn.example.com/logo.png");
     expect(dark).toHaveAttribute("src", "https://cdn.example.com/logo-dark.png");
@@ -155,7 +155,7 @@ describe("Sidebar (leftnav)", () => {
     mockUseThemeImpl = () => ({ ...unbrandedTheme(), logoUrl: "https://cdn.example.com/logo.png" });
     renderWithProviders(<Sidebar {...defaultProps} />);
 
-    const [light, dark] = Array.from(screen.getByRole("link", { name: /litellm home/i }).querySelectorAll("img"));
+    const [light, dark] = Array.from(screen.getByRole("link", { name: /litellm 首页/i }).querySelectorAll("img"));
 
     expect(light).toHaveAttribute("src", "https://cdn.example.com/logo.png");
     expect(dark).toHaveAttribute("src", "https://cdn.example.com/logo.png");
@@ -169,7 +169,7 @@ describe("Sidebar (leftnav)", () => {
     });
     renderWithProviders(<Sidebar {...defaultProps} />);
 
-    const [, dark] = Array.from(screen.getByRole("link", { name: /litellm home/i }).querySelectorAll("img"));
+    const [, dark] = Array.from(screen.getByRole("link", { name: /litellm 首页/i }).querySelectorAll("img"));
     expect(dark).toHaveAttribute("src", "https://cdn.example.com/gone.png");
 
     fireEvent.error(dark);

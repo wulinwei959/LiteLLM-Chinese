@@ -960,7 +960,7 @@ export default function KeyInfoView({
                                 ? `${project.project_alias} (${currentKeyData.project_id})`
                                 : currentKeyData.project_id;
                             })()
-                          : "Not Set"}
+                          : commonT("notSet")}
                       </p>
                     </div>
                   )}

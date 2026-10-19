@@ -230,6 +230,7 @@
     "deletedTeamsAuditBody": "已删除团队的审计功能正从 beta 毕业，正式进入企业版的审计与合规套件。"
   },
   "nav": {
+    "homeAria": "LiteLLM 首页",
     "aiGateway": "AI 网关",
     "observability": "可观测性",
     "accessControl": "访问控制",
