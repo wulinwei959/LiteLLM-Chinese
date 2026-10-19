@@ -2,7 +2,15 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MCPGatewaySessionsTab, describeTerminateResult, formatIdleSeconds } from "./MCPGatewaySessionsTab";
+import { createTranslator } from "next-intl";
+import {
+  MCPGatewaySessionsTab,
+  describeSelector,
+  describeTerminateResult,
+  formatIdleSeconds,
+} from "./MCPGatewaySessionsTab";
+import en from "@/messages/en.json";
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { renderWithProviders, testQueryClient } from "@/../tests/test-utils";
 import * as networking from "@/components/networking";
 import type { MCPGatewaySessionsResponse, MCPGatewaySessionsTerminateResponse } from "@/components/mcp_tools/types";
@@ -69,6 +77,12 @@ const REPORT: MCPGatewaySessionsResponse = {
 const renderTab = ({ canTerminate = false }: { canTerminate?: boolean } = {}) =>
   renderWithProviders(<MCPGatewaySessionsTab accessToken="token" canTerminate={canTerminate} />);
 
+const enT = createTranslator({
+  locale: "en",
+  messages: en,
+  namespace: "mcpServers",
+}) as unknown as McpServersTranslator;
+
 describe("formatIdleSeconds", () => {
   it("renders seconds under a minute and minutes plus seconds above it", () => {
     expect(formatIdleSeconds(0)).toBe("0s");
@@ -81,11 +95,23 @@ describe("formatIdleSeconds", () => {
 
 describe("describeTerminateResult", () => {
   it("pluralizes the session count and names the worker", () => {
-    expect(describeTerminateResult({ worker_pid: 9, terminated_sessions: 1, sessions: [] })).toBe(
+    expect(describeTerminateResult(enT, { worker_pid: 9, terminated_sessions: 1, sessions: [] })).toBe(
       "Disconnected 1 session on worker pid 9.",
     );
-    expect(describeTerminateResult({ worker_pid: 9, terminated_sessions: 0, sessions: [] })).toBe(
+    expect(describeTerminateResult(enT, { worker_pid: 9, terminated_sessions: 0, sessions: [] })).toBe(
       "Disconnected 0 sessions on worker pid 9.",
+    );
+  });
+});
+
+describe("describeSelector", () => {
+  it("describes a session-prefix selector and folds it into the force-close warning with one space", () => {
+    const scope = enT("gatewaySessions.forceCloseScope", {
+      selector: describeSelector(enT, { session_id_prefix: "abcd1234" }, enT("gatewaySessions.unknown")),
+    });
+    expect(describeSelector(enT, { session_id_prefix: "abcd1234" }, "x")).toBe("session abcd1234");
+    expect(enT("gatewaySessions.disconnectConfirm", { scope })).toBe(
+      "This force-closes session abcd1234 on this proxy worker. In-flight requests fail and the client must initialize again before it can call tools.",
     );
   });
 });
@@ -166,10 +192,10 @@ describe("MCPGatewaySessionsTab", () => {
     await user.click(await screen.findByRole("button", { name: "断开会话 bbbb2222" }));
     expect(networking.terminateMCPGatewaySessions).not.toHaveBeenCalled();
     const dialog = await screen.findByRole("alertdialog");
-    expect(dialog).toHaveTextContent("session bbbb2222");
+    expect(dialog).toHaveTextContent("会话 bbbb2222");
     await user.click(within(dialog).getByRole("button", { name: "断开" }));
 
-    const status = await screen.findByText("Disconnected 1 session on worker pid 4242.", { exact: false });
+    const status = await screen.findByText("已在 worker pid 4242 断开 1 个会话", { exact: false });
     expect(status).toBeInTheDocument();
     expect(networking.terminateMCPGatewaySessions).toHaveBeenCalledWith("token", { session_id_prefix: "bbbb2222" });
     expect(networking.fetchMCPGatewaySessions).toHaveBeenCalledTimes(2);
@@ -192,7 +218,7 @@ describe("MCPGatewaySessionsTab", () => {
     expect(dialog).toHaveTextContent(/alice/);
     await user.click(within(dialog).getByRole("button", { name: "断开" }));
 
-    expect(await screen.findByText(/Disconnected 2 sessions on worker pid 4242\./)).toBeInTheDocument();
+    expect(await screen.findByText(/已在 worker pid 4242 断开 2 个会话/)).toBeInTheDocument();
     expect(networking.terminateMCPGatewaySessions).toHaveBeenCalledWith("token", { user_id: "alice" });
   });
 

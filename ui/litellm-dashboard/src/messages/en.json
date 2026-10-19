@@ -7029,7 +7029,13 @@
       "disconnected": "Disconnected",
       "disconnectTitle": "Disconnect MCP session",
       "cancel": "Cancel",
-      "unknown": "(unknown)"
+      "unknown": "(unknown)",
+      "terminatedSessions": "Disconnected {count, plural, one {# session} other {# sessions}} on worker pid {pid}.",
+      "terminatedAlert": "{detail} Clients holding those sessions must send a new initialize request, which re-runs authentication. Sessions on other proxy workers are not affected.",
+      "selectorByUser": "every live session opened by user {user}",
+      "selectorBySession": "session {prefix}",
+      "forceCloseScope": "This force-closes {selector} on this proxy worker. ",
+      "disconnectConfirm": "{scope}In-flight requests fail and the client must initialize again before it can call tools."
     },
     "networkSettings": {
       "addClient": "Add client",

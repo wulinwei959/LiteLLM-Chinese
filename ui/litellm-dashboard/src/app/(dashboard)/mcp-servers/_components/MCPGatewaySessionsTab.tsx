@@ -24,6 +24,7 @@ import type {
   MCPGatewaySessionsTerminateResponse,
 } from "@/components/mcp_tools/types";
 import { createQueryKeys } from "@/app/(dashboard)/hooks/common/queryKeysFactory";
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 
 const mcpGatewaySessionKeys = createQueryKeys("mcpGatewaySessions");
 const REFETCH_INTERVAL_MS = 15000;
@@ -41,14 +42,18 @@ function groupLabel(label: string | null, unknownLabel: string): string {
   return label === "" ? '""' : label;
 }
 
-export function describeSelector(selector: MCPGatewaySessionSelector, unknownLabel: string): string {
-  if (selector.user_id !== undefined) return `every live session opened by user ${groupLabel(selector.user_id, unknownLabel)}`;
-  return `session ${selector.session_id_prefix}`;
+export function describeSelector(
+  t: McpServersTranslator,
+  selector: MCPGatewaySessionSelector,
+  unknownLabel: string,
+): string {
+  if (selector.user_id !== undefined)
+    return t("gatewaySessions.selectorByUser", { user: groupLabel(selector.user_id, unknownLabel) });
+  return t("gatewaySessions.selectorBySession", { prefix: selector.session_id_prefix });
 }
 
-export function describeTerminateResult(result: MCPGatewaySessionsTerminateResponse): string {
-  const noun = result.terminated_sessions === 1 ? "session" : "sessions";
-  return `Disconnected ${result.terminated_sessions} ${noun} on worker pid ${result.worker_pid}.`;
+export function describeTerminateResult(t: McpServersTranslator, result: MCPGatewaySessionsTerminateResponse): string {
+  return t("gatewaySessions.terminatedSessions", { count: result.terminated_sessions, pid: result.worker_pid });
 }
 
 function StatCard({ labelKey, value }: { labelKey: "gatewaySessions.liveSessions" | "gatewaySessions.aiClients" | "gatewaySessions.users"; value: number }) {
@@ -311,8 +316,7 @@ export function MCPGatewaySessionsTab({ accessToken, canTerminate }: MCPGatewayS
         <Alert>
           <AlertTitle>{t("gatewaySessions.disconnected")}</AlertTitle>
           <AlertDescription>
-            {describeTerminateResult(terminate.data)} Clients holding those sessions must send a new initialize request,
-            which re-runs authentication. Sessions on other proxy workers are not affected.
+            {t("gatewaySessions.terminatedAlert", { detail: describeTerminateResult(t, terminate.data) })}
           </AlertDescription>
         </Alert>
       ) : null}
@@ -329,8 +333,13 @@ export function MCPGatewaySessionsTab({ accessToken, canTerminate }: MCPGatewayS
           <AlertDialogHeader>
             <AlertDialogTitle>{t("gatewaySessions.disconnectTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {pendingSelector ? `This force-closes ${describeSelector(pendingSelector, t("gatewaySessions.unknown"))} on this proxy worker. ` : ""}
-              In-flight requests fail and the client must initialize again before it can call tools.
+              {t("gatewaySessions.disconnectConfirm", {
+                scope: pendingSelector
+                  ? t("gatewaySessions.forceCloseScope", {
+                      selector: describeSelector(t, pendingSelector, t("gatewaySessions.unknown")),
+                    })
+                  : "",
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

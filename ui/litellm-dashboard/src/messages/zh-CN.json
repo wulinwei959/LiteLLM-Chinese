@@ -7028,7 +7028,13 @@
       "disconnected": "已断开",
       "disconnectTitle": "断开 MCP 会话",
       "cancel": "取消",
-      "unknown": "(未知)"
+      "unknown": "(未知)",
+      "terminatedSessions": "已在 worker pid {pid} 断开 {count} 个会话。",
+      "terminatedAlert": "{detail}持有这些会话的客户端需要重新发送 initialize 请求，这会重新执行鉴权。其他代理 worker 上的会话不受影响。",
+      "selectorByUser": "用户 {user} 的全部在线会话",
+      "selectorBySession": "会话 {prefix}",
+      "forceCloseScope": "这会在当前代理 worker 上强制关闭{selector}。",
+      "disconnectConfirm": "{scope}进行中的请求会失败，客户端需要重新 initialize 后才能调用工具。"
     },
     "networkSettings": {
       "addClient": "添加客户端",
