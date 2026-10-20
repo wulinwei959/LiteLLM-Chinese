@@ -12559,6 +12559,12 @@
     "server": "服务器错误",
     "generic": "错误",
     "copyFailed": "复制到剪贴板失败",
-    "sessionExpired": "会话已过期，正在退出登录。"
+    "sessionExpired": "会话已过期，正在退出登录。",
+    "createVectorStoreFailed": "创建向量存储失败",
+    "listVectorStoresFailed": "获取向量存储列表失败",
+    "deleteVectorStoreFailed": "删除向量存储失败",
+    "getVectorStoreInfoFailed": "获取向量存储信息失败",
+    "updateVectorStoreFailed": "更新向量存储失败",
+    "ingestDocumentFailed": "导入文档失败"
   }
 }

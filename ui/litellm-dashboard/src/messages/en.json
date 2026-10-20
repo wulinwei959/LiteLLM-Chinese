@@ -12564,6 +12564,12 @@
     "server": "Server Error",
     "generic": "Error",
     "copyFailed": "Failed to copy to clipboard",
-    "sessionExpired": "UI Session Expired. Logging out."
+    "sessionExpired": "UI Session Expired. Logging out.",
+    "createVectorStoreFailed": "Failed to create vector store",
+    "listVectorStoresFailed": "Failed to list vector stores",
+    "deleteVectorStoreFailed": "Failed to delete vector store",
+    "getVectorStoreInfoFailed": "Failed to get vector store info",
+    "updateVectorStoreFailed": "Failed to update vector store",
+    "ingestDocumentFailed": "Failed to ingest document"
   }
 }

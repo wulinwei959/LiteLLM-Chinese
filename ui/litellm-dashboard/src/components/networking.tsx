@@ -5548,7 +5548,7 @@ export const vectorStoreCreateCall = async (accessToken: string, formValues: Rec
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || "Failed to create vector store");
+      throw new Error(error.detail || toastMessage("createVectorStoreFailed"));
     }
 
     return await response.json();
@@ -5576,7 +5576,7 @@ export const vectorStoreListCall = async (
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || "Failed to list vector stores");
+      throw new Error(error.detail || toastMessage("listVectorStoresFailed"));
     }
 
     return await response.json();
@@ -5615,7 +5615,7 @@ export const vectorStoreDeleteCall = async (accessToken: string, vectorStoreId: 
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || "Failed to delete vector store");
+      throw new Error(error.detail || toastMessage("deleteVectorStoreFailed"));
     }
 
     return await response.json();
@@ -5640,7 +5640,7 @@ export const vectorStoreInfoCall = async (accessToken: string, vectorStoreId: st
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || "Failed to get vector store info");
+      throw new Error(error.detail || toastMessage("getVectorStoreInfoFailed"));
     }
 
     return await response.json();
@@ -5665,7 +5665,7 @@ export const vectorStoreUpdateCall = async (accessToken: string, formValues: Rec
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || "Failed to update vector store");
+      throw new Error(error.detail || toastMessage("updateVectorStoreFailed"));
     }
 
     return await response.json();
@@ -5723,7 +5723,7 @@ export const ragIngestCall = async (
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error?.message || error.detail || "Failed to ingest document");
+      throw new Error(error.error?.message || error.detail || toastMessage("ingestDocumentFailed"));
     }
 
     return await response.json();
