@@ -574,10 +574,11 @@ function useSettledPageClamp<TData extends RowData>(table: Table<TData>, options
 
 export function DataTable<TData extends RowData, TValue>(props: DataTableProps<TData, TValue>) {
   const resolved: DataTableResolvedProps<TData, TValue> = props;
+  const t = useTranslations("common");
 
   const {
     isLoading = false,
-    loadingMessage = "Loading…",
+    loadingMessage = t("loading"),
     skeletonRowCount = 8,
     noDataMessage,
     paginationMode = "none",
