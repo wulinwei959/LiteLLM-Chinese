@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { toastMessage } from "@/lib/toast";
 import { testMCPToolsListRequest } from "../components/networking";
 import { AUTH_TYPE, OAUTH_FLOW, TRANSPORT, isClientForwardedTokenMode } from "@/components/mcp_tools/types";
 
@@ -165,7 +166,7 @@ export const useTestMCPConnection = ({
           setHasShownSuccessMessage(true);
         }
       } else {
-        const errorMessage = toolsResponse.message || "Failed to retrieve tools list";
+        const errorMessage = toolsResponse.message || toastMessage("retrieveToolsListFailed");
         setToolsError(errorMessage);
         setToolsErrorStatus(typeof toolsResponse.status === "number" ? toolsResponse.status : null);
         setToolsErrorStackTrace(toolsResponse.status === 403 ? null : toolsResponse.stack_trace || null);

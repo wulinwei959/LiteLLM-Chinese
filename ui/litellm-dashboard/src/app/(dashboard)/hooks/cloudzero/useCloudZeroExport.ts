@@ -1,4 +1,5 @@
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import { toastMessage } from "@/lib/toast";
 import { useMutation } from "@tanstack/react-query";
 
 interface ExportParams {
@@ -27,7 +28,7 @@ const performCloudZeroExport = async (accessToken: string, params: ExportParams 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
-      errorData?.error?.message || errorData?.message || errorData?.detail || "Failed to export data";
+      errorData?.error?.message || errorData?.message || errorData?.detail || toastMessage("exportCloudZeroDataFailed");
     throw new Error(errorMessage);
   }
 

@@ -12578,6 +12578,12 @@
     "resetEmailEventSettingsFailed": "重置邮件事件设置失败",
     "createKeyForAgentFailed": "为智能体创建密钥失败",
     "updateGuardrailFailed": "更新护栏失败",
-    "validateBlockedWordsFileFailed": "校验屏蔽词文件失败"
+    "validateBlockedWordsFileFailed": "校验屏蔽词文件失败",
+    "performDryRunFailed": "试运行失败",
+    "exportCloudZeroDataFailed": "导出数据失败",
+    "createCloudZeroIntegrationFailed": "创建 CloudZero 集成失败",
+    "updateModelStorageSettingsFailed": "更新模型存储设置失败",
+    "updateSpendLogsSettingsFailed": "更新花费日志设置失败",
+    "retrieveToolsListFailed": "获取工具列表失败"
   }
 }

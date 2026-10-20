@@ -1,4 +1,5 @@
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import { toastMessage } from "@/lib/toast";
 import { useMutation } from "@tanstack/react-query";
 
 interface DryRunParams {
@@ -27,7 +28,7 @@ const performCloudZeroDryRun = async (accessToken: string, params: DryRunParams 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
-      errorData?.error?.message || errorData?.message || errorData?.detail || "Failed to perform dry run";
+      errorData?.error?.message || errorData?.message || errorData?.detail || toastMessage("performDryRunFailed");
     throw new Error(errorMessage);
   }
 

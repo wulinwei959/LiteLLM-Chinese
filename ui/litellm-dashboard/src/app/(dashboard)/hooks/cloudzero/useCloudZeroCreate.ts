@@ -1,4 +1,5 @@
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import { toastMessage } from "@/lib/toast";
 import { useMutation } from "@tanstack/react-query";
 
 interface CreateParams {
@@ -31,7 +32,10 @@ const performCloudZeroCreate = async (accessToken: string, params: CreateParams)
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
-      errorData?.error?.message || errorData?.message || errorData?.detail || "Failed to create CloudZero integration";
+      errorData?.error?.message ||
+      errorData?.message ||
+      errorData?.detail ||
+      toastMessage("createCloudZeroIntegrationFailed");
     throw new Error(errorMessage);
   }
 

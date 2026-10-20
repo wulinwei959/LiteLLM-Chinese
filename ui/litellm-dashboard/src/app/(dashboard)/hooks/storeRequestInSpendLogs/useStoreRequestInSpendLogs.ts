@@ -1,5 +1,6 @@
 import { useMutation, UseMutationResult, useQueryClient } from "@tanstack/react-query";
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import { toastMessage } from "@/lib/toast";
 import useAuthorized from "../useAuthorized";
 import { proxyConfigKeys } from "../proxyConfig/useProxyConfig";
 
@@ -42,7 +43,10 @@ const performStoreRequestInSpendLogs = async (
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
-      errorData?.error?.message || errorData?.message || errorData?.detail || "Failed to update spend logs settings";
+      errorData?.error?.message ||
+      errorData?.message ||
+      errorData?.detail ||
+      toastMessage("updateSpendLogsSettingsFailed");
     throw new Error(errorMessage);
   }
 

@@ -12583,6 +12583,12 @@
     "resetEmailEventSettingsFailed": "Failed to reset email event settings",
     "createKeyForAgentFailed": "Failed to create key for agent",
     "updateGuardrailFailed": "Failed to update guardrail",
-    "validateBlockedWordsFileFailed": "Failed to validate blocked words file"
+    "validateBlockedWordsFileFailed": "Failed to validate blocked words file",
+    "performDryRunFailed": "Failed to perform dry run",
+    "exportCloudZeroDataFailed": "Failed to export data",
+    "createCloudZeroIntegrationFailed": "Failed to create CloudZero integration",
+    "updateModelStorageSettingsFailed": "Failed to update model storage settings",
+    "updateSpendLogsSettingsFailed": "Failed to update spend logs settings",
+    "retrieveToolsListFailed": "Failed to retrieve tools list"
   }
 }

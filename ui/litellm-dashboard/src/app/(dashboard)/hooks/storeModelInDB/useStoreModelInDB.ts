@@ -1,5 +1,6 @@
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
+import { toastMessage } from "@/lib/toast";
 import useAuthorized from "../useAuthorized";
 
 export interface StoreModelInDBParams {
@@ -33,7 +34,10 @@ const performStoreModelInDB = async (
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage =
-      errorData?.error?.message || errorData?.message || errorData?.detail || "Failed to update model storage settings";
+      errorData?.error?.message ||
+      errorData?.message ||
+      errorData?.detail ||
+      toastMessage("updateModelStorageSettingsFailed");
     throw new Error(errorMessage);
   }
 
