@@ -3394,6 +3394,8 @@
   },
   "guardrails": {
     "title": "护栏",
+    "selectGuardrailsPlaceholder": "选择护栏",
+    "premiumGuardrailPlaceholder": "配置护栏是高级功能。",
     "tabs": {
       "garden": "护栏花园",
       "guardrails": "护栏",
@@ -4245,6 +4247,8 @@
   },
   "policies": {
     "title": "策略",
+    "selectPoliciesPlaceholder": "选择策略（生产版本或已发布版本）",
+    "premiumPolicyPlaceholder": "配置策略是高级功能。",
     "aboutTitle": "关于策略",
     "aboutDescription": "使用策略将护栏分组，并控制哪些护栏针对特定团队、密钥或模型运行。",
     "whyUsePolicies": "为什么使用策略？",

@@ -3395,6 +3395,8 @@
   },
   "guardrails": {
     "title": "Guardrails",
+    "selectGuardrailsPlaceholder": "Select guardrails",
+    "premiumGuardrailPlaceholder": "Setting guardrails is a premium feature.",
     "tabs": {
       "garden": "Guardrail Garden",
       "guardrails": "Guardrails",
@@ -4246,6 +4248,8 @@
   },
   "policies": {
     "title": "Policies",
+    "selectPoliciesPlaceholder": "Select policies (production or published versions)",
+    "premiumPolicyPlaceholder": "Setting policies is a premium feature.",
     "aboutTitle": "About Policies",
     "aboutDescription": "Use policies to group guardrails and control which ones run for specific teams, keys, or models.",
     "whyUsePolicies": "Why use policies?",

@@ -2327,7 +2327,7 @@ describe("KeyEditView", () => {
       renderForPayload(onSubmitMock);
       await screen.findByRole("button", { name: /保存更改/ });
 
-      await pickFromCombobox("Select guardrails", "guardrail-1");
+      await pickFromCombobox("选择护栏", "guardrail-1");
       await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
@@ -2344,7 +2344,7 @@ describe("KeyEditView", () => {
       renderForPayload(onSubmitMock);
       await screen.findByRole("button", { name: /保存更改/ });
 
-      await pickFromCombobox(/Select policies/, /policy-1/);
+      await pickFromCombobox(/选择策略/, /policy-1/);
       await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
