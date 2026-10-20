@@ -55,7 +55,7 @@ export async function makeOpenAIEmbeddingsRequest(
     const embedding = responseData?.data?.[0]?.embedding;
 
     if (!embedding) {
-      throw new Error("No embedding returned from server");
+      throw new Error(t("llmCalls.noEmbeddingReturned"));
     }
 
     updateEmbeddingsUI(JSON.stringify(embedding), responseData?.model ?? selectedModel);

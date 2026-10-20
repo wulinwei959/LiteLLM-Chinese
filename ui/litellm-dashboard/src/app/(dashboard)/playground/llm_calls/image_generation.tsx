@@ -47,10 +47,10 @@ export async function makeOpenAIImageGenerationRequest(
         const base64Data = response.data[0].b64_json;
         updateUI(`data:image/png;base64,${base64Data}`, selectedModel);
       } else {
-        throw new Error("No image data found in response");
+        throw new Error(t("llmCalls.noImageDataInResponse"));
       }
     } else {
-      throw new Error("Invalid response format");
+      throw new Error(t("llmCalls.invalidResponseFormat"));
     }
   } catch (error) {
     if (signal?.aborted) {

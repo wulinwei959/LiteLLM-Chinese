@@ -60,7 +60,7 @@ export async function makeInteractionsRequest(
     }
 
     if (!response.body) {
-      throw new Error("No response body received");
+      throw new Error(t("llmCalls.noResponseBodyReceived"));
     }
 
     const reader = response.body.getReader();
