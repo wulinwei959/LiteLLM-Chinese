@@ -50,7 +50,7 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 | **分支** | `main` |
 | **汉化完成度** | 批次 0-14 (核心管理页) 完成，批次 24 (共享组件长尾) 按簇推进到第 412 簇。非测试 `.tsx` 913 个中接入翻译 709 个 (77.7%，带括号调用口径)，未接入宽口径命中全为误报或判定账。第 306 到 407 簇逐片把组件内字面量、共享 util 里的归一化替换串、模块常量当展示文案用的形态、共享件 aria 模板里的内嵌英文词、caller 侧把 thrown message 与硬编前缀拼成气泡内容的形态、浏览器标签页与 meta 描述、服务端错误兜底里的硬编提示逐类接进目录；第 409 簇清掉 226 个无人引用的死键并把判定器接进 CI 门禁 (`npm run check:dead-keys`，按基线棘轮，新增死键即红)；第 410 到 412 簇把死键守卫接进 UI Lint 工作流，并把全仓 26 处硬编码 `"en-US"` 的日期、货币与紧凑记法连同表格日期的手写英文月份数组改成按当前 UI locale 格式化 (`src/lib/i18n/format.ts`)。扫描仍是启发式的，不能据此宣布收口 |
 | **目录规模** | 中英消息各 11247 个叶子，键树完全对齐 (parity 守卫 0 缺失)，中英同值 133 个 (多为 URL、模型名等格式示例，非漏翻) |
-| **测试** | 最近一次全量 (第 412 簇后，`src/components` + `src/app` + `src/utils`) 10103 例，仅 5 例失败，逐个复验后 `top_key_view` 4 例与 `cost_tracking_settings` 1 例在 HEAD 同样失败 (既有欠账与并发假失败)，零翻译回归；逐簇只跑定向文件，全绿 |
+| **测试** | 最近一次全量 (第 413 簇后，`src/components` + `src/app` + `src/utils` + integration) 11615 例，15 例失败，逐个单跑复验后 4 例属并发时序假失败（`add_auto_router_tab.integration` 与 `edit_auto_router_modal.integration` 单跑 160 例全绿），其余为 HEAD 既有欠账，零翻译回归；逐簇只跑定向文件，全绿 |
 | **类型检查** | 非测试文件 0 错误，`npm run build` 绿色；测试文件有 883 条存量类型债 (vitest 全局类型缺失等)，不阻塞构建 |
 | **i18n 守卫** | 3 条全部通过 (`locales.test.ts` 7 + `messagesParity.test.ts` 8 + `missingKeys.test.ts` 1) |
 
@@ -68,4 +68,4 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 ### 剩余工作
 
 - **批次 24 长尾按簇推进**：`components/add_model`、`components/view_logs`、`usage/EntityUsage`、`caching`、`vector-stores`、`tag-management`、`organization`、`claude_code_plugins` 等此前最密的目录已逐簇文案清零；`mcp-servers`、`search-tools`、`agents`、`guardrails` 等目录在第 404 到 406 簇按「模块常量」「共享件 aria 模板」「caller 侧错误气泡」三类形态逐片收过，余量集中在少数组件的英文默认参数、判定账里的 provider 名与品牌 token、以及 CSV 列头与代码语料
-- **永久挂在上游名下的失败**：`cost_tracking_settings.test.tsx` 的超时 flaky 与 `LensSetup.integration.test.tsx` 的 `/2026-09-30/` 日期断言 (任何 locale 下 `toLocaleString` 都渲染英文月名)，已从汉化账摘出，不再重复排查；`tests/top_key_view.test.tsx` 的 4 例断言停在英文，与组件实际输出的中文不符，属既有欠账
+- **永久挂在上游名下的失败**：`cost_tracking_settings.test.tsx` 的超时 flaky 与 `LensSetup.integration.test.tsx` 的 `/2026-09-30/` 日期断言 (任何 locale 下 `toLocaleString` 都渲染英文月名)，已从汉化账摘出，不再重复排查；`AddModelPanel.integration.test.tsx` 的英文 "Please enter valid JSON" 断言（第 401 簇已改走 `models.addModel.invalidJson` zh 键，测试未翻面）与 `view_users/user_info_view.integration.test.tsx` 的上一区间 savings 提交断言同属既有欠账
