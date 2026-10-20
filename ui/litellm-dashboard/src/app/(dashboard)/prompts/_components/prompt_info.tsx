@@ -53,6 +53,7 @@ const PromptInfoView: React.FC<PromptInfoProps> = ({
   const [selectedVersion, setSelectedVersion] = useState<number | null>(null);
   const [loadingVersions, setLoadingVersions] = useState(false);
   const t = useTranslations("prompts");
+  const commonT = useTranslations("common");
 
   // Fetches the requested environment (or the serve-time default when omitted) plus the environments list
   const fetchPromptInfo = async (environment?: string) => {
@@ -134,7 +135,7 @@ const PromptInfoView: React.FC<PromptInfoProps> = ({
   };
 
   const copyToClipboard = async (text: string | null | undefined, key: string) => {
-    const success = await utilCopyToClipboard(text);
+    const success = await utilCopyToClipboard(text, commonT("copiedToClipboard"));
     if (success) {
       setCopiedStates((prev) => ({ ...prev, [key]: true }));
       setTimeout(() => {

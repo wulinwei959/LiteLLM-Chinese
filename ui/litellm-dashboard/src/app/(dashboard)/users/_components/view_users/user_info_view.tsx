@@ -91,6 +91,7 @@ export default function UserInfoView({
 }: UserInfoViewProps) {
   const t = useTranslations("users");
   const tDuration = useTranslations("common.budgetDuration");
+  const commonT = useTranslations("common");
   const { premiumUser, userId: signedInUserId } = useAuthorized();
   const canViewAutoRouterUsage = hasProxyWideSpendView(userRole);
   const canViewSavings = canViewAutoRouterUsage || (Boolean(userId.trim()) && userId === signedInUserId);
@@ -386,7 +387,7 @@ export default function UserInfoView({
   }
 
   const copyToClipboard = async (text: string, key: string) => {
-    const success = await utilCopyToClipboard(text);
+    const success = await utilCopyToClipboard(text, commonT("copiedToClipboard"));
     if (success) {
       setCopiedStates((prev) => ({ ...prev, [key]: true }));
       setTimeout(() => {

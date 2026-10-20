@@ -67,6 +67,7 @@ export const MCPServerView: React.FC<MCPServerViewProps> = ({
   initialTabIndex = 0,
 }) => {
   const t = useTranslations("mcpServers");
+  const commonT = useTranslations("common");
   // Open the editing Settings tab on first render when returning from the edit OAuth
   // redirect, so the "token fetched" feedback shows where the user left off (Settings=2).
   const queryClient = useQueryClient();
@@ -99,7 +100,7 @@ export const MCPServerView: React.FC<MCPServerViewProps> = ({
   };
 
   const copyToClipboard = async (text: string | null | undefined, key: string) => {
-    const success = await utilCopyToClipboard(text);
+    const success = await utilCopyToClipboard(text, commonT("copiedToClipboard"));
     if (success) {
       setCopiedStates((prev) => ({ ...prev, [key]: true }));
       setTimeout(() => {
