@@ -38,6 +38,17 @@ beforeEach(() => {
   vi.mocked(apiClient.post).mockReset();
   vi.mocked(apiClient.post).mockResolvedValue({ eligible: 1, selected: 1, executions: [] });
 });
+/**
+ * The suite stubs `toLocaleString` to a local-time string, so the rendered
+ * stamp follows the machine's timezone. Deriving the expectation the same way
+ * keeps this assertion valid outside UTC.
+ */
+const localStamp = (iso: string): string => {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+};
+
 describe("Lens setup", () => {
   it("preserves check identity and disabled state when a check is edited", async () => {
     const save = vi.fn().mockResolvedValue(undefined);
@@ -116,7 +127,7 @@ describe("Lens setup", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "运行调查" })).toBeEnabled());
     expect(screen.getByText("1 个匹配运行")).toBeInTheDocument();
     expect(screen.getByText("Research report")).toBeInTheDocument();
-    expect(screen.getByText(/2026-09-30/)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(localStamp("2026-09-30T18:00:00.000Z")))).toBeInTheDocument();
     expect(screen.getByRole("spinbutton", { name: "每月上限（美元）" })).not.toBeVisible();
     await user.click(screen.getByRole("button", { name: "运行调查" }));
     const expected = {

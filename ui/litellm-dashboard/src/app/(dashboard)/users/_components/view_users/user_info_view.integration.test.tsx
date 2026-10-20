@@ -568,7 +568,7 @@ describe("UserInfoView savings", () => {
       .mockReturnValue(nextRange.promise);
     const committedTotals: Array<string | null> = [];
     const captureNewRange = () => {
-      if (screen.queryByText("累计已节省 · Sep 1 – Sep 2 (UTC)")) {
+      if (screen.queryByText("累计已节省 · 9月1日 – 9月2日 (UTC)")) {
         committedTotals.push(screen.queryByTestId("summary-card-累计已记录节省")?.textContent ?? null);
       }
     };

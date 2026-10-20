@@ -367,7 +367,7 @@ describe("AddModelPanel validation gates", () => {
     await fillRequired();
     await openAdvanced();
     await user.type(screen.getByLabelText("LiteLLM 参数"), "rpm: 7");
-    await submitExpectingRejection("Please enter valid JSON");
+    await submitExpectingRejection("请输入有效的 JSON");
 
     expect(modelCreateCall).not.toHaveBeenCalled();
   });

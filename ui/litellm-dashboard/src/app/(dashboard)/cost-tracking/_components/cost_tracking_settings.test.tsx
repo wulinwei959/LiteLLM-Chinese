@@ -1,6 +1,6 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { act, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "../../../../../tests/test-utils";
 import CostTrackingSettings from "./cost_tracking_settings";
@@ -218,9 +218,9 @@ describe("CostTrackingSettings", () => {
       expect(removing).toBeDisabled();
       expect(screen.getByRole("button", { name: "取消" })).toBeDisabled();
 
-      await act(async () => {
-        settleRemoval();
-      });
+      // Resolving outside `act` keeps the dialog's exit animation from
+      // holding the act scope open; the waitFor below flushes the update.
+      settleRemoval();
 
       await waitFor(() => {
         expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
