@@ -31,6 +31,7 @@ import { CacheHealthTab } from "./cache_health";
 import CacheSettings from "./cache_settings";
 import CoordinationRedisSettings from "./coordination_redis_settings";
 import { ErrorDrilldownCard } from "./ErrorDrilldown";
+import { formatNumber } from "@/lib/i18n/format";
 
 const UNKNOWN_CALL_TYPE = "Unknown";
 
@@ -54,13 +55,11 @@ const resolveDrilldownCallType = (selected: string | null, groups: readonly Cach
     : null;
 
 function valueFormatterNumbers(number: number) {
-  const formatter = new Intl.NumberFormat("en-US", {
+  return formatNumber(number, {
     maximumFractionDigits: 0,
     notation: "compact",
     compactDisplay: "short",
   });
-
-  return formatter.format(number);
 }
 
 interface CachePageProps {

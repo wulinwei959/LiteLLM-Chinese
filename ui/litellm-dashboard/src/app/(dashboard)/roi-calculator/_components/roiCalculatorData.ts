@@ -1,6 +1,6 @@
 import type { components } from "@/lib/http/schema";
 import type { RoiCalculatorTranslator } from "@/lib/i18n/translators";
-import { formatCurrency, formatDate } from "@/lib/i18n/format";
+import { formatCurrency, formatDate, formatNumber as formatNumberValue } from "@/lib/i18n/format";
 
 export type ROISummary = components["schemas"]["ROISummaryResponse"];
 export type ROIPull = components["schemas"]["ROIPullResponse"];
@@ -32,7 +32,7 @@ export const formatMoney = (value: number | null | undefined): string => {
 };
 
 export const formatNumber = (value: number | null | undefined): string =>
-  value == null ? "—" : new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(value);
+  value == null ? "—" : formatNumberValue(value, { maximumFractionDigits: 1 });
 
 export const formatSyncedAt = (value: string): string => {
   const timestamp = Date.parse(value);

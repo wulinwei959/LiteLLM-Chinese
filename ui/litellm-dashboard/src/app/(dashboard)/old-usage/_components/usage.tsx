@@ -51,6 +51,7 @@ import TopKeyView from "@/components/UsagePage/components/EntityUsage/TopKeyView
 import { MoneyCell } from "@/components/shared/table_cells";
 import { hasCapability } from "@/utils/capabilities";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
+import { formatNumber } from "@/lib/i18n/format";
 
 interface UsagePageProps {
   accessToken: string | null;
@@ -152,13 +153,11 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
   ];
 
   function valueFormatterNumbers(number: number) {
-    const formatter = new Intl.NumberFormat("en-US", {
+    return formatNumber(number, {
       maximumFractionDigits: 0,
       notation: "compact",
       compactDisplay: "short",
     });
-
-    return formatter.format(number);
   }
 
   const fetchProxySettings = async () => {

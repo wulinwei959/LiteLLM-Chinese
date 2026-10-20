@@ -269,12 +269,13 @@ describe("CacheDashboard cache analytics charts", () => {
     renderDashboard();
     const { requestsCard, tokensCard } = await findChartCards();
 
+    // The compact notation is locale-aware: zh abbreviates at 万, not at K.
     const compactTicks = (card: HTMLElement) =>
       within(card)
-        .getAllByText(/^\d+(\.\d+)?K$/)
+        .getAllByText(/^(?:\d+(?:\.\d+)?[K万]|[\d,]+)$/)
         .map((tick) => tick.textContent);
 
     expect(compactTicks(requestsCard).length).toBeGreaterThan(0);
-    expect(compactTicks(tokensCard)).toContain("60K");
+    expect(compactTicks(tokensCard)).toContain("6万");
   });
 });
