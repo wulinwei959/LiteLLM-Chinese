@@ -7489,6 +7489,8 @@
       "accessTokenRequired": "Access token is required",
       "fillAllVariables": "Please fill in all template variables",
       "requestCancelled": "Request cancelled",
+      "errorPrefix": "Error: {message}",
+      "noResponseBody": "No response body",
       "historyCleared": "Chat history cleared."
     },
     "form": {
@@ -12605,6 +12607,7 @@
     "createKeyForAgentFailed": "Failed to create key for agent",
     "updateGuardrailFailed": "Failed to update guardrail",
     "validateBlockedWordsFileFailed": "Failed to validate blocked words file",
+    "noResponseBody": "No response body",
     "performDryRunFailed": "Failed to perform dry run",
     "exportCloudZeroDataFailed": "Failed to export data",
     "createCloudZeroIntegrationFailed": "Failed to create CloudZero integration",

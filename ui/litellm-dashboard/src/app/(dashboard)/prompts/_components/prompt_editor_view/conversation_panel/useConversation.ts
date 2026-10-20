@@ -105,7 +105,7 @@ export const useConversation = (prompt: any, accessToken: string | null, t: Prom
       }
 
       if (!response.body) {
-        throw new Error("No response body");
+        throw new Error(t("conversation.noResponseBody"));
       }
 
       const reader = response.body.getReader();
@@ -181,11 +181,12 @@ export const useConversation = (prompt: any, accessToken: string | null, t: Prom
       } else {
         console.error("Error testing prompt:", error);
         setMessages((prev) => {
+          const errorContent = t("conversation.errorPrefix", { message: error.message });
           const lastMsg = prev[prev.length - 1];
           if (lastMsg && lastMsg.role === "assistant" && lastMsg.content === "") {
-            return [...prev.slice(0, -1), { role: "assistant", content: `Error: ${error.message}` }];
+            return [...prev.slice(0, -1), { role: "assistant", content: errorContent }];
           }
-          return [...prev, { role: "assistant", content: `Error: ${error.message}` }];
+          return [...prev, { role: "assistant", content: errorContent }];
         });
       }
     } finally {

@@ -7488,6 +7488,8 @@
       "accessTokenRequired": "需要访问令牌",
       "fillAllVariables": "请填写所有模板变量",
       "requestCancelled": "请求已取消",
+      "errorPrefix": "错误：{message}",
+      "noResponseBody": "未收到响应体",
       "historyCleared": "聊天历史已清空。"
     },
     "form": {
@@ -12600,6 +12602,7 @@
     "createKeyForAgentFailed": "为智能体创建密钥失败",
     "updateGuardrailFailed": "更新护栏失败",
     "validateBlockedWordsFileFailed": "校验屏蔽词文件失败",
+    "noResponseBody": "未收到响应体",
     "performDryRunFailed": "试运行失败",
     "exportCloudZeroDataFailed": "导出数据失败",
     "createCloudZeroIntegrationFailed": "创建 CloudZero 集成失败",

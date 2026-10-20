@@ -4066,7 +4066,7 @@ export const enrichPolicyTemplateStream = async (
   }
 
   const reader = response.body?.getReader();
-  if (!reader) throw new Error("No response body");
+  if (!reader) throw new Error(toastMessage("noResponseBody"));
 
   const decoder = new TextDecoder();
   let buffer = "";
@@ -4139,7 +4139,7 @@ export const usageAiChatStream = async (
   }
 
   const reader = response.body?.getReader();
-  if (!reader) throw new Error("No response body");
+  if (!reader) throw new Error(toastMessage("noResponseBody"));
 
   const decoder = new TextDecoder();
   let buffer = "";
