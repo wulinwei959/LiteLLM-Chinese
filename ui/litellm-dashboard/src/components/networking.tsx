@@ -2786,7 +2786,7 @@ export const teamMemberAddCall = async (accessToken: string, teamId: string, for
         console.warn("Failed to parse error body as JSON:", errorText);
       }
 
-      const rawMessage = parsedError?.detail?.error || "Failed to add team member";
+      const rawMessage = parsedError?.detail?.error || toastMessage("addTeamMemberFailed");
       const err = new Error(rawMessage);
       (err as any).raw = parsedError;
       throw err;
@@ -2844,7 +2844,7 @@ export const teamBulkMemberAddCall = async (
         console.warn("Failed to parse error body as JSON:", errorText);
       }
 
-      const rawMessage = parsedError?.detail?.error || "Failed to bulk add team members";
+      const rawMessage = parsedError?.detail?.error || toastMessage("bulkAddTeamMembersFailed");
       const err = new Error(rawMessage);
       (err as any).raw = parsedError;
       throw err;
@@ -2918,7 +2918,7 @@ export const teamMemberUpdateCall = async (
         console.warn("Failed to parse error body as JSON:", errorText);
       }
 
-      const rawMessage = parsedError?.detail?.error || "Failed to add team member";
+      const rawMessage = parsedError?.detail?.error || toastMessage("addTeamMemberFailed");
       const err = new Error(rawMessage);
       (err as any).raw = parsedError;
       throw err;
@@ -5168,7 +5168,7 @@ export const listMCPTools = async (
     // to inspect `result.error` / `result.message`. Attach `status` so
     // callers that need to react to auth failures (e.g. the useQuery in
     // mcp_tools.tsx) can still detect 401s from the returned object.
-    const errorMessage = (data && (data.message || data.error)) || "Failed to fetch MCP tools";
+    const errorMessage = (data && (data.message || data.error)) || toastMessage("fetchMCPToolsFailed");
     return {
       tools: [],
       error: (data && data.error) || `http_${response.status}`,
@@ -6715,7 +6715,7 @@ export const cacheTemporaryMcpServer = async (accessToken: string, payload: Reco
 
   const data = await response.json();
   if (!response.ok) {
-    const errorMessage = deriveErrorMessage(data) || data?.error || "Failed to cache MCP server";
+    const errorMessage = deriveErrorMessage(data) || data?.error || toastMessage("cacheMCPServerFailed");
     throw new Error(errorMessage);
   }
   return data;
@@ -6750,7 +6750,7 @@ export const registerMcpOAuthClient = async (
 
   const data = await response.json();
   if (!response.ok) {
-    const errorMessage = deriveErrorMessage(data) || data?.detail || "Failed to register OAuth client";
+    const errorMessage = deriveErrorMessage(data) || data?.detail || toastMessage("registerOAuthClientFailed");
     throw new Error(errorMessage);
   }
   return data;
@@ -7749,7 +7749,7 @@ export const storeMCPOAuthUserCredential = async (
         : detail && typeof (detail as Record<string, unknown>).error === "string"
           ? ((detail as Record<string, unknown>).error as string)
           : undefined;
-    throw new Error(detailMsg || "Failed to store OAuth credential");
+    throw new Error(detailMsg || toastMessage("storeOAuthCredentialFailed"));
   }
   return response.json();
 };
@@ -7780,7 +7780,7 @@ export const deleteMCPOAuthUserCredential = async (
         : detail && typeof (detail as Record<string, unknown>).error === "string"
           ? ((detail as Record<string, unknown>).error as string)
           : undefined;
-    throw new Error(detailMsg || "Failed to revoke OAuth credential");
+    throw new Error(detailMsg || toastMessage("revokeOAuthCredentialFailed"));
   }
   return response.json();
 };

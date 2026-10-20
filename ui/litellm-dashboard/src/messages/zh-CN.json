@@ -12565,6 +12565,13 @@
     "deleteVectorStoreFailed": "删除向量存储失败",
     "getVectorStoreInfoFailed": "获取向量存储信息失败",
     "updateVectorStoreFailed": "更新向量存储失败",
-    "ingestDocumentFailed": "导入文档失败"
+    "ingestDocumentFailed": "导入文档失败",
+    "addTeamMemberFailed": "添加团队成员失败",
+    "bulkAddTeamMembersFailed": "批量添加团队成员失败",
+    "fetchMCPToolsFailed": "获取 MCP 工具失败",
+    "cacheMCPServerFailed": "缓存 MCP 服务器失败",
+    "registerOAuthClientFailed": "注册 OAuth 客户端失败",
+    "storeOAuthCredentialFailed": "存储 OAuth 凭据失败",
+    "revokeOAuthCredentialFailed": "撤销 OAuth 凭据失败"
   }
 }

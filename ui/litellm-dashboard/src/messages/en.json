@@ -12570,6 +12570,13 @@
     "deleteVectorStoreFailed": "Failed to delete vector store",
     "getVectorStoreInfoFailed": "Failed to get vector store info",
     "updateVectorStoreFailed": "Failed to update vector store",
-    "ingestDocumentFailed": "Failed to ingest document"
+    "ingestDocumentFailed": "Failed to ingest document",
+    "addTeamMemberFailed": "Failed to add team member",
+    "bulkAddTeamMembersFailed": "Failed to bulk add team members",
+    "fetchMCPToolsFailed": "Failed to fetch MCP tools",
+    "cacheMCPServerFailed": "Failed to cache MCP server",
+    "registerOAuthClientFailed": "Failed to register OAuth client",
+    "storeOAuthCredentialFailed": "Failed to store OAuth credential",
+    "revokeOAuthCredentialFailed": "Failed to revoke OAuth credential"
   }
 }
