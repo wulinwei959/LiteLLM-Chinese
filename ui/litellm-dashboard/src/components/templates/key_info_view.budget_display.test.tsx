@@ -424,7 +424,7 @@ describe("KeyInfoView budget reset visibility", () => {
       />,
     );
     await waitFor(() => {
-      expect(screen.getByText(/^Jul 22, 2026/)).toBeInTheDocument();
+      expect(screen.getByText(/^2026年7月22日/)).toBeInTheDocument();
     });
   });
 
@@ -461,7 +461,7 @@ describe("KeyInfoView budget reset visibility", () => {
     await waitFor(() => {
       expect(screen.getByText("预算重置")).toBeInTheDocument();
     });
-    expect(screen.getByText(/每 1d 重置，下次 Jul 22, 2026/)).toBeInTheDocument();
+    expect(screen.getByText(/每 1d 重置，下次 2026年7月22日/)).toBeInTheDocument();
   });
 
   it("shows 'Never' in the Settings tab when no reset is scheduled", async () => {

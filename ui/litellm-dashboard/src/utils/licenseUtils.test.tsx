@@ -64,6 +64,15 @@ describe("formatExpiryDate", () => {
     expect(formatExpiryDate("2026-07-31")).toBe("Jul 31, 2026");
   });
 
+  it("follows the document locale", () => {
+    document.documentElement.lang = "zh-CN";
+    try {
+      expect(formatExpiryDate("2026-07-31")).toBe("2026年7月31日");
+    } finally {
+      document.documentElement.lang = "en";
+    }
+  });
+
   it("returns the input unchanged when unparseable", () => {
     expect(formatExpiryDate("bogus")).toBe("bogus");
   });

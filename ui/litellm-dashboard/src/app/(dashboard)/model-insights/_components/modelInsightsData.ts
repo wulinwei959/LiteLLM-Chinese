@@ -1,3 +1,5 @@
+import { formatNumber } from "@/lib/i18n/format";
+
 export type Metric = "requests" | "spend" | "tokens";
 
 export type ModelMetric = {
@@ -52,12 +54,13 @@ export const formatMetric = (value: number, metric: Metric) => {
     const options: Intl.NumberFormatOptions = {
       style: "currency",
       currency: "USD",
+      currencyDisplay: "narrowSymbol",
       notation: compact ? "compact" : "standard",
       maximumFractionDigits: compact ? 1 : 2,
     };
-    return new Intl.NumberFormat("en-US", options).format(value);
+    return formatNumber(value, options);
   }
-  return new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+  return formatNumber(value, { notation: "compact", maximumFractionDigits: 1 });
 };
 
 const toDay = (date: string) => Date.parse(`${date}T00:00:00Z`);

@@ -180,7 +180,7 @@ describe("UsageTab", () => {
     // line rises from zero rather than floating; the daily running totals follow.
     const series = readSeries(screen.getByTestId("area-chart"));
     expect(series).toHaveLength(3);
-    expect(series[0]).toMatchObject({ date: "Jul 1", Compression: 0, "Prompt caching": 0 });
+    expect(series[0]).toMatchObject({ date: "7月1日", Compression: 0, "Prompt caching": 0 });
     expect(series[1]).toMatchObject({ Compression: 0.04, "Prompt caching": 0.006 });
     expect(series[2].Compression).toBeCloseTo(0.14, 5);
     expect(series[2]["Prompt caching"]).toBeCloseTo(0.016, 5);
@@ -197,8 +197,8 @@ describe("UsageTab", () => {
 
     const series = readSeries(screen.getByTestId("area-chart"));
     expect(series).toHaveLength(2);
-    expect(series[0]).toMatchObject({ date: "Jul 24", Compression: 0, "Prompt caching": 0 });
-    expect(series[1]).toMatchObject({ date: "Jul 24", Compression: 0.2, "Prompt caching": 0.05 });
+    expect(series[0]).toMatchObject({ date: "7月24日", Compression: 0, "Prompt caching": 0 });
+    expect(series[1]).toMatchObject({ date: "7月24日", Compression: 0.2, "Prompt caching": 0.05 });
   });
 
   it("plots the daily series oldest first even though the rollup arrives newest first", async () => {
@@ -213,14 +213,14 @@ describe("UsageTab", () => {
 
     // The $0 anchor leads, then the days climb oldest to newest.
     const cumulative = readSeries(screen.getByTestId("area-chart"));
-    expect(cumulative.map((p: { date: string }) => p.date)).toEqual(["Jul 1", "Jul 12", "Jul 13"]);
+    expect(cumulative.map((p: { date: string }) => p.date)).toEqual(["7月1日", "7月12日", "7月13日"]);
     expect(cumulative[1]["Prompt caching"]).toBeCloseTo(0.04, 5);
     expect(cumulative[2]["Prompt caching"]).toBeCloseTo(0.14, 5);
     expect(cumulative[2]["Prompt caching"]).toBeGreaterThan(cumulative[1]["Prompt caching"]);
 
     await userEvent.click(screen.getByRole("tab", { name: "每日" }));
     const perDay = readSeries(screen.getByTestId("bar-chart"));
-    expect(perDay.map((p: { date: string }) => p.date)).toEqual(["Jul 12", "Jul 13"]);
+    expect(perDay.map((p: { date: string }) => p.date)).toEqual(["7月12日", "7月13日"]);
   });
 
   it("draws bars of the raw per-interval readings on the other tab", async () => {

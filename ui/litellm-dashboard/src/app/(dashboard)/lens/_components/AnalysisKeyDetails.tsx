@@ -7,6 +7,7 @@ import { apiClient } from "@/components/networking";
 import { Button } from "@/components/ui/button";
 import type { LensTranslator } from "@/lib/i18n/translators";
 import { runTime } from "./lensData";
+import { formatCurrency } from "@/lib/i18n/format";
 
 const keyInfoFields = {
   key_alias: z.string().nullable().optional(),
@@ -30,11 +31,11 @@ function budgetLabel(amount: number | null, duration: string | null | undefined,
     "7d": t("periodWeek"),
     "1h": t("periodHour"),
   };
-  const dollars = new Intl.NumberFormat("en-US", {
-    style: "currency",
+  const dollars = formatCurrency(amount, {
     currency: "USD",
+    currencyDisplay: "narrowSymbol",
     maximumFractionDigits: 2,
-  }).format(amount);
+  });
   return duration
     ? t("budgetPerPeriod", { amount: dollars, period: periods[duration] ?? duration })
     : t("budgetTotal", { amount: dollars });

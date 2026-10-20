@@ -1,3 +1,5 @@
+import { formatDate } from "@/lib/i18n/format";
+
 import type { SidebarUsageCardTranslator } from "@/lib/i18n/translators";
 
 export type LicenseExpiryTier = "none" | "warning" | "critical" | "expired";
@@ -49,7 +51,7 @@ export const formatExpiryDate = (expirationDate: string): string => {
   if (Number.isNaN(date.getTime())) {
     return expirationDate;
   }
-  return date.toLocaleDateString("en-US", EXPIRY_DATE_FORMAT);
+  return formatDate(date, EXPIRY_DATE_FORMAT);
 };
 
 export const formatExpirationStatus = (

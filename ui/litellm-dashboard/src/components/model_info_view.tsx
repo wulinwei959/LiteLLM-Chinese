@@ -49,6 +49,7 @@ import ModelInfoEditForm, { type ModelEditFormValues, type TouchedPricingField }
 import { Tag } from "./tag_management/types";
 import { getDisplayModelName } from "./view_model/model_name_display";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { formatDate } from "@/lib/i18n/format";
 
 interface ModelInfoViewProps {
   modelId: string;
@@ -692,7 +693,7 @@ export default function ModelInfoView({
                 </svg>
                 {t("createdAt")}{" "}
                 {modelData.model_info.created_at
-                  ? new Date(modelData.model_info.created_at).toLocaleDateString("en-US", {
+                  ? formatDate(new Date(modelData.model_info.created_at), {
                       month: "short",
                       day: "numeric",
                       year: "numeric",

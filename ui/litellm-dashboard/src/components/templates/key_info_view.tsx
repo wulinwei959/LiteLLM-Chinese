@@ -51,6 +51,7 @@ import { parseErrorMessage } from "../shared/errorUtils";
 import { InheritedBudgetHint, inheritedBudgetGates, keyOwnerBudgetSource } from "../shared/InheritedBudgetHint";
 import { KeyEditView } from "./key_edit_view";
 import { isTeamAdminEditingMemberKey, teamAdminMemberKeyPayload } from "./teamAdminMemberKeyPayload";
+import { formatDate } from "@/lib/i18n/format";
 
 export function needsLifetimeSpendBackfill(spend: number, totalSpend: number | null | undefined): boolean {
   return (totalSpend ?? 0) < spend;
@@ -455,12 +456,12 @@ export default function KeyInfoView({
   // Update the formatTimestamp function to use the desired date format
   const formatTimestamp = (timestamp: string | Date) => {
     const date = new Date(timestamp);
-    const dateStr = date.toLocaleDateString("en-US", {
+    const dateStr = formatDate(date, {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-    const timeStr = date.toLocaleTimeString("en-US", {
+    const timeStr = formatDate(date, {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,

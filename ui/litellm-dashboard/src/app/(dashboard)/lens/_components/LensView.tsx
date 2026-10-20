@@ -60,9 +60,10 @@ import {
   type Settings,
   type Job,
 } from "./lensData";
+import { formatCurrency } from "@/lib/i18n/format";
 
 const money = (n: number) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 3 }).format(n);
+  formatCurrency(n, { currency: "USD", currencyDisplay: "narrowSymbol", maximumFractionDigits: 3 });
 const when = (value: string | null | undefined, t: LensTranslator) => (value ? runTime(value) : t("notYet"));
 
 const sourceLabels = { both: "tracesAndRequests", requests: "llmRequests", traces: "agentTraces" } as const;

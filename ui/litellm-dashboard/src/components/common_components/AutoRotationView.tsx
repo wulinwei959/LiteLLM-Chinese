@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import React from "react";
 import { StatusBadge } from "@/components/shared/table_cells";
 import { RefreshIcon, ClockIcon } from "@heroicons/react/outline";
+import { formatDate } from "@/lib/i18n/format";
 
 interface AutoRotationViewProps {
   autoRotate?: boolean;
@@ -27,12 +28,12 @@ const AutoRotationView: React.FC<AutoRotationViewProps> = ({
 
   const formatTimestamp = (timestamp: string | Date) => {
     const date = new Date(timestamp);
-    const dateStr = date.toLocaleDateString("en-US", {
+    const dateStr = formatDate(date, {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-    const timeStr = date.toLocaleTimeString("en-US", {
+    const timeStr = formatDate(date, {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,

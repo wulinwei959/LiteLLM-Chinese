@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { formatDate } from "@/lib/i18n/format";
 
 import { formatCost } from "./AgentTracesTable";
 import { errorHeadline } from "./DetailContent";
@@ -39,10 +40,8 @@ const ABSOLUTE_TIME_OPTIONS: Intl.DateTimeFormatOptions = {
   second: "2-digit",
   timeZoneName: "short",
 };
-const ABSOLUTE_TIME = new Intl.DateTimeFormat("en-US", ABSOLUTE_TIME_OPTIONS);
-
 export const absoluteTime = (traceStartMs: number, offsetMs: number): string =>
-  ABSOLUTE_TIME.format(new Date(traceStartMs + offsetMs));
+  formatDate(new Date(traceStartMs + offsetMs), ABSOLUTE_TIME_OPTIONS);
 
 export interface HoverFacts {
   name: string;

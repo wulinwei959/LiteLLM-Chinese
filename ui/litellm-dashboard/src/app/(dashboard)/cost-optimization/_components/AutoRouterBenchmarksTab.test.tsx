@@ -440,7 +440,7 @@ describe("AutoRouterBenchmarksTab", () => {
     const { dateValue, onDateChange } = renderTab();
 
     expect(vi.mocked(useAutoRouterBenchmarks)).toHaveBeenCalledWith("sk-test", dateValue, undefined, undefined);
-    expect(screen.getByText("Jul 6 – Aug 5 (UTC)")).toBeInTheDocument();
+    expect(screen.getByText("7月6日 – 8月5日 (UTC)")).toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId("date-picker"));
     expect(onDateChange).toHaveBeenCalledWith({ from: new Date(2026, 7, 1), to: new Date(2026, 7, 5) });

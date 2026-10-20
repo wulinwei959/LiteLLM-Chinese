@@ -223,7 +223,7 @@ describe("BlogDropdown", () => {
         await openDropdown();
 
         await waitFor(() => {
-          expect(screen.getByText("Feb 15, 2026")).toBeInTheDocument();
+          expect(screen.getByText("2026年2月15日")).toBeInTheDocument();
         });
       });
 

@@ -78,7 +78,7 @@ describe("EndpointUsageLineChart", () => {
     const tickLabels = Array.from(container.querySelectorAll(".recharts-xAxis-tick-labels text")).map(
       (tick) => tick.textContent,
     );
-    expect(tickLabels).toEqual(["Jun 1", "Jun 2", "Jun 3"]);
+    expect(tickLabels).toEqual(["6月1日", "6月2日", "6月3日"]);
   });
 
   it("formats y axis ticks with toLocaleString", () => {

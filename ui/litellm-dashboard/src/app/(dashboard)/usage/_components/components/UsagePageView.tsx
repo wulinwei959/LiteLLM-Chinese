@@ -67,6 +67,7 @@ import TopKeyView, { type TopKeyItem } from "@/components/UsagePage/components/E
 import { getGlobalTopKeys } from "./EntityUsage/entityUsageAggregations";
 import UsageAIChatPanel from "./UsageAIChatPanel";
 import { UsageOption, UsageViewSelect } from "./UsageViewSelect/UsageViewSelect";
+import { formatDate } from "@/lib/i18n/format";
 
 interface UsagePageProps {
   teams: Team[];
@@ -517,14 +518,14 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                           {t("projectSpend")}{" "}
                           {dateValue.from && dateValue.to && (
                             <>
-                              {dateValue.from.toLocaleDateString("en-US", {
+                              {formatDate(dateValue.from, {
                                 month: "short",
                                 day: "numeric",
                                 year:
                                   dateValue.from.getFullYear() !== dateValue.to.getFullYear() ? "numeric" : undefined,
                               })}
                               {" - "}
-                              {dateValue.to.toLocaleDateString("en-US", {
+                              {formatDate(dateValue.to, {
                                 month: "short",
                                 day: "numeric",
                                 year: "numeric",

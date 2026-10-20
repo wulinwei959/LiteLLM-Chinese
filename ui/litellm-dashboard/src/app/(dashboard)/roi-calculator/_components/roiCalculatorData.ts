@@ -1,5 +1,6 @@
 import type { components } from "@/lib/http/schema";
 import type { RoiCalculatorTranslator } from "@/lib/i18n/translators";
+import { formatCurrency, formatDate } from "@/lib/i18n/format";
 
 export type ROISummary = components["schemas"]["ROISummaryResponse"];
 export type ROIPull = components["schemas"]["ROIPullResponse"];
@@ -27,7 +28,7 @@ const SYNCED_AT_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
 export const formatMoney = (value: number | null | undefined): string => {
   if (value == null) return "—";
   if (value > 0 && value < 0.01) return "<$0.01";
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value);
+  return formatCurrency(value, { currency: "USD", currencyDisplay: "narrowSymbol", maximumFractionDigits: 2 });
 };
 
 export const formatNumber = (value: number | null | undefined): string =>
@@ -36,7 +37,7 @@ export const formatNumber = (value: number | null | undefined): string =>
 export const formatSyncedAt = (value: string): string => {
   const timestamp = Date.parse(value);
   if (!Number.isFinite(timestamp)) return value;
-  return new Intl.DateTimeFormat("en-US", SYNCED_AT_FORMAT_OPTIONS).format(timestamp);
+  return formatDate(timestamp, SYNCED_AT_FORMAT_OPTIONS);
 };
 
 export const effortNote = (t: RoiCalculatorTranslator, basis: string | null | undefined): string =>

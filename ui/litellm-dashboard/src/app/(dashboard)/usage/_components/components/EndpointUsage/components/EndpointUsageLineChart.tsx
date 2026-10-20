@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { LineChart, type ChartColor } from "@/components/shared/charts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DailyData } from "@/components/UsagePage/types";
+import { formatDate } from "@/lib/i18n/format";
 
 interface EndpointUsageLineChartProps {
   dailyData?: { results: DailyData[] };
@@ -24,7 +25,7 @@ function transformDailyDataToChart(dailyData: DailyData[]): Array<Record<string,
 
   dailyData.forEach((day) => {
     const date = new Date(day.date);
-    const dateStr = date.toLocaleDateString("en-US", {
+    const dateStr = formatDate(date, {
       month: "short",
       day: "numeric",
     });
