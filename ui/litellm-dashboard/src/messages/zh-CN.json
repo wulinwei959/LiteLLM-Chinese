@@ -5239,6 +5239,8 @@
       "spendPerTag": "各标签消费",
       "selectTags": "选择标签",
       "noTagsFound": "未找到标签",
+      "allTags": "全部标签",
+      "enterpriseOnlyFeature": "✨ {tag}（仅企业版功能）",
       "getStartedPerTag": "通过追踪每个标签的费用开始使用",
       "here": "此处"
     },

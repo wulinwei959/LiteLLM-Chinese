@@ -141,12 +141,12 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
     .map((key: any) => ({ token: String(key["token"]), alias: String(key["key_alias"]) }));
 
   const tagOptions: TagOption[] = [
-    { value: ALL_TAGS, label: "All Tags", disabled: false },
+    { value: ALL_TAGS, label: t("allTags"), disabled: false },
     ...allTagNames
       .filter((tag) => tag !== ALL_TAGS)
       .map((tag) => ({
         value: tag,
-        label: premiumUser ? tag : `✨ ${tag} (Enterprise only Feature)`,
+        label: premiumUser ? tag : t("enterpriseOnlyFeature", { tag }),
         disabled: !premiumUser,
       })),
   ];

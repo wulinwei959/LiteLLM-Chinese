@@ -5240,6 +5240,8 @@
       "spendPerTag": "Spend Per Tag",
       "selectTags": "Select tags",
       "noTagsFound": "No tags found",
+      "allTags": "All Tags",
+      "enterpriseOnlyFeature": "✨ {tag} (Enterprise only Feature)",
       "getStartedPerTag": "Get Started by Tracking cost per tag",
       "here": "here"
     },
