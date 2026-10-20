@@ -67,6 +67,18 @@ LiteAdmin 这类由模型调工具的界面，文案分两层。喂给模型的�
 
 动态键 `missingKeys` 扫不到，要另加一份运行期同步守卫：用桩 context 构造工具表，断言工具 `name` 集合与目录子对象的键集合相等。少键 `tsc` 会拦（union 的每个成员都得在 `en.json` 里存在），多出来的孤儿键只有这道测试拦得住。
 
+### 第四步之二：日期与数字的格式化
+
+格式化不是文案，不进目录，走 `src/lib/i18n/format.ts`
+
+看到 `toLocaleDateString("en-US")`、`toLocaleString("en-US")`、`Intl.DateTimeFormat("en-US")`、`Intl.NumberFormat("en-US")` 这类硬编码，一律换成 `formatDate` / `formatTime` / `formatNumber` / `formatCurrency`
+
+三处要注意。一是模块级的 `Intl.DateTimeFormat` 常量要改成按调用时格式化，locale 切换后不重算就会留下旧语言的结果。二是货币要带 `currencyDisplay: "narrowSymbol"`，否则中文下出 `US$1,234.56`，与应用里手写 `$${...}` 的风格不一致。三是 `Intl.DateTimeFormat.format` 对无效日期抛 `RangeError`，`toLocaleDateString` 不抛；`formatDate` 已经判了 `NaN` 并返回 `"Invalid Date"`，但自定义格式化时别绕过它
+
+纯数字分组在两种 locale 下输出逐字节相同（`1,234,567.89` 两边一致），所以像 `dataUtils.formatNumberWithCommas` 这种被上百个调用点共享的函数可以不动，改它只有风险没有可见收益
+
+改完要翻面断言。中文下日期从 `Aug 7, 2026` 变 `2026年8月7日`、时间从 `08:00 PM` 变 `下午8:00`、短日期从 `Jul 1` 变 `7月1日`。断言要跟着改，不要为了让测试绿而把格式化改回硬编码
+
 ### 第五步：改测试
 
 组件引入 `useTranslations` 后，原来用普通 `render` 的测试会抛 "context from `NextIntlClientProvider` was not found"，后面的断言全都不执行
@@ -91,10 +103,13 @@ LiteAdmin 这类由模型调工具的界面，文案分两层。喂给模型的�
 npx vitest run <本批改动的测试文件> src/lib/i18n/messagesParity.test.ts src/lib/i18n/missingKeys.test.ts
 npx tsc --noEmit
 npx eslint <改动的文件>
+npm run check:dead-keys
 npm run build
 ```
 
 `npm run build` 的 TypeScript 阶段比 `npx tsc --noEmit` 更严，两个都要跑
+
+`npm run check:dead-keys` 是死键门禁。改了 `src/messages/*.json` 或引用的代码后跑，它会发现「目录里有、但代码里没人用」的键。门禁按基线棘轮：新增死键即失败并列出键名，基线里的条目已解决则提示刷新（`npm run check:dead-keys:write`）。误报时先看判定器是不是漏了某种调用形态，别直接改基线把误报吞掉
 
 eslint 的路径形式在 `(dashboard)` 这类含括号的路径目录下会低报（疑似 flat config 的 glob 匹配撞上括号）。路径形式与 `npx eslint --stdin --stdin-filename <路径> < 文件` 的结果不一致时，以 stdin 形式为准，并把 HEAD 内容与当前内容各测一遍再对比，别把工具的低报当成没有告警
 

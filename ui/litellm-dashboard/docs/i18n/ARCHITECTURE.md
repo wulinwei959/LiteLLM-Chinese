@@ -10,20 +10,27 @@
 
 ## 文件职责
 
-| 文件                                          | 职责                                                                                   |
-| --------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `src/lib/i18n/locales.ts`                     | 纯函数层：支持的语言常量、类型守卫、语言标签归一、初始语言决策                          |
-| `src/contexts/LocaleContext.tsx`              | 运行时层：读 `localStorage`、订阅变更、挂 `NextIntlClientProvider`、暴露 `useUiLocale`  |
-| `src/components/shared/LanguageSwitcher.tsx`  | 唯一的选择器 UI，挂在 `UserDropdown` 与 `SidebarAccountMenu` 两处                       |
-| `src/messages/en.json`                        | 英语目录，同时是类型的真身（见"类型增强"）                                              |
-| `src/messages/zh-CN.json`                     | 中文目录，键树必须与 `en.json` 逐条一致                                                 |
-| `src/lib/i18n/next-intl.d.ts`                 | 三行模块增强，把 `Messages` 收敛成 `en.json` 的形状                                     |
-| `src/lib/i18n/translators.ts`                 | 每个命名空间一个具体翻译器类型，供 props 与函数参数使用                                  |
-| `src/lib/i18n/messagesParity.test.ts`         | 守卫：两侧键树一致、占位符一致、ICU 语法合法                                             |
-| `src/lib/i18n/missingKeys.test.ts`            | 守卫：代码里 `t("x")` 引用的键在 `en.json` 里真的存在                                    |
-| `src/lib/i18n/locales.test.ts`                | 守卫：语言解析与回退规则                                                                |
-| `tests/test-utils.tsx`                        | 测试侧的 `renderWithProviders`，已包好 `LocaleProvider`                                 |
-| `tests/i18nStub.ts`                           | 测试侧的 `enMessages`，给拿不到 React 上下文的纯函数查 `en.json`                        |
+| 文件                                         | 职责                                                                                   |
+| -------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `src/lib/i18n/locales.ts`                    | 纯函数层：支持的语言常量、类型守卫、语言标签归一、初始语言决策                         |
+| `src/contexts/LocaleContext.tsx`             | 运行时层：读 `localStorage`、订阅变更、挂 `NextIntlClientProvider`、暴露 `useUiLocale` |
+| `src/components/shared/LanguageSwitcher.tsx` | 唯一的选择器 UI，挂在 `UserDropdown` 与 `SidebarAccountMenu` 两处                      |
+| `src/lib/i18n/format.ts`                     | 格式化层：按当前 UI locale 格式化日期、时间、数字与货币                                |
+| `src/messages/en.json`                       | 英语目录，同时是类型的真身（见"类型增强"）                                             |
+| `src/messages/zh-CN.json`                    | 中文目录，键树必须与 `en.json` 逐条一致                                                |
+| `src/lib/i18n/next-intl.d.ts`                | 三行模块增强，把 `Messages` 收敛成 `en.json` 的形状                                    |
+| `src/lib/i18n/translators.ts`                | 每个命名空间一个具体翻译器类型，供 props 与函数参数使用                                |
+| `src/lib/i18n/messagesParity.test.ts`        | 守卫：两侧键树一致、占位符一致、ICU 语法合法                                           |
+| `src/lib/i18n/missingKeys.test.ts`           | 守卫：代码里 `t("x")` 引用的键在 `en.json` 里真的存在                                  |
+| `src/lib/i18n/locales.test.ts`               | 守卫：语言解析与回退规则                                                               |
+| `src/lib/i18n/format.test.tsx`               | 守卫：格式化按当前 locale 走，无效日期不抛                                             |
+| `scripts/dead-keys.py`                       | 判定器：找出 `en.json` 里代码从未引用的键                                              |
+| `scripts/dead-key-lib.mjs`                   | 判定器的可单测部分：输出解析、新增死键与已解决死键两个方向                             |
+| `scripts/check-dead-keys.mjs`                | 门禁：死键集合对基线做棘轮，新增即失败                                                 |
+| `dead-keys-baseline.json`                    | 死键基线，当前为空集                                                                   |
+| `tests/dead-key-lib.test.ts`                 | 判定器判定逻辑的单测                                                                   |
+| `tests/test-utils.tsx`                       | 测试侧的 `renderWithProviders`，已包好 `LocaleProvider`                                |
+| `tests/i18nStub.ts`                          | 测试侧的 `enMessages`，给拿不到 React 上下文的纯函数查 `en.json`                       |
 
 ## 语言怎么定下来
 
@@ -34,6 +41,22 @@
 `LocaleContext` 用 `useSyncExternalStore` 而不是 `useState`，因为语言要对两件事同时响应：同标签页内的切换（自定义事件）、跨标签页的切换（原生 `storage` 事件）。`getServerSnapshot` 固定返回英语，这样静态导出的 HTML 在客户端 hydration 前就是英语，避免 hydration mismatch
 
 `LocaleProvider` 带一个可选的 `locale` 属性，传了就强制使用、并且不再订阅存储。这条路径是给测试用的，让用例能把语言钉死
+
+## 日期与数字的格式化
+
+界面上的日期、时间、金额原本是硬编码 `"en-US"` 格式化的，中文界面里照样出英文月份缩写（`Aug 7, 2026`）、12 小时制（`08:00 PM`）、`US$1,234.56`。这类不是文案而是格式化，改的是渲染结果而不是目录
+
+`next-intl` 自带 `useFormatter()` 能做这件事，但它是 Hook。格式化需求里有相当一部分落在拿不到 React 上下文的纯模块上（`licenseUtils.formatExpiryDate`、`costOptimizationUtils.shortDate`、`roiCalculatorData.formatMoney` 这类），Hook 在那里用不了
+
+所以另起一层 `src/lib/i18n/format.ts`，导出 `formatDate` / `formatTime` / `formatNumber` / `formatCurrency`。locale 的取法沿用 `toast.ts` 第 380 簇建立的桥接：读 `document.documentElement.lang`（`LocaleContext` 的 effect 维护它），无 `document` 时回落 `DEFAULT_UI_LOCALE`
+
+读 DOM 属性而不是走 React 上下文，是为了让纯模块能用。代价是它不响应 locale 切换本身，调用方需要在切换后重新渲染。这是可接受的：格式化点绝大多数在组件渲染体里，组件重渲染时自然重算
+
+两个细节值得记住。一是货币要用 `currencyDisplay: "narrowSymbol"`，否则中文下渲染成 `US$1,234.56`，与应用里手写 `$${...}` 的既有风格不一致。二是 `Intl.DateTimeFormat.format` 对无效日期抛 `RangeError`，而 `toLocaleDateString` 返回 `"Invalid Date"` 字符串不抛；`formatDate` 显式判了 `NaN` 并返回同样的字符串，否则 mock 数据里的 `expires: "null"` 这类字符串会让整棵组件树崩掉
+
+紧凑记法（`notation: "compact"`）在中文下于万位才缩写（`6万`），万以下不缩写（`6000`），这是中文数量词习惯，不是缺陷
+
+`src/components/shared/table_cells/date_cell.tsx` 原本不用 Intl，而是手写一个 `MONTHS` 数组拼出 `Jul 7, 2026`，所以它不在「硬编码 `"en-US"`」的扫描口径里，中文界面里仍出英文月名。这类手写月份数组是同一类问题的另一种形态，改法与硬编码 locale 相同
 
 ## 消息目录的形状
 
@@ -81,7 +104,19 @@
 
 `locales.test.ts` 管语言解析，把三级回退链和中文标签归一都钉住
 
-还有一个方向目前没人管：`en.json` 里有、但代码里没人用的死键。抓它要处理动态键、`getTranslations`、非 React 调用等情形，误报会很多，值得单开一个任务
+## 死键守卫
+
+前三条守卫管「引用了但不存在」，没人管反方向：「目录里有、但代码里没人用」。这类键不会让界面出错，只是让目录越来越臃肿，真正的漏接藏在噪声里。第 409 簇清掉 226 个这样的键，之后第 410 簇把判定器接进 CI
+
+判定器 `scripts/dead-keys.py` 要处理三种调用形态。同文件里的 `useTranslations("ns")` 直接可读；经 props 传入的译员从 `src/lib/i18n/translators.ts` 的包装函数反推命名空间，或从本地 `type XTranslator = ReturnType<typeof useTranslations<"ns">>` 读取；`toastMessage` 桥固定读 `toast` 命名空间
+
+误报是这个判定器的主要风险，处理办法是兜底。凡是在源码里以完整相对路径原样出现过的键一律保命，不管判定器能否把它归属到某个命名空间。表常量 `labelKey: "authType.tokenExchange"` 这种就无法静态归属，硬判会错
+
+字符串字面量必须逐引号扫描，不能用「一对引号」的正则。`LensSetup.tsx` 的 `t("investigation")` 曾因此被漏判成死键，差点误删，tsc 立刻报出 17 条新错
+
+门禁 `scripts/check-dead-keys.mjs` 沿用仓库既有的「预算 + 棘轮」范式（对照 `check-lint-budgets.mjs` 与 `eslint-budgets.json`）：`dead-keys-baseline.json` 记录已确认的死键集合，新增死键即失败并列出键名，基线里已解决的条目提示刷新基线（`npm run check:dead-keys:write`）。CI 侧接在 `test-litellm-ui-lint.yml` 的 knip 死代码检查之后
+
+判定逻辑抽在 `scripts/dead-key-lib.mjs` 里，输出解析、新增死键、已解决死键三个方向各有单测在 `tests/dead-key-lib.test.ts`
 
 ## 测试侧的两个入口
 
@@ -96,3 +131,5 @@ switcher 的用例走这条出口，并在 `beforeEach` 里清 `localStorage`、
 `enMessages` 给列定义工厂这类拿不到 React 上下文的纯函数用。它按 `mcpServers` 命名空间去 `en.json` 查值，查不到就抛错。这样测试断言的仍是真实英文文案（`+1 more`）而不是键名（`toolsets.moreCount`），键名写错会立刻失败
 
 `NAMESPACE` 常量要和调用点生产的 `useTranslations("mcpServers")` 保持一致，所以工厂里的键写相对路径 `toolsets.edit`，写成全名会被拼成两层而解析失败
+
+格式化相关的测试有一处环境坑。`unit` 项目跑在 node 环境，没有 `document`，`format.ts` 里的 locale 读取恒定回落英语，于是断言英文日期的用例会通过，中文分支却从未被测到。测 locale 相关行为要用 `.test.tsx`（走 jsdom）并在用例里显式设 `document.documentElement.lang`，`src/utils/licenseUtils.test.ts` 搬成 `.test.tsx` 就是这个原因

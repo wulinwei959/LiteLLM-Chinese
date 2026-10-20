@@ -12,7 +12,7 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 
 1. 上游面板是 Next.js 静态导出(`output: "export"`),由 Python proxy 托管在 `/ui/` 路径下,Next.js 官方 i18n 路由与静态导出不兼容,URL locale 前缀方案被排除
 2. next-intl 官方支持纯客户端的 locale 切换,且活跃适配 Next.js 16
-3. 自带 ICU 消息格式、消息 key 编译期类型校验、`useFormatter()` 本地化日期数字格式化
+3. 自带 ICU 消息格式、消息 key 编译期类型校验；日期与数字格式化另起一层 `src/lib/i18n/format.ts`，因为 `useFormatter()` 是 Hook，纯模块用不了
 
 核心设计:
 
@@ -22,7 +22,8 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 | 类型安全 | `en.json` 驱动 `IntlMessages` 类型增强,key typo 编译期报错 |
 | locale 持久化 | localStorage,首访跟随 `navigator.language` |
 | 切换入口 | Navbar 用户下拉菜单与侧边栏账户菜单 |
-| 日期数字 | `useFormatter()` 替换全部 `"en-US"` 硬编码 |
+| 日期数字 | `src/lib/i18n/format.ts` 按当前 UI locale 格式化,替换全部 `"en-US"` 硬编码 |
+| 死键守卫 | `scripts/dead-keys.py` 判定无人引用的键,CI 里 `npm run check:dead-keys` 按基线棘轮 |
 
 ## 实施计划
 
@@ -42,15 +43,15 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 
 基于 [BerriAI/litellm](https://github.com/BerriAI/litellm) 的 `ui/litellm-dashboard` 展开
 
-## 当前状态 (2026-10-19)
+## 当前状态 (2026-10-21)
 
 | 项目 | 状态 |
 |---|---|
 | **分支** | `main` |
-| **汉化完成度** | 批次 0-14 (核心管理页) 完成，批次 24 (共享组件长尾) 按簇推进到第 325 簇。非测试 `.tsx` 912 个中接入翻译 698 个 (76.5%，带括号调用口径)，未接入宽口径命中 11 个全为误报或判定账；此前唯一剩余的真实翻译目标 `guardrail_garden_data.ts` (55 张护栏卡) 已铺好目录查表回退管道，decision_model、litellm、partner 三片全部接完，显示层收口，partner 与 decision_model 的卡名是品牌/模型标识按判定账保留原值走回退。第 306 簇复扫新查出的 `mcp-servers/toolCallArguments.ts` 表单校验句已在第 307 簇接进目录，工具测试面板中文界面不再出英文。第 308 簇补了第四条「模板串」扫描口径后，第 308 到 311 簇把「模板串」扫描命中的 4 个可接线文件接净后，剩 `networking.tsx` 的 toast 与 `claude_code_plugins/helpers.ts` 的 label 两处英文不是 `t()` 替换能解决的，它们嵌在纯 API/纯 parse 函数里、被大量调用点与两个命名空间共用，需先重构再翻译，已按判定账登记 (理由见 PROGRESS 的下一步优先级)；第 312 到 325 簇另按放宽口径与定向 toast 扫描逐片甄别真 UI，把 margin 行操作 aria、聊天上传校验报错、policies 面板 guardrail 删除/创建 toast、AutoRouters 删除成功/失败 toast、MCP BYOK 连接成功 toast、技能删除成功 toast、附件删除 hook 成功/失败 toast、会话 hook 校验/取消/清空四 toast、图片编辑与音频转录成功/失败 toast 与回落句、cost-tracking 开关 toast 与估算失败回落加 margin 表空态、agents 表加载与 combobox 空态、kill switch 请求体校验与 Entra 身份两条 throw、七个废弃横幅的特性名、六个 llm_calls 模块函数的 catch toast 十四片接进目录；扫描仍是启发式的，不能据此宣布收口 |
-| **目录规模** | 中英消息各 11271 个叶子，键树完全对齐 (parity 守卫 0 缺失)，中英同值 141 个 (多为 URL、模型名等格式示例，非漏翻) |
-| **测试** | 最近一次全量 (第 307 簇后，`src/components` + `src/app`) 826 文件 10530 例，仅 2 例失败且单跑全绿 (已知并发假失败)，与第 305 簇后那轮形状相同，零翻译回归；逐簇只跑定向文件，全绿 |
-| **类型检查** | 非测试文件 0 错误，`npm run build` 绿色；测试文件有 904 条存量类型债 (vitest 全局类型缺失等)，不阻塞构建 |
+| **汉化完成度** | 批次 0-14 (核心管理页) 完成，批次 24 (共享组件长尾) 按簇推进到第 412 簇。非测试 `.tsx` 913 个中接入翻译 709 个 (77.7%，带括号调用口径)，未接入宽口径命中全为误报或判定账。第 306 到 407 簇逐片把组件内字面量、共享 util 里的归一化替换串、模块常量当展示文案用的形态、共享件 aria 模板里的内嵌英文词、caller 侧把 thrown message 与硬编前缀拼成气泡内容的形态、浏览器标签页与 meta 描述、服务端错误兜底里的硬编提示逐类接进目录；第 409 簇清掉 226 个无人引用的死键并把判定器接进 CI 门禁 (`npm run check:dead-keys`，按基线棘轮，新增死键即红)；第 410 到 412 簇把死键守卫接进 UI Lint 工作流，并把全仓 26 处硬编码 `"en-US"` 的日期、货币与紧凑记法连同表格日期的手写英文月份数组改成按当前 UI locale 格式化 (`src/lib/i18n/format.ts`)。扫描仍是启发式的，不能据此宣布收口 |
+| **目录规模** | 中英消息各 11247 个叶子，键树完全对齐 (parity 守卫 0 缺失)，中英同值 133 个 (多为 URL、模型名等格式示例，非漏翻) |
+| **测试** | 最近一次全量 (第 412 簇后，`src/components` + `src/app` + `src/utils`) 10103 例，仅 5 例失败，逐个复验后 `top_key_view` 4 例与 `cost_tracking_settings` 1 例在 HEAD 同样失败 (既有欠账与并发假失败)，零翻译回归；逐簇只跑定向文件，全绿 |
+| **类型检查** | 非测试文件 0 错误，`npm run build` 绿色；测试文件有 883 条存量类型债 (vitest 全局类型缺失等)，不阻塞构建 |
 | **i18n 守卫** | 3 条全部通过 (`locales.test.ts` 7 + `messagesParity.test.ts` 8 + `missingKeys.test.ts` 1) |
 
 进度、逐簇账与口径以 [`ui/litellm-dashboard/docs/i18n/PROGRESS.md`](ui/litellm-dashboard/docs/i18n/PROGRESS.md) 为准；实施流程见同目录 `WORKFLOW.md`
@@ -66,5 +67,5 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 
 ### 剩余工作
 
-- **批次 24 长尾按簇推进**：`components/add_model`、`components/view_logs` 等此前最密的目录已逐簇文案清零，`usage/EntityUsage`、`caching`、`vector-stores`、`tag-management`、`organization`、`claude_code_plugins` 等也已逐文件收过；剩余多是 `mcp-servers`、`search-tools`、`agents`、`guardrails` 等仍含硬编码英文 (列头、tooltip、告警、动态拼装串、复数计数句) 的组件，按 `files with hits` 队列逐文件收
-- **永久挂在上游名下的失败**：`cost_tracking_settings.test.tsx` 7 例 (与导入快照逐行相同的既有失败) 与 `LensSetup.integration.test.tsx` 的 `/2026-09-30/` 日期断言 (任何 locale 下 `toLocaleString` 都渲染英文月名)，已从汉化账摘出，不再重复排查
+- **批次 24 长尾按簇推进**：`components/add_model`、`components/view_logs`、`usage/EntityUsage`、`caching`、`vector-stores`、`tag-management`、`organization`、`claude_code_plugins` 等此前最密的目录已逐簇文案清零；`mcp-servers`、`search-tools`、`agents`、`guardrails` 等目录在第 404 到 406 簇按「模块常量」「共享件 aria 模板」「caller 侧错误气泡」三类形态逐片收过，余量集中在少数组件的英文默认参数、判定账里的 provider 名与品牌 token、以及 CSV 列头与代码语料
+- **永久挂在上游名下的失败**：`cost_tracking_settings.test.tsx` 的超时 flaky 与 `LensSetup.integration.test.tsx` 的 `/2026-09-30/` 日期断言 (任何 locale 下 `toLocaleString` 都渲染英文月名)，已从汉化账摘出，不再重复排查；`tests/top_key_view.test.tsx` 的 4 例断言停在英文，与组件实际输出的中文不符，属既有欠账
