@@ -70,6 +70,11 @@ function useModelsAddModelTranslator() {
 }
 export type ModelsAddModelTranslator = ReturnType<typeof useModelsAddModelTranslator>;
 
+function useModelsHealthTranslator() {
+  return useTranslations("models.health");
+}
+export type ModelsHealthTranslator = ReturnType<typeof useModelsHealthTranslator>;
+
 function usePassThroughTranslator() {
   return useTranslations("models.passThrough");
 }

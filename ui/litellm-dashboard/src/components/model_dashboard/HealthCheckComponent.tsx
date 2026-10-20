@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { errorPatterns } from "@/utils/errorPatterns";
+import { errorPatternReplacement, errorPatterns } from "@/utils/errorPatterns";
 
 import { Team } from "../key_team_helpers/key_list";
 import { individualModelHealthCheckCall, latestHealthChecksCall } from "../networking";
@@ -101,9 +101,9 @@ const extractMeaningfulError = (t: ReturnType<typeof useTranslations<"models.hea
   }
 
   // Check for specific error patterns from errorPatterns
-  for (const { pattern, replacement } of errorPatterns) {
-    if (pattern.test(errorStr)) {
-      return replacement;
+  for (const pattern of errorPatterns) {
+    if (pattern.pattern.test(errorStr)) {
+      return errorPatternReplacement(t, pattern);
     }
   }
 

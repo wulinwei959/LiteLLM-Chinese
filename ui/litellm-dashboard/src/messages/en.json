@@ -1710,6 +1710,17 @@
       "colTeamAlias": "Team Alias",
       "viewResponseDetails": "View response details",
       "viewFullErrorDetails": "View full error details",
+      "errorPatterns": {
+        "missingApiKey": "Missing API Key",
+        "connectionTimeout": "Connection timeout",
+        "networkConnectionFailed": "Network connection failed",
+        "accessForbidden": "Access forbidden - check API key permissions",
+        "unauthorized": "Unauthorized - invalid API key",
+        "rateLimitExceeded": "Rate limit exceeded",
+        "providerInternalServerError": "Provider internal server error",
+        "authenticationFailed": "Authentication failed",
+        "apiError": "API error"
+      },
       "responseDetails": "Response Details",
       "runAllChecks": "Run All Checks",
       "runSelectedChecks": "Run Selected Checks",
