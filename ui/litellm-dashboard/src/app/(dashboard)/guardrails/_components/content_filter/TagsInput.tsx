@@ -54,6 +54,7 @@ export const TagsInput = ({
   id,
 }: TagsInputProps) => {
   const t = useTranslations("guardrails");
+  const commonT = useTranslations("common");
   const emptyText = emptyTextProp ?? t("noMatchingOptions");
   const anchor = useComboboxAnchor();
   const [query, setQuery] = useState("");
@@ -121,7 +122,7 @@ export const TagsInput = ({
               ))}
               <ComboboxChipsInput
                 id={id}
-                placeholder={loading ? "Loading..." : placeholder}
+                placeholder={loading ? commonT("loading") : placeholder}
                 className="min-w-24"
                 onBlur={commitPending}
                 onKeyDown={handleKeyDown}
