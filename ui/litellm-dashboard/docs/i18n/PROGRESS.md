@@ -40,6 +40,24 @@
 
 补充片验证：`src/components` 加 `src/app` 全量 10102 例仅 5 例失败，逐个复验后 `top_key_view` 4 例与 `cost_tracking_settings` 1 例在 HEAD 同样失败、属既有欠账与 flaky，本簇零回归；tsc 全仓 883 与 HEAD 同数、非测试文件零错；eslint 计数与 HEAD 同态（no-console 12、其余同）；prettier 两个改动文件在 HEAD 已脏、本簇未新增脏区；knip:ci 绿；`npm run check:dead-keys` 绿；`npm run build` exit 0。
 
+## 2026-10-21 第 410 簇更新
+
+死键判定器接进 CI。第 409 簇清掉 226 个死键，但死键本身没有守卫，下一轮又会攒起来，而它们正好把真正的漏接藏在噪声里。本簇把判定器变成门禁。
+
+新增 `scripts/check-dead-keys.mjs` 门禁脚本与 `scripts/dead-key-lib.mjs` 判定库，沿用仓库既有的「预算 + 棘轮」范式（对照 `scripts/check-lint-budgets.mjs` 与 `eslint-budgets.json`）。`dead-keys-baseline.json` 记录已确认的死键集合，新增死键即失败并列出键名，基线里已解决的条目则提示刷新基线（`npm run check:dead-keys:write`）。当前基线为空集，因为第 409 簇已把存量清干净。
+
+判定器本轮补强了两处。一是本地定义的译员类型：`src/lib/i18n/translators.ts` 之外的 26 个模块各自定义 `type XTranslator = ReturnType<typeof useTranslations<"ns">>`，命名空间写在类型参数里，此前无法反推、其引用点会被误判成死键，现按该形态解析出命名空间。二是动态展开的键名：实测在 `t(\`entityNames.${x}\`)` 这类模板覆盖的子树内注入探测键仍被判为活键，动态前缀保命成立。
+
+门禁行为实测：向 `toast` 命名空间注入一枚探测键，脚本报「1 new dead message keys」并以退出码 1 失败；移除后恢复绿色。
+
+CI 侧接在 `test-litellm-ui-lint.yml` 的 knip 死代码检查之后，用 `npm run check:dead-keys`。该工作流只在 PR 改了 UI 文件时跑，而死键的来源正是 `src/messages` 下的目录文件与组件代码，落在同一覆盖范围内。
+
+新增 `tests/dead-key-lib.test.ts` 七例，覆盖输出解析、新增死键与已解决死键两个方向。
+
+验证：两个库的测试文件 10 例全绿；`npm run check:dead-keys` 绿（死键 0、基线 0）；tsc 全仓 883 与 HEAD 同数、非测试文件零错；eslint 计数与 HEAD 完全持平（no-console 12、其余同），新增脚本改用 `console.warn` 以不突破 `eslint-budgets.json` 的 no-console 预算；prettier 新增文件全 clean；knip:ci 绿；`npm run build` exit 0。
+
+`local/no-large-inline-object-arg` 在 HEAD 已是 568、超出预算 551，本簇未新增该规则的任何告警（逐文件比对增量为零），属上游既有欠账。
+
 ## 2026-10-20 第 409 簇更新
 
 死键清理。`en.json` / `zh-CN.json` 里存在大量「键在目录里、代码没人引用」的条目，它们既拖慢目录体积，又让真正的漏接藏在噪声里。PROGRESS 一直记着「死键没有守卫，只能人工发现」，本簇把这件事做成可重复的判定。
