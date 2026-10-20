@@ -1529,7 +1529,7 @@ describe("KeyEditView", () => {
       await waitFor(() => {
         expect(screen.getByLabelText("组织")).toHaveValue("Engineering");
       });
-      await userEvent.click(screen.getByRole("button", { name: "Clear" }));
+      await userEvent.click(screen.getByRole("button", { name: "清除" }));
       await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
@@ -1889,7 +1889,7 @@ describe("KeyEditView", () => {
       const onSubmit = renderEditView(serviceAccountKey("svc-a-budget"));
 
       await budgetField();
-      await userEvent.click(screen.getByRole("button", { name: "Clear" }));
+      await userEvent.click(screen.getByRole("button", { name: "清除" }));
       await save();
 
       await waitFor(() => {

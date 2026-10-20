@@ -256,7 +256,7 @@ it.each(["capability", "llm_v2"] as const)(
     expect(buildUpdatedComplexityRouterConfig(stored, changed).default_model).toBe("blocked");
     view.rerender(editor(changed));
     await user.click(
-      within(screen.getByRole("group", { name: "默认模型配置" })).getByRole("button", { name: "Clear" }),
+      within(screen.getByRole("group", { name: "默认模型配置" })).getByRole("button", { name: "清除" }),
     );
     const cleared = onChange.mock.lastCall![0];
     expect(cleared.default_model).toBeUndefined();

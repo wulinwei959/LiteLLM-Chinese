@@ -180,7 +180,7 @@ describe("ChatUI", () => {
       "Model 1",
     );
 
-    await user.click(screen.getAllByRole("button", { name: "Clear" })[0]);
+    await user.click(screen.getAllByRole("button", { name: "清除" })[0]);
     const input = screen.getByPlaceholderText(/Describe the image|描述您想生成的图片/);
     fireEvent.change(input, { target: { value: "Contract endpoint check" } });
     expect(screen.getByRole("button", { name: "发送消息" })).toBeDisabled();

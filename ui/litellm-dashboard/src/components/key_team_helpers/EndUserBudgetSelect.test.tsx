@@ -43,7 +43,7 @@ describe("EndUserBudgetSelect", () => {
     const user = userEvent.setup();
     render(<EndUserBudgetSelect accessToken="tok" value="svc-a-budget" onChange={onChange} canEdit />);
 
-    await user.click(screen.getByRole("button", { name: "Clear" }));
+    await user.click(screen.getByRole("button", { name: "清除" }));
 
     expect(onChange).toHaveBeenLastCalledWith(null);
   });

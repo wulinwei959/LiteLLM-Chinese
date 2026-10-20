@@ -145,7 +145,7 @@ describe("CreateSearchTools submit payload", () => {
     renderModal();
     fireEvent.change(await screen.findByLabelText(/搜索工具名称/), { target: { value: "synthetic-search" } });
     await pickProvider(user, "Perplexity AI");
-    await user.click(screen.getByRole("button", { name: "Clear" }));
+    await user.click(screen.getByRole("button", { name: "清除" }));
     expect(networking.fetchAvailableSearchProviders).toHaveBeenCalledTimes(1);
     await user.click(screen.getByRole("button", { name: "添加搜索工具" }));
     expect(await screen.findByText("请选择搜索供应商")).toBeInTheDocument();

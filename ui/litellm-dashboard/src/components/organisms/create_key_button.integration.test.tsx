@@ -906,7 +906,7 @@ describe("CreateKey", () => {
 
       await userEvent.click(await screen.findByLabelText("组织"));
       await userEvent.click(await screen.findByRole("option", { name: /Engineering/ }));
-      await userEvent.click(await screen.findByRole("button", { name: "Clear" }));
+      await userEvent.click(await screen.findByRole("button", { name: "清除" }));
       await submit();
 
       expect((await createdPayload()).organization_id).toBeUndefined();

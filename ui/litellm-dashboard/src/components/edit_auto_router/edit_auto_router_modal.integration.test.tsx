@@ -1302,7 +1302,7 @@ describe("EditAutoRouterModal prompt compression", () => {
     });
 
     openAutoRouterAdvanced("Compression");
-    await user.click(screen.getAllByRole("button", { name: "Clear" })[0]);
+    await user.click(screen.getAllByRole("button", { name: "清除" })[0]);
     await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
@@ -1327,7 +1327,7 @@ describe("EditAutoRouterModal prompt compression", () => {
     const view = renderWithStoredCompression(stored);
 
     openAutoRouterAdvanced("Compression");
-    await user.click(screen.getAllByRole("button", { name: "Clear" })[0]);
+    await user.click(screen.getAllByRole("button", { name: "清除" })[0]);
     await user.click(screen.getByRole("button", { name: "取消" }));
     expect(modelPatchUpdateCall).not.toHaveBeenCalled();
     view.unmount();
@@ -1335,7 +1335,7 @@ describe("EditAutoRouterModal prompt compression", () => {
     renderWithStoredCompression(stored);
     openAutoRouterAdvanced("Compression");
     expect(screen.getByRole("combobox", { name: "路由决策的压缩" })).toHaveValue("无（不做压缩）");
-    await user.click(screen.getAllByRole("button", { name: "Clear" })[0]);
+    await user.click(screen.getAllByRole("button", { name: "清除" })[0]);
     await user.click(screen.getByRole("combobox", { name: "路由决策的压缩" }));
     await user.click(screen.getByRole("option", { name: "无（不做压缩）" }));
     await waitFor(() => expect(screen.getByRole("button", { name: "保存更改" })).toBeEnabled(), { timeout: 5000 });

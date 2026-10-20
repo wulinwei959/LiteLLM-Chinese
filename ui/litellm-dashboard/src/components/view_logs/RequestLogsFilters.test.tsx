@@ -418,7 +418,7 @@ describe("RequestLogsFilters", () => {
     const input = await screen.findByPlaceholderText("选择或输入错误码");
 
     await user.click(input);
-    await user.click(screen.getByRole("button", { name: "Clear", hidden: true }));
+    await user.click(screen.getByRole("button", { name: "清除", hidden: true }));
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.ERROR_CODE, undefined);
   });

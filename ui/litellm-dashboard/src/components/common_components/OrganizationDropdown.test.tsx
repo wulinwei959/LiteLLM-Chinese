@@ -64,7 +64,7 @@ describe("OrganizationDropdown", () => {
     const user = userEvent.setup();
     renderWithProviders(<OrganizationDropdown organizations={MOCK_ORGS} value="org-1" onChange={onChange} />);
 
-    await user.click(screen.getByRole("button", { name: "Clear" }));
+    await user.click(screen.getByRole("button", { name: "清除" }));
 
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith(null);

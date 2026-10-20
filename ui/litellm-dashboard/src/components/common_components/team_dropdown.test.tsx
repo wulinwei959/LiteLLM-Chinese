@@ -65,7 +65,7 @@ describe("TeamDropdown", () => {
     const onTeamSelect = vi.fn();
     renderWithProviders(<TeamDropdown value="team-1" onChange={onChange} onTeamSelect={onTeamSelect} />);
 
-    await user.click(screen.getByRole("button", { name: "Clear" }));
+    await user.click(screen.getByRole("button", { name: "清除" }));
 
     expect(onChange).toHaveBeenCalledWith(null);
     expect(onTeamSelect).toHaveBeenCalledWith(null);

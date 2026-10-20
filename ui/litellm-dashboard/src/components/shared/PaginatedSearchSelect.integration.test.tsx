@@ -90,12 +90,12 @@ describe("PaginatedSearchSelect", () => {
       );
     }
     const { rerender } = render(<Controlled options={OPTIONS} />);
-    await user.click(screen.getByRole("button", { name: "Clear" }));
+    await user.click(screen.getByRole("button", { name: "清除" }));
     expect(onValueChange).toHaveBeenLastCalledWith(null);
     rerender(<Controlled options={OPTIONS.map((option) => ({ ...option }))} />);
     await waitFor(() => expect(onSearchChange).toHaveBeenLastCalledWith(""));
     expect(screen.getByRole("combobox")).toHaveValue("");
-    expect(screen.queryByRole("button", { name: "Clear" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "清除" })).not.toBeInTheDocument();
     await chooseSelectOption(user, screen.getByRole("combobox"), "alias-beta");
     expect(onValueChange).toHaveBeenLastCalledWith("alias-beta");
   });

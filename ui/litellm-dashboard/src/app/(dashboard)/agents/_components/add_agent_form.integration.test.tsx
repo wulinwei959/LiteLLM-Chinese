@@ -437,7 +437,7 @@ describe("AddAgentForm submit payload", () => {
     await user.click(screen.getByRole("radio", { name: "分配现有密钥" }));
     const keySelector = await screen.findByPlaceholderText("按密钥名称搜索…");
     await chooseSelectOption(user, keySelector, "Maple key");
-    await user.click(screen.getByRole("button", { name: "Clear" }));
+    await user.click(screen.getByRole("button", { name: "清除" }));
     await user.click(screen.getByRole("button", { name: /创建智能体/ }));
     expect(networking.createAgentCall).not.toHaveBeenCalled();
     expect(networking.keyUpdateCall).not.toHaveBeenCalled();

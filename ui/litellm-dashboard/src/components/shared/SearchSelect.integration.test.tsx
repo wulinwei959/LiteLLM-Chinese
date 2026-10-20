@@ -54,9 +54,9 @@ describe("SearchSelect", () => {
       );
     }
     render(<Controlled />);
-    expect(screen.queryByRole("button", { name: "Clear" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "清除" })).not.toBeInTheDocument();
     await chooseSelectOption(user, screen.getByRole("combobox"), "Growth");
-    await user.click(screen.getByRole("button", { name: "Clear" }));
+    await user.click(screen.getByRole("button", { name: "清除" }));
     expect(onValueChange).toHaveBeenLastCalledWith(null);
     expect(screen.getByRole("combobox")).toHaveValue("");
     await chooseSelectOption(user, screen.getByRole("combobox"), "Data Team");
@@ -135,7 +135,7 @@ describe("SearchSelect", () => {
     await user.keyboard("{Enter}");
     await user.keyboard("{ArrowDown}{Enter}");
     expect(onValueChange).toHaveBeenLastCalledWith("team-1");
-    const clear = screen.getByRole("button", { name: "Clear" });
+    const clear = screen.getByRole("button", { name: "清除" });
     clear.focus();
     await user.keyboard("{Enter}");
     expect(onValueChange).toHaveBeenLastCalledWith(null);

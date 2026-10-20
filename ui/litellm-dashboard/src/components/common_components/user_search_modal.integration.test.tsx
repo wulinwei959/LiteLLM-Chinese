@@ -107,7 +107,7 @@ describe("UserSearchModal submit payload", () => {
 
     expect(save()).toBeDisabled();
     await searchByEmail(user, "pick");
-    await user.click(screen.getAllByRole("button", { name: "Clear" })[0]);
+    await user.click(screen.getAllByRole("button", { name: "清除" })[0]);
     expect(screen.getByLabelText("邮箱")).toHaveValue("");
     expect(screen.getByLabelText("用户 ID")).toHaveValue("");
     expect(save()).toBeDisabled();

@@ -194,7 +194,7 @@ describe("CacheSettings advanced settings round-trip", () => {
     const user = userEvent.setup();
     renderSettings();
     await screen.findByRole("combobox", { name: "嵌入模型" });
-    await user.click(screen.getByRole("button", { name: "Clear" }));
+    await user.click(screen.getByRole("button", { name: "清除" }));
     const expected = {
       type: "redis",
       host: "localhost",
