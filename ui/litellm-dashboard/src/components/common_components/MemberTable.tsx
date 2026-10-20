@@ -138,7 +138,7 @@ const buildColumns = ({
     sortingFn: "text",
     sortUndefined: "last",
     enableGlobalFilter: true,
-    meta: { title: "User Email" },
+    meta: { title: t("keysUserEmail") },
     cell: ({ row }) => row.original.user_email || "-",
   },
   {
