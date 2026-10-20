@@ -355,7 +355,9 @@
     "errorTitle": "Failed to load invitation",
     "errorDesc": "The invitation link may be invalid or expired.",
     "backToLogin": "Back to Login",
-    "passwordRequired": "password required to sign up"
+    "passwordRequired": "password required to sign up",
+    "startSessionFailed": "Failed to start session. Please try again.",
+    "submitFailed": "Failed to submit. Please try again."
   },
   "breadcrumb": {
     "unknownPage": "Unknown Page"

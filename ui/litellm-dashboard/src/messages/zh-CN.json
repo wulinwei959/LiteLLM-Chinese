@@ -354,7 +354,9 @@
     "errorTitle": "加载邀请失败",
     "errorDesc": "邀请链接可能无效或已过期。",
     "backToLogin": "返回登录",
-    "passwordRequired": "注册需要设置密码"
+    "passwordRequired": "注册需要设置密码",
+    "startSessionFailed": "会话启动失败，请重试。",
+    "submitFailed": "提交失败，请重试。"
   },
   "breadcrumb": {
     "unknownPage": "未知页面"

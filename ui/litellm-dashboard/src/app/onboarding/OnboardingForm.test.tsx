@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
+import { renderWithProviders } from "../../../tests/test-utils";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { OnboardingForm } from "./OnboardingForm";
@@ -72,7 +73,7 @@ describe("OnboardingForm", () => {
       isError: false,
     });
 
-    render(<OnboardingForm variant="signup" />);
+    renderWithProviders(<OnboardingForm variant="signup" />);
 
     expect(screen.getByTestId("loading-view")).toBeInTheDocument();
   });
@@ -84,7 +85,7 @@ describe("OnboardingForm", () => {
       isError: true,
     });
 
-    render(<OnboardingForm variant="signup" />);
+    renderWithProviders(<OnboardingForm variant="signup" />);
 
     expect(screen.getByTestId("error-view")).toBeInTheDocument();
   });
@@ -96,7 +97,7 @@ describe("OnboardingForm", () => {
       isError: false,
     });
 
-    render(<OnboardingForm variant="signup" />);
+    renderWithProviders(<OnboardingForm variant="signup" />);
 
     expect(screen.getByTestId("form-body")).toBeInTheDocument();
     expect(screen.getByTestId("form-body")).toHaveAttribute("data-email", "alice@example.com");
@@ -109,7 +110,7 @@ describe("OnboardingForm", () => {
       isError: false,
     });
 
-    render(<OnboardingForm variant="reset_password" />);
+    renderWithProviders(<OnboardingForm variant="reset_password" />);
 
     expect(screen.getByTestId("form-body")).toHaveAttribute("data-variant", "reset_password");
   });
@@ -127,7 +128,7 @@ describe("OnboardingForm", () => {
       options.onSuccess({ token: "NEW_USER_TOKEN" });
     });
 
-    render(<OnboardingForm variant="signup" />);
+    renderWithProviders(<OnboardingForm variant="signup" />);
 
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: "Submit" }));
@@ -149,7 +150,7 @@ describe("OnboardingForm", () => {
     });
 
     const cookieSpy = vi.spyOn(document, "cookie", "set");
-    render(<OnboardingForm variant="signup" />);
+    renderWithProviders(<OnboardingForm variant="signup" />);
 
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: "Submit" }));
@@ -176,13 +177,13 @@ describe("OnboardingForm", () => {
       options.onSuccess({});
     });
 
-    render(<OnboardingForm variant="signup" />);
+    renderWithProviders(<OnboardingForm variant="signup" />);
 
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: "Submit" }));
     });
 
-    expect(screen.getByTestId("claim-error")).toHaveTextContent("Failed to start session");
+    expect(screen.getByTestId("claim-error")).toHaveTextContent("会话启动失败");
     expect(document.cookie).not.toContain("fake-jwt-token");
   });
 });
