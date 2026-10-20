@@ -12577,6 +12577,9 @@
     "cacheMCPServerFailed": "Failed to cache MCP server",
     "registerOAuthClientFailed": "Failed to register OAuth client",
     "storeOAuthCredentialFailed": "Failed to store OAuth credential",
-    "revokeOAuthCredentialFailed": "Failed to revoke OAuth credential"
+    "revokeOAuthCredentialFailed": "Failed to revoke OAuth credential",
+    "getEmailEventSettingsFailed": "Failed to get email event settings",
+    "updateEmailEventSettingsFailed": "Failed to update email event settings",
+    "resetEmailEventSettingsFailed": "Failed to reset email event settings"
   }
 }

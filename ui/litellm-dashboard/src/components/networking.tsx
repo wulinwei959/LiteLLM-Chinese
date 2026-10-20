@@ -5748,7 +5748,7 @@ export const getEmailEventSettings = async (accessToken: string): Promise<EmailE
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to get email event settings");
+      throw new Error(toastMessage("getEmailEventSettingsFailed"));
     }
 
     const data = await response.json();
@@ -5775,7 +5775,7 @@ export const updateEmailEventSettings = async (accessToken: string, settings: Em
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to update email event settings");
+      throw new Error(toastMessage("updateEmailEventSettingsFailed"));
     }
 
     const data = await response.json();
@@ -5801,7 +5801,7 @@ export const resetEmailEventSettings = async (accessToken: string) => {
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to reset email event settings");
+      throw new Error(toastMessage("resetEmailEventSettingsFailed"));
     }
 
     const data = await response.json();

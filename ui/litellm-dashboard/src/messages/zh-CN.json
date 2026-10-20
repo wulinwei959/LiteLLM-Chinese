@@ -12572,6 +12572,9 @@
     "cacheMCPServerFailed": "缓存 MCP 服务器失败",
     "registerOAuthClientFailed": "注册 OAuth 客户端失败",
     "storeOAuthCredentialFailed": "存储 OAuth 凭据失败",
-    "revokeOAuthCredentialFailed": "撤销 OAuth 凭据失败"
+    "revokeOAuthCredentialFailed": "撤销 OAuth 凭据失败",
+    "getEmailEventSettingsFailed": "获取邮件事件设置失败",
+    "updateEmailEventSettingsFailed": "更新邮件事件设置失败",
+    "resetEmailEventSettingsFailed": "重置邮件事件设置失败"
   }
 }
