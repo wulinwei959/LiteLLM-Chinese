@@ -12,6 +12,8 @@
     "chartProcessingSub": "稍等片刻即可完成",
     "hideReasoning": "收起推理过程",
     "showReasoning": "展开推理过程",
+    "switchToLightMode": "切换到浅色模式",
+    "switchToDarkMode": "切换到深色模式（beta）",
     "breadcrumbAria": "面包屑导航",
     "resizeDrawerAria": "调整抽屉宽度",
     "collapseDrawerAria": "收起抽屉",

@@ -2,16 +2,19 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "next-themes";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import ThemeToggle from "./ThemeToggle";
 
 const renderToggle = () =>
   render(
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-      <ThemeToggle />
+      <LocaleProvider locale="zh-CN">
+        <ThemeToggle />
+      </LocaleProvider>
     </ThemeProvider>,
   );
 
-const toggle = () => screen.getByRole("button", { name: /Switch to (light|dark) mode/ });
+const toggle = () => screen.getByRole("button", { name: /切换到(浅色|深色)模式/ });
 
 beforeEach(() => {
   localStorage.clear();
@@ -45,11 +48,11 @@ describe("ThemeToggle", () => {
 
   it("names the mode the click will switch to, so the button says what it does", async () => {
     renderToggle();
-    expect(screen.getByRole("button", { name: "Switch to dark mode (beta)" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "切换到深色模式（beta）" })).toBeInTheDocument();
 
     await userEvent.click(toggle());
 
-    expect(await screen.findByRole("button", { name: "Switch to light mode" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "切换到浅色模式" })).toBeInTheDocument();
   });
 
   it("leaves a stored system preference following the OS until the user clicks", () => {
@@ -66,6 +69,6 @@ describe("ThemeToggle", () => {
     await userEvent.click(toggle());
 
     expect(toggle()).not.toHaveTextContent("Beta");
-    expect(toggle()).toHaveAccessibleName("Switch to light mode");
+    expect(toggle()).toHaveAccessibleName("切换到浅色模式");
   });
 });

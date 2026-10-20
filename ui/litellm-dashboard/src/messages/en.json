@@ -12,6 +12,8 @@
     "chartProcessingSub": "This will only take a moment",
     "hideReasoning": "Hide reasoning",
     "showReasoning": "Show reasoning",
+    "switchToLightMode": "Switch to light mode",
+    "switchToDarkMode": "Switch to dark mode (beta)",
     "breadcrumbAria": "Breadcrumb",
     "resizeDrawerAria": "Resize drawer",
     "collapseDrawerAria": "Collapse drawer",
