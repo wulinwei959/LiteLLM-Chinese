@@ -6410,6 +6410,10 @@
     "transformUnexpectedFormat": "Transformed request received in unexpected format",
     "transformFailed": "Failed to transform request"
   },
+  "appMetadata": {
+    "title": "LiteLLM Dashboard",
+    "description": "LiteLLM Proxy Admin UI"
+  },
   "mcpServers": {
     "duplicateIdentifier": "An MCP server with this name/alias already exists.",
     "validation": {

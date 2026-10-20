@@ -6409,6 +6409,10 @@
     "transformUnexpectedFormat": "转换后的请求格式不符合预期",
     "transformFailed": "转换请求失败"
   },
+  "appMetadata": {
+    "title": "LiteLLM 控制台",
+    "description": "LiteLLM 代理管理界面"
+  },
   "mcpServers": {
     "duplicateIdentifier": "已存在同名的 MCP 服务器。",
     "validation": {
