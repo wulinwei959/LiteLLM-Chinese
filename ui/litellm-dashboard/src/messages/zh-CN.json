@@ -9350,6 +9350,7 @@
   },
   "costTracking": {
     "colProvider": "提供方",
+    "colMargin": "加成",
     "colActions": "操作",
     "ariaSaveDiscount": "保存 {name} 的折扣",
     "ariaCancelDiscount": "取消编辑 {name} 的折扣",

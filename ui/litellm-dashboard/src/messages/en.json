@@ -9355,6 +9355,7 @@
   },
   "costTracking": {
     "colProvider": "Provider",
+    "colMargin": "Margin",
     "colActions": "Actions",
     "ariaSaveDiscount": "Save discount for {name}",
     "ariaCancelDiscount": "Cancel editing discount for {name}",

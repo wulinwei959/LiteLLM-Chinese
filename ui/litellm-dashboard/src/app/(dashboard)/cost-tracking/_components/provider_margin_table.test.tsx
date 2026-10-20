@@ -43,11 +43,11 @@ describe("ProviderMarginTable", () => {
         onRemoveProvider={onRemoveProvider}
       />,
     );
-    expect(screen.getByRole("columnheader", { name: "Provider" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Margin" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Margin" })).toHaveClass("text-right");
-    expect(screen.getByRole("columnheader", { name: "Provider" })).not.toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "提供方" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "加成" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "操作" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "加成" })).toHaveClass("text-right");
+    expect(screen.getByRole("columnheader", { name: "提供方" })).not.toHaveClass("text-right");
   });
 
   it("should display the provider display name", () => {
