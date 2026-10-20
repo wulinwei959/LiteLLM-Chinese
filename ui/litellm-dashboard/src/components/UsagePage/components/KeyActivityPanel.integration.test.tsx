@@ -289,13 +289,13 @@ describe("KeyActivityPanel", () => {
     const { rerender } = render(<KeyActivityPanel summary={zeroSummary} summaryLoading {...props} />);
 
     expect(await screen.findByRole("button", { name: /key-local/ })).toBeInTheDocument();
-    expect(screen.getByText("Loading chart data...")).toBeInTheDocument();
+    expect(screen.getByText("正在加载图表数据...")).toBeInTheDocument();
     expect(screen.queryByText("总体用量")).not.toBeInTheDocument();
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
 
     rerender(<KeyActivityPanel summary={summary} summaryLoading={false} {...props} />);
 
-    expect(screen.queryByText("Loading chart data...")).not.toBeInTheDocument();
+    expect(screen.queryByText("正在加载图表数据...")).not.toBeInTheDocument();
     expect(screen.getByText("总体用量")).toBeInTheDocument();
     expect(screen.getAllByText("$500.00").length).toBeGreaterThan(0);
   });

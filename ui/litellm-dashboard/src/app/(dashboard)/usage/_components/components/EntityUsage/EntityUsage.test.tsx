@@ -1021,7 +1021,7 @@ describe("EntityUsage", () => {
     await waitFor(() => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
-    expect(screen.getAllByText("Loading chart data...")).toHaveLength(2);
+    expect(screen.getAllByText("正在加载图表数据...")).toHaveLength(2);
     expect(screen.queryByText("总消费")).not.toBeInTheDocument();
     expect(screen.queryByText("Overall Usage")).not.toBeInTheDocument();
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
@@ -1030,7 +1030,7 @@ describe("EntityUsage", () => {
       resolveSpend(mockSpendData);
     });
 
-    expect(screen.queryByText("Loading chart data...")).not.toBeInTheDocument();
+    expect(screen.queryByText("正在加载图表数据...")).not.toBeInTheDocument();
     expect(screen.getByText("Overall Usage")).toBeInTheDocument();
     expect(screen.getByText("总消费")).toBeInTheDocument();
     expect(screen.getAllByText("$100.50").length).toBeGreaterThan(0);
