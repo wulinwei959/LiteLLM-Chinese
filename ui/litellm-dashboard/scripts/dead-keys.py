@@ -53,6 +53,13 @@ TYPE_TO_NS = {
     )
 }
 
+# Some modules define their own translator type next to the component, as
+# `type XTranslator = ReturnType<typeof useTranslations<"ns">>`. Those types
+# name their namespace in the type argument, so it is read from there.
+LOCAL_TRANSLATOR_RE = re.compile(
+    r"type\s+([A-Z]\w*Translator)\s*=\s*ReturnType<\s*typeof\s+useTranslations<\s*\"([A-Za-z0-9_.-]+)\""
+)
+
 SCOPE_RE = re.compile(r'useTranslations\(\s*"([A-Za-z0-9_.-]+)"')
 TEMPLATE_RE = re.compile(r"`([^`\\\n]{1,160})`")
 PROP_TRANSLATOR_RE = re.compile(r"\b([A-Za-z_$][\w$]*)\s*:\s*([A-Z][A-Za-z]*Translator)\b")
@@ -99,6 +106,17 @@ by_scope: dict[str, set[str]] = {}
 dyn_by_scope: dict[str, set[str]] = {}
 all_literals: set[str] = set()
 
+# A translator type may be defined in one module and used as a prop in
+# another, so the local definitions are collected across the whole tree first.
+local_type_ns: dict[str, str] = {}
+for rel in files:
+    try:
+        source = (ROOT / rel).read_text(encoding="utf-8")
+    except (UnicodeDecodeError, OSError):
+        continue
+    for type_name, namespace in LOCAL_TRANSLATOR_RE.findall(source):
+        local_type_ns.setdefault(type_name, namespace)
+
 for rel in files:
     try:
         source = (ROOT / rel).read_text(encoding="utf-8")
@@ -106,7 +124,7 @@ for rel in files:
         continue
     scopes = set(SCOPE_RE.findall(source))
     for _, type_name in PROP_TRANSLATOR_RE.findall(source):
-        namespace = TYPE_TO_NS.get(type_name)
+        namespace = TYPE_TO_NS.get(type_name) or local_type_ns.get(type_name)
         if namespace:
             scopes.add(namespace)
     literals = string_literals(source)

@@ -103,3 +103,7 @@ jobs:
       - name: Check for dead code (knip)
         if: ${{ !cancelled() && steps.changed.outputs.has_files == 'true' }}
         run: npm run knip:ci
+
+      - name: Check for dead message keys
+        if: ${{ !cancelled() && steps.changed.outputs.has_files == 'true' }}
+        run: npm run check:dead-keys

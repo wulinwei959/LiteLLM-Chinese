@@ -21,7 +21,9 @@
     "knip": "knip",
     "knip:ci": "knip --exclude exports,nsExports,types,nsTypes,enumMembers,classMembers,duplicates",
     "knip:fix": "knip --fix",
-    "gen:api": "node scripts/gen-api-types.mjs"
+    "gen:api": "node scripts/gen-api-types.mjs",
+    "check:dead-keys": "node scripts/check-dead-keys.mjs",
+    "check:dead-keys:write": "node scripts/check-dead-keys.mjs --write"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.92.0",
