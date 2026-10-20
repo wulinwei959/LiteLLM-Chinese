@@ -11383,6 +11383,8 @@
     "trendSinceYesterday": "较昨日 {diff}",
     "updateInputPolicyFailed": "更新输入策略失败：{message}",
     "updateOutputPolicyFailed": "更新输出策略失败：{message}",
+    "addOverrideFailed": "添加覆盖失败：{message}",
+    "removeOverrideFailed": "移除覆盖失败：{message}",
     "unknownError": "未知错误",
     "totalToolsDiscovered": "已发现工具总数",
     "blockedTools": "已阻止工具",

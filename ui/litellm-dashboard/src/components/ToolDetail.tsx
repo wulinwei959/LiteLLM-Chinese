@@ -140,12 +140,12 @@ export function ToolDetail({ toolName, onBack, accessToken }: ToolDetailProps) {
         await updateToolPolicy(accessToken, toolName, { input_policy: newPolicy });
         invalidateDetail();
       } catch (e: unknown) {
-        alert(`Failed to update input policy: ${e instanceof Error ? e.message : String(e)}`);
+        alert(t("updateInputPolicyFailed", { message: e instanceof Error ? e.message : String(e) }));
       } finally {
         setInputPolicySaving(false);
       }
     },
-    [accessToken, toolName, invalidateDetail],
+    [accessToken, toolName, invalidateDetail, t],
   );
 
   const handleOutputPolicyChange = useCallback(
@@ -156,12 +156,12 @@ export function ToolDetail({ toolName, onBack, accessToken }: ToolDetailProps) {
         await updateToolPolicy(accessToken, toolName, { output_policy: newPolicy });
         invalidateDetail();
       } catch (e: unknown) {
-        alert(`Failed to update output policy: ${e instanceof Error ? e.message : String(e)}`);
+        alert(t("updateOutputPolicyFailed", { message: e instanceof Error ? e.message : String(e) }));
       } finally {
         setOutputPolicySaving(false);
       }
     },
-    [accessToken, toolName, invalidateDetail],
+    [accessToken, toolName, invalidateDetail, t],
   );
 
   const handleAddOverride = useCallback(async () => {
@@ -185,11 +185,11 @@ export function ToolDetail({ toolName, onBack, accessToken }: ToolDetailProps) {
       setBlockTeamId(null);
       setBlockKey(null);
     } catch (e: unknown) {
-      alert(`Failed to add override: ${e instanceof Error ? e.message : String(e)}`);
+      alert(t("addOverrideFailed", { message: e instanceof Error ? e.message : String(e) }));
     } finally {
       setOverrideSaving(false);
     }
-  }, [accessToken, toolName, blockScope, blockTeamId, blockKey, invalidateDetail]);
+  }, [accessToken, toolName, blockScope, blockTeamId, blockKey, invalidateDetail, t]);
 
   const handleRemoveOverride = useCallback(
     async (override: ToolPolicyOverrideRow) => {
@@ -202,12 +202,12 @@ export function ToolDetail({ toolName, onBack, accessToken }: ToolDetailProps) {
         });
         invalidateDetail();
       } catch (e: unknown) {
-        alert(`Failed to remove override: ${e instanceof Error ? e.message : String(e)}`);
+        alert(t("removeOverrideFailed", { message: e instanceof Error ? e.message : String(e) }));
       } finally {
         setOverrideSaving(false);
       }
     },
-    [accessToken, toolName, invalidateDetail],
+    [accessToken, toolName, invalidateDetail, t],
   );
 
   if (detailLoading && !detail) {

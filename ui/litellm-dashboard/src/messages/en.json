@@ -11388,6 +11388,8 @@
     "trendSinceYesterday": "{diff} since yesterday",
     "updateInputPolicyFailed": "Failed to update input policy: {message}",
     "updateOutputPolicyFailed": "Failed to update output policy: {message}",
+    "addOverrideFailed": "Failed to add override: {message}",
+    "removeOverrideFailed": "Failed to remove override: {message}",
     "unknownError": "unknown error",
     "totalToolsDiscovered": "Total Tools Discovered",
     "blockedTools": "Blocked Tools",
