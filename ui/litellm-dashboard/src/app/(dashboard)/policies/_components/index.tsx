@@ -44,6 +44,7 @@ interface DismissibleAlertProps {
 }
 
 const DismissibleAlert: React.FC<DismissibleAlertProps> = ({ title, icon, children }) => {
+  const t = useTranslations("policies");
   const [isDismissed, setIsDismissed] = useState(false);
 
   if (isDismissed) return null;
@@ -54,7 +55,12 @@ const DismissibleAlert: React.FC<DismissibleAlertProps> = ({ title, icon, childr
       <AlertTitle>{title}</AlertTitle>
       {children && <AlertDescription>{children}</AlertDescription>}
       <AlertAction>
-        <Button variant="ghost" size="icon-sm" onClick={() => setIsDismissed(true)} aria-label={`Dismiss ${title}`}>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => setIsDismissed(true)}
+          aria-label={t("dismissAlert", { title })}
+        >
           <X />
         </Button>
       </AlertAction>

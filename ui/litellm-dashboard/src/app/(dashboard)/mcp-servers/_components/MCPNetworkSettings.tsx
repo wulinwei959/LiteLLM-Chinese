@@ -362,7 +362,7 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
                 {range}
                 <button
                   type="button"
-                  aria-label={`Remove ${range}`}
+                  aria-label={t("networkSettings.removeRange", { range })}
                   onClick={() => setPrivateRanges(privateRanges.filter((r) => r !== range))}
                   className="ml-1 cursor-pointer"
                 >

@@ -26,7 +26,7 @@ describe("ExportSummary", () => {
       to: new Date("2024-01-31"),
     };
     renderWithProviders(<ExportSummary dateRange={dateRange} selectedFilters={["team-a", "team-b", "team-c"]} />);
-    expect(screen.getByText(/3 filters/)).toBeInTheDocument();
+    expect(screen.getByText(/3 个筛选条件/)).toBeInTheDocument();
   });
 
   it("should show singular 'filter' for one filter", () => {
@@ -35,7 +35,7 @@ describe("ExportSummary", () => {
       to: new Date("2024-01-31"),
     };
     renderWithProviders(<ExportSummary dateRange={dateRange} selectedFilters={["team-a"]} />);
-    expect(screen.getByText(/1 filter$/)).toBeInTheDocument();
+    expect(screen.getByText(/1 个筛选条件$/)).toBeInTheDocument();
   });
 
   it("should not show filter count when no filters selected", () => {
@@ -44,6 +44,6 @@ describe("ExportSummary", () => {
       to: new Date("2024-01-31"),
     };
     renderWithProviders(<ExportSummary dateRange={dateRange} selectedFilters={[]} />);
-    expect(screen.queryByText(/filter/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/筛选条件/)).not.toBeInTheDocument();
   });
 });

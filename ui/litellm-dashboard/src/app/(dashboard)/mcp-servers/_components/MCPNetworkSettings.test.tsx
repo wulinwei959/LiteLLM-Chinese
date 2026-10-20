@@ -132,7 +132,7 @@ describe("MCPNetworkSettings", () => {
     ]);
 
     renderSettings();
-    await userEvent.click(await screen.findByRole("button", { name: "Remove 10.0.0.0/8" }));
+    await userEvent.click(await screen.findByRole("button", { name: "移除 10.0.0.0/8" }));
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
     await waitFor(() =>
@@ -510,7 +510,7 @@ describe("MCPNetworkSettings", () => {
     vi.mocked(deleteConfigFieldSetting).mockRejectedValue(rangeFailure);
 
     renderSettings();
-    await userEvent.click(await screen.findByRole("button", { name: "Remove 10.0.0.0/8" }));
+    await userEvent.click(await screen.findByRole("button", { name: "移除 10.0.0.0/8" }));
     await addClient("Codex", "codex-mcp-client");
     await userEvent.click(screen.getAllByRole("button", { name: /Save|保存/ })[0]);
 
