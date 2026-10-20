@@ -9333,6 +9333,10 @@
 
     "protocolVersionHelpText": "LiteLLM serves this version to clients and converts the upstream agent's responses to match it, regardless of the original agent's version.",
 
+    "skillIdPlaceholder": "e.g., hello_world",
+
+    "skillNamePlaceholder": "e.g., Returns hello world",
+
     "skillDescPlaceholder": "What this skill does",
 
     "skillTagsPlaceholder": "Type a tag and press Enter",

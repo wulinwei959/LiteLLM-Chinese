@@ -9328,6 +9328,10 @@
 
     "protocolVersionHelpText": "LiteLLM 向客户端提供这个版本，并把上游智能体的响应转换为与之匹配的版本，与原始智能体的版本无关。",
 
+    "skillIdPlaceholder": "例如：hello_world",
+
+    "skillNamePlaceholder": "例如：返回 hello world",
+
     "skillDescPlaceholder": "这个技能的作用",
 
     "skillTagsPlaceholder": "输入标签后按回车",

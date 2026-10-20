@@ -68,7 +68,7 @@ const SkillsFieldArray = () => {
                 <Input
                   {...control}
                   ref={ref}
-                  placeholder={SKILL_FIELD_CONFIG.id.placeholder}
+                  placeholder={configText(t, SKILL_FIELD_CONFIG.id.placeholder)}
                   value={typeof value === "string" ? value : ""}
                   onChange={onChange}
                 />
@@ -84,7 +84,7 @@ const SkillsFieldArray = () => {
                 <Input
                   {...control}
                   ref={ref}
-                  placeholder={SKILL_FIELD_CONFIG.name.placeholder}
+                  placeholder={configText(t, SKILL_FIELD_CONFIG.name.placeholder)}
                   value={typeof value === "string" ? value : ""}
                   onChange={onChange}
                 />

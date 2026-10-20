@@ -428,6 +428,8 @@ const FIELD_TEXT_KEYS: Record<string, string> = {
   Description: "skillDescLabel",
   Tags: "skillTagsLabel",
   Examples: "skillExamplesLabel",
+  "e.g., hello_world": "skillIdPlaceholder",
+  "e.g., Returns hello world": "skillNamePlaceholder",
   "What this skill does": "skillDescPlaceholder",
   "Type a tag and press Enter": "skillTagsPlaceholder",
   "Type an example and press Enter": "skillExamplesPlaceholder",
