@@ -45,9 +45,7 @@ const HowItWorks: React.FC = () => {
       </div>
       <div>
         <h3 className="mb-1 text-sm font-medium text-foreground">{t("example")}</h3>
-        <p className="text-xs text-muted-foreground">
-          A 5% discount on a $10.00 request results in: $10.00 × (1 - 0.05) = $9.50
-        </p>
+        <p className="text-xs text-muted-foreground">{t("calcExampleResult")}</p>
       </div>
       <div>
         <h3 className="mb-1 text-sm font-medium text-foreground">{t("validRange")}</h3>
@@ -56,9 +54,7 @@ const HowItWorks: React.FC = () => {
 
       <div className="border-t border-border pt-4">
         <h3 className="mb-2 text-sm font-medium text-foreground">{t("validating")}</h3>
-        <p className="mb-3 text-xs text-muted-foreground">
-          Make a test request and check the response headers to verify discounts are applied:
-        </p>
+        <p className="mb-3 text-xs text-muted-foreground">{t("validatingIntro")}</p>
         <CodeBlock
           language="bash"
           code={`curl -X POST -i http://your-proxy:4000/chat/completions \\
@@ -98,7 +94,7 @@ const HowItWorks: React.FC = () => {
         <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <Label htmlFor="response-cost" className="mb-1 block text-xs">
-              Response Cost (x-litellm-response-cost)
+              {t("responseCostLabel")}
             </Label>
             <Input
               id="response-cost"
@@ -110,7 +106,7 @@ const HowItWorks: React.FC = () => {
           </div>
           <div>
             <Label htmlFor="discount-amount" className="mb-1 block text-xs">
-              Discount Amount (x-litellm-response-cost-discount-amount)
+              {t("discountAmountLabel")}
             </Label>
             <Input
               id="discount-amount"
