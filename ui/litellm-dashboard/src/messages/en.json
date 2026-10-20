@@ -8547,6 +8547,7 @@
       "connectionFailed": "Connection failed: {error}",
       "listening": "🎙️ Listening...",
       "microphoneError": "Microphone error: {error}",
+    "errorPrefix": "Error: {message}",
       "title": "Realtime Voice Chat",
       "connected": "Connected",
       "connecting": "Connecting...",

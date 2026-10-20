@@ -185,7 +185,10 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
               return prev;
             });
           } else if (type === "error") {
-            addMessage("status", `Error: ${data.error?.message || JSON.stringify(data.error)}`);
+            addMessage(
+              "status",
+              t("realtime.errorPrefix", { message: data.error?.message || JSON.stringify(data.error) }),
+            );
           }
         } catch {
           // ignore parse errors
@@ -301,7 +304,7 @@ const RealtimePlayground: React.FC<RealtimePlaygroundProps> = ({
       source.connect(processor);
       processor.connect(ctx.destination);
       setIsRecording(true);
-      addMessage("status", "🎙️ Listening...");
+      addMessage("status", t("realtime.listening"));
     } catch (err: any) {
       addStatus(t("realtime.microphoneError", { error: err.message }));
     }

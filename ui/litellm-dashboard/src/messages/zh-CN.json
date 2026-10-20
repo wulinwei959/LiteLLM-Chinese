@@ -8542,6 +8542,7 @@
       "connectionFailed": "连接失败: {error}",
       "listening": "🎙️ 正在聆听...",
       "microphoneError": "麦克风错误: {error}",
+    "errorPrefix": "错误：{message}",
       "title": "实时语音聊天",
       "connected": "已连接",
       "connecting": "连接中...",

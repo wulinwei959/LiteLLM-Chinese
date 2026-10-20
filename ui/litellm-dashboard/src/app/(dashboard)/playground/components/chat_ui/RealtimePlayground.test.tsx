@@ -69,8 +69,18 @@ beforeEach(() => {
       close = vi.fn();
       createBuffer = vi.fn(() => ({ getChannelData: () => new Float32Array(1), duration: 0 }));
       createBufferSource = vi.fn(() => ({ connect: vi.fn(), start: vi.fn(), buffer: null }));
+      createMediaStreamSource = vi.fn(() => ({ connect: vi.fn(), disconnect: vi.fn() }));
+      createScriptProcessor = vi.fn(() => ({ connect: vi.fn(), disconnect: vi.fn(), onaudioprocess: null }));
     },
   );
+  Object.defineProperty(navigator, "mediaDevices", {
+    writable: true,
+    value: {
+      getUserMedia: vi.fn(async () => ({
+        getTracks: () => [{ stop: vi.fn() }],
+      })),
+    },
+  });
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: (query: string) => ({
@@ -252,7 +262,18 @@ describe("RealtimePlayground", () => {
       latestSocket().emit({ type: "error", error: { message: "rate limited" } });
     });
 
-    expect(screen.getByText("Error: rate limited")).toBeInTheDocument();
+    expect(screen.getByText("错误：rate limited")).toBeInTheDocument();
+  });
+
+  it("shows the localized listening status while recording", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<RealtimePlayground {...props} />);
+
+    await connect(user);
+    await user.click(screen.getByRole("button", { name: "开始录音" }));
+
+    expect(screen.getByText("🎙️ 正在聆听...")).toBeInTheDocument();
+    expect(screen.queryByText("🎙️ Listening...")).not.toBeInTheDocument();
   });
 
   it("closes the socket and returns to the disconnected state", async () => {
