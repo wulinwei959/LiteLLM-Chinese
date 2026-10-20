@@ -125,7 +125,7 @@ describe("MultiExportDropdown", () => {
     await user.click(screen.getByRole("button", { name: "导出" }));
     await user.click(await screen.findByRole("menuitem", { name: "导出为 PDF" }));
 
-    expect(exportMultiToPDF).toHaveBeenCalledWith(multiResult);
+    expect(exportMultiToPDF).toHaveBeenCalledWith(multiResult, expect.any(Function));
   });
 
   it("should close the menu when clicking outside", async () => {

@@ -17,6 +17,7 @@ interface MultiExportDropdownProps {
 
 const MultiExportDropdown: React.FC<MultiExportDropdownProps> = ({ multiResult }) => {
   const t = useTranslations("costTracking.multiExport");
+  const ctT = useTranslations("costTracking");
   const hasResults = multiResult.entries.some((e) => e.result !== null);
 
   if (!hasResults) {
@@ -30,7 +31,7 @@ const MultiExportDropdown: React.FC<MultiExportDropdownProps> = ({ multiResult }
         {t("trigger")}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">
-        <DropdownMenuItem onClick={() => exportMultiToPDF(multiResult)}>
+        <DropdownMenuItem onClick={() => exportMultiToPDF(multiResult, ctT)}>
           <FileText />
           {t("asPdf")}
         </DropdownMenuItem>

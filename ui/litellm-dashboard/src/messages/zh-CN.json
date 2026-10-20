@@ -9458,7 +9458,34 @@
     "multiExport": {
         "trigger": "导出",
         "asPdf": "导出为 PDF",
-        "asCsv": "导出为 CSV"
+        "asCsv": "导出为 CSV",
+        "report": {
+          "documentTitle": "多模型成本估算报告",
+          "heading": "LLM 成本估算报告",
+          "modelsConfigured": "已配置 {count} 个模型",
+          "combinedTotals": "合计总额",
+          "totalPerRequest": "每次请求合计",
+          "totalDaily": "每日合计",
+          "totalMonthly": "每月合计",
+          "marginPerRequest": "每次请求利润",
+          "dailyMargin": "每日利润",
+          "monthlyMargin": "每月利润",
+          "modelBreakdown": "模型明细",
+          "inputTokensPerRequest": "每次请求输入令牌数",
+          "outputTokensPerRequest": "每次请求输出令牌数",
+          "requestsPerDay": "每日请求数",
+          "requestsPerMonth": "每月请求数",
+          "costType": "成本类型",
+          "perRequest": "每次请求",
+          "daily": "每日",
+          "monthly": "每月",
+          "inputCost": "输入成本",
+          "outputCost": "输出成本",
+          "marginFee": "利润/费用",
+          "total": "总计",
+          "footer": "由 LiteLLM 定价计算器生成于 {date}",
+          "allowPopups": "请允许弹窗以导出 PDF"
+        }
     }
   },
   "cloudZero": {

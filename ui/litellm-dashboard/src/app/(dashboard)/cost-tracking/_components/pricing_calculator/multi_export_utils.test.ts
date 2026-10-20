@@ -1,9 +1,13 @@
 // @vitest-environment jsdom
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { createTranslator } from "next-intl";
+import en from "@/messages/en.json";
 import { exportMultiToPDF, exportMultiToCSV } from "./multi_export_utils";
 import type { MultiModelResult } from "./types";
 import type { CostEstimateResponse } from "../types";
+
+const t = createTranslator({ locale: "en", messages: en, namespace: "costTracking" });
 
 vi.mock("@/utils/dataUtils", () => ({
   formatNumberWithCommas: vi.fn((v: number, d: number = 0) => (Number.isFinite(v) ? v.toFixed(d) : "-")),
@@ -78,30 +82,30 @@ describe("exportMultiToPDF", () => {
   });
 
   it("should open a new popup window", () => {
-    exportMultiToPDF(makeMultiResult());
+    exportMultiToPDF(makeMultiResult(), t);
     expect(window.open).toHaveBeenCalledWith("", "_blank");
   });
 
   it("should write HTML containing the report title", () => {
-    exportMultiToPDF(makeMultiResult());
+    exportMultiToPDF(makeMultiResult(), t);
     const html = mockPrintWindow.document.write.mock.calls[0][0] as string;
     expect(html).toContain("LLM Cost Estimate Report");
   });
 
   it("should include model name and provider in the generated HTML", () => {
-    exportMultiToPDF(makeMultiResult());
+    exportMultiToPDF(makeMultiResult(), t);
     const html = mockPrintWindow.document.write.mock.calls[0][0] as string;
     expect(html).toContain("gpt-4");
     expect(html).toContain("openai");
   });
 
   it("should close the document after writing", () => {
-    exportMultiToPDF(makeMultiResult());
+    exportMultiToPDF(makeMultiResult(), t);
     expect(mockPrintWindow.document.close).toHaveBeenCalledTimes(1);
   });
 
   it("should call print after the window finishes loading", () => {
-    exportMultiToPDF(makeMultiResult());
+    exportMultiToPDF(makeMultiResult(), t);
     expect(mockPrintWindow.print).not.toHaveBeenCalled();
     mockPrintWindow.onload!();
     expect(mockPrintWindow.print).toHaveBeenCalledTimes(1);
@@ -118,13 +122,13 @@ describe("exportMultiToPDF", () => {
         monthly_margin: 30.0,
       },
     });
-    exportMultiToPDF(multiResult);
+    exportMultiToPDF(multiResult, t);
     const html = mockPrintWindow.document.write.mock.calls[0][0] as string;
     expect(html).toContain("Margin/Request");
   });
 
   it("should not show the margin section when margin per request is zero", () => {
-    exportMultiToPDF(makeMultiResult());
+    exportMultiToPDF(makeMultiResult(), t);
     const html = mockPrintWindow.document.write.mock.calls[0][0] as string;
     expect(html).not.toContain("Margin/Request");
   });
@@ -132,7 +136,7 @@ describe("exportMultiToPDF", () => {
   it("should alert when popup is blocked", () => {
     vi.spyOn(window, "open").mockReturnValue(null);
     const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
-    exportMultiToPDF(makeMultiResult());
+    exportMultiToPDF(makeMultiResult(), t);
     expect(alertSpy).toHaveBeenCalledWith("Please allow popups to export PDF");
   });
 
@@ -161,7 +165,7 @@ describe("exportMultiToPDF", () => {
         monthly_margin: null,
       },
     };
-    exportMultiToPDF(multiResult);
+    exportMultiToPDF(multiResult, t);
     const html = mockPrintWindow.document.write.mock.calls[0][0] as string;
     expect(html).toContain("1 model configured");
     expect(html).toContain("claude-3");
@@ -192,7 +196,7 @@ describe("exportMultiToPDF", () => {
         monthly_margin: null,
       },
     };
-    exportMultiToPDF(multiResult);
+    exportMultiToPDF(multiResult, t);
     const html = mockPrintWindow.document.write.mock.calls[0][0] as string;
     expect(html).toContain("2 models configured");
   });
