@@ -1606,7 +1606,7 @@ export const modelInfoCall = async (
       errorData += `error shown=${ModelListerrorShown}`;
       if (!ModelListerrorShown) {
         if (errorData.includes("No model list passed")) {
-          errorData = "No Models Exist. Click Add Model to get started.";
+          errorData = toastMessage("noModelsExist");
         }
         toast.info(errorData);
         ModelListerrorShown = true;

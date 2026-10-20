@@ -12623,6 +12623,7 @@
     "updateGuardrailFailed": "Failed to update guardrail",
     "validateBlockedWordsFileFailed": "Failed to validate blocked words file",
     "noResponseBody": "No response body",
+    "noModelsExist": "No Models Exist. Click Add Model to get started.",
     "performDryRunFailed": "Failed to perform dry run",
     "exportCloudZeroDataFailed": "Failed to export data",
     "createCloudZeroIntegrationFailed": "Failed to create CloudZero integration",

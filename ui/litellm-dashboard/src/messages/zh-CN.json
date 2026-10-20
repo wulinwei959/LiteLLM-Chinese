@@ -12618,6 +12618,7 @@
     "updateGuardrailFailed": "更新护栏失败",
     "validateBlockedWordsFileFailed": "校验屏蔽词文件失败",
     "noResponseBody": "未收到响应体",
+    "noModelsExist": "尚无模型。请点击「添加模型」开始使用。",
     "performDryRunFailed": "试运行失败",
     "exportCloudZeroDataFailed": "导出数据失败",
     "createCloudZeroIntegrationFailed": "创建 CloudZero 集成失败",
