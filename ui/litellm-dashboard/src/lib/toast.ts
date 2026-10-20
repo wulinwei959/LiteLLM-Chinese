@@ -15,6 +15,11 @@ type ErrorFacts = {
   readonly text: string;
 };
 
+type ToastTitle = {
+  readonly category: string;
+  readonly label: string;
+};
+
 const DEFAULT_DURATION_MS: Readonly<Record<ToastKind, number>> = {
   success: 4000,
   info: 4000,
@@ -22,30 +27,30 @@ const DEFAULT_DURATION_MS: Readonly<Record<ToastKind, number>> = {
   error: 6000,
 };
 
-const PROXY_TYPE_TITLES: Readonly<Record<string, string>> = {
-  budget_exceeded: "Budget Exceeded",
-  no_db_connection: "Service Unavailable",
-  expired_key: "Authentication Error",
-  token_not_found_in_db: "Authentication Error",
-  team_member_permission_error: "Access Denied",
-  not_found_error: "Not Found",
-  validation_error: "Validation Error",
-  bad_request_error: "Request Error",
-  team_member_already_in_team: "Already Exists",
+const PROXY_TYPE_TITLES: Readonly<Record<string, ToastTitle>> = {
+  budget_exceeded: { category: "budget", label: "Budget Exceeded" },
+  no_db_connection: { category: "service", label: "Service Unavailable" },
+  expired_key: { category: "auth", label: "Authentication Error" },
+  token_not_found_in_db: { category: "auth", label: "Authentication Error" },
+  team_member_permission_error: { category: "forbidden", label: "Access Denied" },
+  not_found_error: { category: "not_found", label: "Not Found" },
+  validation_error: { category: "validation", label: "Validation Error" },
+  bad_request_error: { category: "request", label: "Request Error" },
+  team_member_already_in_team: { category: "conflict", label: "Already Exists" },
 };
 
-const STATUS_TITLES: Readonly<Record<number, string>> = {
-  400: "Request Error",
-  401: "Authentication Error",
-  403: "Access Denied",
-  404: "Not Found",
-  409: "Already Exists",
-  422: "Validation Error",
-  429: "Rate Limit Exceeded",
-  503: "Service Unavailable",
+const STATUS_TITLES: Readonly<Record<number, ToastTitle>> = {
+  400: { category: "request", label: "Request Error" },
+  401: { category: "auth", label: "Authentication Error" },
+  403: { category: "forbidden", label: "Access Denied" },
+  404: { category: "not_found", label: "Not Found" },
+  409: { category: "conflict", label: "Already Exists" },
+  422: { category: "validation", label: "Validation Error" },
+  429: { category: "rate_limit", label: "Rate Limit Exceeded" },
+  503: { category: "service", label: "Service Unavailable" },
 };
 
-const WARNING_TITLES: ReadonlySet<string> = new Set(["Budget Exceeded", "Rate Limit Exceeded"]);
+const WARNING_CATEGORIES: ReadonlySet<string> = new Set(["budget", "rate_limit"]);
 
 const asRecord = (value: unknown): Record<string, unknown> | undefined =>
   value !== null && typeof value === "object" ? (value as Record<string, unknown>) : undefined;
@@ -110,19 +115,19 @@ const describeError = (input: unknown): ErrorFacts => {
   };
 };
 
-const titleForStatus = (status: number): string => {
+const titleForStatus = (status: number): ToastTitle => {
   const known = STATUS_TITLES[status];
   if (known !== undefined) return known;
-  if (status >= 500) return "Server Error";
-  if (status >= 400) return "Request Error";
-  return "Error";
+  if (status >= 500) return { category: "server", label: "Server Error" };
+  if (status >= 400) return { category: "request", label: "Request Error" };
+  return { category: "generic", label: "Error" };
 };
 
-const titleFor = ({ status, proxyType }: ErrorFacts): string => {
-  if (proxyType?.endsWith("_access_denied")) return "Access Denied";
+const titleFor = ({ status, proxyType }: ErrorFacts): ToastTitle => {
+  if (proxyType?.endsWith("_access_denied")) return { category: "forbidden", label: "Access Denied" };
   const byType = proxyType === undefined ? undefined : PROXY_TYPE_TITLES[proxyType];
   if (byType !== undefined) return byType;
-  return status === undefined ? "Error" : titleForStatus(status);
+  return status === undefined ? { category: "generic", label: "Error" } : titleForStatus(status);
 };
 
 const show = (kind: ToastKind, message: ReactNode, options?: ToastOptions): void => {
@@ -139,8 +144,8 @@ export const toast = {
   error: (message: ReactNode, options?: ToastOptions): void => show("error", message, options),
   fromError: (input: unknown, options?: ToastOptions): void => {
     const facts = describeError(input);
-    const title = titleFor(facts);
-    show(WARNING_TITLES.has(title) ? "warning" : "error", title, { description: facts.text, ...options });
+    const { category, label } = titleFor(facts);
+    show(WARNING_CATEGORIES.has(category) ? "warning" : "error", label, { description: facts.text, ...options });
   },
   dismiss: (): void => {
     sonner.dismiss();
