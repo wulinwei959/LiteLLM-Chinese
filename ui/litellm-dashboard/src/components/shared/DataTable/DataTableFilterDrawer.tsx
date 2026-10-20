@@ -1,6 +1,7 @@
 "use client";
 
 import type { ColumnFiltersState, Table } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -42,17 +43,19 @@ function toFilters(draft: Record<string, unknown>): ColumnFiltersState {
     .map(([id, value]) => ({ id, value }));
 }
 
-export function DataTableFilterDrawer<TData>({
-  table,
-  open,
-  onOpenChange,
-  title = "Filters",
-  description,
-  applyLabel = "Apply Filters",
-  resetLabel = "Reset",
-  onReset,
-  children,
-}: DataTableFilterDrawerProps<TData>) {
+export function DataTableFilterDrawer<TData>(props: DataTableFilterDrawerProps<TData>) {
+  const t = useTranslations("common");
+  const {
+    table,
+    open,
+    onOpenChange,
+    title = t("filters"),
+    description,
+    applyLabel = t("applyFilters"),
+    resetLabel = t("reset"),
+    onReset,
+    children,
+  } = props;
   const [draft, setDraft] = React.useState<Record<string, unknown>>(() => toDraft(table.getState().columnFilters));
   const [wasOpen, setWasOpen] = React.useState(open);
 

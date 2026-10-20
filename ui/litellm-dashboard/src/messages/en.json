@@ -127,6 +127,7 @@
     "reset": "Reset",
     "clear": "Clear",
     "apply": "Apply",
+    "applyFilters": "Apply Filters",
     "discard": "Discard",
     "continue": "Continue",
     "finish": "Finish",
