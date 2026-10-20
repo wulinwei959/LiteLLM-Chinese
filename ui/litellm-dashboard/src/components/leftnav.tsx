@@ -795,7 +795,9 @@ const Sidebar_: React.FC<SidebarProps> = ({
           {visibleGroups.map((group, gi) => (
             <SidebarGroup key={group.groupLabel}>
               {gi > 0 && <SidebarSeparator className="hidden group-data-[collapsed=true]/sidebar:block" />}
-              <SidebarGroupLabel>{group.groupLabel}</SidebarGroupLabel>
+              <SidebarGroupLabel>
+                {navT(navMessageKey(SECTION_DISPLAY[group.groupLabel] ?? group.groupLabel))}
+              </SidebarGroupLabel>
               <SidebarMenu>{group.items.map((item) => renderItem(item))}</SidebarMenu>
             </SidebarGroup>
           ))}

@@ -205,7 +205,10 @@ describe("Sidebar (leftnav)", () => {
     ];
 
     topLevelLabels.forEach((label) => {
-      expect(screen.getByText(label)).toBeInTheDocument();
+      // Only the menu item (a link or an expandable button) counts; the "设置"
+      // group header renders the same text in a plain div and must not be matched.
+      const tab = screen.getAllByText(label).find((el) => el.closest("a,button"));
+      expect(tab).toBeDefined();
     });
   });
 
@@ -557,7 +560,10 @@ describe("Sidebar (leftnav)", () => {
     renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI />);
     for (const group of ["智能体", "工具", "实验性", "设置"]) {
       act(() => {
-        fireEvent.click(screen.getByText(group));
+        // Scope to the expandable toggle button so the "设置" group header (same
+        // text, plain div) isn't picked up by getByText and clicked instead.
+        const toggle = screen.getAllByText(group).find((el) => el.closest("button"))!;
+        fireEvent.click(toggle);
       });
     }
     const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href") ?? "");
