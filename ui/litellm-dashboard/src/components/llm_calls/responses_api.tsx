@@ -91,11 +91,11 @@ export async function makeOpenAIResponsesRequest(
   customHeaders?: CustomHeaders,
 ) {
   if (!accessToken) {
-    throw new Error("Virtual Key is required");
+    throw new Error(t("llmCalls.virtualKeyRequired"));
   }
 
   if (!selectedModel || selectedModel.trim() === "") {
-    throw new Error("Model is required. Please select a model before sending a request.");
+    throw new Error(t("llmCalls.modelRequired"));
   }
 
   // Base URL should be the current base_url

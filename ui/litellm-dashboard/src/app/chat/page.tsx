@@ -240,7 +240,7 @@ export default function ChatConversationPage() {
           });
         } else {
           updateLastAssistantMessage(convId!, {
-            content: "[Something went wrong. The partial response has been saved.]",
+            content: t("partialResponseSaved"),
           });
         }
       } finally {
@@ -260,6 +260,7 @@ export default function ChatConversationPage() {
       selectedMCPServers,
       accessToken,
       llmT,
+      t,
       createConversation,
       appendMessage,
       updateLastAssistantMessage,

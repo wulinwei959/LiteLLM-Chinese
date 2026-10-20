@@ -48,7 +48,7 @@ export async function makeOpenAIEmbeddingsRequest(
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(errorText || `Request failed with status ${response.status}`);
+      throw new Error(errorText || t("llmCalls.requestFailedWithStatus", { status: response.status }));
     }
 
     const responseData = await response.json();

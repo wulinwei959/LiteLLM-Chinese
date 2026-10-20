@@ -8146,7 +8146,8 @@
       "send": "Send",
       "historyNotSaved": "Chat history won't be saved in this browser session",
       "openIntegrations": "Open Integrations ->",
-      "blankIntro": "Chat with 100+ LLMs + MCP tools; authenticate once, use them here."
+      "blankIntro": "Chat with 100+ LLMs + MCP tools; authenticate once, use them here.",
+    "partialResponseSaved": "[Something went wrong. The partial response has been saved.]"
     }
   },
   "playground": {
@@ -8701,6 +8702,8 @@
       "errorInteractionsApi": "Error occurred while making Interactions API request. Error: {error}",
       "noEmbeddingReturned": "No embedding returned from server",
       "noResponseBodyReceived": "No response body received",
+      "requestFailedWithStatus": "Request failed with status {status}",
+      "modelRequired": "Model is required. Please select a model before sending a request.",
       "noImageDataInResponse": "No image data found in response",
       "invalidResponseFormat": "Invalid response format",
       "noTranscriptionText": "No transcription text in response",

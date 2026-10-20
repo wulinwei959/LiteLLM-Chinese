@@ -8145,7 +8145,8 @@
       "send": "发送",
       "historyNotSaved": "本次浏览器会话不会保存聊天记录",
       "openIntegrations": "打开集成 ->",
-      "blankIntro": "在这里与 100+ 个 LLM 及 MCP 工具对话；认证一次，即可随处使用。"
+      "blankIntro": "在这里与 100+ 个 LLM 及 MCP 工具对话；认证一次，即可随处使用。",
+      "partialResponseSaved": "[出现错误，部分回复已保存。]"
     }
   },
   "playground": {
@@ -8696,6 +8697,8 @@
       "errorInteractionsApi": "发起 Interactions API 请求时出错。错误: {error}",
       "noEmbeddingReturned": "服务器未返回嵌入向量",
       "noResponseBodyReceived": "未收到响应体",
+      "requestFailedWithStatus": "请求失败，状态码 {status}",
+      "modelRequired": "需要模型，请先选择模型再发送请求。",
       "noImageDataInResponse": "响应中未找到图像数据",
       "invalidResponseFormat": "响应格式无效",
       "noTranscriptionText": "响应中无转录文本",
