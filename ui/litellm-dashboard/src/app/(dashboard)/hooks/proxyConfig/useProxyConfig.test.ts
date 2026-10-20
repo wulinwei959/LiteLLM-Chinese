@@ -14,6 +14,7 @@ import {
   type DeleteProxyConfigFieldRequest,
   type DeleteProxyConfigFieldResponse,
 } from "./useProxyConfig";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
 
 const {
   mockProxyBaseUrl,
@@ -122,16 +123,7 @@ describe("useProxyConfig", () => {
 
     vi.clearAllMocks();
 
-    mockUseAuthorized.mockReturnValue({
-      accessToken: mockAccessToken,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: mockAccessToken }));
 
     fetchSpy = vi.fn();
     global.fetch = fetchSpy;
@@ -210,16 +202,7 @@ describe("useProxyConfig", () => {
   });
 
   it("should not execute query when accessToken is missing", async () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useProxyConfig(ConfigType.GENERAL_SETTINGS), { wrapper });
 
@@ -293,16 +276,7 @@ describe("useDeleteProxyConfigField", () => {
 
     vi.clearAllMocks();
 
-    mockUseAuthorized.mockReturnValue({
-      accessToken: mockAccessToken,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: mockAccessToken }));
 
     fetchSpy = vi.fn();
     global.fetch = fetchSpy;
@@ -380,16 +354,7 @@ describe("useDeleteProxyConfigField", () => {
   });
 
   it("should throw error when accessToken is missing", async () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useDeleteProxyConfigField(), { wrapper });
 

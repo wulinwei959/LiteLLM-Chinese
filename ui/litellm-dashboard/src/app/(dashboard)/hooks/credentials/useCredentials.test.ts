@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { ReactNode } from "react";
 import { useCredentials } from "./useCredentials";
 import { credentialListCall, CredentialsResponse, CredentialItem } from "@/components/networking";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
 
 // Mock the networking function
 vi.mock("@/components/networking", () => ({
@@ -58,16 +59,7 @@ describe("useCredentials", () => {
     vi.clearAllMocks();
 
     // Set default mock for useAuthorized (enabled state)
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userRole: "Admin",
-      userId: "test-user-id",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
   });
 
   const wrapper = ({ children }: { children: ReactNode }) =>
@@ -121,16 +113,7 @@ describe("useCredentials", () => {
 
   it("should not execute query when accessToken is missing", async () => {
     // Mock missing accessToken
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userRole: "Admin",
-      userId: "test-user-id",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useCredentials(), { wrapper });
 

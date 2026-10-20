@@ -3,6 +3,7 @@ import { renderHook, waitFor } from "@testing-library/react";
 import React, { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RouterFieldsResponse, useRouterFields } from "./useRouterFields";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
 
 // Mock the networking module
 vi.mock("@/components/networking", () => ({
@@ -69,16 +70,7 @@ describe("useRouterFields", () => {
     vi.clearAllMocks();
 
     // Set default mock for useAuthorized (enabled state)
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userRole: "Admin",
-      userId: "test-user-id",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
   });
 
   const wrapper = ({ children }: { children: ReactNode }) =>
@@ -151,16 +143,7 @@ describe("useRouterFields", () => {
   });
 
   it("should not execute query when accessToken is missing", () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userRole: "Admin",
-      userId: "test-user-id",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useRouterFields(), { wrapper });
 
@@ -174,16 +157,7 @@ describe("useRouterFields", () => {
   });
 
   it("should not execute query when userId is missing", () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userRole: "Admin",
-      userId: null,
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userId: null }));
 
     const { result } = renderHook(() => useRouterFields(), { wrapper });
 
@@ -197,16 +171,7 @@ describe("useRouterFields", () => {
   });
 
   it("should not execute query when userRole is missing", () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userRole: null,
-      userId: "test-user-id",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userRole: null }));
 
     const { result } = renderHook(() => useRouterFields(), { wrapper });
 

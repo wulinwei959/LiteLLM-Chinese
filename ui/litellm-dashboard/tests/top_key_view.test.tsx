@@ -3,6 +3,7 @@ import { renderWithProviders, screen, fireEvent } from "./test-utils";
 import TopKeyView from "../src/components/UsagePage/components/EntityUsage/TopKeyView";
 import { TagUsage } from "../src/components/UsagePage/types";
 import useAuthorized from "../src/app/(dashboard)/hooks/useAuthorized";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
 
 // Mock the networking module
 vi.mock("../src/components/networking", () => ({
@@ -69,20 +70,16 @@ describe("TopKeyView", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseAuthorized.mockReturnValue({
-      isLoading: false,
-      isAuthorized: true,
+    const session = {
       token: "mock-token",
       accessToken: mockProps.accessToken,
       userId: mockProps.userID,
-      userEmail: "test@example.com",
       userRole: mockProps.userRole,
       userRoleLabel: mockProps.userRole,
-      isViewOnly: false,
       premiumUser: mockProps.premiumUser,
       disabledPersonalKeyCreation: false,
-      showSSOBanner: false,
-    });
+    };
+    mockUseAuthorized.mockReturnValue(authorizedSession(session));
   });
 
   describe("Tags Column Visibility", () => {

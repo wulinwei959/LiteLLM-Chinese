@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { ReactNode } from "react";
 import { useSSOSettings, SSOSettingsResponse } from "./useSSOSettings";
 import { getSSOSettings } from "@/components/networking";
+import { anonymousSession, authorizedSession } from "@tests/mocks/authorizedSession";
 
 vi.mock("@/components/networking", () => ({
   getSSOSettings: vi.fn(),
@@ -71,16 +72,7 @@ describe("useSSOSettings", () => {
 
     vi.clearAllMocks();
 
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
   });
 
   const wrapper = ({ children }: { children: ReactNode }) =>
@@ -135,16 +127,7 @@ describe("useSSOSettings", () => {
   });
 
   it("should not execute query when accessToken is missing", async () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useSSOSettings(), { wrapper });
 
@@ -156,16 +139,7 @@ describe("useSSOSettings", () => {
   });
 
   it("should not execute query when userId is missing", async () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: null,
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userId: null }));
 
     const { result } = renderHook(() => useSSOSettings(), { wrapper });
 
@@ -177,16 +151,7 @@ describe("useSSOSettings", () => {
   });
 
   it("should not execute query when userRole is missing", async () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: null,
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userRole: null }));
 
     const { result } = renderHook(() => useSSOSettings(), { wrapper });
 
@@ -198,16 +163,7 @@ describe("useSSOSettings", () => {
   });
 
   it("should not execute query when all auth values are missing", async () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: null,
-      userRole: null,
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(anonymousSession());
 
     const { result } = renderHook(() => useSSOSettings(), { wrapper });
 

@@ -11,6 +11,37 @@ import { renderWithProviders } from "@/../tests/test-utils";
 import type { Organization } from "@/components/networking";
 import * as networking from "@/components/networking";
 import UsagePage from "./UsagePageView";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
+
+const SESSION_OVERRIDE_1 = {
+  token: "mock-token",
+  accessToken: "test-token",
+  userId: "user-123",
+  premiumUser: true,
+  disabledPersonalKeyCreation: false,
+};
+const SESSION_OVERRIDE_2 = {
+  token: "mock-token",
+  accessToken: "test-token",
+  userId: "user-123",
+  userRole: "internal_user",
+  premiumUser: true,
+  disabledPersonalKeyCreation: false,
+};
+const SESSION_OVERRIDE_3 = {
+  token: "mock-token",
+  accessToken: "test-token",
+  userId: "user-123",
+  userRole: "Internal User",
+  disabledPersonalKeyCreation: false,
+};
+const SESSION_OVERRIDE_4 = {
+  token: "mock-token",
+  accessToken: "test-token",
+  userId: "user-123",
+  userRole: "Internal User",
+  disabledPersonalKeyCreation: false,
+};
 
 // Polyfill ResizeObserver for test environment
 beforeAll(() => {
@@ -366,18 +397,7 @@ describe("UsagePage", () => {
   };
 
   beforeEach(() => {
-    mockUseAuthorized.mockReturnValue({
-      isLoading: false,
-      isAuthorized: true,
-      token: "mock-token",
-      accessToken: "test-token",
-      userId: "user-123",
-      userEmail: "test@example.com",
-      userRole: "Admin",
-      premiumUser: true,
-      disabledPersonalKeyCreation: false,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_1));
     mockUseCurrentUser.mockReturnValue({
       data: {
         user_id: "user-123",
@@ -697,18 +717,7 @@ describe("UsagePage", () => {
   });
 
   it("should show tag usage selector option for internal users", async () => {
-    mockUseAuthorized.mockReturnValue({
-      isLoading: false,
-      isAuthorized: true,
-      token: "mock-token",
-      accessToken: "test-token",
-      userId: "user-123",
-      userEmail: "test@example.com",
-      userRole: "internal_user",
-      premiumUser: true,
-      disabledPersonalKeyCreation: false,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_2));
 
     renderWithProviders(<UsagePage {...defaultProps} />);
 
@@ -1021,18 +1030,7 @@ describe("UsagePage", () => {
 
   describe("non-admin user behavior", () => {
     it("should not render user selector for non-admin users", async () => {
-      mockUseAuthorized.mockReturnValue({
-        isLoading: false,
-        isAuthorized: true,
-        token: "mock-token",
-        accessToken: "test-token",
-        userId: "user-123",
-        userEmail: "test@example.com",
-        userRole: "Internal User",
-        premiumUser: false,
-        disabledPersonalKeyCreation: false,
-        showSSOBanner: false,
-      });
+      mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_3));
 
       renderWithProviders(<UsagePage {...defaultProps} />);
 
@@ -1046,18 +1044,7 @@ describe("UsagePage", () => {
     });
 
     it("should always pass own userId for non-admin users", async () => {
-      mockUseAuthorized.mockReturnValue({
-        isLoading: false,
-        isAuthorized: true,
-        token: "mock-token",
-        accessToken: "test-token",
-        userId: "user-123",
-        userEmail: "test@example.com",
-        userRole: "Internal User",
-        premiumUser: false,
-        disabledPersonalKeyCreation: false,
-        showSSOBanner: false,
-      });
+      mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_4));
 
       renderWithProviders(<UsagePage {...defaultProps} />);
 

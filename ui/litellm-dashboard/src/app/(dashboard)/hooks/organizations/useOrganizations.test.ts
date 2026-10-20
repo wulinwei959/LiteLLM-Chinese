@@ -5,6 +5,9 @@ import React, { ReactNode } from "react";
 import { organizationKeys, useOrganization, useOrganizations } from "./useOrganizations";
 import { organizationInfoCall, organizationListCall } from "@/components/networking";
 import type { Organization } from "@/components/networking";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
+
+const SESSION_OVERRIDE_1 = { accessToken: null, userId: null, userRole: null, token: null, premiumUser: true };
 
 // Mock the networking function
 vi.mock("@/components/networking", () => ({
@@ -75,16 +78,7 @@ describe("useOrganizations", () => {
     vi.clearAllMocks();
 
     // Set default mock for useAuthorized (enabled state)
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: true,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ premiumUser: true }));
   });
 
   const wrapper = ({ children }: { children: ReactNode }) =>
@@ -175,16 +169,7 @@ describe("useOrganizations", () => {
 
   it("should not execute query when accessToken is missing", async () => {
     // Mock missing accessToken
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: true,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null, premiumUser: true }));
 
     const { result } = renderHook(() => useOrganizations(), { wrapper });
 
@@ -198,16 +183,7 @@ describe("useOrganizations", () => {
   });
 
   it("does not call the organization API when the session is not premium", async () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
 
     const { result } = renderHook(() => useOrganizations(), { wrapper });
 
@@ -219,16 +195,7 @@ describe("useOrganizations", () => {
 
   it("should not execute query when userId is missing", async () => {
     // Mock missing userId
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: null,
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: true,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userId: null, premiumUser: true }));
 
     const { result } = renderHook(() => useOrganizations(), { wrapper });
 
@@ -243,16 +210,7 @@ describe("useOrganizations", () => {
 
   it("should not execute query when userRole is missing", async () => {
     // Mock missing userRole
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: null,
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: true,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userRole: null, premiumUser: true }));
 
     const { result } = renderHook(() => useOrganizations(), { wrapper });
 
@@ -267,16 +225,7 @@ describe("useOrganizations", () => {
 
   it("should not execute query when all auth values are missing", async () => {
     // Mock all auth values missing
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: null,
-      userRole: null,
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: true,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_1));
 
     const { result } = renderHook(() => useOrganizations(), { wrapper });
 
@@ -349,16 +298,7 @@ describe("useOrganization", () => {
 
     vi.clearAllMocks();
 
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: true,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ premiumUser: true }));
   });
 
   const wrapper = ({ children }: { children: ReactNode }) =>
@@ -377,16 +317,7 @@ describe("useOrganization", () => {
   });
 
   it("does not call the organization info API when the session is not premium", () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
 
     const { result } = renderHook(() => useOrganization("org-1"), { wrapper });
 

@@ -5,6 +5,7 @@ import React, { ReactNode } from "react";
 import { useAgents } from "./useAgents";
 import { getAgentsList } from "@/components/networking";
 import type { AgentsResponse, Agent } from "@/components/agents/types";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
 
 // Mock the networking function
 vi.mock("@/components/networking", () => ({
@@ -73,16 +74,7 @@ describe("useAgents", () => {
     vi.clearAllMocks();
 
     // Set default mock for useAuthorized (enabled state)
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userRole: "Admin",
-      userId: "test-user-id",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
   });
 
   const wrapper = ({ children }: { children: ReactNode }) =>
@@ -136,16 +128,7 @@ describe("useAgents", () => {
 
   it("should not execute query when accessToken is missing", async () => {
     // Mock missing accessToken
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userRole: "Admin",
-      userId: "test-user-id",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useAgents(), { wrapper });
 
@@ -160,16 +143,7 @@ describe("useAgents", () => {
 
   it("should not execute query when userRole is not an admin role", async () => {
     // Mock non-admin userRole
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userRole: "member", // Not in all_admin_roles
-      userId: "test-user-id",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userRole: "member" })); // "member" is not in all_admin_roles
 
     const { result } = renderHook(() => useAgents(), { wrapper });
 
@@ -184,16 +158,7 @@ describe("useAgents", () => {
 
   it("should not execute query when userRole is null", async () => {
     // Mock null userRole
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userRole: null,
-      userId: "test-user-id",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userRole: null }));
 
     const { result } = renderHook(() => useAgents(), { wrapper });
 
@@ -208,16 +173,7 @@ describe("useAgents", () => {
 
   it("should not execute query when userRole is empty string", async () => {
     // Mock empty string userRole
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userRole: "",
-      userId: "test-user-id",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userRole: "" }));
 
     const { result } = renderHook(() => useAgents(), { wrapper });
 
@@ -232,16 +188,7 @@ describe("useAgents", () => {
 
   it("should not execute query when both accessToken and userRole are missing", async () => {
     // Mock both auth values missing
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userRole: null,
-      userId: "test-user-id",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, userRole: null, token: null }));
 
     const { result } = renderHook(() => useAgents(), { wrapper });
 
@@ -275,16 +222,7 @@ describe("useAgents", () => {
     (getAgentsList as any).mockResolvedValue(mockAgentsResponse);
 
     // Mock proxy_admin role
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userRole: "proxy_admin",
-      userId: "test-user-id",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userRole: "proxy_admin" }));
 
     const { result } = renderHook(() => useAgents(), { wrapper });
 

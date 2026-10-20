@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SpendLogsTable from "./index";
 import { renderWithProviders, testQueryClient } from "../../../tests/test-utils";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
 
 const { useAuthorizedMock, useOrganizationsMock } = vi.hoisted(() => ({
   useAuthorizedMock: vi.fn(),
@@ -47,12 +48,8 @@ const defaultProps = {
 const ORG_ADMIN_MEMBERSHIPS = [{ organization_id: "org-1", members: [{ user_id: "user-1", user_role: "org_admin" }] }];
 
 const renderAs = (sessionRole: string, organizations: unknown[] = []) => {
-  useAuthorizedMock.mockReturnValue({
-    accessToken: "sk-test",
-    userId: "user-1",
-    userRole: sessionRole,
-    premiumUser: true,
-  });
+  const session = { accessToken: "sk-test", userId: "user-1", userRole: sessionRole, premiumUser: true };
+  useAuthorizedMock.mockReturnValue(authorizedSession(session));
   useOrganizationsMock.mockReturnValue({ data: organizations });
   return renderWithProviders(<SpendLogsTable {...defaultProps} userRole={sessionRole} />);
 };

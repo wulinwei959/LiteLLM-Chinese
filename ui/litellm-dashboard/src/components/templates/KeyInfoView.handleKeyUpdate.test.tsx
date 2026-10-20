@@ -198,6 +198,22 @@ vi.mock("./key_edit_view", async () => {
 
 // ---- SUT import AFTER mocks ----
 import KeyInfoView from "./key_info_view";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
+
+const SESSION_OVERRIDE_2 = {
+  accessToken: "access_abc",
+  userId: "user_1",
+  userRole: "viewer",
+  token: "token_123",
+  disabledPersonalKeyCreation: false,
+};
+const SESSION_OVERRIDE_3 = {
+  accessToken: "access_abc",
+  userId: "user_1",
+  premiumUser: true,
+  token: "token_123",
+  disabledPersonalKeyCreation: false,
+};
 
 // ---- Test data helpers ----
 const baseKeyData = {
@@ -223,16 +239,14 @@ const baseKeyData = {
 
 const renderView = (premiumUser: boolean) => {
   // Configure the mock for this test
-  mockUseAuthorized.mockReturnValue({
+  const session = {
     accessToken: "access_abc",
     userId: "user_1",
-    userRole: "Admin",
-    premiumUser,
     token: "token_123",
-    userEmail: "test@example.com",
     disabledPersonalKeyCreation: false,
-    showSSOBanner: false,
-  });
+    premiumUser,
+  };
+  mockUseAuthorized.mockReturnValue(authorizedSession(session));
 
   return renderWithProviders(
     <KeyInfoView
@@ -254,16 +268,7 @@ beforeEach(() => {
 describe("KeyInfoView handleKeyUpdate guardrails guard", () => {
   it("should remove guardrails & prompts for non-premium key owner without write access role", async () => {
     const keyDataWithOwner = { ...baseKeyData, user_id: "user_1" };
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "access_abc",
-      userId: "user_1",
-      userRole: "viewer",
-      premiumUser: false,
-      token: "token_123",
-      userEmail: "test@example.com",
-      disabledPersonalKeyCreation: false,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_2));
 
     renderWithProviders(
       <KeyInfoView
@@ -487,16 +492,7 @@ describe("KeyInfoView handleKeyUpdate budget_duration", () => {
       budget_duration: null,
       budget_reset_at: null,
     });
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "access_abc",
-      userId: "user_1",
-      userRole: "Admin",
-      premiumUser: true,
-      token: "token_123",
-      userEmail: "test@example.com",
-      disabledPersonalKeyCreation: false,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_3));
 
     renderWithProviders(
       <KeyInfoView

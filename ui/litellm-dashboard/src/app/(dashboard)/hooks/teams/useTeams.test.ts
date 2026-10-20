@@ -6,6 +6,14 @@ import { useTeams, useTeam, useAllTeams, useDeletedTeams, DeletedTeam, teamListC
 import { fetchTeams } from "@/app/(dashboard)/networking";
 import { teamInfoCall } from "@/components/networking";
 import type { Team } from "@/components/key_team_helpers/key_list";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
+
+const SESSION_OVERRIDE_1 = {
+  accessToken: "a-different-users-token",
+  userId: "other-user-id",
+  token: "a-different-users-token",
+  userEmail: "other@example.com",
+};
 
 vi.mock("@/app/(dashboard)/networking", () => ({
   fetchTeams: vi.fn(),
@@ -71,16 +79,7 @@ describe("useTeams", () => {
     vi.clearAllMocks();
 
     // Set default mock for useAuthorized (enabled state)
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
   });
 
   const wrapper = ({ children }: { children: ReactNode }) =>
@@ -142,16 +141,7 @@ describe("useTeams", () => {
 
   it("should not execute query when accessToken is missing", async () => {
     // Mock missing accessToken
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useTeams(), { wrapper });
 
@@ -166,16 +156,7 @@ describe("useTeams", () => {
 
   it("should not execute query when accessToken is empty string", async () => {
     // Mock empty string accessToken
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: "", token: "" }));
 
     const { result } = renderHook(() => useTeams(), { wrapper });
 
@@ -242,16 +223,7 @@ describe("useTeams", () => {
     (fetchTeams as any).mockResolvedValue(mockTeams);
 
     // Mock specific userId and userRole
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "custom-user-id",
-      userRole: "member",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userId: "custom-user-id", userRole: "member" }));
 
     const { result } = renderHook(() => useTeams(), { wrapper });
 
@@ -268,16 +240,7 @@ describe("useTeams", () => {
     (fetchTeams as any).mockResolvedValue(mockTeams);
 
     // Mock null userId
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: null,
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userId: null }));
 
     const { result } = renderHook(() => useTeams(), { wrapper });
 
@@ -304,16 +267,7 @@ describe("useTeam", () => {
 
     vi.clearAllMocks();
 
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
   });
 
   const wrapper = ({ children }: { children: ReactNode }) =>
@@ -369,16 +323,7 @@ describe("useTeam", () => {
   });
 
   it("should not execute query when accessToken is missing", () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null })); // no accessToken, so the query stays disabled
 
     const { result } = renderHook(() => useTeam("team-1"), { wrapper });
 
@@ -426,16 +371,7 @@ describe("useTeam", () => {
     // by manually constructing and calling the queryFn logic
 
     // Set up mocks
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null, // Missing accessToken
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     // Manually test the queryFn logic by calling it directly
     // This simulates what would happen if enabled check was bypassed
@@ -455,16 +391,7 @@ describe("useTeam", () => {
     await expect(testQueryFn()).rejects.toThrow("Missing auth or teamId");
 
     // Also test with missing teamId
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
 
     const testQueryFnMissingTeamId = async () => {
       const { accessToken } = mockUseAuthorized();
@@ -641,16 +568,7 @@ describe("useDeletedTeams", () => {
 
     vi.clearAllMocks();
 
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
 
     global.fetch = vi.fn();
   });
@@ -725,16 +643,7 @@ describe("useDeletedTeams", () => {
   });
 
   it("should not execute query when accessToken is missing", () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useDeletedTeams(1, 10, {}), { wrapper });
 
@@ -814,16 +723,7 @@ describe("useAllTeams", () => {
   beforeEach(() => {
     queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     vi.clearAllMocks();
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
     fetchMock = vi.fn();
     global.fetch = fetchMock as unknown as typeof fetch;
   });
@@ -839,16 +739,7 @@ describe("useAllTeams", () => {
   const requestedPage = (url: string) => new URLSearchParams(url.split("?")[1]).get("page");
   const requestedUserId = (url: string) => new URLSearchParams(url.split("?")[1]).get("user_id");
   const asRole = (userRole: string, userId = "test-user-id") =>
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId,
-      userRole,
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userRole, userId }));
 
   it("paginates /v2/team/list to completion and concatenates every page", async () => {
     fetchMock.mockImplementation((url: string) =>
@@ -882,16 +773,7 @@ describe("useAllTeams", () => {
   });
 
   it("does not execute when accessToken is missing", () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useAllTeams(), { wrapper });
 
@@ -907,16 +789,7 @@ describe("useAllTeams", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "a-different-users-token",
-      userId: "other-user-id",
-      userRole: "Admin",
-      token: "a-different-users-token",
-      userEmail: "other@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_1));
     rerender();
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { ReactNode } from "react";
 import { useKeys, useDeletedKeys } from "./useKeys";
 import type { KeyResponse } from "@/components/key_team_helpers/key_list";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
 
 // Mock the networking utilities
 vi.mock("@/components/networking", () => ({
@@ -176,16 +177,7 @@ describe("useKeys", () => {
     vi.clearAllMocks();
 
     // Set default mock for useAuthorized (enabled state)
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userRole: "Admin",
-      userId: "test-user-id",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
 
     // Reset fetch mock
     mockFetch.mockClear();
@@ -267,16 +259,7 @@ describe("useKeys", () => {
 
   it("should not execute query when accessToken is missing", async () => {
     // Mock missing accessToken
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userRole: "Admin",
-      userId: "test-user-id",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useKeys(1, 10), { wrapper });
 
@@ -554,16 +537,7 @@ describe("useDeletedKeys", () => {
     vi.clearAllMocks();
 
     // Set default mock for useAuthorized (enabled state)
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userRole: "Admin",
-      userId: "test-user-id",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
 
     // Reset fetch mock
     mockFetch.mockClear();
@@ -665,16 +639,7 @@ describe("useDeletedKeys", () => {
 
   it("should not execute query when accessToken is missing", async () => {
     // Mock missing accessToken
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userRole: "Admin",
-      userId: "test-user-id",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useDeletedKeys(1, 10), { wrapper });
 

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { ReactNode } from "react";
 import { useEditSSOSettings, EditSSOSettingsParams, EditSSOSettingsResponse } from "./useEditSSOSettings";
 import { updateSSOSettings } from "@/components/networking";
+import { authorizedSession } from "@tests/mocks/authorizedSession";
 
 vi.mock("@/components/networking", () => ({
   updateSSOSettings: vi.fn(),
@@ -36,16 +37,7 @@ describe("useEditSSOSettings", () => {
 
     vi.clearAllMocks();
 
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
   });
 
   const wrapper = ({ children }: { children: ReactNode }) =>
@@ -105,16 +97,7 @@ describe("useEditSSOSettings", () => {
   });
 
   it("should throw error when accessToken is missing", async () => {
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useEditSSOSettings(), { wrapper });
 

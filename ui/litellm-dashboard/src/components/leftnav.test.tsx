@@ -4,6 +4,18 @@ import { renderWithProviders } from "../../tests/test-utils";
 import Sidebar, { menuGroups, getBreadcrumb } from "./leftnav";
 import type { NavTranslator } from "@/lib/i18n/translators";
 
+const ORG_ADMIN_SESSION = {
+  userId: "org-admin-user-id",
+  accessToken: "test-access-token",
+  userRole: "viewer",
+  isViewOnly: false,
+  token: "test-token",
+  userEmail: "orgadmin@example.com",
+  premiumUser: false,
+  disabledPersonalKeyCreation: false,
+  showSSOBanner: false,
+};
+
 vi.mock("../utils/roles", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../utils/roles")>();
   return {
@@ -481,17 +493,7 @@ describe("Sidebar (leftnav)", () => {
   });
 
   it("should show Organizations tab for organization admins", () => {
-    mockUseAuthorized.mockReturnValue({
-      userId: "org-admin-user-id",
-      accessToken: "test-access-token",
-      userRole: "viewer",
-      isViewOnly: false,
-      token: "test-token",
-      userEmail: "orgadmin@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: false,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(ORG_ADMIN_SESSION);
 
     mockUseOrganizations.mockReturnValue({
       data: [

@@ -5,6 +5,7 @@ import React, { ReactNode } from "react";
 import { useTags } from "./useTags";
 import { tagListCall } from "@/components/networking";
 import type { TagListResponse } from "@/components/tag_management/types";
+import { anonymousSession, authorizedSession } from "@tests/mocks/authorizedSession";
 
 // Mock the networking function
 vi.mock("@/components/networking", () => ({
@@ -75,16 +76,7 @@ describe("useTags", () => {
     vi.clearAllMocks();
 
     // Set default mock for useAuthorized (enabled state)
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession());
   });
 
   const wrapper = ({ children }: { children: ReactNode }) =>
@@ -138,16 +130,7 @@ describe("useTags", () => {
 
   it("should not execute query when accessToken is missing", async () => {
     // Mock missing accessToken
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: "test-user-id",
-      userRole: "Admin",
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ accessToken: null, token: null }));
 
     const { result } = renderHook(() => useTags(), { wrapper });
 
@@ -162,16 +145,7 @@ describe("useTags", () => {
 
   it("should not execute query when userId is missing", async () => {
     // Mock missing userId
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: null,
-      userRole: "Admin",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userId: null }));
 
     const { result } = renderHook(() => useTags(), { wrapper });
 
@@ -186,16 +160,7 @@ describe("useTags", () => {
 
   it("should not execute query when userRole is missing", async () => {
     // Mock missing userRole
-    mockUseAuthorized.mockReturnValue({
-      accessToken: "test-access-token",
-      userId: "test-user-id",
-      userRole: null,
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(authorizedSession({ userRole: null }));
 
     const { result } = renderHook(() => useTags(), { wrapper });
 
@@ -210,16 +175,7 @@ describe("useTags", () => {
 
   it("should not execute query when all auth values are missing", async () => {
     // Mock all auth values missing
-    mockUseAuthorized.mockReturnValue({
-      accessToken: null,
-      userId: null,
-      userRole: null,
-      token: null,
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    mockUseAuthorized.mockReturnValue(anonymousSession());
 
     const { result } = renderHook(() => useTags(), { wrapper });
 
