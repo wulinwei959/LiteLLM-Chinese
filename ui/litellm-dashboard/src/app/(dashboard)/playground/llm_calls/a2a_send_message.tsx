@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
 import { type CustomHeaders, withRequiredHeaders } from "@/components/llm_calls/request_headers";
 import { A2ATaskMetadata } from "@/components/chat_ui/types";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 
 interface A2AMessagePart {
   kind: "text";
@@ -240,6 +241,7 @@ export const makeA2ASendMessageRequest = async (
  * Uses the message/stream method with NDJSON responses.
  */
 export const makeA2AStreamMessageRequest = async (
+  t: PlaygroundTranslator,
   agentId: string,
   message: string,
   onTextUpdate: (chunk: string, model?: string) => void,
@@ -293,7 +295,7 @@ export const makeA2AStreamMessageRequest = async (
 
     const reader = response.body?.getReader();
     if (!reader) {
-      throw new Error("No response body");
+      throw new Error(t("llmCalls.a2a.noResponseBody"));
     }
 
     const decoder = new TextDecoder();
@@ -381,7 +383,7 @@ export const makeA2AStreamMessageRequest = async (
 
           // Handle JSON-RPC error response
           if (chunk.error) {
-            const errorMessage = chunk.error.message || "Unknown A2A error";
+            const errorMessage = chunk.error.message || t("llmCalls.a2a.unknownA2AError");
             throw new Error(errorMessage);
           }
         } catch (parseError) {

@@ -8706,6 +8706,7 @@
         "httpError": "HTTP {status}",
         "a2aError": "A2A 错误: {message}",
         "noResponseBody": "无响应体",
+        "unknownA2AError": "未知 A2A 错误",
         "errorMessage": "错误: {message}",
         "jsonParseError": "解析 A2A 流式数据块失败"
       }

@@ -8711,6 +8711,7 @@
         "httpError": "HTTP {status}",
         "a2aError": "A2A error: {message}",
         "noResponseBody": "No response body",
+        "unknownA2AError": "Unknown A2A error",
         "errorMessage": "Error: {message}",
         "jsonParseError": "Failed to parse A2A streaming chunk"
       }

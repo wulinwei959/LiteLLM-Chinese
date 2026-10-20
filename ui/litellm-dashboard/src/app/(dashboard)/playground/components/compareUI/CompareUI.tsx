@@ -582,6 +582,7 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
       // Use A2A or chat completion based on endpoint
       const requestPromise = isA2AMode
         ? makeA2AStreamMessageRequest(
+            t,
             prepared.agent,
             prepared.inputMessage,
             (text, model) => {
