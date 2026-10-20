@@ -504,10 +504,10 @@ describe("TeamInfoView", () => {
       expect(within(settings).getByText("TPM 限制：0")).toBeInTheDocument();
       expect(within(settings).getByText("RPM 限制：0")).toBeInTheDocument();
       expect(within(settings).getByText("最大预算：0")).toBeInTheDocument();
-      expect(screen.queryByText("TPM: Unlimited")).not.toBeInTheDocument();
-      expect(screen.queryByText("RPM: Unlimited")).not.toBeInTheDocument();
-      expect(screen.queryByText("TPM Limit: No Limit")).not.toBeInTheDocument();
-      expect(screen.queryByText("RPM Limit: No Limit")).not.toBeInTheDocument();
+      expect(screen.queryByText("TPM：无限制")).not.toBeInTheDocument();
+      expect(screen.queryByText("RPM：无限制")).not.toBeInTheDocument();
+      expect(screen.queryByText("TPM 限制：无限制")).not.toBeInTheDocument();
+      expect(screen.queryByText("RPM 限制：无限制")).not.toBeInTheDocument();
     });
 
     it("should display guardrails in overview when present", async () => {

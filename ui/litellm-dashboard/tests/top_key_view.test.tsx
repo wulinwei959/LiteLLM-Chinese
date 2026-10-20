@@ -88,12 +88,12 @@ describe("TopKeyView", () => {
   describe("Tags Column Visibility", () => {
     it("should not show tags column when showTags is false", () => {
       renderWithProviders(<TopKeyView {...mockProps} showTags={false} />);
-      expect(screen.queryByText("Tags")).not.toBeInTheDocument();
+      expect(screen.queryByText("标签")).not.toBeInTheDocument();
     });
 
     it("should show tags column when showTags is true", () => {
       renderWithProviders(<TopKeyView {...mockProps} showTags={true} />);
-      expect(screen.getByText("Tags")).toBeInTheDocument();
+      expect(screen.getByText("标签")).toBeInTheDocument();
     });
   });
 
@@ -132,31 +132,31 @@ describe("TopKeyView", () => {
       // Production Key has 3 tags, so it should have an expand arrow
       // Look for the chevron down icon (expand button)
       const expandButtons = screen.getAllByRole("button");
-      const expandButton = expandButtons.find((button) => button.getAttribute("title") === "Show all tags");
+      const expandButton = expandButtons.find((button) => button.getAttribute("title") === "显示全部标签");
       expect(expandButton).toBeInTheDocument();
     });
 
     it("should show all tags when expanded", async () => {
       // Find and click the expand button for Production Key (has 3 tags)
       const expandButtons = screen.getAllByRole("button");
-      const expandButton = expandButtons.find((button) => button.getAttribute("title") === "Show all tags");
+      const expandButton = expandButtons.find((button) => button.getAttribute("title") === "显示全部标签");
+      expect(expandButton).toBeDefined();
 
-      if (expandButton) {
-        fireEvent.click(expandButton);
+      fireEvent.click(expandButton!);
 
-        // Now all tags should be visible
-        expect(screen.getByText("api-cal...")).toBeInTheDocument();
-      }
+      // Now all tags should be visible
+      expect(screen.getByText("api-cal...")).toBeInTheDocument();
     });
 
-    it("should show tooltip on hover with tag information", async () => {
-      // Hover over a tag to trigger tooltip
+    it("should show tag name and spend in the tooltip", async () => {
       const tagElement = screen.getByText("high-vo...");
-      fireEvent.mouseOver(tagElement);
+      fireEvent.focus(tagElement);
 
-      // Check that tooltip content appears
-      // Note: The exact tooltip content depends on your tooltip implementation
-      // You might need to adjust this based on how Ant Design Tooltip renders
+      const nameLabel = await screen.findByText("标签名称：");
+      expect(nameLabel.parentElement).toHaveTextContent("high-volume");
+
+      const spendLabel = screen.getByText("花费：");
+      expect(spendLabel.parentElement).toHaveTextContent("$125.50");
     });
   });
 
@@ -285,19 +285,19 @@ describe("TopKeyView", () => {
     it("should render table with correct headers when showTags is true", () => {
       renderWithProviders(<TopKeyView {...mockProps} showTags={true} />);
 
-      expect(screen.getByText("Key ID")).toBeInTheDocument();
-      expect(screen.getByText("Key Alias")).toBeInTheDocument();
-      expect(screen.getByText("Tags")).toBeInTheDocument();
-      expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
+      expect(screen.getByText("密钥 ID")).toBeInTheDocument();
+      expect(screen.getByText("密钥别名")).toBeInTheDocument();
+      expect(screen.getByText("标签")).toBeInTheDocument();
+      expect(screen.getByText("花费（美元）")).toBeInTheDocument();
     });
 
     it("should render table with correct headers when showTags is false", () => {
       renderWithProviders(<TopKeyView {...mockProps} showTags={false} />);
 
-      expect(screen.getByText("Key ID")).toBeInTheDocument();
-      expect(screen.getByText("Key Alias")).toBeInTheDocument();
-      expect(screen.queryByText("Tags")).not.toBeInTheDocument();
-      expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
+      expect(screen.getByText("密钥 ID")).toBeInTheDocument();
+      expect(screen.getByText("密钥别名")).toBeInTheDocument();
+      expect(screen.queryByText("标签")).not.toBeInTheDocument();
+      expect(screen.getByText("花费（美元）")).toBeInTheDocument();
     });
   });
 

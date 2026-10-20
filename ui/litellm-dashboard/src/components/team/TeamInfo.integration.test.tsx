@@ -496,7 +496,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     await waitFor(() => expect(bulkUpdatePOST).toHaveBeenCalled());
     expect(screen.getByText("重置成员预算？")).toBeInTheDocument();
-    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "重置为 $20.00" })).toBeDisabled();
 
     bulk.resolve({ data: { data: [{ success: true, user_id: "user-custom" }] } });
     await waitFor(() => expect(screen.queryByText("重置成员预算？")).not.toBeInTheDocument());
@@ -516,7 +516,8 @@ describe("TeamInfoView - member budget reset prompt", () => {
       expect(toast.fromError).toHaveBeenCalledWith("团队已更新，但成员预算无法重置"),
     );
     expect(screen.getByText("重置成员预算？")).toBeInTheDocument();
-    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "重置为 $20.00" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "重试重置" })).toBeEnabled();
     await waitFor(() => expect(vi.mocked(networking.teamInfoCall).mock.calls.length).toBeGreaterThan(1));
 
     await user.click(screen.getByRole("button", { name: "重试重置" }));
@@ -539,7 +540,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     expect(bulkUpdatePOST).not.toHaveBeenCalled();
     expect(toast.fromError).not.toHaveBeenCalled();
     expect(toast.error).not.toHaveBeenCalled();
-    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "重试重置" })).not.toBeInTheDocument();
   });
 
   it("reports how many budgets were already reset when a later batch fails", async () => {
