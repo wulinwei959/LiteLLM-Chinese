@@ -14,6 +14,8 @@
     "showReasoning": "Show reasoning",
     "switchToLightMode": "Switch to light mode",
     "switchToDarkMode": "Switch to dark mode (beta)",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "breadcrumbAria": "Breadcrumb",
     "resizeDrawerAria": "Resize drawer",
     "collapseDrawerAria": "Collapse drawer",

@@ -235,10 +235,10 @@ describe("ProviderSpecificFields", () => {
     const apiKeyInput = await screen.findByLabelText("OpenAI API Key");
     expect(apiKeyInput).toHaveAttribute("type", "password");
 
-    fireEvent.click(screen.getByRole("button", { name: "Show password" }));
+    fireEvent.click(screen.getByRole("button", { name: "显示密码" }));
     expect(await screen.findByLabelText("OpenAI API Key")).toHaveAttribute("type", "text");
 
-    fireEvent.click(screen.getByRole("button", { name: "Hide password" }));
+    fireEvent.click(screen.getByRole("button", { name: "隐藏密码" }));
     expect(await screen.findByLabelText("OpenAI API Key")).toHaveAttribute("type", "password");
   });
 

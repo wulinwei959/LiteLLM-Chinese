@@ -135,11 +135,11 @@ describe("UpdateModelCredentialsModal", () => {
     fireEvent.change(field, { target: { value: "sk-peek-42" } });
     expect(field).toHaveAttribute("type", "password");
 
-    await user.click(screen.getByRole("button", { name: /show password/i }));
+    await user.click(screen.getByRole("button", { name: "显示密码" }));
     expect(field).toHaveAttribute("type", "text");
     expect(field).toHaveValue("sk-peek-42");
 
-    await user.click(screen.getByRole("button", { name: /hide password/i }));
+    await user.click(screen.getByRole("button", { name: "隐藏密码" }));
     expect(field).toHaveAttribute("type", "password");
     expect(field).toHaveValue("sk-peek-42");
   });

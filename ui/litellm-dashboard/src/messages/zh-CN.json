@@ -14,6 +14,8 @@
     "showReasoning": "展开推理过程",
     "switchToLightMode": "切换到浅色模式",
     "switchToDarkMode": "切换到深色模式（beta）",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
     "breadcrumbAria": "面包屑导航",
     "resizeDrawerAria": "调整抽屉宽度",
     "collapseDrawerAria": "收起抽屉",
