@@ -122,7 +122,7 @@ describe("BudgetTable", () => {
     const list = makeList({ rows: [makeBudget({ budget_id: budgetId })] });
     renderWithProviders(<BudgetTable {...defaultProps} list={list} />);
     await user.click(screen.getByRole("button", { name: "复制 ID" }));
-    expect(copyToClipboardMock).toHaveBeenCalledWith(budgetId);
+    expect(copyToClipboardMock).toHaveBeenCalledWith(budgetId, "已复制到剪贴板");
   });
 
   it("should offer sorting on every backend-sortable column", async () => {
