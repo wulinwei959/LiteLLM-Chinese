@@ -163,7 +163,7 @@ const OAuthFormFields: React.FC<OAuthFormFieldsProps> = ({
             name={["credentials", "scopes"]}
           >
             {(control) => (
-              <MultiSelect {...tagsControl(control)} placeholder={t("idJag.addScopes")} className="rounded-lg" />
+              <MultiSelect {...tagsControl(t, control)} placeholder={t("idJag.addScopes")} className="rounded-lg" />
             )}
           </MountedFormField>
           <UpstreamResourceField />
@@ -215,7 +215,7 @@ const OAuthFormFields: React.FC<OAuthFormFieldsProps> = ({
             name={["credentials", "scopes"]}
           >
             {(control) => (
-              <MultiSelect {...tagsControl(control)} placeholder={t("idJag.addScopes")} className="rounded-lg" />
+              <MultiSelect {...tagsControl(t, control)} placeholder={t("idJag.addScopes")} className="rounded-lg" />
             )}
           </MountedFormField>
           <UpstreamResourceField />

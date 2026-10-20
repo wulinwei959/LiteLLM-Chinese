@@ -472,7 +472,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
     setIsLoadingTools(false);
     if (!accessToken || !mcpServer.server_id) return;
     if (toolPreview.kind === "incomplete") {
-      setToolsError(toolPreview.message ?? t("edit.completeSettingsToLoadTools"));
+      setToolsError(toolPreview.messageKey ? t(toolPreview.messageKey) : t("edit.completeSettingsToLoadTools"));
       return;
     }
     setIsLoadingTools(true);
@@ -1024,7 +1024,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                     <MountedFormField label={t("edit.args")} name="args">
                       {(control) => (
                         <MultiSelect
-                          {...tagsControl(control)}
+                          {...tagsControl(t, control)}
                           placeholder={t("edit.addArgsPlaceholder")}
                           className="rounded-lg"
                         />

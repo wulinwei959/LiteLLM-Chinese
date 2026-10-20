@@ -6415,6 +6415,8 @@
   },
   "mcpServers": {
     "duplicateIdentifier": "已存在同名的 MCP 服务器。",
+    "typeToAdd": "输入以添加",
+    "serverOriginChanged": "服务器地址已变更。请输入凭据，并替换或移除已保存的静态请求头以预览工具。",
     "validation": {
       "invalidUrl": "请输入有效的 URL（例如 http://service-name.domain:1234/path 或 https://example.com）",
       "invalidName": "不能包含 '-'（连字符）或空格，请使用 '_'（下划线）",

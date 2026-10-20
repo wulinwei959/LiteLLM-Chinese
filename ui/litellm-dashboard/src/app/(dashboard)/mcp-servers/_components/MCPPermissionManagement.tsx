@@ -305,7 +305,7 @@ const MCPPermissionManagement: React.FC<MCPPermissionManagementProps> = ({
           >
             {(control) => (
               <MultiSelect
-                {...tagsControl(control)}
+                {...tagsControl(t, control)}
                 options={availableAccessGroups.map((group) => ({ label: group, value: group }))}
                 placeholder={t("permissionMgmt.selectOrCreateGroups")}
                 className="rounded-lg"
@@ -331,7 +331,7 @@ const MCPPermissionManagement: React.FC<MCPPermissionManagementProps> = ({
           >
             {(control) => (
               <MultiSelect
-                {...tagsControl(control)}
+                {...tagsControl(t, control)}
                 placeholder={
                   mcpServer?.extra_headers && mcpServer.extra_headers.length > 0
                     ? t("permissionMgmt.currentlyConfigured", { count: mcpServer.extra_headers.length })

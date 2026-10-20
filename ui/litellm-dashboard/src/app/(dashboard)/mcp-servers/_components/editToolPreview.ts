@@ -21,7 +21,7 @@ const connectionConfig = (values: Readonly<Record<string, unknown>>) => {
 
 type EditToolPreview =
   | { readonly kind: "saved" }
-  | { readonly kind: "incomplete"; readonly message?: string }
+  | { readonly kind: "incomplete"; readonly messageKey?: "serverOriginChanged" }
   | { readonly kind: "preview"; readonly config: ReturnType<typeof connectionConfig> };
 
 export const getEditToolPreview = (
@@ -59,8 +59,7 @@ export const getEditToolPreview = (
   if (changedOrigin && (needsSavedCredential || reusesHeader)) {
     return {
       kind: "incomplete",
-      message:
-        "The server origin changed. Enter credentials and replace or remove saved static headers to preview tools.",
+      messageKey: "serverOriginChanged",
     };
   }
   return { kind: "preview", config };

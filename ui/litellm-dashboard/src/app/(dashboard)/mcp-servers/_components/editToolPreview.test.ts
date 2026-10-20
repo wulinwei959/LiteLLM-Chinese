@@ -31,7 +31,7 @@ describe("getEditToolPreview", () => {
     (url) => {
       expect(getEditToolPreview({ ...saved, url, static_headers: [] }, saved)).toEqual({
         kind: "incomplete",
-        message: expect.stringContaining("origin changed"),
+        messageKey: "serverOriginChanged",
       });
       const explicit = { ...saved, url, static_headers: [], credentials: { auth_value: "new:secret" } };
       expect(getEditToolPreview(explicit, saved).kind).toBe("preview");

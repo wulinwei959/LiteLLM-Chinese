@@ -6416,6 +6416,8 @@
   },
   "mcpServers": {
     "duplicateIdentifier": "An MCP server with this name/alias already exists.",
+    "typeToAdd": "Type to add",
+    "serverOriginChanged": "The server origin changed. Enter credentials and replace or remove saved static headers to preview tools.",
     "validation": {
       "invalidUrl": "Please enter a valid URL (e.g., http://service-name.domain:1234/path or https://example.com)",
       "invalidName": "Cannot contain '-' (hyphen) or spaces. Please use '_' (underscore) instead.",

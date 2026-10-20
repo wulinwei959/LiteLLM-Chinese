@@ -161,7 +161,7 @@ const IdJagFormFields: React.FC<IdJagFormFieldsProps> = ({ isEditing = false }) 
         name={["credentials", "scopes"]}
       >
         {(control) => (
-          <MultiSelect {...tagsControl(control)} placeholder={t("idJag.addScopes")} className="rounded-lg" />
+          <MultiSelect {...tagsControl(t, control)} placeholder={t("idJag.addScopes")} className="rounded-lg" />
         )}
       </MountedFormField>
       <UpstreamTokenHeaderField />

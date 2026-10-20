@@ -140,7 +140,7 @@ const TokenExchangeFormFields: React.FC<TokenExchangeFormFieldsProps> = ({ isEdi
       >
         {(control) => (
           <MultiSelect
-            {...tagsControl(control)}
+            {...tagsControl(t, control)}
             placeholder={isEntraObo ? "api://<app-id>/.default" : t("idJag.addScopes")}
             className="rounded-lg"
           />

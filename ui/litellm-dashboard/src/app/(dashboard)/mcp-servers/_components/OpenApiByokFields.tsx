@@ -76,7 +76,7 @@ const OpenApiByokFields: React.FC = () => {
           >
             {(control) => (
               <MultiSelect
-                {...tagsControl(control)}
+                {...tagsControl(t, control)}
                 placeholder={t("byok.accessDescriptionPlaceholder")}
                 className="w-full"
               />
