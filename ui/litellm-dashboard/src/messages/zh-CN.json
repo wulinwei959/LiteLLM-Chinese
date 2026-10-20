@@ -12575,6 +12575,9 @@
     "revokeOAuthCredentialFailed": "撤销 OAuth 凭据失败",
     "getEmailEventSettingsFailed": "获取邮件事件设置失败",
     "updateEmailEventSettingsFailed": "更新邮件事件设置失败",
-    "resetEmailEventSettingsFailed": "重置邮件事件设置失败"
+    "resetEmailEventSettingsFailed": "重置邮件事件设置失败",
+    "createKeyForAgentFailed": "为智能体创建密钥失败",
+    "updateGuardrailFailed": "更新护栏失败",
+    "validateBlockedWordsFileFailed": "校验屏蔽词文件失败"
   }
 }

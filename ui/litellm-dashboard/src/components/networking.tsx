@@ -947,7 +947,7 @@ export const keyCreateForAgentCall = async (
   if (!response.ok) {
     const errorData = await response.text();
     handleError(errorData);
-    throw new Error("Failed to create key for agent");
+    throw new Error(toastMessage("createKeyForAgentFailed"));
   }
 
   return response.json();
@@ -6194,7 +6194,7 @@ export const updateGuardrailCall = async (
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to update guardrail");
+      throw new Error(toastMessage("updateGuardrailFailed"));
     }
 
     const data = await response.json();
@@ -6372,7 +6372,7 @@ export const validateBlockedWordsFile = async (accessToken: string, fileContent:
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to validate blocked words file");
+      throw new Error(toastMessage("validateBlockedWordsFileFailed"));
     }
 
     const data = await response.json();
