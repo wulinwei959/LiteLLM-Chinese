@@ -53,6 +53,7 @@ export function IdCell({
   className,
 }: IdCellProps) {
   const t = useTranslations("tableCells");
+  const commonT = useTranslations("common");
   if (!value) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
@@ -100,7 +101,7 @@ export function IdCell({
         className="shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
         onClick={(event) => {
           event.stopPropagation();
-          void copyToClipboard(value);
+          void copyToClipboard(value, commonT("copiedToClipboard"));
         }}
       >
         <Copy className="size-3" />

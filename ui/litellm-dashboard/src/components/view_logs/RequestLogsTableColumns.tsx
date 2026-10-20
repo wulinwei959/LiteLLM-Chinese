@@ -36,6 +36,7 @@ const readMcpLogoUrl = (metadata: Record<string, unknown> | undefined): string |
 
 function RequestIdWithCallIdTooltip({ requestId, callId }: { requestId: string; callId: string }) {
   const t = useTranslations("logs");
+  const commonT = useTranslations("common");
   return (
     <span className="flex flex-col gap-0.5">
       <span>{requestId}</span>
@@ -47,7 +48,7 @@ function RequestIdWithCallIdTooltip({ requestId, callId }: { requestId: string; 
           className="shrink-0 cursor-pointer opacity-70 hover:opacity-100"
           onClick={(event) => {
             event.stopPropagation();
-            void copyToClipboard(callId);
+            void copyToClipboard(callId, commonT("copiedToClipboard"));
           }}
         >
           <Copy className="size-3" />

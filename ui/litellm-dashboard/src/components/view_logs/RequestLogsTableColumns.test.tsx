@@ -315,7 +315,7 @@ describe("Request ID column", () => {
     await user.hover(screen.getByText("chatcmpl-9"));
     fireEvent.click(await screen.findByRole("button", { name: "复制 x-litellm-call-id" }));
 
-    expect(copyToClipboardMock).toHaveBeenCalledWith("call-uuid-9");
+    expect(copyToClipboardMock).toHaveBeenCalledWith("call-uuid-9", "已复制到剪贴板");
     expect(onRowClick).not.toHaveBeenCalled();
   });
 

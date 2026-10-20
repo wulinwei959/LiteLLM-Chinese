@@ -250,9 +250,10 @@ function CodeBlock({
   wrap?: boolean;
 }) {
   const t = useTranslations("logs");
+  const commonT = useTranslations("common");
   const [copied, setCopied] = useState(false);
   const copy = async () => {
-    if (await copyToClipboard(code)) {
+    if (await copyToClipboard(code, commonT("copiedToClipboard"))) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), COPIED_RESET_MS);
     }
@@ -501,9 +502,10 @@ function TracingKey({
 
 function EndpointValue({ value }: { value: string }) {
   const t = useTranslations("logs");
+  const commonT = useTranslations("common");
   const [copied, setCopied] = useState(false);
   const copy = async () => {
-    if (await copyToClipboard(value)) {
+    if (await copyToClipboard(value, commonT("copiedToClipboard"))) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), COPIED_RESET_MS);
     }

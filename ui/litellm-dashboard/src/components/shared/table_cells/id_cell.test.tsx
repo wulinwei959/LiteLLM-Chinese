@@ -71,7 +71,7 @@ describe("IdCell", () => {
       </div>,
     );
     await user.click(screen.getByRole("button", { name: "复制 ID" }));
-    expect(copyToClipboardMock).toHaveBeenCalledWith("key-hash-9");
+    expect(copyToClipboardMock).toHaveBeenCalledWith("key-hash-9", "已复制到剪贴板");
     expect(rowClick).not.toHaveBeenCalled();
   });
 
@@ -80,7 +80,7 @@ describe("IdCell", () => {
     renderWithProviders(<IdCell value="alice@example.com" copyable copyLabel="Copy User Email" />);
     expect(screen.queryByRole("button", { name: "复制 ID" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Copy User Email" }));
-    expect(copyToClipboardMock).toHaveBeenCalledWith("alice@example.com");
+    expect(copyToClipboardMock).toHaveBeenCalledWith("alice@example.com", "已复制到剪贴板");
   });
 
   it("passes dataTestId through to the id element", () => {
