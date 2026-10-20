@@ -40,6 +40,12 @@ const retryPolicyMap: Record<string, string> = {
   "All other errors": "DefaultRetries",
 };
 
+// The error-class labels name the proxy's own retry policy fields, so they stay
+// in English next to their policy key; only the catch-all row is prose.
+const RETRY_POLICY_LABEL_KEYS = {
+  "All other errors": "allOtherErrors",
+} as const;
+
 const isValidRetryCount = (value: number) => Number.isFinite(value) && Number.isInteger(value) && value >= 0;
 
 const ModelRetrySettingsTab = ({
@@ -131,11 +137,13 @@ const ModelRetrySettingsTab = ({
             const inheritedValue = globalRetryPolicy?.[retryPolicyKey] ?? defaultRetry;
             const override = isGlobalScope ? undefined : modelGroupRetryPolicy?.[selectedModelGroup!]?.[retryPolicyKey];
             const hasOverride = override != null;
+            const labelKey = RETRY_POLICY_LABEL_KEYS[exceptionType as keyof typeof RETRY_POLICY_LABEL_KEYS];
+            const exceptionLabel = labelKey ? t(labelKey) : exceptionType;
 
             return (
               <tr key={retryPolicyKey} className="flex items-center justify-between gap-4 border-b py-2 last:border-0">
                 <td className="text-sm">
-                  <span>{exceptionType}</span>
+                  <span>{exceptionLabel}</span>
                   {!isGlobalScope && (
                     <span className="ml-2 text-xs text-muted-foreground">({t("globalLabel")}: {inheritedValue})</span>
                   )}
@@ -144,7 +152,7 @@ const ModelRetrySettingsTab = ({
                   <Input
                     className="w-28"
                     type="number"
-                    aria-label={`${exceptionType} ${t("retryCount")}`}
+                    aria-label={`${exceptionLabel} ${t("retryCount")}`}
                     min={0}
                     step={1}
                     value={isGlobalScope ? inheritedValue : hasOverride ? override : ""}

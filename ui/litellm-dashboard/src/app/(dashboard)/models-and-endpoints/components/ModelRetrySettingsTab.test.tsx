@@ -48,6 +48,14 @@ describe("ModelRetrySettingsTab", () => {
     expect(screen.getByText(/NotFoundError \(404\)/)).toBeInTheDocument();
   });
 
+  it("should translate the catch-all row label while keeping the error class names as policy field names", () => {
+    renderWithProviders(<ModelRetrySettingsTab {...buildProps()} />);
+
+    expect(screen.getByText("其他所有错误")).toBeInTheDocument();
+    expect(screen.queryByText("All other errors")).not.toBeInTheDocument();
+    expect(screen.getByRole("spinbutton", { name: /其他所有错误 重试次数$/ })).toBeInTheDocument();
+  });
+
   it("should write the NotFoundError row to NotFoundErrorRetries ahead of the catch-all row", () => {
     const setGlobalRetryPolicy = vi.fn();
     renderWithProviders(

@@ -1736,6 +1736,7 @@
       "modelSpecificRetryDesc": "模型特定的重试设置。未设置时回退到全局默认值。",
       "globalLabel": "全局",
       "retryCount": "重试次数",
+    "allOtherErrors": "其他所有错误",
       "reset": "重置",
       "save": "保存",
       "savedSuccessfully": "重试设置保存成功",

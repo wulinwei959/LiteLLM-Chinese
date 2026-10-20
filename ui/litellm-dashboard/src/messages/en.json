@@ -1737,6 +1737,7 @@
       "modelSpecificRetryDesc": "Model-specific retry settings. Falls back to global defaults if not set.",
       "globalLabel": "Global",
       "retryCount": "retry count",
+    "allOtherErrors": "All other errors",
       "reset": "Reset",
       "save": "Save",
       "savedSuccessfully": "Retry settings saved successfully",
