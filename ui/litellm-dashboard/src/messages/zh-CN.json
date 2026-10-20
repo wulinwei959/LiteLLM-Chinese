@@ -2543,6 +2543,11 @@
     "infoUserKeys": "用户密钥：{value}",
     "infoVectorStores": "向量存储",
     "infoVirtualKeys": "虚拟密钥",
+    "infoTabOverview": "概览",
+    "infoTabMyUser": "我的用户",
+    "infoTabMembers": "成员",
+    "infoTabMemberPermissions": "成员权限",
+    "infoTabSettings": "设置",
     "member": {
       "addMember": "添加成员",
       "adding": "正在添加...",

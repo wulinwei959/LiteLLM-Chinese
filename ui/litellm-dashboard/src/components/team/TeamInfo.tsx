@@ -116,7 +116,7 @@ import {
   getTeamInfoDefaultTab,
   getTeamInfoVisibleTabs,
   TEAM_INFO_TAB_KEYS,
-  TEAM_INFO_TAB_LABELS,
+  TEAM_INFO_TAB_LABEL_KEYS,
 } from "./tabVisibilityUtils";
 import TeamMembersComponent from "./TeamMemberTab";
 import {
@@ -1303,7 +1303,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   const tabItems = [
     {
       key: TEAM_INFO_TAB_KEYS.OVERVIEW,
-      label: TEAM_INFO_TAB_LABELS[TEAM_INFO_TAB_KEYS.OVERVIEW],
+      label: t(TEAM_INFO_TAB_LABEL_KEYS[TEAM_INFO_TAB_KEYS.OVERVIEW]),
       children: (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card className="block p-6">
@@ -1459,17 +1459,17 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
     },
     {
       key: TEAM_INFO_TAB_KEYS.MY_USER,
-      label: TEAM_INFO_TAB_LABELS[TEAM_INFO_TAB_KEYS.MY_USER],
+      label: t(TEAM_INFO_TAB_LABEL_KEYS[TEAM_INFO_TAB_KEYS.MY_USER]),
       children: <MyUserTab teamId={teamId} />,
     },
     {
       key: TEAM_INFO_TAB_KEYS.VIRTUAL_KEYS,
-      label: TEAM_INFO_TAB_LABELS[TEAM_INFO_TAB_KEYS.VIRTUAL_KEYS],
+      label: t(TEAM_INFO_TAB_LABEL_KEYS[TEAM_INFO_TAB_KEYS.VIRTUAL_KEYS]),
       children: <TeamVirtualKeysTable teamId={teamId} teamAlias={info.team_alias} organization={organization} />,
     },
     {
       key: TEAM_INFO_TAB_KEYS.MEMBERS,
-      label: TEAM_INFO_TAB_LABELS[TEAM_INFO_TAB_KEYS.MEMBERS],
+      label: t(TEAM_INFO_TAB_LABEL_KEYS[TEAM_INFO_TAB_KEYS.MEMBERS]),
       children: (
         <TeamMembersComponent
           teamData={teamData}
@@ -1485,12 +1485,12 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
     },
     {
       key: TEAM_INFO_TAB_KEYS.MEMBER_PERMISSIONS,
-      label: TEAM_INFO_TAB_LABELS[TEAM_INFO_TAB_KEYS.MEMBER_PERMISSIONS],
+      label: t(TEAM_INFO_TAB_LABEL_KEYS[TEAM_INFO_TAB_KEYS.MEMBER_PERMISSIONS]),
       children: <MemberPermissions teamId={teamId} accessToken={accessToken} canEditTeam={canEditTeam} />,
     },
     {
       key: TEAM_INFO_TAB_KEYS.SETTINGS,
-      label: TEAM_INFO_TAB_LABELS[TEAM_INFO_TAB_KEYS.SETTINGS],
+      label: t(TEAM_INFO_TAB_LABEL_KEYS[TEAM_INFO_TAB_KEYS.SETTINGS]),
       children: (
         <Card className="block p-6 overflow-y-auto max-h-[65vh]">
           <div className="flex justify-between items-center mb-4">

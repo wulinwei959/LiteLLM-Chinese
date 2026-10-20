@@ -12,14 +12,14 @@ export const TEAM_INFO_TAB_KEYS = {
   SETTINGS: "settings",
 } as const;
 
-export const TEAM_INFO_TAB_LABELS: Record<string, string> = {
-  [TEAM_INFO_TAB_KEYS.OVERVIEW]: "Overview",
-  [TEAM_INFO_TAB_KEYS.MY_USER]: "My User",
-  [TEAM_INFO_TAB_KEYS.VIRTUAL_KEYS]: "Virtual Keys",
-  [TEAM_INFO_TAB_KEYS.MEMBERS]: "Members",
-  [TEAM_INFO_TAB_KEYS.MEMBER_PERMISSIONS]: "Member Permissions",
-  [TEAM_INFO_TAB_KEYS.SETTINGS]: "Settings",
-};
+export const TEAM_INFO_TAB_LABEL_KEYS = {
+  [TEAM_INFO_TAB_KEYS.OVERVIEW]: "infoTabOverview",
+  [TEAM_INFO_TAB_KEYS.MY_USER]: "infoTabMyUser",
+  [TEAM_INFO_TAB_KEYS.VIRTUAL_KEYS]: "infoVirtualKeys",
+  [TEAM_INFO_TAB_KEYS.MEMBERS]: "infoTabMembers",
+  [TEAM_INFO_TAB_KEYS.MEMBER_PERMISSIONS]: "infoTabMemberPermissions",
+  [TEAM_INFO_TAB_KEYS.SETTINGS]: "infoTabSettings",
+} as const satisfies Record<string, string>;
 
 /**
  * Returns the list of tab keys that should be visible based on permissions.

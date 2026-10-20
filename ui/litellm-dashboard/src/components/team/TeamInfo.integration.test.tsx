@@ -408,7 +408,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await user.click(screen.getByText("团队成员设置"));
     return await screen.findByLabelText("默认预算（USD）");
@@ -653,7 +653,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     const { rerender } = renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await user.click(screen.getByText("团队成员设置"));
     const input = await screen.findByLabelText("默认预算（USD）");
@@ -682,7 +682,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     const { rerender } = renderWithProviders(<TeamInfoView {...props} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: "编辑设置" }));
     await user.click(screen.getByText("团队成员设置"));
     const input = await screen.findByLabelText("默认预算（USD）");

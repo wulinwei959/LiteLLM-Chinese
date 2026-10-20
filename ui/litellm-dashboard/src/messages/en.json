@@ -2544,6 +2544,11 @@
     "infoUserKeys": "User Keys: {value}",
     "infoVectorStores": "Vector Stores",
     "infoVirtualKeys": "Virtual Keys",
+    "infoTabOverview": "Overview",
+    "infoTabMyUser": "My User",
+    "infoTabMembers": "Members",
+    "infoTabMemberPermissions": "Member Permissions",
+    "infoTabSettings": "Settings",
     "member": {
       "addMember": "Add Member",
       "adding": "Adding...",
