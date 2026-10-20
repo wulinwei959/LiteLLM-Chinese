@@ -8131,7 +8131,8 @@
       "selectModel": "Select model",
       "send": "Send",
       "historyNotSaved": "Chat history won't be saved in this browser session",
-      "openIntegrations": "Open Integrations ->"
+      "openIntegrations": "Open Integrations ->",
+      "blankIntro": "Chat with 100+ LLMs + MCP tools; authenticate once, use them here."
     }
   },
   "playground": {

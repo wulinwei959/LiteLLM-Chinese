@@ -8130,7 +8130,8 @@
       "selectModel": "选择模型",
       "send": "发送",
       "historyNotSaved": "本次浏览器会话不会保存聊天记录",
-      "openIntegrations": "打开集成 ->"
+      "openIntegrations": "打开集成 ->",
+      "blankIntro": "在这里与 100+ 个 LLM 及 MCP 工具对话；认证一次，即可随处使用。"
     }
   },
   "playground": {

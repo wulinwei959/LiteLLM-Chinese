@@ -540,7 +540,7 @@ export default function ChatConversationPage() {
             </h1>
 
             <p className="-mt-4 mb-7 text-sm text-muted-foreground text-center max-w-[520px] leading-relaxed">
-              Chat with 100+ LLMs + MCP tools; authenticate once, use them here.{" "}
+              {t("blankIntro")}{" "}
               <Button
                 variant="link"
                 onClick={() => router.push(getChatRoutes().integrations)}
