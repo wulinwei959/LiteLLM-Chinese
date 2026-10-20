@@ -1,4 +1,7 @@
+import { createTranslator } from "next-intl";
 import { describe, it, expect } from "vitest";
+
+import zh from "@/messages/zh-CN.json";
 import {
   type LicenseExpiryTier,
   formatExpirationStatus,
@@ -67,23 +70,25 @@ describe("formatExpiryDate", () => {
 });
 
 describe("formatExpirationStatus", () => {
+  const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "sidebarUsageCard" });
+
   it("shows the exact date for a future expiration", () => {
-    expect(formatExpirationStatus("2026-08-07", NOW)).toBe("Expires Aug 7, 2026");
+    expect(formatExpirationStatus(t, "2026-08-07", NOW)).toBe("将于 Aug 7, 2026 到期");
   });
 
   it("still reads as upcoming on the expiration day itself", () => {
-    expect(formatExpirationStatus("2026-07-08", NOW)).toBe("Expires Jul 8, 2026");
+    expect(formatExpirationStatus(t, "2026-07-08", NOW)).toBe("将于 Jul 8, 2026 到期");
   });
 
   it("shows the exact date for a past expiration", () => {
-    expect(formatExpirationStatus("2026-07-07", NOW)).toBe("Expired Jul 7, 2026");
+    expect(formatExpirationStatus(t, "2026-07-07", NOW)).toBe("已于 Jul 7, 2026 过期");
   });
 
-  it("returns No expiration for a null date", () => {
-    expect(formatExpirationStatus(null, NOW)).toBe("No expiration");
+  it("returns the no-expiration wording for a null date", () => {
+    expect(formatExpirationStatus(t, null, NOW)).toBe("无到期时间");
   });
 
-  it("returns No expiration for an unparseable date", () => {
-    expect(formatExpirationStatus("not-a-date", NOW)).toBe("No expiration");
+  it("returns the no-expiration wording for an unparseable date", () => {
+    expect(formatExpirationStatus(t, "not-a-date", NOW)).toBe("无到期时间");
   });
 });

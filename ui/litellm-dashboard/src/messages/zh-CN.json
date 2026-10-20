@@ -12030,7 +12030,10 @@
     "seats": "席位",
     "teams": "团队",
     "loading": "加载中……",
-    "meterValueText": "{total} 中的 {used}"
+    "meterValueText": "{total} 中的 {used}",
+    "noExpiration": "无到期时间",
+    "expiredOn": "已于 {date} 过期",
+    "expiresOn": "将于 {date} 到期"
   },
   "onboardingModal": {
     "invitationTitle": "邀请链接",

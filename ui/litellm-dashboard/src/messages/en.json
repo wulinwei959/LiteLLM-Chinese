@@ -12035,7 +12035,10 @@
     "seats": "Seats",
     "teams": "Teams",
     "loading": "Loading…",
-    "meterValueText": "{used} of {total}"
+    "meterValueText": "{used} of {total}",
+    "noExpiration": "No expiration",
+    "expiredOn": "Expired {date}",
+    "expiresOn": "Expires {date}"
   },
   "onboardingModal": {
     "invitationTitle": "Invitation Link",

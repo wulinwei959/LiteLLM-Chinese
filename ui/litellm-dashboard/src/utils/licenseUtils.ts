@@ -1,3 +1,5 @@
+import type { SidebarUsageCardTranslator } from "@/lib/i18n/translators";
+
 export type LicenseExpiryTier = "none" | "warning" | "critical" | "expired";
 
 export const LICENSE_EXPIRY_WARNING_DAYS = 30;
@@ -50,10 +52,15 @@ export const formatExpiryDate = (expirationDate: string): string => {
   return date.toLocaleDateString("en-US", EXPIRY_DATE_FORMAT);
 };
 
-export const formatExpirationStatus = (expirationDate: string | null, now: Date = new Date()): string => {
+export const formatExpirationStatus = (
+  t: SidebarUsageCardTranslator,
+  expirationDate: string | null,
+  now: Date = new Date(),
+): string => {
   const days = getDaysUntilExpiration(expirationDate, now);
   if (expirationDate === null || days === null) {
-    return "No expiration";
+    return t("noExpiration");
   }
-  return days < 0 ? `Expired ${formatExpiryDate(expirationDate)}` : `Expires ${formatExpiryDate(expirationDate)}`;
+  const date = formatExpiryDate(expirationDate);
+  return days < 0 ? t("expiredOn", { date }) : t("expiresOn", { date });
 };

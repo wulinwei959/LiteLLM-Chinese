@@ -129,7 +129,7 @@ describe("SidebarUsageCard", () => {
 
     renderWithClient(<SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />);
 
-    expect(await screen.findByText("Expires Dec 31, 2099")).toBeInTheDocument();
+    expect(await screen.findByText("将于 Dec 31, 2099 到期")).toBeInTheDocument();
     expect(screen.queryByText(/(day|days|month|months) remaining/)).not.toBeInTheDocument();
   });
 
@@ -138,7 +138,7 @@ describe("SidebarUsageCard", () => {
 
     renderWithClient(<SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />);
 
-    expect(await screen.findByText("Expired Jan 1, 2020")).toBeInTheDocument();
+    expect(await screen.findByText("已于 Jan 1, 2020 过期")).toBeInTheDocument();
   });
 
   it("falls back to Active plan when the license has no expiration date", async () => {

@@ -100,7 +100,9 @@ export default function SidebarUsageCard({ accessToken, collapsed, onExpandRail 
     );
   }
 
-  const subtitle = licenseInfo?.expiration_date ? formatExpirationStatus(licenseInfo.expiration_date) : t("activePlan");
+  const subtitle = licenseInfo?.expiration_date
+    ? formatExpirationStatus(t, licenseInfo.expiration_date)
+    : t("activePlan");
   const meters = buildMeters(t, data);
 
   return (

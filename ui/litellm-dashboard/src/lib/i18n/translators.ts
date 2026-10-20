@@ -75,6 +75,11 @@ function useModelsHealthTranslator() {
 }
 export type ModelsHealthTranslator = ReturnType<typeof useModelsHealthTranslator>;
 
+function useSidebarUsageCardTranslator() {
+  return useTranslations("sidebarUsageCard");
+}
+export type SidebarUsageCardTranslator = ReturnType<typeof useSidebarUsageCardTranslator>;
+
 function usePassThroughTranslator() {
   return useTranslations("models.passThrough");
 }
