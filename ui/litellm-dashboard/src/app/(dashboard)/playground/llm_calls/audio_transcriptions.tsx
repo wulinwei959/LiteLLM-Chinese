@@ -51,7 +51,7 @@ export async function makeOpenAIAudioTranscriptionRequest(
       updateUI(response.text, selectedModel);
       toast.success(t("llmCalls.audioTranscriptionSuccessToast"));
     } else {
-      throw new Error("No transcription text in response");
+      throw new Error(t("llmCalls.noTranscriptionText"));
     }
   } catch (error: any) {
     console.error("Error making audio transcription request:", error);

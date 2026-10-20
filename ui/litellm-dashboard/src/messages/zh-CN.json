@@ -8694,6 +8694,7 @@
       "noResponseBodyReceived": "未收到响应体",
       "noImageDataInResponse": "响应中未找到图像数据",
       "invalidResponseFormat": "响应格式无效",
+      "noTranscriptionText": "响应中无转录文本",
       "errorA2ASendMessage": "发送 A2A 消息时出错。错误: {error}",
       "imageEditsSuccessToast": "成功处理 {count} 张图片",
       "imageEditsFailedToast": "图片编辑失败: {error}",

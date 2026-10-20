@@ -18,7 +18,7 @@ export async function makeOpenAIEmbeddingsRequest(
   customHeaders?: CustomHeaders,
 ) {
   if (!accessToken) {
-    throw new Error("Virtual Key is required");
+    throw new Error(t("llmCalls.virtualKeyRequired"));
   }
 
   // Base URL should be the current base_url

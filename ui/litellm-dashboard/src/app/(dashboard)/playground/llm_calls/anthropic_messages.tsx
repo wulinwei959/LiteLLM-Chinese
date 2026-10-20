@@ -40,7 +40,7 @@ export async function makeAnthropicMessagesRequest(
   customHeaders?: CustomHeaders,
 ) {
   if (!accessToken) {
-    throw new Error("Virtual Key is required");
+    throw new Error(t("llmCalls.virtualKeyRequired"));
   }
 
   const isLocal = process.env.NODE_ENV === "development";

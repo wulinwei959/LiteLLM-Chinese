@@ -8699,6 +8699,7 @@
       "noResponseBodyReceived": "No response body received",
       "noImageDataInResponse": "No image data found in response",
       "invalidResponseFormat": "Invalid response format",
+      "noTranscriptionText": "No transcription text in response",
       "errorA2ASendMessage": "Error occurred while sending A2A message. Error: {error}",
       "imageEditsSuccessToast": "Successfully processed {count, plural, one {# image} other {# images}}",
       "imageEditsFailedToast": "Image edit failed: {error}",
