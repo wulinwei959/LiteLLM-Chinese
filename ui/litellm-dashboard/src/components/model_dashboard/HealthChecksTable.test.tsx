@@ -122,7 +122,7 @@ describe("HealthChecksTable rows", () => {
   it("renders the live checking cell while a row is loading and disables its run button", () => {
     renderWithProviders(<Harness data={[makeRow({ id: "busy", health_loading: true, health_status: "checking" })]} />);
 
-    expect(screen.getByText("Checking...")).toBeInTheDocument();
+    expect(screen.getByText("检查中...")).toBeInTheDocument();
     expect(screen.getByTestId("run-health-check-btn")).toBeDisabled();
   });
 

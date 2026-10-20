@@ -22,8 +22,9 @@ const deepParse = (input: any) => {
 
 // TableClickableErrorField component with copy-to-clipboard functionality
 const TableClickableErrorField: React.FC<{ label: string; value: string | null | undefined }> = ({ label, value }) => {
+  const t = useTranslations("caching");
   const [isExpanded, setIsExpanded] = React.useState(false);
-  const safeValue = value?.toString() || "N/A";
+  const safeValue = value?.toString() || t("notAvailable");
   const truncated = safeValue.length > 50 ? safeValue.substring(0, 50) + "..." : safeValue;
 
   const handleCopy = () => {
@@ -125,16 +126,16 @@ const HealthCheckDetails: React.FC<{ response: any }> = ({ response }) => {
       parsedRedisParams?.redis_async_client?.connection_pool?.connection_kwargs?.host ||
       parsedRedisParams?.connection_kwargs?.host ||
       parsedRedisParams?.host ||
-      "N/A",
+      t("notAvailable"),
 
     redis_port:
       parsedRedisParams?.redis_client?.connection_pool?.connection_kwargs?.port ||
       parsedRedisParams?.redis_async_client?.connection_pool?.connection_kwargs?.port ||
       parsedRedisParams?.connection_kwargs?.port ||
       parsedRedisParams?.port ||
-      "N/A",
+      t("notAvailable"),
 
-    redis_version: parsedRedisParams?.redis_version || "N/A",
+    redis_version: parsedRedisParams?.redis_version || t("notAvailable"),
 
     startup_nodes: (() => {
       try {
@@ -147,13 +148,13 @@ const HealthCheckDetails: React.FC<{ response: any }> = ({ response }) => {
         const port =
           parsedRedisParams?.redis_client?.connection_pool?.connection_kwargs?.port ||
           parsedRedisParams?.redis_async_client?.connection_pool?.connection_kwargs?.port;
-        return host && port ? JSON.stringify([{ host, port }]) : "N/A";
+        return host && port ? JSON.stringify([{ host, port }]) : t("notAvailable");
       } catch (e) {
-        return "N/A";
+        return t("notAvailable");
       }
     })(),
 
-    namespace: parsedRedisParams?.namespace || "N/A",
+    namespace: parsedRedisParams?.namespace || t("notAvailable"),
   };
 
   return (
@@ -206,7 +207,10 @@ const HealthCheckDetails: React.FC<{ response: any }> = ({ response }) => {
                 </tr>
                 <TableClickableErrorField label={t("cacheConfig")} value={String(parsedLitellmParams?.type)} />
                 <TableClickableErrorField label={t("pingResponse")} value={String(response.ping_response)} />
-                <TableClickableErrorField label={t("setCacheResponse")} value={response.set_cache_response || "N/A"} />
+                <TableClickableErrorField
+                  label={t("setCacheResponse")}
+                  value={response.set_cache_response || t("notAvailable")}
+                />
                 <TableClickableErrorField
                   label="litellm_settings.cache_params"
                   value={JSON.stringify(parsedLitellmParams, null, 2)}
@@ -220,11 +224,26 @@ const HealthCheckDetails: React.FC<{ response: any }> = ({ response }) => {
                         {t("redisDetailsTitle")}
                       </td>
                     </tr>
-                    <TableClickableErrorField label={t("redisHost")} value={redisDetails.redis_host || "N/A"} />
-                    <TableClickableErrorField label={t("redisPort")} value={redisDetails.redis_port || "N/A"} />
-                    <TableClickableErrorField label={t("redisVersion")} value={redisDetails.redis_version || "N/A"} />
-                    <TableClickableErrorField label={t("startupNodes")} value={redisDetails.startup_nodes || "N/A"} />
-                    <TableClickableErrorField label={t("namespace")} value={redisDetails.namespace || "N/A"} />
+                    <TableClickableErrorField
+                      label={t("redisHost")}
+                      value={redisDetails.redis_host || t("notAvailable")}
+                    />
+                    <TableClickableErrorField
+                      label={t("redisPort")}
+                      value={redisDetails.redis_port || t("notAvailable")}
+                    />
+                    <TableClickableErrorField
+                      label={t("redisVersion")}
+                      value={redisDetails.redis_version || t("notAvailable")}
+                    />
+                    <TableClickableErrorField
+                      label={t("startupNodes")}
+                      value={redisDetails.startup_nodes || t("notAvailable")}
+                    />
+                    <TableClickableErrorField
+                      label={t("namespace")}
+                      value={redisDetails.namespace || t("notAvailable")}
+                    />
                   </>
                 )}
               </tbody>

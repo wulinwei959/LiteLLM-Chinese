@@ -100,7 +100,7 @@ export function useAgentTraces({
     traces,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
-    notEnabledDetail: notEnabled ? query.error?.message || "Agent tracing is not enabled" : null,
+    notEnabledDetail: notEnabled ? query.error?.message || t("trace.agentTracingNotEnabled") : null,
     error: notEnabled ? null : displayError(query.error, t),
     hasMore: query.hasNextPage,
     loadMore: () => void query.fetchNextPage(),

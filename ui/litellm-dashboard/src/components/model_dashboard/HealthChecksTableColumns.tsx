@@ -312,7 +312,7 @@ export const getHealthChecksTableColumns = (
           return (
             <div className="flex items-center space-x-2">
               <DotPulse className="size-2 bg-indigo-500" />
-              <span className="text-sm text-muted-foreground">Checking...</span>
+              <span className="text-sm text-muted-foreground">{t("checking")}</span>
             </div>
           );
         }

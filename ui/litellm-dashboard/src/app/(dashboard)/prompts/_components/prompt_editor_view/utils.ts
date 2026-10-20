@@ -1,3 +1,5 @@
+import type { PromptsTranslator } from "@/lib/i18n/translators";
+
 import { PromptType, Message, Tool } from "./types";
 
 export const extractVariables = (prompt: PromptType): string[] => {
@@ -89,7 +91,7 @@ const parseNumber = (raw: string): number | undefined => {
   return Number.isFinite(value) ? value : undefined;
 };
 
-const parseToolsFromFrontmatter = (lines: string[]): Tool[] => {
+const parseToolsFromFrontmatter = (t: PromptsTranslator, lines: string[]): Tool[] => {
   const tools: Tool[] = [];
   let inToolsBlock = false;
 
@@ -117,7 +119,7 @@ const parseToolsFromFrontmatter = (lines: string[]): Tool[] => {
     try {
       const toolObj = JSON.parse(rawJson);
       tools.push({
-        name: toolObj?.function?.name || "Unnamed Tool",
+        name: toolObj?.function?.name || t("unnamedTool"),
         description: toolObj?.function?.description || "",
         json: JSON.stringify(toolObj, null, 2),
       });
@@ -127,11 +129,11 @@ const parseToolsFromFrontmatter = (lines: string[]): Tool[] => {
   return tools;
 };
 
-const parseDotpromptFrontmatter = (frontmatter: string): ParsedFrontmatter => {
+const parseDotpromptFrontmatter = (t: PromptsTranslator, frontmatter: string): ParsedFrontmatter => {
   const result: ParsedFrontmatter = { config: {}, tools: [] };
   const lines = frontmatter.split("\n");
 
-  result.tools = parseToolsFromFrontmatter(lines);
+  result.tools = parseToolsFromFrontmatter(t, lines);
 
   for (const line of lines) {
     const trimmedLine = line.trim();
@@ -211,7 +213,7 @@ const parseDotpromptBody = (body: string): ParsedBody => {
   return { developerMessage, messages };
 };
 
-export const parseExistingPrompt = (apiResponse: any): PromptType => {
+export const parseExistingPrompt = (t: PromptsTranslator, apiResponse: any): PromptType => {
   // Extract dotprompt_content from litellm_params
   const dotpromptContent = apiResponse?.prompt_spec?.litellm_params?.dotprompt_content || "";
 
@@ -228,11 +230,11 @@ export const parseExistingPrompt = (apiResponse: any): PromptType => {
   const frontmatter = parts[1];
   const content = parts.slice(2).join("---").trim();
 
-  const parsedFrontmatter = parseDotpromptFrontmatter(frontmatter);
+  const parsedFrontmatter = parseDotpromptFrontmatter(t, frontmatter);
   const parsedBody = parseDotpromptBody(content);
 
   // Strip version suffix from prompt name for display
-  const promptId = apiResponse?.prompt_spec?.prompt_id || "Unnamed Prompt";
+  const promptId = apiResponse?.prompt_spec?.prompt_id || t("unnamedPrompt");
   const baseName = stripVersionFromPromptId(promptId) || promptId;
 
   return {

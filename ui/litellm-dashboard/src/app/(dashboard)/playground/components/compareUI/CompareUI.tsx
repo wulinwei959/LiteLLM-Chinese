@@ -841,7 +841,9 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-foreground truncate">{uploadedFile.name}</div>
-                      <div className="text-xs text-muted-foreground">{isUploadedFilePdf ? "PDF" : "Image"}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {isUploadedFilePdf ? "PDF" : t("filePreview.image")}
+                      </div>
                     </div>
                     <button
                       className="flex items-center justify-center w-6 h-6 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors"

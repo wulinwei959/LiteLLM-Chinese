@@ -393,8 +393,8 @@ export default function ComplianceUI({
             return;
           }
 
-          const framework = row.framework?.trim() || "CSV Upload";
-          const category = row.category?.trim() || "Uploaded Prompts";
+          const framework = row.framework?.trim() || t("compliance.csvUploadFramework");
+          const category = row.category?.trim() || t("compliance.uploadedPromptsCategory");
 
           newPrompts.push({
             id: `csv-${Date.now()}-${idx}`,

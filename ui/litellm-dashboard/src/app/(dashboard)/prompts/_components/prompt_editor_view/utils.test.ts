@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { enMessagesFor } from "@tests/i18nStub";
+import type { PromptsTranslator } from "@/lib/i18n/translators";
 import { PromptType } from "./types";
 import {
   convertToDotPrompt,
@@ -7,6 +9,8 @@ import {
   parseExistingPrompt,
   stripVersionFromPromptId,
 } from "./utils";
+
+const t = enMessagesFor("prompts") as unknown as PromptsTranslator;
 
 describe("extractVariables", () => {
   it("should extract variables from messages", () => {
@@ -207,7 +211,7 @@ describe("convertToDotPrompt", () => {
 describe("parseExistingPrompt", () => {
   it("should keep saved prompts with missing or blank models unassigned", () => {
     for (const modelLine of ["", "model: \n"]) {
-      const prompt = parseExistingPrompt({
+      const prompt = parseExistingPrompt(t, {
         prompt_spec: {
           prompt_id: "unassigned-prompt",
           litellm_params: { dotprompt_content: `---\n${modelLine}temperature: 0\n---\nUser: Keep this message` },
@@ -237,7 +241,7 @@ User: Hello world`,
       },
     };
 
-    const result = parseExistingPrompt(apiResponse);
+    const result = parseExistingPrompt(t, apiResponse);
     expect(result.name).toBe("test-prompt");
     expect(result.model).toBe("gpt-4");
     expect(result.messages).toEqual([{ role: "user", content: "Hello world" }]);
@@ -264,7 +268,7 @@ User: Hello`,
       },
     };
 
-    const result = parseExistingPrompt(apiResponse);
+    const result = parseExistingPrompt(t, apiResponse);
     expect(result.config.temperature).toBe(0.7);
     expect(result.config.max_tokens).toBe(100);
     expect(result.config.top_p).toBe(0.9);
@@ -290,7 +294,7 @@ User: Hello`,
       },
     };
 
-    const result = parseExistingPrompt(apiResponse);
+    const result = parseExistingPrompt(t, apiResponse);
     expect(result.developerMessage).toBe("You are a helpful assistant");
   });
 
@@ -318,7 +322,7 @@ User: Great!`,
       },
     };
 
-    const result = parseExistingPrompt(apiResponse);
+    const result = parseExistingPrompt(t, apiResponse);
     expect(result.messages).toEqual([
       { role: "user", content: "Hello\nHow are you?" },
       { role: "assistant", content: "I am fine\nThank you for asking" },
@@ -344,7 +348,7 @@ User: Hello`,
       },
     };
 
-    const result = parseExistingPrompt(apiResponse);
+    const result = parseExistingPrompt(t, apiResponse);
     expect(result.name).toBe("test-prompt");
   });
 
@@ -355,7 +359,7 @@ User: Hello`,
       },
     };
 
-    expect(() => parseExistingPrompt(apiResponse)).toThrow("No dotprompt_content found in API response");
+    expect(() => parseExistingPrompt(t, apiResponse)).toThrow("No dotprompt_content found in API response");
   });
 
   it("should throw error for invalid dotprompt format", () => {
@@ -367,7 +371,7 @@ User: Hello`,
       },
     };
 
-    expect(() => parseExistingPrompt(apiResponse)).toThrow("Invalid dotprompt format");
+    expect(() => parseExistingPrompt(t, apiResponse)).toThrow("Invalid dotprompt format");
   });
 
   it("should provide default values when parsing fails", () => {
@@ -388,7 +392,7 @@ output:
       },
     };
 
-    const result = parseExistingPrompt(apiResponse);
+    const result = parseExistingPrompt(t, apiResponse);
     expect(result.messages).toEqual([
       { role: "user", content: "Enter task specifics. Use {{template_variables}} for dynamic inputs" },
     ]);

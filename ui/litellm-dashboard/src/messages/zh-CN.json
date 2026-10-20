@@ -5701,7 +5701,9 @@
       "loadingAttributes": "正在加载属性…",
       "idCopied": "ID 已复制",
       "copy": "复制",
-      "copied": "已复制"
+      "copied": "已复制",
+      "agentTracingNotEnabled": "未启用智能体调用链追踪",
+      "agentTracingNotEnabled": "未启用智能体调用链追踪"
     },
     "traceList": {
       "colAgent": "智能体",
@@ -5966,7 +5968,9 @@
       "textCoverageChip": "文本 {guarded}/{total}",
       "imagesCoverageChip": "图片 {guarded}/{total}",
       "sectionAutomatedReasoning": "自动推理检出项",
-      "sectionRawBedrockResponse": "原始 Bedrock 护栏响应"
+      "sectionRawBedrockResponse": "原始 Bedrock 护栏响应",
+      "notAvailable": "无",
+      "notAvailable": "无"
     }
   },
   "projects": {
@@ -7534,7 +7538,9 @@
       "namePlaceholder": "变量名",
       "save": "保存",
       "cancel": "取消"
-    }
+    },
+    "unnamedPrompt": "未命名提示词",
+    "unnamedPrompt": "未命名提示词"
   },
   "costOptimization": {
     "totalTurnsLabel": "共 {total, number} 次对话",
@@ -8308,7 +8314,11 @@
       "csvNoValidPrompts": "未在 CSV 中找到有效提示词",
       "csvParseFailed": "CSV 文件解析失败",
       "customPromptsDesc": "本次会话添加的自定义提示词。",
-      "csvPromptsDesc": "从 CSV 上传的提示词，分类为 {category}。"
+      "csvPromptsDesc": "从 CSV 上传的提示词，分类为 {category}。",
+      "csvUploadFramework": "CSV 上传",
+      "uploadedPromptsCategory": "上传的提示词",
+      "csvUploadFramework": "CSV 上传",
+      "uploadedPromptsCategory": "上传的提示词"
     },
     "agentBuilder": {
       "title": "智能体构建器",
@@ -9484,7 +9494,9 @@
         "saveSuccess": "协调 Redis 设置已保存，重启代理后生效。",
         "updateFailed": "更新协调 Redis 设置失败"
       }
-    }
+    },
+    "notAvailable": "无",
+    "notAvailable": "无"
   },
   "searchTools": {
     "addNew": "新建搜索工具",
@@ -10240,7 +10252,18 @@
       "toastSuccess": "MCP 中心的公开列表已更新",
       "missingMetadata": "这个代理没有为每个 MCP 服务器提供明确的公开状态。请升级代理后在这里管理可见性，或修改它现有配置里的 litellm_settings.public_mcp_servers",
       "loading": "正在加载公开设置"
-    }
+    },
+    "modeChat": "对话",
+    "free": "免费",
+    "unknownHealth": "未知",
+    "responseTime": "响应时间：{value}ms",
+    "lastChecked": "最近检查：{value}",
+    "modeChat": "对话",
+    "notAvailable": "无",
+    "free": "免费",
+    "unknownHealth": "未知",
+    "responseTime": "响应时间：{value}ms",
+    "lastChecked": "最近检查：{value}"
   },
   "secretManager": {
     "shared": {
@@ -12414,6 +12437,10 @@
     "createCloudZeroIntegrationFailed": "创建 CloudZero 集成失败",
     "updateModelStorageSettingsFailed": "更新模型存储设置失败",
     "updateSpendLogsSettingsFailed": "更新花费日志设置失败",
-    "retrieveToolsListFailed": "获取工具列表失败"
+    "retrieveToolsListFailed": "获取工具列表失败",
+    "unknownError": "发生未知错误",
+    "oauthTokenExchangeFailed": "OAuth 令牌交换失败",
+    "unknownError": "发生未知错误",
+    "oauthTokenExchangeFailed": "OAuth 令牌交换失败"
   }
 }

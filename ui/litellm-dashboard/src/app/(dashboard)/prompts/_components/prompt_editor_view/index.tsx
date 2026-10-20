@@ -20,7 +20,7 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
   const getInitialPrompt = (): PromptType => {
     if (initialPromptData) {
       try {
-        return parseExistingPrompt(initialPromptData);
+        return parseExistingPrompt(t, initialPromptData);
       } catch (error) {
         console.error("Error parsing existing prompt:", error);
         toast.fromError(t("editor.parseFailed"));
@@ -166,7 +166,7 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
 
   const handleLoadVersion = (versionData: any) => {
     try {
-      const loadedPrompt = parseExistingPrompt({ prompt_spec: versionData });
+      const loadedPrompt = parseExistingPrompt(t, { prompt_spec: versionData });
       setPrompt(loadedPrompt);
       // Store the version number or construct versioned ID for tracking
       const versionNum = versionData.version || 1;
@@ -280,7 +280,7 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
               try {
                 const response = await getPromptInfo(accessToken, initialPromptData.prompt_spec.prompt_id, env);
                 if (response?.prompt_spec) {
-                  const loadedPrompt = parseExistingPrompt(response);
+                  const loadedPrompt = parseExistingPrompt(t, response);
                   setPrompt({ ...loadedPrompt, environment: env });
                   const versionNum = response.prompt_spec.version || 1;
                   setActiveVersionId(`${response.prompt_spec.prompt_id}.v${versionNum}`);

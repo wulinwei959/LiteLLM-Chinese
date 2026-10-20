@@ -5702,7 +5702,9 @@
       "loadingAttributes": "Loading attributes…",
       "idCopied": "ID copied",
       "copy": "Copy",
-      "copied": "Copied"
+      "copied": "Copied",
+      "agentTracingNotEnabled": "Agent tracing is not enabled",
+      "agentTracingNotEnabled": "Agent tracing is not enabled"
     },
     "traceList": {
       "colAgent": "Agent",
@@ -5967,7 +5969,9 @@
       "textCoverageChip": "text {guarded}/{total}",
       "imagesCoverageChip": "images {guarded}/{total}",
       "sectionAutomatedReasoning": "Automated Reasoning Findings",
-      "sectionRawBedrockResponse": "Raw Bedrock Guardrail Response"
+      "sectionRawBedrockResponse": "Raw Bedrock Guardrail Response",
+      "notAvailable": "N/A",
+      "notAvailable": "N/A"
     }
   },
   "projects": {
@@ -7535,7 +7539,9 @@
       "namePlaceholder": "Variable name",
       "save": "Save",
       "cancel": "Cancel"
-    }
+    },
+    "unnamedPrompt": "Unnamed Prompt",
+    "unnamedPrompt": "Unnamed Prompt"
   },
   "costOptimization": {
     "totalTurnsLabel": "{total, number} total turns",
@@ -8313,7 +8319,11 @@
       "csvNoValidPrompts": "No valid prompts found in CSV.",
       "csvParseFailed": "Failed to parse CSV file.",
       "customPromptsDesc": "Custom prompts added this session.",
-      "csvPromptsDesc": "Prompts uploaded from CSV — {category}."
+      "csvPromptsDesc": "Prompts uploaded from CSV — {category}.",
+      "csvUploadFramework": "CSV Upload",
+      "uploadedPromptsCategory": "Uploaded Prompts",
+      "csvUploadFramework": "CSV Upload",
+      "uploadedPromptsCategory": "Uploaded Prompts"
     },
     "agentBuilder": {
       "title": "Agent Builder",
@@ -9489,7 +9499,9 @@
         "saveSuccess": "Coordination Redis settings saved. Restart the proxy to apply them.",
         "updateFailed": "Failed to update coordination Redis settings"
       }
-    }
+    },
+    "notAvailable": "N/A",
+    "notAvailable": "N/A"
   },
   "searchTools": {
     "addNew": "Add New Search Tool",
@@ -10245,7 +10257,18 @@
       "toastSuccess": "MCP Hub publication list updated",
       "missingMetadata": "This proxy does not provide explicit publication status for every MCP server. Update the proxy to manage visibility here, or edit litellm_settings.public_mcp_servers in its existing configuration",
       "loading": "Loading publication settings"
-    }
+    },
+    "modeChat": "Chat",
+    "free": "Free",
+    "unknownHealth": "Unknown",
+    "responseTime": "Response Time: {value}ms",
+    "lastChecked": "Last Checked: {value}",
+    "modeChat": "Chat",
+    "notAvailable": "N/A",
+    "free": "Free",
+    "unknownHealth": "Unknown",
+    "responseTime": "Response Time: {value}ms",
+    "lastChecked": "Last Checked: {value}"
   },
   "secretManager": {
     "shared": {
@@ -12419,6 +12442,10 @@
     "createCloudZeroIntegrationFailed": "Failed to create CloudZero integration",
     "updateModelStorageSettingsFailed": "Failed to update model storage settings",
     "updateSpendLogsSettingsFailed": "Failed to update spend logs settings",
-    "retrieveToolsListFailed": "Failed to retrieve tools list"
+    "retrieveToolsListFailed": "Failed to retrieve tools list",
+    "unknownError": "An unknown error occurred",
+    "oauthTokenExchangeFailed": "OAuth token exchange failed",
+    "unknownError": "An unknown error occurred",
+    "oauthTokenExchangeFailed": "OAuth token exchange failed"
   }
 }

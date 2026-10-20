@@ -1,10 +1,12 @@
+import { toastMessage } from "@/lib/toast";
+
 /**
  * Extracts a user-friendly error message from various error formats
  * @param {any} error - The error object or message
  * @returns {string} - A clean error message
  */
 export const parseErrorMessage = (error: any): string => {
-  if (!error) return "An unknown error occurred";
+  if (!error) return toastMessage("unknownError");
 
   // If error is already a string, return it
   if (typeof error === "string") return error;

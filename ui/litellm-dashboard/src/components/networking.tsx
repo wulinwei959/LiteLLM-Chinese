@@ -6846,7 +6846,8 @@ export const exchangeMcpOAuthToken = async ({
       typeof data?.error === "string" && typeof data?.error_description === "string"
         ? `${data.error}: ${data.error_description}`
         : undefined;
-    const errorMessage = oauthErrorMessage || deriveErrorMessage(data) || data?.detail || "OAuth token exchange failed";
+    const errorMessage =
+      oauthErrorMessage || deriveErrorMessage(data) || data?.detail || toastMessage("oauthTokenExchangeFailed");
     throw new Error(errorMessage);
   }
   return data;

@@ -8,6 +8,7 @@ import { CellTooltip, IdentityCell, StatusBadge, type StatusTone } from "@/compo
 import { Badge } from "@/components/ui/badge";
 import { getProviderLogoAndName } from "@/components/provider_info_helpers";
 import { PUBLIC_MODEL_HUB_SORTABLE_FIELDS } from "@/components/publicModelHub/publicModelHubFilters";
+import { formatDate } from "@/lib/i18n/format";
 
 export interface ModelGroupInfo {
   model_group: string;
@@ -206,7 +207,7 @@ export const getPublicModelHubColumns = (
       cell: ({ row }) => (
         <span className="flex items-center gap-2 text-sm">
           <span>{getModeIcon(row.original.mode || "")}</span>
-          <span>{row.original.mode || "Chat"}</span>
+          <span>{row.original.mode || t("modeChat")}</span>
         </span>
       ),
     },
@@ -234,7 +235,7 @@ export const getPublicModelHubColumns = (
       size: 110,
       cell: ({ row }) => (
         <span className="text-sm">
-          {row.original.input_cost_per_token ? formatCost(row.original.input_cost_per_token) : "Free"}
+          {row.original.input_cost_per_token ? formatCost(row.original.input_cost_per_token) : t("free")}
         </span>
       ),
     },
@@ -246,7 +247,7 @@ export const getPublicModelHubColumns = (
       size: 110,
       cell: ({ row }) => (
         <span className="text-sm">
-          {row.original.output_cost_per_token ? formatCost(row.original.output_cost_per_token) : "Free"}
+          {row.original.output_cost_per_token ? formatCost(row.original.output_cost_per_token) : t("free")}
         </span>
       ),
     },
@@ -271,11 +272,11 @@ export const getPublicModelHubColumns = (
       cell: ({ row }) => {
         const model = row.original;
         const responseTimeLabel = model.health_response_time
-          ? `Response Time: ${Number(model.health_response_time).toFixed(2)}ms`
-          : "N/A";
+          ? t("responseTime", { value: Number(model.health_response_time).toFixed(2) })
+          : t("notAvailable");
         const lastCheckedLabel = model.health_checked_at
-          ? `Last Checked: ${new Date(model.health_checked_at).toLocaleString()}`
-          : "N/A";
+          ? t("lastChecked", { value: formatDate(new Date(model.health_checked_at)) })
+          : t("notAvailable");
         return (
           <CellTooltip
             content={
@@ -288,7 +289,7 @@ export const getPublicModelHubColumns = (
               <span className="capitalize">
                 <StatusBadge
                   tone={HEALTH_TONES[model.health_status ?? ""] || "neutral"}
-                  label={model.health_status ?? "Unknown"}
+                  label={model.health_status ?? t("unknownHealth")}
                 />
               </span>
             }

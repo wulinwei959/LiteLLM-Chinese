@@ -95,7 +95,7 @@ export function AgentControlPlaneView() {
         flex: 1,
         minHeight: "calc(100vh - 56px)",
       }}
-      title={activePlugin?.display_name ?? "Plugin"}
+      title={activePlugin?.display_name ?? t("plugin")}
       allow="clipboard-write"
     />
   );

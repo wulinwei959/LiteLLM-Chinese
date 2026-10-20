@@ -219,7 +219,7 @@ export const BedrockGuardrailDetails: React.FC<{ response: BedrockGuardrailRespo
       <div className="border rounded-lg p-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <KV label={t("guardrail.colAction")}>{chip(response.action ?? "N/A", actionTone)}</KV>
+            <KV label={t("guardrail.colAction")}>{chip(response.action ?? t("guardrail.notAvailable"), actionTone)}</KV>
             {response.actionReason && <KV label={t("guardrail.colActionReason")}>{response.actionReason}</KV>}
             {response.blockedResponse && (
               <KV label={t("guardrail.colBlockedResponse")}>
@@ -287,7 +287,7 @@ export const BedrockGuardrailDetails: React.FC<{ response: BedrockGuardrailRespo
                           {assess.wordPolicy.customWords!.map((w, i) => (
                             <div key={i} className="flex justify-between items-center p-2 bg-muted rounded-sm">
                               <div className="flex items-center gap-2">
-                                {chip(w.action ?? "N/A", w.detected ? "red" : "slate")}
+                                {chip(w.action ?? t("guardrail.notAvailable"), w.detected ? "red" : "slate")}
                                 <span className="font-mono text-sm break-all">{w.match}</span>
                               </div>
                               {boolPill(t, w.detected)}
@@ -302,7 +302,7 @@ export const BedrockGuardrailDetails: React.FC<{ response: BedrockGuardrailRespo
                           {assess.wordPolicy.managedWordLists!.map((w, i) => (
                             <div key={i} className="flex justify-between items-center p-2 bg-muted rounded-sm">
                               <div className="flex items-center gap-2">
-                                {chip(w.action ?? "N/A", w.detected ? "red" : "slate")}
+                                {chip(w.action ?? t("guardrail.notAvailable"), w.detected ? "red" : "slate")}
                                 <span className="font-mono text-sm break-all">{w.match}</span>
                                 {w.type && chip(w.type, "slate")}
                               </div>
@@ -387,7 +387,7 @@ export const BedrockGuardrailDetails: React.FC<{ response: BedrockGuardrailRespo
                           {assess.sensitiveInformationPolicy.piiEntities!.map((p, i) => (
                             <div key={i} className="flex justify-between items-center p-2 bg-muted rounded-sm">
                               <div className="flex items-center gap-2">
-                                {chip(p.action ?? "N/A", p.detected ? "red" : "slate")}
+                                {chip(p.action ?? t("guardrail.notAvailable"), p.detected ? "red" : "slate")}
                                 {p.type && chip(p.type, "slate")}
                                 <span className="font-mono text-xs break-all">{p.match}</span>
                               </div>
@@ -406,7 +406,7 @@ export const BedrockGuardrailDetails: React.FC<{ response: BedrockGuardrailRespo
                               className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 bg-muted rounded-sm gap-1"
                             >
                               <div className="flex items-center gap-2">
-                                {chip(r.action ?? "N/A", r.detected ? "red" : "slate")}
+                                {chip(r.action ?? t("guardrail.notAvailable"), r.detected ? "red" : "slate")}
                                 <span className="font-medium">{r.name ?? "regex"}</span>
                                 <span className="font-mono text-xs break-all">{r.regex}</span>
                               </div>
@@ -430,7 +430,7 @@ export const BedrockGuardrailDetails: React.FC<{ response: BedrockGuardrailRespo
                       {assess.topicPolicy.topics!.map((topic, i) => (
                         <div key={i} className="px-3 py-1.5 bg-muted rounded-md text-xs">
                           <div className="flex items-center gap-2">
-                            {chip(topic.action ?? "N/A", topic.detected ? "red" : "slate")}
+                            {chip(topic.action ?? t("guardrail.notAvailable"), topic.detected ? "red" : "slate")}
                             <span className="font-medium">{topic.name ?? "topic"}</span>
                             {topic.type && chip(topic.type, "slate")}
                             {boolPill(t, topic.detected)}
