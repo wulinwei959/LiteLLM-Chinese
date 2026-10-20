@@ -6,6 +6,10 @@
 
 中英同值从 106 涨到 128 是第 146 簇带来的：供应商字段的占位符多半是 URL、模型名、字段名这类格式示例（如 `text-embedding-3-small`、`embedding`、`6379`），两侧本来就该一致。这类同值不是漏翻。
 
+## 2026-10-20 第 364 簇后补充扫描
+
+第 362 到 364 簇把「更宽正则盲区」逐条扫了一遍并记判定，可见小面串趋薄：单行 `>Title Case<` 生产命中仅 `view_user_spend.tsx` 一处、且在 `{/* */}` 注释块内非渲染（假阳性）；插值后内联英文（`{x} Input` 形）仅 multi_cost_results 一族（362 已接）；属性维度 `alt`/`aria-label`/`title`/`placeholder` 英文字面量全落判定账——法规专名 `EU AI Act`/`GDPR` 与品牌 `CloudZero` 中英同值、`GroupCountTable title="gatewaySessions.*"` 系 i18n 键路径非裸串、`aria-label="file-pdf"` 与 slug/数字/协议头/prompt 样例占位符系格式示例（循 349/360 例）；多行散文命中全在 `{/* */}` 代码注释；`{" "}` 后接英文与反引号渲染散文两条正则零命中。仅余一类边界项待用户定夺：`UiLoadingSpinner` 的 `aria-label="loading"` 于 LoggingSettings/ChangePasswordForm/LoginPage/OnboardingFormBody 四处重复、屏幕阅读器在 zh 构建下仍读英文 `loading`，属可及性文本非「可见串」，且 `common.loading` 值是「Loading...」与现「loading」不同字、贯穿或改共享件均有扇出，暂不入队待确认。不据本报告宣布整体完成
+
 ## 2026-10-20 第 364 簇更新
 
 开「小写起头 JSX 文本节点」补扫（前几簇 Title Case 正则 `[A-Z]…` 漏掉以 `stdio`/变量名等小写起头的句子），命中 `mcp-servers/_components/StdioAvailability.tsx` 一处真串族：模块级导出常量 `STDIO_DISABLED_MESSAGE`「stdio MCP servers are disabled…restart to enable them」作 tooltip 内容（`TransportSelectItems` 已接入行 25）与横幅正文（`StdioDisabledBanner` 未接 hook）、`AlertTitle`「stdio is disabled on this proxy」、正文后缀「. Until then this server cannot start or be saved as stdio.」。常量无法调 `t()`，故删常量、三键化：新增 `mcpServers.stdioDisabledMessage`（en 逐字同旧常量、`LITELLM_ENABLE_MCP_STDIO=true` 环境变量标识原样、`=`/`.` 非 ICU 特殊字符）、`stdioDisabledTitle`、`stdioDisabledUntilThen`；横幅正文写 `{t(msg)}. {t(until)}` 与旧字面量逐字节一致，`TransportSelectItems` tooltip 改 `t("stdioDisabledMessage")`（该组件 `mcpServers` 译员已在域）
