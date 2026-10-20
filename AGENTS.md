@@ -109,6 +109,14 @@ Follow conventional commits for commit names and PR titles
 
 Commit messages pushed to the LAN Gitea (both the `type(scope): subject` title and the body) must be written in Simplified Chinese. Keep the conventional-commit type/scope prefixes in English.
 
+## Language and Documentation
+
+All communication with the user happens in Simplified Chinese: questions, progress reports, explanations of design decisions, and summaries of completed work. Code, identifiers, and command output stay in English, and only the prose around them is Chinese.
+
+Every piece of human-facing text in Simplified Chinese: commit titles and bodies, pull request titles and descriptions, issue bodies, release notes, and any documentation this project maintains.
+
+Documentation is part of the change, not a follow-up task. When a change alters behaviour, configuration, or an API, update the matching document in the same commit, and write it in Simplified Chinese.
+
 ## Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs**
