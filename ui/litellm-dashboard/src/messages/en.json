@@ -12550,5 +12550,18 @@
       "startupNodesHelp": "List of startup nodes for Redis Cluster (e.g., ['{'\"host\": \"127.0.0.1\", \"port\": 7001'}'])",
       "urlHelp": "Full Redis/Valkey connection URL (e.g. redis://:password@host:6379/1). When set, it takes precedence over Host, Port, Username, and Password."
     }
+  },
+  "toast": {
+    "budget": "Budget Exceeded",
+    "rateLimit": "Rate Limit Exceeded",
+    "service": "Service Unavailable",
+    "auth": "Authentication Error",
+    "forbidden": "Access Denied",
+    "notFound": "Not Found",
+    "validation": "Validation Error",
+    "request": "Request Error",
+    "conflict": "Already Exists",
+    "server": "Server Error",
+    "generic": "Error"
   }
 }

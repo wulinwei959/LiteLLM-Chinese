@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
 import { toast as sonner } from "sonner";
 import { ApiError, deriveErrorMessage, unwrapProxyErrorMessage } from "@/lib/http/client";
+import { DEFAULT_UI_LOCALE, isUiLocale, type UiLocale } from "@/lib/i18n/locales";
+import enMessages from "@/messages/en.json";
+import zhMessages from "@/messages/zh-CN.json";
 
 export type ToastKind = "success" | "info" | "warning" | "error";
 
@@ -15,11 +18,6 @@ type ErrorFacts = {
   readonly text: string;
 };
 
-type ToastTitle = {
-  readonly category: string;
-  readonly label: string;
-};
-
 const DEFAULT_DURATION_MS: Readonly<Record<ToastKind, number>> = {
   success: 4000,
   info: 4000,
@@ -27,30 +25,43 @@ const DEFAULT_DURATION_MS: Readonly<Record<ToastKind, number>> = {
   error: 6000,
 };
 
-const PROXY_TYPE_TITLES: Readonly<Record<string, ToastTitle>> = {
-  budget_exceeded: { category: "budget", label: "Budget Exceeded" },
-  no_db_connection: { category: "service", label: "Service Unavailable" },
-  expired_key: { category: "auth", label: "Authentication Error" },
-  token_not_found_in_db: { category: "auth", label: "Authentication Error" },
-  team_member_permission_error: { category: "forbidden", label: "Access Denied" },
-  not_found_error: { category: "not_found", label: "Not Found" },
-  validation_error: { category: "validation", label: "Validation Error" },
-  bad_request_error: { category: "request", label: "Request Error" },
-  team_member_already_in_team: { category: "conflict", label: "Already Exists" },
+const ERROR_TITLE_CATALOG: Readonly<Record<UiLocale, Readonly<Record<string, string>>>> = {
+  en: enMessages.toast,
+  "zh-CN": zhMessages.toast,
 };
 
-const STATUS_TITLES: Readonly<Record<number, ToastTitle>> = {
-  400: { category: "request", label: "Request Error" },
-  401: { category: "auth", label: "Authentication Error" },
-  403: { category: "forbidden", label: "Access Denied" },
-  404: { category: "not_found", label: "Not Found" },
-  409: { category: "conflict", label: "Already Exists" },
-  422: { category: "validation", label: "Validation Error" },
-  429: { category: "rate_limit", label: "Rate Limit Exceeded" },
-  503: { category: "service", label: "Service Unavailable" },
+const currentUiLocale = (): UiLocale =>
+  typeof document !== "undefined" && isUiLocale(document.documentElement.lang)
+    ? document.documentElement.lang
+    : DEFAULT_UI_LOCALE;
+
+const errorTitle = (category: string): string =>
+  ERROR_TITLE_CATALOG[currentUiLocale()][category] ?? ERROR_TITLE_CATALOG[DEFAULT_UI_LOCALE][category] ?? category;
+
+const PROXY_TYPE_CATEGORIES: Readonly<Record<string, string>> = {
+  budget_exceeded: "budget",
+  no_db_connection: "service",
+  expired_key: "auth",
+  token_not_found_in_db: "auth",
+  team_member_permission_error: "forbidden",
+  not_found_error: "notFound",
+  validation_error: "validation",
+  bad_request_error: "request",
+  team_member_already_in_team: "conflict",
 };
 
-const WARNING_CATEGORIES: ReadonlySet<string> = new Set(["budget", "rate_limit"]);
+const STATUS_CATEGORIES: Readonly<Record<number, string>> = {
+  400: "request",
+  401: "auth",
+  403: "forbidden",
+  404: "notFound",
+  409: "conflict",
+  422: "validation",
+  429: "rateLimit",
+  503: "service",
+};
+
+const WARNING_CATEGORIES: ReadonlySet<string> = new Set(["budget", "rateLimit"]);
 
 const asRecord = (value: unknown): Record<string, unknown> | undefined =>
   value !== null && typeof value === "object" ? (value as Record<string, unknown>) : undefined;
@@ -115,19 +126,19 @@ const describeError = (input: unknown): ErrorFacts => {
   };
 };
 
-const titleForStatus = (status: number): ToastTitle => {
-  const known = STATUS_TITLES[status];
+const categoryForStatus = (status: number): string => {
+  const known = STATUS_CATEGORIES[status];
   if (known !== undefined) return known;
-  if (status >= 500) return { category: "server", label: "Server Error" };
-  if (status >= 400) return { category: "request", label: "Request Error" };
-  return { category: "generic", label: "Error" };
+  if (status >= 500) return "server";
+  if (status >= 400) return "request";
+  return "generic";
 };
 
-const titleFor = ({ status, proxyType }: ErrorFacts): ToastTitle => {
-  if (proxyType?.endsWith("_access_denied")) return { category: "forbidden", label: "Access Denied" };
-  const byType = proxyType === undefined ? undefined : PROXY_TYPE_TITLES[proxyType];
+const categoryFor = ({ status, proxyType }: ErrorFacts): string => {
+  if (proxyType?.endsWith("_access_denied")) return "forbidden";
+  const byType = proxyType === undefined ? undefined : PROXY_TYPE_CATEGORIES[proxyType];
   if (byType !== undefined) return byType;
-  return status === undefined ? { category: "generic", label: "Error" } : titleForStatus(status);
+  return status === undefined ? "generic" : categoryForStatus(status);
 };
 
 const show = (kind: ToastKind, message: ReactNode, options?: ToastOptions): void => {
@@ -144,8 +155,11 @@ export const toast = {
   error: (message: ReactNode, options?: ToastOptions): void => show("error", message, options),
   fromError: (input: unknown, options?: ToastOptions): void => {
     const facts = describeError(input);
-    const { category, label } = titleFor(facts);
-    show(WARNING_CATEGORIES.has(category) ? "warning" : "error", label, { description: facts.text, ...options });
+    const category = categoryFor(facts);
+    show(WARNING_CATEGORIES.has(category) ? "warning" : "error", errorTitle(category), {
+      description: facts.text,
+      ...options,
+    });
   },
   dismiss: (): void => {
     sonner.dismiss();

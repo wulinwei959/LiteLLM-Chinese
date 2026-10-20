@@ -12545,5 +12545,18 @@
       "startupNodesHelp": "Redis Cluster 的启动节点列表（例如 '['{'\"host\": \"127.0.0.1\", \"port\": 7001'}']'）",
       "urlHelp": "完整的 Redis/Valkey 连接 URL（例如 redis://:password@host:6379/1）。设置后它的优先级高于主机、端口、用户名与密码。"
     }
+  },
+  "toast": {
+    "budget": "预算超限",
+    "rateLimit": "请求频率超限",
+    "service": "服务不可用",
+    "auth": "认证错误",
+    "forbidden": "拒绝访问",
+    "notFound": "未找到",
+    "validation": "校验错误",
+    "request": "请求错误",
+    "conflict": "已存在",
+    "server": "服务器错误",
+    "generic": "错误"
   }
 }
