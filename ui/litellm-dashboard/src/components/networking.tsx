@@ -118,7 +118,6 @@ import type {
   CoordinationRedisSettingsResponse,
   CoordinationRedisTestResponse,
 } from "@/app/(dashboard)/caching/_components/coordination_redis_settings/types";
-import { MCP_TOOLS_PREVIEW_FORBIDDEN_MESSAGE } from "./mcp_tools/constants";
 import type { ComplexityRouterConfigPayload } from "./add_model/build_complexity_router_config";
 import type { AutoRouterPresetsResponse } from "@/lib/autorouter_presets";
 import type { VectorStoreIndex } from "@/app/(dashboard)/vector-stores/_components/IndexesTab";
@@ -6678,7 +6677,7 @@ export const testMCPToolsListRequest = async (
           tools: [],
           error: true,
           status: 403,
-          message: MCP_TOOLS_PREVIEW_FORBIDDEN_MESSAGE,
+          message: toastMessage("toolsPreviewForbidden"),
         };
       }
       // Return the error response instead of throwing an error

@@ -365,6 +365,8 @@
   },
   "ssoEnabledNotice": "单点登录 (SSO) 已启用。LiteLLM 加载此页面时不再自动重定向到 SSO 登录流程。如需重新启用自动重定向到 SSO，请在环境配置中设置 AUTO_REDIRECT_UI_LOGIN_TO_SSO=true。",
   "virtualKeys": {
+    "createErrorPrefix": "创建密钥时出错：{error}",
+    "teamMemberPermissionError": "团队成员无权为该团队生成密钥。请联系代理管理员配置团队成员权限设置。",
     "title": "虚拟密钥",
     "keyInfoFailed": "获取密钥信息失败：{error}",
     "searchPlaceholder": "搜索密钥...",
@@ -12632,6 +12634,7 @@
     "validateBlockedWordsFileFailed": "校验屏蔽词文件失败",
     "noResponseBody": "未收到响应体",
     "noModelsExist": "尚无模型。请点击「添加模型」开始使用。",
+    "toolsPreviewForbidden": "提交申请时无法预览工具。工具将在审核期间由管理员验证。",
     "performDryRunFailed": "试运行失败",
     "exportCloudZeroDataFailed": "导出数据失败",
     "createCloudZeroIntegrationFailed": "创建 CloudZero 集成失败",

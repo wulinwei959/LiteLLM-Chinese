@@ -366,6 +366,8 @@
   },
   "ssoEnabledNotice": "Single Sign-On (SSO) is enabled. LiteLLM no longer automatically redirects to the SSO login flow upon loading this page. To re-enable auto-redirect-to-SSO, set AUTO_REDIRECT_UI_LOGIN_TO_SSO=true in your environment configuration.",
   "virtualKeys": {
+    "createErrorPrefix": "Error creating the key: {error}",
+    "teamMemberPermissionError": "Team member does not have permission to generate key for this team. Ask your proxy admin to configure the team member permission settings.",
     "title": "Virtual Keys",
     "keyInfoFailed": "Failed to fetch key info - {error}",
     "searchPlaceholder": "Search keys...",
@@ -12637,6 +12639,7 @@
     "validateBlockedWordsFileFailed": "Failed to validate blocked words file",
     "noResponseBody": "No response body",
     "noModelsExist": "No Models Exist. Click Add Model to get started.",
+    "toolsPreviewForbidden": "Tool preview is not available for submissions. Tools will be verified by an admin during review.",
     "performDryRunFailed": "Failed to perform dry run",
     "exportCloudZeroDataFailed": "Failed to export data",
     "createCloudZeroIntegrationFailed": "Failed to create CloudZero integration",

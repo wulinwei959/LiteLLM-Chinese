@@ -491,7 +491,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
       setBudgetFallbacksKey((k) => k + 1);
       localStorage.removeItem("userData" + userID);
     } catch (error) {
-      const simplifiedError = simplifyKeyGenerateError(error);
+      const simplifiedError = simplifyKeyGenerateError(t, error);
       toast.fromError(simplifiedError);
     }
   };
