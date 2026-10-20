@@ -1,4 +1,4 @@
-import { toast } from "@/lib/toast";
+import { toast, toastMessage } from "@/lib/toast";
 
 export function updateExistingKeys<Source extends object>(target: Source, source: object): Source {
   const clonedTarget = structuredClone(target);
@@ -115,7 +115,7 @@ const fallbackCopyToClipboard = (text: string, messageText: string): boolean => 
       throw new Error("execCommand failed");
     }
   } catch (err) {
-    toast.fromError("Failed to copy to clipboard");
+    toast.fromError(toastMessage("copyFailed"));
     console.error("Failed to copy: ", err);
     return false;
   }

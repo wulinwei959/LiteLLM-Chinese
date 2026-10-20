@@ -12562,6 +12562,8 @@
     "request": "Request Error",
     "conflict": "Already Exists",
     "server": "Server Error",
-    "generic": "Error"
+    "generic": "Error",
+    "copyFailed": "Failed to copy to clipboard",
+    "sessionExpired": "UI Session Expired. Logging out."
   }
 }

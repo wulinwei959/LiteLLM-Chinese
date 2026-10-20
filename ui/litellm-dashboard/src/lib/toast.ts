@@ -25,7 +25,7 @@ const DEFAULT_DURATION_MS: Readonly<Record<ToastKind, number>> = {
   error: 6000,
 };
 
-const ERROR_TITLE_CATALOG: Readonly<Record<UiLocale, Readonly<Record<string, string>>>> = {
+const TOAST_MESSAGES: Readonly<Record<UiLocale, Readonly<Record<string, string>>>> = {
   en: enMessages.toast,
   "zh-CN": zhMessages.toast,
 };
@@ -35,8 +35,8 @@ const currentUiLocale = (): UiLocale =>
     ? document.documentElement.lang
     : DEFAULT_UI_LOCALE;
 
-const errorTitle = (category: string): string =>
-  ERROR_TITLE_CATALOG[currentUiLocale()][category] ?? ERROR_TITLE_CATALOG[DEFAULT_UI_LOCALE][category] ?? category;
+export const toastMessage = (key: string): string =>
+  TOAST_MESSAGES[currentUiLocale()][key] ?? TOAST_MESSAGES[DEFAULT_UI_LOCALE][key] ?? key;
 
 const PROXY_TYPE_CATEGORIES: Readonly<Record<string, string>> = {
   budget_exceeded: "budget",
@@ -156,7 +156,7 @@ export const toast = {
   fromError: (input: unknown, options?: ToastOptions): void => {
     const facts = describeError(input);
     const category = categoryFor(facts);
-    show(WARNING_CATEGORIES.has(category) ? "warning" : "error", errorTitle(category), {
+    show(WARNING_CATEGORIES.has(category) ? "warning" : "error", toastMessage(category), {
       description: facts.text,
       ...options,
     });

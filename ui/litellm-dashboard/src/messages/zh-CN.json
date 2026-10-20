@@ -12557,6 +12557,8 @@
     "request": "请求错误",
     "conflict": "已存在",
     "server": "服务器错误",
-    "generic": "错误"
+    "generic": "错误",
+    "copyFailed": "复制到剪贴板失败",
+    "sessionExpired": "会话已过期，正在退出登录。"
   }
 }

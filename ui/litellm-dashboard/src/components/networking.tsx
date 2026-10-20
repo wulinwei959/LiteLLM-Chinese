@@ -86,7 +86,7 @@ export const getAutoRouterAssembledPromptCall = async (
 /**
  * Helper file for calls being made to proxy
  */
-import { toast } from "@/lib/toast";
+import { toast, toastMessage } from "@/lib/toast";
 import type {
   CommonTranslator,
   ModelsAddModelTranslator,
@@ -406,7 +406,7 @@ export const handleError = async (errorData: string | any) => {
     // Convert errorData to string if it isn't already
     const errorString = typeof errorData === "string" ? errorData : JSON.stringify(errorData);
     if (errorString.includes("Authentication Error - Expired Key")) {
-      toast.info("UI Session Expired. Logging out.");
+      toast.info(toastMessage("sessionExpired"));
       lastErrorTime = currentTime;
       clearTokenCookies();
       const browserLocation = getWindowLocation();

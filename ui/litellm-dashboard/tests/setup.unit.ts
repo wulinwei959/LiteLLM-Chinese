@@ -1,6 +1,7 @@
 import { vi } from "vitest";
 
-vi.mock("@/lib/toast", () => ({
+vi.mock("@/lib/toast", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/toast")>()),
   toast: {
     success: vi.fn(),
     info: vi.fn(),

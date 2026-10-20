@@ -88,7 +88,8 @@ const ensureTestLocalStorage = () => {
 ensureTestLocalStorage();
 
 // Global mock so every test can assert on toast calls; toast.test.ts opts back in with vi.unmock
-vi.mock("@/lib/toast", () => ({
+vi.mock("@/lib/toast", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/toast")>()),
   toast: {
     success: vi.fn(),
     info: vi.fn(),
