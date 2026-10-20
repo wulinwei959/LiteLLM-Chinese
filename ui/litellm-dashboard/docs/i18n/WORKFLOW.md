@@ -95,6 +95,8 @@ LiteAdmin 这类由模型调工具的界面，文案分两层。喂给模型的�
 
 测试分层按 [`AGENTS.md`](../../AGENTS.md) 的约定：`Foo.test.tsx` 是单元测试，一个模块、毫秒级；`Foo.integration.test.tsx` 是集成测试，渲染真实组件树、只打桩网络边界；浏览器级测试在 `tests/e2e/ui/`。改动哪个文件就归类哪个文件
 
+打桩 `useAuthorized` 的用例不要手抄 session 形状。用 `tests/mocks/authorizedSession.ts` 的 `authorizedSession({ ...要改的字段 })`：它给的是 hook 的完整返回类型，漏字段时 tsc 会报 TS2345，手抄形状很容易漏。要表达"没有 token / 没有用户"就把对应字段显式传成 `null`
+
 ### 第六步：验证
 
 按顺序跑，前面的失败不用往下走

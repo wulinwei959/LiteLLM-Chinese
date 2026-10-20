@@ -31,6 +31,7 @@
 | `tests/dead-key-lib.test.ts`                 | 判定器判定逻辑的单测                                                                   |
 | `tests/test-utils.tsx`                       | 测试侧的 `renderWithProviders`，已包好 `LocaleProvider`                                |
 | `tests/i18nStub.ts`                          | 测试侧的 `enMessages`，给拿不到 React 上下文的纯函数查 `en.json`                       |
+| `tests/mocks/authorizedSession.ts`           | 测试侧的 auth session 工厂，给打桩 `useAuthorized` 的用例用                            |
 
 ## 语言怎么定下来
 
@@ -131,5 +132,7 @@ switcher 的用例走这条出口，并在 `beforeEach` 里清 `localStorage`、
 `enMessages` 给列定义工厂这类拿不到 React 上下文的纯函数用。它按 `mcpServers` 命名空间去 `en.json` 查值，查不到就抛错。这样测试断言的仍是真实英文文案（`+1 more`）而不是键名（`toolsets.moreCount`），键名写错会立刻失败
 
 `NAMESPACE` 常量要和调用点生产的 `useTranslations("mcpServers")` 保持一致，所以工厂里的键写相对路径 `toolsets.edit`，写成全名会被拼成两层而解析失败
+
+`authorizedSession` 是同一个思路的另一处应用。打桩 `useAuthorized` 的用例过去把整份 session 形状手抄一遍，每份 8 到 12 个字段，抄漏字段时 `mockReturnValue` 会留下 TS2345。现在形状由 `tests/mocks/authorizedSession.ts` 给出，取的是 hook 的完整返回类型，测试只写自己关心的那几个字段。override 类型放宽成 `{ [K in keyof AuthorizedSession]?: AuthorizedSession[K] | null }`，因为 mock 常常要表达"没有 token / 没有用户 / 没有角色"，而 hook 自己的类型把 `userRole` 写成普通 string，不放宽就赋不了 null
 
 格式化相关的测试有一处环境坑。`unit` 项目跑在 node 环境，没有 `document`，`format.ts` 里的 locale 读取恒定回落英语，于是断言英文日期的用例会通过，中文分支却从未被测到。测 locale 相关行为要用 `.test.tsx`（走 jsdom）并在用例里显式设 `document.documentElement.lang`，`src/utils/licenseUtils.test.ts` 搬成 `.test.tsx` 就是这个原因

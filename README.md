@@ -48,11 +48,12 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 | 项目 | 状态 |
 |---|---|
 | **分支** | `main` |
-| **汉化完成度** | 批次 0-14 (核心管理页) 完成，批次 24 (共享组件长尾) 按簇推进到第 412 簇。非测试 `.tsx` 913 个中接入翻译 709 个 (77.7%，带括号调用口径)，未接入宽口径命中全为误报或判定账。第 306 到 407 簇逐片把组件内字面量、共享 util 里的归一化替换串、模块常量当展示文案用的形态、共享件 aria 模板里的内嵌英文词、caller 侧把 thrown message 与硬编前缀拼成气泡内容的形态、浏览器标签页与 meta 描述、服务端错误兜底里的硬编提示逐类接进目录；第 409 簇清掉 226 个无人引用的死键并把判定器接进 CI 门禁 (`npm run check:dead-keys`，按基线棘轮，新增死键即红)；第 410 到 412 簇把死键守卫接进 UI Lint 工作流，并把全仓 26 处硬编码 `"en-US"` 的日期、货币与紧凑记法连同表格日期的手写英文月份数组改成按当前 UI locale 格式化 (`src/lib/i18n/format.ts`)。扫描仍是启发式的，不能据此宣布收口 |
-| **目录规模** | 中英消息各 11247 个叶子，键树完全对齐 (parity 守卫 0 缺失)，中英同值 133 个 (多为 URL、模型名等格式示例，非漏翻) |
-| **测试** | 最近一次全量 (第 413 簇后，`src/components` + `src/app` + `src/utils` + integration) 11615 例，15 例失败，逐个单跑复验后 4 例属并发时序假失败（`add_auto_router_tab.integration` 与 `edit_auto_router_modal.integration` 单跑 160 例全绿），其余为 HEAD 既有欠账，零翻译回归；逐簇只跑定向文件，全绿 |
-| **类型检查** | 非测试文件 0 错误，`npm run build` 绿色；测试文件有 883 条存量类型债 (vitest 全局类型缺失等)，不阻塞构建 |
+| **汉化完成度** | 批次 0-14 (核心管理页) 完成，批次 24 (共享组件长尾) 按簇推进到第 416 簇。非测试 `.tsx` 913 个中接入翻译 709 个 (77.7%，带括号调用口径)，未接入的 204 个逐个筛过、含疑似英文文案的只剩 14 个文件且 9 个已入判定账。第 306 到 407 簇逐片把组件内字面量、共享 util 里的归一化替换串、模块常量当展示文案用的形态、共享件 aria 模板里的内嵌英文词、caller 侧把 thrown message 与硬编前缀拼成气泡内容的形态、浏览器标签页与 meta 描述、服务端错误兜底里的硬编提示逐类接进目录；第 409 簇清掉 226 个无人引用的死键并把判定器接进 CI 门禁 (`npm run check:dead-keys`，按基线棘轮，新增死键即红)；第 410 到 412 簇把死键守卫接进 UI Lint 工作流、把全仓 26 处硬编码 `"en-US"` 的日期货币紧凑记法连同表格日期的手写英文月份数组改成按当前 UI locale 格式化 (`src/lib/i18n/format.ts`)；第 414 簇把 97 处手抄的 auth session mock 收进共享工厂，lint 预算 568 压到 472 并棘轮；第 415 簇接完最后一批显示层回落串 (15 处)；第 416 簇清掉四笔既有测试欠账 |
+| **目录规模** | 中英消息各 11261 个叶子，键树完全对齐 (parity 守卫 0 缺失)，中英同值 133 个 (多为 URL、模型名等格式示例，非漏翻) |
+| **测试** | 最近一次全量 (第 416 簇后，`src/components` + `src/app` + `src/utils` + integration) 11615 例，仅 10 例失败，逐个单跑复验后全部落在 LensSetup 与 add_auto_router_tab 两个文件上、单跑 115 例全绿，属并发时序假失败，零翻译回归 |
+| **类型检查** | 非测试文件 0 错误，`npm run build` 绿色；测试文件有 878 条存量类型债 (vitest 全局类型缺失等)，不阻塞构建 |
 | **i18n 守卫** | 3 条全部通过 (`locales.test.ts` 7 + `messagesParity.test.ts` 8 + `missingKeys.test.ts` 1) |
+| **CI 门禁** | UI Lint 工作流的全部门禁绿：lint 预算 (472 = max 472)、knip 死代码、死键基线棘轮 |
 
 进度、逐簇账与口径以 [`ui/litellm-dashboard/docs/i18n/PROGRESS.md`](ui/litellm-dashboard/docs/i18n/PROGRESS.md) 为准；实施流程见同目录 `WORKFLOW.md`
 
@@ -67,5 +68,6 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 
 ### 剩余工作
 
-- **批次 24 长尾按簇推进**：`components/add_model`、`components/view_logs`、`usage/EntityUsage`、`caching`、`vector-stores`、`tag-management`、`organization`、`claude_code_plugins` 等此前最密的目录已逐簇文案清零；`mcp-servers`、`search-tools`、`agents`、`guardrails` 等目录在第 404 到 406 簇按「模块常量」「共享件 aria 模板」「caller 侧错误气泡」三类形态逐片收过，余量集中在少数组件的英文默认参数、判定账里的 provider 名与品牌 token、以及 CSV 列头与代码语料
-- **永久挂在上游名下的失败**：`cost_tracking_settings.test.tsx` 的超时 flaky 与 `LensSetup.integration.test.tsx` 的 `/2026-09-30/` 日期断言 (任何 locale 下 `toLocaleString` 都渲染英文月名)，已从汉化账摘出，不再重复排查；`AddModelPanel.integration.test.tsx` 的英文 "Please enter valid JSON" 断言（第 401 簇已改走 `models.addModel.invalidJson` zh 键，测试未翻面）与 `view_users/user_info_view.integration.test.tsx` 的上一区间 savings 提交断言同属既有欠账
+- **换新维度而不是重扫旧正则**：按当前四条扫描口径 (回落串、模板串、JSX 文本节点、更宽的 `>text<`)，真 UI 文案的可接线余量已经见底，剩下的命中全部有判定归属 (技术值、协议标识、CSV 列头、代码语料、品牌名)。下一轮应从新组件、新页面、新交互形态入手，不该再重扫这四条正则。逐条甄别结果见 `docs/i18n/PROGRESS.md` 的「扫描维度收口」一节
+- **上游持续演进**：本 fork 的上游仍在更新，新组件会带来新的英文串。按簇推进仍是唯一可靠的收口方式
+- **lint 预算还有 172 条余量**：`local/no-large-inline-object-arg` 已从 568 压到 472 (目标 300)。剩下的分布是测试文件里的 mock 与断言载荷为主，改动价值低于收益，按需做
