@@ -2597,6 +2597,7 @@
       "resetsAt": "Resets {date}",
       "role": "Role",
       "roleRequired": "Please select a role!",
+      "tempBudgetPairRequired": "Set both a temporary budget increase and its expiry, or neither",
       "saveChanges": "Save Changes",
       "saving": "Saving...",
       "selectOptions": "Select options",
@@ -6410,6 +6411,7 @@
     "transformFailed": "Failed to transform request"
   },
   "mcpServers": {
+    "duplicateIdentifier": "An MCP server with this name/alias already exists.",
     "validation": {
       "invalidUrl": "Please enter a valid URL (e.g., http://service-name.domain:1234/path or https://example.com)",
       "invalidName": "Cannot contain '-' (hyphen) or spaces. Please use '_' (underscore) instead.",

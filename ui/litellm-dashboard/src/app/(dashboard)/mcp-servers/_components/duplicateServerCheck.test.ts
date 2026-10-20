@@ -1,6 +1,10 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 import { ApiError } from "@/lib/http/client";
-import { findDuplicateMcpServer, mcpSubmitErrorReason } from "./duplicateServerCheck";
+import zh from "@/messages/zh-CN.json";
+import { duplicateIdentifierMessage, findDuplicateMcpServer, mcpSubmitErrorReason } from "./duplicateServerCheck";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "mcpServers" });
 
 const servers = [
   { server_id: "s1", server_name: "GitHub_MCP", alias: "github" },
@@ -45,5 +49,11 @@ describe("mcpSubmitErrorReason", () => {
 
   it("never produces [object Object] for a non-Error rejection", () => {
     expect(mcpSubmitErrorReason({ detail: { error: "structured 400" } })).toBe("structured 400");
+  });
+});
+
+describe("duplicateIdentifierMessage", () => {
+  it("returns the localized duplicate hint", () => {
+    expect(duplicateIdentifierMessage(t)).toBe("已存在同名的 MCP 服务器。");
   });
 });

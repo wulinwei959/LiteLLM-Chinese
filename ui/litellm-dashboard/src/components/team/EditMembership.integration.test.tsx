@@ -37,7 +37,7 @@ const tempBudgetConfig = {
   ],
 };
 
-const TEMP_BUDGET_PAIR_MESSAGE = "Set both a temporary budget increase and its expiry, or neither";
+const TEMP_BUDGET_PAIR_MESSAGE = "临时预算增幅与到期时间需同时设置或同时不设置";
 
 const cappedMember = { user_id: "u1", user_email: "a@b.com", role: "user", max_budget_in_team: 10 };
 

@@ -38,7 +38,7 @@ import {
   buildCreateServerPayload,
   reduceStaticHeaders,
 } from "./createServerPayload";
-import { DUPLICATE_IDENTIFIER_MESSAGE, findDuplicateMcpServer, mcpSubmitErrorReason } from "./duplicateServerCheck";
+import { duplicateIdentifierMessage, findDuplicateMcpServer, mcpSubmitErrorReason } from "./duplicateServerCheck";
 import { readCreateUiSnapshot, writeCreateUiSnapshot } from "./createOAuthUiState";
 import AwsSigV4Fields from "./AwsSigV4Fields";
 import OpenApiByokFields from "./OpenApiByokFields";
@@ -434,8 +434,8 @@ const CreateMCPServer: React.FC<CreateMCPServerProps> = ({
       typeof values.alias === "string" ? values.alias : undefined,
     );
     if (duplicate) {
-      form.setError(duplicate.field, { type: "duplicate", message: DUPLICATE_IDENTIFIER_MESSAGE });
-      toast.fromError(DUPLICATE_IDENTIFIER_MESSAGE);
+      form.setError(duplicate.field, { type: "duplicate", message: duplicateIdentifierMessage(t) });
+      toast.fromError(duplicateIdentifierMessage(t));
       return;
     }
     const built = buildCreateServerPayload(values, {

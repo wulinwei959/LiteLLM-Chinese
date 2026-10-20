@@ -1,4 +1,5 @@
 import { MCPServer } from "@/components/mcp_tools/types";
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { ApiError, deriveErrorMessage, unwrapProxyErrorMessage } from "@/lib/http/client";
 
 export type McpIdentifierField = "server_name" | "alias";
@@ -38,7 +39,7 @@ export function findDuplicateMcpServer(
   return null;
 }
 
-export const DUPLICATE_IDENTIFIER_MESSAGE = "An MCP server with this name/alias already exists.";
+export const duplicateIdentifierMessage = (t: McpServersTranslator): string => t("duplicateIdentifier");
 
 export const mcpSubmitErrorReason = (error: unknown): string => {
   if (error instanceof ApiError) {

@@ -20,7 +20,7 @@ import {
   buildMemberFormData,
   buildMemberFormValues,
   emptyMemberFormValues,
-  TEMP_BUDGET_PAIR_MESSAGE,
+  tempBudgetPairMessage,
   tempBudgetPairError,
   type MemberAdditionalField,
   type MemberFieldsConfig,
@@ -63,7 +63,7 @@ const buildMemberSchema = (config: ModalConfig, t: TeamsTranslator): z.ZodType<M
 
   return z.object(shape).superRefine((values, ctx) => {
     const path = tempBudgetPairError(values);
-    if (path !== null) ctx.addIssue({ code: "custom", path: [path], message: TEMP_BUDGET_PAIR_MESSAGE });
+    if (path !== null) ctx.addIssue({ code: "custom", path: [path], message: tempBudgetPairMessage(t) });
   });
 };
 

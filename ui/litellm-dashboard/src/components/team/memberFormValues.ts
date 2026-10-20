@@ -1,3 +1,4 @@
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 export type MemberFieldValue = string | number | null | undefined | string[];
 
 export type MemberFormValues = Record<string, MemberFieldValue>;
@@ -29,7 +30,7 @@ const NULLABLE_NUMERIC_FIELDS: ReadonlySet<string> = new Set([
   "temp_budget_increase",
 ]);
 
-export const TEMP_BUDGET_PAIR_MESSAGE = "Set both a temporary budget increase and its expiry, or neither";
+export const tempBudgetPairMessage = (t: TeamsTranslator): string => t("member.tempBudgetPairRequired");
 
 const isUnset = (value: MemberFieldValue): boolean => value === null || value === undefined || value === "";
 

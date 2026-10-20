@@ -2596,6 +2596,7 @@
       "resetsAt": "{date} 重置",
       "role": "角色",
       "roleRequired": "请选择角色！",
+      "tempBudgetPairRequired": "临时预算增幅与到期时间需同时设置或同时不设置",
       "saveChanges": "保存更改",
       "saving": "正在保存...",
       "selectOptions": "选择选项",
@@ -6409,6 +6410,7 @@
     "transformFailed": "转换请求失败"
   },
   "mcpServers": {
+    "duplicateIdentifier": "已存在同名的 MCP 服务器。",
     "validation": {
       "invalidUrl": "请输入有效的 URL（例如 http://service-name.domain:1234/path 或 https://example.com）",
       "invalidName": "不能包含 '-'（连字符）或空格，请使用 '_'（下划线）",

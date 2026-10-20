@@ -52,7 +52,7 @@ import MCPLogoSelector from "./MCPLogoSelector";
 import EnvVarsSection from "./EnvVarsSection";
 import { validateMCPServerUrl, validateMCPServerName, normalizeToolOverrideMap } from "./utils";
 import { EditServerFormValues, buildEditServerPayload, editPayloadErrorMessage } from "./editServerPayload";
-import { DUPLICATE_IDENTIFIER_MESSAGE, findDuplicateMcpServer, mcpSubmitErrorReason } from "./duplicateServerCheck";
+import { duplicateIdentifierMessage, findDuplicateMcpServer, mcpSubmitErrorReason } from "./duplicateServerCheck";
 import { toast } from "@/lib/toast";
 import { getEditToolPreview } from "./editToolPreview";
 import { useMcpOAuthFlow } from "@/hooks/useMcpOAuthFlow";
@@ -739,8 +739,8 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
       mcpServer.server_id,
     );
     if (duplicate) {
-      form.setError(duplicate.field, { type: "duplicate", message: DUPLICATE_IDENTIFIER_MESSAGE });
-      toast.fromError(DUPLICATE_IDENTIFIER_MESSAGE);
+      form.setError(duplicate.field, { type: "duplicate", message: duplicateIdentifierMessage(t) });
+      toast.fromError(duplicateIdentifierMessage(t));
       return;
     }
     try {
