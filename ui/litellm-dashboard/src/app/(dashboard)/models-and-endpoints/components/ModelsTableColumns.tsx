@@ -177,7 +177,7 @@ function CreatedByCell({ model }: { model: ModelData }) {
   const isConfigModel = !model.model_info?.db_model;
   const createdAt = formatShortDate(model.model_info.created_at);
   const primary = isConfigModel ? t("modelTable.configModel") : model.model_info.created_by || t("health.unknown");
-  const secondaryForDbModel = createdAt ?? "Unknown date";
+  const secondaryForDbModel = createdAt ?? t("unknownDate");
 
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
