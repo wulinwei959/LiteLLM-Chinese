@@ -112,6 +112,7 @@
     "copy": "Copy",
     "copyField": "Copy {label}",
     "copied": "Copied",
+    "copiedToClipboard": "Copied to clipboard",
     "rename": "Rename",
     "duplicate": "Duplicate",
     "archive": "Archive",

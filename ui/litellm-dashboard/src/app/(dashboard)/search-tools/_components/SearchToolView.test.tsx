@@ -160,7 +160,7 @@ describe("SearchToolView", () => {
     await user.click(nameCopyButton);
 
     await waitFor(() => {
-      expect(copyToClipboard).toHaveBeenCalledWith("Test Search Tool");
+      expect(copyToClipboard).toHaveBeenCalledWith("Test Search Tool", "已复制到剪贴板");
     });
   });
 
@@ -176,7 +176,7 @@ describe("SearchToolView", () => {
     await user.click(idCopyButton);
 
     await waitFor(() => {
-      expect(copyToClipboard).toHaveBeenCalledWith("test-tool-id-123");
+      expect(copyToClipboard).toHaveBeenCalledWith("test-tool-id-123", "已复制到剪贴板");
     });
   });
 
@@ -213,7 +213,7 @@ describe("SearchToolView", () => {
 
     await waitFor(
       () => {
-        expect(copyToClipboard).toHaveBeenCalledWith("Test Search Tool");
+        expect(copyToClipboard).toHaveBeenCalledWith("Test Search Tool", "已复制到剪贴板");
       },
       { timeout: 3000 },
     );

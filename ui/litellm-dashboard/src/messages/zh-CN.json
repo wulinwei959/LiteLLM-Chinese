@@ -112,6 +112,7 @@
     "copy": "复制",
     "copyField": "复制 {label}",
     "copied": "已复制",
+    "copiedToClipboard": "已复制到剪贴板",
     "rename": "重命名",
     "duplicate": "复制",
     "archive": "归档",
