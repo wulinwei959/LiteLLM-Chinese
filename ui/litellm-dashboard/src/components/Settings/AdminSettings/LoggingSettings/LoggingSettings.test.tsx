@@ -360,7 +360,7 @@ describe("LoggingSettings", () => {
 
     const saveButton = screen.getByRole("button", { name: /保存中/ });
     expect(saveButton).toBeInTheDocument();
-    expect(within(saveButton).getByRole("img", { name: "loading" })).toBeInTheDocument();
+    expect(within(saveButton).getByRole("img", { name: /加载中/ })).toBeInTheDocument();
   });
 
   it("should show loading state on save button when delete pending", () => {
@@ -373,7 +373,7 @@ describe("LoggingSettings", () => {
 
     const saveButton = screen.getByRole("button", { name: /保存中/ });
     expect(saveButton).toBeInTheDocument();
-    expect(within(saveButton).getByRole("img", { name: "loading" })).toBeInTheDocument();
+    expect(within(saveButton).getByRole("img", { name: /加载中/ })).toBeInTheDocument();
   });
 
   it("should render form with initial values from config data", () => {

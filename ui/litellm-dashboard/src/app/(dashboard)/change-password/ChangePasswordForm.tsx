@@ -37,6 +37,7 @@ type ChangePasswordValues = z.infer<ReturnType<typeof buildChangePasswordSchema>
 
 export function ChangePasswordForm() {
   const t = useTranslations("changePassword");
+  const commonT = useTranslations("common");
   const { accessToken, passwordResetRequired } = useAuthorized();
   const form = useZodForm(buildChangePasswordSchema(t), {
     defaultValues: { currentPassword: "", newPassword: "", confirmNewPassword: "" },
@@ -106,7 +107,7 @@ export function ChangePasswordForm() {
 
             <div className="mt-8">
               <Button type="submit" disabled={isPending}>
-                {isPending && <UiLoadingSpinner className="size-4" role="img" aria-label="loading" />}
+                {isPending && <UiLoadingSpinner className="size-4" role="img" aria-label={commonT("loading")} />}
                 {t("changePasswordTitle")}
               </Button>
             </div>

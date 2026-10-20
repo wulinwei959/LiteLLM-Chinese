@@ -318,7 +318,9 @@ function LoginPageContent() {
                   </FormField>
 
                   <Button type="submit" size="lg" disabled={isLoginLoading} className="w-full">
-                    {isLoginLoading && <UiLoadingSpinner className="size-4" role="img" aria-label="loading" />}
+                    {isLoginLoading && (
+                      <UiLoadingSpinner className="size-4" role="img" aria-label={commonT("loading")} />
+                    )}
                     {isLoginLoading ? t("loggingIn") : t("loginButton")}
                   </Button>
 

@@ -61,8 +61,8 @@ describe("OnboardingFormBody", () => {
 
   it("should show a loading indicator on the submit button when isPending is true", () => {
     renderWithProviders(<OnboardingFormBody {...defaultProps} isPending={true} />);
-    // antd v5 renders a loading icon with aria-label="loading" inside the button
-    expect(screen.getByRole("img", { name: "loading" })).toBeInTheDocument();
+    // submit button shows the loading spinner while the claim/pending state is active
+    expect(screen.getByRole("img", { name: /加载中/ })).toBeInTheDocument();
   });
 
   it("should call onSubmit with the typed password on form submit", async () => {

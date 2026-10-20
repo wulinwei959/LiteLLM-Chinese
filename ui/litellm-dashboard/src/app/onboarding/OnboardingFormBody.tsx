@@ -31,6 +31,7 @@ type OnboardingFormValues = z.infer<ReturnType<typeof buildOnboardingSchema>>;
 
 export function OnboardingFormBody({ variant, userEmail, isPending, claimError, onSubmit }: OnboardingFormBodyProps) {
   const t = useTranslations("onboarding");
+  const commonT = useTranslations("common");
   const schema = React.useMemo(() => buildOnboardingSchema(t), [t]);
   const form = useZodForm(schema, { defaultValues: { password: "" } });
   const emailFieldId = React.useId();
@@ -93,7 +94,7 @@ export function OnboardingFormBody({ variant, userEmail, isPending, claimError, 
 
             <div className="mt-10">
               <Button type="submit" variant="outline" disabled={isPending}>
-                {isPending && <UiLoadingSpinner className="size-4" role="img" aria-label="loading" />}
+                {isPending && <UiLoadingSpinner className="size-4" role="img" aria-label={commonT("loading")} />}
                 {isResetPassword ? t("resetPasswordButton") : t("signUpButton")}
               </Button>
             </div>

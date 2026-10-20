@@ -209,7 +209,7 @@ const LoggingSettingsForm: React.FC<LoggingSettingsFormProps> = ({
         </FieldGroup>
 
         <Button type="submit" className="mt-6" disabled={isSaving}>
-          {isSaving && <UiLoadingSpinner role="img" aria-label="loading" className="size-4" />}
+          {isSaving && <UiLoadingSpinner role="img" aria-label={tc("loading")} className="size-4" />}
           {isSaving ? tc("saving") : t("loggingSettings.saveButton")}
         </Button>
       </form>
