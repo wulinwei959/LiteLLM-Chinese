@@ -8,7 +8,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TRANSPORT_ITEMS } from "@/components/mcp_tools/types";
 import { switchToWorkerUrl } from "@/components/networking";
-import { STDIO_DISABLED_MESSAGE, TransportSelectItems, useMcpStdioEnabled } from "./StdioAvailability";
+import { TransportSelectItems, useMcpStdioEnabled } from "./StdioAvailability";
 
 function openTransportSelect(stdioEnabled: boolean) {
   renderWithProviders(
@@ -37,7 +37,7 @@ describe("TransportSelectItems", () => {
 
     await user.hover(screen.getByLabelText("帮助"));
 
-    expect(await screen.findByText(STDIO_DISABLED_MESSAGE)).toBeInTheDocument();
+    expect(await screen.findByText(/此代理已禁用 stdio MCP 服务器/)).toBeInTheDocument();
   });
 
   it("offers stdio like any other transport when stdio is on", () => {
