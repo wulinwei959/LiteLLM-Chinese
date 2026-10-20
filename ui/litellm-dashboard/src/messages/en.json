@@ -279,6 +279,8 @@
     "usage": "Usage",
     "costOptimization": "Cost Optimization",
     "lens": "Lens",
+    "modelLeaderboard": "Model Leaderboard",
+    "roiCalculator": "ROI Calculator",
     "logs": "Logs",
     "guardrailsMonitor": "Guardrails Monitor",
     "teams": "Teams",

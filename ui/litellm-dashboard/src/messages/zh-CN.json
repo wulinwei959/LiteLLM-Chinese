@@ -278,6 +278,8 @@
     "usage": "用量",
     "costOptimization": "成本优化",
     "lens": "Lens",
+    "modelLeaderboard": "模型排行榜",
+    "roiCalculator": "ROI 计算器",
     "logs": "日志",
     "guardrailsMonitor": "护栏监控",
     "teams": "团队",

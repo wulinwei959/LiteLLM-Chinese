@@ -224,7 +224,7 @@ const menuGroups: MenuGroup[] = [
         roles: all_admin_roles,
         label: (
           <span className="flex items-center gap-2">
-            Model Leaderboard <BetaBadge />
+            <span data-i18n="nav.modelLeaderboard" /> <BetaBadge />
           </span>
         ),
       },
@@ -235,7 +235,7 @@ const menuGroups: MenuGroup[] = [
         roles: all_admin_roles,
         label: (
           <span className="flex items-center gap-2">
-            ROI Calculator <BetaBadge />
+            <span data-i18n="nav.roiCalculator" /> <BetaBadge />
           </span>
         ),
       },
