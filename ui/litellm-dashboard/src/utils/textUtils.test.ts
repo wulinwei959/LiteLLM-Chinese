@@ -27,24 +27,26 @@ describe("truncateString", () => {
 });
 
 describe("formItemValidateJSON", () => {
+  const invalidJsonMessage = "请输入有效的 JSON";
+
   it("should resolve for a valid JSON", async () => {
     const validObj = { a: 1, b: "x", c: true, d: [1, 2], e: { f: "y" } };
-    await expect(formItemValidateJSON({}, JSON.stringify(validObj))).resolves.toBeUndefined();
+    await expect(formItemValidateJSON({}, JSON.stringify(validObj), invalidJsonMessage)).resolves.toBeUndefined();
   });
 
-  it("should reject with an error message for invalid JSON", async () => {
-    await expect(formItemValidateJSON({}, "invalid JSON")).rejects.toBe("Please enter valid JSON");
+  it("should reject with the caller supplied message for invalid JSON", async () => {
+    await expect(formItemValidateJSON({}, "invalid JSON", invalidJsonMessage)).rejects.toBe(invalidJsonMessage);
   });
 
   it("should resolve when value is empty string", async () => {
-    await expect(formItemValidateJSON({}, "")).resolves.toBeUndefined();
+    await expect(formItemValidateJSON({}, "", invalidJsonMessage)).resolves.toBeUndefined();
   });
 
   it("should resolve when value is null", async () => {
-    await expect(formItemValidateJSON({}, null as any)).resolves.toBeUndefined();
+    await expect(formItemValidateJSON({}, null as any, invalidJsonMessage)).resolves.toBeUndefined();
   });
 
   it("should resolve when value is undefined", async () => {
-    await expect(formItemValidateJSON({}, undefined as any)).resolves.toBeUndefined();
+    await expect(formItemValidateJSON({}, undefined as any, invalidJsonMessage)).resolves.toBeUndefined();
   });
 });

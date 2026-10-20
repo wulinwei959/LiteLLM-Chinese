@@ -11,7 +11,7 @@ export function truncateString(str: string, maxLength: number) {
   return str.length > maxLength ? str.substring(0, maxLength) + "..." : str;
 }
 
-export const formItemValidateJSON = (_: any, value: string) => {
+export const formItemValidateJSON = (_: any, value: string, invalidJsonMessage: string) => {
   if (!value) {
     return Promise.resolve();
   }
@@ -19,6 +19,6 @@ export const formItemValidateJSON = (_: any, value: string) => {
     JSON.parse(value);
     return Promise.resolve();
   } catch (error) {
-    return Promise.reject("Please enter valid JSON");
+    return Promise.reject(invalidJsonMessage);
   }
 };

@@ -468,7 +468,9 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
               name="litellm_extra_params"
               label={labelWithHint(t("litellmParamsLabel"), t("litellmParamsHint"))}
               className="mb-4 mt-4"
-              rules={{ validate: validatorRules({ validator: formItemValidateJSON }) }}
+              rules={{
+                validate: validatorRules({ validator: (_, value) => formItemValidateJSON(_, value, t("invalidJson")) }),
+              }}
             >
               {(control) => (
                 <Textarea
@@ -502,7 +504,9 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
               name="model_info_params"
               label={labelWithHint(t("modelInfoLabel"), t("modelInfoHint"))}
               className="mb-0"
-              rules={{ validate: validatorRules({ validator: formItemValidateJSON }) }}
+              rules={{
+                validate: validatorRules({ validator: (_, value) => formItemValidateJSON(_, value, t("invalidJson")) }),
+              }}
             >
               {(control) => (
                 <Textarea
