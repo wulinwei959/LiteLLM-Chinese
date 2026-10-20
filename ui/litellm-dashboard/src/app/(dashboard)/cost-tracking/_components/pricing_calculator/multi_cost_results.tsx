@@ -88,15 +88,15 @@ const SingleModelBreakdown: React.FC<{
             </p>
           </div>
           <div className="min-w-0">
-            <p className="text-xs text-muted-foreground block">{periodLabel} Input</p>
+            <p className="text-xs text-muted-foreground block">{t("periodInput", { period: periodLabel })}</p>
             <p className="text-sm break-words">{formatCost(periodInputCost)}</p>
           </div>
           <div className="min-w-0">
-            <p className="text-xs text-muted-foreground block">{periodLabel} Output</p>
+            <p className="text-xs text-muted-foreground block">{t("periodOutput", { period: periodLabel })}</p>
             <p className="text-sm break-words">{formatCost(periodOutputCost)}</p>
           </div>
           <div className="min-w-0">
-            <p className="text-xs text-muted-foreground block">{periodLabel} Margin Fee</p>
+            <p className="text-xs text-muted-foreground block">{t("periodMarginFee", { period: periodLabel })}</p>
             <p className={`text-sm break-words ${(periodMarginCost ?? 0) > 0 ? "text-warning" : ""}`}>
               {formatCost(periodMarginCost)}
             </p>
@@ -106,13 +106,17 @@ const SingleModelBreakdown: React.FC<{
 
       {(result.input_cost_per_token || result.output_cost_per_token) && (
         <div className="text-xs text-muted-foreground pt-2 border-t border-border">
-          Token Pricing:{" "}
+          {t("tokenPricing")}{" "}
           {result.input_cost_per_token && (
-            <span>Input ${formatNumberWithCommas(result.input_cost_per_token * 1_000_000, 2)}/1M</span>
+            <span>
+              {t("inputPerMillion", { cost: formatNumberWithCommas(result.input_cost_per_token * 1_000_000, 2) })}
+            </span>
           )}
           {result.input_cost_per_token && result.output_cost_per_token && " | "}
           {result.output_cost_per_token && (
-            <span>Output ${formatNumberWithCommas(result.output_cost_per_token * 1_000_000, 2)}/1M</span>
+            <span>
+              {t("outputPerMillion", { cost: formatNumberWithCommas(result.output_cost_per_token * 1_000_000, 2) })}
+            </span>
           )}
         </div>
       )}
@@ -243,7 +247,7 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
               </div>
             </div>
             <div className="min-w-0">
-              <div className="text-xs text-muted-foreground">{periodLabel} Margin Fee</div>
+              <div className="text-xs text-muted-foreground">{t("periodMarginFee", { period: periodLabel })}</div>
               <div className="text-sm font-mono text-warning break-words">
                 {formatCost(timePeriod === "day" ? multiResult.totals.daily_margin : multiResult.totals.monthly_margin)}
               </div>
@@ -292,7 +296,7 @@ const MultiCostResults: React.FC<MultiCostResultsProps> = ({ multiResult, timePe
                         )}
                         {record.hasZeroCost && !record.error && (
                           <div className="text-xs text-warning bg-warning/10 px-2 py-1 rounded-sm">
-                            ⚠️ No pricing data found for this model. Set base_model in config.
+                            ⚠️ {t("noPricingData")}
                           </div>
                         )}
                       </div>

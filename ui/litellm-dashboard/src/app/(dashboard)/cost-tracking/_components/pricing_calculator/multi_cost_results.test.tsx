@@ -328,7 +328,7 @@ describe("MultiCostResults", () => {
       });
 
       renderWithProviders(<MultiCostResults multiResult={multiResult} timePeriod="day" />);
-      expect(screen.getByText(/no pricing data found/i)).toBeInTheDocument();
+      expect(screen.getByText(/未找到该模型的定价数据/)).toBeInTheDocument();
     });
   });
 });
