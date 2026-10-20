@@ -1,9 +1,13 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { DateCell, formatCellDate, formatFullTimestamp } from "./date_cell";
 
 const localIso = new Date(2026, 6, 7, 9, 50, 13).toISOString();
+
+afterEach(() => {
+  document.documentElement.lang = "";
+});
 
 describe("formatCellDate", () => {
   it("formats datetime precision as 'MMM D, HH:mm:ss' without a year", () => {
@@ -16,6 +20,11 @@ describe("formatCellDate", () => {
 
   it("formats date precision as 'MMM D, YYYY' with no time", () => {
     expect(formatCellDate(new Date(2026, 11, 31, 23, 59, 59), "date")).toBe("Dec 31, 2026");
+  });
+
+  it("uses the document locale for the month name", () => {
+    document.documentElement.lang = "zh-CN";
+    expect(formatCellDate(new Date(2026, 6, 7, 9, 50, 13), "date")).toBe("2026年7月7日");
   });
 });
 

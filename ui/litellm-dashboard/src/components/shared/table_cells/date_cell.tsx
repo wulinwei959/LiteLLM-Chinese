@@ -1,8 +1,8 @@
 "use client";
 
-import { CellTooltip } from "./cell_tooltip";
+import { formatDate } from "@/lib/i18n/format";
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
+import { CellTooltip } from "./cell_tooltip";
 
 export type DatePrecision = "datetime" | "date";
 
@@ -12,17 +12,28 @@ interface DateCellProps {
   fallback?: string;
 }
 
-const pad = (n: number): string => String(n).padStart(2, "0");
+const DATE_OPTIONS: Intl.DateTimeFormatOptions = { year: "numeric", month: "short", day: "numeric" };
+
+const TIME_OPTIONS: Intl.DateTimeFormatOptions = {
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hourCycle: "h23",
+};
+
+const DATETIME_OPTIONS: Intl.DateTimeFormatOptions = {
+  month: "short",
+  day: "numeric",
+  ...TIME_OPTIONS,
+};
 
 export const formatCellDate = (date: Date, precision: DatePrecision): string =>
-  precision === "date"
-    ? `${MONTHS[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
-    : `${MONTHS[date.getMonth()]} ${date.getDate()}, ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+  formatDate(date, precision === "date" ? DATE_OPTIONS : DATETIME_OPTIONS);
 
 export const formatFullTimestamp = (date: Date): string => {
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const day = `${MONTHS[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
-  const time = `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+  const day = formatDate(date, DATE_OPTIONS);
+  const time = formatDate(date, TIME_OPTIONS);
   return `${day}, ${time} (${timeZone})`;
 };
 

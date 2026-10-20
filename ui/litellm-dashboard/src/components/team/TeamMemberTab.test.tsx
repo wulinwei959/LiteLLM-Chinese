@@ -313,7 +313,7 @@ describe("TeamMembersComponent", () => {
       />,
     );
 
-    expect(screen.getByText("Jul 15, 2026")).toBeInTheDocument();
+    expect(screen.getByText("2026年7月15日")).toBeInTheDocument();
   });
 
   it("should display formatted budget and Unlimited for member with no budget", () => {
