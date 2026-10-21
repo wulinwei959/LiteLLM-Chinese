@@ -53,7 +53,7 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 | **测试** | 最近一次全量 (第 420 簇后，`src/components` + `src/app` + `src/utils` + integration) 11617 例，仅剩并发时序假失败，零翻译回归；单跑也红的稳定失败已全部清掉 |
 | **类型检查** | 非测试文件 0 错误，`npm run build` 绿色；测试文件有 878 条存量类型债 (vitest 全局类型缺失等)，不阻塞构建 |
 | **i18n 守卫** | 4 条全部通过 (`locales.test.ts` 7 + `messagesParity.test.ts` 8 + `missingKeys.test.ts` 1 + `messageArgs.test.ts` 1)，第四条比对消息要的参数与调用点给的参数 |
-| **CI 门禁** | UI Lint 工作流的全部门禁绿：lint 预算 (472 = max 472)、knip 死代码、死键基线棘轮 |
+| **CI 门禁** | UI Lint 工作流的全部门禁绿：lint 预算 (471 = max 471)、knip 死代码、死键基线棘轮；另有 `npm run scan:rendered` 用真实浏览器扫运行期才炸的故障与残留英文 |
 
 进度、逐簇账与口径以 [`ui/litellm-dashboard/docs/i18n/PROGRESS.md`](ui/litellm-dashboard/docs/i18n/PROGRESS.md) 为准；实施流程见同目录 `WORKFLOW.md`
 
