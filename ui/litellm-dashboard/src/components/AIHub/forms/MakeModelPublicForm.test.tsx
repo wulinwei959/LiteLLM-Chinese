@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { screen, fireEvent, act, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import MakeModelPublicForm from "./MakeModelPublicForm";
@@ -337,7 +338,7 @@ describe("MakeModelPublicForm", () => {
       providers: ["typesafe"],
       mode: "evaluation",
     };
-    render(<MakeModelPublicForm {...mockProps} modelHubData={[decisionModel]} />);
+    renderWithProviders(<MakeModelPublicForm {...mockProps} modelHubData={[decisionModel]} />);
 
     expect(screen.getByText("decisions")).toBeInTheDocument();
     expect(screen.queryByText("evaluation")).not.toBeInTheDocument();

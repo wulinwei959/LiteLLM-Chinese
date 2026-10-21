@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { screen, within } from "@testing-library/react";
 import { renderWithProviders } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
@@ -87,7 +88,7 @@ describe("CredentialsTable", () => {
         credential_info: { custom_llm_provider: "openai" },
       },
     ];
-    render(<CredentialsTable {...defaultProps} credentials={credentials} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} credentials={credentials} />);
     const rows = screen.getAllByRole("row").slice(1);
     const federatedNames = rows
       .filter((row) => within(row).queryByText("Workload identity federation") !== null)
@@ -150,7 +151,7 @@ describe("CredentialsTable", () => {
       },
       { credential_name: "plain-key", credential_values: {}, credential_info: { custom_llm_provider: "openai" } },
     ];
-    render(<CredentialsTable {...defaultProps} credentials={credentials} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} credentials={credentials} />);
 
     const labeledRow = screen.getByRole("row", { name: /Prod OpenAI/ });
     expect(within(labeledRow).getByText("openai-prod")).toBeInTheDocument();
@@ -163,7 +164,7 @@ describe("CredentialsTable", () => {
       { credential_name: "a-key", display_name: "zulu", credential_values: {}, credential_info: {} },
       { credential_name: "b-key", credential_values: {}, credential_info: {} },
     ];
-    render(<CredentialsTable {...defaultProps} credentials={credentials} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} credentials={credentials} />);
 
     const rows = screen.getAllByRole("row").slice(1);
     expect(within(rows[0]).getByText("b-key")).toBeInTheDocument();
@@ -176,7 +177,7 @@ describe("CredentialsTable", () => {
       { credential_name: "from-config", source: "config", credential_values: {}, credential_info: {} },
       { credential_name: "from-db", source: "db", credential_values: {}, credential_info: {} },
     ];
-    render(<CredentialsTable {...defaultProps} credentials={credentials} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} credentials={credentials} />);
 
     const sourceColumn = screen.getAllByRole("columnheader").findIndex((header) => header.textContent === "Source");
     const sourceCell = (name: RegExp) => within(screen.getByRole("row", { name })).getAllByRole("cell")[sourceColumn];
@@ -202,7 +203,7 @@ describe("CredentialsTable", () => {
     const credentials: CredentialItem[] = [
       { credential_name: "from-db", source: "db", credential_values: {}, credential_info: {} },
     ];
-    render(<CredentialsTable {...defaultProps} credentials={credentials} />);
+    renderWithProviders(<CredentialsTable {...defaultProps} credentials={credentials} />);
 
     await user.click(screen.getByTestId("credential-actions-from-db"));
     expect(await screen.findByTestId("credential-action-edit")).not.toHaveAttribute("data-disabled");

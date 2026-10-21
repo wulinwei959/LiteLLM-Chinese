@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { fireEvent, act } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import UISettings from "./UISettings";
@@ -147,7 +148,7 @@ describe("UISettings", () => {
       }),
     );
 
-    render(<UISettings />);
+    renderWithProviders(<UISettings />);
 
     expect(screen.getByText("Connected to https://moyai.example.com")).toBeInTheDocument();
     act(() => {
@@ -161,7 +162,7 @@ describe("UISettings", () => {
   });
 
   it("shows a link to the Moyai page when not connected", () => {
-    render(<UISettings />);
+    renderWithProviders(<UISettings />);
 
     expect(screen.getByText("Not connected")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Connect from the Moyai page" })).toHaveAttribute("href", "/ui/moyai");

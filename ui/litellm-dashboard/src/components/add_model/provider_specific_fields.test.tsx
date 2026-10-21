@@ -1,3 +1,6 @@
+import { userEvent } from "@testing-library/user-event";
+import { render } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "../../../tests/test-utils";
@@ -486,7 +489,7 @@ describe("ProviderSpecificFields", () => {
 
   it("defaults Microsoft 365 Copilot to OAuth token exchange fields", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider="MICROSOFT_365_COPILOT" />
@@ -506,7 +509,7 @@ describe("ProviderSpecificFields", () => {
   it("offers a credential-only OAuth mode in model context", async () => {
     const onCreateCredential = vi.fn();
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields
@@ -529,7 +532,7 @@ describe("ProviderSpecificFields", () => {
   it("hides credential-only auth modes from non-admin model forms", async () => {
     const user = userEvent.setup();
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider="MICROSOFT_365_COPILOT" context="model" />
@@ -553,7 +556,7 @@ describe("ProviderSpecificFields", () => {
   it("switches Microsoft 365 Copilot fields to a static delegated access token", async () => {
     const user = userEvent.setup();
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider="MICROSOFT_365_COPILOT" />
@@ -578,7 +581,7 @@ describe("ProviderSpecificFields", () => {
 
   it("infers a static delegated token from a preloaded api_key", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost defaultValues={{ api_key: "delegated-token" }}>
           <ProviderSpecificFields selectedProvider="MICROSOFT_365_COPILOT" />
@@ -596,7 +599,7 @@ describe("ProviderSpecificFields", () => {
   it("re-infers the auth type when the selected provider changes", async () => {
     const user = userEvent.setup();
     const queryClient = createQueryClient();
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost defaultValues={{ api_key: "delegated-token" }}>
           <ProviderSpecificFields selectedProvider="MICROSOFT_365_COPILOT" />
@@ -635,7 +638,7 @@ describe("ProviderSpecificFields", () => {
   it("requires only the required OAuth token exchange fields", async () => {
     const user = userEvent.setup();
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ValidationForm>
@@ -658,7 +661,7 @@ describe("ProviderSpecificFields", () => {
   });
 
   it("renders typed password and text inputs empty after the form is reset", async () => {
-    render(
+    renderWithProviders(
       <QueryClientProvider client={createQueryClient()}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={Providers.OpenAI} />
@@ -683,7 +686,7 @@ describe("ProviderSpecificFields", () => {
   });
 
   it("renders a typed textarea input empty after the form is reset", async () => {
-    render(
+    renderWithProviders(
       <QueryClientProvider client={createQueryClient()}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider={"Oracle" as Providers} />
@@ -702,7 +705,7 @@ describe("ProviderSpecificFields", () => {
 
   it("does not render an Auth Type selector for OpenAI", async () => {
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields selectedProvider="OpenAI" />

@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
@@ -88,7 +89,7 @@ describe("DrawerHeader sidebar toggle", () => {
 describe("DrawerHeader back link", () => {
   const renderWithBack = (backTo?: { label: string; icon: ReactNode }) => {
     const onClose = vi.fn();
-    render(
+    renderWithProviders(
       <DrawerHeader
         log={logEntry({})}
         onClose={onClose}

@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -111,7 +112,7 @@ describe("AllModelsTable", () => {
   it("reports the routing status picked in the Filters drawer", async () => {
     const user = userEvent.setup();
     const onColumnFiltersChange = vi.fn();
-    render(<AllModelsTable {...baseProps} onColumnFiltersChange={onColumnFiltersChange} />);
+    renderWithProviders(<AllModelsTable {...baseProps} onColumnFiltersChange={onColumnFiltersChange} />);
 
     await user.click(screen.getByTestId("datatable-filters-trigger"));
     await user.click(screen.getByRole("combobox", { name: /filter by status/i }));
@@ -177,7 +178,7 @@ describe("AllModelsTable", () => {
   });
 
   it("renders the credential's display name with its credential name beneath", () => {
-    render(
+    renderWithProviders(
       <AllModelsTable
         {...baseProps}
         credentialLabels={new Map([["openai-prod", "Prod OpenAI"]])}
@@ -189,7 +190,7 @@ describe("AllModelsTable", () => {
   });
 
   it("tells apart a credential whose label is another credential's name", () => {
-    render(
+    renderWithProviders(
       <AllModelsTable
         {...baseProps}
         credentialLabels={

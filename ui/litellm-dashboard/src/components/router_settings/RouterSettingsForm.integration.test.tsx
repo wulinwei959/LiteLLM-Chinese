@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -111,7 +112,7 @@ describe("RouterSettingsForm", () => {
         timeout: "db" as const,
       },
     };
-    render(<RouterSettingsForm {...props} />);
+    renderWithProviders(<RouterSettingsForm {...props} />);
 
     expect(screen.getByRole("combobox")).toBeDisabled();
     expect(screen.getByRole("switch")).toHaveAttribute("aria-disabled", "true");

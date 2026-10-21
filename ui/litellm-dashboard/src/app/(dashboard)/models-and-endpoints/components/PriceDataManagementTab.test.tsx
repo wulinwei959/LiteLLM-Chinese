@@ -1,4 +1,8 @@
 /* @vitest-environment jsdom */
+import { render } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { modelCostMapKeys } from "../../hooks/models/useModelCostMap";
+import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -11,7 +15,7 @@ vi.mock("@/components/price_data_reload", () => ({
 vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({ default: () => ({ accessToken: "sk-test" }) }));
 
 const renderTab = (queryClient: QueryClient) =>
-  render(
+  renderWithProviders(
     <QueryClientProvider client={queryClient}>
       <PriceDataManagementTab />
     </QueryClientProvider>,

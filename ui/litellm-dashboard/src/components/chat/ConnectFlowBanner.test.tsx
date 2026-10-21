@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import type { ConnectFlowStatus } from "@/components/networking";
@@ -64,7 +65,7 @@ describe("ConnectFlowBanner", () => {
         { server_id: "beta-id", server_name: "beta", connected: false },
       ],
     };
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <ConnectFlowBanner
         flowHandle="flow-handle-123"
         flow={flow}

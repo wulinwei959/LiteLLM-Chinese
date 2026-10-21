@@ -1,3 +1,4 @@
+import { getSecureItem } from "src/utils/secureStorag";
 import React from "react";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";

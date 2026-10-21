@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "../../tests/test-utils";
@@ -218,7 +219,7 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     expect(await screen.findByTestId("kubernetes-pods-card")).toHaveTextContent("123");
   });
@@ -237,7 +238,9 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole="Admin Viewer" isViewOnly={true} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole="Admin Viewer" isViewOnly={true} />, {
+      wrapper,
+    });
 
     expect(await screen.findByTestId("kubernetes-pods-card")).toHaveTextContent("123");
   });
@@ -256,7 +259,7 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole="Internal User" />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole="Internal User" />, { wrapper });
 
     expect(await screen.findByText("Model Settings")).toBeInTheDocument();
     expect(screen.queryByTestId("kubernetes-pods-card")).not.toBeInTheDocument();
@@ -276,14 +279,14 @@ describe("ModelInfoView", () => {
       error: null,
     });
 
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     expect(await screen.findByText("Model Settings")).toBeInTheDocument();
     expect(screen.queryByTestId("kubernetes-pods-card")).not.toBeInTheDocument();
   });
 
   it("hides Kubernetes pods when discovery is not configured", async () => {
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     expect(await screen.findByText("Model Settings")).toBeInTheDocument();
     expect(screen.queryByTestId("kubernetes-pods-card")).not.toBeInTheDocument();
@@ -400,7 +403,7 @@ describe("ModelInfoView", () => {
     };
     mockUseModelsInfo.mockReturnValue({ data: { data: [displayedModel] }, isLoading: false, error: null });
     mockModelInfoV1Call.mockResolvedValue({ data: [displayedModel] });
-    render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+    renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText("Model Settings")).toBeInTheDocument();
@@ -1645,7 +1648,7 @@ describe("ModelInfoView", () => {
         ],
       } as never);
       const user = userEvent.setup();
-      render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+      renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
       await user.click(await screen.findByTestId("reuse-credentials-button"));
 
@@ -1815,7 +1818,7 @@ describe("ModelInfoView", () => {
       });
 
       it("shows both configured cache write rates per million tokens", async () => {
-        render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
+        renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
         expect(await screen.findByText("Cache Write Cost (1 hour, per 1M tokens)")).toBeInTheDocument();
         expect(screen.getByText("3.7500")).toBeInTheDocument();

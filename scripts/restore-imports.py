@@ -58,7 +58,7 @@ def main() -> int:
     wanted: dict[str, set[str]] = collections.defaultdict(set)
     for line in report.read_text(encoding="utf-8").splitlines():
         match = ERROR.search(line)
-        if match and ".test." not in match.group(1):
+        if match:
             wanted[match.group(1)].add(match.group(2))
 
     for path, names in wanted.items():

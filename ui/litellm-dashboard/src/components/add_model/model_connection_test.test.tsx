@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { act, fireEvent, screen } from "@testing-library/react";
 import { renderWithProviders } from "../../../tests/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -97,7 +98,7 @@ describe("ModelConnectionTest", () => {
   it("asks for the required fields instead of crashing when nothing could be prepared", async () => {
     vi.mocked(prepareModelAddRequest).mockResolvedValue([] as never);
 
-    render(<ModelConnectionTest formValues={{}} accessToken="sk-test" testMode="chat" />);
+    renderWithProviders(<ModelConnectionTest formValues={{}} accessToken="sk-test" testMode="chat" />);
     await finishConnectionTest();
 
     expect(screen.getByTestId("connection-failure-msg")).toHaveTextContent("Connection to this model failed");

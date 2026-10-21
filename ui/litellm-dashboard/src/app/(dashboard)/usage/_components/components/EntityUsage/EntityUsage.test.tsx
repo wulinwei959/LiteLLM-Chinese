@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { act, cleanup, fireEvent, screen, waitFor, within } from "@testing-library/react";
 
 import { renderWithProviders } from "../../../../../../../tests/test-utils";
@@ -1375,7 +1376,7 @@ describe("EntityUsage", () => {
     };
 
     it("links the single picked user back to their Internal Users record", async () => {
-      render(
+      renderWithProviders(
         <EntityUsage
           {...defaultProps}
           entityType="user"
@@ -1400,7 +1401,7 @@ describe("EntityUsage", () => {
     it("reports the picked user to the owner of the selection", async () => {
       const user = userEvent.setup();
       const onSelectedEntitiesChange = vi.fn();
-      render(
+      renderWithProviders(
         <EntityUsage
           {...defaultProps}
           entityType="user"

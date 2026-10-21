@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { screen, renderWithProviders } from "../../../../tests/test-utils";
 import { describe, expect, it } from "vitest";
 
@@ -70,7 +71,7 @@ describe("SpendBudgetCell", () => {
       budgetDuration: "30d",
       spend: 45,
     };
-    const { container } = render(
+    const { container } = renderWithProviders(
       <SpendBudgetCell
         spend={5}
         maxBudget={null}
@@ -97,7 +98,7 @@ describe("SpendBudgetCell", () => {
       maxBudget: 50,
       budgetDuration: "30d",
     };
-    render(<SpendBudgetCell spend={10} maxBudget={100} teamMemberGate={teamMemberGate} />);
+    renderWithProviders(<SpendBudgetCell spend={10} maxBudget={100} teamMemberGate={teamMemberGate} />);
 
     expect(screen.getByText("of $100")).toBeInTheDocument();
     expect(screen.queryByText(/team member/)).not.toBeInTheDocument();

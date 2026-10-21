@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useChatHistory } from "@/components/chat/useChatHistory";
@@ -71,7 +72,7 @@ const ON_USAGE_DATA_INDEX = 9;
 const ON_TOTAL_LATENCY_INDEX = 25;
 
 async function sendOneMessage(): Promise<void> {
-  render(
+  renderWithProviders(
     <LocaleProvider locale="zh-CN">
       <ChatConversationPage />
     </LocaleProvider>,
@@ -160,7 +161,7 @@ describe("/ui/chat storage banner", () => {
   });
 
   it("keeps the dismiss control amber on hover instead of the ghost variant's foreground", async () => {
-    render(
+    renderWithProviders(
       <LocaleProvider locale="zh-CN">
         <ChatConversationPage />
       </LocaleProvider>,

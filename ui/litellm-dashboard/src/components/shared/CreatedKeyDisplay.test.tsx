@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { cloneElement, type MouseEventHandler, type ReactElement, type ReactNode } from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderWithProviders, screen, act } from "../../../tests/test-utils";
@@ -102,7 +103,7 @@ describe("CreatedKeyDisplay", () => {
 
   it("shows the gateway URL without its trailing slash and copies it", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    render(<CreatedKeyDisplay apiKey="sk-test-123" />);
+    renderWithProviders(<CreatedKeyDisplay apiKey="sk-test-123" />);
 
     expect(screen.getByText("http://gw.test:4000")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Copy URL" }));
@@ -113,7 +114,7 @@ describe("CreatedKeyDisplay", () => {
 
   it("shows one shared instruction card with both agent logos and expands on demand", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    render(<CreatedKeyDisplay apiKey="sk-test-123" />);
+    renderWithProviders(<CreatedKeyDisplay apiKey="sk-test-123" />);
 
     expect(screen.getByRole("img", { name: "Claude Code" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Codex" })).toBeInTheDocument();
@@ -136,7 +137,7 @@ describe("CreatedKeyDisplay", () => {
 
   it("copies complete shared instructions while the card is collapsed", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-    render(<CreatedKeyDisplay apiKey="sk-test-123" />);
+    renderWithProviders(<CreatedKeyDisplay apiKey="sk-test-123" />);
 
     expect(screen.getByRole("button", { name: "Show" })).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByText(/POST http:\/\/gw\.test:4000\/v1\/responses/)).not.toBeInTheDocument();

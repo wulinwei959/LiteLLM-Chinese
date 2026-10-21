@@ -1,3 +1,5 @@
+import { userEvent } from "@testing-library/user-event";
+import { render } from "@testing-library/react";
 import { screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { STACKED_USAGE_PALETTE } from "@/components/shared/charts";
@@ -195,7 +197,7 @@ describe("UserAgentActivity", () => {
     const onSelectedTagsChange = vi.fn();
     const selectedTags = ["User-Agent: Chrome/1.0"];
 
-    render(
+    renderWithProviders(
       <UserAgentActivity {...defaultProps} selectedTags={selectedTags} onSelectedTagsChange={onSelectedTagsChange} />,
     );
 
@@ -234,7 +236,7 @@ describe("UserAgentActivity", () => {
       total_pages: Math.ceil(totalUsers / pageSize),
     }));
     const props = { ...defaultProps, selectedTags, onSelectedTagsChange };
-    const { rerender } = render(<UserAgentActivity {...props} />);
+    const { rerender } = renderWithProviders(<UserAgentActivity {...props} />);
 
     await waitFor(() => expect(mockTagDistinctCall).toHaveBeenCalled());
     await waitFor(() => expect(mockUserAgentSummaryCall).toHaveBeenCalled());

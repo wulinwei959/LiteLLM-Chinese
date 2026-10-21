@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useTranslations } from "next-intl";
@@ -313,7 +314,7 @@ describe("MetadataKeyValueFields with a declared schema", () => {
     const onFinish = vi.fn();
     const schemaFields = [{ key: "cost_center", label: "Cost Center" }];
     const initialMetadata = [{ key: "region", value: "us" }];
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <Harness onFinish={onFinish} initialMetadata={initialMetadata} schemaFields={schemaFields} />,
     );
     expect(await screen.findByTestId("metadata-schema-label")).toHaveTextContent("Cost Center");
@@ -337,7 +338,9 @@ describe("MetadataKeyValueFields with a declared schema", () => {
   it("should label only rows whose current key is declared when the schema arrives after an edit", () => {
     const onFinish = vi.fn();
     const initialMetadata = [{ key: "cost_center", value: "1" }];
-    const { rerender } = render(<Harness onFinish={onFinish} initialMetadata={initialMetadata} schemaFields={[]} />);
+    const { rerender } = renderWithProviders(
+      <Harness onFinish={onFinish} initialMetadata={initialMetadata} schemaFields={[]} />,
+    );
     fireEvent.change(screen.getByPlaceholderText("Key"), { target: { value: "region" } });
 
     rerender(

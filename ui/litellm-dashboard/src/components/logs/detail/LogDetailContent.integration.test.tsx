@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -438,7 +439,7 @@ describe("LogDetailContent", () => {
     { selection: "session_affinity", label: "Session affinity" },
     { selection: "session_affinity_retry", label: "Session affinity (retry)" },
   ] as const)("shows the selected Kubernetes pod and routing mode", ({ selection, label }) => {
-    render(
+    renderWithProviders(
       <LogDetailContent
         logEntry={createLogEntry({
           metadata: {
@@ -459,7 +460,7 @@ describe("LogDetailContent", () => {
   });
 
   it("omits the Pod row when routing metadata is absent", () => {
-    render(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success" } })} />);
+    renderWithProviders(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success" } })} />);
 
     expect(screen.queryByText("Pod")).not.toBeInTheDocument();
   });

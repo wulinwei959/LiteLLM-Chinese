@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, waitFor, fireEvent, act } from "@testing-library/react";
@@ -1600,10 +1601,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
         screen.getAllByPlaceholderText(/留空则保留当前已保存|Leave blank to keep/)[0],
         "org-app-client-id",
       );
-      await user.type(
-        screen.getByPlaceholderText("留空则保留当前已保存的密钥（若有）"),
-        "org-app-secret",
-      );
+      await user.type(screen.getByPlaceholderText("留空则保留当前已保存的密钥（若有）"), "org-app-secret");
 
       await act(async () => {
         fireEvent.click(screen.getAllByRole("button", { name: "保存更改" })[0]);
@@ -1647,10 +1645,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
         screen.getAllByPlaceholderText(/留空则保留当前已保存|Leave blank to keep/)[0],
         "org-app-client-id",
       );
-      await user.type(
-        screen.getByPlaceholderText("留空则保留当前已保存的密钥（若有）"),
-        "org-app-secret",
-      );
+      await user.type(screen.getByPlaceholderText("留空则保留当前已保存的密钥（若有）"), "org-app-secret");
 
       act(() => {
         mockOauth.onTokenReceived?.({ access_token: "cf-tok", token_type: "bearer" });
@@ -1754,7 +1749,9 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
       }),
     );
     const props = { accessToken: "access-token", onCancel: vi.fn(), onSuccess: vi.fn(), availableAccessGroups: [] };
-    const view = render(<MCPServerEdit {...props} mcpServer={{ ...interactiveOAuthServer, server_id: "", url: "" }} />);
+    const view = renderWithProviders(
+      <MCPServerEdit {...props} mcpServer={{ ...interactiveOAuthServer, server_id: "", url: "" }} />,
+    );
     await act(async () => {
       fireEvent.click(screen.getAllByRole("button", { name: "Cancel" })[0]);
     });
@@ -1762,7 +1759,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
     expect(window.sessionStorage.getItem(EDIT_OAUTH_UI_STATE_KEY)).toBeNull();
     expect(mockOauth.reset).toHaveBeenCalled();
     view.unmount();
-    render(<MCPServerEdit {...props} mcpServer={interactiveOAuthServer} />);
+    renderWithProviders(<MCPServerEdit {...props} mcpServer={interactiveOAuthServer} />);
     await waitFor(() => expect(screen.getByLabelText("MCP Server URL")).toHaveValue(interactiveOAuthServer.url));
     expect(networking.updateMCPServer).not.toHaveBeenCalled();
   });
@@ -1782,7 +1779,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
       onSuccess: vi.fn(),
       availableAccessGroups: [],
     };
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <MCPServerEdit {...props} mcpServer={{ ...interactiveOAuthServer, server_id: "", url: "" }} />,
     );
     rerender(<MCPServerEdit {...props} mcpServer={interactiveOAuthServer} />);
@@ -1841,8 +1838,12 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
     );
 
     // Check "remove saved app" on server A.
-    fireEvent.click(screen.getByRole("checkbox", { name: /保存时移除已保存的 OAuth 应用|Remove the saved OAuth app on save/ }));
-    expect(screen.getByRole("checkbox", { name: /保存时移除已保存的 OAuth 应用|Remove the saved OAuth app on save/ })).toBeChecked();
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: /保存时移除已保存的 OAuth 应用|Remove the saved OAuth app on save/ }),
+    );
+    expect(
+      screen.getByRole("checkbox", { name: /保存时移除已保存的 OAuth 应用|Remove the saved OAuth app on save/ }),
+    ).toBeChecked();
 
     // Switch the panel to server B without unmounting.
     rerender(
@@ -1857,7 +1858,9 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
     );
 
     // The checkbox must have reset, so saving server B does not send the explicit-null delete write.
-    expect(screen.getByRole("checkbox", { name: /保存时移除已保存的 OAuth 应用|Remove the saved OAuth app on save/ })).not.toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: /保存时移除已保存的 OAuth 应用|Remove the saved OAuth app on save/ }),
+    ).not.toBeChecked();
 
     await act(async () => {
       fireEvent.click(screen.getAllByRole("button", { name: "保存更改" })[0]);
@@ -2258,7 +2261,7 @@ describe("MCPServerEdit (max concurrent requests)", () => {
       rpm: null,
     });
 
-    render(
+    renderWithProviders(
       <MCPServerEdit
         mcpServer={limitedServer}
         accessToken="access-token"
