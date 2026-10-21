@@ -3221,7 +3221,7 @@
     "maxBudget": "最大预算",
     "tpm": "TPM",
     "rpm": "RPM",
-    "tpdBatch": "TPD (batch)",
+    "tpdBatch": "TPD（批量）",
     "howToUse": "如何使用预算 ID",
     "assignBudget": "为客户分配预算",
     "editBudget": "编辑预算",
