@@ -185,10 +185,10 @@ theirs = upstream/main 的内容 （上游的新版）
 
 ### 当前状态与欠账
 
-- 生产类型检查（`npm run typecheck`，排除测试文件）**330 条错误，分布在 94 个文件**，全部是上面第二类半成品文件还没重接完
-- 测试文件类型错误 1123 条（合并前基线 878），大头是 vitest 全局类型缺失的 TS2304/TS2582，与上游同源
+- 生产类型检查（`npm run typecheck`，排除测试文件）**0 条错误**
+- 测试文件类型错误 419 条（合并前基线 878）。其中一大半是 `tsconfig` 一直没把 vitest 的全局类型纳进来导致的悬空 `describe`/`it`/`expect`，补上 `"types": ["node", "vitest/globals", "@testing-library/jest-dom"]` 后一次消掉 534 条；余下的是测试用旧 API 写的地方，要按上游的新结构逐个改
 - 目录：死键 0（合并后一次性清了 735 个无人引用的键）、中英 parity 与缺键守卫 17 例全绿
-- `npm run build` 目前**不绿**，卡在上面的生产类型检查
+- `npm run build` 待最终跑一遍确认
 
 ### 下一步
 

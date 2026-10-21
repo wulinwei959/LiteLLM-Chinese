@@ -33,13 +33,13 @@ type SaveEditableFields = ReturnType<typeof useUpdateUISettings>["mutate"];
 
 const MAX_BUDGET_FIELD: TeamAdminSettingsField = "max_budget";
 
-const RAISE_MAX_BUDGET_HELP_LABEL = "About raising the team's max budget";
-const RAISE_MAX_BUDGET_TOOLTIP =
+export const RAISE_MAX_BUDGET_HELP_LABEL = "About raising the team's max budget";
+export const RAISE_MAX_BUDGET_TOOLTIP =
   "Lets team admins raise the budget too, capped by the organization's budget when the team has one. Only proxy admins can remove it.";
 const METADATA_HELP_LABEL = "About editing team metadata";
 const METADATA_TOOLTIP =
   "Lets team admins add, change and remove their own metadata keys. Keys the proxy reads as settings stay with proxy admins, and keys declared in the team metadata schema can be changed but not removed.";
-const TEAM_ADMIN_FIELDS_DOCS_URL =
+export const TEAM_ADMIN_FIELDS_DOCS_URL =
   "https://docs.litellm.ai/docs/proxy/access_control#choosing-what-team-admins-can-edit";
 
 const toggleEditableField = (

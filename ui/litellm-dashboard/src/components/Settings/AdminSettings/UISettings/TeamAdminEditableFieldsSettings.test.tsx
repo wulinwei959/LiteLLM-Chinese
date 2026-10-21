@@ -5,6 +5,11 @@ import { fireEvent, renderWithProviders, screen, waitFor } from "@/../tests/test
 import { toast } from "@/lib/toast";
 
 import TeamAdminEditableFieldsSettings from "./TeamAdminEditableFieldsSettings";
+import {
+  TEAM_ADMIN_FIELDS_DOCS_URL as RAISE_MAX_BUDGET_DOCS_URL,
+  RAISE_MAX_BUDGET_HELP_LABEL,
+  RAISE_MAX_BUDGET_TOOLTIP,
+} from "./TeamAdminEditableFieldsSettings";
 
 const mockUseUISettings = vi.hoisted(() => vi.fn());
 const mockUseUpdateUISettings = vi.hoisted(() => vi.fn());
@@ -23,6 +28,7 @@ vi.mock("@/app/(dashboard)/hooks/uiSettings/useUpdateUISettings", () => ({
 
 const TPM_LABEL = "每分钟 Token 限制（TPM）";
 const MAX_BUDGET_LABEL = "最大预算（USD）";
+const RAISE_MAX_BUDGET_LABEL = "提高团队最大预算";
 
 const mockSettings = (supported: readonly string[], enabled: readonly string[]) =>
   mockUseUISettings.mockReturnValue({
@@ -55,6 +61,8 @@ const mockSave = ({
 };
 
 const saveButton = () => screen.getByRole("button", { name: "保存" });
+const maxBudgetCheckbox = () => screen.getByRole("checkbox", { name: MAX_BUDGET_LABEL });
+const raiseMaxBudgetCheckbox = () => screen.getByRole("checkbox", { name: RAISE_MAX_BUDGET_LABEL });
 
 describe("TeamAdminEditableFieldsSettings", () => {
   beforeEach(() => {
