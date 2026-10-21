@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { TeamMetadataField } from "@/app/(dashboard)/hooks/teams/useTeamMetadataSchema";
 import { useZodForm } from "@/lib/forms/useZodForm";
 import { renderWithProviders } from "../../../tests/test-utils";
@@ -54,6 +54,12 @@ describe("metadataObjectToPairs", () => {
       metadataObjectToPairs({ department: "research", logging: [{ callback_name: "langfuse" }] }, new Set(["logging"])),
     ).toEqual([{ key: "department", value: "research" }]);
   });
+
+  it("drops an empty key, which the form can never submit, so an API-written one does not block saving", () => {
+    expect(metadataObjectToPairs({ "": { displayName: "okta-push-group" }, scim_managed: true })).toEqual([
+      { key: "scim_managed", value: "true" },
+    ]);
+  });
 });
 
 describe("metadataPairsToObject", () => {
@@ -97,6 +103,7 @@ interface HarnessProps {
   initialMetadata?: MetadataPair[];
   schemaFields?: TeamMetadataField[];
   schemaLoading?: boolean;
+  fieldsHidden?: boolean;
 }
 
 const Harness: React.FC<HarnessProps> = ({ onFinish, initialMetadata, schemaFields, schemaLoading }) => {
@@ -105,13 +112,15 @@ const Harness: React.FC<HarnessProps> = ({ onFinish, initialMetadata, schemaFiel
   const form = useZodForm(harnessSchema, { defaultValues: { metadata: initialMetadata ?? [] } });
   return (
     <form onSubmit={form.handleSubmit((values) => onFinish(values))}>
-      <MetadataKeyValueFields
-        control={form.control}
-        getValues={form.getValues}
-        name="metadata"
-        schemaFields={schemaFields}
-        schemaLoading={schemaLoading}
-      />
+      {!fieldsHidden && (
+        <MetadataKeyValueFields
+          control={form.control}
+          getValues={form.getValues}
+          name="metadata"
+          schemaFields={schemaFields}
+          schemaLoading={schemaLoading}
+        />
+      )}
       <button type="submit">Save</button>
     </form>
   );
@@ -257,7 +266,7 @@ describe("MetadataKeyValueFields with a declared schema", () => {
     ]);
   });
 
-  it("should let the user remove a prepopulated row", async () => {
+  it("should still let the user add and remove free-form pairs below the declared keys", async () => {
     const user = userEvent.setup();
     renderWithProviders(<Harness onFinish={vi.fn()} schemaFields={schema} />);
 
@@ -269,6 +278,78 @@ describe("MetadataKeyValueFields with a declared schema", () => {
         "app_name",
       ]);
     });
+
+    const keyInput = screen.getByPlaceholderText("Key");
+    await user.clear(keyInput);
+    await user.type(keyInput, "cost_center");
+
+    expect(keyInput).toHaveValue("cost_center");
+    expect(keyInput).toHaveFocus();
+
+    await user.click(screen.getByRole("button", { name: /add key-value pair/i }));
+    expect(screen.getAllByPlaceholderText("Key").map((input) => (input as HTMLInputElement).value)).toEqual([
+      "cost_center",
+      "",
+    ]);
+    await user.click(screen.getAllByLabelText("Remove key-value pair")[1]);
+
+    expect(screen.getAllByPlaceholderText("Key").map((input) => (input as HTMLInputElement).value)).toEqual([
+      "cost_center",
+    ]);
+    expect(screen.getAllByLabelText("Remove key-value pair")).toHaveLength(1);
+    expect(screen.getAllByTestId("metadata-schema-label").map((label) => label.textContent)).toEqual([
+      "Cost",
+      "Cost Center",
+    ]);
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(await screen.findByText("Duplicate key")).toBeInTheDocument();
+    expect(onFinish).not.toHaveBeenCalled();
+  });
+
+  it("should keep one editable row per duplicated declared key when the editor remounts", async () => {
+    const user = userEvent.setup();
+    const onFinish = vi.fn();
+    const schemaFields = [{ key: "cost_center", label: "Cost Center" }];
+    const initialMetadata = [{ key: "region", value: "us" }];
+    const { rerender } = render(
+      <Harness onFinish={onFinish} initialMetadata={initialMetadata} schemaFields={schemaFields} />,
+    );
+    expect(await screen.findByTestId("metadata-schema-label")).toHaveTextContent("Cost Center");
+    fireEvent.change(screen.getByPlaceholderText("Key"), { target: { value: "cost_center" } });
+
+    rerender(
+      <Harness onFinish={onFinish} initialMetadata={initialMetadata} schemaFields={schemaFields} fieldsHidden />,
+    );
+    rerender(<Harness onFinish={onFinish} initialMetadata={initialMetadata} schemaFields={schemaFields} />);
+
+    expect(screen.getAllByTestId("metadata-schema-label")).toHaveLength(1);
+    expect(screen.getByPlaceholderText("Key")).toHaveValue("cost_center");
+    expect(screen.getAllByLabelText("Remove key-value pair")).toHaveLength(1);
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(await screen.findByText("Duplicate key")).toBeInTheDocument();
+    expect(onFinish).not.toHaveBeenCalled();
+  });
+
+  it("should label only rows whose current key is declared when the schema arrives after an edit", () => {
+    const onFinish = vi.fn();
+    const initialMetadata = [{ key: "cost_center", value: "1" }];
+    const { rerender } = render(<Harness onFinish={onFinish} initialMetadata={initialMetadata} schemaFields={[]} />);
+    fireEvent.change(screen.getByPlaceholderText("Key"), { target: { value: "region" } });
+
+    rerender(
+      <Harness
+        onFinish={onFinish}
+        initialMetadata={initialMetadata}
+        schemaFields={[{ key: "cost_center", label: "Cost Center" }]}
+      />,
+    );
+
+    expect(screen.getByPlaceholderText("Key")).toHaveValue("region");
+    expect(screen.getAllByTestId("metadata-schema-label").map((label) => label.textContent)).toEqual(["Cost Center"]);
   });
 
   it("should show a skeleton instead of the editor while the schema is loading", () => {

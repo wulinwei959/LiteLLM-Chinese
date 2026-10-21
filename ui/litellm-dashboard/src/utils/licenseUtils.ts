@@ -22,23 +22,6 @@ export const getDaysUntilExpiration = (expirationDate: string | null, now: Date 
   return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 };
 
-export const getLicenseExpiryTier = (expirationDate: string | null, now: Date = new Date()): LicenseExpiryTier => {
-  const days = getDaysUntilExpiration(expirationDate, now);
-  if (days === null) {
-    return "none";
-  }
-  if (days < 0) {
-    return "expired";
-  }
-  if (days <= LICENSE_EXPIRY_CRITICAL_DAYS) {
-    return "critical";
-  }
-  if (days <= LICENSE_EXPIRY_WARNING_DAYS) {
-    return "warning";
-  }
-  return "none";
-};
-
 const EXPIRY_DATE_FORMAT: Intl.DateTimeFormatOptions = {
   year: "numeric",
   month: "short",

@@ -6,10 +6,12 @@ import { Check, Columns3 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/cva.config";
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
   label?: string;
+  iconOnly?: boolean;
   className?: string;
 }
 

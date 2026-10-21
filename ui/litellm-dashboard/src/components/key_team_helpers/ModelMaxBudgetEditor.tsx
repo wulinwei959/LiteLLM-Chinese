@@ -98,6 +98,13 @@ export function ModelMaxBudgetEditor({
     label: t(option.labelKey),
   }));
 
+  const incoming = JSON.stringify(value ?? {});
+  const [syncedValue, setSyncedValue] = useState(incoming);
+  if (incoming !== syncedValue) {
+    setSyncedValue(incoming);
+    if (incoming !== JSON.stringify(entriesToModelMaxBudget(entries))) setEntries(modelMaxBudgetToEntries(value));
+  }
+
   const emitChange = (updated: ModelBudgetEntry[]) => {
     setEntries(updated);
     onChange(entriesToModelMaxBudget(updated));
@@ -221,6 +228,7 @@ export function ModelMaxBudgetEditor({
 
 interface ModelMaxBudgetFieldProps extends ModelMaxBudgetEditorProps {
   hint: string;
+  label?: string;
 }
 
 /** The editor with its label, so every form that offers it presents it the same way. */

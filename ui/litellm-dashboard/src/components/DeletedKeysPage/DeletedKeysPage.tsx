@@ -1,4 +1,5 @@
 "use client";
+import { PageContent } from "@/components/shared/Page";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { PaginationState } from "@tanstack/react-table";
@@ -16,9 +17,9 @@ export default function DeletedKeysPage() {
   const { data: keysData, isLoading } = useDeletedKeys(pagination.pageIndex + 1, pagination.pageSize);
 
   return (
-    <div className="flex flex-col gap-4">
+    <PageContent>
       {!premiumUser && (
-        <Alert>
+        <Alert className="shrink-0">
           <Info />
           <AlertTitle>{t("comingSoonEnterprise")}</AlertTitle>
           <AlertDescription>{t("deletedKeysAuditBody")}</AlertDescription>
@@ -31,6 +32,6 @@ export default function DeletedKeysPage() {
         pagination={pagination}
         onPaginationChange={setPagination}
       />
-    </div>
+    </PageContent>
   );
 }

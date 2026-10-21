@@ -8,11 +8,13 @@ import * as React from "react";
 import { accessGroupKeys } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
 import { useAgents } from "@/app/(dashboard)/hooks/agents/useAgents";
 import { useMCPServers } from "@/app/(dashboard)/hooks/mcpServers/useMCPServers";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { ModelSelect } from "@/components/ModelSelect/ModelSelect";
 import { toast } from "@/lib/toast";
 import { FieldGroup } from "@/components/ui/field";
 import { FormField } from "@/components/shared/form/FormField";
 import { MultiSelect } from "@/components/shared/MultiSelect";
+import SkillSelector from "@/components/skills/SkillSelector";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -21,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useZodForm } from "@/lib/forms/useZodForm";
 import { fetchClient } from "@/lib/http/api";
 
+import { AccessGroupMCPToolPermissions } from "../AccessGroupsModal/AccessGroupBaseForm";
 import { buildAccessGroupCreateBody, emptyAccessGroupFormValues, type AccessGroupCreateBody } from "./mapper";
 import { buildAccessGroupCreateSchema } from "./schema";
 
@@ -47,6 +50,7 @@ export const AccessGroupCreateDialog = ({
   const form = useZodForm(buildAccessGroupCreateSchema(t), { defaultValues: emptyAccessGroupFormValues });
   const [activeTab, setActiveTab] = React.useState(GENERAL_TAB);
 
+  const { accessToken } = useAuthorized();
   const { data: agentsData } = useAgents();
   const { data: mcpServersData } = useMCPServers();
 
@@ -119,6 +123,10 @@ export const AccessGroupCreateDialog = ({
                 <BotIcon />
                 {t("agents")}
               </TabsTrigger>
+              <TabsTrigger value="skills">
+                <SparklesIcon />
+                Skills
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value={GENERAL_TAB} className="pt-4">
@@ -152,6 +160,11 @@ export const AccessGroupCreateDialog = ({
                   />
                 )}
               </FormField>
+              <AccessGroupMCPToolPermissions
+                selectedServers={form.watch("mcpServerIds")}
+                toolPermissions={form.watch("mcpToolPermissions")}
+                onChange={(next) => form.setValue("mcpToolPermissions", next, { shouldDirty: true })}
+              />
             </TabsContent>
 
             <TabsContent value="agents" className="pt-4">
@@ -163,6 +176,24 @@ export const AccessGroupCreateDialog = ({
                     onValueChange={onChange}
                     options={agentOptions}
                     placeholder={t("selectAgents")}
+                  />
+                )}
+              </FormField>
+            </TabsContent>
+
+            <TabsContent value="skills" className="pt-4">
+              <FormField
+                control={form.control}
+                name="skillNames"
+                label="Allowed Skills"
+                description="Enabled skills are visible to everyone. Grant disabled (private) Claude Code plugins to the teams and keys in this group here."
+              >
+                {({ value, onChange }) => (
+                  <SkillSelector
+                    onChange={onChange}
+                    value={value}
+                    accessToken={accessToken || ""}
+                    placeholder="Select skills (optional)"
                   />
                 )}
               </FormField>

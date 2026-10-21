@@ -24,6 +24,9 @@ import ClassifierVisionConfig from "./ClassifierVisionConfig";
 import { getHeuristicV2SuccessThresholdError } from "./build_complexity_router_config";
 import ClassifierPluginTimeoutField from "./ClassifierPluginTimeoutField";
 import ClassifierTypeRadios from "./ClassifierTypeRadios";
+import { ClassifierMenu, ClassifierOption } from "./AutoRouterClassifierTabs";
+import { isHeuristicChain } from "./classifier_types";
+import HeuristicKeywordOverrides from "./HeuristicKeywordOverrides";
 import type { ReasoningEffort } from "./complexity_router_tiers";
 import { useComplexityScorerDefaults } from "@/app/(dashboard)/hooks/autoRouter/useComplexityScorerDefaults";
 import {
@@ -40,6 +43,8 @@ import {
   ClassificationRubric,
   effectiveTierLabel,
   heuristicScoringRole,
+  heuristicTuningType,
+  usesHeuristicV2,
   usesLlmClassifier,
   usesClassifierContext,
   DEFAULT_HYBRID_BOUNDARY_MARGIN,
@@ -104,6 +109,7 @@ const HowClassificationWorks: React.FC<{ value: ComplexityRouterConfigValue }> =
     value.tier_boundaries,
     value.reasoning_override_min_score,
   );
+  const scorerDefaultsUnavailable = scorerRuns && !ranges && isError;
 
   if (value.custom_tier_set) return null;
 
@@ -159,6 +165,7 @@ interface ClassificationMethodConfigProps {
   /** The resolved default model - see resolveComplexityDefaultModel. Names and gates the radio. */
   defaultModel?: string;
   advancedOnly?: boolean;
+  section?: "selection" | "classifier" | "heuristic";
 }
 
 export const InactiveHeuristicV2Threshold: React.FC<Pick<ClassificationMethodConfigProps, "value" | "onChange">> = ({
@@ -206,11 +213,18 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
   defaultModel,
   advancedOnly = false,
   jevSection,
+  section,
 }) => {
   const t = useTranslations("models.addModel");
   const [draft, setDraft] = React.useState<{ id: string; raw: string } | null>(null);
   const hasDefaultModel = Boolean(defaultModel);
   const classifierType = effectiveClassifierType(value);
+  const showSelection = section === undefined || section === "selection";
+  const showClassifier = section === undefined || section === "classifier";
+  const heuristic = heuristicTuningType(value);
+  const showHeuristic = (section === undefined || section === "heuristic") && heuristic !== undefined;
+  const showLocalChecks =
+    showSelection && advancedOnly && ["llm", "heuristic_first", "hybrid"].includes(classifierType);
   const usesCustomPrompt = Boolean(value.classifier_llm_config?.system_prompt?.trim());
   const contextBudget = value.classifier_context_budget_chars ?? DEFAULT_CLASSIFIER_CONTEXT_BUDGET_CHARS;
   const contextBudgetQuotesNothing = contextBudget > 0 && contextBudget < MIN_QUOTED_CONTEXT_TURN_CHARS;
@@ -357,7 +371,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
 
   return (
     <>
-      {!advancedOnly && (
+      {!advancedOnly && showSelection && (
         <>
           <ClassifierTypeRadios
             value={value}
@@ -372,7 +386,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
           />
         </>
       )}
-      {advancedOnly && ["llm", "heuristic_first", "hybrid"].includes(classifierType) && (
+      {showLocalChecks && (
         <div className="space-y-2">
           <Label htmlFor="auto-router-local-checks">{t("localChecksLabel")}</Label>
           <Select
@@ -402,11 +416,39 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
         </div>
       )}
 
-      {classifierType === "custom" && (
+      {showSelection && isHeuristicChain(classifierType) && (
+        <div className="mt-4 space-y-2">
+          <Label htmlFor="auto-router-local-heuristic">Heuristic before the judge</Label>
+          <ClassifierMenu
+            id="auto-router-local-heuristic"
+            label="Heuristic before the judge"
+            selectedLabel={value.local_heuristic === "heuristic_v2" ? "Heuristic v2" : "Heuristic v1 (rule-based)"}
+            feature={value.local_heuristic === "heuristic_v2" ? "heuristic_v2" : undefined}
+            value={value.local_heuristic ?? "heuristic"}
+            onValueChange={(next) => {
+              if (next === "heuristic" || next === "heuristic_v2") onChange({ ...value, local_heuristic: next });
+            }}
+          >
+            <ClassifierOption
+              value="heuristic"
+              label="Heuristic v1 (rule-based)"
+              description="Score requests using configurable weights and keywords"
+            />
+            <ClassifierOption
+              value="heuristic_v2"
+              label="Heuristic v2"
+              description="Choose a tier using calibrated success probabilities"
+              feature="heuristic_v2"
+            />
+          </ClassifierMenu>
+        </div>
+      )}
+
+      {showClassifier && classifierType === "custom" && (
         <ClassifierPluginTimeoutField value={value} onChange={onChange} showValidationErrors={showValidationErrors} />
       )}
 
-      {classifierType === "heuristic_v2" && (
+      {showHeuristic && heuristic === "heuristic_v2" && (
         <div className="mt-4 space-y-2">
           <Label htmlFor={HEURISTIC_V2_SUCCESS_THRESHOLD_ID} className="block font-semibold">
             {t("successThresholdLabel")}
@@ -435,14 +477,14 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
         </div>
       )}
 
-      {classifierType === "heuristic_first" && (
+      {showSelection && classifierType === "heuristic_first" && (
         <div className="mt-4 space-y-2">
           <strong className="block font-semibold">{t("decideLocallyUpTo")}</strong>
           <Select
             value={value.heuristic_first_max_tier}
             onValueChange={(tier: unknown) => handleHeuristicFirstMaxTierChange(tier as string)}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger id="auto-router-local-max-tier" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -457,7 +499,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
         </div>
       )}
 
-      {classifierType === "hybrid" && (
+      {showSelection && classifierType === "hybrid" && (
         <div className="mt-4 space-y-2">
           <strong className="block font-semibold">{t("boundaryMarginLabel")}</strong>
           <Input
@@ -477,8 +519,10 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
         </div>
       )}
 
-      {classifierType === "jev" && <JevClassifierConfig value={value} onChange={onChange} section={jevSection} />}
-      {usesLlmClassifier(classifierType) && (
+      {showClassifier && classifierType === "jev" && (
+        <JevClassifierConfig value={value} onChange={onChange} section={jevSection} />
+      )}
+      {showClassifier && usesLlmClassifier(classifierType) && (
         <div className="mt-4 space-y-3">
           <ClassifierReasoningEffortSelect
             model={classifierModel}
@@ -560,7 +604,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
           </div>
         </div>
       )}
-      {usesClassifierContext(classifierType) && (
+      {showClassifier && usesClassifierContext(classifierType) && (
         <div className="mt-4 space-y-3">
           <RestrictedSection heading={t("ifClassifierFailsHeading")} by={restrictedBy(value, "classifierFallback")}>
             <RadioGroup
@@ -665,7 +709,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
         </div>
       )}
 
-      {heuristicScoringRole(value) !== "never" && (
+      {showHeuristic && heuristic === "heuristic" && (
         <div className="mt-4">
           <div className="flex items-center gap-2 mb-1">
             <strong className="font-semibold">{t("customTechnicalKeywordsLabel")}</strong>
@@ -695,9 +739,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
       {["heuristic", "heuristic_first", "hybrid"].includes(classifierType) && (
         <AutoRouterAllowanceNote feature="heuristic_tuning" label={t("customScoringRulesLabel")} />
       )}
-      <HeuristicScoringConfig value={value} onChange={onChange} />
-
-      <HowClassificationWorks value={value} />
+      {showHeuristic && <HowClassificationWorks value={value} />}
     </>
   );
 };

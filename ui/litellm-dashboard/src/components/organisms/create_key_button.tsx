@@ -6,6 +6,7 @@ import { useTags } from "@/app/(dashboard)/hooks/tags/useTags";
 import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useCan from "@/app/(dashboard)/hooks/useCan";
+import { parseTeamAdminEditableFields } from "@/components/team/teamAdminEditAccess";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -81,6 +82,14 @@ import {
 import CreatedKeyDisplay from "../shared/CreatedKeyDisplay";
 import NumericalInput from "../shared/numerical_input";
 import VectorStoreSelector from "../vector_store_management/VectorStoreSelector";
+import {
+  administersTeam,
+  anotherUserScope,
+  effectiveKeyOwner,
+  isTeamMemberOwner,
+  teamMemberOwnerOptions,
+  teamMemberOwnerPlaceholder,
+} from "./createKeyOwnerAccess";
 import { buildKeyCreatePayload, type KeyCreateInput } from "./createKeyPayload";
 import { simplifyKeyGenerateError } from "./utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -258,7 +267,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
   const [apiKey, setApiKey] = useState(null);
   const [userModels, setUserModels] = useState<string[]>([]);
   const [modelsToPick, setModelsToPick] = useState<string[]>([]);
-  const [keyOwner, setKeyOwner] = useState("you");
+  const [requestedKeyOwner, setKeyOwner] = useState("you");
   const [hasPrefilled, setHasPrefilled] = useState(false);
   const [pendingPrefillModels, setPendingPrefillModels] = useState<string[] | null>(null);
   const [guardrailsList, setGuardrailsList] = useState<string[]>([]);
@@ -289,6 +298,18 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
   const [agentsList, setAgentsList] = useState<{ agent_id: string; agent_name: string }[]>([]);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const selectedModels: string[] = (useWatch({ control: form.control, name: "models" }) as string[] | undefined) ?? [];
+  const teamAdminEditableFields = parseTeamAdminEditableFields(uiSettingsData?.values);
+  const keyOwnerViewer = { userRole, userId: userID, teamAdminEditableFields, teams };
+  const ownerScope = anotherUserScope(keyOwnerViewer);
+  const keyOwner = effectiveKeyOwner(requestedKeyOwner, ownerScope);
+  const ownerLimitedToTeamMembers = keyOwner === "another_user" && ownerScope === "team_members";
+  const memberOwnerOptions = teamMemberOwnerOptions(selectedCreateKeyTeam, userID);
+  const createKeyOwner = form.watch("user_id");
+  useEffect(() => {
+    form.setValue("allowed_mcp_servers_and_groups", { servers: [], accessGroups: [] });
+    form.setValue("mcp_tool_permissions", {});
+  }, [createKeyOwner, form]);
+  const ownerRequiresTeam = keyOwner === "service_account" || ownerLimitedToTeamMembers;
   const handleCancel = () => {
     setIsModalVisible(false);
     setApiKey(null);
@@ -393,14 +414,8 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
 
       // Apply prefill data if provided
       if (prefillData) {
-        // Set key owner (owned_by) - validate that "another_user" is only allowed for Admin
         if (prefillData.owned_by) {
-          if (prefillData.owned_by === "another_user" && userRole !== "Admin") {
-            // Ignore invalid owned_by for non-admin users, fall back to default
-            setKeyOwner("you");
-          } else {
-            setKeyOwner(prefillData.owned_by);
-          }
+          setKeyOwner(prefillData.owned_by);
         }
 
         // Set team - find the team by ID and set it (only if team exists in user's teams)
@@ -472,7 +487,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
       const response =
         endpoint === "service_account"
           ? await keyCreateServiceAccountCall(accessToken, payload)
-          : await keyCreateCall(accessToken, userID, payload);
+          : await keyCreateCall(accessToken, userID ?? "", payload);
 
       // Add the data to the state in the parent component
       // Also directly update the keys list in VirtualKeysTable without an API call
@@ -525,6 +540,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
     }
     // Clear MCP server selection when team changes (available servers may differ)
     form.setValue("allowed_mcp_servers_and_groups", { servers: [], accessGroups: [] });
+    form.setValue("mcp_tool_permissions", {});
   }, [selectedCreateKeyTeam, selectedProjectId, accessToken, userID, userRole, form]);
 
   // Apply deferred model prefill once the available model list arrives.
@@ -624,6 +640,23 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
     }
   };
 
+  const changeKeyOwner = (owner: string) => {
+    setKeyOwner(owner);
+    const limitsOwnerToTeamMembers = owner === "another_user" && ownerScope === "team_members";
+    if (limitsOwnerToTeamMembers && selectedCreateKeyTeam && !administersTeam(selectedCreateKeyTeam, userID)) {
+      selectTeam(null);
+      form.setValue("team_id", null);
+    }
+  };
+
+  useEffect(() => {
+    if (!ownerLimitedToTeamMembers) return;
+    const owner = form.getValues("user_id");
+    if (owner != null && !isTeamMemberOwner(owner, selectedCreateKeyTeam, userID)) {
+      form.setValue("user_id", null);
+    }
+  }, [ownerLimitedToTeamMembers, selectedCreateKeyTeam, userID, form]);
+
   const changeProject = (write: FieldWrite) => (projectId: string | null) => {
     write(projectId);
     if (!projectId) {
@@ -672,6 +705,68 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
     }
   };
 
+  const memberOwnerPlaceholder = teamMemberOwnerPlaceholder(memberOwnerOptions, selectedCreateKeyTeam);
+  const requiredTeamHelp = ownerLimitedToTeamMembers
+    ? "required, the key's owner must be a member of this team"
+    : "required";
+  const teamFieldHelp = ownerRequiresTeam ? requiredTeamHelp : "";
+  const ownerField = keyOwner === "another_user" && (
+    <MountedFormField
+      label={
+        <span>
+          User ID{" "}
+          <SimpleTooltip content="The user who will own this key and be responsible for its usage">
+            <Info className="ml-1 inline size-3.5 align-text-bottom" />
+          </SimpleTooltip>
+        </span>
+      }
+      name="user_id"
+      className="mt-4"
+      required
+      rules={requiredRule(
+        keyOwner === "another_user",
+        `Please input the user ID of the user you are assigning the key to`,
+      )}
+    >
+      {(control) =>
+        ownerLimitedToTeamMembers ? (
+          <SearchSelect
+            inputId={control.id}
+            options={memberOwnerOptions}
+            value={typeof control.value === "string" ? control.value : null}
+            onValueChange={control.onChange}
+            disabled={memberOwnerOptions.length === 0}
+            placeholder={memberOwnerPlaceholder}
+            emptyText="No team members found"
+          />
+        ) : (
+          <div>
+            <div className="mb-2 flex">
+              <PaginatedSearchSelect
+                options={userOptions}
+                value={typeof control.value === "string" ? control.value : undefined}
+                onValueChange={control.onChange}
+                onSearchChange={fetchUsers}
+                isLoading={userSearchLoading}
+                placeholder="Type email or user ID to search for users"
+                emptyText="No users found"
+                loadingText="Searching..."
+                inputId={control.id}
+                aria-required={control["aria-required"] === "true" ? true : undefined}
+                aria-invalid={control["aria-invalid"] === "true" ? true : undefined}
+                aria-describedby={control["aria-describedby"]}
+              />
+              <Button variant="outline" className="ml-2" onClick={() => setIsCreateUserModalVisible(true)}>
+                Create User
+              </Button>
+            </div>
+            <div className="text-xs text-muted-foreground">Search by email or user ID to find users</div>
+          </div>
+        )
+      }
+    </MountedFormField>
+  );
+
   return (
     <div>
       {userRole && rolesWithWriteAccess.includes(userRole) && (
@@ -701,7 +796,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                   <RadioGroup
                     className="flex flex-wrap items-center gap-4"
                     value={keyOwner}
-                    onValueChange={(value: unknown) => setKeyOwner(String(value))}
+                    onValueChange={(value: unknown) => changeKeyOwner(String(value))}
                   >
                     <label className={KEY_OWNER_LABEL_CLASS}>
                       <RadioGroupItem value="you" />
@@ -711,7 +806,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                       <RadioGroupItem value="service_account" />
                       {ct("ownerServiceAccount")}
                     </label>
-                    {userRole === "Admin" && (
+                    {ownerScope !== "none" && (
                       <label className={KEY_OWNER_LABEL_CLASS}>
                         <RadioGroupItem value="another_user" />
                         {ct("ownerAnotherUser")}
@@ -832,9 +927,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                       disabled={selectedProjectId !== null}
                       organizationId={selectedOrganizationId}
                       onTeamSelect={selectTeam}
+                      filterTeam={ownerLimitedToTeamMembers ? (team) => administersTeam(team, userID) : undefined}
                     />
                   )}
                 </MountedFormField>
+                {ownerLimitedToTeamMembers && ownerField}
                 {enableProjectsUI && (
                   <MountedFormField
                     label={
@@ -1804,7 +1901,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
               <DialogTitle>{usersT("createNewUser")}</DialogTitle>
             </DialogHeader>
             <CreateUserButton
-              userID={userID}
+              userID={userID ?? ""}
               accessToken={accessToken}
               possibleUIRoles={possibleUIRoles}
               onUserCreated={handleUserCreated}
@@ -1816,7 +1913,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
 
       {apiKey && (
         <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>
-          <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
+          <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-2xl">
             <div className="grid grid-cols-1 gap-2 w-full">
               <DialogTitle className="text-lg font-medium text-foreground">{ct("saveYourKey")}</DialogTitle>
               {apiKey != null ? (

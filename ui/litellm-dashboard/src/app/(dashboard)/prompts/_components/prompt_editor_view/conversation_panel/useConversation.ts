@@ -110,6 +110,7 @@ export const useConversation = (prompt: any, accessToken: string | null, t: Prom
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let buffer = "";
 
       let assistantMessage = "";
       let model: string | undefined;
@@ -121,8 +122,9 @@ export const useConversation = (prompt: any, accessToken: string | null, t: Prom
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
 
         for (const line of lines) {
           if (line.startsWith("data: ")) {
@@ -131,36 +133,43 @@ export const useConversation = (prompt: any, accessToken: string | null, t: Prom
               continue;
             }
 
+            let parsed;
             try {
-              const parsed = JSON.parse(data);
-
-              if (!model && parsed.model) {
-                model = parsed.model;
-              }
-
-              if (parsed.usage) {
-                usage = parsed.usage;
-              }
-
-              const content = parsed.choices?.[0]?.delta?.content;
-              if (content) {
-                if (!timeToFirstToken) {
-                  timeToFirstToken = Date.now() - startTime;
-                }
-                assistantMessage += content;
-                setMessages((prev) => {
-                  const newMessages = [...prev];
-                  newMessages[newMessages.length - 1] = {
-                    role: "assistant",
-                    content: assistantMessage,
-                    model,
-                    timeToFirstToken,
-                  };
-                  return newMessages;
-                });
-              }
+              parsed = JSON.parse(data);
             } catch (e) {
               console.error("Error parsing chunk:", e);
+              continue;
+            }
+
+            const errorMessage = streamErrorMessage(parsed);
+            if (errorMessage !== null) {
+              throw new Error(errorMessage);
+            }
+
+            if (!model && parsed?.model) {
+              model = parsed.model;
+            }
+
+            if (parsed?.usage) {
+              usage = parsed.usage;
+            }
+
+            const content = parsed?.choices?.[0]?.delta?.content;
+            if (content) {
+              if (!timeToFirstToken) {
+                timeToFirstToken = Date.now() - startTime;
+              }
+              assistantMessage += content;
+              setMessages((prev) => {
+                const newMessages = [...prev];
+                newMessages[newMessages.length - 1] = {
+                  role: "assistant",
+                  content: assistantMessage,
+                  model,
+                  timeToFirstToken,
+                };
+                return newMessages;
+              });
             }
           }
         }

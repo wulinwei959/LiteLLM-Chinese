@@ -5,7 +5,7 @@ import type { SearchSelectOption } from "@/components/shared/SearchSelect";
 import { useInfiniteTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 
 interface TeamMultiSelectProps {
-  value?: string[];
+  value?: readonly string[];
   onChange?: (value: string[]) => void;
   disabled?: boolean;
   organizationId?: string | null;

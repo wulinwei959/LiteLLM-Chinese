@@ -47,6 +47,7 @@ export function DeletedKeysTable({
 
   return (
     <DataTable
+      fillHeight
       data={keys}
       columns={columns}
       getRowId={(key, index) => key.token || String(index)}

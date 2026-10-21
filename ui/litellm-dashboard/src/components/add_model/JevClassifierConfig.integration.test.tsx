@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, renderWithProviders, screen } from "../../../tests/test-utils";
+import { chooseSelectOption, fireEvent, renderWithProviders, screen } from "../../../tests/test-utils";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import ClassificationMethodConfig from "./ClassificationMethodConfig";
 import AutoRouterClassifierTabs from "./AutoRouterClassifierTabs";
@@ -138,7 +139,8 @@ describe("JEV classifier editor", () => {
         }),
       }),
     );
-  });
+    },
+  );
 
   it("allows licensed instructions and can restore built-in instructions", () => {
     const authorized = useAuthorized();

@@ -65,6 +65,8 @@ vi.mock("@/components/networking", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/components/networking")>();
   return {
     formatDate: original.formatDate,
+    getRuntimeBackendBaseUrl: original.getRuntimeBackendBaseUrl,
+    getUiPageUrl: original.getUiPageUrl,
     serverRootPath: "/",
     userGetInfoV2: (...args: unknown[]) => mockUserGetInfoV2(...args),
     userDailyActivityCall: (...args: unknown[]) => mockUserDailyActivityCall(...args),
@@ -353,7 +355,6 @@ const routerUsageResponse = (saved: number): AutoRouterBenchmarksResponse => ({
     saved_spend: saved,
     baseline_spend: 10 + saved,
     saved_pct: (100 * saved) / (10 + saved),
-    saved_per_session: saved / 2,
     cache: {
       coverage_pct: 100,
       hit_rate_pct: 0,

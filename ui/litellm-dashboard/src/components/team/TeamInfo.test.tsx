@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { chooseSelectOption, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
 import { toast } from "@/lib/toast";
+import type { Member } from "@/components/networking";
 import type { EffectiveMcpServer } from "../mcp_server_management/effectiveMcpServers";
 import type { MCPServer } from "../mcp_tools/types";
 import TeamInfoView, {
@@ -15,7 +16,7 @@ import TeamInfoView, {
   type TeamData,
 } from "./TeamInfo";
 
-const authState = vi.hoisted(() => ({ userRole: "Admin" }));
+const authState = vi.hoisted(() => ({ userRole: "Admin", isViewOnly: false }));
 
 vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
   default: () => ({
@@ -24,6 +25,7 @@ vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
     userId: "user-1",
     userEmail: "user@example.com",
     userRole: authState.userRole,
+    isViewOnly: authState.isViewOnly,
     premiumUser: false,
     disabledPersonalKeyCreation: null,
     showSSOBanner: false,
@@ -81,6 +83,7 @@ vi.mock("@/app/(dashboard)/hooks/uiSettings/useUISettings", () => ({
 
 vi.mock("@/app/(dashboard)/hooks/models/useModels", () => ({
   useAllProxyModels: vi.fn(),
+  useModelAccessGroupNames: vi.fn(() => new Set<string>()),
 }));
 
 vi.mock("@/app/(dashboard)/hooks/teams/useTeams", async (importOriginal) => ({
@@ -131,11 +134,29 @@ vi.mock("@/components/mcp_server_management/MCPServerSelector", () => ({
 }));
 
 vi.mock("@/components/team/TeamMemberTab", () => ({
-  default: vi.fn(({ setIsAddMemberModalVisible }) => (
-    <div>
-      <button onClick={() => setIsAddMemberModalVisible(true)}>Add Member</button>
-    </div>
-  )),
+  default: vi.fn(
+    ({
+      setIsAddMemberModalVisible,
+      setSelectedEditMember,
+      setIsEditMemberModalVisible,
+    }: {
+      setIsAddMemberModalVisible: (visible: boolean) => void;
+      setSelectedEditMember: (member: Member) => void;
+      setIsEditMemberModalVisible: (visible: boolean) => void;
+    }) => (
+      <div>
+        <button onClick={() => setIsAddMemberModalVisible(true)}>Add Member</button>
+        <button
+          onClick={() => {
+            setSelectedEditMember({ user_email: "edit@test.com", user_id: "edit-user", role: "user" });
+            setIsEditMemberModalVisible(true);
+          }}
+        >
+          Edit Member
+        </button>
+      </div>
+    ),
+  ),
 }));
 
 vi.mock("@/components/common_components/user_search_modal", () => ({
@@ -231,7 +252,7 @@ vi.mock("../key_team_helpers/filter_helpers", () => ({
   fetchAllOrganizations: vi.fn().mockResolvedValue([]),
 }));
 
-import { useAllProxyModels } from "@/app/(dashboard)/hooks/models/useModels";
+import { useAllProxyModels, useModelAccessGroupNames } from "@/app/(dashboard)/hooks/models/useModels";
 import { useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import { useOrganization } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { useTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
@@ -242,6 +263,7 @@ import { useAccessGroups } from "@/app/(dashboard)/hooks/accessGroups/useAccessG
 import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
 
 const mockUseAllProxyModels = vi.mocked(useAllProxyModels);
+const mockUseModelAccessGroupNames = vi.mocked(useModelAccessGroupNames);
 const mockUseKeys = vi.mocked(useKeys);
 const mockUseTeam = vi.mocked(useTeam);
 const mockUseOrganization = vi.mocked(useOrganization);
@@ -292,6 +314,7 @@ const createMockTeamData = (overrides = {}) => ({
 });
 
 const seedDefaultMocks = () => {
+  mockUseModelAccessGroupNames.mockReturnValue(new Set());
   mockUseAllProxyModels.mockReturnValue({
     data: { data: [] },
     isLoading: false,
@@ -358,9 +381,39 @@ describe("TeamInfoView", () => {
   afterEach(() => {
     vi.clearAllMocks();
     authState.userRole = "Admin";
+    authState.isViewOnly = false;
   });
 
   describe("display and rendering", () => {
+    it("links direct model chips to their matching access-group or model filter", async () => {
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(
+        createMockTeamData({ models: ["repro-access-group", "gpt-4.1"] }),
+      );
+      mockUseModelAccessGroupNames.mockReturnValue(new Set(["repro-access-group"]));
+
+      renderWithProviders(<TeamInfoView {...defaultProps} />);
+
+      expect(await screen.findByRole("link", { name: "repro-access-group" })).toHaveAttribute(
+        "href",
+        expect.stringMatching(/\?access_group=repro-access-group$/),
+      );
+      expect(screen.getByRole("link", { name: "gpt-4.1" })).toHaveAttribute(
+        "href",
+        expect.stringMatching(/\?model_group=gpt-4\.1$/),
+      );
+
+      await userEvent.setup({ delay: null }).click(screen.getByRole("tab", { name: "Settings" }));
+      const settings = await screen.findByRole("tabpanel", { name: "Settings" });
+      expect(within(settings).getByRole("link", { name: "repro-access-group" })).toHaveAttribute(
+        "href",
+        expect.stringMatching(/\?access_group=repro-access-group$/),
+      );
+      expect(within(settings).getByRole("link", { name: "gpt-4.1" })).toHaveAttribute(
+        "href",
+        expect.stringMatching(/\?model_group=gpt-4\.1$/),
+      );
+    });
+
     it("should render", async () => {
       vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
 
@@ -1040,6 +1093,31 @@ describe("TeamInfoView", () => {
       });
     });
 
+    it("invalidates the member budget query after a successful member update", async () => {
+      const user = userEvent.setup({ delay: null });
+      const teamData = createMockTeamData();
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(teamData);
+      testQueryClient.clear();
+      const invalidateQueriesSpy = vi.spyOn(testQueryClient, "invalidateQueries");
+
+      try {
+        renderWithProviders(<TeamInfoView {...defaultProps} />);
+
+        await user.click(await screen.findByRole("tab", { name: "Members" }));
+        await user.click(await screen.findByRole("button", { name: "Edit Member" }));
+        await user.click(await screen.findByRole("button", { name: "Submit" }));
+
+        await waitFor(() => expect(networking.teamMemberUpdateCall).toHaveBeenCalled());
+        await waitFor(() =>
+          expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+            queryKey: ["teams", "memberBudget", defaultProps.teamId],
+          }),
+        );
+      } finally {
+        invalidateQueriesSpy.mockRestore();
+      }
+    });
+
     it("should display soft budget in settings view when present", async () => {
       const user = userEvent.setup({ delay: null });
       vi.mocked(networking.teamInfoCall).mockResolvedValue(
@@ -1386,7 +1464,7 @@ describe("TeamInfoView", () => {
       expect(screen.getByLabelText("每个模型的预估输出 Token")).toBeEnabled();
     });
 
-    it("should keep declared keys as ordinary prefilled rows and submit the edited value", async () => {
+    it("should show declared keys as fixed labels and submit the edited value", async () => {
       const user = userEvent.setup({ delay: null });
       vi.mocked(useTeamMetadataSchema).mockReturnValue({
         data: [
@@ -1926,13 +2004,14 @@ describe("TeamInfoView", () => {
       expect(toast.error).not.toHaveBeenCalled();
     });
 
-    it("prefills the RPM limit and budget a team admin may edit with the team's stored values", async () => {
+    it("prefills the RPM limit and budgets a team admin may edit with the team's stored values", async () => {
       const user = userEvent.setup({ delay: null });
       vi.mocked(networking.teamInfoCall).mockResolvedValue(
         createMockTeamData({
           rpm_limit: 50,
           max_budget: 20,
-          caller_edit_access: { kind: "team_admin", editable_fields: ["rpm_limit", "max_budget"] },
+          soft_budget: 15,
+          caller_edit_access: { kind: "team_admin", editable_fields: ["rpm_limit", "max_budget", "soft_budget"] },
         }),
       );
 
@@ -2099,6 +2178,43 @@ describe("TeamInfoView - which team member fields reach the update payload depen
     expect(JSON.parse(JSON.stringify(payload))).not.toHaveProperty("team_member_budget_duration");
   });
 
+  it("sends a null team_member_budget when Default Budget is cleared, instead of a $0 cap", async () => {
+    const user = userEvent.setup({ delay: null });
+    await openEditor(user);
+
+    await user.click(screen.getByText("Team Member Settings"));
+    fireEvent.change(await screen.findByLabelText("Default Budget (USD)"), { target: { value: "" } });
+    const payload = await save(user);
+
+    expect(JSON.parse(JSON.stringify(payload))).toMatchObject({
+      team_member_budget: null,
+      team_member_tpm_limit: 11,
+      team_member_rpm_limit: 22,
+    });
+  });
+
+  it("keeps a member default with no dollar cap uncapped when Team Member Settings is saved", async () => {
+    const user = userEvent.setup({ delay: null });
+    await openEditor(user, { max_budget: null, budget_duration: "30d", tpm_limit: null, rpm_limit: 60 });
+
+    await user.click(screen.getByText("Team Member Settings"));
+    await screen.findByLabelText("Default Budget (USD)");
+    const payload = await save(user);
+
+    expect(JSON.parse(JSON.stringify(payload))).toMatchObject({ team_member_budget: null, team_member_rpm_limit: 60 });
+  });
+
+  it("sends a typed Default Budget as a number", async () => {
+    const user = userEvent.setup({ delay: null });
+    await openEditor(user);
+
+    await user.click(screen.getByText("Team Member Settings"));
+    fireEvent.change(await screen.findByLabelText("Default Budget (USD)"), { target: { value: "12.5" } });
+    const payload = await save(user);
+
+    expect(payload.team_member_budget).toBe(12.5);
+  });
+
   it("omits object_permission.search_tools while Search Tool Settings is closed", async () => {
     const user = userEvent.setup({ delay: null });
     await openEditor(user);
@@ -2136,9 +2252,11 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    authState.userRole = "Admin";
+    authState.isViewOnly = false;
   });
 
-  const storedTeam = () =>
+  const storedTeam = (requireTraceId = false) =>
     createMockTeamData({
       models: ["gpt-4"],
       max_budget: 100,
@@ -2148,13 +2266,17 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
       team_member_budget_table: { max_budget: 42, budget_duration: "30d", tpm_limit: 11, rpm_limit: 22 },
       default_team_member_models: ["gpt-4"],
       object_permission: { search_tools: ["tool-a"], vector_stores: ["vs-1"] },
+      metadata: requireTraceId ? { require_trace_id: true } : {},
     });
 
-  const openEditor = async (user: ReturnType<typeof userEvent.setup>) => {
-    vi.mocked(networking.teamInfoCall).mockResolvedValue(storedTeam());
+  const openEditor = async (
+    user: ReturnType<typeof userEvent.setup>,
+    options: { requireTraceId?: boolean; isProxyAdmin?: boolean } = {},
+  ) => {
+    vi.mocked(networking.teamInfoCall).mockResolvedValue(storedTeam(options.requireTraceId === true));
     vi.mocked(networking.teamUpdateCall).mockResolvedValue({ data: {}, team_id: "123" } as any);
 
-    renderWithProviders(<TeamInfoView {...props} />);
+    renderWithProviders(<TeamInfoView {...props} is_proxy_admin={options.isProxyAdmin ?? true} />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: "编辑设置" }));
@@ -2208,6 +2330,7 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
 
     const payload = await save(user);
 
+    expect(payload.metadata).not.toHaveProperty("require_trace_id");
     expect(payload).toStrictEqual({
       ...alwaysSent,
       team_member_budget_duration: undefined,
@@ -2217,6 +2340,27 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
       ...alwaysSent,
       object_permission: mcpPermissions,
     });
+  });
+
+  it("sends require_trace_id when a proxy admin enables it", async () => {
+    const user = userEvent.setup({ delay: null });
+    await openEditor(user);
+
+    fireEvent.click(screen.getByRole("switch", { name: /Require Trace ID/i }));
+    const payload = await save(user);
+
+    expect(payload.metadata).toMatchObject({ require_trace_id: true });
+  });
+
+  it("hides the switch from non-admins and preserves the stored value on an unrelated save", async () => {
+    const user = userEvent.setup({ delay: null });
+    authState.userRole = "Internal User";
+    await openEditor(user, { requireTraceId: true, isProxyAdmin: false });
+
+    expect(screen.queryByRole("switch", { name: /Require Trace ID/i })).not.toBeInTheDocument();
+    const payload = await save(user);
+
+    expect(payload.metadata).toMatchObject({ require_trace_id: true });
   });
 
   const openEditorWithAgents = async (user: ReturnType<typeof userEvent.setup>) => {
@@ -2437,7 +2581,7 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
     expect(networking.teamUpdateCall).not.toHaveBeenCalled();
   });
 
-  it("carries every typed value to the update payload at the type and shape antd sends today", async () => {
+  it("carries every typed value to the update payload, with numeric fields as numbers", async () => {
     const user = userEvent.setup({ delay: null });
     await openEditor(user);
 
@@ -2460,8 +2604,8 @@ describe("TeamInfoView - the exact bytes the update call sends", () => {
     const payload = await save(user);
 
     expect(payload.team_alias).toBe("Renamed Team");
-    expect(payload.soft_budget).toBe("9.5");
-    expect(payload.tpm_limit).toBe("555");
+    expect(payload.soft_budget).toBe(9.5);
+    expect(payload.tpm_limit).toBe(555);
     expect((payload.metadata as Record<string, unknown>).soft_budget_alerting_emails).toStrictEqual([
       "a@test.com",
       "b@test.com",

@@ -15,6 +15,7 @@ import { StatusBadge } from "@/components/shared/table_cells";
 import RouterSettings from "@/components/router_settings";
 import Fallbacks from "@/components/Settings/RouterSettings/Fallbacks/Fallbacks";
 import RoutingGroups from "@/components/routing_groups";
+import { RequestTagMappingsEditor, requestTagMappingsAreValid } from "./RequestTagMappings";
 
 const PROMPT_CACHING_TAB = "prompt_caching";
 const ENABLE_ANTHROPIC_PROMPT_CACHING = "enable_anthropic_prompt_caching";
@@ -35,6 +36,7 @@ export interface generalSettingsItem {
   field_value: any;
   field_description: string;
   stored_in_db: boolean | null;
+  editable?: boolean;
   field_options?: string[] | null;
   field_tab?: string | null;
   field_default_value?: any;
@@ -246,7 +248,7 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
     setGeneralSettings(updatedSettings);
   };
 
-  const handleUpdateField = (fieldName: string) => {
+  const handleUpdateField = async (fieldName: string) => {
     if (!accessToken) {
       return;
     }
@@ -360,13 +362,23 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
                           )}
                         </TableCell>
                         <TableCell>
-                          <Button onClick={() => handleUpdateField(value.field_name)}>{t("update")}</Button>
-                          <span
-                            onClick={() => handleResetField(value.field_name)}
-                            className="inline-flex shrink-0 cursor-pointer items-center justify-center px-1.5 py-1.5 text-destructive"
+                          <Button
+                            disabled={
+                              value.field_name === "request_tag_mappings" &&
+                              (value.editable === false || !requestTagMappingsAreValid(value.field_value))
+                            }
+                            onClick={() => handleUpdateField(value.field_name)}
                           >
-                            <Trash2 className="h-5 w-5 shrink-0" />
-                          </span>
+                            {t("update")}
+                          </Button>
+                          {value.field_name === "request_tag_mappings" && value.editable === false ? null : (
+                            <span
+                              onClick={() => handleResetField(value.field_name)}
+                              className="inline-flex shrink-0 cursor-pointer items-center justify-center px-1.5 py-1.5 text-destructive"
+                            >
+                              <Trash2 className="h-5 w-5 shrink-0" />
+                            </span>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}

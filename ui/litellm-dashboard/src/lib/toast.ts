@@ -10,6 +10,7 @@ export type ToastKind = "success" | "info" | "warning" | "error";
 export type ToastOptions = {
   readonly description?: ReactNode;
   readonly durationMs?: number;
+  readonly id?: string;
 };
 
 type ErrorFacts = {
@@ -143,6 +144,7 @@ const categoryFor = ({ status, proxyType }: ErrorFacts): string => {
 
 const show = (kind: ToastKind, message: ReactNode, options?: ToastOptions): void => {
   sonner[kind](message, {
+    id: options?.id,
     description: options?.description,
     duration: options?.durationMs ?? DEFAULT_DURATION_MS[kind],
   });

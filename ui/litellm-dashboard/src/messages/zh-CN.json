@@ -2792,7 +2792,12 @@
     "weeklyTitle": "周活跃用户 - 近 7 周",
     "monthlyTitle": "月活跃用户 - 近 7 个月",
     "weekBucket": "第 {n} 周",
-    "monthBucket": "第 {n} 月"
+    "monthBucket": "第 {n} 月",
+    "viewActiveUsers": "活跃用户",
+    "viewPerUser": "按用户",
+    "perUserSubtitle": "按终端用户查看用量",
+    "periodLabel": "活跃用户周期",
+    "viewLabel": "活跃度视图"
   },
   "users": {
     "title": "内部用户",
@@ -3930,7 +3935,14 @@
       "descWordCount": "统计词数",
       "descCharCount": "统计字符数",
       "descCase": "字符串转换",
-      "namePlaceholder": "例如 block-pii-custom"
+      "namePlaceholder": "例如 block-pii-custom",
+      "templateLabel": "模板",
+      "standardLabel": "标准",
+      "browseCommunity": "浏览社区模板",
+      "defaultOn": "默认开启",
+      "pythonLogic": "Python 逻辑",
+      "restrictedEnv": "受限环境（不允许 import）",
+      "testInputJson": "测试输入（JSON）"
     },
     "judge": {
       "modelName": "评审模型",
@@ -4961,7 +4973,8 @@
       "models": "模型活动",
       "keys": "密钥活动",
       "mcp": "MCP 服务器活动",
-      "endpoints": "端点活动"
+      "endpoints": "端点活动",
+      "agents": "智能体活动"
     },
     "metrics": {
       "title": "用量指标",
@@ -5054,7 +5067,8 @@
         "organization": "组织",
         "customer": "客户",
         "agent": "智能体"
-      }
+      },
+      "shareColumn": "占比"
     },
     "provider": {
       "title": "按供应商统计消费",
@@ -5169,7 +5183,14 @@
         "viewModeAria": "头部模型视图模式",
       "tableView": "表格视图",
       "chartView": "图表视图"
-    }
+    },
+    "entity.shareColumn": "占比",
+    "granularityDay": "按天",
+    "granularityWeek": "按周",
+    "scaleLinear": "线性",
+    "scaleLog": "对数",
+    "scaleLabel": "刻度",
+    "bucketSizeLabel": "时间桶大小"
   },
   "logs": {
     "detail": {
@@ -11689,7 +11710,8 @@
     "summaryDesc": "网关的{granularity}{metric}",
     "topModelsByTask": "按任务的热门模型",
     "topModelsByTaskDesc": "每个任务中{metric}的占比，并标注其主导模型",
-    "leaderboardDesc": "{metric}的占比，以及该时段前后两半的变化"
+    "leaderboardDesc": "{metric}的占比，以及该时段前后两半的变化",
+    "gatewayTotalLabel": "网关总计"
   },
   "guardrailSettingsView": {
     "noGuardrails": "未配置任何护栏",

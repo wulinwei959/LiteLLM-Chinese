@@ -14,6 +14,17 @@ const metadata = {
   total_tokens: 3456,
 };
 
+describe("hasPtuHours", () => {
+  it("is false when no PTU hours were consumed or the backend predates the field", () => {
+    expect(hasPtuHours({ ...metadata, total_ptu_hours: 0 })).toBe(false);
+    expect(hasPtuHours(metadata)).toBe(false);
+  });
+
+  it("is true once a PTU model group has been used", () => {
+    expect(hasPtuHours({ ...metadata, total_ptu_hours: 0.25 })).toBe(true);
+  });
+});
+
 describe("hasFlatCost", () => {
   it("is false when there is no flat cost to report", () => {
     expect(hasFlatCost({ ...metadata, total_flat_cost: 0 })).toBe(false);
@@ -30,6 +41,23 @@ describe("buildSummaryTiles", () => {
   it("keeps the row at five tiles either way so adding flat cost never narrows the cards", () => {
     expect(buildSummaryTiles(t, metadata, false)).toHaveLength(5);
     expect(buildSummaryTiles(t, metadata, true)).toHaveLength(5);
+  });
+
+  it("adds a sixth PTU Hours tile only when asked, after Total Tokens", () => {
+    const withPtu = { ...metadata, total_ptu_hours: 1234.5678 };
+    expect(buildSummaryTiles(withPtu, true)).toHaveLength(5);
+    const tiles = buildSummaryTiles(withPtu, true, true);
+    expect(tiles).toHaveLength(6);
+    const last = tiles[tiles.length - 1];
+    expect(last.title).toBe("PTU Hours");
+    expect(last.value).toBe("1,234.57");
+    expect(last.tooltip).toContain("PTU-hours");
+    expect(tiles[tiles.length - 2].title).toBe("Total Tokens");
+  });
+
+  it("treats missing PTU hours as zero when the tile is forced on", () => {
+    const tiles = buildSummaryTiles(metadata, false, true);
+    expect(tiles[tiles.length - 1].value).toBe("0.00");
   });
 
   it("shows request-only spend under the original title when there is no flat cost", () => {

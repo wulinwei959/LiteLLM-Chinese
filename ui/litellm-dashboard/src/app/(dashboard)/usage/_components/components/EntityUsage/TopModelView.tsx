@@ -5,6 +5,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
+import { Segmented } from "../overview/Primitives";
+import { providerForModel } from "../overview/modelProvider";
 
 type TopModel = {
   key: string;
@@ -20,7 +22,33 @@ interface TopModelViewProps {
   setTopModelsLimit: (limit: number) => void;
 }
 
-export const TOP_MODEL_LIMITS = [5, 10, 25, 50];
+const TOP_MODEL_LIMITS = [5, 10, 25, 50];
+
+type ViewMode = "chart" | "table";
+
+const LIMIT_OPTIONS = TOP_MODEL_LIMITS.map((limit) => ({ value: String(limit), label: String(limit) }));
+const VIEW_OPTIONS = [
+  { value: "table", label: "Table View" },
+  { value: "chart", label: "Chart View" },
+] as const satisfies readonly { value: ViewMode; label: string }[];
+
+const BAR_COLOR = "#2b3fd6";
+const QUIET_HEADER = { headerClassName: "font-normal" };
+
+function ModelName({ name }: { name: string | undefined }) {
+  if (!name) return <>-</>;
+  const provider = providerForModel(name);
+  return (
+    <span className="flex min-w-0 items-center gap-2">
+      {provider && (
+        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-md border bg-background">
+          <ProviderLogo provider={provider} className="size-3.5 rounded-[3px]" />
+        </span>
+      )}
+      <span className="truncate font-medium text-foreground">{name}</span>
+    </span>
+  );
+}
 
 export default function TopModelView({ topModels, topModelsLimit, setTopModelsLimit }: TopModelViewProps) {
   const t = useTranslations("usage.topModelView");
@@ -30,30 +58,31 @@ export default function TopModelView({ topModels, topModelsLimit, setTopModelsLi
     {
       header: t("colModel"),
       accessorKey: "key",
-      cell: (info: any) => info.getValue() || "-",
+      meta: QUIET_HEADER,
+      cell: (info: any) => <ModelName name={info.getValue()} />,
     },
     {
       header: t("colSpend"),
       accessorKey: "spend",
-      meta: { numeric: true },
+      meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => <MoneyCell value={info.getValue()} decimals={2} />,
     },
     {
       header: t("colSuccessful"),
       accessorKey: "successful_requests",
-      meta: { numeric: true },
+      meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => <span className="text-success">{info.getValue()?.toLocaleString() || 0}</span>,
     },
     {
       header: t("colFailed"),
       accessorKey: "failed_requests",
-      meta: { numeric: true },
+      meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => <span className="text-destructive">{info.getValue()?.toLocaleString() || 0}</span>,
     },
     {
       header: t("colTokens"),
       accessorKey: "tokens",
-      meta: { numeric: true },
+      meta: { numeric: true, ...QUIET_HEADER },
       cell: (info: any) => info.getValue()?.toLocaleString() || 0,
     },
   ];
@@ -85,12 +114,12 @@ export default function TopModelView({ topModels, topModelsLimit, setTopModelsLi
       {modelViewMode === "chart" ? (
         <div className="relative max-h-[600px] overflow-y-auto">
           <BarChart
-            className="mt-4 cursor-pointer hover:opacity-90"
+            className="cursor-pointer hover:opacity-90"
             style={{ height: Math.min(processedTopModels.length, topModelsLimit) * 52 }}
             data={processedTopModels}
             index="key"
             categories={["spend"]}
-            colors={["cyan"]}
+            colors={[BAR_COLOR]}
             valueFormatter={(value) => `$${formatNumberWithCommas(value, 2)}`}
             layout="vertical"
             yAxisWidth={200}

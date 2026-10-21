@@ -29,20 +29,30 @@ import {
   readRecord,
   requiredRule,
   type GuardrailFormValues,
+  LoggingOnlyScopeField,
   SkipMessageSelect,
 } from "./GuardrailFormField";
 import ContentFilterManager, { formatContentFilterDataForAPI } from "./content_filter/ContentFilterManager";
 import CustomCodeModal, { EditGuardrailData } from "./custom_code/CustomCodeModal";
-import DecisionModelDetails from "./decision_model/DecisionModelDetails";
+import { GuardrailModeCard } from "./GuardrailModeDisplay";
+import { GuardrailReadOnlyDetails } from "./GuardrailReadOnlyDetails";
 import {
-  formatGuardrailMode,
+  getLoggingOnlyScopeUpdate,
   getGuardrailLogoAndName,
   guardrail_provider_map,
+  loggingOnlyContinueFromParams,
+  loggingOnlyScopeToChoice,
   skipSystemMessageToChoice,
   skipToolMessageToChoice,
+  streamScopeByModeFromConfig,
+  streamScopeForUpdate,
+  supportsDirectionalLoggingOnlyScope,
+  toModeArray,
   type SkipSystemMessageChoice,
   type SkipToolMessageChoice,
+  type GuardrailStreamScope,
 } from "./guardrail_info_helpers";
+import { GuardrailStreamScopeCaption, StreamScopeFormField } from "./StreamScopeFields";
 import GuardrailOptionalParams from "./guardrail_optional_params";
 import GuardrailProviderFields from "./guardrail_provider_fields";
 import PiiConfiguration from "./pii_configuration";
@@ -85,6 +95,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
       entities: string[];
     }>;
     supported_modes: string[];
+    providers_without_directional_logging_only_scope?: string[];
     content_filter_settings?: {
       prebuilt_patterns: Array<{
         name: string;
@@ -113,6 +124,8 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
   const [toolPermissionConfig, setToolPermissionConfig] = useState<ToolPermissionConfig>(emptyToolPermissionConfig);
   const [toolPermissionDirty, setToolPermissionDirty] = useState(false);
   const [customCodeModalVisible, setCustomCodeModalVisible] = useState(false);
+  const guardrailProvider = guardrailData?.litellm_params?.guardrail ?? null;
+  const directionalScopeSupported = supportsDirectionalLoggingOnlyScope(guardrailSettings, guardrailProvider);
 
   // Content Filter data ref (managed by ContentFilterManager)
   const contentFilterDataRef = React.useRef<{
@@ -164,8 +177,8 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
 
         // Only if there are entities configured
         if (Object.keys(piiConfig).length > 0) {
-          const entities: string[] = [];
-          const actions: { [key: string]: string } = {};
+          const entities: string[] = [],
+            actions: { [key: string]: string } = {};
 
           Object.entries(piiConfig).forEach(([entity, action]: [string, any]) => {
             entities.push(entity);
@@ -217,12 +230,13 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
     fetchGuardrailUISettings();
   }, [guardrailId, accessToken]);
 
-  // Reset form when guardrail data or provider params change. Only the names this form actually
-  // binds are seeded: an unbound key would otherwise be submitted as if the user had set it.
   useEffect(() => {
     if (!guardrailData) return;
     form.setValue("guardrail_name", guardrailData.guardrail_name);
     form.setValue("default_on", guardrailData.litellm_params?.default_on);
+    const storedParams = guardrailData.litellm_params;
+    form.setValue("logging_only_scope_choice", loggingOnlyScopeToChoice(storedParams?.logging_only_scope));
+    form.setValue("logging_only_continue_on_input_failure", loggingOnlyContinueFromParams(storedParams));
     form.setValue(
       "skip_system_message_choice",
       skipSystemMessageToChoice(guardrailData.litellm_params?.skip_system_message_in_guardrail),
@@ -230,6 +244,13 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
     form.setValue(
       "skip_tool_message_choice",
       skipToolMessageToChoice(guardrailData.litellm_params?.skip_tool_message_in_guardrail),
+    );
+    form.setValue(
+      "stream_scope_by_mode",
+      streamScopeByModeFromConfig(
+        guardrailData.litellm_params?.stream_scope,
+        toModeArray(guardrailData.litellm_params?.mode),
+      ),
     );
     form.setValue(
       "guardrail_info",
@@ -284,12 +305,11 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
     try {
       if (!accessToken) return;
 
-      // Prepare update data object - only include changed fields
+      const { logging_only_scope_choice: scopeChoice, logging_only_continue_on_input_failure: continueFlag } = values;
       const updateData: any = {
-        litellm_params: {},
+        litellm_params: getLoggingOnlyScopeUpdate(guardrailData.litellm_params, scopeChoice, continueFlag),
       };
 
-      // Only include guardrail_name if it has changed
       if (values.guardrail_name !== guardrailData.guardrail_name) {
         updateData.guardrail_name = values.guardrail_name;
       }
@@ -297,6 +317,16 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
       // Only include default_on if it has changed
       if (values.default_on !== guardrailData.litellm_params?.default_on) {
         updateData.litellm_params.default_on = values.default_on;
+      }
+
+      const modes = toModeArray(guardrailData.litellm_params?.mode);
+      const nextStreamScope = streamScopeForUpdate(
+        modes,
+        (values.stream_scope_by_mode as Record<string, GuardrailStreamScope> | undefined) ?? {},
+        guardrailData.litellm_params?.stream_scope,
+      );
+      if (nextStreamScope !== undefined) {
+        updateData.litellm_params.stream_scope = nextStreamScope;
       }
 
       const prevSkipChoice = skipSystemMessageToChoice(guardrailData.litellm_params?.skip_system_message_in_guardrail);
@@ -735,6 +765,11 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                           )}
                         </GuardrailField>
 
+                        <StreamScopeFormField
+                          control={form.control}
+                          modes={toModeArray(guardrailData.litellm_params?.mode)}
+                        />
+
                         <GuardrailField
                           control={form.control}
                           name="skip_system_message_choice"
@@ -750,6 +785,11 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                         >
                           {(fieldControl) => <SkipMessageSelect control={fieldControl} />}
                         </GuardrailField>
+                        <LoggingOnlyScopeField
+                          control={form.control}
+                          mode={guardrailData.litellm_params?.mode}
+                          directionalScopeSupported={directionalScopeSupported}
+                        />
                         {guardrailData.litellm_params?.guardrail === "presidio" && (
                           <>
                             <SectionHeading>{t("info.piiSection")}</SectionHeading>

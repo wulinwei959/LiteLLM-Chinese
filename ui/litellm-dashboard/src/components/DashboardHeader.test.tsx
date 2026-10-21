@@ -9,6 +9,7 @@ const { mockUsePluginMode, mockUseUISettings, state } = vi.hoisted(() => {
     plugins: [] as { name: string; display_name: string; url: string }[],
     enableChatUI: false,
     pathname: "/ui/logs",
+    isDesktop: false,
   };
   return {
     state,
@@ -20,6 +21,7 @@ const { mockUsePluginMode, mockUseUISettings, state } = vi.hoisted(() => {
 vi.mock("@/contexts/PluginModeContext", () => ({ usePluginMode: mockUsePluginMode }));
 vi.mock("@/app/(dashboard)/hooks/uiSettings/useUISettings", () => ({ useUISettings: mockUseUISettings }));
 vi.mock("next/navigation", () => ({ usePathname: () => state.pathname }));
+vi.mock("usehooks-ts", () => ({ useMediaQuery: () => state.isDesktop }));
 vi.mock("@/hooks/useWorker", () => ({ useWorker: () => ({ isControlPlane: false, selectedWorker: null }) }));
 vi.mock("@/app/(dashboard)/hooks/useDisableShowPrompts", () => ({ useDisableShowPrompts: () => false }));
 vi.mock("@/components/Navbar/BlogDropdown/BlogDropdown", () => ({ BlogDropdown: () => null }));
@@ -82,10 +84,16 @@ vi.mock("next-intl", () => ({
 }));
 
 describe("DashboardHeader breadcrumb", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   afterEach(() => {
     state.plugins = [];
     state.enableChatUI = false;
     state.pathname = "/ui/logs";
+    state.isDesktop = false;
+    localStorage.clear();
   });
 
   it("titles the breadcrumb from the current route, not from a sidebar page id", () => {
@@ -95,11 +103,11 @@ describe("DashboardHeader breadcrumb", () => {
     expect(screen.getByText("Models + Endpoints")).toBeInTheDocument();
   });
 
-  it("titles the dashboard root as Virtual Keys", () => {
+  it("titles the dashboard root as Home", () => {
     state.pathname = "/ui/";
     renderWithProviders(<DashboardHeader />);
 
-    expect(screen.getByText("Virtual Keys")).toBeInTheDocument();
+    expect(screen.getByText("Home")).toBeInTheDocument();
   });
 
   it("titles the breadcrumb from the current route when the selector is available", () => {

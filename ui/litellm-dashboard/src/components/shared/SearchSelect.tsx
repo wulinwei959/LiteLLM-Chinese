@@ -31,6 +31,7 @@ interface SearchSelectProps {
   inputId?: string;
   allowClear?: boolean;
   "aria-label"?: string;
+  id?: string;
 }
 
 const matchesQuery = (option: SearchSelectOption, query: string): boolean => {
@@ -50,6 +51,7 @@ export function SearchSelect({
   inputId,
   allowClear = true,
   "aria-label": ariaLabel,
+  id,
 }: SearchSelectProps) {
   const t = useTranslations("common");
   const resolvedPlaceholder = placeholder ?? t("selectEllipsis");
@@ -70,7 +72,7 @@ export function SearchSelect({
       disabled={disabled}
     >
       <ComboboxInput
-        id={inputId}
+        id={id ?? inputId}
         aria-label={ariaLabel}
         placeholder={resolvedPlaceholder}
         showClear={allowClear && value != null && value !== ""}

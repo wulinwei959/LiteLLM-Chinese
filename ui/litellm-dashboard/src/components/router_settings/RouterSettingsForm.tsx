@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import LatencyBasedConfiguration from "./LatencyBasedConfiguration";
+import { RouterSettingsSource, isOwnedByConfig } from "./ConfigOwned";
 import ReliabilityRetriesSection from "./ReliabilityRetriesSection";
 import RoutingStrategySelector from "./RoutingStrategySelector";
 import TagFilteringToggle from "./TagFilteringToggle";
@@ -17,6 +18,7 @@ interface RouterSettingsFormProps {
   routerFieldsMetadata: { [key: string]: any };
   availableRoutingStrategies: string[];
   routingStrategyDescriptions: { [key: string]: string };
+  routerSettingsSource?: RouterSettingsSource;
 }
 
 const RouterSettingsForm: React.FC<RouterSettingsFormProps> = ({
@@ -25,6 +27,7 @@ const RouterSettingsForm: React.FC<RouterSettingsFormProps> = ({
   routerFieldsMetadata,
   availableRoutingStrategies,
   routingStrategyDescriptions,
+  routerSettingsSource = {},
 }) => {
   const t = useTranslations("routerSettings");
   const handleStrategyChange = (strategy: string) => {
@@ -58,6 +61,7 @@ const RouterSettingsForm: React.FC<RouterSettingsFormProps> = ({
             routingStrategyDescriptions={routingStrategyDescriptions}
             routerFieldsMetadata={routerFieldsMetadata}
             onStrategyChange={handleStrategyChange}
+            ownedByConfig={isOwnedByConfig(routerSettingsSource, "routing_strategy")}
           />
         )}
 
@@ -66,6 +70,7 @@ const RouterSettingsForm: React.FC<RouterSettingsFormProps> = ({
           enabled={value.enableTagFiltering}
           routerFieldsMetadata={routerFieldsMetadata}
           onToggle={handleTagFilteringToggle}
+          ownedByConfig={isOwnedByConfig(routerSettingsSource, "enable_tag_filtering")}
         />
       </div>
 
@@ -74,11 +79,18 @@ const RouterSettingsForm: React.FC<RouterSettingsFormProps> = ({
 
       {/* Strategy-Specific Args - Show immediately after strategy if latency-based */}
       {value.selectedStrategy === "latency-based-routing" && (
-        <LatencyBasedConfiguration routingStrategyArgs={value.routerSettings["routing_strategy_args"]} />
+        <LatencyBasedConfiguration
+          routingStrategyArgs={value.routerSettings["routing_strategy_args"]}
+          ownedByConfig={isOwnedByConfig(routerSettingsSource, "routing_strategy_args")}
+        />
       )}
 
       {/* Other Settings */}
-      <ReliabilityRetriesSection routerSettings={value.routerSettings} routerFieldsMetadata={routerFieldsMetadata} />
+      <ReliabilityRetriesSection
+        routerSettings={value.routerSettings}
+        routerFieldsMetadata={routerFieldsMetadata}
+        routerSettingsSource={routerSettingsSource}
+      />
     </div>
   );
 };

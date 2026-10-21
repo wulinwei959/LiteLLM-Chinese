@@ -92,3 +92,35 @@ describe("computeTeamModelBadges", () => {
     ]);
   });
 });
+
+describe("teamPerModelLimitOptions", () => {
+  const USER_MODELS = ["gpt-4o", "haiku", "openai/gpt-4o-mini", "openai/gpt-4.1"];
+
+  it("offers access-group models, not the sentinel, for a no-default-models team", () => {
+    expect(teamPerModelLimitOptions(["no-default-models"], ["gpt-4o", "haiku"], USER_MODELS)).toEqual([
+      "gpt-4o",
+      "haiku",
+    ]);
+  });
+
+  it("merges direct and access-group models without duplicates", () => {
+    expect(teamPerModelLimitOptions(["gpt-4o"], ["gpt-4o", "haiku"], USER_MODELS)).toEqual(["gpt-4o", "haiku"]);
+  });
+
+  it("offers every user model when the team covers all models", () => {
+    expect(teamPerModelLimitOptions([], [], USER_MODELS)).toEqual(USER_MODELS);
+    expect(teamPerModelLimitOptions(["all-proxy-models"], [], USER_MODELS)).toEqual(USER_MODELS);
+    expect(teamPerModelLimitOptions(["all-team-models"], [], USER_MODELS)).toEqual(USER_MODELS);
+  });
+
+  it("expands wildcards to concrete names and drops the pattern itself", () => {
+    expect(teamPerModelLimitOptions(["no-default-models"], ["openai/*"], USER_MODELS)).toEqual([
+      "openai/gpt-4o-mini",
+      "openai/gpt-4.1",
+    ]);
+  });
+
+  it("offers nothing when the team has no models it can call", () => {
+    expect(teamPerModelLimitOptions(["no-default-models"], [], USER_MODELS)).toEqual([]);
+  });
+});

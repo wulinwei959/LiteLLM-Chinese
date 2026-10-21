@@ -206,13 +206,13 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
       .filter((key) => /(^|_)(url|api_base|endpoint)$/i.test(key));
 
     const fieldsToSet: AgentFormValues = {
-      name: selected_card.name,
-      description: selected_card.description,
+      name: selected_card.name ?? undefined,
+      description: selected_card.description ?? undefined,
       url: selection.upstream_url,
       streaming: Boolean(selected_card.capabilities?.streaming),
       skills,
-      iconUrl: selected_card.iconUrl,
-      documentationUrl: selected_card.documentationUrl,
+      iconUrl: selected_card.iconUrl ?? undefined,
+      documentationUrl: selected_card.documentationUrl ?? undefined,
       ...Object.fromEntries(urlCredentialKeys.map((key) => [key, selection.upstream_url])),
     };
 
@@ -286,7 +286,7 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
   }
 
   // Format date helper function
-  const formatDate = (dateString?: string) => {
+  const formatDate = (dateString?: string | null) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
     return date.toLocaleString();

@@ -1,5 +1,14 @@
 import { useAccessGroupDetails } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroupDetails";
-import { ArrowLeftIcon, BotIcon, EditIcon, KeyIcon, LayersIcon, ServerIcon, UsersIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  BotIcon,
+  EditIcon,
+  KeyIcon,
+  LayersIcon,
+  ServerIcon,
+  SparklesIcon,
+  UsersIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import DefaultProxyAdminTag from "@/components/common_components/DefaultProxyAdminTag";
@@ -25,6 +34,37 @@ interface AccessGroupDetailProps {
 const MAX_PREVIEW = 5;
 
 const shortId = (id: string) => (id.length > 20 ? `${id.slice(0, 10)}...${id.slice(-6)}` : id);
+
+const describeAllowedTools = (tools: readonly string[] | undefined): string => {
+  if (tools === undefined) {
+    return "All tools";
+  }
+  return tools.length === 0 ? "No tools" : tools.join(", ");
+};
+
+function MCPToolPermissionList({
+  servers,
+  toolPermissions,
+}: {
+  servers: readonly AccessGroupResource[];
+  toolPermissions: Readonly<Record<string, string[]>> | null;
+}) {
+  if (toolPermissions === null || servers.length === 0) {
+    return null;
+  }
+  return (
+    <section className="mt-6 space-y-2" aria-label="MCP tool permissions">
+      {servers.map(({ id, name }) => {
+        return (
+          <div key={id} className="flex flex-wrap items-baseline gap-2 text-sm">
+            <span className="font-medium">{name ?? id}</span>
+            <span className="text-muted-foreground">{describeAllowedTools(toolPermissions[id])}</span>
+          </div>
+        );
+      })}
+    </section>
+  );
+}
 
 function ResourceList({ items, emptyMessage }: { items: readonly AccessGroupResource[]; emptyMessage: string }) {
   if (items.length === 0) {
@@ -97,6 +137,7 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
   const models = accessGroup.access_model_names.map((id) => ({ id, name: null }));
   const mcpServers = accessGroup.access_mcp_servers;
   const agents = accessGroup.access_agents;
+  const skills = (accessGroup.access_skill_names ?? []).map((name) => ({ id: name, name: null }));
   const keys = accessGroup.assigned_keys;
   const teams = accessGroup.assigned_teams;
 
@@ -233,6 +274,11 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
                 {t("agents")}
                 <Badge variant="secondary">{agents.length}</Badge>
               </TabsTrigger>
+              <TabsTrigger value="skills" className="flex-none gap-2 rounded-none px-4 py-2">
+                <SparklesIcon className="size-4" />
+                Skills
+                <Badge variant="secondary">{skills.length}</Badge>
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="models" className="pt-4">
               <ResourceList items={models} emptyMessage={t("noModels")} />
@@ -242,6 +288,9 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
             </TabsContent>
             <TabsContent value="agents" className="pt-4">
               <ResourceList items={agents} emptyMessage={t("noAgents")} />
+            </TabsContent>
+            <TabsContent value="skills" className="pt-4">
+              <ResourceList items={skills} emptyMessage="No skills assigned to this group" />
             </TabsContent>
           </Tabs>
         </CardContent>

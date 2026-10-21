@@ -11,6 +11,7 @@ const t = createTranslator({ locale: "en", messages: en, namespace: "playground"
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => "https://example.com"),
+  getGatewayBaseUrl: vi.fn(() => "https://gateway.example.com"),
 }));
 
 const mockMessagesStream = vi.fn();

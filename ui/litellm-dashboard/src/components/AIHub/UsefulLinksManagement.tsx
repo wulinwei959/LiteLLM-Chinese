@@ -293,7 +293,7 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
             <p className="text-sm font-medium text-foreground">{t("manageExistingLinks")}</p>
             <div className="flex items-center space-x-2">
               <Link
-                href={`${getProxyBaseUrl()}/ui/model_hub_table`}
+                href={getUiPageUrl(`${getProxyBaseUrl()}/ui/model_hub_table`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs bg-info/10 text-info px-3 py-1.5 rounded-sm hover:bg-info/15 flex items-center"

@@ -1,5 +1,8 @@
+import { useCanManageProjects } from "@/app/(dashboard)/hooks/projects/projectAccess";
 import { useProjectDetails } from "@/app/(dashboard)/hooks/projects/useProjectDetails";
 import { useTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
+import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { isUserTeamAdminForSingleTeam } from "@/utils/roles";
 import { BarChart } from "@/components/shared/charts";
 import { ArrowLeftIcon, DollarSignIcon, EditIcon, UsersIcon } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -26,6 +29,10 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
   const t = useTranslations("projects");
   const { data: project, isLoading } = useProjectDetails(projectId);
   const { data: teamInfo } = useTeam(project?.team_id ?? undefined);
+  const { userId } = useAuthorized();
+  const canEditProject = useCanManageProjects(
+    isUserTeamAdminForSingleTeam(teamInfo?.members_with_roles ?? null, userId ?? ""),
+  );
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
   const spend = project?.spend ?? 0;

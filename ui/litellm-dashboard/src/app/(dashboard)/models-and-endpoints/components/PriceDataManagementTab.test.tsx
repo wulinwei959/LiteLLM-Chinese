@@ -5,15 +5,35 @@ import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../../tests/test-utils";
 import PriceDataManagementTab from "./PriceDataManagementTab";
 
-vi.mock("@/components/price_data_reload", () => ({ default: () => <div>reload</div> }));
-vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({ default: () => ({ accessToken: "sk-test" }) }));
-vi.mock("@/app/(dashboard)/hooks/models/useModelCostMap", () => ({
-  useModelCostMap: () => ({ refetch: vi.fn() }),
+vi.mock("@/components/price_data_reload", () => ({
+  default: ({ onReloadSuccess }: { onReloadSuccess: () => void }) => <button onClick={onReloadSuccess}>reload</button>,
 }));
+vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({ default: () => ({ accessToken: "sk-test" }) }));
+
+const renderTab = (queryClient: QueryClient) =>
+  render(
+    <QueryClientProvider client={queryClient}>
+      <PriceDataManagementTab />
+    </QueryClientProvider>,
+  );
 
 describe("PriceDataManagementTab", () => {
   it("renders its content standalone, without a tab-panel ancestor", () => {
     renderWithProviders(<PriceDataManagementTab />);
     expect(screen.getByText("价格数据管理")).toBeInTheDocument();
+  });
+
+  it("invalidates both the live and the catalog-only cost map after a reload", () => {
+    const queryClient = new QueryClient();
+    const liveKey = modelCostMapKeys.list({});
+    const catalogKey = modelCostMapKeys.list({ filters: { catalog_only: "true" } });
+    queryClient.setQueryData(liveKey, {});
+    queryClient.setQueryData(catalogKey, {});
+    renderTab(queryClient);
+
+    fireEvent.click(screen.getByRole("button", { name: "reload" }));
+
+    expect(queryClient.getQueryState(liveKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(catalogKey)?.isInvalidated).toBe(true);
   });
 });

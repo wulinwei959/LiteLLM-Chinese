@@ -63,19 +63,7 @@ export function EndpointUsageLineChart({ dailyData }: EndpointUsageLineChartProp
     return keys;
   }, [chartData]);
 
-  // Tremor color palette for multiple lines
-  const colors: readonly ChartColor[] = [
-    "blue",
-    "cyan",
-    "indigo",
-    "violet",
-    "purple",
-    "fuchsia",
-    "pink",
-    "rose",
-    "red",
-    "orange",
-  ];
+  const colors = useMemo(() => categories.map((_, i) => stackedUsageColor(i)), [categories]);
 
   return (
     <Card className="mb-6">

@@ -1,5 +1,7 @@
 "use client";
 import { useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
+import { useTeamMemberBudgets } from "@/app/(dashboard)/hooks/teams/useTeamMemberBudgets";
+import { teamMemberBudgetGate } from "@/components/shared/InheritedBudgetHint";
 import { SimpleTooltip } from "@/components/ui/tooltip";
 import {
   DateCell,
@@ -21,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { orgDetailHref, userDetailHref } from "@/utils/entityLinks";
 import { DEFAULT_PROXY_ADMIN_USER_ID } from "@/utils/sentinels";
 import { DEBOUNCE_WAIT_MS } from "@/utils/debounceConstants";
+import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { useDebouncedValue } from "@tanstack/react-pacer/debouncer";
 import { ColumnDef, ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
 import { ChevronDown, ChevronRight } from "lucide-react";
@@ -99,6 +102,12 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
       organization_id: (k.organization_id ?? k.org_id) || orgId,
     }));
   }, [keys?.keys, organization?.organization_id]);
+
+  const teamMemberBudgetTeamIds = useMemo(
+    () => (displayKeys.some((key) => key.max_budget == null && Boolean(key.user_id)) ? [teamId] : []),
+    [displayKeys, teamId],
+  );
+  const teamMemberBudgets = useTeamMemberBudgets(teamMemberBudgetTeamIds);
 
   const rowCount = keys?.total_count ?? 0;
   const [expandedAccordions, setExpandedAccordions] = useState<Record<string, boolean>>({});

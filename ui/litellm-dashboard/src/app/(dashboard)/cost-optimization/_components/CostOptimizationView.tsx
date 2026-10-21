@@ -1,13 +1,14 @@
 "use client";
 
+import { Page, PageTabs, PageTabsList, PageTabsTrigger } from "@/components/shared/Page";
 import React from "react";
-import { useTranslations } from "next-intl";
 import { Info, PiggyBank } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import useCan from "@/app/(dashboard)/hooks/useCan";
 import { Alert, AlertDescription } from "@/components/shared/Alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PageHeader } from "@/components/shared/PageHeader";
+import { TabsContent } from "@/components/ui/tabs";
+import { PageHeader, PageHeaderControls, PageHeaderDescription, PageHeaderTitle } from "@/components/shared/PageHeader";
 import UsageTab from "./UsageTab";
 import PromptCompressionTab from "./PromptCompressionTab";
 import PromptCachingTab from "./PromptCachingTab";
@@ -21,10 +22,10 @@ interface CostOptimizationViewProps {
 }
 
 const CostOptimizationView: React.FC<CostOptimizationViewProps> = ({ accessToken, userId, userRole }) => {
+  const t = useTranslations("costOptimization");
   const activity = useDailyActivityRange(accessToken, userId, userRole);
   const canViewProxyWideCostData = useCan("viewProxyWideCostData");
   const [visitedTabs, setVisitedTabs] = React.useState<readonly string[]>(["usage"]);
-  const t = useTranslations("costOptimization");
 
   const handleTabChange = (value: unknown) => {
     if (typeof value !== "string") {
@@ -35,37 +36,27 @@ const CostOptimizationView: React.FC<CostOptimizationViewProps> = ({ accessToken
   };
 
   return (
-    <main className="w-full p-8">
-      <Tabs defaultValue="usage" onValueChange={handleTabChange} className="gap-6">
-        <PageHeader
-          icon={<PiggyBank />}
-          title={t("view.title")}
-          subtitle={t("view.subtitle")}
-          tabs={({ leadingControls }) => (
-            <TabsList
-              variant="line"
-              className="gap-0 p-0 [&>[data-slot=tabs-trigger]+[data-slot=tabs-trigger]]:ml-[22px]"
-            >
-              {leadingControls}
-              <TabsTrigger value="usage" className="flex-none px-0 py-[7px] data-active:font-semibold">
-                {t("view.tabOverall")}
-              </TabsTrigger>
+    <Page>
+      <PageTabs defaultValue="usage" onValueChange={handleTabChange}>
+        <PageHeader>
+          <PageHeaderTitle>
+            <PiggyBank />
+            {t("view.title")}
+          </PageHeaderTitle>
+          <PageHeaderDescription>{t("view.subtitle")}</PageHeaderDescription>
+          <PageHeaderControls>
+            <PageTabsList>
+              <PageTabsTrigger value="usage">{t("view.tabOverall")}</PageTabsTrigger>
               {canViewProxyWideCostData && (
                 <>
-                  <TabsTrigger value="compression" className="flex-none px-0 py-[7px] data-active:font-semibold">
-                    {t("view.tabCompression")}
-                  </TabsTrigger>
-                  <TabsTrigger value="caching" className="flex-none px-0 py-[7px] data-active:font-semibold">
-                    {t("view.tabCaching")}
-                  </TabsTrigger>
-                  <TabsTrigger value="autorouter-usage" className="flex-none px-0 py-[7px] data-active:font-semibold">
-                    {t("view.tabAutoRouter")}
-                  </TabsTrigger>
+                  <PageTabsTrigger value="compression">{t("view.tabCompression")}</PageTabsTrigger>
+                  <PageTabsTrigger value="caching">{t("view.tabCaching")}</PageTabsTrigger>
+                  <PageTabsTrigger value="autorouter-usage">{t("view.tabAutoRouter")}</PageTabsTrigger>
                 </>
               )}
-            </TabsList>
-          )}
-        />
+            </PageTabsList>
+          </PageHeaderControls>
+        </PageHeader>
 
         <div
           role="alert"
@@ -107,8 +98,8 @@ const CostOptimizationView: React.FC<CostOptimizationViewProps> = ({ accessToken
             </TabsContent>
           </>
         )}
-      </Tabs>
-    </main>
+      </PageTabs>
+    </Page>
   );
 };
 

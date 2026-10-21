@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/cva.config";
+import { usageHrefForUser } from "@/app/(dashboard)/usage/_components/usageUrlState";
 import { copyToClipboard } from "@/utils/dataUtils";
 
 const SSO_ID_HINT =
@@ -32,6 +33,7 @@ function isScimInactive(user: UserInfo): boolean {
 
 interface UserRowActionsProps {
   user: UserInfo;
+  canViewUserUsage: boolean;
   onUserClick: (userId: string, openInEditMode?: boolean) => void;
   onDeleteUser: (user: UserInfo) => void;
   onResetPassword: (userId: string) => void;
@@ -65,6 +67,15 @@ function UserRowActions({ user, onUserClick, onDeleteUser, onResetPassword }: Us
           <Copy />
           {t("copyUserID")}
         </DropdownMenuItem>
+        {canViewUserUsage && (
+          <DropdownMenuItem
+            render={<Link href={usageHrefForUser(user.user_id)} />}
+            data-testid="user-action-view-usage"
+          >
+            <ChartColumn />
+            View usage
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={() => onDeleteUser(user)} data-testid="user-action-delete">
           <Trash2 />
@@ -78,6 +89,7 @@ function UserRowActions({ user, onUserClick, onDeleteUser, onResetPassword }: Us
 export interface UsersTableColumnsDeps {
   possibleUIRoles: Record<string, Record<string, string>> | null;
   includeSelection: boolean;
+  canViewUserUsage: boolean;
   onUserClick: (userId: string, openInEditMode?: boolean) => void;
   onDeleteUser: (user: UserInfo) => void;
   onResetPassword: (userId: string) => void;
@@ -88,6 +100,7 @@ export interface UsersTableColumnsDeps {
 export const getUsersTableColumns = ({
   possibleUIRoles,
   includeSelection,
+  canViewUserUsage,
   onUserClick,
   onDeleteUser,
   onResetPassword,
@@ -154,7 +167,11 @@ export const getUsersTableColumns = ({
       ),
       size: 160,
       enableSorting: true,
-      cell: ({ row }) => <span className="text-sm">{possibleUIRoles?.[row.original.user_role]?.ui_label || "-"}</span>,
+      cell: ({ row }) => (
+        <span className="text-sm">
+          {(row.original.user_role && possibleUIRoles?.[row.original.user_role]?.ui_label) || "-"}
+        </span>
+      ),
     },
     {
       id: "user_alias",
@@ -266,6 +283,7 @@ export const getUsersTableColumns = ({
         <div className="flex justify-end">
           <UserRowActions
             user={row.original}
+            canViewUserUsage={canViewUserUsage}
             onUserClick={onUserClick}
             onDeleteUser={onDeleteUser}
             onResetPassword={onResetPassword}

@@ -4,8 +4,15 @@ import { ChevronRight } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import type { ModelGroup } from "@/components/llm_calls/fetch_models";
-import type { ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
+import {
+  effectiveClassifierType,
+  heuristicTuningType,
+  usesClassifierContext,
+  usesLlmClassifier,
+  type ComplexityRouterConfigValue,
+} from "./ComplexityRouterConfig";
 import AdaptiveRoutingConfig from "./AdaptiveRoutingConfig";
+import CacheAwareRoutingConfig from "./CacheAwareRoutingConfig";
 import ClassificationMethodConfig from "./ClassificationMethodConfig";
 import ForecastClassifierConfig from "./ForecastClassifierConfig";
 import ContextWindowEscalationConfig from "./ContextWindowEscalationConfig";
@@ -19,7 +26,6 @@ import CompressionControls from "./CompressionControls";
 import PlanModeOverrideControls from "./PlanModeOverrideControls";
 import { AffinityControls } from "./AffinityControls";
 import { ModalityRoutingControls } from "./ModalityRoutingControls";
-import HeuristicKeywordOverrides from "./HeuristicKeywordOverrides";
 import HousekeepingRoutingControls from "./HousekeepingRoutingControls";
 import ReminderMarkers from "./ReminderMarkers";
 import type { AutoRouterCompressionState } from "./buildAutoRouterCompression";
@@ -101,7 +107,7 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
           },
         ]
       : []),
-    ...(!forecast
+    ...(!forecast && (usesClassifierContext(classifierType) || classifierType === "custom")
       ? [
           {
             key: "classifier",
@@ -122,7 +128,7 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
           },
         ]
       : []),
-    ...(!forecast
+    ...(heuristicTuningType(value)
       ? [
           {
             key: "keyword-overrides",
@@ -144,6 +150,11 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
       key: "affinity",
       label: <strong className="text-foreground font-semibold">{t("advSectionAffinity")}</strong>,
       children: <AffinityControls value={value} onChange={onChange} />,
+    },
+    {
+      key: "cache-aware",
+      label: <strong className="text-foreground font-semibold">Cache-aware routing</strong>,
+      children: <CacheAwareRoutingConfig value={value} onChange={onChange} />,
     },
     {
       key: "modality",
@@ -273,6 +284,11 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
   }
   return (
     <div>
+      {["llm", "heuristic_first", "hybrid"].includes(classifierType) && (
+        <div className="px-4 py-3">
+          <ClassificationMethodConfig {...classificationProps} section="selection" />
+        </div>
+      )}
       {groups.map((group) => (
         <Collapsible
           key={group.label}
@@ -297,7 +313,7 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
               )
               .map(({ key, label, children }) => (
                 <section key={key} className="space-y-3">
-                  {key !== "classifier" && <h4>{label}</h4>}
+                  {key !== "classifier" && key !== "heuristic" && <h4>{label}</h4>}
                   {children}
                 </section>
               ))}

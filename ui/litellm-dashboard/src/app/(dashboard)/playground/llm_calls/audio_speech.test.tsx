@@ -70,7 +70,7 @@ describe("audio_speech", () => {
       "nova",
       mockUpdateUI,
       "tts-1-hd",
-      "sk-1234567890",
+      "sk-9876543210",
       ["tag1", "tag2"],
       signal,
       "mp3",

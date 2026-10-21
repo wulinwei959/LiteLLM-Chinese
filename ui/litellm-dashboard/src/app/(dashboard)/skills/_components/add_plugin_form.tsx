@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { CircleHelp } from "lucide-react";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { toast } from "@/lib/toast";
 import type { SkillsTranslator } from "@/lib/i18n/translators";
 import { registerClaudeCodePlugin } from "@/components/networking";

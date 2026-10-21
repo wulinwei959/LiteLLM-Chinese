@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 
 import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { MCPServer, MCPUserEnvVarsStatus, MCPUserEnvVarSpec } from "@/components/mcp_tools/types";
 import { clearMCPUserEnvVars, getMCPUserEnvVars, storeMCPUserEnvVars } from "@/components/networking";
 import { toast } from "@/lib/toast";

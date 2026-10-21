@@ -19,6 +19,7 @@ import { makeOpenAIResponsesRequest } from "@/components/llm_calls/responses_api
 import type { TokenUsage } from "@/components/chat_ui/ResponseMetrics";
 import type { MCPEvent } from "@/components/chat/types";
 import { getProviderLogoAndName } from "@/components/provider_info_helpers";
+import { useQueryState } from "nuqs";
 
 type SuggestionKey = "write" | "learn" | "code" | "brainstorm";
 
@@ -53,6 +54,7 @@ function getProviderFromModelName(modelName: string): string {
 }
 
 export default function ChatConversationPage() {
+  const [, setConversationIdInUrl] = useQueryState("id", { history: "push" });
   const router = useRouter();
   const t = useTranslations("chat.page");
   const llmT = useTranslations("playground");
@@ -145,7 +147,7 @@ export default function ChatConversationPage() {
       if (!convId) {
         convId = createConversation(model);
         setResponsesSessionId(null); // new conversation starts a fresh session
-        window.history.pushState(null, "", `${window.location.pathname}?id=${convId}`);
+        setConversationIdInUrl(convId);
       }
 
       appendMessage(convId, { role: "user", content: trimmed });
@@ -266,6 +268,7 @@ export default function ChatConversationPage() {
       updateLastAssistantMessage,
       isStreaming,
       responsesSessionId,
+      setConversationIdInUrl,
     ],
   );
 

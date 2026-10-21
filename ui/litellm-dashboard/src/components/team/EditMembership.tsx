@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import type { TeamsTranslator } from "@/lib/i18n/translators";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { z } from "zod/v4";
+import { z } from "zod";
 import NumericalInput from "../shared/numerical_input";
 import BudgetDurationDropdown from "../common_components/budget_duration_dropdown";
 import { FieldGroup } from "@/components/ui/field";
@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { UtcDateTimeInput } from "@/components/shared/form/UtcDateTimeInput";
+import { ModelMaxBudgetEditor } from "../key_team_helpers/ModelMaxBudgetEditor";
 import { useZodForm } from "@/lib/forms/useZodForm";
 import {
   buildMemberFormData,
@@ -51,7 +52,11 @@ interface MemberModalProps<T extends BaseMember> {
 
 const isEmailish = (value: string): boolean => value === "" || z.email().safeParse(value).success;
 
-const memberFieldSchema = z.union([z.string(), z.number(), z.null(), z.array(z.string())]).optional();
+const modelMaxBudgetSchema = z.record(z.string(), z.looseObject({ budget_limit: z.number(), time_period: z.string() }));
+
+const memberFieldSchema = z
+  .union([z.string(), z.number(), z.null(), z.array(z.string()), modelMaxBudgetSchema])
+  .optional();
 
 const buildMemberSchema = (config: ModalConfig, t: TeamsTranslator): z.ZodType<MemberFormValues, MemberFormValues> => {
   const shape = {
@@ -170,6 +175,16 @@ const MemberModal = <T extends BaseMember>({
                 id={id}
                 value={typeof value === "string" ? value : null}
                 onChange={(next) => onChange(mode === "add" ? next ?? undefined : next)}
+              />
+            );
+          case "model-max-budget":
+            return (
+              <ModelMaxBudgetEditor
+                key={`${visible}-${initialData?.user_id ?? initialData?.user_email ?? ""}`}
+                value={isModelMaxBudget(value) ? value : {}}
+                onChange={onChange}
+                availableModels={field.availableModels ?? []}
+                premiumUser={field.premiumUser ?? false}
               />
             );
           case "utc-datetime":

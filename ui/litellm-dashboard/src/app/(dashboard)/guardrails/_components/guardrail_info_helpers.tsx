@@ -1,6 +1,8 @@
+import airiaLogo from "../../../../../public/assets/logos/airia.svg";
 import aimSecurityLogo from "../../../../../public/assets/logos/aim_security.jpeg";
 import aktoLogo from "../../../../../public/assets/logos/akto.svg";
 import aliceLogo from "../../../../../public/assets/logos/alice.svg";
+import llmShieldProxyLogo from "../../../../../public/assets/logos/llm_shield_proxy.svg";
 import conductLogo from "../../../../../public/assets/logos/conduct.png";
 import aporiaLogo from "../../../../../public/assets/logos/aporia.png";
 import bedrockLogo from "../../../../../public/assets/logos/bedrock.svg";
@@ -25,6 +27,7 @@ import promptguardLogo from "../../../../../public/assets/logos/promptguard.svg"
 import qohashLogo from "../../../../../public/assets/logos/qohash.jpg";
 import repelloAiLogo from "../../../../../public/assets/logos/repelloai.png";
 import straikerLogo from "../../../../../public/assets/logos/straiker.svg";
+import wingbackLogo from "../../../../../public/assets/logos/wingback.png";
 import xecguardLogo from "../../../../../public/assets/logos/xecguard.svg";
 import zscalerLogo from "../../../../../public/assets/logos/zscaler.svg";
 import type { CommonTranslator } from "@/lib/i18n/translators";
@@ -87,6 +90,7 @@ export const guardrail_provider_map: Record<string, string> = {
   QostodianNexus: "qostodian_nexus",
   Repelloai: "repelloai",
   Alice: "alice",
+  "LLM Shield Proxy": "llm_shield_proxy",
   Conduct: "conduct",
   DecisionModel: "decision_model",
 };
@@ -223,7 +227,10 @@ export const guardrailLogoMap = {
   Straiker: straikerLogo.src,
   Alice: aliceLogo.src,
   "Microsoft Agent 365": microsoftAzureLogo.src,
+  "LLM Shield Proxy": llmShieldProxyLogo.src,
   "Conduct Guard": conductLogo.src,
+  Wingback: wingbackLogo.src,
+  "Airia Guardrail": airiaLogo.src,
   "Decision Model": litellmLogo.src,
 } satisfies Record<string, string>;
 
@@ -285,3 +292,86 @@ export function choiceToSkipToolForCreate(choice: SkipToolMessageChoice | undefi
   if (choice === "no") return false;
   return undefined;
 }
+
+export const GUARDRAIL_STREAM_SCOPES = ["both", "streaming", "non_streaming"] as const;
+export type GuardrailStreamScope = (typeof GUARDRAIL_STREAM_SCOPES)[number];
+
+export const STREAM_SCOPE_OPTIONS: { value: GuardrailStreamScope; label: string }[] = [
+  { value: "both", label: "Streaming and non-streaming" },
+  { value: "streaming", label: "Streaming only" },
+  { value: "non_streaming", label: "Non-streaming only" },
+];
+
+export const isGuardrailStreamScope = (value: unknown): value is GuardrailStreamScope =>
+  value === "both" || value === "streaming" || value === "non_streaming";
+
+export const streamScopeForMode = (raw: unknown, mode: string): GuardrailStreamScope => {
+  if (isGuardrailStreamScope(raw)) return raw;
+  if (raw !== null && typeof raw === "object" && !Array.isArray(raw)) {
+    const value = (raw as Record<string, unknown>)[mode];
+    if (isGuardrailStreamScope(value)) return value;
+  }
+  return "both";
+};
+
+export const streamScopeByModeFromConfig = (raw: unknown, modes: string[]): Record<string, GuardrailStreamScope> =>
+  Object.fromEntries(modes.map((mode) => [mode, streamScopeForMode(raw, mode)]));
+
+export const streamScopePayload = (
+  modes: string[],
+  scopes: Record<string, GuardrailStreamScope>,
+): GuardrailStreamScope | Record<string, GuardrailStreamScope> | undefined => {
+  const perMode: Record<string, GuardrailStreamScope> = Object.fromEntries(
+    modes.map((mode) => [mode, scopes[mode] ?? "both"]),
+  );
+  const values = Object.values(perMode);
+  if (values.length === 0 || values.every((scope) => scope === "both")) return undefined;
+  const unique = new Set(values);
+  if (unique.size === 1) return values[0];
+  return Object.fromEntries(Object.entries(perMode).filter((entry) => entry[1] !== "both"));
+};
+
+export const formatGuardrailStreamScope = (raw: unknown): string => {
+  if (isGuardrailStreamScope(raw)) {
+    return STREAM_SCOPE_OPTIONS.find((option) => option.value === raw)?.label ?? raw;
+  }
+  if (raw !== null && typeof raw === "object" && !Array.isArray(raw)) {
+    const entries = Object.entries(raw as Record<string, unknown>).filter(
+      (entry): entry is [string, GuardrailStreamScope] => isGuardrailStreamScope(entry[1]),
+    );
+    if (entries.length === 0) return "";
+    return entries.map(([mode, scope]) => `${mode}: ${formatGuardrailStreamScope(scope)}`).join(", ");
+  }
+  return "";
+};
+
+export const streamScopeForUpdate = (
+  modes: string[],
+  nextByMode: Record<string, GuardrailStreamScope>,
+  previousRaw: unknown,
+  previousModes: string[] = modes,
+): GuardrailStreamScope | Record<string, GuardrailStreamScope> | undefined => {
+  const previousMap: Record<string, unknown> =
+    previousRaw !== null && typeof previousRaw === "object" && !Array.isArray(previousRaw)
+      ? (previousRaw as Record<string, unknown>)
+      : {};
+  const preserved: Record<string, GuardrailStreamScope> = Object.fromEntries(
+    Object.entries(previousMap).filter(
+      (entry): entry is [string, GuardrailStreamScope] => !modes.includes(entry[0]) && isGuardrailStreamScope(entry[1]),
+    ),
+  );
+  const nextModes = [...modes, ...Object.keys(preserved)];
+  const nextStreamScope = streamScopePayload(nextModes, {
+    ...preserved,
+    ...Object.fromEntries(modes.map((mode) => [mode, nextByMode[mode] ?? "both"])),
+  });
+  const previousCompareModes = Object.keys(previousMap).length > 0 ? Object.keys(previousMap) : previousModes;
+  const previousStreamScope = streamScopePayload(
+    previousCompareModes,
+    streamScopeByModeFromConfig(previousRaw, previousCompareModes),
+  );
+  if (JSON.stringify(nextStreamScope ?? "both") === JSON.stringify(previousStreamScope ?? "both")) {
+    return undefined;
+  }
+  return nextStreamScope ?? "both";
+};

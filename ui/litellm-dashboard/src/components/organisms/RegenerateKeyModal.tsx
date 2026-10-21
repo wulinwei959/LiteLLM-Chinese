@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 import { useWatch } from "react-hook-form";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { KeyResponse } from "../key_team_helpers/key_list";
 import { toast } from "@/lib/toast";
 import { regenerateKeyCall } from "../networking";

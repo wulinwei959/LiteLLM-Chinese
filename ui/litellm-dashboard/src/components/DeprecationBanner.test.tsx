@@ -5,8 +5,8 @@ import { describe, expect, it } from "vitest";
 import { DeprecationBanner } from "./DeprecationBanner";
 
 describe("DeprecationBanner", () => {
-  it("names the deprecated feature in the heading and the body", () => {
-    render(<DeprecationBanner featureName="Memory" />);
+  it("names the deprecated feature", () => {
+    render(<DeprecationBanner featureName="Workflows" />);
 
     expect(screen.getByText("Memory 已列入草案废弃清单")).toBeInTheDocument();
     expect(screen.getByText(/Memory 是我们正在考虑移除的多个实验特性之一/)).toBeInTheDocument();
@@ -20,7 +20,7 @@ describe("DeprecationBanner", () => {
   });
 
   it("links to the deprecation discussion in a new tab without leaking the opener", () => {
-    render(<DeprecationBanner featureName="Memory" />);
+    render(<DeprecationBanner featureName="Workflows" />);
 
     const link = screen.getByRole("link", { name: "废弃讨论" });
     expect(link).toHaveAttribute("href", "https://github.com/BerriAI/litellm/discussions/32090");

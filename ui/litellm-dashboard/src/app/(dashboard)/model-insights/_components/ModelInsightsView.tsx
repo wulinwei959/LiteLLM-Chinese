@@ -1,18 +1,17 @@
 "use client";
 
+import { Page } from "@/components/shared/Page";
 import { useTranslations } from "next-intl";
 import React from "react";
-import { Bar, BarChart, CartesianGrid, Treemap, XAxis, YAxis } from "recharts";
-import { ArrowDownRight, ArrowUpRight, BarChart3, Layers, Minus } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, BarChart3, Minus } from "lucide-react";
+import { StackedUsageChart } from "@/components/shared/charts";
 
 import { apiClient } from "@/components/networking";
 import { extractErrorMessage } from "@/utils/errorUtils";
 import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
-import { PageHeader } from "@/components/shared/PageHeader";
+import { PageHeader, PageHeaderDescription, PageHeaderTitle } from "@/components/shared/PageHeader";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -22,39 +21,15 @@ import {
   Granularity,
   Metric,
   ModelInsightsResponse,
-  ModelInsightTasksResponse,
-  TaskSummary,
   modelOrder,
   rankModels,
   RankedModel,
 } from "./modelInsightsData";
 
-const PALETTE = [
-  "#ec4899",
-  "#a855f7",
-  "#f59e0b",
-  "#3b82f6",
-  "#10b981",
-  "#ef4444",
-  "#14b8a6",
-  "#84cc16",
-  "#6366f1",
-  "#f97316",
-];
-const FALLBACK_COLOR = "#64748b";
-const CATEGORY_COLORS: Record<string, string> = {
-  General: "#ee8650",
-  Agent: "#7666e4",
-  Code: "#5fb074",
-  Data: "#3b82f6",
-};
 const SCALES = ["linear", "log"] as const;
 const GRANULARITIES = ["day", "week"] as const;
-const GRANULARITY_KEYS: Record<Granularity, "granularityDaily" | "granularityWeekly"> = {
-  day: "granularityDaily",
-  week: "granularityWeekly",
-};
-const METRIC_KEYS: Record<Metric, "metricRequests" | "metricSpend" | "metricTokens"> = {
+const GRANULARITY_KEYS: Record<Granularity, string> = { day: "granularityDaily", week: "granularityWeekly" };
+const METRIC_KEYS: Record<Metric, string> = {
   requests: "metricRequests",
   spend: "metricSpend",
   tokens: "metricTokens",
@@ -97,38 +72,12 @@ const RankingRow = ({ model, rank }: { model: RankedModel; rank: number }) => (
   </li>
 );
 
-type TileProps = TaskSummary & { x: number; y: number; width: number; height: number; index: number };
-
-const TaskTileContent = ({ x, y, width, height, category, label, leader }: TileProps) => {
-  if (width <= 0 || height <= 0) return null;
-  const color = CATEGORY_COLORS[category] ?? FALLBACK_COLOR;
-  const fits = width > 90 && height > 44;
-  return (
-    <g>
-      <rect x={x} y={y} width={width} height={height} fill={color} stroke="#fff" strokeWidth={2} />
-      {fits && (
-        <>
-          <text x={x + 12} y={y + 26} fill="#fff" fontSize={16} fontWeight={500}>
-            {label}
-          </text>
-          <text x={x + 12} y={y + 46} fill="#ffffffcc" fontSize={12}>
-            {leader}
-          </text>
-        </>
-      )}
-    </g>
-  );
-};
-
 export default function ModelInsightsView({ accessToken }: { accessToken: string | null }) {
   const t = useTranslations("modelInsights");
   const [loaded, setLoaded] = React.useState<{ metric: Metric; response: ModelInsightsResponse } | null>(null);
   const [metric, setMetric] = React.useState<Metric>("tokens");
   const [scale, setScale] = React.useState<Scale>("linear");
   const [granularity, setGranularity] = React.useState<Granularity>("day");
-  const [taskMetric, setTaskMetric] = React.useState<Metric>("spend");
-  const [taskData, setTaskData] = React.useState<ModelInsightTasksResponse | null>(null);
-  const [taskError, setTaskError] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -149,24 +98,6 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
     };
   }, [accessToken, metric]);
 
-  React.useEffect(() => {
-    if (!accessToken) return;
-    let cancelled = false;
-    apiClient
-      .get<ModelInsightTasksResponse>("/model-insights/tasks", { accessToken, query: { metric: taskMetric } })
-      .then((response) => {
-        if (cancelled) return;
-        setTaskError(null);
-        setTaskData(response);
-      })
-      .catch((err: unknown) => {
-        if (!cancelled) setTaskError(extractErrorMessage(err));
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [accessToken, taskMetric]);
-
   const data = loaded?.response ?? null;
   const shown = loaded?.metric ?? metric;
   const isStale = loaded !== null && loaded.metric !== metric;
@@ -183,15 +114,6 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
   const ranking = React.useMemo(
     () => (data ? rankModels(data.top_models, data.daily, shown, range) : []),
     [data, shown, range],
-  );
-  const tiles = React.useMemo(() => taskData?.tasks ?? [], [taskData]);
-  const categoryShares = React.useMemo(
-    () =>
-      [...new Set(tiles.map((tile) => tile.category))].map((category) => ({
-        category,
-        share: tiles.filter((tile) => tile.category === category).reduce((sum, tile) => sum + tile.share, 0),
-      })),
-    [tiles],
   );
 
   if (error) {
@@ -214,17 +136,17 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
     );
   }
 
-  const chartConfig = Object.fromEntries(
-    models.map((model, index) => [model, { label: model, color: PALETTE[index % PALETTE.length] }]),
-  ) satisfies ChartConfig;
-
   return (
-    <main className="w-full space-y-6 p-8">
-      <PageHeader
-        icon={<BarChart3 />}
-        title={t("leaderboardTitle")}
-        subtitle={t("leaderboardSubtitle", { start: data.start_date, end: data.end_date })}
-      />
+    <Page>
+      <PageHeader>
+        <PageHeaderTitle>
+          <BarChart3 />
+          {t("leaderboardTitle")}
+        </PageHeaderTitle>
+        <PageHeaderDescription>
+          {t("leaderboardSubtitle", { start: data.start_date, end: data.end_date })}
+        </PageHeaderDescription>
+      </PageHeader>
 
       <Card aria-busy={isStale} className={isStale ? "opacity-60 transition-opacity" : "transition-opacity"}>
         <CardHeader className="flex-row items-start justify-between space-y-0">
@@ -239,7 +161,7 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
               <TabsList>
                 {(["requests", "spend", "tokens"] as const).map((value) => (
                   <TabsTrigger key={value} value={value} className="capitalize">
-                    {value}
+                    {t(METRIC_KEYS[value])}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -248,7 +170,7 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
               <TabsList aria-label={t("bucketSizeAria")}>
                 {GRANULARITIES.map((value) => (
                   <TabsTrigger key={value} value={value}>
-                    {t(GRANULARITY_KEYS[value])}
+                    {GRANULARITY_LABELS[value]}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -265,48 +187,24 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
           </div>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-[380px] w-full aspect-auto">
-            <BarChart data={series} margin={{ left: 8, right: 8 }} barCategoryGap={2}>
-              <CartesianGrid vertical={false} />
-              <XAxis dataKey="date" tickLine={false} axisLine={false} minTickGap={48} />
-              <YAxis
-                scale={scale}
-                domain={scale === "log" ? [1, "auto"] : [0, "auto"]}
-                allowDataOverflow
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => formatMetric(Number(value), shown)}
-              />
-              <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    labelFormatter={(label) =>
-                      t("gatewayTotal", {
-                        label,
-                        total: formatMetric(bucketTotals.get(String(label)) ?? 0, shown),
-                      })
-                    }
-                  />
-                }
-              />
-              {models.map((model, index) => (
-                <Bar
-                  key={model}
-                  dataKey={model}
-                  stackId="usage"
-                  fill={PALETTE[index % PALETTE.length]}
-                  isAnimationActive={false}
-                />
-              ))}
-            </BarChart>
-          </ChartContainer>
+          <StackedUsageChart
+            data={series}
+            series={models}
+            xKey="date"
+            scale={scale}
+            format={(value) => formatMetric(value, shown)}
+            totalLabel={t("gatewayTotalLabel")}
+            totalFor={(label) => bucketTotals.get(label) ?? 0}
+          />
         </CardContent>
       </Card>
 
       <Card aria-busy={isStale} className={isStale ? "opacity-60 transition-opacity" : "transition-opacity"}>
         <CardHeader>
           <CardTitle>{t("leaderboard")}</CardTitle>
-          <CardDescription>{t("leaderboardDesc", { metric: t(METRIC_KEYS[shown]) })}</CardDescription>
+          <CardDescription>
+            {t("leaderboardDesc", { metric: t(METRIC_KEYS[shown]) })}
+          </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-x-12 md:grid-cols-2">
           <ol className="divide-y">
@@ -323,55 +221,6 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
       </Card>
 
       <Card>
-        <CardHeader className="flex-row items-start justify-between space-y-0">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Layers className="size-5" /> {t("topModelsByTask")}
-            </CardTitle>
-            <CardDescription>{t("topModelsByTaskDesc", { metric: t(METRIC_KEYS[taskMetric]) })}</CardDescription>
-          </div>
-          <Select value={taskMetric} onValueChange={(value) => setTaskMetric(value as Metric)}>
-            <SelectTrigger className="w-44" aria-label={t("taskMetricAria")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="spend">{t("shareOfSpend")}</SelectItem>
-              <SelectItem value="requests">{t("shareOfRequests")}</SelectItem>
-              <SelectItem value="tokens">{t("shareOfTokens")}</SelectItem>
-            </SelectContent>
-          </Select>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {taskError && (
-            <Alert variant="destructive">
-              <AlertTitle>{t("tasksLoadFailed")}</AlertTitle>
-              <AlertDescription>{taskError}</AlertDescription>
-            </Alert>
-          )}
-          <ChartContainer config={{}} className="h-[360px] w-full aspect-auto">
-            <Treemap
-              data={tiles.map((tile) => ({ ...tile, name: tile.task_type }))}
-              dataKey="value"
-              isAnimationActive={false}
-              content={<TaskTileContent {...({} as TileProps)} />}
-            />
-          </ChartContainer>
-          <ul className="flex flex-wrap gap-x-6 gap-y-2">
-            {categoryShares.map(({ category, share }) => (
-              <li key={category} className="flex items-center gap-2 text-sm">
-                <span
-                  className="size-3 rounded-full"
-                  style={{ backgroundColor: CATEGORY_COLORS[category] ?? FALLBACK_COLOR }}
-                />
-                <span className="text-muted-foreground">{category}</span>
-                <span className="font-medium tabular-nums">{share.toFixed(1)}%</span>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      <Card>
         <CardHeader>
           <CardTitle>{t("costPerSession")}</CardTitle>
           <CardDescription>{t("sessionCostNote")}</CardDescription>
@@ -380,6 +229,6 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
           <p className="text-sm text-muted-foreground">{t("sessionHint")}</p>
         </CardContent>
       </Card>
-    </main>
+    </Page>
   );
 }

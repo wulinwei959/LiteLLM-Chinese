@@ -12,6 +12,7 @@ export interface SummaryTile {
 interface SpendSummaryMetadata {
   total_spend: number;
   total_flat_cost?: number;
+  total_ptu_hours?: number;
   total_api_requests: number;
   total_successful_requests: number;
   total_failed_requests: number;
@@ -26,6 +27,15 @@ export const buildSummaryTiles = (
   showFlatCost: boolean,
 ): SummaryTile[] => {
   const flatCost = metadata.total_flat_cost ?? 0;
+  const ptuHoursTile: SummaryTile[] = showPtuHours
+    ? [
+        {
+          title: "PTU Hours",
+          value: formatNumberWithCommas(metadata.total_ptu_hours ?? 0, 2),
+          tooltip: PTU_HOURS_TOOLTIP,
+        },
+      ]
+    : [];
   return [
     showFlatCost
       ? {

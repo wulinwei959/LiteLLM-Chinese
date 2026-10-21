@@ -7,7 +7,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import ClassifierCircuitBreakerConfig from "./ClassifierCircuitBreakerConfig";
 import type { ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
-import { defaultJevClassifierConfig } from "./jev_classifier_config";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { defaultJevClassifierConfig, fixedClassifierModels } from "./jev_classifier_config";
+
+const providerDescriptions = {
+  jev: "Uses TypeSafe System One Choice evaluation with your configured tiers",
+  laya: "Uses Laya with your configured tiers. Set LAYA_API_BASE on the gateway to connect your Laya server.",
+  bespoke:
+    "Uses Bespoke Nimble with your configured tiers. Set BESPOKE_API_BASE on the gateway to connect your Nimble server.",
+  databricks:
+    "Uses the Databricks ai_decide AI Function, or a decision serving endpoint you name, with your configured tiers. Set DATABRICKS_API_BASE to https://<workspace-host>/serving-endpoints and DATABRICKS_API_KEY on the gateway.",
+};
 
 export default function JevClassifierConfig({
   value,
@@ -21,6 +31,7 @@ export default function JevClassifierConfig({
   const t = useTranslations("models.addModel");
   const id = useId();
   const config = value.jev_classifier_config ?? defaultJevClassifierConfig();
+  const models = fixedClassifierModels(config.provider);
   const update = (patch: Partial<typeof config>) =>
     onChange({ ...value, jev_classifier_config: { ...config, ...patch } });
 

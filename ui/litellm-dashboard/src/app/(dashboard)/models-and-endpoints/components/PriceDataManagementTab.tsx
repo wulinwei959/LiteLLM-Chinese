@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 const PriceDataManagementTab = () => {
   const t = useTranslations("models.priceData");
   const { accessToken } = useAuthorized();
-  const { refetch: refetchModelCostMap } = useModelCostMap();
+  const queryClient = useQueryClient();
 
   return (
     <div>
@@ -21,7 +21,7 @@ const PriceDataManagementTab = () => {
         <PriceDataReload
           accessToken={accessToken}
           onReloadSuccess={() => {
-            refetchModelCostMap();
+            queryClient.invalidateQueries({ queryKey: modelCostMapKeys.all });
           }}
           buttonText={t("reloadButton")}
           size="middle"

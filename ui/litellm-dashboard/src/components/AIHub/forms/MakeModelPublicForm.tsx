@@ -9,6 +9,7 @@ import { cn } from "@/lib/cva.config";
 import { makeModelGroupPublic } from "../../networking";
 import ModelFilters from "../../model_filters";
 import { toast } from "@/lib/toast";
+import { displayMode } from "@/lib/decisionModels";
 
 interface ModelGroupInfo {
   model_group: string;
@@ -184,7 +185,7 @@ const MakeModelPublicForm: React.FC<MakeModelPublicFormProps> = ({
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-medium break-words">{model.model_group}</p>
-                      {model.mode && <Badge>{model.mode}</Badge>}
+                      {model.mode && <Badge>{displayMode(model.mode)}</Badge>}
                     </div>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {model.providers.map((provider) => (

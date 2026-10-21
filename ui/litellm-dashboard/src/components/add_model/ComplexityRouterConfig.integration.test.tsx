@@ -52,6 +52,53 @@ const baseProps = {
 };
 
 describe("ComplexityRouterConfig", () => {
+  it.each(["Heuristic first", "Hybrid"])(
+    "shows only the selected heuristic tuning when chaining with %s",
+    async (mode) => {
+      const initialValue: ComplexityRouterConfigValue = {
+        ...defaultValue,
+        classifier_type: "llm",
+        classifier_llm_config: { model: "gpt-4", timeout_ms: 750 },
+        token_thresholds: { simple: 12, complex: 800 },
+        heuristic_v2_success_threshold: 0.9,
+      };
+      function Editor() {
+        const [value, setValue] = React.useState(initialValue);
+        return <ComplexityRouterConfig {...baseProps} value={value} onChange={setValue} />;
+      }
+      renderWithProviders(<Editor />);
+      fireEvent.click(screen.getByRole("button", { name: /^Advanced settings/ }));
+      expect(screen.getByRole("button", { name: "LLM tuning" })).toHaveAttribute("aria-expanded", "false");
+      expect(screen.queryByRole("button", { name: "Heuristic tuning" })).not.toBeInTheDocument();
+      expect(screen.queryByText("Advanced scoring")).not.toBeInTheDocument();
+      expect(screen.queryByText("Custom Technical Keywords")).not.toBeInTheDocument();
+      expect(screen.queryByText("Heuristic Keyword Overrides")).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
+      await selectAutoRouterOption("Local checks before the judge", mode);
+      expect(screen.getByRole("button", { name: "Heuristic before the judge" })).toHaveTextContent("Heuristic v1");
+      fireEvent.click(screen.getByRole("button", { name: "Heuristic tuning" }));
+      fireEvent.click(screen.getByRole("button", { name: /Advanced scoring/ }));
+      expect(screen.getByLabelText("Short below")).toHaveValue("12");
+      await selectAutoRouterOption("Heuristic before the judge", "Heuristic v2");
+      expect(screen.getByLabelText("Success threshold")).toHaveValue("0.9");
+      expect(screen.queryByText("Advanced scoring")).not.toBeInTheDocument();
+      expect(screen.queryByText("Custom Technical Keywords")).not.toBeInTheDocument();
+      expect(screen.queryByText("Heuristic Keyword Overrides")).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
+      if (mode === "Hybrid") expect(screen.getByLabelText("Success threshold margin")).toBeInTheDocument();
+      await selectAutoRouterOption("Heuristic before the judge", "Heuristic v1");
+      fireEvent.click(screen.getByRole("button", { name: /Advanced scoring/ }));
+      expect(screen.getByLabelText("Short below")).toHaveValue("12");
+      fireEvent.click(screen.getByRole("button", { name: "LLM tuning" }));
+      expect(screen.getByLabelText("Timeout (ms)")).toHaveValue("750");
+      await selectAutoRouterOption("Local checks before the judge", "Always use the judge");
+      expect(screen.queryByRole("button", { name: "Heuristic tuning" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Heuristic before the judge" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
+      expect(screen.getByLabelText("Timeout (ms)")).toHaveValue("750");
+    },
+  );
+
   it("should render", async () => {
     renderWithProviders(<ComplexityRouterConfig {...baseProps} />);
     expect(screen.getByText("按层级划分的模型")).toBeInTheDocument();
@@ -731,7 +778,7 @@ describe("ComplexityRouterConfig classifier fallback", () => {
     expect(screen.getByText(/不再运行/)).toBeInTheDocument();
   });
 
-  it("still describes the heuristic as the fallback when a custom prompt keeps heuristic fallback", async () => {
+  it("keeps heuristic fallback selectable without showing heuristic tuning for a custom judge prompt", async () => {
     renderWithProviders(
       <ComplexityRouterConfig
         modelInfo={mockModelInfo}
@@ -1483,15 +1530,6 @@ describe("ComplexityRouterConfig custom technical keywords", () => {
         classifier_type: "heuristic_first" as const,
         heuristic_first_max_tier: "SIMPLE",
         classifier_llm_config: llmConfig,
-      },
-    ],
-    [
-      "llm falling back to the scorer",
-      {
-        ...defaultValue,
-        classifier_type: "llm" as const,
-        classifier_llm_config: llmConfig,
-        classifier_fallback: "heuristic" as const,
       },
     ],
   ])("offers the keywords on a router whose scorer runs: %s", (_label, value) => {

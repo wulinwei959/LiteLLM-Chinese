@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
+import { MessageSquare, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Combobox,
@@ -298,7 +299,7 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({ open, onClose, acce
       </div>
 
       {/* Chat messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted">
+      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-muted/40">
         {messages.length === 0 && !streamingContent && !isLoading && (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
             <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,7 +370,7 @@ const UsageAIChatPanel: React.FC<UsageAIChatPanelProps> = ({ open, onClose, acce
       </div>
 
       {/* Input area */}
-      <div className="px-4 py-3 border-t border-border bg-card shrink-0">
+      <div className="px-5 py-3 border-t border-border bg-card shrink-0">
         <div className="flex gap-2">
           <Textarea
             value={inputText}

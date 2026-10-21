@@ -1,3 +1,4 @@
+import { Page, PageTabs, PageTabsList, PageTabsTrigger } from "@/components/shared/Page";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import useCan from "@/app/(dashboard)/hooks/useCan";
 import AvailableTeamsPanel from "@/components/team/AvailableTeamsPanel";
@@ -15,15 +16,16 @@ import { SearchSelect } from "@/components/shared/SearchSelect";
 import { labelWithDocsHint, labelWithHint } from "@/components/shared/form/LabelWithHint";
 import { useZodForm } from "@/lib/forms/useZodForm";
 import { TagsInput } from "@/app/(dashboard)/guardrails/_components/content_filter/TagsInput";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
 import { ChevronDown, Plus, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { TeamsTranslator } from "@/lib/i18n/translators";
 import React, { useEffect, useMemo, useState } from "react";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { PageHeader } from "@/components/shared/PageHeader";
+import { PageHeader, PageHeaderControls, PageHeaderDescription, PageHeaderTitle } from "@/components/shared/PageHeader";
+import { ToolbarSeparator } from "@/components/shared/ToolbarSeparator";
 import { Button as UIButton } from "@/components/ui/button";
 import { teamsTableKeys } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { parseAsString, useQueryState } from "nuqs";
@@ -52,6 +54,7 @@ import BudgetDurationDropdown, {
 import { Organization, getDefaultTeamSettings, getGuardrailsList, getPoliciesList, teamDeleteCall } from "./networking";
 import NumericalInput from "./shared/numerical_input";
 import { ModelMaxBudget, ModelMaxBudgetField } from "./key_team_helpers/ModelMaxBudgetEditor";
+import { modelMaxBudgetUpdate } from "./key_team_helpers/modelMaxBudgetPayload";
 import VectorStoreSelector from "./vector_store_management/VectorStoreSelector";
 import SearchToolSelector from "./search_tools/SearchToolSelector";
 import SkillSelector from "./skills/SkillSelector";
@@ -61,6 +64,7 @@ interface TeamProps {
   accessToken: string | null;
   userID: string | null;
   userRole: string | null;
+  isViewOnly?: boolean;
   premiumUser?: boolean;
 }
 
@@ -129,6 +133,7 @@ const EMPTY_TEAM_CREATE_VALUES: TeamCreateFormValues = {
   secret_manager_settings: undefined,
   guardrails: undefined,
   disable_global_guardrails: undefined,
+  require_trace_id: undefined,
   policies: undefined,
   access_group_ids: undefined,
   allowed_vector_store_ids: undefined,
@@ -149,6 +154,7 @@ const ADDITIONAL_SETTINGS_FIELDS = [
   "secret_manager_settings",
   "guardrails",
   "disable_global_guardrails",
+  "require_trace_id",
   "policies",
   "access_group_ids",
   "allowed_vector_store_ids",
@@ -268,6 +274,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
   const [editTeam, setEditTeam] = useState<boolean>(false);
 
   const [isTeamModalVisible, setIsTeamModalVisible] = useState(false);
+  const canEditAsProxyAdmin = !isViewOnly && isProxyAdminRole(userRole || "");
   const [userModels, setUserModels] = useState<string[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [teamToDelete, setTeamToDelete] = useState<Team | null>(null);
@@ -279,6 +286,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
   const [loggingSettings, setLoggingSettings] = useState<any[]>([]);
   const [modelAliases, setModelAliases] = useState<{ [key: string]: string }>({});
   const [modelMaxBudget, setModelMaxBudget] = useState<ModelMaxBudget>({});
+  const [teamMemberModelMaxBudget, setTeamMemberModelMaxBudget] = useState<ModelMaxBudget>({});
   const [routerSettings, setRouterSettings] = useState<RouterSettingsAccordionValue | null>(null);
   const [routerSettingsKey, setRouterSettingsKey] = useState<number>(0);
 
@@ -360,6 +368,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
     setLoggingSettings([]);
     setModelAliases({});
     setModelMaxBudget({});
+    setTeamMemberModelMaxBudget({});
     setRouterSettings(null);
     setRouterSettingsKey((prev) => prev + 1);
   };
@@ -659,7 +668,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
   ];
 
   return (
-    <main className={selectedTeamId ? "px-12 py-6" : "flex h-full flex-col p-8"}>
+    <Page className={selectedTeamId ? undefined : "h-full"}>
       {selectedTeamId ? (
         <TeamInfoView
           teamId={selectedTeamId}
@@ -679,43 +688,38 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
           premiumUser={premiumUser}
         />
       ) : (
-        <Tabs defaultValue={tabItems[0].key} className="min-h-0 flex-1 gap-6">
-          <PageHeader
-            icon={<Users />}
-            title={t("title")}
-            subtitle={t("listSubtitle")}
-            primaryAction={
-              canCreateOrManageTeams(userRole, userID, organizations) ? (
-                <UIButton onClick={openCreateTeamModal} data-testid="create-team-button">
-                  <Plus className="size-4" />
-                  {t("createTeam")}
-                </UIButton>
-              ) : undefined
-            }
-            tabs={({ leadingControls }) => (
-              <TabsList
-                variant="line"
-                className="gap-0 p-0 [&>[data-slot=tabs-trigger]+[data-slot=tabs-trigger]]:ml-[22px]"
-              >
-                {leadingControls}
+        <PageTabs defaultValue={tabItems[0].key}>
+          <PageHeader>
+            <PageHeaderTitle>
+              <Users />
+              {t("title")}
+            </PageHeaderTitle>
+            <PageHeaderDescription>{t("listSubtitle")}</PageHeaderDescription>
+            <PageHeaderControls>
+              <PageTabsList>
+                {canCreateOrManageTeams(userRole, userID, organizations) && (
+                  <>
+                    <UIButton onClick={openCreateTeamModal} data-testid="create-team-button">
+                      <Plus className="size-4" />
+                      {t("createTeam")}
+                    </UIButton>
+                    <ToolbarSeparator className="mx-0 h-6" />
+                  </>
+                )}
                 {tabItems.map((item) => (
-                  <TabsTrigger
-                    key={item.key}
-                    value={item.key}
-                    className="flex-none px-0 py-[7px] data-active:font-semibold"
-                  >
+                  <PageTabsTrigger key={item.key} value={item.key}>
                     {item.label}
-                  </TabsTrigger>
+                  </PageTabsTrigger>
                 ))}
-              </TabsList>
-            )}
-          />
+              </PageTabsList>
+            </PageHeaderControls>
+          </PageHeader>
           {tabItems.map((item) => (
             <TabsContent key={item.key} value={item.key} className={item.className}>
               {item.children}
             </TabsContent>
           ))}
-        </Tabs>
+        </PageTabs>
       )}
 
       {canCreateOrManageTeams(userRole, userID, organizations) && (
@@ -901,6 +905,15 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                             />
                           )}
                         </FormField>
+                        <ModelMaxBudgetField
+                          key={`team-member-model-max-budget-${routerSettingsKey}`}
+                          label="Default Per-Model Budget"
+                          premiumUser={premiumUser}
+                          value={teamMemberModelMaxBudget}
+                          onChange={setTeamMemberModelMaxBudget}
+                          availableModels={userModels}
+                          hint="Set a default per-model spend cap for each team member, with an independent reset window."
+                        />
                         <FormField
                           control={form.control}
                           name="team_member_key_duration"
@@ -995,6 +1008,21 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                                 checked={value === true}
                                 onCheckedChange={onChange}
                               />
+                            )}
+                          </FormField>
+                        )}
+                        {canEditAsProxyAdmin && (
+                          <FormField
+                            control={form.control}
+                            name="require_trace_id"
+                            className="mt-4"
+                            label={labelWithHint(
+                              "Require Trace ID",
+                              "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-litellm-trace-id header, LLM requests can also use traceparent or metadata.trace_id)",
+                            )}
+                          >
+                            {({ id, value, onChange }) => (
+                              <Switch id={id} checked={value === true} onCheckedChange={onChange} />
                             )}
                           </FormField>
                         )}
@@ -1281,7 +1309,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
           </DialogContent>
         </Dialog>
       )}
-    </main>
+    </Page>
   );
 };
 

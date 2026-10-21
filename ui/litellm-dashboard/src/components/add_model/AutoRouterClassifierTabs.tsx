@@ -18,6 +18,11 @@ import {
   type ClassifierType,
   type ComplexityRouterConfigValue,
 } from "./ComplexityRouterConfig";
+import {
+  defaultJevClassifierConfig,
+  isOssClassifierProvider,
+  normalizeJevClassifierConfig,
+} from "./jev_classifier_config";
 import { transitionClassifierType } from "./classifier_type_transition";
 import { isForecastClassifier } from "./forecast_classifier_config";
 import {
@@ -29,7 +34,7 @@ import {
   AUTO_ROUTER_CONTACT_URL,
 } from "./AutoRouterAvailability";
 
-function ClassifierOption({
+export function ClassifierOption({
   value,
   label,
   description,
@@ -77,7 +82,7 @@ function ClassifierOption({
   );
 }
 
-function ClassifierMenu({
+export function ClassifierMenu({
   id,
   label,
   value,

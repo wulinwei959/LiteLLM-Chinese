@@ -9,7 +9,14 @@ import type { RouterSettingsFallbacksTranslator } from "@/lib/i18n/translators";
 import DeleteResourceModal from "../../../common_components/DeleteResourceModal";
 import { ProviderLogo } from "../../../molecules/models/ProviderLogo";
 import { toast } from "@/lib/toast";
-import { getCallbacksCall, setCallbacksCall } from "../../../networking";
+import { getCallbacksCall, getRouterSettingsCall, setCallbacksCall } from "../../../networking";
+import {
+  CONFIG_OWNED_HINT,
+  SOURCE_UNKNOWN_HINT,
+  ConfigOwnedBadge,
+  RouterSettingsSource,
+  isOwnedByConfig,
+} from "../../../router_settings/ConfigOwned";
 import { isProxyAdminRole } from "@/utils/roles";
 import AddFallbacks from "./AddFallbacks";
 import EditFallbacks from "./EditFallbacks";
@@ -131,6 +138,12 @@ async function testFallbackModelResponse(
   }
 }
 
+function fallbacksWriteHint(source: RouterSettingsSource | null, ownedByConfig: boolean): string | undefined {
+  if (ownedByConfig) return CONFIG_OWNED_HINT;
+  if (source === null) return SOURCE_UNKNOWN_HINT;
+  return undefined;
+}
+
 const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID }) => {
   const t = useTranslations("routerSettings.fallbacks");
   const routerT = useTranslations("routerSettings");
@@ -141,6 +154,7 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID }) 
   const [fallbackToDelete, setFallbackToDelete] = useState<FallbackEntry | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [fallbackToEdit, setFallbackToEdit] = useState<FallbackEntry | null>(null);
+  const [routerSettingsSource, setRouterSettingsSource] = useState<RouterSettingsSource | null>(null);
 
   const { data: modelCostMapData } = useModelCostMap();
   const getProviderFromModel = (model: string): string => {
@@ -161,6 +175,9 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID }) 
       }
       setRouterSettings(router_settings);
     });
+    getRouterSettingsCall(accessToken)
+      .then((data) => setRouterSettingsSource(data.source ?? {}))
+      .catch(() => setRouterSettingsSource(null));
   }, [accessToken, userRole, userID]);
 
   const handleDeleteClick = (fallbackEntry: FallbackEntry) => {
@@ -266,15 +283,24 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID }) 
   const hasFallbacks = Array.isArray(routerSettings.fallbacks) && routerSettings.fallbacks.length > 0;
   // Admin Viewer follows the read-parity rule: see fallbacks, no writes.
   const canModify = isProxyAdminRole(userRole ?? "");
+  const ownedByConfig = routerSettingsSource !== null && isOwnedByConfig(routerSettingsSource, "fallbacks");
+  const writeHint = fallbacksWriteHint(routerSettingsSource, ownedByConfig);
+  const canWrite = canModify && writeHint === undefined;
+  const writeActionClass = (hoverClass: string) =>
+    canWrite ? `${iconWrapperClass} cursor-pointer ${hoverClass}` : `${iconWrapperClass} cursor-not-allowed opacity-50`;
 
   return (
     <TooltipProvider>
       {canModify && (
-        <AddFallbacks
-          accessToken={accessToken || ""}
-          value={routerSettings.fallbacks || []}
-          onChange={handleFallbacksChange}
-        />
+        <div className="flex items-center">
+          <AddFallbacks
+            accessToken={accessToken || ""}
+            value={routerSettings.fallbacks || []}
+            onChange={handleFallbacksChange}
+            disabledReason={writeHint}
+          />
+          {ownedByConfig && <ConfigOwnedBadge />}
+        </div>
       )}
       {!hasFallbacks ? (
         <div className="rounded-lg border border-border bg-muted px-4 py-6 text-center">
@@ -323,9 +349,10 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID }) 
                                 data-testid="edit-fallback-button"
                                 role="button"
                                 tabIndex={0}
-                                onClick={() => handleEditClick(item)}
-                                onKeyDown={(e) => e.key === "Enter" && handleEditClick(item)}
-                                className={`${iconWrapperClass} cursor-pointer hover:text-info`}
+                                aria-disabled={!canWrite}
+                                onClick={() => canWrite && handleEditClick(item)}
+                                onKeyDown={(e) => canWrite && e.key === "Enter" && handleEditClick(item)}
+                                className={writeActionClass("hover:text-info")}
                               />
                             }
                           >
@@ -340,9 +367,10 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID }) 
                                 data-testid="delete-fallback-button"
                                 role="button"
                                 tabIndex={0}
-                                onClick={() => handleDeleteClick(item)}
-                                onKeyDown={(e) => e.key === "Enter" && handleDeleteClick(item)}
-                                className={`${iconWrapperClass} cursor-pointer hover:text-destructive`}
+                                aria-disabled={!canWrite}
+                                onClick={() => canWrite && handleDeleteClick(item)}
+                                onKeyDown={(e) => canWrite && e.key === "Enter" && handleDeleteClick(item)}
+                                className={writeActionClass("hover:text-destructive")}
                               />
                             }
                           >

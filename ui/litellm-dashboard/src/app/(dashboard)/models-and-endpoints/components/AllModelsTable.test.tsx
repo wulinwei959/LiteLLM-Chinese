@@ -108,6 +108,23 @@ describe("AllModelsTable", () => {
     expect(await screen.findByText("数据库模型")).toBeInTheDocument();
   });
 
+  it("reports the routing status picked in the Filters drawer", async () => {
+    const user = userEvent.setup();
+    const onColumnFiltersChange = vi.fn();
+    render(<AllModelsTable {...baseProps} onColumnFiltersChange={onColumnFiltersChange} />);
+
+    await user.click(screen.getByTestId("datatable-filters-trigger"));
+    await user.click(screen.getByRole("combobox", { name: /filter by status/i }));
+    expect(await screen.findByRole("option", { name: "All", exact: true })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "All Statuses" })).not.toBeInTheDocument();
+    await user.click(await screen.findByRole("option", { name: "Paused" }));
+    await user.click(screen.getByTestId("filter-drawer-apply"));
+
+    const updater = onColumnFiltersChange.mock.calls.at(-1)?.[0];
+    const next = typeof updater === "function" ? updater([]) : updater;
+    expect(next).toEqual([{ id: "model_info_blocked", value: "paused" }]);
+  });
+
   it("opens the model detail from the model ID cell", async () => {
     const user = userEvent.setup();
     const onModelIdClick = vi.fn();
@@ -157,6 +174,42 @@ describe("AllModelsTable", () => {
 
     rerender(<AllModelsTable {...baseProps} data={[makeModel()]} />);
     expect(screen.getByText("手动输入")).toBeInTheDocument();
+  });
+
+  it("renders the credential's display name with its credential name beneath", () => {
+    render(
+      <AllModelsTable
+        {...baseProps}
+        credentialLabels={new Map([["openai-prod", "Prod OpenAI"]])}
+        data={[makeModel({ litellm_params: { model: "openai/gpt-4", litellm_credential_name: "openai-prod" } })]}
+      />,
+    );
+    expect(screen.getByText("Prod OpenAI")).toBeInTheDocument();
+    expect(screen.getByText("openai-prod")).toBeInTheDocument();
+  });
+
+  it("tells apart a credential whose label is another credential's name", () => {
+    render(
+      <AllModelsTable
+        {...baseProps}
+        credentialLabels={
+          new Map([
+            ["openai-prod", "openai-staging"],
+            ["openai-staging", "openai-staging"],
+          ])
+        }
+        data={[
+          makeModel({ litellm_params: { model: "openai/gpt-4", litellm_credential_name: "openai-prod" } }),
+          makeModel({
+            model_name: "gpt-4-staging",
+            model_info: { id: "staging-id", db_model: true } as ModelData["model_info"],
+            litellm_params: { model: "openai/gpt-4", litellm_credential_name: "openai-staging" },
+          }),
+        ]}
+      />,
+    );
+    expect(screen.getAllByText("openai-staging")).toHaveLength(2);
+    expect(screen.getByText("openai-prod")).toBeInTheDocument();
   });
 
   it("shows 'Defined in config' for a config model and the creator for a DB model", () => {

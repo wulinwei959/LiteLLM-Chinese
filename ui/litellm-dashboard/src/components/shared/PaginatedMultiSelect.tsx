@@ -23,7 +23,7 @@ import { usePaginatedCombobox } from "./usePaginatedCombobox";
 
 interface PaginatedMultiSelectProps {
   options: SearchSelectOption[];
-  value?: string[];
+  value?: readonly string[];
   onValueChange: (value: string[]) => void;
   onSearchChange: (query: string) => void;
   onLoadMore: () => void;

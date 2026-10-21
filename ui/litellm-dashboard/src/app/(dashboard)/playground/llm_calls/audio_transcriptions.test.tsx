@@ -70,7 +70,7 @@ describe("audio_transcription", () => {
       mockFile,
       mockUpdateUI,
       "whisper-1",
-      "sk-1234567890",
+      "sk-9876543210",
       ["tag1", "tag2"],
       signal,
       "en",

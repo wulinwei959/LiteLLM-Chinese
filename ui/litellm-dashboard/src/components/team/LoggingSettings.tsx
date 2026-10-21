@@ -124,6 +124,21 @@ const LoggingSettings: React.FC<LoggingSettingsProps> = ({
         [field]: callbackValue,
         callback_vars: {},
       };
+    } else if (field === "callback_type" && newValue === "failure") {
+      const callbackDisplayName = Object.entries(callback_map).find(
+        ([_, value]) => value === updatedConfigs[index].callback_name,
+      )?.[0];
+      const successOnlyParams = new Set(
+        (callbackDisplayName && callbackInfo[callbackDisplayName]?.success_event_params) || [],
+      );
+      const callbackVars = Object.fromEntries(
+        Object.entries(updatedConfigs[index].callback_vars).filter(([key]) => !successOnlyParams.has(key)),
+      );
+      updatedConfigs[index] = {
+        ...updatedConfigs[index],
+        [field]: newValue,
+        callback_vars: callbackVars,
+      };
     } else {
       updatedConfigs[index] = {
         ...updatedConfigs[index],
@@ -206,6 +221,10 @@ const LoggingSettings: React.FC<LoggingSettingsProps> = ({
 
     const dynamicParams = callbackInfo[callbackDisplayName]?.dynamic_params || {};
     const paramOptions = callbackInfo[callbackDisplayName]?.dynamic_param_options || {};
+    const successOnlyParams =
+      config.callback_type === "failure"
+        ? new Set(callbackInfo[callbackDisplayName]?.success_event_params ?? [])
+        : new Set<string>();
 
     if (Object.keys(dynamicParams).length === 0) return null;
 

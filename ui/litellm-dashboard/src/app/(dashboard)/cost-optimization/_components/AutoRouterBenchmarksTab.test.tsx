@@ -9,6 +9,7 @@ import { ApiError } from "@/lib/http/client";
 
 vi.mock("./useAutoRouterBenchmarks", () => ({ useAutoRouterBenchmarks: vi.fn() }));
 vi.mock("@/app/(dashboard)/hooks/models/useModels", () => ({ useAutoRouters: vi.fn() }));
+vi.mock("./AutoRouterSummaryTable", () => ({ default: () => <div data-testid="router-summary" /> }));
 vi.mock("./ShadowEvalSection", () => ({ default: () => <div data-testid="shadow-eval-section" /> }));
 vi.mock("@/components/shared/advanced_date_picker", () => ({
   __esModule: true,
@@ -76,7 +77,6 @@ const totals = (overrides: Partial<Totals> = {}): Totals => ({
   saved_spend: 2174.59,
   baseline_spend: 2534.45,
   saved_pct: 85.8,
-  saved_per_session: 23.13,
   cache: cache(),
   ...overrides,
 });
@@ -111,7 +111,6 @@ const zeroTotals: Totals = {
   saved_spend: 0,
   baseline_spend: 0,
   saved_pct: 0,
-  saved_per_session: 0,
   cache: zeroCache,
 };
 
@@ -174,7 +173,6 @@ describe("AutoRouterBenchmarksTab", () => {
       saved_spend: saved,
       baseline_spend: estimatedTurns ? actual + (saved ?? 0) : null,
       saved_pct: pct,
-      saved_per_session: null,
     };
     mockHook({
       data: response([], totals(comparison)),
@@ -205,7 +203,7 @@ describe("AutoRouterBenchmarksTab", () => {
     }
   });
 
-  it("leads with total estimated savings, before the four session-shape metrics", () => {
+  it("leads with total estimated savings, before the three session-shape metrics", () => {
     mockHook({ data: response([group(), group({ router_name: "gpt-auto" })]) });
     renderTab();
 
@@ -264,7 +262,7 @@ describe("AutoRouterBenchmarksTab", () => {
     },
   );
 
-  it("pairs the savings with the session count it was earned over, in its own tile", () => {
+  it("labels selected-day money apart from whole-session metrics, with no savings-per-session tile", () => {
     mockHook({ data: response([group(), group({ router_name: "gpt-auto" })]) });
     renderTab();
 

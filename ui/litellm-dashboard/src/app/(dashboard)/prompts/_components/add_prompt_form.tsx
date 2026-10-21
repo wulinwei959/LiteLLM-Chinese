@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Upload as UploadIcon, X } from "lucide-react";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { convertPromptFileToJson, createPromptCall } from "@/components/networking";
 import { toast } from "@/lib/toast";
 import { Field, FieldDescription, FieldGroup, FieldSeparator, FieldTitle } from "@/components/ui/field";

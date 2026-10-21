@@ -79,7 +79,7 @@ describe("useMcpOAuthFlow reset", () => {
 
     await waitFor(() => expect(result.current.status).toBe("success"));
     expect(result.current.tokenResponse).toEqual(token);
-    expect(onTokenReceived).toHaveBeenCalledWith(token, expect.objectContaining({ clientId: "client-1" }));
+    expect(onTokenReceived).toHaveBeenCalledWith(token, expect.objectContaining({ client_id: "client-1" }));
 
     act(() => {
       result.current.reset();
@@ -88,6 +88,51 @@ describe("useMcpOAuthFlow reset", () => {
     expect(result.current.status).toBe("idle");
     expect(result.current.tokenResponse).toBeNull();
     expect(result.current.error).toBeNull();
+  });
+
+  it("retains client binding from a redirect started before the state format changed", async () => {
+    seedCompletedRedirect();
+    const client = {
+      client_id: "client-1",
+      client_secret: "registered-secret",
+      dcr_issuer: "https://issuer.example.com",
+      dcr_server_url: "https://server-1.example.com/mcp",
+      redirect_uris: ["https://app.example.com/ui/mcp/oauth/callback"],
+    };
+    const state = JSON.parse(getSecureItem(FLOW_STATE_KEY)!);
+    setSecureItem(
+      FLOW_STATE_KEY,
+      JSON.stringify({ ...state, clientSecret: client.client_secret, dcrCredentials: client }),
+    );
+    const token = { access_token: "registered-token" };
+    vi.mocked(networking.exchangeMcpOAuthToken).mockResolvedValue(token);
+    const onTokenReceived = vi.fn();
+    const { result } = renderFlow(onTokenReceived);
+    await waitFor(() => expect(result.current.status).toBe("success"));
+    expect(onTokenReceived).toHaveBeenCalledWith(token, client);
+    expect(networking.exchangeMcpOAuthToken).toHaveBeenCalledWith(
+      expect.objectContaining({ clientId: client.client_id, clientSecret: client.client_secret }),
+    );
+  });
+
+  it("resumes a legacy server-managed flow without exposing a registered client", async () => {
+    seedCompletedRedirect();
+    const state = JSON.parse(getSecureItem(FLOW_STATE_KEY)!);
+    delete state.clientId;
+    setSecureItem(FLOW_STATE_KEY, JSON.stringify(state));
+    const token = { access_token: "server-managed-token" };
+    vi.mocked(networking.exchangeMcpOAuthToken).mockResolvedValue(token);
+    const onTokenReceived = vi.fn();
+    const { result } = renderFlow(onTokenReceived);
+    await waitFor(() => expect(result.current.status).toBe("success"));
+    expect(onTokenReceived).toHaveBeenCalledWith(token, undefined);
+    expect(networking.exchangeMcpOAuthToken).toHaveBeenCalledWith(
+      expect.objectContaining({
+        serverId: "server-1",
+        clientId: undefined,
+        clientSecret: undefined,
+      }),
+    );
   });
 
   it("ignores an in-flight exchange result after reset", async () => {
@@ -143,7 +188,7 @@ describe("useMcpOAuthFlow reset", () => {
     rerender({ onTokenReceived: onTokenReceived2 });
 
     await waitFor(() =>
-      expect(onTokenReceived2).toHaveBeenCalledWith(token, expect.objectContaining({ clientId: "client-1" })),
+      expect(onTokenReceived2).toHaveBeenCalledWith(token, expect.objectContaining({ client_id: "client-1" })),
     );
   });
 
@@ -169,8 +214,8 @@ describe("useMcpOAuthFlow reset", () => {
 
     await waitFor(() => expect(result.current.status).toBe("success"));
     expect(onTokenReceived).toHaveBeenCalledWith(token, {
-      clientId: "dcr-client-xyz",
-      clientSecret: "dcr-secret-abc",
+      client_id: "dcr-client-xyz",
+      client_secret: "dcr-secret-abc",
     });
   });
 

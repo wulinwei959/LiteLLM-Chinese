@@ -15,9 +15,19 @@ interface ProviderDiscountTableProps {
 }
 
 interface ProviderDiscountRow {
+  key: string;
   provider: string;
+  modelPattern: string | null;
   discount: number;
 }
+
+const splitDiscountKey = (key: string): { provider: string; modelPattern: string | null } => {
+  const slashIndex = key.indexOf("/");
+  if (slashIndex < 0) {
+    return { provider: key, modelPattern: null };
+  }
+  return { provider: key.slice(0, slashIndex), modelPattern: key.slice(slashIndex + 1) };
+};
 
 const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
   discountConfig,
@@ -28,40 +38,45 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
   const [editingProvider, setEditingProvider] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string>("");
 
-  const handleStartEdit = (provider: string, currentDiscount: number) => {
-    setEditingProvider(provider);
+  const handleStartEdit = (key: string, currentDiscount: number) => {
+    setEditingKey(key);
     setEditValue((currentDiscount * 100).toString());
   };
 
-  const handleSaveEdit = (provider: string) => {
+  const handleSaveEdit = (key: string) => {
     const percentValue = parseFloat(editValue);
     if (!isNaN(percentValue) && percentValue >= 0 && percentValue <= 100) {
-      onDiscountChange(provider, (percentValue / 100).toString());
+      onDiscountChange(key, (percentValue / 100).toString());
     }
-    setEditingProvider(null);
+    setEditingKey(null);
     setEditValue("");
   };
 
   const handleCancelEdit = () => {
-    setEditingProvider(null);
+    setEditingKey(null);
     setEditValue("");
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent, provider: string) => {
+  const handleKeyDown = (e: React.KeyboardEvent, key: string) => {
     if (e.key === "Enter") {
-      handleSaveEdit(provider);
+      handleSaveEdit(key);
     } else if (e.key === "Escape") {
       handleCancelEdit();
     }
   };
 
+  const rowLabel = (row: ProviderDiscountRow): string => {
+    const { displayName } = getProviderLogoAndName(row.provider);
+    return row.modelPattern ? `${displayName} (${row.modelPattern})` : displayName;
+  };
+
   // Convert discount config to array and sort
   const data: ProviderDiscountRow[] = Object.entries(discountConfig)
-    .map(([provider, discount]) => ({ provider, discount }))
+    .map(([key, discount]) => ({ key, ...splitDiscountKey(key), discount }))
     .sort((a, b) => {
       const displayA = getProviderLogoAndName(a.provider).displayName;
       const displayB = getProviderLogoAndName(b.provider).displayName;
-      return displayA.localeCompare(displayB);
+      return displayA.localeCompare(displayB) || (a.modelPattern ?? "").localeCompare(b.modelPattern ?? "");
     });
 
   return (
@@ -84,15 +99,15 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
           header: t("discountPercentageLabel"),
           numeric: true,
           cell: (row) => {
-            const { displayName } = getProviderLogoAndName(row.provider);
+            const label = rowLabel(row);
             return (
               <div className="flex items-center justify-end gap-2">
-                {editingProvider === row.provider ? (
+                {editingKey === row.key ? (
                   <>
                     <Input
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, row.provider)}
+                      onKeyDown={(e) => handleKeyDown(e, row.key)}
                       placeholder="5"
                       className="w-20"
                       autoFocus
@@ -139,7 +154,7 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
         {
           header: t("colActions"),
           cell: (row) => {
-            const { displayName } = getProviderLogoAndName(row.provider);
+            const label = rowLabel(row);
             return (
               <Button
                 variant="ghost"

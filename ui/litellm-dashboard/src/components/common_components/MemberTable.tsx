@@ -1,4 +1,4 @@
-import type { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
+import type { ColumnDef, ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
 import { Crown, Info, User, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
@@ -10,6 +10,7 @@ import {
   DataTableFilterField,
   DataTableSortHeader,
   DataTableToolbar,
+  DEFAULT_PAGE_SIZE_OPTIONS,
 } from "@/components/shared/DataTable";
 import { StatusBadge } from "@/components/shared/table_cells";
 import { Button } from "@/components/ui/button";
@@ -40,11 +41,13 @@ export interface MemberTableProps {
   extraColumns?: MemberTableColumn[];
   showDeleteForMember?: (member: Member) => boolean;
   onResetSpend?: (member: Member) => void;
-  showResetSpendForMember?: (member: Member) => boolean;
+  resetSpendDisabledReason?: (member: Member) => string | null;
   emptyText?: string;
 }
 
 const ALL_ROLES = "all";
+
+const DEFAULT_SORTING: SortingState = [{ id: "user_alias", desc: false }];
 
 export const memberRowId = (member: Member): string => member.user_id ?? member.user_email ?? JSON.stringify(member);
 
@@ -68,6 +71,19 @@ function RoleHeaderTitle({ title, tooltip }: { title: string; tooltip?: string }
   );
 }
 
+function ResetSpendAction({ disabledReason, onClick }: { disabledReason: string | null; onClick: () => void }) {
+  return (
+    <TableIconActionButton
+      variant="Reset"
+      tooltipText="Reset spend"
+      disabled={disabledReason !== null}
+      disabledTooltipText={disabledReason ?? undefined}
+      dataTestId="reset-member-spend"
+      onClick={onClick}
+    />
+  );
+}
+
 const ACTIONS_COLUMN_WIDTH = 120;
 
 interface MemberColumnDeps {
@@ -81,7 +97,7 @@ interface MemberColumnDeps {
   extraColumns: MemberTableColumn[];
   showDeleteForMember?: (member: Member) => boolean;
   onResetSpend?: (member: Member) => void;
-  showResetSpendForMember?: (member: Member) => boolean;
+  resetSpendDisabledReason?: (member: Member) => string | null;
 }
 
 const extraColumnDef = (column: MemberTableColumn): ColumnDef<Member> => {
@@ -119,7 +135,7 @@ const buildColumns = ({
   extraColumns,
   showDeleteForMember,
   onResetSpend,
-  showResetSpendForMember,
+  resetSpendDisabledReason,
 }: MemberColumnDeps): ColumnDef<Member>[] => [
   {
     id: "user_alias",
@@ -220,15 +236,28 @@ export default function MemberTable({
   extraColumns = [],
   showDeleteForMember,
   onResetSpend,
-  showResetSpendForMember,
+  resetSpendDisabledReason,
   emptyText,
 }: MemberTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: DEFAULT_PAGE_SIZE_OPTIONS[0],
+  });
   const [filtersOpen, setFiltersOpen] = useState(false);
   const t = useTranslations("teams");
   const commonT = useTranslations("common");
   const resolvedRoleTitle = roleColumnTitle ?? commonT("role");
+
+  const backToFirstPage =
+    <T,>(onChange: OnChangeFn<T>): OnChangeFn<T> =>
+    (updaterOrValue) => {
+      onChange(updaterOrValue);
+      setPagination((current) => ({ ...current, pageIndex: 0 }));
+    };
+  const changeSearch = backToFirstPage(setGlobalFilter);
 
   const columnDeps: MemberColumnDeps = {
     t,
@@ -241,7 +270,7 @@ export default function MemberTable({
     extraColumns,
     showDeleteForMember,
     onResetSpend,
-    showResetSpendForMember,
+    resetSpendDisabledReason,
   };
   const columns = buildColumns(columnDeps);
   const roleFilterItems = [
@@ -260,13 +289,17 @@ export default function MemberTable({
         data={members}
         columns={columns}
         getRowId={memberRowId}
+        paginationMode="client"
+        pagination={pagination}
+        onPaginationChange={setPagination}
         sortingMode="client"
-        defaultSorting={[{ id: "user_alias", desc: false }]}
+        sorting={sorting}
+        onSortingChange={backToFirstPage(setSorting)}
         filterMode="client"
         columnFilters={columnFilters}
-        onColumnFiltersChange={setColumnFilters}
+        onColumnFiltersChange={backToFirstPage(setColumnFilters)}
         globalFilter={globalFilter}
-        onGlobalFilterChange={setGlobalFilter}
+        onGlobalFilterChange={changeSearch}
         noDataMessage={
           <span className="text-muted-foreground">
             {isNarrowed ? t("memberTable.noMatch") : emptyText ?? commonT("noDataShort")}

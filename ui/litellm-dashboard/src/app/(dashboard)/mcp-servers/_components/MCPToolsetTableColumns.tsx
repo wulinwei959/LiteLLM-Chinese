@@ -32,7 +32,7 @@ export function displayToolName(serverPrefix: string | undefined, toolName: stri
 }
 
 export function toolsetEndpointUrl(toolsetName: string): string {
-  return `${getProxyBaseUrl()}/toolset/${toolsetName}/mcp`;
+  return `${getGatewayBaseUrl()}/toolset/${toolsetName}/mcp`;
 }
 
 interface ToolsetRowActionsProps {

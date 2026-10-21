@@ -180,6 +180,7 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
     setIsCreating(true);
     const results: RAGIngestResponse[] = [];
     let vectorStoreId: string | undefined;
+    let failure: { name: string; error: unknown } | undefined;
 
     try {
       // Ingest each document
@@ -213,8 +214,13 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
           console.error(`Error ingesting ${doc.name}:`, error);
           // Update document status to error
           setDocuments((prev) => prev.map((d) => (d.uid === doc.uid ? { ...d, status: "error" as const } : d)));
-          throw error; // Stop processing on first error
+          failure = { name: doc.name, error };
+          break;
         }
+      }
+
+      if (failure && !vectorStoreId) {
+        throw failure.error;
       }
 
       setIngestResults(results);
@@ -222,6 +228,10 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
 
       if (onSuccess && vectorStoreId) {
         onSuccess(vectorStoreId);
+      }
+
+      if (failure) {
+        return;
       }
 
       // Clear documents after successful creation

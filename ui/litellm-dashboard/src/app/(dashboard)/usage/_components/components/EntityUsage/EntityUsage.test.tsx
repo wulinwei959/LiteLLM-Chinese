@@ -3,7 +3,7 @@ import { act, cleanup, fireEvent, screen, waitFor, within } from "@testing-libra
 import { renderWithProviders } from "../../../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import type { ReactNode } from "react";
+import { useState, type ComponentProps, type ReactNode } from "react";
 import { useInfiniteUsers } from "@/app/(dashboard)/hooks/users/useUsers";
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
 import * as networking from "@/components/networking";
@@ -16,6 +16,13 @@ import type {
 } from "@/components/UsagePage/types";
 import EntityUsage from "./EntityUsage";
 import { getGlobalTopKeys, getTopAPIKeys } from "./entityUsageAggregations";
+
+type EntityUsageProps = ComponentProps<typeof EntityUsage>;
+
+function StatefulEntityUsage(props: Omit<EntityUsageProps, "selectedEntities" | "onSelectedEntitiesChange">) {
+  const [selectedEntities, setSelectedEntities] = useState<readonly string[]>([]);
+  return <EntityUsage {...props} selectedEntities={selectedEntities} onSelectedEntitiesChange={setSelectedEntities} />;
+}
 
 const emptySpendMetrics: SpendMetrics = {
   spend: 0,
@@ -112,7 +119,7 @@ vi.mock("./TopModelView", () => ({
 }));
 
 vi.mock("./TeamUserSpendCard", () => ({
-  default: ({ teamIds }: { teamIds: string[] }) => <div>{`team-user-spend:${teamIds.join("|")}`}</div>,
+  default: ({ teamIds }: { teamIds: readonly string[] }) => <div>{`team-user-spend:${teamIds.join("|")}`}</div>,
 }));
 
 vi.mock("@/components/EntityUsageExport/EntityUsageExportModal", () => ({
@@ -565,7 +572,8 @@ describe("EntityUsage", () => {
       expect(spendElements.length).toBeGreaterThan(0);
     });
 
-    expect(screen.getByText("1,000")).toBeInTheDocument(); // Total Requests
+    // Scoped to the active Cost tab: the keep-mounted Key Activity tab shows the same totals.
+    expect(within(screen.getByRole("tabpanel")).getByText("1,000")).toBeInTheDocument(); // Total Requests
   });
 
   it("should render with team entity type and call team API", async () => {
@@ -685,7 +693,7 @@ describe("EntityUsage", () => {
       fireEvent.click(keyActivityTab);
     });
 
-    expect(screen.getAllByText("Activity Metrics")[1]).toBeInTheDocument();
+    expect(within(screen.getByRole("tabpanel")).getByRole("heading", { name: "Overall Usage" })).toBeInTheDocument();
   });
 
   it("loads key pages separately from the aggregate using the current entity scope", async () => {
@@ -1102,24 +1110,19 @@ describe("EntityUsage", () => {
       expect(mockTagDailyActivityCall).toHaveBeenCalled();
     });
 
+    // The fixture carries no model breakdown, so the day's spend stacks as a single "Other" segment.
     await waitFor(() => {
-      expect(container.querySelectorAll("path.recharts-rectangle")).toHaveLength(2);
+      expect(container.querySelectorAll("path.recharts-rectangle")).toHaveLength(1);
     });
+    expect(container.querySelector("path.recharts-rectangle")).toHaveAttribute("fill", "#94a3b8");
 
-    const barFills = new Set(
-      Array.from(container.querySelectorAll("path.recharts-rectangle")).map((rect) => rect.getAttribute("fill")),
-    );
-    expect(barFills).toEqual(new Set(["var(--color-cyan-500, #06b6d4)"]));
+    expect(screen.getAllByText("Jan 1").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Tag 1").length).toBeGreaterThan(0);
 
-    expect(screen.getAllByText("2025-01-01").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Tag 1").length).toBeGreaterThan(1);
-
-    const sectors = container.querySelectorAll(".recharts-pie-sector path");
-    expect(sectors).toHaveLength(1);
-    expect(sectors[0]).toHaveAttribute("fill", "var(--color-cyan-500, #06b6d4)");
-
-    const centerLabels = Array.from(container.querySelectorAll("text.fill-foreground")).map((text) => text.textContent);
-    expect(centerLabels).toContain("$100.50");
+    const segments = screen.getAllByTestId("provider-share-segment");
+    expect(segments).toHaveLength(1);
+    expect(segments[0]).toHaveStyle({ backgroundColor: "rgb(236, 72, 153)" });
+    expect(screen.getByTestId("provider-spend-total")).toHaveTextContent("$100.50");
   });
 
   it("should label the chart with user_email metadata instead of the raw UUID (LIT-3889)", async () => {
@@ -1370,6 +1373,48 @@ describe("EntityUsage", () => {
         expect(mockUserDailyActivityCall).toHaveBeenCalled();
       });
     };
+
+    it("links the single picked user back to their Internal Users record", async () => {
+      render(
+        <EntityUsage
+          {...defaultProps}
+          entityType="user"
+          entityList={null}
+          selectedEntities={["user-001"]}
+          onSelectedEntitiesChange={vi.fn()}
+        />,
+      );
+
+      expect(await screen.findByRole("link", { name: "View user record" })).toHaveAttribute(
+        "href",
+        "/ui/users?user=user-001",
+      );
+    });
+
+    it("shows no user record link until a user is picked", async () => {
+      await renderUserUsage();
+
+      expect(screen.queryByRole("link", { name: "View user record" })).not.toBeInTheDocument();
+    });
+
+    it("reports the picked user to the owner of the selection", async () => {
+      const user = userEvent.setup();
+      const onSelectedEntitiesChange = vi.fn();
+      render(
+        <EntityUsage
+          {...defaultProps}
+          entityType="user"
+          entityList={null}
+          selectedEntities={[]}
+          onSelectedEntitiesChange={onSelectedEntitiesChange}
+        />,
+      );
+
+      await user.click(userCombobox());
+      await user.click(await screen.findByText("Alice (user-001)"));
+
+      expect(onSelectedEntitiesChange).toHaveBeenCalledWith(["user-001"]);
+    });
 
     it("offers a user filter even when the caller preloaded no user page", async () => {
       await renderUserUsage();

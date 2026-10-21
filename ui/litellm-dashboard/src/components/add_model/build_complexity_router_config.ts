@@ -6,6 +6,7 @@ import {
   type FuseSettings,
 } from "./forecast_classifier_config";
 import type { ModelGroup } from "../llm_calls/fetch_models";
+import { isHeuristicChain, type LocalHeuristic } from "./classifier_types";
 import { KeywordTierRule } from "./KeywordTierRules";
 import {
   type JevClassifierConfig,
@@ -23,7 +24,8 @@ import {
   tierRowByName,
 } from "./tier_rows";
 import { emptyKeywordTierRuleIndexes, serializeKeywordTierRules } from "./complexity_router_keywords";
-import { type CustomDimension, type CustomDimensionRow, serializeCustomDimensions } from "./custom_dimensions";
+import { type CustomDimension, type CustomDimensionRow } from "./custom_dimensions";
+import { scorerKnobPayload } from "./heuristic_scoring_knobs";
 import {
   TierModelParams,
   TierModelParamsByTier,
@@ -105,45 +107,6 @@ export const normalizeClassifierLlmConfig = ({
         ...(vision && { vision }),
       };
 
-interface ScorerKnobInputs {
-  classifierType: ClassifierType;
-  classifierFallback: ClassifierFallback | undefined;
-  tierBoundaries: TierBoundaries | undefined;
-  tokenThresholds: TokenThresholds | undefined;
-  dimensionWeights: DimensionWeights | undefined;
-  customDimensions: CustomDimensionRow[] | undefined;
-  reasoningOverrideMinScore: number | undefined;
-}
-
-/**
- * The scorer knobs to persist, which is none of them on a router that never scores: an LLM classifier
- * falling back to the default model would otherwise carry settings that can only mislead the next reader.
- * Each is omitted while untouched, so the router keeps tracking the backend defaults.
- */
-const scorerKnobPayload = ({
-  classifierType,
-  classifierFallback,
-  tierBoundaries,
-  tokenThresholds,
-  dimensionWeights,
-  customDimensions,
-  reasoningOverrideMinScore,
-}: ScorerKnobInputs) => {
-  const role = heuristicScoringRoleFor(classifierType, classifierFallback);
-  return role === "never"
-    ? {}
-    : {
-        ...(tierBoundaries && { tier_boundaries: tierBoundaries }),
-        ...(tokenThresholds && { token_thresholds: tokenThresholds }),
-        ...(dimensionWeights && { dimension_weights: dimensionWeights }),
-        // Only a scorer that decides accepts these; the backend rejects them on every other
-        // classifier, so a fallback-only router must not carry rows a switch left behind.
-        ...(role === "decides" &&
-          customDimensions !== undefined && { custom_dimensions: serializeCustomDimensions(customDimensions) }),
-        ...(reasoningOverrideMinScore !== undefined && { reasoning_override_min_score: reasoningOverrideMinScore }),
-      };
-};
-
 export interface StoredComplexityRouterConfig {
   tiers?: Record<string, unknown>;
   enable_non_reasoning_tier?: boolean;
@@ -155,12 +118,14 @@ export interface StoredComplexityRouterConfig {
   heuristic_first_max_tier?: unknown;
   hybrid_boundary_margin?: unknown;
   tier_labels?: unknown;
-  classifier_type?: ClassifierType;
+  classifier_type?: ClassifierType | "oss_classifier";
+  local_heuristic?: unknown;
   heuristic_v2_success_threshold?: unknown;
   capability_classifier_config?: unknown;
   llm_v2_config?: unknown;
   classifier_llm_config?: ClassifierLLMConfig;
   jev_classifier_config?: unknown;
+  opensource_classifier_config?: unknown;
   classifier_context_window_size?: unknown;
   classifier_context_budget_chars?: unknown;
   classifier_context_per_turn_chars?: unknown;
@@ -184,6 +149,9 @@ export interface StoredComplexityRouterConfig {
   return_raw_model_name?: boolean;
   enable_context_window_escalation?: unknown;
   context_window_escalation_buffer?: unknown;
+  cache_aware_routing?: unknown;
+  cache_aware_routing_output_tokens?: unknown;
+  cache_aware_routing_timeout_ms?: unknown;
   stall_escalation_enabled?: unknown;
   stall_escalation_window?: unknown;
   stall_escalation_repeat_threshold?: unknown;
@@ -207,6 +175,7 @@ export interface BuildComplexityRouterConfigParams {
   planModeMinTier: string | undefined;
   tierLabels: ComplexityTierLabels | undefined;
   classifierType: ClassifierType;
+  localHeuristic?: LocalHeuristic;
   heuristicV2SuccessThreshold?: number;
   capabilityClassifierConfig?: CapabilitySettings;
   llmV2Config?: FuseSettings;
@@ -248,6 +217,9 @@ export interface BuildComplexityRouterConfigParams {
   tierModelParams?: TierModelParamsByTier;
   enableContextWindowEscalation?: boolean;
   contextWindowEscalationBuffer?: number;
+  cacheAwareRouting?: boolean;
+  cacheAwareRoutingOutputTokens?: number;
+  cacheAwareRoutingTimeoutMs?: number;
   sessionAffinityTtlSeconds?: number;
   codeKeywords?: string[];
   reasoningKeywords?: string[];
@@ -280,19 +252,21 @@ export interface TierDefinitionPayload {
 }
 
 export interface ComplexityRouterConfigPayload {
-  tiers: ComplexityTiers | Record<string, string[]>;
+  tiers: Record<string, string | string[]>;
   enable_non_reasoning_tier?: boolean;
   tier_definitions?: TierDefinitionPayload[];
   fallback_tier?: string;
   default_model?: string;
   plan_mode_min_tier?: string;
   tier_labels?: ComplexityTierLabels;
-  classifier_type: ClassifierType;
+  classifier_type: ClassifierType | "oss_classifier";
+  local_heuristic?: LocalHeuristic;
   heuristic_v2_success_threshold?: number;
   capability_classifier_config?: CapabilitySettings;
   llm_v2_config?: FuseSettings;
   classifier_llm_config?: ClassifierLLMConfig;
   jev_classifier_config?: JevClassifierConfig;
+  opensource_classifier_config?: JevClassifierConfig;
   classifier_context_window_size?: number;
   classifier_context_budget_chars?: number;
   classifier_context_per_turn_chars?: number;
@@ -329,6 +303,9 @@ export interface ComplexityRouterConfigPayload {
   reasoning_override_min_score?: number;
   enable_context_window_escalation?: boolean;
   context_window_escalation_buffer?: number;
+  cache_aware_routing?: boolean;
+  cache_aware_routing_output_tokens?: number;
+  cache_aware_routing_timeout_ms?: number;
   tier_model_configs?: Record<string, { model_name: string; litellm_params: TierModelParams }[]>;
   code_keywords?: string[];
   reasoning_keywords?: string[];
@@ -521,7 +498,7 @@ export const customTierWireFields = (
     tiers: Object.fromEntries(rows.map((row) => [activeTierName(row), row.models])),
     tier_definitions: tierDefinitionsFromRows(rows),
     ...(fallback && { fallback_tier: activeTierName(fallback) }),
-    classifier_type: classifierType === "jev" ? "jev" : "llm",
+    classifier_type: classifierType === "jev" ? "oss_classifier" : "llm",
     // Rebuilt from the fields an edited tier set allows. The backend rejects system_prompt and
     // classification_rubric beside tier_definitions, and both live inside this object rather than at
     // the top level the omit list covers. The opening instructions ride classification_prompt below.
@@ -675,6 +652,7 @@ export const buildComplexityRouterConfig = ({
   planModeMinTier,
   tierLabels,
   classifierType,
+  localHeuristic,
   heuristicV2SuccessThreshold,
   capabilityClassifierConfig,
   llmV2Config,
@@ -716,6 +694,9 @@ export const buildComplexityRouterConfig = ({
   tierModelParams,
   enableContextWindowEscalation,
   contextWindowEscalationBuffer,
+  cacheAwareRouting,
+  cacheAwareRoutingOutputTokens,
+  cacheAwareRoutingTimeoutMs,
   sessionAffinityTtlSeconds,
   codeKeywords,
   reasoningKeywords,
@@ -739,6 +720,7 @@ export const buildComplexityRouterConfig = ({
   const cleanedTierLabels = serializeTierLabels(tierLabels);
   const scorerInputs = {
     classifierType,
+    localHeuristic,
     classifierFallback,
     tierBoundaries,
     tokenThresholds,
@@ -784,16 +766,26 @@ export const buildComplexityRouterConfig = ({
     classifierPluginTimeoutMs > 0;
 
   const supportsOpeningPrompt = !customTierSet && !forecast && usesLlmClassifier(effectiveType);
+  const populatedTiers =
+    forecast || cacheAwareRouting
+      ? Object.fromEntries(Object.entries(tiers).filter(([, models]) => models.length > 0))
+      : tiers;
   const payload: ComplexityRouterConfigPayload = {
-    tiers: forecast ? Object.fromEntries(Object.entries(tiers).filter(([, models]) => models.length > 0)) : tiers,
+    tiers:
+      cacheAwareRouting && !customTierSet
+        ? Object.fromEntries(
+            Object.entries(populatedTiers).map(([tier, models]) => [tier, models.length === 1 ? models[0] : models]),
+          )
+        : populatedTiers,
     // The backend rejects the flag beside a custom tier set.
     ...(!customTierSet && enableNonReasoningTier && { enable_non_reasoning_tier: true }),
     ...(serializedTierModelConfigs && { tier_model_configs: serializedTierModelConfigs }),
     ...(defaultModel?.trim() && { default_model: defaultModel }),
     ...(planModeMinTier?.trim() && { plan_mode_min_tier: planModeMinTier }),
     ...(cleanedTierLabels && { tier_labels: cleanedTierLabels }),
-    classifier_type: classifierType,
-    ...(effectiveType === "jev" && { jev_classifier_config: normalizeJevClassifierConfig(jevClassifierConfig) }),
+    classifier_type: classifierType === "jev" ? "oss_classifier" : classifierType,
+    ...(isHeuristicChain(effectiveType) && localHeuristic !== undefined && { local_heuristic: localHeuristic }),
+    ...(effectiveType === "jev" && { opensource_classifier_config: normalizeJevClassifierConfig(jevClassifierConfig) }),
     ...(heuristicV2SuccessThreshold !== undefined && {
       heuristic_v2_success_threshold: heuristicV2SuccessThreshold,
     }),
@@ -839,6 +831,11 @@ export const buildComplexityRouterConfig = ({
         adaptive_eligible: adaptiveEligible,
       }),
     ...(returnRawModelName && { return_raw_model_name: true }),
+    ...(cacheAwareRouting !== undefined && { cache_aware_routing: cacheAwareRouting }),
+    ...(cacheAwareRoutingOutputTokens !== undefined && {
+      cache_aware_routing_output_tokens: cacheAwareRoutingOutputTokens,
+    }),
+    ...(cacheAwareRoutingTimeoutMs !== undefined && { cache_aware_routing_timeout_ms: cacheAwareRoutingTimeoutMs }),
     ...((forecast || enableContextWindowEscalation !== undefined) && {
       enable_context_window_escalation: enableContextWindowEscalation ?? false,
     }),

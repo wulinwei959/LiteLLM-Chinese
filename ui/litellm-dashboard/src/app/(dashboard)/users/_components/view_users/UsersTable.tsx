@@ -34,6 +34,7 @@ interface UsersTableProps {
   isLoading: boolean;
   possibleUIRoles: Record<string, Record<string, string>> | null;
   teams: UsersTableTeamOption[] | null;
+  canViewUserUsage: boolean;
   sorting: SortingState;
   onSortingChange: OnChangeFn<SortingState>;
   pagination: PaginationState;
@@ -69,6 +70,7 @@ export function UsersTable({
   isLoading,
   possibleUIRoles,
   teams,
+  canViewUserUsage,
   sorting,
   onSortingChange,
   pagination,
@@ -92,6 +94,7 @@ export function UsersTable({
     const columnDeps = {
       possibleUIRoles,
       includeSelection: selectionEnabled,
+      canViewUserUsage,
       onUserClick,
       onDeleteUser,
       onResetPassword,

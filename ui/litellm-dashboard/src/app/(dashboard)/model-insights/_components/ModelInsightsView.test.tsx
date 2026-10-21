@@ -21,7 +21,6 @@ vi.mock("recharts", () => ({
     </div>
   ),
   CartesianGrid: () => null,
-  Treemap: () => null,
   XAxis: () => null,
   YAxis: () => null,
 }));
@@ -46,36 +45,13 @@ const response = {
   daily_totals: [{ date: "2026-09-28", spend: 2.5, prompt_tokens: 1000, completion_tokens: 2000, requests: 12 }],
 };
 
-const taskResponse = {
-  start_date: "2025-09-29",
-  end_date: "2026-09-28",
-  tasks: [
-    {
-      task_type: "code_generation",
-      label: "Code Generation",
-      category: "Code",
-      value: 2.5,
-      share: 100,
-      leader: "fast-chat",
-      provider: "openai",
-    },
-  ],
-};
-
-const mockApi = (tasks: unknown = taskResponse) =>
-  vi
-    .mocked(apiClient.get)
-    .mockImplementation((path: string) =>
-      path === "/model-insights/tasks" ? (tasks as Promise<unknown>) : Promise.resolve(response),
-    );
-
 describe("ModelInsightsView", () => {
   beforeEach(() => {
     vi.mocked(apiClient.get).mockReset();
-    mockApi(Promise.resolve(taskResponse));
+    vi.mocked(apiClient.get).mockResolvedValue(response);
   });
 
-  it("shows the ranking with share and the task legend from the API response", async () => {
+  it("shows the ranking with share from the API response", async () => {
     render(<ModelInsightsView accessToken="token" />);
 
     expect(await screen.findByText("fast-chat")).toBeInTheDocument();
@@ -83,14 +59,15 @@ describe("ModelInsightsView", () => {
       screen.getByText(`你的网关在 ${response.start_date} 至 ${response.end_date} 期间用过的模型`),
     ).toBeInTheDocument();
     expect(screen.getByText("by openai")).toBeInTheDocument();
-    expect(await screen.findByText("Code")).toBeInTheDocument();
-    expect(screen.getAllByText("100.0%")).toHaveLength(2);
+    expect(screen.getAllByText("100.0%")).toHaveLength(1);
+    expect(screen.queryByText("Top models by task")).not.toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "tokens" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("tab", { name: "log" })).toBeInTheDocument();
     expect(apiClient.get).toHaveBeenCalledWith("/model-insights", {
       accessToken: "token",
       query: { metric: "tokens" },
     });
+    expect(apiClient.get).not.toHaveBeenCalledWith("/model-insights/tasks", expect.anything());
   });
 
   it("refetches with the selected metric so top models are ranked by it", async () => {
@@ -107,24 +84,6 @@ describe("ModelInsightsView", () => {
     );
   });
 
-  it("does not refetch the task breakdown when the chart metric changes", async () => {
-    render(<ModelInsightsView accessToken="token" />);
-    await screen.findByText("Code");
-    const taskCalls = () =>
-      vi.mocked(apiClient.get).mock.calls.filter(([path]) => path === "/model-insights/tasks").length;
-    const before = taskCalls();
-
-    await userEvent.click(screen.getByRole("tab", { name: "requests" }));
-    await waitFor(() =>
-      expect(apiClient.get).toHaveBeenCalledWith("/model-insights", {
-        accessToken: "token",
-        query: { metric: "requests" },
-      }),
-    );
-
-    expect(taskCalls()).toBe(before);
-  });
-
   it("shows the API error instead of loading forever", async () => {
     vi.mocked(apiClient.get).mockRejectedValue(new Error("Only proxy admins can view deployment-wide model insights"));
     render(<ModelInsightsView accessToken="token" />);
@@ -137,11 +96,7 @@ describe("ModelInsightsView", () => {
     render(<ModelInsightsView accessToken="token" />);
     await screen.findByText("fast-chat");
     let resolve: (value: typeof response) => void = () => {};
-    vi.mocked(apiClient.get).mockImplementation((path: string) =>
-      path === "/model-insights/tasks"
-        ? Promise.resolve(taskResponse)
-        : new Promise((done) => (resolve = done as typeof resolve)),
-    );
+    vi.mocked(apiClient.get).mockImplementation(() => new Promise((done) => (resolve = done as typeof resolve)));
 
     await userEvent.click(screen.getByRole("tab", { name: "spend" }));
 
@@ -159,7 +114,6 @@ describe("ModelInsightsView", () => {
     render(<ModelInsightsView accessToken="token" />);
     await screen.findByText("fast-chat");
     const chart = screen.getByTestId("usage-chart");
-    const days = (Date.parse(response.end_date) - Date.parse(response.start_date)) / 86_400_000 + 1;
 
     expect(screen.getByRole("tab", { name: "按日" })).toHaveAttribute("aria-selected", "true");
     expect(chart).toHaveAttribute("data-buckets", String(days));

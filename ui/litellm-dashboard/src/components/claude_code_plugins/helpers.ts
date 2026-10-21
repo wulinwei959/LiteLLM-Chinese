@@ -297,7 +297,7 @@ export const getSourceDisplayText = (t: SkillsTranslator, source: PluginSource):
 /**
  * Get clickable link for plugin source. Ssh clone urls are not browsable, so they yield null.
  */
-export const getSourceLink = (source: PluginSource): string | null => {
+export const getSourceLink = (source: Plugin["source"]): string | null => {
   if (source.source === "github" && source.repo) {
     return `https://github.com/${source.repo}`;
   }
@@ -309,7 +309,7 @@ export const getSourceLink = (source: PluginSource): string | null => {
  * Get badge color based on category
  */
 export const getCategoryBadgeColor = (
-  category?: string,
+  category?: string | null,
 ): "blue" | "green" | "purple" | "red" | "orange" | "yellow" | "gray" => {
   if (!category) {
     return "gray";

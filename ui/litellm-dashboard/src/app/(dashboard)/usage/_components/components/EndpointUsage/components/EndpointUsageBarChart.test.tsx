@@ -34,14 +34,14 @@ describe("EndpointUsageBarChart", () => {
     expect(screen.getByText("失败请求")).toBeInTheDocument();
   });
 
-  it("renders stacked green and red bars per endpoint", () => {
+  it("renders stacked brand-blue and red bars per endpoint", () => {
     const { container } = renderWithProviders(<EndpointUsageBarChart endpointData={endpointData} />);
 
     expect(container.querySelectorAll(".recharts-bar")).toHaveLength(2);
     const rectangles = Array.from(container.querySelectorAll("path.recharts-rectangle"));
     expect(rectangles).toHaveLength(4);
     const fills = new Set(rectangles.map((rect) => rect.getAttribute("fill")));
-    expect(fills).toEqual(new Set(["var(--color-green-500, #22c55e)", "var(--color-red-500, #ef4444)"]));
+    expect(fills).toEqual(new Set(["#2b3fd6", "#ef4444"]));
 
     const xPositions = rectangles.map((rect) => rect.getAttribute("d")?.split(",")[0]);
     expect(new Set(xPositions).size).toBe(2);

@@ -14,6 +14,7 @@ const defaultLowestLatencyArgs: routingStrategyArgs = {
 
 interface LatencyBasedConfigurationProps {
   routingStrategyArgs: { [key: string]: any };
+  ownedByConfig?: boolean;
 }
 
 const LatencyBasedConfiguration: React.FC<LatencyBasedConfigurationProps> = ({ routingStrategyArgs }) => {
@@ -42,6 +43,8 @@ const LatencyBasedConfiguration: React.FC<LatencyBasedConfigurationProps> = ({ r
                 <Input
                   name={param}
                   defaultValue={typeof value === "object" ? JSON.stringify(value, null, 2) : value?.toString()}
+                  disabled={ownedByConfig}
+                  title={ownedByConfig ? CONFIG_OWNED_HINT : undefined}
                   className="font-mono text-sm w-full"
                 />
               </label>

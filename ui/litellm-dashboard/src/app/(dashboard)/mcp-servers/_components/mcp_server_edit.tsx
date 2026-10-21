@@ -55,7 +55,7 @@ import { EditServerFormValues, buildEditServerPayload, editPayloadErrorMessage }
 import { duplicateIdentifierMessage, findDuplicateMcpServer, mcpSubmitErrorReason } from "./duplicateServerCheck";
 import { toast } from "@/lib/toast";
 import { getEditToolPreview } from "./editToolPreview";
-import { useMcpOAuthFlow } from "@/hooks/useMcpOAuthFlow";
+import { useMcpOAuthFlow, type McpDcrCredentials } from "@/hooks/useMcpOAuthFlow";
 import {
   MountedFormField,
   MountedFormProvider,
@@ -251,6 +251,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
   // in this edit session; undefined when none is held. If a mint-relevant field later diverges from it,
   // the held token (hook response + sessionStorage) is discarded so the admin must re-authorize.
   const authorizedIdentityRef = React.useRef<string | undefined>(undefined);
+  const dcrClientRef = React.useRef<McpDcrCredentials | null>(null);
 
   const {
     startOAuthFlow,
@@ -301,7 +302,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
         env: values.env,
       };
     },
-    onTokenReceived: (token) => {
+    onTokenReceived: (token, registeredClient) => {
       if (!token?.access_token) {
         return;
       }
@@ -318,6 +319,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
         return;
       }
 
+      dcrClientRef.current = registeredClient?.dcr_server_url ? registeredClient : null;
       const current = (allFieldsValue(form).credentials as Record<string, unknown> | undefined) ?? {};
       const nextCredentials = {
         ...(preservedAdminCredentials(current) ?? {}),
@@ -392,6 +394,9 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
       if (!parsed || parsed.serverId !== mcpServer.server_id) {
         return;
       }
+      // The saved server may still be loading on the first render after the redirect.
+      // Consume this snapshot only after the matching server can restore it.
+      window.sessionStorage.removeItem(EDIT_OAUTH_UI_STATE_KEY);
       if (parsed.formValues) {
         // Rebuild credentials from the declared app in EITHER the loaded server or the saved snapshot,
         // then strip minted token material. Merging the two (server under snapshot) before stripping is
@@ -432,7 +437,6 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
       }
     } catch (err) {
       console.error("Failed to restore MCP edit state", err);
-    } finally {
       window.sessionStorage.removeItem(EDIT_OAUTH_UI_STATE_KEY);
     }
   }, [form, mcpServer]);
@@ -503,6 +507,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
       removeToken(mcpServer.server_id, userID);
     }
     setTools([]);
+    dcrClientRef.current = null;
     resetOAuthFlow();
     // The admin-typed app is upstream-scoped config, not minted material, so it survives every
     // invalidation; only the held token is discarded. Token-shaped keys are excluded by the filter.
@@ -722,7 +727,16 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
     return () => subscription.unsubscribe();
   }, [form]);
 
+  const isOAuthPending = ["authorizing", "exchanging"].includes(oauthStatus);
+
+  const handleCancel = () => {
+    window.sessionStorage.removeItem(EDIT_OAUTH_UI_STATE_KEY);
+    resetOAuthFlow();
+    onCancel();
+  };
+
   const submitForm = async () => {
+    if (isOAuthPending) return;
     const isValid = await form.trigger(mountedPaths(registry) as string[]);
     if (!isValid) {
       return;
@@ -744,7 +758,8 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
       return;
     }
     try {
-      const built = buildEditServerPayload(values, {
+      const uiState = {
+        dcrClient: dcrClientRef.current,
         mcpServer,
         logoUrl,
         costConfig,
@@ -754,7 +769,8 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
         toolNameToDisplayName,
         toolNameToDescription,
         removeStoredApp,
-      });
+      };
+      const built = buildEditServerPayload(values, uiState);
       if (built.kind !== "ok") {
         toast.fromError(editPayloadErrorMessage(built, t));
         return;
@@ -822,6 +838,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
           <FormProvider {...form}>
             <MountedFormProvider value={{ control: form.control, registry }}>
               <form
+                aria-label="Edit MCP server"
                 onSubmit={(event) => {
                   event.preventDefault();
                   void submitForm();
@@ -955,6 +972,28 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                       min={1}
                       step={1}
                       placeholder={t("create.maxConcurrentPlaceholder")}
+                      className="w-full rounded-lg"
+                    />
+                  )}
+                </MountedFormField>
+
+                <MountedFormField
+                  label={
+                    <span className="text-sm font-medium text-foreground flex items-center">
+                      RPM limit (all callers)
+                      <SimpleTooltip content="Max requests per minute to this server across all keys and teams. Leave empty for no limit">
+                        <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
+                      </SimpleTooltip>
+                    </span>
+                  }
+                  name="rpm"
+                >
+                  {(control) => (
+                    <Input
+                      {...numberControl(control, 0)}
+                      min={0}
+                      step={1}
+                      placeholder="e.g. 60"
                       className="w-full rounded-lg"
                     />
                   )}

@@ -27,7 +27,7 @@ interface PerUserAnalyticsResponse {
 
 interface PerUserUsageProps {
   accessToken: string | null;
-  selectedTags: string[];
+  selectedTags: readonly string[];
   formatAbbreviatedNumber: (value: number, decimalPlaces?: number) => string;
 }
 
@@ -45,7 +45,7 @@ const PerUserUsage: React.FC<PerUserUsageProps> = ({ accessToken, selectedTags, 
   });
 
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 50 });
-  const [pagedTags, setPagedTags] = useState(selectedTags);
+  const [pagedTags, setPagedTags] = useState<readonly string[]>(selectedTags);
 
   if (pagedTags !== selectedTags) {
     setPagedTags(selectedTags);
@@ -60,7 +60,7 @@ const PerUserUsage: React.FC<PerUserUsageProps> = ({ accessToken, selectedTags, 
       accessToken,
       pagination.pageIndex + 1,
       pagination.pageSize,
-      pagedTags.length > 0 ? pagedTags : undefined,
+      pagedTags.length > 0 ? [...pagedTags] : undefined,
     )
       .then((response) => {
         if (stale) return;

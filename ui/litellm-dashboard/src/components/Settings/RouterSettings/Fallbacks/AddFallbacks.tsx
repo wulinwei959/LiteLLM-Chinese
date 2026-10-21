@@ -7,6 +7,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { toast } from "@/lib/toast";
 import { fetchAvailableModels, ModelGroup } from "@/components/llm_calls/fetch_models";
@@ -21,6 +22,7 @@ interface AddFallbacksProps {
   accessToken: string;
   value?: Fallbacks; // Current fallbacks value from form
   onChange?: (fallbacks: Fallbacks) => Promise<void>; // Callback to update form value
+  disabledReason?: string; // When set, the button is disabled and this explains why
 }
 
 export default function AddFallbacks({ accessToken, value = [], onChange }: AddFallbacksProps) {

@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import { CircleCheck, FileDown } from "lucide-react";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { getGlobalLitellmHeaderName } from "@/components/networking";
 import type { CloudZeroTranslator } from "@/lib/i18n/translators";
 import { toast } from "@/lib/toast";

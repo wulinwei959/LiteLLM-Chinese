@@ -23,7 +23,8 @@ type AdvancedDatePickerTranslatorKey = Parameters<AdvancedDatePickerTranslator>[
 
 interface AdvancedDatePickerProps {
   value: DateRangePickerValue;
-  onValueChange: (value: DateRangePickerValue) => void;
+  onValueChange: (value: DateRangePickerValue, presetShortLabel: string | null) => void;
+  presetShortLabel?: string | null;
   label?: string;
   className?: string;
   showTimeRange?: boolean;
@@ -86,6 +87,15 @@ const relativeTimeOptions = (t: AdvancedDatePickerTranslator): readonly Relative
     },
   ] as const satisfies readonly RelativeTimeOption[];
 
+export function matchRelativeTimeOption(value: DateRangePickerValue): RelativeTimeOption | undefined {
+  const { from, to } = value;
+  if (!from || !to) return undefined;
+  return relativeTimeOptions.find((option) => {
+    const optionRange = option.getValue();
+    return moment(from).isSame(optionRange.from, "day") && moment(to).isSame(optionRange.to, "day");
+  });
+}
+
 /**
  * Advanced Date Range Picker with dropdown, relative times, and custom inputs
  */
@@ -103,6 +113,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [tempValue, setTempValue] = useState<DateRangePickerValue>(value);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [pickedPreset, setPickedPreset] = useState<string | null>(null);
 
   // Custom date inputs only - removed time inputs
   const [startDate, setStartDate] = useState("");
@@ -166,7 +177,8 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
       setEndDate(moment(value.to).format("YYYY-MM-DD"));
     }
     setTempValue(value);
-  }, [value]);
+    setPickedPreset(presetShortLabel ?? null);
+  }, [value, presetShortLabel]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -270,13 +282,13 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
   const handleApply = () => {
     if (tempValue.from && tempValue.to && validation.isValid) {
       // First call with immediate value for UI responsiveness
-      onValueChange(tempValue);
+      onValueChange(tempValue, pickedPreset);
 
       // Then do the same background adjustment logic as the original component
       requestIdleCallback(
         () => {
           const adjustedValue = adjustDateRange(tempValue);
-          onValueChange(adjustedValue);
+          onValueChange(adjustedValue, pickedPreset);
         },
         { timeout: 100 },
       );
@@ -300,6 +312,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
     // Reset selected option
     const matchingOption = getMatchingOption(value);
     setSelectedOption(matchingOption);
+    setPickedPreset(presetShortLabel ?? null);
 
     setIsOpen(false);
   };
@@ -394,7 +407,10 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                     <input
                       type="date"
                       value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
+                      onChange={(e) => {
+                        setPickedPreset(null);
+                        setStartDate(e.target.value);
+                      }}
                       className={`w-65 px-3 py-2 text-sm border rounded-md cursor-pointer hover:border-ring focus:border-info focus:ring-1 focus:ring-ring ${
                         !validation.isValid
                           ? "border-destructive/30 focus:border-destructive focus:ring-red-200"
@@ -409,7 +425,10 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                     <input
                       type="date"
                       value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
+                      onChange={(e) => {
+                        setPickedPreset(null);
+                        setEndDate(e.target.value);
+                      }}
                       className={`w-65 px-3 py-2 text-sm border rounded-md cursor-pointer hover:border-ring focus:border-info focus:ring-1 focus:ring-ring ${
                         !validation.isValid
                           ? "border-destructive/30 focus:border-destructive focus:ring-red-200"

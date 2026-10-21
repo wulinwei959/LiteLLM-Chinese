@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { ArrowLeft, Check, Copy, Link2 } from "lucide-react";
 import { cn } from "@/lib/cva.config";
 import { buildMarketplaceSettingsSnippet, formatInstallCommand, getSourceDisplayText, getSourceLink } from "./helpers";
-import { Plugin, PluginSource } from "./types";
+import { Plugin } from "./types";
 
 const SkillSource: React.FC<{ source: PluginSource }> = ({ source }) => {
   const t = useTranslations("claudeCodePlugins");

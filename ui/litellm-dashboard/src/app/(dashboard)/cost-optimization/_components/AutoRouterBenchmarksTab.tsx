@@ -89,7 +89,7 @@ const HeroCard: React.FC<{ view: BenchmarkView }> = ({ view }) => {
   const classifierCost = stats.baseline_spend == null ? null : stats.savings_estimated_classifier_cost ?? null;
   const comparedAll = stats.savings_estimated_turns === stats.turns;
   return (
-    <Card className="overflow-hidden py-0">
+    <Card className="overflow-hidden py-0" role="region" aria-label="Auto-router savings">
       <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="flex flex-col items-center justify-center gap-2 p-6">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -112,6 +112,12 @@ const HeroCard: React.FC<{ view: BenchmarkView }> = ({ view }) => {
           {stats.baseline_spend != null && !comparedAll && (
             <p className="text-center text-xs text-muted-foreground">
               {t("autoRouter.comparedOn", { measured: stats.savings_estimated_turns, total: stats.turns })}
+            </p>
+          )}
+          {stats.unattributed_saved_spend != null && (
+            <p className="text-center text-xs text-muted-foreground">
+              Per-router records differ from recorded savings by {usd(Math.abs(stats.unattributed_saved_spend))}, for
+              example history from before per-router tracking, so the baseline comparison is unavailable
             </p>
           )}
         </div>
@@ -321,7 +327,16 @@ const BenchmarksBody: React.FC<BenchmarksBodyProps> = ({ isPending, error, data,
 
       <TierTurnsChart view={view} autoRouters={autoRouters} />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <p className="text-xs text-muted-foreground">
+        Savings and spend count requests on the selected UTC days. Actual spend covers every request on complexity
+        routers, including LLM classification cost. Baseline is actual spend plus recorded savings, so savings can be
+        zero or negative.
+      </p>
+
+      <p className="text-xs text-muted-foreground">
+        Session metrics cover every session that overlaps the range, including its turns outside the range.
+      </p>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Metric
           label={t("autoRouter.avgSaved")}
           value={stats.saved_per_session == null ? t("autoRouter.valueUnavailable") : usd(stats.saved_per_session)}

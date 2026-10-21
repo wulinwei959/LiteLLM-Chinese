@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Download } from "lucide-react";
+import { Download, Users } from "lucide-react";
 import React, { useMemo } from "react";
 
 import { teamSpendByUserCall } from "@/components/networking";
@@ -11,7 +11,8 @@ import type { UsageTeamUserSpendTranslator } from "@/lib/i18n/translators";
 import { DataTable } from "@/components/shared/DataTable";
 import { MoneyCell } from "@/components/shared/table_cells";
 import { Button } from "@/components/ui/button";
-import { Card as ShadcnCard, CardContent } from "@/components/ui/card";
+
+import { Panel } from "../overview/Primitives";
 
 import {
   buildTeamUserSpendCsv,
@@ -28,7 +29,7 @@ interface TeamUserSpendCardProps {
   accessToken: string | null;
   startTime: Date | null;
   endTime: Date | null;
-  teamIds: string[];
+  teamIds: readonly string[];
 }
 
 const buildTeamUserColumns = (t: UsageTeamUserSpendTranslator): ColumnDef<TeamUserSpendRow>[] => [
@@ -37,31 +38,31 @@ const buildTeamUserColumns = (t: UsageTeamUserSpendTranslator): ColumnDef<TeamUs
   {
     header: t("spend"),
     accessorKey: "spend",
-    meta: { numeric: true },
+    meta: { numeric: true, ...QUIET_HEADER },
     cell: ({ row }) => <MoneyCell value={row.original.spend} decimals={4} />,
   },
   {
     header: t("requests"),
     accessorKey: "api_requests",
-    meta: { numeric: true },
+    meta: { numeric: true, ...QUIET_HEADER },
     cell: ({ row }) => row.original.api_requests.toLocaleString(),
   },
   {
     header: t("successful"),
     accessorKey: "successful_requests",
-    meta: { numeric: true, className: "text-success" },
+    meta: { numeric: true, className: "text-success", ...QUIET_HEADER },
     cell: ({ row }) => row.original.successful_requests.toLocaleString(),
   },
   {
     header: t("failed"),
     accessorKey: "failed_requests",
-    meta: { numeric: true, className: "text-destructive" },
+    meta: { numeric: true, className: "text-destructive", ...QUIET_HEADER },
     cell: ({ row }) => row.original.failed_requests.toLocaleString(),
   },
   {
     header: t("tokens"),
     accessorKey: "total_tokens",
-    meta: { numeric: true },
+    meta: { numeric: true, ...QUIET_HEADER },
     cell: ({ row }) => row.original.total_tokens.toLocaleString(),
   },
 ];

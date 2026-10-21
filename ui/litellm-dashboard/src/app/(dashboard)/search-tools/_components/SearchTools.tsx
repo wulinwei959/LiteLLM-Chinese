@@ -104,6 +104,7 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
       search_provider: tool.litellm_params.search_provider,
       api_key: tool.litellm_params.api_key,
       description: tool.search_tool_info?.description,
+      input_cost_per_query: tool.litellm_params.input_cost_per_query,
     };
     form.reset(editFormValues);
     setSelectedToolId(toolId);

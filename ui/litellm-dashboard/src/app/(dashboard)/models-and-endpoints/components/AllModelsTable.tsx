@@ -1,5 +1,7 @@
 "use client";
 
+import { ROUTING_STATUS_FILTER_ID } from "../utils/routingStatus";
+
 import { ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
 import { Search, Settings } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -72,6 +74,7 @@ export interface AllModelsTableProps {
   onDeleteClick: (modelId: string) => void;
   onTogglePauseClick: (modelId: string, blocked: boolean) => void | Promise<void>;
   pausingModelId: string | null;
+  credentialLabels?: ReadonlyMap<string, string>;
 }
 
 function EmptyState({ t }: { t: ModelsTranslator }) {
@@ -118,6 +121,7 @@ export function AllModelsTable({
   onDeleteClick,
   onTogglePauseClick,
   pausingModelId,
+  credentialLabels,
 }: AllModelsTableProps) {
   const t = useTranslations("models");
 
@@ -169,6 +173,9 @@ export function AllModelsTable({
     const raw = String(value);
     if (columnId === MODEL_NAME_COLUMN_ID && raw === WILDCARD_MODEL_GROUP_VALUE) {
       return t("modelTable.wildcardModels");
+    }
+    if (columnId === ROUTING_STATUS_FILTER_ID) {
+      return ROUTING_STATUS_FILTER_VALUES[raw as keyof typeof ROUTING_STATUS_FILTER_VALUES] ?? raw;
     }
     return raw;
   };

@@ -1,10 +1,11 @@
+import { observeResponseHeaders, type ResponseHeadersListener } from "@/lib/http/observeResponseHeaders";
 import Anthropic from "@anthropic-ai/sdk";
 import { MessageType } from "@/components/chat_ui/types";
 import { TokenUsage } from "@/components/chat_ui/ResponseMetrics";
 import { buildMcpToolBlocks } from "@/components/llm_calls/mcp_tool_blocks";
 import { buildPlaygroundHeaders, type CustomHeaders } from "@/components/llm_calls/request_headers";
 import { MCPServer, MCPToolset } from "@/components/mcp_tools/types";
-import { getProxyBaseUrl } from "@/components/networking";
+import { getGatewayBaseUrl } from "@/components/networking";
 import { toast } from "@/lib/toast";
 import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 import { extractPromptCacheTokens } from "@/utils/promptCacheUsage";
@@ -38,6 +39,7 @@ export async function makeAnthropicMessagesRequest(
   mcpToolsets?: MCPToolset[],
   streamingEnabled: boolean = true,
   customHeaders?: CustomHeaders,
+  onResponseHeaders?: ResponseHeadersListener,
 ) {
   if (!accessToken) {
     throw new Error(t("llmCalls.virtualKeyRequired"));
@@ -48,7 +50,7 @@ export async function makeAnthropicMessagesRequest(
     console.log = function () {};
   }
 
-  const proxyBaseUrl = customBaseUrl || getProxyBaseUrl();
+  const proxyBaseUrl = customBaseUrl || getGatewayBaseUrl();
 
   const headers = buildPlaygroundHeaders(tags, customHeaders);
 
@@ -57,6 +59,7 @@ export async function makeAnthropicMessagesRequest(
     baseURL: proxyBaseUrl,
     dangerouslyAllowBrowser: true,
     defaultHeaders: headers,
+    ...(onResponseHeaders ? { fetch: observeResponseHeaders(onResponseHeaders) } : {}),
   });
 
   try {

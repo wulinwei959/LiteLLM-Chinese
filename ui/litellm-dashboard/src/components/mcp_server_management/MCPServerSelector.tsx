@@ -5,6 +5,8 @@ import { MultiSelect, type MultiSelectOption } from "@/components/shared/MultiSe
 import React from "react";
 import { useTranslations } from "next-intl";
 import { ALL_PROXY_MCP_SERVERS_SENTINEL, NO_MCP_SERVERS_SENTINEL } from "@/components/mcp_tools/constants";
+import type { MCPServer } from "@/components/mcp_tools/types";
+import { accessGroupNamesOf } from "./effectiveMcpServers";
 
 interface MCPServerSelectorProps {
   onChange: (selected: { servers: string[]; accessGroups: string[]; toolsets: string[] }) => void;
@@ -18,11 +20,26 @@ interface MCPServerSelectorProps {
   placeholder?: string;
   disabled?: boolean;
   teamId?: string | null;
+  userId?: string | null;
   allowNoMcpServers?: boolean;
   allowAllProxyMcpServers?: boolean;
 }
 
 const TOOLSET_PREFIX = "toolset:";
+
+export const serversWithinAccessGroups = (
+  servers: readonly MCPServer[],
+  selectedAccessGroups: readonly string[],
+  selectedServers: readonly string[],
+): readonly MCPServer[] => {
+  if (selectedAccessGroups.length === 0) return servers;
+  return servers.filter(
+    (server) =>
+      server.allow_all_keys === true ||
+      selectedServers.includes(server.server_id) ||
+      accessGroupNamesOf(server).some((group) => selectedAccessGroups.includes(group)),
+  );
+};
 
 const MCPServerSelector: React.FC<MCPServerSelectorProps> = ({
   onChange,
@@ -32,6 +49,7 @@ const MCPServerSelector: React.FC<MCPServerSelectorProps> = ({
   placeholder,
   disabled = false,
   teamId,
+  userId,
   allowNoMcpServers = false,
   allowAllProxyMcpServers = false,
 }) => {
@@ -43,6 +61,7 @@ const MCPServerSelector: React.FC<MCPServerSelectorProps> = ({
   const loading = serversLoading || groupsLoading || toolsetsLoading;
 
   const accessGroupSet = new Set(accessGroups);
+  const visibleServers = serversWithinAccessGroups(mcpServers, value?.accessGroups ?? [], value?.servers ?? []);
 
   // Combine options: access groups + servers + toolsets
   const options = [
@@ -51,7 +70,7 @@ const MCPServerSelector: React.FC<MCPServerSelectorProps> = ({
       value: group,
       description: t("accessGroup"),
     })),
-    ...mcpServers.map((server) => ({
+    ...visibleServers.map((server) => ({
       label: `${server.server_name || server.server_id} (${server.server_id})`,
       value: server.server_id,
       description: t("mcpServer"),

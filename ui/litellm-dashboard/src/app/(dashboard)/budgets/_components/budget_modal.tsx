@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 
 import type { BudgetsTranslator } from "@/lib/i18n/translators";
 import React from "react";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { useCreateBudget } from "@/app/(dashboard)/hooks/budgets/useBudgets";
 import { applyBudgetPrecision } from "./budgetPrecision";
 import { toast } from "@/lib/toast";

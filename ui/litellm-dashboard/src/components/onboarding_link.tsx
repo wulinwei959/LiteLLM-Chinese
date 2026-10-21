@@ -1,9 +1,11 @@
+import React, { useId, useRef } from "react";
+import { Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { toast } from "@/lib/toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
+import { copyToClipboard } from "@/utils/dataUtils";
+import { getUiPageUrl } from "@/components/networking";
 
 export interface InvitationLink {
   id: string;
@@ -59,39 +61,55 @@ export default function OnboardingModal({
   invitationLinkData,
   modalType = "invitation",
 }: OnboardingProps) {
+  const linkFieldId = useId();
+  const copyButtonRef = useRef<HTMLButtonElement>(null);
+  const isInvitation = modalType === "invitation";
   const t = useTranslations("onboardingModal");
-  const title = modalType === "invitation" ? t("invitationTitle") : t("resetTitle");
-  const handleInvitationCancel = () => {
-    setIsInvitationLinkModalVisible(false);
-  };
-
-  const getInvitationUrl = () =>
+  const title = isInvitation ? t("invitationTitle") : t("resetTitle");
+  const invitationUrl = getUiPageUrl(
     buildOnboardingUrl({
       baseUrl,
       invitationId: invitationLinkData?.id,
       hasUserSetupSso: invitationLinkData?.has_user_setup_sso ?? false,
-      resetPassword: modalType === "resetPassword",
-    });
+      resetPassword: !isInvitation,
+    }),
+  );
 
   return (
-    <Dialog open={isInvitationLinkModalVisible} onOpenChange={(open) => !open && handleInvitationCancel()}>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
+    <Dialog
+      open={isInvitationLinkModalVisible}
+      onOpenChange={(open) => !open && setIsInvitationLinkModalVisible(false)}
+    >
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-xl" initialFocus={copyButtonRef}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>
+            {isInvitation ? t("invitationBody") : t("resetBody")}
+          </DialogDescription>
         </DialogHeader>
-        <p className="text-sm text-foreground">{modalType === "invitation" ? t("invitationBody") : t("resetBody")}</p>
-        <div className="flex justify-between pt-5 pb-2">
-          <p className="text-base">{t("userId")}</p>
-          <p className="text-sm">{invitationLinkData?.user_id}</p>
-        </div>
-        <div className="flex justify-between pt-5 pb-2">
-          <p className="text-sm">{title}</p>
-          <p className="text-sm">{getInvitationUrl()}</p>
-        </div>
-        <div className="flex justify-end mt-5">
-          <CopyToClipboard text={getInvitationUrl()} onCopy={() => toast.success(t("copied"))}>
-            <Button>{modalType === "invitation" ? t("copyInvitation") : t("copyReset")}</Button>
-          </CopyToClipboard>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <p className="text-xs text-muted-foreground">{t("userId")}</p>
+            <p className="font-mono text-sm break-all">{invitationLinkData?.user_id}</p>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor={linkFieldId} className="text-xs font-normal text-muted-foreground">
+              {isInvitation ? t("invitationTitle") : t("resetTitle")}
+            </Label>
+            <InputGroup>
+              <InputGroupInput id={linkFieldId} readOnly value={invitationUrl} className="font-mono text-xs" />
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
+                  ref={copyButtonRef}
+                  aria-label={isInvitation ? t("copyInvitation") : t("copyReset")}
+                  onClick={() => copyToClipboard(invitationUrl)}
+                >
+                  <Copy />
+                  {isInvitation ? t("copyInvitation") : t("copyReset")}
+                </InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

@@ -56,6 +56,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       arize_space_id: "password",
       arize_success_sampling_rate: "number",
       arize_error_sampling_rate: "number",
+      arize_otlp_protocol: "select",
     },
   },
   {

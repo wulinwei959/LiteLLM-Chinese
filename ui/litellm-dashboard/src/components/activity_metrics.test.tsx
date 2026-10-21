@@ -621,11 +621,12 @@ describe("ActivityMetrics charts", () => {
     ]);
   });
 
-  it("shows the built-in chart legend only on the spend per day chart", () => {
+  it("keys every chart from its panel header instead of a built-in chart legend", () => {
     const { container } = render(<ActivityMetrics modelMetrics={twoDayModelMetrics} />);
 
-    expect(container.querySelectorAll(".recharts-legend-wrapper")).toHaveLength(1);
-    expect(screen.getByText("metrics.spend")).toBeInTheDocument();
+    expect(container.querySelectorAll(".recharts-legend-wrapper")).toHaveLength(0);
+    expect(screen.queryByText("metrics.spend")).not.toBeInTheDocument();
+    expect(screen.getByText("Spend")).toBeInTheDocument();
   });
 
   it("renders formatted header legends for each chart card", () => {

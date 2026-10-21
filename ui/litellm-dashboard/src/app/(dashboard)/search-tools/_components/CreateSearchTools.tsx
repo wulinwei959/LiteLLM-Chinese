@@ -6,7 +6,7 @@ import { CircleHelp } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useWatch } from "react-hook-form";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { Logo } from "@/components/molecules/logo/Logo";
 import { toast } from "@/lib/toast";
 import { createSearchTool, fetchAvailableSearchProviders } from "@/components/networking";

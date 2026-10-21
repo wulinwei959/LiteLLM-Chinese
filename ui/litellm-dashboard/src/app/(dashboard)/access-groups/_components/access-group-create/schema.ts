@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 
 import type { AccessGroupsTranslator } from "@/lib/i18n/translators";
 

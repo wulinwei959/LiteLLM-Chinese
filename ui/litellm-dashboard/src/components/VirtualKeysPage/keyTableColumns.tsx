@@ -6,7 +6,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import type { CommonTranslator, VirtualKeysTranslator } from "@/lib/i18n/translators";
 
 import { DataTableMultiSortHeader, DataTableSortHeader, type DataTableSortField } from "@/components/shared/DataTable";
-import { inheritedBudgetGates, keyOwnerBudgetSource } from "@/components/shared/InheritedBudgetHint";
+import {
+  inheritedBudgetGates,
+  keyOwnerBudgetSource,
+  teamMemberBudgetGate,
+  type TeamMemberBudgetSource,
+} from "@/components/shared/InheritedBudgetHint";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -90,6 +95,7 @@ const InfoHeader = ({ label, tooltip }: { label: string; tooltip: string }) => (
 interface KeyTableColumnsDeps {
   allTeams: Team[];
   organizations: Organization[];
+  teamMemberBudgets: Readonly<Record<string, TeamMemberBudgetSource>>;
   onSelectKey: (key: KeyResponse) => void;
   applyUserBudgetToTeamKeys: boolean;
   t: VirtualKeysTranslator;
@@ -99,6 +105,7 @@ interface KeyTableColumnsDeps {
 export const getKeyTableColumns = ({
   allTeams,
   organizations,
+  teamMemberBudgets,
   onSelectKey,
   applyUserBudgetToTeamKeys,
   t,
@@ -283,13 +290,27 @@ export const getKeyTableColumns = ({
       const team = allTeams.find((t) => t.team_id === row.original.team_id);
       const orgId = row.original.organization_id || row.original.org_id || team?.organization_id;
       const organization = organizations.find((o) => o.organization_id === orgId);
+      const memberGate =
+        row.original.max_budget == null
+          ? teamMemberBudgetGate(
+              teamMemberBudgets[row.original.team_id ?? ""],
+              row.original.user_id,
+              row.original.user?.user_email,
+            )
+          : null;
       return (
         <SpendBudgetCell
           spend={row.original.spend}
           maxBudget={row.original.max_budget}
+          teamMemberGate={memberGate}
           inheritedGates={
             row.original.max_budget == null
-              ? inheritedBudgetGates(team, organization, keyOwnerBudgetSource(row.original, applyUserBudgetToTeamKeys))
+              ? inheritedBudgetGates(
+                  team,
+                  organization,
+                  keyOwnerBudgetSource(row.original, applyUserBudgetToTeamKeys),
+                  memberGate,
+                )
               : []
           }
         />

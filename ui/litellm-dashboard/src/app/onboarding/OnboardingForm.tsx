@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { jwtDecode } from "jwt-decode";
 import { useOnboardingCredentials, useClaimOnboardingToken } from "@/app/(dashboard)/hooks/onboarding/useOnboarding";
-import { getProxyBaseUrl } from "@/components/networking";
+import { getProxyBaseUrl, getUiPageUrl } from "@/components/networking";
 import { clearTokenCookies, storeLoginToken } from "@/utils/cookieUtils";
 import { OnboardingLoadingView } from "./OnboardingLoadingView";
 import { OnboardingErrorView } from "./OnboardingErrorView";
@@ -53,7 +53,9 @@ export function OnboardingForm({ variant }: OnboardingFormProps) {
           clearTokenCookies();
           storeLoginToken(data.token);
           const proxyBaseUrl = getProxyBaseUrl();
-          window.location.href = proxyBaseUrl ? `${proxyBaseUrl}/ui/?login=success` : "/ui/?login=success";
+          window.location.href = getUiPageUrl(
+            proxyBaseUrl ? `${proxyBaseUrl}/ui/?login=success` : "/ui/?login=success",
+          );
         },
         onError: (error: Error) => {
           setClaimError(error.message || t("submitFailed"));

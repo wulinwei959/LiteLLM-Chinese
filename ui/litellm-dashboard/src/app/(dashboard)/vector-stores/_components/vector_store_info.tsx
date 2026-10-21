@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, CircleHelp, Lock } from "lucide-react";
-import { z } from "zod/v4";
+import { z } from "zod";
 import {
   vectorStoreInfoCall,
   vectorStoreUpdateCall,
@@ -23,20 +23,14 @@ import { StatusBadge } from "@/components/shared/table_cells";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useZodForm } from "@/lib/forms/useZodForm";
+import { SearchSelect } from "@/components/shared/SearchSelect";
+import { credentialOptions } from "@/components/shared/credentialOptions";
 
 interface VectorStoreInfoViewProps {
   vectorStoreId: string;
@@ -72,11 +66,6 @@ const toFormValues = (vectorStore: VectorStore): VectorStoreEditValues => ({
   custom_llm_provider: vectorStore.custom_llm_provider ?? "",
   litellm_credential_name: vectorStore.litellm_credential_name,
 });
-
-interface CredentialOption {
-  label: string;
-  value: string | null;
-}
 
 const labelWithHint = (label: string, hint: string): React.ReactNode => (
   <>

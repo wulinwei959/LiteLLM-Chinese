@@ -345,6 +345,8 @@ export default function UserInfoView({
         user_alias: formValues.user_alias ?? userData.user_alias,
         models: formValues.models ?? userData.models,
         max_budget: formValues.max_budget === undefined ? userData.max_budget : formValues.max_budget,
+        tpm_limit: formValues.tpm_limit === undefined ? userData.tpm_limit : formValues.tpm_limit,
+        rpm_limit: formValues.rpm_limit === undefined ? userData.rpm_limit : formValues.rpm_limit,
         budget_duration:
           formValues.budget_duration === undefined ? userData.budget_duration : formValues.budget_duration,
         metadata: formValues.metadata ?? userData.metadata,
@@ -405,6 +407,8 @@ export default function UserInfoView({
       user_role: userData.user_role,
       models: userData.models,
       max_budget: userData.max_budget,
+      tpm_limit: userData.tpm_limit,
+      rpm_limit: userData.rpm_limit,
       budget_duration: userData.budget_duration,
       metadata: userData.metadata,
       // Without these the per-model budget editor mounts empty and a save

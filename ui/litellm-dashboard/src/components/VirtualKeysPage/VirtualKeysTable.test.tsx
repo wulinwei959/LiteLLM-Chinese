@@ -1,15 +1,15 @@
-import { screen, waitFor, within, fireEvent } from "@testing-library/react";
+import { act, screen, waitFor, within, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { OnUrlUpdateFunction } from "nuqs/adapters/testing";
 import { vi, it, expect, beforeEach, describe, Mock, MockedFunction } from "vitest";
-import { chooseSelectOption, renderWithProviders } from "../../../tests/test-utils";
+import { chooseSelectOption, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
 import { VirtualKeysTable } from "./VirtualKeysTable";
 import { KEY_TABLE_HIDDEN_COLUMNS, KEY_TABLE_SORT_FIELDS } from "./keyTableColumns";
 import { KeyResponse, Team } from "../key_team_helpers/key_list";
 import { useKeyInfo } from "@/app/(dashboard)/hooks/keys/useKeyInfo";
 import { KeysResponse, useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
-import { regenerateKeyCall } from "../networking";
+import { regenerateKeyCall, teamInfoCall } from "../networking";
 
 // Mock next-intl translations for tests
 const mockTranslations: Record<string, string> = {
@@ -167,6 +167,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 vi.mock("../networking", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../networking")>()),
   regenerateKeyCall: vi.fn(),
+  teamInfoCall: vi.fn(),
 }));
 
 vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
@@ -180,6 +181,7 @@ vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
 }));
 
 vi.mock("@/app/(dashboard)/hooks/teams/useTeams", () => ({
+  teamKeys: { all: ["teams"] },
   useAllTeams: vi.fn(() => ({
     data: [{ team_id: "team-1", team_alias: "Test Team" }],
     isLoading: false,
@@ -222,6 +224,7 @@ const mockKey: KeyResponse = {
   spend: 5.5,
   total_spend: 42.25,
   max_budget: 100,
+  key_type: null,
   expires: "2999-12-31T23:59:59Z",
   models: ["gpt-3.5-turbo", "gpt-4"],
   aliases: {},
@@ -240,7 +243,10 @@ const mockKey: KeyResponse = {
   allowed_routes: [],
   permissions: {},
   model_spend: { "gpt-3.5-turbo": 2.5, "gpt-4": 3.0 },
-  model_max_budget: { "gpt-3.5-turbo": 50, "gpt-4": 50 },
+  model_max_budget: {
+    "gpt-3.5-turbo": { budget_limit: 50, time_period: "1m" },
+    "gpt-4": { budget_limit: 50, time_period: "1m" },
+  },
   soft_budget_cooldown: false,
   blocked: false,
   litellm_budget_table: {},
@@ -328,6 +334,7 @@ const lastHistoryMode = (onUrlUpdate: Mock<OnUrlUpdateFunction>) => onUrlUpdate.
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.mocked(teamInfoCall).mockReset();
   localStorage.clear();
 
   mockUseKeys.mockReturnValue(keysResult([mockKey]));

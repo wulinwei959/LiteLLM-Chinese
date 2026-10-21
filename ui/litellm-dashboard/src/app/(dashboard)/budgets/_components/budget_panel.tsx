@@ -3,14 +3,16 @@
  *
  */
 
+import { Page, PageTabs, PageTabsList, PageTabsTrigger } from "@/components/shared/Page";
 import { Plus, Wallet } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { useTranslations } from "next-intl";
 
 import { useSyntaxTheme } from "@/hooks/useSyntaxTheme";
-import { PageHeader } from "@/components/shared/PageHeader";
+import { PageHeader, PageHeaderControls, PageHeaderDescription, PageHeaderTitle } from "@/components/shared/PageHeader";
+import { ToolbarSeparator } from "@/components/shared/ToolbarSeparator";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DeleteResourceModal from "@/components/common_components/DeleteResourceModal";
@@ -80,35 +82,30 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
   };
 
   return (
-    <main className="flex h-full flex-col p-8">
-      <Tabs defaultValue="budgets" className="min-h-0 flex-1 gap-6">
-        <PageHeader
-          icon={<Wallet />}
-          title={t("title")}
-          subtitle={t("subtitle")}
-          primaryAction={
-            canModify ? (
-              <Button onClick={() => setIsCreateModelVisible(true)}>
-                <Plus className="size-4" />
-                {t("createBudget")}
-              </Button>
-            ) : undefined
-          }
-          tabs={({ leadingControls }) => (
-            <TabsList
-              variant="line"
-              className="gap-0 p-0 [&>[data-slot=tabs-trigger]+[data-slot=tabs-trigger]]:ml-[22px]"
-            >
-              {leadingControls}
-              <TabsTrigger value="budgets" className="flex-none px-0 py-[7px] data-active:font-semibold">
-                {t("tabs.budgets")}
-              </TabsTrigger>
-              <TabsTrigger value="examples" className="flex-none px-0 py-[7px] data-active:font-semibold">
-                {t("tabs.examples")}
-              </TabsTrigger>
-            </TabsList>
-          )}
-        />
+    <Page className="h-full">
+      <PageTabs defaultValue="budgets">
+        <PageHeader>
+          <PageHeaderTitle>
+            <Wallet />
+            {t("title")}
+          </PageHeaderTitle>
+          <PageHeaderDescription>{t("subtitle")}</PageHeaderDescription>
+          <PageHeaderControls>
+            <PageTabsList>
+              {canModify && (
+                <>
+                  <Button onClick={() => setIsCreateModelVisible(true)}>
+                    <Plus className="size-4" />
+                    {t("createBudget")}
+                  </Button>
+                  <ToolbarSeparator className="mx-0 h-6" />
+                </>
+              )}
+              <PageTabsTrigger value="budgets">{t("tabs.budgets")}</PageTabsTrigger>
+              <PageTabsTrigger value="examples">{t("tabs.examples")}</PageTabsTrigger>
+            </PageTabsList>
+          </PageHeaderControls>
+        </PageHeader>
         <TabsContent value="budgets" className="flex min-h-0 flex-1 flex-col" keepMounted>
           <div className="flex min-h-0 flex-1 flex-col">
             <BudgetModal isModalVisible={isCreateModelVisible} setIsModalVisible={setIsCreateModelVisible} />
@@ -145,55 +142,39 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
         </TabsContent>
         <TabsContent value="examples" className="min-h-0 flex-1 overflow-y-auto" keepMounted>
           <div className="pt-6">
-            <p className="text-base text-muted-foreground">{t("howToUse")}</p>
+            <p className="text-base text-muted-foreground">How to use budget id</p>
             <Tabs defaultValue="assign-budget">
               <TabsList variant="line" className="h-auto w-full justify-start rounded-none border-b p-0">
                 <TabsTrigger value="assign-budget" className="flex-none rounded-none px-4 py-2">
-                  {t("assignBudget")}
+                  Assign Budget to Customer
+                </TabsTrigger>
+                <TabsTrigger value="curl" className="flex-none rounded-none px-4 py-2">
+                  Test it (Curl)
+                </TabsTrigger>
+                <TabsTrigger value="openai-sdk" className="flex-none rounded-none px-4 py-2">
+                  Test it (OpenAI SDK)
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="assign-budget">
-                <SyntaxHighlighter
-                  language="bash"
-                  style={syntaxTheme}
-                  className="rounded-lg border border-border bg-muted/50 text-sm"
-                >
+              <TabsContent value="assign-budget" keepMounted>
+                <SyntaxHighlighter language="bash" style={syntaxTheme}>
                   {CREATE_END_USER_CURL_COMMAND}
                 </SyntaxHighlighter>
-                <Tabs defaultValue="openai-sdk">
-                  <TabsList variant="line" className="h-auto w-full justify-start rounded-none border-b p-0">
-                    <TabsTrigger value="openai-sdk" className="flex-none rounded-none px-4 py-2">
-                      OpenAI SDK
-                    </TabsTrigger>
-                    <TabsTrigger value="curl" className="flex-none rounded-none px-4 py-2">
-                      curl
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="openai-sdk">
-                    <SyntaxHighlighter
-                      language="python"
-                      style={syntaxTheme}
-                      className="rounded-lg border border-border bg-muted/50 text-sm"
-                    >
-                      {OPENAI_SDK_PYTHON_CODE}
-                    </SyntaxHighlighter>
-                  </TabsContent>
-                  <TabsContent value="curl">
-                    <SyntaxHighlighter
-                      language="bash"
-                      style={syntaxTheme}
-                      className="rounded-lg border border-border bg-muted/50 text-sm"
-                    >
-                      {CHAT_COMPLETIONS_CURL_COMMAND}
-                    </SyntaxHighlighter>
-                  </TabsContent>
-                </Tabs>
+              </TabsContent>
+              <TabsContent value="curl" keepMounted>
+                <SyntaxHighlighter language="bash" style={syntaxTheme}>
+                  {CHAT_COMPLETIONS_CURL_COMMAND}
+                </SyntaxHighlighter>
+              </TabsContent>
+              <TabsContent value="openai-sdk" keepMounted>
+                <SyntaxHighlighter language="python" style={syntaxTheme}>
+                  {OPENAI_SDK_PYTHON_CODE}
+                </SyntaxHighlighter>
               </TabsContent>
             </Tabs>
           </div>
         </TabsContent>
-      </Tabs>
-    </main>
+      </PageTabs>
+    </Page>
   );
 };
 

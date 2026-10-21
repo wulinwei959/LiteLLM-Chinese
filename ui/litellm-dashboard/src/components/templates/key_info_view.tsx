@@ -1,4 +1,5 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { useModelAccessGroupNames } from "@/app/(dashboard)/hooks/models/useModels";
 import { useProjects } from "@/app/(dashboard)/hooks/projects/useProjects";
 import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
 import { useApplyUserBudgetToTeamKeys } from "@/app/(dashboard)/hooks/uiSettings/useApplyUserBudgetToTeamKeys";
@@ -14,7 +15,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EntityLink } from "@/components/shared/EntityLink";
-import { modelGroupHref, teamDetailHref } from "@/utils/entityLinks";
+import { modelOrAccessGroupHref, teamDetailHref } from "@/utils/entityLinks";
 import { BadgeLink } from "@/components/shared/BadgeLink";
 import { KeyInfoHeader } from "./KeyInfoHeader";
 import KeySavingsTab from "./KeySavingsTab";
@@ -44,11 +45,17 @@ import { keyKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMCPServers } from "@/app/(dashboard)/hooks/mcpServers/useMCPServers";
 import { useMCPToolsets } from "@/app/(dashboard)/hooks/mcpServers/useMCPToolsets";
+import { useTeamMemberBudgets } from "@/app/(dashboard)/hooks/teams/useTeamMemberBudgets";
 import { extractMcpEntitlement } from "../mcp_server_management/mcpEntitlement";
 import ObjectPermissionsView from "../object_permissions_view";
 import { RegenerateKeyModal } from "../organisms/RegenerateKeyModal";
 import { parseErrorMessage } from "../shared/errorUtils";
-import { InheritedBudgetHint, inheritedBudgetGates, keyOwnerBudgetSource } from "../shared/InheritedBudgetHint";
+import {
+  InheritedBudgetHint,
+  inheritedBudgetGates,
+  keyOwnerBudgetSource,
+  teamMemberBudgetGate,
+} from "../shared/InheritedBudgetHint";
 import { KeyEditView } from "./key_edit_view";
 import { isTeamAdminEditingMemberKey, teamAdminMemberKeyPayload } from "./teamAdminMemberKeyPayload";
 import { formatDate } from "@/lib/i18n/format";
@@ -102,6 +109,7 @@ export default function KeyInfoView({
   const guardrailsT = useTranslations("guardrails");
   const policiesT = useTranslations("policies");
   const { accessToken, userId: userID, userRole, premiumUser } = useAuthorized();
+  const accessGroupNames = useModelAccessGroupNames();
   const activityDateRange = useActivityDateRange();
   const queryClient = useQueryClient();
   const canEditGuardrails = premiumUser || (userRole != null && rolesWithWriteAccess.includes(userRole));
@@ -123,6 +131,14 @@ export default function KeyInfoView({
   const { mutate: setKeyBlockedState, isPending: blockLoading } = useSetKeyBlockedState();
   // Add local state to maintain key data and track regeneration
   const [currentKeyData, setCurrentKeyData] = useState<KeyResponse | undefined>(keyData);
+  const memberBudgetTeamIds = useMemo(
+    () =>
+      currentKeyData?.max_budget === null && currentKeyData.team_id && currentKeyData.user_id
+        ? [currentKeyData.team_id]
+        : [],
+    [currentKeyData],
+  );
+  const teamMemberBudgets = useTeamMemberBudgets(memberBudgetTeamIds);
   const [lastRegeneratedAt, setLastRegeneratedAt] = useState<Date | null>(null);
   const [keyDataUpdateHeldUntilModalClose, setKeyDataUpdateHeldUntilModalClose] = useState<Partial<KeyResponse> | null>(
     null,
@@ -542,7 +558,19 @@ export default function KeyInfoView({
     ? `$${formatNumberWithCommas(currentKeyData.max_budget, 2)}`
     : commonT("unlimited");
   const ownerUser = keyOwnerBudgetSource(currentKeyData, applyUserBudgetToTeamKeys);
-  const inheritedGates = hasOwnBudget ? [] : inheritedBudgetGates(parentTeam, parentOrg, ownerUser);
+  const memberGate = hasOwnBudget
+    ? null
+    : teamMemberBudgetGate(
+        teamMemberBudgets[currentKeyData.team_id ?? ""],
+        currentKeyData.user_id,
+        currentKeyData.user?.user_email,
+      );
+  const budgetDisplay = (() => {
+    if (hasOwnBudget) return `$${formatNumberWithCommas(currentKeyData.max_budget, 2)}`;
+    if (memberGate) return `$${formatNumberWithCommas(memberGate.maxBudget, 2)} (team member budget)`;
+    return "Unlimited";
+  })();
+  const inheritedGates = hasOwnBudget ? [] : inheritedBudgetGates(parentTeam, parentOrg, ownerUser, memberGate);
 
   let budgetResetDisplay: string;
   if (!currentKeyData.budget_reset_at) {
@@ -781,7 +809,11 @@ export default function KeyInfoView({
                 <div className="mt-2 flex flex-wrap gap-2">
                   {currentKeyData.models && currentKeyData.models.length > 0 ? (
                     currentKeyData.models.map((model, index) => (
-                      <BadgeLink key={index} href={modelGroupHref(model)} className="min-w-0 break-words">
+                      <BadgeLink
+                        key={index}
+                        href={modelOrAccessGroupHref(model, accessGroupNames)}
+                        className="min-w-0 break-words"
+                      >
                         {model}
                       </BadgeLink>
                     ))
@@ -1133,7 +1165,11 @@ export default function KeyInfoView({
                     <div className="flex flex-wrap gap-2 mt-1">
                       {currentKeyData.models && currentKeyData.models.length > 0 ? (
                         currentKeyData.models.map((model, index) => (
-                          <BadgeLink key={index} href={modelGroupHref(model)} className="min-w-0 break-words">
+                          <BadgeLink
+                            key={index}
+                            href={modelOrAccessGroupHref(model, accessGroupNames)}
+                            className="min-w-0 break-words"
+                          >
                             {model}
                           </BadgeLink>
                         ))

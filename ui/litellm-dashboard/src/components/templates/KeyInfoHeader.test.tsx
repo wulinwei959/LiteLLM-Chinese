@@ -8,7 +8,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 const MOCK_DATA: KeyInfoData = {
   keyName: "My Test Key",
-  keyId: "sk-1234567890abcdef",
+  keyId: "sk-9876543210fedcba",
   userId: "user-abc-123",
   userEmail: "test@example.com",
   userAlias: null,

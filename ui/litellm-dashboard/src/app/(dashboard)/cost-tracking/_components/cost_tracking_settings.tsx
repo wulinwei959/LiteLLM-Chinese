@@ -55,6 +55,7 @@ const CostTrackingSettings: React.FC<CostTrackingSettingsProps> = ({ userID, use
   const [selectedProvider, setSelectedProvider] = useState<string | undefined>(undefined);
   const t = useTranslations("costTracking");
   const [newDiscount, setNewDiscount] = useState<string>("");
+  const [modelPattern, setModelPattern] = useState<string>("");
   const [isFetching, setIsFetching] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isMarginModalVisible, setIsMarginModalVisible] = useState(false);
@@ -112,10 +113,11 @@ const CostTrackingSettings: React.FC<CostTrackingSettingsProps> = ({ userID, use
   }, [accessToken, fetchDiscountConfig, fetchMarginConfig, fetchBlockUnpriced]);
 
   const handleAddProvider = async () => {
-    const success = await addProvider(selectedProvider, newDiscount);
+    const success = await addProvider(selectedProvider, newDiscount, modelPattern);
     if (success) {
       setSelectedProvider(undefined);
       setNewDiscount("");
+      setModelPattern("");
       setIsModalVisible(false);
     }
   };
@@ -124,6 +126,7 @@ const CostTrackingSettings: React.FC<CostTrackingSettingsProps> = ({ userID, use
     setIsModalVisible(false);
     setSelectedProvider(undefined);
     setNewDiscount("");
+    setModelPattern("");
   };
 
   const handleRemoveProvider = (provider: string, providerDisplayName: string) => {
@@ -368,11 +371,12 @@ const CostTrackingSettings: React.FC<CostTrackingSettingsProps> = ({ userID, use
             <p className="text-sm text-muted-foreground mb-6">{t("addDiscountDesc")}</p>
             <form onSubmit={(event) => event.preventDefault()} className="space-y-6">
               <AddProviderForm
-                discountConfig={discountConfig}
                 selectedProvider={selectedProvider}
                 newDiscount={newDiscount}
+                modelPattern={modelPattern}
                 onProviderChange={setSelectedProvider}
                 onDiscountChange={setNewDiscount}
+                onModelPatternChange={setModelPattern}
                 onAddProvider={handleAddProvider}
               />
             </form>

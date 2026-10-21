@@ -207,7 +207,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
           aria-label={t("toggleBouncingIcon")}
         />
       </div>
-      {canUseLiteAdmin && (
+      {premiumUser === true && canUseLiteAdmin && (
         <div className="flex w-full items-center justify-between gap-2">
           <span className="text-muted-foreground">{t("hideLiteAdmin")}</span>
           <Switch

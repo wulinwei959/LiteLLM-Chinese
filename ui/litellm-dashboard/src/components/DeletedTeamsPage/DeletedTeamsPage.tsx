@@ -2,6 +2,7 @@
 import { PaginationState } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { Info } from "lucide-react";
+import { PageContent } from "@/components/shared/Page";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
 import { DEFAULT_PAGE_SIZE_OPTIONS } from "@/components/shared/DataTable";
@@ -19,9 +20,9 @@ export default function DeletedTeamsPage() {
   const { data: teamsData, isLoading } = useDeletedTeams(pagination.pageIndex + 1, pagination.pageSize);
 
   return (
-    <div className="flex flex-col gap-4">
+    <PageContent>
       {!premiumUser && (
-        <Alert>
+        <Alert className="shrink-0">
           <Info />
           <AlertTitle>{t("comingSoonEnterprise")}</AlertTitle>
           <AlertDescription>{t("deletedTeamsAuditBody")}</AlertDescription>
@@ -34,6 +35,6 @@ export default function DeletedTeamsPage() {
         onPaginationChange={setPagination}
         rowCount={teamsData?.total ?? 0}
       />
-    </div>
+    </PageContent>
   );
 }

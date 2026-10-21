@@ -3,6 +3,7 @@
 import { useKeyInfo } from "@/app/(dashboard)/hooks/keys/useKeyInfo";
 import { useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
+import { useTeamMemberBudgets } from "@/app/(dashboard)/hooks/teams/useTeamMemberBudgets";
 import { useApplyUserBudgetToTeamKeys } from "@/app/(dashboard)/hooks/uiSettings/useApplyUserBudgetToTeamKeys";
 import { useAllTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { DEBOUNCE_WAIT_MS } from "@/utils/debounceConstants";
@@ -16,7 +17,9 @@ import {
   type UrlTableStateOptions,
 } from "@/components/shared/DataTable";
 import { SearchSelect } from "@/components/shared/SearchSelect";
-import { PageHeader } from "@/components/shared/PageHeader";
+import { PageContent } from "@/components/shared/Page";
+import { PageHeader, PageHeaderControls, PageHeaderDescription, PageHeaderTitle } from "@/components/shared/PageHeader";
+import { PageHeader, PageHeaderControls, PageHeaderDescription, PageHeaderTitle } from "@/components/shared/PageHeader";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDebouncedValue } from "@tanstack/react-pacer/debouncer";
@@ -164,12 +167,21 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
   const keyList = useMemo(() => keys?.keys ?? [], [keys]);
   const rowCount = keys?.total_count ?? 0;
 
+  const teamIds = useMemo(
+    () =>
+      Array.from(
+        new Set(keyList.flatMap((key) => (key.max_budget == null && key.team_id && key.user_id ? [key.team_id] : []))),
+      ),
+    [keyList],
+  );
+  const teamMemberBudgets = useTeamMemberBudgets(teamIds);
   const applyUserBudgetToTeamKeys = useApplyUserBudgetToTeamKeys();
 
   const columnDeps = useMemo(
     () => ({
       allTeams,
       organizations,
+      teamMemberBudgets,
       onSelectKey: (key: KeyResponse) => void setSelectedKeyId(key.token),
       applyUserBudgetToTeamKeys,
       t,
@@ -255,8 +267,15 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-6">
-      <PageHeader icon={<KeyRound />} title={t("title")} subtitle={t("description")} primaryAction={headerActions} />
+    <PageContent>
+      <PageHeader>
+        <PageHeaderTitle>
+          <KeyRound />
+          {t("title")}
+        </PageHeaderTitle>
+        <PageHeaderDescription>{t("description")}</PageHeaderDescription>
+        {headerActions != null && <PageHeaderControls>{headerActions}</PageHeaderControls>}
+      </PageHeader>
       <DataTable
         data={keyList}
         columns={columns}
@@ -359,6 +378,6 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
           </>
         )}
       />
-    </div>
+    </PageContent>
   );
 }

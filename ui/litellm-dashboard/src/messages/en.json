@@ -2793,7 +2793,12 @@
     "weeklyTitle": "Weekly Active Users - Last 7 Weeks",
     "monthlyTitle": "Monthly Active Users - Last 7 Months",
     "weekBucket": "Week {n}",
-    "monthBucket": "Month {n}"
+    "monthBucket": "Month {n}",
+    "viewActiveUsers": "Active users",
+    "viewPerUser": "Per user",
+    "perUserSubtitle": "Usage per end user",
+    "periodLabel": "Active users period",
+    "viewLabel": "Activity view"
   },
   "users": {
     "title": "Internal Users",
@@ -3931,7 +3936,14 @@
       "descWordCount": "Count words",
       "descCharCount": "Count characters",
       "descCase": "String transforms",
-      "namePlaceholder": "e.g., block-pii-custom"
+      "namePlaceholder": "e.g., block-pii-custom",
+      "templateLabel": "Template",
+      "standardLabel": "STANDARD",
+      "browseCommunity": "Browse Community templates",
+      "defaultOn": "Default On",
+      "pythonLogic": "Python Logic",
+      "restrictedEnv": "Restricted environment (no imports)",
+      "testInputJson": "Test Input (JSON)"
     },
     "judge": {
       "modelName": "Judge Model",
@@ -4962,7 +4974,8 @@
       "models": "Model Activity",
       "keys": "Key Activity",
       "mcp": "MCP Server Activity",
-      "endpoints": "Endpoint Activity"
+      "endpoints": "Endpoint Activity",
+      "agents": "Agent Activity"
     },
     "metrics": {
       "title": "Usage Metrics",
@@ -5055,7 +5068,8 @@
         "organization": "Organization",
         "customer": "Customer",
         "agent": "Agent"
-      }
+      },
+      "shareColumn": "Share"
     },
     "provider": {
       "title": "Spend by Provider",
@@ -5170,7 +5184,14 @@
         "viewModeAria": "Top model view mode",
       "tableView": "Table View",
       "chartView": "Chart View"
-    }
+    },
+    "entity.shareColumn": "Share",
+    "granularityDay": "Daily",
+    "granularityWeek": "Weekly",
+    "scaleLinear": "Linear",
+    "scaleLog": "Log",
+    "scaleLabel": "Scale",
+    "bucketSizeLabel": "Bucket size"
   },
   "logs": {
     "detail": {
@@ -11694,7 +11715,8 @@
     "summaryDesc": "{granularity} {metric} across your gateway",
     "topModelsByTask": "Top models by task",
     "topModelsByTaskDesc": "Each task&apos;s share of {metric}, labelled with its leading model",
-    "leaderboardDesc": "Share of {metric}, with the change between the first and second half of the period"
+    "leaderboardDesc": "Share of {metric}, with the change between the first and second half of the period",
+    "gatewayTotalLabel": "Gateway total"
   },
   "guardrailSettingsView": {
     "noGuardrails": "No guardrails configured",

@@ -3,8 +3,7 @@ import { BarChart } from "@/components/shared/charts";
 import { DataTable } from "@/components/shared/DataTable";
 import { IdCell, MoneyCell } from "@/components/shared/table_cells";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/outline";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Segmented } from "@/app/(dashboard)/usage/_components/components/overview/Primitives";
 import { SimpleTooltip } from "@/components/ui/tooltip";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
@@ -15,6 +14,16 @@ import KeyInfoView from "../../../templates/key_info_view";
 import { TagUsage } from "../../types";
 
 const TOP_KEYS_LIMITS = [5, 10, 25, 50] as const;
+const LIMIT_OPTIONS = TOP_KEYS_LIMITS.map((limit) => ({ value: String(limit), label: String(limit) }));
+
+type ViewMode = "table" | "chart";
+const VIEW_OPTIONS = [
+  { value: "table", label: "Table View" },
+  { value: "chart", label: "Chart View" },
+] as const satisfies readonly { value: ViewMode; label: string }[];
+
+const BAR_COLOR = "#2b3fd6";
+const QUIET_HEADER = { headerClassName: "font-normal" };
 
 export interface TopKeyItem {
   api_key: string;
@@ -42,7 +51,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [keyData, setKeyData] = useState<any | undefined>(undefined);
-  const [viewMode, setViewMode] = useState<"chart" | "table">("table");
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [expandedTags, setExpandedTags] = useState<Set<string>>(new Set());
 
   const toggleTagsExpansion = (apiKey: string) => {
@@ -102,6 +111,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
     {
       header: t("keyId"),
       accessorKey: "api_key",
+      meta: QUIET_HEADER,
       cell: (info: any) =>
         canOpenKeyInfo(info.row.original) ? (
           <IdCell value={info.getValue()} onClick={() => handleKeyClick(info.row.original)} />
@@ -112,6 +122,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
     {
       header: t("keyAlias"),
       accessorKey: "key_alias",
+      meta: QUIET_HEADER,
       cell: (info: any) => info.getValue() || "-",
     },
     ...(topKeys.some((k) => k.user)
@@ -119,6 +130,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
           {
             header: t("user"),
             accessorKey: "user",
+            meta: QUIET_HEADER,
             cell: (info: any) => info.getValue() || "-",
           },
         ]
@@ -128,6 +140,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
   const tagsColumn = {
     header: t("tags"),
     accessorKey: "tags",
+    meta: QUIET_HEADER,
     cell: (info: any) => {
       const tags = info.getValue() as TagUsage[] | undefined;
       const apiKey = info.row.original.api_key;
@@ -159,7 +172,9 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                   </div>
                 }
               >
-                <span className="px-2 py-1 bg-muted rounded-full text-xs">{tag.tag.slice(0, 7)}...</span>
+                <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                  {tag.tag.slice(0, 7)}...
+                </span>
               </SimpleTooltip>
             ))}
             {hasMoreTags && (
@@ -184,7 +199,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
   const spendColumn = {
     header: t("spendUsd"),
     accessorKey: "spend",
-    meta: { numeric: true },
+    meta: { ...QUIET_HEADER, numeric: true },
     cell: (info: any) => <MoneyCell value={info.getValue()} decimals={2} />,
   };
 
@@ -233,12 +248,12 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
       {viewMode === "chart" ? (
         <div className="relative max-h-[600px] overflow-y-auto">
           <BarChart
-            className="mt-4 cursor-pointer hover:opacity-90"
+            className="cursor-pointer hover:opacity-90"
             style={{ height: Math.min(processedTopKeys.length, topKeysLimit) * 52 }}
             data={processedTopKeys}
             index="display_key_alias"
             categories={["spend"]}
-            colors={["cyan"]}
+            colors={[BAR_COLOR]}
             yAxisWidth={120}
             tickGap={5}
             layout="vertical"

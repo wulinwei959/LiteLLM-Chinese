@@ -6,9 +6,15 @@ interface TagFilteringToggleProps {
   enabled: boolean;
   routerFieldsMetadata: { [key: string]: any };
   onToggle: (enabled: boolean) => void;
+  ownedByConfig?: boolean;
 }
 
-const TagFilteringToggle: React.FC<TagFilteringToggleProps> = ({ enabled, routerFieldsMetadata, onToggle }) => {
+const TagFilteringToggle: React.FC<TagFilteringToggleProps> = ({
+  enabled,
+  routerFieldsMetadata,
+  onToggle,
+  ownedByConfig = false,
+}) => {
   const toggleId = useId();
   const t = useTranslations("routerSettings");
   const commonT = useTranslations("common");
@@ -20,6 +26,7 @@ const TagFilteringToggle: React.FC<TagFilteringToggleProps> = ({ enabled, router
           <label htmlFor={toggleId} className="text-xs font-medium text-foreground uppercase tracking-wide">
             {routerFieldsMetadata["enable_tag_filtering"]?.ui_field_name || t("tagFilteringFallback")}
           </label>
+          {ownedByConfig && <ConfigOwnedBadge />}
           <p className="text-xs text-muted-foreground mt-0.5">
             {routerFieldsMetadata["enable_tag_filtering"]?.field_description || ""}
             {routerFieldsMetadata["enable_tag_filtering"]?.link && (
@@ -37,7 +44,14 @@ const TagFilteringToggle: React.FC<TagFilteringToggleProps> = ({ enabled, router
             )}
           </p>
         </div>
-        <Switch id={toggleId} checked={enabled} onCheckedChange={onToggle} className="ml-4" />
+        <Switch
+          id={toggleId}
+          checked={enabled}
+          onCheckedChange={onToggle}
+          disabled={ownedByConfig}
+          title={ownedByConfig ? CONFIG_OWNED_HINT : undefined}
+          className="ml-4"
+        />
       </div>
     </div>
   );
