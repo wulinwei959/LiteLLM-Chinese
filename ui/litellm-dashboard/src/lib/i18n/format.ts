@@ -1,3 +1,6 @@
+import { useCallback } from "react";
+import { useLocale } from "next-intl";
+
 import { DEFAULT_UI_LOCALE, isUiLocale, type UiLocale } from "./locales";
 
 /**
@@ -33,4 +36,33 @@ export const formatCurrency = (
 ): string => {
   const { currency = "USD", ...rest } = options;
   return new Intl.NumberFormat(currentUiLocale(), { ...rest, style: "currency", currency }).format(value);
+};
+
+/**
+ * Formatting for components, with the locale taken from the React context.
+ *
+ * The module-level helpers above read the document's language attribute, which
+ * `LocaleContext` keeps in sync with the provider but only from an effect. A
+ * component that renders before that effect sees the wrong locale, and a test
+ * that pins the locale on the provider sees none at all. Components therefore
+ * read the locale the provider holds.
+ *
+ * `Intl` is called directly rather than through next-intl's formatter because
+ * that one demands an explicit time zone, and the app renders dates in the
+ * reader's own zone.
+ */
+export const useUiFormat = () => {
+  const locale = useLocale();
+  const resolved: UiLocale = isUiLocale(locale) ? locale : DEFAULT_UI_LOCALE;
+  const date = useCallback(
+    (value: Date | number, options?: Intl.DateTimeFormatOptions): string => {
+      const dateValue = value instanceof Date ? value : new Date(value);
+      if (Number.isNaN(dateValue.getTime())) {
+        return "Invalid Date";
+      }
+      return new Intl.DateTimeFormat(resolved, options).format(dateValue);
+    },
+    [resolved],
+  );
+  return { date };
 };

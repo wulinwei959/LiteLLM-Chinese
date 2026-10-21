@@ -1,23 +1,22 @@
 import { Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cva.config";
+import { useUiFormat } from "@/lib/i18n/format";
 import type { DateRangePickerValue } from "./date_picker_types";
 import moment from "moment";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-type DateTimeOptions = NonNullable<Parameters<ReturnType<typeof useFormatter>["dateTime"]>[2]>;
-
-const RANGE_FORMAT: DateTimeOptions = {
+const RANGE_FORMAT: Intl.DateTimeFormatOptions = {
   day: "numeric",
   month: "short",
   hour: "2-digit",
   minute: "2-digit",
 };
 
-const DAY_FORMAT: DateTimeOptions = { year: "numeric", month: "short", day: "numeric" };
+const DAY_FORMAT: Intl.DateTimeFormatOptions = { year: "numeric", month: "short", day: "numeric" };
 
-const CLOCK_FORMAT: DateTimeOptions = { hour: "2-digit", minute: "2-digit", second: "2-digit" };
+const CLOCK_FORMAT: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit", second: "2-digit" };
 
 type AdvancedDatePickerTranslator = ReturnType<typeof useTranslations<"advancedDatePicker">>;
 type AdvancedDatePickerTranslatorKey = Parameters<AdvancedDatePickerTranslator>[0];
@@ -99,7 +98,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
   align = "right",
 }) => {
   const t = useTranslations("advancedDatePicker");
-  const format = useFormatter();
+  const { date: formatDate } = useUiFormat();
   const label = labelProp ?? t("defaultLabel");
   const [isOpen, setIsOpen] = useState(false);
   const [tempValue, setTempValue] = useState<DateRangePickerValue>(value);
@@ -190,11 +189,11 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
     (from: Date | undefined, to: Date | undefined) => {
       if (!from || !to) return t("selectDateRange");
 
-      const formatDateTime = (date: Date) => format.dateTime(date, RANGE_FORMAT);
+      const formatDateTime = (date: Date) => formatDate(date, RANGE_FORMAT);
 
       return `${formatDateTime(from)} - ${formatDateTime(to)}`;
     },
-    [format, t],
+    [formatDate, t],
   );
 
   // CRITICAL: Apply the same date adjustment logic as the original component
@@ -440,13 +439,12 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                   {tempValue.from && tempValue.to && validation.isValid && (
                     <div className="bg-info/10 p-3 rounded-md space-y-1">
                       <div className="text-xs text-info">
-                        <span className="font-medium">{t("fromLabel")}</span>{" "}
-                        {format.dateTime(tempValue.from, DAY_FORMAT)} {t("timeConnector")}{" "}
-                        {format.dateTime(tempValue.from, CLOCK_FORMAT)}
+                        <span className="font-medium">{t("fromLabel")}</span> {formatDate(tempValue.from, DAY_FORMAT)}{" "}
+                        {t("timeConnector")} {formatDate(tempValue.from, CLOCK_FORMAT)}
                       </div>
                       <div className="text-xs text-info">
-                        <span className="font-medium">{t("toLabel")}</span> {format.dateTime(tempValue.to, DAY_FORMAT)}{" "}
-                        {t("timeConnector")} {format.dateTime(tempValue.to, CLOCK_FORMAT)}
+                        <span className="font-medium">{t("toLabel")}</span> {formatDate(tempValue.to, DAY_FORMAT)}{" "}
+                        {t("timeConnector")} {formatDate(tempValue.to, CLOCK_FORMAT)}
                       </div>
                     </div>
                   )}

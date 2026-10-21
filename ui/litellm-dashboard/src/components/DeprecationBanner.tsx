@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useUiFormat } from "@/lib/i18n/format";
 import { Info, X } from "lucide-react";
 
 const DEPRECATION_DISCUSSION_URL = "https://github.com/BerriAI/litellm/discussions/32090";
@@ -15,7 +16,7 @@ interface DeprecationBannerProps {
 
 export const DeprecationBanner: React.FC<DeprecationBannerProps> = ({ featureName }) => {
   const t = useTranslations("banners.deprecation");
-  const format = useFormatter();
+  const { date: formatDate } = useUiFormat();
   const [isClosed, setIsClosed] = useState(false);
 
   if (isClosed) {
@@ -33,7 +34,7 @@ export const DeprecationBanner: React.FC<DeprecationBannerProps> = ({ featureNam
         <p className="mt-1 break-words text-muted-foreground">
           {t.rich("body", {
             feature: featureName,
-            date: format.dateTime(DEPRECATION_TARGET_DATE, TARGET_DATE_FORMAT),
+            date: formatDate(DEPRECATION_TARGET_DATE, TARGET_DATE_FORMAT),
             link: (chunks) => (
               <Link
                 href={DEPRECATION_DISCUSSION_URL}
