@@ -304,8 +304,6 @@ export default function RequestLogsPanel({ accessToken, token, userRole, userID,
         <h1 className="text-xl font-semibold">{t("tabs.requestLogs")}</h1>
       </div>
 
-      {isLiveTail && pagination.pageIndex === 0 && <LiveTailBanner onStop={() => setIsLiveTail(false)} />}
-
       <RequestLogsTable
         data={rows}
         rowCount={rowCount}

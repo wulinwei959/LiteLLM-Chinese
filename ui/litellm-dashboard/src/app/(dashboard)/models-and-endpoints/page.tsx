@@ -47,6 +47,10 @@ type ModelTabSlug = (typeof MODEL_TAB_SLUGS)[number];
 
 const BASE_TAB_KEY = "all-models";
 
+const TAB_KEYS = [BASE_TAB_KEY, ...MODEL_TAB_SLUGS] as const;
+
+const PREFILL_URL_PARAMS = { provider: parseAsString, litellm_model: parseAsString };
+
 const TAB_LABELS_KEYS: Record<ModelTabSlug, keyof typeof enMessages.models.tabs> = {
   add: "addModel",
   "auto-routers": "autoRouters",
@@ -132,6 +136,17 @@ export default function ModelsAndEndpointsPage() {
     ],
     [canCreate, canViewAutoRouters, isAdmin, isInternalUser, isViewOnly],
   );
+
+  const visibleKeys: readonly string[] = visibleSlugs.map((slug) => slug || BASE_TAB_KEY);
+  const activeKey = visibleKeys.includes(requestedTab) ? requestedTab : BASE_TAB_KEY;
+  const handleTabChange = (key: string) => {
+    const next = TAB_KEYS.find((tabKey) => tabKey === key);
+    if (next === undefined) {
+      return;
+    }
+    setRequestedTab(next);
+    void setPrefillParams({ provider: null, litellm_model: null });
+  };
 
   const allModelsLabel = isAdmin ? t("tabs.deployed") : t("tabs.yourModels");
   const tabLabel = (slug: "" | ModelTabSlug): React.ReactNode => {

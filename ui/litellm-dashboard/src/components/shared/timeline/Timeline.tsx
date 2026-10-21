@@ -81,17 +81,18 @@ function NowEdge() {
 }
 
 function BucketTooltip({
+  t,
   bucket,
   index,
   bucketCount,
   noun,
 }: {
+  t: LogsTranslator;
   bucket: TimeBucket;
   index: number;
   bucketCount: number;
   noun: ItemNoun;
 }) {
-  const t = useTranslations("logs");
   return (
     <div
       className="pointer-events-none absolute top-full z-floating mt-1 rounded-md border border-border bg-popover px-2.5 py-1.5 font-mono text-xs text-popover-foreground shadow-md"
@@ -149,6 +150,7 @@ const edgeFormat = (range: TimeWindow): string => (range.endMs - range.startMs <
 
 /** The selected window drawn as a flat bracket: resize handles on each edge, times outside, span centered. */
 function SelectionBracket({
+  t,
   band,
   window,
   format,
@@ -156,6 +158,7 @@ function SelectionBracket({
   bucketCount,
   onHandleDown,
 }: {
+  t: LogsTranslator;
   band: Band;
   window: TimeWindow;
   format: string;
@@ -190,7 +193,7 @@ function SelectionBracket({
         />
         {widthPx >= MIN_DURATION_LABEL_PX && (
           <span className="pointer-events-none absolute inset-x-0 top-2 text-center font-mono text-xs font-semibold text-info">
-            {formatSpan(window.endMs - window.startMs)}
+            {formatSpan(t, window.endMs - window.startMs)}
           </span>
         )}
       </div>
@@ -238,6 +241,7 @@ function TickAxis({ range, width }: { range: TimeWindow; width: number }) {
 
 /** Histogram over the window covered by `buckets`. Drag to select; drag the bracket or its edges to adjust; Esc clears. */
 export function Timeline({ buckets, selection, onSelect, noun }: TimelineProps) {
+  const t = useTranslations("logs");
   const bucketCount = buckets.length;
   const [hover, setHover] = useState<number | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
@@ -331,6 +335,7 @@ export function Timeline({ buckets, selection, onSelect, noun }: TimelineProps) 
         ))}
         {band && (
           <SelectionBracket
+            t={t}
             band={band}
             window={windowOf(band)}
             format={labelFormat}
@@ -344,7 +349,7 @@ export function Timeline({ buckets, selection, onSelect, noun }: TimelineProps) 
         <TickAxis range={range} width={stripWidth} />
       </div>
       {hover !== null && !drag && (
-        <BucketTooltip bucket={buckets[hover]} index={hover} bucketCount={bucketCount} noun={noun} />
+        <BucketTooltip t={t} bucket={buckets[hover]} index={hover} bucketCount={bucketCount} noun={noun} />
       )}
       {selection && (
         <button

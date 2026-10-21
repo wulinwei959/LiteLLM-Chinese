@@ -31,7 +31,7 @@ const SkillSource: React.FC<{ source: Plugin["source"] }> = ({ source }) => {
   return (
     <div className="mb-6">
       <div className="mb-1 text-xs text-muted-foreground">Source</div>
-      <div className="break-all text-[13px] text-foreground">{getSourceDisplayText(skillsT, source)}</div>
+      <div className="break-all text-[13px] text-foreground">{getSourceDisplayText(source)}</div>
     </div>
   );
 };

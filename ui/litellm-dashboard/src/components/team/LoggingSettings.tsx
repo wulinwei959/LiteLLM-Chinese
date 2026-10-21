@@ -28,6 +28,7 @@ const CallbackVarInput: React.FC<{
   onValueChange: (value: string) => void;
 }> = ({ sensitive, placeholder, value, onValueChange }) => {
   const t = useTranslations("teams");
+  const callbacksT = useTranslations("loggingCallbacks");
 
   const [revealed, setRevealed] = React.useState(false);
 
@@ -76,6 +77,7 @@ const LoggingSettings: React.FC<LoggingSettingsProps> = ({
   onDisabledCallbacksChange,
 }) => {
   const t = useTranslations("teams");
+  const callbacksT = useTranslations("loggingCallbacks");
   // Get callbacks that support team and key logging
   const supportedCallbacks = Object.entries(callbackInfo)
     .filter(([_, info]) => info.supports_key_team_logging)
@@ -278,7 +280,9 @@ const LoggingSettings: React.FC<LoggingSettingsProps> = ({
             </SelectTrigger>
             <SelectContent>
               {allCallbacks.map((callbackName) => {
-                const description = callbackInfo[callbackName]?.description;
+                const description = callbackInfo[callbackName]?.descriptionKey
+                  ? callbacksT(callbackInfo[callbackName].descriptionKey)
+                  : undefined;
                 return (
                   <SelectItem key={callbackName} value={callbackName}>
                     <SimpleTooltip content={description} side="right">
@@ -369,7 +373,9 @@ const LoggingSettings: React.FC<LoggingSettingsProps> = ({
                       </SelectTrigger>
                       <SelectContent>
                         {supportedCallbacks.map((callbackName) => {
-                          const description = callbackInfo[callbackName]?.description;
+                          const description = callbackInfo[callbackName]?.descriptionKey
+                            ? callbacksT(callbackInfo[callbackName].descriptionKey)
+                            : undefined;
                           return (
                             <SelectItem key={callbackName} value={callbackName}>
                               <SimpleTooltip content={description} side="right">

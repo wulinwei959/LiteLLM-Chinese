@@ -26,7 +26,7 @@ const ConversationPanel: React.FC<ConversationPanelProps> = ({ prompt, accessTok
     handleClearConversation,
     handleKeyDown,
     handleVariableChange,
-  } = useConversation(prompt, accessToken, t);
+  } = useConversation(prompt, accessToken);
 
   return (
     <div className="flex flex-col h-full bg-background">

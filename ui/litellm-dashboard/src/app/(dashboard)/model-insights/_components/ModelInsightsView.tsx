@@ -28,8 +28,15 @@ import {
 
 const SCALES = ["linear", "log"] as const;
 const GRANULARITIES = ["day", "week"] as const;
-const GRANULARITY_LABELS: Record<Granularity, string> = { day: "Daily", week: "Weekly" };
-const METRIC_LABELS: Record<Metric, string> = { requests: "requests", spend: "spend", tokens: "tokens" };
+const GRANULARITY_KEYS: Record<Granularity, "granularityDaily" | "granularityWeekly"> = {
+  day: "granularityDaily",
+  week: "granularityWeekly",
+};
+const METRIC_KEYS: Record<Metric, "metricRequests" | "metricSpend" | "metricTokens"> = {
+  requests: "metricRequests",
+  spend: "metricSpend",
+  tokens: "metricTokens",
+};
 const RANKING_ROWS = 5;
 
 type Scale = (typeof SCALES)[number];
@@ -167,7 +174,7 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
               <TabsList aria-label={t("bucketSizeAria")}>
                 {GRANULARITIES.map((value) => (
                   <TabsTrigger key={value} value={value}>
-                    {GRANULARITY_LABELS[value]}
+                    {t(GRANULARITY_KEYS[value])}
                   </TabsTrigger>
                 ))}
               </TabsList>

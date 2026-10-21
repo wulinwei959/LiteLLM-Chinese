@@ -1,4 +1,5 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import type { EstimatedOutputTokensTranslator, TeamsTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 import type { components } from "@/lib/http/schema";
 import useCan from "@/app/(dashboard)/hooks/useCan";
@@ -105,7 +106,7 @@ import { useMCPServers } from "@/app/(dashboard)/hooks/mcpServers/useMCPServers"
 import { useMCPToolsets } from "@/app/(dashboard)/hooks/mcpServers/useMCPToolsets";
 import { useAccessGroups, type AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
 import { ModelSelect } from "../ModelSelect/ModelSelect";
-import { estimateChecks, estimateTooltips } from "../templates/estimatedOutputTokens";
+import { estimateChecks, estimateMessages, estimateTooltips } from "../templates/estimatedOutputTokens";
 import ObjectPermissionsView from "../object_permissions_view";
 import NumericalInput from "../shared/numerical_input";
 import VectorStoreSelector from "../vector_store_management/VectorStoreSelector";
@@ -275,7 +276,8 @@ export const retainedMcpToolPermissions = (
   );
 };
 
-export const mcpUnresolvableSaveError = (reason: string): string => t("infoMcpUnresolvableSaveError", { reason });
+export const mcpUnresolvableSaveError = (reason: string, t: TeamsTranslator): string =>
+  t("infoMcpUnresolvableSaveError", { reason });
 
 export type TeamMemberBudgetSource = components["schemas"]["TeamMemberResetBudgetResponse"]["budget_source"];
 
@@ -371,96 +373,89 @@ const SUPPRESSED_BY_DESCRIPTION = "";
 
 const numericInputSchema = z.union([z.string(), z.number()]).nullish();
 
-const teamUpdateFieldsSchema = z.object({
-  team_alias: z.string().min(1, "Please input a team name"),
-  models: z.array(z.string()).optional(),
-  max_budget: numericInputSchema,
-  soft_budget: numericInputSchema,
-  soft_budget_alerting_emails: z.union([z.string(), z.array(z.string())]).optional(),
-  default_team_member_models: z.array(z.string()).optional(),
-  team_member_budget: numericInputSchema,
-  team_member_budget_duration: z.string().nullish(),
-  team_member_key_duration: z.string().optional(),
-  team_member_tpm_limit: numericInputSchema,
-  team_member_rpm_limit: numericInputSchema,
-  team_member_max_budget_alert_emails: z
-    .array(z.object({ threshold: z.number().nullable(), emails: z.string() }))
-    .superRefine((rows, ctx) => {
-      const t = useTranslations("teams");
-
-      rows.forEach((row, index) => {
-        const t = useTranslations("teams");
-
-        if (!isValidThreshold(row.threshold)) {
-          ctx.addIssue({ code: "custom", message: t("infoEnterWholeNumber1To100"), path: [index, "threshold"] });
-        } else if (rows.filter((other) => other.threshold === row.threshold).length > 1) {
-          ctx.addIssue({ code: "custom", message: t("infoDuplicateThreshold"), path: [index, "threshold"] });
-        }
-      });
-    })
-    .optional(),
-  budget_duration: z.string().nullish(),
-  tpm_limit: numericInputSchema,
-  rpm_limit: numericInputSchema,
-  tpd_limit: numericInputSchema,
-  modelLimits: z
-    .array(
-      z.object({
-        model: z
-          .string()
-          .nullable()
-          .refine((model) => Boolean(model), t("infoMissingModel")),
-        tpm: z.number().nullish(),
-        rpm: z.number().nullish(),
+const buildTeamUpdateFieldsSchema = (t: TeamsTranslator, estimateT: EstimatedOutputTokensTranslator) =>
+  z.object({
+    team_alias: z.string().min(1, t("listTeamNameRequired")),
+    models: z.array(z.string()).optional(),
+    max_budget: numericInputSchema,
+    soft_budget: numericInputSchema,
+    soft_budget_alerting_emails: z.union([z.string(), z.array(z.string())]).optional(),
+    default_team_member_models: z.array(z.string()).optional(),
+    team_member_budget: numericInputSchema,
+    team_member_budget_duration: z.string().nullish(),
+    team_member_key_duration: z.string().optional(),
+    team_member_tpm_limit: numericInputSchema,
+    team_member_rpm_limit: numericInputSchema,
+    team_member_max_budget_alert_emails: z
+      .array(z.object({ threshold: z.number().nullable(), emails: z.string() }))
+      .superRefine((rows, ctx) => {
+        rows.forEach((row, index) => {
+          if (!isValidThreshold(row.threshold)) {
+            ctx.addIssue({ code: "custom", message: t("infoEnterWholeNumber1To100"), path: [index, "threshold"] });
+          } else if (rows.filter((other) => other.threshold === row.threshold).length > 1) {
+            ctx.addIssue({ code: "custom", message: t("infoDuplicateThreshold"), path: [index, "threshold"] });
+          }
+        });
+      })
+      .optional(),
+    budget_duration: z.string().nullish(),
+    tpm_limit: numericInputSchema,
+    rpm_limit: numericInputSchema,
+    tpd_limit: numericInputSchema,
+    modelLimits: z
+      .array(
+        z.object({
+          model: z
+            .string()
+            .nullable()
+            .refine((model) => Boolean(model), t("infoMissingModel")),
+          tpm: z.number().nullish(),
+          rpm: z.number().nullish(),
+        }),
+      )
+      .superRefine((rows, ctx) => {
+        rows.forEach((row, index) => {
+          if (row.model && rows.filter((other) => other.model === row.model).length > 1) {
+            ctx.addIssue({ code: "custom", message: t("infoDuplicateModel"), path: [index, "model"] });
+          }
+          if (row.model && row.tpm == null && row.rpm == null) {
+            ctx.addIssue({ code: "custom", message: t("infoSetAtLeastOneTpmRpm"), path: [index, "tpm"] });
+          }
+        });
       }),
-    )
-    .superRefine((rows, ctx) => {
-      const t = useTranslations("teams");
+    default_estimated_output_tokens: numericInputSchema.refine(
+      estimateChecks.positive.isValid,
+      estimateMessages(estimateT).positive,
+    ),
+    default_estimated_output_tokens_per_model: z
+      .string()
+      .optional()
+      .refine(estimateChecks.perModel.isValid, estimateMessages(estimateT).perModel),
+    guardrails: z.array(z.string()).optional(),
+    disable_global_guardrails: z.boolean().optional(),
+    require_trace_id: z.boolean().optional(),
+    policies: z.array(z.string()).optional(),
+    access_group_ids: z.array(z.string()).optional(),
+    vector_stores: z.array(z.string()).optional(),
+    allowed_passthrough_routes: z.array(z.string()).optional(),
+    mcp_servers_and_groups: z
+      .object({
+        servers: z.array(z.string()),
+        accessGroups: z.array(z.string()),
+        toolsets: z.array(z.string()).optional(),
+      })
+      .optional(),
+    mcp_tool_permissions: z.record(z.string(), z.array(z.string())).optional(),
+    agents_and_groups: z.object({ agents: z.array(z.string()), accessGroups: z.array(z.string()) }).optional(),
+    object_permission_search_tools: z.array(z.string()).optional(),
+    object_permission_skills: z.array(z.string()).optional(),
+    organization_id: z.string().nullish(),
+    logging_settings: z.array(z.unknown()).optional(),
+    secret_manager_settings: z.string().optional(),
+    metadata: buildMetadataPairsSchema(t).optional(),
+  });
 
-      rows.forEach((row, index) => {
-        const t = useTranslations("teams");
-
-        if (row.model && rows.filter((other) => other.model === row.model).length > 1) {
-          ctx.addIssue({ code: "custom", message: t("infoDuplicateModel"), path: [index, "model"] });
-        }
-        if (row.model && row.tpm == null && row.rpm == null) {
-          ctx.addIssue({ code: "custom", message: t("infoSetAtLeastOneTpmRpm"), path: [index, "tpm"] });
-        }
-      });
-    }),
-  default_estimated_output_tokens: numericInputSchema.refine(
-    estimateChecks.positive.isValid,
-    estimateChecks.positive.message,
-  ),
-  default_estimated_output_tokens_per_model: z
-    .string()
-    .optional()
-    .refine(estimateChecks.perModel.isValid, estimateChecks.perModel.message),
-  guardrails: z.array(z.string()).optional(),
-  disable_global_guardrails: z.boolean().optional(),
-  require_trace_id: z.boolean().optional(),
-  policies: z.array(z.string()).optional(),
-  access_group_ids: z.array(z.string()).optional(),
-  vector_stores: z.array(z.string()).optional(),
-  allowed_passthrough_routes: z.array(z.string()).optional(),
-  mcp_servers_and_groups: z
-    .object({
-      servers: z.array(z.string()),
-      accessGroups: z.array(z.string()),
-      toolsets: z.array(z.string()).optional(),
-    })
-    .optional(),
-  mcp_tool_permissions: z.record(z.string(), z.array(z.string())).optional(),
-  agents_and_groups: z.object({ agents: z.array(z.string()), accessGroups: z.array(z.string()) }).optional(),
-  object_permission_search_tools: z.array(z.string()).optional(),
-  object_permission_skills: z.array(z.string()).optional(),
-  organization_id: z.string().nullish(),
-  logging_settings: z.array(z.unknown()).optional(),
-  secret_manager_settings: z.string().optional(),
-  metadata: buildMetadataPairsSchema(t).optional(),
-});
-
-type TeamUpdateFormValues = z.infer<typeof teamUpdateFieldsSchema>;
+type TeamUpdateFormValues = z.infer<ReturnType<typeof buildTeamUpdateFieldsSchema>>;
 
 type TeamInfoRecord = TeamData["team_info"] & { team_member_key_duration?: string };
 
@@ -609,9 +604,10 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   onUpdate,
 }) => {
   const t = useTranslations("teams");
+  const estimateT = useTranslations("teams.estimatedOutputTokens");
   const teamUpdateSchema = useMemo(
     () =>
-      teamUpdateFieldsSchema.superRefine((values, ctx) => {
+      buildTeamUpdateFieldsSchema(t, estimateT).superRefine((values, ctx) => {
         if (!isParsableJson(values.secret_manager_settings)) {
           ctx.addIssue({ code: "custom", message: SUPPRESSED_BY_DESCRIPTION, path: ["secret_manager_settings"] });
         }
@@ -660,7 +656,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   const { data: allAccessGroups = [], isError: accessGroupsFailed, isLoading: accessGroupsLoading } = useAccessGroups();
   const canEditAsProxyAdmin = is_proxy_admin && !isViewOnly;
   const canEditTeamEstimates = isProxyAdminRole(userRole);
-  const teamEstimateTooltip = estimateTooltips(canEditTeamEstimates, "team");
+  const teamEstimateTooltip = estimateTooltips(canEditTeamEstimates, estimateT);
   const { data: userOrganizations = [] } = useOrganizations();
   const { data: teamMetadataSchemaFields = [], isLoading: isTeamMetadataSchemaLoading } = useTeamMetadataSchema();
   const queryClient = useQueryClient();
@@ -963,7 +959,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   };
 
   const persistTeamUpdate = async (token: string, updateData: Record<string, unknown>) => {
-    await teamUpdateCall(token, updateData);
+    await teamUpdateCall(t, token, updateData);
     void queryClient.invalidateQueries({ queryKey: organizationKeys.all });
     void invalidateTeamQueries(queryClient);
     setIsEditing(false);
@@ -1188,7 +1184,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
           ? { kind: "unresolvable", reason: mcpLookupFailure }
           : await grantedMcpServerIds(mcpGrantInput);
       if (mcpResolution.kind === "unresolvable" && Object.keys(submittedToolPermissions).length > 0) {
-        toast.fromError(mcpUnresolvableSaveError(mcpResolution.reason));
+        toast.fromError(mcpUnresolvableSaveError(mcpResolution.reason, t));
         return;
       }
       const mcpToolPermissions =
@@ -1456,7 +1452,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
           <Card className="block p-6">
             <p>Models</p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {computeTeamModelBadges(info.models, info.access_group_models || [], info.access_group_details).map(
+              {computeTeamModelBadges(info.models, info.access_group_models || [], info.access_group_details, t).map(
                 (badge, index) => (
                   <SimpleTooltip key={`${badge.kind}-${badge.label}-${index}`} content={badge.tooltip}>
                     <span>

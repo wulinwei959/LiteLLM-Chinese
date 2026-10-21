@@ -2,8 +2,14 @@
 
 import { CircleHelp } from "lucide-react";
 import { useTranslations } from "next-intl";
-import React, { useId } from "react";
-import { useController, type Control, type ControllerRenderProps, type RegisterOptions } from "react-hook-form";
+import React, { useEffect, useId } from "react";
+import {
+  useController,
+  useWatch,
+  type Control,
+  type ControllerRenderProps,
+  type RegisterOptions,
+} from "react-hook-form";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";

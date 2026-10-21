@@ -109,6 +109,7 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
           numeric: true,
           cell: (row) => {
             const label = rowLabel(row);
+            const { displayName } = getProviderLogoAndName(row.provider);
             return (
               <div className="flex items-center justify-end gap-2">
                 {editingKey === row.key ? (
@@ -164,6 +165,7 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
           header: t("colActions"),
           cell: (row) => {
             const label = rowLabel(row);
+            const { displayName } = getProviderLogoAndName(row.provider);
             return (
               <Button
                 variant="ghost"

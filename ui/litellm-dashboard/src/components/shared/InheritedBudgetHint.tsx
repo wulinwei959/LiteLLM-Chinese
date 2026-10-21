@@ -8,6 +8,7 @@ import { formatNumberWithCommas } from "@/utils/dataUtils";
 
 const SCOPE_KEYS = {
   Team: "scopeTeam",
+  "Team member": "scopeTeamMember",
   Organization: "scopeOrganization",
   User: "scopeUser",
 } as const;

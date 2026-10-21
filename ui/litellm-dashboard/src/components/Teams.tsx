@@ -1,4 +1,5 @@
 import { Page, PageTabs, PageTabsList, PageTabsTrigger } from "@/components/shared/Page";
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import useCan from "@/app/(dashboard)/hooks/useCan";
@@ -94,6 +95,7 @@ const createTeamFieldsSchema = (t: TeamsTranslator) =>
     secret_manager_settings: z.string().optional(),
     guardrails: z.array(z.string()).optional(),
     disable_global_guardrails: z.boolean().optional(),
+    require_trace_id: z.boolean().optional(),
     policies: z.array(z.string()).optional(),
     access_group_ids: z.array(z.string()).optional(),
     allowed_vector_store_ids: z.array(z.string()).optional(),
@@ -218,6 +220,7 @@ const getAdminOrganizations = (
 // @deprecated
 const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly = false, premiumUser = false }) => {
   const t = useTranslations("teams");
+  const tDuration = useTranslations("common.budgetDuration");
   const { data: organizationsData } = useOrganizations();
   const organizations = organizationsData ?? null;
   const { data: teamMetadataSchemaFields = [], isLoading: isTeamMetadataSchemaLoading } = useTeamMetadataSchema();
@@ -239,7 +242,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
 
   const teamCreateSchema = useMemo(
     () =>
-      teamCreateFieldsSchema.superRefine((values, ctx) => {
+      createTeamFieldsSchema(t).superRefine((values, ctx) => {
         if (isOrgAdmin && !values.organization_id) {
           ctx.addIssue({ code: "custom", message: SUPPRESSED_BY_DESCRIPTION, path: ["organization_id"] });
         }
@@ -296,7 +299,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
   });
   const defaultBudgetDuration: string | undefined = defaultTeamSettings?.values?.budget_duration ?? undefined;
   const budgetDurationPlaceholder = defaultBudgetDuration
-    ? `Default: ${getBudgetDurationLabel(defaultBudgetDuration)} (${defaultBudgetDuration})`
+    ? `Default: ${getBudgetDurationLabel(tDuration, defaultBudgetDuration)} (${defaultBudgetDuration})`
     : "n/a";
 
   // Add this useEffect to fetch guardrails

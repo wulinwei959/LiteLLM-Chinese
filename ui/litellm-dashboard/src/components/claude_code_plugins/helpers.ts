@@ -3,6 +3,7 @@
  */
 
 import type { Plugin, PluginSource } from "./types";
+import type { CommonTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 
 export interface SkillSourcePreview {
@@ -224,8 +225,7 @@ const parseArchiveSource = (url: URL): SkillSourcePreview => ({
  * authenticates with the user's own key; every other host is treated as a raw repo URL,
  * with an optional subfolder turning it into git-subdir.
  */
-export const parseSkillSource = (rawUrl: string, subPath?: string): SkillSourcePreview | null => {
-  const t = useTranslations("common");
+export const parseSkillSource = (t: CommonTranslator, rawUrl: string, subPath?: string): SkillSourcePreview | null => {
   const ssh = parseSshSource(rawUrl, subPath);
   if (ssh) {
     return ssh;

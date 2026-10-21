@@ -1,4 +1,5 @@
 import type { MessageAttachment } from "@/components/chat_ui/types";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
 import { validateAudioFile, validateChatAttachment, validateImageEditFile } from "../chat_ui/uploadValidation";
 import type { AttachKind } from "./endpointCapabilities";
 
@@ -21,13 +22,14 @@ export const toAttachment = ({ file, previewUrl }: DraftFile): MessageAttachment
   ...(previewUrl ? { previewUrl } : {}),
 });
 
-const validate = (kind: AttachKind, file: File, count: number) => {
-  if (kind === "images") return validateImageEditFile(file, count);
-  if (kind === "audio") return validateAudioFile(file);
-  return validateChatAttachment(file);
+const validate = (t: PlaygroundTranslator, kind: AttachKind, file: File, count: number) => {
+  if (kind === "images") return validateImageEditFile(t, file, count);
+  if (kind === "audio") return validateAudioFile(t, file);
+  return validateChatAttachment(t, file);
 };
 
 export const addFiles = (
+  t: PlaygroundTranslator,
   kind: AttachKind,
   current: readonly DraftFile[],
   incoming: readonly File[],
@@ -37,7 +39,7 @@ export const addFiles = (
   return incoming.reduce<AddFilesResult>(
     (result, file) => {
       const kept = single ? [] : result.files;
-      const check = validate(kind, file, kept.length);
+      const check = validate(t, kind, file, kept.length);
       if (!check.ok) return { ...result, errors: [...result.errors, check.error] };
       return { ...result, files: [...kept, { file, previewUrl: isImage(file) ? preview(file) : undefined }] };
     },

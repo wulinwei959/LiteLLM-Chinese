@@ -1,6 +1,7 @@
 "use client";
 
 import moment from "moment";
+import { useTranslations } from "next-intl";
 import { CalendarDays } from "lucide-react";
 import { type ComponentProps, useState } from "react";
 
@@ -43,14 +44,17 @@ interface LogsTimeRangePickerProps {
 }
 
 export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePickerProps) {
+  const t = useTranslations("logs");
   const [open, setOpen] = useState(false);
 
   const selectedOption = QUICK_SELECT_OPTIONS.find(
     (option) => option.value === value.interval.value && option.unit === value.interval.unit,
   );
   const displayLabel = value.isCustomDate
-    ? getTimeRangeDisplay(true, value.startTime, value.endTime)
-    : selectedOption?.label;
+    ? getTimeRangeDisplay(t, true, value.startTime, value.endTime)
+    : selectedOption
+      ? t(selectedOption.labelKey)
+      : undefined;
 
   return (
     <>
@@ -67,7 +71,7 @@ export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePicke
           <div className="space-y-1">
             {QUICK_SELECT_OPTIONS.map((option) => (
               <Button
-                key={option.label}
+                key={option.labelKey}
                 variant="ghost"
                 className="w-full justify-start font-normal"
                 onClick={() => {
@@ -75,7 +79,7 @@ export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePicke
                   setOpen(false);
                 }}
               >
-                {option.label}
+                {t(option.labelKey)}
               </Button>
             ))}
             <div className="my-2 border-t" />

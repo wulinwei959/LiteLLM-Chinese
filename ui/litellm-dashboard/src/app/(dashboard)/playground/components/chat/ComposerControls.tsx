@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { InputGroupButton } from "@/components/ui/input-group";
+import { useTranslations } from "next-intl";
 import { ENDPOINT_OPTIONS, OPEN_AI_VOICE_SELECT_OPTIONS, type OpenAIVoice } from "../chat_ui/chatConstants";
 import { formatBytes, type DraftFile } from "./composerFiles";
 
@@ -61,11 +62,12 @@ export function VoiceMenu({
   value: OpenAIVoice;
   onValueChange: (value: OpenAIVoice) => void;
 }) {
+  const t = useTranslations("playground");
   const current = OPEN_AI_VOICE_SELECT_OPTIONS.find((option) => option.value === value);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger render={<InputGroupButton size="xs" className="shrink-0" aria-label="Voice" />}>
-        <span className="text-xs">Voice: {current?.label.split(" - ")[0] ?? value}</span>
+        <span className="text-xs">Voice: {current ? t(current.labelKey).split(" - ")[0] : value}</span>
         <ChevronDown className="text-muted-foreground" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-72">
@@ -73,7 +75,7 @@ export function VoiceMenu({
           <DropdownMenuLabel>Voice</DropdownMenuLabel>
           {OPEN_AI_VOICE_SELECT_OPTIONS.map((option) => (
             <DropdownMenuRadioItem key={option.value} value={option.value} closeOnClick>
-              {option.label}
+              {t(option.labelKey)}
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>

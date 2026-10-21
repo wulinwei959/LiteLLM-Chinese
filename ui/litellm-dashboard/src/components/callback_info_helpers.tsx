@@ -13,36 +13,33 @@ import pointfiveLogo from "../../public/assets/logos/pointfive.png";
 import signozLogo from "../../public/assets/logos/signoz.svg";
 import databricksLogo from "../../public/assets/logos/databricks.svg";
 
-/**
- * The id doubles as the key for the callback's one-line description, so the
- * catalog needs no parallel lookup table: `t(config.id)` is the copy.
- */
-export type CallbackId =
-  | "arize"
-  | "braintrust"
-  | "custom_callback_api"
-  | "galileo"
-  | "datadog"
-  | "newrelic"
-  | "lago"
-  | "langfuse"
-  | "langfuse_otel"
-  | "langsmith"
-  | "openmeter"
-  | "otel"
-  | "pointfive"
-  | "zerobus"
-  | "s3"
-  | "signoz"
-  | "SQS";
-
 interface CallbackConfig {
-  id: CallbackId;
+  id: string;
   displayName: string;
   logo?: string;
   supports_key_team_logging: boolean;
   dynamic_params: Record<string, "text" | "password" | "select" | "upload" | "number">;
   dynamic_param_options?: Record<string, readonly string[]>;
+  success_event_params?: string[];
+  description: string;
+  descriptionKey:
+    | "SQS"
+    | "arize"
+    | "braintrust"
+    | "custom_callback_api"
+    | "datadog"
+    | "galileo"
+    | "lago"
+    | "langfuse"
+    | "langfuse_otel"
+    | "langsmith"
+    | "newrelic"
+    | "openmeter"
+    | "otel"
+    | "pointfive"
+    | "s3"
+    | "signoz"
+    | "zerobus";
 }
 
 export const CALLBACK_CONFIGS: CallbackConfig[] = [
@@ -58,6 +55,12 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       arize_error_sampling_rate: "number",
       arize_otlp_protocol: "select",
     },
+    dynamic_param_options: {
+      arize_otlp_protocol: ["grpc", "http/protobuf"],
+    },
+    success_event_params: ["arize_otlp_protocol"],
+    descriptionKey: "arize",
+    description: "Arize Logging Integration",
   },
   {
     id: "braintrust",
@@ -68,6 +71,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       braintrust_api_key: "password",
       braintrust_project_name: "text",
     },
+    descriptionKey: "braintrust",
+    description: "Braintrust Logging Integration",
   },
   {
     id: "custom_callback_api",
@@ -77,6 +82,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       custom_callback_api_url: "text",
       custom_callback_api_headers: "text",
     },
+    descriptionKey: "custom_callback_api",
+    description: "Custom Callback API Logging Integration",
   },
   {
     id: "galileo",
@@ -91,6 +98,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       GALILEO_USERNAME: "text",
       GALILEO_PASSWORD: "password",
     },
+    descriptionKey: "galileo",
+    description: "Galileo AI Observability Integration",
   },
   {
     id: "datadog",
@@ -101,6 +110,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       dd_api_key: "password",
       dd_site: "text",
     },
+    descriptionKey: "datadog",
+    description: "Datadog Logging Integration",
   },
   {
     id: "newrelic",
@@ -111,6 +122,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       newrelic_api_key: "password",
       newrelic_region: "text",
     },
+    descriptionKey: "newrelic",
+    description: "New Relic Logging Integration",
   },
   {
     id: "lago",
@@ -121,6 +134,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       lago_api_url: "text",
       lago_api_key: "password",
     },
+    descriptionKey: "lago",
+    description: "Lago Billing Logging Integration",
   },
   {
     id: "langfuse",
@@ -133,6 +148,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       langfuse_host: "text",
       langfuse_environment: "text",
     },
+    descriptionKey: "langfuse",
+    description: "Langfuse v2 Logging Integration",
   },
   {
     id: "langfuse_otel",
@@ -149,6 +166,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
     dynamic_param_options: {
       langfuse_span_scope: ["full", "llm_only"],
     },
+    descriptionKey: "langfuse_otel",
+    description: "Langfuse v3 OTEL Logging Integration",
   },
   {
     id: "langsmith",
@@ -161,6 +180,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       langsmith_base_url: "text",
       langsmith_sampling_rate: "number",
     },
+    descriptionKey: "langsmith",
+    description: "Langsmith Logging Integration",
   },
   {
     id: "openmeter",
@@ -171,6 +192,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       openmeter_api_key: "password",
       openmeter_base_url: "text",
     },
+    descriptionKey: "openmeter",
+    description: "OpenMeter Logging Integration",
   },
   {
     id: "otel",
@@ -182,6 +205,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       otel_headers: "text",
       otel_exporter_otlp_protocol: "select",
     },
+    descriptionKey: "otel",
+    description: "OpenTelemetry Logging Integration",
   },
   {
     id: "pointfive",
@@ -192,6 +217,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       POINTFIVE_API_KEY: "password",
       POINTFIVE_API_URL: "text",
     },
+    descriptionKey: "pointfive",
+    description: "PointFive Logging Integration",
   },
   {
     id: "zerobus",
@@ -205,6 +232,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       ZEROBUS_CLIENT_SECRET: "password",
       ZEROBUS_TABLE_NAME: "text",
     },
+    descriptionKey: "zerobus",
+    description: "Databricks Zerobus Ingest Logging Integration",
   },
   {
     id: "s3",
@@ -217,6 +246,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       aws_secret_access_key: "password",
       aws_region: "text",
     },
+    descriptionKey: "s3",
+    description: "S3 Bucket (AWS) Logging Integration",
   },
   {
     id: "signoz",
@@ -227,6 +258,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       signoz_ingestion_endpoint: "text",
       signoz_ingestion_key: "password",
     },
+    descriptionKey: "signoz",
+    description: "SigNoz Logging Integration. Setup: https://signoz.io/docs/litellm-observability/",
   },
   {
     id: "SQS",
@@ -239,6 +272,8 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       aws_secret_access_key: "password",
       aws_region: "text",
     },
+    descriptionKey: "SQS",
+    description: "SQS Queue (AWS) Logging Integration",
   },
 ];
 

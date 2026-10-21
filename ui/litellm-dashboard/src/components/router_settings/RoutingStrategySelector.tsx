@@ -1,4 +1,5 @@
 import React from "react";
+import { CONFIG_OWNED_HINT, ConfigOwnedBadge } from "./ConfigOwned";
 import { useTranslations } from "next-intl";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { DeprecationBanner } from "@/components/DeprecationBanner";
 import PromptsPanel from "./_components";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 

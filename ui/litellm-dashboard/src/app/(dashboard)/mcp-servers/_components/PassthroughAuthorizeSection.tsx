@@ -150,7 +150,7 @@ export default function PassthroughAuthorizeSection({
         name={["credentials", "scopes"]}
         help="Scopes requested from the upstream when a user authorizes. Press enter or comma between scopes."
       >
-        {(control) => <MultiSelect {...tagsControl(control)} placeholder="Add scopes" className="rounded-lg" />}
+        {(control) => <MultiSelect {...tagsControl(t, control)} placeholder="Add scopes" className="rounded-lg" />}
       </MountedFormField>
       <DcrBridgeToggle authType={authType} initialChecked={dcrBridgeInitialChecked} />
       {isEditing && onRemoveStoredAppChange && (

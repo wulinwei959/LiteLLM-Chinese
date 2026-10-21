@@ -155,6 +155,11 @@ function usePromptsTranslator() {
 }
 export type PromptsTranslator = ReturnType<typeof usePromptsTranslator>;
 
+function useUsageKeyActivityTranslator() {
+  return useTranslations("usageKeyActivity");
+}
+export type UsageKeyActivityTranslator = ReturnType<typeof useUsageKeyActivityTranslator>;
+
 function useUsageTranslator() {
   return useTranslations("usage");
 }

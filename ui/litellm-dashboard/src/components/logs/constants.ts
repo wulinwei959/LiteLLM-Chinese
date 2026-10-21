@@ -63,6 +63,12 @@ export const SPAN_TYPE_LABEL_KEYS: Readonly<Record<string, LogsSpanTypeKey>> = {
   batch: "filters.options.batch",
 };
 
+export const KUBERNETES_POD_ROUTING_LABEL_KEYS = {
+  round_robin: "podRouting.roundRobin",
+  session_affinity: "podRouting.sessionAffinity",
+  session_affinity_retry: "podRouting.sessionAffinityRetry",
+} as const;
+
 export const CREDENTIAL_LABEL_KEYS: Readonly<Record<string, LogsCredentialKey>> = {
   true: "filters.options.clientOAuthToken",
   false: "filters.options.configuredKey",

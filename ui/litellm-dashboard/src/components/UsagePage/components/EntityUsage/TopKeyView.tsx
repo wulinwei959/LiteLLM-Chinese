@@ -72,7 +72,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
     if (!accessToken || !canOpenKeyInfo(item)) return;
 
     try {
-      const keyInfo = await keyInfoV1Call(accessToken, item.api_key);
+      const keyInfo = await keyInfoV1Call(t, accessToken, item.api_key);
       const transformedKeyData = transformKeyInfo(keyInfo);
 
       setKeyData(transformedKeyData);

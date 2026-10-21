@@ -199,9 +199,9 @@ const INITIAL_VALUES: GuardrailFormValues = {
 };
 
 const ALWAYS_ON_ITEMS = [
-  { label: "Yes", value: true },
-  { label: "No", value: false },
-];
+  { labelKey: "form.yes", value: true },
+  { labelKey: "form.no", value: false },
+] as const;
 
 const DEFAULT_MODES = ["pre_call", "during_call", "post_call", "logging_only"];
 
@@ -458,7 +458,7 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
         if (!(await form.trigger(["decision_model"]))) {
           return;
         }
-        const questionsProblem = decisionChecksProblem(decisionChecks);
+        const questionsProblem = decisionChecksProblem(decisionChecks, t);
         if (questionsProblem) {
           toast.fromError(questionsProblem);
           return;
@@ -677,7 +677,7 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
       }
 
       if (guardrailProvider === "decision_model") {
-        const questionsProblem = decisionChecksProblem(decisionChecks);
+        const questionsProblem = decisionChecksProblem(decisionChecks, t);
         if (questionsProblem) {
           toast.fromError(questionsProblem);
           setLoading(false);
@@ -1212,31 +1212,31 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
     );
   };
 
-  const getStepConfigs = () => {
+  const getStepConfigs = (): Array<{ labelKey: Parameters<typeof t>[0]; optional: boolean }> => {
     if (shouldRenderContentFilterConfigSettings(selectedProvider)) {
       return [
-        { title: "Basic Info", optional: false },
-        { title: "Topics", optional: false },
-        { title: "Patterns", optional: false },
-        { title: "Keywords", optional: false },
-        { title: "Endpoint Settings (Optional)", optional: true },
+        { labelKey: "form.stepBasic", optional: false },
+        { labelKey: "form.stepTopics", optional: false },
+        { labelKey: "form.stepPatterns", optional: false },
+        { labelKey: "form.stepKeywords", optional: false },
+        { labelKey: "form.stepEndpoint", optional: true },
       ];
     }
     if (shouldRenderPIIConfigSettings(selectedProvider)) {
       return [
-        { title: "Basic Info", optional: false },
-        { title: "PII Configuration", optional: false },
+        { labelKey: "form.stepBasic", optional: false },
+        { labelKey: "form.stepPii", optional: false },
       ];
     }
     if (isDecisionModelProvider) {
       return [
-        { title: "Basic Info", optional: false },
-        { title: "Decision Model Configuration", optional: false },
+        { labelKey: "form.stepBasic", optional: false },
+        { labelKey: "form.stepDecisionModel", optional: false },
       ];
     }
     return [
-      { title: "Basic Info", optional: false },
-      { title: "Provider Configuration", optional: false },
+      { labelKey: "form.stepBasic", optional: false },
+      { labelKey: "form.stepProvider", optional: false },
     ];
   };
 

@@ -1,4 +1,5 @@
 import type { ColumnDef, ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
+import type { CommonTranslator, TeamsTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 import { Crown, Info, User, UserPlus } from "lucide-react";
 import React, { useState } from "react";
@@ -86,6 +87,8 @@ function ResetSpendAction({ disabledReason, onClick }: { disabledReason: string 
 const ACTIONS_COLUMN_WIDTH = 120;
 
 interface MemberColumnDeps {
+  t: TeamsTranslator;
+  commonT: CommonTranslator;
   canEdit: boolean;
   onEdit: (member: Member) => void;
   onDelete: (member: Member) => void;
@@ -122,6 +125,8 @@ const extraColumnDef = (column: MemberTableColumn): ColumnDef<Member> => {
 };
 
 const buildColumns = ({
+  t,
+  commonT,
   canEdit,
   onEdit,
   onDelete,
@@ -135,11 +140,11 @@ const buildColumns = ({
   {
     id: "user_alias",
     accessorFn: (member) => member.user_alias || undefined,
-    header: ({ column }) => <DataTableSortHeader column={column} title="Name" />,
+    header: ({ column }) => <DataTableSortHeader column={column} title={commonT("name")} />,
     sortingFn: "text",
     sortUndefined: "last",
     enableGlobalFilter: true,
-    meta: { title: "Name" },
+    meta: { title: commonT("name") },
     cell: ({ row }) => row.original.user_alias || <span className="text-muted-foreground">-</span>,
   },
   {
@@ -233,6 +238,7 @@ export default function MemberTable({
   emptyText,
 }: MemberTableProps) {
   const t = useTranslations("teams");
+  const commonT = useTranslations("common");
 
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -261,6 +267,8 @@ export default function MemberTable({
     showDeleteForMember,
     onResetSpend,
     resetSpendDisabledReason,
+    t,
+    commonT,
   };
   const columns = buildColumns(columnDeps);
   const roleFilterItems = [

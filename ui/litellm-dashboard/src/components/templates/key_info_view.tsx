@@ -22,6 +22,7 @@ import KeySavingsTab from "./KeySavingsTab";
 import KeyAutoRouterUsageTab from "./KeyAutoRouterUsageTab";
 import { useActivityDateRange } from "@/app/(dashboard)/cost-optimization/_components/useDailyActivityRange";
 import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import {
   hasProxyWideSpendView,
@@ -554,9 +555,6 @@ export default function KeyInfoView({
   const parentOrg = orgId ? organizations?.find((org) => org.organization_id === orgId) : null;
 
   const hasOwnBudget = currentKeyData.max_budget !== null;
-  const budgetDisplay = hasOwnBudget
-    ? `$${formatNumberWithCommas(currentKeyData.max_budget, 2)}`
-    : commonT("unlimited");
   const ownerUser = keyOwnerBudgetSource(currentKeyData, applyUserBudgetToTeamKeys);
   const memberGate = hasOwnBudget
     ? null
@@ -567,8 +565,8 @@ export default function KeyInfoView({
       );
   const budgetDisplay = (() => {
     if (hasOwnBudget) return `$${formatNumberWithCommas(currentKeyData.max_budget, 2)}`;
-    if (memberGate) return `$${formatNumberWithCommas(memberGate.maxBudget, 2)} (team member budget)`;
-    return "Unlimited";
+    if (memberGate) return `$${formatNumberWithCommas(memberGate.maxBudget, 2)} (${t("teamMemberBudget")})`;
+    return commonT("unlimited");
   })();
   const inheritedGates = hasOwnBudget ? [] : inheritedBudgetGates(parentTeam, parentOrg, ownerUser, memberGate);
 

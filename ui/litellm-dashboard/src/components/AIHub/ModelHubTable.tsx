@@ -106,6 +106,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
   canAddModels,
 }) => {
   const t = useTranslations("modelHub");
+  const commonT = useTranslations("common");
   const syntaxTheme = useSyntaxTheme(prism);
   // Admin Viewer follows the read-parity rule: see the AI Hub catalog, but
   // cannot toggle public visibility (write).
@@ -427,13 +428,13 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
   const [agentSorting, setAgentSorting] = useState<SortingState>([{ id: "name", desc: false }]);
   const [mcpSorting, setMcpSorting] = useState<SortingState>([{ id: "server_name", desc: false }]);
 
-  const modelColumns = useMemo(() => getModelHubTableColumns({ onModelClick: showModal }), [showModal]);
-  const agentColumns = useMemo(() => getAgentHubTableColumns({ onAgentClick: showAgentModal }), [showAgentModal]);
+  const modelColumns = useMemo(() => getModelHubTableColumns({ onModelClick: showModal, t, commonT }), [showModal]);
+  const agentColumns = useMemo(() => getAgentHubTableColumns({ onAgentClick: showAgentModal, t }), [showAgentModal]);
   const filteredAgentData = useMemo(
     () => filterBySearchTerm(agentHubData ?? [], agentSearchTerm, (agent) => [agent.name, agent.description]),
     [agentHubData, agentSearchTerm],
   );
-  const mcpColumns = useMemo(() => getMCPHubTableColumns({ onServerClick: showMcpModal }), [showMcpModal]);
+  const mcpColumns = useMemo(() => getMCPHubTableColumns({ onServerClick: showMcpModal, t, commonT }), [showMcpModal]);
 
   // If this is a public page, use the dedicated PublicModelHub component
   if (publicPage && publicPageAllowed) {

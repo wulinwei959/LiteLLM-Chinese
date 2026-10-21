@@ -58,6 +58,11 @@ import { ProviderSpendBreakdown } from "./SpendByProvider";
 
 const BRAND = "#2b3fd6";
 const FLAT_COST_SERIES = "Flat cost";
+const METRIC_TITLE_KEY = {
+  spend: "spend",
+  tokens: "totalTokens",
+  requests: "totalRequests",
+} as const;
 const FLAT_COST_COLOR = "#8b5cf6";
 const METRIC_TITLE: Record<UsageMetric, string> = { spend: "Spend", tokens: "Tokens", requests: "Requests" };
 /** Summary tiles that carry a sparkline, keyed by tile title, valued by the dailyTotals field. */
@@ -368,7 +373,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   const dailyTrend = useMemo(() => dailyTotals(spendData.results), [spendData.results]);
   const stackFlatCost = showFlatCost && breakdown.metric === "spend";
   const chartSeries = useMemo(() => {
-    const series = stackFlatCost ? withFlatCost(dailySeries, spendData.results, t) : dailySeries;
+    const series = stackFlatCost ? withFlatCost(dailySeries, spendData.results) : dailySeries;
     return bucketSeries(series, granularity);
   }, [stackFlatCost, dailySeries, spendData.results, granularity]);
   const chartTotals = useMemo(() => bucketTotals(chartSeries), [chartSeries]);
@@ -465,8 +470,8 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     );
   };
 
-  const breakdownTiles = showFlatCost && showCostBreakdown ? buildCostBreakdownTiles(spendData.metadata) : [];
-  const summaryTiles = buildSummaryTiles(spendData.metadata, showFlatCost, showPtuHours);
+  const breakdownTiles = showFlatCost && showCostBreakdown ? buildCostBreakdownTiles(t, spendData.metadata) : [];
+  const summaryTiles = buildSummaryTiles(t, spendData.metadata, showFlatCost, showPtuHours);
 
   const modelViewTitle = modelViewType === "groups" ? t("topModelGroups") : t("topModelSingle");
   const chartFormat = (value: number) => formatMetricValue(value, breakdown.metric);

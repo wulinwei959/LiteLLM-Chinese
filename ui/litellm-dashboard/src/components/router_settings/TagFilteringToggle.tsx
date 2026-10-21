@@ -1,4 +1,5 @@
 import React, { useId } from "react";
+import { CONFIG_OWNED_HINT, ConfigOwnedBadge } from "./ConfigOwned";
 import { useTranslations } from "next-intl";
 import { Switch } from "@/components/ui/switch";
 

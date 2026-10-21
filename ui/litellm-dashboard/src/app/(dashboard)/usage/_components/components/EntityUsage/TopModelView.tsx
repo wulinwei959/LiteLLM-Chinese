@@ -1,4 +1,5 @@
 import { BarChart } from "@/components/shared/charts";
+import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
 import { DataTable } from "@/components/shared/DataTable";
 import { MoneyCell } from "@/components/shared/table_cells";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";

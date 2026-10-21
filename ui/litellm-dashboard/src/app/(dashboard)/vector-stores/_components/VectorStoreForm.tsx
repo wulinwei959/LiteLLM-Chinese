@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import type { VectorStoresTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 import { CircleHelp, Eye, EyeOff, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
@@ -93,7 +94,7 @@ const isProviderFieldName = (name: string): name is ProviderFieldName =>
 
 const optionalText = z.string().optional();
 
-const vectorStoreShape = {
+const buildVectorStoreShape = (t: VectorStoresTranslator) => ({
   custom_llm_provider: z.string().min(1, t("providerRequired")),
   vector_store_id: z.string().min(1, t("idRequired")),
   vector_store_name: optionalText,
@@ -120,24 +121,25 @@ const vectorStoreShape = {
   valkey_ssl: optionalText,
   valkey_text_field: optionalText,
   valkey_embedding_field: optionalText,
-};
-
-const vectorStoreSchema = z.object(vectorStoreShape).superRefine((values, ctx) => {
-  getProviderSpecificFields(values.custom_llm_provider)
-    .filter((field) => field.required && isProviderFieldName(field.name) && !values[field.name])
-    .forEach((field) =>
-      ctx.addIssue({
-        code: "custom",
-        path: [field.name],
-        message:
-          field.type === "select"
-            ? `Please select the ${field.label.toLowerCase()}`
-            : `Please input the ${field.label.toLowerCase()}`,
-      }),
-    );
 });
 
-type VectorStoreFormValues = z.output<typeof vectorStoreSchema>;
+const buildVectorStoreSchema = (t: VectorStoresTranslator) =>
+  z.object(buildVectorStoreShape(t)).superRefine((values, ctx) => {
+    getProviderSpecificFields(values.custom_llm_provider)
+      .filter((field) => field.required && isProviderFieldName(field.name) && !values[field.name])
+      .forEach((field) =>
+        ctx.addIssue({
+          code: "custom",
+          path: [field.name],
+          message:
+            field.type === "select"
+              ? t("selectFieldRequired", { field: t(field.labelKey).toLowerCase() })
+              : t("inputFieldRequired", { field: t(field.labelKey).toLowerCase() }),
+        }),
+      );
+  });
+
+type VectorStoreFormValues = z.output<ReturnType<typeof buildVectorStoreSchema>>;
 
 const VECTOR_STORE_ID_PLACEHOLDERS: Record<string, string> = {
   vertex_rag_engine: '6917529027641081856 (corpus ID from Vertex AI / "RAG Engine" console)',
@@ -203,7 +205,7 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
   credentials,
 }) => {
   const t = useTranslations("vectorStores");
-  const form = useZodForm(vectorStoreSchema, { defaultValues: EMPTY_VALUES });
+  const form = useZodForm(buildVectorStoreSchema(t), { defaultValues: EMPTY_VALUES });
   const [metadataJson, setMetadataJson] = useState("{}");
   const [selectedProvider, setSelectedProvider] = useState("bedrock");
   const [modelInfo, setModelInfo] = useState<ModelGroup[]>([]);
@@ -540,7 +542,7 @@ interface ProviderFieldProps {
 
 const ProviderField: React.FC<ProviderFieldProps> = ({ field, control, modelInfo }) => {
   const t = useTranslations("vectorStores");
-  const label = labelWithHint(field.label, field.tooltip);
+  const label = labelWithHint(t(field.labelKey), t(field.tooltipKey));
 
   if (field.type === "select") {
     const selectOptions =
@@ -569,7 +571,7 @@ const ProviderField: React.FC<ProviderFieldProps> = ({ field, control, modelInfo
               id={id}
               aria-invalid={ariaInvalid}
               aria-describedby={ariaDescribedBy}
-              placeholder={field.placeholder}
+              placeholder={field.placeholderKey ? t(field.placeholderKey) : undefined}
               className="w-full"
             />
             <ComboboxContent>
@@ -592,9 +594,20 @@ const ProviderField: React.FC<ProviderFieldProps> = ({ field, control, modelInfo
     <FormField control={control} name={field.name} label={label}>
       {({ ref, value, ...controlProps }) =>
         field.type === "password" ? (
-          <PasswordInput {...controlProps} ref={ref} value={value ?? ""} placeholder={field.placeholder} />
+          <PasswordInput
+            {...controlProps}
+            ref={ref}
+            value={value ?? ""}
+            placeholder={field.placeholderKey ? t(field.placeholderKey) : undefined}
+          />
         ) : (
-          <Input {...controlProps} ref={ref} value={value ?? ""} type="text" placeholder={field.placeholder} />
+          <Input
+            {...controlProps}
+            ref={ref}
+            value={value ?? ""}
+            type="text"
+            placeholder={field.placeholderKey ? t(field.placeholderKey) : undefined}
+          />
         )
       }
     </FormField>

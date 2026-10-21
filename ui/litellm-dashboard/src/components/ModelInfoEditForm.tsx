@@ -23,11 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 
-import CacheControlInjectionPoints, {
-  CACHE_CONTROL_LABEL,
-  CACHE_CONTROL_TOOLTIP,
-  type CacheControlInjectionPoint,
-} from "./add_model/cache_control_settings";
+import CacheControlInjectionPoints, { type CacheControlInjectionPoint } from "./add_model/cache_control_settings";
 import type { Team } from "./key_team_helpers/key_list";
 import type { CredentialItem } from "./networking";
 import NumericalInput from "./shared/numerical_input";
@@ -49,19 +45,28 @@ import {
   ptuWindowIsOrdered,
 } from "../utils/ptuValidation";
 
+type PtuLabelKey = Parameters<ReturnType<typeof useTranslations<"common">>>[0];
+type PtuPlaceholderKey = PtuLabelKey;
+
 interface PtuEditField {
   name: string;
-  label: string;
+  labelKey: PtuLabelKey;
+  placeholderKey?: PtuPlaceholderKey;
   input: "number" | "datetime";
-  placeholder?: string;
   isCount?: boolean;
 }
 
 const PTU_EDIT_FIELDS: PtuEditField[] = [
-  { name: PTU_COUNT_FIELD, label: "PTU Count", input: "number", placeholder: "e.g. 15", isCount: true },
-  { name: PTU_RATE_FIELD, label: "Cost per PTU / Hour (USD)", input: "number", placeholder: "e.g. 2.00" },
-  { name: PTU_START_FIELD, label: "PTU Effective From (UTC)", input: "datetime" },
-  { name: PTU_END_FIELD, label: "PTU Effective To (UTC)", input: "datetime" },
+  {
+    name: PTU_COUNT_FIELD,
+    labelKey: "ptuCount",
+    placeholderKey: "ptuCountPlaceholder",
+    input: "number",
+    isCount: true,
+  },
+  { name: PTU_RATE_FIELD, labelKey: "ptuRateLabel", placeholderKey: "ptuRatePlaceholder", input: "number" },
+  { name: PTU_START_FIELD, labelKey: "ptuStart", input: "datetime" },
+  { name: PTU_END_FIELD, labelKey: "ptuEnd", input: "datetime" },
 ];
 
 const PRICING_FIELDS = [
@@ -359,6 +364,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
   teams,
 }) => {
   const t = useTranslations("common");
+  const commonT = useTranslations("common");
   // Neither RHF's blur-based touchedFields nor its resettable dirtyFields matches antd's touched-on-change.
   const touchedRef = React.useRef<ReadonlySet<string>>(new Set<string>());
   const isFieldTouched = React.useCallback((field: TouchedPricingField) => touchedRef.current.has(field), []);
@@ -472,7 +478,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             {ptuCostAttributionEnabled &&
               PTU_EDIT_FIELDS.map((ptuField) => (
                 <div key={ptuField.name}>
-                  <FieldLabel htmlFor={ptuField.name}>{ptuField.label}</FieldLabel>
+                  <FieldLabel htmlFor={ptuField.name}>{t(ptuField.labelKey)}</FieldLabel>
                   {isEditing ? (
                     <FormField control={form.control} name={ptuField.name as ModelEditFieldName}>
                       {({ value, onChange, ...control }) =>

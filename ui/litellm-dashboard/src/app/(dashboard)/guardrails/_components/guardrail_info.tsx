@@ -59,9 +59,9 @@ import GuardrailProviderFields from "./guardrail_provider_fields";
 import PiiConfiguration from "./pii_configuration";
 import ToolPermissionRulesEditor, { ToolPermissionConfig } from "./tool_permission/ToolPermissionRulesEditor";
 
-const DEFAULT_ON_ITEMS = [
-  { label: "Yes", value: true },
-  { label: "No", value: false },
+const DEFAULT_ON_ITEMS: readonly { labelKey: "info.yesLabel" | "info.noLabel"; value: boolean }[] = [
+  { labelKey: "info.yesLabel", value: true },
+  { labelKey: "info.noLabel", value: false },
 ];
 
 const SectionHeading: React.FC<{ children: React.ReactNode }> = ({ children }) => (

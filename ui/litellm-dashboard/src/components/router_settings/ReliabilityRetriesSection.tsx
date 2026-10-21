@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslations } from "next-intl";
+import { CONFIG_OWNED_HINT, ConfigOwnedBadge, type RouterSettingsSource, isOwnedByConfig } from "./ConfigOwned";
 import { Input } from "@/components/ui/input";
 
 interface ReliabilityRetriesSectionProps {

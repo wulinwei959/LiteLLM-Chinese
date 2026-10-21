@@ -32,7 +32,7 @@ import {
   type BenchmarkView,
   type BucketRow,
 } from "./autoRouterBenchmarks";
-import { classificationRatePer1kTurns, formatRangeLabel, usd } from "./costOptimizationUtils";
+import { classificationRatePer1k, formatRangeLabel, usd } from "./costOptimizationUtils";
 import AutoRouterSummaryTable from "./AutoRouterSummaryTable";
 import ShadowEvalSection from "./ShadowEvalSection";
 import TierTurnsChart from "./TierTurnsChart";
@@ -138,7 +138,7 @@ const HeroCard: React.FC<{ view: BenchmarkView }> = ({ view }) => {
               hint={
                 classifierCost == null
                   ? undefined
-                  : classificationRatePer1kTurns(classifierCost, stats.savings_estimated_turns)
+                  : classificationRatePer1k(classifierCost, stats.savings_estimated_turns)
               }
             />
           </div>
@@ -159,6 +159,7 @@ const HeroCard: React.FC<{ view: BenchmarkView }> = ({ view }) => {
 };
 
 const StackedTurnBar: React.FC<{ buckets: BucketRow[] }> = ({ buckets }) => {
+  const t = useTranslations("costOptimization");
   const segments = buckets.filter((b) => b.turns > 0);
   return (
     <div className="flex flex-col gap-1">
@@ -172,7 +173,7 @@ const StackedTurnBar: React.FC<{ buckets: BucketRow[] }> = ({ buckets }) => {
             key={b.key}
             className={`${b.fill} first:rounded-l-sm last:rounded-r-sm`}
             style={{ width: `${b.sharePct}%` }}
-            title={`${b.label}: ${b.turns.toLocaleString()} turns`}
+            title={`${t(b.labelKey)}: ${b.turns.toLocaleString()} turns`}
           />
         ))}
       </div>
@@ -187,44 +188,47 @@ const StackedTurnBar: React.FC<{ buckets: BucketRow[] }> = ({ buckets }) => {
   );
 };
 
-const BucketTable: React.FC<{ buckets: BucketRow[] }> = ({ buckets }) => (
-  <Table className="border-b">
-    <TableHeader>
-      <TableRow className="hover:bg-transparent">
-        <TableHead className="text-[11px] uppercase tracking-wide">Bucket</TableHead>
-        <TableHead className="text-right text-[11px] uppercase tracking-wide">Turns</TableHead>
-        <TableHead className="w-1/2" />
-        <TableHead className="text-right text-[11px] uppercase tracking-wide">Hit rate</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {buckets.map((b) => (
-        <TableRow key={b.key} className="hover:bg-transparent">
-          <TableCell className="text-foreground">
-            <span className="flex items-center gap-2">
-              <span className={`inline-block size-2 shrink-0 rounded-sm ${b.fill}`} aria-hidden />
-              <span>
-                {b.label}
-                <span className="block text-xs font-normal text-muted-foreground">{b.sublabel}</span>
-              </span>
-            </span>
-          </TableCell>
-          <TableCell className="text-right align-middle tabular-nums text-foreground">
-            {b.turns.toLocaleString()}
-          </TableCell>
-          <TableCell className="align-middle">
-            <div className="h-1.5 w-full rounded-full bg-muted">
-              <div className="h-full rounded-full bg-foreground" style={{ width: `${b.hitRatePct}%` }} aria-hidden />
-            </div>
-          </TableCell>
-          <TableCell className="text-right align-middle font-medium tabular-nums text-foreground">
-            {pctLabel(b.hitRatePct)}
-          </TableCell>
+const BucketTable: React.FC<{ buckets: BucketRow[] }> = ({ buckets }) => {
+  const t = useTranslations("costOptimization");
+  return (
+    <Table className="border-b">
+      <TableHeader>
+        <TableRow className="hover:bg-transparent">
+          <TableHead className="text-[11px] uppercase tracking-wide">Bucket</TableHead>
+          <TableHead className="text-right text-[11px] uppercase tracking-wide">Turns</TableHead>
+          <TableHead className="w-1/2" />
+          <TableHead className="text-right text-[11px] uppercase tracking-wide">Hit rate</TableHead>
         </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-);
+      </TableHeader>
+      <TableBody>
+        {buckets.map((b) => (
+          <TableRow key={b.key} className="hover:bg-transparent">
+            <TableCell className="text-foreground">
+              <span className="flex items-center gap-2">
+                <span className={`inline-block size-2 shrink-0 rounded-sm ${b.fill}`} aria-hidden />
+                <span>
+                  {t(b.labelKey)}
+                  <span className="block text-xs font-normal text-muted-foreground">{t(b.sublabelKey)}</span>
+                </span>
+              </span>
+            </TableCell>
+            <TableCell className="text-right align-middle tabular-nums text-foreground">
+              {b.turns.toLocaleString()}
+            </TableCell>
+            <TableCell className="align-middle">
+              <div className="h-1.5 w-full rounded-full bg-muted">
+                <div className="h-full rounded-full bg-foreground" style={{ width: `${b.hitRatePct}%` }} aria-hidden />
+              </div>
+            </TableCell>
+            <TableCell className="text-right align-middle font-medium tabular-nums text-foreground">
+              {pctLabel(b.hitRatePct)}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+};
 
 const CachingCard: React.FC<{ cache: AutoRouterCacheStats }> = ({ cache }) => {
   const t = useTranslations("costOptimization");

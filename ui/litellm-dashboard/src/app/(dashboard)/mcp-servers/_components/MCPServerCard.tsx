@@ -32,6 +32,7 @@ interface MCPServerCardProps {
   onByokConnect?: () => void;
   onOpenFillFields?: () => void;
   onDelete?: () => void;
+  stdioEnabled?: boolean;
 }
 
 const HEALTH_TONE: Record<string, { dot: string }> = {

@@ -115,7 +115,7 @@ export function usePlaygroundSend(deps: SendDeps) {
 
   const attach = (incoming: readonly File[]) => {
     if (!deps.capabilities.attach) return;
-    const result = addFiles(deps.capabilities.attach, files, incoming, previewFor);
+    const result = addFiles(t, deps.capabilities.attach, files, incoming, previewFor);
     result.errors.forEach((error) => toast.error(error));
     setFiles(result.files);
   };

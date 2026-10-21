@@ -33,6 +33,7 @@ interface MCPServerViewProps {
   availableAccessGroups: string[];
   existingServers?: MCPServer[];
   initialTabIndex?: number;
+  stdioEnabled?: boolean;
 }
 
 // True when this render is the return from the edit-settings OAuth redirect for this
@@ -338,7 +339,9 @@ export const MCPServerView: React.FC<MCPServerViewProps> = ({
                       <span className={`h-1.5 w-1.5 rounded-full ${networkAccess.dotClassName}`} />
                       {t(networkAccessLabelKey(networkAccess.kind))}
                     </Badge>
-                    <p className="mt-2 text-xs text-muted-foreground">{t(networkAccessDescriptionKey(networkAccess.reason))}</p>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      {t(networkAccessDescriptionKey(networkAccess.reason))}
+                    </p>
                   </div>
                 </div>
                 {handleAuth(mcpServer.auth_type) === "oauth2" && (

@@ -1,4 +1,5 @@
 import React from "react";
+import { CONFIG_OWNED_HINT, ConfigOwnedBadge } from "./ConfigOwned";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 
@@ -17,7 +18,10 @@ interface LatencyBasedConfigurationProps {
   ownedByConfig?: boolean;
 }
 
-const LatencyBasedConfiguration: React.FC<LatencyBasedConfigurationProps> = ({ routingStrategyArgs }) => {
+const LatencyBasedConfiguration: React.FC<LatencyBasedConfigurationProps> = ({
+  routingStrategyArgs,
+  ownedByConfig = false,
+}) => {
   const t = useTranslations("routerSettings");
   const paramExplanation: { [key: string]: string } = {
     ttl: t("latencyTtlHelp"),

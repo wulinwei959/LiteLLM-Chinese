@@ -251,7 +251,13 @@
     "addCredential": "Add Credential",
     "resourceInformationTitle": "Credential Information",
     "credentialName": "Credential Name",
-    "noDescription": "No description"
+    "noDescription": "No description",
+    "ptuCount": "PTU Count",
+    "ptuCountPlaceholder": "e.g. 15",
+    "ptuRateLabel": "Cost per PTU / Hour (USD)",
+    "ptuRatePlaceholder": "e.g. 2.00",
+    "ptuStart": "PTU Effective From (UTC)",
+    "ptuEnd": "PTU Effective To (UTC)"
   },
   "nav": {
     "expandSidebar": "Expand sidebar",
@@ -745,7 +751,8 @@
       "tooltipAdminOnly": "Only a proxy admin can change this. It sets how many output tokens the rate limiter reserves for a request that omits max_tokens, which is charged against the team and organization TPM windows.",
       "invalidPositive": "Enter a positive integer",
       "invalidPerModel": "Enter a JSON object of positive integers, e.g. '{'\"gpt-4\": 4096'}'"
-    }
+    },
+    "teamMemberBudget": "team member budget"
   },
   "models": {
     "refreshModelsAria": "Refresh models",
@@ -2183,7 +2190,9 @@
     "kindModel": "model",
     "liteLlmModelName": "LiteLLM Model Name",
     "usingExistingCredential": "Using Existing Credential",
-    "connectionTestResults": "Connection Test Results"
+    "connectionTestResults": "Connection Test Results",
+    "updateFailed": "Failed to update the model",
+    "deleteFailed": "Failed to delete the model"
   },
   "teams": {
     "title": "Teams",
@@ -3431,7 +3440,9 @@
       "modeRow": "Mode",
       "defaultOnRow": "Default On",
       "createdAtRow": "Created At",
-      "updatedAtRow": "Last Updated"
+      "updatedAtRow": "Last Updated",
+      "yesLabel": "Yes",
+      "noLabel": "No"
     },
     "form": {
       "loadFailed": "Failed to load guardrail configuration",
@@ -3470,7 +3481,20 @@
       "previous": "Previous",
       "next": "Next",
       "create": "Create Guardrail",
-      "modeHint": "How the guardrail should be applied"
+      "modeHint": "How the guardrail should be applied",
+      "stepBasic": "Basic Info",
+      "stepDecisionModel": "Decision Model Configuration",
+      "stepEndpoint": "Endpoint Settings (Optional)",
+      "stepKeywords": "Keywords",
+      "stepPatterns": "Patterns",
+      "stepPii": "PII Configuration",
+      "stepProvider": "Provider Configuration",
+      "stepTopics": "Topics",
+      "alwaysOffLabel": "Default Off",
+      "loggingOnlyScopeLabel": "Logging only scope",
+      "continueAfterFlaggedLabel": "Continue after a flagged request",
+      "onLabel": "On",
+      "offLabel": "Off"
     },
     "test": {
       "title": "Test Guardrails:",
@@ -5675,6 +5699,11 @@
       "sectionAutomatedReasoning": "Automated Reasoning Findings",
       "sectionRawBedrockResponse": "Raw Bedrock Guardrail Response",
       "notAvailable": "N/A"
+    },
+    "podRouting": {
+      "roundRobin": "Round robin",
+      "sessionAffinity": "Session affinity",
+      "sessionAffinityRetry": "Session affinity (retry)"
     }
   },
   "projects": {
@@ -7456,6 +7485,14 @@
       "show": "Show",
       "jobsLoadFailed": "Existing evaluations could not be loaded. Refresh the page to retry.",
       "sectionDesc": "Blind-judge the auto-router on the real traffic of a key, team, or user (teams and users cover JWT-authenticated traffic): against the models they use today before switching, or against a fixed baseline after they have switched."
+    },
+    "benchmarks": {
+      "sameModel": "Same model",
+      "firstVisit": "First visit",
+      "returnToTier": "Return to tier",
+      "sameModelSub": "previous turn → same tier",
+      "firstVisitSub": "previous turn → a tier not used yet",
+      "returnToTierSub": "previous turn → a tier used earlier"
     }
   },
   "chat": {
@@ -9532,7 +9569,9 @@
     "createDescHint": "Optional: Describe what this vector store contains",
     "createDescPlaceholder": "e.g., Contains all product documentation and user guides",
     "createProviderHint": "Select the provider for embedding and vector store operations",
-    "creatingBtn": "Creating Vector Store..."
+    "creatingBtn": "Creating Vector Store...",
+    "selectFieldRequired": "Please select the {field}",
+    "inputFieldRequired": "Please input the {field}"
   },
   "modelHub": {
     "showingModels": "Showing {shown} of {total, plural, one {# model} other {# models}}",
@@ -9923,7 +9962,8 @@
     "scopeTeam": "Team",
     "scopeOrganization": "Organization",
     "scopeUser": "User",
-    "gateFormat": "{scope} {alias}: ${amount}{suffix}"
+    "gateFormat": "{scope} {alias}: ${amount}{suffix}",
+    "scopeTeamMember": "Team member"
   },
   "roiCalculator": {
     "title": "ROI Calculator",
@@ -10192,7 +10232,9 @@
     "requestsColumn": "Requests",
     "virtualKeysTitle": "Virtual keys",
     "keyColumn": "Key",
-    "spendColumn": "Spend"
+    "spendColumn": "Spend",
+    "matchingKeys": "{count} matching keys",
+    "totalKeys": "{count} keys"
   },
   "keyModelUsage": {
     "title": "Model Usage",
@@ -10461,7 +10503,8 @@
       "spend_report": "View spend by date and group (requires an enterprise license)",
       "team_spend_report": "View a team's spend by model and key (requires an enterprise license)",
       "key_spend_report": "View a key's spend by model (requires an enterprise license)",
-      "request_logs": "List request cost, timing and status, excluding prompts and responses"
+      "request_logs": "List request cost, timing and status, excluding prompts and responses",
+      "key_detach_from_team": "Remove a virtual key from its team without deleting the key"
     },
     "askAria": "Ask LiteAdmin",
     "homeSubtitle": "Control your entire gateway.",
@@ -10683,7 +10726,12 @@
     "leaderboard": "Leaderboard",
     "summaryDesc": "{granularity} {metric} across your gateway",
     "leaderboardDesc": "Share of {metric}, with the change between the first and second half of the period",
-    "gatewayTotalLabel": "Gateway total"
+    "gatewayTotalLabel": "Gateway total",
+    "granularityDaily": "Daily",
+    "granularityWeekly": "Weekly",
+    "metricRequests": "requests",
+    "metricSpend": "spend",
+    "metricTokens": "tokens"
   },
   "guardrailSettingsView": {
     "noGuardrails": "No guardrails configured",

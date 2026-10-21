@@ -64,7 +64,7 @@ export function ObjectPermissionsView({
         {skills.join(", ")}
         {skills.length > 0 && inheritedOnlySkills.length > 0 ? ", " : ""}
         {inheritedOnlySkills.map((grant, index) => (
-          <span key={grant.id} title={inheritedGrantTooltip(grant)} className="text-muted-foreground">
+          <span key={grant.id} title={inheritedGrantTooltip(t, grant)} className="text-muted-foreground">
             {index > 0 ? ", " : ""}
             {grant.id} (access group)
           </span>

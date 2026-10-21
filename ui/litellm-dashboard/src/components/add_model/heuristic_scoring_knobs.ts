@@ -1,4 +1,7 @@
 import type { useTranslations } from "next-intl";
+import { serializeCustomDimensions } from "./custom_dimensions";
+import { heuristicScoringRoleFor, type ClassifierFallback } from "./ComplexityRouterConfig";
+import { isHeuristicChain, type ClassifierType, type LocalHeuristic } from "./classifier_types";
 import type { CustomDimensionRow } from "./custom_dimensions";
 
 export type TierBoundaries = Record<string, number>;
@@ -14,6 +17,35 @@ export type AddModelTranslator = ReturnType<typeof useTranslations<"models.addMo
  * shipped weights come from the proxy (GET /public/complexity_router/scorer_defaults), so a dimension
  * added backend-side still renders, under its raw key until it is given a label here.
  */
+interface ScorerKnobInputs {
+  classifierType: ClassifierType;
+  localHeuristic: LocalHeuristic | undefined;
+  classifierFallback: ClassifierFallback | undefined;
+  tierBoundaries: TierBoundaries | undefined;
+  tokenThresholds: TokenThresholds | undefined;
+  dimensionWeights: DimensionWeights | undefined;
+  customDimensions: CustomDimensionRow[] | undefined;
+  reasoningOverrideMinScore: number | undefined;
+}
+
+export const scorerKnobPayload = (knobs: ScorerKnobInputs) => {
+  const role = heuristicScoringRoleFor(knobs.classifierType, knobs.classifierFallback, knobs.localHeuristic);
+  return role === "never" && !isHeuristicChain(knobs.classifierType)
+    ? {}
+    : {
+        ...(knobs.tierBoundaries && { tier_boundaries: knobs.tierBoundaries }),
+        ...(knobs.tokenThresholds && { token_thresholds: knobs.tokenThresholds }),
+        ...(knobs.dimensionWeights && { dimension_weights: knobs.dimensionWeights }),
+        ...(role === "decides" &&
+          knobs.customDimensions !== undefined && {
+            custom_dimensions: serializeCustomDimensions(knobs.customDimensions),
+          }),
+        ...(knobs.reasoningOverrideMinScore !== undefined && {
+          reasoning_override_min_score: knobs.reasoningOverrideMinScore,
+        }),
+      };
+};
+
 export const DIMENSION_LABEL_KEYS = {
   codePresence: "dimensionCodePresence",
   reasoningMarkers: "dimensionReasoningMarkers",
@@ -94,8 +126,7 @@ export const rebalanceDimensionWeights = (
   custom: CustomDimensionRow[] | undefined,
   edit: WeightEdit,
 ): WeightResult => {
-  if (!defaults || !Object.keys(defaults).length)
-    return { ok: false, error: "rebalanceNeedDefaults" };
+  if (!defaults || !Object.keys(defaults).length) return { ok: false, error: "rebalanceNeedDefaults" };
   const builtin = effectiveDimensionWeights(defaults, stored);
   const rows =
     edit.type === "add"
@@ -121,8 +152,7 @@ export const rebalanceDimensionWeights = (
     return edit.type === "add" ? edit.row.weight : 0;
   };
   const weight = requestedWeight();
-  if (!weightValid({ kind: target?.kind ?? "builtin", weight }))
-    return { ok: false, error: "rebalanceWeightRange" };
+  if (!weightValid({ kind: target?.kind ?? "builtin", weight })) return { ok: false, error: "rebalanceWeightRange" };
   const others = vector.filter((entry) => !pinned(entry));
   const total = others.reduce((sum, entry) => sum + entry.weight, 0);
   if (!Number.isFinite(total)) return { ok: false, error: "rebalanceTooLarge" };
@@ -142,8 +172,7 @@ export const rebalanceDimensionWeights = (
     entry === receiver ? { ...entry, weight: entry.weight + residual } : entry,
   );
   const offBudget = Math.abs(corrected.reduce((sum, entry) => sum + entry.weight, 0) - 1) > 1e-12;
-  if (!corrected.every(weightValid) || offBudget)
-    return { ok: false, error: "rebalanceNoShare" };
+  if (!corrected.every(weightValid) || offBudget) return { ok: false, error: "rebalanceNoShare" };
   const weights = Object.fromEntries(
     corrected.filter((entry) => entry.kind === "builtin").map(({ id, weight }) => [id, weight]),
   );

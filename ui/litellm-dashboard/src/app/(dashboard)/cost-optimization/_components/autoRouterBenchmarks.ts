@@ -34,6 +34,8 @@ export const viewFor = (data: AutoRouterBenchmarksResponse, selectedKey: string)
 
 export interface BucketRow {
   key: "same_model" | "first_visit" | "return_to_tier";
+  labelKey: "benchmarks.sameModel" | "benchmarks.firstVisit" | "benchmarks.returnToTier";
+  sublabelKey: "benchmarks.sameModelSub" | "benchmarks.firstVisitSub" | "benchmarks.returnToTierSub";
   turns: number;
   sharePct: number;
   hitRatePct: number;
@@ -50,6 +52,8 @@ export const bucketRows = (cache: AutoRouterCacheStats): BucketRow[] => {
   return [
     {
       key: "same_model",
+      labelKey: "benchmarks.sameModel",
+      sublabelKey: "benchmarks.sameModelSub",
       turns: cache.same_model.turns,
       sharePct: sharePctOf(cache.same_model.turns, total),
       hitRatePct: cache.same_model.hit_rate_pct,
@@ -57,6 +61,8 @@ export const bucketRows = (cache: AutoRouterCacheStats): BucketRow[] => {
     },
     {
       key: "first_visit",
+      labelKey: "benchmarks.firstVisit",
+      sublabelKey: "benchmarks.firstVisitSub",
       turns: cache.first_visit.turns,
       sharePct: sharePctOf(cache.first_visit.turns, total),
       hitRatePct: cache.first_visit.hit_rate_pct,
@@ -64,6 +70,8 @@ export const bucketRows = (cache: AutoRouterCacheStats): BucketRow[] => {
     },
     {
       key: "return_to_tier",
+      labelKey: "benchmarks.returnToTier",
+      sublabelKey: "benchmarks.returnToTierSub",
       turns: cache.return_to_tier.turns,
       sharePct: sharePctOf(cache.return_to_tier.turns, total),
       hitRatePct: cache.return_to_tier.hit_rate_pct,

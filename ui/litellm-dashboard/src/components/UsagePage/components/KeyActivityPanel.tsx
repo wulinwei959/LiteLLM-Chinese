@@ -1,4 +1,5 @@
 import { KeyRound, Search, X } from "lucide-react";
+import type { UsageKeyActivityTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
@@ -59,10 +60,16 @@ type KeyDetailState =
   | { status: "failed" }
   | { status: "loaded"; metrics: ModelActivityData | undefined };
 
-const keyCountText = (searching: boolean, isFiltering: boolean, shownKeys: number, total: number): string => {
-  if (searching) return "Searching...";
-  if (isFiltering) return `${shownKeys.toLocaleString()} matching keys`;
-  return `${total.toLocaleString()} keys`;
+const keyCountText = (
+  t: UsageKeyActivityTranslator,
+  searching: boolean,
+  isFiltering: boolean,
+  shownKeys: number,
+  total: number,
+): string => {
+  if (searching) return t("searching");
+  if (isFiltering) return t("matchingKeys", { count: shownKeys.toLocaleString() });
+  return t("totalKeys", { count: total.toLocaleString() });
 };
 
 interface KeyDetailContentProps {
@@ -361,7 +368,7 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
   const keyCountLabel =
     searchSettled && searchFailed && shownKeys === 0
       ? t("searchFailed")
-      : keyCountText(t, { searching, isFiltering, shownKeys, total });
+      : keyCountText(t, searching, isFiltering, shownKeys, total);
 
   const retryFirstPage = () => {
     setPageState({

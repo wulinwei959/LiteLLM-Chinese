@@ -142,6 +142,7 @@ export function AllModelsTable({
   credentialLabels,
 }: AllModelsTableProps) {
   const t = useTranslations("models");
+  const commonT = useTranslations("common");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const columns = useMemo(() => {
@@ -155,6 +156,8 @@ export function AllModelsTable({
       onTogglePauseClick,
       pausingModelId,
       credentialLabels,
+      t,
+      commonT,
     };
     return getModelsTableColumns(columnDeps);
   }, [

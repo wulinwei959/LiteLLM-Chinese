@@ -1,4 +1,5 @@
 import type { useTranslations } from "next-intl";
+import { unfurlWildcardModelsInList } from "../key_team_helpers/fetch_available_models_team_key";
 
 export type TeamBadgeTranslator = ReturnType<typeof useTranslations<"teams">>;
 

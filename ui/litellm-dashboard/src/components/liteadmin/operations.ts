@@ -11,6 +11,7 @@ export type LiteAdminOperationName =
   | "key_create"
   | "key_update"
   | "key_delete"
+  | "key_detach_from_team"
   | "key_block"
   | "key_unblock"
   | "teams_list"

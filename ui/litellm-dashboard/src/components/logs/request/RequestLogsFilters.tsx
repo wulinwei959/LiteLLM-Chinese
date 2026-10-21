@@ -275,9 +275,11 @@ function ErrorCodeFilterField({ value, onChange }: { value: string; onChange: (v
   const options = useMemo<SearchSelectOption[]>(() => {
     const trimmed = query.trim();
     const lowered = trimmed.toLowerCase();
-    const matches = ERROR_CODE_OPTIONS.filter((option) => option.label.toLowerCase().includes(lowered));
+    const matches = ERROR_CODE_OPTIONS.filter((option) => t(option.labelKey).toLowerCase().includes(lowered)).map(
+      (option) => ({ value: option.value, label: t(option.labelKey) }),
+    );
     const isKnownCode = ERROR_CODE_OPTIONS.some(
-      (option) => option.value === trimmed || option.label.toLowerCase() === lowered,
+      (option) => option.value === trimmed || t(option.labelKey).toLowerCase() === lowered,
     );
     if (trimmed === "" || isKnownCode) return matches;
     return [...matches, { label: `Use custom code: ${trimmed}`, value: trimmed }];
@@ -285,7 +287,8 @@ function ErrorCodeFilterField({ value, onChange }: { value: string; onChange: (v
 
   const selected = useMemo<SearchSelectOption | null>(() => {
     if (value === "") return null;
-    return ERROR_CODE_OPTIONS.find((option) => option.value === value) ?? { label: value, value };
+    const known = ERROR_CODE_OPTIONS.find((option) => option.value === value);
+    return known ? { value: known.value, label: t(known.labelKey) } : { label: value, value };
   }, [value]);
 
   const items = useMemo<SearchSelectOption[]>(() => {

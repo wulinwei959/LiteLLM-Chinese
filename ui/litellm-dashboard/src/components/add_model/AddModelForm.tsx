@@ -89,6 +89,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
   decisionCatalog,
 }) => {
   const t = useTranslations("common");
+  const addModelT = useTranslations("models.addModel");
   const [testMode, setTestMode] = useState<string>("chat");
   const [isResultModalVisible, setIsResultModalVisible] = useState<boolean>(false);
   const [isTestingConnection, setIsTestingConnection] = useState<boolean>(false);
@@ -299,7 +300,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       <MountedFormField label={t("mode")} name="mode" className="mb-1">
                         {(control) => (
                           <Select
-                            items={TEST_MODES}
+                            items={TEST_MODES.map((mode) => ({ value: mode.value, label: addModelT(mode.labelKey) }))}
                             value={(control.value as string | undefined) ?? null}
                             onValueChange={(value: string | null) => {
                               control.onChange(value);
@@ -312,7 +313,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                             <SelectContent>
                               {TEST_MODES.map((mode) => (
                                 <SelectItem key={mode.value} value={mode.value}>
-                                  {mode.label}
+                                  {addModelT(mode.labelKey)}
                                 </SelectItem>
                               ))}
                             </SelectContent>

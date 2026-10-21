@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { DeprecationBanner } from "@/components/DeprecationBanner";
 import { MemoryView } from "./_components/MemoryView";
 import { AdminOnlyNotice } from "@/components/shared/AdminOnlyNotice";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";

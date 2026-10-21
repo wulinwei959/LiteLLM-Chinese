@@ -251,7 +251,13 @@
     "addCredential": "添加凭据",
     "resourceInformationTitle": "凭据信息",
     "credentialName": "凭据名称",
-    "noDescription": "无描述"
+    "noDescription": "无描述",
+    "ptuCount": "PTU 数量",
+    "ptuCountPlaceholder": "例如 15",
+    "ptuRateLabel": "PTU 每小时成本 (USD)",
+    "ptuRatePlaceholder": "例如 2.00",
+    "ptuStart": "PTU 生效起始时间 (UTC)",
+    "ptuEnd": "PTU 生效结束时间 (UTC)"
   },
   "nav": {
     "expandSidebar": "展开侧边栏",
@@ -745,7 +751,8 @@
       "tooltipAdminOnly": "只有代理管理员可以修改此项。它决定限流器为省略 max_tokens 的请求预留多少输出 Token，该用量会计入团队和组织的 TPM 窗口。",
       "invalidPositive": "请输入正整数",
       "invalidPerModel": "请输入正整数构成的 JSON 对象，例如 '{'\"gpt-4\": 4096'}'"
-    }
+    },
+    "teamMemberBudget": "团队成员预算"
   },
   "models": {
     "refreshModelsAria": "刷新模型列表",
@@ -2183,7 +2190,9 @@
     "kindModel": "模型",
     "liteLlmModelName": "LiteLLM 模型名称",
     "usingExistingCredential": "使用已有凭据",
-    "connectionTestResults": "连接测试结果"
+    "connectionTestResults": "连接测试结果",
+    "updateFailed": "更新模型失败",
+    "deleteFailed": "删除模型失败"
   },
   "teams": {
     "title": "团队",
@@ -3431,7 +3440,9 @@
       "modeRow": "模式",
       "defaultOnRow": "默认启用",
       "createdAtRow": "创建时间",
-      "updatedAtRow": "最后更新"
+      "updatedAtRow": "最后更新",
+      "yesLabel": "是",
+      "noLabel": "否"
     },
     "form": {
       "loadFailed": "加载护栏配置失败",
@@ -3470,7 +3481,20 @@
       "previous": "上一步",
       "next": "下一步",
       "create": "创建护栏",
-      "modeHint": "护栏的应用方式。"
+      "modeHint": "护栏的应用方式。",
+      "stepBasic": "基本信息",
+      "stepDecisionModel": "决策模型配置",
+      "stepEndpoint": "端点设置（可选）",
+      "stepKeywords": "关键词",
+      "stepPatterns": "模式",
+      "stepPii": "PII 配置",
+      "stepProvider": "提供商配置",
+      "stepTopics": "主题",
+      "alwaysOffLabel": "默认关闭",
+      "loggingOnlyScopeLabel": "仅记录日志范围",
+      "continueAfterFlaggedLabel": "标记请求后继续",
+      "onLabel": "开",
+      "offLabel": "关"
     },
     "test": {
       "title": "测试护栏：",
@@ -5675,6 +5699,11 @@
       "sectionAutomatedReasoning": "自动推理检出项",
       "sectionRawBedrockResponse": "原始 Bedrock 护栏响应",
       "notAvailable": "无"
+    },
+    "podRouting": {
+      "roundRobin": "轮询",
+      "sessionAffinity": "会话亲和",
+      "sessionAffinityRetry": "会话亲和（重试）"
     }
   },
   "projects": {
@@ -7456,6 +7485,14 @@
       "show": "展开",
       "jobsLoadFailed": "既有评估加载失败。请刷新页面重试。",
       "sectionDesc": "对密钥、团队或用户的真实流量上的自动路由进行盲评（团队与用户覆盖经 JWT 认证的流量）：切换前与其当前使用的模型对比，或切换后与固定基线对比。"
+    },
+    "benchmarks": {
+      "sameModel": "同一模型",
+      "firstVisit": "首次访问",
+      "returnToTier": "回到该层级",
+      "sameModelSub": "上一轮 → 同一层级",
+      "firstVisitSub": "上一轮 → 尚未使用过的层级",
+      "returnToTierSub": "上一轮 → 之前用过的层级"
     }
   },
   "chat": {
@@ -9528,7 +9565,9 @@
     "createDescHint": "可选：描述该向量存储包含的内容",
     "createDescPlaceholder": "例如：包含全部产品文档与用户指南",
     "createProviderHint": "选择用于嵌入与向量存储操作的供应商",
-    "creatingBtn": "正在创建向量存储..."
+    "creatingBtn": "正在创建向量存储...",
+    "selectFieldRequired": "请选择 {field}",
+    "inputFieldRequired": "请输入 {field}"
   },
   "modelHub": {
     "showingModels": "已显示 {shown}，共 {total} 个模型",
@@ -9919,7 +9958,8 @@
     "scopeTeam": "团队",
     "scopeOrganization": "组织",
     "scopeUser": "用户",
-    "gateFormat": "{scope} {alias}：${amount}{suffix}"
+    "gateFormat": "{scope} {alias}：${amount}{suffix}",
+    "scopeTeamMember": "团队成员"
   },
   "roiCalculator": {
     "title": "ROI 计算器",
@@ -10188,7 +10228,9 @@
     "requestsColumn": "请求数",
     "virtualKeysTitle": "虚拟密钥",
     "keyColumn": "密钥",
-    "spendColumn": "花费"
+    "spendColumn": "花费",
+    "matchingKeys": "{count} 个匹配的密钥",
+    "totalKeys": "{count} 个密钥"
   },
   "keyModelUsage": {
     "title": "模型用量",
@@ -10457,7 +10499,8 @@
       "spend_report": "按日期与分组查看花费（需企业版许可）",
       "team_spend_report": "查看团队按模型与密钥划分的花费（需企业版许可）",
       "key_spend_report": "查看密钥按模型划分的花费（需企业版许可）",
-      "request_logs": "列出请求的花费、耗时与状态，不含提示词与响应内容"
+      "request_logs": "列出请求的花费、耗时与状态，不含提示词与响应内容",
+      "key_detach_from_team": "从团队移除虚拟密钥但不删除该密钥"
     },
     "askAria": "向 LiteAdmin 提问",
     "homeSubtitle": "掌控你的整个网关。",
@@ -10679,7 +10722,12 @@
     "leaderboard": "排行榜",
     "summaryDesc": "网关的{granularity}{metric}",
     "leaderboardDesc": "{metric}的占比，以及该时段前后两半的变化",
-    "gatewayTotalLabel": "网关总计"
+    "gatewayTotalLabel": "网关总计",
+    "granularityDaily": "按日",
+    "granularityWeekly": "按周",
+    "metricRequests": "请求数",
+    "metricSpend": "花费",
+    "metricTokens": "令牌数"
   },
   "guardrailSettingsView": {
     "noGuardrails": "未配置任何护栏",

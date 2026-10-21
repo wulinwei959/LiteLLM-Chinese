@@ -67,6 +67,7 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
   onAddProvider,
 }) => {
   const t = useTranslations("costTracking");
+  const commonT = useTranslations("common");
   const options = providerOptions();
   const selectedOption = selectedProviderOption(selectedProvider);
 
