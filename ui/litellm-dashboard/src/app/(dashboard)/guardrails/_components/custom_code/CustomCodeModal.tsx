@@ -463,7 +463,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
                 <ComboboxChips render={<div ref={anchor} />} className="w-full">
                   {selectedModeOptions.map((option) => (
                     <ComboboxChip key={option.value} aria-label={t(option.labelKey)}>
-                      {t(option.labelKey)}
+                      {option.label}
                     </ComboboxChip>
                   ))}
                   <ComboboxChipsInput placeholder={mode.length === 0 ? t("custom.selectModes") : undefined} />
@@ -471,7 +471,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
                 <ComboboxContent anchor={anchor}>
                   <ComboboxEmpty>{t("custom.noModes")}</ComboboxEmpty>
                   <ComboboxList>
-                    {(option: { value: string; label: string }) => (
+                    {(option: ModeOption) => (
                       <ComboboxItem key={option.value} value={option}>
                         {option.label}
                       </ComboboxItem>
@@ -486,31 +486,33 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
           )}
           {mode.includes("logging_only") && (
             <div className="flex shrink-0 items-center gap-2 pt-5">
-              <span className="text-sm text-muted-foreground">{t("custom.continueObserving")}</span>
+              <span className="text-sm text-muted-foreground">
+                Continue observing the response after a flagged request
+              </span>
               <Switch
                 checked={loggingOnlyScopeChoice === "default" && loggingOnlyContinue}
                 disabled={loggingOnlyScopeChoice !== "default"}
                 onCheckedChange={setLoggingOnlyContinue}
-                aria-label={t("custom.continueObserving")}
+                aria-label="Continue observing the response after a flagged request"
               />
             </div>
           )}
           <div className="w-[180px]">
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("custom.templateLabel")}</label>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">Template</label>
             <Select
-              items={TEMPLATE_ITEMS.map((template) => ({ value: template.value, label: t(template.labelKey) }))}
+              items={TEMPLATE_ITEMS}
               value={selectedTemplate}
               onValueChange={(value: string | null) => value && handleTemplateChange(value)}
             >
-              <SelectTrigger className="w-full" aria-label={t("custom.templateLabel")}>
+              <SelectTrigger className="w-full" aria-label="Template">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>{t("custom.standardLabel")}</SelectLabel>
+                  <SelectLabel>STANDARD</SelectLabel>
                   {TEMPLATE_ITEMS.map((template) => (
                     <SelectItem key={template.value} value={template.value}>
-                      {t(template.labelKey)}
+                      {template.label}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -543,10 +545,8 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
           {/* Code Editor */}
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="mb-2 flex shrink-0 items-center justify-between">
-              <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                {t("custom.pythonLogic")}
-              </span>
-              <span className="text-xs text-muted-foreground">{t("custom.restrictedEnv")}</span>
+              <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Python Logic</span>
+              <span className="text-xs text-muted-foreground">Restricted environment (no imports)</span>
             </div>
             <div
               className="relative rounded-lg overflow-hidden border border-gray-700 bg-[#1e1e1e] shrink-0"
@@ -599,7 +599,9 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
                 <div className="space-y-3">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-xs font-medium text-muted-foreground">{t("custom.testInputJson")}</label>
+                      <label className="block text-xs font-medium text-muted-foreground">
+                        {t("custom.testInputJson")}
+                      </label>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground">{t("custom.loadExample")}</span>
                         <button
@@ -634,11 +636,13 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
                           <strong>images</strong>: {t("custom.guideImages")}
                         </div>
                         <div>
-                          <strong>tools</strong>: {t("custom.guideTools")} <span className="text-warning">(pre_call)</span>,{" "}
-                          {t("custom.guideToolsMcp")} <span className="text-purple-600">(pre_mcp_call)</span>
+                          <strong>tools</strong>: {t("custom.guideTools")}{" "}
+                          <span className="text-warning">(pre_call)</span>, {t("custom.guideToolsMcp")}{" "}
+                          <span className="text-purple-600">(pre_mcp_call)</span>
                         </div>
                         <div>
-                          <strong>tool_calls</strong>: {t("custom.guideCalls")} <span className="text-success">(post_call)</span>
+                          <strong>tool_calls</strong>: {t("custom.guideCalls")}{" "}
+                          <span className="text-success">(post_call)</span>
                         </div>
                         <div>
                           <strong>structured_messages</strong>: {t("custom.guideStruct")}{" "}
@@ -719,9 +723,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
                 </div>
                 <div>
                   <div className="text-sm font-medium">{t("custom.builtQ")}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {t("custom.shareHint")}
-                  </div>
+                  <div className="text-xs text-muted-foreground">{t("custom.shareHint")}</div>
                 </div>
               </div>
               <Button size="sm" onClick={() => window.open("https://github.com/BerriAI/litellm-guardrails", "_blank")}>
@@ -740,19 +742,19 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
             <p className="mb-3 text-xs text-muted-foreground">{t("custom.primHint")}</p>
 
             <div className="space-y-2">
-              {Object.entries(PRIMITIVES).map(([category, group]) => (
+              {Object.entries(PRIMITIVES).map(([category, primitives]) => (
                 <Collapsible
                   key={category}
-                  defaultOpen={category === "returnValues"}
+                  defaultOpen={category === "Return Values"}
                   className="rounded-lg border border-border"
                 >
                   <CollapsibleTrigger className="group flex w-full items-center justify-between px-3 py-2 text-sm font-medium">
-                    {t(group.labelKey)}
+                    {category}
                     <ChevronRight className="size-4 transition-transform group-data-panel-open:rotate-90" />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="px-3 pb-3">
                     <div className="space-y-2">
-                      {group.items.map((p) => (
+                      {primitives.map((p) => (
                         <button
                           key={p.name}
                           onClick={() => copyPrimitive(p.name)}

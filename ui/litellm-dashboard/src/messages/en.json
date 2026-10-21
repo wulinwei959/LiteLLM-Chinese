@@ -132,23 +132,15 @@
     "notFound": "Not found",
     "networkError": "Network error. Please check your connection.",
     "addModel": {
-      "additionalInfo": "Additional Model Info Settings",
-      "credentialsDesc": "Either select existing credentials OR enter new provider credentials below",
-      "existingCredentials": "Existing Credentials",
       "getHelpGithub": "Get help on our github",
       "modelAccessGroup": "Model Access Group",
-      "modelAccessGroupHint": "Use model access groups to give users access to select models, and add new ones to the group over time.",
       "needHelp": "Need Help?",
       "optional": "Optional",
       "selectCredentials": "Select or search for existing credentials",
       "selectTeam": "Select Team",
       "submit": "Add Model",
       "teamByok": "Team-BYOK Model",
-      "teamByokHint": "Only use this model + credential combination for this team. Useful when teams want to onboard their own OpenAI keys.",
-      "teamByokHint2": "Only keys for this team will be able to call this model.",
-      "teamByokPremium": "This is an enterprise-only feature. Upgrade to premium to restrict model+credential combinations to a specific team.",
-      "teamRequired": "Please select a team to continue",
-      "testConnect": "Test Connect"
+      "teamRequired": "Please select a team to continue"
     },
     "common": {
       "learnMore": "Learn more",
@@ -189,7 +181,6 @@
     "selectTeamHint": "Select the team for which you want to add this model",
     "teamRequired": "Please select a team.",
     "teamSelectionRequired": "Team Selection Required",
-    "teamSelectionRequiredDesc": "As a team admin, you need to select your team first before adding models.",
     "title": "Add Model",
     "never": "Never",
     "none": "None",
@@ -231,7 +222,35 @@
     "notSet": "Not Set",
     "comingSoonEnterprise": "Coming soon to Enterprise",
     "deletedKeysAuditBody": "Deleted key auditing is graduating from beta into our Enterprise audit & compliance suite.",
-    "deletedTeamsAuditBody": "Deleted team auditing is graduating from beta into our Enterprise audit & compliance suite."
+    "deletedTeamsAuditBody": "Deleted team auditing is graduating from beta into our Enterprise audit & compliance suite.",
+    "deleteGroup": "Delete access group",
+    "resources": "Resources",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "idCopied": "ID copied",
+    "copyId": "Copy attachment ID",
+    "cacheReadCostPerToken": "Cache Read Cost (per 1M tokens)",
+    "cacheReadOnSaveHint": "If left blank on save, defaults to Input Cost.",
+    "cacheWriteCostPerToken": "Cache Write Cost (per 1M tokens)",
+    "cacheWriteOnSaveHint": "If left blank on save, defaults to Input Cost (backend falls back to input_cost_per_token).",
+    "guardrailsPlaceholder": "Select existing guardrails or type to create new ones",
+    "noGuardrailsAssigned": "No guardrails assigned",
+    "attachedKnowledgeBases": "Attached Knowledge Bases (RAG)",
+    "knowledgeBasesTooltip": "Vector stores used for RAG. Every request to this model will automatically retrieve context from these knowledge bases.",
+    "selectKnowledgeBasesPlaceholder": "Select knowledge bases (optional)",
+    "healthCheckModelPlaceholder": "Select existing health check model",
+    "cacheControlLabel": "Cache Control Injection Points",
+    "cacheControlTooltipDesc": "Tell litellm where to inject cache control checkpoints. You can specify either by role (to apply to all messages of that role) or by specific message index.",
+    "teamLabel": "Team",
+    "saveChanges": "Save Changes",
+    "sourceUnknown": "Unknown source",
+    "nameCopied": "Credential name copied",
+    "copyName": "Copy credential name",
+    "ptuCostReservedOnly": "Reserved capacity cost only",
+    "createdSuccessfully": "Credential added successfully",
+    "addCredential": "Add Credential",
+    "resourceInformationTitle": "Credential Information",
+    "credentialName": "Credential Name"
   },
   "nav": {
     "expandSidebar": "Expand sidebar",
@@ -338,8 +357,7 @@
     "startSessionFailed": "Failed to start session. Please try again.",
     "submitFailed": "Failed to submit. Please try again."
   },
-  "breadcrumb": {
-  },
+  "breadcrumb": {},
   "virtualKeys": {
     "createErrorPrefix": "Error creating the key: {error}",
     "teamMemberPermissionError": "Team member does not have permission to generate key for this team. Ask your proxy admin to configure the team member permission settings.",
@@ -794,14 +812,9 @@
       "costOut": "OUT",
       "costTooltip": "Cost per 1M tokens",
       "costTooltipPerSecond": "Cost per 1M tokens; /s is cost per second of output",
-      "credentialTypes": "Credential types",
       "credentials": "Credentials",
-      "credentialsTooltip": "About credential types",
       "delete": "Delete model",
       "manual": "Manual",
-      "manualDesc": "Credentials added directly during model creation or defined in the config file.",
-      "reusable": "Reusable",
-      "reusableDesc": "Credentials saved in LiteLLM that can be added to models repeatedly.",
       "settings": "Model Settings"
     },
     "emptyState": {
@@ -1640,7 +1653,6 @@
       "teamLabel": "Team",
       "cacheControlLocation": "Location"
     },
-    "unknownDate": "Unknown date",
     "health": {
       "title": "Health Status",
       "description": "Monitor the health of your model deployments",
@@ -1717,7 +1729,7 @@
       "modelSpecificRetryDesc": "Model-specific retry settings. Falls back to global defaults if not set.",
       "globalLabel": "Global",
       "retryCount": "retry count",
-    "allOtherErrors": "All other errors",
+      "allOtherErrors": "All other errors",
       "reset": "Reset",
       "save": "Save",
       "savedSuccessfully": "Retry settings saved successfully",
@@ -1734,9 +1746,9 @@
       "createdSuccessfully": "Credential added successfully",
       "createFailed": "Failed to add credential",
       "deletedSuccessfully": "Credential deleted successfully",
-      "deleteFailed": "Failed to delete credential",
+      "deleteFailed": "Error deleting the endpoint",
       "deleteConfirmTitle": "Delete Credential?",
-      "deleteConfirmMessage": "Are you sure you want to delete this credential? This action cannot be undone and may break existing integrations.",
+      "deleteConfirmMessage": "Are you sure you want to delete this pass-through endpoint? This action cannot be undone.",
       "resourceInformationTitle": "Credential Information",
       "credentialName": "Credential Name",
       "provider": "Provider",
@@ -2055,11 +2067,9 @@
       "teamLabel": "Team",
       "viewLabel": "View",
       "viewModes": {
-        "currentTeam": "Current Team Models",
         "all": "All Available Models"
       },
       "filterLabels": {
-        "publicModelName": "Public Model Name",
         "accessGroup": "Model Access Group"
       },
       "emptyState": {
@@ -2069,7 +2079,6 @@
       "lastRefreshed": "Last Refreshed: {time}",
       "allAccessGroups": "All Model Access Groups",
       "allProxyModels": "All Proxy Models",
-      "configModel": "Defined in config",
       "copied": "LiteLLM model name copied",
       "copyTooltip": "Copy LiteLLM model name",
       "deleteTooltipConfig": "Config model cannot be deleted on the dashboard. Please delete it from the config file.",
@@ -2083,8 +2092,7 @@
       "pauseTooltipAdmin": "Only proxy admins can pause or resume a model.",
       "pauseTooltipConfig": "Config models cannot be paused from the dashboard. Pause is DB-backed.",
       "placeholder": {
-        "accessGroup": "Filter by Model Access Group",
-        "publicModelName": "Filter by Public Model Name"
+        "accessGroup": "Filter by Model Access Group"
       },
       "unknownProvider": "Unknown provider",
       "dbModel": "DB Model",
@@ -2154,10 +2162,28 @@
     "budgetSaved": "Budget saved for {name}",
     "budgetCleared": "Budget cleared for {name}",
     "pricingSummary": {
-        "followsCostMap": "Follows the model cost map",
-        "customPricing": "Custom pricing",
-        "overridesCostMap": "Overrides the model cost map for {fields}"
-    }
+      "followsCostMap": "Follows the model cost map",
+      "customPricing": "Custom pricing",
+      "overridesCostMap": "Overrides the model cost map for {fields}"
+    },
+    "deleteAutoRouter": "Delete Auto-Router",
+    "invalidLiteLlmParams": "Invalid JSON in LiteLLM Params",
+    "invalidModelInfo": "Invalid JSON in Model Info",
+    "modelSettingsUpdated": "Model settings updated successfully",
+    "testingConnection": "Testing connection to {provider}...",
+    "updateApiKey": "Update API Key",
+    "reUseCredentials": "Re-use Credentials",
+    "rawJson": "Raw JSON",
+    "liteLlmModel": "LiteLLM Model",
+    "pricing": "Pricing",
+    "modelSettings": "Model Settings",
+    "editOnlyDbHint": "Only DB models can be edited. You must be an admin or the creator of the model to edit it.",
+    "undoWarning": "This action cannot be undone.",
+    "kindAutoRouter": "auto-router",
+    "kindModel": "model",
+    "liteLlmModelName": "LiteLLM Model Name",
+    "usingExistingCredential": "Using Existing Credential",
+    "connectionTestResults": "Connection Test Results"
   },
   "teams": {
     "title": "Teams",
@@ -2278,37 +2304,22 @@
     "listTpdLimitHint": "Daily token budget for batch submissions (/v1/batches). When set, batch input files are charged against this 24h window instead of the team's TPM/RPM limits. Online requests keep using TPM/RPM.",
     "listTpmLimit": "Tokens per minute Limit (TPM)",
     "listYourTeams": "Your Teams",
-    "infoActive": "Active",
-    "infoAddBudgetAlertThreshold": "Add Budget Alert Threshold",
-    "infoAddModelLimit": "Add Model Limit",
-    "infoAdminsEnterpriseOnly": "Assigning admins is an enterprise-only feature. Please upgrade your LiteLLM plan to enable this.",
     "infoAgentsAccessGroups": "Agents / Access Groups",
     "infoAllowedFailures": "Allowed Failures: {value}",
     "infoAllowedModels": "Allowed Models",
     "infoAllowedModelsPlaceholder": "Leave empty to inherit all team models",
     "infoAllowedModelsTooltip": "Models this member can access within this team. Leave empty to inherit all team models.",
-    "infoBackToTeams": "Back to Teams",
-    "infoBlocked": "Blocked",
     "infoBudgetAlertThresholds": "Budget Alert Thresholds",
-    "infoBudgetAlertThresholdsHint": "Email each member when their spend reaches a percentage of their team member budget. The member is always notified; add comma-separated addresses to notify others as well. Requires email alerting to be configured on the proxy.",
-    "infoBudgetAlertThresholdsValue": "Budget Alert Thresholds: {value}",
-    "infoBudgetDurationValue": "Budget Duration: {value}",
     "infoBudgetLimitForMemberPlaceholder": "Budget limit for this member within this team",
     "infoBudgetResetPeriod": "Budget Reset Period",
     "infoBudgetResetPeriodTooltip": "How often this member's budget resets within the team. Leave unset and the budget never resets.",
-    "infoBudgetResetValue": "Budget Reset: {value}",
-    "infoBudgetStatus": "Budget Status",
-    "infoCancel": "Cancel",
     "infoCooldownTime": "Cooldown Time: {value}s",
     "infoCreatedAt": "Created At",
-    "infoDefault": "Default",
     "infoDefaultBudgetDuration": "Default Budget Duration",
     "infoDefaultBudgetUsd": "Default Budget (USD)",
     "infoDefaultBudgetUsdHint": "Default spend budget for each member in this team.",
     "infoDefaultKeyDuration": "Default Key Duration (eg: 1d, 1mo)",
     "infoDefaultMemberModels": "Default Member Models",
-    "infoDefaultModelAccess": "Default Model Access",
-    "infoDefaultModelAccessHint": "Optional. If set, new members can only access these models by default. Must be a subset of the team's models above. Leave empty to give all members access to all team models.",
     "infoDefaultRpmLimit": "Default RPM Limit",
     "infoDefaultRpmLimitHint": "Default requests per minute limit for each member. Can be overridden per member.",
     "infoDefaultTpmLimit": "Default TPM Limit",
@@ -2324,7 +2335,6 @@
     "infoEditSettings": "Edit Settings",
     "infoEmail": "Email",
     "infoEnterWholeNumber1To100": "Enter a whole number from 1 to 100",
-    "infoEstimatedOutputTokens": "Estimated Output Tokens",
     "infoEstimatedOutputTokensPerModel": "Estimated Output Tokens Per Model",
     "estimatedOutputTokens": {
       "tooltipReserved": "Expected output tokens reserved for TPM limiting when a request omits max_tokens. Overrides the built-in estimate for this team.",
@@ -2333,26 +2343,19 @@
       "invalidPositive": "Enter a positive integer",
       "invalidPerModel": "Enter a JSON object of positive integers, e.g. '{'\"gpt-4\": 4096'}'"
     },
-    "infoEstimatedOutputTokensPerModelValue": "Estimated Output Tokens Per Model: {value}",
-    "infoEstimatedOutputTokensValue": "Estimated Output Tokens: {value}",
     "infoExtraBudgetPlaceholder": "Extra budget for this member until the expiry",
     "infoFailedToAddTeamMember": "Failed to add team member",
-    "infoFailedToLoadTeam": "Failed to load team information",
     "infoFailedToRemoveTeamMember": "Failed to remove team member",
     "infoFailedToUpdateTeamMember": "Failed to update team member",
-    "infoFallbacks": "Fallbacks: {count} configured",
     "infoFallbacksLabel": "Fallbacks:",
     "infoGuardrailsHint": "Select which guardrails apply to this team. Global guardrails are enabled by default, uncheck to opt out. Other guardrails are opt-in.",
     "infoInheritTeamResetPeriod": "Inherit team reset period",
     "infoInvalidEstimatedTokensJson": "Invalid JSON in estimated output tokens per model",
     "infoInvalidSecretManagerJson": "Invalid JSON in secret manager settings",
-    "infoKeyDurationValue": "Key Duration: {value}",
     "infoLeaveEmptyAllTeamModels": "Leave empty — all team models accessible to every member",
     "infoLoading": "Loading...",
     "infoLoadingGuardrails": "Loading guardrails...",
     "infoMaxBudgetUsd": "Max Budget (USD)",
-    "infoMaxBudgetValue": "Max Budget: {value}",
-    "infoMaxParallelRequests": "Max Parallel Requests: {value}",
     "infoMcpAccessGroupListCouldNotBeLoaded": "the access group list could not be loaded",
     "infoMcpAccessGroupsCouldNotBeLoaded": "the team's access groups could not be loaded",
     "infoMcpAccessGroupsCouldNotBeReloaded": "the team's access groups could not be reloaded",
@@ -2375,22 +2378,11 @@
     "infoModelAliasesHint": "Map a custom alias to an underlying model. Team members can call the alias in API requests instead of the real model name.",
     "infoModelSpecificRateLimits": "Model-Specific Rate Limits",
     "infoModelSpecificRateLimitsHint": "Set per-model TPM/RPM limits that apply across the whole team.",
-    "infoModelsDescription": "Leave empty to grant no models directly. The team keeps any models granted through its access groups",
-    "infoNever": "Never",
-    "infoNeverResets": "Never resets",
-    "infoNoLimit": "No Limit",
     "infoNoMatchingOrganizations": "No matching organizations",
     "infoNoModelAliases": "No model aliases configured",
     "infoNoPoliciesConfigured": "No policies configured",
     "infoNoRouterSettings": "No router settings configured",
-    "infoNone": "None",
     "infoNumberOfRetries": "Number of Retries: {value}",
-    "infoOfBudget": "of {budget}",
-    "infoOrganizationId": "Organization ID",
-    "infoPerModelBudget": "Per-Model Budget ({model}): ${budget} per {period}",
-    "infoPerModelBudgetSpent": ", spent ${spent}",
-    "infoPerModelLimits": "Per-model limits:",
-    "infoPerModelLimitsRow": "{model}: TPM {tpm}, RPM {rpm}",
     "infoPlaceholderAdditionalRecipients": "Additional recipients, e.g. finance@example.com",
     "infoPlaceholderEg100": "e.g., 100",
     "infoPlaceholderEg1000": "e.g., 1000",
@@ -2398,7 +2390,6 @@
     "infoRateLimits": "Rate Limits",
     "infoRemoveBudgetAlertThreshold": "Remove budget alert threshold",
     "infoRemoveModelLimit": "Remove model limit",
-    "infoResetValue": "Reset: {value}",
     "infoResolvedGuardrails": "Resolved Guardrails:",
     "infoRetryAfter": "Retry After: {value}s",
     "infoRole": "Role",
@@ -2407,9 +2398,7 @@
     "infoRoutingStrategy": "Routing Strategy:",
     "infoRpmLimitLabel": "Requests per minute Limit (RPM)",
     "infoRpmLimitPlaceholder": "RPM Limit",
-    "infoRpmLimitValue": "RPM Limit: {value}",
     "infoRpmValue": "RPM: {value}",
-    "infoSaveChanges": "Save Changes",
     "infoSelectModel": "Select model",
     "infoSelectOrganization": "Select an organization",
     "infoSelectPassThroughRoutes": "Select pass through routes",
@@ -2419,43 +2408,33 @@
     "infoSkills": "Skills",
     "infoSoftBudgetAlertingEmails": "Soft Budget Alerting Emails",
     "infoSoftBudgetAlertingEmailsHint": "Comma-separated email addresses to receive alerts when the soft budget is reached",
-    "infoSoftBudgetAlertingEmailsValue": "Soft Budget Alerting Emails: {value}",
     "infoSoftBudgetUsd": "Soft Budget (USD)",
-    "infoSoftBudgetValue": "Soft Budget: {value}",
-    "infoStatus": "Status",
     "infoTagFilteringEnabled": "Tag Filtering: Enabled",
-    "infoTeamBudget": "Team Budget",
     "infoTeamMemberAdded": "Team member added successfully",
     "infoTeamMemberBudgetTooltip": "Maximum amount in USD this member can spend within this team. This is separate from any global user budget limits",
     "infoTeamMemberBudgetUsd": "Team Member Budget (USD)",
-    "infoTeamMemberBudgetValue": "Team Member Budget: ${value}",
     "infoTeamMemberInformation": "Team Member Information",
     "infoTeamMemberRemoved": "Team member removed successfully",
     "infoTeamMemberRpmLimit": "Team Member RPM Limit",
     "infoTeamMemberRpmLimitTooltip": "Maximum requests per minute this member can make within this team. This is separate from any global user RPM limit",
     "infoTeamMemberRpmPlaceholder": "Requests per minute limit for this member in this team",
-    "infoTeamMemberSettings": "Team Member Settings",
-    "infoTeamMemberSettingsDescription": "Optional defaults applied when members join this team. All fields can be overridden per member.",
     "infoTeamMemberTpmLimit": "Team Member TPM Limit",
     "infoTeamMemberTpmLimitTooltip": "Maximum tokens per minute this member can use within this team. This is separate from any global user TPM limit",
     "infoTeamMemberTpmPlaceholder": "Tokens per minute limit for this member in this team",
     "infoTeamMemberUpdated": "Team member updated successfully",
     "infoTeamName": "Team Name",
     "infoTeamNotFound": "Team not found",
-    "infoTeamSettings": "Team Settings",
     "infoTeamSettingsUpdated": "Team settings updated successfully",
     "updateFailedToast": "Failed to update team settings: {error}",
     "infoTemporaryBudgetExpiryTooltip": "When the temporary budget increase stops applying. Required whenever a temporary budget increase is set.",
     "infoTemporaryBudgetExpiryUtc": "Temporary Budget Expiry (UTC)",
     "infoTemporaryBudgetIncreaseTooltip": "Extra USD added on top of the team member budget until the expiry below. The permanent budget is left unchanged and the increase stops applying at expiry.",
     "infoTemporaryBudgetIncreaseUsd": "Temporary Budget Increase (USD)",
-    "infoTheseAreMemberLimits": "These are limits on individual team members",
     "infoTimeout": "Timeout: {value}s",
     "infoTotal": "Total: {value}",
     "infoTpdBatchValue": "TPD (batch): {value}",
     "infoTpmLimitLabel": "Tokens per minute Limit (TPM)",
     "infoTpmLimitPlaceholder": "TPM Limit",
-    "infoTpmLimitValue": "TPM Limit: {value}",
     "infoTpmValue": "TPM: {value}",
     "infoUnlimited": "Unlimited",
     "infoUserId": "User ID",
@@ -2471,14 +2450,10 @@
       "addMember": "Add Member",
       "adding": "Adding...",
       "allTeamModels": "All Team Models",
-      "allTeamModelsInline": "(all team models)",
       "budgetColumn": "Team Member Budget (USD)",
       "budgetColumnTooltip": "Team default follows the team's member budget, so changing it in team settings updates this member too. Custom is set on this member only and ignores later team changes.",
       "budgetInfoAria": "Team member budget information",
       "budgetReset": "Budget Reset",
-      "budgetResetSuccess": "Team member budget reset to the team default",
-      "budgetSourceCustom": "Custom",
-      "budgetSourceTeamDefault": "Team default",
       "cancel": "Cancel",
       "currentCycleSpend": "Current Cycle Spend (USD)",
       "currentCycleSpendInfoAria": "Current cycle spend information",
@@ -2491,8 +2466,6 @@
       "loadingMembership": "Loading your membership info…",
       "membershipLoadFailed": "Failed to load your membership info for this team.",
       "modelScope": "Model Scope",
-      "modelScopeInfoAria": "Model scope information",
-      "modelScopeTooltip": "Models this member can access. Empty means they inherit all team models.",
       "moreCount": "+{count} more",
       "myCurrentCycleSpendInfoAria": "Current Cycle Spend (USD) information",
       "myCurrentCycleSpendTooltip": "Spend for the current budget cycle. Resets to $0 when the budget window rolls over.",
@@ -2511,12 +2484,6 @@
       "rateLimitsInfoAria": "Team member rate limits information",
       "rateLimitsTooltip": "Rate limits for this member's usage within this team.",
       "reset": "Reset",
-      "resetBudgetBody": "Remove the custom budget for <strong>{name}</strong> and put them back on the team default of <strong>{amount}</strong>?",
-      "resetBudgetDetail": "Custom budget: <strong>{amount}</strong>. Their spend is kept. Future changes to the team's member budget will apply to them again.",
-      "resetBudgetTitle": "Reset Team Member Budget",
-      "resetSpendBody": "Reset current cycle spend for <strong>{name}</strong> in this team to <strong>$0</strong>?",
-      "resetSpendDetail": "Current cycle spend: <strong>{amount}</strong>. This is the value checked against the member's budget. Total spend and logs are preserved.",
-      "resetSpendTitle": "Reset Team Member Spend",
       "resetsAt": "Resets {date}",
       "role": "Role",
       "roleRequired": "Please select a role!",
@@ -2524,14 +2491,12 @@
       "saveChanges": "Save Changes",
       "saving": "Saving...",
       "selectOptions": "Select options",
-      "spendResetSuccess": "Team member spend reset to $0",
       "teamRole": "Team Role",
       "teamRoleTooltip": "This role applies only to this team and is independent from the user's proxy-level role.",
       "totalSpend": "Total Spend (USD)",
       "totalSpendInfoAria": "Total spend information",
       "totalSpendTooltip": "Cumulative spend by this member within this team, across all budget cycles. Tracking began 2026-04-21; spend from before that date is not included.",
       "unlimited": "Unlimited",
-      "useTeamDefault": "Use team default",
       "user": "User",
       "userId": "User ID"
     },
@@ -2569,8 +2534,6 @@
     "adminFieldMemberKeyBudgets": "Update budgets on team members' keys",
     "adminEditDisabledTitle": "Team admins cannot edit team settings on this proxy",
     "adminEditDisabledDescription": "Ask a proxy admin to enable fields under Settings > UI > Team admin editable fields.",
-    "settingsCancel": "Cancel",
-    "settingsSaveChanges": "Save Changes",
     "availableActions": "Actions",
     "availableDescription": "Description",
     "availableEmpty": "No available teams to join",
@@ -2736,7 +2699,6 @@
     "memberTable": {
       "editTooltip": "Edit member",
       "deleteTooltip": "Delete member",
-      "resetSpendTooltip": "Reset spend",
       "allRoles": "All Roles",
       "membersCount": "{count, plural, =1 {# Member} other {# Members}}",
       "noMatch": "No members match your search or filters",
@@ -2771,7 +2733,8 @@
     "tooltipViaGroups": "Granted via {groups}",
     "groupsOne": "access group {names}",
     "groupsMany": "access groups {names}",
-    "oneAccessGroup": "an access group"
+    "oneAccessGroup": "an access group",
+    "settingsInheritTeamResetPeriod": "Inherit team reset period"
   },
   "userAgentActivity": {
     "summaryTitle": "Summary by User Agent",
@@ -2893,23 +2856,15 @@
     "usersAddedWithUserRole": "Users will be added with \"user\" role by default. All users will be added to each selected team.",
     "updatingAllUsers": "Updating all users...",
     "updatingUsers": "Updating {count} user(s)...",
-    "budgetRequired": "Please enter a budget or select Unlimited Budget",
-    "globalProxyRoleHint": "This is the role that the user will globally on the proxy. This role is independent of any team/org specific roles.",
-    "personalModels": "Personal Models",
-    "personalModelsHint": "Select which models this user can access outside of team-scope. Choose 'All Proxy Models' to grant access to all models available on the proxy.",
     "allProxyModels": "All Proxy Models",
     "noDefaultModels": "No Default Models",
     "selectModels": "Select models",
     "maxBudgetUSD": "Max Budget (USD)",
-    "unlimitedBudget": "Unlimited Budget",
     "enterNumericalValue": "Enter a numerical value",
     "resetBudget": "Reset Budget",
     "modelMaxBudgetHint": "Cap this user's spend on individual models, each with its own reset window. Applies across every key the user holds.",
     "metadata": "Metadata",
     "enterMetadataAsJson": "Enter metadata as JSON",
-    "mcpServersAccessGroups": "MCP Servers / Access Groups",
-    "mcpServersAccessGroupsHint": "Caps which MCP servers, access groups, and tools this user may reach. Every key the user holds is limited to this set.",
-    "selectMcpServersOrAccessGroups": "Select MCP servers or access groups (optional)",
     "cancel": "Cancel",
     "saveChanges": "Save Changes",
     "budgetDurationNoReset": "No reset",
@@ -3479,17 +3434,9 @@
       "updatedAtRow": "Last Updated"
     },
     "form": {
-      "modePreCall": "Before LLM Call - Runs before the LLM call and checks the input (Recommended)",
-      "modeDuringCall": "During LLM Call - Runs in parallel with the LLM call, with response held until check completes",
-      "modePostCall": "After LLM Call - Runs after the LLM call and checks only the output",
-      "modeLoggingOnly": "Logging Only - Only runs on logging callbacks without affecting the LLM call",
-      "modePreMcp": "Before MCP Tool Call - Runs before MCP tool execution and validates tool calls",
-      "modeDuringMcp": "During MCP Tool Call - Runs in parallel with MCP tool execution for monitoring",
-      "modePostMcp": "After MCP Tool Call - Runs after MCP tool execution and checks the tool result",
       "loadFailed": "Failed to load guardrail configuration",
       "selectPii": "Please select at least one PII entity to continue",
       "fixFields": "Failed to create guardrail: please fix the highlighted fields",
-      "configureContentFilter": "Please configure at least one content filter setting (category, pattern, keyword, or competitor intent)",
       "invalidJsonConfig": "Invalid JSON in configuration",
       "addCriterion": "Add at least one evaluation criterion",
       "weightsSum": "Criterion weights must sum to 100% (currently {total}%)",
@@ -3508,37 +3455,14 @@
       "modeRequired": "Please select a mode",
       "alwaysOnLabel": "Always On",
       "alwaysOnHint": "If enabled, this guardrail will be applied to all requests by default.",
-      "skipSystem": "Skip system messages in guardrail",
-      "skipSystemHint": "Unified guardrails only: omit role: system from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows litellm_settings.skip_system_message_in_guardrail.",
-      "skipTool": "Skip tool messages in guardrail",
-      "skipToolHint": "Unified guardrails only: omit role: tool from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows litellm_settings.skip_tool_message_in_guardrail.",
       "yes": "Yes",
       "no": "No",
       "selectOption": "Select an option",
-      "endpointIntro": "Configure settings for a specific call type. Most guardrails don't need this — skip it unless you're using a specific endpoint like",
-      "callType": "Call type",
       "callTypePlaceholder": "Select a call type",
       "moreCallTypes": "More call types coming soon.",
       "realtimeSettings": "/v1/realtime settings",
-      "endSessionLabel": "End session after X violations",
-      "endSessionHint": "Automatically close the session after this many guardrail violations. Leave empty to never auto-close.",
-      "endSessionPlaceholder": "e.g. 3",
       "onViolation": "On violation",
       "warn": "Warn",
-      "warnDesc": "Bot speaks the message, session continues",
-      "endSession": "End session",
-      "endSessionDesc": "Bot speaks the message, connection closes immediately",
-      "heardMessage": "Message the user hears",
-      "heardMessageHint": "What the bot says aloud when this guardrail fires. Falls back to the default violation message if empty.",
-      "heardMessagePlaceholder": "e.g. I'm not able to continue this conversation. Please contact us at 1-800-774-2678.",
-      "stepBasic": "Basic Info",
-      "stepTopics": "Topics",
-      "stepPatterns": "Patterns",
-      "stepKeywords": "Keywords",
-      "stepEndpoint": "Endpoint Settings (Optional)",
-      "stepPii": "PII Configuration",
-      "stepDecisionModel": "Decision Model Configuration",
-      "stepProvider": "Provider Configuration",
       "optionalTag": "optional",
       "editStep": "Edit",
       "title": "Create guardrail",
@@ -5018,8 +4942,8 @@
       "trends": "Endpoint Usage Trends"
     },
     "entity": {
-    "ptuHoursTooltip": "Provisioned throughput consumed, in PTU-hours: the tokens sent to PTU deployments converted through the Azure sizing table for each model. Divide it by the PTUs reserved times the hours in the period to see how much of the reservation was used.",
-    "ptuHoursTitle": "PTU Hours",
+      "ptuHoursTooltip": "Provisioned throughput consumed, in PTU-hours: the tokens sent to PTU deployments converted through the Azure sizing table for each model. Divide it by the PTUs reserved times the hours in the period to see how much of the reservation was used.",
+      "ptuHoursTitle": "PTU Hours",
       "here": "here",
       "topKeys": "Top Virtual Keys",
       "topAgents": "Top Agents",
@@ -5034,7 +4958,6 @@
       "flatCostTooltip": "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets.",
       "requestTokenConsumption": "Request / Token Consumption",
       "spendFetchFailed": "Fetching spend data failed, so the totals below may be empty rather than final. Reload the page to try again.",
-      "agentFetchFailed": "Fetching agent data failed, so the totals below may be empty rather than final. Reload the page to try again.",
       "type": {
         "user": "User",
         "team": "Team",
@@ -5070,7 +4993,8 @@
       "requests": "Requests",
       "successful": "Successful",
       "failed": "Failed",
-      "tokens": "Tokens"
+      "tokens": "Tokens",
+      "attributionHint": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key"
     },
     "old": {
       "title": "Usage",
@@ -5136,36 +5060,30 @@
       "userAgentDesc": "View detailed user agent activity logs"
     },
     "endpointUsage": {
-        "endpoint": "Endpoint",
-        "successfulFailed": "Successful / Failed",
-        "successfulAria": "Successful requests",
-        "totalRequests": "Total Request",
-        "successRate": "Success Rate",
-        "totalTokens": "Total Tokens",
-        "spend": "Spend",
-        "noData": "No endpoint usage data"
+      "endpoint": "Endpoint",
+      "successfulFailed": "Successful / Failed",
+      "successfulAria": "Successful requests",
+      "totalRequests": "Total Request",
+      "successRate": "Success Rate",
+      "totalTokens": "Total Tokens",
+      "spend": "Spend",
+      "noData": "No endpoint usage data"
     },
     "modelViewToggle": {
-        "publicName": "Public Model Name",
-        "litellmName": "Litellm Model Name"
+      "publicName": "Public Model Name",
+      "litellmName": "Litellm Model Name"
     },
     "topModelView": {
-        "colModel": "Model",
-        "colSpend": "Spend (USD)",
-        "colSuccessful": "Successful",
-        "colFailed": "Failed",
-        "colTokens": "Tokens",
-        "modelCountAria": "Number of models to show",
-        "viewModeAria": "Top model view mode",
+      "colModel": "Model",
+      "colSpend": "Spend (USD)",
+      "colSuccessful": "Successful",
+      "colFailed": "Failed",
+      "colTokens": "Tokens",
+      "modelCountAria": "Number of models to show",
+      "viewModeAria": "Top model view mode",
       "tableView": "Table View",
       "chartView": "Chart View"
     },
-    "granularityDay": "Daily",
-    "granularityWeek": "Weekly",
-    "scaleLinear": "Linear",
-    "scaleLog": "Log",
-    "scaleLabel": "Scale",
-    "bucketSizeLabel": "Bucket size",
     "usageViewAccessDenied": "You don't have access to that usage view",
     "linkCopied": "Link copied",
     "copyShareLink": "Copy Share Link",
@@ -5184,32 +5102,20 @@
       "ipAddress": "IP Address",
       "guardrail": "Guardrail",
       "loadingRequestResponse": "Loading request & response data...",
-      "errorCodeLabel": "Error Code:",
-      "messageLabel": "Message:",
       "maskedCount": "{count} masked",
       "responseCache": "Response Cache",
       "responseCacheTooltip": "Whether this request was served from LiteLLM's response cache (e.g. Redis / in-memory), skipping the LLM provider call entirely. This is separate from provider prompt caching; a Miss here does not mean prompt caching failed.",
-      "cacheKey": "Cache Key",
-      "cacheKeyTooltip": "The key LiteLLM computed for this request in the response cache. Requests with the same cache key share a cached response; a different key means the request content did not match any cached entry.",
       "promptCacheRead": "Prompt Cache Read Tokens",
-      "promptCacheReadTooltip": "Input tokens read from the LLM provider's prompt cache (e.g. Anthropic / OpenAI), billed at a discounted rate. Reported by the provider.",
       "promptCacheCreation": "Prompt Cache Creation Tokens",
-      "promptCacheCreationTooltip": "Input tokens written to the LLM provider's prompt cache for reuse by later requests.",
       "docs": "Docs",
-      "infoAria": "{label} info",
       "batchResults": "Batch Results",
       "batchId": "Batch ID",
       "successfulRequests": "Successful Requests",
       "failedRequests": "Failed Requests",
       "models": "Models",
       "metrics": "Metrics",
-      "inputTokens": "Input Tokens",
-      "outputTokens": "Output Tokens",
-      "reasoningTokens": "Reasoning Tokens",
       "duration": "Duration",
       "timeToFirstToken": "Time to First Token",
-      "cacheHit": "Hit",
-      "cacheMiss": "Miss",
       "litellmOverhead": "LiteLLM Overhead",
       "retries": "Retries",
       "retriesNone": "None",
@@ -5232,8 +5138,7 @@
       "filtersDescription": "Narrow down request logs",
       "empty": "No requests yet",
       "emptyDesc": "Requests proxied through LiteLLM will appear here.",
-      "emptyFiltered": "No matching requests",
-      "emptyFilteredDesc": "No requests match your filters for this time range."
+      "emptyFiltered": "No matching requests"
     },
     "title": "Logs",
     "tabs": {
@@ -5296,8 +5201,6 @@
       "publicModelOrSearchTool": "Public model / search tool",
       "options": {
         "allRequests": "All Requests",
-        "cacheHit": "Cache Hit",
-        "cacheMiss": "Cache Miss",
         "allCredentials": "All Credentials",
         "clientOAuthToken": "Client OAuth token",
         "configuredKey": "Configured key",
@@ -5309,10 +5212,8 @@
       },
       "placeholders": {
         "searchTeam": "Search or select a team",
-        "searchKeyAlias": "Search a key alias",
         "searchModel": "Search a model",
         "searchUser": "Search an internal user",
-        "searchEndUser": "Search an end user",
         "selectErrorCode": "Select or type an error code",
         "enterErrorMessage": "Enter error message…",
         "enterKeyHash": "Enter key hash…",
@@ -5324,14 +5225,11 @@
       },
       "empty": {
         "teams": "No teams found",
-        "keyAliases": "No key aliases found",
         "models": "No models found",
         "users": "No users found",
-        "endUsers": "No end users in this time range",
         "errorCodes": "No error codes found"
       },
-      "modelIdLabel": "Model ID: {modelId}",
-      "useCustomCode": "Use custom code: {code}"
+      "modelIdLabel": "Model ID: {modelId}"
     },
     "columns": {
       "time": "Time",
@@ -5571,16 +5469,8 @@
       },
       "drawer": {
         "title": "Audit log details",
-        "before": "Before",
-        "after": "After",
-        "copyJson": "Copy JSON",
         "notApplicable": "N/A",
-        "noDiff": "No differing fields detected",
-        "tokenLabel": "Token: ",
-        "spendLabel": "Spend: ",
-        "maxBudgetLabel": "Max Budget: ",
-        "copyObjectId": "Copy object ID",
-        "copyKeyHash": "Copy API key hash"
+        "maxBudgetLabel": "Max Budget: "
       }
     },
     "trace": {
@@ -5953,7 +5843,6 @@
     "creating": "Creating...",
     "createGroup": "Create Group",
     "updatedSuccessfully": "Access group updated successfully",
-    "editGroupTitle": "Edit Access Group",
     "groupNameRequired": "Please enter the access group name"
   },
   "uiTheme": {
@@ -6100,11 +5989,7 @@
     "subtitle": "Configure and manage your MCP servers",
     "myConnections": "My Connections",
     "importFromJson": "Import from JSON",
-    "addNewServer": "+ Add New MCP Server",
     "submitServer": "+ Submit MCP Server",
-    "tabAllServers": "All Servers",
-    "tabToolsets": "Toolsets",
-    "tabConnect": "Connect",
     "tabSemanticFilter": "Semantic Filter",
     "tabToolSearch": "Tool Search",
     "tabNetworkSettings": "Network Settings",
@@ -6113,19 +5998,10 @@
     "team": "Team",
     "personal": "Personal",
     "accessGroup": "Access Group",
-    "aboutAccessGroups": "About access groups",
-    "accessGroupTooltip": "An MCP Access Group is a set of users or teams that have permission to access specific MCP servers. Use access groups to control and organize who can connect to which servers.",
     "allAccessGroups": "All Access Groups",
     "sort": "Sort",
     "searchPlaceholder": "Search by name, alias, URL, or ID",
-    "sortCreatedDesc": "Recently created",
-    "sortUpdatedDesc": "Recently updated",
-    "sortNameAsc": "Name (A→Z)",
-    "sortHealth": "Health (unhealthy first)",
-    "serverCount": "{shown} of {total} servers",
     "loading": "Loading MCP servers...",
-    "emptyNone": "No MCP servers configured. Click '+ Add New MCP Server' to get started.",
-    "emptyNoMatch": "No servers match the current filters or search.",
     "deleteTitle": "Delete MCP Server?",
     "deleteBody": "This action is permanent and cannot be undone. All associated configurations will be removed.",
     "name": "Name",
@@ -6786,18 +6662,14 @@
       "disconnectConfirm": "{scope}In-flight requests fail and the client must initialize again before it can call tools."
     },
     "networkSettings": {
-      "addClient": "Add client",
-      "editClient": "Edit client",
-      "clientDescription": "The alias is the name shown in the dashboard and gateway logs. The value is the exact JWT claim or header value that identifies the client, such as the OAuth client ID your identity provider issues.",
       "alias": "Alias",
-      "aliasPlaceholder": "e.g. Coding CLI",
       "value": "Value",
       "valuePlaceholder": "e.g. 0oa1b2c3d4e5f6g7h8i9",
       "cancel": "Cancel",
       "add": "Add",
       "done": "Done",
       "removeClient": "Remove client",
-    "removeRange": "Remove {range}",
+      "removeRange": "Remove {range}",
       "savedToast": "MCP network settings saved",
       "privateIpRangesTitle": "Private IP Ranges",
       "privateIpRangesDesc": "Define which IP ranges are part of your private network. Callers from these IPs can see all MCP servers. Callers from any other IP can only see servers marked \"Available on Public Internet\".",
@@ -6805,16 +6677,6 @@
       "suggestedRange": "Suggested range: ",
       "yourPrivateRanges": "Your Private Network Ranges",
       "placeholderRanges": "Leave empty to use defaults: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8",
-      "cidrRangesNote": "Enter CIDR ranges (e.g., 10.0.0.0/8). When empty, standard private IP ranges are used.",
-      "allowedClientsTitle": "Allowed Clients",
-      "allowedClientsDesc": "Only the MCP client applications listed here can use the gateway. Leave empty to allow every client. A client that authenticates with a JWT is identified by the claim named in litellm_jwtauth.mcp_client_id_jwt_field in your proxy config (for example azp or client_id), which your identity provider asserts and the client cannot change. Any other client is identified by the request header configured below, if you enable one.",
-      "malformedAllowlist": "The stored allowlist is not a list of alias and value pairs, so every client is denied. Add the clients you want and save to replace it, or save with the list empty to remove it and allow every client again.",
-      "emptyAllowlist": "An empty allowlist is currently stored, so every client is denied. Save with the list empty to remove it and allow every client again.",
-      "addClientButton": "Add client",
-      "clientListNote": "Click a client to edit or remove it. Leave the list empty to allow every client. Every MCP request from an unlisted client, or from one with no resolvable identity, gets a 403.",
-      "clientIdentityHeader": "Client Identity Header (less secure)",
-      "clientIdentityPlaceholder": "Leave empty to identify clients by JWT only, e.g. x-mcp-client",
-      "clientIdentityDesc": "Optional header whose value names the client for callers without a JWT identity. Clients pick this value themselves, so it is a policy control rather than a security boundary. Without it, callers that do not carry the JWT claim are rejected while the allowlist is set.",
       "save": "Save"
     },
     "permissionMgmt": {
@@ -6855,26 +6717,16 @@
       "statusActive": "Active",
       "statusPendingReview": "Pending Review",
       "statusRejected": "Rejected",
-      "rejectionReasonPlaceholder": "Reason for rejection (optional)",
       "cancel": "Cancel",
       "approveBtn": "Approve",
       "rejectBtn": "Reject",
       "submissionRules": "Submission Rules",
       "requiredFieldsCount": "({count} required fields)",
       "noRulesSet": "no rules set",
-      "rulesDesc": "Select which fields must be filled in before a submission is considered compliant. LiteLLM will show ✓ / ✗ for each rule on every submission card below.",
       "saving": "Saving…",
       "saveRules": "Save Rules",
       "transport": "Transport: {transport}",
-      "submittedBy": "Submitted by: {by}",
-      "rejectionReason": "Rejection reason: {reason}",
-      "allChecksPassed": "All checks passed",
-      "checksFailed": "{count, plural, one {# check failed} other {# checks failed}}",
-      "passingFailing": "{pass} passing, {fail} failing",
-      "passes": "Passes",
       "missing": "Missing",
-      "reapprove": "Re-approve",
-      "totalSubmitted": "Total Submitted",
       "pendingReview": "Pending Review",
       "active": "Active",
       "rejected": "Rejected",
@@ -6888,11 +6740,6 @@
       "rejectFailedToast": "Failed to reject MCP server",
       "rulesSavedToast": "Submission rules saved",
       "rulesSaveFailedToast": "Failed to save submission rules",
-      "confirmApproveTitle": "Approve MCP Server",
-      "confirmRejectTitle": "Reject MCP Server",
-      "confirmApproveBody": "Are you sure you want to approve <b>\"{serverName}\"</b>? This will activate the server. The submitting user will see it in their MCP Servers list once approved.",
-      "confirmRejectBodyLive": "Are you sure you want to reject <b>\"{serverName}\"</b>? This server is currently live. Rejecting it will immediately remove it from the proxy runtime.",
-      "confirmRejectBodyPending": "Are you sure you want to reject <b>\"{serverName}\"</b>? This will mark the submission as rejected.",
       "loadFailed": "Failed to load submissions"
     },
     "mcpConnect": {
@@ -7028,20 +6875,20 @@
     "option2": "Option 2:",
     "actions": "Actions",
     "selector": {
-        "placeholder": "Select MCP servers",
-        "mcpServer": "MCP Server",
-        "toolset": "Toolset",
-        "allProxyMcpServers": "All Proxy MCP Servers",
-        "noMcpServers": "No MCP Servers",
-        "blockAll": "Block all",
-        "emptyText": "No MCP servers found",
+      "placeholder": "Select MCP servers",
+      "mcpServer": "MCP Server",
+      "toolset": "Toolset",
+      "allProxyMcpServers": "All Proxy MCP Servers",
+      "noMcpServers": "No MCP Servers",
+      "blockAll": "Block all",
+      "emptyText": "No MCP servers found",
       "accessGroup": "Access Group"
     },
     "oauthCallback": {
-        "title": "LiteLLM MCP OAuth",
-        "complete": "Authorization complete. You may close this window and return to the LiteLLM dashboard.",
-        "closeHint": "If the window does not close automatically, everything is still saved—you can close it manually.",
-        "loading": "Loading..."
+      "title": "LiteLLM MCP OAuth",
+      "complete": "Authorization complete. You may close this window and return to the LiteLLM dashboard.",
+      "closeHint": "If the window does not close automatically, everything is still saved—you can close it manually.",
+      "loading": "Loading..."
     }
   },
   "guardrailsMonitor": {
@@ -7172,7 +7019,7 @@
   "prompts": {
     "unnamedTool": "Unnamed Tool",
     "conversation": {
-      "accessTokenRequired": "Access token is required",
+      "accessTokenRequired": "Access Token required",
       "fillAllVariables": "Please fill in all template variables",
       "requestCancelled": "Request cancelled",
       "errorPrefix": "Error: {message}",
@@ -7483,51 +7330,18 @@
       "unavailable": "Savings are unavailable for this range. Try another date range or reopen this tab."
     },
     "autoRouter": {
-      "bucket": "Bucket",
       "turns": "Turns",
-      "hitRate": "Hit rate",
       "cacheHitRate": "Cache hit rate",
-      "shareOfTurns": "Share of turns",
-      "loadingUsage": "Loading auto-router usage...",
       "adminOnly": "Auto-router usage is visible to proxy admin roles only",
       "unavailable": "Auto-router usage is unavailable right now",
       "promptCaching": "Auto-router prompt caching",
-      "bucketDesc": "every turn falls in exactly one bucket, by what the router did",
-      "usageTitle": "Auto-router usage",
       "allRouters": "All auto-routers",
       "routingByTier": "Routing by tier",
       "tierTurnsDesc": "Turns each tier served. Turns the classifier sent to the default model belong to no tier and are not counted here, so this can total less than the router's turns.",
       "savingsTitle": "Total estimated savings",
       "valueUnavailable": "Unavailable",
-      "comparedOn": "Compared on {measured, number} of {total, number} requests; adaptive and quality routers are excluded",
-      "actualSpend": "Actual auto-router spend",
-      "actualSpendTooltip": "Auto-routed spend in the range, including classification costs, for complexity routers. Adaptive and quality routers are excluded. Baseline is this spend plus recorded savings.",
-      "llmSpend": "LLM spend",
-      "classificationCost": "Classification cost",
-      "per1kTurns": "({rate} / 1K turns)",
-      "breakdownUnavailable": "Breakdown unavailable because some usage predates classification-cost tracking.",
-      "baselineSpend": "Estimated baseline spend",
-      "turnsByBucketAria": "Share of turns by bucket",
-      "turnsCount": "{label}: {count, number} turns",
-      "expiredMiss": "Expired-miss",
-      "expiredMissTooltip": "share of all measured turns that missed cache because a return to an earlier tier came after its TTL lapsed",
-      "turnsMeasured": "<strong>{count, number}</strong> turns measured",
-      "outOfOrder": "{count, number} turns arrived out of order across pods and are not bucketed",
-      "avgSaved": "Avg saved per session",
-      "sessionsHint": "· {count, number} sessions",
-      "avgTurns": "Avg turns per session",
-      "avgSessionLength": "Avg session length",
-      "avgTokens": "Avg tokens per session",
-      "benchmarkNote": "Actual spend covers every request on complexity routers, including LLM classification cost. Baseline is actual spend plus recorded savings, so savings can be zero or negative. The range counts whole sessions that overlap it, so totals can differ from savings views that group usage by UTC day.",
-      "userScopeNote": "Usage for this user across API keys and JWT-authenticated requests. Older sessions recorded without a user ID are not included.",
       "tabUsage": "Usage",
-      "tabShadowEvals": "Shadow Evals",
-      "bucketSameModel": "Same model",
-      "bucketSameModelHint": "previous turn used the same tier",
-      "bucketFirstVisit": "First visit",
-      "bucketFirstVisitHint": "previous turn had not used this tier yet",
-      "bucketReturnToTier": "Return to tier",
-      "bucketReturnToTierHint": "previous turn had used this tier earlier"
+      "tabShadowEvals": "Shadow Evals"
     },
     "shadowEval": {
       "target": "Target",
@@ -7659,7 +7473,8 @@
       "readyBody": "Click Finish connecting to give {client} access to {server} as you.",
       "finish": "Finish connecting",
       "cancel": "Cancel",
-      "remoteClient": "My client is on a remote or SSH machine"
+      "remoteClient": "My client is on a remote or SSH machine",
+      "multiBody": "Authorize each requested server below to continue, or cancel to send {client} away."
     },
     "connectPicker": {
       "loadToolsFailed": "Could not load tools for {server} — it will be excluded from this message.",
@@ -7799,26 +7614,26 @@
       "navUsage": "Usage"
     },
     "page": {
-        "suggestions": {
-            "write": "Write",
-            "learn": "Learn",
-            "code": "Code",
-            "brainstorm": "Brainstorm"
-        },
-        "greetingMorning": "Good morning",
-        "greetingAfternoon": "Good afternoon",
-        "greetingEvening": "Good evening",
-        "modelsLoadFailed": "Could not load models",
-        "modelSearchPlaceholder": "Search models...",
-        "sendPlaceholder": "Send a message...",
-        "emptyStateHint": "How can I help you today?",
-        "scrollToBottom": "Scroll to bottom",
+      "suggestions": {
+        "write": "Write",
+        "learn": "Learn",
+        "code": "Code",
+        "brainstorm": "Brainstorm"
+      },
+      "greetingMorning": "Good morning",
+      "greetingAfternoon": "Good afternoon",
+      "greetingEvening": "Good evening",
+      "modelsLoadFailed": "Could not load models",
+      "modelSearchPlaceholder": "Search models...",
+      "sendPlaceholder": "Send a message...",
+      "emptyStateHint": "How can I help you today?",
+      "scrollToBottom": "Scroll to bottom",
       "selectModel": "Select model",
       "send": "Send",
       "historyNotSaved": "Chat history won't be saved in this browser session",
       "openIntegrations": "Open Integrations ->",
       "blankIntro": "Chat with 100+ LLMs + MCP tools; authenticate once, use them here.",
-    "partialResponseSaved": "[Something went wrong. The partial response has been saved.]"
+      "partialResponseSaved": "[Something went wrong. The partial response has been saved.]"
     }
   },
   "playground": {
@@ -8167,7 +7982,6 @@
       "noAgentForChat": "Save an agent first to test in Chat.",
       "noAgentForTest": "Select an agent to run batch tests.",
       "noAgentForConnect": "Select an agent to see how to connect.",
-      "noAgentsYet": "No agents yet. Add an agent to get started.",
       "missingModelId": "This agent cannot be updated or deleted here (missing model id). Manage it from Models & Endpoints.",
       "experimentalBanner": "Agent Builder is experimental and may change or be removed without notice. We'd love your feedback—email us at <link>product@berri.ai</link>.",
       "proxyBaseUrl": "Proxy base URL",
@@ -8205,7 +8019,7 @@
       "connectionFailed": "Connection failed: {error}",
       "listening": "🎙️ Listening...",
       "microphoneError": "Microphone error: {error}",
-    "errorPrefix": "Error: {message}",
+      "errorPrefix": "Error: {message}",
       "title": "Realtime Voice Chat",
       "connected": "Connected",
       "connecting": "Connecting...",
@@ -8513,7 +8327,6 @@
     "deleteWarning": "This action cannot be undone.",
     "cancel": "Cancel",
     "noSkills": "No skills found",
-    "noSkillsDesc": "Add one to get started.",
     "actions": "Actions",
     "subtitle": "Register Claude Code skills. Published skills appear in the Skill Hub for all users and are served via <code>/claude-code/marketplace.json</code>.",
     "addButton": "+ Add Skill",
@@ -8547,15 +8360,14 @@
     "noMatchingSkillsDesc": "Adjust the search or domain filter to see more skills.",
     "noSkillsYetDesc": "Skills added here will appear for developers.",
     "showingCount": "Showing {shown} of {total} {total, plural, one {skill} other {skills}}",
-    "uncategorized": "Uncategorized",
     "na": "N/A",
     "noDescription": "No description",
     "copyId": "Copy skill ID",
     "idCopied": "Skill ID copied",
     "selector": {
-        "placeholder": "Select skills (optional)",
-        "clearAll": "Clear all skills",
-        "private": "private"
+      "placeholder": "Select skills (optional)",
+      "clearAll": "Clear all skills",
+      "private": "private"
     },
     "subPathLabel": "Subfolder path (Optional)",
     "subPathHint": "Path within the repository where the skill lives (e.g., plugins/my-skill). Leave empty if the skill is at the repo root.",
@@ -8574,8 +8386,7 @@
       "githubRepo": "GitHub repo — {name}",
       "githubSubdir": "GitHub subdir — {repo} @ {path}",
       "gitRepo": "{brand} repo — {url}",
-      "gitSubdir": "{brand} subdir — {repo} @ {path}",
-      "zipArchive": "Zip archive — {path}"
+      "gitSubdir": "{brand} subdir — {repo} @ {path}"
     },
     "skillNameKebabToast": "Skill name must be kebab-case (lowercase letters, numbers, and hyphens only)",
     "semverToast": "Version must be in semantic versioning format (e.g., 1.0.0)",
@@ -8899,26 +8710,26 @@
     "agentNameCopied": "Agent name copied",
     "jwtConfigured": "JWT configured",
     "identity": {
-        "sectionAria": "Agent Identity",
-        "heading": "Agent Identity: Microsoft Entra ID",
-        "tenantLabel": "Tenant",
-        "appIdLabel": "Application (Client) ID",
-        "servicePrincipalLabel": "Enterprise application Object ID",
-        "notConfigured": "Not configured",
-        "executionModeLine": "Execution: {execution} · Mode: {mode}",
-        "loadingValue": "Loading",
-        "identityUnbound": "Identity unbound; execution is disabled",
-        "authEvidenceFailed": "Could not load authentication evidence",
-        "lastAuthenticated": "Last authenticated identity match: {timestamp}",
-        "awaitingAuth": "Configured, awaiting an authenticated request",
-        "evidenceNote": "Recent evidence comes from a validated Entra token matching this binding. It is persisted across restarts and cleared when the binding changes. Tool and model permissions are checked separately.",
-        "refreshButton": "Refresh authentication evidence",
-        "viewLogsLink": "View request logs"
+      "sectionAria": "Agent Identity",
+      "heading": "Agent Identity: Microsoft Entra ID",
+      "tenantLabel": "Tenant",
+      "appIdLabel": "Application (Client) ID",
+      "servicePrincipalLabel": "Enterprise application Object ID",
+      "notConfigured": "Not configured",
+      "executionModeLine": "Execution: {execution} · Mode: {mode}",
+      "loadingValue": "Loading",
+      "identityUnbound": "Identity unbound; execution is disabled",
+      "authEvidenceFailed": "Could not load authentication evidence",
+      "lastAuthenticated": "Last authenticated identity match: {timestamp}",
+      "awaitingAuth": "Configured, awaiting an authenticated request",
+      "evidenceNote": "Recent evidence comes from a validated Entra token matching this binding. It is persisted across restarts and cleared when the binding changes. Tool and model permissions are checked separately.",
+      "refreshButton": "Refresh authentication evidence",
+      "viewLogsLink": "View request logs"
     },
     "selector": {
-        "placeholder": "Select agents",
-        "accessGroupDesc": "Access Group",
-        "agentDesc": "Agent",
+      "placeholder": "Select agents",
+      "accessGroupDesc": "Access Group",
+      "agentDesc": "Agent",
       "noAgents": "No agents found"
     },
     "agentCreationSteps": "Agent creation steps",
@@ -9127,38 +8938,37 @@
     "updateDiscountConfigFailed": "Failed to update discount configuration",
     "selectProviderAndDiscountRequired": "Please select a provider and enter discount percentage",
     "discountPercentRange": "Discount must be between 0% and 100%",
-    "discountExists": "Discount for {name} already exists. Edit it in the table above.",
     "multiExport": {
-        "trigger": "Export",
-        "asPdf": "Export as PDF",
-        "asCsv": "Export as CSV",
-        "report": {
-          "documentTitle": "Multi-Model Cost Estimate Report",
-          "heading": "LLM Cost Estimate Report",
-          "modelsConfigured": "{count, plural, one {# model configured} other {# models configured}}",
-          "combinedTotals": "Combined Totals",
-          "totalPerRequest": "Total Per Request",
-          "totalDaily": "Total Daily",
-          "totalMonthly": "Total Monthly",
-          "marginPerRequest": "Margin/Request",
-          "dailyMargin": "Daily Margin",
-          "monthlyMargin": "Monthly Margin",
-          "modelBreakdown": "Model Breakdown",
-          "inputTokensPerRequest": "Input Tokens per Request",
-          "outputTokensPerRequest": "Output Tokens per Request",
-          "requestsPerDay": "Requests per Day",
-          "requestsPerMonth": "Requests per Month",
-          "costType": "Cost Type",
-          "perRequest": "Per Request",
-          "daily": "Daily",
-          "monthly": "Monthly",
-          "inputCost": "Input Cost",
-          "outputCost": "Output Cost",
-          "marginFee": "Margin/Fee",
-          "total": "Total",
-          "footer": "Generated by LiteLLM Pricing Calculator on {date}",
-          "allowPopups": "Please allow popups to export PDF"
-        }
+      "trigger": "Export",
+      "asPdf": "Export as PDF",
+      "asCsv": "Export as CSV",
+      "report": {
+        "documentTitle": "Multi-Model Cost Estimate Report",
+        "heading": "LLM Cost Estimate Report",
+        "modelsConfigured": "{count, plural, one {# model configured} other {# models configured}}",
+        "combinedTotals": "Combined Totals",
+        "totalPerRequest": "Total Per Request",
+        "totalDaily": "Total Daily",
+        "totalMonthly": "Total Monthly",
+        "marginPerRequest": "Margin/Request",
+        "dailyMargin": "Daily Margin",
+        "monthlyMargin": "Monthly Margin",
+        "modelBreakdown": "Model Breakdown",
+        "inputTokensPerRequest": "Input Tokens per Request",
+        "outputTokensPerRequest": "Output Tokens per Request",
+        "requestsPerDay": "Requests per Day",
+        "requestsPerMonth": "Requests per Month",
+        "costType": "Cost Type",
+        "perRequest": "Per Request",
+        "daily": "Daily",
+        "monthly": "Monthly",
+        "inputCost": "Input Cost",
+        "outputCost": "Output Cost",
+        "marginFee": "Margin/Fee",
+        "total": "Total",
+        "footer": "Generated by LiteLLM Pricing Calculator on {date}",
+        "allowPopups": "Please allow popups to export PDF"
+      }
     }
   },
   "cloudZero": {
@@ -9315,8 +9125,6 @@
     "tipKey": "Verify your API key is correct and active",
     "tipService": "Check if the search provider service is operational",
     "tipQuota": "Ensure you have sufficient credits/quota with the provider",
-    "enterApiKeyShort": "Enter API key",
-    "descPlaceholderShort": "Description of this search tool",
     "missingAuthParams": "Missing required authentication parameters.",
     "editTitle": "Edit Search Tool",
     "title": "Search Tools",
@@ -9373,10 +9181,10 @@
     "configDeleteHint": "Config search tools cannot be deleted on the dashboard. Please edit the config file.",
     "loadingMessage": "Loading search tools…",
     "selector": {
-        "placeholder": "Select search tools (optional)",
-        "clearAll": "Clear all search tools",
-        "loading": "Loading search tools…",
-        "noTools": "No search tools found"
+      "placeholder": "Select search tools (optional)",
+      "clearAll": "Clear all search tools",
+      "loading": "Loading search tools…",
+      "noTools": "No search tools found"
     },
 
     "nameRequired": "Please enter a search tool name",
@@ -9384,13 +9192,11 @@
     "deletedToast": "Deleted search tool successfully",
     "deleteError": "Failed to delete search tool",
     "updatedToast": "Search tool updated successfully",
-    "updateError": "Failed to update search tool",
     "deleteTitle": "Delete Search Tool",
     "deleteConfirm": "Are you sure you want to delete this search tool? This action cannot be undone.",
     "resourceInfoTitle": "Search Tool Information",
     "searchToolName": "Search Tool Name",
     "providerLabel": "Search Provider",
-    "apiKeyDesc": "API key for the search provider",
     "idLabel": "ID",
     "nameExample": "e.g., my-perplexity-search",
     "namePattern": "Name can only contain letters, numbers, hyphens, and underscores",
@@ -9436,16 +9242,6 @@
     "selectVectorStoreDesc": "Choose a vector store to test search queries against",
     "selectVectorStorePlaceholder": "Select a vector store",
     "noMatchingStores": "No matching vector stores",
-    "addNewTitle": "Add New Vector Store",
-    "pgVectorSetup": "PG Vector Setup Required",
-    "pgVectorDesc": "Configure your PostgreSQL database with pgvector extension",
-    "pgVectorNote": "Start the server and note the API base URL and API key",
-    "pgVectorFields": "Enter those details in the fields below",
-    "valkeySetup": "Valkey Setup Required",
-    "vertexRAGSetup": "Vertex AI RAG Engine Setup",
-    "vertexRAGDesc": "To use Vertex AI RAG Engine:",
-    "vertexSearchSetup": "Vertex AI Search Setup",
-    "vertexSearchDesc": "To use Vertex AI Search (Discovery Engine):",
     "noVectorStoresList": "No vector stores",
     "noVectorStoresHint": "Connect a vector store to enable retrieval-augmented generation.",
     "openActions": "Open vector store actions",
@@ -9476,16 +9272,10 @@
     "notFound": "Vector store not found",
     "loading": "Loading...",
     "editTitle": "Edit Vector Store",
-    "readOnlyConfig": "Read only: defined in the config file",
     "idLabel": "Vector Store ID:",
     "nameLabel": "Vector Store Name:",
     "descriptionLabel": "Description:",
-    "existingCreds": "Existing Credentials",
-    "selectCreds": "Select or search for existing credentials",
-    "noMatchingCreds": "No matching credentials",
     "saveChanges": "Save Changes",
-    "vertexRAGStep1Desc": "Create a corpus in your Google Cloud project",
-    "vertexRAGStep2Desc": "Enter the corpus ID in the Vector Store ID field below",
     "createDesc": "Upload documents and select a provider to create a new vector store with embedded content.",
     "uploadNote": "Upload one or more documents (PDF, TXT, DOCX, MD). Maximum file size: 50MB per file.",
     "providerLabel": "Provider:",
@@ -9496,20 +9286,10 @@
     "searchFailed": "Search failed: {error}",
     "noResults": "No results found",
     "noDescription": "No description",
-    "loadFailedDesc": "Vector store {id} could not be loaded. It may have been deleted.",
-    "noneLabel": "None",
-    "detailsTab": "Details",
-    "readOnlyDesc": "This vector store comes from the proxy config YAML, so it cannot be edited or deleted on the dashboard. Change or remove it in the config file and restart the proxy.",
     "updateFailed": "Error updating vector store: {error}",
-    "idFieldRequired": "Please input a vector store ID",
     "fetchDetailsFailed": "Error fetching vector store details: {error}",
     "updatedToast": "Vector store updated successfully",
-    "credsChoiceHint": "Either select existing credentials OR enter provider credentials below",
-    "metadataFieldHint": "JSON metadata for the vector store",
-    "orDivider": "OR",
     "uploadDragHint": "Click or drag files to this area to upload",
-    "locationHint": "Pick a supported location: global, us, or eu",
-    "engineId": "Engine ID",
     "createBtn": "Create",
     "noMatchingOptions": "No matching options",
     "detailsTitle": "Vector Store Details",
@@ -9554,179 +9334,177 @@
     "indexesErrorPrefix": "Error fetching indexes: ",
     "indexesIntro": "Vector store indexes registered on this proxy via the <code>/v1/indexes</code> API. See the <docsLink>vector store index docs</docsLink> for how this works. Index passthrough is supported for Azure AI Search and Milvus today; support for more providers can be added, so please <issueLink>file a GitHub issue</issueLink> if you want your provider supported.",
     "fields": {
-        "pgVector": {
-            "apiBase": {
-                "label": "API Base",
-                "tooltip": "Enter the base URL of your deployed litellm-pgvector server (e.g., http://your-server:8000)",
-                "placeholder": "http://your-deployed-server:8000"
-            },
-            "apiKey": {
-                "label": "API Key",
-                "tooltip": "Enter the API key from your deployed litellm-pgvector server",
-                "placeholder": "your-deployed-api-key"
-            }
+      "pgVector": {
+        "apiBase": {
+          "label": "API Base",
+          "tooltip": "Enter the base URL of your deployed litellm-pgvector server (e.g., http://your-server:8000)",
+          "placeholder": "http://your-deployed-server:8000"
         },
-        "vertexSearchApi": {
-            "vertexProject": {
-                "label": "Vertex Project",
-                "tooltip": "Google Cloud project ID that hosts the Vertex AI Search data store.",
-                "placeholder": "my-gcp-project-id"
-            },
-            "vertexLocation": {
-                "label": "Vertex Location",
-                "tooltip": "Vertex AI Search data store location. Must be one of global, us, or eu."
-            },
-            "collectionId": {
-                "label": "Collection ID (optional)",
-                "tooltip": "Discovery Engine collection ID. Leave blank to use the default collection.",
-                "placeholder": "e.g. my-custom-collection"
-            },
-            "engineId": {
-                "label": "Engine ID (optional)",
-                "tooltip": "Search app (engine) ID. Required for website, healthcare, and connector-based data stores (Workspace, Slack, Jira, etc.) because these sources route search through an engine. Leave blank to query the data store directly.",
-                "placeholder": "e.g. my-search-app_1234567890"
-            }
-        },
-        "openai": {
-            "apiKey": {
-                "label": "API Key",
-                "tooltip": "Enter your OpenAI API key",
-                "placeholder": "sk-..."
-            }
-        },
-        "azure": {
-            "apiKey": {
-                "label": "API Key",
-                "tooltip": "Enter your Azure OpenAI API key",
-                "placeholder": "your-azure-api-key"
-            },
-            "apiBase": {
-                "label": "API Base",
-                "tooltip": "Enter your Azure OpenAI endpoint (e.g., https://your-resource.openai.azure.com/)",
-                "placeholder": "https://your-resource.openai.azure.com/"
-            }
-        },
-        "milvus": {
-            "apiKey": {
-                "label": "API Key",
-                "tooltip": "To obtain a token, you should use a colon (:) to concatenate the username and password that you use to access your Milvus instance (e.g., username:password)",
-                "placeholder": "username:password or api key"
-            },
-            "apiBase": {
-                "label": "API Base",
-                "tooltip": "Enter your Milvus endpoint (e.g., https://your-milvus-endpoint.com/)",
-                "placeholder": "https://your-milvus-endpoint.com/"
-            },
-            "embeddingModel": {
-                "label": "Embedding Model",
-                "tooltip": "Select the embedding model to use",
-                "placeholder": "text-embedding-3-small"
-            }
-        },
-        "mongodb": {
-            "apiBase": {
-                "label": "Sidecar URL",
-                "tooltip": "Use HTTPS for a remote sidecar, or HTTP with a loopback IP for a sidecar on the same host or Pod",
-                "placeholder": "http://127.0.0.1:8080"
-            },
-            "apiKey": {
-                "label": "Sidecar API Key",
-                "tooltip": "The MONGODB_SIDECAR_API_KEY configured in your MongoDB sidecar",
-                "placeholder": "Enter sidecar API key"
-            },
-            "database": {
-                "label": "Database",
-                "tooltip": "The MongoDB database holding the collection you want to search",
-                "placeholder": "sample_mflix"
-            },
-            "collection": {
-                "label": "Collection",
-                "tooltip": "The collection your MongoDB Vector Search index was built on",
-                "placeholder": "embedded_movies"
-            },
-            "embeddingModel": {
-                "label": "Embedding Model",
-                "tooltip": "The embedding model on this proxy that created the vectors already stored in your collection. LiteLLM embeds every search query with it, so it must be the same model. A different model of the same size will not error, it will just return wrong results. Add it under Models first if it is not listed",
-                "placeholder": "text-embedding-3-small"
-            },
-            "vectorFieldName": {
-                "label": "Vector Field Name",
-                "tooltip": "The field in each document that holds its embedding. It must match the path your MongoDB Vector Search index was created on (default: embedding)",
-                "placeholder": "embedding"
-            },
-            "textField": {
-                "label": "Text Field",
-                "tooltip": "The field in each document that holds its readable text. LiteLLM returns this text in search results, and it accepts a dotted path such as metadata.body (default: text)",
-                "placeholder": "text"
-            },
-            "candidatesConsidered": {
-                "label": "Candidates Considered",
-                "tooltip": "How many nearest neighbours MongoDB examines before returning the top results. Higher is more accurate and slower. Leave blank to let LiteLLM scale it with the requested result count",
-                "placeholder": "100"
-            }
-        },
-        "valkey": {
-            "valkeyHost": {
-                "label": "Valkey Host",
-                "tooltip": "Hostname or IP of your Valkey server, without redis:// or a port (e.g. my-valkey.example.com)",
-                "placeholder": "my-valkey.example.com"
-            },
-            "valkeyPort": {
-                "label": "Valkey Port",
-                "tooltip": "Port your Valkey server listens on. Leave as 6379 unless you changed it",
-                "placeholder": "6379"
-            },
-            "valkeyPassword": {
-                "label": "Valkey Password",
-                "tooltip": "Password used to log in to your Valkey server. Leave blank if it has no password"
-            },
-            "useTls": {
-                "label": "Use TLS",
-                "tooltip": "Set to true if your Valkey server requires an encrypted (TLS) connection, for example AWS ElastiCache with in-transit encryption turned on"
-            },
-            "embeddingModel": {
-                "label": "Embedding Model",
-                "tooltip": "The embedding model on this proxy that was used to create the embeddings already stored in your Valkey index. LiteLLM uses it to embed each search query, so it must be the same model or results will be wrong. Add it under Models first if it is not listed",
-                "placeholder": "text-embedding-3-small"
-            },
-            "valkeyTextField": {
-                "label": "Text Field",
-                "tooltip": "The field in each stored document that holds its readable text. LiteLLM returns this text in search results. Must match how your documents were stored (default: text)",
-                "placeholder": "text"
-            },
-            "valkeyEmbeddingField": {
-                "label": "Vector Field Name",
-                "tooltip": "The field in each stored document that holds its embedding. LiteLLM searches against this field, so it must match the field your index was created on (default: embedding)",
-                "placeholder": "embedding"
-            }
-        },
-        "s3Vectors": {
-            "vectorBucketName": {
-                "label": "Vector Bucket Name",
-                "tooltip": "S3 bucket name for vector storage (will be auto-created if it doesn't exist)",
-                "placeholder": "my-vector-bucket"
-            },
-            "indexName": {
-                "label": "Index Name",
-                "tooltip": "Name for the vector index (optional, will be auto-generated if not provided)",
-                "placeholder": "my-vector-index"
-            },
-            "awsRegion": {
-                "label": "AWS Region",
-                "tooltip": "AWS region where the S3 bucket is located (e.g., us-west-2)",
-                "placeholder": "us-west-2"
-            },
-            "embeddingModel": {
-                "label": "Embedding Model",
-                "tooltip": "Select the embedding model to use for vector generation",
-                "placeholder": "text-embedding-3-small"
-            }
+        "apiKey": {
+          "label": "API Key",
+          "tooltip": "Enter the API key from your deployed litellm-pgvector server",
+          "placeholder": "your-deployed-api-key"
         }
+      },
+      "vertexSearchApi": {
+        "vertexProject": {
+          "label": "Vertex Project",
+          "tooltip": "Google Cloud project ID that hosts the Vertex AI Search data store.",
+          "placeholder": "my-gcp-project-id"
+        },
+        "vertexLocation": {
+          "label": "Vertex Location",
+          "tooltip": "Vertex AI Search data store location. Must be one of global, us, or eu."
+        },
+        "collectionId": {
+          "label": "Collection ID (optional)",
+          "tooltip": "Discovery Engine collection ID. Leave blank to use the default collection.",
+          "placeholder": "e.g. my-custom-collection"
+        },
+        "engineId": {
+          "label": "Engine ID (optional)",
+          "tooltip": "Search app (engine) ID. Required for website, healthcare, and connector-based data stores (Workspace, Slack, Jira, etc.) because these sources route search through an engine. Leave blank to query the data store directly.",
+          "placeholder": "e.g. my-search-app_1234567890"
+        }
+      },
+      "openai": {
+        "apiKey": {
+          "label": "API Key",
+          "tooltip": "Enter your OpenAI API key",
+          "placeholder": "sk-..."
+        }
+      },
+      "azure": {
+        "apiKey": {
+          "label": "API Key",
+          "tooltip": "Enter your Azure OpenAI API key",
+          "placeholder": "your-azure-api-key"
+        },
+        "apiBase": {
+          "label": "API Base",
+          "tooltip": "Enter your Azure OpenAI endpoint (e.g., https://your-resource.openai.azure.com/)",
+          "placeholder": "https://your-resource.openai.azure.com/"
+        }
+      },
+      "milvus": {
+        "apiKey": {
+          "label": "API Key",
+          "tooltip": "To obtain a token, you should use a colon (:) to concatenate the username and password that you use to access your Milvus instance (e.g., username:password)",
+          "placeholder": "username:password or api key"
+        },
+        "apiBase": {
+          "label": "API Base",
+          "tooltip": "Enter your Milvus endpoint (e.g., https://your-milvus-endpoint.com/)",
+          "placeholder": "https://your-milvus-endpoint.com/"
+        },
+        "embeddingModel": {
+          "label": "Embedding Model",
+          "tooltip": "Select the embedding model to use",
+          "placeholder": "text-embedding-3-small"
+        }
+      },
+      "mongodb": {
+        "apiBase": {
+          "label": "Sidecar URL",
+          "tooltip": "Use HTTPS for a remote sidecar, or HTTP with a loopback IP for a sidecar on the same host or Pod",
+          "placeholder": "http://127.0.0.1:8080"
+        },
+        "apiKey": {
+          "label": "Sidecar API Key",
+          "tooltip": "The MONGODB_SIDECAR_API_KEY configured in your MongoDB sidecar",
+          "placeholder": "Enter sidecar API key"
+        },
+        "database": {
+          "label": "Database",
+          "tooltip": "The MongoDB database holding the collection you want to search",
+          "placeholder": "sample_mflix"
+        },
+        "collection": {
+          "label": "Collection",
+          "tooltip": "The collection your MongoDB Vector Search index was built on",
+          "placeholder": "embedded_movies"
+        },
+        "embeddingModel": {
+          "label": "Embedding Model",
+          "tooltip": "The embedding model on this proxy that created the vectors already stored in your collection. LiteLLM embeds every search query with it, so it must be the same model. A different model of the same size will not error, it will just return wrong results. Add it under Models first if it is not listed",
+          "placeholder": "text-embedding-3-small"
+        },
+        "vectorFieldName": {
+          "label": "Vector Field Name",
+          "tooltip": "The field in each document that holds its embedding. It must match the path your MongoDB Vector Search index was created on (default: embedding)",
+          "placeholder": "embedding"
+        },
+        "textField": {
+          "label": "Text Field",
+          "tooltip": "The field in each document that holds its readable text. LiteLLM returns this text in search results, and it accepts a dotted path such as metadata.body (default: text)",
+          "placeholder": "text"
+        },
+        "candidatesConsidered": {
+          "label": "Candidates Considered",
+          "tooltip": "How many nearest neighbours MongoDB examines before returning the top results. Higher is more accurate and slower. Leave blank to let LiteLLM scale it with the requested result count",
+          "placeholder": "100"
+        }
+      },
+      "valkey": {
+        "valkeyHost": {
+          "label": "Valkey Host",
+          "tooltip": "Hostname or IP of your Valkey server, without redis:// or a port (e.g. my-valkey.example.com)",
+          "placeholder": "my-valkey.example.com"
+        },
+        "valkeyPort": {
+          "label": "Valkey Port",
+          "tooltip": "Port your Valkey server listens on. Leave as 6379 unless you changed it",
+          "placeholder": "6379"
+        },
+        "valkeyPassword": {
+          "label": "Valkey Password",
+          "tooltip": "Password used to log in to your Valkey server. Leave blank if it has no password"
+        },
+        "useTls": {
+          "label": "Use TLS",
+          "tooltip": "Set to true if your Valkey server requires an encrypted (TLS) connection, for example AWS ElastiCache with in-transit encryption turned on"
+        },
+        "embeddingModel": {
+          "label": "Embedding Model",
+          "tooltip": "The embedding model on this proxy that was used to create the embeddings already stored in your Valkey index. LiteLLM uses it to embed each search query, so it must be the same model or results will be wrong. Add it under Models first if it is not listed",
+          "placeholder": "text-embedding-3-small"
+        },
+        "valkeyTextField": {
+          "label": "Text Field",
+          "tooltip": "The field in each stored document that holds its readable text. LiteLLM returns this text in search results. Must match how your documents were stored (default: text)",
+          "placeholder": "text"
+        },
+        "valkeyEmbeddingField": {
+          "label": "Vector Field Name",
+          "tooltip": "The field in each stored document that holds its embedding. LiteLLM searches against this field, so it must match the field your index was created on (default: embedding)",
+          "placeholder": "embedding"
+        }
+      },
+      "s3Vectors": {
+        "vectorBucketName": {
+          "label": "Vector Bucket Name",
+          "tooltip": "S3 bucket name for vector storage (will be auto-created if it doesn't exist)",
+          "placeholder": "my-vector-bucket"
+        },
+        "indexName": {
+          "label": "Index Name",
+          "tooltip": "Name for the vector index (optional, will be auto-generated if not provided)",
+          "placeholder": "my-vector-index"
+        },
+        "awsRegion": {
+          "label": "AWS Region",
+          "tooltip": "AWS region where the S3 bucket is located (e.g., us-west-2)",
+          "placeholder": "us-west-2"
+        },
+        "embeddingModel": {
+          "label": "Embedding Model",
+          "tooltip": "Select the embedding model to use for vector generation",
+          "placeholder": "text-embedding-3-small"
+        }
+      }
     },
     "providerRequired": "Please select a provider",
     "idRequired": "Please input the vector store ID from your api provider",
-    "selectFieldRequired": "Please select the {field}",
-    "inputFieldRequired": "Please input the {field}",
     "providerFieldMissing": "Please provide {field}",
     "selectorPlaceholder": "Select vector stores",
     "s3Desc": "AWS S3 Vectors allows you to store and query vector embeddings directly in S3:",
@@ -9746,34 +9524,12 @@
     "idHint": "Enter the vector store ID from your api provider",
     "nameFieldLabel": "Vector Store Name",
     "nameHint": "Custom name you want to give to the vector store, this name will be rendered on the LiteLLM UI",
-    "existingCredsHint": "Optionally select API provider credentials for this vector store eg. Bedrock API KEY",
     "metadataHint": "JSON metadata for the vector store (optional)",
     "hidePassword": "Hide Password",
     "showPassword": "Show Password",
     "metadataJsonInvalid": "Invalid JSON in metadata field",
     "createdToast": "Vector store created successfully",
     "createErrorToast": "Error creating vector store: {error}",
-    "idPlaceholderWithEngine": "Any identifier you'll use to reference this in LiteLLM",
-    "idPlaceholderDefault": "Enter vector store ID from your provider",
-    "idPlaceholderVertexRag": "6917529027641081856 (corpus ID from Vertex AI / \"RAG Engine\" console)",
-    "idPlaceholderVertexSearch": "my-datastore_1234567890 (data store ID from Vertex AI / \"Agent Search\" console)",
-    "idPlaceholderValkey": "my-search-index (FT index name in Valkey)",
-    "idPlaceholderMongodb": "my-vector-index (MongoDB Vector Search index name)",
-    "pgVectorIntro": "LiteLLM provides a server to connect to PG Vector. To use this provider:",
-    "pgVectorDeployStep": "Deploy the litellm-pgvector server from: <link>https://github.com/BerriAI/litellm-pgvector</link>",
-    "valkeyIntro": "LiteLLM searches documents you have already stored in Valkey. It does not create the index or upload documents for you. Before creating this vector store, make sure:",
-    "valkeyStep1": "Your Valkey server has vector search enabled (the valkey-search module, included in the valkey-bundle image and in AWS ElastiCache / MemoryDB for Valkey)",
-    "valkeyStep2": "You have already created a search index and loaded your documents and their embeddings into it. Enter that index name as the Vector Store ID",
-    "valkeyStep3": "You know which embedding model created those stored embeddings. That model must be added to this proxy under Models so you can pick it below. Using a different model returns wrong results",
-    "valkeyStep4": "You know the field names your documents use for their text and their embedding. If they are not \"text\" and \"embedding\", set them below",
-    "valkeyOutro": "When a query comes in, LiteLLM converts it to an embedding with the model below and returns the closest matching documents from your index.",
-    "vertexRAGRenamedNote": "Note: Google Cloud has renamed this to \"RAG Engine\" in its console - the steps below still apply.",
-    "vertexRAGGuideStep": "Set up your Vertex AI RAG Engine corpus following the guide: <link>Vertex AI RAG Engine Overview</link>",
-    "vertexRAGStep3": "Note the corpus ID from the Vertex AI console (now labeled \"RAG Engine\" in Google Cloud)",
-    "vertexSearchRenamedNote": "Note: Google Cloud has renamed this to \"Agent Search\" in its console - the steps below still apply.",
-    "vertexSearchGuideStep": "Enable the Discovery Engine API on your Google Cloud project and create a data store following the guide: <link>Create a Vertex AI Search data store</link>",
-    "vertexSearchStep3": "For most data store types (Cloud Storage, BigQuery, Media): copy the data store ID and enter it in the Vector Store ID field below.",
-    "vertexSearchStep4": "For website, healthcare, and connector-based sources (Drive, Gmail, Slack, Jira, etc.): create a search app on top of the data store, then copy the <strong>{engineId}</strong> and enter it in the Engine ID field. The Vector Store ID is still required as the LiteLLM-side name for this record, but it isn't used in the GCP URL when Engine ID is set.",
     "uploadTypeUnsupported": "{name} is not a supported file type. Please upload PDF, TXT, DOCX, or MD files.",
     "uploadSizeUnsupported": "{name} must be smaller than 50MB!",
     "uploadRequired": "Please upload at least one document",
@@ -9833,37 +9589,21 @@
     "openModelActions": "Open model actions",
     "copyModelName": "Copy model name",
     "modelNameCopied": "Model name copied",
-    "hubTitle": "AI Hub",
-    "hubAdminDescription": "Make models, agents, and MCP servers public for developers to know what's available.",
-    "hubUserDescription": "A list of all public model names personally available to you.",
-    "modelHubUrlLabel": "Model Hub URL:",
-    "copyUrl": "Copy URL",
     "tabModels": "Model Hub",
     "tabAgents": "Agent Hub",
     "tabMcp": "MCP Hub",
     "tabSkills": "Skill Hub",
     "selectModelsToMakePublic": "Select Models to Make Public",
     "selectAgentsToMakePublic": "Select Agents to Make Public",
-    "selectSkillsToMakePublic": "Select Skills to Make Public",
     "manageMcpHubVisibility": "Manage MCP Hub Visibility",
     "loadingModels": "Loading models…",
     "loadingAgents": "Loading agents…",
     "loadingMcpServers": "Loading MCP servers…",
-    "noModelsYet": "No models yet",
     "noMatchingModels": "No matching models",
-    "modelsFilterHint": "Adjust the filters to see more models.",
-    "modelsEmptyHint": "Models added to this proxy will appear here.",
-    "noAgentsYet": "No agents yet",
     "noMatchingAgents": "No matching agents",
-    "agentsSearchHint": "Adjust the search to see more agents.",
-    "agentsEmptyHint": "Agents added to this proxy will appear here.",
-    "noMcpServersYet": "No MCP servers yet",
-    "mcpServersEmptyHint": "MCP servers added to this proxy will appear here.",
     "searchAgentsLabel": "Search Agents:",
     "searchAgentsPlaceholder": "Search agent names or descriptions...",
     "clearSearch": "Clear search",
-    "publicHubNotEnabled": "Public Model Hub not enabled.",
-    "publicHubNotEnabledHint": "Ask your proxy admin to enable this on their Admin UI.",
     "modelDetailsTitle": "Model Details",
     "agentDetailsTitle": "Agent Details",
     "mcpServerDetailsTitle": "MCP Server Details",
@@ -9916,8 +9656,6 @@
     "notSpecified": "Not specified",
     "noCapabilitiesListed": "No special capabilities listed",
     "supportsAuthExtendedCard": "Supports Authenticated Extended Card",
-    "linksTitle": "Link Management",
-    "linksDescription": "Manage the links that are displayed under 'Useful Links' on the public model hub.",
     "addNewLink": "Add New Link",
     "colDisplayName": "Display Name",
     "colUrl": "URL",
@@ -9936,8 +9674,6 @@
     "editLink": "Edit link",
     "deleteLink": "Delete link",
     "noLinksYet": "No links added yet. Add a new link above.",
-    "toastInvalidUrl": "Please enter a valid URL",
-    "toastDuplicateName": "A link with this display name already exists",
     "toastSaveFailed": "Failed to save links - {error}",
     "toastLinkAdded": "Link added successfully",
     "toastLinkUpdated": "Link updated successfully",
@@ -10195,9 +9931,6 @@
     "hit": "Hit"
   },
   "createdKeyDisplay": {
-    "securityWarning": "Please save this secret key somewhere safe and accessible. For security reasons, <b>you will not be able to view it again</b> through your LiteLLM account. If you lose this secret key, you will need to generate a new one.",
-    "virtualKeyLabel": "Virtual Key:",
-    "copyButton": "Copy Virtual Key",
     "copied": "Copied!",
     "keyCopiedToast": "Key copied to clipboard"
   },
@@ -10465,11 +10198,6 @@
   },
   "usageKeyActivity": {
     "searching": "Searching...",
-    "matchingKeys": "{count} matching keys",
-    "totalKeys": "{count} keys",
-    "loadingKeyDetails": "Loading key details...",
-    "keyDetailsFailed": "Could not load key details.",
-    "noDailyDetails": "No daily details available",
     "keysRangeFailed": "Could not load keys for this range.",
     "loadingKeys": "Loading keys...",
     "searchKeysAria": "Search keys",
@@ -10478,9 +10206,6 @@
     "searchAllKeysFailed": "Could not search all keys.",
     "loadingMoreKeys": "Loading more keys...",
     "moreKeysFailed": "Could not load more keys.",
-    "searchKeysFailed": "Could not search keys.",
-    "retrySearch": "Retry search",
-    "noKeysMatch": "No keys match \"{query}\" in this date range",
     "searchFailed": "Search failed",
     "requestsColumn": "Requests",
     "virtualKeysTitle": "Virtual keys",
@@ -10507,12 +10232,8 @@
     "spend": "Spend:",
     "showAllTags": "Show all tags",
     "showFewerTags": "Show fewer tags",
-    "topKeysLimitAria": "Number of top keys to show",
     "tableView": "Table View",
     "chartView": "Chart View",
-    "tooltipKeyAlias": "Key Alias: ",
-    "tooltipKeyId": "Key ID: ",
-    "tooltipSpend": "Spend: ",
     "close": "Close",
     "keyNotInDatabase": "This key is no longer in the database (deleted, or a CLI/SSO session key), so its details can't be opened"
   },
@@ -10654,8 +10375,6 @@
   },
   "modelInfo": {
     "loading": "Loading...",
-    "modelNotFound": "Model not found",
-    "copyModelId": "Copy model ID",
     "provider": "Provider",
     "liteLlmModel": "LiteLLM Model",
     "pricing": "Pricing",
@@ -10663,18 +10382,12 @@
     "usingExistingCredential": "Using Existing Credential",
     "connectionTestResults": "Connection Test Results",
     "fetchTagsFailed": "Failed to fetch tags:",
-    "storingCredential": "Storing credential..",
-    "credentialStored": "Credential stored successfully",
     "invalidLiteLlmParams": "Invalid JSON in LiteLLM Params",
     "invalidModelInfo": "Invalid JSON in Model Info",
     "modelSettingsUpdated": "Model settings updated successfully",
     "updateFailed": "Failed to update model settings",
-    "noComplexityTiers": "No complexity tiers are configured yet, so there is nothing to test.",
     "testingConnection": "Testing connection...",
-    "connectionTestSuccess": "Connection test successful!",
     "unknownError": "Unknown error",
-    "errorTestingConnection": "Error testing connection: ",
-    "modelDeleted": "Model deleted successfully",
     "deleteError": "Error deleting the model:",
     "deleteFailed": "Failed to delete model",
     "notSet": "Not Set",
@@ -10689,10 +10402,6 @@
     "kindAutoRouter": "auto-router",
     "kindModel": "model",
 
-    "backToModels": "Back to Models",
-
-    "publicModelName": "Public Model Name",
-
     "testConnection": "Test Connection",
 
     "updateApiKey": "Update API Key",
@@ -10702,8 +10411,6 @@
     "rawJson": "Raw JSON",
 
     "createdAt": "Created At",
-
-    "editAutoRouter": "Edit Auto Router",
 
     "editSettings": "Edit Settings",
 
@@ -10917,14 +10624,7 @@
     "status": "Status",
     "tags": "Tags",
     "skillId": "Skill ID",
-    "usingThisSkill": "Using this skill",
-    "runInClaudeCode": "Run in Claude Code",
-    "marketplaceSetup": "One-time marketplace setup",
-    "enableSkillCommandIntro": "Once your proxy is set as a marketplace, enable this skill in Claude Code with one command:",
     "staleCatalogHint": "If you see \"Plugin {name} not found in marketplace\", update the catalog first:",
-    "registerMarketplaceIntro": "Run this command in Claude Code to register the marketplace:",
-    "needMarketplaceSetupHint": "Don't have the marketplace configured yet? <link>See one-time setup →</link>",
-    "addToSettingsHint": "Or add this to <code>~/.claude/settings.json</code> for a persistent configuration:",
     "selectAtLeastOne": "Please select at least one skill",
     "updateFailed": "Failed to update skills. Please try again.",
     "selectSkillsToPublish": "Select Skills to Publish",
@@ -11004,17 +10704,9 @@
     "loadFailed": "Could not load model insights",
     "leaderboardTitle": "Model Leaderboard",
     "leaderboardSubtitle": "See which models your gateway used from {start} through {end}",
-    "sessionHint": "Add a stable session_id to requests to unlock accurate session-level model comparisons in a future bounded session rollup",
     "topModels": "Top models",
     "bucketSizeAria": "Bucket size",
     "leaderboard": "Leaderboard",
-    "costPerSession": "Cost per session",
-    "sessionCostNote": "Session cost is not estimated from request counts",
-    "granularityDaily": "Daily",
-    "granularityWeekly": "Weekly",
-    "metricRequests": "requests",
-    "metricSpend": "spend",
-    "metricTokens": "tokens",
     "summaryDesc": "{granularity} {metric} across your gateway",
     "leaderboardDesc": "Share of {metric}, with the change between the first and second half of the period",
     "gatewayTotalLabel": "Gateway total"
@@ -11084,35 +10776,19 @@
     "falseLabel": "False"
   },
   "advancedDatePicker": {
-    "defaultLabel": "Select Time Range",
     "relativeTime": "Relative time",
     "startAndEndDates": "Start and end dates",
     "startDate": "Start date",
     "endDate": "End date",
     "fromLabel": "From:",
     "toLabel": "To:",
-    "selectDateRange": "Select date range",
     "invalidDateFormat": "Invalid date format",
     "endBeforeStart": "End date cannot be before start date",
-    "timeConnector": "at",
-    "presetToday": "Today",
-    "presetLast7": "Last 7 days",
-    "presetLast30": "Last 30 days",
-    "presetMonthToDate": "Month to date",
-    "presetYearToDate": "Year to date",
-    "badgeToday": "today",
-    "badge7d": "7d",
-    "badge30d": "30d",
-    "badgeMtd": "MTD",
-    "badgeYtd": "YTD"
+    "timeConnector": "at"
   },
   "objectPermissions": {
     "title": "Object Permissions",
-    "description": "Access control for Vector Stores and MCP Servers",
-    "searchToolsTitle": "Search tools",
-    "searchToolsNone": "No restriction — all configured search tools are allowed for this team.",
-    "skillsTitle": "Skills",
-    "skillsNone": "No private skills granted. Only enabled (public) Claude Code plugins are visible."
+    "description": "Access control for Vector Stores and MCP Servers"
   },
   "vectorStorePermissions": {
     "title": "Vector Stores",
@@ -11410,12 +11086,11 @@
     },
     "deprecation": {
       "title": "{feature} is on a draft deprecation list",
-    "featureWorkflows": "Workflows",
-    "featurePrompts": "Prompt Management",
-    "featureMemory": "Memory",
-    "featureOldUsage": "The old Usage page",
-    "featureApiReference": "The API Reference tab",
-    "featureMcpNetwork": "MCP Network Settings and the internal-network-only flag",
+      "featureWorkflows": "Workflows",
+      "featurePrompts": "Prompt Management",
+      "featureMemory": "Memory",
+      "featureOldUsage": "The old Usage page",
+      "featureApiReference": "The API Reference tab",
       "body": "{feature} is one of several experimental features we're considering removing, potentially as early as {date}. This list is a draft and is not final. If you rely on this feature, please share feedback on the <link>deprecation discussion</link>.",
       "close": "Close"
     },

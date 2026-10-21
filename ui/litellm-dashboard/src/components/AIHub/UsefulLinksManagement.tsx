@@ -1,4 +1,5 @@
 import TableIconActionButton from "@/components/common_components/IconActionButton/TableIconActionButtons/TableIconActionButton";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import { isAdminRole } from "@/utils/roles";
 import { ChevronDownIcon, ChevronRightIcon, ExternalLinkIcon, PlusCircleIcon } from "@heroicons/react/outline";
@@ -6,8 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
-import { getProxyBaseUrl, getPublicModelHubInfo, updateUsefulLinksCall } from "../networking";
+import { getProxyBaseUrl, getPublicModelHubInfo, getUiPageUrl, updateUsefulLinksCall } from "../networking";
 
 interface UsefulLinksManagementProps {
   accessToken: string | null;
@@ -22,14 +22,13 @@ interface Link {
 }
 
 const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessToken, userRole }) => {
+  const t = useTranslations("modelHub");
   const [links, setLinks] = useState<Link[]>([]);
   const [newLink, setNewLink] = useState({ url: "", displayName: "" });
   const [editingLink, setEditingLink] = useState<Link | null>(null);
   const [isExpanded, setIsExpanded] = useState(true);
   const [isRearranging, setIsRearranging] = useState(false);
   const [originalLinksOrder, setOriginalLinksOrder] = useState<Link[]>([]);
-  const t = useTranslations("modelHub");
-  const commonT = useTranslations("common");
 
   const fetchUsefulLinks = async () => {
     if (!accessToken) return;
@@ -118,13 +117,13 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
     try {
       new URL(newLink.url);
     } catch {
-      toast.fromError(t("toastInvalidUrl"));
+      toast.fromError("Please enter a valid URL");
       return;
     }
 
     // Check for duplicate display names
     if (links.some((link) => link.displayName === newLink.displayName)) {
-      toast.fromError(t("toastDuplicateName"));
+      toast.fromError("A link with this display name already exists");
       return;
     }
 
@@ -154,13 +153,13 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
     try {
       new URL(editingLink.url);
     } catch {
-      toast.fromError(t("toastInvalidUrl"));
+      toast.fromError("Please enter a valid URL");
       return;
     }
 
     // Check for duplicate display names (excluding current link)
     if (links.some((link) => link.id !== editingLink.id && link.displayName === editingLink.displayName)) {
-      toast.fromError(t("toastDuplicateName"));
+      toast.fromError("A link with this display name already exists");
       return;
     }
 
@@ -230,8 +229,10 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
     <Card className="mb-6 px-6">
       <div className="flex items-center justify-between cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
         <div className="flex flex-col">
-          <h3 className="mb-0 text-lg font-semibold">{t("linksTitle")}</h3>
-          <p className="text-sm text-muted-foreground">{t("linksDescription")}</p>
+          <h3 className="mb-0 text-lg font-semibold">Link Management</h3>
+          <p className="text-sm text-muted-foreground">
+            Manage the links that are displayed under &apos;Useful Links&apos; on the public model hub.
+          </p>
         </div>
         <div className="flex items-center">
           {isExpanded ? (
@@ -321,7 +322,7 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
                     onClick={handleCancelRearranging}
                     className="text-xs bg-muted text-muted-foreground px-3 py-1.5 rounded-sm hover:bg-accent"
                   >
-                    {commonT("cancel")}
+                    Cancel
                   </button>
                 </div>
               )}
@@ -334,7 +335,7 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
                   <TableRow>
                     <TableHead className="py-1 h-8">{t("colDisplayName")}</TableHead>
                     <TableHead className="py-1 h-8">{t("colUrl")}</TableHead>
-                    <TableHead className="py-1 h-8">{commonT("actions")}</TableHead>
+                    <TableHead className="py-1 h-8">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -374,13 +375,13 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
                                 onClick={handleUpdateLink}
                                 className="text-xs bg-info/10 text-info px-2 py-1 rounded-sm hover:bg-info/15"
                               >
-                                {commonT("save")}
+                                Save
                               </button>
                               <button
                                 onClick={handleCancelEdit}
                                 className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-sm hover:bg-accent"
                               >
-                                {commonT("cancel")}
+                                Cancel
                               </button>
                             </div>
                           </TableCell>

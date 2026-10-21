@@ -1,6 +1,6 @@
 import type { ColumnDef, ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
-import { Crown, Info, User, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Crown, Info, User, UserPlus } from "lucide-react";
 import React, { useState } from "react";
 
 import { Member } from "@/components/networking";
@@ -16,7 +16,6 @@ import { StatusBadge } from "@/components/shared/table_cells";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SimpleTooltip } from "@/components/ui/tooltip";
-import type { CommonTranslator, TeamsTranslator } from "@/lib/i18n/translators";
 
 import TableIconActionButton from "./IconActionButton/TableIconActionButtons/TableIconActionButton";
 
@@ -87,8 +86,6 @@ function ResetSpendAction({ disabledReason, onClick }: { disabledReason: string 
 const ACTIONS_COLUMN_WIDTH = 120;
 
 interface MemberColumnDeps {
-  t: TeamsTranslator;
-  commonT: CommonTranslator;
   canEdit: boolean;
   onEdit: (member: Member) => void;
   onDelete: (member: Member) => void;
@@ -125,8 +122,6 @@ const extraColumnDef = (column: MemberTableColumn): ColumnDef<Member> => {
 };
 
 const buildColumns = ({
-  t,
-  commonT,
   canEdit,
   onEdit,
   onDelete,
@@ -140,11 +135,11 @@ const buildColumns = ({
   {
     id: "user_alias",
     accessorFn: (member) => member.user_alias || undefined,
-    header: ({ column }) => <DataTableSortHeader column={column} title={commonT("name")} />,
+    header: ({ column }) => <DataTableSortHeader column={column} title="Name" />,
     sortingFn: "text",
     sortUndefined: "last",
     enableGlobalFilter: true,
-    meta: { title: commonT("name") },
+    meta: { title: "Name" },
     cell: ({ row }) => row.original.user_alias || <span className="text-muted-foreground">-</span>,
   },
   {
@@ -165,7 +160,7 @@ const buildColumns = ({
     enableGlobalFilter: true,
     cell: ({ row }) =>
       row.original.user_id === "default_user_id" ? (
-        <StatusBadge tone="info" label={commonT("defaultProxyAdmin")} />
+        <StatusBadge tone="info" label="Default Proxy Admin" />
       ) : (
         row.original.user_id || "-"
       ),
@@ -190,7 +185,7 @@ const buildColumns = ({
   ...extraColumns.map(extraColumnDef),
   {
     id: "actions",
-    header: commonT("actions"),
+    header: "Actions",
     size: ACTIONS_COLUMN_WIDTH,
     enableSorting: false,
     enableGlobalFilter: false,
@@ -200,22 +195,20 @@ const buildColumns = ({
         <span className="inline-flex items-center gap-2">
           <TableIconActionButton
             variant="Edit"
-            tooltipText={t("memberTable.editTooltip")}
+            tooltipText="Edit member"
             dataTestId="edit-member"
             onClick={() => onEdit(row.original)}
           />
-          {onResetSpend && (showResetSpendForMember?.(row.original) ?? true) && (
-            <TableIconActionButton
-              variant="Reset"
-              tooltipText={t("memberTable.resetSpendTooltip")}
-              dataTestId="reset-member-spend"
+          {onResetSpend && (
+            <ResetSpendAction
+              disabledReason={resetSpendDisabledReason?.(row.original) ?? null}
               onClick={() => onResetSpend(row.original)}
             />
           )}
           {(!showDeleteForMember || showDeleteForMember(row.original)) && (
             <TableIconActionButton
               variant="Delete"
-              tooltipText={t("memberTable.deleteTooltip")}
+              tooltipText="Delete member"
               dataTestId="delete-member"
               onClick={() => onDelete(row.original)}
             />
@@ -231,7 +224,7 @@ export default function MemberTable({
   onEdit,
   onDelete,
   onAddMember,
-  roleColumnTitle,
+  roleColumnTitle = "Role",
   roleTooltip,
   extraColumns = [],
   showDeleteForMember,
@@ -239,6 +232,8 @@ export default function MemberTable({
   resetSpendDisabledReason,
   emptyText,
 }: MemberTableProps) {
+  const t = useTranslations("teams");
+
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
@@ -247,9 +242,6 @@ export default function MemberTable({
     pageSize: DEFAULT_PAGE_SIZE_OPTIONS[0],
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const t = useTranslations("teams");
-  const commonT = useTranslations("common");
-  const resolvedRoleTitle = roleColumnTitle ?? commonT("role");
 
   const backToFirstPage =
     <T,>(onChange: OnChangeFn<T>): OnChangeFn<T> =>
@@ -260,12 +252,10 @@ export default function MemberTable({
   const changeSearch = backToFirstPage(setGlobalFilter);
 
   const columnDeps: MemberColumnDeps = {
-    t,
-    commonT,
     canEdit,
     onEdit,
     onDelete,
-    roleColumnTitle: resolvedRoleTitle,
+    roleColumnTitle,
     roleTooltip,
     extraColumns,
     showDeleteForMember,
@@ -310,7 +300,7 @@ export default function MemberTable({
             <DataTableToolbar
               table={table}
               searchValue={globalFilter}
-              onSearchChange={setGlobalFilter}
+              onSearchChange={changeSearch}
               searchPlaceholder={t("memberTable.searchPlaceholder")}
               onOpenFilters={() => setFiltersOpen(true)}
               showViewOptions={false}
@@ -323,7 +313,7 @@ export default function MemberTable({
               description={t("memberTable.filtersDescription")}
             >
               {({ get, set }) => (
-                <DataTableFilterField label={resolvedRoleTitle}>
+                <DataTableFilterField label={roleColumnTitle}>
                   <Select
                     items={roleFilterItems}
                     value={(get("role") as string | undefined) ?? ALL_ROLES}

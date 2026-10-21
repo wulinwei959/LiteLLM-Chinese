@@ -1,8 +1,8 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Bot, Layers, MoreHorizontal, Server, Trash2 } from "lucide-react";
-import type { AccessGroupsTranslator } from "@/lib/i18n/translators";
+import { useTranslations } from "next-intl";
+import { Bot, Layers, MoreHorizontal, Server, Sparkles, Trash2 } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { DateCell, IdentityCell } from "@/components/shared/table_cells";
@@ -37,11 +37,12 @@ const RESOURCE_TONES: Record<"models" | "mcpServers" | "agents" | "skills", Reso
   },
 };
 
-function ResourcesCell({ group, t }: { group: AccessGroup; t: AccessGroupsTranslator }) {
+function ResourcesCell({ group }: { group: AccessGroup }) {
   const items = [
-    { key: "models" as const, label: t("models"), count: group.modelIds.length },
-    { key: "mcpServers" as const, label: t("mcpServers"), count: group.mcpServerIds.length },
-    { key: "agents" as const, label: t("agents"), count: group.agentIds.length },
+    { key: "models" as const, label: "Models", count: group.modelIds.length },
+    { key: "mcpServers" as const, label: "MCP Servers", count: group.mcpServerIds.length },
+    { key: "agents" as const, label: "Agents", count: group.agentIds.length },
+    { key: "skills" as const, label: "Skills", count: group.skillNames.length },
   ];
 
   return (
@@ -70,16 +71,15 @@ function ResourcesCell({ group, t }: { group: AccessGroup; t: AccessGroupsTransl
 function AccessGroupRowActions({
   group,
   onDeleteClick,
-  t,
 }: {
   group: AccessGroup;
   onDeleteClick: (group: AccessGroup) => void;
-  t: AccessGroupsTranslator;
 }) {
+  const t = useTranslations("common");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label={t("openActions")}
+        aria-label="Open access group actions"
         data-testid={`access-group-actions-${group.id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -103,21 +103,20 @@ interface AccessGroupsTableColumnsDeps {
   canModify: boolean;
   onGroupClick: (id: string) => void;
   onDeleteClick: (group: AccessGroup) => void;
-  t: AccessGroupsTranslator;
 }
 
 export const getAccessGroupsTableColumns = ({
   canModify,
   onGroupClick,
   onDeleteClick,
-  t,
 }: AccessGroupsTableColumnsDeps): ColumnDef<AccessGroup>[] => {
+  const t = useTranslations("common");
   const columns: ColumnDef<AccessGroup>[] = [
     {
       id: "id",
       accessorKey: "id",
-      meta: { title: t("id") },
-      header: t("id"),
+      meta: { title: "ID" },
+      header: "ID",
       size: 200,
       enableSorting: false,
       cell: ({ row }) => (
@@ -150,7 +149,7 @@ export const getAccessGroupsTableColumns = ({
       header: t("resources"),
       size: 220,
       enableSorting: false,
-      cell: ({ row }) => <ResourcesCell group={row.original} t={t} />,
+      cell: ({ row }) => <ResourcesCell group={row.original} />,
     },
     {
       id: "createdAt",
@@ -188,7 +187,7 @@ export const getAccessGroupsTableColumns = ({
       enableHiding: false,
       cell: ({ row }) => (
         <div className="flex justify-end">
-          <AccessGroupRowActions group={row.original} onDeleteClick={onDeleteClick} t={t} />
+          <AccessGroupRowActions group={row.original} onDeleteClick={onDeleteClick} />
         </div>
       ),
     },

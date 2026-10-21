@@ -1,6 +1,6 @@
 import type { ColumnDef, OnChangeFn, SortingState } from "@tanstack/react-table";
-import { CircleDollarSign, Download, HeartPulse, Settings, TrendingUp, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { CircleDollarSign, Download, HeartPulse, Settings, TrendingUp, TriangleAlert } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { DataTable, DataTableSortHeader } from "@/components/shared/DataTable";
 import { MoneyCell } from "@/components/shared/table_cells/money_cell";
@@ -54,7 +54,6 @@ const EMPTY_METRICS = {
 };
 
 function UsageUnitsCell({ units }: { units: GuardrailUsageOverviewRow["usageUnits"] }) {
-  const t = useTranslations("guardrailsMonitor");
   const counters = Object.entries(units);
   if (counters.length === 0) return <span className="text-muted-foreground">—</span>;
   return (
@@ -63,7 +62,7 @@ function UsageUnitsCell({ units }: { units: GuardrailUsageOverviewRow["usageUnit
         <ul className="space-y-0.5">
           {counters.map(([counter, n]) => (
             <li key={counter}>
-              {counterLabel(t, counter)}: {n.toLocaleString()}
+              {counterLabel(counter)}: {n.toLocaleString()}
             </li>
           ))}
         </ul>
@@ -84,29 +83,26 @@ function TotalCostMath({
 }) {
   const t = useTranslations("guardrailsMonitor");
   return (
-    <CalcPopover title={t("overview.costTitle")} formula={t("overview.costFormula")}>
+    <CalcPopover title="How this cost is calculated" formula="guardrail + guardrail + … = guardrail cost">
       <MathTable
         rows={rows
           .filter((row) => row.cost != null)
           .map((row) => ({ label: row.name, parts: [formatCost(row.cost)], note: null }))}
         total={formatCost(total)}
       />
-      <p className="text-xs text-muted-foreground">
-        {t("overview.costDesc")}
-      </p>
+      <p className="text-xs text-muted-foreground">{t("overview.costDesc")}</p>
       <UnpricedNote unpriced={untracked} />
     </CalcPopover>
   );
 }
 
 function CostCell({ row }: { row: GuardrailUsageOverviewRow }) {
-  const t = useTranslations("guardrailsMonitor");
-  const unpriced = unpricedSummary(t, row.untrackedUsageUnits);
+  const unpriced = unpricedSummary(row.untrackedUsageUnits);
   return (
     <span className="inline-flex w-full items-center justify-end gap-1">
       {unpriced && (
         <CellTooltip
-          content={t("overview.unpricedTip", { summary: unpriced })}
+          content={`${unpriced}: these units have no known price and are left out of the cost`}
           trigger={<TriangleAlert aria-label={unpriced} className="size-3.5 shrink-0 text-warning" />}
         />
       )}
@@ -122,10 +118,10 @@ export function GuardrailsOverview({
   onSelectGuardrail,
   dateRangeControl,
 }: GuardrailsOverviewProps) {
+  const t = useTranslations("guardrailsMonitor");
   const [sortBy, setSortBy] = useState<SortKey>("failRate");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [evaluationModalOpen, setEvaluationModalOpen] = useState(false);
-  const t = useTranslations("guardrailsMonitor");
 
   const {
     data: guardrailsData,
@@ -287,20 +283,20 @@ export function GuardrailsOverview({
 
   return (
     <div>
-      <PageHeader
-        icon={<HeartPulse />}
-        title={t("overview.title")}
-        subtitle={t("overview.subtitle")}
-        utilities={
-          <>
-            {dateRangeControl}
-            <Button variant="outline" title={t("overview.comingSoon")}>
-              <Download className="size-4" />
-              {t("overview.export")}
-            </Button>
-          </>
-        }
-      />
+      <PageHeader>
+        <PageHeaderTitle>
+          <HeartPulse />
+          {t("overview.title")}
+        </PageHeaderTitle>
+        <PageHeaderDescription>{t("overview.subtitle")}</PageHeaderDescription>
+        <PageHeaderControls className="justify-end">
+          {dateRangeControl}
+          <Button variant="outline" title={t("overview.comingSoon")}>
+            <Download className="size-4" />
+            {t("overview.export")}
+          </Button>
+        </PageHeaderControls>
+      </PageHeader>
 
       <div className="mt-6 mb-6 grid grid-cols-[repeat(auto-fit,minmax(7rem,1fr))] gap-4">
         <MetricCard label={t("overview.totalEvals")} value={metrics.totalRequests.toLocaleString()} />
@@ -328,7 +324,7 @@ export function GuardrailsOverview({
           value={formatCost(metrics.totalCost)}
           valueColor={metrics.totalCost != null ? "text-foreground" : "text-muted-foreground"}
           icon={<CircleDollarSign className="size-4" />}
-          subtitle={unpricedSummary(t, metrics.untracked) ?? undefined}
+          subtitle={unpricedSummary(metrics.untracked) ?? undefined}
           hint={<TotalCostMath rows={activeData} total={metrics.totalCost} untracked={metrics.untracked} />}
         />
         <MetricCard label={t("overview.active")} value={metrics.count} />
@@ -366,9 +362,7 @@ export function GuardrailsOverview({
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h5 className="mb-0 text-base font-semibold text-foreground">{t("overview.perfTitle")}</h5>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {t("overview.perfDesc")}
-                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">{t("overview.perfDesc")}</p>
               </div>
               <div className="flex items-center gap-2">
                 <Button

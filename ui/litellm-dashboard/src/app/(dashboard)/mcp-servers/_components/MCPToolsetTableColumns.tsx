@@ -15,8 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/cva.config";
-import type { McpServersTranslator } from "@/lib/i18n/translators";
-import { getProxyBaseUrl } from "@/components/networking";
+import { getGatewayBaseUrl } from "@/components/networking";
 import { MCPToolset } from "@/components/mcp_tools/types";
 import { copyToClipboard } from "@/utils/dataUtils";
 
@@ -47,7 +46,7 @@ function ToolsetRowActions({ toolset, isAdmin, onEditClick, onDeleteClick }: Too
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label={t("toolsets.openActions")}
+        aria-label="Open toolset actions"
         data-testid={`toolset-actions-${toolset.toolset_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -73,7 +72,7 @@ function ToolsetRowActions({ toolset, isAdmin, onEditClick, onDeleteClick }: Too
             <DropdownMenuSeparator />
             <DropdownMenuItem data-testid="toolset-action-edit" onClick={() => onEditClick(toolset)}>
               <Pencil />
-              {t("toolsets.edit")}
+              Edit
             </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
@@ -81,7 +80,7 @@ function ToolsetRowActions({ toolset, isAdmin, onEditClick, onDeleteClick }: Too
               onClick={() => onDeleteClick(toolset.toolset_id)}
             >
               <Trash2 />
-              {t("toolsets.delete")}
+              Delete
             </DropdownMenuItem>
           </>
         )}
@@ -95,7 +94,6 @@ interface MCPToolsetTableColumnsDeps {
   serverPrefixById: Map<string, string>;
   onEditClick: (toolset: MCPToolset) => void;
   onDeleteClick: (toolsetId: string) => void;
-  t: McpServersTranslator;
 }
 
 export const getMCPToolsetTableColumns = ({
@@ -103,13 +101,12 @@ export const getMCPToolsetTableColumns = ({
   serverPrefixById,
   onEditClick,
   onDeleteClick,
-  t,
 }: MCPToolsetTableColumnsDeps): ColumnDef<MCPToolset>[] => [
   {
     id: "toolset_id",
     accessorKey: "toolset_id",
-    meta: { title: t("toolsets.columnToolsetId") },
-    header: t("toolsets.columnToolsetId"),
+    meta: { title: "Toolset ID" },
+    header: "Toolset ID",
     size: 140,
     enableSorting: false,
     cell: ({ row }) => <IdCell value={row.original.toolset_id} />,
@@ -163,9 +160,7 @@ export const getMCPToolsetTableColumns = ({
             </span>
           ))}
           {tools.length > 4 && (
-            <span className="self-center text-xs text-muted-foreground">
-              {t("toolsets.moreCount", { count: tools.length - 4 })}
-            </span>
+            <span className="self-center text-xs text-muted-foreground">+{tools.length - 4} more</span>
           )}
         </div>
       );

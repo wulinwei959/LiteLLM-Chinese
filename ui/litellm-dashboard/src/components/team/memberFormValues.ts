@@ -1,5 +1,12 @@
-import type { TeamsTranslator } from "@/lib/i18n/translators";
-export type MemberFieldValue = string | number | null | undefined | string[];
+import { useTranslations } from "next-intl";
+
+import {
+  entriesToModelMaxBudget,
+  modelMaxBudgetToEntries,
+  type ModelMaxBudget,
+} from "../key_team_helpers/ModelMaxBudgetEditor";
+
+export type MemberFieldValue = string | number | null | undefined | string[] | ModelMaxBudget;
 
 export type MemberFormValues = Record<string, MemberFieldValue>;
 
@@ -47,6 +54,7 @@ export const isModelMaxBudget = (value: MemberFieldValue): value is ModelMaxBudg
   typeof value === "object" && value !== null && !Array.isArray(value);
 
 export const tempBudgetPairError = (values: MemberFormValues): "temp_budget_increase" | "temp_budget_expiry" | null => {
+  const t = useTranslations("teams");
   const increaseUnset = isUnset(values.temp_budget_increase);
   const expiryUnset = isUnset(values.temp_budget_expiry);
   if (increaseUnset === expiryUnset) return null;
@@ -68,6 +76,7 @@ export const buildMemberFormValues = (
   initialData: MemberFormValues | null | undefined,
   config: MemberFieldsConfig,
 ): MemberFormValues => {
+  const t = useTranslations("teams");
   if (mode === "edit" && initialData) {
     const seeded: MemberFormValues = {
       ...initialData,
@@ -106,6 +115,7 @@ const emptyValueForType = (type: MemberFieldType | undefined): MemberFieldValue 
 };
 
 export const emptyMemberFormValues = (config: MemberFieldsConfig): MemberFormValues => {
+  const t = useTranslations("teams");
   const typeByName = new Map((config.additionalFields ?? []).map((field) => [field.name, field.type]));
   return Object.fromEntries(memberFieldNames(config).map((name) => [name, emptyValueForType(typeByName.get(name))]));
 };

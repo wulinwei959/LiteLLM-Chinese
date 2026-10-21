@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-
-import type { TeamsTranslator } from "@/lib/i18n/translators";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { z } from "zod";
@@ -21,6 +19,7 @@ import {
   buildMemberFormData,
   buildMemberFormValues,
   emptyMemberFormValues,
+  isModelMaxBudget,
   tempBudgetPairMessage,
   tempBudgetPairError,
   type MemberAdditionalField,
@@ -50,7 +49,10 @@ interface MemberModalProps<T extends BaseMember> {
   config: ModalConfig;
 }
 
-const isEmailish = (value: string): boolean => value === "" || z.email().safeParse(value).success;
+const ROLE_REQUIRED_MESSAGE = "Please select a role!";
+
+const isEmailish = (value: string): boolean =>
+  value === "" || z.email({ pattern: z.regexes.html5Email }).safeParse(value).success;
 
 const modelMaxBudgetSchema = z.record(z.string(), z.looseObject({ budget_limit: z.number(), time_period: z.string() }));
 
@@ -58,7 +60,8 @@ const memberFieldSchema = z
   .union([z.string(), z.number(), z.null(), z.array(z.string()), modelMaxBudgetSchema])
   .optional();
 
-const buildMemberSchema = (config: ModalConfig, t: TeamsTranslator): z.ZodType<MemberFormValues, MemberFormValues> => {
+const buildMemberSchema = (config: ModalConfig): z.ZodType<MemberFormValues, MemberFormValues> => {
+  const t = useTranslations("teams");
   const shape = {
     user_email: z.string().refine(isEmailish, t("member.invalidEmail")).nullish(),
     user_id: z.string().nullish(),
@@ -81,7 +84,8 @@ const MemberModal = <T extends BaseMember>({
   config,
 }: MemberModalProps<T>) => {
   const t = useTranslations("teams");
-  const schema = useMemo(() => buildMemberSchema(config, t), [config, t]);
+
+  const schema = useMemo(() => buildMemberSchema(config), [config]);
   const form = useZodForm(schema, { defaultValues: emptyMemberFormValues(config) });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -116,6 +120,8 @@ const MemberModal = <T extends BaseMember>({
   const renderField = (field: MemberAdditionalField, name: string) => (
     <FormField key={name} control={form.control} name={name} label={field.label}>
       {({ ref, id, value, onChange, ...rest }) => {
+        const t = useTranslations("teams");
+
         switch (field.type) {
           case "input":
             return (
@@ -249,11 +255,9 @@ const MemberModal = <T extends BaseMember>({
               name="role"
               label={
                 <span className="flex items-center gap-2">
-                  <span>{t("member.role")}</span>
+                  <span>Role</span>
                   {mode === "edit" && initialData && (
-                    <span className="text-sm text-muted-foreground">
-                      {t("member.currentRole", { role: getRoleLabel(initialData.role) })}
-                    </span>
+                    <span className="text-sm text-muted-foreground">(Current: {getRoleLabel(initialData.role)})</span>
                   )}
                 </span>
               }
@@ -283,7 +287,7 @@ const MemberModal = <T extends BaseMember>({
 
           <div className="mt-6 text-right">
             <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="mr-2">
-              {t("member.cancel")}
+              Cancel
             </Button>
             <Button type="submit" variant="outline" disabled={isSubmitting}>
               {isSubmitting && <UiLoadingSpinner className="size-4" />}

@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import { Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { CredentialItem } from "@/components/networking";
@@ -21,7 +22,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/cva.config";
 import { copyToClipboard } from "@/utils/dataUtils";
-import type { CommonTranslator, CredentialsTranslator } from "@/lib/i18n/translators";
 
 import { inferAuthMethod } from "./credential_federation";
 
@@ -52,15 +52,15 @@ interface CredentialRowActionsProps {
   credential: CredentialItem;
   onEdit: (credential: CredentialItem) => void;
   onDelete: (credential: CredentialItem) => void;
-  t: CredentialsTranslator;
-  commonT: CommonTranslator;
 }
 
-function CredentialRowActions({ credential, onEdit, onDelete, t, commonT }: CredentialRowActionsProps) {
+function CredentialRowActions({ credential, onEdit, onDelete }: CredentialRowActionsProps) {
+  const t = useTranslations("common");
+  const configOwned = credential.source === "config";
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label={t("openActionsAria")}
+        aria-label="Open credential actions"
         data-testid={`credential-actions-${credential.credential_name}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -83,7 +83,7 @@ function CredentialRowActions({ credential, onEdit, onDelete, t, commonT }: Cred
           onClick={() => onEdit(credential)}
         >
           <Pencil />
-          {commonT("edit")}
+          Edit
         </DropdownMenuItem>
         <DropdownMenuItem
           data-testid="credential-action-copy"
@@ -100,7 +100,7 @@ function CredentialRowActions({ credential, onEdit, onDelete, t, commonT }: Cred
           onClick={() => onDelete(credential)}
         >
           <Trash2 />
-          {commonT("delete")}
+          Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -111,23 +111,19 @@ interface CredentialsTableColumnsDeps {
   canModifyCredentials: boolean;
   onEdit: (credential: CredentialItem) => void;
   onDelete: (credential: CredentialItem) => void;
-  t: CredentialsTranslator;
-  commonT: CommonTranslator;
 }
 
 export const getCredentialsTableColumns = ({
   canModifyCredentials,
   onEdit,
   onDelete,
-  t,
-  commonT,
 }: CredentialsTableColumnsDeps): ColumnDef<CredentialItem>[] => {
   const dataColumns: ColumnDef<CredentialItem>[] = [
     {
       id: "credential_name",
-      accessorKey: "credential_name",
-      meta: { title: t("nameCol") },
-      header: ({ column }) => <DataTableSortHeader column={column} title={t("nameCol")} />,
+      accessorFn: credentialLabel,
+      meta: { title: "Credential Name" },
+      header: ({ column }) => <DataTableSortHeader column={column} title="Credential Name" />,
       size: 260,
       enableSorting: true,
       cell: ({ row }) => (
@@ -142,9 +138,23 @@ export const getCredentialsTableColumns = ({
     {
       id: "provider",
       accessorKey: "credential_info.custom_llm_provider",
-      meta: { title: commonT("provider") },
-      header: commonT("provider"),
-      size: 200,
+      meta: { title: "Provider" },
+      header: "Provider",
+      size: 320,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <CredentialProviderCell
+          provider={row.original.credential_info?.custom_llm_provider}
+          federated={inferAuthMethod(row.original.credential_values) === "federation"}
+        />
+      ),
+    },
+    {
+      id: "source",
+      accessorFn: (row) => row.source ?? "db",
+      meta: { title: "Source" },
+      header: "Source",
+      size: 140,
       enableSorting: false,
       cell: ({ row }) =>
         row.original.source === "config" ? (
@@ -164,13 +174,13 @@ export const getCredentialsTableColumns = ({
     {
       id: "actions",
       meta: { className: "text-right", headerClassName: "text-right" },
-      header: () => <span className="sr-only">{commonT("actions")}</span>,
+      header: () => <span className="sr-only">Actions</span>,
       size: 64,
       enableSorting: false,
       enableHiding: false,
       cell: ({ row }) => (
         <div className="flex justify-end">
-          <CredentialRowActions credential={row.original} onEdit={onEdit} onDelete={onDelete} t={t} commonT={commonT} />
+          <CredentialRowActions credential={row.original} onEdit={onEdit} onDelete={onDelete} />
         </div>
       ),
     },

@@ -1,6 +1,6 @@
 import { CircleMinus, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   useFieldArray,
   type Control,
@@ -12,12 +12,12 @@ import {
 import { z } from "zod";
 
 import { TeamMetadataField } from "@/app/(dashboard)/hooks/teams/useTeamMetadataSchema";
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 import { FormField } from "@/components/shared/form/FormField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { TeamsTranslator } from "@/lib/i18n/translators";
 
 export interface MetadataPair {
   key: string;
@@ -147,7 +147,6 @@ const MetadataKeyValueFields = <TFieldValues extends FieldValues>({
   schemaFields = [],
   schemaLoading = false,
 }: MetadataKeyValueFieldsProps<TFieldValues>) => {
-  const t = useTranslations("teams");
   const { fields, append, remove } = useFieldArray({ control, name });
   const seededRef = useRef(false);
   const schemaLabelsByKey = new Map(schemaFields.map((field) => [field.key, field.label || field.key]));
@@ -196,27 +195,15 @@ const MetadataKeyValueFields = <TFieldValues extends FieldValues>({
   return (
     <>
       {fields.map((field, index) => (
-        <div key={field.id} className="mb-2 flex items-start gap-2">
-          <FormField control={control} name={`${name}.${index}.key` as FieldPath<TFieldValues>}>
-            {({ ref, value, ...rest }) => (
-              <Input {...rest} ref={ref} value={(value as string) ?? ""} placeholder={t("metadata.key")} />
-            )}
-          </FormField>
-          <FormField control={control} name={`${name}.${index}.value` as FieldPath<TFieldValues>}>
-            {({ ref, value, ...rest }) => (
-              <Input {...rest} ref={ref} value={(value as string) ?? ""} placeholder={t("metadata.value")} />
-            )}
-          </FormField>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={t("metadata.removePair")}
-            className="mt-1 text-destructive"
-            onClick={() => remove(index)}
-          >
-            <CircleMinus className="size-4" />
-          </Button>
-        </div>
+        <MetadataRow
+          key={field.id}
+          control={control}
+          name={name}
+          index={index}
+          rowId={field.id}
+          schemaLabel={schemaLabelAt(index)}
+          onRemove={() => remove(index)}
+        />
       ))}
       <Button
         variant="outline"
@@ -224,7 +211,7 @@ const MetadataKeyValueFields = <TFieldValues extends FieldValues>({
         onClick={() => append({ key: "", value: "" } as never, { shouldFocus: false })}
       >
         <Plus className="size-4" />
-        {t("metadata.addPair")}
+        Add Key-Value Pair
       </Button>
     </>
   );

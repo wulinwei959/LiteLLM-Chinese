@@ -1,4 +1,5 @@
 import { Page, PageTabs, PageTabsList, PageTabsTrigger } from "@/components/shared/Page";
+import { useTranslations } from "next-intl";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import useCan from "@/app/(dashboard)/hooks/useCan";
 import AvailableTeamsPanel from "@/components/team/AvailableTeamsPanel";
@@ -18,9 +19,6 @@ import { useZodForm } from "@/lib/forms/useZodForm";
 import { TagsInput } from "@/app/(dashboard)/guardrails/_components/content_filter/TagsInput";
 import { TabsContent } from "@/components/ui/tabs";
 import { ChevronDown, Plus, Users } from "lucide-react";
-import { useTranslations } from "next-intl";
-
-import type { TeamsTranslator } from "@/lib/i18n/translators";
 import React, { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -218,9 +216,8 @@ const getAdminOrganizations = (
 };
 
 // @deprecated
-const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser = false }) => {
+const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly = false, premiumUser = false }) => {
   const t = useTranslations("teams");
-  const tDuration = useTranslations("common.budgetDuration");
   const { data: organizationsData } = useOrganizations();
   const organizations = organizationsData ?? null;
   const { data: teamMetadataSchemaFields = [], isLoading: isTeamMetadataSchemaLoading } = useTeamMetadataSchema();
@@ -242,7 +239,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
 
   const teamCreateSchema = useMemo(
     () =>
-      createTeamFieldsSchema(t).superRefine((values, ctx) => {
+      teamCreateFieldsSchema.superRefine((values, ctx) => {
         if (isOrgAdmin && !values.organization_id) {
           ctx.addIssue({ code: "custom", message: SUPPRESSED_BY_DESCRIPTION, path: ["organization_id"] });
         }
@@ -261,7 +258,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
           ctx.addIssue({ code: "custom", message: SUPPRESSED_BY_DESCRIPTION, path: ["secret_manager_settings"] });
         }
       }),
-    [isOrgAdmin, additionalSettingsOpen, adminOrgs, organizations, t],
+    [isOrgAdmin, additionalSettingsOpen, adminOrgs, organizations],
   );
 
   const form = useZodForm(teamCreateSchema, { defaultValues: EMPTY_TEAM_CREATE_VALUES });
@@ -299,11 +296,8 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
   });
   const defaultBudgetDuration: string | undefined = defaultTeamSettings?.values?.budget_duration ?? undefined;
   const budgetDurationPlaceholder = defaultBudgetDuration
-    ? t("listBudgetDurationDefault", {
-        label: getBudgetDurationLabel(tDuration, defaultBudgetDuration),
-        duration: defaultBudgetDuration,
-      })
-    : t("listBudgetDurationNotAvailable");
+    ? `Default: ${getBudgetDurationLabel(defaultBudgetDuration)} (${defaultBudgetDuration})`
+    : "n/a";
 
   // Add this useEffect to fetch guardrails
   useEffect(() => {
@@ -561,15 +555,22 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
           }
         }
 
-        await teamCreateCall(accessToken, { ...formValues, models: normalizeTeamModelSelection(formValues.models) });
-        toast.success(t("listTeamCreated"));
+        const { require_trace_id: requireTraceId, ...teamCreateValues } = formValues;
+        const teamMemberModelBudgets = modelMaxBudgetUpdate(teamMemberModelMaxBudget, {});
+        await teamCreateCall(accessToken, {
+          ...teamCreateValues,
+          ...(requireTraceId === undefined ? {} : { require_trace_id: requireTraceId }),
+          ...(teamMemberModelBudgets !== undefined ? { team_member_model_max_budget: teamMemberModelBudgets } : {}),
+          models: normalizeTeamModelSelection(formValues.models),
+        });
+        toast.success("Team created");
         await refreshTeams();
         resetCreateForm();
         setIsTeamModalVisible(false);
       }
     } catch (error) {
       console.error("Error creating the team:", error);
-      toast.fromError(t("listCreateError", { error: extractProxyErrorMessage(error) }));
+      toast.fromError("Error creating the team: " + extractProxyErrorMessage(error));
     }
   };
 
@@ -625,21 +626,23 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
 
           <DeleteResourceModal
             isOpen={isDeleteModalOpen}
-            title={t("deleteConfirmTitle")}
+            title="Delete Team?"
             alertMessage={(() => {
               const deleteKeyCount = teamToDelete?.keys_count ?? teamToDelete?.keys?.length ?? 0;
-              return deleteKeyCount === 0 ? undefined : t("listDeleteKeysWarning", { count: deleteKeyCount });
+              return deleteKeyCount === 0
+                ? undefined
+                : `Warning: This team has ${deleteKeyCount} keys associated with it. Deleting the team will also delete all associated keys, along with any models created for this team. This action is irreversible.`;
             })()}
-            message={t("listDeleteConfirmMessage")}
-            resourceInformationTitle={t("listTeamInformation")}
+            message="Are you sure you want to delete this team, all its keys, and any models created for it? This action cannot be undone."
+            resourceInformationTitle="Team Information"
             resourceInformation={[
-              { label: t("listTeamId"), value: teamToDelete?.team_id, code: true },
-              { label: t("listTeamName"), value: teamToDelete?.team_alias },
+              { label: "Team ID", value: teamToDelete?.team_id, code: true },
+              { label: "Team Name", value: teamToDelete?.team_alias },
               {
-                label: t("keys"),
+                label: "Keys",
                 value: teamToDelete?.keys_count ?? teamToDelete?.keys?.length ?? 0,
               },
-              { label: t("members"), value: teamToDelete?.members_with_roles?.length },
+              { label: "Members", value: teamToDelete?.members_with_roles?.length },
             ]}
             requiredConfirmation={teamToDelete?.team_alias}
             onCancel={cancelDelete}
@@ -692,7 +695,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
           <PageHeader>
             <PageHeaderTitle>
               <Users />
-              {t("title")}
+              Teams
             </PageHeaderTitle>
             <PageHeaderDescription>{t("listSubtitle")}</PageHeaderDescription>
             <PageHeaderControls>
@@ -701,7 +704,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                   <>
                     <UIButton onClick={openCreateTeamModal} data-testid="create-team-button">
                       <Plus className="size-4" />
-                      {t("createTeam")}
+                      Create Team
                     </UIButton>
                     <ToolbarSeparator className="mx-0 h-6" />
                   </>
@@ -771,8 +774,10 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                               }))}
                               disabled={isOrgAdmin && soleOrganizationId !== null && value === soleOrganizationId}
                               allowClear={!isOrgAdmin}
-                              placeholder={hasNoOrgs ? t("listNoOrganizationsAvailable") : t("listSearchOrganization")}
-                              emptyText={t("listNoOrganizationsAvailable")}
+                              placeholder={
+                                hasNoOrgs ? "No organizations available" : "Search or select an Organization"
+                              }
+                              emptyText="No organizations available"
                               onValueChange={(next) => selectCreateTeamOrganization(next, value ?? null, onChange)}
                             />
                           )}
@@ -780,7 +785,10 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
 
                         {isOrgAdmin && !isSingleOrg && adminOrgs.length > 1 && (
                           <div className="mb-8 rounded-md border border-info/20 bg-info/10 p-4">
-                            <span className="text-sm text-info">{t("listSelectOrganizationNotice")}</span>
+                            <span className="text-sm text-info">
+                              Please select an organization to create a team for. You can only create teams within
+                              organizations where you are an admin.
+                            </span>
                           </div>
                         )}
                       </>
@@ -789,7 +797,10 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                   <FormField
                     control={form.control}
                     name="models"
-                    label={labelWithHint(t("models"), t("listModelsHint"))}
+                    label={labelWithHint(
+                      "Models",
+                      "These are the models that your selected team has access to. Leave empty to grant no models directly, e.g. when the team gets its models from access groups",
+                    )}
                   >
                     {({ id, value, onChange }) => (
                       <ModelSelect
@@ -807,17 +818,12 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                     )}
                   </FormField>
 
-                  <FormField control={form.control} name="max_budget" label={t("listMaxBudgetUsd")}>
+                  <FormField control={form.control} name="max_budget" label="Max Budget (USD)">
                     {({ ref, value, ...field }) => (
                       <NumericalInput {...field} ref={ref} value={value ?? ""} step={0.01} precision={2} width={200} />
                     )}
                   </FormField>
-                  <FormField
-                    control={form.control}
-                    name="budget_duration"
-                    className="mt-8"
-                    label={t("listResetBudget")}
-                  >
+                  <FormField control={form.control} name="budget_duration" className="mt-8" label="Reset Budget">
                     {({ id, value, onChange }) => (
                       <BudgetDurationDropdown
                         id={id}
@@ -849,14 +855,17 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                   <FormField
                     control={form.control}
                     name="tpd_limit"
-                    label={labelWithHint(t("listTpdLimit"), t("listTpdLimitHint"))}
+                    label={labelWithHint(
+                      "Tokens per day Limit (TPD)",
+                      "Daily token budget for batch submissions (/v1/batches). When set, batch input files are charged against this 24h window instead of the team's TPM/RPM limits. Online requests keep using TPM/RPM.",
+                    )}
                   >
                     {({ ref, value, ...field }) => (
                       <NumericalInput {...field} ref={ref} value={value ?? ""} step={1} width={400} />
                     )}
                   </FormField>
                   <Field>
-                    <FieldLabel>{t("listMetadata")}</FieldLabel>
+                    <FieldLabel>Metadata</FieldLabel>
                     <MetadataKeyValueFields
                       control={form.control}
                       getValues={form.getValues}
@@ -864,7 +873,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                       schemaFields={teamMetadataSchemaFields}
                       schemaLoading={isTeamMetadataSchemaLoading}
                     />
-                    <FieldDescription>{t("listMetadataDescription", { example: '{"region": "us"}' })}</FieldDescription>
+                    <FieldDescription>
+                      Values are saved as text. Enter JSON for typed values, e.g. 3, true, or {'{"region": "us"}'}.
+                    </FieldDescription>
                   </Field>
 
                   <Collapsible
@@ -881,15 +892,18 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                         <FormField
                           control={form.control}
                           name="team_id"
-                          label={t("listTeamId")}
-                          description={t("listTeamIdDescription")}
+                          label="Team ID"
+                          description="ID of the team you want to create. If not provided, it will be generated automatically."
                         >
                           {({ ref, value, ...field }) => <UIInput {...field} ref={ref} value={value ?? ""} />}
                         </FormField>
                         <FormField
                           control={form.control}
                           name="team_member_budget"
-                          label={labelWithHint(t("listTeamMemberBudget"), t("listTeamMemberBudgetHint"))}
+                          label={labelWithHint(
+                            "Team Member Budget (USD)",
+                            "This is the individual budget for a user in the team.",
+                          )}
                         >
                           {({ ref, value, onChange, ...field }) => (
                             <NumericalInput
@@ -917,21 +931,22 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                         <FormField
                           control={form.control}
                           name="team_member_key_duration"
-                          label={labelWithHint(t("listTeamMemberKeyDuration"), t("listTeamMemberKeyDurationHint"))}
+                          label={labelWithHint(
+                            "Team Member Key Duration (eg: 1d, 1mo)",
+                            "Set a limit to the duration of a team member's key. Format: 30s (seconds), 30m (minutes), 30h (hours), 30d (days), 1mo (month)",
+                          )}
                         >
                           {({ ref, value, ...field }) => (
-                            <UIInput
-                              {...field}
-                              ref={ref}
-                              value={value ?? ""}
-                              placeholder={t("listTeamMemberKeyDurationPlaceholder")}
-                            />
+                            <UIInput {...field} ref={ref} value={value ?? ""} placeholder="e.g., 30d" />
                           )}
                         </FormField>
                         <FormField
                           control={form.control}
                           name="team_member_rpm_limit"
-                          label={labelWithHint(t("listTeamMemberRpmLimit"), t("listTeamMemberRpmLimitHint"))}
+                          label={labelWithHint(
+                            "Team Member RPM Limit",
+                            "The RPM (Requests Per Minute) limit for individual team members",
+                          )}
                         >
                           {({ ref, value, ...field }) => (
                             <NumericalInput {...field} ref={ref} value={value ?? ""} step={1} width={400} />
@@ -940,7 +955,10 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                         <FormField
                           control={form.control}
                           name="team_member_tpm_limit"
-                          label={labelWithHint(t("listTeamMemberTpmLimit"), t("listTeamMemberTpmLimitHint"))}
+                          label={labelWithHint(
+                            "Team Member TPM Limit",
+                            "The TPM (Tokens Per Minute) limit for individual team members",
+                          )}
                         >
                           {({ ref, value, ...field }) => (
                             <NumericalInput {...field} ref={ref} value={value ?? ""} step={1} width={400} />
@@ -949,9 +967,11 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                         <FormField
                           control={form.control}
                           name="secret_manager_settings"
-                          label={t("listSecretManagerSettings")}
+                          label="Secret Manager Settings"
                           description={
-                            premiumUser ? t("listSecretManagerDescription") : t("listSecretManagerPremiumDescription")
+                            premiumUser
+                              ? "Enter secret manager configuration as a JSON object."
+                              : "Premium feature - Upgrade to manage secret manager settings."
                           }
                         >
                           {({ ref, value, ...field }) => (
@@ -1053,14 +1073,17 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                           control={form.control}
                           name="access_group_ids"
                           className="mt-8"
-                          label={labelWithHint(t("listAccessGroups"), t("listAccessGroupsHint"))}
-                          description={t("listAccessGroupsDescription")}
+                          label={labelWithHint(
+                            "Access Groups",
+                            "Assign access groups to this team. Access groups control which models, MCP servers, and agents this team can use",
+                          )}
+                          description="Select access groups to assign to this team"
                         >
                           {({ value, onChange }) => (
                             <AccessGroupSelector
                               value={value}
                               onChange={onChange}
-                              placeholder={t("listAccessGroupsPlaceholder")}
+                              placeholder="Select access groups (optional)"
                             />
                           )}
                         </FormField>
@@ -1068,15 +1091,18 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                           control={form.control}
                           name="allowed_vector_store_ids"
                           className="mt-8"
-                          label={labelWithHint(t("listAllowedVectorStores"), t("listAllowedVectorStoresHint"))}
-                          description={t("listAllowedVectorStoresDescription")}
+                          label={labelWithHint(
+                            "Allowed Vector Stores",
+                            "Select which vector stores this team can access by default. Leave empty for access to all vector stores",
+                          )}
+                          description="Select vector stores this team can access. Leave empty for access to all vector stores"
                         >
                           {({ value, onChange }) => (
                             <VectorStoreSelector
                               onChange={onChange}
                               value={value}
                               accessToken={accessToken || ""}
-                              placeholder={t("listAllowedVectorStoresPlaceholder")}
+                              placeholder="Select vector stores (optional)"
                             />
                           )}
                         </FormField>
@@ -1087,12 +1113,12 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                           label={
                             !premiumUser
                               ? labelWithHint(
-                                  t("listAllowedPassThroughRoutes"),
+                                  "Allowed Pass Through Routes",
                                   t("listAllowedPassThroughRoutesPremiumHint"),
                                 )
                               : !isProxyAdminRole(userRole || "")
                                 ? labelWithHint(
-                                    t("listAllowedPassThroughRoutes"),
+                                    "Allowed Pass Through Routes",
                                     t("listAllowedPassThroughRoutesAdminHint"),
                                   )
                                 : t("listAllowedPassThroughRoutes")
@@ -1126,15 +1152,18 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                         control={form.control}
                         name="allowed_mcp_servers_and_groups"
                         className="mt-4"
-                        label={labelWithHint(t("listAllowedMcpServers"), t("listAllowedMcpServersHint"))}
-                        description={t("listAllowedMcpServersDescription")}
+                        label={labelWithHint(
+                          "Allowed MCP Servers",
+                          "Select which MCP servers or access groups this team can access",
+                        )}
+                        description="Select MCP servers or access groups this team can access"
                       >
                         {({ value, onChange }) => (
                           <MCPServerSelector
                             onChange={onChange}
                             value={value}
                             accessToken={accessToken || ""}
-                            placeholder={t("listAllowedMcpServersPlaceholder")}
+                            placeholder="Select MCP servers or access groups (optional)"
                             allowAllProxyMcpServers={isProxyAdminRole(userRole || "")}
                           />
                         )}
@@ -1167,15 +1196,18 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                         control={form.control}
                         name="allowed_agents_and_groups"
                         className="mt-4"
-                        label={labelWithHint(t("listAllowedAgents"), t("listAllowedAgentsHint"))}
-                        description={t("listAllowedAgentsDescription")}
+                        label={labelWithHint(
+                          "Allowed Agents",
+                          "Select which agents or access groups this team can access",
+                        )}
+                        description="Select agents or access groups this team can access"
                       >
                         {({ value, onChange }) => (
                           <AgentSelector
                             onChange={onChange}
                             value={value}
                             accessToken={accessToken || ""}
-                            placeholder={t("listAllowedAgentsPlaceholder")}
+                            placeholder="Select agents or access groups (optional)"
                           />
                         )}
                       </FormField>
@@ -1196,15 +1228,18 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                         control={form.control}
                         name="object_permission_search_tools"
                         className="mt-4"
-                        label={labelWithHint(t("listAllowedSearchTools"), t("listAllowedSearchToolsHint"))}
-                        description={t("listAllowedSearchToolsDescription")}
+                        label={labelWithHint(
+                          "Allowed Search Tools",
+                          "Select which search tools this team can access. Leave empty to allow all search tools.",
+                        )}
+                        description="Restrict which configured search tools keys on this team may call."
                       >
                         {({ value, onChange }) => (
                           <SearchToolSelector
                             onChange={onChange}
                             value={value}
                             accessToken={accessToken || ""}
-                            placeholder={t("listAllowedSearchToolsPlaceholder")}
+                            placeholder="Select search tools (optional, empty = all allowed)"
                           />
                         )}
                       </FormField>
@@ -1225,15 +1260,18 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                         control={form.control}
                         name="object_permission_skills"
                         className="mt-4"
-                        label={labelWithHint(t("listAllowedSkills"), t("listAllowedSkillsHint"))}
-                        description={t("listAllowedSkillsDescription")}
+                        label={labelWithHint(
+                          "Allowed Skills",
+                          "Enabled skills are visible to every team. Grant disabled (private) Claude Code plugins to this team here.",
+                        )}
+                        description="Private skills keys on this team may see in the Claude Code marketplace."
                       >
                         {({ value, onChange }) => (
                           <SkillSelector
                             onChange={onChange}
                             value={value}
                             accessToken={accessToken || ""}
-                            placeholder={t("listAllowedSkillsPlaceholder")}
+                            placeholder="Select skills (optional)"
                           />
                         )}
                       </FormField>
@@ -1283,12 +1321,15 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
 
                   <Collapsible className="mt-8 mb-8 overflow-hidden rounded-lg border">
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>{t("listModelAliases")}</b>
+                      <b>Model Aliases</b>
                       <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-4 pb-3">
                       <div className="mt-4">
-                        <p className="mb-4 block text-sm text-muted-foreground">{t("listModelAliasesDescription")}</p>
+                        <p className="mb-4 block text-sm text-muted-foreground">
+                          Create custom aliases for models that can be used by team members in API calls. This allows
+                          you to create shortcuts for specific models.
+                        </p>
                         <ModelAliasManager
                           accessToken={accessToken || ""}
                           initialModelAliases={modelAliases}
@@ -1301,7 +1342,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
                 </FieldGroup>
                 <div className="mt-[10px] text-right">
                   <UIButton type="submit" data-testid="create-team-submit">
-                    {t("createTeam")}
+                    Create Team
                   </UIButton>
                 </div>
               </form>

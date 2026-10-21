@@ -1,4 +1,5 @@
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
+import { useTranslations } from "next-intl";
 import { StackedUsageChart, type StackedUsageScale } from "@/components/shared/charts";
 import { DataTable } from "@/components/shared/DataTable";
 import { getProviderSpend, getTopAgents, getTopAPIKeys, getTopModels } from "./entityUsageAggregations";
@@ -16,9 +17,6 @@ import { Bot, Boxes, ChevronDown, ChevronRight, ExternalLink, Info, KeyRound, La
 import type { ColumnDef } from "@tanstack/react-table";
 import { Alert, AlertDescription } from "@/components/shared/Alert";
 import { ChartLoader } from "@/components/shared/chart_loader";
-import { useTranslations } from "next-intl";
-
-import type { UsageTranslator } from "@/lib/i18n/translators";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cva.config";
@@ -59,13 +57,9 @@ import TeamUserSpendCard from "./TeamUserSpendCard";
 import { ProviderSpendBreakdown } from "./SpendByProvider";
 
 const BRAND = "#2b3fd6";
-const FLAT_COST_SERIES = "entity.flatCost";
+const FLAT_COST_SERIES = "Flat cost";
 const FLAT_COST_COLOR = "#8b5cf6";
-const METRIC_TITLE_KEY: Record<UsageMetric, "spend" | "totalTokens" | "totalRequests"> = {
-  spend: "spend",
-  tokens: "totalTokens",
-  requests: "totalRequests",
-};
+const METRIC_TITLE: Record<UsageMetric, string> = { spend: "Spend", tokens: "Tokens", requests: "Requests" };
 /** Summary tiles that carry a sparkline, keyed by tile title, valued by the dailyTotals field. */
 const TILE_TRENDS: Readonly<Record<string, string>> = {
   "Total Spend": "spend",
@@ -73,40 +67,25 @@ const TILE_TRENDS: Readonly<Record<string, string>> = {
   "Total Requests": "requests",
   "Total Tokens": "tokens",
 };
-
-/** The tile titles arrive in English from the summary builder; this renders them in the reader's language. */
-const tileTitle = (t: UsageTranslator, title: string): string => {
-  switch (title) {
-    case "Total Spend":
-      return t("entity.totalSpend");
-    case "Total Cost":
-      return t("entity.totalCost");
-    case "Total Requests":
-      return t("totalRequests");
-    case "Total Tokens":
-      return t("totalTokens");
-    default:
-      return title;
-  }
-};
 const GRANULARITY_OPTIONS = [
-  { value: "day", labelKey: "granularityDay" },
-  { value: "week", labelKey: "granularityWeek" },
-] as const satisfies readonly { value: Granularity; labelKey: string }[];
+  { value: "day", label: "Daily" },
+  { value: "week", label: "Weekly" },
+] as const satisfies readonly { value: Granularity; label: string }[];
 const SCALE_OPTIONS = [
-  { value: "linear", labelKey: "scaleLinear" },
-  { value: "log", labelKey: "scaleLog" },
-] as const satisfies readonly { value: StackedUsageScale; labelKey: string }[];
+  { value: "linear", label: "Linear" },
+  { value: "log", label: "Log" },
+] as const satisfies readonly { value: StackedUsageScale; label: string }[];
 const QUIET_HEADER = { headerClassName: "font-normal" };
 const FLAT_COST_KEY = "flat_cost";
 
 /** Stacks reserved-capacity flat cost on top of the per-model spend, so each bar is the day's full cost. */
-const withFlatCost = (series: Series, results: readonly DailyData[], t: UsageTranslator): Series => {
+const withFlatCost = (series: Series, results: readonly DailyData[]): Series => {
+  const t = useTranslations("usage");
   const flatByDate = new Map(results.map((day) => [day.date, day.metrics.flat_cost ?? 0]));
   return {
     data: series.data.map((day) => ({ ...day, [FLAT_COST_KEY]: flatByDate.get(day.date) ?? 0 })),
     keys: [...series.keys, FLAT_COST_KEY],
-    labels: [...series.labels, t(FLAT_COST_SERIES)],
+    labels: [...series.labels, FLAT_COST_SERIES],
     colors: [...series.colors, FLAT_COST_COLOR],
   };
 };
@@ -441,7 +420,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
 
   const tileLabel = ({ title, tooltip, expandable }: SummaryTile) => (
     <>
-      <span>{tileTitle(t, title)}</span>
+      <span>{title}</span>
       {tooltip ? (
         <Tooltip>
           <TooltipTrigger render={<Info className="size-3.5 text-muted-foreground hover:text-foreground" />} />
@@ -531,17 +510,12 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
           <div className="flex flex-wrap items-center gap-2">
             <BreakdownControls state={breakdown} onChange={setBreakdown} showDimension={false} />
             <Segmented
-              label={t("bucketSizeLabel")}
+              label="Bucket size"
               value={granularity}
-              options={GRANULARITY_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
+              options={GRANULARITY_OPTIONS}
               onChange={setGranularity}
             />
-            <Segmented
-              label={t("scaleLabel")}
-              value={scale}
-              options={SCALE_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
-              onChange={setScale}
-            />
+            <Segmented label="Scale" value={scale} options={SCALE_OPTIONS} onChange={setScale} />
           </div>
         </header>
         <div className="px-3 pt-4 pb-2">
@@ -695,14 +669,16 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
       {failed && (
         <Alert variant="error">
           <AlertDescription className="text-inherit">
-            {t("entity.spendFetchFailed")}
+            Fetching spend data failed, so the totals below may be empty rather than final. Reload the page to try
+            again.
           </AlertDescription>
         </Alert>
       )}
       {showAgentBreakdown && agentFailed && (
         <Alert variant="error">
           <AlertDescription className="text-inherit">
-            {t("entity.agentFetchFailed")}
+            Fetching agent data failed, so the totals below may be empty rather than final. Reload the page to try
+            again.
           </AlertDescription>
         </Alert>
       )}
@@ -711,9 +687,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
           dateValue={dateValue}
           entityType={entityType}
           onExport={(exportType, format) =>
-            request
-              ? api.exportRows(request, exportType, format)
-              : Promise.reject(new Error(t("selectRangeToExport")))
+            request ? api.exportRows(request, exportType, format) : Promise.reject(new Error(t("selectRangeToExport")))
           }
           showFilters={filterSlot === undefined && entityList !== null}
           filterSlot={filterSlot}

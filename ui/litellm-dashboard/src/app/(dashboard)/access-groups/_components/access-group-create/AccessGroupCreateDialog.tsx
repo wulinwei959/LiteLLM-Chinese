@@ -1,8 +1,8 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { BotIcon, InfoIcon, LayersIcon, ServerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { BotIcon, InfoIcon, LayersIcon, ServerIcon, SparklesIcon } from "lucide-react";
 import * as React from "react";
 
 import { accessGroupKeys } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
@@ -72,11 +72,12 @@ export const AccessGroupCreateDialog = ({
   const mutation = useMutation({
     mutationFn: (body: AccessGroupCreateBody) => createAccessGroup(body),
     onSuccess: () => {
-      toast.success(t("createdSuccessfully"));
+      toast.success("Access group created successfully");
       queryClient.invalidateQueries({ queryKey: accessGroupKeys.all });
       closeAndReset();
     },
-    onError: (error: unknown) => toast.fromError(error instanceof Error ? error.message : t("createFailed")),
+    onError: (error: unknown) =>
+      toast.fromError(error instanceof Error ? error.message : "Failed to create access group"),
   });
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -109,19 +110,19 @@ export const AccessGroupCreateDialog = ({
             <TabsList className="w-full">
               <TabsTrigger value={GENERAL_TAB}>
                 <InfoIcon />
-                {t("generalTab")}
+                General Info
               </TabsTrigger>
               <TabsTrigger value="models">
                 <LayersIcon />
-                {t("models")}
+                Models
               </TabsTrigger>
               <TabsTrigger value="mcp-servers">
                 <ServerIcon />
-                {t("mcpServers")}
+                MCP Servers
               </TabsTrigger>
               <TabsTrigger value="agents">
                 <BotIcon />
-                {t("agents")}
+                Agents
               </TabsTrigger>
               <TabsTrigger value="skills">
                 <SparklesIcon />
@@ -131,32 +132,37 @@ export const AccessGroupCreateDialog = ({
 
             <TabsContent value={GENERAL_TAB} className="pt-4">
               <FieldGroup>
-                <FormField control={form.control} name="name" label={t("groupName")}>
-                  {({ ref, ...field }) => <Input {...field} ref={ref} placeholder={t("groupNamePlaceholder")} />}
+                <FormField control={form.control} name="name" label="Group Name">
+                  {({ ref, ...field }) => <Input {...field} ref={ref} placeholder="e.g. Engineering Team" />}
                 </FormField>
-                <FormField control={form.control} name="description" label={t("description")}>
+                <FormField control={form.control} name="description" label="Description">
                   {({ ref, ...field }) => (
-                    <Textarea {...field} ref={ref} rows={4} placeholder={t("descriptionPlaceholder")} />
+                    <Textarea
+                      {...field}
+                      ref={ref}
+                      rows={4}
+                      placeholder="Describe the purpose of this access group..."
+                    />
                   )}
                 </FormField>
               </FieldGroup>
             </TabsContent>
 
             <TabsContent value="models" className="pt-4">
-              <FormField control={form.control} name="modelIds" label={t("allowedModels")}>
+              <FormField control={form.control} name="modelIds" label="Allowed Models">
                 {(field) => <ModelSelect context="global" value={field.value} onChange={field.onChange} />}
               </FormField>
             </TabsContent>
 
             <TabsContent value="mcp-servers" className="pt-4">
-              <FormField control={form.control} name="mcpServerIds" label={t("allowedMcpServers")}>
+              <FormField control={form.control} name="mcpServerIds" label="Allowed MCP Servers">
                 {({ id, value, onChange }) => (
                   <MultiSelect
                     id={id}
                     value={value}
                     onValueChange={onChange}
                     options={mcpServerOptions}
-                    placeholder={t("selectMcpServers")}
+                    placeholder="Select MCP servers"
                   />
                 )}
               </FormField>

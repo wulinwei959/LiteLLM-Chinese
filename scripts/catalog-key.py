@@ -36,6 +36,29 @@ def find_object(lines: list[str], path: list[str]) -> tuple[int, int]:
     return index - 1, closing
 
 
+def set_key(path: pathlib.Path, dotted: str, value: str) -> None:
+    """Add or replace a key in a catalog, keeping the file's layout."""
+    parts = dotted.split(".")
+    key = parts[-1]
+    lines = path.read_text(encoding="utf-8").split("\n")
+    start, end = find_object(lines, parts[:-1]) if len(parts) > 1 else (0, len(lines))
+    indent = " " * (len(lines[start]) - len(lines[start].lstrip()) + 2)
+    existing = [index for index in range(start + 1, end) if lines[index].strip().startswith(f'"{key}"')]
+    if existing:
+        index = existing[0]
+        lines[index] = f'{indent}"{key}": {value},'
+        if index + 1 >= end:
+            lines[index] = f'{indent}"{key}": {value}'
+    else:
+        last = end - 1
+        while last > start and not lines[last].strip():
+            last -= 1
+        if not lines[last].rstrip().endswith(","):
+            lines[last] = lines[last].rstrip() + ","
+        lines.insert(last + 1, f'{indent}"{key}": {value}')
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
 def main() -> int:
     catalog = pathlib.Path(sys.argv[1])
     path = sys.argv[2].split(".")

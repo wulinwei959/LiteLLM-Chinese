@@ -89,12 +89,24 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
   customTierSet,
 }) => {
   const t = useTranslations("models.addModel");
+  const classifierType = effectiveClassifierType(value);
+  const classificationProps = {
+    advancedOnly: true,
+    value,
+    onChange,
+    modelOptions,
+    effortOptionsByModel: classifierEffortOptionsByModel,
+    customTechnicalKeywords,
+    onCustomTechnicalKeywordsChange,
+    showValidationErrors,
+    defaultModel,
+  };
   const sections = [
     ...(forecast
       ? [
           {
             key: "classifier",
-            label: <strong className="text-foreground font-semibold">{t("advGroupClassifierTuning")}</strong>,
+            label: <strong className="text-foreground font-semibold">Classifier tuning</strong>,
             children: (
               <ForecastClassifierConfig
                 section="advanced"
@@ -111,35 +123,23 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
       ? [
           {
             key: "classifier",
-            label: <strong className="text-foreground font-semibold">{t("advSectionClassificationMethod")}</strong>,
-            children: (
-              <ClassificationMethodConfig
-                advancedOnly
-                value={value}
-                onChange={onChange}
-                modelOptions={modelOptions}
-                effortOptionsByModel={classifierEffortOptionsByModel}
-                customTechnicalKeywords={customTechnicalKeywords}
-                onCustomTechnicalKeywordsChange={onCustomTechnicalKeywordsChange}
-                showValidationErrors={showValidationErrors}
-                defaultModel={defaultModel}
-              />
-            ),
+            label: <strong className="text-foreground font-semibold">Classification Method</strong>,
+            children: <ClassificationMethodConfig {...classificationProps} section="classifier" />,
           },
         ]
       : []),
     ...(heuristicTuningType(value)
       ? [
           {
-            key: "keyword-overrides",
-            label: <strong className="text-foreground font-semibold">{t("advSectionHeuristicKeywordOverrides")}</strong>,
-            children: <HeuristicKeywordOverrides value={value} onChange={onChange} />,
+            key: "heuristic",
+            label: <strong className="text-foreground font-semibold">Heuristic tuning</strong>,
+            children: <ClassificationMethodConfig {...classificationProps} section="heuristic" />,
           },
         ]
       : []),
     {
       key: "adaptive",
-      label: <strong className="text-foreground font-semibold">{t("advSectionAdaptiveRouting")}</strong>,
+      label: <strong className="text-foreground font-semibold">Adaptive Routing</strong>,
       children: (
         <Restricted by={restrictedBy(value, "adaptive")}>
           <AdaptiveRoutingConfig value={value} onChange={onChange} />
@@ -255,9 +255,11 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
   ];
 
   const groups = [
-    { label: t("advGroupClassifierTuning"), keys: ["classifier", "keyword-overrides", "reminder-markers"] },
+    { label: "Heuristic tuning", keys: ["heuristic"] },
+    { label: usesLlmClassifier(classifierType) ? "LLM tuning" : "Classifier tuning", keys: ["classifier"] },
+    { label: "Request preprocessing", keys: ["reminder-markers"] },
     {
-      label: t("advGroupRoutingRules"),
+      label: "Routing rules and recovery",
       keys: [
         "modality",
         "plan-mode",

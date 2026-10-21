@@ -1,8 +1,8 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { useCredentials } from "@/app/(dashboard)/hooks/credentials/useCredentials";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
@@ -24,7 +24,8 @@ import CredentialsTable from "./CredentialsTable";
 import { buildCredential, type CredentialSubmission } from "./credential_form_helpers";
 
 export default function CredentialsPanel() {
-  const t = useTranslations("models.credentials");
+  const t = useTranslations("common");
+
   const { accessToken, userRole } = useAuthorized();
   // Admin Viewer follows the read-parity rule: see credentials, do not modify.
   const canModifyCredentials = isProxyAdminRole(userRole ?? "");
@@ -43,17 +44,22 @@ export default function CredentialsPanel() {
       return;
     }
     try {
-      const newCredential = buildCredential(values, stripMaskedSecrets(withoutRestrictedFields(values)));
-      await credentialUpdateCall(accessToken, values.credential_name as string, newCredential);
-      toast.success(t("updatedSuccessfully"));
+      const newCredential = buildCredential(submission, stripMaskedSecrets(submission.credential_values));
+      await credentialUpdateCall(accessToken, submission.credential_name, {
+        ...newCredential,
+        ...(valuesToDelete.length > 0 ? { credential_values_to_delete: valuesToDelete } : {}),
+      });
+      toast.success("Credential updated successfully");
       setIsUpdateModalOpen(false);
       await refetchCredentials();
     } catch (error) {
-      toast.error(t("updateFailed"));
+      toast.error(extractProxyErrorMessage(error));
     }
   };
 
   const handleAddCredential = async (submission: CredentialSubmission) => {
+    const t = useTranslations("common");
+
     if (!accessToken) {
       return;
     }
@@ -64,11 +70,13 @@ export default function CredentialsPanel() {
       setIsAddModalOpen(false);
       await refetchCredentials();
     } catch (error) {
-      toast.error(t("createFailed"));
+      toast.error(extractProxyErrorMessage(error));
     }
   };
 
   const handleDeleteCredential = async () => {
+    const t = useTranslations("common");
+
     if (!accessToken || !credentialToDelete) {
       return;
     }
@@ -104,9 +112,7 @@ export default function CredentialsPanel() {
   return (
     <div className="mx-auto flex w-full flex-auto flex-col gap-4 overflow-y-auto p-2">
       <div className="flex items-center justify-between gap-4">
-        <p className="text-sm text-muted-foreground">
-          {t("description")}
-        </p>
+        <p className="text-sm text-muted-foreground">{t("description")}</p>
         {canModifyCredentials && (
           <Button onClick={() => setIsAddModalOpen(true)}>
             <Plus className="size-4" />

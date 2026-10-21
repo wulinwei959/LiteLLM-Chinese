@@ -2,8 +2,8 @@
  * Helper utilities for Claude Code Marketplace
  */
 
-import { PluginSource } from "./types";
-import type { SkillsTranslator } from "@/lib/i18n/translators";
+import type { Plugin, PluginSource } from "./types";
+import { useTranslations } from "next-intl";
 
 export interface SkillSourcePreview {
   parsed: PluginSource;
@@ -16,6 +16,7 @@ export const SUBDIR_PATH_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9._-]*(\/[a-zA-Z0-9][a-zA
 export const normalizeSubPath = (subPath: string): string => subPath.trim().replace(/\/+$/, "");
 
 export const isValidSubPath = (subPath: string): boolean => {
+  const t = useTranslations("skills");
   const normalized = normalizeSubPath(subPath);
   return normalized !== "" && SUBDIR_PATH_REGEX.test(normalized);
 };
@@ -65,6 +66,7 @@ const isSafeHost = (url: URL): boolean =>
  * this normalized object rather than the raw string.
  */
 const parseRepoUrl = (raw: string): URL | null => {
+  const t = useTranslations("common");
   const trimmed = raw.trim();
   if (trimmed === "" || trimmed.startsWith("//")) {
     return null;
@@ -78,6 +80,7 @@ const parseRepoUrl = (raw: string): URL | null => {
 };
 
 const lastSegment = (path: string): string => {
+  const t = useTranslations("common");
   const segments = path.split("/").filter((seg) => seg !== "");
   return segments[segments.length - 1] ?? "";
 };
@@ -89,7 +92,8 @@ const toKebabCase = (value: string): string =>
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-const parseGitHubSource = (t: SkillsTranslator, url: URL, subPath?: string): SkillSourcePreview | null => {
+const parseGitHubSource = (url: URL, subPath?: string): SkillSourcePreview | null => {
+  const t = useTranslations("common");
   const parts = pathSegments(url);
   if (parts.length < 2) {
     return null;
@@ -147,35 +151,38 @@ const parseGitHubSource = (t: SkillsTranslator, url: URL, subPath?: string): Ski
 };
 
 const buildGitSourcePreview = (
-  t: SkillsTranslator,
-  repo: { kind: "Git" | "SSH"; url: string; name: string },
+  kind: "Git" | "SSH",
+  repoUrl: string,
+  repoName: string,
   subPath?: string,
 ): SkillSourcePreview | null => {
+  const t = useTranslations("common");
   const normalized = normalizeSubPath(subPath ?? "");
   if (normalized !== "") {
     if (!SUBDIR_PATH_REGEX.test(normalized)) {
       return null;
     }
     return {
-      parsed: { source: "git-subdir", url: repo.url, path: normalized },
+      parsed: { source: "git-subdir", url: repoUrl, path: normalized },
       label: t("sourceLabel.gitSubdir", { brand: repo.kind, repo: repo.url, path: normalized }),
       suggestedName: toKebabCase(lastSegment(normalized)),
     };
   }
 
   return {
-    parsed: { source: "url", url: repo.url },
+    parsed: { source: "url", url: repoUrl },
     label: t("sourceLabel.gitRepo", { brand: repo.kind, url: repo.url }),
-    suggestedName: toKebabCase(repo.name),
+    suggestedName: toKebabCase(repoName),
   };
 };
 
-const parseRawGitSource = (t: SkillsTranslator, url: URL, subPath?: string): SkillSourcePreview | null => {
+const parseRawGitSource = (url: URL, subPath?: string): SkillSourcePreview | null => {
+  const t = useTranslations("common");
   if (pathSegments(url).length < 2) {
     return null;
   }
   const repoName = lastSegment(url.pathname).replace(/\.git$/, "");
-  return buildGitSourcePreview(t, { kind: "Git", url: buildRepoUrl(url), name: repoName }, subPath);
+  return buildGitSourcePreview("Git", buildRepoUrl(url), repoName, subPath);
 };
 
 /**
@@ -185,7 +192,8 @@ const parseRawGitSource = (t: SkillsTranslator, url: URL, subPath?: string): Ski
  * rewritten to `ssh://` only to reuse the https host and credential rules, and only a URL that
  * survives that round trip unchanged is accepted, which keeps traversal segments off the feed.
  */
-const parseSshSource = (t: SkillsTranslator, raw: string, subPath?: string): SkillSourcePreview | null => {
+const parseSshSource = (raw: string, subPath?: string): SkillSourcePreview | null => {
+  const t = useTranslations("common");
   const trimmed = raw.trim();
   const scp = SSH_SCP_REGEX.exec(trimmed);
   const candidate = scp ? `${SSH_SCHEME}${scp[1]}@${scp[2]}/${scp[3]}` : trimmed;
@@ -200,16 +208,12 @@ const parseSshSource = (t: SkillsTranslator, raw: string, subPath?: string): Ski
   if (pathStart === -1 || url.pathname !== candidate.slice(pathStart) || pathSegments(url).length < 2) {
     return null;
   }
-  return buildGitSourcePreview(
-    t,
-    { kind: "SSH", url: trimmed, name: lastSegment(url.pathname).replace(/\.git$/i, "") },
-    subPath,
-  );
+  return buildGitSourcePreview("SSH", trimmed, lastSegment(url.pathname).replace(/\.git$/i, ""), subPath);
 };
 
-const parseArchiveSource = (t: SkillsTranslator, url: URL): SkillSourcePreview => ({
+const parseArchiveSource = (url: URL): SkillSourcePreview => ({
   parsed: { source: "archive", url: url.href },
-  label: t("sourceLabel.zipArchive", { path: `${url.host}${url.pathname}` }),
+  label: `Zip archive — ${url.host}${url.pathname}`,
   suggestedName: toKebabCase(lastSegment(url.pathname).replace(ZIP_ARCHIVE_REGEX, "")),
 });
 
@@ -220,8 +224,9 @@ const parseArchiveSource = (t: SkillsTranslator, url: URL): SkillSourcePreview =
  * authenticates with the user's own key; every other host is treated as a raw repo URL,
  * with an optional subfolder turning it into git-subdir.
  */
-export const parseSkillSource = (t: SkillsTranslator, rawUrl: string, subPath?: string): SkillSourcePreview | null => {
-  const ssh = parseSshSource(t, rawUrl, subPath);
+export const parseSkillSource = (rawUrl: string, subPath?: string): SkillSourcePreview | null => {
+  const t = useTranslations("common");
+  const ssh = parseSshSource(rawUrl, subPath);
   if (ssh) {
     return ssh;
   }
@@ -230,12 +235,12 @@ export const parseSkillSource = (t: SkillsTranslator, rawUrl: string, subPath?: 
     return null;
   }
   if (ZIP_ARCHIVE_REGEX.test(url.pathname)) {
-    return parseArchiveSource(t, url);
+    return parseArchiveSource(url);
   }
   if (url.hostname.replace(/^www\./, "") === GITHUB_HOST) {
-    return parseGitHubSource(t, url, subPath);
+    return parseGitHubSource(url, subPath);
   }
-  return parseRawGitSource(t, url, subPath);
+  return parseRawGitSource(url, subPath);
 };
 
 /**
@@ -271,6 +276,7 @@ export const formatInstallCommand = (plugin: { name: string }): string => `/plug
  * Must be lowercase letters, numbers, and hyphens only
  */
 export const validatePluginName = (name: string): boolean => {
+  const t = useTranslations("common");
   if (!name || name.trim() === "") {
     return false;
   }
@@ -281,7 +287,8 @@ export const validatePluginName = (name: string): boolean => {
 /**
  * Get human-readable source display text
  */
-export const getSourceDisplayText = (t: SkillsTranslator, source: PluginSource): string => {
+export const getSourceDisplayText = (source: Plugin["source"]): string => {
+  const t = useTranslations("common");
   if (source.source === "github" && source.repo) {
     return `GitHub: ${source.repo}`;
   }
@@ -298,6 +305,7 @@ export const getSourceDisplayText = (t: SkillsTranslator, source: PluginSource):
  * Get clickable link for plugin source. Ssh clone urls are not browsable, so they yield null.
  */
 export const getSourceLink = (source: Plugin["source"]): string | null => {
+  const t = useTranslations("common");
   if (source.source === "github" && source.repo) {
     return `https://github.com/${source.repo}`;
   }
@@ -338,6 +346,7 @@ export const getCategoryBadgeColor = (
  * Validate semantic version format (basic check)
  */
 export const isValidSemanticVersion = (version?: string): boolean => {
+  const t = useTranslations("common");
   if (!version) {
     return true; // Version is optional
   }
@@ -351,6 +360,7 @@ export const isValidSemanticVersion = (version?: string): boolean => {
  * Validate email format
  */
 export const isValidEmail = (email?: string): boolean => {
+  const t = useTranslations("common");
   if (!email) {
     return true; // Email is optional
   }
@@ -379,6 +389,7 @@ export const isValidUrl = (url?: string): boolean => {
  * Parse keywords from comma-separated string
  */
 export const parseKeywords = (keywordsString: string): string[] => {
+  const t = useTranslations("common");
   if (!keywordsString || keywordsString.trim() === "") {
     return [];
   }

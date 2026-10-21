@@ -2,8 +2,8 @@ import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useCallback } from "react";
 import moment from "moment";
-import { AuditLogEntry, auditActionLabel, auditTableNameLabel } from "../AuditLogsTableColumns";
-import DefaultProxyAdminTag from "../../common_components/DefaultProxyAdminTag";
+import { AuditLogEntry, AUDIT_TABLE_NAME_KEYS } from "../AuditLogsTableColumns";
+import DefaultProxyAdminTag from "../../../common_components/DefaultProxyAdminTag";
 import CopyButton from "@/components/shared/CopyButton";
 import { StatusBadge, type StatusTone } from "@/components/shared/table_cells/status_badge";
 import { Button } from "@/components/ui/button";
@@ -55,13 +55,7 @@ function CopyableJsonBlock({ label, value }: { label: string; value: Record<stri
     <div className="overflow-hidden rounded-sm border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border bg-muted px-3 py-2">
         <span className="text-xs font-semibold text-muted-foreground">{label}</span>
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          onClick={handleCopy}
-          title={t("auditLogs.drawer.copyJson")}
-          aria-label={t("auditLogs.drawer.copyJson")}
-        >
+        <Button variant="ghost" size="icon-xs" onClick={handleCopy} title="Copy JSON" aria-label="Copy JSON">
           {copied ? <Check className="text-success" /> : <Copy />}
         </Button>
       </div>
@@ -120,9 +114,8 @@ function DiffSection({ log }: { log: AuditLogEntry }) {
       }
     });
 
-    const note = t("auditLogs.drawer.noDiff");
-    displayBefore = Object.keys(changedBefore).length > 0 ? changedBefore : { note };
-    displayAfter = Object.keys(changedAfter).length > 0 ? changedAfter : { note };
+    displayBefore = Object.keys(changedBefore).length > 0 ? changedBefore : { note: "No differing fields detected" };
+    displayAfter = Object.keys(changedAfter).length > 0 ? changedAfter : { note: "No differing fields detected" };
   }
 
   const renderValue = (label: string, value: Record<string, any> | null | undefined) => {
@@ -150,20 +143,17 @@ function DiffSection({ log }: { log: AuditLogEntry }) {
             <div className="space-y-1 px-3 py-3 text-xs">
               {value.token !== undefined && (
                 <p>
-                  <span className="text-muted-foreground">{t("auditLogs.drawer.tokenLabel")}</span>
-                  {value.token ?? t("auditLogs.drawer.notApplicable")}
+                  <span className="text-muted-foreground">Token:</span> {value.token ?? "N/A"}
                 </p>
               )}
               {value.spend !== undefined && (
                 <p>
-                  <span className="text-muted-foreground">{t("auditLogs.drawer.spendLabel")}</span>$
-                  {Number(value.spend).toFixed(6)}
+                  <span className="text-muted-foreground">Spend:</span> ${Number(value.spend).toFixed(6)}
                 </p>
               )}
               {value.max_budget !== undefined && (
                 <p>
-                  <span className="text-muted-foreground">{t("auditLogs.drawer.maxBudgetLabel")}</span>$
-                  {Number(value.max_budget).toFixed(6)}
+                  <span className="text-muted-foreground">Max Budget:</span> ${Number(value.max_budget).toFixed(6)}
                 </p>
               )}
             </div>
@@ -177,8 +167,8 @@ function DiffSection({ log }: { log: AuditLogEntry }) {
 
   return (
     <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-      {renderValue(t("auditLogs.drawer.before"), displayBefore)}
-      {renderValue(t("auditLogs.drawer.after"), displayAfter)}
+      {renderValue("Before", displayBefore)}
+      {renderValue("After", displayAfter)}
     </div>
   );
 }
@@ -187,15 +177,15 @@ export function AuditLogDrawer({ open, onClose, log }: AuditLogDrawerProps) {
   const t = useTranslations("logs");
   if (!log) return null;
 
-  const tableDisplay = auditTableNameLabel(t, log.table_name);
+  const tableDisplay = t(AUDIT_TABLE_NAME_KEYS[log.table_name]) ?? log.table_name;
 
   return (
     <Sheet open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
       <ResizableSheetContent storageKey="litellm:auditLogDrawerWidth" className="gap-0 p-0">
-        <SheetTitle className="sr-only">{t("auditLogs.drawer.title")}</SheetTitle>
+        <SheetTitle className="sr-only">Audit log details</SheetTitle>
 
         <div className="flex shrink-0 items-center gap-3 border-b border-border bg-card px-6 py-4">
-          <StatusBadge tone={ACTION_TONE[log.action] ?? "neutral"} label={auditActionLabel(t, log.action)} />
+          <StatusBadge tone={ACTION_TONE[log.action] ?? "neutral"} label={log.action} />
           <span className="text-sm text-muted-foreground">
             {moment.utc(log.updated_at).local().format("MMM D, YYYY HH:mm:ss")}
           </span>
@@ -203,28 +193,25 @@ export function AuditLogDrawer({ open, onClose, log }: AuditLogDrawerProps) {
 
         <div className="px-6 py-5">
           <div className="mb-5 rounded-lg border border-border bg-muted p-4">
-            <p className="mb-2 text-xs font-semibold tracking-wide text-foreground uppercase">{t("details")}</p>
-            <MetadataRow label={t("auditLogs.columns.table")} value={tableDisplay} />
+            <p className="mb-2 text-xs font-semibold tracking-wide text-foreground uppercase">Details</p>
+            <MetadataRow label="Table" value={tableDisplay} />
             <MetadataRow
-              label={t("auditLogs.columns.objectId")}
+              label="Object ID"
               value={
                 <span className="inline-flex items-center gap-1 font-mono text-xs">
                   {log.object_id}
-                  <CopyButton value={log.object_id} label={t("auditLogs.drawer.copyObjectId")} />
+                  <CopyButton value={log.object_id} label="Copy object ID" />
                 </span>
               }
             />
+            <MetadataRow label="Changed By" value={<DefaultProxyAdminTag userId={log.changed_by} />} />
             <MetadataRow
-              label={t("auditLogs.columns.changedBy")}
-              value={<DefaultProxyAdminTag userId={log.changed_by} />}
-            />
-            <MetadataRow
-              label={t("auditLogs.columns.apiKeyHash")}
+              label="API Key (Hash)"
               value={
                 log.changed_by_api_key ? (
                   <span className="inline-flex items-center gap-1 font-mono text-xs break-all">
                     {log.changed_by_api_key}
-                    <CopyButton value={log.changed_by_api_key} label={t("auditLogs.drawer.copyKeyHash")} />
+                    <CopyButton value={log.changed_by_api_key} label="Copy API key hash" />
                   </span>
                 ) : (
                   "—"

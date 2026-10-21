@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { useTranslations } from "next-intl";
 import { CircleHelp } from "lucide-react";
@@ -69,8 +67,7 @@ const AddProviderForm: React.FC<AddProviderFormProps> = ({
   onAddProvider,
 }) => {
   const t = useTranslations("costTracking");
-  const commonT = useTranslations("common");
-  const options = providerOptionsWithoutDiscount(discountConfig);
+  const options = providerOptions();
   const selectedOption = selectedProviderOption(selectedProvider);
 
   return (

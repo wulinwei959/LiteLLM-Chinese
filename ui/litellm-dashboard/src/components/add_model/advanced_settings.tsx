@@ -13,9 +13,7 @@ import { validatorRules } from "../common_components/formRules";
 import { labelWithHint } from "@/components/shared/form/LabelWithHint";
 import { MountedFormField } from "../common_components/MountedFormField";
 import { UtcDateTimeInput } from "@/components/shared/form/UtcDateTimeInput";
-import CacheControlInjectionPoints, {
-  NEW_CACHE_CONTROL_POINT,
-} from "./cache_control_settings";
+import CacheControlInjectionPoints, { NEW_CACHE_CONTROL_POINT } from "./cache_control_settings";
 import VectorStoreSelector from "../vector_store_management/VectorStoreSelector";
 import { Tag } from "../tag_management/types";
 import { formItemValidateJSON } from "../../utils/textUtils";
@@ -206,10 +204,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
               <>
                 <MountedFormField
                   name={PTU_COUNT_FIELD}
-                  label={labelWithHint(
-                    t("ptuCount"),
-                    t("ptuCountHint"),
-                  )}
+                  label={labelWithHint(t("ptuCount"), t("ptuCountHint"))}
                   rules={{
                     deps: REVALIDATED_WHEN_PTU_COUNT_CHANGES,
                     validate: validatorRules(
@@ -233,10 +228,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
 
                 <MountedFormField
                   name={PTU_RATE_FIELD}
-                  label={labelWithHint(
-                    t("ptuRate"),
-                    t("ptuRateHint"),
-                  )}
+                  label={labelWithHint(t("ptuRate"), t("ptuRateHint"))}
                   rules={{
                     deps: [PTU_COUNT_FIELD],
                     validate: validatorRules(
@@ -260,10 +252,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
 
                 <MountedFormField
                   name={PTU_START_FIELD}
-                  label={labelWithHint(
-                    t("ptuStart"),
-                    t("ptuStartHint"),
-                  )}
+                  label={labelWithHint(t("ptuStart"), t("ptuStartHint"))}
                   rules={{
                     deps: [PTU_END_FIELD],
                     validate: validatorRules(
@@ -285,10 +274,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
 
                 <MountedFormField
                   name={PTU_END_FIELD}
-                  label={labelWithHint(
-                    t("ptuEnd"),
-                    t("ptuEndHint"),
-                  )}
+                  label={labelWithHint(t("ptuEnd"), t("ptuEndHint"))}
                   rules={{
                     deps: [PTU_START_FIELD],
                     validate: validatorRules(ptuWindowOrderRule(PTU_START_FIELD, "end", t)),
@@ -400,7 +386,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                         "Cache Write Cost (1 hour, per 1M tokens)",
                         "Rate for prompt cache writes with a 1 hour TTL (Anthropic's cache_control ttl 1h). If left blank, known models use their cost map 1 hour rate, otherwise Cache Write Cost.",
                       )}
-                      rules={usageCostRules}
+                      rules={usageCostRules(t)}
                       className="mb-4"
                     >
                       {(control) => (

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useTranslations } from "next-intl";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import anthropicLogo from "../../../public/assets/logos/anthropic.svg";
+import openaiLogo from "../../../public/assets/logos/openai_small.svg";
+import { getProxyBaseUrl } from "@/components/networking";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/lib/toast";
 
@@ -59,15 +63,19 @@ const CreatedKeyDisplay: React.FC<CreatedKeyDisplayProps> = ({ apiKey }) => {
 
   return (
     <div>
-      <p className="mb-2">{t.rich("securityWarning", { b: (chunks) => <b>{chunks}</b> })}</p>
+      <p className="mb-2">
+        Please save this secret key somewhere safe and accessible. For security reasons,{" "}
+        <b>you will not be able to view it again</b> through your LiteLLM account. If you lose this secret key, you will
+        need to generate a new one.
+      </p>
 
-      <p className="text-sm text-muted-foreground mt-3 mb-1">{t("virtualKeyLabel")}</p>
+      <p className="text-sm text-muted-foreground mt-3 mb-1">Virtual Key:</p>
       <div className="bg-muted rounded-md p-2.5 mb-2.5">
         <pre className="m-0 whitespace-normal break-words text-foreground">{apiKey}</pre>
       </div>
 
       <CopyToClipboard text={apiKey} onCopy={handleCopy}>
-        <Button className="mt-3">{copied ? t("copied") : t("copyButton")}</Button>
+        <Button className="mt-3">{copied ? "Copied!" : "Copy Virtual Key"}</Button>
       </CopyToClipboard>
 
       <p className="text-sm text-muted-foreground mt-4 mb-1">Gateway URL:</p>

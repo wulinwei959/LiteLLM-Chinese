@@ -98,6 +98,7 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
   onAuthTypeChange,
   fieldValidators,
 }) => {
+  const t = useTranslations("models.addModel");
   const selectedProviderEnum = Providers[selectedProvider as keyof typeof Providers] as Providers;
   const form = useFormContext<MountedFormValues>();
   const authTypes = authTypesFor(selectedProvider);
@@ -405,9 +406,7 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
           </MountedFormField>
 
           {/* Special case for Vertex Credentials help text */}
-          {field.key === "vertex_credentials" && (
-            <p className="text-sm mb-3 mt-1">{t("gcpServiceAccountHint")}</p>
-          )}
+          {field.key === "vertex_credentials" && <p className="text-sm mb-3 mt-1">{t("gcpServiceAccountHint")}</p>}
 
           {/* Special case for Azure Base Model help text */}
           {field.key === "base_model" && (

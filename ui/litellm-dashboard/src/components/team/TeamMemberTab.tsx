@@ -1,4 +1,5 @@
 import { useResetTeamMemberBudget } from "@/app/(dashboard)/hooks/teams/useResetTeamMemberBudget";
+import { useTranslations } from "next-intl";
 import { useResetTeamMemberSpend } from "@/app/(dashboard)/hooks/teams/useResetTeamMemberSpend";
 import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
@@ -15,18 +16,16 @@ import { toast } from "@/lib/toast";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { isProxyAdminRole, isUserTeamAdminForSingleTeam } from "@/utils/roles";
 import { CircleHelp } from "lucide-react";
-import { useTranslations } from "next-intl";
-import type { TeamsTranslator } from "@/lib/i18n/translators";
-import { useState, type ComponentProps } from "react";
+import { useMemo, useState, type ComponentProps } from "react";
 import { TeamData, TeamMemberBudgetSource, TeamMembership } from "./TeamInfo";
 
-const BUDGET_SOURCE_LABEL_KEYS = {
-  team_default: "member.budgetSourceTeamDefault",
-  custom: "member.budgetSourceCustom",
-} as const satisfies Record<Exclude<TeamMemberBudgetSource, "none">, string>;
+const BUDGET_SOURCE_LABELS: Record<Exclude<TeamMemberBudgetSource, "none">, string> = {
+  team_default: "Team default",
+  custom: "Custom",
+};
 
-const formatBudget = (value: number | null, t: TeamsTranslator): string =>
-  value === null ? t("member.unlimited") : `$${formatNumberWithCommas(value, 2)}`;
+const formatBudget = (value: number | null): string =>
+  value === null ? "Unlimited" : `$${formatNumberWithCommas(value, 2)}`;
 
 const hasModelBudgets = (budget: StoredModelMaxBudget | null | undefined): budget is StoredModelMaxBudget =>
   budget != null && Object.keys(budget).length > 0;
@@ -126,8 +125,9 @@ export default function TeamMemberTab({
 
   // Helper function to get rate limits for a user
   const getUserRateLimits = (userId: string | null): string => {
-    if (!userId) return t("member.noLimits");
-    const membership = teamData.team_memberships.find((tm) => tm.user_id === userId);
+    const t = useTranslations("teams");
+    if (!userId) return "No Limits";
+    const membership = findMembership(userId);
     const rpmLimit = membership?.litellm_budget_table?.rpm_limit;
     const tpmLimit = membership?.litellm_budget_table?.tpm_limit;
 
@@ -159,17 +159,18 @@ export default function TeamMemberTab({
     {
       title: (
         <span className="flex items-center gap-1">
-          {t("member.modelScope")}
-          <SimpleTooltip content={t("member.modelScopeTooltip")}>
-            <CircleHelp className="size-4" aria-label={t("member.modelScopeInfoAria")} />
+          Model Scope
+          <SimpleTooltip content="Models this member can access. Empty means they inherit all team models.">
+            <CircleHelp className="size-4" aria-label="Model scope information" />
           </SimpleTooltip>
         </span>
       ),
       key: "model_scope",
       render: (record: Member) => {
+        const t = useTranslations("teams");
         const models = getUserAllowedModels(record.user_id);
         if (!models) {
-          return <span className="text-muted-foreground">{t("member.allTeamModelsInline")}</span>;
+          return <span className="text-muted-foreground">(all team models)</span>;
         }
         const displayed = models.slice(0, 2);
         const remaining = models.length - displayed.length;
@@ -233,10 +234,10 @@ export default function TeamMemberTab({
         const source = getUserBudgetSource(record.user_id);
         return (
           <span className="flex items-center justify-end gap-2">
-            <MoneyCell value={getUserBudget(record.user_id)} decimals={2} emptyText={t("member.unlimited")} showZero />
+            <MoneyCell value={getUserBudget(record.user_id)} decimals={2} emptyText="Unlimited" showZero />
             {source !== "none" && (
               <Badge variant={source === "custom" ? "outline" : "secondary"} data-testid="member-budget-source">
-                {t(BUDGET_SOURCE_LABEL_KEYS[source])}
+                {BUDGET_SOURCE_LABELS[source]}
               </Badge>
             )}
             {source === "custom" && canEditTeam && (
@@ -247,7 +248,7 @@ export default function TeamMemberTab({
                 data-testid="reset-member-budget"
                 onClick={() => setMemberToResetBudget(record)}
               >
-                {t("member.useTeamDefault")}
+                Use team default
               </Button>
             )}
           </span>
@@ -280,7 +281,7 @@ export default function TeamMemberTab({
       { teamId: teamData.team_id, userId: memberToResetSpend.user_id },
       {
         onSuccess: () => {
-          toast.success(t("member.spendResetSuccess"));
+          toast.success("Team member spend reset to $0");
           setMemberToResetSpend(null);
           onMemberSpendReset();
         },
@@ -295,7 +296,7 @@ export default function TeamMemberTab({
       { teamId: teamData.team_id, userId: memberToResetBudget.user_id },
       {
         onSuccess: () => {
-          toast.success(t("member.budgetResetSuccess"));
+          toast.success("Team member budget reset to the team default");
           setMemberToResetBudget(null);
           onMemberBudgetReset();
         },
@@ -341,26 +342,24 @@ export default function TeamMemberTab({
       <Dialog open={memberToResetSpend !== null} onOpenChange={(open) => !open && setMemberToResetSpend(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("member.resetSpendTitle")}</DialogTitle>
+            <DialogTitle>Reset Team Member Spend</DialogTitle>
           </DialogHeader>
           <p>
-            {t.rich("member.resetSpendBody", {
-              name: memberToResetSpend?.user_email || memberToResetSpend?.user_id || "",
-              strong: (chunks) => <strong>{chunks}</strong>,
-            })}
+            Reset current cycle spend for{" "}
+            <strong>{memberToResetSpend?.user_email || memberToResetSpend?.user_id}</strong> in this team to{" "}
+            <strong>$0</strong>?
           </p>
           <p className="text-sm text-muted-foreground">
-            {t.rich("member.resetSpendDetail", {
-              amount: `$${formatNumberWithCommas(getUserCurrentCycleSpend(memberToResetSpend?.user_id ?? null), 4)}`,
-              strong: (chunks) => <strong>{chunks}</strong>,
-            })}
+            Current cycle spend:{" "}
+            <strong>${formatNumberWithCommas(getUserCurrentCycleSpend(memberToResetSpend?.user_id ?? null), 4)}</strong>
+            . This is the value checked against the member&apos;s budget. Total spend and logs are preserved.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setMemberToResetSpend(null)}>
-              {t("member.cancel")}
+              Cancel
             </Button>
             <Button variant="destructive" onClick={handleResetSpend} disabled={isResettingSpend}>
-              {t("member.reset")}
+              Reset
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -368,27 +367,23 @@ export default function TeamMemberTab({
       <Dialog open={memberToResetBudget !== null} onOpenChange={(open) => !open && setMemberToResetBudget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("member.resetBudgetTitle")}</DialogTitle>
+            <DialogTitle>Reset Team Member Budget</DialogTitle>
           </DialogHeader>
           <p>
-            {t.rich("member.resetBudgetBody", {
-              name: memberToResetBudget?.user_email || memberToResetBudget?.user_id || "",
-              amount: formatBudget(teamDefaultBudget, t),
-              strong: (chunks) => <strong>{chunks}</strong>,
-            })}
+            Remove the custom budget for{" "}
+            <strong>{memberToResetBudget?.user_email || memberToResetBudget?.user_id}</strong> and put them back on the
+            team default of <strong>{formatBudget(teamDefaultBudget)}</strong>?
           </p>
           <p className="text-sm text-muted-foreground">
-            {t.rich("member.resetBudgetDetail", {
-              amount: formatBudget(getUserBudget(memberToResetBudget?.user_id ?? null), t),
-              strong: (chunks) => <strong>{chunks}</strong>,
-            })}
+            Custom budget: <strong>{formatBudget(getUserBudget(memberToResetBudget?.user_id ?? null))}</strong>. Their
+            spend is kept. Future changes to the team&apos;s member budget will apply to them again.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setMemberToResetBudget(null)}>
-              {t("member.cancel")}
+              Cancel
             </Button>
             <Button onClick={handleResetBudget} disabled={isResettingBudget}>
-              {t("member.useTeamDefault")}
+              Use team default
             </Button>
           </DialogFooter>
         </DialogContent>

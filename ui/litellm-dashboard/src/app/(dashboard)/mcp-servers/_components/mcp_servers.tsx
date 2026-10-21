@@ -1,4 +1,5 @@
 import { isAdminRole, isProxyAdminRole, isProxyAdminTierRole } from "@/utils/roles";
+import { useTranslations } from "next-intl";
 import { CircleHelp, Plug, Search } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -18,9 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
-
-import type { McpServersTranslator } from "@/lib/i18n/translators";
+import { useQueryState } from "nuqs";
 import { useMCPServers } from "@/app/(dashboard)/hooks/mcpServers/useMCPServers";
 import { useMCPServerHealth } from "@/app/(dashboard)/hooks/mcpServers/useMCPServerHealth";
 import { toast } from "@/lib/toast";
@@ -32,6 +31,7 @@ import CreateMCPServer from "./CreateMCPServer";
 import ImportMCPServers from "./ImportMCPServers";
 import MCPConnect from "./mcp_connect";
 import MCPServerCard from "./MCPServerCard";
+import { useMcpStdioEnabled } from "./StdioAvailability";
 import { MCPServerView } from "./mcp_server_view";
 import type {
   DiscoverableMCPServer,
@@ -54,14 +54,12 @@ import { listMCPUserEnvVarStatus } from "@/components/networking";
 
 export type SortKey = "created_desc" | "updated_desc" | "name_asc" | "health";
 
-const SORT_KEYS: readonly SortKey[] = ["created_desc", "updated_desc", "name_asc", "health"];
-
-const SORT_LABEL_KEYS = {
-  created_desc: "sortCreatedDesc",
-  updated_desc: "sortUpdatedDesc",
-  name_asc: "sortNameAsc",
-  health: "sortHealth",
-} as const satisfies Record<SortKey, string>;
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: "created_desc", label: "Recently created" },
+  { value: "updated_desc", label: "Recently updated" },
+  { value: "name_asc", label: "Name (A→Z)" },
+  { value: "health", label: "Health (unhealthy first)" },
+];
 
 const HEALTH_RANK: Record<string, number> = {
   unhealthy: 0,
@@ -125,23 +123,24 @@ function DeleteServerDialog({
   server,
   isDeleting,
   onConfirm,
-  t,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   server: MCPServer | undefined;
   isDeleting: boolean;
   onConfirm: () => Promise<void>;
-  t: McpServersTranslator;
 }) {
+  const t = useTranslations("mcpServers");
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
+          <AlertDialogTitle>Delete MCP Server?</AlertDialogTitle>
         </AlertDialogHeader>
         <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">{t("deleteBody")}</p>
+          <p className="text-sm text-muted-foreground">
+            <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
+          </p>
 
           {server && (
             <dl className="mt-3 space-y-1 rounded-lg border border-border bg-muted p-4">
@@ -229,6 +228,8 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortKey, setSortKey] = useState<SortKey>("created_desc");
   const isInternalUser = userRole === "Internal User";
+
+  const stdioEnabled = useMcpStdioEnabled();
 
   // Single bulk fetch of this user's per-server env-var status. Drives the
   // red "N user fields missing" footer on each card with no per-row request.
@@ -321,7 +322,7 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
       personal: t("personal"),
       ...Object.fromEntries(uniqueTeams.map((team) => [team.team_id, team.team_alias || team.team_id])),
     }),
-    [isInternalUser, uniqueTeams, t],
+    [isInternalUser, uniqueTeams],
   );
 
   const uniqueMcpAccessGroups = React.useMemo(() => {
@@ -340,7 +341,7 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
       all: t("allAccessGroups"),
       ...Object.fromEntries(uniqueMcpAccessGroups.map((group) => [group, group])),
     }),
-    [uniqueMcpAccessGroups, t],
+    [uniqueMcpAccessGroups],
   );
 
   // Filtering logic for both team and access group
@@ -484,7 +485,6 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
           server={serverToDelete}
           isDeleting={isDeletingServer}
           onConfirm={confirmDelete}
-          t={t}
         />
         <CreateMCPServer
           userRole={userRole}
@@ -496,6 +496,7 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
           availableAccessGroups={uniqueMcpAccessGroups}
           existingServers={mcpServers}
           prefillData={prefillData}
+          stdioEnabled={stdioEnabled}
           onBackToDiscovery={() => {
             setModalVisible(false);
             setPrefillData(null);
@@ -521,7 +522,7 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
                   {t("importFromJson")}
                 </Button>
                 <Button className="shrink-0" onClick={() => setDiscoveryVisible(true)}>
-                  {t("addNewServer")}
+                  + Add New MCP Server
                 </Button>
               </>
             ) : (
@@ -562,13 +563,13 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
         <Tabs defaultValue="servers" className="mt-2 w-full">
           <TabsList variant="line" className="h-auto w-full justify-start rounded-none border-b p-0">
             <TabsTrigger value="servers" className="flex-none rounded-none px-4 py-2">
-              {t("tabAllServers")}
+              All Servers
             </TabsTrigger>
             <TabsTrigger value="toolsets" className="flex-none rounded-none px-4 py-2">
-              {t("tabToolsets")}
+              Toolsets
             </TabsTrigger>
             <TabsTrigger value="connect" className="flex-none rounded-none px-4 py-2">
-              {t("tabConnect")}
+              Connect
             </TabsTrigger>
             {isAdminRole(userRole) && (
               <>
@@ -610,6 +611,7 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
                 availableAccessGroups={uniqueMcpAccessGroups}
                 existingServers={mcpServers}
                 initialTabIndex={selectedServerId === toolsTabServerId ? 1 : 0}
+                stdioEnabled={stdioEnabled}
               />
             ) : (
               <div className="w-full h-full">
@@ -640,17 +642,20 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
                       <div className="h-6 w-px bg-border" />
                       <div className="flex items-center gap-2">
                         <p className="flex items-center text-sm font-medium whitespace-nowrap text-muted-foreground">
-                          {t("accessGroup")}
+                          Access Group
                           <Tooltip>
                             <TooltipTrigger
                               render={
                                 <CircleHelp
                                   className="ml-1 size-3.5 text-muted-foreground"
-                                  aria-label={t("aboutAccessGroups")}
+                                  aria-label="About access groups"
                                 />
                               }
                             />
-                            <TooltipContent>{t("accessGroupTooltip")}</TooltipContent>
+                            <TooltipContent>
+                              An MCP Access Group is a set of users or teams that have permission to access specific MCP
+                              servers. Use access groups to control and organize who can connect to which servers.
+                            </TooltipContent>
                           </Tooltip>
                         </p>
                         <Select
@@ -680,18 +685,15 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
                       <Search className="size-4 text-muted-foreground" />
                     </InputGroupAddon>
                     <InputGroupInput
-                      placeholder={t("searchPlaceholder")}
+                      placeholder="Search by name, alias, URL, or ID"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </InputGroup>
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium whitespace-nowrap text-muted-foreground">{t("sort")}</p>
+                    <p className="text-sm font-medium whitespace-nowrap text-muted-foreground">Sort</p>
                     <Select
-                      items={SORT_KEYS.map((key) => ({
-                        value: key,
-                        label: t(SORT_LABEL_KEYS[key]),
-                      }))}
+                      items={SORT_OPTIONS}
                       value={sortKey}
                       onValueChange={(v: string | null) => setSortKey((v ?? "created_desc") as SortKey)}
                     >
@@ -699,28 +701,30 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {SORT_KEYS.map((key) => (
-                          <SelectItem key={key} value={key}>
-                            {t(SORT_LABEL_KEYS[key])}
+                        {SORT_OPTIONS.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="ml-auto text-xs text-muted-foreground">
-                    {t("serverCount", { shown: displayedServers.length, total: filteredServers.length })}
+                    {displayedServers.length} of {filteredServers.length} servers
                   </div>
                 </div>
                 <div className="mt-4 w-full">
                   {isLoadingServers ? (
                     <div className="flex items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card p-12">
                       <UiLoadingSpinner className="size-6 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">{t("loading")}</p>
+                      <p className="text-sm text-muted-foreground">Loading MCP servers...</p>
                     </div>
                   ) : displayedServers.length === 0 ? (
                     <div className="rounded-lg border border-dashed border-border bg-card p-12 text-center">
                       <p className="text-sm text-muted-foreground">
-                        {filteredServers.length === 0 ? t("emptyNone") : t("emptyNoMatch")}
+                        {filteredServers.length === 0
+                          ? "No MCP servers configured. Click '+ Add New MCP Server' to get started."
+                          : "No servers match the current filters or search."}
                       </p>
                     </div>
                   ) : (
@@ -746,6 +750,7 @@ const MCPServers: React.FC<MCPServerProps> = ({ accessToken, userRole, userID, i
                           onByokConnect={server.is_byok ? () => setByokModalServer(server) : undefined}
                           onOpenFillFields={() => setEnvVarsModalServer(server)}
                           onDelete={isAdminRole(userRole) ? () => handleDelete(server.server_id) : undefined}
+                          stdioEnabled={stdioEnabled}
                         />
                       ))}
                     </div>

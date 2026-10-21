@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import type { CommonTranslator, SkillsTranslator } from "@/lib/i18n/translators";
+import { useTranslations } from "next-intl";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -31,29 +31,29 @@ const CATEGORY_BADGE_CLASS: Record<ReturnType<typeof getCategoryBadgeColor>, str
   gray: "border-border bg-muted text-muted-foreground",
 };
 
-function PluginCategoryBadge({ category, t }: { category?: string; t: SkillsTranslator }) {
+function PluginCategoryBadge({ category }: { category?: string }) {
   return (
     <Badge
       variant="outline"
       className={cn("whitespace-nowrap font-normal", CATEGORY_BADGE_CLASS[getCategoryBadgeColor(category)])}
     >
-      {category || t("uncategorized")}
+      {category || "Uncategorized"}
     </Badge>
   );
 }
 
 interface PluginRowActionsProps {
-  t: SkillsTranslator;
   plugin: Plugin;
   isAdmin: boolean;
   onDeleteClick: (pluginName: string, displayName: string) => void;
 }
 
-function PluginRowActions({ plugin, isAdmin, onDeleteClick, t }: PluginRowActionsProps) {
+function PluginRowActions({ plugin, isAdmin, onDeleteClick }: PluginRowActionsProps) {
+  const t = useTranslations("skills");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label={t("openActions")}
+        aria-label="Open skill actions"
         data-testid={`plugin-actions-${plugin.name}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -76,7 +76,7 @@ function PluginRowActions({ plugin, isAdmin, onDeleteClick, t }: PluginRowAction
               onClick={() => onDeleteClick(plugin.name, plugin.name)}
             >
               <Trash2 />
-              {t("deleteButton")}
+              Delete
             </DropdownMenuItem>
           </>
         )}
@@ -89,22 +89,18 @@ interface PluginTableColumnsDeps {
   isAdmin: boolean;
   onPluginClick: (pluginId: string) => void;
   onDeleteClick: (pluginName: string, displayName: string) => void;
-  t: SkillsTranslator;
-  commonT: CommonTranslator;
 }
 
 export const getPluginTableColumns = ({
   isAdmin,
   onPluginClick,
   onDeleteClick,
-  t,
-  commonT,
 }: PluginTableColumnsDeps): ColumnDef<Plugin>[] => [
   {
     id: "name",
     accessorKey: "name",
-    meta: { title: t("skillName") },
-    header: ({ column }) => <DataTableSortHeader column={column} title={t("skillName")} />,
+    meta: { title: "Skill Name" },
+    header: ({ column }) => <DataTableSortHeader column={column} title="Skill Name" />,
     size: 220,
     enableSorting: true,
     cell: ({ row }) => (
@@ -133,9 +129,11 @@ export const getPluginTableColumns = ({
     size: 300,
     enableSorting: false,
     cell: ({ row }) => {
+      const t = useTranslations("common");
+
       const description = row.original.description;
       return (
-        <span className="block max-w-72 truncate text-sm text-muted-foreground" title={description}>
+        <span className="block max-w-72 truncate text-sm text-muted-foreground" title={description ?? undefined}>
           {description || t("noDescription")}
         </span>
       );
@@ -144,32 +142,29 @@ export const getPluginTableColumns = ({
   {
     id: "category",
     accessorKey: "category",
-    meta: { title: t("category"), skeleton: "badge" },
-    header: t("category"),
+    meta: { title: "Category", skeleton: "badge" },
+    header: "Category",
     size: 150,
     enableSorting: false,
-    cell: ({ row }) => <PluginCategoryBadge category={row.original.category} t={t} />,
+    cell: ({ row }) => <PluginCategoryBadge category={row.original.category ?? undefined} />,
   },
   {
     id: "enabled",
     accessorKey: "enabled",
-    meta: { title: t("public"), skeleton: "badge" },
-    header: t("public"),
+    meta: { title: "Public", skeleton: "badge" },
+    header: "Public",
     size: 100,
     enableSorting: false,
     cell: ({ row }) => (
-      <StatusBadge
-        tone={row.original.enabled ? "success" : "neutral"}
-        label={row.original.enabled ? commonT("yes") : commonT("no")}
-      />
+      <StatusBadge tone={row.original.enabled ? "success" : "neutral"} label={row.original.enabled ? "Yes" : "No"} />
     ),
   },
   {
     id: "created_at",
     accessorKey: "created_at",
     sortingFn: "datetime",
-    meta: { title: t("createdAt") },
-    header: ({ column }) => <DataTableSortHeader column={column} title={t("createdAt")} />,
+    meta: { title: "Created At" },
+    header: ({ column }) => <DataTableSortHeader column={column} title="Created At" />,
     size: 160,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.created_at} />,
@@ -183,7 +178,7 @@ export const getPluginTableColumns = ({
     enableHiding: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <PluginRowActions plugin={row.original} isAdmin={isAdmin} onDeleteClick={onDeleteClick} t={t} />
+        <PluginRowActions plugin={row.original} isAdmin={isAdmin} onDeleteClick={onDeleteClick} />
       </div>
     ),
   },

@@ -1,9 +1,9 @@
 "use client";
 
-import type { ModelsTranslator } from "@/lib/i18n/translators";
+import { ColumnDef } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 
-import { ColumnDef } from "@tanstack/react-table";
+import type { ModelsTranslator } from "@/lib/i18n/translators";
 import { CredentialIdentity } from "@/components/shared/CredentialIdentity";
 import { Copy, Info, Loader2, Pencil, RefreshCw, Trash2 } from "lucide-react";
 
@@ -89,7 +89,9 @@ function ModelInformationCell({ model, displayName }: { model: ModelData; displa
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
             {model.provider ? <ProviderLogo provider={model.provider} className="size-4 shrink-0" /> : null}
-            <span className="truncate text-xs text-muted-foreground">{model.provider || t("modelTable.unknownProvider")}</span>
+            <span className="truncate text-xs text-muted-foreground">
+              {model.provider || t("modelTable.unknownProvider")}
+            </span>
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="text-xs text-muted-foreground">{t("modelTable.publicModelName")}</span>
@@ -121,14 +123,15 @@ function ModelInformationCell({ model, displayName }: { model: ModelData; displa
 }
 
 function CredentialsHeader() {
-  const t = useTranslations("models");
   return (
-    <span className="flex items-center gap-1">{t("table.credentials")}<HoverCard>
+    <span className="flex items-center gap-1">
+      Credentials
+      <HoverCard>
         <HoverCardTrigger
           render={
             <button
               type="button"
-              aria-label={t("table.credentialsTooltip")}
+              aria-label="About credential types"
               data-testid="credentials-header-info"
               className="cursor-pointer text-muted-foreground hover:text-foreground"
             />
@@ -138,16 +141,24 @@ function CredentialsHeader() {
         </HoverCardTrigger>
         <HoverCardContent align="start" className="w-80">
           <div className="flex flex-col gap-3">
-            <span className="text-sm font-medium text-foreground">{t("table.credentialTypes")}</span>
+            <span className="text-sm font-medium text-foreground">Credential types</span>
             <div className="flex flex-col gap-1">
               <span className="flex items-center gap-1.5 text-sm font-medium text-info">
-                <RefreshCw className="size-3.5" />{t("table.reusable")}</span>
-              <span className="text-xs text-muted-foreground">{t("table.reusableDesc")}</span>
+                <RefreshCw className="size-3.5" />
+                Reusable
+              </span>
+              <span className="text-xs text-muted-foreground">
+                Credentials saved in LiteLLM that can be added to models repeatedly.
+              </span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-                <Pencil className="size-3.5" />{t("table.manual")}</span>
-              <span className="text-xs text-muted-foreground">{t("table.manualDesc")}</span>
+                <Pencil className="size-3.5" />
+                Manual
+              </span>
+              <span className="text-xs text-muted-foreground">
+                Credentials added directly during model creation or defined in the config file.
+              </span>
             </div>
           </div>
         </HoverCardContent>
@@ -156,12 +167,13 @@ function CredentialsHeader() {
   );
 }
 
-function CredentialsCell({ credentialName }: { credentialName: string | undefined }) {
-  const t = useTranslations("models");
+function CredentialsCell({ credentialName, label }: { credentialName: string | undefined; label: string | undefined }) {
   if (!credentialName) {
     return (
       <Badge variant="outline" className="gap-1 font-normal text-muted-foreground">
-        <Pencil className="size-3" />{t("table.manual")}</Badge>
+        <Pencil className="size-3" />
+        Manual
+      </Badge>
     );
   }
 
@@ -176,11 +188,10 @@ function CredentialsCell({ credentialName }: { credentialName: string | undefine
 }
 
 function CreatedByCell({ model }: { model: ModelData }) {
-  const t = useTranslations("models");
   const isConfigModel = !model.model_info?.db_model;
   const createdAt = formatShortDate(model.model_info.created_at);
-  const primary = isConfigModel ? t("modelTable.configModel") : model.model_info.created_by || t("health.unknown");
-  const secondaryForDbModel = createdAt ?? t("unknownDate");
+  const primary = isConfigModel ? "Defined in config" : model.model_info.created_by || "Unknown";
+  const secondaryForDbModel = createdAt ?? "Unknown date";
 
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
@@ -227,7 +238,7 @@ function CostsCell({ model }: { model: ModelData }) {
 }
 
 function AccessGroupsCell({ accessGroups }: { accessGroups: string[] | null }) {
-  const t = useTranslations("common");
+  const t = useTranslations("models");
   if (!accessGroups || accessGroups.length === 0) {
     return <span className="text-sm text-muted-foreground">-</span>;
   }
@@ -267,7 +278,6 @@ interface ModelRowActionsProps {
   isPausing: boolean;
   onDeleteClick?: (modelId: string) => void;
   onTogglePauseClick?: (modelId: string, blocked: boolean) => void | Promise<void>;
-  t: ModelsTranslator;
 }
 
 function ModelRowActions({
@@ -278,8 +288,8 @@ function ModelRowActions({
   isPausing,
   onDeleteClick,
   onTogglePauseClick,
-  t,
 }: ModelRowActionsProps) {
+  const t = useTranslations("models");
   const modelId = model.model_info?.id;
   const isConfigModel = !model.model_info?.db_model;
   const isAdmin = userRole === "Admin" && !isViewOnly;
@@ -288,6 +298,8 @@ function ModelRowActions({
   const isPauseToggleable = !isConfigModel && isAdmin && Boolean(onTogglePauseClick);
 
   const resolvePauseTooltip = (): string => {
+    const t = useTranslations("models");
+
     if (isConfigModel) {
       return t("modelTable.pauseTooltipConfig");
     }
@@ -297,9 +309,7 @@ function ModelRowActions({
     return isBlocked ? t("modelTable.resumeTooltipNormal") : t("modelTable.pauseTooltipNormal");
   };
 
-  const deleteTooltip = isConfigModel
-    ? t("modelTable.deleteTooltipConfig")
-    : t("table.delete");
+  const deleteTooltip = isConfigModel ? t("modelTable.deleteTooltipConfig") : t("table.delete");
 
   return (
     <div className="flex items-center justify-end gap-1.5">
@@ -366,6 +376,7 @@ export interface ModelsTableColumnDeps {
   onDeleteClick?: (modelId: string) => void;
   onTogglePauseClick?: (modelId: string, blocked: boolean) => void | Promise<void>;
   pausingModelId?: string | null;
+  credentialLabels?: ReadonlyMap<string, string>;
   t: ModelsTranslator;
 }
 
@@ -378,6 +389,7 @@ export const getModelsTableColumns = ({
   onDeleteClick,
   onTogglePauseClick,
   pausingModelId,
+  credentialLabels,
   t,
 }: ModelsTableColumnDeps): ColumnDef<ModelData>[] => [
   {
@@ -515,7 +527,6 @@ export const getModelsTableColumns = ({
         isPausing={pausingModelId === row.original.model_info?.id}
         onDeleteClick={onDeleteClick}
         onTogglePauseClick={onTogglePauseClick}
-        t={t}
       />
     ),
   },

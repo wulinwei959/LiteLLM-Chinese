@@ -1,15 +1,14 @@
 "use client";
 
 import { SortingState } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 import { KeyRound } from "lucide-react";
 import React, { useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
 
 import { CredentialItem } from "@/components/networking";
 import { DataTable } from "@/components/shared/DataTable";
 
 import { getCredentialsTableColumns } from "./CredentialsTableColumns";
-import type { CredentialsTranslator } from "@/lib/i18n/translators";
 
 interface CredentialsTableProps {
   credentials: CredentialItem[];
@@ -21,7 +20,8 @@ interface CredentialsTableProps {
 
 const DEFAULT_SORTING: SortingState = [{ id: "credential_name", desc: false }];
 
-function EmptyState({ t }: { t: CredentialsTranslator }) {
+function EmptyState() {
+  const t = useTranslations("credentials");
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
@@ -41,12 +41,11 @@ const CredentialsTable: React.FC<CredentialsTableProps> = ({
   isLoading = false,
 }) => {
   const t = useTranslations("credentials");
-  const commonT = useTranslations("common");
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
   const columns = useMemo(
-    () => getCredentialsTableColumns({ canModifyCredentials, onEdit, onDelete, t, commonT }),
-    [canModifyCredentials, onEdit, onDelete, t, commonT],
+    () => getCredentialsTableColumns({ canModifyCredentials, onEdit, onDelete }),
+    [canModifyCredentials, onEdit, onDelete],
   );
 
   return (
@@ -60,7 +59,7 @@ const CredentialsTable: React.FC<CredentialsTableProps> = ({
       onSortingChange={setSorting}
       isLoading={isLoading}
       loadingMessage={t("loading")}
-      noDataMessage={<EmptyState t={t} />}
+      noDataMessage={<EmptyState />}
       size="compact"
     />
   );

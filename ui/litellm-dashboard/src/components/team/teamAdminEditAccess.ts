@@ -1,4 +1,6 @@
 import { z } from "zod";
+
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 import { numberOrNull } from "@/lib/forms/numberOrNull";
 
 import {
@@ -7,9 +9,17 @@ import {
   metadataPairsToObject,
 } from "../common_components/MetadataKeyValueFields";
 
-import type { TeamsTranslator } from "@/lib/i18n/translators";
-
 export const TEAM_ADMIN_EDITABLE_TEAM_FIELDS_SETTING = "team_admin_editable_team_fields";
+
+export const TEAM_ADMIN_RAISE_MAX_BUDGET_PERMISSION = "raise_max_budget";
+
+export const TEAM_ADMIN_CREATE_MEMBER_KEYS_PERMISSION = "create_member_keys";
+
+export const TEAM_ADMIN_METADATA_FIELD = "metadata";
+
+export const TEAM_ADMIN_EDITING_DISABLED_TITLE = "Team admins cannot edit team settings on this proxy";
+export const TEAM_ADMIN_EDITING_DISABLED_DESCRIPTION =
+  "Ask a proxy admin to enable fields under Settings > UI > Team admin editable fields.";
 
 const teamAdminEditAccessShape = {
   kind: z.literal("team_admin"),
@@ -68,6 +78,30 @@ export const TEAM_ADMIN_SETTINGS_FIELDS = [
 ] as const;
 
 export type TeamAdminSettingsField = (typeof TEAM_ADMIN_SETTINGS_FIELDS)[number];
+
+type TeamAdminDurationSettingsField = "team_member_budget_duration";
+
+type TeamAdminNumericSettingsField = Exclude<TeamAdminSettingsField, TeamAdminDurationSettingsField>;
+
+export const isTeamAdminDurationSettingsField = (
+  field: TeamAdminSettingsField,
+): field is TeamAdminDurationSettingsField => field === "team_member_budget_duration";
+
+const TEAM_ADMIN_FIELD_LABELS: ReadonlyMap<string, string> = new Map([
+  ["tpm_limit", "Tokens per minute Limit (TPM)"],
+  ["rpm_limit", "Requests per minute Limit (RPM)"],
+  ["max_budget", "Max Budget (USD)"],
+  [TEAM_ADMIN_METADATA_FIELD, "Team Metadata"],
+  ["soft_budget", "Soft Budget (USD)"],
+  ["team_member_budget", "Member Default Budget (USD)"],
+  ["team_member_budget_duration", "Member Default Budget Duration"],
+  ["team_member_tpm_limit", "Member Default TPM Limit"],
+  ["team_member_rpm_limit", "Member Default RPM Limit"],
+  [TEAM_ADMIN_RAISE_MAX_BUDGET_PERMISSION, "Raise the team's max budget"],
+  ["projects", "Create and update projects"],
+  ["member_key_budgets", "Update budgets on team members' keys"],
+  [TEAM_ADMIN_CREATE_MEMBER_KEYS_PERMISSION, "Create keys for team members"],
+]);
 
 export const teamAdminFieldLabel = (t: TeamsTranslator, field: string): string => {
   switch (field) {

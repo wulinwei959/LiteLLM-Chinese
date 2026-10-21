@@ -1,5 +1,5 @@
-import { useTranslations } from "next-intl";
 import React from "react";
+import { useTranslations } from "next-intl";
 import VectorStorePermissions from "./permissions/VectorStorePermissions";
 import MCPServerPermissions from "./permissions/MCPServerPermissions";
 import AgentPermissions from "./permissions/AgentPermissions";
@@ -91,20 +91,18 @@ export function ObjectPermissionsView({
         accessToken={accessToken}
       />
       <div className="min-w-0 rounded-md border border-border p-4">
-        <p className="text-sm font-medium text-foreground">{t("searchToolsTitle")}</p>
+        <p className="text-sm font-medium text-foreground">Search tools</p>
         {searchTools.length === 0 ? (
-          <p className="mt-1 block text-xs text-muted-foreground">{t("searchToolsNone")}</p>
+          <p className="mt-1 block text-xs text-muted-foreground">
+            No restriction — all configured search tools are allowed for this team.
+          </p>
         ) : (
           <p className="mt-1 block text-xs break-words text-foreground">{searchTools.join(", ")}</p>
         )}
       </div>
       <div className="min-w-0 rounded-md border border-border p-4">
-        <p className="text-sm font-medium text-foreground">{t("skillsTitle")}</p>
-        {skills.length === 0 ? (
-          <p className="mt-1 block text-xs text-muted-foreground">{t("skillsNone")}</p>
-        ) : (
-          <p className="mt-1 block text-xs break-words text-foreground">{skills.join(", ")}</p>
-        )}
+        <p className="text-sm font-medium text-foreground">Skills</p>
+        {skillsContent}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Check, ChevronDown, ChevronRight, CircleAlert, Copy, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Check, ChevronDown, ChevronRight, CircleAlert, Copy, Info } from "lucide-react";
 import moment from "moment";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { LogEntry } from "../types";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
-import GuardrailViewer from "../GuardrailViewer/GuardrailViewer";
-import EvalViewer from "../EvalViewer/EvalViewer";
+import { PROMPT_CACHE_CREATION_TOOLTIP, PROMPT_CACHE_READ_TOOLTIP } from "@/utils/promptCacheUsage";
+import GuardrailViewer from "./sections/GuardrailViewer/GuardrailViewer";
+import EvalViewer from "./sections/EvalViewer/EvalViewer";
 import {
   getBatchIdFromRequestId,
   getBatchModels,
@@ -20,10 +21,10 @@ import {
   getReasoningTokens,
   isBatchCallType,
 } from "../batchLogUtils";
-import { CostBreakdownViewer } from "../CostBreakdownViewer";
-import { ConfigInfoMessage } from "../ConfigInfoMessage";
-import { VectorStoreViewer } from "../VectorStoreViewer";
-import { CREDENTIAL_LABEL_KEYS } from "../constants";
+import { CostBreakdownViewer } from "./sections/CostBreakdownViewer";
+import { ConfigInfoMessage } from "./sections/ConfigInfoMessage";
+import { VectorStoreViewer } from "./sections/VectorStoreViewer";
+import { CREDENTIAL_LABEL_KEYS, KUBERNETES_POD_ROUTING_LABEL_KEYS } from "../constants";
 import { TruncatedValue } from "./TruncatedValue";
 import { TokenFlow } from "./TokenFlow";
 import { JsonViewer } from "./JsonViewer";
@@ -166,7 +167,7 @@ export function LogDetailContent({
                 <DescriptionItem label="Pod">
                   {podRouting.pod_ip}
                   {" · "}
-                  {KUBERNETES_POD_ROUTING_LABELS[podRouting.selection]}
+                  {t(KUBERNETES_POD_ROUTING_LABEL_KEYS[podRouting.selection])}
                   {" · "}
                   {podRouting.pod_count} pods
                 </DescriptionItem>
@@ -329,17 +330,16 @@ function CopyButton({
 }
 
 function ErrorDescription({ errorInfo }: { errorInfo: any }) {
-  const t = useTranslations("logs");
   return (
     <div>
       {errorInfo.error_code && (
         <div>
-          <span className="font-semibold">{t("detail.errorCodeLabel")}</span> {errorInfo.error_code}
+          <span className="font-semibold">Error Code:</span> {errorInfo.error_code}
         </div>
       )}
       {errorInfo.error_message && (
         <div>
-          <span className="font-semibold">{t("detail.messageLabel")}</span> {errorInfo.error_message}
+          <span className="font-semibold">Message:</span> {errorInfo.error_message}
         </div>
       )}
     </div>
@@ -347,11 +347,10 @@ function ErrorDescription({ errorInfo }: { errorInfo: any }) {
 }
 
 function TagsSection({ tags }: { tags: Record<string, any> }) {
-  const t = useTranslations("logs");
   return (
     <div className="bg-card rounded-lg shadow-sm w-full max-w-full overflow-hidden p-4 mb-6">
       <span className="font-semibold" style={{ display: "block", marginBottom: 8, fontSize: 16 }}>
-        {t("columns.tags")}
+        Tags
       </span>
       <div className="flex flex-wrap items-center gap-2">
         {Object.entries(tags).map(([key, value]) => (
@@ -404,31 +403,28 @@ function getUncachedInputTextTokens(metadata: Record<string, any>): number | und
   return Number.isFinite(n) ? n : undefined;
 }
 
+const RESPONSE_CACHE_TOOLTIP =
+  "Whether this request was served from LiteLLM's response cache (e.g. Redis / in-memory), skipping the LLM provider call entirely. This is separate from provider prompt caching; a Miss here does not mean prompt caching failed.";
 const RESPONSE_CACHE_DOCS_URL = "https://docs.litellm.ai/docs/proxy/caching";
+const CACHE_KEY_TOOLTIP =
+  "The key LiteLLM computed for this request in the response cache. Requests with the same cache key share a cached response; a different key means the request content did not match any cached entry.";
 const PROMPT_CACHE_DOCS_URL = "https://docs.litellm.ai/docs/completion/prompt_caching";
 
 function MetricLabel({ label, tooltip, docsUrl }: { label: string; tooltip: string; docsUrl: string }) {
-  const t = useTranslations("logs");
   return (
     <span className="inline-flex items-center gap-1">
       {label}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger
-            render={
-              <span
-                role="img"
-                aria-label={t("detail.infoAria", { label })}
-                className="inline-flex text-muted-foreground"
-              />
-            }
+            render={<span role="img" aria-label={`${label} info`} className="inline-flex text-muted-foreground" />}
           >
             <Info className="size-3.5" />
           </TooltipTrigger>
           <TooltipContent>
             {tooltip}{" "}
             <a href={docsUrl} target="_blank" rel="noreferrer" className="underline">
-              {t("detail.docs")}
+              Docs
             </a>
           </TooltipContent>
         </Tooltip>
@@ -504,30 +500,24 @@ function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: 
   const showAnthropicMessagesInputOutput =
     logEntry.call_type === "anthropic_messages" && uncachedInputTokens !== undefined;
   const reasoningTokens = getReasoningTokens(metadata);
-  const responseCacheTooltip = t("detail.responseCacheTooltip");
-  const cacheKeyTooltip = t("detail.cacheKeyTooltip");
-  const promptCacheReadTooltip = t("detail.promptCacheReadTooltip");
-  const promptCacheCreationTooltip = t("detail.promptCacheCreationTooltip");
 
   return (
     <div className="bg-card rounded-lg shadow-sm w-full max-w-full overflow-hidden mb-6">
       <Card size="sm" style={{ marginBottom: 0 }}>
         <CardHeader>
-          <CardTitle>{t("detail.metrics")}</CardTitle>
+          <CardTitle>Metrics</CardTitle>
         </CardHeader>
         <CardContent>
           <DescriptionList>
             {showAnthropicMessagesInputOutput ? (
               <>
-                <DescriptionItem label={t("detail.inputTokens")}>
-                  {formatNumberWithCommas(uncachedInputTokens)}
-                </DescriptionItem>
-                <DescriptionItem label={t("detail.outputTokens")}>
+                <DescriptionItem label="Input Tokens">{formatNumberWithCommas(uncachedInputTokens)}</DescriptionItem>
+                <DescriptionItem label="Output Tokens">
                   {formatNumberWithCommas(logEntry.completion_tokens)}
                 </DescriptionItem>
               </>
             ) : (
-              <DescriptionItem label={t("tokens")}>
+              <DescriptionItem label="Tokens">
                 <TokenFlow
                   prompt={logEntry.prompt_tokens}
                   completion={logEntry.completion_tokens}
@@ -536,42 +526,34 @@ function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: 
               </DescriptionItem>
             )}
             {reasoningTokens !== undefined && reasoningTokens > 0 && (
-              <DescriptionItem label={t("detail.reasoningTokens")}>
-                {formatNumberWithCommas(reasoningTokens)}
-              </DescriptionItem>
+              <DescriptionItem label="Reasoning Tokens">{formatNumberWithCommas(reasoningTokens)}</DescriptionItem>
             )}
-            <DescriptionItem label={t("cost")}>{formatNumberWithCommas(logEntry.spend || 0, 8)}</DescriptionItem>
-            <DescriptionItem label={t("detail.duration")}>
+            <DescriptionItem label="Cost">${formatNumberWithCommas(logEntry.spend || 0, 8)}</DescriptionItem>
+            <DescriptionItem label="Duration">
               {logEntry.request_duration_ms != null ? (logEntry.request_duration_ms / 1000).toFixed(3) : "-"} s
             </DescriptionItem>
             {ttftMs != null && ttftMs > 0 && (
-              <DescriptionItem label={t("detail.timeToFirstToken")}>{(ttftMs / 1000).toFixed(3)} s</DescriptionItem>
+              <DescriptionItem label="Time to First Token">{(ttftMs / 1000).toFixed(3)} s</DescriptionItem>
             )}
 
             {showResponseCache && (
               <DescriptionItem
                 label={
                   <MetricLabel
-                    label={t("detail.responseCache")}
-                    tooltip={responseCacheTooltip}
+                    label="Response Cache"
+                    tooltip={RESPONSE_CACHE_TOOLTIP}
                     docsUrl={RESPONSE_CACHE_DOCS_URL}
                   />
                 }
               >
                 <Badge variant="secondary" className={isResponseCacheHit ? "bg-success/15 text-success" : undefined}>
-                  {isResponseCacheHit ? t("detail.cacheHit") : t("detail.cacheMiss")}
+                  {isResponseCacheHit ? "Hit" : "Miss"}
                 </Badge>
               </DescriptionItem>
             )}
             {responseCacheKey && (
               <DescriptionItem
-                label={
-                  <MetricLabel
-                    label={t("detail.cacheKey")}
-                    tooltip={cacheKeyTooltip}
-                    docsUrl={RESPONSE_CACHE_DOCS_URL}
-                  />
-                }
+                label={<MetricLabel label="Cache Key" tooltip={CACHE_KEY_TOOLTIP} docsUrl={RESPONSE_CACHE_DOCS_URL} />}
               >
                 <TruncatedValue value={responseCacheKey} />
               </DescriptionItem>
@@ -581,7 +563,7 @@ function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: 
                 label={
                   <MetricLabel
                     label={t("detail.promptCacheRead")}
-                    tooltip={promptCacheReadTooltip}
+                    tooltip={PROMPT_CACHE_READ_TOOLTIP}
                     docsUrl={PROMPT_CACHE_DOCS_URL}
                   />
                 }
@@ -594,7 +576,7 @@ function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: 
                 label={
                   <MetricLabel
                     label={t("detail.promptCacheCreation")}
-                    tooltip={promptCacheCreationTooltip}
+                    tooltip={PROMPT_CACHE_CREATION_TOOLTIP}
                     docsUrl={PROMPT_CACHE_DOCS_URL}
                   />
                 }
@@ -777,7 +759,6 @@ const guardrailJumpLinkOutcome = (evaluated: unknown[]): keyof typeof GUARDRAIL_
 };
 
 export function GuardrailJumpLink({ guardrailEntries }: { guardrailEntries: any[] }) {
-  const t = useTranslations("logs");
   const statuses = guardrailEntries.map((e) => e?.guardrail_status || e?.status);
   const evaluated = statuses.filter((s) => !isNotRunStatus(s));
   const notRunCount = statuses.length - evaluated.length;
@@ -804,8 +785,9 @@ export function GuardrailJumpLink({ guardrailEntries }: { guardrailEntries: any[
           fontWeight: 500,
         }}
       >
-        {glyph} {t("guardrail.guardrailsEvaluated", { count: evaluated.length })}
-        {notRunCount > 0 ? t("guardrail.notRunSuffix", { count: notRunCount }) : ""}
+        {glyph} {evaluated.length} guardrail
+        {evaluated.length !== 1 ? "s" : ""} evaluated
+        {notRunCount > 0 ? `, ${notRunCount} not run` : ""}
         <span style={{ fontSize: 11, opacity: 0.7 }}>{"\u2193"}</span>
       </div>
     </div>

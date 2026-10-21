@@ -1,4 +1,5 @@
 import { AgentHubData, getAgentHubTableColumns } from "@/components/AIHub/AgentHubTableColumns";
+import { useTranslations } from "next-intl";
 import MakeAgentPublicForm from "@/components/AIHub/forms/MakeAgentPublicForm";
 import MakeMCPPublicForm from "@/components/AIHub/forms/MakeMCPPublicForm";
 import MakeModelPublicForm from "@/components/AIHub/forms/MakeModelPublicForm";
@@ -36,7 +37,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Copy, Inbox, Search as SearchIcon, X } from "lucide-react";
-import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -97,10 +97,15 @@ function HubEmptyState({ title, body }: { title: string; body: string }) {
   );
 }
 
-const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, premiumUser, userRole }) => {
+const ModelHubTable: React.FC<ModelHubTableProps> = ({
+  accessToken,
+  publicPage,
+  premiumUser,
+  userRole,
+  canOpenPlayground,
+  canAddModels,
+}) => {
   const t = useTranslations("modelHub");
-  const agentsT = useTranslations("agents");
-  const commonT = useTranslations("common");
   const syntaxTheme = useSyntaxTheme(prism);
   // Admin Viewer follows the read-parity rule: see the AI Hub catalog, but
   // cannot toggle public visibility (write).
@@ -422,22 +427,13 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
   const [agentSorting, setAgentSorting] = useState<SortingState>([{ id: "name", desc: false }]);
   const [mcpSorting, setMcpSorting] = useState<SortingState>([{ id: "server_name", desc: false }]);
 
-  const modelColumns = useMemo(
-    () => getModelHubTableColumns({ onModelClick: showModal, t, commonT }),
-    [showModal, t, commonT],
-  );
-  const agentColumns = useMemo(
-    () => getAgentHubTableColumns({ onAgentClick: showAgentModal, t: agentsT }),
-    [showAgentModal, agentsT],
-  );
+  const modelColumns = useMemo(() => getModelHubTableColumns({ onModelClick: showModal }), [showModal]);
+  const agentColumns = useMemo(() => getAgentHubTableColumns({ onAgentClick: showAgentModal }), [showAgentModal]);
   const filteredAgentData = useMemo(
     () => filterBySearchTerm(agentHubData ?? [], agentSearchTerm, (agent) => [agent.name, agent.description]),
     [agentHubData, agentSearchTerm],
   );
-  const mcpColumns = useMemo(
-    () => getMCPHubTableColumns({ onServerClick: showMcpModal, t, commonT }),
-    [showMcpModal, t, commonT],
-  );
+  const mcpColumns = useMemo(() => getMCPHubTableColumns({ onServerClick: showMcpModal }), [showMcpModal]);
 
   // If this is a public page, use the dedicated PublicModelHub component
   if (publicPage && publicPageAllowed) {
@@ -451,23 +447,25 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
           {/* Header with Title, Description and URL */}
           <div className="flex justify-between items-center mb-6">
             <div className="flex flex-col items-start">
-              <h2 className="text-center text-xl font-semibold">{t("hubTitle")}</h2>
+              <h2 className="text-center text-xl font-semibold">AI Hub</h2>
               {isAdminRole(userRole || "") ? (
-                <p className="text-sm text-muted-foreground">{t("hubAdminDescription")}</p>
+                <p className="text-sm text-muted-foreground">
+                  Make models, agents, and MCP servers public for developers to know what&apos;s available.
+                </p>
               ) : (
-                <p className="text-sm text-muted-foreground">{t("hubUserDescription")}</p>
+                <p className="text-sm text-muted-foreground">
+                  A list of all public model names personally available to you.
+                </p>
               )}
             </div>
             <div className="flex items-center space-x-4">
-              <p>{t("modelHubUrlLabel")}</p>
+              <p>Model Hub URL:</p>
               <div className="flex items-center bg-border px-2 py-1 rounded-sm">
                 <p className="mr-2">{getUiPageUrl(`${getProxyBaseUrl()}/ui/model_hub_table`)}</p>
                 <button
-                  onClick={() =>
-                    void copyToClipboard(`${getProxyBaseUrl()}/ui/model_hub_table`, commonT("copiedToClipboard"))
-                  }
+                  onClick={() => void copyToClipboard(getUiPageUrl(`${getProxyBaseUrl()}/ui/model_hub_table`))}
                   className="p-1 hover:bg-accent rounded-sm transition-colors"
-                  title={t("copyUrl")}
+                  title="Copy URL"
                 >
                   <Copy size={16} className="text-muted-foreground" />
                 </button>
@@ -486,16 +484,16 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
           <Tabs defaultValue="models">
             <TabsList variant="line" className="mb-4 h-auto w-full justify-start rounded-none border-b p-0">
               <TabsTrigger value="models" className="flex-none rounded-none px-4 py-2">
-                {t("tabModels")}
+                Model Hub
               </TabsTrigger>
               <TabsTrigger value="agents" className="flex-none rounded-none px-4 py-2">
-                {t("tabAgents")}
+                Agent Hub
               </TabsTrigger>
               <TabsTrigger value="mcp" className="flex-none rounded-none px-4 py-2">
-                {t("tabMcp")}
+                MCP Hub
               </TabsTrigger>
               <TabsTrigger value="skills" className="flex-none rounded-none px-4 py-2">
-                {t("tabSkills")}
+                Skill Hub
               </TabsTrigger>
             </TabsList>
 
@@ -529,12 +527,9 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                     sorting={modelSorting}
                     onSortingChange={setModelSorting}
                     isLoading={loading}
-                    loadingMessage={t("loadingModels")}
+                    loadingMessage="Loading models…"
                     noDataMessage={
-                      <HubEmptyState
-                        title={modelHubData?.length ? t("noMatchingModels") : t("noModelsYet")}
-                        body={modelHubData?.length ? t("modelsFilterHint") : t("modelsEmptyHint")}
-                      />
+                      <HubEmptyState {...modelTableEmptyState(modelHubData ?? [], showDecisionGarden, selectedMode)} />
                     }
                     size="compact"
                   />
@@ -594,11 +589,15 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                     sorting={agentSorting}
                     onSortingChange={setAgentSorting}
                     isLoading={agentLoading}
-                    loadingMessage={t("loadingAgents")}
+                    loadingMessage="Loading agents…"
                     noDataMessage={
                       <HubEmptyState
-                        title={agentHubData?.length ? t("noMatchingAgents") : t("noAgentsYet")}
-                        body={agentHubData?.length ? t("agentsSearchHint") : t("agentsEmptyHint")}
+                        title={agentHubData?.length ? "No matching agents" : "No agents yet"}
+                        body={
+                          agentHubData?.length
+                            ? "Adjust the search to see more agents."
+                            : "Agents added to this proxy will appear here."
+                        }
                       />
                     }
                     size="compact"
@@ -637,18 +636,20 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                     sorting={mcpSorting}
                     onSortingChange={setMcpSorting}
                     isLoading={mcpLoading}
-                    loadingMessage={t("loadingMcpServers")}
-                    noDataMessage={<HubEmptyState title={t("noMcpServersYet")} body={t("mcpServersEmptyHint")} />}
+                    loadingMessage="Loading MCP servers…"
+                    noDataMessage={
+                      <HubEmptyState
+                        title="No MCP servers yet"
+                        body="MCP servers added to this proxy will appear here."
+                      />
+                    }
                     size="compact"
                   />
                 </Card>
 
                 <div className="mt-4 text-center space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    {t("showingMcpServers", {
-                      shown: mcpHubData?.length || 0,
-                      total: mcpHubData?.length || 0,
-                    })}
+                    Showing {mcpHubData?.length || 0} MCP server{mcpHubData?.length !== 1 ? "s" : ""}
                   </p>
                 </div>
               </TabsContent>
@@ -657,9 +658,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
               <TabsContent value="skills" keepMounted>
                 {publicPage == false && canModify && (
                   <div className="flex justify-end mb-4">
-                    <Button onClick={() => setIsMakeSkillPublicModalVisible(true)}>
-                      {t("selectSkillsToMakePublic")}
-                    </Button>
+                    <Button onClick={() => setIsMakeSkillPublicModalVisible(true)}>Select Skills to Make Public</Button>
                   </div>
                 )}
                 <SkillHubDashboard
@@ -679,8 +678,10 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
         </div>
       ) : (
         <Card className="mx-auto max-w-xl mt-10 px-6">
-          <p className="text-xl text-center mb-2 text-foreground">{t("publicHubNotEnabled")}</p>
-          <p className="text-base text-center text-foreground">{t("publicHubNotEnabledHint")}</p>
+          <p className="text-xl text-center mb-2 text-foreground">Public Model Hub not enabled.</p>
+          <p className="text-base text-center text-foreground">
+            Ask your proxy admin to enable this on their Admin UI.
+          </p>
         </Card>
       )}
 
@@ -740,7 +741,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                     <p>
                       {selectedModel.input_cost_per_token
                         ? formatCost(selectedModel.input_cost_per_token)
-                        : t("notSpecified")}
+                        : "Not specified"}
                     </p>
                   </div>
                   <div>
@@ -748,7 +749,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                     <p>
                       {selectedModel.output_cost_per_token
                         ? formatCost(selectedModel.output_cost_per_token)
-                        : t("notSpecified")}
+                        : "Not specified"}
                     </p>
                   </div>
                 </div>
@@ -756,7 +757,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
               {/* Capabilities */}
               <div>
-                <p className="text-lg font-semibold mb-4">{t("secCapabilities")}</p>
+                <p className="text-lg font-semibold mb-4">Capabilities</p>
                 <div className="flex flex-wrap gap-2">
                   {(() => {
                     const capabilities = getModelCapabilities(selectedModel);
@@ -811,7 +812,24 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
               )}
 
               <div>
-                <p className="text-lg font-semibold mb-4">{t("secUsageExample")}</p>
+                <p className="text-lg font-semibold mb-4">Usage Example</p>
+                {isDecisionMode(selectedModel.mode) && (
+                  <p className="mb-2 text-sm text-muted-foreground">
+                    Decision models answer on <code>/v1/decisions</code> and <code>/v1/systemone</code>, not{" "}
+                    <code>/chat/completions</code>.{" "}
+                    <a href={DECISIONS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="underline">
+                      How to call decision models
+                    </a>
+                    {canOpenPlayground && (
+                      <>
+                        {" · "}
+                        <a href={uiHref(SYSTEM_ONE_PLAYGROUND_ROUTE)} className="underline">
+                          Try it in the Playground
+                        </a>
+                      </>
+                    )}
+                  </p>
+                )}
                 <SyntaxHighlighter language="python" className="text-sm" style={syntaxTheme}>
                   {modelUsageExample(
                     selectedModel.mode,
@@ -855,14 +873,14 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                     <div className="flex items-center space-x-2">
                       <p className="truncate min-w-0">{selectedAgent.url}</p>
                       <Copy
-                        onClick={() => void copyToClipboard(selectedAgent.url, commonT("copiedToClipboard"))}
+                        onClick={() => void copyToClipboard(selectedAgent.url)}
                         className="size-3.5 shrink-0 cursor-pointer text-muted-foreground hover:text-info"
                       />
                     </div>
                   </div>
                 </div>
                 <div>
-                  <p className="font-medium">{t("lblDescription")}</p>
+                  <p className="font-medium">Description:</p>
                   <p className="mt-1">{selectedAgent.description}</p>
                 </div>
               </div>
@@ -870,7 +888,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
               {/* Capabilities */}
               {selectedAgent.capabilities && Object.keys(selectedAgent.capabilities).length > 0 && (
                 <div>
-                  <p className="text-lg font-semibold mb-4">{t("secCapabilities")}</p>
+                  <p className="text-lg font-semibold mb-4">Capabilities</p>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(selectedAgent.capabilities)
                       .filter(([_, value]) => value === true)
@@ -894,7 +912,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                         <Badge key={mode} variant="secondary">
                           {mode}
                         </Badge>
-                      )) || <p>{t("notSpecified")}</p>}
+                      )) || <p>Not specified</p>}
                     </div>
                   </div>
                   <div>
@@ -904,7 +922,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                         <Badge key={mode} variant="outline">
                           {mode}
                         </Badge>
-                      )) || <p>{t("notSpecified")}</p>}
+                      )) || <p>Not specified</p>}
                     </div>
                   </div>
                 </div>
@@ -984,7 +1002,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                     <div className="flex items-center space-x-2">
                       <p className="text-xs truncate min-w-0">{selectedMcpServer.server_id}</p>
                       <Copy
-                        onClick={() => void copyToClipboard(selectedMcpServer.server_id, commonT("copiedToClipboard"))}
+                        onClick={() => void copyToClipboard(selectedMcpServer.server_id)}
                         className="size-3.5 shrink-0 cursor-pointer text-muted-foreground hover:text-info"
                       />
                     </div>
@@ -1022,7 +1040,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
                 </div>
                 {selectedMcpServer.description && (
                   <div className="mt-2">
-                    <p className="font-medium">{t("lblDescription")}</p>
+                    <p className="font-medium">Description:</p>
                     <p className="mt-1">{selectedMcpServer.description}</p>
                   </div>
                 )}
@@ -1120,7 +1138,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({ accessToken, publicPage, 
 
               {/* Usage Example */}
               <div>
-                <p className="text-lg font-semibold mb-4">{t("secUsageExample")}</p>
+                <p className="text-lg font-semibold mb-4">Usage Example</p>
                 <SyntaxHighlighter language="python" className="text-sm" style={syntaxTheme}>
                   {`from fastmcp import Client
 import asyncio

@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { CheckCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
+
+import type { ChatTranslator } from "@/lib/i18n/translators";
+import { CheckCircle } from "lucide-react";
 import { getProxyBaseUrl, ConnectFlowStatus } from "@/components/networking";
 import { OAuth2ConnectButton } from "@/components/chat/MCPAppsPanel";
-import type { ChatTranslator } from "@/lib/i18n/translators";
 
 interface Props {
   flowHandle: string;
@@ -17,6 +18,7 @@ interface Props {
 
 /** Finish remains an explicit POST because a cross-site navigation must never mint a code. */
 export function isLoopbackOrigin(origin: string | null): boolean {
+  const t = useTranslations("chat");
   if (!origin) return false;
   try {
     const hostname = new URL(origin).hostname.replace(/^\[|\]$/g, "");
@@ -46,10 +48,10 @@ const copyFor = (
     const allServersConnected =
       flow.servers !== null && flow.servers.length > 0 && flow.servers.every((server) => server.connected);
     return [
-      `Allow ${clientLabel} to use ${serverNames}`,
+      t("connectFlow.allowTitle", { client: clientLabel, server: serverLabel }),
       allServersConnected
-        ? `Click Finish connecting to give ${clientLabel} access to ${serverNames} as you.`
-        : `Authorize each requested server below to continue, or cancel to send ${clientLabel} away.`,
+        ? t("connectFlow.readyBody", { client: clientLabel, server: serverLabel })
+        : t("connectFlow.multiBody", { client: clientLabel, server: serverLabel }),
     ];
   }
   if (flow.state === "interactive" && !flow.connected) {
@@ -91,10 +93,7 @@ const ConnectFlowBanner: React.FC<Props> = ({ flowHandle, flow, accessToken, onC
   const canFinish = canFinishConnectFlow(state, flow);
   const canCancel = state !== "unscoped";
   const loopbackClient = isLoopbackOrigin(flow?.client_origin ?? null);
-  const vendorServer =
-    state === "interactive" && flow?.connected === false && flow.server_id !== null
-      ? { server_id: flow.server_id, server_name: flow.server_name }
-      : null;
+  const vendorServers = vendorServersFor(state, flow);
   const copy = copyFor(t, flow, failed);
 
   return (
@@ -139,7 +138,7 @@ const ConnectFlowBanner: React.FC<Props> = ({ flowHandle, flow, accessToken, onC
                 value="deny"
                 className="ml-2 h-[38px] rounded-md border px-4 text-sm font-semibold text-foreground hover:bg-accent/40"
               >
-                {t("connectFlow.cancel")}
+                Cancel
               </button>
             )}
             {loopbackClient && (

@@ -1,10 +1,8 @@
-"use client";
-
 import { isAdminRole } from "@/utils/roles";
-import { useQuery } from "@tanstack/react-query";
-import React, { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { z } from "zod/v4";
+import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { z } from "zod";
 import DeleteResourceModal from "@/components/common_components/DeleteResourceModal";
 import { toast } from "@/lib/toast";
 import {
@@ -35,24 +33,22 @@ interface SearchToolsProps {
   userID: string | null;
 }
 
-type SearchToolsTranslator = ReturnType<typeof useTranslations<"searchTools">>;
-
-const editSearchToolShape = (t: SearchToolsTranslator) => ({
-  search_tool_name: z.string().min(1, t("nameRequired")),
-  search_provider: z.string().min(1, t("providerRequired")),
+const editSearchToolShape = {
+  search_tool_name: z.string().min(1, "Please enter a search tool name"),
+  search_provider: z.string().min(1, "Please select a search provider"),
   api_key: z.string().nullish(),
   description: z.string().nullish(),
-});
+  input_cost_per_query: z.number().nonnegative("Cost per query cannot be negative").nullish(),
+};
 
-const editSearchToolSchema = (t: SearchToolsTranslator) => z.object(editSearchToolShape(t));
+const editSearchToolSchema = z.object(editSearchToolShape);
 
-type EditSearchToolFormValues = z.infer<ReturnType<typeof editSearchToolSchema>>;
+type EditSearchToolFormValues = z.infer<typeof editSearchToolSchema>;
 
 const EMPTY_EDIT_VALUES: EditSearchToolFormValues = { search_tool_name: "", search_provider: "" };
 
 const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID }) => {
   const t = useTranslations("searchTools");
-  const commonT = useTranslations("common");
   const {
     data: searchTools,
     isLoading: isLoadingTools,
@@ -84,10 +80,7 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
   const [editTool, setEditTool] = useState(false);
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
   const [isEditModalVisible, setEditModalVisible] = useState(false);
-  const form = useZodForm(
-    useMemo(() => editSearchToolSchema(t), [t]),
-    { defaultValues: EMPTY_EDIT_VALUES },
-  );
+  const form = useZodForm(editSearchToolSchema, { defaultValues: EMPTY_EDIT_VALUES });
 
   const handleView = (toolId: string) => {
     setSelectedToolId(toolId);
@@ -163,12 +156,12 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
         refetch();
       } catch (error) {
         console.error("Failed to update search tool:", error);
-        toast.error(t("updateError"));
+        toast.error("Failed to update search tool");
       }
     },
     (errors) => {
       console.error("Failed to update search tool:", errors);
-      toast.error(t("updateError"));
+      toast.error("Failed to update search tool");
     },
   );
 
@@ -209,15 +202,34 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
           )}
         </FormField>
 
-        <FormField control={form.control} name="api_key" label={t("apiKeyCol")} description={t("apiKeyDesc")}>
+        <FormField control={form.control} name="api_key" label="API Key" description="API key for the search provider">
           {({ ref, value, ...field }) => (
-            <PasswordInput {...field} ref={ref} value={value ?? ""} placeholder={t("enterApiKeyShort")} />
+            <PasswordInput {...field} ref={ref} value={value ?? ""} placeholder="Enter API key" />
           )}
         </FormField>
 
-        <FormField control={form.control} name="description" label={t("descriptionCol")}>
+        <FormField
+          control={form.control}
+          name="input_cost_per_query"
+          label="Cost per Query (USD)"
+          description="Overrides the cost map price for this tool. Leave blank to use the provider's default price"
+        >
+          {({ ref, value, onChange, ...field }) => (
+            <Input
+              {...field}
+              ref={ref}
+              type="number"
+              step="any"
+              value={value ?? ""}
+              onChange={(event) => onChange(event.target.value === "" ? null : event.target.valueAsNumber)}
+              placeholder="e.g., 0.007"
+            />
+          )}
+        </FormField>
+
+        <FormField control={form.control} name="description" label="Description">
           {({ ref, value, ...field }) => (
-            <Textarea {...field} ref={ref} value={value ?? ""} rows={3} placeholder={t("descPlaceholderShort")} />
+            <Textarea {...field} ref={ref} value={value ?? ""} rows={3} placeholder="Description of this search tool" />
           )}
         </FormField>
       </FieldGroup>
@@ -319,9 +331,9 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
                 setSelectedToolId(null);
               }}
             >
-              {commonT("cancel")}
+              Cancel
             </Button>
-            <Button onClick={handleEditSubmit}>{commonT("ok")}</Button>
+            <Button onClick={handleEditSubmit}>OK</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,4 +1,5 @@
 import { canDetachKeyProject, KeyProjectField } from "./KeyProjectField";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import GuardrailSelector from "@/components/guardrails/GuardrailSelector";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";

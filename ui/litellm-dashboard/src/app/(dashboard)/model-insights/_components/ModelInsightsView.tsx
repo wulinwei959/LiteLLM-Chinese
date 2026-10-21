@@ -28,12 +28,8 @@ import {
 
 const SCALES = ["linear", "log"] as const;
 const GRANULARITIES = ["day", "week"] as const;
-const GRANULARITY_KEYS: Record<Granularity, string> = { day: "granularityDaily", week: "granularityWeekly" };
-const METRIC_KEYS: Record<Metric, string> = {
-  requests: "metricRequests",
-  spend: "metricSpend",
-  tokens: "metricTokens",
-};
+const GRANULARITY_LABELS: Record<Granularity, string> = { day: "Daily", week: "Weekly" };
+const METRIC_LABELS: Record<Metric, string> = { requests: "requests", spend: "spend", tokens: "tokens" };
 const RANKING_ROWS = 5;
 
 type Scale = (typeof SCALES)[number];
@@ -74,6 +70,7 @@ const RankingRow = ({ model, rank }: { model: RankedModel; rank: number }) => (
 
 export default function ModelInsightsView({ accessToken }: { accessToken: string | null }) {
   const t = useTranslations("modelInsights");
+
   const [loaded, setLoaded] = React.useState<{ metric: Metric; response: ModelInsightsResponse } | null>(null);
   const [metric, setMetric] = React.useState<Metric>("tokens");
   const [scale, setScale] = React.useState<Scale>("linear");
@@ -161,7 +158,7 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
               <TabsList>
                 {(["requests", "spend", "tokens"] as const).map((value) => (
                   <TabsTrigger key={value} value={value} className="capitalize">
-                    {t(METRIC_KEYS[value])}
+                    {value}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -202,9 +199,7 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
       <Card aria-busy={isStale} className={isStale ? "opacity-60 transition-opacity" : "transition-opacity"}>
         <CardHeader>
           <CardTitle>{t("leaderboard")}</CardTitle>
-          <CardDescription>
-            {t("leaderboardDesc", { metric: t(METRIC_KEYS[shown]) })}
-          </CardDescription>
+          <CardDescription>{t("leaderboardDesc", { metric: t(METRIC_KEYS[shown]) })}</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-x-12 md:grid-cols-2">
           <ol className="divide-y">
@@ -222,11 +217,14 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
 
       <Card>
         <CardHeader>
-          <CardTitle>{t("costPerSession")}</CardTitle>
-          <CardDescription>{t("sessionCostNote")}</CardDescription>
+          <CardTitle>Cost per session</CardTitle>
+          <CardDescription>Session cost is not estimated from request counts</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">{t("sessionHint")}</p>
+          <p className="text-sm text-muted-foreground">
+            Add a stable session_id to requests to unlock accurate session-level model comparisons in a future bounded
+            session rollup
+          </p>
         </CardContent>
       </Card>
     </Page>

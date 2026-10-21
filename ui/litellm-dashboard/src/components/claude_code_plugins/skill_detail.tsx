@@ -1,19 +1,18 @@
-import { useTranslations } from "next-intl";
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowLeft, Check, Copy, Link2 } from "lucide-react";
 import { cn } from "@/lib/cva.config";
 import { buildMarketplaceSettingsSnippet, formatInstallCommand, getSourceDisplayText, getSourceLink } from "./helpers";
 import { Plugin } from "./types";
 
-const SkillSource: React.FC<{ source: PluginSource }> = ({ source }) => {
+const SkillSource: React.FC<{ source: Plugin["source"] }> = ({ source }) => {
   const t = useTranslations("claudeCodePlugins");
-  const skillsT = useTranslations("skills");
   const link = getSourceLink(source);
   const href = link && source.source === "git-subdir" && source.path ? `${link}/tree/main/${source.path}` : link;
   if (href) {
     return (
       <div className="mb-6">
-        <div className="mb-1 text-xs text-muted-foreground">{t("source")}</div>
+        <div className="mb-1 text-xs text-muted-foreground">Source</div>
         <a
           href={href}
           target="_blank"
@@ -31,7 +30,7 @@ const SkillSource: React.FC<{ source: PluginSource }> = ({ source }) => {
   }
   return (
     <div className="mb-6">
-      <div className="mb-1 text-xs text-muted-foreground">{t("source")}</div>
+      <div className="mb-1 text-xs text-muted-foreground">Source</div>
       <div className="break-all text-[13px] text-foreground">{getSourceDisplayText(skillsT, source)}</div>
     </div>
   );
@@ -183,13 +182,15 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
       {/* How to Use tab */}
       {activeTab === "usage" && (
         <div className="max-w-[640px]">
-          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">{t("usingThisSkill")}</h2>
-          <p className="m-0 mb-6 text-sm leading-relaxed text-muted-foreground">{t("enableSkillCommandIntro")}</p>
+          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">Using this skill</h2>
+          <p className="m-0 mb-6 text-sm leading-relaxed text-muted-foreground">
+            Once your proxy is set as a marketplace, enable this skill in Claude Code with one command:
+          </p>
 
           {/* Install command */}
           <div className="mb-6 overflow-hidden rounded-lg border border-border">
             <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2.5">
-              <span className="text-[13px] font-medium text-foreground">{t("runInClaudeCode")}</span>
+              <span className="text-[13px] font-medium text-foreground">Run in Claude Code</span>
               <button
                 onClick={() => copyToClipboard(installCommand, "install")}
                 className={cn(
@@ -215,13 +216,10 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
           </div>
 
           <p className="m-0 text-[13px] leading-relaxed text-muted-foreground">
-            {t.rich("needMarketplaceSetupHint", {
-              link: (chunks) => (
-                <span onClick={() => setActiveTab("setup")} className="cursor-pointer text-info">
-                  {chunks}
-                </span>
-              ),
-            })}
+            Don&apos;t have the marketplace configured yet?{" "}
+            <span onClick={() => setActiveTab("setup")} className="cursor-pointer text-info">
+              See one-time setup →
+            </span>
           </p>
         </div>
       )}
@@ -229,13 +227,15 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
       {/* Setup tab (linked from usage) */}
       {activeTab === "setup" && (
         <div className="max-w-[640px]">
-          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">{t("marketplaceSetup")}</h2>
+          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">One-time marketplace setup</h2>
 
           {/* Option 1: single command — fastest path for most users */}
-          <p className="m-0 mb-3 text-sm leading-relaxed text-muted-foreground">{t("registerMarketplaceIntro")}</p>
+          <p className="m-0 mb-3 text-sm leading-relaxed text-muted-foreground">
+            Run this command in Claude Code to register the marketplace:
+          </p>
           <div className="mb-6 overflow-hidden rounded-lg border border-border">
             <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2.5">
-              <span className="text-[13px] font-medium text-foreground">{t("runInClaudeCode")}</span>
+              <span className="text-[13px] font-medium text-foreground">Run in Claude Code</span>
               <button
                 onClick={() => {
                   const origin = typeof window !== "undefined" ? window.location.origin : "";
@@ -258,9 +258,8 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
           {/* Option 2: settings.json — for persistent config or managed deployments.
               extraKnownMarketplaces requires source to be a nested object, not a flat string. */}
           <p className="m-0 mb-3 text-sm leading-relaxed text-muted-foreground">
-            {t.rich("addToSettingsHint", {
-              code: (chunks) => <code className="rounded bg-muted px-1.5 py-px text-[13px]">{chunks}</code>,
-            })}
+            Or add this to <code className="rounded bg-muted px-1.5 py-px text-[13px]">~/.claude/settings.json</code>{" "}
+            for a persistent configuration:
           </p>
           <div className="overflow-hidden rounded-lg border border-border">
             <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2.5">

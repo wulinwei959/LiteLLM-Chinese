@@ -1,11 +1,11 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { useTranslations } from "next-intl";
 import { BarChart } from "@/components/shared/charts";
 import { DataTable } from "@/components/shared/DataTable";
 import { IdCell, MoneyCell } from "@/components/shared/table_cells";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/outline";
 import { Segmented } from "@/app/(dashboard)/usage/_components/components/overview/Primitives";
 import { SimpleTooltip } from "@/components/ui/tooltip";
-import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 import { formatNumberWithCommas } from "../../../../utils/dataUtils";
 import { transformKeyInfo } from "../../../key_team_helpers/transform_key_info";
@@ -34,6 +34,9 @@ export interface TopKeyItem {
   spend: number;
 }
 
+const KEY_NOT_IN_DATABASE_TOOLTIP =
+  "This key is no longer in the database (deleted, or a CLI/SSO session key), so its details can't be opened";
+
 const canOpenKeyInfo = (item: TopKeyItem) => item.key_exists !== false;
 
 interface TopKeyViewProps {
@@ -45,9 +48,8 @@ interface TopKeyViewProps {
 }
 
 const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = false, topKeysLimit, setTopKeysLimit }) => {
-  const { accessToken } = useAuthorized();
   const t = useTranslations("topKeyView");
-  const keysT = useTranslations("virtualKeys");
+  const { accessToken } = useAuthorized();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [keyData, setKeyData] = useState<any | undefined>(undefined);
@@ -70,7 +72,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
     if (!accessToken || !canOpenKeyInfo(item)) return;
 
     try {
-      const keyInfo = await keyInfoV1Call(keysT, accessToken, item.api_key);
+      const keyInfo = await keyInfoV1Call(accessToken, item.api_key);
       const transformedKeyData = transformKeyInfo(keyInfo);
 
       setKeyData(transformedKeyData);
@@ -180,7 +182,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
             {hasMoreTags && (
               <button
                 onClick={() => toggleTagsExpansion(apiKey)}
-                className="ml-1 p-1 hover:bg-accent rounded-full transition-colors"
+                className="ml-0.5 rounded-md p-1 transition-colors hover:bg-accent"
                 title={isExpanded ? t("showFewerTags") : t("showAllTags")}
               >
                 {isExpanded ? (
@@ -212,37 +214,14 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
 
   return (
     <>
-      <div className="mb-4 flex justify-between items-center">
-        <RadioGroup
-          aria-label={t("topKeysLimitAria")}
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <Segmented
+          label="Number of top keys to show"
           value={String(topKeysLimit)}
-          onValueChange={(limit: unknown) => setTopKeysLimit(Number(limit))}
-          className="inline-flex w-fit items-center gap-1 rounded-lg bg-muted p-[3px]"
-        >
-          {TOP_KEYS_LIMITS.map((limit) => (
-            <Label
-              key={limit}
-              className="cursor-pointer rounded-md px-3 py-1 font-medium text-foreground/60 transition-colors has-data-checked:bg-background has-data-checked:text-foreground has-data-checked:shadow-sm"
-            >
-              <RadioGroupItem value={String(limit)} className="sr-only" />
-              {limit}
-            </Label>
-          ))}
-        </RadioGroup>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setViewMode("table")}
-            className={`px-3 py-1 text-sm rounded-md ${viewMode === "table" ? "bg-info/15 text-info" : "bg-muted text-foreground"}`}
-          >
-            {t("tableView")}
-          </button>
-          <button
-            onClick={() => setViewMode("chart")}
-            className={`px-3 py-1 text-sm rounded-md ${viewMode === "chart" ? "bg-info/15 text-info" : "bg-muted text-foreground"}`}
-          >
-            {t("chartView")}
-          </button>
-        </div>
+          options={LIMIT_OPTIONS}
+          onChange={(limit) => setTopKeysLimit(Number(limit))}
+        />
+        <Segmented label="View" value={viewMode} options={VIEW_OPTIONS} onChange={setViewMode} />
       </div>
 
       {viewMode === "chart" ? (
@@ -264,19 +243,21 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
             customTooltip={(props) => {
               const item = props.payload?.[0]?.payload;
               return (
-                <div className="relative z-floating p-3 bg-black/90 shadow-lg rounded-lg text-white max-w-xs">
-                  <div className="space-y-1.5">
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">{t("tooltipKeyAlias")}</span>
-                      <span className="font-mono text-gray-100 break-all">{item?.key_alias}</span>
+                <div className="relative z-floating max-w-xs rounded-lg border bg-popover px-3 py-2 text-xs shadow-lg">
+                  <div className="grid gap-1">
+                    <div>
+                      <span className="text-muted-foreground">Key Alias: </span>
+                      <span className="break-all font-mono text-foreground">{item?.key_alias}</span>
                     </div>
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">{t("tooltipKeyId")}</span>
-                      <span className="font-mono text-gray-100 break-all">{item?.api_key}</span>
+                    <div>
+                      <span className="text-muted-foreground">Key ID: </span>
+                      <span className="break-all font-mono text-foreground">{item?.api_key}</span>
                     </div>
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">{t("tooltipSpend")}</span>
-                      <span className="text-white font-medium">${formatNumberWithCommas(item?.spend, 2)}</span>
+                    <div>
+                      <span className="text-muted-foreground">Spend: </span>
+                      <span className="font-medium tabular-nums text-foreground">
+                        ${formatNumberWithCommas(item?.spend, 2)}
+                      </span>
                     </div>
                   </div>
                 </div>

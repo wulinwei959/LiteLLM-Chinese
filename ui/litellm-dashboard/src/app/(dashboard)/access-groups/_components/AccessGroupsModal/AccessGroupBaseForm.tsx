@@ -1,9 +1,7 @@
 "use client";
 
-import { BotIcon, InfoIcon, LayersIcon, ServerIcon } from "lucide-react";
+import { BotIcon, InfoIcon, LayersIcon, ServerIcon, SparklesIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-import type { AccessGroupsTranslator } from "@/lib/i18n/translators";
 import type { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
@@ -20,16 +18,17 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 
-export const buildAccessGroupFormSchema = (t: AccessGroupsTranslator) =>
-  z.object({
-    name: z.string().min(1, t("groupNameRequired")),
-    description: z.string(),
-    modelIds: z.array(z.string()),
-    mcpServerIds: z.array(z.string()),
-    agentIds: z.array(z.string()),
-  });
+export const accessGroupFormSchema = z.object({
+  name: z.string().min(1, "Please enter the access group name"),
+  description: z.string(),
+  modelIds: z.array(z.string()),
+  mcpServerIds: z.array(z.string()),
+  mcpToolPermissions: z.record(z.string(), z.array(z.string())),
+  agentIds: z.array(z.string()),
+  skillNames: z.array(z.string()),
+});
 
-export type AccessGroupFormValues = z.output<ReturnType<typeof buildAccessGroupFormSchema>>;
+export type AccessGroupFormValues = z.output<typeof accessGroupFormSchema>;
 
 export const GENERAL_TAB = "general";
 export const MODELS_TAB = "models";
@@ -83,6 +82,7 @@ export function AccessGroupBaseForm({
   initialServerIds,
 }: AccessGroupBaseFormProps) {
   const t = useTranslations("access-groups");
+  const { accessToken } = useAuthorized();
   const { data: agentsData } = useAgents();
   const { data: mcpServersData } = useMCPServers();
 
@@ -104,15 +104,15 @@ export function AccessGroupBaseForm({
         </TabsTrigger>
         <TabsTrigger value={MODELS_TAB}>
           <LayersIcon size={16} />
-          {t("models")}
+          Models
         </TabsTrigger>
         <TabsTrigger value={MCP_SERVERS_TAB}>
           <ServerIcon size={16} />
-          {t("mcpServers")}
+          MCP Servers
         </TabsTrigger>
         <TabsTrigger value={AGENTS_TAB}>
           <BotIcon size={16} />
-          {t("agents")}
+          Agents
         </TabsTrigger>
         <TabsTrigger value={SKILLS_TAB}>
           <SparklesIcon size={16} />

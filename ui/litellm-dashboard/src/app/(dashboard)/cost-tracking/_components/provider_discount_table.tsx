@@ -35,7 +35,7 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
   onRemoveProvider,
 }) => {
   const t = useTranslations("costTracking");
-  const [editingProvider, setEditingProvider] = useState<string | null>(null);
+  const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string>("");
 
   const handleStartEdit = (key: string, currentDiscount: number) => {
@@ -96,7 +96,16 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
           },
         },
         {
-          header: t("discountPercentageLabel"),
+          header: "Models",
+          cell: (row) =>
+            row.modelPattern ? (
+              <span className="font-mono text-sm">{row.modelPattern}</span>
+            ) : (
+              <span className="text-muted-foreground">All models</span>
+            ),
+        },
+        {
+          header: "Discount Percentage",
           numeric: true,
           cell: (row) => {
             const label = rowLabel(row);
@@ -160,7 +169,7 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
                 variant="ghost"
                 size="icon-sm"
                 aria-label={t("ariaRemoveDiscount", { name: displayName })}
-                onClick={() => onRemoveProvider(row.provider, displayName)}
+                onClick={() => onRemoveProvider(row.key, label)}
                 className="cursor-pointer hover:text-destructive"
               >
                 <Trash2 className="size-5" />
@@ -170,7 +179,7 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
           width: "80px",
         },
       ]}
-      getRowKey={(row) => row.provider}
+      getRowKey={(row) => row.key}
       emptyMessage={t("noDiscounts")}
     />
   );

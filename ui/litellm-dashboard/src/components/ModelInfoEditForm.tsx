@@ -1,10 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { CircleHelp } from "lucide-react";
 import type { Dayjs } from "dayjs";
 import * as React from "react";
-import { useTranslations } from "next-intl";
 import { useForm, type Resolver } from "react-hook-form";
 import { z } from "zod";
 
@@ -23,7 +23,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 
-import CacheControlInjectionPoints, { type CacheControlInjectionPoint } from "./add_model/cache_control_settings";
+import CacheControlInjectionPoints, {
+  CACHE_CONTROL_LABEL,
+  CACHE_CONTROL_TOOLTIP,
+  type CacheControlInjectionPoint,
+} from "./add_model/cache_control_settings";
 import type { Team } from "./key_team_helpers/key_list";
 import type { CredentialItem } from "./networking";
 import NumericalInput from "./shared/numerical_input";
@@ -45,29 +49,19 @@ import {
   ptuWindowIsOrdered,
 } from "../utils/ptuValidation";
 
-type PtuLabelKey = "ptuCount" | "ptuRateLabel" | "ptuStart" | "ptuEnd";
-
-type PtuPlaceholderKey = "ptuCountPlaceholder" | "ptuRatePlaceholder";
-
 interface PtuEditField {
   name: string;
-  labelKey: PtuLabelKey;
-  placeholderKey?: PtuPlaceholderKey;
+  label: string;
   input: "number" | "datetime";
+  placeholder?: string;
   isCount?: boolean;
 }
 
 const PTU_EDIT_FIELDS: PtuEditField[] = [
-  {
-    name: PTU_COUNT_FIELD,
-    labelKey: "ptuCount",
-    placeholderKey: "ptuCountPlaceholder",
-    input: "number",
-    isCount: true,
-  },
-  { name: PTU_RATE_FIELD, labelKey: "ptuRateLabel", placeholderKey: "ptuRatePlaceholder", input: "number" },
-  { name: PTU_START_FIELD, labelKey: "ptuStart", input: "datetime" },
-  { name: PTU_END_FIELD, labelKey: "ptuEnd", input: "datetime" },
+  { name: PTU_COUNT_FIELD, label: "PTU Count", input: "number", placeholder: "e.g. 15", isCount: true },
+  { name: PTU_RATE_FIELD, label: "Cost per PTU / Hour (USD)", input: "number", placeholder: "e.g. 2.00" },
+  { name: PTU_START_FIELD, label: "PTU Effective From (UTC)", input: "datetime" },
+  { name: PTU_END_FIELD, label: "PTU Effective To (UTC)", input: "datetime" },
 ];
 
 const PRICING_FIELDS = [
@@ -143,19 +137,15 @@ const isJson = (value: string): boolean => {
   }
 };
 
-type AddModelTranslator = ReturnType<typeof useTranslations<"models.addModel">>;
-
-const buildSchema = (
-  ptuEnabled: boolean,
-  isFieldTouched: (field: TouchedPricingField) => boolean,
-  t: AddModelTranslator,
-) =>
+const buildSchema = (ptuEnabled: boolean, isFieldTouched: (field: TouchedPricingField) => boolean) =>
   z.object(modelEditShape).superRefine((values, ctx) => {
+    const t = useTranslations("common");
+
     const reject = (path: ModelEditFieldName, message: string) =>
       ctx.addIssue({ code: "custom", path: [path], message });
 
     if (values.litellm_extra_params && !isJson(values.litellm_extra_params)) {
-      reject("litellm_extra_params", t("invalidJson"));
+      reject("litellm_extra_params", "Please enter valid JSON");
     }
 
     // antd validates only mounted fields, and the PTU block does not render when the flag is off.
@@ -164,21 +154,24 @@ const buildSchema = (
     }
 
     if (!isPositiveWholePtuCount(values.ptu_count)) {
-      reject("ptu_count", t("ptuCountRange", { max: MAX_PTU_COUNT.toLocaleString() }));
+      reject("ptu_count", `PTU Count must be a whole number between 1 and ${MAX_PTU_COUNT.toLocaleString()}`);
     }
     if (!isNonNegativePtuRate(values.cost_per_ptu_per_hour)) {
-      reject("cost_per_ptu_per_hour", t("ptuRateRange", { max: MAX_COST_PER_PTU_PER_HOUR.toLocaleString() }));
+      reject(
+        "cost_per_ptu_per_hour",
+        `Cost per PTU / Hour must be between 0 and ${MAX_COST_PER_PTU_PER_HOUR.toLocaleString()}`,
+      );
     }
     if (isFilledPtuValue(values.ptu_count) !== isFilledPtuValue(values.cost_per_ptu_per_hour)) {
-      const message = t("ptuPairRequired");
+      const message = "PTU Count and Cost per PTU / Hour must be set together";
       reject("ptu_count", message);
       reject("cost_per_ptu_per_hour", message);
     }
     if (isFilledPtuValue(values.ptu_count) && !isFilledPtuValue(values.ptu_effective_from)) {
-      reject("ptu_effective_from", t("ptuStartRequired"));
+      reject("ptu_effective_from", "PTU Effective From is required when PTU Count is set");
     }
     if (!ptuWindowIsOrdered(values.ptu_effective_from, values.ptu_effective_to)) {
-      const message = t("ptuWindowOrder");
+      const message = "PTU Effective To must be after PTU Effective From";
       reject("ptu_effective_from", message);
       reject("ptu_effective_to", message);
     }
@@ -267,10 +260,10 @@ export const toModelEditFormValues = (localModelData: any, isWildcardModel: bool
   team_id: localModelData.model_info?.team_id ?? undefined,
 });
 
-const displayCost = (localModelData: any, field: TouchedPricingField): string | null => {
-  const { param, info } = COST_SOURCES[field];
-  const rate = localModelData?.litellm_params?.[param] ?? localModelData?.model_info?.[info];
-  return rate != null ? (Number(rate) * 1_000_000).toFixed(4) : null;
+const displayCost = (localModelData: any, field: TouchedPricingField): string => {
+  const key = COST_SOURCES[field];
+  const rate = localModelData?.litellm_params?.[key] ?? localModelData?.model_info?.[key];
+  return rate != null ? (Number(rate) * 1_000_000).toFixed(4) : "Not Set";
 };
 
 interface ModelInfoEditFormProps {
@@ -325,9 +318,8 @@ const DocsHint: React.FC<{ text: string; href: string }> = ({ text, href }) => (
 );
 
 const ChipList: React.FC<{ values: unknown; emptyLabel: string }> = ({ values, emptyLabel }) => {
-  const commonT = useTranslations("common");
   if (!values) {
-    return <>{commonT("notSet")}</>;
+    return <>Not Set</>;
   }
   if (!Array.isArray(values)) {
     return <>{String(values)}</>;
@@ -366,9 +358,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
   healthCheckModelOptions,
   teams,
 }) => {
-  const t = useTranslations("models.addModel");
-  const commonT = useTranslations("common");
-  const tableT = useTranslations("models.table");
+  const t = useTranslations("common");
   // Neither RHF's blur-based touchedFields nor its resettable dirtyFields matches antd's touched-on-change.
   const touchedRef = React.useRef<ReadonlySet<string>>(new Set<string>());
   const isFieldTouched = React.useCallback((field: TouchedPricingField) => touchedRef.current.has(field), []);
@@ -377,8 +367,8 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
   };
 
   // react-hook-form refreshes control._options every render, so this rebuild is what the next submit runs.
-  const resolver: Resolver<ModelEditFormValues> = (values, context, options) =>
-    zodResolver(buildSchema(ptuCostAttributionEnabled, isFieldTouched, t))(values, context, options);
+  const resolver: Resolver<ModelEditFormValues, unknown, ModelEditSubmitValues> = (values, context, options) =>
+    zodResolver(buildSchema(ptuCostAttributionEnabled, isFieldTouched))(values, context, options);
 
   const form = useForm<ModelEditFormValues, unknown, ModelEditSubmitValues>({
     resolver,
@@ -396,13 +386,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
     onCancel();
   };
 
-  const storedText = (name: ModelEditFieldName): string => {
-    const fromRoot = name === "model_name" || name === "litellm_model_name";
-    const stored = fromRoot ? localModelData[name] : localModelData.litellm_params?.[name];
-    return (stored as string) || commonT("notSet");
-  };
-
-  const textField = (name: ModelEditFieldName, label: string, placeholder: string) => (
+  const textField = (name: ModelEditFieldName, label: string, placeholder: string, stored: unknown) => (
     <div>
       <FieldLabel>{label}</FieldLabel>
       {isEditing ? (
@@ -410,12 +394,12 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
           {({ value, ...control }) => <Input {...control} value={(value as string) ?? ""} placeholder={placeholder} />}
         </FormField>
       ) : (
-        <Display>{storedText(name)}</Display>
+        <Display>{(stored as string) || "Not Set"}</Display>
       )}
     </div>
   );
 
-  const numberField = (name: ModelEditFieldName, label: string, placeholder: string) => (
+  const numberField = (name: ModelEditFieldName, label: string, placeholder: string, stored: unknown) => (
     <div>
       <FieldLabel>{label}</FieldLabel>
       {isEditing ? (
@@ -423,7 +407,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
           {({ value, ...control }) => <NumericalInput {...control} value={value ?? ""} placeholder={placeholder} />}
         </FormField>
       ) : (
-        <Display>{storedText(name)}</Display>
+        <Display>{(stored as string) || "Not Set"}</Display>
       )}
     </div>
   );
@@ -474,16 +458,21 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
       <form onSubmit={submit}>
         <div className="space-y-4">
           <div className="space-y-4">
-            {textField("model_name", tableT("modelName"), t("modelNamePlaceholder"))}
-            {textField("litellm_model_name", t("litellmModelNameHeader"), t("litellmModelNamePlaceholder"))}
+            {textField("model_name", "Model Name", "Enter model name", localModelData.model_name)}
+            {textField(
+              "litellm_model_name",
+              "LiteLLM Model Name",
+              "Enter LiteLLM model name",
+              localModelData.litellm_model_name,
+            )}
 
-            {pricingField("input_cost", t("inputCostPerToken"), t("inputCostPlaceholder"))}
-            {pricingField("output_cost", t("outputCostPerToken"), t("outputCostPlaceholder"))}
+            {pricingField("input_cost", "Input Cost (per 1M tokens)", "Enter input cost")}
+            {pricingField("output_cost", "Output Cost (per 1M tokens)", "Enter output cost")}
 
             {ptuCostAttributionEnabled &&
               PTU_EDIT_FIELDS.map((ptuField) => (
                 <div key={ptuField.name}>
-                  <FieldLabel htmlFor={ptuField.name}>{t(ptuField.labelKey)}</FieldLabel>
+                  <FieldLabel htmlFor={ptuField.name}>{ptuField.label}</FieldLabel>
                   {isEditing ? (
                     <FormField control={form.control} name={ptuField.name as ModelEditFieldName}>
                       {({ value, onChange, ...control }) =>
@@ -511,7 +500,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                     <Display>
                       {(ptuField.input === "datetime"
                         ? formatPtuUtcDisplay(localModelData?.model_info?.[ptuField.name])
-                        : localModelData?.model_info?.[ptuField.name]) ?? commonT("notSet")}
+                        : localModelData?.model_info?.[ptuField.name]) ?? "Not Set"}
                     </Display>
                   )}
                 </div>
@@ -520,13 +509,13 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             {pricingField(
               "cache_read_cost",
               t("cacheReadCostPerToken"),
-              t("defaultsToInputCost"),
+              "Defaults to Input Cost if blank",
               t("cacheReadOnSaveHint"),
             )}
             {pricingField(
               "cache_write_cost",
               t("cacheWriteCostPerToken"),
-              t("defaultsToInputCost"),
+              "Defaults to Input Cost if blank",
               t("cacheWriteOnSaveHint"),
             )}
             {pricingField(
@@ -536,36 +525,51 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
               "Rate for prompt cache writes with a 1 hour TTL. If left blank on save, known models use their cost map 1 hour rate, otherwise Cache Write Cost.",
             )}
 
-            {textField("api_base", t("apiBaseLabel"), t("apiBasePlaceholder"))}
-            {textField("custom_llm_provider", t("customProviderLabel"), t("customProviderPlaceholder"))}
-            {textField("organization", t("organizationLabel"), t("organizationPlaceholder"))}
+            {textField("api_base", "API Base", "Enter API base", localModelData.litellm_params?.api_base)}
+            {textField(
+              "custom_llm_provider",
+              "Custom LLM Provider",
+              "Enter custom LLM provider",
+              localModelData.litellm_params?.custom_llm_provider,
+            )}
+            {textField(
+              "organization",
+              "Organization",
+              "Enter organization",
+              localModelData.litellm_params?.organization,
+            )}
 
-            {numberField("tpm", t("tpmLabel"), t("tpmPlaceholder"))}
-            {numberField("rpm", t("rpmLabel"), t("rpmPlaceholder"))}
-            {numberField("max_retries", t("maxRetriesLabel"), t("maxRetriesPlaceholder"))}
-            {numberField("timeout", t("timeoutSecondsLabel"), t("timeoutPlaceholder"))}
-            {numberField("stream_timeout", t("streamTimeoutLabel"), t("streamTimeoutPlaceholder"))}
+            {numberField("tpm", "TPM (Tokens per Minute)", "Enter TPM", localModelData.litellm_params?.tpm)}
+            {numberField("rpm", "RPM (Requests per Minute)", "Enter RPM", localModelData.litellm_params?.rpm)}
+            {numberField("max_retries", "Max Retries", "Enter max retries", localModelData.litellm_params?.max_retries)}
+            {numberField("timeout", "Timeout (seconds)", "Enter timeout", localModelData.litellm_params?.timeout)}
+            {numberField(
+              "stream_timeout",
+              "Stream Timeout (seconds)",
+              "Enter stream timeout",
+              localModelData.litellm_params?.stream_timeout,
+            )}
 
             <div>
-              <FieldLabel>{t("editModelAccessGroupsLabel")}</FieldLabel>
+              <FieldLabel>Model Access Groups</FieldLabel>
               {isEditing ? (
                 tagsField(
                   "model_access_group",
                   (modelAccessGroups ?? []).map((group) => ({ value: group, label: group })),
-                  t("accessGroupsPlaceholder"),
+                  "Select existing groups or type to create new ones",
                 )
               ) : (
                 <Display>
-                  <ChipList values={localModelData.model_info?.access_groups} emptyLabel={t("noGroupsAssigned")} />
+                  <ChipList values={localModelData.model_info?.access_groups} emptyLabel="No groups assigned" />
                 </Display>
               )}
             </div>
 
             <div>
               <FieldLabel>
-                {t("guardrails")}
+                Guardrails
                 <DocsHint
-                  text={t("guardrailsModelTooltip")}
+                  text="Apply safety guardrails to this model to filter content or enforce policies"
                   href="https://docs.litellm.ai/docs/proxy/guardrails/quick_start"
                 />
               </FieldLabel>
@@ -605,67 +609,63 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                 <Display>
                   <ChipList
                     values={localModelData.litellm_params?.vector_store_ids}
-                    emptyLabel={t("noKnowledgeBasesAttached")}
+                    emptyLabel="No knowledge bases attached"
                   />
                 </Display>
               )}
             </div>
 
             <div>
-              <FieldLabel>{t("tags")}</FieldLabel>
+              <FieldLabel>Tags</FieldLabel>
               {isEditing ? (
                 tagsField(
                   "tags",
                   Object.values(tagsList).map((tag: Tag) => ({ value: tag.name, label: tag.name })),
-                  t("tagsPlaceholder"),
+                  "Select existing tags or type to create new ones",
                 )
               ) : (
                 <Display>
-                  <ChipList values={localModelData.litellm_params?.tags} emptyLabel={t("noTagsAssigned")} />
+                  <ChipList values={localModelData.litellm_params?.tags} emptyLabel="No tags assigned" />
                 </Display>
               )}
             </div>
 
             <div>
-              <FieldLabel>{t("existingCredentials")}</FieldLabel>
+              <FieldLabel>Existing Credentials</FieldLabel>
               {isEditing ? (
                 <FormField control={form.control} name="litellm_credential_name">
-                  {({ id, value, onChange, onBlur }) => {
-                    const items: { value: string | null; label: string }[] = [
-                      { value: null, label: t("noneCredential") },
-                      ...credentialsList.map((credential) => ({
-                        value: credential.credential_name,
-                        label: credential.credential_name,
-                      })),
-                    ];
-                    return (
-                      <Select
-                        items={items}
-                        value={(value as string | null) ?? null}
-                        onValueChange={(selected: string | null) => onChange(selected)}
-                      >
-                        <SelectTrigger id={id} className="w-full" onBlur={onBlur}>
-                          <SelectValue placeholder={t("selectCredentials")} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {items.map((item) => (
-                            <SelectItem key={item.value ?? "none"} value={item.value}>
-                              {item.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    );
-                  }}
+                  {({ id, value, onChange }) => (
+                    <>
+                      <SearchSelect
+                        inputId={id}
+                        placeholder="Select or search for existing credentials"
+                        options={credentialOptions(credentialsList)}
+                        value={(value as string | null) ?? ""}
+                        allowClear={false}
+                        onValueChange={(selected) => {
+                          if (selected !== null) onChange(selected === "" ? null : selected);
+                        }}
+                      />
+                      <CredentialNameHint
+                        credentialName={value as string | null | undefined}
+                        credentials={credentialsList}
+                      />
+                    </>
+                  )}
                 </FormField>
               ) : (
-                <Display>{localModelData.litellm_params?.litellm_credential_name || tableT("manual")}</Display>
+                <Display>
+                  <AttachedCredential
+                    credentialName={localModelData.litellm_params?.litellm_credential_name}
+                    credentials={credentialsList}
+                  />
+                </Display>
               )}
             </div>
 
             {isWildcardModel && (
               <div>
-                <FieldLabel>{t("healthCheckModelLabel")}</FieldLabel>
+                <FieldLabel>Health Check Model</FieldLabel>
                 {isEditing ? (
                   <FormField control={form.control} name="health_check_model">
                     {({ id, value, onChange, onBlur }) => (
@@ -678,7 +678,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                           <SelectValue placeholder={t("healthCheckModelPlaceholder")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={null}>{commonT("none")}</SelectItem>
+                          <SelectItem value={null}>None</SelectItem>
                           {healthCheckModelOptions.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
                               {option.label}
@@ -689,7 +689,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                     )}
                   </FormField>
                 ) : (
-                  <Display>{localModelData.model_info?.health_check_model || commonT("notSet")}</Display>
+                  <Display>{localModelData.model_info?.health_check_model || "Not Set"}</Display>
                 )}
               </div>
             )}
@@ -732,40 +732,29 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
               </>
             ) : (
               <div>
-                <FieldLabel>{t("cacheControl")}</FieldLabel>
+                <FieldLabel>Cache Control</FieldLabel>
                 <Display>
                   {localModelData.litellm_params?.cache_control_injection_points ? (
                     <div>
-                      <p>{commonT("enabled")}</p>
+                      <p>Enabled</p>
                       <div className="mt-2">
                         {localModelData.litellm_params.cache_control_injection_points.map((point: any, i: number) => (
                           <div key={i} className="mb-1 text-sm text-muted-foreground">
-                            {t("cacheControlLocation")}: {point.location},
-                            {point.role && (
-                              <span>
-                                {" "}
-                                {t("cacheControlRole")}: {point.role}
-                              </span>
-                            )}
-                            {point.index !== undefined && (
-                              <span>
-                                {" "}
-                                {t("cacheControlIndex")}: {point.index}
-                              </span>
-                            )}
+                            Location: {point.location},{point.role && <span> Role: {point.role}</span>}
+                            {point.index !== undefined && <span> Index: {point.index}</span>}
                           </div>
                         ))}
                       </div>
                     </div>
                   ) : (
-                    commonT("disabled")
+                    "Disabled"
                   )}
                 </Display>
               </div>
             )}
 
             <div>
-              <FieldLabel>{t("modelInfoLabel")}</FieldLabel>
+              <FieldLabel>Model Info</FieldLabel>
               {isEditing ? (
                 <FormField control={form.control} name="model_info">
                   {({ value, ...control }) => (
@@ -788,8 +777,11 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
 
             <div>
               <FieldLabel>
-                {t("litellmParamsLabel")}
-                <DocsHint text={t("litellmParamsTooltip")} href="https://docs.litellm.ai/docs/completion/input" />
+                LiteLLM Params
+                <DocsHint
+                  text="Optional litellm params used for making a litellm.completion() call. Some params are automatically added by LiteLLM."
+                  href="https://docs.litellm.ai/docs/completion/input"
+                />
               </FieldLabel>
               {isEditing ? (
                 <FormField control={form.control} name="litellm_extra_params">
@@ -823,7 +815,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                 <Display>
                   {teamAlias
                     ? `${teamAlias} (${localModelData.model_info?.team_id})`
-                    : localModelData.model_info?.team_id || commonT("notSet")}
+                    : localModelData.model_info?.team_id || "Not Set"}
                 </Display>
               )}
             </div>
@@ -832,7 +824,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
           {isEditing && (
             <div className="mt-6 flex justify-end gap-2">
               <Button type="submit" variant="secondary" onClick={cancel} disabled={isSaving}>
-                {t("cancelLabel")}
+                Cancel
               </Button>
               <Button type="submit" disabled={isSaving} aria-busy={isSaving}>
                 {isSaving && <UiLoadingSpinner className="size-4" />}

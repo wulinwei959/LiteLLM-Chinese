@@ -132,23 +132,15 @@
     "notFound": "未找到",
     "networkError": "网络错误，请检查您的连接。",
     "addModel": {
-      "additionalInfo": "附加模型信息设置",
-      "credentialsDesc": "选择已有凭据,或在下方输入新的提供商凭据",
-      "existingCredentials": "已有凭据",
       "getHelpGithub": "在我们的 GitHub 上获取帮助",
       "modelAccessGroup": "模型访问组",
-      "modelAccessGroupHint": "用模型访问组授予用户选择模型的权限,并可随时往组里添加新模型。",
       "needHelp": "需要帮助?",
       "optional": "可选",
       "selectCredentials": "选择或搜索已有凭据",
       "selectTeam": "选择团队",
       "submit": "添加模型",
       "teamByok": "团队自带密钥模型",
-      "teamByokHint": "该模型与凭据组合仅供此团队使用。适合希望接入自有 OpenAI 密钥的团队。",
-      "teamByokHint2": "只有此团队的密钥才能调用该模型。",
-      "teamByokPremium": "此功能仅企业版可用。升级到高级版后,可将模型与凭据组合限定给特定团队。",
-      "teamRequired": "请选择团队以继续",
-      "testConnect": "测试连接"
+      "teamRequired": "请选择团队以继续"
     },
     "common": {
       "learnMore": "了解更多",
@@ -189,7 +181,6 @@
     "selectTeamHint": "选择要添加此模型的团队",
     "teamRequired": "请选择团队。",
     "teamSelectionRequired": "需要先选择团队",
-    "teamSelectionRequiredDesc": "作为团队管理员,添加模型前需要先选择你的团队。",
     "title": "添加模型",
     "never": "从不",
     "none": "无",
@@ -231,7 +222,35 @@
     "notSet": "未设置",
     "comingSoonEnterprise": "即将纳入企业版",
     "deletedKeysAuditBody": "已删除 Key 的审计功能正从 beta 毕业，正式进入企业版的审计与合规套件。",
-    "deletedTeamsAuditBody": "已删除团队的审计功能正从 beta 毕业，正式进入企业版的审计与合规套件。"
+    "deletedTeamsAuditBody": "已删除团队的审计功能正从 beta 毕业，正式进入企业版的审计与合规套件。",
+    "deleteGroup": "删除访问组",
+    "resources": "资源",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "idCopied": "ID 已复制",
+    "copyId": "复制附件 ID",
+    "cacheReadCostPerToken": "缓存读取成本（每百万 Token）",
+    "cacheReadOnSaveHint": "保存时留空则默认为输入成本。",
+    "cacheWriteCostPerToken": "缓存写入成本（每百万 Token）",
+    "cacheWriteOnSaveHint": "保存时留空则默认为输入成本（后端回退到 input_cost_per_token）。",
+    "guardrailsPlaceholder": "选择现有护栏，或输入以创建新护栏",
+    "noGuardrailsAssigned": "未分配护栏",
+    "attachedKnowledgeBases": "附加知识库 (RAG)",
+    "knowledgeBasesTooltip": "用于 RAG 的向量库。对该模型的每个请求都会自动从这些知识库检索上下文。",
+    "selectKnowledgeBasesPlaceholder": "选择知识库（可选）",
+    "healthCheckModelPlaceholder": "选择现有的健康检查模型",
+    "cacheControlLabel": "缓存控制注入点",
+    "cacheControlTooltipDesc": "告诉 litellm 在哪里注入缓存控制检查点。你可以按角色指定（应用于该角色的所有消息）或按特定消息索引指定。",
+    "teamLabel": "团队",
+    "saveChanges": "保存更改",
+    "sourceUnknown": "未知来源",
+    "nameCopied": "凭据名称已复制",
+    "copyName": "复制凭据名称",
+    "ptuCostReservedOnly": "仅预留容量成本",
+    "createdSuccessfully": "凭据添加成功",
+    "addCredential": "添加凭据",
+    "resourceInformationTitle": "凭据信息",
+    "credentialName": "凭据名称"
   },
   "nav": {
     "expandSidebar": "展开侧边栏",
@@ -337,8 +356,7 @@
     "startSessionFailed": "会话启动失败，请重试。",
     "submitFailed": "提交失败，请重试。"
   },
-  "breadcrumb": {
-  },
+  "breadcrumb": {},
   "virtualKeys": {
     "createErrorPrefix": "创建密钥时出错：{error}",
     "teamMemberPermissionError": "团队成员无权为该团队生成密钥。请联系代理管理员配置团队成员权限设置。",
@@ -782,7 +800,7 @@
       "tpm": "TPM",
       "actions": "操作",
       "accessGroup": "访问组",
-      "createdBy": "创建者",
+      "createdBy": "创建人",
       "updatedAt": "更新时间",
       "inputCost": "输入成本",
       "outputCost": "输出成本",
@@ -793,14 +811,9 @@
       "costOut": "输出",
       "costTooltip": "每 100 万 Token 的成本",
       "costTooltipPerSecond": "每 100 万 Token 的成本;/s 表示每秒输出的成本",
-      "credentialTypes": "凭据类型",
       "credentials": "凭据",
-      "credentialsTooltip": "关于凭据类型",
       "delete": "删除模型",
       "manual": "手动输入",
-      "manualDesc": "在创建模型时直接添加,或在配置文件中定义的凭据。",
-      "reusable": "可复用",
-      "reusableDesc": "保存在 LiteLLM 中、可重复添加到多个模型的凭据。",
       "settings": "模型设置"
     },
     "emptyState": {
@@ -1639,7 +1652,6 @@
       "teamLabel": "团队",
       "cacheControlLocation": "位置"
     },
-    "unknownDate": "未知日期",
     "health": {
       "title": "健康状态",
       "description": "监控模型部署的健康状况",
@@ -1716,7 +1728,7 @@
       "modelSpecificRetryDesc": "模型特定的重试设置。未设置时回退到全局默认值。",
       "globalLabel": "全局",
       "retryCount": "重试次数",
-    "allOtherErrors": "其他所有错误",
+      "allOtherErrors": "其他所有错误",
       "reset": "重置",
       "save": "保存",
       "savedSuccessfully": "重试设置保存成功",
@@ -1733,9 +1745,9 @@
       "createdSuccessfully": "凭据添加成功",
       "createFailed": "添加凭据失败",
       "deletedSuccessfully": "凭据删除成功",
-      "deleteFailed": "删除凭据失败",
+      "deleteFailed": "删除端点时出错",
       "deleteConfirmTitle": "删除凭据？",
-      "deleteConfirmMessage": "确定要删除此凭据吗？此操作无法撤销，可能会破坏现有集成。",
+      "deleteConfirmMessage": "确定要删除此透传端点吗?此操作无法撤销。",
       "resourceInformationTitle": "凭据信息",
       "credentialName": "凭据名称",
       "provider": "提供商",
@@ -2054,11 +2066,9 @@
       "teamLabel": "团队",
       "viewLabel": "视图",
       "viewModes": {
-        "currentTeam": "当前团队模型",
         "all": "所有可用模型"
       },
       "filterLabels": {
-        "publicModelName": "公共模型名称",
         "accessGroup": "模型访问组"
       },
       "emptyState": {
@@ -2068,7 +2078,6 @@
       "lastRefreshed": "最后刷新: {time}",
       "allAccessGroups": "全部模型访问组",
       "allProxyModels": "所有代理模型",
-      "configModel": "在配置文件中定义",
       "copied": "已复制 LiteLLM 模型名称",
       "copyTooltip": "复制 LiteLLM 模型名称",
       "deleteTooltipConfig": "配置中的模型无法在管理面板删除,请从配置文件删除。",
@@ -2082,8 +2091,7 @@
       "pauseTooltipAdmin": "只有代理管理员可以暂停或恢复模型。",
       "pauseTooltipConfig": "配置中的模型无法在管理面板暂停,暂停状态保存在数据库中。",
       "placeholder": {
-        "accessGroup": "按模型访问组筛选",
-        "publicModelName": "按公开模型名称筛选"
+        "accessGroup": "按模型访问组筛选"
       },
       "unknownProvider": "未知提供商",
       "dbModel": "数据库模型",
@@ -2153,10 +2161,28 @@
     "budgetSaved": "{name} 的预算已保存",
     "budgetCleared": "{name} 的预算已清除",
     "pricingSummary": {
-        "followsCostMap": "沿用模型成本表",
-        "customPricing": "自定义定价",
-        "overridesCostMap": "为 {fields} 覆盖模型成本表"
-    }
+      "followsCostMap": "沿用模型成本表",
+      "customPricing": "自定义定价",
+      "overridesCostMap": "为 {fields} 覆盖模型成本表"
+    },
+    "deleteAutoRouter": "删除自动路由器",
+    "invalidLiteLlmParams": "LiteLLM 参数中的 JSON 无效",
+    "invalidModelInfo": "模型信息中的 JSON 无效",
+    "modelSettingsUpdated": "模型设置更新成功",
+    "testingConnection": "正在测试到 {provider} 的连接...",
+    "updateApiKey": "更新 API 密钥",
+    "reUseCredentials": "复用凭据",
+    "rawJson": "原始 JSON",
+    "liteLlmModel": "LiteLLM 模型",
+    "pricing": "定价",
+    "modelSettings": "模型设置",
+    "editOnlyDbHint": "只有 DB 模型可以编辑。必须是管理员或该模型的创建者才能编辑。",
+    "undoWarning": "此操作无法撤销。",
+    "kindAutoRouter": "自动路由器",
+    "kindModel": "模型",
+    "liteLlmModelName": "LiteLLM 模型名称",
+    "usingExistingCredential": "使用已有凭据",
+    "connectionTestResults": "连接测试结果"
   },
   "teams": {
     "title": "团队",
@@ -2277,37 +2303,22 @@
     "listTpdLimitHint": "批量提交（/v1/batches）的每日令牌预算。设置后，批量输入文件将在此 24 小时窗口内计费，而不是使用团队的 TPM/RPM 限制。在线请求仍使用 TPM/RPM。",
     "listTpmLimit": "每分钟令牌数上限（TPM）",
     "listYourTeams": "你的团队",
-    "infoActive": "活动",
-    "infoAddBudgetAlertThreshold": "添加预算告警阈值",
-    "infoAddModelLimit": "添加模型限制",
-    "infoAdminsEnterpriseOnly": "分配管理员是企业版专属功能。请升级你的 LiteLLM 套餐以启用此功能。",
     "infoAgentsAccessGroups": "代理 / 访问组",
     "infoAllowedFailures": "允许的失败次数：{value}",
     "infoAllowedModels": "允许的模型",
     "infoAllowedModelsPlaceholder": "留空则继承所有团队模型",
     "infoAllowedModelsTooltip": "该成员在此团队内可以访问的模型。留空则继承所有团队模型。",
-    "infoBackToTeams": "返回团队",
-    "infoBlocked": "已屏蔽",
     "infoBudgetAlertThresholds": "预算告警阈值",
-    "infoBudgetAlertThresholdsHint": "当成员的支出达到其团队成员预算的某一百分比时，向该成员发送邮件。成员始终会收到通知；可添加用逗号分隔的地址以同时通知其他人。需要在代理上配置邮件告警。",
-    "infoBudgetAlertThresholdsValue": "预算告警阈值：{value}",
-    "infoBudgetDurationValue": "预算周期：{value}",
     "infoBudgetLimitForMemberPlaceholder": "该成员在此团队内的预算上限",
     "infoBudgetResetPeriod": "预算重置周期",
     "infoBudgetResetPeriodTooltip": "该成员的预算在团队内多久重置一次。不设置则预算从不重置。",
-    "infoBudgetResetValue": "预算重置：{value}",
-    "infoBudgetStatus": "预算状态",
-    "infoCancel": "取消",
     "infoCooldownTime": "冷却时间：{value} 秒",
     "infoCreatedAt": "创建时间",
-    "infoDefault": "默认",
     "infoDefaultBudgetDuration": "默认预算周期",
     "infoDefaultBudgetUsd": "默认预算（USD）",
     "infoDefaultBudgetUsdHint": "该团队中每个成员的默认支出预算。",
     "infoDefaultKeyDuration": "默认密钥有效期（例如：1d、1mo）",
     "infoDefaultMemberModels": "默认成员模型",
-    "infoDefaultModelAccess": "默认模型访问权限",
-    "infoDefaultModelAccessHint": "可选。如果设置，新成员默认只能访问这些模型。必须是上方团队模型的一个子集。留空则让所有成员都能访问团队的全部模型。",
     "infoDefaultRpmLimit": "默认 RPM 限制",
     "infoDefaultRpmLimitHint": "每个成员的默认每分钟请求数限制。可按成员单独覆盖。",
     "infoDefaultTpmLimit": "默认 TPM 限制",
@@ -2323,7 +2334,6 @@
     "infoEditSettings": "编辑设置",
     "infoEmail": "邮箱",
     "infoEnterWholeNumber1To100": "请输入 1 到 100 之间的整数",
-    "infoEstimatedOutputTokens": "预估输出 Token",
     "infoEstimatedOutputTokensPerModel": "每个模型的预估输出 Token",
     "estimatedOutputTokens": {
       "tooltipReserved": "请求省略 max_tokens 时，为 TPM 限流预留的预期输出 Token。会覆盖此团队的内置估算值。",
@@ -2332,26 +2342,19 @@
       "invalidPositive": "请输入正整数",
       "invalidPerModel": "请输入正整数构成的 JSON 对象，例如 '{'\"gpt-4\": 4096'}'"
     },
-    "infoEstimatedOutputTokensPerModelValue": "每个模型的预估输出 Token：{value}",
-    "infoEstimatedOutputTokensValue": "预估输出 Token：{value}",
     "infoExtraBudgetPlaceholder": "该成员在到期前的额外预算",
     "infoFailedToAddTeamMember": "添加团队成员失败",
-    "infoFailedToLoadTeam": "加载团队信息失败",
     "infoFailedToRemoveTeamMember": "移除团队成员失败",
     "infoFailedToUpdateTeamMember": "更新团队成员失败",
-    "infoFallbacks": "回退：已配置 {count} 个",
     "infoFallbacksLabel": "回退：",
     "infoGuardrailsHint": "选择适用于该团队的护栏。全局护栏默认启用，取消勾选即可退出。其他护栏为按需启用。",
     "infoInheritTeamResetPeriod": "继承团队重置周期",
     "infoInvalidEstimatedTokensJson": "每个模型的预估输出 Token 中的 JSON 无效",
     "infoInvalidSecretManagerJson": "密钥管理器设置中的 JSON 无效",
-    "infoKeyDurationValue": "密钥有效期：{value}",
     "infoLeaveEmptyAllTeamModels": "留空 — 所有团队成员均可访问全部团队模型",
     "infoLoading": "加载中...",
     "infoLoadingGuardrails": "正在加载护栏...",
     "infoMaxBudgetUsd": "最大预算（USD）",
-    "infoMaxBudgetValue": "最大预算：{value}",
-    "infoMaxParallelRequests": "最大并发请求数：{value}",
     "infoMcpAccessGroupListCouldNotBeLoaded": "访问组列表无法加载",
     "infoMcpAccessGroupsCouldNotBeLoaded": "无法加载团队的访问组",
     "infoMcpAccessGroupsCouldNotBeReloaded": "无法重新加载团队的访问组",
@@ -2374,22 +2377,11 @@
     "infoModelAliasesHint": "将自定义别名映射到底层模型。团队成员可以在 API 请求中使用该别名，而无需使用真实模型名称。",
     "infoModelSpecificRateLimits": "模型专属速率限制",
     "infoModelSpecificRateLimitsHint": "设置适用于整个团队的按模型 TPM/RPM 限制。",
-    "infoModelsDescription": "留空则不为该团队直接授予任何模型。团队仍会保留通过其访问组授予的模型",
-    "infoNever": "从不",
-    "infoNeverResets": "从不重置",
-    "infoNoLimit": "无限制",
     "infoNoMatchingOrganizations": "没有匹配的组织",
     "infoNoModelAliases": "未配置模型别名",
     "infoNoPoliciesConfigured": "未配置策略",
     "infoNoRouterSettings": "未配置路由设置",
-    "infoNone": "无",
     "infoNumberOfRetries": "重试次数：{value}",
-    "infoOfBudget": "共 {budget}",
-    "infoOrganizationId": "组织 ID",
-    "infoPerModelBudget": "各模型预算（{model}）：每 {period} ${budget}",
-    "infoPerModelBudgetSpent": "，已支出 ${spent}",
-    "infoPerModelLimits": "各模型限制：",
-    "infoPerModelLimitsRow": "{model}：TPM {tpm}，RPM {rpm}",
     "infoPlaceholderAdditionalRecipients": "其他收件人，例如 finance@example.com",
     "infoPlaceholderEg100": "例如 100",
     "infoPlaceholderEg1000": "例如 1000",
@@ -2397,7 +2389,6 @@
     "infoRateLimits": "速率限制",
     "infoRemoveBudgetAlertThreshold": "移除预算告警阈值",
     "infoRemoveModelLimit": "移除模型限制",
-    "infoResetValue": "重置：{value}",
     "infoResolvedGuardrails": "已解析的护栏：",
     "infoRetryAfter": "重试等待时间：{value} 秒",
     "infoRole": "角色",
@@ -2406,9 +2397,7 @@
     "infoRoutingStrategy": "路由策略：",
     "infoRpmLimitLabel": "每分钟请求限制（RPM）",
     "infoRpmLimitPlaceholder": "RPM 限制",
-    "infoRpmLimitValue": "RPM 限制：{value}",
     "infoRpmValue": "RPM：{value}",
-    "infoSaveChanges": "保存更改",
     "infoSelectModel": "选择模型",
     "infoSelectOrganization": "选择组织",
     "infoSelectPassThroughRoutes": "选择透传路由",
@@ -2418,43 +2407,33 @@
     "infoSkills": "技能",
     "infoSoftBudgetAlertingEmails": "软预算告警邮箱",
     "infoSoftBudgetAlertingEmailsHint": "当达到软预算时接收告警的邮箱地址，用逗号分隔",
-    "infoSoftBudgetAlertingEmailsValue": "软预算告警邮箱：{value}",
     "infoSoftBudgetUsd": "软预算（USD）",
-    "infoSoftBudgetValue": "软预算：{value}",
-    "infoStatus": "状态",
     "infoTagFilteringEnabled": "标签过滤：已启用",
-    "infoTeamBudget": "团队预算",
     "infoTeamMemberAdded": "团队成员添加成功",
     "infoTeamMemberBudgetTooltip": "该成员在此团队内可支出的最大 USD 金额。这与任何全局用户预算限制相互独立",
     "infoTeamMemberBudgetUsd": "团队成员预算（USD）",
-    "infoTeamMemberBudgetValue": "团队成员预算：${value}",
     "infoTeamMemberInformation": "团队成员信息",
     "infoTeamMemberRemoved": "团队成员移除成功",
     "infoTeamMemberRpmLimit": "团队成员 RPM 限制",
     "infoTeamMemberRpmLimitTooltip": "该成员在此团队内可使用的每分钟最大请求数。这与任何全局用户 RPM 限制相互独立",
     "infoTeamMemberRpmPlaceholder": "该成员在此团队内的每分钟请求数限制",
-    "infoTeamMemberSettings": "团队成员设置",
-    "infoTeamMemberSettingsDescription": "成员加入团队时应用的可选默认值。所有字段都可以按成员单独覆盖。",
     "infoTeamMemberTpmLimit": "团队成员 TPM 限制",
     "infoTeamMemberTpmLimitTooltip": "该成员在此团队内可使用的每分钟最大 Token 数。这与任何全局用户 TPM 限制相互独立",
     "infoTeamMemberTpmPlaceholder": "该成员在此团队内的每分钟 Token 限制",
     "infoTeamMemberUpdated": "团队成员更新成功",
     "infoTeamName": "团队名称",
     "infoTeamNotFound": "未找到团队",
-    "infoTeamSettings": "团队设置",
     "infoTeamSettingsUpdated": "团队设置更新成功",
     "updateFailedToast": "更新团队设置失败：{error}",
     "infoTemporaryBudgetExpiryTooltip": "临时预算增加停止生效的时间。只要设置了临时预算增加，此项就为必填。",
     "infoTemporaryBudgetExpiryUtc": "临时预算到期时间（UTC）",
     "infoTemporaryBudgetIncreaseTooltip": "在下方到期时间之前，在团队成员预算之上额外增加的 USD 金额。永久预算保持不变，增加部分在到期后停止生效。",
     "infoTemporaryBudgetIncreaseUsd": "临时预算增加（USD）",
-    "infoTheseAreMemberLimits": "这些是针对单个团队成员的限制",
     "infoTimeout": "超时：{value} 秒",
     "infoTotal": "总计：{value}",
     "infoTpdBatchValue": "TPD（批量）：{value}",
     "infoTpmLimitLabel": "每分钟 Token 限制（TPM）",
     "infoTpmLimitPlaceholder": "TPM 限制",
-    "infoTpmLimitValue": "TPM 限制：{value}",
     "infoTpmValue": "TPM：{value}",
     "infoUnlimited": "无限制",
     "infoUserId": "用户 ID",
@@ -2470,14 +2449,10 @@
       "addMember": "添加成员",
       "adding": "正在添加...",
       "allTeamModels": "所有团队模型",
-      "allTeamModelsInline": "（所有团队模型）",
       "budgetColumn": "团队成员预算（美元）",
       "budgetColumnTooltip": "团队默认值跟随团队的成员预算，因此在团队设置中更改它也会更新该成员。自定义值仅作用于该成员，之后团队的更改不会影响它。",
       "budgetInfoAria": "团队成员预算说明",
       "budgetReset": "预算重置",
-      "budgetResetSuccess": "团队成员预算已重置为团队默认值",
-      "budgetSourceCustom": "自定义",
-      "budgetSourceTeamDefault": "团队默认",
       "cancel": "取消",
       "currentCycleSpend": "本周期支出（美元）",
       "currentCycleSpendInfoAria": "本周期支出说明",
@@ -2490,8 +2465,6 @@
       "loadingMembership": "正在加载你的成员信息…",
       "membershipLoadFailed": "无法加载你在该团队中的成员信息。",
       "modelScope": "模型范围",
-      "modelScopeInfoAria": "模型范围说明",
-      "modelScopeTooltip": "该成员可以访问的模型。留空表示继承团队的所有模型。",
       "moreCount": "+{count} 个",
       "myCurrentCycleSpendInfoAria": "本周期支出（美元）说明",
       "myCurrentCycleSpendTooltip": "当前预算周期的支出。当预算周期滚动重置时会归零为 $0。",
@@ -2510,12 +2483,6 @@
       "rateLimitsInfoAria": "团队成员速率限制说明",
       "rateLimitsTooltip": "该成员在此团队中使用时的速率限制。",
       "reset": "重置",
-      "resetBudgetBody": "移除 <strong>{name}</strong> 的自定义预算，并将其恢复为团队默认值 <strong>{amount}</strong>？",
-      "resetBudgetDetail": "自定义预算：<strong>{amount}</strong>。其支出会保留。之后对团队成员预算的更改将重新对其生效。",
-      "resetBudgetTitle": "重置团队成员预算",
-      "resetSpendBody": "将 <strong>{name}</strong> 在此团队中的本周期支出重置为 <strong>$0</strong>？",
-      "resetSpendDetail": "本周期支出：<strong>{amount}</strong>。该值会用于与该成员的预算进行比对。总支出和日志会保留。",
-      "resetSpendTitle": "重置团队成员支出",
       "resetsAt": "{date} 重置",
       "role": "角色",
       "roleRequired": "请选择角色！",
@@ -2523,14 +2490,12 @@
       "saveChanges": "保存更改",
       "saving": "正在保存...",
       "selectOptions": "选择选项",
-      "spendResetSuccess": "团队成员支出已重置为 $0",
       "teamRole": "团队角色",
       "teamRoleTooltip": "该角色仅适用于此团队，与用户的代理级别角色无关。",
       "totalSpend": "总支出（美元）",
       "totalSpendInfoAria": "总支出说明",
       "totalSpendTooltip": "该成员在此团队中跨所有预算周期的累计支出。统计从 2026-04-21 开始；该日期之前的支出不计入。",
       "unlimited": "无限制",
-      "useTeamDefault": "使用团队默认值",
       "user": "用户",
       "userId": "用户 ID"
     },
@@ -2568,8 +2533,6 @@
     "adminFieldMemberKeyBudgets": "更新团队成员密钥的预算",
     "adminEditDisabledTitle": "此代理上团队管理员无法编辑团队设置",
     "adminEditDisabledDescription": "请联系代理管理员在 设置 > UI > 团队管理员可编辑字段 中启用相关字段。",
-    "settingsCancel": "取消",
-    "settingsSaveChanges": "保存更改",
     "availableActions": "操作",
     "availableDescription": "描述",
     "availableEmpty": "没有可加入的团队",
@@ -2735,7 +2698,6 @@
     "memberTable": {
       "editTooltip": "编辑成员",
       "deleteTooltip": "删除成员",
-      "resetSpendTooltip": "重置支出",
       "allRoles": "全部角色",
       "membersCount": "{count, plural, other {# 名成员}}",
       "noMatch": "没有符合搜索或筛选条件的成员",
@@ -2770,7 +2732,8 @@
     "tooltipViaGroups": "通过{groups}授予。",
     "groupsOne": "访问组 {names}",
     "groupsMany": "访问组 {names}",
-    "oneAccessGroup": "某个访问组"
+    "oneAccessGroup": "某个访问组",
+    "settingsInheritTeamResetPeriod": "继承团队重置周期"
   },
   "userAgentActivity": {
     "summaryTitle": "按用户代理汇总",
@@ -2892,23 +2855,15 @@
     "usersAddedWithUserRole": "用户将默认以 \"user\" 角色添加。所有用户都会被加入每个所选团队。",
     "updatingAllUsers": "正在更新全部用户...",
     "updatingUsers": "正在更新 {count} 个用户...",
-    "budgetRequired": "请输入预算或选择无限制预算",
-    "globalProxyRoleHint": "这是用户在整个代理上的全局角色，与任何团队/组织内的角色相互独立。",
-    "personalModels": "个人模型",
-    "personalModelsHint": "选择此用户在团队范围之外可以访问的模型。选择“所有代理模型”可授予访问代理上所有模型的权限。",
     "allProxyModels": "所有代理模型",
     "noDefaultModels": "无默认模型",
     "selectModels": "选择模型",
     "maxBudgetUSD": "最大预算 (USD)",
-    "unlimitedBudget": "无限制预算",
     "enterNumericalValue": "请输入数值",
     "resetBudget": "重置预算",
     "modelMaxBudgetHint": "限制该用户在各个模型上的花费，每个模型可各自设置重置周期。适用于该用户持有的所有密钥。",
     "metadata": "元数据",
     "enterMetadataAsJson": "以 JSON 输入元数据",
-    "mcpServersAccessGroups": "MCP 服务器 / 访问组",
-    "mcpServersAccessGroupsHint": "限定该用户可以访问的 MCP 服务器、访问组和工具。该用户持有的所有密钥都受此范围限制。",
-    "selectMcpServersOrAccessGroups": "选择 MCP 服务器或访问组（可选）",
     "cancel": "取消",
     "saveChanges": "保存更改",
     "budgetDurationNoReset": "不重置",
@@ -3478,17 +3433,9 @@
       "updatedAtRow": "最后更新"
     },
     "form": {
-      "modePreCall": "LLM 调用前——在 LLM 调用前运行并检查输入（推荐）",
-      "modeDuringCall": "LLM 调用中——与 LLM 调用并行运行，检查完成前暂扣响应",
-      "modePostCall": "LLM 调用后——在 LLM 调用后运行，只检查输出",
-      "modeLoggingOnly": "仅记录日志——只在日志回调时运行，不影响 LLM 调用",
-      "modePreMcp": "MCP 工具调用前——在 MCP 工具执行前运行并校验工具调用",
-      "modeDuringMcp": "MCP 工具调用中——与 MCP 工具执行并行运行，用于监控",
-      "modePostMcp": "MCP 工具调用后——在 MCP 工具执行后运行并检查工具结果",
       "loadFailed": "加载护栏配置失败",
       "selectPii": "请至少选择一个 PII 实体以继续",
       "fixFields": "创建护栏失败：请修正标出的字段",
-      "configureContentFilter": "请至少配置一项内容过滤设置（类别、模式、关键词或竞品意图）",
       "invalidJsonConfig": "配置中的 JSON 无效",
       "addCriterion": "请至少添加一条评估标准",
       "weightsSum": "标准权重之和必须为 100%（当前 {total}%）",
@@ -3507,37 +3454,14 @@
       "modeRequired": "请选择模式",
       "alwaysOnLabel": "始终启用",
       "alwaysOnHint": "启用后，此护栏将默认应用于所有请求。",
-      "skipSystem": "在护栏中跳过系统消息",
-      "skipSystemHint": "仅统一护栏：从护栏评估输入中省略 role: system（OpenAI 对话与 Anthropic 消息）。模型仍会收到完整消息。使用全局默认值，遵循 litellm_settings.skip_system_message_in_guardrail。",
-      "skipTool": "在护栏中跳过工具消息",
-      "skipToolHint": "仅统一护栏：从护栏评估输入中省略 role: tool（OpenAI 对话与 Anthropic 消息）。模型仍会收到完整消息。使用全局默认值，遵循 litellm_settings.skip_tool_message_in_guardrail。",
       "yes": "是",
       "no": "否",
       "selectOption": "选择一个选项",
-      "endpointIntro": "为特定调用类型配置设置。大多数护栏不需要——除非你用的是特定端点，例如",
-      "callType": "调用类型",
       "callTypePlaceholder": "选择调用类型",
       "moreCallTypes": "更多调用类型即将推出。",
       "realtimeSettings": "/v1/realtime 设置",
-      "endSessionLabel": "违规 X 次后结束会话",
-      "endSessionHint": "在此护栏违规次数达到后自动关闭会话。留空则从不自动关闭。",
-      "endSessionPlaceholder": "例如 3",
       "onViolation": "违规时",
       "warn": "警告",
-      "warnDesc": "机器人说出消息，会话继续",
-      "endSession": "结束会话",
-      "endSessionDesc": "机器人说出消息，连接立即关闭",
-      "heardMessage": "用户听到的消息",
-      "heardMessageHint": "此护栏触发时机器人说出的内容。留空则回退到默认违规消息。",
-      "heardMessagePlaceholder": "例如：我无法继续这次对话，请致电 1-800-774-2678 联系我们。",
-      "stepBasic": "基本信息",
-      "stepTopics": "主题",
-      "stepPatterns": "模式",
-      "stepKeywords": "关键词",
-      "stepEndpoint": "端点设置（可选）",
-      "stepPii": "PII 配置",
-      "stepDecisionModel": "决策模型配置",
-      "stepProvider": "提供商配置",
       "optionalTag": "可选",
       "editStep": "编辑",
       "title": "创建护栏",
@@ -5017,8 +4941,8 @@
       "trends": "端点用量趋势"
     },
     "entity": {
-    "ptuHoursTooltip": "已消耗的预置吞吐量（按 PTU 小时计）：发送到 PTU 部署的 token 按每个模型的 Azure 容量表换算。用它除以预留的 PTU 数乘以周期内小时数，即可看出预留容量的使用比例。",
-    "ptuHoursTitle": "PTU 小时",
+      "ptuHoursTooltip": "已消耗的预置吞吐量（按 PTU 小时计）：发送到 PTU 部署的 token 按每个模型的 Azure 容量表换算。用它除以预留的 PTU 数乘以周期内小时数，即可看出预留容量的使用比例。",
+      "ptuHoursTitle": "PTU 小时",
       "here": "此处",
       "topKeys": "热门虚拟密钥",
       "topAgents": "热门智能体",
@@ -5033,7 +4957,6 @@
       "flatCostTooltip": "预留的预配置吞吐量，无论是否发送请求都按小时计费。仅在此处展示，不计入团队、密钥、用户或组织的预算。",
       "requestTokenConsumption": "请求 / Token 消耗",
       "spendFetchFailed": "消费数据拉取失败，下方合计可能为空而非最终值。请重新加载页面重试。",
-      "agentFetchFailed": "智能体数据拉取失败，下方合计可能为空而非最终值。请重新加载页面重试。",
       "type": {
         "user": "用户",
         "team": "团队",
@@ -5069,7 +4992,8 @@
       "requests": "请求数",
       "successful": "成功",
       "failed": "失败",
-      "tokens": "Token"
+      "tokens": "Token",
+      "attributionHint": "按请求归因自花费日志，因此包含不使用虚拟密钥的 JWT/SSO 流量"
     },
     "old": {
       "title": "用量",
@@ -5135,36 +5059,30 @@
       "userAgentDesc": "查看详细的用户代理活跃日志"
     },
     "endpointUsage": {
-        "endpoint": "端点",
-        "successfulFailed": "成功 / 失败",
-        "successfulAria": "成功的请求数",
-        "totalRequests": "请求总数",
-        "successRate": "成功率",
-        "totalTokens": "总 Token 数",
-        "spend": "花费",
-        "noData": "暂无端点用量数据"
+      "endpoint": "端点",
+      "successfulFailed": "成功 / 失败",
+      "successfulAria": "成功的请求数",
+      "totalRequests": "请求总数",
+      "successRate": "成功率",
+      "totalTokens": "总 Token 数",
+      "spend": "花费",
+      "noData": "暂无端点用量数据"
     },
     "modelViewToggle": {
-        "publicName": "公开模型名",
-        "litellmName": "LiteLLM 模型名"
+      "publicName": "公开模型名",
+      "litellmName": "LiteLLM 模型名"
     },
     "topModelView": {
-        "colModel": "模型",
-        "colSpend": "花费（美元）",
-        "colSuccessful": "成功",
-        "colFailed": "失败",
-        "colTokens": "Token 数",
-        "modelCountAria": "要展示的模型数量",
-        "viewModeAria": "头部模型视图模式",
+      "colModel": "模型",
+      "colSpend": "花费（美元）",
+      "colSuccessful": "成功",
+      "colFailed": "失败",
+      "colTokens": "Token 数",
+      "modelCountAria": "要展示的模型数量",
+      "viewModeAria": "头部模型视图模式",
       "tableView": "表格视图",
       "chartView": "图表视图"
     },
-    "granularityDay": "按天",
-    "granularityWeek": "按周",
-    "scaleLinear": "线性",
-    "scaleLog": "对数",
-    "scaleLabel": "刻度",
-    "bucketSizeLabel": "时间桶大小",
     "usageViewAccessDenied": "您无权查看该用量视图",
     "linkCopied": "链接已复制",
     "copyShareLink": "复制分享链接",
@@ -5183,32 +5101,20 @@
       "ipAddress": "IP 地址",
       "guardrail": "护栏",
       "loadingRequestResponse": "正在加载请求与响应数据...",
-      "errorCodeLabel": "错误码：",
-      "messageLabel": "消息：",
       "maskedCount": "{count} 项已脱敏",
       "responseCache": "响应缓存",
       "responseCacheTooltip": "该请求是否由 LiteLLM 的响应缓存（例如 Redis 或进程内缓存）直接返回，从而完全跳过大模型提供商调用。这与提供商侧的提示缓存是两回事，这里显示未命中并不代表提示缓存失效。",
-      "cacheKey": "缓存键",
-      "cacheKeyTooltip": "LiteLLM 为该请求在响应缓存中算出的键。缓存键相同的请求共用同一份缓存响应；键不同说明请求内容没有匹配到任何缓存条目。",
       "promptCacheRead": "提示缓存读取令牌",
-      "promptCacheReadTooltip": "从大模型提供商的提示缓存（例如 Anthropic、OpenAI）读取的输入令牌，按折扣价计费，数值由提供商上报。",
       "promptCacheCreation": "提示缓存写入令牌",
-      "promptCacheCreationTooltip": "写入大模型提供商提示缓存的输入令牌，供后续请求复用。",
       "docs": "文档",
-      "infoAria": "{label} 信息",
       "batchResults": "批处理结果",
       "batchId": "批次 ID",
       "successfulRequests": "成功请求数",
       "failedRequests": "失败请求数",
       "models": "模型列表",
       "metrics": "指标",
-      "inputTokens": "输入令牌",
-      "outputTokens": "输出令牌",
-      "reasoningTokens": "推理令牌",
       "duration": "耗时",
       "timeToFirstToken": "首字延迟",
-      "cacheHit": "命中",
-      "cacheMiss": "未命中",
       "litellmOverhead": "LiteLLM 额外开销",
       "retries": "重试",
       "retriesNone": "无",
@@ -5231,8 +5137,7 @@
       "filtersDescription": "缩小请求日志范围",
       "empty": "暂无请求",
       "emptyDesc": "经 LiteLLM 代理的请求会显示在这里。",
-      "emptyFiltered": "没有匹配的请求",
-      "emptyFilteredDesc": "当前时间范围内没有符合筛选条件的请求。"
+      "emptyFiltered": "没有匹配的请求"
     },
     "title": "日志",
     "tabs": {
@@ -5295,8 +5200,6 @@
       "publicModelOrSearchTool": "公开模型 / 搜索工具",
       "options": {
         "allRequests": "全部请求",
-        "cacheHit": "缓存命中",
-        "cacheMiss": "缓存未命中",
         "allCredentials": "全部凭据",
         "clientOAuthToken": "客户端 OAuth 令牌",
         "configuredKey": "配置密钥",
@@ -5308,10 +5211,8 @@
       },
       "placeholders": {
         "searchTeam": "搜索或选择团队",
-        "searchKeyAlias": "搜索密钥别名",
         "searchModel": "搜索模型",
         "searchUser": "搜索内部用户",
-        "searchEndUser": "搜索终端用户",
         "selectErrorCode": "选择或输入错误码",
         "enterErrorMessage": "输入错误信息…",
         "enterKeyHash": "输入密钥哈希…",
@@ -5323,14 +5224,11 @@
       },
       "empty": {
         "teams": "未找到团队",
-        "keyAliases": "未找到密钥别名",
         "models": "未找到模型",
         "users": "未找到用户",
-        "endUsers": "该时间范围内没有终端用户",
         "errorCodes": "未找到错误码"
       },
-      "modelIdLabel": "模型 ID：{modelId}",
-      "useCustomCode": "使用自定义错误码：{code}"
+      "modelIdLabel": "模型 ID：{modelId}"
     },
     "columns": {
       "time": "时间",
@@ -5570,16 +5468,8 @@
       },
       "drawer": {
         "title": "审计日志详情",
-        "before": "变更前",
-        "after": "变更后",
-        "copyJson": "复制 JSON",
         "notApplicable": "无",
-        "noDiff": "未检测到有差异的字段",
-        "tokenLabel": "令牌：",
-        "spendLabel": "花费：",
-        "maxBudgetLabel": "最大预算：",
-        "copyObjectId": "复制对象 ID",
-        "copyKeyHash": "复制 API 密钥哈希"
+        "maxBudgetLabel": "最大预算："
       }
     },
     "trace": {
@@ -5952,7 +5842,6 @@
     "creating": "创建中...",
     "createGroup": "创建访问组",
     "updatedSuccessfully": "访问组更新成功",
-    "editGroupTitle": "编辑访问组",
     "groupNameRequired": "请输入访问组名称"
   },
   "uiTheme": {
@@ -6099,11 +5988,7 @@
     "subtitle": "配置和管理你的 MCP 服务器",
     "myConnections": "我的连接",
     "importFromJson": "从 JSON 导入",
-    "addNewServer": "+ 添加 MCP 服务器",
     "submitServer": "+ 提交 MCP 服务器",
-    "tabAllServers": "全部服务器",
-    "tabToolsets": "工具集",
-    "tabConnect": "连接",
     "tabSemanticFilter": "语义筛选",
     "tabToolSearch": "工具搜索",
     "tabNetworkSettings": "网络设置",
@@ -6112,19 +5997,10 @@
     "team": "团队",
     "personal": "个人",
     "accessGroup": "访问组",
-    "aboutAccessGroups": "关于访问组",
-    "accessGroupTooltip": "MCP 访问组是一组被授权访问特定 MCP 服务器的用户或团队。用访问组来控制和组织谁能连接哪些服务器。",
     "allAccessGroups": "全部访问组",
     "sort": "排序",
     "searchPlaceholder": "按名称、别名、URL 或 ID 搜索",
-    "sortCreatedDesc": "最近创建",
-    "sortUpdatedDesc": "最近更新",
-    "sortNameAsc": "名称(A→Z)",
-    "sortHealth": "健康度(不健康优先)",
-    "serverCount": "共 {total} 个服务器,显示 {shown} 个",
     "loading": "正在加载 MCP 服务器...",
-    "emptyNone": "尚未配置任何 MCP 服务器。点击“+ 添加 MCP 服务器”开始使用。",
-    "emptyNoMatch": "没有服务器符合当前的筛选或搜索条件。",
     "deleteTitle": "删除 MCP 服务器?",
     "deleteBody": "此操作是永久性的,无法撤销。所有相关配置都将被删除。",
     "name": "名称",
@@ -6785,18 +6661,14 @@
       "disconnectConfirm": "{scope}进行中的请求会失败，客户端需要重新 initialize 后才能调用工具。"
     },
     "networkSettings": {
-      "addClient": "添加客户端",
-      "editClient": "编辑客户端",
-      "clientDescription": "别名是显示在控制面板和网关日志中的名称。值是标识该客户端的确切 JWT 声明或请求头的值，例如身份提供商颁发的 OAuth 客户端 ID。",
       "alias": "别名",
-      "aliasPlaceholder": "例如 Coding CLI",
       "value": "值",
       "valuePlaceholder": "例如 0oa1b2c3d4e5f6g7h8i9",
       "cancel": "取消",
       "add": "添加",
       "done": "完成",
       "removeClient": "移除客户端",
-    "removeRange": "移除 {range}",
+      "removeRange": "移除 {range}",
       "savedToast": "MCP 网络设置已保存",
       "privateIpRangesTitle": "私有 IP 段",
       "privateIpRangesDesc": "定义哪些 IP 段属于您的内部网络。来自这些 IP 的调用方可以查看所有 MCP 服务器。来自其他 IP 的调用方只能查看标记为\"可在公网访问\"的服务器。",
@@ -6804,16 +6676,6 @@
       "suggestedRange": "建议的网段：",
       "yourPrivateRanges": "您的内部网络网段",
       "placeholderRanges": "留空使用默认值：10.0.0.0/8、172.16.0.0/12、192.168.0.0/16、127.0.0.0/8",
-      "cidrRangesNote": "输入 CIDR 网段（例如 10.0.0.0/8）。留空时使用标准私有 IP 段。",
-      "allowedClientsTitle": "允许的客户端",
-      "allowedClientsDesc": "只有此处列出的 MCP 客户端应用可以使用网关。留空表示允许所有客户端。通过 JWT 认证的客户端由代理配置中 litellm_jwtauth.mcp_client_id_jwt_field 指定的声明标识（例如 azp 或 client_id），该声明由身份提供商断言，客户端无法更改。其他客户端由下方配置的请求头标识（若启用）。",
-      "malformedAllowlist": "存储的允许列表不是别名与值的配对列表，因此所有客户端都会被拒绝。添加所需客户端并保存以替换它，或保存空列表以移除它并重新允许所有客户端。",
-      "emptyAllowlist": "当前存储了空的允许列表，因此所有客户端都会被拒绝。保存空列表可将其移除并重新允许所有客户端。",
-      "addClientButton": "添加客户端",
-      "clientListNote": "点击客户端可编辑或移除。列表留空表示允许所有客户端。来自未列出客户端或无法解析身份的客户端的每个 MCP 请求都会返回 403。",
-      "clientIdentityHeader": "客户端身份请求头（安全性较低）",
-      "clientIdentityPlaceholder": "留空表示仅通过 JWT 标识客户端，例如 x-mcp-client",
-      "clientIdentityDesc": "可选请求头，其值为无 JWT 身份的调用方命名客户端。该值由客户端自行选择，因此是策略控制而非安全边界。未配置时，若设置了允许列表，不携带 JWT 声明的调用方将被拒绝。",
       "save": "保存"
     },
     "permissionMgmt": {
@@ -6854,26 +6716,16 @@
       "statusActive": "活跃",
       "statusPendingReview": "待审核",
       "statusRejected": "已拒绝",
-      "rejectionReasonPlaceholder": "拒绝原因（可选）",
       "cancel": "取消",
       "approveBtn": "通过",
       "rejectBtn": "拒绝",
       "submissionRules": "提交规则",
       "requiredFieldsCount": "（{count} 个必填字段）",
       "noRulesSet": "未设置规则",
-      "rulesDesc": "选择提交被视为合规前必须填写的字段。LiteLLM 会在下方每个提交卡片上为每条规则显示 ✓ / ✗。",
       "saving": "保存中…",
       "saveRules": "保存规则",
       "transport": "传输方式：{transport}",
-      "submittedBy": "提交者：{by}",
-      "rejectionReason": "拒绝原因：{reason}",
-      "allChecksPassed": "全部检查通过",
-      "checksFailed": "{count, plural, other {# 项检查未通过}}",
-      "passingFailing": "{pass} 项通过，{fail} 项未通过",
-      "passes": "通过",
       "missing": "缺失",
-      "reapprove": "重新通过",
-      "totalSubmitted": "提交总数",
       "pendingReview": "待审核",
       "active": "活跃",
       "rejected": "已拒绝",
@@ -6887,11 +6739,6 @@
       "rejectFailedToast": "拒绝 MCP 服务器失败",
       "rulesSavedToast": "提交规则已保存",
       "rulesSaveFailedToast": "保存提交规则失败",
-      "confirmApproveTitle": "通过 MCP 服务器",
-      "confirmRejectTitle": "拒绝 MCP 服务器",
-      "confirmApproveBody": "确定要通过 <b>\"{serverName}\"</b> 吗？这会激活该服务器，审核通过后提交用户即可在其 MCP 服务器列表中看到它。",
-      "confirmRejectBodyLive": "确定要拒绝 <b>\"{serverName}\"</b> 吗？该服务器当前处于线上状态，拒绝会立即将其从代理运行时中移除。",
-      "confirmRejectBodyPending": "确定要拒绝 <b>\"{serverName}\"</b> 吗？这会将该提交标记为已拒绝。",
       "loadFailed": "加载提交列表失败"
     },
     "mcpConnect": {
@@ -7027,20 +6874,20 @@
     "option2": "方式二：",
     "actions": "操作",
     "selector": {
-        "placeholder": "选择 MCP 服务器",
-        "mcpServer": "MCP 服务器",
-        "toolset": "工具集",
-        "allProxyMcpServers": "所有代理 MCP 服务器",
-        "noMcpServers": "无 MCP 服务器",
-        "blockAll": "全部拦截",
-        "emptyText": "未找到 MCP 服务器",
+      "placeholder": "选择 MCP 服务器",
+      "mcpServer": "MCP 服务器",
+      "toolset": "工具集",
+      "allProxyMcpServers": "所有代理 MCP 服务器",
+      "noMcpServers": "无 MCP 服务器",
+      "blockAll": "全部拦截",
+      "emptyText": "未找到 MCP 服务器",
       "accessGroup": "访问组"
     },
     "oauthCallback": {
-        "title": "LiteLLM MCP OAuth",
-        "complete": "授权已完成，可以关闭本窗口并返回 LiteLLM 控制台。",
-        "closeHint": "如果窗口没有自动关闭，所有内容都已经保存好了，你可以手动关闭。",
-        "loading": "加载中..."
+      "title": "LiteLLM MCP OAuth",
+      "complete": "授权已完成，可以关闭本窗口并返回 LiteLLM 控制台。",
+      "closeHint": "如果窗口没有自动关闭，所有内容都已经保存好了，你可以手动关闭。",
+      "loading": "加载中..."
     }
   },
   "guardrailsMonitor": {
@@ -7171,7 +7018,7 @@
   "prompts": {
     "unnamedTool": "未命名工具",
     "conversation": {
-      "accessTokenRequired": "需要访问令牌",
+      "accessTokenRequired": "需要 Access Token",
       "fillAllVariables": "请填写所有模板变量",
       "requestCancelled": "请求已取消",
       "errorPrefix": "错误：{message}",
@@ -7482,51 +7329,18 @@
       "unavailable": "该范围无法获取节省数据，请更换日期范围或重新打开此标签页。"
     },
     "autoRouter": {
-      "bucket": "分桶",
       "turns": "轮次",
-      "hitRate": "命中率",
       "cacheHitRate": "缓存命中率",
-      "shareOfTurns": "轮次占比",
-      "loadingUsage": "正在加载自动路由用量...",
       "adminOnly": "自动路由用量仅代理管理员角色可见",
       "unavailable": "自动路由用量暂时不可用",
       "promptCaching": "自动路由提示缓存",
-      "bucketDesc": "按路由行为，每一轮恰好落入一个分桶",
-      "usageTitle": "自动路由用量",
       "allRouters": "全部自动路由",
       "routingByTier": "按层级路由",
       "tierTurnsDesc": "各层级服务的轮次数。分类器发送到默认模型的轮次不属于任何层级，不计入此处，因此总数可能小于路由器的轮次数。",
       "savingsTitle": "预计总节省",
       "valueUnavailable": "不可用",
-      "comparedOn": "在 {measured, number} 个请求上对比（共 {total, number} 个）；自适应与质量路由不计入",
-      "actualSpend": "自动路由实际支出",
-      "actualSpendTooltip": "该时间范围内复杂度路由的自动路由支出，含分类成本；自适应与质量路由不计入。基线等于该支出加上已记录的节省",
-      "llmSpend": "LLM 支出",
-      "classificationCost": "分类成本",
-      "per1kTurns": "（{rate} / 千轮）",
-      "breakdownUnavailable": "部分用量早于分类成本统计上线，无法给出明细",
-      "baselineSpend": "估算基线支出",
-      "turnsByBucketAria": "各分桶的轮次占比",
-      "turnsCount": "{label}：{count, number} 轮",
-      "expiredMiss": "过期未命中",
-      "expiredMissTooltip": "在所有已计量轮次中，因回落到更早档位时 TTL 已过期而未命中缓存的比例",
-      "turnsMeasured": "已计量 <strong>{count, number}</strong> 轮",
-      "outOfOrder": "{count, number} 轮跨 pod 乱序到达，未计入任何分桶",
-      "avgSaved": "会话平均节省",
-      "sessionsHint": "· {count, number} 个会话",
-      "avgTurns": "会话平均轮次",
-      "avgSessionLength": "会话平均时长",
-      "avgTokens": "会话平均 Token 数",
-      "benchmarkNote": "实际支出覆盖复杂度路由上的所有请求，含 LLM 分类成本。基线等于实际支出加已记录的节省，因此节省可能为零或为负。时间范围按整段重叠的会话计量，总数可能与按 UTC 日分组的节省视图不同",
-      "userScopeNote": "该用量统计此用户跨 API Key 与 JWT 认证请求的用量；未记录用户 ID 的历史会话不计入",
       "tabUsage": "用量",
-      "tabShadowEvals": "影子评估",
-      "bucketSameModel": "同一模型",
-      "bucketSameModelHint": "上一轮使用同一档位",
-      "bucketFirstVisit": "首次访问",
-      "bucketFirstVisitHint": "上一轮尚未使用过该档位",
-      "bucketReturnToTier": "回落档位",
-      "bucketReturnToTierHint": "上一轮曾使用过该档位"
+      "tabShadowEvals": "影子评估"
     },
     "shadowEval": {
       "target": "目标",
@@ -7658,7 +7472,8 @@
       "readyBody": "点击“完成连接”，以你的身份让{client}获得访问{server}的权限。",
       "finish": "完成连接",
       "cancel": "取消",
-      "remoteClient": "我的客户端在远程或 SSH 机器上"
+      "remoteClient": "我的客户端在远程或 SSH 机器上",
+      "multiBody": "在下方逐个授权需要的服务器，或取消以送走 {client}。"
     },
     "connectPicker": {
       "loadToolsFailed": "无法加载{server}的工具，本次消息将不包含它。",
@@ -7798,20 +7613,20 @@
       "navUsage": "用量"
     },
     "page": {
-        "suggestions": {
-            "write": "写作",
-            "learn": "学习",
-            "code": "写代码",
-            "brainstorm": "头脑风暴"
-        },
-        "greetingMorning": "早上好",
-        "greetingAfternoon": "下午好",
-        "greetingEvening": "晚上好",
-        "modelsLoadFailed": "无法加载模型",
-        "modelSearchPlaceholder": "搜索模型...",
-        "sendPlaceholder": "输入消息...",
-        "emptyStateHint": "今天有什么可以帮你的？",
-        "scrollToBottom": "滚动到底部",
+      "suggestions": {
+        "write": "写作",
+        "learn": "学习",
+        "code": "写代码",
+        "brainstorm": "头脑风暴"
+      },
+      "greetingMorning": "早上好",
+      "greetingAfternoon": "下午好",
+      "greetingEvening": "晚上好",
+      "modelsLoadFailed": "无法加载模型",
+      "modelSearchPlaceholder": "搜索模型...",
+      "sendPlaceholder": "输入消息...",
+      "emptyStateHint": "今天有什么可以帮你的？",
+      "scrollToBottom": "滚动到底部",
       "selectModel": "选择模型",
       "send": "发送",
       "historyNotSaved": "本次浏览器会话不会保存聊天记录",
@@ -8162,7 +7977,6 @@
       "noAgentForChat": "请先保存一个智能体，然后在聊天中测试。",
       "noAgentForTest": "请选择一个智能体以运行批量测试。",
       "noAgentForConnect": "请选择一个智能体以查看连接方式。",
-      "noAgentsYet": "暂无智能体。请添加一个智能体开始使用。",
       "missingModelId": "此智能体无法在此处更新或删除（缺少模型 ID）。请在“模型与端点”中管理。",
       "experimentalBanner": "智能体构建器为实验性功能，可能随时变更或移除，恕不另行通知。我们非常期待您的反馈——请发送邮件至 <link>product@berri.ai</link>。",
       "proxyBaseUrl": "代理基础 URL",
@@ -8200,7 +8014,7 @@
       "connectionFailed": "连接失败: {error}",
       "listening": "🎙️ 正在聆听...",
       "microphoneError": "麦克风错误: {error}",
-    "errorPrefix": "错误：{message}",
+      "errorPrefix": "错误：{message}",
       "title": "实时语音聊天",
       "connected": "已连接",
       "connecting": "连接中...",
@@ -8508,7 +8322,6 @@
     "deleteWarning": "此操作无法撤销。",
     "cancel": "取消",
     "noSkills": "未找到技能",
-    "noSkillsDesc": "添加一个开始使用。",
     "actions": "操作",
     "subtitle": "注册 Claude Code 技能。已发布的技能会出现在所有用户的技能中心，并通过 <code>/claude-code/marketplace.json</code> 提供。",
     "addButton": "+ 添加技能",
@@ -8542,15 +8355,14 @@
     "noMatchingSkillsDesc": "调整搜索或领域筛选以查看更多技能。",
     "noSkillsYetDesc": "在此添加的技能会展示给开发者。",
     "showingCount": "显示 {shown} 条，共 {total} 条技能",
-    "uncategorized": "未分类",
     "na": "无",
     "noDescription": "暂无描述",
     "copyId": "复制技能 ID",
     "idCopied": "技能 ID 已复制",
     "selector": {
-        "placeholder": "选择技能（可选）",
-        "clearAll": "清空全部技能",
-        "private": "私有"
+      "placeholder": "选择技能（可选）",
+      "clearAll": "清空全部技能",
+      "private": "私有"
     },
     "subPathLabel": "子目录路径（可选）",
     "subPathHint": "技能在仓库中的相对路径（如 plugins/my-skill）。技能位于仓库根目录时请留空。",
@@ -8569,8 +8381,7 @@
       "githubRepo": "{name} 仓库",
       "githubSubdir": "{repo} 子目录 — {path}",
       "gitRepo": "{brand} 仓库 — {url}",
-      "gitSubdir": "{brand} 子目录 — {repo} @ {path}",
-      "zipArchive": "Zip 压缩包 — {path}"
+      "gitSubdir": "{brand} 子目录 — {repo} @ {path}"
     },
     "skillNameKebabToast": "技能名称必须是 kebab-case（只能包含小写字母、数字和连字符）",
     "semverToast": "版本必须符合语义化版本格式（如 1.0.0）",
@@ -8894,26 +8705,26 @@
     "agentNameCopied": "智能体名称已复制",
     "jwtConfigured": "已配置 JWT",
     "identity": {
-        "sectionAria": "Agent 身份",
-        "heading": "Agent 身份：Microsoft Entra ID",
-        "tenantLabel": "租户",
-        "appIdLabel": "应用程序（客户端）ID",
-        "servicePrincipalLabel": "企业应用程序对象 ID",
-        "notConfigured": "未配置",
-        "executionModeLine": "执行：{execution} · 模式：{mode}",
-        "loadingValue": "加载中",
-        "identityUnbound": "身份未绑定，执行已禁用",
-        "authEvidenceFailed": "无法加载认证凭据",
-        "lastAuthenticated": "最近一次认证通过的身份匹配：{timestamp}",
-        "awaitingAuth": "已配置，等待一次通过认证的请求",
-        "evidenceNote": "近期的凭据来自与该绑定匹配的、经验证的 Entra 令牌。它会跨重启持久保存，并在绑定变更时清除。工具与模型权限是单独校验的。",
-        "refreshButton": "刷新认证凭据",
-        "viewLogsLink": "查看请求日志"
+      "sectionAria": "Agent 身份",
+      "heading": "Agent 身份：Microsoft Entra ID",
+      "tenantLabel": "租户",
+      "appIdLabel": "应用程序（客户端）ID",
+      "servicePrincipalLabel": "企业应用程序对象 ID",
+      "notConfigured": "未配置",
+      "executionModeLine": "执行：{execution} · 模式：{mode}",
+      "loadingValue": "加载中",
+      "identityUnbound": "身份未绑定，执行已禁用",
+      "authEvidenceFailed": "无法加载认证凭据",
+      "lastAuthenticated": "最近一次认证通过的身份匹配：{timestamp}",
+      "awaitingAuth": "已配置，等待一次通过认证的请求",
+      "evidenceNote": "近期的凭据来自与该绑定匹配的、经验证的 Entra 令牌。它会跨重启持久保存，并在绑定变更时清除。工具与模型权限是单独校验的。",
+      "refreshButton": "刷新认证凭据",
+      "viewLogsLink": "查看请求日志"
     },
     "selector": {
-        "placeholder": "选择 Agent",
-        "accessGroupDesc": "访问组",
-        "agentDesc": "Agent",
+      "placeholder": "选择 Agent",
+      "accessGroupDesc": "访问组",
+      "agentDesc": "Agent",
       "noAgents": "未找到 Agent"
     },
     "agentCreationSteps": "智能体创建步骤",
@@ -9122,38 +8933,37 @@
     "updateDiscountConfigFailed": "更新折扣配置失败",
     "selectProviderAndDiscountRequired": "请选择供应商并输入折扣百分比",
     "discountPercentRange": "折扣必须在 0% 到 100% 之间",
-    "discountExists": "{name} 的折扣已存在，请在上方的表格中编辑。",
     "multiExport": {
-        "trigger": "导出",
-        "asPdf": "导出为 PDF",
-        "asCsv": "导出为 CSV",
-        "report": {
-          "documentTitle": "多模型成本估算报告",
-          "heading": "LLM 成本估算报告",
-          "modelsConfigured": "已配置 {count} 个模型",
-          "combinedTotals": "合计总额",
-          "totalPerRequest": "每次请求合计",
-          "totalDaily": "每日合计",
-          "totalMonthly": "每月合计",
-          "marginPerRequest": "每次请求利润",
-          "dailyMargin": "每日利润",
-          "monthlyMargin": "每月利润",
-          "modelBreakdown": "模型明细",
-          "inputTokensPerRequest": "每次请求输入令牌数",
-          "outputTokensPerRequest": "每次请求输出令牌数",
-          "requestsPerDay": "每日请求数",
-          "requestsPerMonth": "每月请求数",
-          "costType": "成本类型",
-          "perRequest": "每次请求",
-          "daily": "每日",
-          "monthly": "每月",
-          "inputCost": "输入成本",
-          "outputCost": "输出成本",
-          "marginFee": "利润/费用",
-          "total": "总计",
-          "footer": "由 LiteLLM 定价计算器生成于 {date}",
-          "allowPopups": "请允许弹窗以导出 PDF"
-        }
+      "trigger": "导出",
+      "asPdf": "导出为 PDF",
+      "asCsv": "导出为 CSV",
+      "report": {
+        "documentTitle": "多模型成本估算报告",
+        "heading": "LLM 成本估算报告",
+        "modelsConfigured": "已配置 {count} 个模型",
+        "combinedTotals": "合计总额",
+        "totalPerRequest": "每次请求合计",
+        "totalDaily": "每日合计",
+        "totalMonthly": "每月合计",
+        "marginPerRequest": "每次请求利润",
+        "dailyMargin": "每日利润",
+        "monthlyMargin": "每月利润",
+        "modelBreakdown": "模型明细",
+        "inputTokensPerRequest": "每次请求输入令牌数",
+        "outputTokensPerRequest": "每次请求输出令牌数",
+        "requestsPerDay": "每日请求数",
+        "requestsPerMonth": "每月请求数",
+        "costType": "成本类型",
+        "perRequest": "每次请求",
+        "daily": "每日",
+        "monthly": "每月",
+        "inputCost": "输入成本",
+        "outputCost": "输出成本",
+        "marginFee": "利润/费用",
+        "total": "总计",
+        "footer": "由 LiteLLM 定价计算器生成于 {date}",
+        "allowPopups": "请允许弹窗以导出 PDF"
+      }
     }
   },
   "cloudZero": {
@@ -9310,8 +9120,6 @@
     "tipKey": "确认 API 密钥正确且有效",
     "tipService": "确认搜索供应商服务正常",
     "tipQuota": "确认在供应商处有足够的额度/配额",
-    "enterApiKeyShort": "输入 API 密钥",
-    "descPlaceholderShort": "此搜索工具的描述",
     "missingAuthParams": "缺少必要的认证参数。",
     "editTitle": "编辑搜索工具",
     "title": "搜索工具",
@@ -9368,10 +9176,10 @@
     "configDeleteHint": "配置文件中的搜索工具无法在管理面板删除，请直接修改配置文件。",
     "loadingMessage": "正在加载搜索工具…",
     "selector": {
-        "placeholder": "选择搜索工具（可选）",
-        "clearAll": "清空全部搜索工具",
-        "loading": "正在加载搜索工具…",
-        "noTools": "未找到搜索工具"
+      "placeholder": "选择搜索工具（可选）",
+      "clearAll": "清空全部搜索工具",
+      "loading": "正在加载搜索工具…",
+      "noTools": "未找到搜索工具"
     },
 
     "nameRequired": "请输入搜索工具名称",
@@ -9379,13 +9187,11 @@
     "deletedToast": "搜索工具已删除",
     "deleteError": "删除搜索工具失败",
     "updatedToast": "搜索工具已更新",
-    "updateError": "更新搜索工具失败",
     "deleteTitle": "删除搜索工具",
     "deleteConfirm": "确定要删除这个搜索工具吗？此操作不可撤销。",
     "resourceInfoTitle": "搜索工具信息",
     "searchToolName": "搜索工具名称",
     "providerLabel": "搜索供应商",
-    "apiKeyDesc": "搜索供应商的 API 密钥",
     "idLabel": "ID",
     "nameExample": "例如：my-perplexity-search",
     "namePattern": "名称只能包含字母、数字、连字符和下划线",
@@ -9431,18 +9237,6 @@
     "selectVectorStoreDesc": "选择一个向量存储以测试搜索查询",
     "selectVectorStorePlaceholder": "选择向量存储",
     "noMatchingStores": "没有匹配的向量存储",
-    "addNewTitle": "新建向量存储",
-    "pgVectorSetup": "PG Vector 设置",
-    "pgVectorDesc": "配置带有 pgvector 扩展的 PostgreSQL 数据库",
-    "pgVectorNote": "启动服务器并记下 API 基础 URL 和 API 密钥",
-    "pgVectorFields": "在下方字段中输入这些详细信息",
-    "valkeySetup": "Valkey 设置",
-    "vertexRAGSetup": "Vertex AI RAG Engine 设置",
-    "vertexRAGDesc": "要使用 Vertex AI RAG Engine：",
-    "vertexRAGStep1Desc": "在 Google Cloud 项目中创建一个语料库",
-    "vertexRAGStep2Desc": "在向量存储 ID 字段中输入语料库 ID",
-    "vertexSearchSetup": "Vertex AI Search 设置",
-    "vertexSearchDesc": "要使用 Vertex AI Search (Discovery Engine)：",
     "noVectorStoresList": "暂无向量存储",
     "noVectorStoresHint": "连接向量存储即可启用检索增强生成。",
     "openActions": "打开向量存储操作",
@@ -9473,13 +9267,9 @@
     "notFound": "未找到向量存储",
     "loading": "加载中...",
     "editTitle": "编辑向量存储",
-    "readOnlyConfig": "只读：在配置文件中定义",
     "idLabel": "向量存储 ID：",
     "nameLabel": "向量存储名称：",
     "descriptionLabel": "描述：",
-    "existingCreds": "现有凭据",
-    "selectCreds": "选择或搜索现有凭据",
-    "noMatchingCreds": "没有匹配的凭据",
     "saveChanges": "保存更改",
     "createDesc": "上传文档并选择供应商，创建一个包含嵌入内容的新向量存储。",
     "uploadNote": "上传一个或多个文档（PDF、TXT、DOCX、MD）。单个文件最大 50MB。",
@@ -9491,20 +9281,10 @@
     "searchFailed": "搜索失败：{error}",
     "noResults": "未找到结果",
     "noDescription": "无描述",
-    "loadFailedDesc": "向量存储 {id} 无法加载，可能已被删除。",
-    "noneLabel": "无",
-    "detailsTab": "详情",
-    "readOnlyDesc": "此向量存储来自代理配置 YAML，因此无法在管理面板中编辑或删除。请在配置文件中修改或移除它，然后重启代理。",
     "updateFailed": "更新向量存储出错：{error}",
-    "idFieldRequired": "请输入向量存储 ID",
     "fetchDetailsFailed": "获取向量存储详情失败：{error}",
     "updatedToast": "向量存储更新成功",
-    "credsChoiceHint": "可选择现有凭据，或在下方输入供应商凭据",
-    "metadataFieldHint": "该向量存储的 JSON 元数据",
-    "orDivider": "或",
     "uploadDragHint": "点击或拖拽文件到此处上传",
-    "locationHint": "选择支持的位置：global、us 或 eu",
-    "engineId": "引擎 ID",
     "createBtn": "创建",
     "noMatchingOptions": "没有匹配的选项",
     "detailsTitle": "向量存储详情",
@@ -9549,179 +9329,177 @@
     "indexesErrorPrefix": "获取索引失败：",
     "indexesIntro": "通过 <code>/v1/indexes</code> API 注册到本代理的向量存储索引。工作原理见<docsLink>向量存储索引文档</docsLink>。目前索引透传支持 Azure AI Search 与 Milvus；如需支持更多供应商，欢迎<issueLink>提交 GitHub issue</issueLink>。",
     "fields": {
-        "pgVector": {
-            "apiBase": {
-                "label": "API 基础地址",
-                "tooltip": "请输入你部署的 litellm-pgvector 服务器的基础地址（例如 http://your-server:8000）",
-                "placeholder": "http://your-deployed-server:8000"
-            },
-            "apiKey": {
-                "label": "API 密钥",
-                "tooltip": "请输入你部署的 litellm-pgvector 服务器的 API 密钥",
-                "placeholder": "你的已部署 API 密钥"
-            }
+      "pgVector": {
+        "apiBase": {
+          "label": "API 基础地址",
+          "tooltip": "请输入你部署的 litellm-pgvector 服务器的基础地址（例如 http://your-server:8000）",
+          "placeholder": "http://your-deployed-server:8000"
         },
-        "vertexSearchApi": {
-            "vertexProject": {
-                "label": "Vertex 项目",
-                "tooltip": "承载 Vertex AI Search 数据存储的 Google Cloud 项目 ID。",
-                "placeholder": "my-gcp-project-id"
-            },
-            "vertexLocation": {
-                "label": "Vertex 区域",
-                "tooltip": "Vertex AI Search 数据存储所在的区域，必须是 global、us 或 eu 之一。"
-            },
-            "collectionId": {
-                "label": "集合 ID（可选）",
-                "tooltip": "Discovery Engine 的集合 ID。留空则使用默认集合。",
-                "placeholder": "例如 my-custom-collection"
-            },
-            "engineId": {
-                "label": "引擎 ID（可选）",
-                "tooltip": "搜索应用（引擎）ID。网站、医疗健康以及基于连接器的数据存储（Workspace、Slack、Jira 等）必须填写，因为这些数据源通过引擎路由搜索。留空则直接查询数据存储。",
-                "placeholder": "例如 my-search-app_1234567890"
-            }
-        },
-        "openai": {
-            "apiKey": {
-                "label": "API 密钥",
-                "tooltip": "请输入你的 OpenAI API 密钥",
-                "placeholder": "sk-..."
-            }
-        },
-        "azure": {
-            "apiKey": {
-                "label": "API 密钥",
-                "tooltip": "请输入你的 Azure OpenAI API 密钥",
-                "placeholder": "你的 Azure API 密钥"
-            },
-            "apiBase": {
-                "label": "API 基础地址",
-                "tooltip": "请输入你的 Azure OpenAI 终结点（例如 https://your-resource.openai.azure.com/）",
-                "placeholder": "https://your-resource.openai.azure.com/"
-            }
-        },
-        "milvus": {
-            "apiKey": {
-                "label": "API 密钥",
-                "tooltip": "要获取令牌，请用冒号（:）把访问 Milvus 实例所用的用户名与密码拼接起来（例如 username:password）",
-                "placeholder": "username:password 或 API 密钥"
-            },
-            "apiBase": {
-                "label": "API 基础地址",
-                "tooltip": "请输入你的 Milvus 终结点（例如 https://your-milvus-endpoint.com/）",
-                "placeholder": "https://your-milvus-endpoint.com/"
-            },
-            "embeddingModel": {
-                "label": "嵌入模型",
-                "tooltip": "选择要使用的嵌入模型",
-                "placeholder": "text-embedding-3-small"
-            }
-        },
-        "mongodb": {
-            "apiBase": {
-                "label": "Sidecar 地址",
-                "tooltip": "远程 Sidecar 请用 HTTPS；与宿主机或 Pod 同机的 Sidecar 请用回环 IP 的 HTTP",
-                "placeholder": "http://127.0.0.1:8080"
-            },
-            "apiKey": {
-                "label": "Sidecar API 密钥",
-                "tooltip": "你的 MongoDB Sidecar 中配置的 MONGODB_SIDECAR_API_KEY",
-                "placeholder": "请输入 Sidecar API 密钥"
-            },
-            "database": {
-                "label": "数据库",
-                "tooltip": "存放你要搜索的集合的 MongoDB 数据库",
-                "placeholder": "sample_mflix"
-            },
-            "collection": {
-                "label": "集合",
-                "tooltip": "MongoDB Vector Search 索引所在的集合",
-                "placeholder": "embedded_movies"
-            },
-            "embeddingModel": {
-                "label": "嵌入模型",
-                "tooltip": "本代理上用于生成你集合中已有向量的嵌入模型。LiteLLM 用它来嵌入每条搜索查询，因此必须是同一个模型。换一个同样大小的模型不会报错，只会返回错误结果。如果列表里没有它，请先到模型页添加。",
-                "placeholder": "text-embedding-3-small"
-            },
-            "vectorFieldName": {
-                "label": "向量字段名",
-                "tooltip": "每个文档中存放嵌入值的字段，必须与 MongoDB Vector Search 索引创建时的路径一致（默认 embedding）",
-                "placeholder": "embedding"
-            },
-            "textField": {
-                "label": "文本字段",
-                "tooltip": "每个文档中存放可读文本的字段。LiteLLM 会在搜索结果里返回该文本，支持 metadata.body 这样的点分路径（默认 text）",
-                "placeholder": "text"
-            },
-            "candidatesConsidered": {
-                "label": "候选数量",
-                "tooltip": "MongoDB 在返回最相似结果前会检查多少个近邻。数值越大越精确也越慢。留空则由 LiteLLM 按请求的结果数量自动伸缩。",
-                "placeholder": "100"
-            }
-        },
-        "valkey": {
-            "valkeyHost": {
-                "label": "Valkey 主机",
-                "tooltip": "你的 Valkey 服务器主机名或 IP，不带 redis:// 协议头和端口（例如 my-valkey.example.com）",
-                "placeholder": "my-valkey.example.com"
-            },
-            "valkeyPort": {
-                "label": "Valkey 端口",
-                "tooltip": "你的 Valkey 服务器监听的端口。除非改过，否则保持 6379。",
-                "placeholder": "6379"
-            },
-            "valkeyPassword": {
-                "label": "Valkey 密码",
-                "tooltip": "登录 Valkey 服务器所用的密码。若该服务器没有密码则留空。"
-            },
-            "useTls": {
-                "label": "使用 TLS",
-                "tooltip": "若你的 Valkey 服务器要求加密（TLS）连接则设为 true，例如开启了传输中加密的 AWS ElastiCache。"
-            },
-            "embeddingModel": {
-                "label": "嵌入模型",
-                "tooltip": "本代理上用于生成你 Valkey 索引中已有嵌入值的嵌入模型。LiteLLM 用它来嵌入每条搜索查询，因此必须是同一个模型，否则结果会出错。如果列表里没有它，请先到模型页添加。",
-                "placeholder": "text-embedding-3-small"
-            },
-            "valkeyTextField": {
-                "label": "文本字段",
-                "tooltip": "每个已存文档中存放可读文本的字段。LiteLLM 会在搜索结果里返回该文本，必须与文档的存储方式一致（默认 text）。",
-                "placeholder": "text"
-            },
-            "valkeyEmbeddingField": {
-                "label": "向量字段名",
-                "tooltip": "每个已存文档中存放嵌入值的字段。LiteLLM 在该字段上做向量检索，因此必须与索引创建时的字段一致（默认 embedding）。",
-                "placeholder": "embedding"
-            }
-        },
-        "s3Vectors": {
-            "vectorBucketName": {
-                "label": "向量存储桶名称",
-                "tooltip": "用于向量存储的 S3 存储桶名称（不存在时将自动创建）",
-                "placeholder": "my-vector-bucket"
-            },
-            "indexName": {
-                "label": "索引名称",
-                "tooltip": "向量索引名称（可选，不填将自动生成）",
-                "placeholder": "my-vector-index"
-            },
-            "awsRegion": {
-                "label": "AWS 区域",
-                "tooltip": "S3 存储桶所在的 AWS 区域（例如 us-west-2）",
-                "placeholder": "us-west-2"
-            },
-            "embeddingModel": {
-                "label": "嵌入模型",
-                "tooltip": "选择用于生成向量的嵌入模型",
-                "placeholder": "text-embedding-3-small"
-            }
+        "apiKey": {
+          "label": "API 密钥",
+          "tooltip": "请输入你部署的 litellm-pgvector 服务器的 API 密钥",
+          "placeholder": "你的已部署 API 密钥"
         }
+      },
+      "vertexSearchApi": {
+        "vertexProject": {
+          "label": "Vertex 项目",
+          "tooltip": "承载 Vertex AI Search 数据存储的 Google Cloud 项目 ID。",
+          "placeholder": "my-gcp-project-id"
+        },
+        "vertexLocation": {
+          "label": "Vertex 区域",
+          "tooltip": "Vertex AI Search 数据存储所在的区域，必须是 global、us 或 eu 之一。"
+        },
+        "collectionId": {
+          "label": "集合 ID（可选）",
+          "tooltip": "Discovery Engine 的集合 ID。留空则使用默认集合。",
+          "placeholder": "例如 my-custom-collection"
+        },
+        "engineId": {
+          "label": "引擎 ID（可选）",
+          "tooltip": "搜索应用（引擎）ID。网站、医疗健康以及基于连接器的数据存储（Workspace、Slack、Jira 等）必须填写，因为这些数据源通过引擎路由搜索。留空则直接查询数据存储。",
+          "placeholder": "例如 my-search-app_1234567890"
+        }
+      },
+      "openai": {
+        "apiKey": {
+          "label": "API 密钥",
+          "tooltip": "请输入你的 OpenAI API 密钥",
+          "placeholder": "sk-..."
+        }
+      },
+      "azure": {
+        "apiKey": {
+          "label": "API 密钥",
+          "tooltip": "请输入你的 Azure OpenAI API 密钥",
+          "placeholder": "你的 Azure API 密钥"
+        },
+        "apiBase": {
+          "label": "API 基础地址",
+          "tooltip": "请输入你的 Azure OpenAI 终结点（例如 https://your-resource.openai.azure.com/）",
+          "placeholder": "https://your-resource.openai.azure.com/"
+        }
+      },
+      "milvus": {
+        "apiKey": {
+          "label": "API 密钥",
+          "tooltip": "要获取令牌，请用冒号（:）把访问 Milvus 实例所用的用户名与密码拼接起来（例如 username:password）",
+          "placeholder": "username:password 或 API 密钥"
+        },
+        "apiBase": {
+          "label": "API 基础地址",
+          "tooltip": "请输入你的 Milvus 终结点（例如 https://your-milvus-endpoint.com/）",
+          "placeholder": "https://your-milvus-endpoint.com/"
+        },
+        "embeddingModel": {
+          "label": "嵌入模型",
+          "tooltip": "选择要使用的嵌入模型",
+          "placeholder": "text-embedding-3-small"
+        }
+      },
+      "mongodb": {
+        "apiBase": {
+          "label": "Sidecar 地址",
+          "tooltip": "远程 Sidecar 请用 HTTPS；与宿主机或 Pod 同机的 Sidecar 请用回环 IP 的 HTTP",
+          "placeholder": "http://127.0.0.1:8080"
+        },
+        "apiKey": {
+          "label": "Sidecar API 密钥",
+          "tooltip": "你的 MongoDB Sidecar 中配置的 MONGODB_SIDECAR_API_KEY",
+          "placeholder": "请输入 Sidecar API 密钥"
+        },
+        "database": {
+          "label": "数据库",
+          "tooltip": "存放你要搜索的集合的 MongoDB 数据库",
+          "placeholder": "sample_mflix"
+        },
+        "collection": {
+          "label": "集合",
+          "tooltip": "MongoDB Vector Search 索引所在的集合",
+          "placeholder": "embedded_movies"
+        },
+        "embeddingModel": {
+          "label": "嵌入模型",
+          "tooltip": "本代理上用于生成你集合中已有向量的嵌入模型。LiteLLM 用它来嵌入每条搜索查询，因此必须是同一个模型。换一个同样大小的模型不会报错，只会返回错误结果。如果列表里没有它，请先到模型页添加。",
+          "placeholder": "text-embedding-3-small"
+        },
+        "vectorFieldName": {
+          "label": "向量字段名",
+          "tooltip": "每个文档中存放嵌入值的字段，必须与 MongoDB Vector Search 索引创建时的路径一致（默认 embedding）",
+          "placeholder": "embedding"
+        },
+        "textField": {
+          "label": "文本字段",
+          "tooltip": "每个文档中存放可读文本的字段。LiteLLM 会在搜索结果里返回该文本，支持 metadata.body 这样的点分路径（默认 text）",
+          "placeholder": "text"
+        },
+        "candidatesConsidered": {
+          "label": "候选数量",
+          "tooltip": "MongoDB 在返回最相似结果前会检查多少个近邻。数值越大越精确也越慢。留空则由 LiteLLM 按请求的结果数量自动伸缩。",
+          "placeholder": "100"
+        }
+      },
+      "valkey": {
+        "valkeyHost": {
+          "label": "Valkey 主机",
+          "tooltip": "你的 Valkey 服务器主机名或 IP，不带 redis:// 协议头和端口（例如 my-valkey.example.com）",
+          "placeholder": "my-valkey.example.com"
+        },
+        "valkeyPort": {
+          "label": "Valkey 端口",
+          "tooltip": "你的 Valkey 服务器监听的端口。除非改过，否则保持 6379。",
+          "placeholder": "6379"
+        },
+        "valkeyPassword": {
+          "label": "Valkey 密码",
+          "tooltip": "登录 Valkey 服务器所用的密码。若该服务器没有密码则留空。"
+        },
+        "useTls": {
+          "label": "使用 TLS",
+          "tooltip": "若你的 Valkey 服务器要求加密（TLS）连接则设为 true，例如开启了传输中加密的 AWS ElastiCache。"
+        },
+        "embeddingModel": {
+          "label": "嵌入模型",
+          "tooltip": "本代理上用于生成你 Valkey 索引中已有嵌入值的嵌入模型。LiteLLM 用它来嵌入每条搜索查询，因此必须是同一个模型，否则结果会出错。如果列表里没有它，请先到模型页添加。",
+          "placeholder": "text-embedding-3-small"
+        },
+        "valkeyTextField": {
+          "label": "文本字段",
+          "tooltip": "每个已存文档中存放可读文本的字段。LiteLLM 会在搜索结果里返回该文本，必须与文档的存储方式一致（默认 text）。",
+          "placeholder": "text"
+        },
+        "valkeyEmbeddingField": {
+          "label": "向量字段名",
+          "tooltip": "每个已存文档中存放嵌入值的字段。LiteLLM 在该字段上做向量检索，因此必须与索引创建时的字段一致（默认 embedding）。",
+          "placeholder": "embedding"
+        }
+      },
+      "s3Vectors": {
+        "vectorBucketName": {
+          "label": "向量存储桶名称",
+          "tooltip": "用于向量存储的 S3 存储桶名称（不存在时将自动创建）",
+          "placeholder": "my-vector-bucket"
+        },
+        "indexName": {
+          "label": "索引名称",
+          "tooltip": "向量索引名称（可选，不填将自动生成）",
+          "placeholder": "my-vector-index"
+        },
+        "awsRegion": {
+          "label": "AWS 区域",
+          "tooltip": "S3 存储桶所在的 AWS 区域（例如 us-west-2）",
+          "placeholder": "us-west-2"
+        },
+        "embeddingModel": {
+          "label": "嵌入模型",
+          "tooltip": "选择用于生成向量的嵌入模型",
+          "placeholder": "text-embedding-3-small"
+        }
+      }
     },
     "providerRequired": "请选择供应商",
     "idRequired": "请输入你的 API 供应商提供的向量存储 ID",
-    "selectFieldRequired": "请选择 {field}",
-    "inputFieldRequired": "请输入 {field}",
     "providerFieldMissing": "请填写 {field}",
     "selectorPlaceholder": "选择向量库",
     "s3Desc": "AWS S3 Vectors 支持直接在 S3 中存储与查询向量嵌入：",
@@ -9741,34 +9519,12 @@
     "idHint": "输入你的 API 供应商提供的向量存储 ID",
     "nameFieldLabel": "向量存储名称",
     "nameHint": "你为该向量存储设置的自定义名称，将显示在 LiteLLM 界面上",
-    "existingCredsHint": "可选：为该向量存储选择 API 供应商凭据，例如 Bedrock API KEY",
     "metadataHint": "该向量存储的 JSON 元数据（可选）",
     "hidePassword": "隐藏密码",
     "showPassword": "显示密码",
     "metadataJsonInvalid": "元数据字段中的 JSON 无效",
     "createdToast": "向量存储创建成功",
     "createErrorToast": "创建向量存储失败：{error}",
-    "idPlaceholderWithEngine": "你在 LiteLLM 中引用此存储时使用的任意标识符",
-    "idPlaceholderDefault": "输入来自你的供应商的向量存储 ID",
-    "idPlaceholderVertexRag": "6917529027641081856（Vertex AI / \"RAG Engine\" 控制台中的 corpus ID）",
-    "idPlaceholderVertexSearch": "my-datastore_1234567890（Vertex AI / \"Agent Search\" 控制台中的数据商店 ID）",
-    "idPlaceholderValkey": "my-search-index（Valkey 中的 FT 索引名）",
-    "idPlaceholderMongodb": "my-vector-index（MongoDB 向量搜索索引名）",
-    "pgVectorIntro": "LiteLLM 提供了一个用于连接 PG Vector 的服务器。要使用此供应商：",
-    "pgVectorDeployStep": "部署 litellm-pgvector 服务器：<link>https://github.com/BerriAI/litellm-pgvector</link>",
-    "valkeyIntro": "LiteLLM 只检索你已存储在 Valkey 中的文档，不会替你创建索引或上传文档。创建此向量存储前，请确认：",
-    "valkeyStep1": "你的 Valkey 服务器已启用向量搜索（valkey-search 模块，包含在 valkey-bundle 镜像以及 AWS ElastiCache / MemoryDB for Valkey 中）",
-    "valkeyStep2": "你已经创建了搜索索引并把文档及其嵌入向量载入其中。将该索引名称作为向量存储 ID 填入",
-    "valkeyStep3": "你知道这些已存嵌入向量是由哪个嵌入模型生成的。该模型必须已在本代理的模型页中添加，才能在下方选择它。使用别的模型会返回错误结果",
-    "valkeyStep4": "知道文档存放文本和嵌入所使用的字段名。如果它们不是 \"text\" 和 \"embedding\"，请在下方设置",
-    "valkeyOutro": "查询到来时，LiteLLM 用下方模型将其转换为嵌入向量，并从你的索引中返回最匹配的文档。",
-    "vertexRAGRenamedNote": "注意：Google Cloud 已在其控制台把该功能更名为 \"RAG Engine\"，以下步骤仍然适用。",
-    "vertexRAGGuideStep": "按照指南设置你的 Vertex AI RAG Engine 语料库：<link>Vertex AI RAG Engine Overview</link>",
-    "vertexRAGStep3": "记下 Vertex AI 控制台中的 corpus ID（在 Google Cloud 中现标记为 \"RAG Engine\"）",
-    "vertexSearchRenamedNote": "注意：Google Cloud 已在其控制台把该功能更名为 \"Agent Search\"，以下步骤仍然适用。",
-    "vertexSearchGuideStep": "在你的 Google Cloud 项目上启用 Discovery Engine API 并按指南创建数据商店：<link>Create a Vertex AI Search data store</link>",
-    "vertexSearchStep3": "对大多数数据商店类型（Cloud Storage、BigQuery、Media）：复制数据商店 ID 并填入下方的向量存储 ID 字段。",
-    "vertexSearchStep4": "对网站、医疗健康以及基于连接器的数据源（Drive、Gmail、Slack、Jira 等）：在数据商店之上创建搜索应用，然后复制 <strong>{engineId}</strong> 并填入引擎 ID 字段。向量存储 ID 仍然必填，作为本记录在 LiteLLM 侧的名称，但设置了引擎 ID 后它不会用于 GCP URL。",
     "uploadTypeUnsupported": "{name} 不是支持的文件类型，请上传 PDF、TXT、DOCX 或 MD 文件。",
     "uploadSizeUnsupported": "{name} 必须小于 50MB！",
     "uploadRequired": "请至少上传一个文档",
@@ -9828,37 +9584,21 @@
     "openModelActions": "打开模型操作菜单",
     "copyModelName": "复制模型名称",
     "modelNameCopied": "模型名称已复制",
-    "hubTitle": "AI 中心",
-    "hubAdminDescription": "把模型、智能体和 MCP 服务器公开出去，让开发者知道有哪些可用。",
-    "hubUserDescription": "你个人可用的全部公开模型名称列表。",
-    "modelHubUrlLabel": "模型中心 URL：",
-    "copyUrl": "复制 URL",
     "tabModels": "模型中心",
     "tabAgents": "智能体中心",
     "tabMcp": "MCP 中心",
     "tabSkills": "技能中心",
     "selectModelsToMakePublic": "选择要公开的模型",
     "selectAgentsToMakePublic": "选择要公开的智能体",
-    "selectSkillsToMakePublic": "选择要公开的技能",
     "manageMcpHubVisibility": "管理 MCP 中心的可见性",
     "loadingModels": "正在加载模型…",
     "loadingAgents": "正在加载智能体…",
     "loadingMcpServers": "正在加载 MCP 服务器…",
-    "noModelsYet": "暂无模型",
     "noMatchingModels": "没有匹配的模型",
-    "modelsFilterHint": "调整筛选条件即可看到更多模型。",
-    "modelsEmptyHint": "添加到此代理的模型会显示在这里。",
-    "noAgentsYet": "暂无智能体",
     "noMatchingAgents": "没有匹配的智能体",
-    "agentsSearchHint": "调整搜索关键词即可看到更多智能体。",
-    "agentsEmptyHint": "添加到此代理的智能体会显示在这里。",
-    "noMcpServersYet": "暂无 MCP 服务器",
-    "mcpServersEmptyHint": "添加到此代理的 MCP 服务器会显示在这里。",
     "searchAgentsLabel": "搜索智能体：",
     "searchAgentsPlaceholder": "搜索智能体名称或描述...",
     "clearSearch": "清除搜索",
-    "publicHubNotEnabled": "公开模型中心未启用。",
-    "publicHubNotEnabledHint": "请让代理管理员在他们的管理界面中启用。",
     "modelDetailsTitle": "模型详情",
     "agentDetailsTitle": "智能体详情",
     "mcpServerDetailsTitle": "MCP 服务器详情",
@@ -9911,8 +9651,6 @@
     "notSpecified": "未指定",
     "noCapabilitiesListed": "未列出特殊能力",
     "supportsAuthExtendedCard": "支持认证扩展卡片",
-    "linksTitle": "链接管理",
-    "linksDescription": "管理公开模型中心“常用链接”下方展示的链接。",
     "addNewLink": "添加新链接",
     "colDisplayName": "显示名称",
     "colUrl": "URL",
@@ -9931,8 +9669,6 @@
     "editLink": "编辑链接",
     "deleteLink": "删除链接",
     "noLinksYet": "还没有添加链接，请在上方添加一个新链接。",
-    "toastInvalidUrl": "请输入有效的 URL",
-    "toastDuplicateName": "该显示名称的链接已存在",
     "toastSaveFailed": "保存链接失败 - {error}",
     "toastLinkAdded": "链接已添加",
     "toastLinkUpdated": "链接已更新",
@@ -10190,9 +9926,6 @@
     "hit": "命中"
   },
   "createdKeyDisplay": {
-    "securityWarning": "请将此密钥保存在安全且可访问的地方。出于安全考虑，<b>你将无法通过 LiteLLM 账户再次查看它</b>。如果丢失此密钥，你需要生成一个新的。",
-    "virtualKeyLabel": "虚拟密钥：",
-    "copyButton": "复制虚拟密钥",
     "copied": "已复制！",
     "keyCopiedToast": "密钥已复制到剪贴板"
   },
@@ -10460,11 +10193,6 @@
   },
   "usageKeyActivity": {
     "searching": "搜索中...",
-    "matchingKeys": "{count} 个匹配的密钥",
-    "totalKeys": "{count} 个密钥",
-    "loadingKeyDetails": "正在加载密钥详情...",
-    "keyDetailsFailed": "无法加载密钥详情。",
-    "noDailyDetails": "没有可用的每日明细",
     "keysRangeFailed": "无法加载该时间范围内的密钥。",
     "loadingKeys": "正在加载密钥...",
     "searchKeysAria": "搜索密钥",
@@ -10473,9 +10201,6 @@
     "searchAllKeysFailed": "无法搜索全部密钥。",
     "loadingMoreKeys": "正在加载更多密钥...",
     "moreKeysFailed": "无法加载更多密钥。",
-    "searchKeysFailed": "无法搜索密钥。",
-    "retrySearch": "重新搜索",
-    "noKeysMatch": "该日期范围内没有与“{query}”匹配的密钥",
     "searchFailed": "搜索失败",
     "requestsColumn": "请求数",
     "virtualKeysTitle": "虚拟密钥",
@@ -10502,12 +10227,8 @@
     "spend": "花费：",
     "showAllTags": "显示全部标签",
     "showFewerTags": "收起部分标签",
-    "topKeysLimitAria": "显示的头部密钥数量",
     "tableView": "表格视图",
     "chartView": "图表视图",
-    "tooltipKeyAlias": "密钥别名：",
-    "tooltipKeyId": "密钥 ID：",
-    "tooltipSpend": "花费：",
     "close": "关闭",
     "keyNotInDatabase": "该密钥已不在数据库中（已被删除，或属于 CLI/SSO 会话密钥），因此无法打开其详情"
   },
@@ -10649,8 +10370,6 @@
   },
   "modelInfo": {
     "loading": "加载中...",
-    "modelNotFound": "未找到模型",
-    "copyModelId": "复制模型 ID",
     "provider": "提供商",
     "liteLlmModel": "LiteLLM 模型",
     "pricing": "定价",
@@ -10658,18 +10377,12 @@
     "usingExistingCredential": "使用已有凭据",
     "connectionTestResults": "连接测试结果",
     "fetchTagsFailed": "获取标签失败：",
-    "storingCredential": "正在保存凭据..",
-    "credentialStored": "凭据保存成功",
     "invalidLiteLlmParams": "LiteLLM 参数中的 JSON 无效",
     "invalidModelInfo": "模型信息中的 JSON 无效",
     "modelSettingsUpdated": "模型设置更新成功",
     "updateFailed": "更新模型设置失败",
-    "noComplexityTiers": "尚未配置任何复杂度层级，无需测试。",
     "testingConnection": "正在测试连接...",
-    "connectionTestSuccess": "连接测试成功！",
     "unknownError": "未知错误",
-    "errorTestingConnection": "连接测试出错：",
-    "modelDeleted": "模型删除成功",
     "deleteError": "删除模型时出错：",
     "deleteFailed": "删除模型失败",
     "notSet": "未设置",
@@ -10684,10 +10397,6 @@
     "kindAutoRouter": "自动路由器",
     "kindModel": "模型",
 
-    "backToModels": "返回模型列表",
-
-    "publicModelName": "公共模型名称",
-
     "testConnection": "测试连接",
 
     "updateApiKey": "更新 API 密钥",
@@ -10697,8 +10406,6 @@
     "rawJson": "原始 JSON",
 
     "createdAt": "创建时间",
-
-    "editAutoRouter": "编辑自动路由器",
 
     "editSettings": "编辑设置",
 
@@ -10912,14 +10619,7 @@
     "status": "状态",
     "tags": "标签",
     "skillId": "技能 ID",
-    "usingThisSkill": "正在使用此技能",
-    "runInClaudeCode": "在 Claude Code 中运行",
-    "marketplaceSetup": "一次性市场配置",
-    "enableSkillCommandIntro": "将你的代理设为 marketplace 后，用一条命令即可在 Claude Code 中启用此技能：",
     "staleCatalogHint": "如果看到“Plugin {name} not found in marketplace”，请先更新目录：",
-    "registerMarketplaceIntro": "在 Claude Code 中运行此命令以注册 marketplace：",
-    "needMarketplaceSetupHint": "还没有配置好 marketplace？<link>查看一次性设置 →</link>",
-    "addToSettingsHint": "或将以下内容加入 <code>~/.claude/settings.json</code> 作持久配置：",
     "selectAtLeastOne": "请至少选择一个技能",
     "updateFailed": "更新技能失败，请重试。",
     "selectSkillsToPublish": "选择要发布的技能",
@@ -10999,17 +10699,9 @@
     "loadFailed": "无法加载模型洞察",
     "leaderboardTitle": "模型排行榜",
     "leaderboardSubtitle": "你的网关在 {start} 至 {end} 期间用过的模型",
-    "sessionHint": "为请求添加稳定的 session_id，即可在后续的有界会话汇总中解锁按会话精确的模型对比",
     "topModels": "热门模型",
     "bucketSizeAria": "时间粒度",
     "leaderboard": "排行榜",
-    "costPerSession": "单次会话成本",
-    "sessionCostNote": "会话成本不由请求数推算",
-    "granularityDaily": "按日",
-    "granularityWeekly": "按周",
-    "metricRequests": "请求数",
-    "metricSpend": "花费",
-    "metricTokens": "令牌数",
     "summaryDesc": "网关的{granularity}{metric}",
     "leaderboardDesc": "{metric}的占比，以及该时段前后两半的变化",
     "gatewayTotalLabel": "网关总计"
@@ -11079,35 +10771,19 @@
     "falseLabel": "否"
   },
   "advancedDatePicker": {
-    "defaultLabel": "选择时间范围",
     "relativeTime": "相对时间",
     "startAndEndDates": "起止日期",
     "startDate": "开始日期",
     "endDate": "结束日期",
     "fromLabel": "起始：",
     "toLabel": "结束：",
-    "selectDateRange": "选择日期范围",
     "invalidDateFormat": "日期格式无效",
     "endBeforeStart": "结束日期不能早于开始日期",
-    "timeConnector": "于",
-    "presetToday": "今天",
-    "presetLast7": "最近 7 天",
-    "presetLast30": "最近 30 天",
-    "presetMonthToDate": "本月至今",
-    "presetYearToDate": "本年至今",
-    "badgeToday": "今天",
-    "badge7d": "7 天",
-    "badge30d": "30 天",
-    "badgeMtd": "本月",
-    "badgeYtd": "本年"
+    "timeConnector": "于"
   },
   "objectPermissions": {
     "title": "对象权限",
-    "description": "向量存储与 MCP 服务器的访问控制",
-    "searchToolsTitle": "搜索工具",
-    "searchToolsNone": "未做限制，该团队可以使用所有已配置的搜索工具。",
-    "skillsTitle": "技能",
-    "skillsNone": "未授予任何私有技能。仅已启用的（公开的）Claude Code 插件可见。"
+    "description": "向量存储与 MCP 服务器的访问控制"
   },
   "vectorStorePermissions": {
     "title": "向量存储",
@@ -11405,12 +11081,11 @@
     },
     "deprecation": {
       "title": "{feature} 已列入草案废弃清单",
-    "featureWorkflows": "工作流",
-    "featurePrompts": "提示词管理",
-    "featureMemory": "记忆",
-    "featureOldUsage": "旧版用量页",
-    "featureApiReference": "API 参考页签",
-    "featureMcpNetwork": "MCP 网络设置与仅限内网标志",
+      "featureWorkflows": "工作流",
+      "featurePrompts": "提示词管理",
+      "featureMemory": "记忆",
+      "featureOldUsage": "旧版用量页",
+      "featureApiReference": "API 参考页签",
       "body": "{feature} 是我们正在考虑移除的多个实验特性之一，最早可能于 {date} 移除。这份清单仍是草案，尚未定稿。如果你依赖该特性，请在<link>废弃讨论</link>里分享你的反馈。",
       "close": "关闭"
     },

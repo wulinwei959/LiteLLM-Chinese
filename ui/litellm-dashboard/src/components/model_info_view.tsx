@@ -1,4 +1,5 @@
 import { useModelCostMap } from "@/app/(dashboard)/hooks/models/useModelCostMap";
+import { useTranslations } from "next-intl";
 import { useModelHub, useModelsInfo } from "@/app/(dashboard)/hooks/models/useModels";
 import { useQueryClient } from "@tanstack/react-query";
 import { transformModelData } from "@/app/(dashboard)/models-and-endpoints/utils/modelDataTransformer";
@@ -10,7 +11,6 @@ import { SimpleTooltip } from "@/components/ui/tooltip";
 import { applyPtuModelInfo } from "../utils/ptuModelInfo";
 import { usePtuCostAttributionEnabled } from "@/app/(dashboard)/hooks/uiSettings/usePtuCostAttributionEnabled";
 import { ArrowLeft, CheckIcon, CopyIcon, Info } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { copyToClipboard as utilCopyToClipboard } from "../utils/dataUtils";
 import { stripMaskedSecrets } from "../utils/maskedSecretUtils";
@@ -51,7 +51,7 @@ import ModelInfoEditForm, { type ModelEditSubmitValues, type TouchedPricingField
 import { Tag } from "./tag_management/types";
 import { getDisplayModelName } from "./view_model/model_name_display";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { formatDate } from "@/lib/i18n/format";
+import KubernetesPodsCard from "./model_info/KubernetesPodsCard";
 
 interface ModelInfoViewProps {
   modelId: string;
@@ -75,7 +75,6 @@ export default function ModelInfoView({
   modelAccessGroups,
 }: ModelInfoViewProps) {
   const t = useTranslations("modelInfo");
-  const commonT = useTranslations("common");
   const queryClient = useQueryClient();
   const [localModelData, setLocalModelData] = useState<any>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -260,15 +259,16 @@ export default function ModelInfoView({
         custom_llm_provider: localModelData.litellm_params?.custom_llm_provider,
       },
     };
-    toast.info(t("storingCredential"));
+    toast.info("Storing credential..");
     let credentialResponse = await credentialCreateCall(accessToken, credentialItem);
-    toast.success(t("credentialStored"));
+    toast.success("Credential stored successfully");
   };
 
   const handleModelUpdate = async (
     values: ModelEditSubmitValues,
     isFieldTouched: (field: TouchedPricingField) => boolean,
   ) => {
+    const t = useTranslations("models");
     try {
       if (!accessToken) return;
       setIsSaving(true);
@@ -421,9 +421,9 @@ export default function ModelInfoView({
       <div className="p-4">
         <Button variant="ghost" onClick={onClose} className="mb-4">
           <ArrowLeft className="size-4" />
-          {t("backToModels")}
+          Back to Models
         </Button>
-        <p className="text-sm">{t("loading")}</p>
+        <p className="text-sm">Loading...</p>
       </div>
     );
   }
@@ -434,19 +434,20 @@ export default function ModelInfoView({
       <div className="p-4">
         <Button variant="ghost" onClick={onClose} className="mb-4">
           <ArrowLeft className="size-4" />
-          {t("backToModels")}
+          Back to Models
         </Button>
-        <p className="text-sm">{t("modelNotFound")}</p>
+        <p className="text-sm">Model not found</p>
       </div>
     );
   }
 
   const handleTestConnection = async () => {
+    const t = useTranslations("models");
     if (!accessToken) return;
     if (isComplexityRouterModel) {
       const targets = buildComplexityRouterTestTargets(localModelData ?? modelData);
       if (targets.length === 0) {
-        toast.warning(t("noComplexityTiers"));
+        toast.warning("No complexity tiers are configured yet, so there is nothing to test.");
         return;
       }
       setAutoRouterTestTargets(targets);
@@ -474,25 +475,26 @@ export default function ModelInfoView({
       );
 
       if (response.status === "success") {
-        toast.success(t("connectionTestSuccess"));
+        toast.success("Connection test successful!");
       } else {
-        throw new Error(response?.result?.error || response?.message || t("unknownError"));
+        throw new Error(response?.result?.error || response?.message || "Unknown error");
       }
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(t("errorTestingConnection") + truncateString(error.message, 100));
+        toast.error("Error testing connection: " + truncateString(error.message, 100));
       } else {
-        toast.error(t("errorTestingConnection") + String(error));
+        toast.error("Error testing connection: " + String(error));
       }
     }
   };
 
   const handleDelete = async () => {
+    const t = useTranslations("models");
     try {
       setDeleteLoading(true);
       if (!accessToken) return;
       await modelDeleteCall(accessToken, modelId);
-      toast.success(t("modelDeleted"));
+      toast.success("Model deleted successfully");
 
       if (onModelUpdate) {
         onModelUpdate({
@@ -512,7 +514,7 @@ export default function ModelInfoView({
   };
 
   const copyToClipboard = async (text: string, key: string) => {
-    const success = await utilCopyToClipboard(text, commonT("copiedToClipboard"));
+    const success = await utilCopyToClipboard(text);
     if (success) {
       setCopiedStates((prev) => ({ ...prev, [key]: true }));
       setTimeout(() => {
@@ -543,17 +545,15 @@ export default function ModelInfoView({
         <div>
           <Button variant="ghost" onClick={onClose} className="mb-4">
             <ArrowLeft className="size-4" />
-            {t("backToModels")}
+            Back to Models
           </Button>
-          <h2 className="text-xl font-semibold">
-            {t("publicModelName")}: {getDisplayModelName(modelData)}
-          </h2>
+          <h2 className="text-xl font-semibold">Public Model Name: {getDisplayModelName(modelData)}</h2>
           <div className="flex items-center cursor-pointer">
             <span className="text-sm text-muted-foreground font-mono">{modelData.model_info.id}</span>
             <Button
               variant="ghost"
               size="icon-xs"
-              aria-label={t("copyModelId")}
+              aria-label="Copy model ID"
               onClick={() => copyToClipboard(modelData.model_info.id, "model-id")}
               className={`left-2 z-raised transition-all duration-200 ${
                 copiedStates["model-id"]
@@ -619,7 +619,7 @@ export default function ModelInfoView({
       <Tabs defaultValue="overview">
         <TabsList variant="line" className="mb-6 h-auto w-full justify-start rounded-none border-b p-0">
           <TabsTrigger value="overview" className="flex-none rounded-none px-4 py-2">
-            {commonT("overview")}
+            Overview
           </TabsTrigger>
           <TabsTrigger value="raw" className="flex-none rounded-none px-4 py-2">
             {t("rawJson")}
@@ -666,7 +666,7 @@ export default function ModelInfoView({
                 </svg>
                 {t("createdAt")}{" "}
                 {modelData.model_info.created_at
-                  ? formatDate(new Date(modelData.model_info.created_at), {
+                  ? new Date(modelData.model_info.created_at).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
@@ -699,7 +699,7 @@ export default function ModelInfoView({
                 <div className="flex gap-2">
                   {isAutoRouterModel && canEditRouter && !isEditing && (
                     <Button onClick={() => setIsAutoRouterModalOpen(true)} className="flex items-center">
-                      {t("editAutoRouter")}
+                      Edit Auto Router
                     </Button>
                   )}
                   {canEditModel ? (
@@ -737,7 +737,7 @@ export default function ModelInfoView({
                   teams={assignableTeams}
                 />
               ) : (
-                <p className="text-sm">{t("loading")}</p>
+                <p className="text-sm">Loading...</p>
               )}
             </Card>
           </TabsContent>
@@ -804,7 +804,7 @@ export default function ModelInfoView({
             />
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsCredentialModalOpen(false)}>
-                {commonT("cancel")}
+                Cancel
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -853,7 +853,7 @@ export default function ModelInfoView({
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAutoRouterTestModalOpen(false)}>
-              {commonT("close")}
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>

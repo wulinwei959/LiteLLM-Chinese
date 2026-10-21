@@ -1,18 +1,17 @@
 "use client";
 
 import type { ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
-import { ScrollText } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { ScrollText } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 
 import { useUserEmailLookup } from "@/app/(dashboard)/hooks/users/useUsers";
 import { DataTable, DataTableFilterDrawer, DataTableToolbar } from "@/components/shared/DataTable";
-import type { LogsTranslator } from "@/lib/i18n/translators";
 
-import type { Team } from "../key_team_helpers/key_list";
-import type { LogEntry } from "./columns";
-import { CREDENTIAL_LABEL_KEYS, SPAN_TYPE_LABEL_KEYS } from "./constants";
-import { LOG_FILTER_IDS, LOG_FILTER_LABEL_KEYS, type LogsWindow } from "./log_filter_logic";
+import type { Team } from "../../key_team_helpers/key_list";
+import type { LogEntry } from "../types";
+import { CREDENTIAL_LABEL_KEYS, SPAN_TYPE_LABEL_KEYS } from "../constants";
+import { LOG_FILTER_IDS, LOG_FILTER_LABEL_KEYS, type LogsWindow } from "./useLogFilterLogic";
 import { RequestLogsFilters } from "./RequestLogsFilters";
 import { getRequestLogsTableColumns } from "./RequestLogsTableColumns";
 
@@ -38,30 +37,29 @@ interface RequestLogsTableProps {
   toolbarChildren?: ReactNode;
 }
 
-const formatFilterValue = (t: LogsTranslator, columnId: string, value: unknown): string => {
+const formatFilterValue = (columnId: string, value: unknown): string => {
+  const t = useTranslations("logs");
+
   if (columnId === LOG_FILTER_IDS.SPAN_TYPE) {
-    const spanTypeKey = SPAN_TYPE_LABEL_KEYS[String(value)];
-    return spanTypeKey === undefined ? String(value) : t(spanTypeKey);
+    return t(SPAN_TYPE_LABEL_KEYS[String(value)]) ?? String(value);
   }
   if (columnId === LOG_FILTER_IDS.CREDENTIAL) {
-    const credentialKey = CREDENTIAL_LABEL_KEYS[String(value)];
-    return credentialKey === undefined ? String(value) : t(credentialKey);
+    return t(CREDENTIAL_LABEL_KEYS[String(value)]) ?? String(value);
   }
   return Array.isArray(value) ? value.join(", ") : String(value);
 };
 
 function RequestLogsEmptyState({ filtered }: { filtered: boolean }) {
-  const t = useTranslations("logs");
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <ScrollText className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">
-        {filtered ? t("table.emptyFiltered") : t("table.empty")}
-      </div>
+      <div className="text-sm font-medium text-foreground">{filtered ? "No matching requests" : "No requests yet"}</div>
       <div className="max-w-xs text-center text-sm text-muted-foreground">
-        {filtered ? t("table.emptyFilteredDesc") : t("table.emptyDesc")}
+        {filtered
+          ? "No requests match your filters for this time range."
+          : "Requests proxied through LiteLLM will appear here."}
       </div>
     </div>
   );
@@ -96,15 +94,8 @@ export function RequestLogsTable({
 
   const columns = useMemo(() => {
     const resolveUserEmail = (userId: string) => emailByUserId?.[userId];
-    const deps = { onKeyHashClick, onSessionClick, resolveUserEmail, t };
-    return getRequestLogsTableColumns(deps);
-  }, [onKeyHashClick, onSessionClick, emailByUserId, t]);
-
-  const filterLabels = useMemo(
-    () =>
-      Object.fromEntries(Object.entries(LOG_FILTER_LABEL_KEYS).map(([columnId, labelKey]) => [columnId, t(labelKey)])),
-    [t],
-  );
+    return getRequestLogsTableColumns({ onKeyHashClick, onSessionClick, resolveUserEmail });
+  }, [onKeyHashClick, onSessionClick, emailByUserId]);
 
   const isFiltered = columnFilters.length > 0 || searchValue !== "";
 
@@ -139,8 +130,8 @@ export function RequestLogsTable({
             onRefresh={onRefresh}
             isRefreshing={isRefreshing}
             onOpenFilters={() => setFiltersOpen(true)}
-            filterLabels={filterLabels}
-            formatFilterValue={(columnId, value) => formatFilterValue(t, columnId, value)}
+            filterLabels={LOG_FILTER_LABEL_KEYS}
+            formatFilterValue={formatFilterValue}
             showViewOptions={false}
           >
             {toolbarChildren}

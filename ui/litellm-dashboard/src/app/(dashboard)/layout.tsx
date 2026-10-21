@@ -2,6 +2,7 @@
 
 import React, { Suspense, useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import Navbar from "@/components/navbar";
 import LoadingScreen from "@/components/common_components/LoadingScreen";
@@ -116,6 +117,7 @@ export function AgentControlPlaneView() {
 const FULL_BLEED_SEGMENTS = new Set(["logs"]);
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("nav");
   const { accessToken } = useAuth();
   const { mode } = usePluginMode();
   const pathname = usePathname();
@@ -220,6 +222,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 }
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("nav");
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();

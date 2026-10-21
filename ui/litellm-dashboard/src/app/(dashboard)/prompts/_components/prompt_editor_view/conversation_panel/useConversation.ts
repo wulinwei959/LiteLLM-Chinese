@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 import { TokenUsage } from "@/components/chat_ui/ResponseMetrics";
 import { Message } from "./types";
 import { convertToDotPrompt, extractVariables } from "../utils";
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
-import type { PromptsTranslator } from "@/lib/i18n/translators";
+import { streamErrorMessage } from "@/utils/streamErrorMessage";
 
-export const useConversation = (prompt: any, accessToken: string | null, t: PromptsTranslator) => {
+export const useConversation = (prompt: any, accessToken: string | null) => {
+  const t = useTranslations("prompts");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -190,12 +192,11 @@ export const useConversation = (prompt: any, accessToken: string | null, t: Prom
       } else {
         console.error("Error testing prompt:", error);
         setMessages((prev) => {
-          const errorContent = t("conversation.errorPrefix", { message: error.message });
           const lastMsg = prev[prev.length - 1];
           if (lastMsg && lastMsg.role === "assistant" && lastMsg.content === "") {
-            return [...prev.slice(0, -1), { role: "assistant", content: errorContent }];
+            return [...prev.slice(0, -1), { role: "assistant", content: `Error: ${error.message}` }];
           }
-          return [...prev, { role: "assistant", content: errorContent }];
+          return [...prev, { role: "assistant", content: `Error: ${error.message}` }];
         });
       }
     } finally {

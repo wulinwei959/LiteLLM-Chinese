@@ -51,7 +51,7 @@ export function useDiscountConfig({ accessToken }: UseDiscountConfigProps): UseD
       console.error("Error fetching discount config:", error);
       toast.fromError(t("fetchDiscountConfigFailed"));
     }
-  }, [accessToken, t]);
+  }, [accessToken]);
 
   const saveDiscountConfig = useCallback(
     async (config: DiscountConfig) => {
@@ -81,7 +81,7 @@ export function useDiscountConfig({ accessToken }: UseDiscountConfigProps): UseD
         toast.fromError(t("updateDiscountConfigFailed"));
       }
     },
-    [accessToken, fetchDiscountConfig, t],
+    [accessToken, fetchDiscountConfig],
   );
 
   const handleAddProvider = useCallback(
@@ -102,12 +102,17 @@ export function useDiscountConfig({ accessToken }: UseDiscountConfigProps): UseD
       const providerValue = getProviderBackendValue(selectedProvider);
 
       if (!providerValue) {
-        toast.fromError(t("invalidProviderSelected"));
+        toast.fromError("Invalid provider selected");
         return false;
       }
 
-      if (discountConfig[providerValue]) {
-        toast.fromError(t("discountExists", { name: Providers[selectedProvider as keyof typeof Providers] }));
+      const configKey = trimmedPattern ? `${providerValue}/${trimmedPattern}` : providerValue;
+
+      if (configKey in discountConfig) {
+        const displayName = Providers[selectedProvider as keyof typeof Providers];
+        toast.fromError(
+          `Discount for ${displayName} (${trimmedPattern || "all models"}) already exists. Edit it in the table above.`,
+        );
         return false;
       }
 
@@ -121,7 +126,7 @@ export function useDiscountConfig({ accessToken }: UseDiscountConfigProps): UseD
       await saveDiscountConfig(updatedConfig);
       return true;
     },
-    [discountConfig, saveDiscountConfig, t],
+    [discountConfig, saveDiscountConfig],
   );
 
   const handleRemoveProvider = useCallback(

@@ -1,13 +1,12 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Copy, Info, KeyRound, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-import type { UsersTranslator } from "@/lib/i18n/translators";
+import { ChartColumn, Copy, Info, KeyRound, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
 
 import { UserInfo } from "@/components/networking";
-import { createSelectionColumn, DataTableSortHeader, type SelectionTranslator } from "@/components/shared/DataTable";
+import { createSelectionColumn, DataTableSortHeader } from "@/components/shared/DataTable";
 import { CellTooltip, DateCell, IdentityCell, MoneyCell, StatusBadge } from "@/components/shared/table_cells";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -39,13 +38,12 @@ interface UserRowActionsProps {
   onResetPassword: (userId: string) => void;
 }
 
-function UserRowActions({ user, onUserClick, onDeleteUser, onResetPassword }: UserRowActionsProps) {
+function UserRowActions({ user, canViewUserUsage, onUserClick, onDeleteUser, onResetPassword }: UserRowActionsProps) {
   const t = useTranslations("users");
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label={t("openUserActions")}
+        aria-label="Open user actions"
         data-testid={`user-actions-${user.user_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -93,8 +91,6 @@ export interface UsersTableColumnsDeps {
   onUserClick: (userId: string, openInEditMode?: boolean) => void;
   onDeleteUser: (user: UserInfo) => void;
   onResetPassword: (userId: string) => void;
-  t: UsersTranslator;
-  selectionT: SelectionTranslator;
 }
 
 export const getUsersTableColumns = ({
@@ -104,15 +100,14 @@ export const getUsersTableColumns = ({
   onUserClick,
   onDeleteUser,
   onResetPassword,
-  t,
-  selectionT,
 }: UsersTableColumnsDeps): ColumnDef<UserInfo>[] => {
+  const t = useTranslations("users");
   const baseColumns: ColumnDef<UserInfo>[] = [
     {
       id: "user_id",
       accessorKey: "user_id",
-      meta: { title: t("userID") },
-      header: ({ column }) => <DataTableSortHeader column={column} title={t("userID")} variant="header-cycle" />,
+      meta: { title: "User ID" },
+      header: ({ column }) => <DataTableSortHeader column={column} title="User ID" variant="header-cycle" />,
       size: 220,
       enableSorting: true,
       cell: ({ row }) => (
@@ -147,24 +142,20 @@ export const getUsersTableColumns = ({
           return (
             <StatusBadge
               tone="error"
-              label={t("statusInactive")}
+              label="Inactive"
               tooltip={SCIM_INACTIVE_HINT}
               dataTestId={`user-status-${row.original.user_id}`}
             />
           );
         }
-        return (
-          <StatusBadge tone="success" label={t("statusActive")} dataTestId={`user-status-${row.original.user_id}`} />
-        );
+        return <StatusBadge tone="success" label="Active" dataTestId={`user-status-${row.original.user_id}`} />;
       },
     },
     {
       id: "user_role",
       accessorKey: "user_role",
-      meta: { title: t("globalProxyRole") },
-      header: ({ column }) => (
-        <DataTableSortHeader column={column} title={t("globalProxyRole")} variant="header-cycle" />
-      ),
+      meta: { title: "Global Proxy Role" },
+      header: ({ column }) => <DataTableSortHeader column={column} title="Global Proxy Role" variant="header-cycle" />,
       size: 160,
       enableSorting: true,
       cell: ({ row }) => (
@@ -210,7 +201,7 @@ export const getUsersTableColumns = ({
       meta: { title: t("ssoUserID") },
       header: () => (
         <span className="flex items-center gap-1.5">
-          {t("ssoUserID")}
+          SSO ID
           <CellTooltip
             content={SSO_ID_HINT}
             trigger={<Info className="size-3.5 shrink-0 text-muted-foreground" aria-label={t("aboutSSOID")} />}
@@ -299,8 +290,7 @@ export const getUsersTableColumns = ({
 
   return [
     createSelectionColumn<UserInfo>({
-      title: selectionT("columnTitle"),
-      rowAriaLabel: (row) => selectionT("selectNamed", { name: row.original.user_email || row.original.user_id }),
+      rowAriaLabel: (row) => `Select ${row.original.user_email || row.original.user_id}`,
     }),
     ...baseColumns,
   ];

@@ -1,13 +1,11 @@
 "use client";
 
 import { ROUTING_STATUS_FILTER_ID } from "../utils/routingStatus";
+import { useTranslations } from "next-intl";
 
 import { ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
 import { Search, Settings } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
-
-import type { ModelsTranslator } from "@/lib/i18n/translators";
 
 import { ModelData } from "@/components/model_dashboard/types";
 import {
@@ -36,13 +34,31 @@ export const ALL_MODEL_GROUPS_VALUE = "all";
 export const WILDCARD_MODEL_GROUP_VALUE = "wildcard";
 
 const MODEL_TABLE_BODY_HEIGHT = 600;
+const ALL_PROXY_MODELS_LABEL = "All Proxy Models";
+
+const FILTER_LABELS: Record<string, string> = {
+  [MODEL_NAME_COLUMN_ID]: "Public Model Name",
+  [ACCESS_GROUPS_COLUMN_ID]: "Model Access Group",
+  [ROUTING_STATUS_FILTER_ID]: "Status",
+};
+
+const ROUTING_STATUS_FILTER_VALUES = {
+  all: "All",
+  active: "Active",
+  paused: "Paused",
+} as const;
+
+const VIEW_MODE_LABELS: Record<ModelViewMode, string> = {
+  current_team: "Current Team Models",
+  all: ALL_PROXY_MODELS_LABEL,
+};
 
 export interface ModelsTableTeamOption {
   value: string;
   label: string;
 }
 
-export interface AllModelsTableProps {
+interface AllModelsTableProps {
   data: ModelData[];
   rowCount: number;
   isLoading: boolean;
@@ -77,14 +93,16 @@ export interface AllModelsTableProps {
   credentialLabels?: ReadonlyMap<string, string>;
 }
 
-function EmptyState({ t }: { t: ModelsTranslator }) {
+function EmptyState() {
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-11 items-center justify-center rounded-xl bg-muted">
         <Search className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-base font-semibold text-foreground">{t("modelTable.emptyState.title")}</div>
-      <div className="max-w-80 text-sm text-muted-foreground">{t("modelTable.emptyState.description")}</div>
+      <div className="text-base font-semibold text-foreground">No models found</div>
+      <div className="max-w-80 text-sm text-muted-foreground">
+        No models match your search or filters. Try resetting them.
+      </div>
     </div>
   );
 }
@@ -124,7 +142,6 @@ export function AllModelsTable({
   credentialLabels,
 }: AllModelsTableProps) {
   const t = useTranslations("models");
-
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const columns = useMemo(() => {
@@ -137,7 +154,7 @@ export function AllModelsTable({
       onDeleteClick,
       onTogglePauseClick,
       pausingModelId,
-      t,
+      credentialLabels,
     };
     return getModelsTableColumns(columnDeps);
   }, [
@@ -149,7 +166,7 @@ export function AllModelsTable({
     onDeleteClick,
     onTogglePauseClick,
     pausingModelId,
-    t,
+    credentialLabels,
   ]);
 
   const modelGroupOptions = useMemo(
@@ -158,7 +175,7 @@ export function AllModelsTable({
       { label: t("modelTable.wildcardModels"), value: WILDCARD_MODEL_GROUP_VALUE },
       ...availableModelGroups.map((group) => ({ label: group, value: group })),
     ],
-    [availableModelGroups, t],
+    [availableModelGroups],
   );
 
   const accessGroupOptions = useMemo(
@@ -166,7 +183,7 @@ export function AllModelsTable({
       { label: t("modelTable.allAccessGroups"), value: ALL_MODEL_GROUPS_VALUE },
       ...availableModelAccessGroups.map((accessGroup) => ({ label: accessGroup, value: accessGroup })),
     ],
-    [availableModelAccessGroups, t],
+    [availableModelAccessGroups],
   );
 
   const formatFilterValue = (columnId: string, value: unknown): string => {
@@ -182,16 +199,6 @@ export function AllModelsTable({
 
   const selectedTeamLabel =
     teamOptions.find((option) => option.value === selectedTeamValue)?.label ?? teamOptions[0]?.label ?? "";
-
-  const viewModeLabels: Record<ModelViewMode, string> = {
-    current_team: t("modelTable.viewModes.currentTeam"),
-    all: t("modelTable.viewModes.all"),
-  };
-
-  const filterLabels = {
-    [MODEL_NAME_COLUMN_ID]: t("modelTable.filterLabels.publicModelName"),
-    [ACCESS_GROUPS_COLUMN_ID]: t("modelTable.filterLabels.accessGroup"),
-  };
 
   return (
     <DataTable
@@ -215,7 +222,7 @@ export function AllModelsTable({
       maxBodyHeight={MODEL_TABLE_BODY_HEIGHT}
       isLoading={isLoading}
       loadingMessage={t("modelTable.loading")}
-      noDataMessage={<EmptyState t={t} />}
+      noDataMessage={<EmptyState />}
       size="compact"
       toolbar={(table) => (
         <>
@@ -227,7 +234,7 @@ export function AllModelsTable({
             onOpenFilters={() => setFiltersOpen(true)}
             onRefresh={onRefresh}
             isRefreshing={isRefreshing}
-            filterLabels={filterLabels}
+            filterLabels={FILTER_LABELS}
             formatFilterValue={formatFilterValue}
           >
             <Select value={selectedTeamValue} onValueChange={(value) => onTeamChange(String(value))}>
@@ -263,18 +270,13 @@ export function AllModelsTable({
             </Select>
 
             <Select value={viewMode} onValueChange={(value) => onViewModeChange(value as ModelViewMode)}>
-              <SelectTrigger
-                size="sm"
-                aria-label={t("modelTable.viewLabel")}
-                data-testid="models-view-select"
-                className="gap-2"
-              >
-                <span className="text-muted-foreground">{t("modelTable.viewLabel")}</span>
-                <span className="truncate">{viewModeLabels[viewMode]}</span>
+              <SelectTrigger size="sm" aria-label="View" data-testid="models-view-select" className="gap-2">
+                <span className="text-muted-foreground">View</span>
+                <span className="truncate">{VIEW_MODE_LABELS[viewMode]}</span>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="current_team">{viewModeLabels.current_team}</SelectItem>
-                <SelectItem value="all">{viewModeLabels.all}</SelectItem>
+                <SelectItem value="current_team">{VIEW_MODE_LABELS.current_team}</SelectItem>
+                <SelectItem value="all">{VIEW_MODE_LABELS.all}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -295,33 +297,56 @@ export function AllModelsTable({
             table={table}
             open={filtersOpen}
             onOpenChange={setFiltersOpen}
-            title={t("modelTable.filters")}
-            description={t("modelTable.filtersDescription")}
-            resetLabel={t("common.reset")}
+            title="Filters"
+            description="Narrow down models + endpoints"
+            resetLabel="Reset Filters"
             onReset={onResetFilters}
           >
             {({ get, set }) => (
               <>
-                <DataTableFilterField label={t("modelTable.filterLabels.publicModelName")}>
+                <DataTableFilterField label="Public Model Name">
                   <SearchSelect
                     options={modelGroupOptions}
                     value={(get(MODEL_NAME_COLUMN_ID) as string) ?? ALL_MODEL_GROUPS_VALUE}
                     onValueChange={(value) =>
                       set(MODEL_NAME_COLUMN_ID, value === ALL_MODEL_GROUPS_VALUE ? undefined : value ?? undefined)
                     }
-                    placeholder={t("modelTable.placeholder.publicModelName")}
-                    emptyText={t("modelTable.empty.models")}
+                    placeholder="Filter by Public Model Name"
+                    emptyText="No models found"
                   />
                 </DataTableFilterField>
-                <DataTableFilterField label={t("modelTable.filterLabels.accessGroup")}>
+                <DataTableFilterField label="Status">
+                  <Select
+                    value={(get(ROUTING_STATUS_FILTER_ID) as string) ?? "all"}
+                    onValueChange={(value) =>
+                      set(ROUTING_STATUS_FILTER_ID, value === "all" ? undefined : (value as "active" | "paused"))
+                    }
+                  >
+                    <SelectTrigger aria-label="Filter by status" className="w-full">
+                      {ROUTING_STATUS_FILTER_VALUES[
+                        (get(ROUTING_STATUS_FILTER_ID) as keyof typeof ROUTING_STATUS_FILTER_VALUES) ?? "all"
+                      ] ?? ROUTING_STATUS_FILTER_VALUES.all}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(
+                        Object.keys(ROUTING_STATUS_FILTER_VALUES) as Array<keyof typeof ROUTING_STATUS_FILTER_VALUES>
+                      ).map((value) => (
+                        <SelectItem key={value} value={value}>
+                          {ROUTING_STATUS_FILTER_VALUES[value]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </DataTableFilterField>
+                <DataTableFilterField label="Model Access Group">
                   <SearchSelect
                     options={accessGroupOptions}
                     value={(get(ACCESS_GROUPS_COLUMN_ID) as string) ?? ALL_MODEL_GROUPS_VALUE}
                     onValueChange={(value) =>
                       set(ACCESS_GROUPS_COLUMN_ID, value === ALL_MODEL_GROUPS_VALUE ? undefined : value ?? undefined)
                     }
-                    placeholder={t("modelTable.placeholder.accessGroup")}
-                    emptyText={t("modelTable.empty.accessGroups")}
+                    placeholder="Filter by Model Access Group"
+                    emptyText="No model access groups found"
                   />
                 </DataTableFilterField>
               </>

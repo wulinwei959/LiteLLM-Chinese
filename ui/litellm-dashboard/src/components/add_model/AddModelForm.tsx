@@ -1,4 +1,5 @@
 import { useProviderFields } from "@/app/(dashboard)/hooks/providers/useProviderFields";
+import { useTranslations } from "next-intl";
 import { useGuardrails } from "@/app/(dashboard)/hooks/guardrails/useGuardrails";
 import { useTags } from "@/app/(dashboard)/hooks/tags/useTags";
 import { all_admin_roles, isUserTeamAdminForAnyTeam } from "@/utils/roles";
@@ -47,7 +48,6 @@ import { toast } from "@/lib/toast";
 import { isProxyAdminRole } from "@/utils/roles";
 import { useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useTranslations } from "next-intl";
 
 interface AddModelFormProps {
   form: UseFormReturn<MountedFormValues>; // For the Add Model tab
@@ -89,9 +89,6 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
   decisionCatalog,
 }) => {
   const t = useTranslations("common");
-  const commonT = useTranslations("common");
-  const addModelT = useTranslations("models.addModel");
-
   const [testMode, setTestMode] = useState<string>("chat");
   const [isResultModalVisible, setIsResultModalVisible] = useState<boolean>(false);
   const [isTestingConnection, setIsTestingConnection] = useState<boolean>(false);
@@ -188,16 +185,11 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
     [sortedProviderMetadata],
   );
 
-  const credentialOptions: SearchSelectOption[] = useMemo(
-    () => [
-      { label: addModelT("noneCredential"), value: "" },
-      ...credentials.map((credential) => ({
-        label: credential.credential_name,
-        value: credential.credential_name,
-      })),
-    ],
-    [credentials, addModelT],
-  );
+  const pickedLitellmProvider = sortedProviderMetadata.find(
+    (providerInfo) => providerInfo.provider === pickedProvider,
+  )?.litellm_provider;
+
+  const credentialSelectOptions: SearchSelectOption[] = useMemo(() => credentialOptions(credentials), [credentials]);
 
   const applyProviderSelection = (provider: string | null) => {
     setSelectedProvider(provider);
@@ -262,8 +254,10 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {!teamAdminSelectedTeam && (
                         <Alert variant="info" className="mb-4">
                           <Info />
-                          <AlertTitle>{t("teamSelectionRequired")}</AlertTitle>
-                          <AlertDescription>{t("teamSelectionRequiredDesc")}</AlertDescription>
+                          <AlertTitle>Team Selection Required</AlertTitle>
+                          <AlertDescription>
+                            As a team admin, you need to select your team first before adding models.
+                          </AlertDescription>
                         </Alert>
                       )}
                     </>
@@ -305,7 +299,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       <MountedFormField label={t("mode")} name="mode" className="mb-1">
                         {(control) => (
                           <Select
-                            items={TEST_MODES.map((mode) => ({ value: mode.value, label: addModelT(mode.labelKey) }))}
+                            items={TEST_MODES}
                             value={(control.value as string | undefined) ?? null}
                             onValueChange={(value: string | null) => {
                               control.onChange(value);
@@ -318,7 +312,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                             <SelectContent>
                               {TEST_MODES.map((mode) => (
                                 <SelectItem key={mode.value} value={mode.value}>
-                                  {addModelT(mode.labelKey)}
+                                  {mode.label}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -344,11 +338,13 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
 
                       {/* Credentials */}
                       <div className="mb-4">
-                        <span className="text-sm text-muted-foreground">{t("addModel.credentialsDesc")}</span>
+                        <span className="text-sm text-muted-foreground">
+                          Either select existing credentials OR enter new provider credentials below
+                        </span>
                       </div>
 
                       <MountedFormField
-                        label={t("addModel.existingCredentials")}
+                        label="Existing Credentials"
                         name="litellm_credential_name"
                         defaultValue={null}
                         className="mb-4"
@@ -357,7 +353,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                           <SearchSelect
                             inputId={control.id}
                             placeholder={t("addModel.selectCredentials")}
-                            options={credentialOptions}
+                            options={credentialSelectOptions}
                             value={(control.value as string | null | undefined) ?? ""}
                             onValueChange={(value) => control.onChange(value === "" ? null : value)}
                           />
@@ -396,14 +392,26 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       )}
                       <div className="flex items-center my-4">
                         <div className="grow border-t border-border"></div>
-                        <span className="px-4 text-muted-foreground text-sm">{t("addModel.additionalInfo")}</span>
+                        <span className="px-4 text-muted-foreground text-sm">Additional Model Info Settings</span>
                         <div className="grow border-t border-border"></div>
                       </div>
                       {/* Team-only Model Switch - Only show for proxy admins, not team admins */}
                       {(isAdmin || !isTeamAdmin) && (
                         <Field className="mb-4">
-                          <FieldLabel>{labelWithHint(t("addModel.teamByok"), t("addModel.teamByokHint"))}</FieldLabel>
-                          <SimpleTooltip content={!premiumUser ? t("addModel.teamByokPremium") : ""} side="top">
+                          <FieldLabel>
+                            {labelWithHint(
+                              "Team-BYOK Model",
+                              "Only use this model + credential combination for this team. Useful when teams want to onboard their own OpenAI keys.",
+                            )}
+                          </FieldLabel>
+                          <SimpleTooltip
+                            content={
+                              !premiumUser
+                                ? "This is an enterprise-only feature. Upgrade to premium to restrict model+credential combinations to a specific team."
+                                : ""
+                            }
+                            side="top"
+                          >
                             <span className="inline-flex">
                               <Switch
                                 checked={isTeamOnly}
@@ -424,13 +432,16 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {/* Conditional Team Selection */}
                       {isTeamOnly && !requiresTeamScope && (
                         <MountedFormField
-                          label={labelWithHint(t("addModel.selectTeam"), t("addModel.teamByokHint2"))}
+                          label={labelWithHint(
+                            "Select Team",
+                            "Only keys for this team will be able to call this model.",
+                          )}
                           name="team_id"
                           className="mb-4"
                           required={isTeamOnly && !isAdmin}
                           rules={
                             isTeamOnly && !isAdmin
-                              ? { validate: { required: requiredRule(t("addModel.teamRequired")) } }
+                              ? { validate: { required: requiredRule("Please select a team.") } }
                               : undefined
                           }
                         >
@@ -446,7 +457,10 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {isAdmin && (
                         <>
                           <MountedFormField
-                            label={labelWithHint(t("addModel.modelAccessGroup"), t("addModel.modelAccessGroupHint"))}
+                            label={labelWithHint(
+                              "Model Access Group",
+                              "Use model access groups to give users access to select models, and add new ones to the group over time.",
+                            )}
                             name="model_access_group"
                             className="mb-4"
                           >
@@ -490,10 +504,10 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                         disabled={isTestingConnection}
                         aria-busy={isTestingConnection}
                       >
-                        {t("addModel.testConnect")}
+                        Test Connect
                       </Button>
                       <Button data-testid="add-model-btn" type="submit">
-                        {t("addModel.submit")}
+                        Add Model
                       </Button>
                     </div>
                   </div>
@@ -564,7 +578,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                 setIsTestingConnection(false);
               }}
             >
-              {commonT("close")}
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>

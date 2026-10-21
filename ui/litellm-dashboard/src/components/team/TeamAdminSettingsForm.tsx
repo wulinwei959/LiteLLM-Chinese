@@ -2,6 +2,7 @@
 
 import { Save } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -12,11 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { useZodForm } from "@/lib/forms/useZodForm";
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 
 import BudgetDurationDropdown, { NEVER_RESETS_BUDGET_DURATION } from "../common_components/budget_duration_dropdown";
 import MetadataKeyValueFields, {
   type MetadataPair,
-  metadataPairsSchema,
+  buildMetadataPairsSchema,
 } from "../common_components/MetadataKeyValueFields";
 import NumericalInput from "../shared/numerical_input";
 import {
@@ -46,10 +48,10 @@ const teamAdminSettingsShape = {
   team_member_rpm_limit: numericInputSchema,
 };
 
-const teamAdminSettingsSchemaFor = (metadataContext: TeamAdminMetadataContext | undefined) =>
+const teamAdminSettingsSchemaFor = (t: TeamsTranslator, metadataContext: TeamAdminMetadataContext | undefined) =>
   z.object({
     ...teamAdminSettingsShape,
-    metadata: metadataPairsSchema
+    metadata: buildMetadataPairsSchema(t)
       .superRefine((pairs, ctx) => {
         if (metadataContext === undefined) return;
         pairs.forEach((pair, index) => {
@@ -123,8 +125,10 @@ function TeamAdminSettingsFormFields({
   onCancel,
   onSave,
 }: TeamAdminSettingsFormProps) {
+  const editsMetadata = metadata !== undefined && editableFields.has(TEAM_ADMIN_METADATA_FIELD);
+  const [schema] = useState(() => teamAdminSettingsSchemaFor(t, editsMetadata ? metadata.context : undefined));
   const t = useTranslations("teams");
-  const form = useZodForm(teamAdminSettingsSchema, { defaultValues: initialValues });
+  const form = useZodForm(schema, { defaultValues: { ...initialValues, metadata: [...(metadata?.pairs ?? [])] } });
   const draft = useWatch({ control: form.control });
   const changesFrom = (values: typeof draft): TeamAdminSettingsChanges => ({
     ...teamAdminSettingsChanges(values, initialValues, editableFields),
@@ -138,15 +142,38 @@ function TeamAdminSettingsFormFields({
       <FieldGroup>
         <p className="text-sm text-muted-foreground">{t("settingsAdminOnlyNotice")}</p>
         {TEAM_ADMIN_SETTINGS_FIELDS.filter((name) => editableFields.has(name)).map((name) => (
-          <FormField key={name} control={form.control} name={name} label={teamAdminFieldLabel(t, name)}>
-            {({ ref, value, ...field }) => (
-              <NumericalInput {...field} ref={ref} value={value ?? ""} step={INPUT_STEP[name]} />
-            )}
+          <FormField
+            key={name}
+            control={form.control}
+            name={name}
+            label={teamAdminFieldLabel(t, name)}
+            description={fieldHint(name, mayRaiseMaxBudget)}
+          >
+            {({ ref, id, value, onChange, ...field }) =>
+              isTeamAdminDurationSettingsField(name) ? (
+                <BudgetDurationDropdown
+                  id={id}
+                  showNeverResets
+                  placeholder={t("settingsInheritTeamResetPeriod")}
+                  value={durationSelectValue(value)}
+                  onChange={(next) => onChange(next === NEVER_RESETS_BUDGET_DURATION ? null : next ?? undefined)}
+                />
+              ) : (
+                <NumericalInput
+                  {...field}
+                  ref={ref}
+                  id={id}
+                  value={value ?? ""}
+                  onChange={onChange}
+                  step={INPUT_STEP[name]}
+                />
+              )
+            }
           </FormField>
         ))}
         {editsMetadata && (
           <Field>
-            <FieldLabel>{teamAdminFieldLabel(TEAM_ADMIN_METADATA_FIELD)}</FieldLabel>
+            <FieldLabel>{teamAdminFieldLabel(t, TEAM_ADMIN_METADATA_FIELD)}</FieldLabel>
             <MetadataKeyValueFields
               control={form.control}
               getValues={form.getValues}
@@ -165,11 +192,11 @@ function TeamAdminSettingsFormFields({
 
       <div className="mt-6 flex items-center justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
-          {t("settingsCancel")}
+          Cancel
         </Button>
         <Button type="submit" disabled={isSaving || !hasChanges}>
           {isSaving ? <UiLoadingSpinner className="size-4" /> : <Save className="size-4" />}
-          {t("settingsSaveChanges")}
+          Save Changes
         </Button>
       </div>
     </form>
