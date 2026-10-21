@@ -14,6 +14,7 @@
 | [WORKFLOW.md](./WORKFLOW.md)           | 实施步骤：单批执行流程、验证清单、编码约定                          |
 | [FIXES.md](./FIXES.md)                 | 错误修复步骤：缺陷分类、定位手段、修复方式与回归                    |
 | [RENDERED-SCAN.md](./RENDERED-SCAN.md) | 渲染扫描：用真实浏览器查运行期才炸的故障与残留英文                  |
+| [UPSTREAM-SYNC.md](./UPSTREAM-SYNC.md) | 上游同步计划：差距量化、逐文件三方合并的阶段与风险                  |
 
 ## 相关文档
 
