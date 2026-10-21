@@ -50,7 +50,8 @@ describe("AdvancedDatePicker", () => {
 
   it("should display formatted date range", () => {
     const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
-    expect(getTrigger(container)).toHaveTextContent(/\d{1,2} \w{3}, \d{2}:\d{2} - \d{1,2} \w{3}, \d{2}:\d{2}/);
+    // The range follows the UI locale: this suite renders with zh-CN pinned.
+    expect(getTrigger(container)).toHaveTextContent(/\d{1,2}月\d{1,2}日 \d{2}:\d{2} - \d{1,2}月\d{1,2}日 \d{2}:\d{2}/);
   });
 
   it("should open dropdown when clicked", () => {

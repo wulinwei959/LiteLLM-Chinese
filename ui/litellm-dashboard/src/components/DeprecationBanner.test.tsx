@@ -15,7 +15,7 @@ describe("DeprecationBanner", () => {
   it("states the target removal date and that the list is not final", () => {
     render(<DeprecationBanner featureName="Memory" />);
 
-    expect(screen.getByText(/最早可能于 September 1, 2026 移除/)).toBeInTheDocument();
+    expect(screen.getByText(/最早可能于 2026年9月1日 移除/)).toBeInTheDocument();
     expect(screen.getByText(/这份清单仍是草案，尚未定稿/)).toBeInTheDocument();
   });
 

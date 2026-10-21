@@ -38,12 +38,13 @@ export const authorizedSession = (overrides: SessionOverride = {}): AuthorizedSe
   ({ ...BASE, ...overrides }) as AuthorizedSession;
 
 /** The session of a caller that has neither a token nor a user behind it. */
+const ANONYMOUS: SessionOverride = {
+  token: null,
+  accessToken: null,
+  userId: null,
+  userRole: null,
+  userRoleLabel: "",
+};
+
 export const anonymousSession = (overrides: SessionOverride = {}): AuthorizedSession =>
-  authorizedSession({
-    token: null,
-    accessToken: null,
-    userId: null,
-    userRole: null,
-    userRoleLabel: "",
-    ...overrides,
-  });
+  authorizedSession({ ...ANONYMOUS, ...overrides });

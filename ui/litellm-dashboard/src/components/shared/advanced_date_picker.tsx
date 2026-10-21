@@ -3,8 +3,21 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cva.config";
 import type { DateRangePickerValue } from "./date_picker_types";
 import moment from "moment";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+
+type DateTimeOptions = NonNullable<Parameters<ReturnType<typeof useFormatter>["dateTime"]>[2]>;
+
+const RANGE_FORMAT: DateTimeOptions = {
+  day: "numeric",
+  month: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+};
+
+const DAY_FORMAT: DateTimeOptions = { year: "numeric", month: "short", day: "numeric" };
+
+const CLOCK_FORMAT: DateTimeOptions = { hour: "2-digit", minute: "2-digit", second: "2-digit" };
 
 type AdvancedDatePickerTranslator = ReturnType<typeof useTranslations<"advancedDatePicker">>;
 type AdvancedDatePickerTranslatorKey = Parameters<AdvancedDatePickerTranslator>[0];
@@ -86,6 +99,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
   align = "right",
 }) => {
   const t = useTranslations("advancedDatePicker");
+  const format = useFormatter();
   const label = labelProp ?? t("defaultLabel");
   const [isOpen, setIsOpen] = useState(false);
   const [tempValue, setTempValue] = useState<DateRangePickerValue>(value);
@@ -176,13 +190,11 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
     (from: Date | undefined, to: Date | undefined) => {
       if (!from || !to) return t("selectDateRange");
 
-      const formatDateTime = (date: Date) => {
-        return moment(date).format("D MMM, HH:mm");
-      };
+      const formatDateTime = (date: Date) => format.dateTime(date, RANGE_FORMAT);
 
       return `${formatDateTime(from)} - ${formatDateTime(to)}`;
     },
-    [t],
+    [format, t],
   );
 
   // CRITICAL: Apply the same date adjustment logic as the original component
@@ -429,11 +441,12 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                     <div className="bg-info/10 p-3 rounded-md space-y-1">
                       <div className="text-xs text-info">
                         <span className="font-medium">{t("fromLabel")}</span>{" "}
-                        {moment(tempValue.from).format(`MMM D, YYYY [${t("timeConnector")}] HH:mm:ss`)}
+                        {format.dateTime(tempValue.from, DAY_FORMAT)} {t("timeConnector")}{" "}
+                        {format.dateTime(tempValue.from, CLOCK_FORMAT)}
                       </div>
                       <div className="text-xs text-info">
-                        <span className="font-medium">{t("toLabel")}</span>{" "}
-                        {moment(tempValue.to).format(`MMM D, YYYY [${t("timeConnector")}] HH:mm:ss`)}
+                        <span className="font-medium">{t("toLabel")}</span> {format.dateTime(tempValue.to, DAY_FORMAT)}{" "}
+                        {t("timeConnector")} {format.dateTime(tempValue.to, CLOCK_FORMAT)}
                       </div>
                     </div>
                   )}

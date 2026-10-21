@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import Link from "next/link";
 import { Info, X } from "lucide-react";
 
 const DEPRECATION_DISCUSSION_URL = "https://github.com/BerriAI/litellm/discussions/32090";
-const DEPRECATION_TARGET_DATE = "September 1, 2026";
+const DEPRECATION_TARGET_DATE = new Date("2026-09-01T00:00:00Z");
+const TARGET_DATE_FORMAT = { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" } as const;
 
 interface DeprecationBannerProps {
   featureName: string;
@@ -14,6 +15,7 @@ interface DeprecationBannerProps {
 
 export const DeprecationBanner: React.FC<DeprecationBannerProps> = ({ featureName }) => {
   const t = useTranslations("banners.deprecation");
+  const format = useFormatter();
   const [isClosed, setIsClosed] = useState(false);
 
   if (isClosed) {
@@ -31,7 +33,7 @@ export const DeprecationBanner: React.FC<DeprecationBannerProps> = ({ featureNam
         <p className="mt-1 break-words text-muted-foreground">
           {t.rich("body", {
             feature: featureName,
-            date: DEPRECATION_TARGET_DATE,
+            date: format.dateTime(DEPRECATION_TARGET_DATE, TARGET_DATE_FORMAT),
             link: (chunks) => (
               <Link
                 href={DEPRECATION_DISCUSSION_URL}

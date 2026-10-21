@@ -32,9 +32,10 @@ describe("policy option list", () => {
     renderWithProviders(<PolicySelect value="untrusted" toolName="test-tool" saving={false} onChange={vi.fn()} />);
     await userEvent.click(screen.getByRole("combobox"));
 
-    expect(screen.getByRole("option", { name: "不受信任" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "受信任" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "已阻止" })).toBeInTheDocument();
+    // The option list renders into a portal after the click, so it is awaited.
+    expect(await screen.findByRole("option", { name: "不受信任" })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "受信任" })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "已阻止" })).toBeInTheDocument();
   });
 
   it("should not offer blocked as an output policy", async () => {
@@ -43,8 +44,8 @@ describe("policy option list", () => {
     );
     await userEvent.click(screen.getByRole("combobox"));
 
-    expect(screen.getByRole("option", { name: "不受信任" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "受信任" })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "不受信任" })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "受信任" })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "已阻止" })).not.toBeInTheDocument();
   });
 });
