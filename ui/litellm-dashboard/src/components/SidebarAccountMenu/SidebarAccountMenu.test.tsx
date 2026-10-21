@@ -312,7 +312,7 @@ describe("SidebarAccountMenu", () => {
     expect(toggle).toBeChecked();
   });
 
-  it("should show Account in the trigger for the default placeholder user id", () => {
+  it("should show the account label in the trigger for the default placeholder user id", () => {
     mockUseAuthorizedImpl = () => ({
       userId: "default_user_id",
       userEmail: null,
@@ -321,7 +321,7 @@ describe("SidebarAccountMenu", () => {
       accessToken: "test-token",
     });
     renderWithProviders(<SidebarAccountMenu onLogout={mockOnLogout} />);
-    expect(screen.getByText("Account")).toBeInTheDocument();
+    expect(screen.getByText("账户")).toBeInTheDocument();
   });
 
   it("should display a dash when email is unavailable", async () => {

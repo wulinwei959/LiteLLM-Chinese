@@ -11216,7 +11216,8 @@
     "copyEmail": "Copy email",
     "copyUserIdLabel": "Copy user ID",
     "accountMenuTrigger": "Account menu — {role} — signed in as {identity}",
-    "unknownRole": "Unknown role"
+    "unknownRole": "Unknown role",
+    "account": "Account"
   },
   "toolPolicies": {
     "policyUntrusted": "untrusted",

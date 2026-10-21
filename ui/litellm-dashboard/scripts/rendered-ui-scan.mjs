@@ -38,11 +38,35 @@ const value = (name, fallback) => {
 
 const BASE_URL = value("base-url", "http://localhost:3000").replace(/\/+$/, "");
 const PROXY_URL = value("proxy-url", "");
+const MASTER_KEY = value("master-key", "");
 const UPDATE_BASELINE = flag("update-baseline");
 const SETTLE_MS = Number(value("settle-ms", "4000"));
 
 const b64url = (value) => Buffer.from(JSON.stringify(value)).toString("base64url");
 const ADMIN_TOKEN = `${b64url({ alg: "HS256", typ: "JWT" })}.${b64url(ADMIN_SESSION_CLAIMS)}.scan`;
+
+/**
+ * A session the proxy accepts.
+ *
+ * Against the stub proxy the fabricated token is enough, because nothing checks
+ * it. Against a real proxy the session has to be a JWT the proxy signed, so the
+ * master key is exchanged for one through the same login route the sign-in form
+ * uses.
+ */
+const sessionToken = async (proxyUrl) => {
+  if (!MASTER_KEY) return ADMIN_TOKEN;
+  const response = await fetch(`${proxyUrl}/v2/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username: "admin", password: MASTER_KEY }),
+  });
+  if (!response.ok) {
+    throw new Error(`Logging in to ${proxyUrl} failed: ${response.status} ${await response.text()}`);
+  }
+  const payload = await response.json();
+  if (!payload.token) throw new Error(`The proxy did not return a session token for ${proxyUrl}`);
+  return payload.token;
+};
 
 /** The API responses the dashboard reads, served on the port it expects. */
 const startStubProxy = (port) =>
@@ -79,7 +103,7 @@ const main = async () => {
     );
   });
   const context = await browser.newContext({ locale: "zh-CN", viewport: { width: 1440, height: 900 } });
-  await context.addCookies([{ name: "token", value: ADMIN_TOKEN, url: BASE_URL }]);
+  await context.addCookies([{ name: "token", value: await sessionToken(proxyUrl), url: BASE_URL }]);
   await context.addInitScript(() => window.localStorage.setItem("litellm-ui-locale", "zh-CN"));
 
   if (!PROXY_URL) {

@@ -11211,7 +11211,8 @@
     "copyEmail": "复制邮箱",
     "copyUserIdLabel": "复制用户 ID",
     "accountMenuTrigger": "账户菜单 — {role} — 以 {identity} 身份登录",
-    "unknownRole": "未知角色"
+    "unknownRole": "未知角色",
+    "account": "账户"
   },
   "toolPolicies": {
     "policyUntrusted": "不受信任",

@@ -284,7 +284,7 @@ describe("UserDropdown", () => {
     expect(localStorageUtils.emitLocalStorageChange).toHaveBeenCalledWith("disableShowPrompts");
   });
 
-  it("should show Account in the trigger when user id is the default placeholder", () => {
+  it("should show the account label in the trigger when user id is the default placeholder", () => {
     mockUseAuthorizedImpl = () => ({
       userId: "default_user_id",
       userEmail: null as any,
@@ -292,7 +292,7 @@ describe("UserDropdown", () => {
       premiumUser: false,
     });
     renderWithProviders(<UserDropdown onLogout={mockOnLogout} />);
-    expect(screen.getByText("Account")).toBeInTheDocument();
+    expect(screen.getByText("账户")).toBeInTheDocument();
   });
 
   it("should display dash when user email is not available", async () => {
