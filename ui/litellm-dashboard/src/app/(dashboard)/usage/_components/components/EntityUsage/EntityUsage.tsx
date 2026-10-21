@@ -61,7 +61,7 @@ import { ProviderSpendBreakdown } from "./SpendByProvider";
 const BRAND = "#2b3fd6";
 const FLAT_COST_SERIES = "entity.flatCost";
 const FLAT_COST_COLOR = "#8b5cf6";
-const METRIC_TITLE_KEY: Record<UsageMetric, string> = {
+const METRIC_TITLE_KEY: Record<UsageMetric, "spend" | "totalTokens" | "totalRequests"> = {
   spend: "spend",
   tokens: "totalTokens",
   requests: "totalRequests",
@@ -74,20 +74,28 @@ const TILE_TRENDS: Readonly<Record<string, string>> = {
   "Total Tokens": "tokens",
 };
 
-/** The tile titles arrive in English from the summary builder; this maps them to their catalog keys. */
-const TILE_TITLE_KEYS: Readonly<Record<string, string>> = {
-  "Total Spend": "entity.totalSpend",
-  "Total Cost": "entity.totalCost",
-  "Total Requests": "totalRequests",
-  "Total Tokens": "totalTokens",
+/** The tile titles arrive in English from the summary builder; this renders them in the reader's language. */
+const tileTitle = (t: UsageTranslator, title: string): string => {
+  switch (title) {
+    case "Total Spend":
+      return t("entity.totalSpend");
+    case "Total Cost":
+      return t("entity.totalCost");
+    case "Total Requests":
+      return t("totalRequests");
+    case "Total Tokens":
+      return t("totalTokens");
+    default:
+      return title;
+  }
 };
 const GRANULARITY_OPTIONS = [
-  { value: "day", labelKey: "usage.granularityDay" },
-  { value: "week", labelKey: "usage.granularityWeek" },
+  { value: "day", labelKey: "granularityDay" },
+  { value: "week", labelKey: "granularityWeek" },
 ] as const satisfies readonly { value: Granularity; labelKey: string }[];
 const SCALE_OPTIONS = [
-  { value: "linear", labelKey: "usage.scaleLinear" },
-  { value: "log", labelKey: "usage.scaleLog" },
+  { value: "linear", labelKey: "scaleLinear" },
+  { value: "log", labelKey: "scaleLog" },
 ] as const satisfies readonly { value: StackedUsageScale; labelKey: string }[];
 const QUIET_HEADER = { headerClassName: "font-normal" };
 const FLAT_COST_KEY = "flat_cost";
@@ -395,31 +403,31 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         cell: ({ row }) => <span className="font-medium text-foreground">{row.original.metadata.alias}</span>,
       },
       {
-        header: t("usage.entity.shareColumn"),
+        header: t("entity.shareColumn"),
         id: "share",
         meta: { ...QUIET_HEADER, className: "w-40" },
         cell: ({ row }) => <ShareBar value={row.original.metrics.spend} max={maxEntitySpend} />,
       },
       {
-        header: t("usage.spend"),
+        header: t("spend"),
         accessorKey: "metrics.spend",
         meta: { numeric: true, ...QUIET_HEADER },
         cell: ({ row }) => <MoneyCell value={row.original.metrics.spend} decimals={4} />,
       },
       {
-        header: t("usage.provider.successful"),
+        header: t("provider.successful"),
         accessorKey: "metrics.successful_requests",
         meta: { numeric: true, className: "text-success", ...QUIET_HEADER },
         cell: ({ row }) => row.original.metrics.successful_requests.toLocaleString(),
       },
       {
-        header: t("usage.provider.failed"),
+        header: t("provider.failed"),
         accessorKey: "metrics.failed_requests",
         meta: { numeric: true, className: "text-destructive", ...QUIET_HEADER },
         cell: ({ row }) => row.original.metrics.failed_requests.toLocaleString(),
       },
       {
-        header: t("usage.provider.tokens"),
+        header: t("provider.tokens"),
         accessorKey: "metrics.total_tokens",
         meta: { numeric: true, ...QUIET_HEADER },
         cell: ({ row }) => row.original.metrics.total_tokens.toLocaleString(),
@@ -433,7 +441,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
 
   const tileLabel = ({ title, tooltip, expandable }: SummaryTile) => (
     <>
-      <span>{TILE_TITLE_KEYS[title] ? t(TILE_TITLE_KEYS[title]) : title}</span>
+      <span>{tileTitle(t, title)}</span>
       {tooltip ? (
         <Tooltip>
           <TooltipTrigger render={<Info className="size-3.5 text-muted-foreground hover:text-foreground" />} />
@@ -481,7 +489,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   const breakdownTiles = showFlatCost && showCostBreakdown ? buildCostBreakdownTiles(spendData.metadata) : [];
   const summaryTiles = buildSummaryTiles(spendData.metadata, showFlatCost, showPtuHours);
 
-  const modelViewTitle = modelViewType === "groups" ? t("usage.topModelGroups") : t("usage.topModelSingle");
+  const modelViewTitle = modelViewType === "groups" ? t("topModelGroups") : t("topModelSingle");
   const chartFormat = (value: number) => formatMetricValue(value, breakdown.metric);
 
   const costPanel = loading ? (
@@ -523,13 +531,13 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
           <div className="flex flex-wrap items-center gap-2">
             <BreakdownControls state={breakdown} onChange={setBreakdown} showDimension={false} />
             <Segmented
-              label={t("usage.bucketSizeLabel")}
+              label={t("bucketSizeLabel")}
               value={granularity}
               options={GRANULARITY_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
               onChange={setGranularity}
             />
             <Segmented
-              label={t("usage.scaleLabel")}
+              label={t("scaleLabel")}
               value={scale}
               options={SCALE_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
               onChange={setScale}
@@ -595,7 +603,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
       )}
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Panel icon={KeyRound} title={t("usage.entity.topKeys")}>
+        <Panel icon={KeyRound} title={t("entity.topKeys")}>
           <TopKeyView
             topKeys={getTopAPIKeys(spendData.results, topKeysLimit)}
             teams={null}
@@ -606,7 +614,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         </Panel>
         <Panel
           icon={Boxes}
-          title={entityType === "agent" ? t("usage.entity.topAgents") : modelViewTitle}
+          title={entityType === "agent" ? t("entity.topAgents") : modelViewTitle}
           action={<ModelViewToggle value={modelViewType} onChange={setModelViewType} />}
         >
           <TopModelView
@@ -618,7 +626,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
       </div>
 
       {showAgentBreakdown && (
-        <Panel icon={Bot} title={t("usage.entity.topAgentsDrivingSpend")}>
+        <Panel icon={Bot} title={t("entity.topAgentsDrivingSpend")}>
           {agentLoading ? (
             <ChartLoader />
           ) : (
@@ -631,17 +639,17 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         </Panel>
       )}
 
-      <Panel icon={Server} title={t("usage.entity.providerUsage")}>
+      <Panel icon={Server} title={t("entity.providerUsage")}>
         <ProviderSpendBreakdown rows={providerSpend} />
       </Panel>
     </div>
   );
 
   const tabs: readonly { key: string; label: string; content: ReactNode }[] = [
-    { key: "cost", label: t("usage.tabs.cost"), content: costPanel },
+    { key: "cost", label: t("tabs.cost"), content: costPanel },
     {
       key: "models",
-      label: entityType === "agent" ? t("usage.entity.requestTokenConsumption") : t("usage.tabs.models"),
+      label: entityType === "agent" ? t("entity.requestTokenConsumption") : t("tabs.models"),
       content: (
         <>
           <div className="mb-3 flex justify-end">
@@ -659,14 +667,14 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
       ? [
           {
             key: "agents",
-            label: t("usage.tabs.agents"),
+            label: t("tabs.agents"),
             content: <ActivityMetrics modelMetrics={agentMetrics} />,
           },
         ]
       : []),
     {
       key: "keys",
-      label: t("usage.tabs.keys"),
+      label: t("tabs.keys"),
       content: (
         <KeyActivityPanel
           summary={summaryMetrics}
@@ -679,7 +687,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         />
       ),
     },
-    { key: "endpoints", label: t("usage.tabs.endpoints"), content: <EndpointUsage userSpendData={spendData} /> },
+    { key: "endpoints", label: t("tabs.endpoints"), content: <EndpointUsage userSpendData={spendData} /> },
   ];
 
   return (
@@ -687,14 +695,14 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
       {failed && (
         <Alert variant="error">
           <AlertDescription className="text-inherit">
-            {t("usage.entity.spendFetchFailed")}
+            {t("entity.spendFetchFailed")}
           </AlertDescription>
         </Alert>
       )}
       {showAgentBreakdown && agentFailed && (
         <Alert variant="error">
           <AlertDescription className="text-inherit">
-            {t("usage.entity.agentFetchFailed")}
+            {t("entity.agentFetchFailed")}
           </AlertDescription>
         </Alert>
       )}
@@ -705,7 +713,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
           onExport={(exportType, format) =>
             request
               ? api.exportRows(request, exportType, format)
-              : Promise.reject(new Error(t("usage.selectRangeToExport")))
+              : Promise.reject(new Error(t("selectRangeToExport")))
           }
           showFilters={filterSlot === undefined && entityList !== null}
           filterSlot={filterSlot}

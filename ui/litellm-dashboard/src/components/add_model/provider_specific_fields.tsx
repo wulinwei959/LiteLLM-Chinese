@@ -1,4 +1,5 @@
 import { useProviderFields } from "@/app/(dashboard)/hooks/providers/useProviderFields";
+import { useTranslations } from "next-intl";
 import { PasswordInput } from "@/components/shared/PasswordInput";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Upload as UploadIcon } from "lucide-react";
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { useTranslations } from "next-intl";
 import { requiredRule } from "../common_components/formRules";
 import {
   MountedFormField,
@@ -100,7 +100,22 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
 }) => {
   const selectedProviderEnum = Providers[selectedProvider as keyof typeof Providers] as Providers;
   const form = useFormContext<MountedFormValues>();
-  const t = useTranslations("models.addModel");
+  const authTypes = authTypesFor(selectedProvider);
+  const availableAuthTypes = React.useMemo(
+    () =>
+      authTypes.filter(
+        ({ credentialOnly }) => context !== "model" || onCreateCredential !== undefined || !credentialOnly,
+      ),
+    [authTypes, context, onCreateCredential],
+  );
+  const [selectedAuthTypeId, setSelectedAuthTypeId] = React.useState(() =>
+    initialAuthTypeId && availableAuthTypes.some(({ id }) => id === initialAuthTypeId)
+      ? initialAuthTypeId
+      : inferAuthTypeId(availableAuthTypes, form.getValues()),
+  );
+  const selectedAuthType = availableAuthTypes.find(({ id }) => id === selectedAuthTypeId) ?? availableAuthTypes[0];
+  const credentialOnlySelected = context === "model" && selectedAuthType?.credentialOnly === true;
+  const authTypeSelectId = React.useId();
   const credentialsFileRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -328,6 +343,44 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
 
   return (
     <>
+      {availableAuthTypes.length > 0 && selectedAuthType && (
+        <div className="mb-4 flex flex-col gap-2">
+          <label htmlFor={authTypeSelectId} className="text-sm font-medium">
+            {labelWithHint("Auth Type:", "Select how LiteLLM authenticates to this provider.")}
+          </label>
+          <Select
+            items={availableAuthTypes.map(({ id, label }) => ({ value: id, label }))}
+            value={selectedAuthType.id}
+            onValueChange={(value) => setSelectedAuthTypeId(value ?? "")}
+          >
+            <SelectTrigger id={authTypeSelectId} className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {availableAuthTypes.map((authType) => (
+                <SelectItem key={authType.id} value={authType.id}>
+                  {authType.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-sm text-muted-foreground">{selectedAuthType.description}</p>
+        </div>
+      )}
+      {credentialOnlySelected ? (
+        <>
+          <p className="mb-4 text-sm">This auth type is saved as an LLM credential and attached to this model.</p>
+          <Button type="button" onClick={() => onCreateCredential?.(selectedAuthType.id)}>
+            Create credential
+          </Button>
+        </>
+      ) : (
+        Object.entries(selectedAuthType?.fixedValues ?? {}).map(([fieldKey, fixedValue]) => (
+          <MountedFormField key={`${selectedProvider}:${fieldKey}`} name={fieldKey} defaultValue={fixedValue} bare>
+            {() => null}
+          </MountedFormField>
+        ))
+      )}
       {isLoading && allFields.length === 0 && <p className="text-sm mb-2">{t("loadingProviderFields")}</p>}
       {loadError && allFields.length === 0 && (
         <p className="text-sm mb-2 text-destructive">

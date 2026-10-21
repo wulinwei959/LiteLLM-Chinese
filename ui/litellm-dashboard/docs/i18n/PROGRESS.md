@@ -4342,3 +4342,15 @@ i18n 自身的三条守卫也是全绿，16 个用例
 死键（`en.json` 里有、代码没人用）没有守卫，只能人工发现
 
 `t` 通过 props 传进来的调用点无法静态判定作用域，`missingKeys` 会跳过
+
+## 2026-10-21 第 422 簇：上游 main 同步
+
+这一簇做的是上游同步本身，方法、数字与欠账记在 `UPSTREAM-SYNC.md` 第八节，这里只记与汉化账直接相关的几点。
+
+合并把上游的新结构与我们的汉化接线拼在一起，产生两类待收口的问题：一类是上游改了辅助函数签名而我们改过同一批签名（llm_calls 系列首参注入译员，上游新增的调用点不知道要传），一类是文件被拼成半成品（上游新 JSX 配我们旧 import 与 state，出现找不到标识符）。本簇重接了 30 余个文件，其余 94 个文件的生产类型错误留到下一簇。
+
+目录侧：合并后一次性清了 735 个无人引用的键（死键 735 → 0），新增与补回的键 22 枚（`playground.headerSubtitle`、`playground.tabs.decisions`、`usage.provider.totalSpend`、`usage.entity.ptuHours*`、`usageKeyActivity.searchFailed/requestsColumn/virtualKeysTitle/keyColumn/spendColumn`、`liteAdmin.askAria/homeSubtitle/recentChats/chatsAria/chatLabel`、`guardrails.custom.modeTagScoped/modeTagScopedShort/continueObserving`、`usage.usageViewAccessDenied/linkCopied/copyShareLink/gatewayRequestsByEndpointSubtitle/searchModels/searchByModelName/clearModelSearch`、`navbar.notifications.unread`）。i18n 四条守卫 17 例全绿。
+
+合并基线踩了个坑并记在案：仪表盘侧原计划用上游 `303434d`（2026-09-26）当基线，实际我们的仪表盘停在 `v1.105.0`，用错基线会把上游自己的演进当成我们的改动，合并出大批半成品。改用 `v1.105.0` 后同批文件的冲突从 113 降到 0。
+
+欠账：生产类型检查 330 条错误（94 个文件），测试文件 1123 条（合并前基线 878，大头是 vitest 全局类型缺失的 TS2304/TS2582，与上游同源），`npm run build` 暂时不绿。

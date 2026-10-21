@@ -21,18 +21,21 @@ interface SpendSummaryMetadata {
 
 export const hasFlatCost = (metadata: SpendSummaryMetadata): boolean => (metadata.total_flat_cost ?? 0) > 0;
 
+export const hasPtuHours = (metadata: SpendSummaryMetadata): boolean => (metadata.total_ptu_hours ?? 0) > 0;
+
 export const buildSummaryTiles = (
   t: UsageTranslator,
   metadata: SpendSummaryMetadata,
   showFlatCost: boolean,
+  showPtuHours: boolean = false,
 ): SummaryTile[] => {
   const flatCost = metadata.total_flat_cost ?? 0;
   const ptuHoursTile: SummaryTile[] = showPtuHours
     ? [
         {
-          title: "PTU Hours",
+          title: t("entity.ptuHoursTitle"),
           value: formatNumberWithCommas(metadata.total_ptu_hours ?? 0, 2),
-          tooltip: PTU_HOURS_TOOLTIP,
+          tooltip: t("entity.ptuHoursTooltip"),
         },
       ]
     : [];
@@ -57,6 +60,7 @@ export const buildSummaryTiles = (
       className: "text-destructive",
     },
     { title: t("totalTokens"), value: metadata.total_tokens.toLocaleString() },
+    ...ptuHoursTile,
   ];
 };
 

@@ -145,3 +145,53 @@ theirs = upstream/main 的内容 （上游的新版）
 2. **再做 Phase 3**（仪表盘源码），单独一条分支，冲突分批解，每批推送让 CI 兜住
 3. **汉化（Phase 5）跟着 Phase 3 走**，上游每多一批组件就补一批键，不必等合并全部结束
 4. **Phase 6 收口**，更新死键基线与 lint 预算棘轮
+
+## 八、执行记录（2026-10-21）
+
+计划已执行到 Phase 3，Phase 4~6 尚未开始。这一节记的是实际做法与实际结果，与前面的计划有出入的地方以这一节为准。
+
+### 合并基线改了
+
+计划里仪表盘侧的基线写的是上游 `303434d`（2026-09-26）。实际执行时发现基线选错了：我们的仪表盘不是停在 `303434d`，而是停在 `v1.105.0` 那次同步带进来的状态。`v1.105.0` 与 `303434d` 之间上游又改过仪表盘，所以拿 `303434d` 当基线时，三方合并会把"上游从 303434d 到 v1.105.0 的改动"当成"我们的改动"，于是一大批本该干净合并的文件报冲突，合并结果里出现上游新代码与旧代码拼接的半成品（JSX 标签不闭合、引用了不存在的标识符）。
+
+改用 `v1.105.0` 作仪表盘侧基线后，同样一批文件的冲突数从 113 处降到 0，合并结果也干净得多。代理侧基线仍是 `v1.105.0`（我们的 Python 树与那个 tag 逐字节一致）。
+
+### 工具
+
+`scripts/upstream-merge.py` 做逐文件三方合并：
+
+- 基线按路径分区：仪表盘用 `--dashboard-base`，其余用 `--rest-base`
+- 只有一侧改动的文件直接取那一侧
+- 两侧都改的走 `git merge-file`
+- 上游搬过家的文件跟着重命名走，`git diff -M` 认出 old→new 后把我们的改动合并到新路径下，汉化随代码一起搬
+- 二进制文件不做合并，直接取上游那份
+- `--keep` 保留 fork 自有的基础设施（我们的 4 个 UI 工作流、`check-ui-api-types.yml`）
+
+### 实际数字
+
+仪表盘侧：1395 个文件合并、103 处重命名带汉化、385 个新增、88 个上游删除。代理与仓库其余部分：3818 个文件取上游、137 处重命名、2626 个新增、1124 个上游删除。合并提交是 `797ecb3208`，共 8591 个文件、+1310663 / -504842。
+
+上游删掉、我们也改过的文件里，绝大多数是搬家（`view_logs` 整目录搬到 `components/logs`，`lens` 与 `roi-calculator` 的页面组件搬进上游的 `@litellm/lens-ui` 本地包）。这些在原路径留下的旧副本是合并产物里的孤儿，共 1467 个文件，已按"上游同路径没有该文件且内容在别处存在"判据清掉。
+
+### 汉化层重接（Phase 5，进行中）
+
+合并把上游的新结构与我们的汉化接线拼在一起，产生两类问题：
+
+一类是上游改了辅助函数的签名而我们改过同一批签名。典型是 `makeOpenAIResponsesRequest` 等 llm_calls 系列函数，我们的做法是首参注入 `PlaygroundTranslator` 把报错文案接进目录，上游新增的调用点（`playground/components/chat/dispatchRequest.ts`）不知道要传，于是类型不匹配。这类要沿调用链把译员补齐。
+
+另一类是文件被拼成半成品：上游的新 JSX 配我们旧的 import 与 state，出现"找不到标识符"（`SparklesIcon`、`QUIET_HEADER`、`selectedAuthType` 这类）。这类要取上游那份骨架，再把汉化按新结构重新贴回去。
+
+已重接完并通过类型检查的文件（举例）：`PageHeader`、`onboarding_link`、`NotificationsBell`、`ProjectsPage`、`AccessGroupsPage`、`TeamAdminEditableFieldsSettings`、`playground/page`、`budget_panel`、`CostOptimizationView`、`user_agent_activity`、`MCPAppsPanel`、`activity_metrics`、`LiteAdmin`、`CustomCodeModal`（含 `custom_code_catalog.ts` 的模板名/模式/原语描述改键）、`EntityUsage`（含 `entityUsageSummary.ts`）、`SpendByProvider`、`KeyActivityPanel`、`UsagePageView`、`ModelInsightsView`、`key_edit_view`、`Teams`、`VirtualKeysTable`、`general_settings`、`guardrail_info_helpers`、`provider_specific_fields`、`shared/timeline/Timeline`、两个测试文件。
+
+### 当前状态与欠账
+
+- 生产类型检查（`npm run typecheck`，排除测试文件）**330 条错误，分布在 94 个文件**，全部是上面第二类半成品文件还没重接完
+- 测试文件类型错误 1123 条（合并前基线 878），大头是 vitest 全局类型缺失的 TS2304/TS2582，与上游同源
+- 目录：死键 0（合并后一次性清了 735 个无人引用的键）、中英 parity 与缺键守卫 17 例全绿
+- `npm run build` 目前**不绿**，卡在上面的生产类型检查
+
+### 下一步
+
+1. 按错误数从多到少把剩下 94 个文件逐个重接（每个文件的做法固定：取上游那份 + 按 diff 里的 `t(...)` 贴回汉化 + 补目录键）
+2. 测试文件那 1123 条：先分清"上游带来的 vitest 全局类型债"（与上游同源，可不修）与"汉化接线变了断言"（要翻面）
+3. 收口：死键基线复核、lint 预算棘轮、`npm run build` 转绿、渲染扫描重跑

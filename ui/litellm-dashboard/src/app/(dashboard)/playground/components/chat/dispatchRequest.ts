@@ -16,6 +16,8 @@ import { makeOpenAIEmbeddingsRequest } from "../../llm_calls/embeddings_api";
 import { makeOpenAIImageEditsRequest } from "../../llm_calls/image_edits";
 import { makeOpenAIImageGenerationRequest } from "../../llm_calls/image_generation";
 import { makeInteractionsRequest } from "../../llm_calls/interactions_api";
+import type { PlaygroundTranslator } from "@/lib/i18n/translators";
+
 import type { PlaygroundSettings } from "./playgroundSettings";
 
 type ApiMessage = { role: string; content: string | any[] };
@@ -23,6 +25,7 @@ type ApiMessage = { role: string; content: string | any[] };
 export type DirectToolCall = Readonly<{ serverId: string; tool: string; arguments: Record<string, unknown> }>;
 
 export type DispatchContext = Readonly<{
+  t: PlaygroundTranslator;
   settings: PlaygroundSettings;
   apiKey: string;
   text: string;
@@ -75,7 +78,7 @@ const toolResultText = (result: { content?: { type: string; text?: string }[] } 
 };
 
 export async function dispatchRequest(context: DispatchContext): Promise<void> {
-  const { settings, apiKey, text, userMessage, history, traceId, signal, chat, onHeaders } = context;
+  const { t, settings, apiKey, text, userMessage, history, traceId, signal, chat, onHeaders } = context;
   const model = settings.model ?? "";
   const tags = [...settings.tags];
   const baseUrl = settings.proxyBaseUrl || undefined;
@@ -129,6 +132,7 @@ export async function dispatchRequest(context: DispatchContext): Promise<void> {
     case EndpointType.RESPONSES: {
       const continuing = chat.useApiSessionManagement && chat.responsesSessionId;
       return makeOpenAIResponsesRequest(
+        t,
         (continuing ? [userMessage] : [...textHistory(history), userMessage]) as MessageType[],
         (role, delta, servedModel) => chat.updateTextUI(role, delta, servedModel),
         model,
@@ -160,6 +164,7 @@ export async function dispatchRequest(context: DispatchContext): Promise<void> {
     }
     case EndpointType.ANTHROPIC_MESSAGES:
       return makeAnthropicMessagesRequest(
+        t,
         [...textHistory(history), userMessage] as MessageType[],
         (role, delta, servedModel) => chat.updateTextUI(role, delta, servedModel),
         model,
@@ -184,6 +189,7 @@ export async function dispatchRequest(context: DispatchContext): Promise<void> {
       );
     case EndpointType.IMAGE:
       return makeOpenAIImageGenerationRequest(
+        t,
         text,
         (imageUrl, servedModel) => chat.updateImageUI(imageUrl, servedModel),
         model,
@@ -196,6 +202,7 @@ export async function dispatchRequest(context: DispatchContext): Promise<void> {
       );
     case EndpointType.IMAGE_EDITS:
       return makeOpenAIImageEditsRequest(
+        t,
         context.files.length === 1 ? context.files[0] : [...context.files],
         text,
         (imageUrl, servedModel) => chat.updateImageUI(imageUrl, servedModel),
@@ -209,6 +216,7 @@ export async function dispatchRequest(context: DispatchContext): Promise<void> {
       );
     case EndpointType.SPEECH:
       return makeOpenAIAudioSpeechRequest(
+        t,
         text,
         settings.voice,
         (audioUrl, servedModel) => chat.updateAudioUI(audioUrl, servedModel),
@@ -224,6 +232,7 @@ export async function dispatchRequest(context: DispatchContext): Promise<void> {
       );
     case EndpointType.TRANSCRIPTION:
       return makeOpenAIAudioTranscriptionRequest(
+        t,
         context.files[0],
         (transcription, servedModel) => chat.updateTextUI("assistant", transcription, servedModel),
         model,
@@ -240,6 +249,7 @@ export async function dispatchRequest(context: DispatchContext): Promise<void> {
       );
     case EndpointType.EMBEDDINGS:
       return makeOpenAIEmbeddingsRequest(
+        t,
         text,
         (embeddings, servedModel) => chat.updateEmbeddingsUI(embeddings, servedModel),
         model,
@@ -251,6 +261,7 @@ export async function dispatchRequest(context: DispatchContext): Promise<void> {
       );
     case EndpointType.INTERACTIONS:
       return makeInteractionsRequest(
+        t,
         text,
         (reply, servedModel) => chat.updateTextUI("assistant", reply, servedModel),
         model,

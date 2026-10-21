@@ -1,4 +1,5 @@
 import airiaLogo from "../../../../../public/assets/logos/airia.svg";
+import type { CommonTranslator } from "@/lib/i18n/translators";
 import aimSecurityLogo from "../../../../../public/assets/logos/aim_security.jpeg";
 import aktoLogo from "../../../../../public/assets/logos/akto.svg";
 import aliceLogo from "../../../../../public/assets/logos/alice.svg";
@@ -30,7 +31,6 @@ import straikerLogo from "../../../../../public/assets/logos/straiker.svg";
 import wingbackLogo from "../../../../../public/assets/logos/wingback.png";
 import xecguardLogo from "../../../../../public/assets/logos/xecguard.svg";
 import zscalerLogo from "../../../../../public/assets/logos/zscaler.svg";
-import type { CommonTranslator } from "@/lib/i18n/translators";
 
 // Legacy enum - keeping for backward compatibility
 export enum GuardrailProviders {
@@ -123,6 +123,103 @@ export const toModeArray = (raw: unknown): string[] => {
   if (Array.isArray(raw)) return raw.filter((m): m is string => typeof m === "string");
   if (typeof raw === "string") return [raw];
   return [];
+};
+
+export type LoggingOnlyScope = "input" | "output";
+export type LoggingOnlyScopeChoice = "default" | LoggingOnlyScope;
+export type LoggingOnlyScopeOption = { label: string; value: LoggingOnlyScopeChoice };
+
+export const normalizeLoggingOnlyScopeChoice = (
+  choice: LoggingOnlyScopeChoice,
+  directionalScopeSupported: boolean,
+): LoggingOnlyScopeChoice => (directionalScopeSupported || choice === "default" ? choice : "default");
+
+const LOGGING_ONLY_SCOPE_OPTIONS: LoggingOnlyScopeOption[] = [
+  { label: "Default (request and response)", value: "default" },
+  { label: "Input only (request)", value: "input" },
+  { label: "Output only (response)", value: "output" },
+];
+
+export const loggingOnlyScopeToChoice = (v: string | null | undefined): LoggingOnlyScopeChoice =>
+  v === "input" || v === "output" ? v : "default";
+
+export const choiceToLoggingOnlyScope = (choice: LoggingOnlyScopeChoice | undefined): LoggingOnlyScope | null =>
+  choice === "input" || choice === "output" ? choice : null;
+
+export const loggingOnlyContinueFromParams = (
+  litellmParams:
+    | {
+        logging_only_scope?: string | null;
+        logging_only_continue_on_input_failure?: boolean | null;
+      }
+    | null
+    | undefined,
+): boolean =>
+  litellmParams?.logging_only_continue_on_input_failure === true &&
+  (litellmParams?.logging_only_scope === null || litellmParams?.logging_only_scope === undefined);
+
+export const effectiveLoggingOnlyContinue = (
+  choice: LoggingOnlyScopeChoice | undefined,
+  toggle: boolean | undefined,
+): boolean => choice === "default" && toggle === true;
+
+export const getLoggingOnlyScopeUpdate = (
+  litellmParams:
+    | {
+        logging_only_scope?: string | null;
+        logging_only_continue_on_input_failure?: boolean | null;
+      }
+    | null
+    | undefined,
+  choice: LoggingOnlyScopeChoice | undefined,
+  continueToggle: boolean | undefined,
+): { logging_only_scope?: LoggingOnlyScope | null; logging_only_continue_on_input_failure?: boolean } => {
+  if (
+    choice === undefined ||
+    (choice === loggingOnlyScopeToChoice(litellmParams?.logging_only_scope) &&
+      effectiveLoggingOnlyContinue(choice, continueToggle) === loggingOnlyContinueFromParams(litellmParams))
+  )
+    return {};
+  return {
+    logging_only_scope: choiceToLoggingOnlyScope(choice),
+    logging_only_continue_on_input_failure: effectiveLoggingOnlyContinue(choice, continueToggle),
+  };
+};
+
+export const formatLoggingOnlyScope = (v: string | null | undefined): string => {
+  if (v === "input") return "Input only (request)";
+  if (v === "output") return "Output only (response)";
+  return "Default (request and response)";
+};
+
+export const modeIncludesLoggingOnly = (raw: unknown): boolean => {
+  if (toModeArray(raw).includes("logging_only")) return true;
+  if (raw === null || typeof raw !== "object") return false;
+
+  const { tags, default: fallback } = raw as { tags?: Record<string, unknown>; default?: unknown };
+  const taggedModes =
+    tags && typeof tags === "object"
+      ? Object.values(tags).some((mode) => toModeArray(mode).includes("logging_only"))
+      : false;
+  return toModeArray(fallback).includes("logging_only") || taggedModes;
+};
+
+export const getLoggingOnlyScopeOptions = (directionalScopeSupported: boolean): LoggingOnlyScopeOption[] =>
+  directionalScopeSupported
+    ? LOGGING_ONLY_SCOPE_OPTIONS
+    : LOGGING_ONLY_SCOPE_OPTIONS.filter((option) => option.value === "default");
+
+export const supportsDirectionalLoggingOnlyScope = (
+  settings: { providers_without_directional_logging_only_scope?: string[] } | null,
+  selectedProvider: string | null,
+): boolean => {
+  const providerKey = selectedProvider
+    ? (
+        guardrail_provider_map[selectedProvider] ??
+        Object.values(guardrail_provider_map).find((value) => value.toLowerCase() === selectedProvider.toLowerCase())
+      )?.toLowerCase()
+    : null;
+  return !providerKey || !settings?.providers_without_directional_logging_only_scope?.includes(providerKey);
 };
 
 export const formatGuardrailMode = (raw: unknown, commonT: CommonTranslator): string => {

@@ -1,4 +1,5 @@
 import { useRef, useState, type RefObject } from "react";
+import { useTranslations } from "next-intl";
 import { v4 as uuidv4 } from "uuid";
 import { EndpointType } from "@/components/chat_ui/mode_endpoint_mapping";
 import type { MessageType, ReplyTrace } from "@/components/chat_ui/types";
@@ -103,6 +104,7 @@ type PreparedRequest = Readonly<{
 }>;
 
 export function usePlaygroundSend(deps: SendDeps) {
+  const t = useTranslations("playground");
   const [text, setText] = useState("");
   const [draft, setDraft] = useState<Draft>({ kind: null, files: [] });
   const [isLoading, setIsLoading] = useState(false);
@@ -220,6 +222,7 @@ export function usePlaygroundSend(deps: SendDeps) {
 
     try {
       const context: DispatchContext = {
+        t,
         settings,
         apiKey: deps.apiKey,
         text,

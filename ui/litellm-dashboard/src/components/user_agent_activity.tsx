@@ -25,8 +25,8 @@ type ActivityView = "active-users" | "per-user";
 type ActivePeriod = "dau" | "wau" | "mau";
 
 const VIEW_OPTIONS = [
-  { value: "active-users", labelKey: "userAgentActivity.viewActiveUsers" },
-  { value: "per-user", labelKey: "userAgentActivity.viewPerUser" },
+  { value: "active-users", labelKey: "viewActiveUsers" },
+  { value: "per-user", labelKey: "viewPerUser" },
 ] as const satisfies readonly { value: ActivityView; labelKey: string }[];
 
 const PERIOD_OPTIONS = [

@@ -1,8 +1,5 @@
-"use client";
-
+import { STACKED_USAGE_PALETTE } from "@/components/shared/charts";
 import { useTranslations } from "next-intl";
-
-import { DonutChart } from "@/components/shared/charts";
 import { DataTable } from "@/components/shared/DataTable";
 import { MoneyCell } from "@/components/shared/table_cells";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
@@ -13,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import React, { useId, useState } from "react";
 import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
 import { ChartLoader } from "@/components/shared/chart_loader";
+import { Panel } from "../overview/Primitives";
 import type { UsageProviderTranslator } from "@/lib/i18n/translators";
 
 type ProviderSpendData = {
@@ -29,6 +27,8 @@ interface SpendByProviderProps {
   isDateChanging: boolean;
   providerSpend: ProviderSpendData[];
 }
+
+const QUIET_HEADER = { headerClassName: "font-normal" };
 
 const buildProviderColumns = (t: UsageProviderTranslator): ColumnDef<ProviderSpendData>[] => [
   {
@@ -78,6 +78,8 @@ const buildProviderColumns = (t: UsageProviderTranslator): ColumnDef<ProviderSpe
  * usage views.
  */
 export function ProviderSpendBreakdown({ rows }: { rows: readonly ProviderSpendData[] }) {
+  const t = useTranslations("usage.provider");
+  const columns = buildProviderColumns(t);
   const sorted = [...rows].sort((a, b) => b.spend - a.spend);
   const total = sorted.reduce((sum, row) => sum + row.spend, 0);
   const shareOf = (spend: number) => (total > 0 ? (spend / total) * 100 : 0);
@@ -88,7 +90,7 @@ export function ProviderSpendBreakdown({ rows }: { rows: readonly ProviderSpendD
       {visible.length > 0 && (
         <div className="grid gap-2.5">
           <div className="flex items-baseline justify-between gap-3">
-            <span className="text-xs text-muted-foreground">Total provider spend</span>
+            <span className="text-xs text-muted-foreground">{t("totalSpend")}</span>
             <span data-testid="provider-spend-total" className="text-sm font-semibold tabular-nums">
               ${formatNumberWithCommas(total, 2)}
             </span>
@@ -119,7 +121,7 @@ export function ProviderSpendBreakdown({ rows }: { rows: readonly ProviderSpendD
         columns={columns}
         data={sorted}
         getRowId={(row) => row.provider}
-        noDataMessage="No provider usage data"
+        noDataMessage={t("noDataMessage")}
         size="compact"
       />
     </div>
@@ -178,53 +180,32 @@ const SpendByProvider: React.FC<SpendByProviderProps> = ({ loading, isDateChangi
   });
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardAction className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-foreground">{t("showZeroSpend")}</label>
-            <Switch checked={includeZeroSpend} onCheckedChange={setIncludeZeroSpend} />
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              <label className="text-sm text-foreground">{t("showUnknown")}</label>
-              <Tooltip>
-                <TooltipTrigger render={<Info className="size-4 text-muted-foreground hover:text-foreground" />} />
-                <TooltipContent>{t("unknownHint")}</TooltipContent>
-              </Tooltip>
-            </div>
-            <Switch checked={includeUnknown} onCheckedChange={setIncludeUnknown} />
-          </div>
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        {loading ? (
-          <ChartLoader isDateChanging={isDateChanging} />
-        ) : (
-          <div className="grid grid-cols-2">
-            <DonutChart
-              className="mt-4 h-40"
-              data={filteredProviderSpend}
-              index="provider"
-              category="spend"
-              valueFormatter={(value) => `$${formatNumberWithCommas(value, 2)}`}
-              colors={["cyan"]}
-              showLabel
-              startAngle={90}
-              endAngle={-270}
-            />
-            <DataTable
-              columns={columns}
-              data={filteredProviderSpend}
-              getRowId={(row) => row.provider}
-              noDataMessage={t("noDataMessage")}
-              size="compact"
-            />
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <Panel
+      icon={Server}
+      title={t("title")}
+      className="h-full"
+      action={
+        <div className="flex flex-wrap items-center gap-3">
+          <ToggleField
+            label={t("showZeroSpend")}
+            checked={includeZeroSpend}
+            onCheckedChange={setIncludeZeroSpend}
+          />
+          <ToggleField
+            label={t("showUnknown")}
+            checked={includeUnknown}
+            onCheckedChange={setIncludeUnknown}
+            hint={t("unknownHint")}
+          />
+        </div>
+      }
+    >
+      {loading ? (
+        <ChartLoader isDateChanging={isDateChanging} />
+      ) : (
+        <ProviderSpendBreakdown rows={filteredProviderSpend} />
+      )}
+    </Panel>
   );
 };
 
