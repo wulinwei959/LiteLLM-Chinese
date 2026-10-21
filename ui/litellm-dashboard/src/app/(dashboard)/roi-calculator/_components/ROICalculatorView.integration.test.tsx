@@ -275,7 +275,10 @@ describe("ROICalculatorView", () => {
     expect(await screen.findByRole("progressbar", { name: "同步进度" })).toBeInTheDocument();
     expect(await screen.findByText("每估算工程小时的花费", {}, { timeout: 5000 })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "连接 GitHub 以开始" })).not.toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("上次同步 Sep 30, 2026, 12:00 PM UTC");
+    // The sync time follows the UI locale; the suite renders with zh-CN pinned.
+    expect(screen.getByRole("status")).toHaveTextContent("上次同步");
+    expect(screen.getByRole("status")).toHaveTextContent("2026年9月30日");
+    expect(screen.getByRole("status")).toHaveTextContent("12:00");
     expect(screen.getByRole("status")).toHaveTextContent("已复用 57 项估算中的 57 项");
   });
 

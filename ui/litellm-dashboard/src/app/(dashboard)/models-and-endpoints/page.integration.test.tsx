@@ -224,7 +224,7 @@ describe("ModelsAndEndpointsPage ?team drill-in", () => {
     const user = userEvent.setup({ delay: null });
     renderWithProviders(<ModelsAndEndpointsPage />, { searchParams: { team: "team-a1b2" } });
 
-    await user.click(await screen.findByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
     await screen.findByLabelText(/团队名称/);
 
@@ -237,7 +237,7 @@ describe("ModelsAndEndpointsPage ?team drill-in", () => {
 
     await screen.findByText("Test Team");
 
-    expect(screen.queryByRole("button", { name: /edit settings/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /编辑设置/i })).not.toBeInTheDocument();
     expect(screen.queryByText("Disable all global guardrails")).not.toBeInTheDocument();
   });
 });
