@@ -241,10 +241,7 @@ function LoginPageContent() {
                   <AlertDescription>
                     <p className="text-sm">
                       {t.rich("defaultCredentialsDesc", {
-                        username: (chunks) => <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">{chunks}</code>,
-                        masterKey: (chunks) => (
-                          <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">{chunks}</code>
-                        ),
+                        code: (chunks) => <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">{chunks}</code>,
                       })}
                     </p>
                     <p className="mt-2 text-sm">

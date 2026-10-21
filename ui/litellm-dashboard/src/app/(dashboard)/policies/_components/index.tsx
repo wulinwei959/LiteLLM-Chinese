@@ -21,6 +21,14 @@ import GuardrailSelectionModal from "./guardrail_selection_modal";
 import TemplateParameterModal from "./template_parameter_modal";
 import AiSuggestionModal from "./ai_suggestion_modal";
 import { useDeletePolicyAttachment } from "@/hooks/policies/useDeletePolicyAttachment";
+
+const INLINE_CODE_CLASS = "rounded-sm bg-muted px-1 py-0.5 font-mono text-xs";
+
+/** The attachment-scope sentences name a scope and quote a literal; both need a renderer. */
+const ATTACHMENT_SCOPE_RICH = {
+  strong: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
+  code: (chunks: React.ReactNode) => <code className={INLINE_CODE_CLASS}>{chunks}</code>,
+};
 import {
   getPoliciesList,
   deletePolicyCall,
@@ -555,11 +563,11 @@ const PoliciesPanel: React.FC<PoliciesPanelProps> = ({ accessToken, userRole }) 
             <p className="mb-3">{t("attach.aboutDesc")}</p>
             <p className="mb-2 font-semibold">{t("attach.scopesTitle")}</p>
             <ul className="mb-3 ml-2 list-inside list-disc space-y-1">
-              <li>{t.rich("attach.scopeGlobal")}</li>
-              <li>{t.rich("attach.scopeTeams")}</li>
-              <li>{t.rich("attach.scopeKeys")}</li>
-              <li>{t.rich("attach.scopeModels")}</li>
-              <li>{t.rich("attach.scopeTags")}</li>
+              <li>{t.rich("attach.scopeGlobal", ATTACHMENT_SCOPE_RICH)}</li>
+              <li>{t.rich("attach.scopeTeams", ATTACHMENT_SCOPE_RICH)}</li>
+              <li>{t.rich("attach.scopeKeys", ATTACHMENT_SCOPE_RICH)}</li>
+              <li>{t.rich("attach.scopeModels", ATTACHMENT_SCOPE_RICH)}</li>
+              <li>{t.rich("attach.scopeTags", ATTACHMENT_SCOPE_RICH)}</li>
             </ul>
             <a
               href="https://docs.litellm.ai/docs/proxy/guardrails/guardrail_policies#attachments"

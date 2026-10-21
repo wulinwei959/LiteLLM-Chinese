@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { renderWithProviders } from "../../../tests/test-utils";
 import LoginPage from "./LoginPage";
 
@@ -81,6 +81,30 @@ describe("LoginPage", () => {
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "登录" })).toBeInTheDocument();
     });
+  });
+
+  it("should render the default-credentials hint with the code-styled values", async () => {
+    // The hint is a rich-text message: its <code> tag needs a handler at the
+    // call site, and a mismatch makes t.rich() throw instead of rendering.
+    (useUIConfig as ReturnType<typeof vi.fn>).mockReturnValue({
+      data: {
+        auto_redirect_to_sso: false,
+        server_root_path: "/",
+        proxy_base_url: null,
+        sso_configured: false,
+        hide_default_credentials_hint: false,
+      },
+      isLoading: false,
+    });
+    (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue(null);
+
+    renderWithProviders(<LoginPage />);
+
+    const hint = await screen.findByText(/默认情况下，用户名为/, undefined, { timeout: 2_000 });
+    expect(hint).toHaveTextContent("admin");
+    expect(hint).toHaveTextContent("MASTER_KEY");
+    expect(within(hint).getByText("admin").tagName).toBe("CODE");
+    expect(within(hint).getByText("MASTER_KEY").tagName).toBe("CODE");
   });
 
   it("should call router.replace to dashboard when jwt is valid", async () => {
