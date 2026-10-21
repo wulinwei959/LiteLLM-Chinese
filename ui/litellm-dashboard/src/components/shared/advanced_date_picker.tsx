@@ -1,9 +1,13 @@
 import { Calendar, Clock } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cva.config";
+import { formatDate, formatTime, useUiFormat } from "@/lib/i18n/format";
+
+type AdvancedDatePickerTranslator = ReturnType<typeof useTranslations<"advancedDatePicker">>;
+type AdvancedDatePickerTranslatorKey = Parameters<AdvancedDatePickerTranslator>[0];
 import type { DateRangePickerValue } from "./date_picker_types";
 import moment from "moment";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface AdvancedDatePickerProps {
@@ -19,13 +23,26 @@ interface AdvancedDatePickerProps {
 export interface RelativeTimeOption {
   label: string;
   shortLabel: string;
+  labelKey: AdvancedDatePickerTranslatorKey;
+  badgeKey: AdvancedDatePickerTranslatorKey;
   getValue: () => { from: Date; to: Date };
+}
+
+export function matchRelativeTimeOption(value: DateRangePickerValue): RelativeTimeOption | undefined {
+  const { from, to } = value;
+  if (!from || !to) return undefined;
+  return relativeTimeOptions.find((option) => {
+    const optionRange = option.getValue();
+    return moment(from).isSame(optionRange.from, "day") && moment(to).isSame(optionRange.to, "day");
+  });
 }
 
 export const relativeTimeOptions: readonly RelativeTimeOption[] = [
   {
     label: "Today",
     shortLabel: "today",
+    labelKey: "presetToday",
+    badgeKey: "badgeToday",
     getValue: () => ({
       from: moment().startOf("day").toDate(),
       to: moment().endOf("day").toDate(),
@@ -34,6 +51,8 @@ export const relativeTimeOptions: readonly RelativeTimeOption[] = [
   {
     label: "Last 7 days",
     shortLabel: "7d",
+    labelKey: "presetLast7",
+    badgeKey: "badge7d",
     getValue: () => ({
       from: moment().subtract(7, "days").startOf("day").toDate(),
       to: moment().endOf("day").toDate(),
@@ -42,6 +61,8 @@ export const relativeTimeOptions: readonly RelativeTimeOption[] = [
   {
     label: "Last 30 days",
     shortLabel: "30d",
+    labelKey: "presetLast30",
+    badgeKey: "badge30d",
     getValue: () => ({
       from: moment().subtract(30, "days").startOf("day").toDate(),
       to: moment().endOf("day").toDate(),
@@ -50,6 +71,8 @@ export const relativeTimeOptions: readonly RelativeTimeOption[] = [
   {
     label: "Month to date",
     shortLabel: "MTD",
+    labelKey: "presetMonthToDate",
+    badgeKey: "badgeMtd",
     getValue: () => ({
       from: moment().startOf("month").toDate(),
       to: moment().endOf("day").toDate(),
@@ -58,22 +81,14 @@ export const relativeTimeOptions: readonly RelativeTimeOption[] = [
   {
     label: "Year to date",
     shortLabel: "YTD",
+    labelKey: "presetYearToDate",
+    badgeKey: "badgeYtd",
     getValue: () => ({
       from: moment().startOf("year").toDate(),
       to: moment().endOf("day").toDate(),
     }),
   },
 ];
-
-export function matchRelativeTimeOption(value: DateRangePickerValue): RelativeTimeOption | undefined {
-  const t = useTranslations("advancedDatePicker");
-  const { from, to } = value;
-  if (!from || !to) return undefined;
-  return relativeTimeOptions.find((option) => {
-    const optionRange = option.getValue();
-    return moment(from).isSame(optionRange.from, "day") && moment(to).isSame(optionRange.to, "day");
-  });
-}
 
 /**
  * Advanced Date Range Picker with dropdown, relative times, and custom inputs
@@ -120,11 +135,11 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
     const end = moment(endDate, "YYYY-MM-DD");
 
     if (!start.isValid() || !end.isValid()) {
-      return { isValid: false, error: t("invalidDateFormat") };
+      return { isValid: false, error: "Invalid date format" };
     }
 
     if (end.isBefore(start)) {
-      return { isValid: false, error: t("endBeforeStart") };
+      return { isValid: false, error: "End date cannot be before start date" };
     }
 
     return { isValid: true, error: "" };
@@ -323,14 +338,14 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
               {/* Left side - Relative time options */}
               <div className="w-1/2 border-r border-border">
                 <div className="p-3 border-b border-border">
-                  <span className="text-sm font-semibold text-foreground">{t("relativeTime")}</span>
+                  <span className="text-sm font-semibold text-foreground">Relative time</span>
                 </div>
                 <div className="h-[350px] overflow-y-auto">
                   {relativeTimeOptions.map((option) => {
                     const isSelected = selectedOption === option.shortLabel;
                     return (
                       <button
-                        key={option.label}
+                        key={option.shortLabel}
                         type="button"
                         data-slot="advanced-date-picker-preset"
                         aria-pressed={isSelected}
@@ -340,14 +355,14 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                         onClick={() => handleRelativeTimeSelect(option)}
                       >
                         <span className={`text-sm ${isSelected ? "text-info font-medium" : "text-foreground"}`}>
-                          {option.label}
+                          {t(option.labelKey)}
                         </span>
                         <span
                           className={`text-xs px-2 py-1 rounded capitalize ${
                             isSelected ? "text-info bg-info/15" : "text-muted-foreground bg-muted"
                           }`}
                         >
-                          {t(option.badgeKey)}
+                          {option.shortLabel}
                         </span>
                       </button>
                     );
@@ -360,14 +375,14 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                 <div className="p-3.5 border-b border-border">
                   <div className="flex items-center gap-2">
                     <Calendar className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-semibold text-foreground">{t("startAndEndDates")}</span>
+                    <span className="text-sm font-semibold text-foreground">Start and end dates</span>
                   </div>
                 </div>
 
                 <div className="p-6 space-y-6 pb-20">
                   {/* Start date */}
                   <div>
-                    <label className="text-sm text-foreground mb-1 block">{t("startDate")}</label>
+                    <label className="text-sm text-foreground mb-1 block">Start date</label>
                     <input
                       type="date"
                       value={startDate}
@@ -385,7 +400,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
 
                   {/* End date */}
                   <div>
-                    <label className="text-sm text-foreground mb-1 block">{t("endDate")}</label>
+                    <label className="text-sm text-foreground mb-1 block">End date</label>
                     <input
                       type="date"
                       value={endDate}
@@ -422,12 +437,12 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                   {tempValue.from && tempValue.to && validation.isValid && (
                     <div className="bg-info/10 p-3 rounded-md space-y-1">
                       <div className="text-xs text-info">
-                        <span className="font-medium">{t("fromLabel")}</span> {formatDate(tempValue.from, DAY_FORMAT)}{" "}
-                        {t("timeConnector")} {formatDate(tempValue.from, CLOCK_FORMAT)}
+                        <span className="font-medium">From:</span>{" "}
+                        {moment(tempValue.from).format("MMM D, YYYY [at] HH:mm:ss")}
                       </div>
                       <div className="text-xs text-info">
-                        <span className="font-medium">{t("toLabel")}</span> {formatDate(tempValue.to, DAY_FORMAT)}{" "}
-                        {t("timeConnector")} {formatDate(tempValue.to, CLOCK_FORMAT)}
+                        <span className="font-medium">To:</span>{" "}
+                        {moment(tempValue.to).format("MMM D, YYYY [at] HH:mm:ss")}
                       </div>
                     </div>
                   )}

@@ -134,7 +134,6 @@ export const PRIMITIVES = {
   },
 } as const;
 
-
 export const MODE_OPTIONS = [
   { value: "pre_call", labelKey: "custom.modePre" },
   { value: "post_call", labelKey: "custom.modePost" },
@@ -143,12 +142,16 @@ export const MODE_OPTIONS = [
   { value: "pre_mcp_call", labelKey: "custom.modePreMcp" },
   { value: "post_mcp_call", labelKey: "custom.modePostMcp" },
   { value: "during_mcp_call", labelKey: "custom.modeDuringMcp" },
-];
+] as const;
 
-export const TEMPLATE_ITEMS = Object.entries(CODE_TEMPLATES).map(([key, template]) => ({
-  value: key,
-  labelKey: template.nameKey,
-}));
+export const TEMPLATE_ITEMS = [
+  { value: "empty", labelKey: "custom.tplEmpty" },
+  { value: "blockSSN", labelKey: "custom.tplSSN" },
+  { value: "redactEmail", labelKey: "custom.tplEmail" },
+  { value: "blockSQL", labelKey: "custom.tplSQL" },
+  { value: "validateJSON", labelKey: "custom.tplJSON" },
+  { value: "externalAPI", labelKey: "custom.tplAPI" },
+] as const;
 
 export type ModeOption = (typeof MODE_OPTIONS)[number];
 

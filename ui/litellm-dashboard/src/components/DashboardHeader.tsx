@@ -32,9 +32,20 @@ import { CommandPaletteTrigger } from "@/components/CommandPalette/CommandPalett
 
 // Top bar for the dashboard shell. Sits only over the content column (the brand
 // lives in the sidebar header); mirrors the design's breadcrumb-left / tools-right layout.
-export function DashboardHeader() {
-  const navT = useTranslations('nav');
+export function DashboardHeader({
+  accessToken,
+  navigationTrigger,
+  deploymentHealth,
+}: {
+  accessToken: string | null;
+  navigationTrigger?: ReactNode;
+  deploymentHealth?: ReactNode;
+}) {
+  const navT = useTranslations("nav");
   const { title } = getBreadcrumb(usePathname(), navT);
+  const isDesktop = useMediaQuery("(min-width: 768px)", { initializeWithValue: false });
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
+  if (isDesktop && mobileToolsOpen) setMobileToolsOpen(false);
   const { isControlPlane, selectedWorker } = useWorker();
   const showWorkerSwitch = isControlPlane && selectedWorker !== null;
   const hideCommunityLinks = useDisableShowPrompts();

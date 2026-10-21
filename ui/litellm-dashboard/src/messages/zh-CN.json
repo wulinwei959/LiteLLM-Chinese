@@ -250,7 +250,8 @@
     "createdSuccessfully": "凭据添加成功",
     "addCredential": "添加凭据",
     "resourceInformationTitle": "凭据信息",
-    "credentialName": "凭据名称"
+    "credentialName": "凭据名称",
+    "noDescription": "无描述"
   },
   "nav": {
     "expandSidebar": "展开侧边栏",
@@ -5673,7 +5674,6 @@
       "imagesCoverageChip": "图片 {guarded}/{total}",
       "sectionAutomatedReasoning": "自动推理检出项",
       "sectionRawBedrockResponse": "原始 Bedrock 护栏响应",
-      "notAvailable": "无",
       "notAvailable": "无"
     }
   },
@@ -7200,7 +7200,6 @@
       "save": "保存",
       "cancel": "取消"
     },
-    "unnamedPrompt": "未命名提示词",
     "unnamedPrompt": "未命名提示词"
   },
   "costOptimization": {
@@ -7927,8 +7926,6 @@
       "csvParseFailed": "CSV 文件解析失败",
       "customPromptsDesc": "本次会话添加的自定义提示词。",
       "csvPromptsDesc": "从 CSV 上传的提示词，分类为 {category}。",
-      "csvUploadFramework": "CSV 上传",
-      "uploadedPromptsCategory": "上传的提示词",
       "csvUploadFramework": "CSV 上传",
       "uploadedPromptsCategory": "上传的提示词"
     },
@@ -8777,19 +8774,12 @@
     "createAgent": "创建智能体",
     "creating": "正在创建...",
     "logoAltAgent": "智能体",
-
     "protocolVersionTooltip": "LiteLLM 向客户端提供该智能体的 A2A 协议版本。LiteLLM 会把上游智能体的响应转换为这个版本，因此无论原始智能体是什么版本，客户端看到的始终是你在这里选择的版本。",
-
     "protocolVersionHelpText": "LiteLLM 向客户端提供这个版本，并把上游智能体的响应转换为与之匹配的版本，与原始智能体的版本无关。",
-
     "skillIdPlaceholder": "例如：hello_world",
-
     "skillNamePlaceholder": "例如：返回 hello world",
-
     "skillDescPlaceholder": "这个技能的作用",
-
     "skillTagsPlaceholder": "输入标签后按回车",
-
     "skillExamplesPlaceholder": "输入示例后按回车"
   },
   "costTracking": {
@@ -9103,7 +9093,6 @@
         "updateFailed": "更新协调 Redis 设置失败"
       }
     },
-    "notAvailable": "无",
     "notAvailable": "无"
   },
   "searchTools": {
@@ -9181,7 +9170,6 @@
       "loading": "正在加载搜索工具…",
       "noTools": "未找到搜索工具"
     },
-
     "nameRequired": "请输入搜索工具名称",
     "providerRequired": "请选择搜索供应商",
     "deletedToast": "搜索工具已删除",
@@ -9792,12 +9780,7 @@
     "unknownHealth": "未知",
     "responseTime": "响应时间：{value}ms",
     "lastChecked": "最近检查：{value}",
-    "modeChat": "对话",
-    "notAvailable": "无",
-    "free": "免费",
-    "unknownHealth": "未知",
-    "responseTime": "响应时间：{value}ms",
-    "lastChecked": "最近检查：{value}"
+    "notAvailable": "无"
   },
   "secretManager": {
     "shared": {
@@ -10396,19 +10379,12 @@
     "deleteConfirmMessage": "确定要删除这个{kind}吗？",
     "kindAutoRouter": "自动路由器",
     "kindModel": "模型",
-
     "testConnection": "测试连接",
-
     "updateApiKey": "更新 API 密钥",
-
     "reUseCredentials": "复用凭据",
-
     "rawJson": "原始 JSON",
-
     "createdAt": "创建时间",
-
     "editSettings": "编辑设置",
-
     "editOnlyDbHint": "只有 DB 模型可以编辑。必须是管理员或该模型的创建者才能编辑。"
   },
   "liteAdmin": {
@@ -10489,7 +10465,6 @@
     "chatsAria": "LiteAdmin 对话列表",
     "chatLabel": "对话 {id}"
   },
-
   "modelGroupAlias": {
     "saveFailed": "保存模型组别名设置失败",
     "provideBoth": "请同时填写别名名称与目标模型组",
@@ -10716,12 +10691,11 @@
     "description": "应用到该团队的全局与团队专属护栏"
   },
   "routePreview": {
-    "forwardsTo": "转发至",
+    "forwardsTo": "转发到",
     "title": "路由预览",
     "description": "您的请求将如何被路由",
     "basicRouting": "基础路由：",
     "yourEndpoint": "您的端点",
-    "forwardsTo": "转发到",
     "withSubpaths": "带子路径时：",
     "endpointPlusSubpath": "您的端点 + 子路径",
     "appendNote": "{path} 之后的任何路径都会追加到目标 URL",
@@ -10771,15 +10745,16 @@
     "falseLabel": "否"
   },
   "advancedDatePicker": {
-    "relativeTime": "相对时间",
-    "startAndEndDates": "起止日期",
-    "startDate": "开始日期",
-    "endDate": "结束日期",
-    "fromLabel": "起始：",
-    "toLabel": "结束：",
-    "invalidDateFormat": "日期格式无效",
-    "endBeforeStart": "结束日期不能早于开始日期",
-    "timeConnector": "于"
+    "presetToday": "今天",
+    "presetLast7": "最近 7 天",
+    "presetLast30": "最近 30 天",
+    "presetMonthToDate": "本月至今",
+    "presetYearToDate": "本年至今",
+    "badgeToday": "今天",
+    "badge7d": "7 天",
+    "badge30d": "30 天",
+    "badgeMtd": "本月",
+    "badgeYtd": "本年"
   },
   "objectPermissions": {
     "title": "对象权限",
@@ -11426,8 +11401,6 @@
     "updateModelStorageSettingsFailed": "更新模型存储设置失败",
     "updateSpendLogsSettingsFailed": "更新花费日志设置失败",
     "retrieveToolsListFailed": "获取工具列表失败",
-    "unknownError": "发生未知错误",
-    "oauthTokenExchangeFailed": "OAuth 令牌交换失败",
     "unknownError": "发生未知错误",
     "oauthTokenExchangeFailed": "OAuth 令牌交换失败"
   }

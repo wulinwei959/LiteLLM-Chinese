@@ -80,6 +80,7 @@ interface CustomCodeModalProps {
 
 const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onSuccess, accessToken, editData }) => {
   const t = useTranslations("guardrails");
+  const commonT = useTranslations("common");
   const anchor = useComboboxAnchor();
   const isEditMode = !!editData;
   const [guardrailName, setGuardrailName] = useState("");
@@ -424,7 +425,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
   const rawEditMode = editData?.litellm_params?.mode;
   const tagScopedModeLabel =
     rawEditMode !== null && typeof rawEditMode === "object" && !Array.isArray(rawEditMode)
-      ? formatGuardrailMode(rawEditMode) || "-"
+      ? formatGuardrailMode(rawEditMode, commonT) || "-"
       : null;
 
   return (
@@ -463,7 +464,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
                 <ComboboxChips render={<div ref={anchor} />} className="w-full">
                   {selectedModeOptions.map((option) => (
                     <ComboboxChip key={option.value} aria-label={t(option.labelKey)}>
-                      {option.label}
+                      {t(option.labelKey)}
                     </ComboboxChip>
                   ))}
                   <ComboboxChipsInput placeholder={mode.length === 0 ? t("custom.selectModes") : undefined} />
@@ -473,7 +474,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
                   <ComboboxList>
                     {(option: ModeOption) => (
                       <ComboboxItem key={option.value} value={option}>
-                        {option.label}
+                        {t(option.labelKey)}
                       </ComboboxItem>
                     )}
                   </ComboboxList>
@@ -498,21 +499,21 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
             </div>
           )}
           <div className="w-[180px]">
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Template</label>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("custom.templateLabel")}</label>
             <Select
-              items={TEMPLATE_ITEMS}
+              items={TEMPLATE_ITEMS.map((template) => ({ value: template.value, label: t(template.labelKey) }))}
               value={selectedTemplate}
               onValueChange={(value: string | null) => value && handleTemplateChange(value)}
             >
-              <SelectTrigger className="w-full" aria-label="Template">
+              <SelectTrigger className="w-full" aria-label={t("custom.templateLabel")}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>STANDARD</SelectLabel>
+                  <SelectLabel>{t("custom.standardLabel")}</SelectLabel>
                   {TEMPLATE_ITEMS.map((template) => (
                     <SelectItem key={template.value} value={template.value}>
-                      {template.label}
+                      {t(template.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -742,19 +743,19 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
             <p className="mb-3 text-xs text-muted-foreground">{t("custom.primHint")}</p>
 
             <div className="space-y-2">
-              {Object.entries(PRIMITIVES).map(([category, primitives]) => (
+              {Object.entries(PRIMITIVES).map(([category, group]) => (
                 <Collapsible
                   key={category}
-                  defaultOpen={category === "Return Values"}
+                  defaultOpen={category === "returnValues"}
                   className="rounded-lg border border-border"
                 >
                   <CollapsibleTrigger className="group flex w-full items-center justify-between px-3 py-2 text-sm font-medium">
-                    {category}
+                    {t(group.labelKey)}
                     <ChevronRight className="size-4 transition-transform group-data-panel-open:rotate-90" />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="px-3 pb-3">
                     <div className="space-y-2">
-                      {primitives.map((p) => (
+                      {group.items.map((p) => (
                         <button
                           key={p.name}
                           onClick={() => copyPrimitive(p.name)}

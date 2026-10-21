@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 import { Copy, Link2, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
@@ -90,6 +91,7 @@ function ToolsetRowActions({ toolset, isAdmin, onEditClick, onDeleteClick }: Too
 }
 
 interface MCPToolsetTableColumnsDeps {
+  t: McpServersTranslator;
   isAdmin: boolean;
   serverPrefixById: Map<string, string>;
   onEditClick: (toolset: MCPToolset) => void;
@@ -101,6 +103,8 @@ export const getMCPToolsetTableColumns = ({
   serverPrefixById,
   onEditClick,
   onDeleteClick,
+
+  t,
 }: MCPToolsetTableColumnsDeps): ColumnDef<MCPToolset>[] => [
   {
     id: "toolset_id",

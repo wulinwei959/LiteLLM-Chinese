@@ -37,8 +37,8 @@ const PluginTable: React.FC<PluginTableProps> = ({ pluginsList, isLoading, onDel
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
   const columns = useMemo(
-    () => getPluginTableColumns({ isAdmin, onPluginClick, onDeleteClick }),
-    [isAdmin, onPluginClick, onDeleteClick],
+    () => getPluginTableColumns({ isAdmin, onPluginClick, onDeleteClick, t }),
+    [isAdmin, onPluginClick, onDeleteClick, t],
   );
 
   return (

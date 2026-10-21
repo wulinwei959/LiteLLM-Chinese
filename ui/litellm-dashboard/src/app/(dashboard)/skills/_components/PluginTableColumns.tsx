@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { SkillsTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
 
@@ -86,6 +87,7 @@ function PluginRowActions({ plugin, isAdmin, onDeleteClick }: PluginRowActionsPr
 }
 
 interface PluginTableColumnsDeps {
+  t: SkillsTranslator;
   isAdmin: boolean;
   onPluginClick: (pluginId: string) => void;
   onDeleteClick: (pluginName: string, displayName: string) => void;
@@ -95,6 +97,8 @@ export const getPluginTableColumns = ({
   isAdmin,
   onPluginClick,
   onDeleteClick,
+
+  t,
 }: PluginTableColumnsDeps): ColumnDef<Plugin>[] => [
   {
     id: "name",

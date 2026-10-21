@@ -33,6 +33,7 @@ interface MCPNetworkSettingsProps {
  */
 function ipToSlash24(ip: string): string {
   const t = useTranslations("mcpServers");
+  const commonT = useTranslations("common");
   const parts = ip.split(".");
   if (parts.length !== 4) return ip + "/32";
   return `${parts[0]}.${parts[1]}.${parts[2]}.0/24`;
@@ -180,6 +181,7 @@ const parseDisabledCapabilities = (value: unknown): DisableableCapability[] =>
     : [];
 
 const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) => {
+  const commonT = useTranslations("common");
   const t = useTranslations("mcpServers");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -244,11 +246,11 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
   const persistRanges = async (token: string) => {
     if (unchangedSinceLoad(privateRanges, storedRanges)) return;
     if (privateRanges.length > 0) {
-      await updateConfigFieldSetting(token, "mcp_internal_ip_ranges", privateRanges);
+      await updateConfigFieldSetting(commonT, token, "mcp_internal_ip_ranges", privateRanges);
       setStoredRanges(privateRanges);
       return;
     }
-    await deleteConfigFieldSetting(token, "mcp_internal_ip_ranges");
+    await deleteConfigFieldSetting(commonT, token, "mcp_internal_ip_ranges");
     setStoredRanges(null);
   };
 
@@ -256,11 +258,11 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
     const clients = allowedClients.map(({ alias, value }) => ({ alias, value }));
     if (clientsUnchangedSinceLoad(clients, storedClients)) return;
     if (clients.length > 0) {
-      await updateConfigFieldSetting(token, "mcp_allowed_clients", clients);
+      await updateConfigFieldSetting(commonT, token, "mcp_allowed_clients", clients);
       setStoredClients({ kind: "clients", clients });
       return;
     }
-    await deleteConfigFieldSetting(token, "mcp_allowed_clients");
+    await deleteConfigFieldSetting(commonT, token, "mcp_allowed_clients");
     setStoredClients(ABSENT);
   };
 
@@ -268,22 +270,22 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
     const value = clientIdHeader.trim();
     if (headerUnchangedSinceLoad(value, storedClientIdHeader)) return;
     if (value !== "") {
-      await updateConfigFieldSetting(token, "mcp_client_id_header", value);
+      await updateConfigFieldSetting(commonT, token, "mcp_client_id_header", value);
       setStoredClientIdHeader(value);
       return;
     }
-    await deleteConfigFieldSetting(token, "mcp_client_id_header");
+    await deleteConfigFieldSetting(commonT, token, "mcp_client_id_header");
     setStoredClientIdHeader(null);
   };
 
   const persistDisabledCapabilities = async (token: string) => {
     if (unchangedSinceLoad(disabledCapabilities, storedDisabledCapabilities)) return;
     if (disabledCapabilities.length > 0) {
-      await updateConfigFieldSetting(token, "mcp_disabled_capabilities", disabledCapabilities);
+      await updateConfigFieldSetting(commonT, token, "mcp_disabled_capabilities", disabledCapabilities);
       setStoredDisabledCapabilities(disabledCapabilities);
       return;
     }
-    await deleteConfigFieldSetting(token, "mcp_disabled_capabilities");
+    await deleteConfigFieldSetting(commonT, token, "mcp_disabled_capabilities");
     setStoredDisabledCapabilities(null);
   };
 

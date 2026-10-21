@@ -93,7 +93,7 @@ const toKebabCase = (value: string): string =>
     .replace(/^-+|-+$/g, "");
 
 const parseGitHubSource = (url: URL, subPath?: string): SkillSourcePreview | null => {
-  const t = useTranslations("common");
+  const t = useTranslations("skills");
   const parts = pathSegments(url);
   if (parts.length < 2) {
     return null;
@@ -156,7 +156,7 @@ const buildGitSourcePreview = (
   repoName: string,
   subPath?: string,
 ): SkillSourcePreview | null => {
-  const t = useTranslations("common");
+  const t = useTranslations("skills");
   const normalized = normalizeSubPath(subPath ?? "");
   if (normalized !== "") {
     if (!SUBDIR_PATH_REGEX.test(normalized)) {
@@ -164,14 +164,14 @@ const buildGitSourcePreview = (
     }
     return {
       parsed: { source: "git-subdir", url: repoUrl, path: normalized },
-      label: t("sourceLabel.gitSubdir", { brand: repo.kind, repo: repo.url, path: normalized }),
+      label: t("sourceLabel.gitSubdir", { brand: "git", repo: repoUrl, path: normalized }),
       suggestedName: toKebabCase(lastSegment(normalized)),
     };
   }
 
   return {
     parsed: { source: "url", url: repoUrl },
-    label: t("sourceLabel.gitRepo", { brand: repo.kind, url: repo.url }),
+    label: t("sourceLabel.gitRepo", { brand: "git", url: repoUrl }),
     suggestedName: toKebabCase(repoName),
   };
 };
