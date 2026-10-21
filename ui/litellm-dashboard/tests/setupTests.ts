@@ -1,6 +1,12 @@
 import "@testing-library/jest-dom";
-import { cleanup } from "@testing-library/react";
+import { cleanup, configure } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
+
+// The vitest config gives each test 60s, but testing-library's `waitFor` keeps
+// its own 1s retry budget. A control that waits on a debounced query (the
+// auto-router availability check debounces 300ms before it asks the server)
+// then fails the moment the suite runs in parallel, where 1s is not enough.
+configure({ asyncUtilTimeout: 5_000 });
 
 const ensureTestLocalStorage = () => {
   if (typeof window === "undefined" || typeof window.Storage === "undefined") {
