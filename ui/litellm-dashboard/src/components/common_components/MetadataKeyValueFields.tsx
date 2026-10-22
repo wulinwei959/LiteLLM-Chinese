@@ -99,11 +99,14 @@ const MetadataRow = <TFieldValues extends FieldValues>({
   schemaLabel,
   onRemove,
 }: MetadataRowProps<TFieldValues>) => {
+  const t = useTranslations("teams");
   return (
     <div className="mb-2 flex items-start gap-2">
       {schemaLabel === undefined ? (
         <FormField control={control} name={`${name}.${index}.key` as FieldPath<TFieldValues>}>
-          {({ ref, value, ...rest }) => <Input {...rest} ref={ref} value={(value as string) ?? ""} placeholder="Key" />}
+          {({ ref, value, ...rest }) => (
+            <Input {...rest} ref={ref} value={(value as string) ?? ""} placeholder={t("metadata.key")} />
+          )}
         </FormField>
       ) : (
         <Label
@@ -121,7 +124,7 @@ const MetadataRow = <TFieldValues extends FieldValues>({
             id={schemaLabel === undefined ? id : `${rowId}-value`}
             ref={ref}
             value={(value as string) ?? ""}
-            placeholder="Value"
+            placeholder={t("metadata.value")}
           />
         )}
       </FormField>

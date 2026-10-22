@@ -104,6 +104,7 @@ interface TeamAdminSettingsFormProps {
 }
 
 export default function TeamAdminSettingsForm(props: TeamAdminSettingsFormProps) {
+  const t = useTranslations("teams");
   const waitsForMetadataSchema =
     props.metadata?.schemaLoading === true && props.editableFields.has(TEAM_ADMIN_METADATA_FIELD);
   if (waitsForMetadataSchema) {
@@ -125,9 +126,9 @@ function TeamAdminSettingsFormFields({
   onCancel,
   onSave,
 }: TeamAdminSettingsFormProps) {
+  const t = useTranslations("teams");
   const editsMetadata = metadata !== undefined && editableFields.has(TEAM_ADMIN_METADATA_FIELD);
   const [schema] = useState(() => teamAdminSettingsSchemaFor(t, editsMetadata ? metadata.context : undefined));
-  const t = useTranslations("teams");
   const form = useZodForm(schema, { defaultValues: { ...initialValues, metadata: [...(metadata?.pairs ?? [])] } });
   const draft = useWatch({ control: form.control });
   const changesFrom = (values: typeof draft): TeamAdminSettingsChanges => ({
@@ -192,11 +193,11 @@ function TeamAdminSettingsFormFields({
 
       <div className="mt-6 flex items-center justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
-          Cancel
+          {t("infoCancel")}
         </Button>
         <Button type="submit" disabled={isSaving || !hasChanges}>
           {isSaving ? <UiLoadingSpinner className="size-4" /> : <Save className="size-4" />}
-          Save Changes
+          {t("infoSaveChanges")}
         </Button>
       </div>
     </form>

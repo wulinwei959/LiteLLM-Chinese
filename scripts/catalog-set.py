@@ -200,8 +200,25 @@ def get_path(tree: dict[str, Any], path: list[str]) -> Any:
     return node
 
 
+def remove_key(catalog: pathlib.Path, dotted: str) -> None:
+    """Delete a leaf, keeping the file's own style."""
+    text = catalog.read_text(encoding="utf-8")
+    root = Parser(text).parse()
+    tree: dict[str, Any] = root.value
+    path = [part for part in dotted.split(".") if part]
+    holder = get_path(tree, path[:-1])
+    if path[-1] not in holder:
+        print(f"{catalog}: {dotted} 不存在")
+        return
+    del holder[path[-1]]
+    catalog.write_text(write_node(root, tree, text, 0) + "\n", encoding="utf-8")
+
+
 def set_key(catalog: pathlib.Path, dotted: str, value: str) -> None:
     """Write a string value at dotted key path, keeping the file's own style."""
+    if value == "--remove":
+        remove_key(catalog, dotted)
+        return
     text = catalog.read_text(encoding="utf-8")
     root = Parser(text).parse()
     tree: dict[str, Any] = root.value

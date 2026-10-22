@@ -402,8 +402,8 @@ describe("TeamInfoView", () => {
         expect.stringMatching(/\?model_group=gpt-4\.1$/),
       );
 
-      await userEvent.setup({ delay: null }).click(screen.getByRole("tab", { name: "Settings" }));
-      const settings = await screen.findByRole("tabpanel", { name: "Settings" });
+      await userEvent.setup({ delay: null }).click(screen.getByRole("tab", { name: "设置" }));
+      const settings = await screen.findByRole("tabpanel", { name: "设置" });
       expect(within(settings).getByRole("link", { name: "repro-access-group" })).toHaveAttribute(
         "href",
         expect.stringMatching(/\?access_group=repro-access-group$/),
@@ -1103,7 +1103,7 @@ describe("TeamInfoView", () => {
       try {
         renderWithProviders(<TeamInfoView {...defaultProps} />);
 
-        await user.click(await screen.findByRole("tab", { name: "Members" }));
+        await user.click(await screen.findByRole("tab", { name: "成员" }));
         await user.click(await screen.findByRole("button", { name: "Edit Member" }));
         await user.click(await screen.findByRole("button", { name: "Submit" }));
 
@@ -1486,9 +1486,7 @@ describe("TeamInfoView", () => {
 
       await waitFor(() => {
         expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
-          "cost_center",
           "department",
-          "app_name",
         ]);
       });
       expect(screen.getAllByPlaceholderText("值")[0]).toHaveValue("CC-OLD");
@@ -2182,8 +2180,8 @@ describe("TeamInfoView - which team member fields reach the update payload depen
     const user = userEvent.setup({ delay: null });
     await openEditor(user);
 
-    await user.click(screen.getByText("Team Member Settings"));
-    fireEvent.change(await screen.findByLabelText("Default Budget (USD)"), { target: { value: "" } });
+    await user.click(screen.getByText("团队成员设置"));
+    fireEvent.change(await screen.findByLabelText("默认预算（USD）"), { target: { value: "" } });
     const payload = await save(user);
 
     expect(JSON.parse(JSON.stringify(payload))).toMatchObject({
@@ -2197,8 +2195,8 @@ describe("TeamInfoView - which team member fields reach the update payload depen
     const user = userEvent.setup({ delay: null });
     await openEditor(user, { max_budget: null, budget_duration: "30d", tpm_limit: null, rpm_limit: 60 });
 
-    await user.click(screen.getByText("Team Member Settings"));
-    await screen.findByLabelText("Default Budget (USD)");
+    await user.click(screen.getByText("团队成员设置"));
+    await screen.findByLabelText("默认预算（USD）");
     const payload = await save(user);
 
     expect(JSON.parse(JSON.stringify(payload))).toMatchObject({ team_member_budget: null, team_member_rpm_limit: 60 });
@@ -2208,8 +2206,8 @@ describe("TeamInfoView - which team member fields reach the update payload depen
     const user = userEvent.setup({ delay: null });
     await openEditor(user);
 
-    await user.click(screen.getByText("Team Member Settings"));
-    fireEvent.change(await screen.findByLabelText("Default Budget (USD)"), { target: { value: "12.5" } });
+    await user.click(screen.getByText("团队成员设置"));
+    fireEvent.change(await screen.findByLabelText("默认预算（USD）"), { target: { value: "12.5" } });
     const payload = await save(user);
 
     expect(payload.team_member_budget).toBe(12.5);
