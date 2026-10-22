@@ -410,7 +410,7 @@ describe("UserInfoView auto-router usage", () => {
       const params = new URL(request.url).searchParams;
       expect(params.get("user_id")).toBe("user-123");
       expect(params.has("api_key")).toBe(false);
-      expect(screen.getByText(/未记录用户 ID 的历史会话不计入/)).toBeInTheDocument();
+      expect(screen.getByText(/未记录用户 ID 的旧会话不计入/)).toBeInTheDocument();
     },
   );
 
@@ -586,7 +586,7 @@ describe("UserInfoView savings", () => {
     const [startDateInput, endDateInput] = screen.getAllByDisplayValue(/^\d{4}-\d{2}-\d{2}$/);
     fireEvent.change(startDateInput, { target: { value: "2026-09-01" } });
     fireEvent.change(endDateInput, { target: { value: "2026-09-02" } });
-    await user.click(screen.getByRole("button", { name: "Apply" }));
+    await user.click(screen.getByRole("button", { name: "应用" }));
 
     expect(committedTotals.length).toBeGreaterThan(0);
     expect(committedTotals.every((total) => total === null)).toBe(true);

@@ -22,11 +22,6 @@ import { cn } from "@/lib/cva.config";
 import { usageHrefForUser } from "@/app/(dashboard)/usage/_components/usageUrlState";
 import { copyToClipboard } from "@/utils/dataUtils";
 
-const SSO_ID_HINT =
-  "SSO ID is the ID of the user in the SSO provider. If the user is not using SSO, this will be null.";
-
-const SCIM_INACTIVE_HINT = "Deactivated via SCIM (external identity provider). The user's virtual keys are blocked.";
-
 function isScimInactive(user: UserInfo): boolean {
   return (user.metadata as Record<string, unknown> | null | undefined)?.scim_active === false;
 }
@@ -44,7 +39,7 @@ function UserRowActions({ user, canViewUserUsage, onUserClick, onDeleteUser, onR
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open user actions"
+        aria-label={t("openUserActionsAria")}
         data-testid={`user-actions-${user.user_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -72,7 +67,7 @@ function UserRowActions({ user, canViewUserUsage, onUserClick, onDeleteUser, onR
             data-testid="user-action-view-usage"
           >
             <ChartColumn />
-            View usage
+            {t("viewUsage")}
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
@@ -108,8 +103,8 @@ export const getUsersTableColumns = ({
     {
       id: "user_id",
       accessorKey: "user_id",
-      meta: { title: "User ID" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="User ID" variant="header-cycle" />,
+      meta: { title: t("userIdCol") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("userIdCol")} variant="header-cycle" />,
       size: 220,
       enableSorting: true,
       cell: ({ row }) => (
@@ -144,20 +139,20 @@ export const getUsersTableColumns = ({
           return (
             <StatusBadge
               tone="error"
-              label="Inactive"
-              tooltip={SCIM_INACTIVE_HINT}
+              label={t("statusInactive")}
+              tooltip={t("scimInactiveHint")}
               dataTestId={`user-status-${row.original.user_id}`}
             />
           );
         }
-        return <StatusBadge tone="success" label="Active" dataTestId={`user-status-${row.original.user_id}`} />;
+        return <StatusBadge tone="success" label={t("statusActive")} dataTestId={`user-status-${row.original.user_id}`} />;
       },
     },
     {
       id: "user_role",
       accessorKey: "user_role",
-      meta: { title: "Global Proxy Role" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Global Proxy Role" variant="header-cycle" />,
+      meta: { title: t("globalProxyRole") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("globalProxyRole")} variant="header-cycle" />,
       size: 160,
       enableSorting: true,
       cell: ({ row }) => (
@@ -203,9 +198,9 @@ export const getUsersTableColumns = ({
       meta: { title: t("ssoUserID") },
       header: () => (
         <span className="flex items-center gap-1.5">
-          SSO ID
+          {t("ssoUserID")}
           <CellTooltip
-            content={SSO_ID_HINT}
+            content={t("ssoIdHint")}
             trigger={<Info className="size-3.5 shrink-0 text-muted-foreground" aria-label={t("aboutSSOID")} />}
           />
         </span>
@@ -292,7 +287,7 @@ export const getUsersTableColumns = ({
 
   return [
     createSelectionColumn<UserInfo>({
-      rowAriaLabel: (row) => `Select ${row.original.user_email || row.original.user_id}`,
+      rowAriaLabel: (row) => t("selectUser", { name: row.original.user_email || row.original.user_id }),
     }),
     ...baseColumns,
   ];

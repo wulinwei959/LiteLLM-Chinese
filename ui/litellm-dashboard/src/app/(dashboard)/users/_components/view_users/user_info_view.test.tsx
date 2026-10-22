@@ -79,6 +79,27 @@ const mockTranslations: Record<string, string> = {
   userAlias: "User Alias",
   userID: "User ID",
   userInformation: "User Information",
+  userIdCol: "User ID",
+  statusActive: "Active",
+  statusInactive: "Inactive",
+  ssoIdHint: "SSO ID is the ID of the user in the SSO provider.",
+  scimInactiveHint: "Deactivated via SCIM.",
+  selectUser: "Select {name}",
+  openUserActionsAria: "Open user actions",
+  viewUsage: "View usage",
+  globalProxyRoleHint: "This is the role the user has globally on the proxy.",
+  personalModels: "Personal Models",
+  personalModelsHint: "Select which models this user can access outside of team-scope.",
+  selectModels: "Select models",
+  unlimitedBudgetLabel: "Unlimited Budget",
+  tpmLimit: "TPM Limit",
+  rpmLimit: "RPM Limit",
+  limitHint: "Applies across all keys owned by this user.",
+  mcpServersAndGroups: "MCP Servers / Access Groups",
+  mcpServersAndGroupsHint: "Caps which MCP servers, access groups, and tools this user may reach.",
+  selectMcpServersPlaceholder: "Select MCP servers or access groups (optional)",
+  budgetRequired: "Please enter a budget or select Unlimited Budget",
+  rateLimitError: "Enter a non-negative whole number, or leave empty for unlimited",
 };
 
 vi.mock("next-intl", () => {
@@ -235,8 +256,8 @@ describe("UserInfoView", () => {
 
     render(<UserInfoView {...defaultProps} userRole="proxy_admin" initialTab={1} startInEditMode />);
 
-    expect(await screen.findByRole("spinbutton", { name: /tpm limit/i })).toHaveValue(100000);
-    expect(await screen.findByRole("spinbutton", { name: /rpm limit/i })).toHaveValue(50);
+    expect(await screen.findByRole("spinbutton", { name: /TPM Limit/ })).toHaveValue(100000);
+    expect(await screen.findByRole("spinbutton", { name: /RPM Limit/ })).toHaveValue(50);
   });
 
   it("keeps the updated TPM and stored RPM when reopening the edit form", async () => {
@@ -248,7 +269,7 @@ describe("UserInfoView", () => {
 
     render(<UserInfoView {...defaultProps} userRole="proxy_admin" initialTab={1} startInEditMode />);
 
-    fireEvent.change(await screen.findByRole("spinbutton", { name: /tpm limit/i }), {
+    fireEvent.change(await screen.findByRole("spinbutton", { name: /TPM Limit/ }), {
       target: { value: "" },
     });
     await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
@@ -258,8 +279,8 @@ describe("UserInfoView", () => {
 
     await userEvent.click(await screen.findByRole("button", { name: /edit settings/i }));
 
-    expect(await screen.findByRole("spinbutton", { name: /tpm limit/i })).toHaveValue(null);
-    expect(await screen.findByRole("spinbutton", { name: /rpm limit/i })).toHaveValue(50);
+    expect(await screen.findByRole("spinbutton", { name: /TPM Limit/ })).toHaveValue(null);
+    expect(await screen.findByRole("spinbutton", { name: /RPM Limit/ })).toHaveValue(50);
   });
 
   it("should render overview spend and budget with two decimal places", async () => {

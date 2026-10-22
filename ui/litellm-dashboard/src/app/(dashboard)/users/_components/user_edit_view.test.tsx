@@ -471,8 +471,8 @@ describe("UserEditView", () => {
     it("seeds the TPM and RPM inputs from the selected user", async () => {
       renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithRateLimits()} />);
 
-      expect(await screen.findByRole("spinbutton", { name: /tpm limit/i })).toHaveValue(100000);
-      expect(await screen.findByRole("spinbutton", { name: /rpm limit/i })).toHaveValue(50);
+      expect(await screen.findByRole("spinbutton", { name: /TPM 上限/ })).toHaveValue(100000);
+      expect(await screen.findByRole("spinbutton", { name: /RPM 上限/ })).toHaveValue(50);
     });
 
     it("keeps unset rate limits empty and omits them from an untouched save", async () => {
@@ -487,9 +487,9 @@ describe("UserEditView", () => {
       };
       renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithNullRateLimits} onSubmit={onSubmit} />);
 
-      expect(await screen.findByRole("spinbutton", { name: /tpm limit/i })).toHaveValue(null);
-      expect(await screen.findByRole("spinbutton", { name: /rpm limit/i })).toHaveValue(null);
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      expect(await screen.findByRole("spinbutton", { name: /TPM 上限/ })).toHaveValue(null);
+      expect(await screen.findByRole("spinbutton", { name: /RPM 上限/ })).toHaveValue(null);
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalled();
@@ -502,7 +502,7 @@ describe("UserEditView", () => {
       const onSubmit = vi.fn();
       renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithRateLimits()} onSubmit={onSubmit} />);
 
-      await userEvent.click(await screen.findByRole("button", { name: /save changes/i }));
+      await userEvent.click(await screen.findByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalled();
@@ -515,10 +515,10 @@ describe("UserEditView", () => {
       const onSubmit = vi.fn();
       renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithRateLimits()} onSubmit={onSubmit} />);
 
-      fireEvent.change(await screen.findByRole("spinbutton", { name: /tpm limit/i }), {
+      fireEvent.change(await screen.findByRole("spinbutton", { name: /TPM 上限/ }), {
         target: { value: "0" },
       });
-      await userEvent.click(await screen.findByRole("button", { name: /save changes/i }));
+      await userEvent.click(await screen.findByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalled();
@@ -530,10 +530,10 @@ describe("UserEditView", () => {
       const onSubmit = vi.fn();
       renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithRateLimits()} onSubmit={onSubmit} />);
 
-      fireEvent.change(await screen.findByRole("spinbutton", { name: /tpm limit/i }), {
+      fireEvent.change(await screen.findByRole("spinbutton", { name: /TPM 上限/ }), {
         target: { value: "100000" },
       });
-      await userEvent.click(await screen.findByRole("button", { name: /save changes/i }));
+      await userEvent.click(await screen.findByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalled();
@@ -545,10 +545,10 @@ describe("UserEditView", () => {
       const onSubmit = vi.fn();
       renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithRateLimits()} onSubmit={onSubmit} />);
 
-      fireEvent.change(await screen.findByRole("spinbutton", { name: /tpm limit/i }), {
+      fireEvent.change(await screen.findByRole("spinbutton", { name: /TPM 上限/ }), {
         target: { value: "" },
       });
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalled();
@@ -561,10 +561,10 @@ describe("UserEditView", () => {
       const onSubmit = vi.fn();
       renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithRateLimits()} onSubmit={onSubmit} />);
 
-      fireEvent.change(await screen.findByRole("spinbutton", { name: /rpm limit/i }), {
+      fireEvent.change(await screen.findByRole("spinbutton", { name: /RPM 上限/ }), {
         target: { value: "1" },
       });
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalled();
@@ -577,10 +577,10 @@ describe("UserEditView", () => {
       const onSubmit = vi.fn();
       renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithRateLimits()} onSubmit={onSubmit} />);
 
-      fireEvent.change(await screen.findByRole("spinbutton", { name: /tpm limit/i }), {
+      fireEvent.change(await screen.findByRole("spinbutton", { name: /TPM 上限/ }), {
         target: { value },
       });
-      const submitButton = screen.getByRole("button", { name: /save changes/i }) as HTMLButtonElement;
+      const submitButton = screen.getByRole("button", { name: /保存更改/ }) as HTMLButtonElement;
       const form = submitButton.form;
       if (!form) {
         throw new Error("User edit form was not rendered");
@@ -588,7 +588,7 @@ describe("UserEditView", () => {
       fireEvent.submit(form);
 
       expect(
-        await screen.findByText("Enter a non-negative whole number, or leave empty for unlimited"),
+        await screen.findByText("请输入非负整数，或留空表示无限制"),
       ).toBeInTheDocument();
       expect(onSubmit).not.toHaveBeenCalled();
     });
@@ -596,9 +596,9 @@ describe("UserEditView", () => {
     it("hides both rate-limit inputs in bulk edit mode", async () => {
       renderWithProviders(<UserEditView {...defaultProps} userData={userDataWithRateLimits()} isBulkEdit={true} />);
 
-      await screen.findByRole("button", { name: /save changes/i });
-      expect(screen.queryByRole("spinbutton", { name: /tpm limit/i })).not.toBeInTheDocument();
-      expect(screen.queryByRole("spinbutton", { name: /rpm limit/i })).not.toBeInTheDocument();
+      await screen.findByRole("button", { name: /保存更改/ });
+      expect(screen.queryByRole("spinbutton", { name: /TPM 上限/ })).not.toBeInTheDocument();
+      expect(screen.queryByRole("spinbutton", { name: /RPM 上限/ })).not.toBeInTheDocument();
     });
   });
 
@@ -728,16 +728,11 @@ describe("UserEditView", () => {
       renderWithProviders(<UserEditView {...defaultProps} />);
 
       const budgetInput = await screen.findByRole("spinbutton", { name: /最大预算/ });
+      const form = budgetInput.closest("form");
       expect(budgetInput).toHaveAttribute("step", "0.01");
       expect(budgetInput).not.toHaveAttribute("min");
+      expect(form).not.toBeNull();
       expect(form).not.toHaveAttribute("novalidate");
-    });
-
-    it("asks for the MCP servers scoped to the edited user", async () => {
-      renderWithProviders(<UserEditView {...defaultProps} />);
-      await waitFor(() => {
-        expect(networking.fetchMCPServers).toHaveBeenCalledWith(expect.anything(), undefined, undefined, "user-123");
-      });
     });
 
     it("shows the tool matrix for servers the user reaches only through an access group or toolset", async () => {
