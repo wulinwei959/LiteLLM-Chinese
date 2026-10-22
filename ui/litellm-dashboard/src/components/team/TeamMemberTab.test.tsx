@@ -684,7 +684,9 @@ describe("TeamMembersComponent", () => {
       POST.mockRejectedValue(new Error("Cannot reset your own spend. Ask a proxy admin."));
       renderEditableTab();
 
-      await user.click(screen.getByTestId("reset-member-spend"));
+      await user.click(
+        within(screen.getByRole("row", { name: /user1@test\.com/ })).getByTestId("reset-member-spend"),
+      );
       const dialog = await screen.findByRole("dialog", { name: "重置团队成员支出" });
       await user.click(within(dialog).getByRole("button", { name: "重置" }));
 
@@ -697,7 +699,9 @@ describe("TeamMembersComponent", () => {
       const user = userEvent.setup();
       renderEditableTab();
 
-      await user.click(screen.getByTestId("reset-member-spend"));
+      await user.click(
+        within(screen.getByRole("row", { name: /user1@test\.com/ })).getByTestId("reset-member-spend"),
+      );
       const dialog = await screen.findByRole("dialog", { name: "重置团队成员支出" });
       await user.click(within(dialog).getByRole("button", { name: "取消" }));
 
@@ -743,7 +747,7 @@ describe("TeamMembersComponent", () => {
 
       await user.click(within(screen.getByRole("row", { name: /user1@test\.com/ })).getByTestId("reset-member-spend"));
 
-      expect(await screen.findByRole("dialog", { name: "Reset Team Member Spend" })).toHaveTextContent(
+      expect(await screen.findByRole("dialog", { name: "重置团队成员支出" })).toHaveTextContent(
         "user1@test.com",
       );
     });

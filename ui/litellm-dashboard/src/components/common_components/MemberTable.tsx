@@ -165,7 +165,7 @@ const buildColumns = ({
     enableGlobalFilter: true,
     cell: ({ row }) =>
       row.original.user_id === "default_user_id" ? (
-        <StatusBadge tone="info" label="Default Proxy Admin" />
+        <StatusBadge tone="info" label={t("memberTable.defaultProxyAdmin")} />
       ) : (
         row.original.user_id || "-"
       ),
@@ -190,7 +190,7 @@ const buildColumns = ({
   ...extraColumns.map(extraColumnDef),
   {
     id: "actions",
-    header: "Actions",
+    header: commonT("actions"),
     size: ACTIONS_COLUMN_WIDTH,
     enableSorting: false,
     enableGlobalFilter: false,

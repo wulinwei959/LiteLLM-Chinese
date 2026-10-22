@@ -2522,7 +2522,20 @@
       "totalSpendTooltip": "Cumulative spend by this member within this team, across all budget cycles. Tracking began 2026-04-21; spend from before that date is not included.",
       "unlimited": "Unlimited",
       "user": "User",
-      "userId": "User ID"
+      "userId": "User ID",
+      "sourceTeamDefault": "Team default",
+      "sourceCustom": "Custom",
+      "scopeTooltip": "Models this member can access. Empty means they inherit all team models.",
+      "scopeAll": "(all team models)",
+      "useTeamDefault": "Use team default",
+      "resetSpendTitle": "Reset Team Member Spend",
+      "resetSpendBody": "Reset current cycle spend for <strong>{member}</strong> in this team to <strong>$0</strong>?",
+      "resetSpendDetail": "Current cycle spend: <strong>{amount}</strong>. This is the value checked against the member's budget. Total spend and logs are preserved.",
+      "resetBudgetTitle": "Reset Team Member Budget",
+      "resetBudgetBody": "Remove the custom budget for <strong>{member}</strong> and put them back on the team default of <strong>{budget}</strong>?",
+      "resetBudgetDetail": "Custom budget: <strong>{amount}</strong>. Their spend is kept. Future changes to the team's member budget will apply to them again.",
+      "toastSpendReset": "Team member spend reset to $0",
+      "toastBudgetReset": "Team member budget reset to the team default"
     },
     "perm": {
       "accessEndpoint": "Access {endpoint}",
@@ -2728,7 +2741,8 @@
       "noMatch": "No members match your search or filters",
       "filtersTitle": "Filters",
       "filtersDescription": "Narrow down members",
-      "searchPlaceholder": "Search by name, email, or user ID"
+      "searchPlaceholder": "Search by name, email, or user ID",
+      "defaultProxyAdmin": "Default Proxy Admin"
     },
     "teamsTable": {
       "exportCsv": "Export CSV",

@@ -2522,7 +2522,20 @@
       "totalSpendTooltip": "该成员在此团队中跨所有预算周期的累计支出。统计从 2026-04-21 开始；该日期之前的支出不计入。",
       "unlimited": "无限制",
       "user": "用户",
-      "userId": "用户 ID"
+      "userId": "用户 ID",
+      "sourceTeamDefault": "团队默认",
+      "sourceCustom": "自定义",
+      "scopeTooltip": "该成员可以访问的模型。留空表示继承全部团队模型。",
+      "scopeAll": "（全部团队模型）",
+      "useTeamDefault": "使用团队默认值",
+      "resetSpendTitle": "重置团队成员支出",
+      "resetSpendBody": "将 <strong>{member}</strong> 在该团队的本周期支出重置为 <strong>$0</strong>？",
+      "resetSpendDetail": "本周期支出：<strong>{amount}</strong>。这是与成员预算比较的数值。总支出与日志都会保留。",
+      "resetBudgetTitle": "重置团队成员预算",
+      "resetBudgetBody": "移除 <strong>{member}</strong> 的自定义预算，并恢复为团队默认值 <strong>{budget}</strong>？",
+      "resetBudgetDetail": "自定义预算：<strong>{amount}</strong>。其支出会保留。之后团队的成员预算变更将重新作用于该成员。",
+      "toastSpendReset": "团队成员支出已重置为 $0",
+      "toastBudgetReset": "团队成员预算已重置为团队默认值"
     },
     "perm": {
       "accessEndpoint": "访问 {endpoint}",
@@ -2728,7 +2741,8 @@
       "noMatch": "没有符合搜索或筛选条件的成员",
       "filtersTitle": "筛选",
       "filtersDescription": "缩小成员范围",
-      "searchPlaceholder": "按名称、邮箱或用户 ID 搜索"
+      "searchPlaceholder": "按名称、邮箱或用户 ID 搜索",
+      "defaultProxyAdmin": "默认代理管理员"
     },
     "teamsTable": {
       "exportCsv": "导出 CSV",
