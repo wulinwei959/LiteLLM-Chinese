@@ -38,15 +38,15 @@ interface UsageOverviewProps {
   providerBreakdown: ReactNode;
 }
 
-const METRIC_NOUN: Record<UsageMetric, string> = { spend: "spend", tokens: "tokens", requests: "requests" };
-const GRANULARITY_OPTIONS = [
-  { value: "day", label: "Daily" },
-  { value: "week", label: "Weekly" },
-] as const satisfies readonly { value: Granularity; label: string }[];
-const SCALE_OPTIONS = [
-  { value: "linear", label: "Linear" },
-  { value: "log", label: "Log" },
-] as const satisfies readonly { value: StackedUsageScale; label: string }[];
+const METRIC_NOUN_KEY: Record<UsageMetric, "overview.metricSpend" | "overview.metricTokens" | "overview.metricRequests"> = {
+  spend: "overview.metricSpend",
+  tokens: "overview.metricTokens",
+  requests: "overview.metricRequests",
+};
+const GRANULARITY_KEY: Record<Granularity, "overview.granularityDaily" | "overview.granularityWeekly"> = {
+  day: "overview.granularityDaily",
+  week: "overview.granularityWeekly",
+};
 
 export default function UsageOverview({
   results,
@@ -61,6 +61,14 @@ export default function UsageOverview({
   budget,
 }: UsageOverviewProps) {
   const t = useTranslations("usage.overview");
+  const granularityOptions = [
+    { value: "day", label: t("overview.granularityDaily") },
+    { value: "week", label: t("overview.granularityWeekly") },
+  ] as const satisfies readonly { value: Granularity; label: string }[];
+  const scaleOptions = [
+    { value: "linear", label: t("overview.scaleLinear") },
+    { value: "log", label: t("overview.scaleLog") },
+  ] as const satisfies readonly { value: StackedUsageScale; label: string }[];
   const [state, setState] = useState<BreakdownState>({ metric: "spend", dimension: "model_groups" });
   const [granularity, setGranularity] = useState<Granularity>("day");
   const [scale, setScale] = useState<StackedUsageScale>("linear");
@@ -80,18 +88,21 @@ export default function UsageOverview({
       />
 
       <Panel
-        title={`${granularity === "day" ? "Daily" : "Weekly"} usage`}
-        subtitle={`${granularity === "day" ? "Daily" : "Weekly"} ${METRIC_NOUN[state.metric]} by model (top 8, rest grouped as Other)`}
+        title={t("overview.chartTitle", { granularity: t(GRANULARITY_KEY[granularity]) })}
+        subtitle={t("overview.chartSubtitle", {
+          granularity: t(GRANULARITY_KEY[granularity]),
+          metric: t(METRIC_NOUN_KEY[state.metric]),
+        })}
         action={
           <>
             <BreakdownControls state={state} onChange={setState} showDimension={false} />
             <Segmented
               label={t("overview.bucketSize")}
               value={granularity}
-              options={GRANULARITY_OPTIONS}
+              options={granularityOptions}
               onChange={setGranularity}
             />
-            <Segmented label={t("overview.scale")} value={scale} options={SCALE_OPTIONS} onChange={setScale} />
+            <Segmented label={t("overview.scale")} value={scale} options={scaleOptions} onChange={setScale} />
           </>
         }
         bodyClassName="px-0 pt-4 pb-0"

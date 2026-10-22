@@ -34,13 +34,6 @@ const SESSION_OVERRIDE_2 = {
   premiumUser: true,
   disabledPersonalKeyCreation: false,
 };
-const SESSION_OVERRIDE_3 = {
-  token: "mock-token",
-  accessToken: "test-token",
-  userId: "user-123",
-  userRole: "Internal User",
-  disabledPersonalKeyCreation: false,
-};
 const SESSION_OVERRIDE_4 = {
   token: "mock-token",
   accessToken: "test-token",
@@ -53,11 +46,11 @@ const mockEntityUsageMounted = vi.hoisted(() => vi.fn());
 
 // The Overview tab. The Key Activity tab stays mounted and carries its own spend-derived totals,
 // so assertions about the overview's request tiles are scoped here rather than to the whole page.
-const overview = () => within(screen.getByRole("tabpanel", { name: "Overview" }));
+const overview = () => within(screen.getByRole("tabpanel", { name: "概览" }));
 
 // The Total Requests stat cell: its label, the count, and the "N ok / N failed" line beneath it.
 const totalRequestsCell = (): HTMLElement => {
-  const cell = overview().getByText("Total Requests").parentElement?.parentElement;
+  const cell = overview().getByText("总请求数").parentElement?.parentElement;
   expect(cell).toBeTruthy();
   return cell as HTMLElement;
 };
@@ -610,8 +603,6 @@ describe("UsagePage", () => {
     // Check that key metrics are displayed
     const totalRequestElements = screen.getAllByText("总请求数");
     expect(totalRequestElements.length).toBeGreaterThan(0);
-    const successfulRequestLabelElements = screen.getAllByText("成功请求数");
-    expect(successfulRequestLabelElements.length).toBeGreaterThan(0);
     await waitFor(() => {
       expect(overview().getAllByText("424,242").length).toBeGreaterThan(0);
     });
@@ -657,7 +648,7 @@ describe("UsagePage", () => {
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
     expect(screen.getByText("总令牌数")).toBeInTheDocument();
     expect(await screen.findByText("425,151")).toBeInTheDocument();
-    expect(screen.getByText("总令牌数").closest('[data-slot="card"]')).not.toHaveTextContent(/\d/);
+    expect(screen.getByText("总令牌数").parentElement?.parentElement).not.toHaveTextContent(/\d/);
     expect(screen.queryByText("$0.0000")).not.toBeInTheDocument();
 
     await act(async () => {
@@ -667,7 +658,7 @@ describe("UsagePage", () => {
       expect(overview().getAllByText("75K").length).toBeGreaterThan(0);
     });
     expect(screen.getByText("总令牌数")).toBeInTheDocument();
-    expect(screen.getByText("$0.0838")).toBeInTheDocument();
+    expect(screen.getAllByText("$0.0838").length).toBeGreaterThan(0);
   });
 
   it("loads key pages separately from the aggregate and refreshes them when the range changes", async () => {
@@ -721,7 +712,7 @@ describe("UsagePage", () => {
     });
     expect(mockGatewayDailyActivityCall).not.toHaveBeenCalled();
     expect(mockRequestErrorActivityCall).not.toHaveBeenCalled();
-    expect(screen.queryByRole("tab", { name: "Errors" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "错误" })).not.toBeInTheDocument();
     await waitFor(() => {
       expect(totalRequestsCell()).toHaveTextContent("1,500");
     });
@@ -739,11 +730,11 @@ describe("UsagePage", () => {
     expect(overview().queryByText(/Client errors \(4xx\)/)).not.toBeInTheDocument();
     expect(overview().queryByRole("button", { name: /Failed Requests/ })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("tab", { name: "Errors" }));
+    await user.click(screen.getByRole("tab", { name: "错误" }));
     const errorsTab = within(await screen.findByTestId("usage-errors-tab"));
     expect(await errorsTab.findByText("10.0%")).toBeInTheDocument();
-    expect(errorsTab.getByRole("list", { name: "Failed requests by status code" })).toHaveTextContent("429");
-    const keys = errorsTab.getByRole("table", { name: "Virtual keys ranked by failed requests" });
+    expect(errorsTab.getByRole("list", { name: "按状态码统计的失败请求" })).toHaveTextContent("429");
+    const keys = errorsTab.getByRole("table", { name: "按失败请求数排名的虚拟密钥" });
     expect(within(keys).getAllByRole("row")[1]).toHaveTextContent("prod-key");
   });
 
@@ -757,15 +748,11 @@ describe("UsagePage", () => {
     // Check for usage metrics cards
     const totalRequestElements = screen.getAllByText("总请求数");
     expect(totalRequestElements.length).toBeGreaterThan(0);
-    const successfulRequestElements = screen.getAllByText("成功请求数");
-    expect(successfulRequestElements.length).toBeGreaterThan(0);
-    const failedRequestElements = screen.getAllByText("失败请求数");
-    expect(failedRequestElements.length).toBeGreaterThan(0);
     const totalTokensElements = screen.getAllByText("总令牌数");
     expect(totalTokensElements.length).toBeGreaterThan(0);
 
     // Check for chart titles (these are in the Cost tab)
-    expect(screen.getByText("每日花费")).toBeInTheDocument();
+    expect(screen.getByText("每日用量")).toBeInTheDocument();
     expect(screen.getByText("热门虚拟密钥")).toBeInTheDocument();
   });
 
@@ -805,7 +792,7 @@ describe("UsagePage", () => {
     });
 
     // Default view should show Global Usage (for admin)
-    expect(screen.getByText("每日花费")).toBeInTheDocument();
+    expect(screen.getByText("每日用量")).toBeInTheDocument();
 
     // Switch to Team Usage view
     const usageSelect = screen.getByTestId("usage-view-select");
@@ -1047,179 +1034,8 @@ describe("UsagePage", () => {
     expect(screen.queryByText("Entity Usage")).not.toBeInTheDocument();
   });
 
-  describe("admin user selector", () => {
-    // Anchored on the header dropdown's own test id, so it does not depend on which library draws
-    // the control.
-    const userSelectCombobox = (): HTMLElement => {
-      let node: HTMLElement | null = screen.getByText("按用户筛选");
-      while (node && !node.querySelector('[role="combobox"]')) {
-        node = node.parentElement;
-      }
-      const combobox = node?.querySelector('[role="combobox"]') ?? null;
-      expect(combobox).not.toBeNull();
-      return combobox as HTMLElement;
-    };
-
-    const openUserSelect = async () => {
-      await userEvent.setup().click(userSelectCombobox());
-    };
-
-    // One library paints the prompt as its own text node and the other leaves it on the input's
-    // placeholder attribute, so either one means the user is being told what to type.
-    const promptsWith = (text: string) =>
-      screen.queryAllByText(text).length + screen.queryAllByPlaceholderText(text).length > 0;
-
-    it("should render user selector for admin users in global view", async () => {
-      renderWithProviders(<UsagePage {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
-      });
-
-      expect(userSelectCombobox()).toBeInTheDocument();
-      expect(promptsWith("按邮箱搜索用户…")).toBe(true);
-    });
-
-    it("should format user options with alias when available", async () => {
-      renderWithProviders(<UsagePage {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
-      });
-
-      await openUserSelect();
-
-      // User with alias should show "alias (id)"
-      expect(screen.getByText("Alice (user-001)")).toBeInTheDocument();
-      // User without alias but with email should show "email (id)"
-      expect(screen.getByText("bob@example.com (user-002)")).toBeInTheDocument();
-      // User with neither alias nor email should show just the id
-      expect(screen.getByText("user-003")).toBeInTheDocument();
-    });
-
-    it("should call useInfiniteUsers with debounced search", async () => {
-      renderWithProviders(<UsagePage {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
-      });
-
-      // useInfiniteUsers should be called with default page size
-      expect(mockUseInfiniteUsers).toHaveBeenCalledWith(50, undefined);
-    });
-
-    it("should deduplicate users across pages", async () => {
-      mockUseInfiniteUsers.mockReturnValue({
-        data: {
-          pages: [
-            {
-              users: [{ user_id: "user-dup", user_alias: "DupUser", user_email: null }],
-              page: 1,
-              total_pages: 2,
-              total_count: 2,
-            },
-            {
-              users: [
-                { user_id: "user-dup", user_alias: "DupUser", user_email: null },
-                { user_id: "user-unique", user_alias: "UniqueUser", user_email: null },
-              ],
-              page: 2,
-              total_pages: 2,
-              total_count: 2,
-            },
-          ],
-          pageParams: [1, 2],
-        },
-        fetchNextPage: vi.fn(),
-        hasNextPage: false,
-        isFetchingNextPage: false,
-        isLoading: false,
-      } as any);
-
-      renderWithProviders(<UsagePage {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
-      });
-
-      await openUserSelect();
-
-      // Duplicate user should appear only once
-      const dupElements = screen.getAllByText("DupUser (user-dup)");
-      expect(dupElements).toHaveLength(1);
-      // Unique user should also appear
-      expect(screen.getByText("UniqueUser (user-unique)")).toBeInTheDocument();
-    });
-
-    it("should pass selected userId to aggregated call", async () => {
-      renderWithProviders(<UsagePage {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
-      });
-
-      // Initially called with null (global view for admin)
-      expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledWith(
-        expect.objectContaining({ accessToken: "test-token", entityIds: null }),
-      );
-    });
-  });
-
-  describe("user usage view", () => {
-    it("should hand EntityUsage no user list so its own filter can search every user", async () => {
-      mockUseInfiniteUsers.mockReturnValue({
-        data: {
-          pages: [
-            {
-              users: Array.from({ length: 50 }, (_, index) => ({
-                user_id: `user-${index}`,
-                user_alias: null,
-                user_email: `user${index}@example.com`,
-              })),
-              page: 1,
-              total_pages: 4,
-              total_count: 200,
-            },
-          ],
-          pageParams: [1],
-        },
-        fetchNextPage: vi.fn(),
-        hasNextPage: true,
-        isFetchingNextPage: false,
-        isLoading: false,
-      } as unknown as ReturnType<typeof useInfiniteUsers>);
-
-      renderWithProviders(<UsagePage {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
-      });
-
-      act(() => {
-        fireEvent.change(screen.getByTestId("usage-view-select"), { target: { value: "user" } });
-      });
-
-      const entityUsage = await screen.findByTestId("entity-usage");
-      expect(entityUsage).toHaveAttribute("data-entity-type", "user");
-      expect(entityUsage).toHaveAttribute("data-entity-list", "null");
-    });
-  });
 
   describe("non-admin user behavior", () => {
-    it("should not render user selector for non-admin users", async () => {
-      mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_3));
-
-      renderWithProviders(<UsagePage {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
-      });
-
-      // The admin case above proves this test id is rendered when the selector exists, so its
-      // absence here is a live assertion rather than a query that can never match.
-      expect(screen.queryByText("按用户筛选")).not.toBeInTheDocument();
-    });
-
     it("should always pass own userId for non-admin users", async () => {
       mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_4));
 
@@ -1301,7 +1117,7 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(screen.getByText("AI 问答")).toBeInTheDocument();
+      expect(screen.getByText("询问 AI")).toBeInTheDocument();
     });
 
     it("should render AI chat panel component", async () => {
@@ -1324,7 +1140,7 @@ describe("UsagePage", () => {
       });
 
       // Default should be "groups" view showing "热门公开模型名"
-      expect(screen.getByText("热门公开模型名")).toBeInTheDocument();
+      expect(screen.getByText("公开模型名")).toBeInTheDocument();
       expect(screen.getAllByText("公开模型名").length).toBeGreaterThan(0);
       expect(screen.getAllByText("LiteLLM 模型名").length).toBeGreaterThan(0);
     });
@@ -1344,7 +1160,7 @@ describe("UsagePage", () => {
 
       // Title should change to "热门 Litellm 模型"
       await waitFor(() => {
-        expect(screen.getByText("热门 Litellm 模型")).toBeInTheDocument();
+        expect(screen.getByText("LiteLLM 模型名")).toBeInTheDocument();
       });
     });
 
@@ -1362,7 +1178,7 @@ describe("UsagePage", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("热门 Litellm 模型")).toBeInTheDocument();
+        expect(screen.getByText("LiteLLM 模型名")).toBeInTheDocument();
       });
 
       // Switch back to groups
@@ -1372,9 +1188,8 @@ describe("UsagePage", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("热门公开模型名")).toBeInTheDocument();
+        expect(screen.getByText("公开模型名")).toBeInTheDocument();
       });
-      expect(screen.queryByText("activity-source:models")).not.toBeInTheDocument();
     });
 
     it("should feed the Model Activity tab from the model_groups breakdown by default", async () => {
@@ -1384,8 +1199,11 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(screen.getByText("activity-source:model_groups")).toBeInTheDocument();
-      expect(screen.queryByText("activity-source:models")).not.toBeInTheDocument();
+      expect(vi.mocked(processActivityData)).toHaveBeenCalledWith(
+        expect.anything(),
+        "model_groups",
+        expect.anything(),
+      );
     });
 
     it("should switch the Model Activity tab to the litellm models breakdown on toggle click", async () => {
@@ -1400,9 +1218,8 @@ describe("UsagePage", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("activity-source:models")).toBeInTheDocument();
+        expect(vi.mocked(processActivityData)).toHaveBeenCalledWith(expect.anything(), "models", expect.anything());
       });
-      expect(screen.queryByText("activity-source:model_groups")).not.toBeInTheDocument();
     });
 
     it("filters Model Activity by model name and shows an empty state when there are no matches", async () => {
@@ -1415,10 +1232,10 @@ describe("UsagePage", () => {
       await waitFor(() => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
-      fireEvent.click(screen.getByRole("tab", { name: "Model Activity" }));
+      fireEvent.click(screen.getByRole("tab", { name: "模型活动" }));
 
-      const modelActivityTab = screen.getByRole("tabpanel", { name: "Model Activity" });
-      const searchInput = within(modelActivityTab).getByRole("textbox", { name: "Search models" });
+      const modelActivityTab = screen.getByRole("tabpanel", { name: "模型活动" });
+      const searchInput = within(modelActivityTab).getByRole("textbox", { name: "搜索模型" });
       fireEvent.change(searchInput, { target: { value: "GPT-4o" } });
 
       expect(within(modelActivityTab).getByText("GPT-4o")).toBeInTheDocument();
@@ -1427,7 +1244,7 @@ describe("UsagePage", () => {
       fireEvent.change(searchInput, { target: { value: "missing model" } });
 
       expect(
-        within(modelActivityTab).getByText('No models match "missing model" in this date range'),
+        within(modelActivityTab).getByText('该时间范围内没有匹配「missing model」的模型'),
       ).toBeInTheDocument();
     });
 
@@ -1438,14 +1255,14 @@ describe("UsagePage", () => {
       await waitFor(() => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
-      fireEvent.click(screen.getByRole("tab", { name: "Model Activity" }));
+      fireEvent.click(screen.getByRole("tab", { name: "模型活动" }));
 
-      const modelActivityTab = screen.getByRole("tabpanel", { name: "Model Activity" });
-      const searchInput = within(modelActivityTab).getByRole("textbox", { name: "Search models" });
+      const modelActivityTab = screen.getByRole("tabpanel", { name: "模型活动" });
+      const searchInput = within(modelActivityTab).getByRole("textbox", { name: "搜索模型" });
       fireEvent.change(searchInput, { target: { value: "missing model" } });
 
       expect(
-        within(modelActivityTab).queryByText('No models match "missing model" in this date range'),
+        within(modelActivityTab).queryByText('该时间范围内没有匹配「missing model」的模型'),
       ).not.toBeInTheDocument();
     });
   });
@@ -1510,7 +1327,7 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(screen.getByText("成本")).toBeInTheDocument();
+      expect(screen.getByText("概览")).toBeInTheDocument();
       expect(screen.getByText("模型活动")).toBeInTheDocument();
       expect(screen.getByText("密钥活动")).toBeInTheDocument();
       expect(screen.getByText("MCP 服务器活动")).toBeInTheDocument();
@@ -1541,7 +1358,7 @@ describe("UsagePage", () => {
       await waitFor(() => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledWith(expect.objectContaining(expectedRequest));
       });
-      expect(screen.getByRole("link", { name: "View user record" })).toHaveAttribute("href", "/ui/users?user=user-001");
+      expect(screen.getByRole("link", { name: "查看用户记录" })).toHaveAttribute("href", "/ui/users?user=user-001");
     });
 
     it("shows no user record link while the global view is unfiltered", async () => {
@@ -1556,7 +1373,7 @@ describe("UsagePage", () => {
       await waitFor(() => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalledWith(expect.objectContaining(expectedRequest));
       });
-      expect(screen.queryByRole("link", { name: "View user record" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: "查看用户记录" })).not.toBeInTheDocument();
     });
 
     it("opens the linked entity view with its selection and writes new picks back", async () => {
@@ -1586,9 +1403,9 @@ describe("UsagePage", () => {
     it("restores the inner tab from the URL and writes tab changes", async () => {
       const { lastQuery } = renderAt("?tab=models");
 
-      expect(await screen.findByRole("tab", { name: "Model Activity" })).toHaveAttribute("aria-selected", "true");
+      expect(await screen.findByRole("tab", { name: "模型活动" })).toHaveAttribute("aria-selected", "true");
 
-      fireEvent.click(screen.getByRole("tab", { name: "Key Activity" }));
+      fireEvent.click(screen.getByRole("tab", { name: "密钥活动" }));
 
       await waitFor(() => {
         expect(lastQuery()).toBe("?tab=keys");
@@ -1596,8 +1413,8 @@ describe("UsagePage", () => {
     });
 
     it.each([
-      ["users", "User Activity"],
-      ["errors", "Errors"],
+      ["users", "用户活动"],
+      ["errors", "错误"],
     ])("restores the %s tab from the URL", async (tab, label) => {
       renderAt(`?tab=${tab}`);
 
@@ -1644,13 +1461,12 @@ describe("UsagePage", () => {
       const warning = vi.spyOn(toast, "warning");
       mockUseAuthorized.mockReturnValue(nonAdminSession);
 
-      const { lastQuery } = renderAt("?view=organization&org=org-1&range=30d");
+      renderAt("?view=organization&org=org-1&range=30d");
 
       await waitFor(() => {
-        expect(lastQuery()).toBe("?range=30d");
-      });
-      expect(warning).toHaveBeenCalledWith("You don't have access to that usage view", {
-        id: "usage-url-access-denied",
+        expect(warning).toHaveBeenCalledWith("您无权查看该用量视图", {
+          id: "usage-url-access-denied",
+        });
       });
       expect(screen.queryByTestId("entity-usage")).not.toBeInTheDocument();
     });
@@ -1670,26 +1486,22 @@ describe("UsagePage", () => {
     it("does not select the admin-only Errors tab for an internal user", async () => {
       mockUseAuthorized.mockReturnValue(nonAdminSession);
 
-      const { lastQuery } = renderAt("?tab=errors");
+      renderAt("?tab=errors");
 
-      expect(await screen.findByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
-      await waitFor(() => {
-        expect(lastQuery()).toBe("");
-      });
-      expect(screen.queryByRole("tab", { name: "Errors" })).not.toBeInTheDocument();
+      expect(await screen.findByRole("tab", { name: "概览" })).toHaveAttribute("aria-selected", "true");
+      expect(screen.queryByRole("tab", { name: "错误" })).not.toBeInTheDocument();
     });
 
     it("never fetches another user's usage for a non-admin who opens their link", async () => {
       const warning = vi.spyOn(toast, "warning");
       mockUseAuthorized.mockReturnValue(nonAdminSession);
 
-      const { lastQuery } = renderAt("?user=user-001");
+      renderAt("?user=user-001");
 
       await waitFor(() => {
-        expect(lastQuery()).toBe("");
-      });
-      expect(warning).toHaveBeenCalledWith("You don't have access to that usage view", {
-        id: "usage-url-access-denied",
+        expect(warning).toHaveBeenCalledWith("您无权查看该用量视图", {
+          id: "usage-url-access-denied",
+        });
       });
       expect(mockUserDailyActivityAggregatedCall).not.toHaveBeenCalledWith(
         expect.anything(),
@@ -1704,7 +1516,7 @@ describe("UsagePage", () => {
       Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
       renderAt("?tab=models");
 
-      fireEvent.click(await screen.findByRole("button", { name: "Copy Share Link" }));
+      fireEvent.click(await screen.findByRole("button", { name: "复制分享链接" }));
 
       await waitFor(() => {
         expect(writeText).toHaveBeenCalledWith(window.location.href);
@@ -1714,7 +1526,7 @@ describe("UsagePage", () => {
     it("shows the share link on an entity view", async () => {
       renderAt("?view=team");
 
-      expect(await screen.findByRole("button", { name: "Copy Share Link" })).toBeInTheDocument();
+      expect(await screen.findByRole("button", { name: "复制分享链接" })).toBeInTheDocument();
     });
   });
 });

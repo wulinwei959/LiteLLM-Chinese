@@ -5064,7 +5064,9 @@
     "topModelSingle": "热门 Litellm 模型",
     "endpointCharts": {
       "successVsFailed": "各端点成功与失败请求数",
-      "trends": "端点用量趋势"
+      "trends": "端点用量趋势",
+      "successful": "成功请求",
+      "failed": "失败请求"
     },
     "entity": {
       "ptuHoursTooltip": "已消耗的预置吞吐量（按 PTU 小时计）：发送到 PTU 部署的 token 按每个模型的 Azure 容量表换算。用它除以预留的 PTU 数乘以周期内小时数，即可看出预留容量的使用比例。",
@@ -5091,7 +5093,24 @@
         "customer": "客户",
         "agent": "智能体"
       },
-      "shareColumn": "占比"
+      "shareColumn": "占比",
+      "granularityDaily": "每日",
+      "granularityWeekly": "每周",
+      "scaleLinear": "线性",
+      "scaleLog": "对数",
+      "spendOverview": "{entity} 消费总览",
+      "byModel": "{metric}按模型",
+      "byDeployment": "{metric}按部署",
+      "chartSubtitle": "{granularity}{metric}，堆叠展示前 8 项",
+      "flatCostOnTop": "，顶部叠加固定成本",
+      "bucketSize": "分桶大小",
+      "scale": "时间粒度",
+      "spendPer": "按{entity}统计的消费",
+      "trackCostPer": "按{entity}跟踪成本",
+      "noSpendData": "没有{entity}的消费数据",
+      "agentFetchFailed": "智能体数据拉取失败，下方合计可能为空而非最终值。请重新加载页面重试。",
+      "filterBy": "按{entity}筛选",
+      "selectFilter": "选择{entity}以筛选……"
     },
     "provider": {
       "title": "按供应商统计消费",
@@ -5338,12 +5357,21 @@
         "scale": "时间粒度",
         "topModels": "热门模型",
         "topVirtualKeys": "热门虚拟密钥",
-        "topUsersBySpend": "按花费排名的用户"
+        "topUsersBySpend": "按花费排名的用户",
+        "granularityDaily": "每日",
+        "granularityWeekly": "每周",
+        "scaleLinear": "线性",
+        "scaleLog": "对数",
+        "metricSpend": "花费",
+        "metricTokens": "token",
+        "metricRequests": "请求数",
+        "chartTitle": "{granularity}用量",
+        "chartSubtitle": "{granularity}按模型统计的{metric}（前 8 项，其余归为其他）"
       },
       "statStrip": {
         "spend": "花费",
-        "totalRequests": "请求总数",
-        "totalTokens": "token 总数",
+        "totalRequests": "总请求数",
+        "totalTokens": "总令牌数",
         "avgCostPerRequest": "平均每请求成本",
         "avgLatency": "平均延迟"
       },
@@ -5379,7 +5407,17 @@
       "title": {
         "activity": "用户活动"
       }
-    }
+    },
+    "tabOverview": "概览",
+    "tabModelActivity": "模型活动",
+    "tabKeyActivity": "密钥活动",
+    "tabUserActivity": "用户活动",
+    "tabMcpActivity": "MCP 服务器活动",
+    "tabEndpointActivity": "端点活动",
+    "tabErrors": "错误",
+    "askAi": "询问 AI",
+    "noModelsMatch": "该时间范围内没有匹配「{query}」的模型",
+    "credentialBannerBody": "使用可复用凭据时，它会在本视图中以带 <code>Credential: </code> 前缀的标签出现。"
   },
   "logs": {
     "detail": {

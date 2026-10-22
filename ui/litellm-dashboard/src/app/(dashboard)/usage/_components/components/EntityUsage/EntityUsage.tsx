@@ -57,39 +57,31 @@ import TeamUserSpendCard from "./TeamUserSpendCard";
 import { ProviderSpendBreakdown } from "./SpendByProvider";
 
 const BRAND = "#2b3fd6";
-const FLAT_COST_SERIES = "Flat cost";
+
 const METRIC_TITLE_KEY = {
   spend: "spend",
   tokens: "totalTokens",
   requests: "totalRequests",
 } as const;
 const FLAT_COST_COLOR = "#8b5cf6";
-const METRIC_TITLE: Record<UsageMetric, string> = { spend: "Spend", tokens: "Tokens", requests: "Requests" };
-/** Summary tiles that carry a sparkline, keyed by tile title, valued by the dailyTotals field. */
-const TILE_TRENDS: Readonly<Record<string, string>> = {
-  "Total Spend": "spend",
-  "Total Cost": "spend",
-  "Total Requests": "requests",
-  "Total Tokens": "tokens",
-};
-const GRANULARITY_OPTIONS = [
-  { value: "day", label: "Daily" },
-  { value: "week", label: "Weekly" },
-] as const satisfies readonly { value: Granularity; label: string }[];
-const SCALE_OPTIONS = [
-  { value: "linear", label: "Linear" },
-  { value: "log", label: "Log" },
-] as const satisfies readonly { value: StackedUsageScale; label: string }[];
+const ENTITY_LABEL_KEY = {
+  user: "entity.type.user",
+  team: "entity.type.team",
+  tag: "entity.type.tag",
+  organization: "entity.type.organization",
+  customer: "entity.type.customer",
+  agent: "entity.type.agent",
+} as const;
 const QUIET_HEADER = { headerClassName: "font-normal" };
 const FLAT_COST_KEY = "flat_cost";
 
 /** Stacks reserved-capacity flat cost on top of the per-model spend, so each bar is the day's full cost. */
-const withFlatCost = (series: Series, results: readonly DailyData[]): Series => {
+const withFlatCost = (series: Series, results: readonly DailyData[], flatCostLabel: string): Series => {
   const flatByDate = new Map(results.map((day) => [day.date, day.metrics.flat_cost ?? 0]));
   return {
     data: series.data.map((day) => ({ ...day, [FLAT_COST_KEY]: flatByDate.get(day.date) ?? 0 })),
     keys: [...series.keys, FLAT_COST_KEY],
-    labels: [...series.labels, FLAT_COST_SERIES],
+    labels: [...series.labels, flatCostLabel],
     colors: [...series.colors, FLAT_COST_COLOR],
   };
 };
@@ -339,14 +331,6 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     8,
   );
 
-  const getFilterLabel = (entityType: string) => {
-    return `Filter by ${entityType}`;
-  };
-
-  const getFilterPlaceholder = (entityType: string) => {
-    return `Select ${entityType} to filter...`;
-  };
-
   const entityFilterSlots: Partial<Record<EntityType, ReactNode>> = {
     team: <TeamMultiSelect value={selectedTags} onChange={setSelectedTags} />,
     user: (
@@ -358,7 +342,15 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   };
   const filterSlot = entityFilterSlots[entityType];
 
-  const capitalizedEntityLabel = entityType.charAt(0).toUpperCase() + entityType.slice(1);
+  const entityLabel = t(ENTITY_LABEL_KEY[entityType]);
+  const granularityOptions = [
+    { value: "day", label: t("entity.granularityDaily") },
+    { value: "week", label: t("entity.granularityWeekly") },
+  ] as const satisfies readonly { value: Granularity; label: string }[];
+  const scaleOptions = [
+    { value: "linear", label: t("entity.scaleLinear") },
+    { value: "log", label: t("entity.scaleLog") },
+  ] as const satisfies readonly { value: StackedUsageScale; label: string }[];
   const showFlatCost = entityType === "team" && hasFlatCost(spendData.metadata);
   const showPtuHours = entityType === "team" && hasPtuHours(spendData.metadata);
   const userSpendTeamIds = useMemo(
@@ -372,15 +364,17 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   const dailyTrend = useMemo(() => dailyTotals(spendData.results), [spendData.results]);
   const stackFlatCost = showFlatCost && breakdown.metric === "spend";
   const chartSeries = useMemo(() => {
-    const series = stackFlatCost ? withFlatCost(dailySeries, spendData.results) : dailySeries;
+    const series = stackFlatCost
+      ? withFlatCost(dailySeries, spendData.results, t("entity.flatCost"))
+      : dailySeries;
     return bucketSeries(series, granularity);
-  }, [stackFlatCost, dailySeries, spendData.results, granularity]);
+  }, [stackFlatCost, dailySeries, spendData.results, granularity, t]);
   const chartTotals = useMemo(() => bucketTotals(chartSeries), [chartSeries]);
 
   const entityBreakdownColumns = useMemo<ColumnDef<EntityMetricWithMetadata>[]>(
     () => [
       {
-        header: capitalizedEntityLabel,
+        header: entityLabel,
         accessorKey: "metadata.alias",
         meta: QUIET_HEADER,
         cell: ({ row }) => <span className="font-medium text-foreground">{row.original.metadata.alias}</span>,
@@ -416,7 +410,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         cell: ({ row }) => row.original.metrics.total_tokens.toLocaleString(),
       },
     ],
-    [capitalizedEntityLabel, maxEntitySpend],
+    [entityLabel, maxEntitySpend],
   );
 
   const chev = "size-3 text-muted-foreground";
@@ -436,7 +430,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   );
 
   const renderSummaryTile = (tile: SummaryTile, index: number) => {
-    const trendKey = TILE_TRENDS[tile.title];
+    const trendKey = tile.trendKey;
     const stat = <Stat label={tileLabel(tile)} value={<span className={tile.className}>{tile.value}</span>} />;
     const trend = trendKey ? (
       <Sparkline data={dailyTrend} dataKey={trendKey} color={BRAND} className="h-12" />
@@ -480,7 +474,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   ) : (
     <div className="grid gap-3">
       <section className="grid gap-2">
-        <h2 className="text-sm font-medium text-foreground">{capitalizedEntityLabel} Spend Overview</h2>
+        <h2 className="text-sm font-medium text-foreground">{t("entity.spendOverview", { entity: entityLabel })}</h2>
         <div
           className={cn(
             "grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border",
@@ -504,22 +498,27 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         <header className="flex flex-wrap items-start justify-between gap-3 px-5 pt-4">
           <div>
             <h3 className="text-sm font-medium text-foreground">
-              {t(METRIC_TITLE_KEY[breakdown.metric])} by {modelViewType === "groups" ? "model" : "deployment"}
+              {t(modelViewType === "groups" ? "entity.byModel" : "entity.byDeployment", {
+                metric: t(METRIC_TITLE_KEY[breakdown.metric]),
+              })}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {granularity === "day" ? "Daily" : "Weekly"} {breakdown.metric}, top 8 stacked
-              {stackFlatCost ? ", flat cost on top" : ""}
+              {t("entity.chartSubtitle", {
+                granularity: t(granularity === "day" ? "entity.granularityDaily" : "entity.granularityWeekly"),
+                metric: t(METRIC_TITLE_KEY[breakdown.metric]),
+              })}
+              {stackFlatCost ? t("entity.flatCostOnTop") : ""}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <BreakdownControls state={breakdown} onChange={setBreakdown} showDimension={false} />
             <Segmented
-              label="Bucket size"
+              label={t("entity.bucketSize")}
               value={granularity}
-              options={GRANULARITY_OPTIONS}
+              options={granularityOptions}
               onChange={setGranularity}
             />
-            <Segmented label="Scale" value={scale} options={SCALE_OPTIONS} onChange={setScale} />
+            <Segmented label={t("entity.scale")} value={scale} options={scaleOptions} onChange={setScale} />
           </div>
         </header>
         <div className="px-3 pt-4 pb-2">
@@ -550,13 +549,13 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
 
       <Panel
         icon={Layers}
-        title={`Spend Per ${capitalizedEntityLabel}`}
+        title={t("entity.spendPer", { entity: entityLabel })}
         action={
           <a
             href="https://docs.litellm.ai/docs/proxy/enterprise#spend-tracking"
             className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
-            Track cost per {entityType}
+            {t("entity.trackCostPer", { entity: entityLabel })}
             <ExternalLink aria-hidden="true" className="size-3" />
           </a>
         }
@@ -566,7 +565,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
           data={entityRows}
           getRowId={(row) => row.metadata.id}
           maxBodyHeight={280}
-          noDataMessage={`No ${entityType} spend data`}
+          noDataMessage={t("entity.noSpendData", { entity: entityLabel })}
           size="compact"
         />
       </Panel>
@@ -673,16 +672,14 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
       {failed && (
         <Alert variant="error">
           <AlertDescription className="text-inherit">
-            Fetching spend data failed, so the totals below may be empty rather than final. Reload the page to try
-            again.
+            {t("entity.spendFetchFailed")}
           </AlertDescription>
         </Alert>
       )}
       {showAgentBreakdown && agentFailed && (
         <Alert variant="error">
           <AlertDescription className="text-inherit">
-            Fetching agent data failed, so the totals below may be empty rather than final. Reload the page to try
-            again.
+            {t("entity.agentFetchFailed")}
           </AlertDescription>
         </Alert>
       )}
@@ -695,8 +692,8 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
           }
           showFilters={filterSlot === undefined && entityList !== null}
           filterSlot={filterSlot}
-          filterLabel={getFilterLabel(entityType)}
-          filterPlaceholder={getFilterPlaceholder(entityType)}
+          filterLabel={t("entity.filterBy", { entity: entityLabel })}
+          filterPlaceholder={t("entity.selectFilter", { entity: entityLabel })}
           selectedFilters={selectedTags}
           onFiltersChange={setSelectedTags}
           filterOptions={getAllTags() || undefined}

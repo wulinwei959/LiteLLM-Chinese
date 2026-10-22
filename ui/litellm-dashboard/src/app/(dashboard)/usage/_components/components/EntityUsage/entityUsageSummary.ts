@@ -7,6 +7,7 @@ export interface SummaryTile {
   className?: string;
   tooltip?: string;
   expandable?: boolean;
+  trendKey?: "spend" | "requests" | "tokens";
 }
 
 interface SpendSummaryMetadata {
@@ -47,8 +48,12 @@ export const buildSummaryTiles = (
           tooltip: t("entity.totalCostTooltip"),
           expandable: true,
         }
-      : { title: t("entity.totalSpend"), value: `$${formatNumberWithCommas(metadata.total_spend, 2)}` },
-    { title: t("totalRequests"), value: metadata.total_api_requests.toLocaleString() },
+      : {
+          title: t("entity.totalSpend"),
+          value: `$${formatNumberWithCommas(metadata.total_spend, 2)}`,
+          trendKey: "spend",
+        },
+    { title: t("totalRequests"), value: metadata.total_api_requests.toLocaleString(), trendKey: "requests" },
     {
       title: t("metrics.successfulRequests"),
       value: metadata.total_successful_requests.toLocaleString(),
@@ -59,7 +64,7 @@ export const buildSummaryTiles = (
       value: metadata.total_failed_requests.toLocaleString(),
       className: "text-destructive",
     },
-    { title: t("totalTokens"), value: metadata.total_tokens.toLocaleString() },
+    { title: t("totalTokens"), value: metadata.total_tokens.toLocaleString(), trendKey: "tokens" },
     ...ptuHoursTile,
   ];
 };

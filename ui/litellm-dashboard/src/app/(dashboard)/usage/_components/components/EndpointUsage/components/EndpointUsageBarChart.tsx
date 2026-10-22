@@ -11,29 +11,35 @@ interface EndpointUsageBarChartProps {
 
 const SUCCESS_COLOR = "#2b3fd6";
 const FAILED_COLOR = "#ef4444";
-const CATEGORIES = ["Successful", "Failed"] as const;
 const COLORS = [SUCCESS_COLOR, FAILED_COLOR] as const;
 
 const valueFormatter = (value: number) => value.toLocaleString();
 
 const EndpointUsageBarChart: React.FC<EndpointUsageBarChartProps> = ({ endpointData }) => {
   const t = useTranslations("usage.endpointCharts");
-  // Transform endpoint data into chart format
-  const chartData = React.useMemo(() => {
-    return Object.entries(endpointData || {}).map(([endpoint, data]) => ({
-      endpoint,
-      Successful: data.metrics.successful_requests,
-      Failed: data.metrics.failed_requests,
-    }));
-  }, [endpointData]);
+  const successfulLabel = t("successful");
+  const failedLabel = t("failed");
+  const categories = [successfulLabel, failedLabel] as const;
+  const chartData = React.useMemo(
+    () =>
+      Object.entries(endpointData || {}).map(([endpoint, data]) => ({
+        endpoint,
+        [successfulLabel]: data.metrics.successful_requests,
+        [failedLabel]: data.metrics.failed_requests,
+      })),
+    [endpointData, successfulLabel, failedLabel],
+  );
 
   const totals = React.useMemo(
     () =>
-      chartData.reduce(
-        (acc, row) => ({ Successful: acc.Successful + row.Successful, Failed: acc.Failed + row.Failed }),
-        { Successful: 0, Failed: 0 },
+      Object.values(endpointData || {}).reduce(
+        (acc, data) => ({
+          successful: acc.successful + data.metrics.successful_requests,
+          failed: acc.failed + data.metrics.failed_requests,
+        }),
+        { successful: 0, failed: 0 },
       ),
-    [chartData],
+    [endpointData],
   );
 
   return (
@@ -42,11 +48,14 @@ const EndpointUsageBarChart: React.FC<EndpointUsageBarChartProps> = ({ endpointD
       title={t("successVsFailed")}
       action={
         <div className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
-          {CATEGORIES.map((category, i) => (
-            <span key={category} className="flex items-center gap-1.5">
-              <span aria-hidden="true" className="size-2 rounded-[2px]" style={{ backgroundColor: COLORS[i] }} />
-              <span>{category}</span>
-              <span className="tabular-nums text-foreground">{totals[category].toLocaleString()}</span>
+          {[
+            { label: successfulLabel, color: SUCCESS_COLOR, total: totals.successful },
+            { label: failedLabel, color: FAILED_COLOR, total: totals.failed },
+          ].map(({ label, color, total }) => (
+            <span key={label} className="flex items-center gap-1.5">
+              <span aria-hidden="true" className="size-2 rounded-[2px]" style={{ backgroundColor: color }} />
+              <span>{label}</span>
+              <span className="tabular-nums text-foreground">{total.toLocaleString()}</span>
             </span>
           ))}
         </div>
@@ -56,7 +65,7 @@ const EndpointUsageBarChart: React.FC<EndpointUsageBarChartProps> = ({ endpointD
         className="h-64"
         data={chartData}
         index="endpoint"
-        categories={CATEGORIES}
+        categories={categories}
         colors={COLORS}
         valueFormatter={valueFormatter}
         customTooltip={CustomTooltip}

@@ -5064,7 +5064,9 @@
     "topModelSingle": "Top Litellm Models",
     "endpointCharts": {
       "successVsFailed": "Success vs Failed Requests by Endpoint",
-      "trends": "Endpoint Usage Trends"
+      "trends": "Endpoint Usage Trends",
+      "successful": "Successful",
+      "failed": "Failed"
     },
     "entity": {
       "ptuHoursTooltip": "Provisioned throughput consumed, in PTU-hours: the tokens sent to PTU deployments converted through the Azure sizing table for each model. Divide it by the PTUs reserved times the hours in the period to see how much of the reservation was used.",
@@ -5091,7 +5093,24 @@
         "customer": "Customer",
         "agent": "Agent"
       },
-      "shareColumn": "Share"
+      "shareColumn": "Share",
+      "granularityDaily": "Daily",
+      "granularityWeekly": "Weekly",
+      "scaleLinear": "Linear",
+      "scaleLog": "Log",
+      "spendOverview": "{entity} Spend Overview",
+      "byModel": "{metric} by model",
+      "byDeployment": "{metric} by deployment",
+      "chartSubtitle": "{granularity} {metric}, top 8 stacked",
+      "flatCostOnTop": ", flat cost on top",
+      "bucketSize": "Bucket size",
+      "scale": "Scale",
+      "spendPer": "Spend Per {entity}",
+      "trackCostPer": "Track cost per {entity}",
+      "noSpendData": "No {entity} spend data",
+      "agentFetchFailed": "Fetching agent data failed, so the totals below may be empty rather than final. Reload the page to try again.",
+      "filterBy": "Filter by {entity}",
+      "selectFilter": "Select {entity} to filter..."
     },
     "provider": {
       "title": "Spend by Provider",
@@ -5338,7 +5357,16 @@
         "scale": "Scale",
         "topModels": "Top models",
         "topVirtualKeys": "Top Virtual Keys",
-        "topUsersBySpend": "Top Users by Spend"
+        "topUsersBySpend": "Top Users by Spend",
+        "granularityDaily": "Daily",
+        "granularityWeekly": "Weekly",
+        "scaleLinear": "Linear",
+        "scaleLog": "Log",
+        "metricSpend": "spend",
+        "metricTokens": "tokens",
+        "metricRequests": "requests",
+        "chartTitle": "{granularity} usage",
+        "chartSubtitle": "{granularity} {metric} by model (top 8, rest grouped as Other)"
       },
       "statStrip": {
         "spend": "Spend",
@@ -5379,7 +5407,17 @@
       "title": {
         "activity": "User activity"
       }
-    }
+    },
+    "tabOverview": "Overview",
+    "tabModelActivity": "Model Activity",
+    "tabKeyActivity": "Key Activity",
+    "tabUserActivity": "User Activity",
+    "tabMcpActivity": "MCP Server Activity",
+    "tabEndpointActivity": "Endpoint Activity",
+    "tabErrors": "Errors",
+    "askAi": "Ask AI",
+    "noModelsMatch": "No models match \"{query}\" in this date range",
+    "credentialBannerBody": "When a reusable credential is used, it will appear as a tag prefixed with <code>Credential: </code> in this view."
   },
   "logs": {
     "detail": {

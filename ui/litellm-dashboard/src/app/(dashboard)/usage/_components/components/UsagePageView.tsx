@@ -110,6 +110,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
   const initialToDate = useMemo(() => new Date(), []);
 
   const t = useTranslations("usage");
+  const commonT = useTranslations("common");
   const [urlParams, setUrlParams] = useQueryStates(usageUrlParsers);
   const { range, from, to } = urlParams;
   const dateValue = useMemo<DateRangePickerValue>(
@@ -434,37 +435,37 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <TabsList variant="line">
                     <TabsTrigger value="cost" className="flex-none px-3">
-                      Overview
+                      {t("tabOverview")}
                     </TabsTrigger>
                     <TabsTrigger value="models" className="flex-none px-3">
-                      Model Activity
+                      {t("tabModelActivity")}
                     </TabsTrigger>
                     <TabsTrigger value="keys" className="flex-none px-3">
-                      Key Activity
+                      {t("tabKeyActivity")}
                     </TabsTrigger>
                     <TabsTrigger value="users" className="flex-none px-3">
-                      User Activity
+                      {t("tabUserActivity")}
                     </TabsTrigger>
                     <TabsTrigger value="mcp" className="flex-none px-3">
-                      MCP Server Activity
+                      {t("tabMcpActivity")}
                     </TabsTrigger>
                     <TabsTrigger value="endpoints" className="flex-none px-3">
-                      Endpoint Activity
+                      {t("tabEndpointActivity")}
                     </TabsTrigger>
                     {isAdmin && (
                       <TabsTrigger value="errors" className="flex-none px-3">
-                        Errors
+                        {t("tabErrors")}
                       </TabsTrigger>
                     )}
                   </TabsList>
                   <div className="flex items-center gap-2">
                     <Button variant="outline" size="sm" onClick={() => setIsAiChatOpen(true)}>
                       <Sparkles />
-                      Ask AI
+                      {t("askAi")}
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => setIsGlobalExportModalOpen(true)}>
                       <Download />
-                      Export Data
+                      {t("exportButton")}
                     </Button>
                   </div>
                 </div>
@@ -555,7 +556,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                   Object.keys(modelMetrics).length > 0 &&
                   Object.keys(filteredModelMetrics).length === 0 ? (
                     <p className="rounded-lg border p-6 text-center text-sm text-muted-foreground">
-                      No models match &quot;{trimmedModelQuery}&quot; in this date range
+                      {t("noModelsMatch", { query: trimmedModelQuery })}
                     </p>
                   ) : (
                     <ActivityMetrics
@@ -661,15 +662,15 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                 <Alert variant="info" className="mb-5">
                   <AlertTitle>{t("reusableCredentialsTagTitle")}</AlertTitle>
                   <AlertDescription className="text-inherit">
-                    When a reusable credential is used, it will appear as a tag prefixed with{" "}
-                    <code className="rounded bg-black/5 px-1 py-0.5 font-mono text-xs">Credential: </code>
-                    in this view.
+                    {t.rich("credentialBannerBody", {
+                      code: (chunks) => <code className="rounded bg-black/5 px-1 py-0.5 font-mono text-xs">{chunks}</code>,
+                    })}
                   </AlertDescription>
                   <AlertAction>
                     <Button
                       variant="ghost"
                       size="icon-xs"
-                      aria-label="Close"
+                      aria-label={commonT("close")}
                       onClick={() => setShowCredentialBanner(false)}
                     >
                       <X />
