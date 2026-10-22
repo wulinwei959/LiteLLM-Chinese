@@ -634,7 +634,7 @@ describe("KeyActivityPanel", () => {
     expect(screen.getByText(/无法搜索密钥。/)).toBeInTheDocument();
     expect(screen.queryByText(/没有与/)).not.toBeInTheDocument();
     expect(screen.queryByText("0 个匹配的密钥")).not.toBeInTheDocument();
-    expect(screen.getByText("搜索中...")).toBeInTheDocument();
+    expect(screen.getByText("搜索失败")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "重新搜索" }));
     expect(screen.getByText("搜索中...")).toBeInTheDocument();
@@ -684,8 +684,8 @@ describe("KeyActivityPanel", () => {
       />,
     );
 
-    const searchInput = await screen.findByRole("textbox", { name: "Search keys" });
-    const summaryHeading = await screen.findByRole("heading", { name: "Overall Usage" });
+    const searchInput = await screen.findByRole("textbox", { name: "搜索密钥" });
+    const summaryHeading = await screen.findByRole("heading", { name: "总体用量" });
 
     expect(searchInput.compareDocumentPosition(summaryHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,

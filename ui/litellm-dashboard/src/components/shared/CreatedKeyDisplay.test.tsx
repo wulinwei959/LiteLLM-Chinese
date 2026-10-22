@@ -106,10 +106,10 @@ describe("CreatedKeyDisplay", () => {
     renderWithProviders(<CreatedKeyDisplay apiKey="sk-test-123" />);
 
     expect(screen.getByText("http://gw.test:4000")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Copy URL" }));
+    await user.click(screen.getByRole("button", { name: "复制 URL" }));
 
     expect(mockCopy).toHaveBeenCalledWith("http://gw.test:4000");
-    expect(toast.success).toHaveBeenCalledWith("Gateway URL copied to clipboard");
+    expect(toast.success).toHaveBeenCalledWith("网关 URL 已复制到剪贴板");
   });
 
   it("shows one shared instruction card with both agent logos and expands on demand", async () => {
@@ -118,18 +118,18 @@ describe("CreatedKeyDisplay", () => {
 
     expect(screen.getByRole("img", { name: "Claude Code" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Codex" })).toBeInTheDocument();
-    expect(screen.getByText("Agent instructions")).toBeInTheDocument();
+    expect(screen.getByText("代理说明")).toBeInTheDocument();
     expect(screen.queryByText("Set up your agent")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Claude Code" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Codex" })).not.toBeInTheDocument();
 
-    const showButton = screen.getByRole("button", { name: "Show" });
+    const showButton = screen.getByRole("button", { name: "展开" });
     expect(showButton).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByText(/POST http:\/\/gw\.test:4000\/v1\/responses/)).not.toBeInTheDocument();
 
     await user.click(showButton);
 
-    expect(screen.getByRole("button", { name: "Hide" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("button", { name: "隐藏" })).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByText(/POST http:\/\/gw\.test:4000\/v1\/responses/)).toBeInTheDocument();
     expect(screen.getByText(/ANTHROPIC_BASE_URL=http:\/\/gw\.test:4000/)).toBeInTheDocument();
     expect(screen.getByText(/OPENAI_BASE_URL=http:\/\/gw\.test:4000\/v1/)).toBeInTheDocument();
@@ -139,9 +139,9 @@ describe("CreatedKeyDisplay", () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     renderWithProviders(<CreatedKeyDisplay apiKey="sk-test-123" />);
 
-    expect(screen.getByRole("button", { name: "Show" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: "展开" })).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByText(/POST http:\/\/gw\.test:4000\/v1\/responses/)).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Copy instructions" }));
+    await user.click(screen.getByRole("button", { name: "复制说明" }));
 
     const copiedInstructions = mockCopy.mock.calls.at(-1)?.[0] ?? "";
     expect(copiedInstructions).toContain("Gateway URL: http://gw.test:4000");
@@ -156,8 +156,8 @@ describe("CreatedKeyDisplay", () => {
     expect(copiedInstructions).toContain(
       "To run Codex through this gateway, set OPENAI_BASE_URL=http://gw.test:4000/v1 and OPENAI_API_KEY=sk-test-123.",
     );
-    expect(screen.getByRole("button", { name: "Copied!" })).toBeInTheDocument();
-    expect(toast.success).toHaveBeenCalledWith("Instructions copied");
+    expect(screen.getByRole("button", { name: "已复制！" })).toBeInTheDocument();
+    expect(toast.success).toHaveBeenCalledWith("说明已复制");
   });
 });
 

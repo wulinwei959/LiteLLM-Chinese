@@ -115,10 +115,10 @@ describe("AllModelsTable", () => {
     renderWithProviders(<AllModelsTable {...baseProps} onColumnFiltersChange={onColumnFiltersChange} />);
 
     await user.click(screen.getByTestId("datatable-filters-trigger"));
-    await user.click(screen.getByRole("combobox", { name: /filter by status/i }));
-    expect(await screen.findByRole("option", { name: "All", exact: true })).toBeInTheDocument();
+    await user.click(screen.getByRole("combobox", { name: /按状态筛选/ }));
+    expect(await screen.findByRole("option", { name: "全部", exact: true })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "All Statuses" })).not.toBeInTheDocument();
-    await user.click(await screen.findByRole("option", { name: "Paused" }));
+    await user.click(await screen.findByRole("option", { name: "已暂停" }));
     await user.click(screen.getByTestId("filter-drawer-apply"));
 
     const updater = onColumnFiltersChange.mock.calls.at(-1)?.[0];

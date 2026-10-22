@@ -1670,7 +1670,11 @@
       "cacheWriteCost1hHint": "提示词缓存写入 TTL 为 1 小时时的费率。保存时留空，已知模型会使用成本表中的 1 小时费率，否则使用缓存写入成本。",
       "cachePointLocation": "位置：",
       "cachePointRole": "角色：",
-      "cachePointIndex": "序号："
+      "cachePointIndex": "序号：",
+      "credentialAdded": "凭据添加成功",
+      "createOrSelectCredential": "请为此认证类型创建或选择凭据",
+      "federatedHint": "工作负载身份联合将保存为凭据，然后附加到此模型。",
+      "federatedButton": "使用工作负载身份联合"
     },
     "health": {
       "title": "健康状态",
@@ -2086,7 +2090,8 @@
       "teamLabel": "团队",
       "viewLabel": "视图",
       "viewModes": {
-        "all": "所有可用模型"
+        "all": "所有可用模型",
+        "currentTeam": "当前团队模型"
       },
       "filterLabels": {
         "accessGroup": "模型访问组"
@@ -2111,11 +2116,25 @@
       "pauseTooltipAdmin": "只有代理管理员可以暂停或恢复模型。",
       "pauseTooltipConfig": "配置中的模型无法在管理面板暂停,暂停状态保存在数据库中。",
       "placeholder": {
-        "accessGroup": "按模型访问组筛选"
+        "accessGroup": "按模型访问组筛选",
+        "modelName": "按公共模型名称筛选"
       },
       "unknownProvider": "未知提供商",
       "dbModel": "数据库模型",
-      "configBadge": "配置模型"
+      "configBadge": "配置模型",
+      "routingStatus": {
+        "all": "全部",
+        "active": "活跃",
+        "paused": "已暂停"
+      },
+      "filterByStatus": "按状态筛选",
+      "credentialTypesAria": "关于凭据类型",
+      "credentialTypes": "凭据类型",
+      "credentialReusable": "可复用",
+      "credentialReusableHint": "保存在 LiteLLM 中、可重复添加到模型上的凭据。",
+      "credentialManualHint": "创建模型时直接填写的凭据，或在配置文件中定义的凭据。",
+      "definedInConfig": "在配置文件中定义",
+      "unknownDate": "未知日期"
     },
     "addAutoRouter": {
       "title": "添加自动路由器",
@@ -10991,7 +11010,18 @@
   },
   "createdKeyDisplay": {
     "copied": "已复制！",
-    "keyCopiedToast": "密钥已复制到剪贴板"
+    "keyCopiedToast": "密钥已复制到剪贴板",
+    "instructionsCopiedToast": "说明已复制",
+    "warning": "请将此密钥保存在安全且可访问的位置。出于安全原因，<b>你将无法通过 LiteLLM 账户再次查看它</b>。如果丢失此密钥，你需要重新生成一个。",
+    "virtualKey": "虚拟密钥：",
+    "copyKey": "复制虚拟密钥",
+    "gatewayUrl": "网关 URL：",
+    "urlCopiedToast": "网关 URL 已复制到剪贴板",
+    "copyUrl": "复制 URL",
+    "agentInstructions": "代理说明",
+    "copyInstructions": "复制说明",
+    "hide": "隐藏",
+    "show": "展开"
   },
   "sharedComponents": {
     "pageControls": "页面控件",
@@ -11272,7 +11302,22 @@
     "keyColumn": "密钥",
     "spendColumn": "花费",
     "matchingKeys": "{count} 个匹配的密钥",
-    "totalKeys": "{count} 个密钥"
+    "totalKeys": "{count} 个密钥",
+    "loadingDetails": "正在加载密钥详情...",
+    "detailsFailed": "无法加载密钥详情。",
+    "retry": "重试",
+    "noDailyDetails": "暂无每日明细",
+    "loadingChart": "正在加载图表数据...",
+    "overallUsage": "总体用量",
+    "requestsOk": "成功",
+    "requestsFailed": "失败",
+    "tokensStat": "Token 数",
+    "tokensHint": "{input} 输入 · {output} 输出",
+    "avgCostPerRequest": "平均每请求成本",
+    "cacheReadHint": "{count} 个缓存读取 Token",
+    "retrySearch": "重新搜索",
+    "searchKeysFailed": "无法搜索密钥。",
+    "noKeysMatch": "该时间范围内没有匹配「{query}」的密钥"
   },
   "keyModelUsage": {
     "title": "模型用量",

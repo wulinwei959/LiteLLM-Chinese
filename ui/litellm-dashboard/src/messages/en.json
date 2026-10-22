@@ -1670,7 +1670,11 @@
       "cacheWriteCost1hHint": "Rate for prompt cache writes with a 1 hour TTL. If left blank on save, known models use their cost map 1 hour rate, otherwise Cache Write Cost.",
       "cachePointLocation": "Location:",
       "cachePointRole": "Role:",
-      "cachePointIndex": "Index:"
+      "cachePointIndex": "Index:",
+      "credentialAdded": "Credential added successfully",
+      "createOrSelectCredential": "Create or select a credential for this auth type",
+      "federatedHint": "Workload identity federation is saved as a credential, then attached to this model.",
+      "federatedButton": "Use workload identity federation"
     },
     "health": {
       "title": "Health Status",
@@ -2086,7 +2090,8 @@
       "teamLabel": "Team",
       "viewLabel": "View",
       "viewModes": {
-        "all": "All Available Models"
+        "all": "All Available Models",
+        "currentTeam": "Current Team Models"
       },
       "filterLabels": {
         "accessGroup": "Model Access Group"
@@ -2111,11 +2116,25 @@
       "pauseTooltipAdmin": "Only proxy admins can pause or resume a model.",
       "pauseTooltipConfig": "Config models cannot be paused from the dashboard. Pause is DB-backed.",
       "placeholder": {
-        "accessGroup": "Filter by Model Access Group"
+        "accessGroup": "Filter by Model Access Group",
+        "modelName": "Filter by Public Model Name"
       },
       "unknownProvider": "Unknown provider",
       "dbModel": "DB Model",
-      "configBadge": "Config Model"
+      "configBadge": "Config Model",
+      "routingStatus": {
+        "all": "All",
+        "active": "Active",
+        "paused": "Paused"
+      },
+      "filterByStatus": "Filter by status",
+      "credentialTypesAria": "About credential types",
+      "credentialTypes": "Credential types",
+      "credentialReusable": "Reusable",
+      "credentialReusableHint": "Credentials saved in LiteLLM that can be added to models repeatedly.",
+      "credentialManualHint": "Credentials added directly during model creation or defined in the config file.",
+      "definedInConfig": "Defined in config",
+      "unknownDate": "Unknown date"
     },
     "addAutoRouter": {
       "title": "Add Auto Router",
@@ -10995,7 +11014,18 @@
   },
   "createdKeyDisplay": {
     "copied": "Copied!",
-    "keyCopiedToast": "Key copied to clipboard"
+    "keyCopiedToast": "Key copied to clipboard",
+    "instructionsCopiedToast": "Instructions copied",
+    "warning": "Please save this secret key somewhere safe and accessible. For security reasons, <b>you will not be able to view it again</b> through your LiteLLM account. If you lose this secret key, you will need to generate a new one.",
+    "virtualKey": "Virtual Key:",
+    "copyKey": "Copy Virtual Key",
+    "gatewayUrl": "Gateway URL:",
+    "urlCopiedToast": "Gateway URL copied to clipboard",
+    "copyUrl": "Copy URL",
+    "agentInstructions": "Agent instructions",
+    "copyInstructions": "Copy instructions",
+    "hide": "Hide",
+    "show": "Show"
   },
   "sharedComponents": {
     "pageControls": "Page controls",
@@ -11276,7 +11306,22 @@
     "keyColumn": "Key",
     "spendColumn": "Spend",
     "matchingKeys": "{count} matching keys",
-    "totalKeys": "{count} keys"
+    "totalKeys": "{count} keys",
+    "loadingDetails": "Loading key details...",
+    "detailsFailed": "Could not load key details.",
+    "retry": "Retry",
+    "noDailyDetails": "No daily details available",
+    "loadingChart": "Loading chart data...",
+    "overallUsage": "Overall Usage",
+    "requestsOk": "ok",
+    "requestsFailed": "failed",
+    "tokensStat": "Tokens",
+    "tokensHint": "{input} in · {output} out",
+    "avgCostPerRequest": "Avg cost / request",
+    "cacheReadHint": "{count} cache read tokens",
+    "retrySearch": "Retry search",
+    "searchKeysFailed": "Could not search keys.",
+    "noKeysMatch": "No keys match \"{query}\" in this date range"
   },
   "keyModelUsage": {
     "title": "Model Usage",

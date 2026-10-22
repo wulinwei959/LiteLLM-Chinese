@@ -512,18 +512,23 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
   const submitLatest = useCallback((values: GuardrailFormValues) => submitRef.current(values), []);
 
   if (loading) {
-    return <div className="p-4">Loading...</div>;
+    return <div className="p-4">{t("info.loading")}</div>;
   }
 
   const backButton = (
     <Button variant="ghost" onClick={onClose} className="mb-4">
       <ArrowLeft className="w-4 h-4" />
-      Back to Guardrails
+      {t("info.back")}
     </Button>
   );
 
   if (!guardrailData) {
-    return <div className="p-4">{backButton}Guardrail not found</div>;
+    return (
+      <div className="p-4">
+        {backButton}
+        {t("info.notFound")}
+      </div>
+    );
   }
 
   const formatDate = (dateString?: string) => (dateString ? new Date(dateString).toLocaleString() : "-");
@@ -569,11 +574,11 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
       <Tabs defaultValue="overview">
         <TabsList variant="line" className="mb-4 h-auto w-full justify-start rounded-none border-b p-0">
           <TabsTrigger value="overview" className="flex-none rounded-none px-4 py-2">
-            Overview
+            {t("info.tabOverview")}
           </TabsTrigger>
           {isAdmin && (
             <TabsTrigger value="settings" className="flex-none rounded-none px-4 py-2">
-              Settings
+              {t("info.tabSettings")}
             </TabsTrigger>
           )}
         </TabsList>
@@ -583,7 +588,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
           <TabsContent value="overview" keepMounted>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="block p-6">
-                <p>Provider</p>
+                <p>{t("info.provider")}</p>
                 <div className="mt-2 flex items-center space-x-2">
                   <Logo src={logo} label={displayName} className="w-6 h-6" />
                   <h3 className="text-lg font-medium">{displayName}</h3>
@@ -594,10 +599,10 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
               <GuardrailStreamScopeCaption raw={guardrailData.litellm_params?.stream_scope} />
 
               <Card className="block p-6">
-                <p>Created At</p>
+                <p>{t("info.createdAt")}</p>
                 <div className="mt-2">
                   <h3 className="text-lg font-medium">{formatDate(guardrailData.created_at)}</h3>
-                  <p>Last Updated: {formatDate(guardrailData.updated_at)}</p>
+                  <p>{t("info.lastUpdated", { date: formatDate(guardrailData.updated_at) })}</p>
                 </div>
               </Card>
             </div>
@@ -606,9 +611,11 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
               Object.keys(guardrailData.litellm_params.pii_entities_config).length > 0 && (
                 <Card className="block mt-6 p-6">
                   <div className="flex justify-between items-center">
-                    <p className="font-medium">PII Protection</p>
+                    <p className="font-medium">{t("info.piiProtection")}</p>
                     <Badge variant="secondary">
-                      {Object.keys(guardrailData.litellm_params.pii_entities_config).length} PII entities configured
+                      {t("info.piiCount", {
+                        count: Object.keys(guardrailData.litellm_params.pii_entities_config).length,
+                      })}
                     </Badge>
                   </div>
                 </Card>
@@ -661,7 +668,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                   {isAdmin && !isConfigGuardrail && (
                     <Button variant="outline" size="sm" onClick={() => setCustomCodeModalVisible(true)}>
                       <Code />
-                      Edit Code
+                      {t("info.editCode")}
                     </Button>
                   )}
                 </div>
@@ -705,7 +712,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                     (guardrailData.litellm_params?.guardrail === "custom_code" ? (
                       <Button variant="outline" onClick={() => setCustomCodeModalVisible(true)}>
                         <Code />
-                        Edit Code
+                        {t("info.editCode")}
                       </Button>
                     ) : (
                       <Button variant="outline" onClick={() => setIsEditing(true)}>
@@ -813,7 +820,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                         />
 
                         {(guardrailData.litellm_params?.guardrail === "tool_permission" ||
-                          guardrailProviderSpecificParams) && <SectionHeading>Provider Settings</SectionHeading>}
+                          guardrailProviderSpecificParams) && <SectionHeading>{t("info.providerSection")}</SectionHeading>}
 
                         {guardrailData.litellm_params?.guardrail === "tool_permission" ? (
                           <ToolPermissionRulesEditor value={toolPermissionConfig} onChange={setToolPermissionConfig} />
@@ -874,9 +881,9 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                               resetToolPermissionEditor();
                             }}
                           >
-                            Cancel
+                            {t("info.cancel")}
                           </Button>
-                          <Button type="submit">Save Changes</Button>
+                          <Button type="submit">{t("info.save")}</Button>
                         </div>
                       </FieldGroup>
                     </form>

@@ -125,7 +125,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
       toast.error(extractProxyErrorMessage(error));
       return;
     }
-    toast.success("Credential added successfully");
+    toast.success(addModelT("credentialAdded"));
     setIsCredentialModalOpen(false);
     setIsFederatedCredentialModalOpen(false);
     await queryClient.invalidateQueries({ queryKey: credentialsKeys.all });
@@ -140,7 +140,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
   const rejectMissingCredential = (): boolean => {
     const missing = selectedAuthType?.credentialOnly === true && !selectedCredentialName;
     if (missing) {
-      toast.error("Create or select a credential for this auth type");
+      toast.error(addModelT("createOrSelectCredential"));
     }
     return missing;
   };
@@ -255,10 +255,8 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {!teamAdminSelectedTeam && (
                         <Alert variant="info" className="mb-4">
                           <Info />
-                          <AlertTitle>Team Selection Required</AlertTitle>
-                          <AlertDescription>
-                            As a team admin, you need to select your team first before adding models.
-                          </AlertDescription>
+                          <AlertTitle>{addModelT("teamSelectionRequired")}</AlertTitle>
+                          <AlertDescription>{addModelT("teamSelectionRequiredDesc")}</AlertDescription>
                         </Alert>
                       )}
                     </>
@@ -340,12 +338,12 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {/* Credentials */}
                       <div className="mb-4">
                         <span className="text-sm text-muted-foreground">
-                          Either select existing credentials OR enter new provider credentials below
+                          {addModelT("credentialsDesc")}
                         </span>
                       </div>
 
                       <MountedFormField
-                        label="Existing Credentials"
+                        label={addModelT("existingCredentials")}
                         name="litellm_credential_name"
                         defaultValue={null}
                         className="mb-4"
@@ -377,15 +375,13 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                           />
                           {canCreateFederatedCredential && (
                             <div className="mb-4 flex flex-col items-start gap-2">
-                              <span className="text-sm text-muted-foreground">
-                                Workload identity federation is saved as a credential, then attached to this model.
-                              </span>
+                              <span className="text-sm text-muted-foreground">{addModelT("federatedHint")}</span>
                               <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => setIsFederatedCredentialModalOpen(true)}
                               >
-                                Use workload identity federation
+                                {addModelT("federatedButton")}
                               </Button>
                             </div>
                           )}
@@ -393,7 +389,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       )}
                       <div className="flex items-center my-4">
                         <div className="grow border-t border-border"></div>
-                        <span className="px-4 text-muted-foreground text-sm">Additional Model Info Settings</span>
+                        <span className="px-4 text-muted-foreground text-sm">{addModelT("additionalInfo")}</span>
                         <div className="grow border-t border-border"></div>
                       </div>
                       {/* Team-only Model Switch - Only show for proxy admins, not team admins */}
@@ -505,10 +501,10 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                         disabled={isTestingConnection}
                         aria-busy={isTestingConnection}
                       >
-                        Test Connect
+                        {addModelT("testConnect")}
                       </Button>
                       <Button data-testid="add-model-btn" type="submit">
-                        Add Model
+                        {addModelT("submit")}
                       </Button>
                     </div>
                   </div>
@@ -579,7 +575,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                 setIsTestingConnection(false);
               }}
             >
-              Close
+              {t("close")}
             </Button>
           </DialogFooter>
         </DialogContent>

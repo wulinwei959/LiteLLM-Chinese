@@ -418,7 +418,7 @@ describe("AddModelForm", () => {
       const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
       const props = createTestProps();
       renderWithProviders(<AddModelForm {...props} />);
-      const input = await screen.findByPlaceholderText("Select or search for existing credentials");
+      const input = await screen.findByPlaceholderText("选择或搜索现有凭据");
       await user.click(input);
       return { user, input, form: props.form };
     };
@@ -441,14 +441,14 @@ describe("AddModelForm", () => {
 
     it("selecting by display name sets litellm_credential_name to the credential name", async () => {
       const { user, input, form } = await openPicker();
-      expect(screen.getByText("OR")).toBeInTheDocument();
+      expect(screen.getByText("或")).toBeInTheDocument();
 
       await user.type(input, "prod open");
       await user.click(await screen.findByRole("option", { name: /test-credential/ }));
 
       expect(input).toHaveValue("Prod OpenAI");
       expect(form.getValues("litellm_credential_name")).toBe("test-credential");
-      expect(screen.queryByText("OR")).not.toBeInTheDocument();
+      expect(screen.queryByText("或")).not.toBeInTheDocument();
     });
   });
 
@@ -471,8 +471,8 @@ describe("AddModelForm", () => {
 
     renderWithProviders(<AddModelForm {...createTestProps()} />);
 
-    await screen.findByText("Provider");
-    await userEvent.click(screen.getByRole("combobox", { name: "Mode" }));
+    await screen.findByText("提供商");
+    await userEvent.click(screen.getByRole("combobox", { name: "模式" }));
 
     expect(await screen.findByRole("option", { name: option, exact: true })).toBeInTheDocument();
   });
@@ -483,7 +483,7 @@ describe("AddModelForm", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
 
     renderWithProviders(<AddModelForm {...createTestProps()} />);
-    await screen.findByText("Provider");
+    await screen.findByText("提供商");
     await pickProvider(user, /OpenAI/);
     fillApiKey("OpenAI API Key");
     await pickModel(user, "gpt-4");
@@ -531,7 +531,7 @@ describe("AddModelForm", () => {
       mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser(userRole, "user-1", true));
       const props = { ...createTestProps(userRole, "user-1", false), selectedProvider };
       renderWithProviders(<AddModelForm {...props} />);
-      await screen.findByText("Existing Credentials");
+      await screen.findByText("现有凭据");
       return props;
     };
 
@@ -542,7 +542,7 @@ describe("AddModelForm", () => {
       const user = userEvent.setup();
       const props = await renderAsRole("proxy_admin", Providers.Anthropic);
 
-      await user.click(screen.getByRole("button", { name: "Use workload identity federation" }));
+      await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
       expect(await screen.findByRole("combobox", { name: /^Authentication:/ })).toHaveTextContent(
         "Workload identity federation",
       );
@@ -573,7 +573,7 @@ describe("AddModelForm", () => {
       const user = userEvent.setup();
       await renderAsRole("proxy_admin", Providers.Anthropic);
 
-      await user.click(screen.getByRole("button", { name: "Use workload identity federation" }));
+      await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
 
       const providerSelect = within(await screen.findByRole("dialog")).getByPlaceholderText("Select a provider");
       expect(providerSelect).toHaveValue("Anthropic");
@@ -584,7 +584,7 @@ describe("AddModelForm", () => {
       const user = userEvent.setup();
       const props = await renderAsRole("proxy_admin", Providers.OpenAI);
 
-      await user.click(screen.getByRole("button", { name: "Use workload identity federation" }));
+      await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
       expect(await screen.findByRole("combobox", { name: /^Authentication:/ })).toHaveTextContent(
         "Workload identity federation",
       );
@@ -607,13 +607,13 @@ describe("AddModelForm", () => {
     it("is not offered for a provider without federation support", async () => {
       await renderAsRole("proxy_admin", Providers.OpenAI_Compatible);
 
-      expect(screen.queryByRole("button", { name: "Use workload identity federation" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "使用工作负载身份联合" })).not.toBeInTheDocument();
     });
 
     it("is not offered to an admin who is not a proxy admin", async () => {
       await renderAsRole("org_admin", Providers.Anthropic);
 
-      expect(screen.queryByRole("button", { name: "Use workload identity federation" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "使用工作负载身份联合" })).not.toBeInTheDocument();
     });
   });
 
@@ -624,7 +624,7 @@ describe("AddModelForm", () => {
       const props = createTestProps();
       props.selectedProvider = selectedProvider;
       renderWithProviders(<AddModelForm {...props} />);
-      await screen.findByText("Existing Credentials");
+      await screen.findByText("现有凭据");
       return props;
     };
 
@@ -693,7 +693,7 @@ describe("AddModelForm", () => {
         await submitModel(props);
         return true;
       });
-      await user.click(screen.getByRole("button", { name: "Add Model" }));
+      await user.click(screen.getByRole("button", { name: "添加模型" }));
       expect(props.handleOk).toHaveBeenCalledOnce();
       await waitFor(() => expect(modelCreateCall).toHaveBeenCalledOnce());
       const modelPayload = vi.mocked(modelCreateCall).mock.calls[0][1];
@@ -705,10 +705,10 @@ describe("AddModelForm", () => {
       const props = await renderAsAdmin();
       const errorToast = vi.spyOn(toast, "error");
 
-      await userEvent.click(screen.getByRole("button", { name: "Add Model" }));
+      await userEvent.click(screen.getByRole("button", { name: "添加模型" }));
 
       expect(props.handleOk).not.toHaveBeenCalled();
-      expect(errorToast).toHaveBeenCalledWith("Create or select a credential for this auth type");
+      expect(errorToast).toHaveBeenCalledWith("请为此认证类型创建或选择凭据");
       errorToast.mockRestore();
     });
 
@@ -730,7 +730,7 @@ describe("AddModelForm", () => {
         return true;
       });
 
-      await user.click(screen.getByRole("button", { name: "Add Model" }));
+      await user.click(screen.getByRole("button", { name: "添加模型" }));
       expect(props.handleOk).toHaveBeenCalledOnce();
       await waitFor(() => expect(modelCreateCall).toHaveBeenCalledOnce());
       expect(vi.mocked(modelCreateCall).mock.calls[0][1].litellm_params).toMatchObject({
@@ -782,7 +782,7 @@ describe("AddModelForm", () => {
         );
         return true;
       });
-      await user.click(screen.getByRole("button", { name: "Add Model" }));
+      await user.click(screen.getByRole("button", { name: "添加模型" }));
 
       await waitFor(() => expect(modelCreateCall).toHaveBeenCalledOnce());
       const modelParams = vi.mocked(modelCreateCall).mock.calls[0][1].litellm_params;
@@ -817,7 +817,7 @@ describe("AddModelForm", () => {
         return true;
       });
 
-      await user.click(screen.getByRole("button", { name: "Add Model" }));
+      await user.click(screen.getByRole("button", { name: "添加模型" }));
 
       await waitFor(() => expect(modelCreateCall).toHaveBeenCalledOnce());
       expect(credentialCreateCall).not.toHaveBeenCalled();
@@ -838,7 +838,7 @@ describe("AddModelForm", () => {
       const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
       const props = { ...createTestProps(), selectedProvider };
       renderWithProviders(<AddModelForm {...props} />);
-      await screen.findByText("Provider");
+      await screen.findByText("提供商");
       return { user, props, clickTestConnect: () => user.click(screen.getByTestId("test-connect-btn")) };
     };
 
@@ -949,7 +949,7 @@ describe("AddModelForm", () => {
       expect(testConnectionRequest).not.toHaveBeenCalled();
       errorToast.mockRestore();
 
-      await user.click(screen.getByPlaceholderText("Select or search for existing credentials"));
+      await user.click(screen.getByPlaceholderText("选择或搜索现有凭据"));
       await user.click(await screen.findByRole("option", { name: /test-credential/ }));
       await clickTestConnect();
 
@@ -960,7 +960,7 @@ describe("AddModelForm", () => {
       const { user, clickTestConnect } = await renderForm();
       await pickProvider(user, /OpenAI/);
       await pickModel(user, "gpt-4");
-      await user.click(screen.getByRole("button", { name: "Use workload identity federation" }));
+      await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
       fireEvent.change(screen.getByLabelText("Credential Name:"), { target: { value: "openai-federated" } });
       fireEvent.change(screen.getByLabelText(/Service Account ID/), { target: { value: "svc_new" } });
       await user.click(screen.getByRole("button", { name: "Add Credential" }));

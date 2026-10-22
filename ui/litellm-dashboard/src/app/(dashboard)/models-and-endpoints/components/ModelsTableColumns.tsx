@@ -122,16 +122,16 @@ function ModelInformationCell({ model, displayName }: { model: ModelData; displa
   );
 }
 
-function CredentialsHeader() {
+function CredentialsHeader({ t }: { t: ModelsTranslator }) {
   return (
     <span className="flex items-center gap-1">
-      Credentials
+      {t("table.credentials")}
       <HoverCard>
         <HoverCardTrigger
           render={
             <button
               type="button"
-              aria-label="About credential types"
+              aria-label={t("modelTable.credentialTypesAria")}
               data-testid="credentials-header-info"
               className="cursor-pointer text-muted-foreground hover:text-foreground"
             />
@@ -141,24 +141,20 @@ function CredentialsHeader() {
         </HoverCardTrigger>
         <HoverCardContent align="start" className="w-80">
           <div className="flex flex-col gap-3">
-            <span className="text-sm font-medium text-foreground">Credential types</span>
+            <span className="text-sm font-medium text-foreground">{t("modelTable.credentialTypes")}</span>
             <div className="flex flex-col gap-1">
               <span className="flex items-center gap-1.5 text-sm font-medium text-info">
                 <RefreshCw className="size-3.5" />
-                Reusable
+                {t("modelTable.credentialReusable")}
               </span>
-              <span className="text-xs text-muted-foreground">
-                Credentials saved in LiteLLM that can be added to models repeatedly.
-              </span>
+              <span className="text-xs text-muted-foreground">{t("modelTable.credentialReusableHint")}</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
                 <Pencil className="size-3.5" />
-                Manual
+                {t("table.manual")}
               </span>
-              <span className="text-xs text-muted-foreground">
-                Credentials added directly during model creation or defined in the config file.
-              </span>
+              <span className="text-xs text-muted-foreground">{t("modelTable.credentialManualHint")}</span>
             </div>
           </div>
         </HoverCardContent>
@@ -167,12 +163,20 @@ function CredentialsHeader() {
   );
 }
 
-function CredentialsCell({ credentialName, label }: { credentialName: string | undefined; label: string | undefined }) {
+function CredentialsCell({
+  t,
+  credentialName,
+  label,
+}: {
+  t: ModelsTranslator;
+  credentialName: string | undefined;
+  label: string | undefined;
+}) {
   if (!credentialName) {
     return (
       <Badge variant="outline" className="gap-1 font-normal text-muted-foreground">
         <Pencil className="size-3" />
-        Manual
+        {t("table.manual")}
       </Badge>
     );
   }
@@ -187,11 +191,11 @@ function CredentialsCell({ credentialName, label }: { credentialName: string | u
   );
 }
 
-function CreatedByCell({ model }: { model: ModelData }) {
+function CreatedByCell({ t, model }: { t: ModelsTranslator; model: ModelData }) {
   const isConfigModel = !model.model_info?.db_model;
   const createdAt = formatShortDate(model.model_info.created_at);
-  const primary = isConfigModel ? "Defined in config" : model.model_info.created_by || "Unknown";
-  const secondaryForDbModel = createdAt ?? "Unknown date";
+  const primary = isConfigModel ? t("modelTable.definedInConfig") : model.model_info.created_by || t("common.unknown");
+  const secondaryForDbModel = createdAt ?? t("modelTable.unknownDate");
 
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
@@ -422,7 +426,7 @@ export const getModelsTableColumns = ({
     id: CREDENTIALS_COLUMN_ID,
     accessorFn: (row) => row.litellm_params?.litellm_credential_name ?? "",
     meta: { title: t("table.credentials") },
-    header: () => <CredentialsHeader />,
+    header: () => <CredentialsHeader t={t} />,
     enableSorting: false,
     size: 180,
     minSize: 110,
@@ -430,6 +434,7 @@ export const getModelsTableColumns = ({
       const credentialName = row.original.litellm_params?.litellm_credential_name;
       return (
         <CredentialsCell
+          t={t}
           credentialName={credentialName}
           label={credentialName ? credentialLabels?.get(credentialName) : undefined}
         />
@@ -439,12 +444,12 @@ export const getModelsTableColumns = ({
   {
     id: CREATED_BY_COLUMN_ID,
     accessorFn: (row) => row.model_info.created_by ?? "",
-    meta: { title: t("table.createdBy"), skeleton: "twoLine" },
-    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.createdBy")} />,
+    meta: { title: t("modelTable.createdBy"), skeleton: "twoLine" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("modelTable.createdBy")} />,
     enableSorting: true,
     size: 180,
     minSize: 110,
-    cell: ({ row }) => <CreatedByCell model={row.original} />,
+    cell: ({ row }) => <CreatedByCell t={t} model={row.original} />,
   },
   {
     id: UPDATED_AT_COLUMN_ID,

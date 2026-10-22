@@ -80,21 +80,22 @@ interface KeyDetailContentProps {
 }
 
 const KeyDetailContent: React.FC<KeyDetailContentProps> = ({ apiKey, detail, hidePromptCachingMetrics, onRetry }) => {
+  const t = useTranslations("usageKeyActivity");
   if (detail?.status === "loading") {
-    return <p className="py-4 text-sm text-muted-foreground">Loading key details...</p>;
+    return <p className="py-4 text-sm text-muted-foreground">{t("loadingDetails")}</p>;
   }
   if (detail?.status === "failed") {
     return (
       <p className="py-4 text-sm text-muted-foreground">
-        Could not load key details.{" "}
+        {t("detailsFailed")}{" "}
         <button type="button" className="font-medium text-foreground underline" onClick={onRetry}>
-          Retry
+          {t("retry")}
         </button>
       </p>
     );
   }
   if (detail?.status !== "loaded" || detail.metrics === undefined) {
-    return <p className="py-4 text-sm text-muted-foreground">No daily details available</p>;
+    return <p className="py-4 text-sm text-muted-foreground">{t("noDailyDetails")}</p>;
   }
   return (
     <ModelSection modelName={apiKey} metrics={detail.metrics} hidePromptCachingMetrics={hidePromptCachingMetrics} />
@@ -140,51 +141,55 @@ const KeySummaryStrip: React.FC<KeySummaryStripProps> = ({ summary, loading, hid
     >
       {loading ? (
         <span role="status" className="sr-only">
-          Loading chart data...
+          {t("loadingChart")}
         </span>
       ) : (
-        <h3 className="sr-only">Overall Usage</h3>
+        <h3 className="sr-only">{t("overallUsage")}</h3>
       )}
       <StatCell trend={trend("spend")}>
-        <Stat label="Spend" value={formatUsd(summary.total_spend)} pending={loading} />
+        <Stat label={t("spendColumn")} value={formatUsd(summary.total_spend)} pending={loading} />
       </StatCell>
       <StatCell trend={trend("requests")}>
-        <Stat label="Requests" value={summary.total_requests.toLocaleString()} pending={loading} />
+        <Stat label={t("requestsColumn")} value={summary.total_requests.toLocaleString()} pending={loading} />
         {!loading && (
           <div className="mt-0.5 flex gap-3 text-xs text-muted-foreground">
             <span>
-              <span className="text-success tabular-nums">{summary.total_successful_requests.toLocaleString()}</span> ok
+              <span className="text-success tabular-nums">{summary.total_successful_requests.toLocaleString()}</span>{" "}
+              {t("requestsOk")}
             </span>
             <span>
               <span className={summary.total_failed_requests > 0 ? "text-destructive tabular-nums" : "tabular-nums"}>
                 {summary.total_failed_requests.toLocaleString()}
               </span>{" "}
-              failed
+              {t("requestsFailed")}
             </span>
           </div>
         )}
       </StatCell>
       <StatCell trend={trend("tokens")}>
         <Stat
-          label="Tokens"
+          label={t("tokensStat")}
           value={summary.total_tokens.toLocaleString()}
           pending={loading}
           hint={
             loading
               ? undefined
-              : `${formatCompact(summary.prompt_tokens)} in · ${formatCompact(summary.completion_tokens)} out`
+              : t("tokensHint", {
+                  input: formatCompact(summary.prompt_tokens),
+                  output: formatCompact(summary.completion_tokens),
+                })
           }
         />
       </StatCell>
       <StatCell>
         <Stat
-          label="Avg cost / request"
+          label={t("avgCostPerRequest")}
           value={formatUsd(avgCost, 4)}
           pending={loading}
           hint={
             loading || hidePromptCachingMetrics
               ? undefined
-              : `${formatCompact(summary.total_cache_read_input_tokens)} cache read tokens`
+              : t("cacheReadHint", { count: formatCompact(summary.total_cache_read_input_tokens) })
           }
         />
       </StatCell>
@@ -395,7 +400,7 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
     <p className="px-4 py-8 text-center text-sm text-muted-foreground">
       {t("keysRangeFailed")}{" "}
       <button type="button" className="font-medium text-foreground underline" onClick={retryFirstPage}>
-        Retry
+        {t("retry")}
       </button>
     </p>
   );
@@ -426,7 +431,7 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
             </div>
             <span className="text-right text-sm tabular-nums text-foreground">{formatUsd(metrics.total_spend)}</span>
             <span className="text-right text-sm tabular-nums text-muted-foreground">
-              {metrics.total_requests.toLocaleString()} <span className="sr-only">requests</span>
+              {metrics.total_requests.toLocaleString()} <span className="sr-only">{t("requestsColumn")}</span>
             </span>
           </div>
         }
@@ -450,14 +455,16 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
   const showSearchErrorNote = !noMatches && searchFailed && !searching;
   const searchRetryButton = (
     <button type="button" className="font-medium text-foreground underline" onClick={retrySearch}>
-      Retry search
+      {t("retrySearch")}
     </button>
   );
   const emptyFilterBody = searchFailed ? (
-    <p className="px-4 py-8 text-center text-sm text-muted-foreground">Could not search keys. {searchRetryButton}</p>
+    <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+      {t("searchKeysFailed")} {searchRetryButton}
+    </p>
   ) : (
     <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-      No keys match &quot;{trimmedQuery}&quot; in this date range
+      {t("noKeysMatch", { query: trimmedQuery })}
     </p>
   );
 
@@ -549,7 +556,7 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
               <p>
                 {t("moreKeysFailed")}{" "}
                 <button type="button" className="font-medium text-foreground underline" onClick={retryNextPage}>
-                  Retry
+                  {t("retry")}
                 </button>
               </p>
             )}
