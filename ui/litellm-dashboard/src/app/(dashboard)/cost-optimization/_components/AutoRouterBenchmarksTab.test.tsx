@@ -1,6 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, screen, within } from "@testing-library/react";
-import { renderWithProviders as render } from "@/../tests/test-utils";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -31,6 +29,7 @@ import type {
   AutoRouterCacheStats,
 } from "./autoRouterBenchmarks";
 import { useAutoRouterBenchmarks } from "./useAutoRouterBenchmarks";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 
 type HookResult = ReturnType<typeof useAutoRouterBenchmarks>;
 
@@ -142,15 +141,10 @@ const renderTab = () => {
     cancelled: false,
     cancel: vi.fn(),
   };
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return {
     dateValue,
     onDateChange,
-    ...render(
-      <QueryClientProvider client={queryClient}>
-        <AutoRouterBenchmarksTab accessToken="sk-test" activity={activity} />
-      </QueryClientProvider>,
-    ),
+    ...renderWithProviders(<AutoRouterBenchmarksTab accessToken="sk-test" activity={activity} />),
   };
 };
 
@@ -189,12 +183,12 @@ describe("AutoRouterBenchmarksTab", () => {
           ]
         : ["不可用", "不可用", "不可用", "不可用"],
     );
-    expect(screen.queryByText(/Matching cost details are unavailable/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/匹配的成本明细不可用/)).not.toBeInTheDocument();
     expect(screen.getByLabelText("帮助")).toBeInTheDocument();
     const partial = estimatedTurns > 0 && estimatedTurns < 3073;
-    expect(screen.queryByText(/自适应与质量路由不计入/) != null).toBe(partial);
+    expect(screen.queryByText(/自适应路由和质量路由不计入/) != null).toBe(partial);
     if (partial) {
-      expect(screen.getByText(/在 10 个请求上对比/)).toBeInTheDocument();
+      expect(screen.getByText(/3,073 次请求中的 10 次/)).toBeInTheDocument();
     }
     if (pct != null) {
       const sign = pct > 0 ? "-" : "+";
@@ -208,9 +202,14 @@ describe("AutoRouterBenchmarksTab", () => {
     renderTab();
 
     const labels = screen
-      .getAllByText(/预计总节省|会话平均节省|会话平均轮次|会话平均时长|会话平均 Token 数/)
+      .getAllByText(/预计总节省|每个会话平均轮次|平均会话时长|每个会话平均 token 数/)
       .map((node) => node.textContent);
-    expect(labels).toEqual(["预计总节省", "会话平均节省", "会话平均轮次", "会话平均时长", "会话平均 Token 数"]);
+    expect(labels).toEqual([
+      "预计总节省",
+      "每个会话平均轮次",
+      "平均会话时长",
+      "每个会话平均 token 数",
+    ]);
   });
 
   it("renders the headline numbers the tiles exist for", () => {
@@ -221,7 +220,7 @@ describe("AutoRouterBenchmarksTab", () => {
     expect(screen.getByText("-86%")).toBeInTheDocument();
     expect(screen.getByText("自动路由实际支出")).toBeInTheDocument();
     expect(screen.getByText("$359.86")).toBeInTheDocument();
-    expect(screen.getByText("估算基线支出")).toBeInTheDocument();
+    expect(screen.getByText("预估基线支出")).toBeInTheDocument();
     expect(screen.getByText("$2,534.45")).toBeInTheDocument();
     expect(screen.getByText("32.7")).toBeInTheDocument();
     expect(screen.getByText("2.1h")).toBeInTheDocument();
@@ -255,10 +254,10 @@ describe("AutoRouterBenchmarksTab", () => {
       renderTab();
 
       expect(screen.getAllByText("不可用")).toHaveLength(2);
-      expect(screen.queryByText(/千轮/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/\/ 千轮/)).not.toBeInTheDocument();
       expect(screen.getByText("$359.86")).toBeInTheDocument();
       expect(screen.getByText("$2,174.59")).toBeInTheDocument();
-      expect(screen.getByText(/部分用量早于分类成本统计上线/)).toBeInTheDocument();
+      expect(screen.getByText(/部分用量记录早于分类成本统计/)).toBeInTheDocument();
     },
   );
 
@@ -266,11 +265,36 @@ describe("AutoRouterBenchmarksTab", () => {
     mockHook({ data: response([group(), group({ router_name: "gpt-auto" })]) });
     renderTab();
 
-    const tile = screen.getByText("会话平均节省").closest('[data-slot="card"]');
-    if (!tile) throw new Error("expected avg saved per session to render as a metric tile");
-
-    expect(within(tile).getByText("$23.13")).toBeInTheDocument();
+    const tile = screen.getByText("每个会话平均轮次").closest<HTMLElement>('[data-slot="card"]');
+    if (!tile) throw new Error("expected avg turns per session to render as a metric tile");
     expect(within(tile).getByText("· 94 个会话")).toBeInTheDocument();
+    expect(screen.queryByText("每个会话平均节省")).not.toBeInTheDocument();
+    expect(screen.getByText(/节省和支出按选中的 UTC 日期统计请求/)).toBeInTheDocument();
+    expect(screen.getByText(/会话指标涵盖与该时间范围有交集的每个会话/)).toBeInTheDocument();
+  });
+
+  it("shows session averages as unavailable, not zero, when routed requests have no session rows", () => {
+    const noSessions = {
+      sessions: 0,
+      avg_turns_per_session: null,
+      avg_session_seconds: null,
+      avg_tokens_per_session: null,
+    };
+    mockHook({ data: response([], totals(noSessions)) });
+    renderTab();
+
+    expect(screen.getAllByText("不可用")).toHaveLength(3);
+    expect(screen.queryByText("0.0")).not.toBeInTheDocument();
+  });
+
+  it.each([3, -3])("explains a %s gap between router records and recorded savings instead of comparing", (gap) => {
+    const residual = { saved_spend: 5, unattributed_saved_spend: gap, baseline_spend: null, saved_pct: null };
+    mockHook({ data: response([], totals(residual)) });
+    renderTab();
+
+    expect(screen.getByText("$5.00")).toBeInTheDocument();
+    expect(screen.getByText(/按路由拆分的记录与已记录的节省相差 \$3\.00/)).toBeInTheDocument();
+    expect(screen.getByText("预估基线支出").nextSibling?.textContent).toBe("不可用");
   });
 
   it("exposes each spend row as a term and its value, not as loose text", () => {
@@ -279,7 +303,12 @@ describe("AutoRouterBenchmarksTab", () => {
 
     const terms = screen.getAllByRole("term").map((node) => node.textContent);
     const values = screen.getAllByRole("definition").map((node) => node.textContent);
-    expect(terms).toEqual(["自动路由实际支出", "LLM 支出", "分类成本（$2.00 / 千轮）", "估算基线支出"]);
+    expect(terms).toEqual([
+      "自动路由实际支出",
+      "LLM 支出",
+      "分类成本（$2.00 / 千轮）",
+      "预估基线支出",
+    ]);
     expect(values).toEqual(["$359.86", "$353.71", "$6.15", "$2,534.45"]);
   });
 
@@ -307,11 +336,11 @@ describe("AutoRouterBenchmarksTab", () => {
     renderTab();
 
     expect(screen.getByText("同一模型")).toBeInTheDocument();
-    expect(screen.getByText("上一轮使用同一档位")).toBeInTheDocument();
+    expect(screen.getByText("上一轮 → 同一层级")).toBeInTheDocument();
     expect(screen.getByText("首次访问")).toBeInTheDocument();
-    expect(screen.getByText("上一轮尚未使用过该档位")).toBeInTheDocument();
-    expect(screen.getByText("回落档位")).toBeInTheDocument();
-    expect(screen.getByText("上一轮曾使用过该档位")).toBeInTheDocument();
+    expect(screen.getByText("上一轮 → 尚未使用过的层级")).toBeInTheDocument();
+    expect(screen.getByText("回到该层级")).toBeInTheDocument();
+    expect(screen.getByText("上一轮 → 之前用过的层级")).toBeInTheDocument();
     expect(screen.getByText("400")).toBeInTheDocument();
     expect(screen.getByText("37")).toBeInTheDocument();
     expect(screen.getByText("381")).toBeInTheDocument();
@@ -321,7 +350,7 @@ describe("AutoRouterBenchmarksTab", () => {
     expect(screen.getByText("97.7%")).toBeInTheDocument();
     expect(screen.getByText("24.3%")).toBeInTheDocument();
     expect(screen.getByText("81.6%")).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: "各分桶的轮次占比" })).not.toHaveClass("bg-muted");
+    expect(screen.getByRole("img", { name: "各分类的轮次占比" })).not.toHaveClass("bg-muted");
   });
 
   it("summarizes the cache column from the bucketed turns, not the session turns", () => {
@@ -330,7 +359,7 @@ describe("AutoRouterBenchmarksTab", () => {
 
     expect(screen.getByText("93.3%")).toBeInTheDocument();
     expect(screen.getByText("818")).toBeInTheDocument();
-    expect(screen.getByText(/已计量/)).toBeInTheDocument();
+    expect(screen.getByText(/轮次已统计/)).toBeInTheDocument();
   });
 
   it("computes the expired-miss share over every measured turn, not just return-to-tier misses", () => {
@@ -380,7 +409,7 @@ describe("AutoRouterBenchmarksTab", () => {
     mockHook({ data: response([group(unordered)], unordered) });
     renderTab();
 
-    expect(screen.getByText(/12 轮跨 pod 乱序到达/)).toBeInTheDocument();
+    expect(screen.getByText(/有 12 个轮次因跨 pod 乱序到达，未计入分类/)).toBeInTheDocument();
   });
 
   it("labels the default selection instead of leaking the __all__ sentinel", () => {
@@ -417,12 +446,12 @@ describe("AutoRouterBenchmarksTab", () => {
     renderTab();
 
     expect(screen.getByText("预计总节省")).toBeInTheDocument();
-    expect(screen.getAllByText("$0.00")).toHaveLength(6);
+    expect(screen.getAllByText("$0.00")).toHaveLength(5);
     expect(screen.getByText("· 0 个会话")).toBeInTheDocument();
     expect(screen.getByText("0s")).toBeInTheDocument();
-    expect(screen.getByText(/已计量/)).toBeInTheDocument();
+    expect(screen.getByText(/轮次已统计/)).toBeInTheDocument();
     expect(screen.getAllByText("0.0%").length).toBeGreaterThan(0);
-    expect(screen.getByRole("img", { name: "各分桶的轮次占比" })).toHaveClass("bg-muted");
+    expect(screen.getByRole("img", { name: "各分类的轮次占比" })).toHaveClass("bg-muted");
   });
 
   it("shows the savings delta as an unsigned zero when nothing was saved", () => {
@@ -457,11 +486,7 @@ describe("AutoRouterBenchmarksTab", () => {
       cancelled: false,
       cancel: vi.fn(),
     };
-    render(
-      <QueryClientProvider client={new QueryClient()}>
-        <AutoRouterUsageView accessToken="sk-test" activity={activity} apiKey="key-hash-1" />
-      </QueryClientProvider>,
-    );
+    renderWithProviders(<AutoRouterUsageView accessToken="sk-test" activity={activity} apiKey="key-hash-1" />);
 
     expect(vi.mocked(useAutoRouterBenchmarks)).toHaveBeenCalledWith("sk-test", dateValue, "key-hash-1", undefined);
     expect(screen.getByText("预计总节省")).toBeInTheDocument();

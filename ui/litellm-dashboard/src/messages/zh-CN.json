@@ -1663,7 +1663,14 @@
       "healthCheckModelPlaceholder": "选择现有的健康检查模型",
       "litellmParamsTooltip": "用于发起 litellm.completion() 调用的可选 litellm 参数。部分参数由 LiteLLM 自动添加。",
       "teamLabel": "团队",
-      "cacheControlLocation": "位置"
+      "cacheControlLocation": "位置",
+      "modelNameLabel": "模型名称",
+      "cacheWriteCost1h": "缓存写入成本（1 小时，每百万 Token）",
+      "cacheWriteCost1hPlaceholder": "留空则使用成本表中的 1 小时费率，否则使用缓存写入成本",
+      "cacheWriteCost1hHint": "提示词缓存写入 TTL 为 1 小时时的费率。保存时留空，已知模型会使用成本表中的 1 小时费率，否则使用缓存写入成本。",
+      "cachePointLocation": "位置：",
+      "cachePointRole": "角色：",
+      "cachePointIndex": "序号："
     },
     "health": {
       "title": "健康状态",
@@ -7710,7 +7717,34 @@
         "percentSaved": "节省百分比"
       },
       "empty": "该时间范围内没有自动路由",
-      "footnote": "节省金额按各路由对应的高档模型基线估算。token 统计启用之前记录的用量没有 token 总量和单位成本，单位成本还要求 token 数不为零。"
+      "footnote": "节省金额按各路由对应的高档模型基线估算。token 统计启用之前记录的用量没有 token 总量和单位成本，单位成本还要求 token 数不为零。",
+      "comparedOn": "按 {total} 次请求中的 {estimated} 次对比，自适应路由和质量路由不计入",
+      "perRouterDiff": "按路由拆分的记录与已记录的节省相差 {amount}，例如按路由统计上线之前的历史数据，因此无法进行基线对比",
+      "actualSpend": "自动路由实际支出",
+      "actualSpendTooltip": "所选范围内经自动路由的支出，包含分类成本，仅统计复杂度路由。自适应路由和质量路由不计入。基线为这部分支出加上已记录的节省。",
+      "llmSpend": "LLM 支出",
+      "classificationCost": "分类成本",
+      "breakdownUnavailable": "部分用量记录早于分类成本统计，因此无法拆分明细。",
+      "estimatedBaselineSpend": "预估基线支出",
+      "shareOfTurnsByBucket": "各分类的轮次占比",
+      "bucket": "分类",
+      "hitRate": "命中率",
+      "expiredMiss": "过期未命中",
+      "expiredMissTooltip": "在所有已统计轮次中，因回到更早层级时缓存已过 TTL 而未命中缓存的比例",
+      "shareOfTurns": "轮次占比",
+      "turnsMeasured": "轮次已统计",
+      "unorderedTurns": "有 {count} 个轮次因跨 pod 乱序到达，未计入分类",
+      "loadingUsage": "正在加载自动路由用量...",
+      "savingsFootnote": "节省和支出按选中的 UTC 日期统计请求。实际支出涵盖复杂度路由上的所有请求，包含 LLM 分类成本。基线为实际支出加上已记录的节省，因此节省可能为零或负数。",
+      "sessionFootnote": "会话指标涵盖与该时间范围有交集的每个会话，包括其在范围之外的轮次。",
+      "avgTurnsPerSession": "每个会话平均轮次",
+      "sessionsHint": "· {count} 个会话",
+      "avgSessionLength": "平均会话时长",
+      "avgTokensPerSession": "每个会话平均 token 数",
+      "bucketExplain": "按路由的实际行为，每个轮次只归入一个分类",
+      "usageTitle": "自动路由用量",
+      "userScopeNote": "该用户在 API 密钥和 JWT 认证请求上的用量。未记录用户 ID 的旧会话不计入。",
+      "per1kTurns": "（{rate} / 千轮）"
     },
     "shadowEval": {
       "target": "目标",
@@ -11294,7 +11328,14 @@
     },
     "action": {
       "refresh": "刷新"
-    }
+    },
+    "storingCredential": "正在保存凭据...",
+    "credentialStored": "凭据保存成功",
+    "backToModels": "返回模型列表",
+    "notFound": "未找到模型",
+    "publicModelName": "公共模型名称：",
+    "copyModelId": "复制模型 ID",
+    "editAutoRouter": "编辑自动路由器"
   },
   "liteAdmin": {
     "loadingGatewaySettings": "正在加载网关设置",

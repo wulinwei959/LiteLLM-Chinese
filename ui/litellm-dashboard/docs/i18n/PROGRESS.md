@@ -4360,3 +4360,15 @@ i18n 自身的三条守卫也是全绿，16 个用例
 新工具留在仓库里：`scripts/catalog-set.py`（按原文件风格改目录，未变更部分逐字节保留，对两个目录做过 round-trip 验证）、`scripts/catalog-batch.py`、`scripts/i18n-apply.py`、`scripts/i18n_helper.py`、`ui/litellm-dashboard/scripts/scan-english.mjs`、`ui/litellm-dashboard/scripts/add-i18n-hooks.mjs`。
 
 还欠着：zod 的自定义校验消息（`systemOneUI/lib/schemas.ts` 与 `openAIDecisions.ts` 里那些 `refine(..., "Model must be a non-empty string.")`）仍是英文，要译得把 schema 改成按译员构造的工厂函数，`openAIDecisionsForm.ts` 用了 `openAIDecisionsRequestSchema.shape.input`，改签名要一起动。测试文件的存量类型错误 418 条（合并前基线 878），大头是测试还在用旧 API 的 props 与旧英文断言，与汉化无关。渲染扫描（`npm run scan:rendered`）需要起 dev server，本轮没跑，漏网的动态文案以它为准。
+
+## 2026-10-23 第 424 簇：hook 误用清扫与两页收口
+
+上一簇的清单只扫了合并改过的 87 个文件，漏掉了被合并覆盖回英文的旧文件。全库重扫后是 178 个文件、736 条可见英文。这一簇先做了两件事。
+
+一是把 `useTranslations` 的误用扫干净。`react-hooks/rules-of-hooks` 报了 33 处，分布在 14 个文件：模块级纯函数里调 hook、表格列构造器里调 hook、事件回调里调 hook、zod schema 的 `refine` 里调 hook。这类问题只在渲染或校验时才炸，静态检查能拦住，所以按 lint 结果逐处改成把译员当参数传下去，或者复用组件作用域的 `t`。顺带修了 `claude_code_plugins/helpers` 里 `getSourceDisplayText` 少传一个参数导致的类型错误。
+
+二是收口 `ModelInfoEditForm` 与 `model_info_view`。`ModelInfoEditForm` 是合并覆盖的典型：main 上整页是中文，合并后回到英文，连字段标签、占位符、缓存控制的注入点、知识库与标签的空态都丢了。zod schema 改成按译员构造的工厂后不再依赖 hook，五条英文校验消息换成目录里已有的中文。`model_info_view` 补完剩下 13 条。两个文件的测试合计 125 例全绿。
+
+`AutoRouterBenchmarksTab` 还暴露了一个合并口径问题。合并时组件取了 release 的树，测试却留着 main 的版本，于是 36 例全红。release 的测试文件没带 `NextIntlClientProvider`（上游没有 i18n），直接拿来也是 36 例全红。最后的做法是取 release 的测试，换成 `renderWithProviders` 包住，断言按新的中文文案翻面，并把 `ALL_ROUTERS` 的哨兵值在渲染前换成目录里的「全部自动路由」。日期范围标签走 `Intl`，测试环境里跟着 `zh-CN` 输出「7月6日 – 8月5日 (UTC)」。
+
+数：36 例全绿，可见英文只剩 `(UTC)` 这个标准时区缩写。生产类型检查 0 条，死键 0，i18n 守卫 23 例全绿。

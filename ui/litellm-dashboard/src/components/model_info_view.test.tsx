@@ -261,7 +261,7 @@ describe("ModelInfoView", () => {
 
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} userRole="Internal User" />, { wrapper });
 
-    expect(await screen.findByText("Model Settings")).toBeInTheDocument();
+    expect(await screen.findByText("模型设置")).toBeInTheDocument();
     expect(screen.queryByTestId("kubernetes-pods-card")).not.toBeInTheDocument();
   });
 
@@ -281,14 +281,14 @@ describe("ModelInfoView", () => {
 
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-    expect(await screen.findByText("Model Settings")).toBeInTheDocument();
+    expect(await screen.findByText("模型设置")).toBeInTheDocument();
     expect(screen.queryByTestId("kubernetes-pods-card")).not.toBeInTheDocument();
   });
 
   it("hides Kubernetes pods when discovery is not configured", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-    expect(await screen.findByText("Model Settings")).toBeInTheDocument();
+    expect(await screen.findByText("模型设置")).toBeInTheDocument();
     expect(screen.queryByTestId("kubernetes-pods-card")).not.toBeInTheDocument();
   });
 
@@ -321,7 +321,7 @@ describe("ModelInfoView", () => {
   it("should display model name in the header", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText(/公共模型名称:/)).toBeInTheDocument();
+      expect(screen.getByText(/公共模型名称/)).toBeInTheDocument();
     });
   });
 
@@ -406,10 +406,10 @@ describe("ModelInfoView", () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText("Model Settings")).toBeInTheDocument();
+      expect(screen.getByText("模型设置")).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: /test connection/i }));
+    await user.click(screen.getByRole("button", { name: /测试连接/ }));
 
     await waitFor(() => {
       expect(mockTestConnectionRequest).toHaveBeenCalled();
@@ -1392,7 +1392,7 @@ describe("ModelInfoView", () => {
     await userEvent.click(testConnectionButton);
 
     await waitFor(() => {
-      expect(mockToast.warning).toHaveBeenCalledWith("尚未配置任何复杂度层级，无需测试。");
+      expect(mockToast.warning).toHaveBeenCalledWith("尚未配置任何复杂度层级，因此没有可测试的内容。");
     });
     expect(mockTestModelGroupConnection).not.toHaveBeenCalled();
   });
@@ -1652,7 +1652,7 @@ describe("ModelInfoView", () => {
 
       await user.click(await screen.findByTestId("reuse-credentials-button"));
 
-      const dialog = await screen.findByRole("dialog", { name: "Using Existing Credential" });
+      const dialog = await screen.findByRole("dialog", { name: "使用已有凭据" });
       await vi.waitFor(() => expect(dialog).toHaveTextContent("Selected Label"));
       expect(dialog).toHaveTextContent("selected-credential");
     });
@@ -1692,7 +1692,7 @@ describe("ModelInfoView", () => {
     const openCredentialSelect = async (user: ReturnType<typeof userEvent.setup>, triggerText?: string) => {
       const trigger = screen
         .getAllByRole("combobox")
-        .filter((element) => element.getAttribute("placeholder") === "Select or search for existing credentials")
+        .filter((element) => element.getAttribute("placeholder") === "选择或搜索现有凭据")
         .find((element) => triggerText === undefined || (element as HTMLInputElement).value.includes(triggerText));
       if (trigger === undefined) {
         throw new Error(`Could not find credential selector${triggerText ? ` with ${triggerText}` : ""}`);
@@ -1789,7 +1789,7 @@ describe("ModelInfoView", () => {
       const [cacheRead, cacheWrite] = screen.getAllByPlaceholderText("留空则默认为输入成本");
       await user.type(cacheRead, "5");
       await user.type(cacheWrite, "9");
-      await user.type(screen.getByPlaceholderText("Defaults to the cost map 1 hour rate, else Cache Write Cost"), "15");
+      await user.type(screen.getByPlaceholderText("留空则使用成本表中的 1 小时费率，否则使用缓存写入成本"), "15");
 
       const payload = await save(user);
 
@@ -1820,7 +1820,7 @@ describe("ModelInfoView", () => {
       it("shows both configured cache write rates per million tokens", async () => {
         renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-        expect(await screen.findByText("Cache Write Cost (1 hour, per 1M tokens)")).toBeInTheDocument();
+        expect(await screen.findByText("缓存写入成本（1 小时，每百万 Token）")).toBeInTheDocument();
         expect(screen.getByText("3.7500")).toBeInTheDocument();
         expect(screen.getByText("6.0000")).toBeInTheDocument();
       });
@@ -1829,7 +1829,7 @@ describe("ModelInfoView", () => {
         const user = userEvent.setup();
         await enterEditMode(user);
 
-        const oneHour = screen.getByPlaceholderText("Defaults to the cost map 1 hour rate, else Cache Write Cost");
+        const oneHour = screen.getByPlaceholderText("留空则使用成本表中的 1 小时费率，否则使用缓存写入成本");
         expect(oneHour).toHaveValue(6);
         await user.clear(oneHour);
 
@@ -2006,7 +2006,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "无" }));
+      await user.click(await screen.findByRole("option", { name: "None" }));
 
       const payload = await save(user);
 
@@ -2019,7 +2019,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "无" }));
+      await user.click(await screen.findByRole("option", { name: "None" }));
       await openCredentialSelect(user);
       await user.click(await screen.findByRole("option", { name: "selected-credential" }));
 
@@ -2041,7 +2041,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user);
-      await user.click(await screen.findByRole("option", { name: "无" }));
+      await user.click(await screen.findByRole("option", { name: "None" }));
 
       const payload = await save(user);
 
@@ -2054,13 +2054,13 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "无" }));
+      await user.click(await screen.findByRole("option", { name: "None" }));
       await user.click(screen.getByRole("button", { name: /取消/ }));
       await user.click(await screen.findByRole("button", { name: /编辑设置/ }));
 
       const credentialTrigger = screen
         .getAllByRole("combobox")
-        .find((element) => element.getAttribute("placeholder") === "Select or search for existing credentials");
+        .find((element) => element.getAttribute("placeholder") === "选择或搜索现有凭据");
       expect(credentialTrigger).toHaveValue("selected-credential");
     });
 
@@ -2069,10 +2069,10 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "无" }));
+      await user.click(await screen.findByRole("option", { name: "None" }));
       await save(user);
 
-      expect(await screen.findByText("手动输入")).toBeInTheDocument();
+      expect(await screen.findByText("手动")).toBeInTheDocument();
       expect(screen.queryByText("selected-credential")).not.toBeInTheDocument();
     });
 
@@ -2106,7 +2106,7 @@ describe("ModelInfoView", () => {
       await enterEditMode(user);
 
       await openCredentialSelect(user, "selected-credential");
-      await user.click(await screen.findByRole("option", { name: "无" }));
+      await user.click(await screen.findByRole("option", { name: "None" }));
       await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => expect(mockToast.fromError).toHaveBeenCalled());
@@ -2259,10 +2259,10 @@ describe("ModelInfoView", () => {
     });
 
     const pricingInputs = () => [
-      screen.getByPlaceholderText("Enter input cost"),
-      screen.getByPlaceholderText("Enter output cost"),
-      ...screen.getAllByPlaceholderText("Defaults to Input Cost if blank"),
-      screen.getByPlaceholderText("Defaults to the cost map 1 hour rate, else Cache Write Cost"),
+      screen.getByPlaceholderText("请输入输入成本"),
+      screen.getByPlaceholderText("请输入输出成本"),
+      ...screen.getAllByPlaceholderText("留空则默认为输入成本"),
+      screen.getByPlaceholderText("留空则使用成本表中的 1 小时费率，否则使用缓存写入成本"),
     ];
 
     it("refuses a negative price on every pricing field and never calls the API", async () => {
@@ -2272,7 +2272,7 @@ describe("ModelInfoView", () => {
         fireEvent.change(input, { target: { value: "-5" } });
       }
 
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       expect(await screen.findAllByText("Enter a price of 0 or more")).toHaveLength(5);
       expect(mockModelPatchUpdateCall).not.toHaveBeenCalled();
@@ -2282,7 +2282,7 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
       setInputCost("0");
-      fireEvent.change(screen.getByPlaceholderText("Enter output cost"), { target: { value: "0" } });
+      fireEvent.change(screen.getByPlaceholderText("请输入输出成本"), { target: { value: "0" } });
 
       const payload = await save(user);
 
@@ -2297,7 +2297,7 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
       setInputCost("2");
-      const [cacheRead] = screen.getAllByPlaceholderText("Defaults to Input Cost if blank");
+      const [cacheRead] = screen.getAllByPlaceholderText("留空则默认为输入成本");
       fireEvent.change(cacheRead, { target: { value: "1" } });
       fireEvent.change(cacheRead, { target: { value: "" } });
 

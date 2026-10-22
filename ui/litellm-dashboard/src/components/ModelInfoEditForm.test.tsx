@@ -1,10 +1,11 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent, { PointerEventsCheckLevel } from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import type { CredentialItem } from "@/components/networking";
 
 import ModelInfoEditForm, { perMillionToPerToken } from "./ModelInfoEditForm";
+import { renderWithProviders } from "../../tests/test-utils";
 
 vi.mock("@/components/networking", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/components/networking")>();
@@ -28,7 +29,7 @@ const renderForm = ({
   isEditing = true,
   litellmParams = { model: "gpt-4o" } as Record<string, unknown>,
 } = {}) =>
-  render(
+  renderWithProviders(
     <ModelInfoEditForm
       localModelData={{
         model_name: "gpt-4o",
@@ -86,10 +87,10 @@ describe("ModelInfoEditForm pricing fields", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm({ onSubmit, litellmParams: storedPrices });
 
-    expect(screen.getByPlaceholderText("Enter input cost")).toHaveValue(3);
-    fireEvent.change(screen.getByPlaceholderText("Enter input cost"), { target: { value: "2.5" } });
-    fireEvent.change(screen.getByPlaceholderText("Enter output cost"), { target: { value: "" } });
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    expect(screen.getByPlaceholderText("请输入输入成本")).toHaveValue(3);
+    fireEvent.change(screen.getByPlaceholderText("请输入输入成本"), { target: { value: "2.5" } });
+    fireEvent.change(screen.getByPlaceholderText("请输入输出成本"), { target: { value: "" } });
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await vi.waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     const [values, isFieldTouched] = onSubmit.mock.calls[0];
@@ -109,11 +110,11 @@ describe("ModelInfoEditForm pricing fields", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm({ onSubmit, litellmParams: storedPrices });
 
-    fireEvent.change(screen.getByPlaceholderText("Enter output cost"), { target: { value: "-1" } });
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    fireEvent.change(screen.getByPlaceholderText("请输入输出成本"), { target: { value: "-1" } });
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     expect(await screen.findByText("Enter a price of 0 or more")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter output cost")).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByPlaceholderText("请输入输出成本")).toHaveAttribute("aria-invalid", "true");
     expect(onSubmit).not.toHaveBeenCalled();
   });
 });
@@ -124,7 +125,7 @@ describe("ModelInfoEditForm existing-credentials picker", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm({ onSubmit });
 
-    const picker = await screen.findByPlaceholderText("Select or search for existing credentials");
+    const picker = await screen.findByPlaceholderText("选择或搜索现有凭据");
     await user.click(picker);
 
     const option = await screen.findByRole("option", { name: /openai-main/ });
@@ -133,7 +134,7 @@ describe("ModelInfoEditForm existing-credentials picker", () => {
 
     await user.type(picker, "main openai");
     await user.click(await screen.findByRole("option", { name: /openai-main/ }));
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await vi.waitFor(() => expect(onSubmit).toHaveBeenCalled());
     expect(onSubmit.mock.calls[0][0].litellm_credential_name).toBe("openai-main");
@@ -144,17 +145,17 @@ describe("ModelInfoEditForm existing-credentials picker", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm({ onSubmit, litellmParams: { model: "gpt-4o", litellm_credential_name: "openai-main" } });
 
-    const picker = await screen.findByPlaceholderText("Select or search for existing credentials");
+    const picker = await screen.findByPlaceholderText("选择或搜索现有凭据");
     expect(picker).toHaveValue("Main OpenAI");
     await user.clear(picker);
     await user.tab();
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
     await vi.waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit.mock.calls[0][0].litellm_credential_name).toBe("openai-main");
 
     await user.click(picker);
     await user.click(await screen.findByRole("option", { name: "None" }));
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
     await vi.waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
     expect(onSubmit.mock.calls[1][0].litellm_credential_name).toBeNull();
   });
@@ -170,7 +171,7 @@ describe("ModelInfoEditForm existing-credentials picker", () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     renderForm({ litellmParams: { model: "gpt-4o", litellm_credential_name: "openai-main" } });
 
-    const picker = await screen.findByPlaceholderText("Select or search for existing credentials");
+    const picker = await screen.findByPlaceholderText("选择或搜索现有凭据");
     expect(picker).toHaveValue("Main OpenAI");
     expect(screen.getByText("openai-main")).toBeInTheDocument();
 
@@ -188,6 +189,6 @@ describe("ModelInfoEditForm existing-credentials picker", () => {
     unmount();
 
     renderForm({ isEditing: false });
-    expect(screen.getByText("Manual")).toBeInTheDocument();
+    expect(screen.getByText("手动")).toBeInTheDocument();
   });
 });

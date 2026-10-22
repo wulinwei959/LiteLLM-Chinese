@@ -1663,7 +1663,14 @@
       "healthCheckModelPlaceholder": "Select existing health check model",
       "litellmParamsTooltip": "Optional litellm params used for making a litellm.completion() call. Some params are automatically added by LiteLLM.",
       "teamLabel": "Team",
-      "cacheControlLocation": "Location"
+      "cacheControlLocation": "Location",
+      "modelNameLabel": "Model Name",
+      "cacheWriteCost1h": "Cache Write Cost (1 hour, per 1M tokens)",
+      "cacheWriteCost1hPlaceholder": "Defaults to the cost map 1 hour rate, else Cache Write Cost",
+      "cacheWriteCost1hHint": "Rate for prompt cache writes with a 1 hour TTL. If left blank on save, known models use their cost map 1 hour rate, otherwise Cache Write Cost.",
+      "cachePointLocation": "Location:",
+      "cachePointRole": "Role:",
+      "cachePointIndex": "Index:"
     },
     "health": {
       "title": "Health Status",
@@ -7710,7 +7717,34 @@
         "percentSaved": "% saved"
       },
       "empty": "No auto-routers in this range",
-      "footnote": "Savings are estimated against each router's premium baseline. Token totals and unit costs are unavailable for usage recorded before token tracking; unit cost also requires nonzero tokens."
+      "footnote": "Savings are estimated against each router's premium baseline. Token totals and unit costs are unavailable for usage recorded before token tracking; unit cost also requires nonzero tokens.",
+      "comparedOn": "Compared on {estimated} of {total} requests; adaptive and quality routers are excluded",
+      "perRouterDiff": "Per-router records differ from recorded savings by {amount}, for example history from before per-router tracking, so the baseline comparison is unavailable",
+      "actualSpend": "Actual auto-router spend",
+      "actualSpendTooltip": "Auto-routed spend in the range, including classification costs, for complexity routers. Adaptive and quality routers are excluded. Baseline is this spend plus recorded savings.",
+      "llmSpend": "LLM spend",
+      "classificationCost": "Classification cost",
+      "breakdownUnavailable": "Breakdown unavailable because some usage predates classification-cost tracking.",
+      "estimatedBaselineSpend": "Estimated baseline spend",
+      "shareOfTurnsByBucket": "Share of turns by bucket",
+      "bucket": "Bucket",
+      "hitRate": "Hit rate",
+      "expiredMiss": "Expired-miss",
+      "expiredMissTooltip": "share of all measured turns that missed cache because a return to an earlier tier came after its TTL lapsed",
+      "shareOfTurns": "Share of turns",
+      "turnsMeasured": "turns measured",
+      "unorderedTurns": "{count} turns arrived out of order across pods and are not bucketed",
+      "loadingUsage": "Loading auto-router usage...",
+      "savingsFootnote": "Savings and spend count requests on the selected UTC days. Actual spend covers every request on complexity routers, including LLM classification cost. Baseline is actual spend plus recorded savings, so savings can be zero or negative.",
+      "sessionFootnote": "Session metrics cover every session that overlaps the range, including its turns outside the range.",
+      "avgTurnsPerSession": "Avg turns per session",
+      "sessionsHint": "· {count} sessions",
+      "avgSessionLength": "Avg session length",
+      "avgTokensPerSession": "Avg tokens per session",
+      "bucketExplain": "every turn falls in exactly one bucket, by what the router did",
+      "usageTitle": "Auto-router usage",
+      "userScopeNote": "Usage for this user across API keys and JWT-authenticated requests. Older sessions recorded without a user ID are not included.",
+      "per1kTurns": "({rate} / 1K turns)"
     },
     "shadowEval": {
       "target": "Target",
@@ -11298,7 +11332,14 @@
     },
     "action": {
       "refresh": "Refresh"
-    }
+    },
+    "storingCredential": "Storing credential..",
+    "credentialStored": "Credential stored successfully",
+    "backToModels": "Back to Models",
+    "notFound": "Model not found",
+    "publicModelName": "Public Model Name:",
+    "copyModelId": "Copy model ID",
+    "editAutoRouter": "Edit Auto Router"
   },
   "liteAdmin": {
     "loadingGatewaySettings": "Loading gateway settings",
