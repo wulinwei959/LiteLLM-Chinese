@@ -54,11 +54,6 @@ const AUTH_METHOD_SELECT_ID = "credential_auth_method";
 const API_KEY_FIELDS: readonly string[] = ["api_key"];
 const NO_HIDDEN_FIELDS: readonly string[] = [];
 
-const authMethodItems: { value: AuthMethod; label: string }[] = [
-  { value: "api_key", label: "API key" },
-  { value: "federation", label: "Workload identity federation" },
-];
-
 interface CredentialModalProps {
   open: boolean;
   onCancel: () => void;
@@ -87,6 +82,10 @@ export default function CredentialModal({
 }: CredentialModalProps) {
   const t = useTranslations("credentials");
   const commonT = useTranslations("common");
+  const authMethodItems: { value: AuthMethod; label: string }[] = [
+    { value: "api_key", label: t("apiKeyMethod") },
+    { value: "federation", label: t("federationLabel") },
+  ];
   const isEdit = mode === "edit";
   const [selectedProvider, setSelectedProvider] = useState<string | null>(
     (existingCredential?.credential_info.custom_llm_provider as Providers) ?? initialProvider ?? Providers.OpenAI,
@@ -195,14 +194,14 @@ export default function CredentialModal({
                 )}
               </MountedFormField>
 
-              <MountedFormField label="Display Name:" name="display_name" className="mb-4">
+              <MountedFormField label={t("displayNameLabel")} name="display_name" className="mb-4">
                 {(control) => (
                   <Input
                     id={control.id}
                     value={typeof control.value === "string" ? control.value : ""}
                     onChange={control.onChange}
                     onBlur={control.onBlur}
-                    placeholder="e.g. Production OpenAI"
+                    placeholder={t("displayNamePlaceholder")}
                   />
                 )}
               </MountedFormField>
@@ -232,10 +231,7 @@ export default function CredentialModal({
               {federatedProviderOf(selectedProvider) !== null && (
                 <div className="mb-4 flex flex-col gap-2">
                   <label htmlFor={AUTH_METHOD_SELECT_ID} className="text-sm font-medium">
-                    {labelWithHint(
-                      "Authentication:",
-                      "Workload identity federation exchanges an identity token for a short-lived access token from the provider, so no API key is stored.",
-                    )}
+                    {labelWithHint(t("authMethodLabel"), t("authMethodHint"))}
                   </label>
                   <Select
                     items={authMethodItems}

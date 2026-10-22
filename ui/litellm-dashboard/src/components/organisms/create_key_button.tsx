@@ -714,8 +714,8 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
     <MountedFormField
       label={
         <span>
-          User ID{" "}
-          <SimpleTooltip content="The user who will own this key and be responsible for its usage">
+          {usersT("userID")}{" "}
+          <SimpleTooltip content={ct("userIdHint")}>
             <Info className="ml-1 inline size-3.5 align-text-bottom" />
           </SimpleTooltip>
         </span>
@@ -723,10 +723,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
       name="user_id"
       className="mt-4"
       required
-      rules={requiredRule(
-        keyOwner === "another_user",
-        `Please input the user ID of the user you are assigning the key to`,
-      )}
+      rules={requiredRule(keyOwner === "another_user", ct("userIdRequired"))}
     >
       {(control) =>
         ownerLimitedToTeamMembers ? (
@@ -737,7 +734,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
             onValueChange={control.onChange}
             disabled={memberOwnerOptions.length === 0}
             placeholder={memberOwnerPlaceholder}
-            emptyText="No team members found"
+            emptyText={ct("noTeamMembers")}
           />
         ) : (
           <div>
@@ -748,19 +745,19 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                 onValueChange={control.onChange}
                 onSearchChange={fetchUsers}
                 isLoading={userSearchLoading}
-                placeholder="Type email or user ID to search for users"
-                emptyText="No users found"
-                loadingText="Searching..."
+                placeholder={ct("userSearchPlaceholder")}
+                emptyText={usersT("noUsers")}
+                loadingText={commonT("searching")}
                 inputId={control.id}
                 aria-required={control["aria-required"] === "true" ? true : undefined}
                 aria-invalid={control["aria-invalid"] === "true" ? true : undefined}
                 aria-describedby={control["aria-describedby"]}
               />
               <Button variant="outline" className="ml-2" onClick={() => setIsCreateUserModalVisible(true)}>
-                Create User
+                {usersT("createUser")}
               </Button>
             </div>
-            <div className="text-xs text-muted-foreground">Search by email or user ID to find users</div>
+            <div className="text-xs text-muted-foreground">{ct("userSearchHelp")}</div>
           </div>
         )
       }

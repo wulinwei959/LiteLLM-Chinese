@@ -262,7 +262,8 @@
       "manual": "手动"
     },
     "closeWithEsc": "关闭（Esc）",
-    "keyboardShortcuts": "键盘快捷键"
+    "keyboardShortcuts": "键盘快捷键",
+    "credentialUpdated": "凭据更新成功"
   },
   "nav": {
     "expandSidebar": "展开侧边栏",
@@ -679,7 +680,8 @@
       "virtualKeyCreated": "虚拟密钥已创建",
       "duplicateAlias": "密钥别名 {alias} 在团队 ID {teamId} 下已存在，请换一个密钥别名",
       "saveYourKey": "保存你的密钥",
-      "keyBeingCreated": "密钥正在创建，可能需要 30 秒"
+      "keyBeingCreated": "密钥正在创建，可能需要 30 秒",
+      "noTeamMembers": "未找到团队成员"
     },
     "editForm": {
       "modelsDisabled": "此密钥类型下 Models 字段不可用",
@@ -1674,7 +1676,9 @@
       "credentialAdded": "凭据添加成功",
       "createOrSelectCredential": "请为此认证类型创建或选择凭据",
       "federatedHint": "工作负载身份联合将保存为凭据，然后附加到此模型。",
-      "federatedButton": "使用工作负载身份联合"
+      "federatedButton": "使用工作负载身份联合",
+      "credentialOnlyNote": "此认证类型将保存为 LLM 凭据并附加到此模型。",
+      "createCredential": "创建凭据"
     },
     "health": {
       "title": "健康状态",
@@ -2202,7 +2206,11 @@
     "pricingSummary": {
       "followsCostMap": "沿用模型成本表",
       "customPricing": "自定义定价",
-      "overridesCostMap": "为 {fields} 覆盖模型成本表"
+      "overridesCostMap": "为 {fields} 覆盖模型成本表",
+      "inputPrice": "输入：${cost}/100 万 Token",
+      "outputPrice": "输出：${cost}/100 万 Token",
+      "outputOnly": "输出：{cost}",
+      "outputTier": "输出（{resolution}）：{cost}"
     },
     "deleteAutoRouter": "删除自动路由器",
     "invalidLiteLlmParams": "LiteLLM 参数中的 JSON 无效",
@@ -12007,7 +12015,18 @@
   },
   "objectPermissions": {
     "title": "对象权限",
-    "description": "向量存储与 MCP 服务器的访问控制"
+    "description": "向量存储与 MCP 服务器的访问控制",
+    "searchTools": "搜索工具",
+    "noSearchToolRestriction": "无限制：此团队允许使用所有已配置的搜索工具。",
+    "skills": "技能",
+    "pluginAccessSuspended": "私有插件访问已暂停：未找到访问组 {groups}。在移除该 ID 或重建访问组之前，仅显示已启用的（公开）Claude Code 插件。",
+    "noPrivateSkillsInherited": "未授予私有技能。仅显示已启用的（公开）Claude Code 插件。",
+    "noPrivateSkillsDirect": "此处未直接授予私有技能。来自访问组的授权不会在此页面列出；默认仅显示已启用的（公开）Claude Code 插件。",
+    "accessGroupSuffix": "（访问组）",
+    "fullId": "完整 ID：{id}",
+    "grantedViaGroup": "通过访问组 {group} 授予。完整 ID：{id}",
+    "grantedViaGroups": "通过访问组 {groups} 授予。完整 ID：{id}",
+    "grantedViaGeneric": "通过某个访问组授予。完整 ID：{id}"
   },
   "vectorStorePermissions": {
     "title": "向量存储",
@@ -12248,7 +12267,12 @@
     "sourceConfig": "配置文件",
     "sourceDb": "数据库",
     "configOwnedHint": "在 config.yaml 中定义。请编辑该文件以更改或删除。",
-    "federationLabel": "工作负载身份联合"
+    "federationLabel": "工作负载身份联合",
+    "apiKeyMethod": "API 密钥",
+    "displayNameLabel": "显示名称：",
+    "displayNamePlaceholder": "例如：OpenAI 生产环境",
+    "authMethodLabel": "认证方式：",
+    "authMethodHint": "工作负载身份联合会用身份令牌向提供商换取短期访问令牌，因此不会存储 API 密钥。"
   },
   "modelSettings": {
     "title": "模型设置",

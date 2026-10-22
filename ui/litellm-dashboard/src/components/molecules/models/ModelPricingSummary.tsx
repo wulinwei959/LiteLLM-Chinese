@@ -25,6 +25,7 @@ function PricingSource({ overrides }: { overrides: string[] | undefined }) {
 }
 
 export function ModelPricingSummary({ model }: { model: PricingFields }) {
+  const t = useTranslations("models.pricingSummary");
   const perSecond = model.output_cost_per_second;
   const hasPerSecond = perSecond != null;
   const showInput = model.input_cost != null && (!hasPerSecond || Number(model.input_cost) > 0);
@@ -36,12 +37,12 @@ export function ModelPricingSummary({ model }: { model: PricingFields }) {
 
   return (
     <div className="mt-2">
-      {showInput && <p className="text-sm">Input: ${model.input_cost}/1M tokens</p>}
-      {showOutput && <p className="text-sm">Output: ${model.output_cost}/1M tokens</p>}
-      {hasPerSecond && <p className="text-sm">Output: {formatPerSecondCost(perSecond)}</p>}
+      {showInput && <p className="text-sm">{t("inputPrice", { cost: String(model.input_cost) })}</p>}
+      {showOutput && <p className="text-sm">{t("outputPrice", { cost: String(model.output_cost) })}</p>}
+      {hasPerSecond && <p className="text-sm">{t("outputOnly", { cost: formatPerSecondCost(perSecond) })}</p>}
       {(model.output_cost_per_second_tiers ?? []).map(({ resolution, cost }) => (
         <p key={resolution} className="text-sm">
-          Output ({resolution}): {formatPerSecondCost(cost)}
+          {t("outputTier", { resolution, cost: formatPerSecondCost(cost) })}
         </p>
       ))}
       <PricingSource overrides={model.model_info?.pricing_overrides} />

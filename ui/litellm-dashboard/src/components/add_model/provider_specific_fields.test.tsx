@@ -522,10 +522,10 @@ describe("ProviderSpecificFields", () => {
     );
 
     expect(
-      await screen.findByText("This auth type is saved as an LLM credential and attached to this model."),
+      await screen.findByText("此认证类型将保存为 LLM 凭据并附加到此模型。"),
     ).toBeInTheDocument();
     expect(screen.queryByLabelText("Token Endpoint URL")).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Create credential" }));
+    await userEvent.click(screen.getByRole("button", { name: "创建凭据" }));
     expect(onCreateCredential).toHaveBeenCalledWith("oauth_token_exchange");
   });
 

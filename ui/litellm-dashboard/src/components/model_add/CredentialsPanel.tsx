@@ -49,7 +49,7 @@ export default function CredentialsPanel() {
         ...newCredential,
         ...(valuesToDelete.length > 0 ? { credential_values_to_delete: valuesToDelete } : {}),
       });
-      toast.success("Credential updated successfully");
+      toast.success(t("credentialUpdated"));
       setIsUpdateModalOpen(false);
       await refetchCredentials();
     } catch (error) {

@@ -45,17 +45,14 @@ export function ObjectPermissionsView({
     if (missingAccessGroupIds.length > 0) {
       return (
         <p className="mt-1 block text-xs break-words text-destructive">
-          Private plugin access is suspended: access group {missingAccessGroupIds.join(", ")} not found. Only enabled
-          (public) Claude Code plugins are visible until the id is removed or the group recreated.
+          {t("pluginAccessSuspended", { groups: missingAccessGroupIds.join(", ") })}
         </p>
       );
     }
     if (skills.length === 0 && inheritedOnlySkills.length === 0) {
       return (
         <p className="mt-1 block text-xs text-muted-foreground">
-          {showsInheritedSkills
-            ? "No private skills granted. Only enabled (public) Claude Code plugins are visible."
-            : "No private skills granted directly here. Grants from access groups are not listed on this page; only enabled (public) Claude Code plugins are visible by default."}
+          {showsInheritedSkills ? t("noPrivateSkillsInherited") : t("noPrivateSkillsDirect")}
         </p>
       );
     }
@@ -66,7 +63,7 @@ export function ObjectPermissionsView({
         {inheritedOnlySkills.map((grant, index) => (
           <span key={grant.id} title={inheritedGrantTooltip(t, grant)} className="text-muted-foreground">
             {index > 0 ? ", " : ""}
-            {grant.id} (access group)
+            {grant.id} {t("accessGroupSuffix")}
           </span>
         ))}
       </p>
@@ -91,17 +88,15 @@ export function ObjectPermissionsView({
         accessToken={accessToken}
       />
       <div className="min-w-0 rounded-md border border-border p-4">
-        <p className="text-sm font-medium text-foreground">Search tools</p>
+        <p className="text-sm font-medium text-foreground">{t("searchTools")}</p>
         {searchTools.length === 0 ? (
-          <p className="mt-1 block text-xs text-muted-foreground">
-            No restriction — all configured search tools are allowed for this team.
-          </p>
+          <p className="mt-1 block text-xs text-muted-foreground">{t("noSearchToolRestriction")}</p>
         ) : (
           <p className="mt-1 block text-xs break-words text-foreground">{searchTools.join(", ")}</p>
         )}
       </div>
       <div className="min-w-0 rounded-md border border-border p-4">
-        <p className="text-sm font-medium text-foreground">Skills</p>
+        <p className="text-sm font-medium text-foreground">{t("skills")}</p>
         {skillsContent}
       </div>
     </div>

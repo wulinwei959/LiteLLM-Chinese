@@ -262,7 +262,8 @@
       "manual": "Manual"
     },
     "closeWithEsc": "Close (Esc)",
-    "keyboardShortcuts": "Keyboard shortcuts"
+    "keyboardShortcuts": "Keyboard shortcuts",
+    "credentialUpdated": "Credential updated successfully"
   },
   "nav": {
     "expandSidebar": "Expand sidebar",
@@ -679,7 +680,8 @@
       "virtualKeyCreated": "Virtual Key Created",
       "duplicateAlias": "Key alias {alias} already exists for team with ID {teamId}, please provide another key alias",
       "saveYourKey": "Save your Key",
-      "keyBeingCreated": "Key being created, this might take 30s"
+      "keyBeingCreated": "Key being created, this might take 30s",
+      "noTeamMembers": "No team members found"
     },
     "editForm": {
       "modelsDisabled": "Models field is disabled for this key type",
@@ -1674,7 +1676,9 @@
       "credentialAdded": "Credential added successfully",
       "createOrSelectCredential": "Create or select a credential for this auth type",
       "federatedHint": "Workload identity federation is saved as a credential, then attached to this model.",
-      "federatedButton": "Use workload identity federation"
+      "federatedButton": "Use workload identity federation",
+      "credentialOnlyNote": "This auth type is saved as an LLM credential and attached to this model.",
+      "createCredential": "Create credential"
     },
     "health": {
       "title": "Health Status",
@@ -2202,7 +2206,11 @@
     "pricingSummary": {
       "followsCostMap": "Follows the model cost map",
       "customPricing": "Custom pricing",
-      "overridesCostMap": "Overrides the model cost map for {fields}"
+      "overridesCostMap": "Overrides the model cost map for {fields}",
+      "inputPrice": "Input: ${cost}/1M tokens",
+      "outputPrice": "Output: ${cost}/1M tokens",
+      "outputOnly": "Output: {cost}",
+      "outputTier": "Output ({resolution}): {cost}"
     },
     "deleteAutoRouter": "Delete Auto-Router",
     "invalidLiteLlmParams": "Invalid JSON in LiteLLM Params",
@@ -12011,7 +12019,18 @@
   },
   "objectPermissions": {
     "title": "Object Permissions",
-    "description": "Access control for Vector Stores and MCP Servers"
+    "description": "Access control for Vector Stores and MCP Servers",
+    "searchTools": "Search tools",
+    "noSearchToolRestriction": "No restriction — all configured search tools are allowed for this team.",
+    "skills": "Skills",
+    "pluginAccessSuspended": "Private plugin access is suspended: access group {groups} not found. Only enabled (public) Claude Code plugins are visible until the id is removed or the group recreated.",
+    "noPrivateSkillsInherited": "No private skills granted. Only enabled (public) Claude Code plugins are visible.",
+    "noPrivateSkillsDirect": "No private skills granted directly here. Grants from access groups are not listed on this page; only enabled (public) Claude Code plugins are visible by default.",
+    "accessGroupSuffix": "(access group)",
+    "fullId": "Full ID: {id}",
+    "grantedViaGroup": "Granted via access group {group}. Full ID: {id}",
+    "grantedViaGroups": "Granted via access groups {groups}. Full ID: {id}",
+    "grantedViaGeneric": "Granted via an access group. Full ID: {id}"
   },
   "vectorStorePermissions": {
     "title": "Vector Stores",
@@ -12252,7 +12271,12 @@
     "sourceConfig": "Config",
     "sourceDb": "DB",
     "configOwnedHint": "Defined in config.yaml. Edit the file to change or delete it.",
-    "federationLabel": "Workload identity federation"
+    "federationLabel": "Workload identity federation",
+    "apiKeyMethod": "API key",
+    "displayNameLabel": "Display Name:",
+    "displayNamePlaceholder": "e.g. Production OpenAI",
+    "authMethodLabel": "Authentication:",
+    "authMethodHint": "Workload identity federation exchanges an identity token for a short-lived access token from the provider, so no API key is stored."
   },
   "modelSettings": {
     "title": "Model Settings",

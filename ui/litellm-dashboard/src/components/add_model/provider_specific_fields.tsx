@@ -370,9 +370,9 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
       )}
       {credentialOnlySelected ? (
         <>
-          <p className="mb-4 text-sm">This auth type is saved as an LLM credential and attached to this model.</p>
+          <p className="mb-4 text-sm">{t("credentialOnlyNote")}</p>
           <Button type="button" onClick={() => onCreateCredential?.(selectedAuthType.id)}>
-            Create credential
+            {t("createCredential")}
           </Button>
         </>
       ) : (

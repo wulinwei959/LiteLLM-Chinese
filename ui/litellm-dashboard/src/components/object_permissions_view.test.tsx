@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithProviders as render } from "../../tests/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import ObjectPermissionsView from "./object_permissions_view";
 
@@ -19,8 +20,8 @@ describe("ObjectPermissionsView skills card", () => {
     );
 
     expect(screen.getByText(/private-plugin/)).toBeInTheDocument();
-    expect(screen.getByTitle(/skills-group/)).toHaveTextContent("private-plugin (access group)");
-    expect(screen.queryByText(/No private skills granted/)).not.toBeInTheDocument();
+    expect(screen.getByTitle(/skills-group/)).toHaveTextContent("private-plugin （访问组）");
+    expect(screen.queryByText(/未授予私有技能/)).not.toBeInTheDocument();
   });
 
   it("lists direct grants once even when an access group grants the same plugin", () => {
@@ -36,21 +37,21 @@ describe("ObjectPermissionsView skills card", () => {
     );
 
     expect(screen.getAllByText(/private-plugin/)).toHaveLength(1);
-    expect(screen.getByTitle(/skills-group/)).toHaveTextContent("team-plugin (access group)");
+    expect(screen.getByTitle(/skills-group/)).toHaveTextContent("team-plugin （访问组）");
   });
 
   it("keeps the empty state when nothing grants a private plugin", () => {
     render(<ObjectPermissionsView objectPermission={objectPermission} inheritedSkills={[]} variant="inline" />);
 
     expect(
-      screen.getByText("No private skills granted. Only enabled (public) Claude Code plugins are visible."),
+      screen.getByText("未授予私有技能。仅显示已启用的（公开）Claude Code 插件。"),
     ).toBeInTheDocument();
   });
 
   it("says access-group grants are not listed when the view resolves none (key page)", () => {
     render(<ObjectPermissionsView objectPermission={objectPermission} variant="inline" />);
 
-    expect(screen.getByText(/Grants from access groups are not listed on this page/)).toBeInTheDocument();
+    expect(screen.getByText(/来自访问组的授权不会在此页面列出/)).toBeInTheDocument();
   });
 
   it("treats the API null for unresolved group ids as no missing groups", () => {
@@ -64,7 +65,7 @@ describe("ObjectPermissionsView skills card", () => {
     );
 
     expect(screen.getByText("private-plugin")).toBeInTheDocument();
-    expect(screen.queryByText(/suspended/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/已暂停/)).not.toBeInTheDocument();
   });
 
   it("reports suspended private access instead of grants while a listed group has no row", () => {
@@ -77,7 +78,7 @@ describe("ObjectPermissionsView skills card", () => {
       />,
     );
 
-    expect(screen.getByText(/access group deleted-group not found/)).toBeInTheDocument();
+    expect(screen.getByText(/未找到访问组 deleted-group/)).toBeInTheDocument();
     expect(screen.queryByText(/private-plugin/)).not.toBeInTheDocument();
     expect(screen.queryByText(/team-plugin/)).not.toBeInTheDocument();
   });
