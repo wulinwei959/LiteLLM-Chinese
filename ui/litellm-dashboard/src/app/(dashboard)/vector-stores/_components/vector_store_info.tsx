@@ -39,7 +39,7 @@ interface VectorStoreInfoViewProps {
 }
 
 const vectorStoreEditShape = {
-  vector_store_id: z.string().min(1, "Please input a vector store ID"),
+  vector_store_id: z.string().min(1, "请输入向量存储 ID"),
   vector_store_name: z.string().nullish(),
   vector_store_description: z.string().nullish(),
   custom_llm_provider: z.string().min(1, "Please select a provider"),
@@ -157,7 +157,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       };
 
       await vectorStoreUpdateCall(accessToken, updateData);
-      toast.success("Vector store updated successfully");
+      toast.success(t("info.updated"));
       setIsEditing(false);
       fetchVectorStoreDetails();
     } catch (error) {
@@ -171,18 +171,16 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       <div className="p-4 max-w-full">
         <Button variant="ghost" className="mb-4" onClick={onClose}>
           <ArrowLeft />
-          Back to Vector Stores
+          {t("info.backToStores")}
         </Button>
-        <h1 className="text-xl font-semibold">Vector store not found</h1>
-        <p className="text-sm text-muted-foreground">
-          Vector store {vectorStoreId} could not be loaded. It may have been deleted.
-        </p>
+        <h1 className="text-xl font-semibold">{t("notFound")}</h1>
+        <p className="text-sm text-muted-foreground">{t("info.notFoundWithId", { id: vectorStoreId })}</p>
       </div>
     );
   }
 
   if (!vectorStoreDetails) {
-    return <div>Loading...</div>;
+    return <div>{t("loading")}</div>;
   }
 
   const canEdit = is_admin && !vectorStoreDetails.is_config;
@@ -194,29 +192,32 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
         <div>
           <Button variant="ghost" className="mb-4" onClick={onClose}>
             <ArrowLeft />
-            Back to Vector Stores
+            {t("info.backToStores")}
           </Button>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold">Vector Store ID: {vectorStoreDetails.vector_store_id}</h1>
+            <h1 className="text-xl font-semibold">
+              {t("idLabel")}
+              {vectorStoreDetails.vector_store_id}
+            </h1>
             <StatusBadge
               tone={vectorStoreDetails.is_config ? "neutral" : "info"}
-              label={vectorStoreDetails.is_config ? "Config" : "DB"}
+              label={vectorStoreDetails.is_config ? t("table.sourceConfig") : "DB"}
             />
           </div>
           <p className="text-sm text-muted-foreground">
-            {vectorStoreDetails.vector_store_description || "No description"}
+            {vectorStoreDetails.vector_store_description || t("info.noDescription")}
           </p>
         </div>
-        {canEdit && !isEditing && <Button onClick={startEditing}>Edit Vector Store</Button>}
+        {canEdit && !isEditing && <Button onClick={startEditing}>{t("info.editTitle")}</Button>}
       </div>
 
       {vectorStoreDetails.is_config && (
         <Alert variant="info" className="mb-4">
           <Lock className="size-4" aria-hidden />
-          <AlertTitle>Read only: defined in the config file</AlertTitle>
+          <AlertTitle>{t("info.readOnly")}</AlertTitle>
           <AlertDescription>
-            This vector store comes from the proxy config YAML, so it cannot be edited or deleted on the dashboard.
-            Change or remove it in the config file and restart the proxy.
+            {t("info.configYamlNotice")}
+            {t("info.configYamlNoticeSuffix")}
           </AlertDescription>
         </Alert>
       )}
@@ -224,10 +225,10 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       <Tabs defaultValue="details">
         <TabsList variant="line" className="mb-6 h-auto w-full justify-start rounded-none p-0">
           <TabsTrigger value="details" className="flex-none rounded-none px-4 py-2">
-            Details
+            {t("info.detailsTitle")}
           </TabsTrigger>
           <TabsTrigger value="test" className="flex-none rounded-none px-4 py-2">
-            Test Vector Store
+            {t("info.testTitle")}
           </TabsTrigger>
         </TabsList>
 
@@ -299,15 +300,17 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                           )}
                         </FormField>
 
-                        <p className="text-sm text-muted-foreground">
-                          Either select existing credentials OR enter provider credentials below
-                        </p>
+                        <p className="text-sm text-muted-foreground">{t("info.credentialsHint")}</p>
 
-                        <FormField control={form.control} name="litellm_credential_name" label="Existing Credentials">
+                        <FormField
+                          control={form.control}
+                          name="litellm_credential_name"
+                          label={t("info.existingCredentials")}
+                        >
                           {({ id, value, onChange }) => (
                             <SearchSelect
                               inputId={id}
-                              placeholder="Select or search for existing credentials"
+                              placeholder={t("info.credentialsPlaceholder")}
                               options={credentialOptions(credentials)}
                               value={value ?? ""}
                               onValueChange={(selected) =>
@@ -319,7 +322,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
 
                         <div className="flex items-center">
                           <div className="grow border-t border-border"></div>
-                          <span className="px-4 text-muted-foreground text-sm">OR</span>
+                          <span className="px-4 text-muted-foreground text-sm">{t("info.or")}</span>
                           <div className="grow border-t border-border"></div>
                         </div>
 
@@ -338,7 +341,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
 
                       <div className="mt-6 flex justify-end space-x-2">
                         <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                          Cancel
+                          {t("info.cancel")}
                         </Button>
                         <Button type="submit">{t("saveChanges")}</Button>
                       </div>
@@ -357,7 +360,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <p className="font-medium">ID</p>
+                      <p className="font-medium">{t("info.idShort")}</p>
                       <p>{vectorStoreDetails.vector_store_id}</p>
                     </div>
                     <div>

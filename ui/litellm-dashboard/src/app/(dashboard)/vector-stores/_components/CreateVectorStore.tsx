@@ -224,7 +224,18 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
       }
 
       setIngestResults(results);
-      toast.success(t("ingestSuccessToast", { count: results.length, storeId: String(vectorStoreId) }));
+      if (failure) {
+        toast.warning(
+          t("ingestPartialToast", {
+            count: results.length,
+            file: failure.name,
+            storeId: String(vectorStoreId),
+          }),
+          { description: failure.error instanceof Error ? failure.error.message : String(failure.error) },
+        );
+      } else {
+        toast.success(t("ingestSuccessToast", { count: results.length, storeId: String(vectorStoreId) }));
+      }
 
       if (onSuccess && vectorStoreId) {
         onSuccess(vectorStoreId);

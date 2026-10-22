@@ -178,7 +178,7 @@ describe("VectorStoreForm submit payload", () => {
     const user = setupUser();
     renderForm();
 
-    const picker = screen.getByPlaceholderText("Select or search for existing credentials");
+    const picker = screen.getByPlaceholderText("选择或搜索已有凭据");
     await user.click(picker);
 
     const option = await screen.findByRole("option", { name: /bedrock-prod/ });
@@ -187,7 +187,7 @@ describe("VectorStoreForm submit payload", () => {
 
     await user.type(picker, "bedrock prod");
     await user.click(await screen.findByRole("option", { name: /bedrock-prod/ }));
-    await user.type(screen.getByPlaceholderText("Enter vector store ID from your provider"), "vs-labeled");
+    await user.type(screen.getByPlaceholderText("输入来自你的供应商的向量存储 ID"), "vs-labeled");
     await submit(user);
 
     await vi.waitFor(() => expect(mockCreate).toHaveBeenCalledTimes(1));
@@ -198,13 +198,13 @@ describe("VectorStoreForm submit payload", () => {
     const user = setupUser();
     renderForm();
 
-    const picker = screen.getByPlaceholderText("Select or search for existing credentials");
+    const picker = screen.getByPlaceholderText("选择或搜索已有凭据");
     await user.click(picker);
     await user.click(await screen.findByRole("option", { name: /bedrock-prod/ }));
     expect(picker).toHaveValue("Bedrock Prod");
     await user.click(picker);
     await user.click(await screen.findByRole("option", { name: "None" }));
-    await user.type(screen.getByPlaceholderText("Enter vector store ID from your provider"), "vs-none");
+    await user.type(screen.getByPlaceholderText("输入来自你的供应商的向量存储 ID"), "vs-none");
     await submit(user);
 
     await vi.waitFor(() => expect(mockCreate).toHaveBeenCalledTimes(1));

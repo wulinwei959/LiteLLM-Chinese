@@ -237,22 +237,21 @@ describe("CreateVectorStore", () => {
       });
     });
     await waitFor(() => {
-      expect(screen.getByText("Uploaded Documents (2)")).toBeInTheDocument();
+      expect(screen.getByText("已上传文档（2）")).toBeInTheDocument();
     });
 
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /Create Vector Store/i }));
+      fireEvent.click(screen.getByRole("button", { name: "创建向量存储" }));
     });
 
     await waitFor(() => {
-      expect(toast.warning).toHaveBeenCalledWith(
-        "Vector store vs_123 was created with 1 document(s), but second.txt failed to ingest",
-        { description: "upstream rejected the file" },
-      );
+      expect(toast.warning).toHaveBeenCalledWith("向量存储 vs_123 已创建并写入 1 个文档，但 second.txt 摄入失败", {
+        description: "upstream rejected the file",
+      });
     });
     expect(toast.fromError).not.toHaveBeenCalled();
     expect(onSuccess).toHaveBeenCalledWith("vs_123");
-    expect(screen.getByText("Vector Store Created Successfully")).toBeInTheDocument();
+    expect(screen.getByText("向量存储创建成功")).toBeInTheDocument();
   });
 
   it("should exclude valkey from the provider dropdown since it has no RAG ingestion", async () => {
