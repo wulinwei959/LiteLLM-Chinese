@@ -109,8 +109,8 @@ test.describe("Logs page filters", () => {
     await page.keyboard.type(alias);
     await page.getByRole("option", { name: alias, exact: true }).first().click();
     // The Status field labels its group, not the trigger, so it is addressed by the value it shows.
-    await drawer.getByRole("combobox").filter({ hasText: "所有状态" }).click();
-    await page.getByRole("option", { name: "失败", exact: true }).click();
+    await drawer.getByRole("combobox").filter({ hasText: "All Statuses" }).click();
+    await page.getByRole("option", { name: "Failure", exact: true }).click();
     await drawer.getByRole("button", { name: "Apply Filters" }).click();
     await expect(drawer).not.toBeVisible({ timeout: 10_000 });
 

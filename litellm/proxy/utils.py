@@ -158,7 +158,7 @@ from litellm.litellm_core_utils.core_helpers import (
 )
 from litellm.litellm_core_utils.duration_parser import get_budget_window_start
 from litellm.litellm_core_utils.env_utils import get_env_float, get_env_int
-from litellm.litellm_core_utils.litellm_logging import Logging, deployment_pricing_model_info
+from litellm.litellm_core_utils.litellm_logging import BilledRoundsDispatch, Logging, deployment_pricing_model_info
 from litellm.litellm_core_utils.llm_cost_calc.utils import generic_cost_per_token
 from litellm.litellm_core_utils.safe_json_dumps import safe_dumps
 from litellm.litellm_core_utils.safe_json_loads import safe_json_loads
@@ -1015,7 +1015,7 @@ def _billed_across_attempts(
     )
 
 
-def _failure_usage_to_lift(
+def _current_failure_usage_to_lift(
     model_call_details: Mapping[str, object],
     request_body: Mapping[str, object],
     dispatched: bool,
@@ -1037,9 +1037,6 @@ def _failure_usage_to_lift(
     failure stays at zero cost. Returns the
     (combined_usage_object, response_cost) pair to lift, or None."""
     recovered_usage: Final = model_call_details.get("combined_usage_object")
-    failed_attempts: Final = _FAILED_ATTEMPTS_USAGE.validate_python(model_call_details.get("failed_attempts_usage", ()))
-    if failed_attempts:
-        return _billed_across_attempts(failed_attempts, recovered_usage, model_call_details.get("response_cost"))
     if recovered_usage is not None:
         return recovered_usage, model_call_details.get("response_cost")
     if not dispatched:
@@ -1281,6 +1278,29 @@ def _estimated_input_cost(
     return next((cost for cost in candidate_costs if cost is not None), 0.0)
 
 
+def _failure_usage_to_lift(
+    model_call_details: Mapping[str, object],
+    request_body: Mapping[str, object],
+    dispatched: bool,
+    provider_billed: bool = False,
+    deployment_id: str | None = None,
+    base_model: str | None = None,
+) -> tuple[object, object] | None:
+    current_attempt: Final = _current_failure_usage_to_lift(
+        model_call_details,
+        request_body,
+        dispatched,
+        provider_billed,
+        deployment_id,
+        base_model,
+    )
+    failed_attempts: Final = _FAILED_ATTEMPTS_USAGE.validate_python(model_call_details.get("failed_attempts_usage", ()))
+    if not failed_attempts:
+        return current_attempt
+    current_usage, current_cost = current_attempt if current_attempt is not None else (None, None)
+    return _billed_across_attempts(failed_attempts, current_usage, current_cost)
+
+
 _EMPTY_LIFT: Final = MappingProxyType({})
 
 
@@ -1444,7 +1464,7 @@ def _failure_fields_to_lift(request_data: Mapping[str, object], provider_billed:
     _usage_to_lift: Final = _failure_usage_to_lift(
         model_call_details=_model_call_details,
         request_body=request_data,
-        dispatched=_first_handoff is not None,
+        dispatched=_model_call_details.get("current_attempt_api_call_start_time", _first_handoff) is not None,
         provider_billed=_billed,
         deployment_id=_deployment_id,
         base_model=_base_model,
@@ -4732,19 +4752,25 @@ class ProxyLogging:
 
     @staticmethod
     def _discard_deferred_stream_logging_for_failure(request_data: Mapping[str, object], error: Exception) -> bool:
-        """Drop the parked success dispatch for an assembled chat stream that ends in an error
-        ``post_call_failure_hook`` logs as a failure, billing its usage on the failure row instead.
+        """Drop the parked success dispatch for an assembled chat stream or a stream that billed several rounds when it
+        ends in an error ``post_call_failure_hook`` logs as a failure, billing its usage on the failure row instead.
         Returns False when the parked dispatch should still be flushed by the caller."""
         logging_obj: Final = request_data.get("litellm_logging_obj")
         if not isinstance(logging_obj, Logging):
             return False
         _args: Final[tuple[object, ...] | None] = getattr(logging_obj, "_deferred_stream_complete_args", None)
-        assembled: Final = _args[0] if _args else None
-        if not isinstance(error, _PROXY_ONLY_LLM_API_ERRORS) or not isinstance(assembled, ModelResponse):
+        if not isinstance(error, _PROXY_ONLY_LLM_API_ERRORS):
             return False
+        match _args:
+            case (ModelResponse() as assembled, *_):
+                logging_obj.record_assembled_response_for_failure(assembled)
+            case (BilledRoundsDispatch() as billed,):
+                billed.dispatch.close()
+                logging_obj.record_billed_rounds_for_failure(billed.spend)
+            case _:
+                return False
         logging_obj._on_deferred_stream_complete = None
         logging_obj._deferred_stream_complete_args = None
-        logging_obj.record_assembled_response_for_failure(assembled)
         return True
 
     async def arelease_max_parallel_requests_on_disconnect(
@@ -4832,6 +4858,7 @@ def jsonify_object(data: dict) -> dict:
 _deprecated_key_cache: Final[LimitedSizeOrderedDict] = LimitedSizeOrderedDict(max_size=1000)
 _DEPRECATED_KEY_CACHE_TTL_SECONDS: Final = 60
 _PRISMA_DEFAULT_TX_TIMEOUT: Final = timedelta(seconds=5)
+_PRISMA_DEFAULT_TX_MAX_WAIT: Final = timedelta(seconds=2)
 
 
 async def _lookup_deprecated_key(
@@ -5238,13 +5265,17 @@ class PrismaClient:
             return self.db.read_target
         return self.db
 
-    def tx(self, *, timeout: timedelta = _PRISMA_DEFAULT_TX_TIMEOUT) -> "TransactionManager":
+    def tx(
+        self, *, timeout: timedelta = _PRISMA_DEFAULT_TX_TIMEOUT, max_wait: timedelta = _PRISMA_DEFAULT_TX_MAX_WAIT
+    ) -> "TransactionManager":
         """Open an interactive transaction on the writer.
 
         Callers go through this instead of reaching into ``self.db`` so writer
         selection and read-replica routing stay encapsulated in the wrapper.
         """
-        return cast("TransactionManager", self.db.tx(timeout=timeout))  # cast-ok: untyped __getattr__ delegate
+        return cast(  # cast-ok: untyped __getattr__ delegate
+            "TransactionManager", self.db.tx(max_wait=max_wait, timeout=timeout)
+        )
 
     def get_request_status(self, payload: dict | SpendLogsPayload) -> Literal["success", "failure"]:
         """
