@@ -166,7 +166,7 @@ describe("MCPAppsPanel connected-app reachability (LIT-4861)", () => {
     fireEvent.click(await screen.findByText("unsupported_srv"));
     expect(await screen.findByRole("heading", { name: "unsupported_srv" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "连接" })).not.toBeInTheDocument();
-    expect(screen.getByText("该连接不支持")).toBeInTheDocument();
+    expect(screen.getByText("该连接不支持此服务器")).toBeInTheDocument();
   });
 
   it("keeps the detail-view Connect action outside connect mode", async () => {

@@ -75,12 +75,12 @@ describe("ConnectFlowBanner", () => {
       />,
     );
 
-    expect(screen.getByText("Allow https://claude.ai to use alpha, beta")).toBeInTheDocument();
+    expect(screen.getByText("允许https://claude.ai使用alpha, beta")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Connect alpha" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Connect beta" })).toBeInTheDocument();
     expect(startOAuthFlow).not.toHaveBeenCalled();
-    expect(screen.queryByRole("button", { name: /finish connecting/i })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /完成连接/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
 
     rerender(
       <ConnectFlowBanner
@@ -96,7 +96,7 @@ describe("ConnectFlowBanner", () => {
     );
 
     expect(
-      screen.getByText("Click Finish connecting to give https://claude.ai access to alpha, beta as you."),
+      screen.getByText("点击“完成连接”，以你的身份让https://claude.ai获得访问alpha, beta的权限。"),
     ).toBeInTheDocument();
   });
 

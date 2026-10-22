@@ -6220,7 +6220,11 @@
     "creating": "Creating...",
     "createGroup": "Create Group",
     "updatedSuccessfully": "Access group updated successfully",
-    "groupNameRequired": "Please enter the access group name"
+    "groupNameRequired": "Please enter the access group name",
+    "skills": "Skills",
+    "allowedSkills": "Allowed Skills",
+    "skillsDescription": "Enabled skills are visible to everyone. Grant disabled (private) Claude Code plugins to the teams and keys in this group here.",
+    "selectSkills": "Select skills (optional)"
   },
   "uiTheme": {
     "themeTitle": "UI Theme Customization",
@@ -7986,7 +7990,26 @@
       "loadToolsFailed": "Could not load tools for {server}",
       "transport": "Transport",
       "status": "Status",
-      "noTools": "No tools available"
+      "noTools": "No tools available",
+      "noServersAvailable": "No MCP servers are available to this connection yet. Ask an admin to grant your user or team access.",
+      "noServersConfigured": "No MCP servers configured. Add servers in Tools -> MCP Servers.",
+      "noConnectedServers": "No servers connected yet.",
+      "noSearchMatches": "No servers match your search.",
+      "authorized": "Authorized",
+      "disconnect": "Disconnect",
+      "back": "Back",
+      "serverFallback": "MCP server",
+      "information": "Information",
+      "serverId": "Server ID",
+      "connected": "Connected",
+      "notConnected": "Not connected",
+      "availableTools": "Available Tools",
+      "subtitleConnect": "Click a server to see its tools and connect",
+      "subtitleBrowse": "Browse tools, authenticate once, use in chat",
+      "toolsAvailable": "{count, plural, one {# tool available} other {# tools available}}",
+      "filterAll": "All",
+      "filterConnected": "Connected",
+      "notSupportedOnConnection": "Not supported on this connection"
     },
     "messages": {
       "imageOmitted": "Image omitted",

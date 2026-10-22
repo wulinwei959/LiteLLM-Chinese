@@ -433,7 +433,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1400px]">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            {isEditMode ? "Edit Custom Guardrail" : "Create Custom Guardrail"}
+            {isEditMode ? t("custom.editTitle") : t("custom.createTitle")}
           </DialogTitle>
           <DialogDescription>{t("custom.desc")}</DialogDescription>
         </DialogHeader>
@@ -445,7 +445,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
             <Input
               value={guardrailName}
               onChange={(e) => setGuardrailName(e.target.value)}
-              placeholder="e.g., block-pii-custom"
+              placeholder={t("custom.namePlaceholder")}
             />
           </div>
           <div className="w-[280px]">
@@ -487,14 +487,12 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
           )}
           {mode.includes("logging_only") && (
             <div className="flex shrink-0 items-center gap-2 pt-5">
-              <span className="text-sm text-muted-foreground">
-                Continue observing the response after a flagged request
-              </span>
+              <span className="text-sm text-muted-foreground">{t("custom.continueObserving")}</span>
               <Switch
                 checked={loggingOnlyScopeChoice === "default" && loggingOnlyContinue}
                 disabled={loggingOnlyScopeChoice !== "default"}
                 onCheckedChange={setLoggingOnlyContinue}
-                aria-label="Continue observing the response after a flagged request"
+                aria-label={t("custom.continueObserving")}
               />
             </div>
           )}
@@ -546,8 +544,10 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
           {/* Code Editor */}
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="mb-2 flex shrink-0 items-center justify-between">
-              <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Python Logic</span>
-              <span className="text-xs text-muted-foreground">Restricted environment (no imports)</span>
+              <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                {t("custom.pythonTitle")}
+              </span>
+              <span className="text-xs text-muted-foreground">{t("custom.restricted")}</span>
             </div>
             <div
               className="relative rounded-lg overflow-hidden border border-gray-700 bg-[#1e1e1e] shrink-0"
@@ -594,7 +594,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
               <CollapsibleTrigger className="flex w-full items-center gap-2 p-3 text-sm font-medium">
                 <ChevronRight className={`size-4 transition-transform ${testExpanded ? "rotate-90" : ""}`} />
                 <PlayCircle className="size-4 text-muted-foreground" />
-                Test Your Guardrail
+                {t("custom.testTitle")}
               </CollapsibleTrigger>
               <CollapsibleContent className="p-3 pt-0">
                 <div className="space-y-3">
@@ -610,21 +610,21 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
                           onClick={() => setTestInput(JSON.stringify(TEST_INPUT_EXAMPLES.pre_call.data, null, 2))}
                           className="px-2 py-1 text-xs rounded-sm border border-warning/20 bg-warning/10 text-warning hover:bg-warning/15 transition-colors"
                         >
-                          Pre-call
+                          {t("custom.exPre")}
                         </button>
                         <button
                           type="button"
                           onClick={() => setTestInput(JSON.stringify(TEST_INPUT_EXAMPLES.pre_mcp_call.data, null, 2))}
                           className="px-2 py-1 text-xs rounded-sm border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300 dark:hover:bg-purple-900"
                         >
-                          Pre MCP
+                          {t("custom.exMcp")}
                         </button>
                         <button
                           type="button"
                           onClick={() => setTestInput(JSON.stringify(TEST_INPUT_EXAMPLES.post_call.data, null, 2))}
                           className="px-2 py-1 text-xs rounded-sm border border-success/20 bg-success/10 text-success hover:bg-success/15 transition-colors"
                         >
-                          Post-call
+                          {t("custom.exPost")}
                         </button>
                       </div>
                     </div>
@@ -788,7 +788,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
           <span className="text-xs text-muted-foreground">{t("custom.autosaved")}</span>
           <div className="flex items-center gap-3">
             <Button variant="secondary" onClick={onClose}>
-              Cancel
+              {commonT("cancel")}
             </Button>
             <Button onClick={handleSave} disabled={isSaving || !guardrailName.trim()} aria-busy={isSaving}>
               {isSaving ? <UiLoadingSpinner className="size-4" /> : <Save />}

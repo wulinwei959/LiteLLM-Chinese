@@ -33,7 +33,9 @@ const copyFor = (
   failed: boolean,
 ): readonly [string, string] => {
   const clientLabel = flow?.client_origin ?? t("connectFlow.fallbackClient");
-  const serverLabel = flow?.server_name ?? t("connectFlow.fallbackServer");
+  const multiServerLabel =
+    flow?.state === "multi" && flow.servers ? flow.servers.map((s) => s.server_name ?? s.server_id).join(", ") : null;
+  const serverLabel = multiServerLabel ?? flow?.server_name ?? t("connectFlow.fallbackServer");
   if (failed || flow === undefined || flow.state === "stale") {
     return [t("connectFlow.failedTitle"), t("connectFlow.failedBody", { client: clientLabel })];
   }
@@ -137,7 +139,7 @@ const ConnectFlowBanner: React.FC<Props> = ({ flowHandle, flow, accessToken, onC
                 value="deny"
                 className="ml-2 h-[38px] rounded-md border px-4 text-sm font-semibold text-foreground hover:bg-accent/40"
               >
-                Cancel
+                {t("connectFlow.cancel")}
               </button>
             )}
             {loopbackClient && (

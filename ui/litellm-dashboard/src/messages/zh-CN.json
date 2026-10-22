@@ -3960,7 +3960,7 @@
       "testInputJson": "测试输入（JSON）",
       "modeTagScoped": "模式（标签限定，只读）",
       "modeTagScopedShort": "模式（标签限定）",
-      "continueObserving": "标记请求后继续观察响应"
+      "continueObserving": "请求被标记后继续观察响应"
     },
     "judge": {
       "modelName": "评审模型",
@@ -6220,7 +6220,11 @@
     "creating": "创建中...",
     "createGroup": "创建访问组",
     "updatedSuccessfully": "访问组更新成功",
-    "groupNameRequired": "请输入访问组名称"
+    "groupNameRequired": "请输入访问组名称",
+    "skills": "技能",
+    "allowedSkills": "可用技能",
+    "skillsDescription": "已启用的技能对所有人可见。如需授予已禁用（私有）的 Claude Code 插件，请在此为该组中的团队和密钥授权。",
+    "selectSkills": "选择技能（可选）"
   },
   "uiTheme": {
     "themeTitle": "界面主题自定义",
@@ -7986,7 +7990,26 @@
       "loadToolsFailed": "无法加载{server}的工具",
       "transport": "传输方式",
       "status": "状态",
-      "noTools": "暂无可用工具"
+      "noTools": "暂无可用工具",
+      "noServersAvailable": "此连接暂时没有可用的 MCP 服务器。请联系管理员为您的用户或团队授权。",
+      "noServersConfigured": "尚未配置 MCP 服务器。请在“工具 -> MCP 服务器”中添加。",
+      "noConnectedServers": "尚未连接任何服务器。",
+      "noSearchMatches": "没有符合搜索条件的服务器。",
+      "authorized": "已授权",
+      "disconnect": "断开连接",
+      "back": "返回",
+      "serverFallback": "MCP 服务器",
+      "information": "信息",
+      "serverId": "服务器 ID",
+      "connected": "已连接",
+      "notConnected": "未连接",
+      "availableTools": "可用工具",
+      "subtitleConnect": "点击服务器查看其工具并连接",
+      "subtitleBrowse": "浏览工具，认证一次，即可在对话中使用",
+      "toolsAvailable": "{count} 个工具可用",
+      "filterAll": "全部",
+      "filterConnected": "已连接",
+      "notSupportedOnConnection": "该连接不支持此服务器"
     },
     "messages": {
       "imageOmitted": "图片已省略",
