@@ -298,8 +298,6 @@ function ModelRowActions({
   const isPauseToggleable = !isConfigModel && isAdmin && Boolean(onTogglePauseClick);
 
   const resolvePauseTooltip = (): string => {
-    const t = useTranslations("models");
-
     if (isConfigModel) {
       return t("modelTable.pauseTooltipConfig");
     }

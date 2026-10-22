@@ -58,8 +58,6 @@ export default function CredentialsPanel() {
   };
 
   const handleAddCredential = async (submission: CredentialSubmission) => {
-    const t = useTranslations("common");
-
     if (!accessToken) {
       return;
     }
@@ -75,8 +73,6 @@ export default function CredentialsPanel() {
   };
 
   const handleDeleteCredential = async () => {
-    const t = useTranslations("common");
-
     if (!accessToken || !credentialToDelete) {
       return;
     }

@@ -162,8 +162,6 @@ const LoggingSettings: React.FC<LoggingSettingsProps> = ({
     paramName: string,
     param: { type: string; options: readonly string[] },
   ) => {
-    const t = useTranslations("teams");
-
     const { type: paramType, options } = param;
     const label = paramName.replace(/_/g, " ");
     if (options.length > 0) {
@@ -325,8 +323,6 @@ const LoggingSettings: React.FC<LoggingSettingsProps> = ({
 
       <div className="space-y-4">
         {value.map((config, index) => {
-          const t = useTranslations("teams");
-
           const callbackDisplayName = config.callback_name
             ? Object.entries(callback_map).find(([_, value]) => value === config.callback_name)?.[0]
             : undefined;

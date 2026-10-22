@@ -7,12 +7,13 @@ import { Plugin } from "./types";
 
 const SkillSource: React.FC<{ source: Plugin["source"] }> = ({ source }) => {
   const t = useTranslations("claudeCodePlugins");
+  const skillsT = useTranslations("skills");
   const link = getSourceLink(source);
   const href = link && source.source === "git-subdir" && source.path ? `${link}/tree/main/${source.path}` : link;
   if (href) {
     return (
       <div className="mb-6">
-        <div className="mb-1 text-xs text-muted-foreground">Source</div>
+        <div className="mb-1 text-xs text-muted-foreground">{t("source")}</div>
         <a
           href={href}
           target="_blank"
@@ -30,8 +31,8 @@ const SkillSource: React.FC<{ source: Plugin["source"] }> = ({ source }) => {
   }
   return (
     <div className="mb-6">
-      <div className="mb-1 text-xs text-muted-foreground">Source</div>
-      <div className="break-all text-[13px] text-foreground">{getSourceDisplayText(source)}</div>
+      <div className="mb-1 text-xs text-muted-foreground">{t("source")}</div>
+      <div className="break-all text-[13px] text-foreground">{getSourceDisplayText(skillsT, source)}</div>
     </div>
   );
 };
@@ -62,12 +63,14 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
   );
 
   const detailRows = [
-    ...(skill.category ? [{ property: "Category", value: skill.category }] : []),
-    ...(skill.domain ? [{ property: "Domain", value: skill.domain }] : []),
-    ...(skill.namespace ? [{ property: "Namespace", value: skill.namespace }] : []),
-    ...(skill.version ? [{ property: "Version", value: skill.version }] : []),
-    ...(skill.author?.name ? [{ property: "Author", value: skill.author.name }] : []),
-    ...(skill.created_at ? [{ property: "Added", value: new Date(skill.created_at).toLocaleDateString() }] : []),
+    ...(skill.category ? [{ property: t("detailCategory"), value: skill.category }] : []),
+    ...(skill.domain ? [{ property: t("detailDomain"), value: skill.domain }] : []),
+    ...(skill.namespace ? [{ property: t("detailNamespace"), value: skill.namespace }] : []),
+    ...(skill.version ? [{ property: t("detailVersion"), value: skill.version }] : []),
+    ...(skill.author?.name ? [{ property: t("detailAuthor"), value: skill.author.name }] : []),
+    ...(skill.created_at
+      ? [{ property: t("detailAdded"), value: new Date(skill.created_at).toLocaleDateString() }]
+      : []),
   ];
 
   const tabs = [
@@ -182,15 +185,15 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
       {/* How to Use tab */}
       {activeTab === "usage" && (
         <div className="max-w-[640px]">
-          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">Using this skill</h2>
+          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">{t("usingThisSkill")}</h2>
           <p className="m-0 mb-6 text-sm leading-relaxed text-muted-foreground">
-            Once your proxy is set as a marketplace, enable this skill in Claude Code with one command:
+            {t("usageIntro")}
           </p>
 
           {/* Install command */}
           <div className="mb-6 overflow-hidden rounded-lg border border-border">
             <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2.5">
-              <span className="text-[13px] font-medium text-foreground">Run in Claude Code</span>
+              <span className="text-[13px] font-medium text-foreground">{t("runInClaudeCode")}</span>
               <button
                 onClick={() => copyToClipboard(installCommand, "install")}
                 className={cn(
@@ -216,9 +219,9 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
           </div>
 
           <p className="m-0 text-[13px] leading-relaxed text-muted-foreground">
-            Don&apos;t have the marketplace configured yet?{" "}
+            {t("noMarketplaceYet")}{" "}
             <span onClick={() => setActiveTab("setup")} className="cursor-pointer text-info">
-              See one-time setup →
+              {t("seeOneTimeSetup")}
             </span>
           </p>
         </div>
@@ -227,15 +230,15 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
       {/* Setup tab (linked from usage) */}
       {activeTab === "setup" && (
         <div className="max-w-[640px]">
-          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">One-time marketplace setup</h2>
+          <h2 className="m-0 mb-2 text-lg font-normal text-foreground">{t("oneTimeSetup")}</h2>
 
           {/* Option 1: single command — fastest path for most users */}
           <p className="m-0 mb-3 text-sm leading-relaxed text-muted-foreground">
-            Run this command in Claude Code to register the marketplace:
+            {t("setupIntro")}
           </p>
           <div className="mb-6 overflow-hidden rounded-lg border border-border">
             <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2.5">
-              <span className="text-[13px] font-medium text-foreground">Run in Claude Code</span>
+              <span className="text-[13px] font-medium text-foreground">{t("runInClaudeCode")}</span>
               <button
                 onClick={() => {
                   const origin = typeof window !== "undefined" ? window.location.origin : "";
@@ -258,8 +261,8 @@ const SkillDetail: React.FC<SkillDetailProps> = ({ skill, onBack }) => {
           {/* Option 2: settings.json — for persistent config or managed deployments.
               extraKnownMarketplaces requires source to be a nested object, not a flat string. */}
           <p className="m-0 mb-3 text-sm leading-relaxed text-muted-foreground">
-            Or add this to <code className="rounded bg-muted px-1.5 py-px text-[13px]">~/.claude/settings.json</code>{" "}
-            for a persistent configuration:
+            {t("orAddThisTo")} <code className="rounded bg-muted px-1.5 py-px text-[13px]">~/.claude/settings.json</code>{" "}
+            {t("forPersistentConfig")}
           </p>
           <div className="overflow-hidden rounded-lg border border-border">
             <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2.5">

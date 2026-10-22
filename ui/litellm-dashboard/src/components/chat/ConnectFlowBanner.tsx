@@ -18,7 +18,6 @@ interface Props {
 
 /** Finish remains an explicit POST because a cross-site navigation must never mint a code. */
 export function isLoopbackOrigin(origin: string | null): boolean {
-  const t = useTranslations("chat");
   if (!origin) return false;
   try {
     const hostname = new URL(origin).hostname.replace(/^\[|\]$/g, "");

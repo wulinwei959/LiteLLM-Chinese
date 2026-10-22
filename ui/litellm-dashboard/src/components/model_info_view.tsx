@@ -75,6 +75,7 @@ export default function ModelInfoView({
   modelAccessGroups,
 }: ModelInfoViewProps) {
   const t = useTranslations("modelInfo");
+  const modelsT = useTranslations("models");
   const queryClient = useQueryClient();
   const [localModelData, setLocalModelData] = useState<any>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -268,7 +269,7 @@ export default function ModelInfoView({
     values: ModelEditSubmitValues,
     isFieldTouched: (field: TouchedPricingField) => boolean,
   ) => {
-    const t = useTranslations("models");
+    
     try {
       if (!accessToken) return;
       setIsSaving(true);
@@ -279,7 +280,7 @@ export default function ModelInfoView({
         parsedExtraParams = values.litellm_extra_params ? JSON.parse(values.litellm_extra_params) : {};
         delete parsedExtraParams.litellm_credential_name;
       } catch (e) {
-        toast.fromError(t("invalidLiteLlmParams"));
+        toast.fromError(modelsT("invalidLiteLlmParams"));
         setIsSaving(false);
         return;
       }
@@ -369,7 +370,7 @@ export default function ModelInfoView({
         if (values.team_id) updatedModelInfo = { ...updatedModelInfo, team_id: values.team_id };
         updatedModelInfo = applyPtuModelInfo(updatedModelInfo, values, ptuCostAttributionEnabled);
       } catch (e) {
-        toast.fromError(t("invalidModelInfo"));
+        toast.fromError(modelsT("invalidModelInfo"));
         return;
       }
 
@@ -405,11 +406,11 @@ export default function ModelInfoView({
         onModelUpdate(updatedModelData);
       }
 
-      toast.success(t("modelSettingsUpdated"));
+      toast.success(modelsT("modelSettingsUpdated"));
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating model:", error);
-      toast.fromError(t("updateFailed"));
+      toast.fromError(modelsT("updateFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -442,7 +443,7 @@ export default function ModelInfoView({
   }
 
   const handleTestConnection = async () => {
-    const t = useTranslations("models");
+    
     if (!accessToken) return;
     if (isComplexityRouterModel) {
       const targets = buildComplexityRouterTestTargets(localModelData ?? modelData);
@@ -456,7 +457,7 @@ export default function ModelInfoView({
       return;
     }
     try {
-      toast.info(t("testingConnection"));
+      toast.info(modelsT("testingConnection"));
       const response = await testConnectionRequest(
         accessToken,
         {
@@ -489,7 +490,7 @@ export default function ModelInfoView({
   };
 
   const handleDelete = async () => {
-    const t = useTranslations("models");
+    
     try {
       setDeleteLoading(true);
       if (!accessToken) return;
@@ -506,7 +507,7 @@ export default function ModelInfoView({
       onClose();
     } catch (error) {
       console.error("Error deleting the model:", error);
-      toast.fromError(t("deleteFailed"));
+      toast.fromError(modelsT("deleteFailed"));
     } finally {
       setDeleteLoading(false);
       setIsDeleteModalOpen(false);

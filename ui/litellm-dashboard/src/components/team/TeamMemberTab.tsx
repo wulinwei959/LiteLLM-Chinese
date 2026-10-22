@@ -125,8 +125,7 @@ export default function TeamMemberTab({
 
   // Helper function to get rate limits for a user
   const getUserRateLimits = (userId: string | null): string => {
-    const t = useTranslations("teams");
-    if (!userId) return "No Limits";
+    if (!userId) return t("member.noLimits");
     const membership = findMembership(userId);
     const rpmLimit = membership?.litellm_budget_table?.rpm_limit;
     const tpmLimit = membership?.litellm_budget_table?.tpm_limit;
@@ -167,7 +166,6 @@ export default function TeamMemberTab({
       ),
       key: "model_scope",
       render: (record: Member) => {
-        const t = useTranslations("teams");
         const models = getUserAllowedModels(record.user_id);
         if (!models) {
           return <span className="text-muted-foreground">(all team models)</span>;

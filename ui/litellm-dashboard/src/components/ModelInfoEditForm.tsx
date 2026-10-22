@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import type { ModelsAddModelTranslator } from "@/lib/i18n/translators";
 import { CircleHelp } from "lucide-react";
 import type { Dayjs } from "dayjs";
 import * as React from "react";
@@ -142,15 +143,17 @@ const isJson = (value: string): boolean => {
   }
 };
 
-const buildSchema = (ptuEnabled: boolean, isFieldTouched: (field: TouchedPricingField) => boolean) =>
+const buildSchema = (
+  t: ModelsAddModelTranslator,
+  ptuEnabled: boolean,
+  isFieldTouched: (field: TouchedPricingField) => boolean,
+) =>
   z.object(modelEditShape).superRefine((values, ctx) => {
-    const t = useTranslations("common");
-
     const reject = (path: ModelEditFieldName, message: string) =>
       ctx.addIssue({ code: "custom", path: [path], message });
 
     if (values.litellm_extra_params && !isJson(values.litellm_extra_params)) {
-      reject("litellm_extra_params", "Please enter valid JSON");
+      reject("litellm_extra_params", t("invalidJson"));
     }
 
     // antd validates only mounted fields, and the PTU block does not render when the flag is off.
@@ -159,24 +162,21 @@ const buildSchema = (ptuEnabled: boolean, isFieldTouched: (field: TouchedPricing
     }
 
     if (!isPositiveWholePtuCount(values.ptu_count)) {
-      reject("ptu_count", `PTU Count must be a whole number between 1 and ${MAX_PTU_COUNT.toLocaleString()}`);
+      reject("ptu_count", t("ptuCountRange", { max: MAX_PTU_COUNT.toLocaleString() }));
     }
     if (!isNonNegativePtuRate(values.cost_per_ptu_per_hour)) {
-      reject(
-        "cost_per_ptu_per_hour",
-        `Cost per PTU / Hour must be between 0 and ${MAX_COST_PER_PTU_PER_HOUR.toLocaleString()}`,
-      );
+      reject("cost_per_ptu_per_hour", t("ptuRateRange", { max: MAX_COST_PER_PTU_PER_HOUR.toLocaleString() }));
     }
     if (isFilledPtuValue(values.ptu_count) !== isFilledPtuValue(values.cost_per_ptu_per_hour)) {
-      const message = "PTU Count and Cost per PTU / Hour must be set together";
+      const message = t("ptuPairRequired");
       reject("ptu_count", message);
       reject("cost_per_ptu_per_hour", message);
     }
     if (isFilledPtuValue(values.ptu_count) && !isFilledPtuValue(values.ptu_effective_from)) {
-      reject("ptu_effective_from", "PTU Effective From is required when PTU Count is set");
+      reject("ptu_effective_from", t("ptuStartRequired"));
     }
     if (!ptuWindowIsOrdered(values.ptu_effective_from, values.ptu_effective_to)) {
-      const message = "PTU Effective To must be after PTU Effective From";
+      const message = t("ptuWindowOrder");
       reject("ptu_effective_from", message);
       reject("ptu_effective_to", message);
     }
@@ -365,6 +365,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
 }) => {
   const t = useTranslations("common");
   const commonT = useTranslations("common");
+  const addModelT = useTranslations("models.addModel");
   // Neither RHF's blur-based touchedFields nor its resettable dirtyFields matches antd's touched-on-change.
   const touchedRef = React.useRef<ReadonlySet<string>>(new Set<string>());
   const isFieldTouched = React.useCallback((field: TouchedPricingField) => touchedRef.current.has(field), []);
@@ -374,7 +375,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
 
   // react-hook-form refreshes control._options every render, so this rebuild is what the next submit runs.
   const resolver: Resolver<ModelEditFormValues, unknown, ModelEditSubmitValues> = (values, context, options) =>
-    zodResolver(buildSchema(ptuCostAttributionEnabled, isFieldTouched))(values, context, options);
+    zodResolver(buildSchema(addModelT, ptuCostAttributionEnabled, isFieldTouched))(values, context, options);
 
   const form = useForm<ModelEditFormValues, unknown, ModelEditSubmitValues>({
     resolver,

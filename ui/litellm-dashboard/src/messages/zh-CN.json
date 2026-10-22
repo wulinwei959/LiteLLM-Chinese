@@ -11526,7 +11526,22 @@
     "publishHint": "已选技能将对技能中心的所有用户可见。取消选择的技能将被撤回发布。",
     "countWillPublish": "将发布 <strong>{count, plural, other {# 个技能}}</strong>",
     "totalWillPublish": "总计将发布 <strong>{count, plural, other {# 个技能}}</strong>",
-    "publishSuccess": "技能中心已更新，共发布 {count, plural, other {# 个技能}}"
+    "publishSuccess": "技能中心已更新，共发布 {count, plural, other {# 个技能}}",
+    "detailCategory": "分类",
+    "detailDomain": "领域",
+    "detailNamespace": "命名空间",
+    "detailVersion": "版本",
+    "detailAuthor": "作者",
+    "detailAdded": "添加时间",
+    "usingThisSkill": "使用这个技能",
+    "usageIntro": "把代理注册成 marketplace 之后，在 Claude Code 里用一条命令启用这个技能：",
+    "runInClaudeCode": "在 Claude Code 里运行",
+    "noMarketplaceYet": "还没有配置 marketplace？",
+    "seeOneTimeSetup": "查看一次性配置步骤 →",
+    "oneTimeSetup": "一次性 marketplace 配置",
+    "setupIntro": "在 Claude Code 里运行这条命令来注册 marketplace：",
+    "orAddThisTo": "或者把下面这段加进",
+    "forPersistentConfig": "以便持久生效："
   },
   "agentIdentity": {
     "sectionAria": "智能体身份",

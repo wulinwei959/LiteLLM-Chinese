@@ -133,8 +133,6 @@ export const getPluginTableColumns = ({
     size: 300,
     enableSorting: false,
     cell: ({ row }) => {
-      const t = useTranslations("common");
-
       const description = row.original.description;
       return (
         <span className="block max-w-72 truncate text-sm text-muted-foreground" title={description ?? undefined}>

@@ -11530,7 +11530,22 @@
     "publishHint": "Selected skills will be visible to all users in the Skill Hub. Deselected skills will be unpublished.",
     "countWillPublish": "<strong>{count, plural, one {# skill} other {# skills}}</strong> will be published",
     "totalWillPublish": "Total: <strong>{count, plural, one {# skill} other {# skills}}</strong> will be published",
-    "publishSuccess": "Skill Hub updated — {count, plural, one {# skill} other {# skills}} published"
+    "publishSuccess": "Skill Hub updated — {count, plural, one {# skill} other {# skills}} published",
+    "detailCategory": "Category",
+    "detailDomain": "Domain",
+    "detailNamespace": "Namespace",
+    "detailVersion": "Version",
+    "detailAuthor": "Author",
+    "detailAdded": "Added",
+    "usingThisSkill": "Using this skill",
+    "usageIntro": "Once your proxy is set as a marketplace, enable this skill in Claude Code with one command:",
+    "runInClaudeCode": "Run in Claude Code",
+    "noMarketplaceYet": "Don't have the marketplace configured yet?",
+    "seeOneTimeSetup": "See one-time setup →",
+    "oneTimeSetup": "One-time marketplace setup",
+    "setupIntro": "Run this command in Claude Code to register the marketplace:",
+    "orAddThisTo": "Or add this to",
+    "forPersistentConfig": "for a persistent configuration:"
   },
   "agentIdentity": {
     "sectionAria": "Agent Identity",

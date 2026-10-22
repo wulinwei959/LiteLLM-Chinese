@@ -3,8 +3,7 @@
  */
 
 import type { Plugin, PluginSource } from "./types";
-import type { CommonTranslator } from "@/lib/i18n/translators";
-import { useTranslations } from "next-intl";
+import type { SkillsTranslator } from "@/lib/i18n/translators";
 
 export interface SkillSourcePreview {
   parsed: PluginSource;
@@ -17,7 +16,6 @@ export const SUBDIR_PATH_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9._-]*(\/[a-zA-Z0-9][a-zA
 export const normalizeSubPath = (subPath: string): string => subPath.trim().replace(/\/+$/, "");
 
 export const isValidSubPath = (subPath: string): boolean => {
-  const t = useTranslations("skills");
   const normalized = normalizeSubPath(subPath);
   return normalized !== "" && SUBDIR_PATH_REGEX.test(normalized);
 };
@@ -67,7 +65,6 @@ const isSafeHost = (url: URL): boolean =>
  * this normalized object rather than the raw string.
  */
 const parseRepoUrl = (raw: string): URL | null => {
-  const t = useTranslations("common");
   const trimmed = raw.trim();
   if (trimmed === "" || trimmed.startsWith("//")) {
     return null;
@@ -81,7 +78,6 @@ const parseRepoUrl = (raw: string): URL | null => {
 };
 
 const lastSegment = (path: string): string => {
-  const t = useTranslations("common");
   const segments = path.split("/").filter((seg) => seg !== "");
   return segments[segments.length - 1] ?? "";
 };
@@ -93,8 +89,7 @@ const toKebabCase = (value: string): string =>
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-const parseGitHubSource = (url: URL, subPath?: string): SkillSourcePreview | null => {
-  const t = useTranslations("skills");
+const parseGitHubSource = (t: SkillsTranslator, url: URL, subPath?: string): SkillSourcePreview | null => {
   const parts = pathSegments(url);
   if (parts.length < 2) {
     return null;
@@ -152,12 +147,11 @@ const parseGitHubSource = (url: URL, subPath?: string): SkillSourcePreview | nul
 };
 
 const buildGitSourcePreview = (
-  kind: "Git" | "SSH",
+  t: SkillsTranslator,
   repoUrl: string,
   repoName: string,
   subPath?: string,
 ): SkillSourcePreview | null => {
-  const t = useTranslations("skills");
   const normalized = normalizeSubPath(subPath ?? "");
   if (normalized !== "") {
     if (!SUBDIR_PATH_REGEX.test(normalized)) {
@@ -177,13 +171,12 @@ const buildGitSourcePreview = (
   };
 };
 
-const parseRawGitSource = (url: URL, subPath?: string): SkillSourcePreview | null => {
-  const t = useTranslations("common");
+const parseRawGitSource = (t: SkillsTranslator, url: URL, subPath?: string): SkillSourcePreview | null => {
   if (pathSegments(url).length < 2) {
     return null;
   }
   const repoName = lastSegment(url.pathname).replace(/\.git$/, "");
-  return buildGitSourcePreview("Git", buildRepoUrl(url), repoName, subPath);
+  return buildGitSourcePreview(t, buildRepoUrl(url), repoName, subPath);
 };
 
 /**
@@ -193,8 +186,7 @@ const parseRawGitSource = (url: URL, subPath?: string): SkillSourcePreview | nul
  * rewritten to `ssh://` only to reuse the https host and credential rules, and only a URL that
  * survives that round trip unchanged is accepted, which keeps traversal segments off the feed.
  */
-const parseSshSource = (raw: string, subPath?: string): SkillSourcePreview | null => {
-  const t = useTranslations("common");
+const parseSshSource = (t: SkillsTranslator, raw: string, subPath?: string): SkillSourcePreview | null => {
   const trimmed = raw.trim();
   const scp = SSH_SCP_REGEX.exec(trimmed);
   const candidate = scp ? `${SSH_SCHEME}${scp[1]}@${scp[2]}/${scp[3]}` : trimmed;
@@ -209,7 +201,7 @@ const parseSshSource = (raw: string, subPath?: string): SkillSourcePreview | nul
   if (pathStart === -1 || url.pathname !== candidate.slice(pathStart) || pathSegments(url).length < 2) {
     return null;
   }
-  return buildGitSourcePreview("SSH", trimmed, lastSegment(url.pathname).replace(/\.git$/i, ""), subPath);
+  return buildGitSourcePreview(t, trimmed, lastSegment(url.pathname).replace(/\.git$/i, ""), subPath);
 };
 
 const parseArchiveSource = (url: URL): SkillSourcePreview => ({
@@ -225,8 +217,8 @@ const parseArchiveSource = (url: URL): SkillSourcePreview => ({
  * authenticates with the user's own key; every other host is treated as a raw repo URL,
  * with an optional subfolder turning it into git-subdir.
  */
-export const parseSkillSource = (t: CommonTranslator, rawUrl: string, subPath?: string): SkillSourcePreview | null => {
-  const ssh = parseSshSource(rawUrl, subPath);
+export const parseSkillSource = (t: SkillsTranslator, rawUrl: string, subPath?: string): SkillSourcePreview | null => {
+  const ssh = parseSshSource(t, rawUrl, subPath);
   if (ssh) {
     return ssh;
   }
@@ -238,9 +230,9 @@ export const parseSkillSource = (t: CommonTranslator, rawUrl: string, subPath?: 
     return parseArchiveSource(url);
   }
   if (url.hostname.replace(/^www\./, "") === GITHUB_HOST) {
-    return parseGitHubSource(url, subPath);
+    return parseGitHubSource(t, url, subPath);
   }
-  return parseRawGitSource(url, subPath);
+  return parseRawGitSource(t, url, subPath);
 };
 
 /**
@@ -276,7 +268,6 @@ export const formatInstallCommand = (plugin: { name: string }): string => `/plug
  * Must be lowercase letters, numbers, and hyphens only
  */
 export const validatePluginName = (name: string): boolean => {
-  const t = useTranslations("common");
   if (!name || name.trim() === "") {
     return false;
   }
@@ -287,8 +278,7 @@ export const validatePluginName = (name: string): boolean => {
 /**
  * Get human-readable source display text
  */
-export const getSourceDisplayText = (source: Plugin["source"]): string => {
-  const t = useTranslations("common");
+export const getSourceDisplayText = (t: SkillsTranslator, source: Plugin["source"]): string => {
   if (source.source === "github" && source.repo) {
     return `GitHub: ${source.repo}`;
   }
@@ -305,7 +295,6 @@ export const getSourceDisplayText = (source: Plugin["source"]): string => {
  * Get clickable link for plugin source. Ssh clone urls are not browsable, so they yield null.
  */
 export const getSourceLink = (source: Plugin["source"]): string | null => {
-  const t = useTranslations("common");
   if (source.source === "github" && source.repo) {
     return `https://github.com/${source.repo}`;
   }
@@ -346,7 +335,6 @@ export const getCategoryBadgeColor = (
  * Validate semantic version format (basic check)
  */
 export const isValidSemanticVersion = (version?: string): boolean => {
-  const t = useTranslations("common");
   if (!version) {
     return true; // Version is optional
   }
@@ -360,7 +348,6 @@ export const isValidSemanticVersion = (version?: string): boolean => {
  * Validate email format
  */
 export const isValidEmail = (email?: string): boolean => {
-  const t = useTranslations("common");
   if (!email) {
     return true; // Email is optional
   }
@@ -389,7 +376,6 @@ export const isValidUrl = (url?: string): boolean => {
  * Parse keywords from comma-separated string
  */
 export const parseKeywords = (keywordsString: string): string[] => {
-  const t = useTranslations("common");
   if (!keywordsString || keywordsString.trim() === "") {
     return [];
   }

@@ -25,7 +25,7 @@ describe("SkillDetail source", () => {
       />,
     );
     expect(screen.getByRole("heading", { name: "my-skill" })).toBeInTheDocument();
-    expect(screen.getByText("Public")).toBeInTheDocument();
+    expect(screen.getByText("公开")).toBeInTheDocument();
   });
 
   it("links a github source to the repository", () => {

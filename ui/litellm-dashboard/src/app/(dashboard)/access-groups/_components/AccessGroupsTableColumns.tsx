@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
+import type { AccessGroupsTranslator } from "@/lib/i18n/translators";
 import { Bot, Layers, MoreHorizontal, Server, Sparkles, Trash2 } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -100,17 +101,18 @@ function AccessGroupRowActions({
 }
 
 interface AccessGroupsTableColumnsDeps {
+  t: AccessGroupsTranslator;
   canModify: boolean;
   onGroupClick: (id: string) => void;
   onDeleteClick: (group: AccessGroup) => void;
 }
 
 export const getAccessGroupsTableColumns = ({
+  t,
   canModify,
   onGroupClick,
   onDeleteClick,
 }: AccessGroupsTableColumnsDeps): ColumnDef<AccessGroup>[] => {
-  const t = useTranslations("common");
   const columns: ColumnDef<AccessGroup>[] = [
     {
       id: "id",

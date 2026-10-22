@@ -57,13 +57,13 @@ const ContentFilterDisplay: React.FC<ContentFilterDisplayProps> = ({
   onCategorySeverityChange,
   onCategoryRemove,
 }) => {
+  const t = useTranslations("guardrails");
   if (patterns.length === 0 && blockedWords.length === 0 && categories.length === 0) {
     return null;
   }
 
   // No-op handlers for read-only mode
   const noOp = () => {};
-  const t = useTranslations("guardrails");
 
   return (
     <>

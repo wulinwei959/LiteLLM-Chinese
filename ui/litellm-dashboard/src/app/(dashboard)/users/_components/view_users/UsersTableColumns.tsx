@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
+import type { UsersTranslator } from "@/lib/i18n/translators";
 import { ChartColumn, Copy, Info, KeyRound, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 
@@ -85,6 +86,7 @@ function UserRowActions({ user, canViewUserUsage, onUserClick, onDeleteUser, onR
 }
 
 export interface UsersTableColumnsDeps {
+  t: UsersTranslator;
   possibleUIRoles: Record<string, Record<string, string>> | null;
   includeSelection: boolean;
   canViewUserUsage: boolean;
@@ -94,6 +96,7 @@ export interface UsersTableColumnsDeps {
 }
 
 export const getUsersTableColumns = ({
+  t,
   possibleUIRoles,
   includeSelection,
   canViewUserUsage,
@@ -101,7 +104,6 @@ export const getUsersTableColumns = ({
   onDeleteUser,
   onResetPassword,
 }: UsersTableColumnsDeps): ColumnDef<UserInfo>[] => {
-  const t = useTranslations("users");
   const baseColumns: ColumnDef<UserInfo>[] = [
     {
       id: "user_id",

@@ -32,8 +32,6 @@ interface MCPNetworkSettingsProps {
  * Given an IP like "203.0.113.45", return "203.0.113.0/24".
  */
 function ipToSlash24(ip: string): string {
-  const t = useTranslations("mcpServers");
-  const commonT = useTranslations("common");
   const parts = ip.split(".");
   if (parts.length !== 4) return ip + "/32";
   return `${parts[0]}.${parts[1]}.${parts[2]}.0/24`;

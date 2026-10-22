@@ -15,6 +15,7 @@ import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { UtcDateTimeInput } from "@/components/shared/form/UtcDateTimeInput";
 import { ModelMaxBudgetEditor } from "../key_team_helpers/ModelMaxBudgetEditor";
 import { useZodForm } from "@/lib/forms/useZodForm";
+import type { TeamsTranslator } from "@/lib/i18n/translators";
 import {
   buildMemberFormData,
   buildMemberFormValues,
@@ -60,8 +61,10 @@ const memberFieldSchema = z
   .union([z.string(), z.number(), z.null(), z.array(z.string()), modelMaxBudgetSchema])
   .optional();
 
-const buildMemberSchema = (config: ModalConfig): z.ZodType<MemberFormValues, MemberFormValues> => {
-  const t = useTranslations("teams");
+const buildMemberSchema = (
+  t: TeamsTranslator,
+  config: ModalConfig,
+): z.ZodType<MemberFormValues, MemberFormValues> => {
   const shape = {
     user_email: z.string().refine(isEmailish, t("member.invalidEmail")).nullish(),
     user_id: z.string().nullish(),
@@ -85,7 +88,7 @@ const MemberModal = <T extends BaseMember>({
 }: MemberModalProps<T>) => {
   const t = useTranslations("teams");
 
-  const schema = useMemo(() => buildMemberSchema(config), [config]);
+  const schema = useMemo(() => buildMemberSchema(t, config), [config, t]);
   const form = useZodForm(schema, { defaultValues: emptyMemberFormValues(config) });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -120,8 +123,6 @@ const MemberModal = <T extends BaseMember>({
   const renderField = (field: MemberAdditionalField, name: string) => (
     <FormField key={name} control={form.control} name={name} label={field.label}>
       {({ ref, id, value, onChange, ...rest }) => {
-        const t = useTranslations("teams");
-
         switch (field.type) {
           case "input":
             return (
