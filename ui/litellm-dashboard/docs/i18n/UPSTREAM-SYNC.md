@@ -65,7 +65,7 @@ theirs = upstream/main 的内容 （上游的新版）
 ### Phase 0 · 准备
 
 - 打 tag `pre-upstream-sync-2026-10-21` 标记当前状态
-- 建分支 `sync/upstream-2026-10-20`
+- 建分支 `litellm_sync_v1.107.0`（命名沿用 `litellm_sync_v1.105.0` 那条线）
 - 记录基线数字：叶子 11261、lint 471/471、tsc 878、全量 11626 例 1 失败、死键 0
 
 ### Phase 1 · 代理侧（Python）
@@ -149,6 +149,8 @@ theirs = upstream/main 的内容 （上游的新版）
 ## 八、执行记录（2026-10-21）
 
 计划已执行到 Phase 3，Phase 4~6 尚未开始。这一节记的是实际做法与实际结果，与前面的计划有出入的地方以这一节为准。
+
+实际用的分支是 `litellm_sync_v1.107.0`，上游基线最终取的是官方 release `v1.107.0`（commit `66c8f5b1a9`）而不是 `upstream/main`——release 与 main 之间还差 78 个代理侧文件，而仪表盘只差 1 行生成物，用 release 更贴近实际发布物。
 
 ### 合并基线改了
 
