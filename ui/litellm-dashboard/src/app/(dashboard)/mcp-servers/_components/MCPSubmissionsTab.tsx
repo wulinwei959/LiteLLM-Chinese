@@ -95,9 +95,7 @@ function ConfirmDialog({ action, serverName, isCurrentlyActive, onConfirm, onCan
   const t = useTranslations("mcpServers");
   const [reviewNotes, setReviewNotes] = useState("");
   const isApprove = action === "approve";
-  const rejectBody = isCurrentlyActive
-    ? "This server is currently live. Rejecting it will immediately remove it from the proxy runtime."
-    : "This will mark the submission as rejected.";
+  const rejectBody = isCurrentlyActive ? t("submissions.rejectLiveBody") : t("submissions.rejectPlainBody");
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-overlay">
       <div className="bg-card rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
@@ -113,18 +111,23 @@ function ConfirmDialog({ action, serverName, isCurrentlyActive, onConfirm, onCan
           )}
         </div>
         <h3 className="text-base font-semibold text-foreground mb-1">
-          {isApprove ? "Approve MCP Server" : "Reject MCP Server"}
+          {isApprove ? t("submissions.approveTitle") : t("submissions.rejectTitle")}
         </h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Are you sure you want to {action}{" "}
-          <span className="font-medium text-foreground">&quot;{serverName}&quot;</span>?{" "}
           {isApprove
-            ? "This will activate the server. The submitting user will see it in their MCP Servers list once approved."
-            : rejectBody}
+            ? t.rich("submissions.confirmApprove", {
+                serverName,
+                strong: (chunks) => <strong className="font-medium text-foreground">{chunks}</strong>,
+              })
+            : t.rich("submissions.confirmReject", {
+                serverName,
+                reason: rejectBody,
+                strong: (chunks) => <strong className="font-medium text-foreground">{chunks}</strong>,
+              })}
         </p>
         {!isApprove && (
           <textarea
-            placeholder="Reason for rejection (optional)"
+            placeholder={t("submissions.reasonPlaceholder")}
             value={reviewNotes}
             onChange={(e) => setReviewNotes(e.target.value)}
             className="w-full border border-border rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:ring-1 focus:ring-ring mb-4 resize-none"
@@ -137,7 +140,7 @@ function ConfirmDialog({ action, serverName, isCurrentlyActive, onConfirm, onCan
             onClick={onCancel}
             className="flex-1 border border-border text-foreground hover:bg-accent text-sm font-medium py-2 rounded-md transition-colors"
           >
-            Cancel
+            {t("submissions.cancel")}
           </button>
           <button
             type="button"
@@ -215,14 +218,13 @@ function SubmissionRulesPanel({ requiredFields, onChange, onSave, isSaving, disa
       {expanded && (
         <div className="border-t border-border px-4 pt-4 pb-4">
           <p className="text-xs text-muted-foreground mb-4">
-            Select which fields must be filled in before a submission is considered compliant. LiteLLM will show ✓ / ✗
-            for each rule on every submission card below.
+            {t("submissions.rulesHint")}
           </p>
           <div className="grid grid-cols-2 gap-x-8 gap-y-5">
             {FIELD_GROUPS.map((group) => (
               <div key={group.label}>
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  {group.label}
+                  {t(group.label)}
                 </div>
                 <div className="space-y-2">
                   {group.fields.map((field) => {
@@ -266,7 +268,7 @@ function SubmissionRulesPanel({ requiredFields, onChange, onSave, isSaving, disa
               onClick={() => setExpanded(false)}
               className="px-4 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-md hover:bg-accent transition-colors"
             >
-              Cancel
+              {t("submissions.cancel")}
             </button>
           </div>
         </div>
@@ -307,7 +309,7 @@ function CardReviewActions({ approvalStatus, onApprove, onReject }: CardReviewAc
               onClick={onApprove}
               className="text-xs bg-success hover:bg-success/80 text-success-foreground px-3 py-1.5 rounded-md transition-colors font-medium"
             >
-              Approve
+              {t("submissions.approveBtn")}
             </button>
           )}
           <button
@@ -315,7 +317,7 @@ function CardReviewActions({ approvalStatus, onApprove, onReject }: CardReviewAc
             onClick={onReject}
             className="text-xs border border-destructive/30 text-destructive hover:bg-destructive/10 px-3 py-1.5 rounded-md transition-colors font-medium"
           >
-            Reject
+            {t("submissions.rejectBtn")}
           </button>
         </div>
       )}
@@ -326,7 +328,7 @@ function CardReviewActions({ approvalStatus, onApprove, onReject }: CardReviewAc
             onClick={onApprove}
             className="text-xs bg-success hover:bg-success/80 text-success-foreground px-3 py-1.5 rounded-md transition-colors font-medium"
           >
-            Re-approve
+            {t("submissions.reapproveBtn")}
           </button>
         </div>
       )}
@@ -367,10 +369,10 @@ function ComplianceChecksPanel({ checks, approvalStatus, onApprove, onReject }: 
         </div>
         <div className="flex-1 min-w-0">
           <div className={`text-sm font-semibold leading-tight ${allPassed ? "text-success" : "text-destructive"}`}>
-            {allPassed ? "All checks passed" : `${failCount} check${failCount !== 1 ? "s" : ""} failed`}
+            {allPassed ? t("submissions.checksAllPassed") : t("submissions.checksFailed", { fail: failCount })}
           </div>
           <div className="text-xs text-muted-foreground mt-0.5">
-            {passCount} passing, {failCount} failing
+            {t("submissions.checksPassing", { pass: passCount, fail: failCount })}
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -380,7 +382,7 @@ function ComplianceChecksPanel({ checks, approvalStatus, onApprove, onReject }: 
               onClick={onApprove}
               className="text-xs bg-success hover:bg-success/80 text-success-foreground px-3 py-1.5 rounded-md transition-colors font-medium"
             >
-              Approve
+              {t("submissions.approveBtn")}
             </button>
           )}
           {approvalStatus === "rejected" && (
@@ -389,7 +391,7 @@ function ComplianceChecksPanel({ checks, approvalStatus, onApprove, onReject }: 
               onClick={onApprove}
               className="text-xs bg-success hover:bg-success/80 text-success-foreground px-3 py-1.5 rounded-md transition-colors font-medium"
             >
-              Re-approve
+              {t("submissions.reapproveBtn")}
             </button>
           )}
           {approvalStatus !== "rejected" && (
@@ -398,7 +400,7 @@ function ComplianceChecksPanel({ checks, approvalStatus, onApprove, onReject }: 
               onClick={onReject}
               className="text-xs border border-destructive/30 text-destructive hover:bg-destructive/10 bg-card px-3 py-1.5 rounded-md transition-colors font-medium"
             >
-              Reject
+              {t("submissions.rejectBtn")}
             </button>
           )}
         </div>
@@ -420,7 +422,7 @@ function ComplianceChecksPanel({ checks, approvalStatus, onApprove, onReject }: 
             </div>
             <span className={`text-sm flex-1 ${c.passed ? "text-foreground" : "text-foreground"}`}>{c.label}</span>
             <span className={`text-xs ${c.passed ? "text-success" : "text-destructive"}`}>
-              {c.passed ? "Passes" : "Missing"}
+              {c.passed ? t("submissions.passes") : t("submissions.missing")}
             </span>
           </div>
         ))}
@@ -468,17 +470,18 @@ function MCPServerCard({ server, onApprove, onReject, requiredFields }: MCPServe
             )}
             <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
               <span>
-                Transport: <span className="text-muted-foreground">{server.transport ?? "sse"}</span>
+                {t("submissions.transport", { transport: server.transport ?? "sse" })}
               </span>
               <span>·</span>
               <span>
-                Submitted by: <span className="text-muted-foreground">{server.submitted_by ?? "—"}</span>
+                {t("submissions.submittedBy")}{" "}
+                <span className="text-muted-foreground">{server.submitted_by ?? "—"}</span>
               </span>
               <span>·</span>
               <span>{formatDate(server.submitted_at)}</span>
             </div>
             {approvalStatus === "rejected" && server.review_notes && (
-              <p className="text-xs text-destructive mt-1.5">Rejection reason: {server.review_notes}</p>
+              <p className="text-xs text-destructive mt-1.5">{t("submissions.rejectionReason", { reason: server.review_notes })}</p>
             )}
           </div>
           {checks.length === 0 && (
@@ -616,10 +619,10 @@ export function MCPSubmissionsTab({ accessToken }: MCPSubmissionsTabProps) {
       />
 
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <StatCard label="Total Submitted" value={summary.total} color="text-foreground" />
-        <StatCard label="Pending Review" value={summary.pending_review} color="text-warning" />
-        <StatCard label="Active" value={summary.active} color="text-success" />
-        <StatCard label="Rejected" value={summary.rejected} color="text-destructive" />
+        <StatCard label={t("submissions.statTotal")} value={summary.total} color="text-foreground" />
+        <StatCard label={t("submissions.statusPendingReview")} value={summary.pending_review} color="text-warning" />
+        <StatCard label={t("submissions.statusActive")} value={summary.active} color="text-success" />
+        <StatCard label={t("submissions.statusRejected")} value={summary.rejected} color="text-destructive" />
       </div>
 
       <div className="flex items-center gap-3 mb-5">

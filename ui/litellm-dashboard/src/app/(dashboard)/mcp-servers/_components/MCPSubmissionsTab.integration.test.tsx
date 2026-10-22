@@ -1,4 +1,5 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act } from "@testing-library/react";
+import { renderWithProviders, screen, waitFor } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MCPServer, MCPSubmissionsSummary } from "@/components/mcp_tools/types";
@@ -61,31 +62,31 @@ describe("MCPSubmissionsTab", () => {
   });
 
   it("renders configured submission rules and card compliance checks", async () => {
-    render(<MCPSubmissionsTab accessToken={token} />);
+    renderWithProviders(<MCPSubmissionsTab accessToken={token} />);
 
-    expect(await screen.findByText("(3 required fields)")).toBeInTheDocument();
-    expect(screen.queryByText("no rules set")).not.toBeInTheDocument();
-    expect(screen.getByText("3 passing, 0 failing")).toBeInTheDocument();
-    expect(screen.getAllByText("Passes")).toHaveLength(3);
+    expect(await screen.findByText("（3 个必填字段）")).toBeInTheDocument();
+    expect(screen.queryByText("未设置规则")).not.toBeInTheDocument();
+    expect(screen.getByText("3 项通过，0 项未通过")).toBeInTheDocument();
+    expect(screen.getAllByText("通过", { selector: "span.text-xs" })).toHaveLength(3);
   });
 
   it("preloads the rules editor and preserves them when adding a field", async () => {
     const user = userEvent.setup();
-    render(<MCPSubmissionsTab accessToken={token} />);
+    renderWithProviders(<MCPSubmissionsTab accessToken={token} />);
 
-    await user.click(await screen.findByText("Submission Rules"));
+    await user.click(await screen.findByText("提交规则"));
 
-    expect(screen.getByRole("checkbox", { name: /Description/ })).toBeChecked();
-    expect(screen.getByRole("checkbox", { name: /Server URL/ })).toBeChecked();
-    expect(screen.getByRole("checkbox", { name: /Alias/ })).toBeChecked();
-    const authTypeCheckbox = screen.getByRole("checkbox", { name: /Auth configured/ });
+    expect(screen.getByRole("checkbox", { name: /描述/ })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: /服务器 URL/ })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: /别名/ })).toBeChecked();
+    const authTypeCheckbox = screen.getByRole("checkbox", { name: /已配置认证/ });
     expect(authTypeCheckbox).not.toBeChecked();
 
     await user.click(authTypeCheckbox);
-    await user.click(screen.getByRole("button", { name: "Save Rules" }));
+    await user.click(screen.getByRole("button", { name: "保存规则" }));
 
     await waitFor(() =>
-      expect(updateConfigFieldSetting).toHaveBeenCalledWith("token", "mcp_required_fields", [
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "token", "mcp_required_fields", [
         "description",
         "url",
         "alias",
@@ -100,21 +101,21 @@ describe("MCPSubmissionsTab", () => {
       Promise.withResolvers<Awaited<ReturnType<typeof getGeneralSettingsCall>>>();
     vi.mocked(getGeneralSettingsCall).mockReturnValue(settingsPromise);
 
-    render(<MCPSubmissionsTab accessToken={token} />);
-    await user.click(screen.getByText("Submission Rules"));
+    renderWithProviders(<MCPSubmissionsTab accessToken={token} />);
+    await user.click(screen.getByText("提交规则"));
 
-    const descriptionCheckbox = screen.getByRole("checkbox", { name: /Description/ });
-    const serverUrlCheckbox = screen.getByRole("checkbox", { name: /Server URL/ });
-    const aliasCheckbox = screen.getByRole("checkbox", { name: /Alias/ });
-    const authTypeCheckbox = screen.getByRole("checkbox", { name: /Auth configured/ });
-    const saveRulesButton = screen.getByRole("button", { name: "Save Rules" });
+    const descriptionCheckbox = screen.getByRole("checkbox", { name: /描述/ });
+    const serverUrlCheckbox = screen.getByRole("checkbox", { name: /服务器 URL/ });
+    const aliasCheckbox = screen.getByRole("checkbox", { name: /别名/ });
+    const authTypeCheckbox = screen.getByRole("checkbox", { name: /已配置认证/ });
+    const saveRulesButton = screen.getByRole("button", { name: "保存规则" });
 
     expect(descriptionCheckbox).toBeDisabled();
     expect(serverUrlCheckbox).toBeDisabled();
     expect(aliasCheckbox).toBeDisabled();
     expect(authTypeCheckbox).toBeDisabled();
     expect(saveRulesButton).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "取消" })).toBeEnabled();
 
     await act(async () => {
       resolveSettings(configuredRules);
@@ -134,8 +135,8 @@ describe("MCPSubmissionsTab", () => {
   it("shows no rules when the general settings array is empty", async () => {
     vi.mocked(getGeneralSettingsCall).mockResolvedValue([]);
 
-    render(<MCPSubmissionsTab accessToken={token} />);
+    renderWithProviders(<MCPSubmissionsTab accessToken={token} />);
 
-    expect(await screen.findByText("no rules set")).toBeInTheDocument();
+    expect(await screen.findByText("未设置规则")).toBeInTheDocument();
   });
 });
