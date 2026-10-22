@@ -2283,7 +2283,7 @@
     "listModelAliases": "模型别名",
     "listModelAliasesDescription": "为模型创建自定义别名，团队成员可在 API 调用中使用。这样可以为特定模型创建快捷方式。",
     "listModelMaxBudgetHint": "限制此团队在单个模型上的支出，每个模型都有自己的重置周期。除非密钥为某个模型设置了独立预算，否则团队中的所有密钥共享该上限。",
-    "listModelsHint": "这些是所选团队可访问的模型。留空表示不直接授予任何模型，例如当团队通过访问组获取模型时",
+    "listModelsHint": "所选团队可以访问的模型。留空表示不直接授予任何模型，例如该团队通过访问组获取模型时。",
     "listNoOrganizationsAvailable": "没有可用的组织",
     "listOrganization": "组织",
     "listOrganizationHint": "一个组织可以有多个团队。进一步了解用户管理层次结构",
@@ -2797,7 +2797,9 @@
     "infoNone": "无",
     "infoEnabled": "已启用",
     "infoDisabled": "已禁用",
-    "infoNever": "永不"
+    "infoNever": "永不",
+    "listRequireTraceId": "要求 Trace ID",
+    "listRequireTraceIdHint": "拒绝来自此团队、未携带 Trace ID 的 LLM、MCP 与代理请求（x-litellm-trace-id 请求头，LLM 请求也可使用 traceparent 或 metadata.trace_id）"
   },
   "userAgentActivity": {
     "summaryTitle": "按用户代理汇总",

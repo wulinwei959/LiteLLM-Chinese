@@ -51,21 +51,21 @@ describe("Teams creation integration", () => {
     const user = userEvent.setup({ delay: null });
     renderWithProviders(<Teams accessToken="sk-session-test" userID="test-admin" userRole="Admin" premiumUser />);
 
-    await user.click(screen.getAllByRole("button", { name: /create team/i })[0]);
-    await screen.findByLabelText(/team name/i);
-    await user.click(screen.getByText("Additional Settings"));
-    await screen.findByText(/Team Member Key Duration/);
+    await user.click(screen.getAllByRole("button", { name: /创建团队/ })[0]);
+    await screen.findByLabelText(/团队名称/);
+    await user.click(screen.getByText("附加设置"));
+    await screen.findByText(/团队成员密钥有效期/);
 
-    const addBudgetButtons = screen.getAllByRole("button", { name: /Add Model Budget/i });
+    const addBudgetButtons = screen.getAllByRole("button", { name: /添加模型预算/ });
     await user.click(addBudgetButtons[1]);
-    const modelSelectors = screen.getAllByPlaceholderText("Select model");
-    await user.click(modelSelectors[0]);
+    const modelSelectors = screen.getAllByPlaceholderText("选择模型");
+    await user.click(modelSelectors.at(-1)!);
     await user.click(await screen.findByRole("option", { name: "gpt-4" }));
-    fireEvent.change(screen.getAllByPlaceholderText("Max spend ($)")[0], { target: { value: "4" } });
-    await user.click(screen.getByText("Additional Settings"));
+    fireEvent.change(screen.getAllByPlaceholderText("最大花费（$）")[0], { target: { value: "4" } });
+    await user.click(screen.getByText("附加设置"));
 
-    fireEvent.change(screen.getByLabelText(/team name/i), { target: { value: "Budget Team" } });
-    await user.click(screen.getAllByRole("button", { name: /create team/i }).at(-1)!);
+    fireEvent.change(screen.getByLabelText(/团队名称/), { target: { value: "Budget Team" } });
+    await user.click(screen.getAllByRole("button", { name: /创建团队/ }).at(-1)!);
     await waitFor(() => {
       expect(vi.mocked(fetch)).toHaveBeenCalled();
     });

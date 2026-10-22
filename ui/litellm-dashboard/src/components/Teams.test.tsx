@@ -27,6 +27,8 @@ const mockTranslations: Record<string, string> = {
   "teams.keys": "Keys",
   "teams.listSubtitle": "Manage teams, members, and their access to models and budgets",
   "teams.listTeamNameRequired": "Please input a team name",
+  "teams.listRequireTraceId": "Require Trace ID",
+  "teams.listRequireTraceIdHint": "Reject requests without a trace ID",
   "teams.listOrganizationNoLongerAvailable": "You can no longer create teams in this organization",
   "teams.listBudgetDurationDefault": "Default: {label} ({duration})",
   "teams.listBudgetDurationNotAvailable": "n/a",

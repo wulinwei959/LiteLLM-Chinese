@@ -2283,7 +2283,7 @@
     "listModelAliases": "Model Aliases",
     "listModelAliasesDescription": "Create custom aliases for models that can be used by team members in API calls. This allows you to create shortcuts for specific models.",
     "listModelMaxBudgetHint": "Cap this team's spend on individual models, each with its own reset window. Every key on the team shares the cap unless the key sets its own budget for that model.",
-    "listModelsHint": "Leave empty to grant no models directly. The team keeps any models granted through its access groups",
+    "listModelsHint": "These are the models that your selected team has access to. Leave empty to grant no models directly, e.g. when the team gets its models from access groups",
     "listNoOrganizationsAvailable": "No organizations available",
     "listOrganization": "Organization",
     "listOrganizationHint": "Organizations can have multiple teams. Learn more about the user management hierarchy",
@@ -2797,7 +2797,9 @@
     "infoNone": "None",
     "infoEnabled": "Enabled",
     "infoDisabled": "Disabled",
-    "infoNever": "Never"
+    "infoNever": "Never",
+    "listRequireTraceId": "Require Trace ID",
+    "listRequireTraceIdHint": "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-litellm-trace-id header, LLM requests can also use traceparent or metadata.trace_id)"
   },
   "userAgentActivity": {
     "summaryTitle": "Summary by User Agent",
