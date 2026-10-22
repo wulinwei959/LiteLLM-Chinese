@@ -1,4 +1,4 @@
-import { teamPerModelLimitOptions } from "src/components/team/teamModelAcces";
+import { teamPerModelLimitOptions } from "@/components/team/teamModelAccess";
 import { describe, expect, it } from "vitest";
 import { enMessagesFor } from "@tests/i18nStub";
 import {

@@ -2,7 +2,7 @@ import moment from "moment";
 import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 import zh from "@/messages/zh-CN.json";
-import { getTimeRangeDisplay } from "./logs_utils";
+import { getTimeRangeDisplay } from "./timeRange";
 
 const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "logs" });
 

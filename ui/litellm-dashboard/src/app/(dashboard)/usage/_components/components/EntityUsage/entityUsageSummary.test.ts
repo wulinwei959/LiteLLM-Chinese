@@ -1,4 +1,4 @@
-import { hasPtuHours } from "src/app/(dashboard)/usage/_components/components/EntityUsage/entityUsageSummar";
+import { hasPtuHours } from "@/app/(dashboard)/usage/_components/components/EntityUsage/entityUsageSummary";
 import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 import zh from "@/messages/zh-CN.json";
@@ -46,18 +46,18 @@ describe("buildSummaryTiles", () => {
 
   it("adds a sixth PTU Hours tile only when asked, after Total Tokens", () => {
     const withPtu = { ...metadata, total_ptu_hours: 1234.5678 };
-    expect(buildSummaryTiles(withPtu, true)).toHaveLength(5);
-    const tiles = buildSummaryTiles(withPtu, true, true);
+    expect(buildSummaryTiles(t, withPtu, true)).toHaveLength(5);
+    const tiles = buildSummaryTiles(t, withPtu, true, true);
     expect(tiles).toHaveLength(6);
     const last = tiles[tiles.length - 1];
-    expect(last.title).toBe("PTU Hours");
+    expect(last.title).toBe("PTU 小时");
     expect(last.value).toBe("1,234.57");
-    expect(last.tooltip).toContain("PTU-hours");
-    expect(tiles[tiles.length - 2].title).toBe("Total Tokens");
+    expect(last.tooltip).toContain("PTU 小时");
+    expect(tiles[tiles.length - 2].title).toBe("总令牌数");
   });
 
   it("treats missing PTU hours as zero when the tile is forced on", () => {
-    const tiles = buildSummaryTiles(metadata, false, true);
+    const tiles = buildSummaryTiles(t, metadata, false, true);
     expect(tiles[tiles.length - 1].value).toBe("0.00");
   });
 
