@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { act } from "@testing-library/react";
 import type { MCPServerData } from "./MCPHubTableColumns";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, waitFor, within } from "../../../tests/test-utils";
+import { renderWithProviders, screen, testQueryClient, waitFor, within } from "../../../tests/test-utils";
 import ModelHubTable from "./ModelHubTable";
 
 const mockUseUISettings = vi.hoisted(() => vi.fn());
@@ -225,7 +225,7 @@ describe("ModelHubTable", () => {
       />,
     );
 
-    expect(await screen.findByText("暂无模型")).toBeInTheDocument();
+    expect(await screen.findByText("暂无可用模型")).toBeInTheDocument();
     expect(networking.modelHubCall).not.toHaveBeenCalled();
   });
 
@@ -303,11 +303,11 @@ describe("ModelHubTable", () => {
       expect(dialog).toHaveTextContent('"http://gateway.local:5000/v1/systemone"');
       expect(dialog).toHaveTextContent('headers={"X-Litellm-Key": "Bearer your_api_key"}');
       expect(dialog).not.toHaveTextContent("chat.completions");
-      expect(screen.getByRole("link", { name: "How to call decision models" })).toHaveAttribute(
+      expect(screen.getByRole("link", { name: "如何调用决策模型" })).toHaveAttribute(
         "href",
         "https://docs.litellm.ai/docs/decisions",
       );
-      expect(screen.getByRole("link", { name: "Try it in the Playground" })).toHaveAttribute(
+      expect(screen.getByRole("link", { name: "在演练场中试用" })).toHaveAttribute(
         "href",
         "/ui/playground?tab=system-one",
       );
@@ -320,8 +320,8 @@ describe("ModelHubTable", () => {
       );
 
       expect(dialog).toHaveTextContent('"http://gateway.local:5000/v1/systemone"');
-      expect(screen.getByRole("link", { name: "How to call decision models" })).toBeInTheDocument();
-      expect(screen.queryByRole("link", { name: "Try it in the Playground" })).not.toBeInTheDocument();
+      expect(screen.getByRole("link", { name: "如何调用决策模型" })).toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: "在演练场中试用" })).not.toBeInTheDocument();
     });
 
     it("keeps the chat completions example for a chat model", async () => {
@@ -329,7 +329,7 @@ describe("ModelHubTable", () => {
 
       expect(dialog).toHaveTextContent("client.chat.completions.create(");
       expect(dialog).toHaveTextContent('"http://gateway.local:5000"');
-      expect(screen.queryByRole("link", { name: "How to call decision models" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: "如何调用决策模型" })).not.toBeInTheDocument();
     });
   });
 
@@ -376,8 +376,8 @@ describe("ModelHubTable", () => {
           canAddModels={canAddModels}
         />,
       );
-      await screen.findByText(/Showing \d+ of \d+ models/);
-      return { user, modeSelect: () => screen.getByDisplayValue("All Modes") };
+      await screen.findByText(/已显示 \d+，共 \d+ 个模型/);
+      return { user, modeSelect: () => screen.getByDisplayValue("全部模式") };
     };
 
     const chatOnly = [{ model_group: "claude-opus-4-8", providers: ["anthropic"], mode: "chat" }];
@@ -398,13 +398,13 @@ describe("ModelHubTable", () => {
       const garden = await screen.findByTestId("decision-model-garden");
       expect(garden).toHaveTextContent("1 more is self-hosted and answers on its own route.");
       const layaCard = within(garden).getByTestId("decision-model-card-laya/english");
-      expect(within(layaCard).queryByRole("link", { name: "/v1/decisions docs" })).not.toBeInTheDocument();
-      expect(within(layaCard).getByRole("link", { name: "Self-hosted, own route" })).toHaveAttribute(
+      expect(within(layaCard).queryByRole("link", { name: "/v1/decisions 文档" })).not.toBeInTheDocument();
+      expect(within(layaCard).getByRole("link", { name: "自托管，走自己的路由" })).toHaveAttribute(
         "href",
         "https://docs.litellm.ai/docs/decisions#self-hosted-laya-and-nimble",
       );
-      expect(await within(garden).findAllByRole("link", { name: "Add model" })).toHaveLength(1);
-      expect(within(layaCard).queryByRole("link", { name: "Add model" })).not.toBeInTheDocument();
+      expect(await within(garden).findAllByRole("link", { name: "添加模型" })).toHaveLength(1);
+      expect(within(layaCard).queryByRole("link", { name: "添加模型" })).not.toBeInTheDocument();
     });
 
     it("links each card to the decisions docs and to Add Model prefilled with that provider and model", async () => {
@@ -413,11 +413,11 @@ describe("ModelHubTable", () => {
       const card = within(await screen.findByTestId("decision-model-garden")).getByTestId(
         "decision-model-card-typesafe/jev-latest",
       );
-      expect(within(card).getByRole("link", { name: "/v1/decisions docs" })).toHaveAttribute(
+      expect(within(card).getByRole("link", { name: "/v1/decisions 文档" })).toHaveAttribute(
         "href",
         "https://docs.litellm.ai/docs/decisions",
       );
-      expect(await within(card).findByRole("link", { name: "Add model" })).toHaveAttribute(
+      expect(await within(card).findByRole("link", { name: "添加模型" })).toHaveAttribute(
         "href",
         expect.stringMatching(/\/models-and-endpoints\?tab=add&provider=typesafe&litellm_model=typesafe%2Fjev-latest$/),
       );
@@ -430,12 +430,12 @@ describe("ModelHubTable", () => {
       expect(garden).toHaveTextContent("2 decision models across 2 providers answer on /v1/decisions");
       expect(garden).toHaveTextContent("1 more needs a newer LiteLLM version.");
       const newCard = within(garden).getByTestId("decision-model-card-newvendor/decider");
-      expect(within(newCard).getByRole("link", { name: "Needs a newer LiteLLM" })).toHaveAttribute(
+      expect(within(newCard).getByRole("link", { name: "需要升级 LiteLLM" })).toHaveAttribute(
         "href",
         "https://docs.litellm.ai/docs/decisions#supported-providers",
       );
-      expect(await within(garden).findAllByRole("link", { name: "Add model" })).toHaveLength(1);
-      expect(within(newCard).queryByRole("link", { name: "Add model" })).not.toBeInTheDocument();
+      expect(await within(garden).findAllByRole("link", { name: "添加模型" })).toHaveLength(1);
+      expect(within(newCard).queryByRole("link", { name: "添加模型" })).not.toBeInTheDocument();
     });
 
     it("lists OpenAI's chat model that answers on /v1/decisions, with Add Model prefilled", async () => {
@@ -454,7 +454,7 @@ describe("ModelHubTable", () => {
       const garden = await screen.findByTestId("decision-model-garden");
       expect(garden).toHaveTextContent("1 decision model across 1 provider answers on /v1/decisions.");
       const card = within(garden).getByTestId("decision-model-card-gpt-6-luna");
-      expect(await within(card).findByRole("link", { name: "Add model" })).toHaveAttribute(
+      expect(await within(card).findByRole("link", { name: "添加模型" })).toHaveAttribute(
         "href",
         expect.stringMatching(/\?tab=add&provider=openai&litellm_model=gpt-6-luna$/),
       );
@@ -473,12 +473,12 @@ describe("ModelHubTable", () => {
       const garden = await screen.findByTestId("decision-model-garden");
       expect(garden).toHaveTextContent("2 decision models across 2 providers answer on /v1/decisions");
       const foundryCard = within(garden).getByTestId("decision-model-card-azure_ai/Microsoft-Decision-1");
-      expect(within(foundryCard).getByRole("link", { name: "Deploy under your own name" })).toHaveAttribute(
+      expect(within(foundryCard).getByRole("link", { name: "以自己的名称部署" })).toHaveAttribute(
         "href",
         "https://docs.litellm.ai/docs/decisions#supported-providers",
       );
-      expect(await within(garden).findAllByRole("link", { name: "Add model" })).toHaveLength(1);
-      expect(within(foundryCard).queryByRole("link", { name: "Add model" })).not.toBeInTheDocument();
+      expect(await within(garden).findAllByRole("link", { name: "添加模型" })).toHaveLength(1);
+      expect(within(foundryCard).queryByRole("link", { name: "添加模型" })).not.toBeInTheDocument();
     });
 
     it("falls back to the cost map alone when this proxy's decision provider list cannot be read", async () => {
@@ -502,9 +502,9 @@ describe("ModelHubTable", () => {
 
       expect(screen.getByTestId("decision-model-garden")).toBeInTheDocument();
       expect(screen.queryByRole("button", { name: "claude-opus-4-8" })).not.toBeInTheDocument();
-      expect(screen.getByText("Showing 0 of 1 models")).toBeInTheDocument();
-      expect(screen.getByText("No model on this proxy uses the decisions mode")).toBeInTheDocument();
-      expect(screen.queryByText("Adjust the filters to see more models.")).not.toBeInTheDocument();
+      expect(screen.getByText("已显示 0，共 1 个模型")).toBeInTheDocument();
+      expect(screen.getByText("该代理上没有模型使用决策模式")).toBeInTheDocument();
+      expect(screen.queryByText("调整搜索关键词或筛选条件即可看到更多模型。")).not.toBeInTheDocument();
     });
 
     it("hides the garden while a non-decision mode is selected", async () => {
@@ -514,7 +514,7 @@ describe("ModelHubTable", () => {
       await user.selectOptions(modeSelect(), "chat");
       expect(screen.queryByTestId("decision-model-garden")).not.toBeInTheDocument();
 
-      await user.click(screen.getByRole("button", { name: "Clear Filters" }));
+      await user.click(screen.getByRole("button", { name: "清除筛选" }));
       expect(await screen.findByTestId("decision-model-garden")).toBeInTheDocument();
     });
 
@@ -529,7 +529,7 @@ describe("ModelHubTable", () => {
       expect(row).not.toHaveTextContent("evaluation");
 
       await user.selectOptions(modeSelect(), "decisions");
-      expect(screen.getByText("Showing 1 of 2 models")).toBeInTheDocument();
+      expect(screen.getByText("已显示 1，共 2 个模型")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "jev-latest" })).toBeInTheDocument();
     });
 
@@ -537,8 +537,8 @@ describe("ModelHubTable", () => {
       await renderHub(chatOnly, { canAddModels: false });
 
       const garden = await screen.findByTestId("decision-model-garden");
-      expect(within(garden).queryByRole("link", { name: "Add model" })).not.toBeInTheDocument();
-      expect(within(garden).getAllByRole("link", { name: "/v1/decisions docs" })).toHaveLength(2);
+      expect(within(garden).queryByRole("link", { name: "添加模型" })).not.toBeInTheDocument();
+      expect(within(garden).getAllByRole("link", { name: "/v1/decisions 文档" })).toHaveLength(2);
     });
 
     it("drops the Add Model link on a card whose provider the Add Model form cannot create", async () => {
@@ -547,9 +547,9 @@ describe("ModelHubTable", () => {
       const garden = await screen.findByTestId("decision-model-garden");
       const typesafeCard = within(garden).getByTestId("decision-model-card-typesafe/jev-latest");
       const cloudflareCard = within(garden).getByTestId("decision-model-card-cloudflare/clef");
-      expect(await within(typesafeCard).findByRole("link", { name: "Add model" })).toBeInTheDocument();
-      expect(within(cloudflareCard).queryByRole("link", { name: "Add model" })).not.toBeInTheDocument();
-      expect(within(cloudflareCard).getByRole("link", { name: "/v1/decisions docs" })).toBeInTheDocument();
+      expect(await within(typesafeCard).findByRole("link", { name: "添加模型" })).toBeInTheDocument();
+      expect(within(cloudflareCard).queryByRole("link", { name: "添加模型" })).not.toBeInTheDocument();
+      expect(within(cloudflareCard).getByRole("link", { name: "/v1/decisions 文档" })).toBeInTheDocument();
     });
 
     it("sorts the Mode column by the label it shows, placing decisions between chat and embedding", async () => {
@@ -616,7 +616,7 @@ describe("ModelHubTable", () => {
       };
       const { user } = await renderHub([], Promise.resolve([server]));
 
-      await user.click(screen.getByRole("tab", { name: "MCP Hub" }));
+      await user.click(screen.getByRole("tab", { name: "MCP 中心" }));
       await user.click(await screen.findByText("exa_test"));
 
       expect(await screen.findByText(/http:\/\/localhost:4000\/exa_test\/mcp/)).toBeInTheDocument();

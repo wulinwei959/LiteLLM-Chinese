@@ -142,7 +142,8 @@ export const getModelHubTableColumns = ({
     header: ({ column }) => <DataTableSortHeader column={column} title={commonT("mode")} />,
     size: 110,
     enableSorting: true,
-    sortingFn: "alphanumeric",
+    sortingFn: (rowA, rowB) =>
+      (displayMode(rowA.original.mode) ?? "").localeCompare(displayMode(rowB.original.mode) ?? ""),
     cell: ({ row }) =>
       row.original.mode ? (
         <span className="font-mono text-xs text-muted-foreground">{displayMode(row.original.mode)}</span>

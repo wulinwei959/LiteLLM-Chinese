@@ -1,3 +1,4 @@
+import type { AiHubTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 import { BookOpen, Plus, Sparkles } from "lucide-react";
@@ -23,21 +24,24 @@ const PREVIEW_COUNT = 8;
 
 const plural = (count: number, one: string, many: string): string => (count === 1 ? one : many);
 
-const ROUTE_LINKS: Readonly<Record<DecisionRoute, { readonly href: string; readonly label: string }>> = {
-  decisions: { href: DECISIONS_DOCS_URL, label: "/v1/decisions docs" },
-  "self-hosted": { href: DECISIONS_SELF_HOSTED_DOCS_URL, label: "Self-hosted, own route" },
-  "needs-upgrade": { href: DECISIONS_PROVIDERS_DOCS_URL, label: "Needs a newer LiteLLM" },
-};
+const routeLinks = (
+  t: AiHubTranslator,
+): Readonly<Record<DecisionRoute, { readonly href: string; readonly label: string }>> => ({
+  decisions: { href: DECISIONS_DOCS_URL, label: t("linkDecisionsDocs") },
+  "self-hosted": { href: DECISIONS_SELF_HOSTED_DOCS_URL, label: t("linkSelfHosted") },
+  "needs-upgrade": { href: DECISIONS_PROVIDERS_DOCS_URL, label: t("linkNeedsUpgrade") },
+});
 
 const DEPLOYMENT_NAMED_PROVIDERS: ReadonlySet<string> = new Set(["azure", "azure_ai"]);
 
-const OWN_DEPLOYMENT_LINK = { href: DECISIONS_PROVIDERS_DOCS_URL, label: "Deploy under your own name" } as const;
+const ownDeploymentLink = (t: AiHubTranslator) =>
+  ({ href: DECISIONS_PROVIDERS_DOCS_URL, label: t("linkOwnDeploymentName") }) as const;
 
 const needsOwnDeploymentName = (row: DecisionGardenModel): boolean =>
   row.route === "decisions" && DEPLOYMENT_NAMED_PROVIDERS.has(row.provider);
 
-const cardLink = (row: DecisionGardenModel) =>
-  needsOwnDeploymentName(row) ? OWN_DEPLOYMENT_LINK : ROUTE_LINKS[row.route];
+const cardLink = (row: DecisionGardenModel, t: AiHubTranslator) =>
+  needsOwnDeploymentName(row) ? ownDeploymentLink(t) : routeLinks(t)[row.route];
 
 export const addModelHref = (row: DecisionGardenModel): string => {
   const params = new URLSearchParams({ tab: "add", provider: row.provider, litellm_model: row.model });
@@ -52,7 +56,7 @@ interface DecisionModelCardProps {
 function DecisionModelCard({ row, canAddModels }: DecisionModelCardProps) {
   const t = useTranslations("aiHub");
   const { displayName } = getProviderLogoAndName(row.provider);
-  const link = cardLink(row);
+  const link = cardLink(row, t);
   return (
     <div
       className="flex flex-col gap-3 rounded-lg border bg-background p-4"

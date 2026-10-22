@@ -23,6 +23,7 @@ interface Link {
 
 const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessToken, userRole }) => {
   const t = useTranslations("modelHub");
+  const commonT = useTranslations("common");
   const [links, setLinks] = useState<Link[]>([]);
   const [newLink, setNewLink] = useState({ url: "", displayName: "" });
   const [editingLink, setEditingLink] = useState<Link | null>(null);
@@ -229,9 +230,9 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
     <Card className="mb-6 px-6">
       <div className="flex items-center justify-between cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
         <div className="flex flex-col">
-          <h3 className="mb-0 text-lg font-semibold">Link Management</h3>
+          <h3 className="mb-0 text-lg font-semibold">{t("linkManagement")}</h3>
           <p className="text-sm text-muted-foreground">
-            Manage the links that are displayed under &apos;Useful Links&apos; on the public model hub.
+            {t("linkManagementHint")}
           </p>
         </div>
         <div className="flex items-center">
@@ -322,7 +323,7 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
                     onClick={handleCancelRearranging}
                     className="text-xs bg-muted text-muted-foreground px-3 py-1.5 rounded-sm hover:bg-accent"
                   >
-                    Cancel
+                    {commonT("cancel")}
                   </button>
                 </div>
               )}
@@ -335,7 +336,7 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
                   <TableRow>
                     <TableHead className="py-1 h-8">{t("colDisplayName")}</TableHead>
                     <TableHead className="py-1 h-8">{t("colUrl")}</TableHead>
-                    <TableHead className="py-1 h-8">Actions</TableHead>
+                    <TableHead className="py-1 h-8">{t("actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -375,13 +376,13 @@ const UsefulLinksManagement: React.FC<UsefulLinksManagementProps> = ({ accessTok
                                 onClick={handleUpdateLink}
                                 className="text-xs bg-info/10 text-info px-2 py-1 rounded-sm hover:bg-info/15"
                               >
-                                Save
+                                {commonT("save")}
                               </button>
                               <button
                                 onClick={handleCancelEdit}
                                 className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-sm hover:bg-accent"
                               >
-                                Cancel
+                                {commonT("cancel")}
                               </button>
                             </div>
                           </TableCell>

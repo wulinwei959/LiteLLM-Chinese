@@ -1,4 +1,5 @@
 import { AgentHubData, getAgentHubTableColumns } from "@/components/AIHub/AgentHubTableColumns";
+import type { ModelHubTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 import MakeAgentPublicForm from "@/components/AIHub/forms/MakeAgentPublicForm";
 import MakeMCPPublicForm from "@/components/AIHub/forms/MakeMCPPublicForm";
@@ -70,19 +71,17 @@ function isMCPHubVisibilityDisabled(isLoading: boolean, servers: readonly MCPSer
 }
 
 function modelTableEmptyState(
+  t: ModelHubTranslator,
   models: readonly ModelHubData[],
   showsDecisionGarden: boolean,
   selectedMode: string,
 ): { title: string; body: string } {
   if (showsDecisionGarden && selectedMode === DECISIONS_MODE && !models.some((model) => isDecisionMode(model.mode))) {
-    return {
-      title: "No model on this proxy uses the decisions mode",
-      body: "The decision models LiteLLM supports are listed below.",
-    };
+    return { title: t("decisionsEmptyTitle"), body: t("decisionsEmptyBody") };
   }
   return models.length > 0
-    ? { title: "No matching models", body: "Adjust the filters to see more models." }
-    : { title: "No models yet", body: "Models added to this proxy will appear here." };
+    ? { title: t("noMatchingModels"), body: t("modelsSearchFilterHint") }
+    : { title: t("noModelsAvailable"), body: t("modelsEmptyHint") };
 }
 
 function HubEmptyState({ title, body }: { title: string; body: string }) {
@@ -448,25 +447,25 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
           {/* Header with Title, Description and URL */}
           <div className="flex justify-between items-center mb-6">
             <div className="flex flex-col items-start">
-              <h2 className="text-center text-xl font-semibold">AI Hub</h2>
+              <h2 className="text-center text-xl font-semibold">{t("pageTitle")}</h2>
               {isAdminRole(userRole || "") ? (
                 <p className="text-sm text-muted-foreground">
-                  Make models, agents, and MCP servers public for developers to know what&apos;s available.
+                  {t("adminSubtitle")}
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  A list of all public model names personally available to you.
+                  {t("userSubtitle")}
                 </p>
               )}
             </div>
             <div className="flex items-center space-x-4">
-              <p>Model Hub URL:</p>
+              <p>{t("publicUrlLabel")}</p>
               <div className="flex items-center bg-border px-2 py-1 rounded-sm">
                 <p className="mr-2">{getUiPageUrl(`${getProxyBaseUrl()}/ui/model_hub_table`)}</p>
                 <button
                   onClick={() => void copyToClipboard(getUiPageUrl(`${getProxyBaseUrl()}/ui/model_hub_table`))}
                   className="p-1 hover:bg-accent rounded-sm transition-colors"
-                  title="Copy URL"
+                  title={t("copyUrl")}
                 >
                   <Copy size={16} className="text-muted-foreground" />
                 </button>
@@ -485,17 +484,13 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
           <Tabs defaultValue="models">
             <TabsList variant="line" className="mb-4 h-auto w-full justify-start rounded-none border-b p-0">
               <TabsTrigger value="models" className="flex-none rounded-none px-4 py-2">
-                Model Hub
-              </TabsTrigger>
+                {t("tabModels")}</TabsTrigger>
               <TabsTrigger value="agents" className="flex-none rounded-none px-4 py-2">
-                Agent Hub
-              </TabsTrigger>
+                {t("tabAgents")}</TabsTrigger>
               <TabsTrigger value="mcp" className="flex-none rounded-none px-4 py-2">
-                MCP Hub
-              </TabsTrigger>
+                {t("tabMcp")}</TabsTrigger>
               <TabsTrigger value="skills" className="flex-none rounded-none px-4 py-2">
-                Skill Hub
-              </TabsTrigger>
+                {t("tabSkills")}</TabsTrigger>
             </TabsList>
 
             <div>
@@ -528,9 +523,9 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                     sorting={modelSorting}
                     onSortingChange={setModelSorting}
                     isLoading={loading}
-                    loadingMessage="Loading models…"
+                    loadingMessage={t("loadingModels")}
                     noDataMessage={
-                      <HubEmptyState {...modelTableEmptyState(modelHubData ?? [], showDecisionGarden, selectedMode)} />
+                      <HubEmptyState {...modelTableEmptyState(t, modelHubData ?? [], showDecisionGarden, selectedMode)} />
                     }
                     size="compact"
                   />
@@ -590,15 +585,11 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                     sorting={agentSorting}
                     onSortingChange={setAgentSorting}
                     isLoading={agentLoading}
-                    loadingMessage="Loading agents…"
+                    loadingMessage={t("loadingAgents")}
                     noDataMessage={
                       <HubEmptyState
-                        title={agentHubData?.length ? "No matching agents" : "No agents yet"}
-                        body={
-                          agentHubData?.length
-                            ? "Adjust the search to see more agents."
-                            : "Agents added to this proxy will appear here."
-                        }
+                        title={agentHubData?.length ? t("noMatchingAgents") : t("noAgentsYet")}
+                        body={agentHubData?.length ? t("agentsSkillFilterHint") : t("agentsEmptyHint")}
                       />
                     }
                     size="compact"
@@ -637,11 +628,11 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                     sorting={mcpSorting}
                     onSortingChange={setMcpSorting}
                     isLoading={mcpLoading}
-                    loadingMessage="Loading MCP servers…"
+                    loadingMessage={t("loadingMcpServers")}
                     noDataMessage={
                       <HubEmptyState
-                        title="No MCP servers yet"
-                        body="MCP servers added to this proxy will appear here."
+                        title={t("noMcpTitle")}
+                        body={t("noMcpBody")}
                       />
                     }
                     size="compact"
@@ -650,7 +641,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
 
                 <div className="mt-4 text-center space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    Showing {mcpHubData?.length || 0} MCP server{mcpHubData?.length !== 1 ? "s" : ""}
+                    {t("mcpCount", { count: mcpHubData?.length || 0 })}
                   </p>
                 </div>
               </TabsContent>
@@ -659,7 +650,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
               <TabsContent value="skills" keepMounted>
                 {publicPage == false && canModify && (
                   <div className="flex justify-end mb-4">
-                    <Button onClick={() => setIsMakeSkillPublicModalVisible(true)}>Select Skills to Make Public</Button>
+                    <Button onClick={() => setIsMakeSkillPublicModalVisible(true)}>{t("selectSkillsPublic")}</Button>
                   </div>
                 )}
                 <SkillHubDashboard
@@ -679,9 +670,9 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
         </div>
       ) : (
         <Card className="mx-auto max-w-xl mt-10 px-6">
-          <p className="text-xl text-center mb-2 text-foreground">Public Model Hub not enabled.</p>
+          <p className="text-xl text-center mb-2 text-foreground">{t("hubDisabledTitle")}</p>
           <p className="text-base text-center text-foreground">
-            Ask your proxy admin to enable this on their Admin UI.
+            {t("hubDisabledHint")}
           </p>
         </Card>
       )}
@@ -718,7 +709,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                   </div>
                   {selectedModel.description && (
                     <div className="col-span-2">
-                      <p className="font-medium">Description:</p>
+                      <p className="font-medium">{t("lblDescription")}</p>
                       <p className="mt-1">{selectedModel.description}</p>
                     </div>
                   )}
@@ -742,7 +733,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                     <p>
                       {selectedModel.input_cost_per_token
                         ? formatCost(selectedModel.input_cost_per_token)
-                        : "Not specified"}
+                        : t("notSpecified")}
                     </p>
                   </div>
                   <div>
@@ -750,7 +741,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                     <p>
                       {selectedModel.output_cost_per_token
                         ? formatCost(selectedModel.output_cost_per_token)
-                        : "Not specified"}
+                        : t("notSpecified")}
                     </p>
                   </div>
                 </div>
@@ -758,7 +749,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
 
               {/* Capabilities */}
               <div>
-                <p className="text-lg font-semibold mb-4">Capabilities</p>
+                <p className="text-lg font-semibold mb-4">{t("colCapabilities")}</p>
                 <div className="flex flex-wrap gap-2">
                   {(() => {
                     const capabilities = getModelCapabilities(selectedModel);
@@ -813,19 +804,18 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
               )}
 
               <div>
-                <p className="text-lg font-semibold mb-4">Usage Example</p>
+                <p className="text-lg font-semibold mb-4">{t("secUsageExample")}</p>
                 {isDecisionMode(selectedModel.mode) && (
                   <p className="mb-2 text-sm text-muted-foreground">
-                    Decision models answer on <code>/v1/decisions</code> and <code>/v1/systemone</code>, not{" "}
-                    <code>/chat/completions</code>.{" "}
+                    {t.rich("decisionModelsAnswer", { code: (chunks) => <code>{chunks}</code> })}{" "}
                     <a href={DECISIONS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="underline">
-                      How to call decision models
+                      {t("howToCallDecisionModels")}
                     </a>
                     {canOpenPlayground && (
                       <>
                         {" · "}
                         <a href={uiHref(SYSTEM_ONE_PLAYGROUND_ROUTE)} className="underline">
-                          Try it in the Playground
+                          {t("tryInPlayground")}
                         </a>
                       </>
                     )}
@@ -881,7 +871,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                   </div>
                 </div>
                 <div>
-                  <p className="font-medium">Description:</p>
+                  <p className="font-medium">{t("lblDescription")}</p>
                   <p className="mt-1">{selectedAgent.description}</p>
                 </div>
               </div>
@@ -889,7 +879,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
               {/* Capabilities */}
               {selectedAgent.capabilities && Object.keys(selectedAgent.capabilities).length > 0 && (
                 <div>
-                  <p className="text-lg font-semibold mb-4">Capabilities</p>
+                  <p className="text-lg font-semibold mb-4">{t("colCapabilities")}</p>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(selectedAgent.capabilities)
                       .filter(([_, value]) => value === true)
@@ -913,7 +903,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                         <Badge key={mode} variant="secondary">
                           {mode}
                         </Badge>
-                      )) || <p>Not specified</p>}
+                      )) || <p>{t("notSpecified")}</p>}
                     </div>
                   </div>
                   <div>
@@ -923,7 +913,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                         <Badge key={mode} variant="outline">
                           {mode}
                         </Badge>
-                      )) || <p>Not specified</p>}
+                      )) || <p>{t("notSpecified")}</p>}
                     </div>
                   </div>
                 </div>
@@ -939,7 +929,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <p className="font-medium text-base">{skill.name}</p>
-                            <p className="text-xs text-muted-foreground">ID: {skill.id}</p>
+                            <p className="text-xs text-muted-foreground">{t("idLabel", { id: skill.id })}</p>
                           </div>
                           {skill.tags && skill.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1">
@@ -1041,7 +1031,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                 </div>
                 {selectedMcpServer.description && (
                   <div className="mt-2">
-                    <p className="font-medium">Description:</p>
+                    <p className="font-medium">{t("lblDescription")}</p>
                     <p className="mt-1">{selectedMcpServer.description}</p>
                   </div>
                 )}
@@ -1139,7 +1129,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
 
               {/* Usage Example */}
               <div>
-                <p className="text-lg font-semibold mb-4">Usage Example</p>
+                <p className="text-lg font-semibold mb-4">{t("secUsageExample")}</p>
                 <SyntaxHighlighter language="python" className="text-sm" style={syntaxTheme}>
                   {`from fastmcp import Client
 import asyncio

@@ -200,6 +200,11 @@ function useAgentsTranslator() {
 }
 export type AgentsTranslator = ReturnType<typeof useAgentsTranslator>;
 
+function useAiHubTranslator() {
+  return useTranslations("aiHub");
+}
+export type AiHubTranslator = ReturnType<typeof useAiHubTranslator>;
+
 function useModelHubTranslator() {
   return useTranslations("modelHub");
 }
