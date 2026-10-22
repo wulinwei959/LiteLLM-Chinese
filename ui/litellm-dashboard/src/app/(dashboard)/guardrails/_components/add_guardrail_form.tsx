@@ -1080,14 +1080,15 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
       <div className="space-y-6">
         <div>
           <p className="text-sm text-muted-foreground">
-            Configure settings for a specific call type. Most guardrails don't need this — skip it unless you're using a
-            specific endpoint like <code>/v1/realtime</code>.
+            {t.rich("form.callTypeHint", {
+              code: (chunks) => <code>{chunks}</code>,
+            })}
           </p>
         </div>
 
         <div>
           <label htmlFor="guardrail-call-type" className="mb-1 block text-sm font-medium text-foreground">
-            Call type
+            {t("form.callTypeLabel")}
           </label>
           <Select
             items={CALL_TYPE_ITEMS}
@@ -1137,17 +1138,14 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
                     htmlFor="guardrail-end-session-after"
                     className="mb-1 block text-sm font-medium text-foreground"
                   >
-                    End session after X violations
+                    {t("form.endSessionAfterLabel")}
                   </label>
-                  <p className="mb-2 text-xs text-muted-foreground">
-                    Automatically close the session after this many guardrail violations. Leave empty to never
-                    auto-close.
-                  </p>
+                  <p className="mb-2 text-xs text-muted-foreground">{t("form.endSessionAfterHelp")}</p>
                   <Input
                     id="guardrail-end-session-after"
                     type="number"
                     min={1}
-                    placeholder="e.g. 3"
+                    placeholder={t("form.endSessionAfterPlaceholder")}
                     value={endSessionAfterNFails ?? ""}
                     onChange={(e) =>
                       setEndSessionAfterNFails(e.target.value ? parseInt(e.target.value, 10) : undefined)
@@ -1189,16 +1187,13 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
                     htmlFor="guardrail-realtime-message"
                     className="mb-1 block text-sm font-medium text-foreground"
                   >
-                    Message the user hears
+                    {t("form.realtimeMessageLabel")}
                   </label>
-                  <p className="mb-2 text-xs text-muted-foreground">
-                    What the bot says aloud when this guardrail fires. Falls back to the default violation message if
-                    empty.
-                  </p>
+                  <p className="mb-2 text-xs text-muted-foreground">{t("form.realtimeMessageHelp")}</p>
                   <Textarea
                     id="guardrail-realtime-message"
                     rows={3}
-                    placeholder="e.g. I'm not able to continue this conversation. Please contact us at 1-800-774-2678."
+                    placeholder={t("form.realtimeMessagePlaceholder")}
                     value={realtimeViolationMessage}
                     onChange={(e) => setRealtimeViolationMessage(e.target.value)}
                     className="w-full resize-none"

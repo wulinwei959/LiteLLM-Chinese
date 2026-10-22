@@ -3583,7 +3583,15 @@
       "loggingOnlyScopeLabel": "仅记录日志范围",
       "continueAfterFlaggedLabel": "标记请求后继续",
       "onLabel": "开",
-      "offLabel": "关"
+      "offLabel": "关",
+      "callTypeHint": "为特定调用类型配置设置。大多数护栏不需要此项，除非你要使用 <code>/v1/realtime</code> 这类特定端点，否则可以跳过。",
+      "callTypeLabel": "调用类型",
+      "endSessionAfterLabel": "违规 X 次后结束会话",
+      "endSessionAfterHelp": "达到此护栏违规次数后自动关闭会话。留空表示从不自动关闭。",
+      "endSessionAfterPlaceholder": "例如 3",
+      "realtimeMessageLabel": "用户听到的提示语",
+      "realtimeMessageHelp": "护栏触发时机器人朗读的内容。留空则使用默认的违规提示语。",
+      "realtimeMessagePlaceholder": "例如：我无法继续此对话，请联系 1-800-774-2678。"
     },
     "test": {
       "title": "测试护栏：",
@@ -6713,7 +6721,14 @@
       "clientSecretPlaceholderKeep": "留空则保留当前已保存的密钥（若有）",
       "clientSecretPlaceholderPublic": "公开客户端或 PKCE 请留空",
       "removeStoredApp": "保存时移除已保存的 OAuth 应用（该服务器将回到动态客户端注册）",
-      "tokenHeld": "令牌已保留在当前浏览器会话中。现在可以预览并配置工具；该令牌未保存到 LiteLLM。"
+      "tokenHeld": "令牌已保留在当前浏览器会话中。现在可以预览并配置工具；该令牌未保存到 LiteLLM。",
+      "authorizationUrlLabel": "授权 URL（可选）",
+      "authorizationUrlHelp": "当上游未发布 OAuth 元数据时设置此项，例如位于 Microsoft Entra 后面的内部服务器。留空则从上游自动发现。",
+      "tokenUrlLabel": "令牌 URL（可选）",
+      "tokenUrlHelp": "同一授权服务器的令牌端点。留空则从上游自动发现。",
+      "scopesLabel": "作用域（可选）",
+      "scopesHelp": "用户授权时向上游请求的作用域。多个作用域之间用回车或逗号分隔。",
+      "scopesPlaceholder": "添加作用域"
     },
     "openapi": {
       "specUrl": "OpenAPI 规范 URL",
@@ -7362,7 +7377,20 @@
       "complete": "授权已完成，可以关闭本窗口并返回 LiteLLM 控制台。",
       "closeHint": "如果窗口没有自动关闭，所有内容都已经保存好了，你可以手动关闭。",
       "loading": "加载中..."
-    }
+    },
+    "sortOptions": {
+      "recentlyCreated": "最近创建",
+      "recentlyUpdated": "最近更新",
+      "nameAsc": "名称（A→Z）",
+      "healthFirst": "健康度（异常优先）"
+    },
+    "aboutAccessGroups": "关于访问组",
+    "accessGroupDescription": "MCP 访问组是一组有权访问特定 MCP 服务器的用户或团队。使用访问组来控制并组织谁可以连接到哪些服务器。",
+    "addNew": "+ 添加 MCP 服务器",
+    "toolsetsTab": "工具集",
+    "shownOfTotal": "{shown} / {total} 台服务器",
+    "emptyNoServers": "尚未配置 MCP 服务器。点击“+ 添加 MCP 服务器”开始。",
+    "emptyNoMatches": "没有服务器符合当前的筛选或搜索条件。"
   },
   "guardrailsMonitor": {
     "overview": {
@@ -10187,7 +10215,14 @@
     "addTool": "添加搜索工具",
     "backToAll": "返回所有搜索工具",
     "copyNameAria": "复制搜索工具名称",
-    "copyIdAria": "复制搜索工具 ID"
+    "copyIdAria": "复制搜索工具 ID",
+    "updateFailed": "更新搜索工具失败",
+    "apiKeyDescription": "搜索供应商的 API 密钥",
+    "apiKeyPlaceholder": "输入 API 密钥",
+    "costPerQuery": "每次查询成本（美元）",
+    "costPerQueryDescription": "覆盖此工具的默认定价。留空则使用供应商的默认价格",
+    "costPlaceholder": "例如 0.007",
+    "descriptionPlaceholder": "此搜索工具的说明"
   },
   "vectorStores": {
     "tableLoading": "正在加载向量存储…",

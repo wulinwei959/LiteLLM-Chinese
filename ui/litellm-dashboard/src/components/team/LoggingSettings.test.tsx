@@ -295,8 +295,8 @@ describe("LoggingSettings", () => {
 
     renderWithProviders(<LoggingSettings value={initialValue} onChange={mockOnChange} />);
 
-    await user.click(screen.getByRole("combobox", { name: "Event Type" }));
-    await user.click(await screen.findByRole("option", { name: "Failure Only" }));
+    await user.click(screen.getByRole("combobox", { name: "事件类型" }));
+    await user.click(await screen.findByRole("option", { name: "仅失败" }));
 
     const lastCall = mockOnChange.mock.calls[mockOnChange.mock.calls.length - 1];
     expect(lastCall[0][0].callback_type).toBe("failure");
@@ -316,8 +316,8 @@ describe("LoggingSettings", () => {
 
     renderWithProviders(<LoggingSettings value={initialValue} onChange={mockOnChange} />);
 
-    await user.click(screen.getByRole("combobox", { name: "Event Type" }));
-    await user.click(await screen.findByRole("option", { name: "Success & Failure" }));
+    await user.click(screen.getByRole("combobox", { name: "事件类型" }));
+    await user.click(await screen.findByRole("option", { name: "成功与失败" }));
 
     const lastCall = mockOnChange.mock.calls[mockOnChange.mock.calls.length - 1];
     expect(lastCall[0][0].callback_type).toBe("success_and_failure");

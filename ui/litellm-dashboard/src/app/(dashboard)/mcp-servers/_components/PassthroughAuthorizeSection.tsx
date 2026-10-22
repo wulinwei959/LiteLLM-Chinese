@@ -61,39 +61,31 @@ export default function PassthroughAuthorizeSection({
 
   if (!isClientForwardedTokenMode(authType)) return null;
   const authorizeButtonLabels: Record<string, string> = {
-    authorizing: "Waiting for authorization...",
-    exchanging: "Exchanging authorization code...",
+    authorizing: t("passthrough.button.authorizing"),
+    exchanging: t("passthrough.button.exchanging"),
   };
-  const authorizeButtonLabel = authorizeButtonLabels[oauthFlow.status] ?? "Authorize & Fetch Tools (browser-only)";
+  const authorizeButtonLabel = authorizeButtonLabels[oauthFlow.status] ?? t("passthrough.button.idle");
   // On edit, "keep existing" only holds when the stored credential class is unchanged; a cross-class
   // switch (e.g. oauth2 -> true_passthrough) replaces credentials, so blanks then mean "no app".
   const classUnchanged = isEditing && credentialAuthClass(savedAuthType) === credentialAuthClass(authType);
   const clientIdPlaceholder = classUnchanged
-    ? "Leave blank to keep the currently saved app (if any)"
-    : "Leave blank to use dynamic client registration";
+    ? t("passthrough.clientIdPlaceholderKeep")
+    : t("passthrough.clientIdPlaceholderDcr");
   const clientSecretPlaceholder = classUnchanged
-    ? "Leave blank to keep the currently saved secret (if any)"
-    : "Leave blank for public clients / PKCE";
+    ? t("passthrough.clientSecretPlaceholderKeep")
+    : t("passthrough.clientSecretPlaceholderPublic");
   const fieldClassName = "rounded-lg border-border focus:border-info focus:ring-ring";
   const clientIdExtra = classUnchanged
-    ? "Set this to make everyone authorize through a specific app; required for upstreams without dynamic client registration (e.g. a pre-registered Slack app)."
-    : "Switching the auth type discards the previously saved app; enter a client ID here or leave blank to use dynamic client registration.";
+    ? t("passthrough.clientIdHelpKeep")
+    : t("passthrough.clientIdHelpSwitch");
   return (
     <div className="rounded-lg border border-dashed border-border p-4 space-y-2 mb-4">
-      <p className="text-sm text-muted-foreground">
-        Callers bring their own upstream token for this auth type, so LiteLLM never stores tokens. To preview tools and
-        configure the tool allowlist, authorize against the upstream here: the token stays in this browser session only
-        and is never saved to LiteLLM. An OAuth app configured below IS saved with the server, so internal users who
-        authorize from the Tools page go through it.
-      </p>
+      <p className="text-sm text-muted-foreground">{t("passthrough.intro")}</p>
       {appMayNotMatchUpstream && (
-        <p className="text-sm text-warning">
-          You changed the upstream URL or endpoints; the OAuth app entered here was registered for the previous upstream
-          and may not be valid. Update the client ID, or clear it to use dynamic client registration.
-        </p>
+        <p className="text-sm text-warning">{t("passthrough.upstreamChangedWarning")}</p>
       )}
       <MountedFormField
-        label={<span className="text-sm font-medium text-foreground">OAuth Client ID (optional)</span>}
+        label={<span className="text-sm font-medium text-foreground">{t("passthrough.clientIdLabel")}</span>}
         name={["credentials", "client_id"]}
         help={clientIdExtra}
       >
@@ -120,9 +112,9 @@ export default function PassthroughAuthorizeSection({
         )}
       </MountedFormField>
       <MountedFormField
-        label={<span className="text-sm font-medium text-foreground">Authorization URL (optional)</span>}
+        label={<span className="text-sm font-medium text-foreground">{t("passthrough.authorizationUrlLabel")}</span>}
         name="authorization_url"
-        help="Set this when the upstream publishes no OAuth metadata, for example an internal server behind Microsoft Entra. Leave blank to discover it from the upstream."
+        help={t("passthrough.authorizationUrlHelp")}
       >
         {(control) => (
           <Input
@@ -133,9 +125,9 @@ export default function PassthroughAuthorizeSection({
         )}
       </MountedFormField>
       <MountedFormField
-        label={<span className="text-sm font-medium text-foreground">Token URL (optional)</span>}
+        label={<span className="text-sm font-medium text-foreground">{t("passthrough.tokenUrlLabel")}</span>}
         name="token_url"
-        help="Token endpoint of the same authorization server. Leave blank to discover it from the upstream."
+        help={t("passthrough.tokenUrlHelp")}
       >
         {(control) => (
           <Input
@@ -146,11 +138,17 @@ export default function PassthroughAuthorizeSection({
         )}
       </MountedFormField>
       <MountedFormField
-        label={<span className="text-sm font-medium text-foreground">Scopes (optional)</span>}
+        label={<span className="text-sm font-medium text-foreground">{t("passthrough.scopesLabel")}</span>}
         name={["credentials", "scopes"]}
-        help="Scopes requested from the upstream when a user authorizes. Press enter or comma between scopes."
+        help={t("passthrough.scopesHelp")}
       >
-        {(control) => <MultiSelect {...tagsControl(t, control)} placeholder="Add scopes" className="rounded-lg" />}
+        {(control) => (
+          <MultiSelect
+            {...tagsControl(t, control)}
+            placeholder={t("passthrough.scopesPlaceholder")}
+            className="rounded-lg"
+          />
+        )}
       </MountedFormField>
       <DcrBridgeToggle authType={authType} initialChecked={dcrBridgeInitialChecked} />
       {isEditing && onRemoveStoredAppChange && (
@@ -168,10 +166,7 @@ export default function PassthroughAuthorizeSection({
       </Button>
       {oauthFlow.error && <p className="text-sm text-destructive">{oauthFlow.error}</p>}
       {oauthFlow.status === "success" && oauthFlow.tokenResponse?.access_token && (
-        <p className="text-sm text-success">
-          Token held for this browser session. Tools can now be previewed and configured; the token was not saved to
-          LiteLLM.
-        </p>
+        <p className="text-sm text-success">{t("passthrough.tokenHeld")}</p>
       )}
     </div>
   );

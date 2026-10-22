@@ -3583,7 +3583,15 @@
       "loggingOnlyScopeLabel": "Logging only scope",
       "continueAfterFlaggedLabel": "Continue after a flagged request",
       "onLabel": "On",
-      "offLabel": "Off"
+      "offLabel": "Off",
+      "callTypeHint": "Configure settings for a specific call type. Most guardrails don't need this — skip it unless you're using a specific endpoint like <code>/v1/realtime</code>.",
+      "callTypeLabel": "Call type",
+      "endSessionAfterLabel": "End session after X violations",
+      "endSessionAfterHelp": "Automatically close the session after this many guardrail violations. Leave empty to never auto-close.",
+      "endSessionAfterPlaceholder": "e.g. 3",
+      "realtimeMessageLabel": "Message the user hears",
+      "realtimeMessageHelp": "What the bot says aloud when this guardrail fires. Falls back to the default violation message if empty.",
+      "realtimeMessagePlaceholder": "e.g. I'm not able to continue this conversation. Please contact us at 1-800-774-2678."
     },
     "test": {
       "title": "Test Guardrails:",
@@ -6713,7 +6721,14 @@
       "clientSecretPlaceholderKeep": "Leave blank to keep the currently saved secret (if any)",
       "clientSecretPlaceholderPublic": "Leave blank for public clients / PKCE",
       "removeStoredApp": "Remove the saved OAuth app on save (the server goes back to dynamic client registration)",
-      "tokenHeld": "Token held for this browser session. Tools can now be previewed and configured; the token was not saved to LiteLLM."
+      "tokenHeld": "Token held for this browser session. Tools can now be previewed and configured; the token was not saved to LiteLLM.",
+      "authorizationUrlLabel": "Authorization URL (optional)",
+      "authorizationUrlHelp": "Set this when the upstream publishes no OAuth metadata, for example an internal server behind Microsoft Entra. Leave blank to discover it from the upstream.",
+      "tokenUrlLabel": "Token URL (optional)",
+      "tokenUrlHelp": "Token endpoint of the same authorization server. Leave blank to discover it from the upstream.",
+      "scopesLabel": "Scopes (optional)",
+      "scopesHelp": "Scopes requested from the upstream when a user authorizes. Press enter or comma between scopes.",
+      "scopesPlaceholder": "Add scopes"
     },
     "openapi": {
       "specUrl": "OpenAPI Spec URL",
@@ -7362,7 +7377,20 @@
       "complete": "Authorization complete. You may close this window and return to the LiteLLM dashboard.",
       "closeHint": "If the window does not close automatically, everything is still saved—you can close it manually.",
       "loading": "Loading..."
-    }
+    },
+    "sortOptions": {
+      "recentlyCreated": "Recently created",
+      "recentlyUpdated": "Recently updated",
+      "nameAsc": "Name (A→Z)",
+      "healthFirst": "Health (unhealthy first)"
+    },
+    "aboutAccessGroups": "About access groups",
+    "accessGroupDescription": "An MCP Access Group is a set of users or teams that have permission to access specific MCP servers. Use access groups to control and organize who can connect to which servers.",
+    "addNew": "+ Add New MCP Server",
+    "toolsetsTab": "Toolsets",
+    "shownOfTotal": "{shown} of {total} servers",
+    "emptyNoServers": "No MCP servers configured. Click '+ Add New MCP Server' to get started.",
+    "emptyNoMatches": "No servers match the current filters or search."
   },
   "guardrailsMonitor": {
     "overview": {
@@ -10191,7 +10219,14 @@
     "addTool": "Add Search Tool",
     "backToAll": "Back to All Search Tools",
     "copyNameAria": "Copy search tool name",
-    "copyIdAria": "Copy search tool ID"
+    "copyIdAria": "Copy search tool ID",
+    "updateFailed": "Failed to update search tool",
+    "apiKeyDescription": "API key for the search provider",
+    "apiKeyPlaceholder": "Enter API key",
+    "costPerQuery": "Cost per Query (USD)",
+    "costPerQueryDescription": "Overrides the cost map price for this tool. Leave blank to use the provider's default price",
+    "costPlaceholder": "e.g., 0.007",
+    "descriptionPlaceholder": "Description of this search tool"
   },
   "vectorStores": {
     "tableLoading": "Loading vector stores…",

@@ -49,6 +49,7 @@ const EMPTY_EDIT_VALUES: EditSearchToolFormValues = { search_tool_name: "", sear
 
 const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID }) => {
   const t = useTranslations("searchTools");
+  const commonT = useTranslations("common");
   const {
     data: searchTools,
     isLoading: isLoadingTools,
@@ -156,12 +157,12 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
         refetch();
       } catch (error) {
         console.error("Failed to update search tool:", error);
-        toast.error("Failed to update search tool");
+        toast.error(t("updateFailed"));
       }
     },
     (errors) => {
       console.error("Failed to update search tool:", errors);
-      toast.error("Failed to update search tool");
+      toast.error(t("updateFailed"));
     },
   );
 
@@ -202,17 +203,22 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
           )}
         </FormField>
 
-        <FormField control={form.control} name="api_key" label="API Key" description="API key for the search provider">
+        <FormField
+          control={form.control}
+          name="api_key"
+          label={t("apiKeyCol")}
+          description={t("apiKeyDescription")}
+        >
           {({ ref, value, ...field }) => (
-            <PasswordInput {...field} ref={ref} value={value ?? ""} placeholder="Enter API key" />
+            <PasswordInput {...field} ref={ref} value={value ?? ""} placeholder={t("apiKeyPlaceholder")} />
           )}
         </FormField>
 
         <FormField
           control={form.control}
           name="input_cost_per_query"
-          label="Cost per Query (USD)"
-          description="Overrides the cost map price for this tool. Leave blank to use the provider's default price"
+          label={t("costPerQuery")}
+          description={t("costPerQueryDescription")}
         >
           {({ ref, value, onChange, ...field }) => (
             <Input
@@ -222,14 +228,14 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
               step="any"
               value={value ?? ""}
               onChange={(event) => onChange(event.target.value === "" ? null : event.target.valueAsNumber)}
-              placeholder="e.g., 0.007"
+              placeholder={t("costPlaceholder")}
             />
           )}
         </FormField>
 
-        <FormField control={form.control} name="description" label="Description">
+        <FormField control={form.control} name="description" label={t("descriptionCol")}>
           {({ ref, value, ...field }) => (
-            <Textarea {...field} ref={ref} value={value ?? ""} rows={3} placeholder="Description of this search tool" />
+            <Textarea {...field} ref={ref} value={value ?? ""} rows={3} placeholder={t("descriptionPlaceholder")} />
           )}
         </FormField>
       </FieldGroup>
@@ -331,9 +337,9 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
                 setSelectedToolId(null);
               }}
             >
-              Cancel
+              {commonT("cancel")}
             </Button>
-            <Button onClick={handleEditSubmit}>OK</Button>
+            <Button onClick={handleEditSubmit}>{commonT("ok")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
