@@ -146,6 +146,8 @@ const ModelTopKeys = ({
     rows: ModelTopKeyRow[];
     failed: boolean;
   } | null>(null);
+  const t = useTranslations("activityMetrics");
+  const commonT = useTranslations("common");
   const [retryToken, setRetryToken] = useState(0);
 
   React.useEffect(() => {
@@ -183,7 +185,7 @@ const ModelTopKeys = ({
   if (current === null) {
     return (
       <TopKeysPanel>
-        <p className="py-2 text-xs text-muted-foreground">Loading top keys...</p>
+        <p className="py-2 text-xs text-muted-foreground">{t("loadingTopKeys")}</p>
       </TopKeysPanel>
     );
   }
@@ -192,7 +194,7 @@ const ModelTopKeys = ({
     return (
       <TopKeysPanel>
         <p className="py-2 text-xs text-muted-foreground">
-          Could not load top keys.{" "}
+          {t("couldNotLoadTopKeys")}{" "}
           <button
             type="button"
             className="font-medium text-foreground underline"
@@ -201,7 +203,7 @@ const ModelTopKeys = ({
               setRetryToken((token) => token + 1);
             }}
           >
-            Retry
+            {commonT("retry")}
           </button>
         </p>
       </TopKeysPanel>
@@ -220,15 +222,22 @@ const ModelTopKeys = ({
             <li key={keyData.api_key} className="flex items-center justify-between gap-4 py-2.5">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-foreground">{keyLabel}</p>
-                {keyData.team_id && <p className="truncate text-xs text-muted-foreground">Team: {keyData.team_id}</p>}
+                {keyData.team_id && (
+                  <p className="truncate text-xs text-muted-foreground">
+                    {t("teamLine", { team: keyData.team_id })}
+                  </p>
+                )}
                 {keyData.user && keyData.user !== keyLabel && (
-                  <p className="truncate text-xs text-muted-foreground">User: {keyData.user}</p>
+                  <p className="truncate text-xs text-muted-foreground">{t("userLine", { user: keyData.user })}</p>
                 )}
               </div>
               <div className="shrink-0 text-right">
                 <p className="text-sm tabular-nums text-foreground">${formatNumberWithCommas(keyData.spend, 2)}</p>
                 <p className="text-xs tabular-nums text-muted-foreground">
-                  {keyData.requests.toLocaleString()} requests | {keyData.tokens.toLocaleString()} tokens
+                  {t("requestsTokens", {
+                    requests: keyData.requests.toLocaleString(),
+                    tokens: keyData.tokens.toLocaleString(),
+                  })}
                 </p>
               </div>
             </li>

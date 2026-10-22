@@ -17,10 +17,6 @@ const TOP_KEYS_LIMITS = [5, 10, 25, 50] as const;
 const LIMIT_OPTIONS = TOP_KEYS_LIMITS.map((limit) => ({ value: String(limit), label: String(limit) }));
 
 type ViewMode = "table" | "chart";
-const VIEW_OPTIONS = [
-  { value: "table", label: "Table View" },
-  { value: "chart", label: "Chart View" },
-] as const satisfies readonly { value: ViewMode; label: string }[];
 
 const BAR_COLOR = "#2b3fd6";
 const QUIET_HEADER = { headerClassName: "font-normal" };
@@ -33,9 +29,6 @@ export interface TopKeyItem {
   tags?: TagUsage[] | null;
   spend: number;
 }
-
-const KEY_NOT_IN_DATABASE_TOOLTIP =
-  "This key is no longer in the database (deleted, or a CLI/SSO session key), so its details can't be opened";
 
 const canOpenKeyInfo = (item: TopKeyItem) => item.key_exists !== false;
 
@@ -55,6 +48,10 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
   const [keyData, setKeyData] = useState<any | undefined>(undefined);
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [expandedTags, setExpandedTags] = useState<Set<string>>(new Set());
+  const viewOptions = [
+    { value: "table", label: t("tableView") },
+    { value: "chart", label: t("chartView") },
+  ] as const satisfies readonly { value: ViewMode; label: string }[];
 
   const toggleTagsExpansion = (apiKey: string) => {
     setExpandedTags((prev) => {
@@ -216,12 +213,12 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
     <>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <Segmented
-          label="Number of top keys to show"
+          label={t("numberOfTopKeys")}
           value={String(topKeysLimit)}
           options={LIMIT_OPTIONS}
           onChange={(limit) => setTopKeysLimit(Number(limit))}
         />
-        <Segmented label="View" value={viewMode} options={VIEW_OPTIONS} onChange={setViewMode} />
+        <Segmented label={t("viewLabel")} value={viewMode} options={viewOptions} onChange={setViewMode} />
       </div>
 
       {viewMode === "chart" ? (
@@ -246,15 +243,15 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                 <div className="relative z-floating max-w-xs rounded-lg border bg-popover px-3 py-2 text-xs shadow-lg">
                   <div className="grid gap-1">
                     <div>
-                      <span className="text-muted-foreground">Key Alias: </span>
+                      <span className="text-muted-foreground">{t("keyAliasLabel")} </span>
                       <span className="break-all font-mono text-foreground">{item?.key_alias}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Key ID: </span>
+                      <span className="text-muted-foreground">{t("keyIdLabel")} </span>
                       <span className="break-all font-mono text-foreground">{item?.api_key}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Spend: </span>
+                      <span className="text-muted-foreground">{t("spendLabel")} </span>
                       <span className="font-medium tabular-nums text-foreground">
                         ${formatNumberWithCommas(item?.spend, 2)}
                       </span>

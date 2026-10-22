@@ -128,7 +128,7 @@ describe("EditMembership submit payload", () => {
     };
     renderEdit(modelBudgetConfig, member);
 
-    const cap = await screen.findByPlaceholderText("Max spend ($)");
+    const cap = await screen.findByPlaceholderText("最大花费（$）");
     expect(cap).toHaveValue(5);
     fireEvent.change(cap, { target: { value: "9" } });
     save();
@@ -160,7 +160,7 @@ describe("EditMembership submit payload", () => {
     renderEdit(modelBudgetConfig, member);
 
     const user = userEvent.setup();
-    await user.click(screen.getByRole("combobox", { name: "Role(Current: User)" }));
+    await user.click(screen.getByRole("combobox", { name: /角色（当前：User）/ }));
     await user.click(await screen.findByRole("option", { name: "Admin" }));
     save();
 
@@ -457,17 +457,17 @@ it("discards an unfinished per-model budget row when an edit session is reopened
   const { rerender } = renderWithProviders(<Harness initialData={member} />);
 
   await user.click(screen.getByRole("button", { name: "Open Edit Member" }));
-  await user.click(screen.getByRole("button", { name: /Add Model Budget/i }));
-  expect(screen.getByPlaceholderText("Select model")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: /添加模型预算/ }));
+  expect(screen.getByPlaceholderText("选择模型")).toBeInTheDocument();
 
-  await user.click(screen.getByRole("button", { name: "Cancel" }));
+  await user.click(screen.getByRole("button", { name: "取消" }));
   await user.click(screen.getByRole("button", { name: "Open Edit Member" }));
 
-  expect(screen.queryByPlaceholderText("Select model")).not.toBeInTheDocument();
+  expect(screen.queryByPlaceholderText("选择模型")).not.toBeInTheDocument();
 
-  await user.click(screen.getByRole("button", { name: /Add Model Budget/i }));
-  expect(screen.getByPlaceholderText("Select model")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: /添加模型预算/ }));
+  expect(screen.getByPlaceholderText("选择模型")).toBeInTheDocument();
 
   rerender(<Harness initialData={otherMember} />);
-  expect(screen.queryByPlaceholderText("Select model")).not.toBeInTheDocument();
+  expect(screen.queryByPlaceholderText("选择模型")).not.toBeInTheDocument();
 });

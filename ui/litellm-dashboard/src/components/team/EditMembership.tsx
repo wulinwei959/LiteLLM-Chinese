@@ -87,6 +87,7 @@ const MemberModal = <T extends BaseMember>({
   config,
 }: MemberModalProps<T>) => {
   const t = useTranslations("teams");
+  const commonT = useTranslations("common");
 
   const schema = useMemo(() => buildMemberSchema(t, config), [config, t]);
   const form = useZodForm(schema, { defaultValues: emptyMemberFormValues(config) });
@@ -256,9 +257,11 @@ const MemberModal = <T extends BaseMember>({
               name="role"
               label={
                 <span className="flex items-center gap-2">
-                  <span>Role</span>
+                  <span>{t("member.roleLabel")}</span>
                   {mode === "edit" && initialData && (
-                    <span className="text-sm text-muted-foreground">(Current: {getRoleLabel(initialData.role)})</span>
+                    <span className="text-sm text-muted-foreground">
+                      {t("member.currentRole", { role: getRoleLabel(initialData.role) })}
+                    </span>
                   )}
                 </span>
               }
@@ -288,7 +291,7 @@ const MemberModal = <T extends BaseMember>({
 
           <div className="mt-6 text-right">
             <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="mr-2">
-              Cancel
+              {commonT("cancel")}
             </Button>
             <Button type="submit" variant="outline" disabled={isSubmitting}>
               {isSubmitting && <UiLoadingSpinner className="size-4" />}

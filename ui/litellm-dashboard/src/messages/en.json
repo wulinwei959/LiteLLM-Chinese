@@ -2554,7 +2554,8 @@
       "resetBudgetBody": "Remove the custom budget for <strong>{member}</strong> and put them back on the team default of <strong>{budget}</strong>?",
       "resetBudgetDetail": "Custom budget: <strong>{amount}</strong>. Their spend is kept. Future changes to the team's member budget will apply to them again.",
       "toastSpendReset": "Team member spend reset to $0",
-      "toastBudgetReset": "Team member budget reset to the team default"
+      "toastBudgetReset": "Team member budget reset to the team default",
+      "roleLabel": "Role"
     },
     "perm": {
       "accessEndpoint": "Access {endpoint}",
@@ -2857,7 +2858,8 @@
     "viewPerUser": "Per user",
     "perUserSubtitle": "Usage per end user",
     "periodLabel": "Active users period",
-    "viewLabel": "Activity view"
+    "viewLabel": "Activity view",
+    "noActiveUsers": "No active users in this period"
   },
   "users": {
     "title": "Internal Users",
@@ -11341,7 +11343,12 @@
     "unknownItem": "Unknown Item",
     "unknownModel": "Unknown Model",
     "requestsCount": "{count} requests",
-    "avgResponse": "{time} avg response"
+    "avgResponse": "{time} avg response",
+    "loadingTopKeys": "Loading top keys...",
+    "couldNotLoadTopKeys": "Could not load top keys.",
+    "teamLine": "Team: {team}",
+    "userLine": "User: {user}",
+    "requestsTokens": "{requests} requests | {tokens} tokens"
   },
   "usageKeyActivity": {
     "searching": "Searching...",
@@ -11399,7 +11406,12 @@
     "tableView": "Table View",
     "chartView": "Chart View",
     "close": "Close",
-    "keyNotInDatabase": "This key is no longer in the database (deleted, or a CLI/SSO session key), so its details can't be opened"
+    "keyNotInDatabase": "This key is no longer in the database (deleted, or a CLI/SSO session key), so its details can't be opened",
+    "numberOfTopKeys": "Number of top keys to show",
+    "viewLabel": "View",
+    "keyAliasLabel": "Key Alias:",
+    "keyIdLabel": "Key ID:",
+    "spendLabel": "Spend:"
   },
   "accountMenus": {
     "premium": "Premium",
@@ -11918,7 +11930,8 @@
     "noneConfigured": "None configured",
     "teamSpecific": "Team-specific",
     "title": "Guardrails Settings",
-    "description": "Global and team-specific guardrails applied to this team"
+    "description": "Global and team-specific guardrails applied to this team",
+    "globalLabel": "Global"
   },
   "routePreview": {
     "forwardsTo": "Forwards to",
@@ -11954,7 +11967,8 @@
     "disabled": "Disabled",
     "noDisabledCallbacks": "No callbacks disabled",
     "title": "Logging Settings",
-    "subtitle": "Active logging integrations and disabled callbacks for this key"
+    "subtitle": "Active logging integrations and disabled callbacks for this key",
+    "parametersConfigured": "{count} parameters configured"
   },
   "mcpToolArgs": {
     "emptyString": "Empty string",

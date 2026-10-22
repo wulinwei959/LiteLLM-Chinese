@@ -36,7 +36,7 @@ export function GuardrailSettingsView({
       <div>
         <span className="mb-2 flex items-center gap-1 text-sm font-medium text-foreground">
           <Globe2 className="size-4" aria-label={t("globalGuardrailAria")} />
-          Global
+          {t("globalLabel")}
         </span>
         {killSwitchOn ? (
           <Badge variant="outline">{t("bypassedForTeam")}</Badge>

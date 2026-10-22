@@ -93,11 +93,12 @@ interface ActiveUserChart {
 }
 
 function ActiveUsersChart({ chart }: { chart: ActiveUserChart }) {
+  const t = useTranslations("userAgentActivity");
   if (chart.loading) return <ChartSkeleton className="h-72" />;
   if (chart.tags.length === 0) {
     return (
       <div className="flex h-72 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
-        No active users in this period
+        {t("noActiveUsers")}
       </div>
     );
   }
@@ -530,7 +531,7 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({
             {Array.from({ length: Math.max(0, SUMMARY_SLOTS - summaryRows.length) }).map((_, index) => (
               <SummaryCell
                 key={`empty-${index}`}
-                name={<h4 className="truncate text-sm font-medium text-muted-foreground">No Data</h4>}
+                name={<h4 className="truncate text-sm font-medium text-muted-foreground">{t("noData")}</h4>}
                 successRequests="-"
                 totalTokens="-"
                 totalCost="-"

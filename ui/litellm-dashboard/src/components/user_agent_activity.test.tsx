@@ -204,7 +204,7 @@ describe("UserAgentActivity", () => {
     await waitFor(() => {
       expect(mockTagDauCall).toHaveBeenCalledWith("test-token", expect.any(Date), undefined, selectedTags);
     });
-    fireEvent.click(await screen.findByRole("button", { name: "Clear user agent filter" }));
+    fireEvent.click(await screen.findByRole("button", { name: "清除用户代理筛选" }));
 
     expect(onSelectedTagsChange).toHaveBeenCalledWith([]);
   });
@@ -243,18 +243,18 @@ describe("UserAgentActivity", () => {
     await waitFor(() => expect(mockTagDauCall).toHaveBeenCalled());
     await waitFor(() => expect(mockTagWauCall).toHaveBeenCalled());
     await waitFor(() => expect(mockTagMauCall).toHaveBeenCalled());
-    await user.click(screen.getByRole("radio", { name: "Per user" }));
+    await user.click(screen.getByRole("radio", { name: "按用户" }));
     expect(await screen.findByText("user-1")).toBeInTheDocument();
     await user.click(screen.getByTestId("pagination-next"));
     expect(await screen.findByText("user-51")).toBeInTheDocument();
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 51-100 of 120");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 51-100 条，共 120 条");
 
     const callsBeforeRerender = mockPerUserAnalyticsCall.mock.calls.length;
     rerender(<UserAgentActivity {...props} />);
 
     expect(mockPerUserAnalyticsCall).toHaveBeenCalledTimes(callsBeforeRerender);
     expect(screen.getByText("user-51")).toBeInTheDocument();
-    expect(screen.getByTestId("pagination-range")).toHaveTextContent("Showing 51-100 of 120");
+    expect(screen.getByTestId("pagination-range")).toHaveTextContent("显示第 51-100 条，共 120 条");
   });
 
   // Walks up from the panel's heading to the nearest ancestor that owns a chart, so the
@@ -302,8 +302,8 @@ describe("UserAgentActivity", () => {
     expect(screen.getByText("周活跃用户 - 近 7 周")).toBeInTheDocument();
     expect(screen.getByText("月活跃用户 - 近 7 个月")).toBeInTheDocument();
 
-    // And so is the second panel of the outer tab group.
-    expect(screen.getByText("Per User Usage")).toBeInTheDocument();
+    // And so is the switch to the second, per-user view of the outer tab group.
+    expect(screen.getByRole("radio", { name: "按用户" })).toBeInTheDocument();
   });
 
   it("renders the DAU chart stacked in the shared usage palette with abbreviated axis ticks", async () => {

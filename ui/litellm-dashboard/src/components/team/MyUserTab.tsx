@@ -26,8 +26,8 @@ const formatNumber = (value: number | null | undefined, digits = 4): string => {
   return formatNumberWithCommas(value, digits);
 };
 
-const formatRateLimit = (value: number | null | undefined): string => {
-  if (value === null || value === undefined) return "Unlimited";
+const formatRateLimit = (value: number | null | undefined, unlimitedLabel: string): string => {
+  if (value === null || value === undefined) return unlimitedLabel;
   return formatNumberWithCommas(value, 0);
 };
 
@@ -120,9 +120,9 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
               t("member.myRateLimitsInfoAria"),
             )}
             <div className="mt-2">
-              <span>TPM: {formatRateLimit(tpmLimit)}</span>
+              <span>TPM: {formatRateLimit(tpmLimit, t("member.unlimited"))}</span>
               <br />
-              <span>RPM: {formatRateLimit(rpmLimit)}</span>
+              <span>RPM: {formatRateLimit(rpmLimit, t("member.unlimited"))}</span>
             </div>
           </CardContent>
         </Card>

@@ -2554,7 +2554,8 @@
       "resetBudgetBody": "移除 <strong>{member}</strong> 的自定义预算，并恢复为团队默认值 <strong>{budget}</strong>？",
       "resetBudgetDetail": "自定义预算：<strong>{amount}</strong>。其支出会保留。之后团队的成员预算变更将重新作用于该成员。",
       "toastSpendReset": "团队成员支出已重置为 $0",
-      "toastBudgetReset": "团队成员预算已重置为团队默认值"
+      "toastBudgetReset": "团队成员预算已重置为团队默认值",
+      "roleLabel": "角色"
     },
     "perm": {
       "accessEndpoint": "访问 {endpoint}",
@@ -2857,7 +2858,8 @@
     "viewPerUser": "按用户",
     "perUserSubtitle": "按终端用户查看用量",
     "periodLabel": "活跃用户周期",
-    "viewLabel": "活跃度视图"
+    "viewLabel": "活跃度视图",
+    "noActiveUsers": "此时间段内没有活跃用户"
   },
   "users": {
     "title": "内部用户",
@@ -11337,7 +11339,12 @@
     "unknownItem": "未知条目",
     "unknownModel": "未知模型",
     "requestsCount": "{count} 次请求",
-    "avgResponse": "{time} 平均响应"
+    "avgResponse": "{time} 平均响应",
+    "loadingTopKeys": "正在加载头部密钥...",
+    "couldNotLoadTopKeys": "无法加载头部密钥。",
+    "teamLine": "团队：{team}",
+    "userLine": "用户：{user}",
+    "requestsTokens": "{requests} 次请求 | {tokens} 个 Token"
   },
   "usageKeyActivity": {
     "searching": "搜索中...",
@@ -11395,7 +11402,12 @@
     "tableView": "表格视图",
     "chartView": "图表视图",
     "close": "关闭",
-    "keyNotInDatabase": "该密钥已不在数据库中（已被删除，或属于 CLI/SSO 会话密钥），因此无法打开其详情"
+    "keyNotInDatabase": "该密钥已不在数据库中（已被删除，或属于 CLI/SSO 会话密钥），因此无法打开其详情",
+    "numberOfTopKeys": "显示的热门密钥数量",
+    "viewLabel": "视图",
+    "keyAliasLabel": "密钥别名：",
+    "keyIdLabel": "密钥 ID：",
+    "spendLabel": "花费："
   },
   "accountMenus": {
     "premium": "高级版",
@@ -11914,7 +11926,8 @@
     "noneConfigured": "未配置",
     "teamSpecific": "团队专属",
     "title": "护栏设置",
-    "description": "应用到该团队的全局与团队专属护栏"
+    "description": "应用到该团队的全局与团队专属护栏",
+    "globalLabel": "全局"
   },
   "routePreview": {
     "forwardsTo": "转发到",
@@ -11950,7 +11963,8 @@
     "disabled": "已禁用",
     "noDisabledCallbacks": "没有禁用的回调",
     "title": "日志设置",
-    "subtitle": "此密钥当前启用的日志集成与已禁用的回调"
+    "subtitle": "此密钥当前启用的日志集成与已禁用的回调",
+    "parametersConfigured": "{count} 个参数已配置"
   },
   "mcpToolArgs": {
     "emptyString": "空字符串",
