@@ -7044,7 +7044,22 @@
       "suggestedRange": "建议的网段：",
       "yourPrivateRanges": "您的内部网络网段",
       "placeholderRanges": "留空使用默认值：10.0.0.0/8、172.16.0.0/12、192.168.0.0/16、127.0.0.0/8",
-      "save": "保存"
+      "save": "保存",
+      "addClient": "添加客户端",
+      "editClient": "编辑客户端",
+      "clientDialogDesc": "别名会显示在仪表盘与网关日志中。值是用来识别客户端的 JWT 声明或请求头原值，例如你的身份提供方签发的 OAuth 客户端 ID。",
+      "aliasPlaceholder": "例如 Coding CLI",
+      "rangesHint": "输入 CIDR 网段（例如 10.0.0.0/8）。留空时使用标准私有 IP 段。",
+      "allowedClientsTitle": "允许的客户端",
+      "allowedClientsDesc": "只有这里列出的 MCP 客户端应用可以使用网关。留空表示允许所有客户端。使用 JWT 认证的客户端，由代理配置里 litellm_jwtauth.mcp_client_id_jwt_field 指定的声明来识别（例如 azp 或 client_id），该声明由身份提供方签发，客户端无法篡改。其他客户端则通过下面配置的请求头识别（如果启用了）。",
+      "allowlistMalformed": "已存储的允许列表不是别名与值的配对列表，因此所有客户端都会被拒绝。添加需要的客户端并保存即可替换它，或者留空保存以删除该列表并重新允许所有客户端。",
+      "allowlistEmpty": "当前存储了空的允许列表，因此所有客户端都会被拒绝。留空保存即可删除它并重新允许所有客户端。",
+      "clientsListHint": "点击客户端即可编辑或移除。留空表示允许所有客户端。来自未列出客户端、或无法识别身份的客户端的每个 MCP 请求都会返回 403。",
+      "clientHeaderTitle": "客户端身份请求头（安全性较低）",
+      "clientHeaderPlaceholder": "留空则仅通过 JWT 识别客户端，例如 x-mcp-client",
+      "clientHeaderDesc": "可选请求头，其值用于标识没有 JWT 身份的调用方对应的客户端。该值由客户端自行选择，因此是策略控制，并非安全边界。不配置时，在设置了允许列表的情况下，未携带 JWT 声明的调用方会被拒绝。",
+      "capabilitiesTitle": "提供的功能",
+      "capabilitiesDesc": "当你的 MCP 服务器都不提供提示或资源时，可以关闭对应功能。关闭的功能不会出现在 initialize 响应里，其列举调用会直接返回空列表而不请求任何上游服务器，其获取或读取调用会被拒绝。"
     },
     "permissionMgmt": {
       "title": "权限管理 / 访问控制",

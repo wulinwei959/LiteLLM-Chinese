@@ -157,9 +157,9 @@ describe("MCPNetworkSettings", () => {
     renderSettings();
     const switches = await screen.findAllByRole("switch");
     expect(switches.map((s) => s.getAttribute("aria-checked"))).toEqual(["true", "true"]);
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getByRole("button", { name: /保存|Save/ }));
 
-    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("MCP network settings saved"));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("MCP 网络设置已保存"));
     expect(deleteConfigFieldSetting).not.toHaveBeenCalled();
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
   });
@@ -167,10 +167,10 @@ describe("MCPNetworkSettings", () => {
   it("stores the capabilities an admin switches off", async () => {
     renderSettings();
     await userEvent.click((await screen.findAllByRole("switch"))[0]);
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getByRole("button", { name: /保存|Save/ }));
 
     await waitFor(() =>
-      expect(updateConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_disabled_capabilities", ["prompts"]),
+      expect(updateConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_disabled_capabilities", ["prompts"]),
     );
     expect(deleteConfigFieldSetting).not.toHaveBeenCalled();
   });
@@ -183,9 +183,9 @@ describe("MCPNetworkSettings", () => {
     const switches = await screen.findAllByRole("switch");
     expect(switches.map((s) => s.getAttribute("aria-checked"))).toEqual(["true", "false"]);
     await userEvent.click(switches[1]);
-    await userEvent.click(screen.getByRole("button", { name: /Save/ }));
+    await userEvent.click(screen.getByRole("button", { name: /保存|Save/ }));
 
-    await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith("tok", "mcp_disabled_capabilities"));
+    await waitFor(() => expect(deleteConfigFieldSetting).toHaveBeenCalledWith(expect.any(Function), "tok", "mcp_disabled_capabilities"));
     expect(updateConfigFieldSetting).not.toHaveBeenCalled();
   });
 

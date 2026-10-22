@@ -7044,7 +7044,22 @@
       "suggestedRange": "Suggested range: ",
       "yourPrivateRanges": "Your Private Network Ranges",
       "placeholderRanges": "Leave empty to use defaults: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8",
-      "save": "Save"
+      "save": "Save",
+      "addClient": "Add client",
+      "editClient": "Edit client",
+      "clientDialogDesc": "The alias is the name shown in the dashboard and gateway logs. The value is the exact JWT claim or header value that identifies the client, such as the OAuth client ID your identity provider issues.",
+      "aliasPlaceholder": "e.g. Coding CLI",
+      "rangesHint": "Enter CIDR ranges (e.g., 10.0.0.0/8). When empty, standard private IP ranges are used.",
+      "allowedClientsTitle": "Allowed Clients",
+      "allowedClientsDesc": "Only the MCP client applications listed here can use the gateway. Leave empty to allow every client. A client that authenticates with a JWT is identified by the claim named in litellm_jwtauth.mcp_client_id_jwt_field in your proxy config (for example azp or client_id), which your identity provider asserts and the client cannot change. Any other client is identified by the request header configured below, if you enable one.",
+      "allowlistMalformed": "The stored allowlist is not a list of alias and value pairs, so every client is denied. Add the clients you want and save to replace it, or save with the list empty to remove it and allow every client again.",
+      "allowlistEmpty": "An empty allowlist is currently stored, so every client is denied. Save with the list empty to remove it and allow every client again.",
+      "clientsListHint": "Click a client to edit or remove it. Leave the list empty to allow every client. Every MCP request from an unlisted client, or from one with no resolvable identity, gets a 403.",
+      "clientHeaderTitle": "Client Identity Header (less secure)",
+      "clientHeaderPlaceholder": "Leave empty to identify clients by JWT only, e.g. x-mcp-client",
+      "clientHeaderDesc": "Optional header whose value names the client for callers without a JWT identity. Clients pick this value themselves, so it is a policy control rather than a security boundary. Without it, callers that do not carry the JWT claim are rejected while the allowlist is set.",
+      "capabilitiesTitle": "Served Capabilities",
+      "capabilitiesDesc": "Turn off prompts or resources when none of your MCP servers offer them. A capability that is turned off is left out of the initialize response, its list calls return an empty list without contacting any upstream server, and its get or read calls are rejected."
     },
     "permissionMgmt": {
       "title": "Permission Management / Access Control",
