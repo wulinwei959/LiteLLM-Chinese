@@ -139,8 +139,8 @@ describe("AdvancedDatePicker", () => {
 
     openDropdown(container);
 
-    expect(screen.getByText("Apply")).toBeInTheDocument();
-    expect(screen.getByText("Cancel")).toBeInTheDocument();
+    expect(screen.getByText("应用")).toBeInTheDocument();
+    expect(screen.getByText("取消")).toBeInTheDocument();
   });
 
   it("should close dropdown when Cancel is clicked", () => {
@@ -148,7 +148,7 @@ describe("AdvancedDatePicker", () => {
 
     openDropdown(container);
 
-    const cancelButton = screen.getByText("Cancel");
+    const cancelButton = screen.getByText("取消");
     fireEvent.click(cancelButton);
 
     // Dropdown should be closed, so relative time options shouldn't be visible
@@ -160,7 +160,7 @@ describe("AdvancedDatePicker", () => {
 
     openDropdown(container);
 
-    const applyButton = screen.getByText("Apply");
+    const applyButton = screen.getByText("应用");
     fireEvent.click(applyButton);
 
     await waitFor(() => {
@@ -172,8 +172,8 @@ describe("AdvancedDatePicker", () => {
     const { container } = render(<AdvancedDatePicker value={defaultValue} onValueChange={mockOnValueChange} />);
 
     openDropdown(container);
-    fireEvent.click(screen.getByText("Today"));
-    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
+    fireEvent.click(screen.getByText("今天"));
+    fireEvent.click(screen.getByRole("button", { name: "应用" }));
 
     expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expect.anything(), "today");
     await waitFor(() => {
@@ -188,7 +188,7 @@ describe("AdvancedDatePicker", () => {
     openDropdown(container);
     fireEvent.change(screen.getByDisplayValue("2025-01-01"), { target: { value: today } });
     fireEvent.change(screen.getByDisplayValue("2025-01-31"), { target: { value: today } });
-    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
+    fireEvent.click(screen.getByRole("button", { name: "应用" }));
 
     expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expect.anything(), null);
     await waitFor(() => {
@@ -202,8 +202,8 @@ describe("AdvancedDatePicker", () => {
     );
 
     openDropdown(container);
-    fireEvent.click(screen.getByText("Today"));
-    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
+    fireEvent.click(screen.getByText("今天"));
+    fireEvent.click(screen.getByRole("button", { name: "应用" }));
 
     expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expect.anything(), "today");
     await waitFor(() => {
@@ -218,7 +218,7 @@ describe("AdvancedDatePicker", () => {
     rerender(<AdvancedDatePicker value={customValue} onValueChange={mockOnValueChange} presetShortLabel={null} />);
 
     openDropdown(container);
-    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
+    fireEvent.click(screen.getByRole("button", { name: "应用" }));
 
     expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expect.anything(), null);
     await waitFor(() => {
@@ -236,7 +236,7 @@ describe("AdvancedDatePicker", () => {
     );
 
     openDropdown(container);
-    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
+    fireEvent.click(screen.getByRole("button", { name: "应用" }));
 
     expect(mockOnValueChange).toHaveBeenNthCalledWith(1, expect.anything(), "30d");
     await waitFor(() => {
@@ -309,7 +309,7 @@ describe("AdvancedDatePicker", () => {
 
     await waitFor(() => {
       // Find the button element (the Apply button's actual button element)
-      const applyButton = screen.getByText("Apply").closest("button");
+      const applyButton = screen.getByText("应用").closest("button");
       expect(applyButton).toBeDisabled();
     });
   });

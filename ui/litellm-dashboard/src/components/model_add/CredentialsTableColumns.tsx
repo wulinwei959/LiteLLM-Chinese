@@ -22,10 +22,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/cva.config";
 import { copyToClipboard } from "@/utils/dataUtils";
+import type { CommonTranslator, CredentialsTranslator } from "@/lib/i18n/translators";
 
 import { inferAuthMethod } from "./credential_federation";
 
-function CredentialProviderCell({ provider, federated }: { provider: string | undefined; federated: boolean }) {
+function CredentialProviderCell({
+  t,
+  provider,
+  federated,
+}: {
+  t: CredentialsTranslator;
+  provider: string | undefined;
+  federated: boolean;
+}) {
   if (!provider) {
     return <span className="text-sm text-muted-foreground">-</span>;
   }
@@ -43,7 +52,7 @@ function CredentialProviderCell({ provider, federated }: { provider: string | un
         />
       ) : null}
       <span className="truncate text-sm">{displayName || provider}</span>
-      {federated && <Badge variant="secondary">Workload identity federation</Badge>}
+      {federated && <Badge variant="secondary">{t("federationLabel")}</Badge>}
     </div>
   );
 }
@@ -55,12 +64,13 @@ interface CredentialRowActionsProps {
 }
 
 function CredentialRowActions({ credential, onEdit, onDelete }: CredentialRowActionsProps) {
-  const t = useTranslations("common");
+  const t = useTranslations("credentials");
+  const commonT = useTranslations("common");
   const configOwned = credential.source === "config";
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open credential actions"
+        aria-label={t("openActionsAria")}
         data-testid={`credential-actions-${credential.credential_name}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -70,9 +80,7 @@ function CredentialRowActions({ credential, onEdit, onDelete }: CredentialRowAct
         {configOwned && (
           <>
             <DropdownMenuGroup>
-              <DropdownMenuLabel data-testid="credential-config-owned-hint">
-                Defined in config.yaml. Edit the file to change or delete it.
-              </DropdownMenuLabel>
+              <DropdownMenuLabel data-testid="credential-config-owned-hint">{t("configOwnedHint")}</DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
           </>
@@ -83,14 +91,14 @@ function CredentialRowActions({ credential, onEdit, onDelete }: CredentialRowAct
           onClick={() => onEdit(credential)}
         >
           <Pencil />
-          Edit
+          {commonT("edit")}
         </DropdownMenuItem>
         <DropdownMenuItem
           data-testid="credential-action-copy"
-          onClick={() => void copyToClipboard(credential.credential_name, t("nameCopied"))}
+          onClick={() => void copyToClipboard(credential.credential_name, commonT("nameCopied"))}
         >
           <Copy />
-          {t("copyName")}
+          {commonT("copyName")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -100,7 +108,7 @@ function CredentialRowActions({ credential, onEdit, onDelete }: CredentialRowAct
           onClick={() => onDelete(credential)}
         >
           <Trash2 />
-          Delete
+          {commonT("delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -108,12 +116,16 @@ function CredentialRowActions({ credential, onEdit, onDelete }: CredentialRowAct
 }
 
 interface CredentialsTableColumnsDeps {
+  t: CredentialsTranslator;
+  commonT: CommonTranslator;
   canModifyCredentials: boolean;
   onEdit: (credential: CredentialItem) => void;
   onDelete: (credential: CredentialItem) => void;
 }
 
 export const getCredentialsTableColumns = ({
+  t,
+  commonT,
   canModifyCredentials,
   onEdit,
   onDelete,
@@ -122,8 +134,8 @@ export const getCredentialsTableColumns = ({
     {
       id: "credential_name",
       accessorFn: credentialLabel,
-      meta: { title: "Credential Name" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Credential Name" />,
+      meta: { title: t("nameCol") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("nameCol")} />,
       size: 260,
       enableSorting: true,
       cell: ({ row }) => (
@@ -138,12 +150,13 @@ export const getCredentialsTableColumns = ({
     {
       id: "provider",
       accessorKey: "credential_info.custom_llm_provider",
-      meta: { title: "Provider" },
-      header: "Provider",
+      meta: { title: t("providerCol") },
+      header: t("providerCol"),
       size: 320,
       enableSorting: false,
       cell: ({ row }) => (
         <CredentialProviderCell
+          t={t}
           provider={row.original.credential_info?.custom_llm_provider}
           federated={inferAuthMethod(row.original.credential_values) === "federation"}
         />
@@ -152,15 +165,15 @@ export const getCredentialsTableColumns = ({
     {
       id: "source",
       accessorFn: (row) => row.source ?? "db",
-      meta: { title: "Source" },
-      header: "Source",
+      meta: { title: t("sourceCol") },
+      header: t("sourceCol"),
       size: 140,
       enableSorting: false,
       cell: ({ row }) =>
         row.original.source === "config" ? (
-          <StatusBadge tone="neutral" label="Config" />
+          <StatusBadge tone="neutral" label={t("sourceConfig")} />
         ) : (
-          <StatusBadge tone="info" label="DB" />
+          <StatusBadge tone="info" label={t("sourceDb")} />
         ),
     },
   ];
@@ -174,7 +187,7 @@ export const getCredentialsTableColumns = ({
     {
       id: "actions",
       meta: { className: "text-right", headerClassName: "text-right" },
-      header: () => <span className="sr-only">Actions</span>,
+      header: () => <span className="sr-only">{commonT("actions")}</span>,
       size: 64,
       enableSorting: false,
       enableHiding: false,

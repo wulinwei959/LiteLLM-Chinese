@@ -91,7 +91,7 @@ describe("CredentialsTable", () => {
     renderWithProviders(<CredentialsTable {...defaultProps} credentials={credentials} />);
     const rows = screen.getAllByRole("row").slice(1);
     const federatedNames = rows
-      .filter((row) => within(row).queryByText("Workload identity federation") !== null)
+      .filter((row) => within(row).queryByText("工作负载身份联合") !== null)
       .map((row) => within(row).getAllByRole("cell")[0].textContent);
     expect(federatedNames).toEqual(["a-anthropic-federated", "c-openai-federated"]);
   });
@@ -179,12 +179,12 @@ describe("CredentialsTable", () => {
     ];
     renderWithProviders(<CredentialsTable {...defaultProps} credentials={credentials} />);
 
-    const sourceColumn = screen.getAllByRole("columnheader").findIndex((header) => header.textContent === "Source");
+    const sourceColumn = screen.getAllByRole("columnheader").findIndex((header) => header.textContent === "来源");
     const sourceCell = (name: RegExp) => within(screen.getByRole("row", { name })).getAllByRole("cell")[sourceColumn];
     expect(sourceColumn).toBeGreaterThan(-1);
-    expect(sourceCell(/from-config/)).toHaveTextContent(/^Config$/);
-    expect(sourceCell(/from-db/)).toHaveTextContent(/^DB$/);
-    expect(within(screen.getByRole("row", { name: /from-config/ })).getAllByText("Config")).toHaveLength(1);
+    expect(sourceCell(/from-config/)).toHaveTextContent(/^配置文件$/);
+    expect(sourceCell(/from-db/)).toHaveTextContent(/^数据库$/);
+    expect(within(screen.getByRole("row", { name: /from-config/ })).getAllByText("配置文件")).toHaveLength(1);
 
     await user.click(screen.getByTestId("credential-actions-from-config"));
     expect(await screen.findByTestId("credential-config-owned-hint")).toBeInTheDocument();

@@ -3131,7 +3131,25 @@
     "bulkNextStepHint": "Download the credentials file containing Virtual Keys and invitation links. Users will need these Virtual Keys to make LLM requests through LiteLLM.",
     "bulkHeadRow": "Row",
     "bulkStartNewImport": "Start New Bulk Import",
-    "bulkDownloadUserCredentials": "Download User Credentials"
+    "bulkDownloadUserCredentials": "Download User Credentials",
+    "userIdCol": "User ID",
+    "openUserActionsAria": "Open user actions",
+    "viewUsage": "View usage",
+    "scimInactiveHint": "Deactivated via SCIM (external identity provider). The user's virtual keys are blocked.",
+    "ssoIdHint": "SSO ID is the ID of the user in the SSO provider. If the user is not using SSO, this will be null.",
+    "selectUser": "Select {name}",
+    "globalProxyRoleHint": "This is the role that the user will globally on the proxy. This role is independent of any team/org specific roles.",
+    "personalModels": "Personal Models",
+    "personalModelsHint": "Select which models this user can access outside of team-scope. Choose 'All Proxy Models' to grant access to all models available on the proxy.",
+    "unlimitedBudgetLabel": "Unlimited Budget",
+    "tpmLimit": "TPM Limit",
+    "rpmLimit": "RPM Limit",
+    "limitHint": "Applies across all keys owned by this user. Team and key limits still apply as ceilings.",
+    "mcpServersAndGroups": "MCP Servers / Access Groups",
+    "mcpServersAndGroupsHint": "Caps which MCP servers, access groups, and tools this user may reach. Every key the user holds is limited to this set.",
+    "selectMcpServersPlaceholder": "Select MCP servers or access groups (optional)",
+    "rateLimitError": "Enter a non-negative whole number, or leave empty for unlimited",
+    "budgetRequired": "Please enter a budget or select Unlimited Budget"
   },
   "organizations": {
     "tableLoading": "Loading organizations…",
@@ -11966,7 +11984,16 @@
     "badge7d": "7d",
     "badge30d": "30d",
     "badgeMtd": "MTD",
-    "badgeYtd": "YTD"
+    "badgeYtd": "YTD",
+    "selectTimeRange": "Select Time Range",
+    "relativeTime": "Relative time",
+    "startEndDates": "Start and end dates",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "from": "From:",
+    "to": "To:",
+    "invalidDateFormat": "Invalid date format",
+    "endBeforeStart": "End date cannot be before start date"
   },
   "objectPermissions": {
     "title": "Object Permissions",
@@ -12205,7 +12232,13 @@
     "helpTooltip": "Get help on our github",
     "needHelp": "Need Help?",
     "updateBtn": "Update Credential",
-    "addBtn": "Add Credential"
+    "addBtn": "Add Credential",
+    "providerCol": "Provider",
+    "sourceCol": "Source",
+    "sourceConfig": "Config",
+    "sourceDb": "DB",
+    "configOwnedHint": "Defined in config.yaml. Edit the file to change or delete it.",
+    "federationLabel": "Workload identity federation"
   },
   "modelSettings": {
     "title": "Model Settings",

@@ -41,11 +41,12 @@ const CredentialsTable: React.FC<CredentialsTableProps> = ({
   isLoading = false,
 }) => {
   const t = useTranslations("credentials");
+  const commonT = useTranslations("common");
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
   const columns = useMemo(
-    () => getCredentialsTableColumns({ canModifyCredentials, onEdit, onDelete }),
-    [canModifyCredentials, onEdit, onDelete],
+    () => getCredentialsTableColumns({ t, commonT, canModifyCredentials, onEdit, onDelete }),
+    [t, commonT, canModifyCredentials, onEdit, onDelete],
   );
 
   return (

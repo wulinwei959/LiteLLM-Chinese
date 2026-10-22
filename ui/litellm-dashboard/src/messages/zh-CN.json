@@ -3131,7 +3131,25 @@
     "bulkNextStepHint": "下载包含虚拟密钥和邀请链接的凭据文件。用户需要这些虚拟密钥才能通过 LiteLLM 发起 LLM 请求。",
     "bulkHeadRow": "行号",
     "bulkStartNewImport": "开始新的批量导入",
-    "bulkDownloadUserCredentials": "下载用户凭据"
+    "bulkDownloadUserCredentials": "下载用户凭据",
+    "userIdCol": "用户 ID",
+    "openUserActionsAria": "打开用户操作",
+    "viewUsage": "查看用量",
+    "scimInactiveHint": "已通过 SCIM（外部身份提供方）停用。该用户的虚拟密钥已被封禁。",
+    "ssoIdHint": "SSO ID 是用户在 SSO 提供方中的 ID。如果用户未使用 SSO，此项为空。",
+    "selectUser": "选择 {name}",
+    "globalProxyRoleHint": "这是用户在代理上的全局角色，与任何团队/组织专属角色无关。",
+    "personalModels": "个人模型",
+    "personalModelsHint": "选择该用户在团队范围之外可访问的模型。选择“所有代理模型”可授予对代理上所有模型的访问权限。",
+    "unlimitedBudgetLabel": "无限制预算",
+    "tpmLimit": "TPM 上限",
+    "rpmLimit": "RPM 上限",
+    "limitHint": "适用于该用户拥有的所有密钥。团队和密钥上限仍然作为上限生效。",
+    "mcpServersAndGroups": "MCP 服务器 / 访问组",
+    "mcpServersAndGroupsHint": "限制该用户可访问的 MCP 服务器、访问组和工具。该用户持有的每个密钥都受此集合限制。",
+    "selectMcpServersPlaceholder": "选择 MCP 服务器或访问组（可选）",
+    "rateLimitError": "请输入非负整数，或留空表示无限制",
+    "budgetRequired": "请输入预算或选择无限制预算"
   },
   "organizations": {
     "tableLoading": "正在加载组织…",
@@ -11962,7 +11980,16 @@
     "badge7d": "7 天",
     "badge30d": "30 天",
     "badgeMtd": "本月",
-    "badgeYtd": "本年"
+    "badgeYtd": "本年",
+    "selectTimeRange": "选择时间范围",
+    "relativeTime": "相对时间",
+    "startEndDates": "开始和结束日期",
+    "startDate": "开始日期",
+    "endDate": "结束日期",
+    "from": "从：",
+    "to": "至：",
+    "invalidDateFormat": "日期格式无效",
+    "endBeforeStart": "结束日期不能早于开始日期"
   },
   "objectPermissions": {
     "title": "对象权限",
@@ -12201,7 +12228,13 @@
     "helpTooltip": "在 GitHub 获取帮助",
     "needHelp": "需要帮助？",
     "updateBtn": "更新凭据",
-    "addBtn": "添加凭据"
+    "addBtn": "添加凭据",
+    "providerCol": "提供商",
+    "sourceCol": "来源",
+    "sourceConfig": "配置文件",
+    "sourceDb": "数据库",
+    "configOwnedHint": "在 config.yaml 中定义。请编辑该文件以更改或删除。",
+    "federationLabel": "工作负载身份联合"
   },
   "modelSettings": {
     "title": "模型设置",
