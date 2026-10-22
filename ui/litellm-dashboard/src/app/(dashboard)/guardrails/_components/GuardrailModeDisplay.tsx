@@ -31,7 +31,7 @@ export const GuardrailModeCard: React.FC<{ litellmParams: GuardrailModeParams }>
       {modeIncludesLoggingOnly(litellmParams.mode) && (
         <div className="mt-4">
           <p>{t("form.loggingOnlyScopeLabel")}</p>
-          <h3 className="text-lg font-medium">{formatLoggingOnlyScope(litellmParams.logging_only_scope)}</h3>
+          <h3 className="text-lg font-medium">{formatLoggingOnlyScope(litellmParams.logging_only_scope, t)}</h3>
           <p className="mt-2">{t("form.continueAfterFlaggedLabel")}</p>
           <h3 className="text-lg font-medium">
             {loggingOnlyContinueFromParams(litellmParams) ? t("form.onLabel") : t("form.offLabel")}
@@ -54,7 +54,7 @@ export const GuardrailModeRows: React.FC<{ litellmParams: GuardrailModeParams }>
       {modeIncludesLoggingOnly(litellmParams.mode) && (
         <div>
           <p className="font-medium">{t("form.loggingOnlyScopeLabel")}</p>
-          <div>{formatLoggingOnlyScope(litellmParams.logging_only_scope)}</div>
+          <div>{formatLoggingOnlyScope(litellmParams.logging_only_scope, t)}</div>
           <p className="font-medium">{t("form.continueAfterFlaggedLabel")}</p>
           <div>{loggingOnlyContinueFromParams(litellmParams) ? t("form.onLabel") : t("form.offLabel")}</div>
         </div>

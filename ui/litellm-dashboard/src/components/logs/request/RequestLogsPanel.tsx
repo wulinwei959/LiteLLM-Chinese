@@ -326,19 +326,19 @@ export default function RequestLogsPanel({ accessToken, token, userRole, userID,
         toolbarChildren={
           <LogsToolbar>
             <LogsTimeRangePicker value={timeRange} onValueChange={handleTimeRangeChange} />
-            <LogsToolbarSwitch label="Live Tail" checked={isLiveTail} onCheckedChange={setIsLiveTail} />
+            <LogsToolbarSwitch label={t("logsTable.liveTail")} checked={isLiveTail} onCheckedChange={setIsLiveTail} />
             {isLiveTail && pagination.pageIndex === 0 && (
               <span role="status" className="whitespace-nowrap text-xs text-muted-foreground">
-                Refreshing every 15s
+                {t("logsTable.refreshing")}
               </span>
             )}
             <LogsToolbarSwitch
-              label="Hide Health Checks"
+              label={t("logsTable.hideHealthChecks")}
               checked={excludeInternalHealthChecks}
               onCheckedChange={handleExcludeInternalHealthChecksChange}
             />
             <Button variant="outline" size="sm" onClick={handleResetFilters}>
-              Reset Filters
+              {t("logsTable.resetFilters")}
             </Button>
           </LogsToolbar>
         }

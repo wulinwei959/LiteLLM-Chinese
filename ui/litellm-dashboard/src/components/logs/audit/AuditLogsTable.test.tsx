@@ -1,6 +1,6 @@
 import type { ColumnFiltersState, PaginationState } from "@tanstack/react-table";
 import { fireEvent, screen } from "@testing-library/react";
-import { renderWithProviders } from "../../../tests/test-utils";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 

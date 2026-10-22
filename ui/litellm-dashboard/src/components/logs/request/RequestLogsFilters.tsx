@@ -130,8 +130,8 @@ function KeyAliasFilterField({
         hasNextPage={hasNextPage}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
-        placeholder="Search a key alias"
-        emptyText="No key aliases found"
+        placeholder={t("filters.searchKeyAlias")}
+        emptyText={t("filters.noKeyAliases")}
       />
     </DataTableFilterField>
   );
@@ -261,8 +261,8 @@ function EndUserFilterField({
         hasNextPage={hasNextPage}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
-        placeholder="Search an end user"
-        emptyText="No end users in this time range"
+        placeholder={t("filters.searchEndUser")}
+        emptyText={t("filters.noEndUsers")}
       />
     </DataTableFilterField>
   );

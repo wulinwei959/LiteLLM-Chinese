@@ -1,6 +1,10 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
+import zh from "@/messages/zh-CN.json";
 import { SYSTEM_ONE_EXAMPLE } from "./example";
 import { validateOpenAIDecisionsPayload, validateSystemOnePayload } from "./validatePayload";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "playground.systemOne" });
 
 const requestWith = (fields: Record<string, unknown> = {}) =>
   JSON.stringify({
@@ -11,39 +15,39 @@ const requestWith = (fields: Record<string, unknown> = {}) =>
 
 describe("validateSystemOnePayload", () => {
   it("rejects empty input", () => {
-    const emptyIssue = { path: "root", label: "Request", message: "Payload cannot be empty.", severity: "error" };
-    expect(validateSystemOnePayload(" ").issues).toContainEqual(emptyIssue);
+    const emptyIssue = { path: "root", label: "请求", message: "请求内容不能为空。", severity: "error" };
+    expect(validateSystemOnePayload(" ", t).issues).toContainEqual(emptyIssue);
   });
 
   it("reports JSON syntax errors", () => {
-    expect(validateSystemOnePayload("{").issues[0]?.path).toBe("syntax");
+    expect(validateSystemOnePayload("{", t).issues[0]?.path).toBe("syntax");
   });
 
   it("requires an object root", () => {
-    expect(validateSystemOnePayload("[]").issues).toContainEqual(
+    expect(validateSystemOnePayload("[]", t).issues).toContainEqual(
       expect.objectContaining({ path: "root", message: "Payload must be a JSON object.", severity: "error" }),
     );
   });
 
   it("requires the state key while accepting null state", () => {
-    expect(validateSystemOnePayload(requestWith({ state: undefined })).issues).toContainEqual(
+    expect(validateSystemOnePayload(requestWith({ state: undefined }), t).issues).toContainEqual(
       expect.objectContaining({
         path: "state",
         message: "Required property 'state' is missing.",
         severity: "error",
       }),
     );
-    expect(validateSystemOnePayload(requestWith({ state: null })).isValid).toBe(true);
+    expect(validateSystemOnePayload(requestWith({ state: null }), t).isValid).toBe(true);
   });
 
   it.each([null, "", 123])("requires a non-empty string model when present: %s", (model) => {
-    expect(validateSystemOnePayload(requestWith({ model })).issues).toContainEqual(
+    expect(validateSystemOnePayload(requestWith({ model }), t).issues).toContainEqual(
       expect.objectContaining({ path: "model", message: "Model must be a non-empty string.", severity: "error" }),
     );
   });
 
   it("requires questions", () => {
-    expect(validateSystemOnePayload(JSON.stringify({ state: null })).issues).toContainEqual(
+    expect(validateSystemOnePayload(JSON.stringify({ state: null }), t).issues).toContainEqual(
       expect.objectContaining({
         path: "questions",
         message: "Required property 'questions' is missing.",
@@ -58,13 +62,13 @@ describe("validateSystemOnePayload", () => {
     ["questions", "Questions must be a non-empty object."],
     [{}, "At least one question is required."],
   ])("requires a non-empty questions object: %s", (questions, message) => {
-    expect(validateSystemOnePayload(requestWith({ questions })).issues).toContainEqual(
+    expect(validateSystemOnePayload(requestWith({ questions }), t).issues).toContainEqual(
       expect.objectContaining({ path: "questions", message, severity: "error" }),
     );
   });
 
   it.each([null, [], "question"])("requires each question to be an object: %s", (question) => {
-    expect(validateSystemOnePayload(requestWith({ questions: { invalid: question } })).issues).toContainEqual(
+    expect(validateSystemOnePayload(requestWith({ questions: { invalid: question } }), t).issues).toContainEqual(
       expect.objectContaining({
         path: "questions.invalid",
         message: "Question must be an object.",
@@ -75,7 +79,7 @@ describe("validateSystemOnePayload", () => {
 
   it("requires a supported question type", () => {
     expect(
-      validateSystemOnePayload(requestWith({ questions: { invalid: { type: "other", instructions: "Do this" } } }))
+      validateSystemOnePayload(requestWith({ questions: { invalid: { type: "other", instructions: "Do this" } } }), t)
         .issues,
     ).toContainEqual(
       expect.objectContaining({
@@ -87,7 +91,9 @@ describe("validateSystemOnePayload", () => {
   });
 
   it("requires instructions", () => {
-    expect(validateSystemOnePayload(requestWith({ questions: { category: { type: "noul" } } })).issues).toContainEqual(
+    expect(
+      validateSystemOnePayload(requestWith({ questions: { category: { type: "noul" } } }), t).issues,
+    ).toContainEqual(
       expect.objectContaining({
         path: "questions.category.instructions",
         message: "Required property 'instructions' is missing.",
@@ -101,6 +107,7 @@ describe("validateSystemOnePayload", () => {
       requestWith({
         questions: { category: { type: "choice", instructions: { text: "Route" }, criteria: { support: "Help" } } },
       }),
+      t,
     );
     expect(result.isValid).toBe(false);
     expect(result.issues).toContainEqual(
@@ -116,6 +123,7 @@ describe("validateSystemOnePayload", () => {
     expect(
       validateSystemOnePayload(
         requestWith({ questions: { category: { type: "choice", instructions: "Route", criteria } } }),
+        t,
       ).issues,
     ).toContainEqual(
       expect.objectContaining({
@@ -131,6 +139,7 @@ describe("validateSystemOnePayload", () => {
       requestWith({
         questions: { category: { type: "choice", instructions: "Route", criteria: { support: { text: "Help" } } } },
       }),
+      t,
     );
     expect(result.isValid).toBe(false);
     expect(result.issues).toContainEqual(
@@ -148,6 +157,7 @@ describe("validateSystemOnePayload", () => {
       expect(
         validateSystemOnePayload(
           requestWith({ questions: { category: { type: "choice", instructions: "Route", criteria } } }),
+          t,
         ).issues,
       ).toContainEqual(
         expect.objectContaining({
@@ -167,6 +177,7 @@ describe("validateSystemOnePayload", () => {
     expect(
       validateSystemOnePayload(
         requestWith({ questions: { category: { type: "choice", instructions: "Route", criteria: one } } }),
+        t,
       ).isValid,
     ).toBe(true);
     expect(
@@ -174,6 +185,7 @@ describe("validateSystemOnePayload", () => {
         requestWith({
           questions: { category: { type: "choice", instructions: "Route", criteria: twoHundredFiftyFiveOptions } },
         }),
+        t,
       ).isValid,
     ).toBe(true);
   });
@@ -182,6 +194,7 @@ describe("validateSystemOnePayload", () => {
     expect(
       validateSystemOnePayload(
         requestWith({ questions: { urgency: { type: "score", instructions: "Rate urgency", criteria } } }),
+        t,
       ).issues,
     ).toContainEqual(
       expect.objectContaining({
@@ -196,6 +209,7 @@ describe("validateSystemOnePayload", () => {
     expect(
       validateSystemOnePayload(
         requestWith({ questions: { urgency: { type: "score", instructions: "Rate urgency", criteria: ["Low"] } } }),
+        t,
       ).issues,
     ).toContainEqual(
       expect.objectContaining({
@@ -213,6 +227,7 @@ describe("validateSystemOnePayload", () => {
           urgency: { type: "score", instructions: "Rate urgency", criteria: ["Low", { level: "High" }] },
         },
       }),
+      t,
     );
     expect(result.isValid).toBe(false);
     expect(result.issues).toContainEqual(
@@ -235,12 +250,13 @@ describe("validateSystemOnePayload", () => {
           },
         },
       }),
+      t,
     );
     expect(result.isValid).toBe(true);
     expect(result.issues).toContainEqual(
       expect.objectContaining({
         path: "questions.urgency.criteria",
-        message: "More than 10 score levels may reduce result quality.",
+        message: "分数等级超过 10 个可能降低结果质量。",
         severity: "warning",
       }),
     );
@@ -253,8 +269,9 @@ describe("validateSystemOnePayload", () => {
           "2": { type: "score", instructions: "Rate urgency", criteria: Array.from({ length: 11 }, () => "Level") },
         },
       }),
+      t,
     );
-    expect(result.issues.map((issue) => issue.label)).toEqual(['Question "2" options']);
+    expect(result.issues.map((issue) => issue.label)).toEqual(["问题“2” 选项"]);
   });
 
   it("accepts a score question with two levels", () => {
@@ -263,6 +280,7 @@ describe("validateSystemOnePayload", () => {
         requestWith({
           questions: { urgency: { type: "score", instructions: "Rate urgency", criteria: ["Low", "High"] } },
         }),
+        t,
       ).isValid,
     ).toBe(true);
   });
@@ -271,6 +289,7 @@ describe("validateSystemOnePayload", () => {
     expect(
       validateSystemOnePayload(
         requestWith({ questions: { escalation: { type: "noul", instructions: "Escalate?", criteria } } }),
+        t,
       ).issues,
     ).toContainEqual(
       expect.objectContaining({
@@ -283,8 +302,10 @@ describe("validateSystemOnePayload", () => {
 
   it("allows omitted noul criteria", () => {
     expect(
-      validateSystemOnePayload(requestWith({ questions: { escalation: { type: "noul", instructions: "Escalate?" } } }))
-        .isValid,
+      validateSystemOnePayload(
+        requestWith({ questions: { escalation: { type: "noul", instructions: "Escalate?" } } }),
+        t,
+      ).isValid,
     ).toBe(true);
   });
 
@@ -299,6 +320,7 @@ describe("validateSystemOnePayload", () => {
           },
         },
       }),
+      t,
     );
     expect(result.isValid).toBe(false);
     expect(result.issues).toEqual(
@@ -326,6 +348,7 @@ describe("validateSystemOnePayload", () => {
           escalate: { type: "noul", instructions: "Escalate?", criteria: { true: "Yes", unsure: "Maybe" } },
         },
       }),
+      t,
     );
     expect(result.payload).toMatchObject({ temperature: 0, questions: { category: { weight: 2 } } });
     expect(result.payload?.questions.escalate).toEqual({
@@ -336,7 +359,10 @@ describe("validateSystemOnePayload", () => {
   });
 
   it("accepts the built-in example without issues", () => {
-    expect(validateSystemOnePayload(JSON.stringify(SYSTEM_ONE_EXAMPLE))).toMatchObject({ isValid: true, issues: [] });
+    expect(validateSystemOnePayload(JSON.stringify(SYSTEM_ONE_EXAMPLE), t)).toMatchObject({
+      isValid: true,
+      issues: [],
+    });
   });
 });
 
@@ -344,18 +370,18 @@ describe("blank context", () => {
   const question = { type: "choice", instructions: "Pick one", criteria: { a: "", b: "" } };
 
   it.each(["", "   "])("rejects /v1/systemone with state %j even when the schema passes", (state) => {
-    const result = validateSystemOnePayload(JSON.stringify({ state, questions: { q: question } }), "/v1/systemone");
+    const result = validateSystemOnePayload(JSON.stringify({ state, questions: { q: question } }), t, "/v1/systemone");
     expect(result).toMatchObject({ isValid: false, payload: expect.anything() });
     expect(result.issues.map((issue) => issue.path)).toEqual(["state"]);
   });
 
   it("reports only the missing state while the blank question is still invalid", () => {
     const raw = JSON.stringify({ state: "", questions: { "": { type: "choice", instructions: "", criteria: {} } } });
-    expect(validateSystemOnePayload(raw, "/v1/systemone").issues.map((issue) => issue.path)).toEqual(["state"]);
-    const filled = validateSystemOnePayload(raw.replace('"state":""', '"state":"A ticket"'), "/v1/systemone");
+    expect(validateSystemOnePayload(raw, t, "/v1/systemone").issues.map((issue) => issue.path)).toEqual(["state"]);
+    const filled = validateSystemOnePayload(raw.replace('"state":""', '"state":"A ticket"'), t, "/v1/systemone");
     expect(filled.isValid).toBe(false);
     expect(filled.issues).toEqual([
-      { path: "questions", label: "Questions", message: "Give every question a name.", severity: "error" },
+      { path: "questions", label: "问题", message: "请给每个问题起个名字。", severity: "error" },
     ]);
   });
 
@@ -364,19 +390,19 @@ describe("blank context", () => {
       state: "A ticket",
       questions: { "2": { type: "choice", instructions: "", criteria: {} } },
     });
-    const labels = validateSystemOnePayload(raw, "/v1/systemone").issues.map((issue) => issue.label);
-    expect(labels).toContain('Question "2" options');
-    expect(labels.some((label) => label.startsWith("Question 3"))).toBe(false);
+    const labels = validateSystemOnePayload(raw, t, "/v1/systemone").issues.map((issue) => issue.label);
+    expect(labels).toContain("问题“2” 选项");
+    expect(labels.some((label) => label.startsWith("问题 3"))).toBe(false);
   });
 
   it("accepts /v1/systemone once the state carries text", () => {
     const raw = JSON.stringify({ state: "A customer wrote in", questions: { q: question } });
-    expect(validateSystemOnePayload(raw, "/v1/systemone")).toMatchObject({ isValid: true, issues: [] });
+    expect(validateSystemOnePayload(raw, t, "/v1/systemone")).toMatchObject({ isValid: true, issues: [] });
   });
 
   it.each(["", "  ", []])("rejects /v1/decisions with %j input even when the schema passes", (input) => {
     const raw = JSON.stringify({ input, questions: [{ type: "predicate", name: "q", instructions: "Is it?" }] });
-    const result = validateOpenAIDecisionsPayload(raw);
+    const result = validateOpenAIDecisionsPayload(raw, t);
     expect(result.isValid).toBe(false);
     expect(result.issues.map((issue) => issue.path)).toEqual(["input"]);
   });
@@ -390,10 +416,10 @@ describe("blank context", () => {
         { type: "choice", name: "pick", instructions: "Pick one", choices: duplicateChoices },
       ],
     });
-    expect(validateOpenAIDecisionsPayload(raw).issues).toEqual([
+    expect(validateOpenAIDecisionsPayload(raw, t).issues).toEqual([
       {
         path: "questions.1.choices",
-        label: "Question 2 choices",
+        label: "问题 2 choices",
         message: "Choice values must be unique, including their string representations.",
         severity: "error",
       },
@@ -405,6 +431,6 @@ describe("blank context", () => {
       input: "Ship it?",
       questions: [{ type: "predicate", name: "q", instructions: "Is it?" }],
     });
-    expect(validateOpenAIDecisionsPayload(raw)).toMatchObject({ isValid: true, issues: [] });
+    expect(validateOpenAIDecisionsPayload(raw, t)).toMatchObject({ isValid: true, issues: [] });
   });
 });

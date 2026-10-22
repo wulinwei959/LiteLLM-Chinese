@@ -86,7 +86,8 @@ const saveChanges = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.click(screen.getByText("保存更改"));
 };
 
-const renderView = () => renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin />);
+const renderView = () =>
+  renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin />);
 
 const lastPayload = () => vi.mocked(networking.updateGuardrailCall).mock.calls.at(-1)?.[2];
 
@@ -156,11 +157,7 @@ describe("GuardrailInfoView update payload characterization", () => {
     renderView();
     await openEditor(user);
 
-    await chooseSelectOption(
-      user,
-      screen.getByLabelText("在护栏中跳过系统消息"),
-      /从护栏扫描中排除/,
-    );
+    await chooseSelectOption(user, screen.getByLabelText("在护栏中跳过系统消息"), /从护栏扫描中排除/);
     await saveChanges(user);
 
     await waitFor(() => expect(networking.updateGuardrailCall).toHaveBeenCalledTimes(1));

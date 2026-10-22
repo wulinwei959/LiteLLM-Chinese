@@ -2,6 +2,8 @@
 
 import type { ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
+
+import type { LogsTranslator } from "@/lib/i18n/translators";
 import { ScrollText } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 
@@ -37,9 +39,7 @@ interface RequestLogsTableProps {
   toolbarChildren?: ReactNode;
 }
 
-const formatFilterValue = (columnId: string, value: unknown): string => {
-  const t = useTranslations("logs");
-
+const formatFilterValue = (columnId: string, value: unknown, t: LogsTranslator): string => {
   if (columnId === LOG_FILTER_IDS.SPAN_TYPE) {
     return t(SPAN_TYPE_LABEL_KEYS[String(value)]) ?? String(value);
   }
@@ -97,6 +97,10 @@ export function RequestLogsTable({
     return getRequestLogsTableColumns({ onKeyHashClick, onSessionClick, resolveUserEmail, t });
   }, [onKeyHashClick, onSessionClick, emailByUserId]);
 
+  const filterLabels = useMemo(
+    () => Object.fromEntries(Object.entries(LOG_FILTER_LABEL_KEYS).map(([columnId, key]) => [columnId, t(key)])),
+    [t],
+  );
   const isFiltered = columnFilters.length > 0 || searchValue !== "";
 
   return (
@@ -130,8 +134,8 @@ export function RequestLogsTable({
             onRefresh={onRefresh}
             isRefreshing={isRefreshing}
             onOpenFilters={() => setFiltersOpen(true)}
-            filterLabels={LOG_FILTER_LABEL_KEYS}
-            formatFilterValue={formatFilterValue}
+            filterLabels={filterLabels}
+            formatFilterValue={(columnId, value) => formatFilterValue(columnId, value, t)}
             showViewOptions={false}
           >
             {toolbarChildren}

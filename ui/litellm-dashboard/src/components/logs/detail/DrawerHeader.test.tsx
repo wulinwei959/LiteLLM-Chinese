@@ -1,11 +1,10 @@
-import { render } from "@testing-library/react";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { renderWithProviders } from "../../../../tests/test-utils";
-import type { LogEntry } from "../columns";
+import type { LogEntry } from "../types";
 import { DrawerHeader } from "./DrawerHeader";
 
 const logEntry = (overrides: Partial<LogEntry>): LogEntry =>
@@ -108,7 +107,7 @@ describe("DrawerHeader back link", () => {
 
   it("names where the drawer was opened from and closes back to it", async () => {
     const onClose = renderWithBack({ label: "Lens trace", icon: <svg data-testid="lens-icon" /> });
-    const back = screen.getByRole("button", { name: "Back to Lens trace" });
+    const back = screen.getByRole("button", { name: "返回 Lens trace" });
     expect(within(back).getByTestId("lens-icon")).toBeInTheDocument();
     await userEvent.click(back);
     expect(onClose).toHaveBeenCalledOnce();

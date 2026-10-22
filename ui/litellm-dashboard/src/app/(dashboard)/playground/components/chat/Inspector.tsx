@@ -1,6 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, type ReactNode } from "react";
+
+import type { PlaygroundInspectorTranslator } from "@/lib/i18n/translators";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
@@ -80,130 +83,143 @@ const millis = (value: number | undefined): string | undefined =>
   value === undefined ? undefined : `${Math.round(value)}ms`;
 
 function Routing({ message }: { message: MessageType }) {
+  const t = useTranslations("playground.inspector");
   const trace = message.trace;
   const served = servedModel(message);
   const fellBack = (trace?.attemptedFallbacks ?? 0) > 0;
   const reported = Boolean(trace?.callId || trace?.modelGroup || trace?.providerModel);
   return (
-    <TraceSection value="routing" title="Routing">
+    <TraceSection value="routing" title={t("section.routing")}>
       {trace?.requestedModel && (
-        <TraceRow title="Requested">
-          <LongValue value={trace.requestedModel} detail="Requested model" copyLabel="model name" className="text-xs" />
+        <TraceRow title={t("row.requested")}>
+          <LongValue
+            value={trace.requestedModel}
+            detail={t("detail.requestedModel")}
+            copyLabel={t("copy.modelName")}
+            className="text-xs"
+          />
         </TraceRow>
       )}
       {served && (
-        <TraceRow title="Served by">
+        <TraceRow title={t("row.servedBy")}>
           {fellBack && <FallbackBadge />}
-          <LongValue value={served} detail="Model group that answered" copyLabel="model name" className="text-xs" />
+          <LongValue
+            value={served}
+            detail={t("detail.servedModel")}
+            copyLabel={t("copy.modelName")}
+            className="text-xs"
+          />
         </TraceRow>
       )}
       {trace?.providerModel && (
-        <TraceRow title="Provider model">
+        <TraceRow title={t("row.providerModel")}>
           <LongValue
             value={trace.providerModel}
-            detail={trace.deploymentId ? `Deployment ID ${trace.deploymentId}` : "Model sent to the provider"}
-            copyLabel="provider model"
+            detail={
+              trace.deploymentId
+                ? t("detail.deploymentId", { id: trace.deploymentId })
+                : t("detail.modelSentToProvider")
+            }
+            copyLabel={t("copy.providerModel")}
             className="text-xs"
             align="end"
           />
         </TraceRow>
       )}
       {trace?.apiBase && (
-        <TraceRow title="API base">
+        <TraceRow title={t("row.apiBase")}>
           <LongValue
             value={trace.apiBase}
-            detail="Provider endpoint"
-            copyLabel="API base"
+            detail={t("detail.providerEndpoint")}
+            copyLabel={t("copy.apiBase")}
             className="text-xs"
             align="end"
           />
         </TraceRow>
       )}
       {trace?.callId && (
-        <TraceRow title="Call ID">
+        <TraceRow title={t("row.callId")}>
           <span className="min-w-0 truncate font-mono text-xs">{trace.callId}</span>
-          <CopyIconButton value={trace.callId} label="call ID" />
+          <CopyIconButton value={trace.callId} label={t("copy.callId")} />
         </TraceRow>
       )}
       {trace?.responseId && (
-        <TraceRow title="Response ID">
+        <TraceRow title={t("row.responseId")}>
           <span className="min-w-0 truncate font-mono text-xs">{trace.responseId}</span>
-          <CopyIconButton value={trace.responseId} label="response ID" />
+          <CopyIconButton value={trace.responseId} label={t("copy.responseId")} />
         </TraceRow>
       )}
       <StatGrid
         stats={[
-          { label: "Fallbacks", icon: <Shuffle />, value: count(trace?.attemptedFallbacks) },
-          { label: "Retries", icon: <RotateCw />, value: count(trace?.attemptedRetries) },
-          { label: "Overhead", icon: <Gauge />, value: millis(trace?.overheadMs) },
+          { label: t("stat.fallbacks"), icon: <Shuffle />, value: count(trace?.attemptedFallbacks) },
+          { label: t("stat.retries"), icon: <RotateCw />, value: count(trace?.attemptedRetries) },
+          { label: t("stat.overhead"), icon: <Gauge />, value: millis(trace?.overheadMs) },
         ]}
       />
-      {!reported && (
-        <Muted>
-          The gateway did not share routing details with this page. Open the dashboard from the proxy to see them
-        </Muted>
-      )}
+      {!reported && <Muted>{t("muted.noRoutingDetails")}</Muted>}
     </TraceSection>
   );
 }
 
-const noneRan = (policies: readonly string[] | undefined): string | null => {
-  if (policies === undefined) return "No guardrails ran on this request";
-  return policies.length === 0 ? "No guardrails or policies ran on this request" : null;
+const noneRan = (policies: readonly string[] | undefined, t: PlaygroundInspectorTranslator): string | null => {
+  if (policies === undefined) return t("muted.noGuardrails");
+  return policies.length === 0 ? t("muted.noGuardrailsOrPolicies") : null;
 };
 
 function Guardrails({ message }: { message: MessageType }) {
+  const t = useTranslations("playground.inspector");
   const guardrails = message.trace?.appliedGuardrails;
   const policies = message.trace?.appliedPolicies;
   if (guardrails === undefined) {
     return (
-      <TraceSection value="guardrails" title="Guardrails and policies">
-        <Muted>This endpoint does not report which guardrails or policies ran</Muted>
+      <TraceSection value="guardrails" title={t("section.guardrails")}>
+        <Muted>{t("muted.endpointDoesNotReport")}</Muted>
       </TraceSection>
     );
   }
-  const emptyNote = guardrails.length === 0 ? noneRan(policies) : null;
+  const emptyNote = guardrails.length === 0 ? noneRan(policies, t) : null;
   return (
-    <TraceSection value="guardrails" title="Guardrails and policies">
+    <TraceSection value="guardrails" title={t("section.guardrails")}>
       {guardrails.map((name) => (
-        <TraceRow key={`g-${name}`} title={name} description="Guardrail">
-          <Badge variant="secondary">Ran</Badge>
+        <TraceRow key={`g-${name}`} title={name} description={t("description.guardrail")}>
+          <Badge variant="secondary">{t("badge.ran")}</Badge>
         </TraceRow>
       ))}
       {policies?.map((name) => (
-        <TraceRow key={`p-${name}`} title={name} description="Policy">
-          <Badge variant="secondary">Ran</Badge>
+        <TraceRow key={`p-${name}`} title={name} description={t("description.policy")}>
+          <Badge variant="secondary">{t("badge.ran")}</Badge>
         </TraceRow>
       ))}
       {emptyNote && <Muted>{emptyNote}</Muted>}
-      {policies === undefined && <Muted>Policies are only reported when the dashboard is opened from the proxy</Muted>}
+      {policies === undefined && <Muted>{t("muted.policiesNeedProxy")}</Muted>}
     </TraceSection>
   );
 }
 
 function SpeedAndCost({ message }: { message: MessageType }) {
+  const t = useTranslations("playground.inspector");
   const usage = message.usage;
   const cost = usage?.cost ?? message.trace?.cost;
   return (
-    <TraceSection value="performance" title="Speed and cost">
+    <TraceSection value="performance" title={t("section.speedAndCost")}>
       <StatGrid
         stats={[
           {
-            label: "First token",
+            label: t("stat.firstToken"),
             icon: <Timer />,
             value: message.timeToFirstToken === undefined ? undefined : formatSeconds(message.timeToFirstToken),
           },
           {
-            label: "Total",
+            label: t("stat.total"),
             icon: <Clock />,
             value: message.totalLatency === undefined ? undefined : formatSeconds(message.totalLatency),
           },
-          { label: "Cost", icon: <Coins />, value: cost === undefined ? undefined : formatCost(cost) },
-          { label: "Tokens in", icon: <ArrowDownToLine />, value: count(usage?.promptTokens) },
-          { label: "Tokens out", icon: <ArrowUpFromLine />, value: count(usage?.completionTokens) },
-          { label: "Cached", icon: <DatabaseZap />, value: count(usage?.cacheReadTokens) },
-          { label: "Reasoning", icon: <Brain />, value: count(usage?.reasoningTokens) },
-          { label: "Gateway time", icon: <Server />, value: millis(message.trace?.responseMs) },
+          { label: t("stat.cost"), icon: <Coins />, value: cost === undefined ? undefined : formatCost(cost) },
+          { label: t("stat.tokensIn"), icon: <ArrowDownToLine />, value: count(usage?.promptTokens) },
+          { label: t("stat.tokensOut"), icon: <ArrowUpFromLine />, value: count(usage?.completionTokens) },
+          { label: t("stat.cached"), icon: <DatabaseZap />, value: count(usage?.cacheReadTokens) },
+          { label: t("stat.reasoning"), icon: <Brain />, value: count(usage?.reasoningTokens) },
+          { label: t("stat.gatewayTime"), icon: <Server />, value: millis(message.trace?.responseMs) },
         ]}
       />
     </TraceSection>
@@ -211,13 +227,12 @@ function SpeedAndCost({ message }: { message: MessageType }) {
 }
 
 function NothingYet() {
+  const t = useTranslations("playground.inspector");
   return (
     <Empty className="flex-1">
       <EmptyHeader>
-        <EmptyTitle className="text-sm">Nothing to inspect yet</EmptyTitle>
-        <EmptyDescription>
-          Each reply shows here with the deployment that served it, fallbacks, guardrails, timing and cost
-        </EmptyDescription>
+        <EmptyTitle className="text-sm">{t("empty.nothingToInspect")}</EmptyTitle>
+        <EmptyDescription>{t("empty.eachReply")}</EmptyDescription>
       </EmptyHeader>
     </Empty>
   );
@@ -235,6 +250,7 @@ function Trace({ message }: { message: MessageType | null }) {
 }
 
 function CodeTab({ code }: { code: (sdk: CodeSdk) => string }) {
+  const t = useTranslations("playground.inspector");
   const [sdk, setSdk] = useState<CodeSdk>("openai");
   const snippet = code(sdk);
   return (
@@ -246,22 +262,20 @@ function CodeTab({ code }: { code: (sdk: CodeSdk) => string }) {
           variant="outline"
           size="sm"
           spacing={0}
-          aria-label="SDK"
+          aria-label={t("aria.sdk")}
         >
           <ToggleGroupItem value="openai" className="h-7 px-2 text-xs">
-            OpenAI SDK
+            {t("tab.openaiSdk")}
           </ToggleGroupItem>
           <ToggleGroupItem value="azure" className="h-7 px-2 text-xs">
-            Azure SDK
+            {t("tab.azureSdk")}
           </ToggleGroupItem>
         </ToggleGroup>
         <span className="ml-auto">
-          <CopyIconButton value={snippet} label="code" />
+          <CopyIconButton value={snippet} label={t("copy.code")} />
         </span>
       </div>
-      <FieldDescription className="px-4 pt-2 text-xs">
-        Send this request from your own app. Replace YOUR_LITELLM_API_KEY with a virtual key
-      </FieldDescription>
+      <FieldDescription className="px-4 pt-2 text-xs">{t("hint.sendFromYourApp")}</FieldDescription>
       <ScrollArea className="w-full">
         <pre className="px-4 py-3 font-mono text-xs leading-5 whitespace-pre text-foreground">{snippet}</pre>
         <ScrollBar orientation="horizontal" />
@@ -271,12 +285,13 @@ function CodeTab({ code }: { code: (sdk: CodeSdk) => string }) {
 }
 
 export function InspectorPanel({ message, code }: { message: MessageType | null; code: (sdk: CodeSdk) => string }) {
+  const t = useTranslations("playground.inspector");
   return (
     <Tabs defaultValue="trace" className="min-h-0 flex-1 gap-0">
       <div className="flex h-12 shrink-0 items-center border-b border-border px-4">
         <TabsList className="w-full">
-          <TabsTrigger value="trace">Trace</TabsTrigger>
-          <TabsTrigger value="code">Code</TabsTrigger>
+          <TabsTrigger value="trace">{t("tab.trace")}</TabsTrigger>
+          <TabsTrigger value="code">{t("tab.code")}</TabsTrigger>
         </TabsList>
       </div>
       <ScrollArea className="min-h-0 flex-1">

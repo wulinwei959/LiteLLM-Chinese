@@ -1,5 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
+import type { PlaygroundChatTranslator } from "@/lib/i18n/translators";
 import { useRef, useState } from "react";
 import { ChevronDown, PanelRight, RotateCcw, SquarePen } from "lucide-react";
 import useCan from "@/app/(dashboard)/hooks/useCan";
@@ -112,10 +115,10 @@ const lastTracedReply = (messages: readonly MessageType[]): number =>
 const totalCost = (messages: readonly MessageType[]): number =>
   messages.reduce((sum, message) => sum + (message.usage?.cost ?? message.trace?.cost ?? 0), 0);
 
-const conversationSummary = (messages: readonly MessageType[]): string => {
+const conversationSummary = (messages: readonly MessageType[], t: PlaygroundChatTranslator): string => {
   const requests = messages.filter((message) => message.role === "user").length;
-  if (requests === 0) return "New chat";
-  const label = requests === 1 ? "1 request" : `${requests} requests`;
+  if (requests === 0) return t("summary.newChat");
+  const label = requests === 1 ? t("summary.oneRequest") : t("summary.requests", { count: requests });
   const cost = totalCost(messages);
   return cost > 0 ? `${label}, ${formatCost(cost)}` : label;
 };
@@ -129,6 +132,7 @@ export function PlaygroundChat({
   disabledPersonalKeyCreation: boolean;
   proxySettings: ProxySettings | undefined;
 }) {
+  const t = useTranslations("playground.chat");
   const { settings: stored, update, reset } = usePlaygroundSettings(disabledPersonalKeyCreation);
   const canViewPolicies = useCan("viewPolicies");
   const apiKey = (stored.keySource === "session" ? accessToken : stored.virtualKey.trim()) || null;
@@ -211,13 +215,13 @@ export function PlaygroundChat({
 
   const newChat = () => {
     clearChat();
-    toast.success("Chat history cleared.");
+    toast.success(t("toast.historyCleared"));
   };
 
   const resetAll = () => {
     clearChat();
     reset();
-    toast.success("Chat and settings reset");
+    toast.success(t("toast.reset"));
   };
 
   const code = (sdk: CodeSdk): string => {
@@ -250,8 +254,8 @@ export function PlaygroundChat({
     <>
       {capabilities.target === "model" && (
         <TargetPicker
-          label="Model"
-          placeholder="Select a model"
+          label={t("field.model")}
+          placeholder={t("placeholder.selectModel")}
           groups={modelGroups(filterModelsForEndpoint([...modelList], settings.endpoint))}
           value={settings.model}
           onValueChange={selectModel}
@@ -262,8 +266,8 @@ export function PlaygroundChat({
       )}
       {capabilities.target === "agent" && (
         <TargetPicker
-          label="Agent"
-          placeholder="Select an agent"
+          label={t("field.agent")}
+          placeholder={t("placeholder.selectAgent")}
           groups={[
             {
               label: "Agents",
@@ -277,14 +281,14 @@ export function PlaygroundChat({
           value={settings.agent}
           onValueChange={(agent) => update({ agent })}
           isLoading={agents.isLoading}
-          emptyText="No agents available for this key"
+          emptyText={t("empty.noAgents")}
         />
       )}
       {capabilities.target === "mcpTool" && (
         <>
           <TargetPicker
-            label="Server"
-            placeholder="Select an MCP server"
+            label={t("field.server")}
+            placeholder={t("placeholder.selectMcpServer")}
             groups={[
               {
                 label: "MCP servers",
@@ -302,15 +306,15 @@ export function PlaygroundChat({
             value={directSelection}
             onValueChange={(server) => update({ mcpSelection: [server], directTool: null })}
             isLoading={mcp.isLoading}
-            emptyText="No MCP servers available for this key"
+            emptyText={t("empty.noMcpServers")}
           />
           {directByok?.is_byok && (
             <ByokKeyButton server={directByok} name={serverName(directByok)} onConnected={mcp.refreshCredentials} />
           )}
           {directSelection && (
             <TargetPicker
-              label="Tool"
-              placeholder="Select a tool"
+              label={t("field.tool")}
+              placeholder={t("placeholder.selectTool")}
               groups={[
                 {
                   label: "Tools",
@@ -411,33 +415,33 @@ export function PlaygroundChat({
     <div className="flex min-h-0 flex-1">
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <div className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-4">
-          <span className="text-xs text-muted-foreground tabular-nums">{conversationSummary(messages)}</span>
+          <span className="text-xs text-muted-foreground tabular-nums">{conversationSummary(messages, t)}</span>
           <span className="ml-auto flex items-center gap-2">
             {!isWide && (
               <Button variant="outline" size="sm" onClick={() => setSheetOpen(true)}>
                 <PanelRight />
-                Inspector
+                {t("button.inspector")}
               </Button>
             )}
             <ButtonGroup>
               <Button variant="outline" size="sm" onClick={newChat}>
                 <SquarePen />
-                New chat
+                {t("button.newChat")}
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger
-                  render={<Button variant="outline" size="icon-sm" aria-label="More chat actions" />}
+                  render={<Button variant="outline" size="icon-sm" aria-label={t("aria.moreChatActions")} />}
                 >
                   <ChevronDown />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64">
                   <DropdownMenuItem onClick={newChat}>
                     <SquarePen />
-                    New chat, keep settings
+                    {t("action.newChatKeepSettings")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={resetAll}>
                     <RotateCcw />
-                    Reset chat and settings
+                    {t("action.resetChatAndSettings")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -473,13 +477,13 @@ export function PlaygroundChat({
         <div className="mx-auto w-full max-w-3xl px-6 pb-6">{composer}</div>
       </div>
       {isWide ? (
-        <aside aria-label="Inspector" className="flex w-96 shrink-0 flex-col border-l border-border">
+        <aside aria-label={t("aria.inspector")} className="flex w-96 shrink-0 flex-col border-l border-border">
           {inspector}
         </aside>
       ) : (
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetContent side="right" className="w-96 gap-0 p-0" showCloseButton={false}>
-            <SheetTitle className="sr-only">Inspector</SheetTitle>
+            <SheetTitle className="sr-only">{t("sheet.inspector")}</SheetTitle>
             {inspector}
           </SheetContent>
         </Sheet>

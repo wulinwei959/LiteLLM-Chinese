@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useRef, type ReactNode } from "react";
 import { ArrowUp, Box, CreditCard, KeyRound, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ export function LiteAdminHomeComposer({
   submitDisabled: boolean;
   modelPicker: ReactNode;
 }) {
+  const t = useTranslations("liteAdmin");
   const inputRef = useRef<HTMLTextAreaElement>(null);
   return (
     <InputGroup className="h-auto flex-col rounded-xl border-border bg-card shadow-xs">
@@ -41,8 +43,8 @@ export function LiteAdminHomeComposer({
             if (!submitDisabled && !isLoading) onSubmit();
           }
         }}
-        placeholder="What would you like to do?"
-        aria-label="Message LiteAdmin"
+        placeholder={t("composer.placeholder")}
+        aria-label={t("composer.ariaLabel")}
         disabled={disabled}
         rows={2}
         className="min-h-24 max-h-48 w-full rounded-t-xl px-5 pt-5 pb-2 text-sm placeholder:text-muted-foreground [field-sizing:content]"
@@ -70,14 +72,14 @@ export function LiteAdminHomeComposer({
         <div className="ml-auto flex min-w-0 max-w-full items-center gap-2">
           <div className="w-64 min-w-0 text-muted-foreground">{modelPicker}</div>
           {isLoading && onCancel ? (
-            <Button type="button" size="icon-sm" aria-label="Stop request" onClick={onCancel}>
+            <Button type="button" size="icon-sm" aria-label={t("composer.stopAriaLabel")} onClick={onCancel}>
               <Square className="size-3.5 fill-current" />
             </Button>
           ) : (
             <Button
               type="button"
               size="icon-sm"
-              aria-label="Send message"
+              aria-label={t("composer.sendAriaLabel")}
               disabled={submitDisabled || isLoading}
               onClick={onSubmit}
               className="rounded-lg bg-info text-info-foreground shadow-xs hover:bg-info/90"

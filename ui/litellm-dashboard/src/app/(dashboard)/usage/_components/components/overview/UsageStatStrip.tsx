@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 import type { DailyData } from "@/components/UsagePage/types";
 import { cn } from "@/lib/cva.config";
@@ -24,19 +25,24 @@ export default function UsageStatStrip({
   requestCountsPending,
   budget,
 }: UsageStatStripProps) {
+  const t = useTranslations("usage.overview");
   const daily = useMemo(() => dailyTotals(results), [results]);
   return (
     <div className="grid grid-cols-1 overflow-hidden rounded-xl border bg-card sm:grid-cols-2 lg:grid-cols-4 lg:divide-x">
       <StatCell trend={<Sparkline data={daily} dataKey="spend" color={BRAND} className="h-14" />}>
         <Stat
-          label="Spend"
+          label={t("statStrip.spend")}
           value={formatUsd(totals.spend)}
           pending={loading}
           hint={budget ? `of ${formatUsd(budget)} budget` : "No budget set"}
         />
       </StatCell>
       <StatCell trend={<Sparkline data={daily} dataKey="requests" color={BRAND} className="h-14" />}>
-        <Stat label="Total Requests" value={totals.requests.toLocaleString()} pending={requestCountsPending} />
+        <Stat
+          label={t("statStrip.totalRequests")}
+          value={totals.requests.toLocaleString()}
+          pending={requestCountsPending}
+        />
         {!requestCountsPending && (
           <div className="mt-0.5 flex gap-3 text-xs leading-4 text-muted-foreground">
             <span>
@@ -53,7 +59,7 @@ export default function UsageStatStrip({
       </StatCell>
       <StatCell trend={<Sparkline data={daily} dataKey="tokens" color={BRAND} className="h-14" />}>
         <Stat
-          label="Total Tokens"
+          label={t("statStrip.totalTokens")}
           value={loading ? null : formatCompact(totals.tokens)}
           exact={`${totals.tokens.toLocaleString()} tokens`}
           pending={loading}
@@ -62,9 +68,13 @@ export default function UsageStatStrip({
       </StatCell>
       <StatCell>
         <div className="grid gap-3">
-          <Stat label="Avg cost / request" value={formatUsd(totals.avgCostPerRequest, 4)} pending={loading} />
           <Stat
-            label="Avg latency"
+            label={t("statStrip.avgCostPerRequest")}
+            value={formatUsd(totals.avgCostPerRequest, 4)}
+            pending={loading}
+          />
+          <Stat
+            label={t("statStrip.avgLatency")}
             value={totals.avgLatencyMs === null ? "—" : formatLatency(totals.avgLatencyMs)}
             pending={loading}
             hint={totals.successRate === null ? undefined : `${totals.successRate.toFixed(1)}% success rate`}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, type ReactNode } from "react";
 import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -64,11 +65,12 @@ function GroupedOptions({ index, mono = false }: { index: ReadonlyMap<string, Pi
 }
 
 function CustomItem({ value }: { value: string }) {
+  const t = useTranslations("playground.pickers");
   return (
     <ComboboxItem value={value} className="font-mono text-xs">
       <Plus />
       <span className="min-w-0 truncate">
-        <span className="font-sans">Use</span> {value}
+        <span className="font-sans">{t("action.use")}</span> {value}
       </span>
     </ComboboxItem>
   );

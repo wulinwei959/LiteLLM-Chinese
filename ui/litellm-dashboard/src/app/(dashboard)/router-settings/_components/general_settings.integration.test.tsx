@@ -273,18 +273,18 @@ it("keeps a new baggage mapping unsaved until every field the backend requires i
   vi.mocked(updateConfigFieldSetting).mockClear();
   const user = userEvent.setup();
   renderWithProviders(<GeneralSettings accessToken="token" userRole="Admin" userID="user" />);
-  await user.click(screen.getByRole("tab", { name: "General" }));
-  await user.click(await screen.findByRole("button", { name: "Add mapping" }));
+  await user.click(screen.getByRole("tab", { name: "通用" }));
+  await user.click(await screen.findByRole("button", { name: "添加映射" }));
   const update = within(screen.getByRole("row", { name: /request_tag_mappings/ })).getByRole("button", {
-    name: "Update",
+    name: "更新",
   });
   expect(update).toBeDisabled();
-  fireEvent.change(screen.getByLabelText("Mapping 1 baggage key"), { target: { value: "entrypoint" } });
-  fireEvent.change(screen.getByLabelText("Mapping 1 match value"), { target: { value: "a" } });
+  fireEvent.change(screen.getByLabelText("映射 1 的 baggage 键"), { target: { value: "entrypoint" } });
+  fireEvent.change(screen.getByLabelText("映射 1 的匹配值"), { target: { value: "a" } });
   expect(update).toBeDisabled();
-  fireEvent.change(screen.getByLabelText("Mapping 1 tag"), { target: { value: "usecase:support" } });
+  fireEvent.change(screen.getByLabelText("映射 1 的标签"), { target: { value: "usecase:support" } });
   await user.click(update);
-  expect(vi.mocked(updateConfigFieldSetting).mock.calls).toEqual([
+  expect(vi.mocked(updateConfigFieldSetting).mock.calls.map((call) => call.slice(1))).toEqual([
     ["token", "request_tag_mappings", [{ header: "baggage", key: "entrypoint", value: "a", tag: "usecase:support" }]],
   ]);
 });

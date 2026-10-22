@@ -3,7 +3,7 @@
  */
 
 import { screen, waitFor } from "@testing-library/react";
-import { renderWithProviders } from "../../../../tests/test-utils";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect } from "vitest";
 import { parseToolsFromLog } from "./utils";

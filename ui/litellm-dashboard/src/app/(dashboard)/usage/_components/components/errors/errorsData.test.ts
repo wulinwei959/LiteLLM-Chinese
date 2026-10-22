@@ -1,4 +1,6 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
+import zh from "@/messages/zh-CN.json";
 import {
   entityRows,
   errorRate,
@@ -10,6 +12,8 @@ import {
   statusCodeRows,
   type RequestErrorActivity,
 } from "./errorsData";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "usage.errors" });
 
 const activity = (overrides: Partial<RequestErrorActivity> = {}): RequestErrorActivity => ({
   total_successful_requests: 900,
@@ -99,8 +103,8 @@ describe("errorSummary", () => {
 
 describe("errorSeries", () => {
   it("orders days and stacks the top status codes, with the unrecorded remainder as Other", () => {
-    const series = errorSeries(activity());
-    expect(series.codes).toEqual(["429", "401", "503", "Other"]);
+    const series = errorSeries(activity(), t);
+    expect(series.codes).toEqual(["429", "401", "503", "其他"]);
     expect(series.rows).toEqual([
       {
         date: "2026-10-07",
@@ -110,7 +114,7 @@ describe("errorSeries", () => {
         "429": 30,
         "401": 10,
         "503": 0,
-        Other: 0,
+        其他: 0,
       },
       {
         date: "2026-10-08",
@@ -120,7 +124,7 @@ describe("errorSeries", () => {
         "429": 40,
         "401": 10,
         "503": 5,
-        Other: 5,
+        其他: 5,
       },
     ]);
   });
@@ -139,13 +143,13 @@ describe("errorSeries", () => {
       ],
       by_status_code: [{ status_code: 429, failed_requests: 2 }],
     });
-    expect(errorSeries(complete).codes).toEqual(["429"]);
+    expect(errorSeries(complete, t).codes).toEqual(["429"]);
   });
 });
 
 describe("rateByStatusRows", () => {
   it("turns each status code count into a share of that day's requests", () => {
-    const rows = rateByStatusRows(errorSeries(activity()));
+    const rows = rateByStatusRows(errorSeries(activity(), t));
     expect(rows).toEqual([
       {
         date: "2026-10-07",
@@ -155,7 +159,7 @@ describe("rateByStatusRows", () => {
         "429": expect.closeTo(5.56, 2),
         "401": expect.closeTo(1.85, 2),
         "503": 0,
-        Other: 0,
+        其他: 0,
       },
       {
         date: "2026-10-08",
@@ -165,7 +169,7 @@ describe("rateByStatusRows", () => {
         "429": expect.closeTo(8.7, 2),
         "401": expect.closeTo(2.17, 2),
         "503": expect.closeTo(1.09, 2),
-        Other: expect.closeTo(1.09, 2),
+        其他: expect.closeTo(1.09, 2),
       },
     ]);
   });
@@ -173,30 +177,30 @@ describe("rateByStatusRows", () => {
 
 describe("statusCodeRows", () => {
   it("ranks codes by count, labels them and adds the unrecorded remainder", () => {
-    expect(statusCodeRows(activity())).toEqual([
-      { status_code: 429, label: "Rate Limited", failed_requests: 70, share: 70 },
-      { status_code: 401, label: "Unauthorized", failed_requests: 20, share: 20 },
-      { status_code: 0, label: "Not recorded", failed_requests: 5, share: 5 },
-      { status_code: 503, label: "Service Unavailable", failed_requests: 5, share: 5 },
+    expect(statusCodeRows(activity(), t)).toEqual([
+      { status_code: 429, label: "触发限流", failed_requests: 70, share: 70 },
+      { status_code: 401, label: "未认证", failed_requests: 20, share: 20 },
+      { status_code: 0, label: "未记录", failed_requests: 5, share: 5 },
+      { status_code: 503, label: "服务不可用", failed_requests: 5, share: 5 },
     ]);
   });
 
   it("is empty when nothing failed", () => {
-    expect(statusCodeRows(activity({ total_failed_requests: 0, by_status_code: [] }))).toEqual([]);
+    expect(statusCodeRows(activity({ total_failed_requests: 0, by_status_code: [] }), t)).toEqual([]);
   });
 });
 
 describe("entityRows", () => {
   it("names rows by alias, computes the rate and describes the top status", () => {
-    expect(entityRows(activity(), "key")).toEqual([
+    expect(entityRows(activity(), "key", t)).toEqual([
       { id: "hash-1", name: "prod-key", requests: 500, failed: 60, rate: 12, topStatus: "429 · 55" },
       { id: "hash-2", name: "hash-2", requests: 0, failed: 0, rate: null, topStatus: null },
     ]);
   });
 
   it("switches source by kind and spells out an unrecorded top status", () => {
-    expect(entityRows(activity(), "team")).toEqual([]);
-    expect(entityRows(activity(), "model")[0].topStatus).toBe("No status · 1");
+    expect(entityRows(activity(), "team", t)).toEqual([]);
+    expect(entityRows(activity(), "model", t)[0].topStatus).toBe("无状态码 · 1");
   });
 });
 
@@ -221,13 +225,13 @@ describe("rates", () => {
 
 describe("statusCodeLabel", () => {
   it.each([
-    [0, "Not recorded"],
-    [401, "Unauthorized"],
-    [429, "Rate Limited"],
-    [503, "Service Unavailable"],
-    [418, "Client Error"],
-    [599, "Server Error"],
+    [0, "未记录"],
+    [401, "未认证"],
+    [429, "触发限流"],
+    [503, "服务不可用"],
+    [418, "客户端错误"],
+    [599, "服务器错误"],
   ] as const)("labels status %s", (code, label) => {
-    expect(statusCodeLabel(code)).toBe(label);
+    expect(statusCodeLabel(code, t)).toBe(label);
   });
 });

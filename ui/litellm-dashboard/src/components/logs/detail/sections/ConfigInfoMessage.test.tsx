@@ -1,4 +1,4 @@
-import { renderWithProviders, screen } from "../../../tests/test-utils";
+import { renderWithProviders, screen } from "../../../../../tests/test-utils";
 import { describe, expect, it } from "vitest";
 import { ConfigInfoMessage } from "./ConfigInfoMessage";
 

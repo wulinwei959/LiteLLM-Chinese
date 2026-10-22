@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
@@ -51,17 +52,18 @@ export function BreakdownControls({
   onChange: (next: BreakdownState) => void;
   showDimension?: boolean;
 }) {
+  const t = useTranslations("usage.overview");
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Segmented
-        label="Metric"
+        label={t("breakdown.metric")}
         value={state.metric}
         options={METRIC_OPTIONS}
         onChange={(metric) => onChange({ ...state, metric })}
       />
       {showDimension && (
         <Segmented
-          label="Group by"
+          label={t("breakdown.groupBy")}
           value={state.dimension}
           options={DIMENSION_OPTIONS}
           onChange={(dimension) => onChange({ ...state, dimension })}
@@ -123,6 +125,7 @@ export function Leaderboard({
   columns?: 1 | 2;
   dense?: boolean;
 }) {
+  const t = useTranslations("usage.overview");
   const colorOf = (name: string) => {
     const index = series.labels.indexOf(name);
     return index === -1 ? OTHER_COLOR : series.colors[index];
@@ -130,7 +133,7 @@ export function Leaderboard({
   const value = (row: LeaderRow) => rankValue(row, metric);
   const rows = ranking.slice(0, limit);
   if (rows.length === 0) {
-    return <p className="py-8 text-center text-xs text-muted-foreground">No usage in this range</p>;
+    return <p className="py-8 text-center text-xs text-muted-foreground">{t("breakdown.empty")}</p>;
   }
   const half = columns === 2 ? Math.ceil(rows.length / 2) : rows.length;
   const groups = columns === 2 ? [rows.slice(0, half), rows.slice(half)] : [rows];

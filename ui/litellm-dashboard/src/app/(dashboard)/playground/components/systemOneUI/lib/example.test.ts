@@ -7,16 +7,20 @@ import {
   toOpenAIDecisionsRequest,
   matchPreset,
 } from "./example";
+import { createTranslator } from "next-intl";
+import zh from "@/messages/zh-CN.json";
 import { validateOpenAIDecisionsPayload, validateSystemOnePayload } from "./validatePayload";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "playground.systemOne" });
 
 describe("decision presets", () => {
   it.each(DECISION_PRESETS.map((preset) => [preset.label, preset] as const))(
     "%s is a valid request on both endpoints",
     (_label, preset) => {
       expect(
-        validateSystemOnePayload(presetPayload(preset, "/v1/systemone", "jev-latest"), "/v1/systemone"),
+        validateSystemOnePayload(presetPayload(preset, "/v1/systemone", "jev-latest"), t, "/v1/systemone"),
       ).toMatchObject({ isValid: true, issues: [] });
-      expect(validateOpenAIDecisionsPayload(presetPayload(preset, "/v1/decisions", "jev-latest"))).toMatchObject({
+      expect(validateOpenAIDecisionsPayload(presetPayload(preset, "/v1/decisions", "jev-latest"), t)).toMatchObject({
         isValid: true,
         issues: [],
       });
@@ -58,6 +62,6 @@ describe("decision presets", () => {
       input: "",
       questions: [{ type: "predicate", name: "", instructions: "" }],
     });
-    expect(validateSystemOnePayload(emptyPayload("/v1/systemone"), "/v1/systemone").isValid).toBe(false);
+    expect(validateSystemOnePayload(emptyPayload("/v1/systemone"), t, "/v1/systemone").isValid).toBe(false);
   });
 });

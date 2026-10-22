@@ -1,4 +1,5 @@
 import type { TelemetryGroup } from "@/app/(dashboard)/hooks/telemetry/useTelemetrySettings";
+import type { TelemetryTranslator } from "@/lib/i18n/translators";
 
 export interface GroupCopy {
   readonly title: string;
@@ -18,45 +19,54 @@ export const PROXY_GROUPS: readonly TelemetryGroup[] = [
 
 export const UI_GROUPS: readonly TelemetryGroup[] = ["page_navigation"];
 
-export const GROUP_COPY: Readonly<Record<TelemetryGroup, GroupCopy>> = {
-  heartbeat: {
-    title: "Heartbeat",
-    counts: "Random instance id, LiteLLM version, report window, which groups are on",
-    helps: "Which versions are running",
-  },
-  request_success: {
-    title: "Request success",
-    slices: "endpoint, LiteLLM status, provider status, stream, handled by Rust, LiteLLM cache hit",
-    counts: "requests, provider attempts, latency to headers and to first byte",
-    helps: "Error-rate and latency regressions, Rust vs Python",
-  },
-  token_info: {
-    title: "Token info",
-    slices: "provider prompt-cache hit",
-    counts: "input, output and cache-read token sums",
-    helps: "Broken prompt caching or token counting",
-  },
-  request_taxonomy: {
-    title: "Request taxonomy",
-    slices: "provider, salted deployment hash",
-    counts: "one row per provider attempt with its status",
-    helps: "Which provider is failing, retries and fallbacks",
-  },
-  event_details: {
-    title: "Event details",
-    counts: "message block counts and types, allowlisted header names (no values), provider time to first token",
-    helps: "Which request shapes and clients fail",
-  },
-  instance_configuration: {
-    title: "Instance configuration",
-    counts: "names of allowlisted config keys that are set (no values)",
-    helps: "Which features an upgrade must keep working",
-  },
-  page_navigation: {
-    title: "Page navigation",
-    counts: "Admin UI page views and tab switches by route name (no ids or typed text)",
-    helps: "Which pages and tabs get used",
-  },
+export const groupCopy = (group: TelemetryGroup, t: TelemetryTranslator): GroupCopy => {
+  switch (group) {
+    case "heartbeat":
+      return {
+        title: t("groups.heartbeat.title"),
+        counts: t("groups.heartbeat.counts"),
+        helps: t("groups.heartbeat.helps"),
+      };
+    case "request_success":
+      return {
+        title: t("groups.requestSuccess.title"),
+        slices: t("groups.requestSuccess.slices"),
+        counts: t("groups.requestSuccess.counts"),
+        helps: t("groups.requestSuccess.helps"),
+      };
+    case "token_info":
+      return {
+        title: t("groups.tokenInfo.title"),
+        slices: t("groups.tokenInfo.slices"),
+        counts: t("groups.tokenInfo.counts"),
+        helps: t("groups.tokenInfo.helps"),
+      };
+    case "request_taxonomy":
+      return {
+        title: t("groups.requestTaxonomy.title"),
+        slices: t("groups.requestTaxonomy.slices"),
+        counts: t("groups.requestTaxonomy.counts"),
+        helps: t("groups.requestTaxonomy.helps"),
+      };
+    case "event_details":
+      return {
+        title: t("groups.eventDetails.title"),
+        counts: t("groups.eventDetails.counts"),
+        helps: t("groups.eventDetails.helps"),
+      };
+    case "instance_configuration":
+      return {
+        title: t("groups.instanceConfiguration.title"),
+        counts: t("groups.instanceConfiguration.counts"),
+        helps: t("groups.instanceConfiguration.helps"),
+      };
+    case "page_navigation":
+      return {
+        title: t("groups.pageNavigation.title"),
+        counts: t("groups.pageNavigation.counts"),
+        helps: t("groups.pageNavigation.helps"),
+      };
+  }
 };
 
 export type Requires = ReadonlyMap<TelemetryGroup, TelemetryGroup | null>;

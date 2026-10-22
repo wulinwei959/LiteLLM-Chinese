@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useReducer } from "react";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
@@ -31,6 +32,7 @@ export default function GithubCopilotConnectModal({
   onConnected,
   onDisconnect,
 }: GithubCopilotConnectModalProps) {
+  const t = useTranslations("modelAdd");
   const { accessToken } = useAuthorized();
   const [state, dispatch] = useReducer(connectFlowReducer, initialConnectFlowState);
 
@@ -79,16 +81,16 @@ export default function GithubCopilotConnectModal({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Connect GitHub Copilot</DialogTitle>
-          <DialogDescription>Credential: {credentialName}</DialogDescription>
+          <DialogTitle>{t("copilot.title")}</DialogTitle>
+          <DialogDescription>{t("copilot.credential", { name: credentialName })}</DialogDescription>
         </DialogHeader>
 
-        {state.kind === "starting" && <p className="text-sm">Requesting a device code from GitHub...</p>}
+        {state.kind === "starting" && <p className="text-sm">{t("copilot.requestingCode")}</p>}
 
         {state.kind === "awaiting" && (
           <div className="flex flex-col gap-3">
             <p className="text-sm">
-              Open{" "}
+              {t("copilot.openAndEnter")}{" "}
               <a
                 href={state.verificationUri}
                 target="_blank"
@@ -96,20 +98,21 @@ export default function GithubCopilotConnectModal({
                 className="text-primary underline-offset-4 hover:underline"
               >
                 {state.verificationUri}
-              </a>{" "}
-              and enter this code:
+              </a>
             </p>
             <div className="flex items-center gap-2">
               <code data-testid="github-device-code" className="rounded-md bg-muted px-3 py-2 font-mono text-lg">
                 {state.userCode}
               </code>
-              <CopyButton value={state.userCode} label="Copy code" copiedLabel="Code copied" />
+              <CopyButton value={state.userCode} label={t("copilot.copyCode")} copiedLabel={t("copilot.codeCopied")} />
             </div>
-            <p className="text-sm text-muted-foreground">Waiting for you to approve the request on GitHub...</p>
+            <p className="text-sm text-muted-foreground">{t("copilot.waitingApproval")}</p>
           </div>
         )}
 
-        {state.kind === "connected" && <p className="text-sm">Connected as @{state.githubLogin}</p>}
+        {state.kind === "connected" && (
+          <p className="text-sm">{t("copilot.connectedAs", { login: state.githubLogin })}</p>
+        )}
 
         {state.kind === "failed" && (
           <p role="alert" className="text-sm text-destructive">
@@ -120,15 +123,15 @@ export default function GithubCopilotConnectModal({
         <DialogFooter>
           {state.kind === "failed" && (
             <Button variant="outline" onClick={() => dispatch({ type: "restarted" })}>
-              Start again
+              {t("copilot.startAgain")}
             </Button>
           )}
           {state.kind === "connected" && (
             <Button variant="destructive" onClick={onDisconnect}>
-              Disconnect
+              {t("copilot.disconnect")}
             </Button>
           )}
-          <Button onClick={onClose}>{state.kind === "connected" ? "Done" : "Close"}</Button>
+          <Button onClick={onClose}>{state.kind === "connected" ? t("copilot.done") : t("copilot.close")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

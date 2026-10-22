@@ -77,7 +77,7 @@ export function DrawerHeader({
         <Button variant="outline" size="sm" onClick={onClose} className="mb-3 max-w-full">
           <ArrowLeft data-icon="inline-start" />
           {backTo.icon}
-          <span className="truncate">Back to {backTo.label}</span>
+          <span className="truncate">{t("detail.backTo", { label: backTo.label })}</span>
         </Button>
       )}
       {/* Row 0: Model + Provider with Logo */}

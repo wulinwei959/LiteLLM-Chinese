@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "next-intl";
+import zh from "@/messages/zh-CN.json";
 import { validateSystemOnePayload, validateOpenAIDecisionsPayload } from "./validatePayload";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "playground.systemOne" });
 import { systemOneResponseSchema } from "./schemas";
 import { openAIDecisionsExample } from "./example";
 
@@ -13,7 +17,7 @@ const request = {
   },
   provider_option: { enabled: true },
 };
-const validate = (value: unknown) => validateSystemOnePayload(JSON.stringify(value), "/v1/systemone");
+const validate = (value: unknown) => validateSystemOnePayload(JSON.stringify(value), t, "/v1/systemone");
 
 describe("native decisions validation", () => {
   it("accepts structured Jev criteria, optional instructions, and provider extensions without dropping fields", () => {
@@ -62,7 +66,7 @@ describe("native decisions validation", () => {
   });
 
   it("does not loosen legacy TypeSafe request validation", () => {
-    expect(validateSystemOnePayload(JSON.stringify(request)).isValid).toBe(false);
+    expect(validateSystemOnePayload(JSON.stringify(request), t).isValid).toBe(false);
   });
 
   it("parses structured score legends and nullable usage from the native endpoint", () => {
@@ -85,7 +89,7 @@ describe("native decisions validation", () => {
 
 describe("/v1/decisions validation", () => {
   const example = openAIDecisionsExample("jev-latest");
-  const validateOpenAI = (value: unknown) => validateOpenAIDecisionsPayload(JSON.stringify(value));
+  const validateOpenAI = (value: unknown) => validateOpenAIDecisionsPayload(JSON.stringify(value), t);
 
   it("keeps input, question arrays, provider extensions and optional model omission intact", () => {
     const payload = { input: example.input, questions: example.questions, provider_option: { enabled: true } };
@@ -128,7 +132,7 @@ describe("/v1/decisions validation", () => {
   });
 
   it("rejects blank and malformed JSON without throwing", () => {
-    expect(validateOpenAIDecisionsPayload(" ").issues[0]?.path).toBe("root");
-    expect(validateOpenAIDecisionsPayload("{").issues[0]?.path).toBe("syntax");
+    expect(validateOpenAIDecisionsPayload(" ", t).issues[0]?.path).toBe("root");
+    expect(validateOpenAIDecisionsPayload("{", t).issues[0]?.path).toBe("syntax");
   });
 });

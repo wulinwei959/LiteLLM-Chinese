@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { useDebouncedValue } from "@tanstack/react-pacer/debouncer";
 import { FileText, KeyRound, LoaderCircle, Search } from "lucide-react";
@@ -39,6 +40,7 @@ export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (ope
 }
 
 function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void }) {
+  const t = useTranslations("commandPalette");
   const pathname = usePathname();
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -140,8 +142,8 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
     const filterEntry: PaletteEntry = {
       id: "action:filter-keys",
       kind: "filter",
-      title: `Filter the keys table for “${trimmedQuery}”`,
-      subtitle: "Open Virtual Keys with this search applied",
+      title: t("action.filterKeysTitle", { query: trimmedQuery }),
+      subtitle: t("action.filterKeysSubtitle"),
       icon: <Search className="size-4" />,
       typeLabel: "Action",
     };
@@ -214,7 +216,7 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
       return (
         <div className="flex h-20 items-center justify-center gap-2 text-sm text-muted-foreground">
           <LoaderCircle className="size-4 animate-spin" />
-          Searching…
+          {t("state.searching")}
         </div>
       );
     }
@@ -242,20 +244,20 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
         overlayClassName="bg-black/35 backdrop-blur-sm"
         className="top-[15vh] max-h-[70vh] translate-y-0 gap-0 overflow-hidden rounded-xl border border-border p-0 shadow-2xl sm:max-w-[640px]"
       >
-        <DialogTitle className="sr-only">Command palette</DialogTitle>
+        <DialogTitle className="sr-only">{t("title.palette")}</DialogTitle>
         <div className="flex h-14 items-center gap-3 border-b border-border px-4">
           <Search className="size-4 shrink-0 text-muted-foreground" />
           {scope === "keys" && (
             <span className="flex shrink-0 items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs font-medium">
               <KeyRound className="size-3.5" />
-              Virtual Keys
+              {t("scope.virtualKeys")}
             </span>
           )}
           <input
             autoFocus
             type="text"
             role="combobox"
-            aria-label="Search"
+            aria-label={t("aria.search")}
             aria-expanded="true"
             aria-controls="command-palette-results"
             aria-activedescendant={activeOptionId}
@@ -272,11 +274,13 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
         <div id="command-palette-results" role="listbox" className="max-h-[400px] overflow-y-auto p-2">
           {hasKeyError && (
             <div className="flex h-20 items-center justify-center text-sm text-muted-foreground">
-              Unable to search keys
+              {t("error.searchKeysFailed")}
             </div>
           )}
           {!hasKeyError && scope === "global" && trimmedQuery && groups.length === 0 && (
-            <div className="px-2 py-3 text-sm text-muted-foreground">No results for “{trimmedQuery}”</div>
+            <div className="px-2 py-3 text-sm text-muted-foreground">
+              {t("empty.noResults", { query: trimmedQuery })}
+            </div>
           )}
           {!hasKeyError &&
             groups.map((group, groupIndex) => {
@@ -299,17 +303,17 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
         <div className="flex h-10 items-center justify-between border-t border-border bg-muted/30 px-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <span className="font-medium text-foreground">LiteLLM</span>
-            <span>{scope === "keys" ? "Virtual Keys" : "All pages"}</span>
+            <span>{scope === "keys" ? t("scope.virtualKeys") : t("scope.allPages")}</span>
           </div>
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
-              <kbd className={shortcutChipClass}>↵</kbd> Open
+              <kbd className={shortcutChipClass}>↵</kbd> {t("hint.open")}
             </span>
             <span className="flex items-center gap-1">
-              <kbd className={shortcutChipClass}>↑↓</kbd> Navigate
+              <kbd className={shortcutChipClass}>↑↓</kbd> {t("hint.navigate")}
             </span>
             <span className="flex items-center gap-1">
-              <kbd className={shortcutChipClass}>esc</kbd> Close
+              <kbd className={shortcutChipClass}>esc</kbd> {t("hint.close")}
             </span>
           </div>
         </div>

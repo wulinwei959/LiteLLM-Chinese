@@ -179,8 +179,13 @@ const CompliancePanel: React.FC<CompliancePanelProps> = ({ accessToken, logEntry
         {t("guardrail.complianceTitle")}
       </h4>
       <div className="space-y-3">
-        <ComplianceCard title="EU AI Act" data={euAiActData} loading={euAiActLoading} error={euAiActError} />
-        <ComplianceCard title="GDPR" data={gdprData} loading={gdprLoading} error={gdprError} />
+        <ComplianceCard
+          title={t("compliance.euAiAct")}
+          data={euAiActData}
+          loading={euAiActLoading}
+          error={euAiActError}
+        />
+        <ComplianceCard title={t("compliance.gdpr")} data={gdprData} loading={gdprLoading} error={gdprError} />
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import type { FetchUserPage } from "./userActivityData";
@@ -12,6 +13,7 @@ interface TopUsersViewProps {
 }
 
 const TopUsersView: React.FC<TopUsersViewProps> = ({ fetchUserPage }) => {
+  const t = useTranslations("usage.userActivity");
   const [state, setState] = useState<{
     scope: FetchUserPage;
     rows: UserActivityRow[];
@@ -49,22 +51,22 @@ const TopUsersView: React.FC<TopUsersViewProps> = ({ fetchUserPage }) => {
   if (current?.failed) {
     return (
       <p className="px-1 py-6 text-center text-sm text-muted-foreground">
-        Could not load top users.{" "}
+        {t("error.loadTopUsersFailed")}{" "}
         <button
           type="button"
           className="font-medium text-foreground underline"
           onClick={() => setRetryToken((token) => token + 1)}
         >
-          Retry
+          {t("action.retry")}
         </button>
       </p>
     );
   }
   if (loading) {
-    return <p className="px-1 py-6 text-center text-sm text-muted-foreground">Loading users...</p>;
+    return <p className="px-1 py-6 text-center text-sm text-muted-foreground">{t("state.loading")}</p>;
   }
   if (current.rows.length === 0) {
-    return <p className="px-1 py-6 text-center text-sm text-muted-foreground">No user activity in this date range</p>;
+    return <p className="px-1 py-6 text-center text-sm text-muted-foreground">{t("empty.noActivity")}</p>;
   }
   const maxSpend = Math.max(0, ...current.rows.map((row) => row.spend));
   return (
@@ -73,9 +75,9 @@ const TopUsersView: React.FC<TopUsersViewProps> = ({ fetchUserPage }) => {
         aria-hidden="true"
         className={`${TOP_USER_ROW_GRID} border-b pb-1.5 text-xs font-medium text-muted-foreground`}
       >
-        <span>User</span>
-        <span className="text-right">Spend</span>
-        <span className="text-right">Requests</span>
+        <span>{t("column.user")}</span>
+        <span className="text-right">{t("column.spend")}</span>
+        <span className="text-right">{t("column.requests")}</span>
       </li>
       {current.rows.map((row) => {
         const secondary = userSecondaryLabel(row);

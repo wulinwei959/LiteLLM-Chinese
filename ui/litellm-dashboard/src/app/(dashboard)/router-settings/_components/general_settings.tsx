@@ -61,6 +61,16 @@ const SettingValueEditor: React.FC<{
   onChange: (fieldName: string, newValue: any) => void;
 }> = ({ setting, onChange }) => {
   const t = useTranslations("routerSettings");
+  const tagMappingsT = useTranslations("routerSettings.requestTagMappings");
+  if (setting.field_name === "request_tag_mappings") {
+    return (
+      <RequestTagMappingsEditor
+        value={setting.field_value}
+        disabled={setting.editable === false}
+        onChange={(rules) => onChange(setting.field_name, rules)}
+      />
+    );
+  }
   if (setting.field_type === "Integer") {
     return (
       <Input
@@ -227,6 +237,7 @@ export const PromptCachingPanel: React.FC<{
 
 const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, userRole, userID }) => {
   const t = useTranslations("routerSettings");
+  const tagMappingsT = useTranslations("routerSettings.requestTagMappings");
   const commonT = useTranslations("common");
   const [generalSettings, setGeneralSettings] = useState<generalSettingsItem[]>([]);
 
@@ -365,7 +376,7 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
                           <Button
                             disabled={
                               value.field_name === "request_tag_mappings" &&
-                              (value.editable === false || !requestTagMappingsAreValid(value.field_value))
+                              (value.editable === false || !requestTagMappingsAreValid(value.field_value, tagMappingsT))
                             }
                             onClick={() => handleUpdateField(value.field_name)}
                           >

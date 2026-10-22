@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   getLoggingOnlyScopeOptions,
+  LOGGING_ONLY_SCOPE_VALUES,
   modeIncludesLoggingOnly,
   normalizeLoggingOnlyScopeChoice,
   type LoggingOnlyScopeChoice,
@@ -54,9 +55,7 @@ export const asText = (value: unknown): string => {
   return "";
 };
 
-const LOGGING_ONLY_SCOPE_CHOICES: ReadonlySet<string> = new Set(
-  getLoggingOnlyScopeOptions(true).map(({ value }) => value),
-);
+const LOGGING_ONLY_SCOPE_CHOICES: ReadonlySet<string> = new Set(LOGGING_ONLY_SCOPE_VALUES);
 
 const isLoggingOnlyScopeChoice = (value: unknown): value is LoggingOnlyScopeChoice =>
   typeof value === "string" && LOGGING_ONLY_SCOPE_CHOICES.has(value);
@@ -156,8 +155,9 @@ export const LoggingOnlyScopeSelect: React.FC<{
   control: GuardrailFieldControlProps;
   directionalScopeSupported: boolean;
 }> = ({ control, directionalScopeSupported }) => {
+  const t = useTranslations("guardrails");
   const { id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy } = control;
-  const items = getLoggingOnlyScopeOptions(directionalScopeSupported);
+  const items = getLoggingOnlyScopeOptions(directionalScopeSupported, t);
 
   useEffect(() => {
     const currentChoice = isLoggingOnlyScopeChoice(value) ? value : "default";

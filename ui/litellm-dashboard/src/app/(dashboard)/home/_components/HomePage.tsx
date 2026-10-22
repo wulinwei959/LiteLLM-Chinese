@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { ArrowRight, Plus, Rocket, Sparkles } from "lucide-react";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import { HOME_USAGE_DAYS, useHomeUsage } from "./useHomeUsage";
 const LEADERBOARD = { metric: "tokens", dimension: "model_groups" } as const;
 
 export default function HomePage() {
+  const t = useTranslations("home");
   const { isViewOnly } = useAuthorized();
   const usage = useHomeUsage();
   const blog = useBlogPosts();
@@ -30,12 +32,12 @@ export default function HomePage() {
   return (
     <Page>
       <PageHeader>
-        <PageHeaderTitle>Home</PageHeaderTitle>
+        <PageHeaderTitle>{t("pageTitle")}</PageHeaderTitle>
         {!isViewOnly && (
           <PageHeaderControls>
             <Button render={<a href={uiHref("api-keys?create=true")} />}>
               <Plus />
-              Create New Virtual Key
+              {t("action.createVirtualKey")}
             </Button>
           </PageHeaderControls>
         )}
@@ -46,9 +48,9 @@ export default function HomePage() {
       <section aria-label={`Usage, last ${HOME_USAGE_DAYS} days`}>
         {usage.failed ? (
           <div className="flex items-center justify-between gap-2 rounded-xl border bg-card px-4 py-3 text-sm">
-            <span className="text-destructive">Failed to load usage</span>
+            <span className="text-destructive">{t("error.loadUsageFailed")}</span>
             <Button variant="outline" size="sm" onClick={usage.retry}>
-              Retry
+              {t("action.retry")}
             </Button>
           </div>
         ) : (
@@ -69,7 +71,7 @@ export default function HomePage() {
               <div>
                 <h2 id="home-whats-new" className="flex items-center gap-2 text-lg font-semibold">
                   <Sparkles className="size-4 text-muted-foreground" />
-                  What&apos;s new in LiteLLM?
+                  {t("title.whatsNew")}
                 </h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-3">
@@ -100,7 +102,7 @@ export default function HomePage() {
           )}
 
           <Panel
-            title="Leaderboard"
+            title={t("title.leaderboard")}
             subtitle={`Share of tokens over the last ${HOME_USAGE_DAYS} days, with the change between the first and second half of the period`}
             testId="home-leaderboard"
           >

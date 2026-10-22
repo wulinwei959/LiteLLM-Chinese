@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Info } from "lucide-react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
@@ -23,6 +24,7 @@ const selectedModelNames = (value: unknown): string[] => {
 };
 
 export default function DecisionModelNote({ catalog, litellmProvider }: DecisionModelNoteProps) {
+  const t = useTranslations("addModel");
   const { control } = useFormContext<MountedFormValues>();
   const model = useWatch({ control, name: "model" });
 
@@ -31,21 +33,21 @@ export default function DecisionModelNote({ catalog, litellmProvider }: Decision
   }
 
   return (
-    <Alert variant="info" role="note" aria-label="Decision model notice" className="mb-4">
+    <Alert variant="info" role="note" aria-label={t("decisionModel.ariaLabel")} className="mb-4">
       <Info />
-      <AlertTitle>Decision model</AlertTitle>
+      <AlertTitle>{t("decisionModel.title")}</AlertTitle>
       <AlertDescription>
         <p>
-          For decision requests, call <code>/v1/decisions</code> (OpenAI format) or <code>/v1/systemone</code> (System
-          One format).{" "}
+          {t("decisionModel.callBefore")} <code>/v1/decisions</code> {t("decisionModel.openAiFormat")}{" "}
+          <code>/v1/systemone</code> {t("decisionModel.systemOneFormat")}{" "}
           <a href={DECISIONS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="underline">
-            How to call decision models
+            {t("decisionModel.howToCall")}
           </a>
         </p>
         <p>
-          After you add it,{" "}
+          {t("decisionModel.afterAdd")}{" "}
           <a href={uiHref(SYSTEM_ONE_PLAYGROUND_ROUTE)} className="underline">
-            test it in the Decisions playground
+            {t("decisionModel.testInPlayground")}
           </a>
         </p>
       </AlertDescription>

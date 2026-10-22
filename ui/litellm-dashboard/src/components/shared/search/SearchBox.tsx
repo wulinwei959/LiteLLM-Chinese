@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import "prosemirror-view/style/prosemirror.css";
 
 import { useDebouncer } from "@tanstack/react-pacer/debouncer";
@@ -108,6 +109,7 @@ function Root<F extends string>({
   children,
   ...props
 }: SearchBoxRootProps<F>) {
+  const t = useTranslations("searchBox");
   const listId = useId();
   const [state, setState] = useState(() => createState(language, value));
   const [seenValue, setSeenValue] = useState(value);
@@ -238,6 +240,7 @@ export type SearchBoxInputProps = ComponentProps<"div"> & {
 
 /** The bordered field holding the editor; shows `placeholder` while the query is empty. */
 function Input({ placeholder, busy = false, className, ...props }: SearchBoxInputProps) {
+  const t = useTranslations("searchBox");
   const { text } = useSearchBox();
   return (
     <div
@@ -251,7 +254,7 @@ function Input({ placeholder, busy = false, className, ...props }: SearchBoxInpu
       {busy ? (
         <Loader2
           role="status"
-          aria-label="Loading results"
+          aria-label={t("aria.loadingResults")}
           className="size-3.5 shrink-0 animate-spin text-muted-foreground motion-reduce:animate-none"
         />
       ) : (
@@ -276,6 +279,7 @@ export type SearchBoxSuggestionsProps = ComponentProps<"div">;
  * `children` render in the footer beside the key hints, e.g. a `CopyCommand`.
  */
 function Suggestions({ className, children, ...props }: SearchBoxSuggestionsProps) {
+  const t = useTranslations("searchBox");
   const { listId, menu, activeId, icon, ops } = useSearchBox();
   const pick = useEditorEventCallback((view, item: Suggestion<string>) => applySuggestion(view, item));
   if (!menu) return null;
@@ -288,7 +292,7 @@ function Suggestions({ className, children, ...props }: SearchBoxSuggestionsProp
       )}
       {...props}
     >
-      <div id={listId} role="listbox" aria-label="Search suggestions" className="max-h-80 overflow-y-auto p-1">
+      <div id={listId} role="listbox" aria-label={t("aria.suggestions")} className="max-h-80 overflow-y-auto p-1">
         {menu.groups.map((group) => (
           <div key={group.heading} role="group" aria-label={group.heading}>
             <div className="px-2 pt-2 pb-1 text-xs text-muted-foreground">{group.heading}</div>
@@ -313,7 +317,7 @@ function Suggestions({ className, children, ...props }: SearchBoxSuggestionsProp
         ))}
         {menu.loading && (
           <div role="status" className="px-2 py-1.5 font-mono text-xs text-muted-foreground">
-            Loading values…
+            {t("state.loadingValues")}
           </div>
         )}
         {menu.showOperators && <OperatorHints ops={ops} />}
@@ -322,13 +326,13 @@ function Suggestions({ className, children, ...props }: SearchBoxSuggestionsProp
         <span className="flex items-center gap-1">
           <Kbd>↑</Kbd>
           <Kbd>↓</Kbd>
-          Navigate
+          {t("hint.navigate")}
         </span>
         <span className="flex items-center gap-1">
           <Kbd>
             <CornerDownLeft className="size-3" />
           </Kbd>
-          Select
+          {t("hint.select")}
         </span>
         {children}
       </div>
@@ -379,9 +383,10 @@ function CopyCommand<F extends string>({ title, command }: SearchBoxCopyCommandP
 }
 
 function OperatorHints({ ops }: { ops: readonly FilterOp[] }) {
+  const t = useTranslations("searchBox");
   return (
     <div className="pb-1">
-      <div className="px-2 pt-2 pb-1 text-xs text-muted-foreground">Comparison operators</div>
+      <div className="px-2 pt-2 pb-1 text-xs text-muted-foreground">{t("hint.comparisonOperators")}</div>
       {OPERATORS.filter((op) => ops.includes(op.op)).map((op) => (
         <div key={op.label} className="flex items-center justify-between px-2 py-1 font-mono text-xs">
           <span className="text-warning">{op.label}</span>

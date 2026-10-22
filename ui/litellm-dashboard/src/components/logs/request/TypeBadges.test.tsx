@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { renderWithProviders } from "../../../tests/test-utils";
+import { renderWithProviders } from "../../../../tests/test-utils";
 import { LlmBadge, McpBadge, AgentBadge, BatchBadge } from "./TypeBadges";
 
 describe("TypeBadges", () => {

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import { formatCompact } from "@/app/(dashboard)/usage/_components/components/overview/overviewData";
@@ -40,23 +41,24 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
   onRetryFirstPage,
   onRetryNextPage,
 }) => {
+  const t = useTranslations("usage.userActivity");
   const firstPageFailed = failed && rows.length === 0;
   const body = (() => {
     if (firstPageFailed) {
       return (
         <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-          Could not load users for this range.{" "}
+          {t("error.loadUsersFailed")}{" "}
           <button type="button" className="font-medium text-foreground underline" onClick={onRetryFirstPage}>
-            Retry
+            {t("action.retry")}
           </button>
         </p>
       );
     }
     if (loading) {
-      return <p className="px-4 py-8 text-center text-sm text-muted-foreground">Loading users...</p>;
+      return <p className="px-4 py-8 text-center text-sm text-muted-foreground">{t("state.loading")}</p>;
     }
     if (rows.length === 0) {
-      return <p className="px-4 py-8 text-center text-sm text-muted-foreground">No user activity in this date range</p>;
+      return <p className="px-4 py-8 text-center text-sm text-muted-foreground">{t("empty.noActivity")}</p>;
     }
     return (
       <div className="overflow-x-auto">
@@ -65,12 +67,12 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
             aria-hidden="true"
             className={`${USER_ROW_GRID} border-y bg-muted/40 py-2 pl-10 pr-4 text-xs font-medium text-muted-foreground`}
           >
-            <span>User</span>
-            <span className="text-right">Spend</span>
-            <span className="text-right">Requests</span>
-            <span className="text-right">Successful</span>
-            <span className="text-right">Failed</span>
-            <span className="text-right">Total tokens</span>
+            <span>{t("column.user")}</span>
+            <span className="text-right">{t("column.spend")}</span>
+            <span className="text-right">{t("column.requests")}</span>
+            <span className="text-right">{t("column.successful")}</span>
+            <span className="text-right">{t("column.failed")}</span>
+            <span className="text-right">{t("column.totalTokens")}</span>
           </div>
           <ul>
             {rows.map((row) => (
@@ -113,18 +115,18 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
       <div>{body}</div>
       {showFooter && (
         <div className="border-t px-4 py-2.5 text-xs text-muted-foreground">
-          {loadingMore && <p>Loading more users...</p>}
+          {loadingMore && <p>{t("state.loadingMore")}</p>}
           {failed && !firstPageFailed && (
             <p>
-              Could not load more users.{" "}
+              {t("error.loadMoreFailed")}{" "}
               <button type="button" className="font-medium text-foreground underline" onClick={onRetryNextPage}>
-                Retry
+                {t("action.retry")}
               </button>
             </p>
           )}
           {canLoadMore && (
             <button type="button" className="font-medium text-foreground underline" onClick={onLoadMore}>
-              Load more
+              {t("action.loadMore")}
             </button>
           )}
         </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Search } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { useCommandPalette } from "./CommandPaletteProvider";
 import { useShortcutLabel } from "./useShortcutLabel";
 
 export function CommandPaletteTrigger({ mobile = false }: { mobile?: boolean }) {
+  const t = useTranslations("commandPalette");
   const pathname = usePathname();
   const { open, setOpen } = useCommandPalette();
   const shortcut = useShortcutLabel();
@@ -21,7 +23,7 @@ export function CommandPaletteTrigger({ mobile = false }: { mobile?: boolean }) 
         variant="ghost"
         size="icon"
         className="size-11 md:hidden"
-        aria-label="Search"
+        aria-label={t("aria.search")}
         aria-expanded={open}
         onClick={() => setOpen(true)}
       >

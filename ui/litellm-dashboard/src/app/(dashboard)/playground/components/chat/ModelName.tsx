@@ -5,27 +5,36 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTranslations } from "next-intl";
+
+import type { PlaygroundModelNameTranslator } from "@/lib/i18n/translators";
 import { cn } from "@/lib/cva.config";
 import { toast } from "@/lib/toast";
 
-export function copyText(value: string, label: string): void {
+export function copyText(value: string, label: string, t: PlaygroundModelNameTranslator): void {
   void navigator.clipboard.writeText(value).then(
-    () => toast.success(`${label} copied`),
-    () => toast.error("Unable to copy to clipboard"),
+    () => toast.success(t("toast.copied", { label })),
+    () => toast.error(t("toast.copyFailed")),
   );
 }
 
 export function CopyIconButton({ value, label }: { value: string; label: string }) {
+  const t = useTranslations("playground.modelName");
   return (
     <Tooltip>
       <TooltipTrigger
         render={
-          <Button variant="ghost" size="icon-xs" aria-label={`Copy ${label}`} onClick={() => copyText(value, label)} />
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            aria-label={t("aria.copy", { label })}
+            onClick={() => copyText(value, label, t)}
+          />
         }
       >
         <Copy />
       </TooltipTrigger>
-      <TooltipContent>Copy {label}</TooltipContent>
+      <TooltipContent>{t("tooltip.copy", { label })}</TooltipContent>
     </Tooltip>
   );
 }
@@ -65,10 +74,11 @@ export function LongValue({
 }
 
 export function FallbackBadge() {
+  const t = useTranslations("playground.modelName");
   return (
     <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">
       <Split data-icon="inline-start" />
-      Fallback
+      {t("badge.fallback")}
     </Badge>
   );
 }

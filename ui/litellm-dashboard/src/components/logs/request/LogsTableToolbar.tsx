@@ -88,7 +88,7 @@ export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePicke
               className="w-full justify-start font-normal"
               onClick={() => onValueChange({ ...value, isCustomDate: !value.isCustomDate })}
             >
-              Custom Range
+              {t("logsTable.customRange")}
             </Button>
           </div>
         </PopoverContent>

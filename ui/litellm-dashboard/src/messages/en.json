@@ -257,7 +257,12 @@
     "ptuRateLabel": "Cost per PTU / Hour (USD)",
     "ptuRatePlaceholder": "e.g. 2.00",
     "ptuStart": "PTU Effective From (UTC)",
-    "ptuEnd": "PTU Effective To (UTC)"
+    "ptuEnd": "PTU Effective To (UTC)",
+    "credential": {
+      "manual": "Manual"
+    },
+    "closeWithEsc": "Close (Esc)",
+    "keyboardShortcuts": "Keyboard shortcuts"
   },
   "nav": {
     "expandSidebar": "Expand sidebar",
@@ -4096,6 +4101,37 @@
     "gardenCard": {
       "f1": "F1: {f1}%",
       "testCases": "{count} test cases"
+    },
+    "loggingOnlyScope": {
+      "default": "Default (request and response)",
+      "label": "Logging only scope",
+      "input": "Input only (request)",
+      "output": "Output only (response)"
+    },
+    "streamScope": {
+      "both": "Streaming and non-streaming",
+      "streaming": "Streaming only",
+      "nonStreaming": "Non-streaming only",
+      "hint": "Run this guardrail on streaming requests, non-streaming requests, or both, for each selected mode.",
+      "appliesTo": "{mode} applies to",
+      "requestShape": "Request shape"
+    },
+    "detail": {
+      "decisionModel": "Decision Model",
+      "checks": "Checks",
+      "check": "Check",
+      "blockAction": "block",
+      "guardrailId": "Guardrail ID",
+      "guardrailName": "Guardrail Name",
+      "provider": "Provider",
+      "defaultOn": "Default On",
+      "piiProtection": "PII Protection",
+      "createdAt": "Created At",
+      "lastUpdated": "Last Updated",
+      "action": "Action",
+      "threshold": "Threshold",
+      "unnamedGuardrail": "Unnamed Guardrail",
+      "piiEntities": "{count} PII entities configured"
     }
   },
   "policies": {
@@ -5114,7 +5150,171 @@
     "gatewayRequestsByEndpointSubtitle": "Successful and failed requests per route",
     "searchModels": "Search models",
     "searchByModelName": "Search by model name",
-    "clearModelSearch": "Clear model search"
+    "clearModelSearch": "Clear model search",
+    "errors": {
+      "entity": {
+        "key": {
+          "singular": "Virtual key",
+          "plural": "Virtual keys"
+        },
+        "team": {
+          "singular": "Team",
+          "plural": "Teams"
+        },
+        "user": {
+          "singular": "User",
+          "plural": "Users"
+        },
+        "model": {
+          "singular": "Model",
+          "plural": "Models"
+        }
+      },
+      "status": {
+        "badRequest": "Bad Request",
+        "unauthorized": "Unauthorized",
+        "paymentRequired": "Payment Required",
+        "forbidden": "Forbidden",
+        "notFound": "Not Found",
+        "requestTimeout": "Request Timeout",
+        "payloadTooLarge": "Payload Too Large",
+        "unprocessableEntity": "Unprocessable Entity",
+        "rateLimited": "Rate Limited",
+        "internalServerError": "Internal Server Error",
+        "badGateway": "Bad Gateway",
+        "serviceUnavailable": "Service Unavailable",
+        "gatewayTimeout": "Gateway Timeout",
+        "notRecorded": "Not recorded",
+        "serverError": "Server Error",
+        "clientError": "Client Error",
+        "error": "Error",
+        "noStatus": "No status"
+      },
+      "other": "Other",
+      "view": {
+        "total": "Total",
+        "byStatusCode": "By status code"
+      },
+      "empty": {
+        "noRequests": "No requests in this range",
+        "noFailedRequests": "No failed requests in this range",
+        "noEntitiesWithFailures": "No {entity} with failed requests in this range"
+      },
+      "stat": {
+        "errorRate": "Error rate",
+        "failedRequests": "Failed requests",
+        "clientErrors": "Client errors (4xx)",
+        "serverErrors": "Server errors (5xx)",
+        "rateLimited": "Rate limited (429)",
+        "authFailures": "Auth failures (401/403)",
+        "failedOfRequests": "{failed} of {requests} requests"
+      },
+      "panel": {
+        "errorRate": {
+          "title": "Error rate over time",
+          "subtitle": "Failed requests as a share of all requests, per day"
+        },
+        "failedByStatus": {
+          "title": "Failed requests by status code",
+          "subtitle": "Per day, stacked by HTTP status"
+        },
+        "byStatusCode": {
+          "title": "By status code",
+          "subtitle": "Share of all failed requests"
+        },
+        "byIdentity": {
+          "title": "Failures by identity",
+          "subtitle": "Keys, teams, users and models ranked by failed requests"
+        }
+      },
+      "control": {
+        "show": "Show",
+        "groupBy": "Group by"
+      },
+      "column": {
+        "requests": "Requests",
+        "failed": "Failed",
+        "errorRate": "Error rate",
+        "topStatus": "Top status"
+      },
+      "chart": {
+        "statusCodesAria": "Status codes in the chart",
+        "failedByStatusAria": "Failed requests by status code",
+        "rankedByFailedAria": "{entity} ranked by failed requests"
+      },
+      "action": {
+        "inspectInLogs": "Inspect failed requests in Logs"
+      },
+      "alert": {
+        "deploymentWide": {
+          "title": "Errors are deployment-wide",
+          "body": "Clear the user filter in Global Usage to see failure analytics"
+        },
+        "loadFailed": {
+          "title": "Error activity could not be loaded",
+          "body": "The proxy did not answer the failed-request query. Reload the page to try again."
+        }
+      }
+    },
+    "overview": {
+      "breakdown": {
+        "metric": "Metric",
+        "groupBy": "Group by",
+        "empty": "No usage in this range"
+      },
+      "topAgents": {
+        "viewActivity": "View activity",
+        "empty": "No agent traffic in this range",
+        "title": "Top agents",
+        "metric": "Agent metric"
+      },
+      "overview": {
+        "bucketSize": "Bucket size",
+        "scale": "Scale",
+        "topModels": "Top models",
+        "topVirtualKeys": "Top Virtual Keys",
+        "topUsersBySpend": "Top Users by Spend"
+      },
+      "statStrip": {
+        "spend": "Spend",
+        "totalRequests": "Total Requests",
+        "totalTokens": "Total Tokens",
+        "avgCostPerRequest": "Avg cost / request",
+        "avgLatency": "Avg latency"
+      },
+      "userRecord": {
+        "view": "View user record"
+      }
+    },
+    "userActivity": {
+      "error": {
+        "loadTopUsersFailed": "Could not load top users.",
+        "loadUsersFailed": "Could not load users for this range.",
+        "loadMoreFailed": "Could not load more users."
+      },
+      "action": {
+        "retry": "Retry",
+        "loadMore": "Load more"
+      },
+      "state": {
+        "loading": "Loading users...",
+        "loadingMore": "Loading more users..."
+      },
+      "empty": {
+        "noActivity": "No user activity in this date range"
+      },
+      "column": {
+        "user": "User",
+        "spend": "Spend",
+        "requests": "Requests",
+        "successful": "Successful",
+        "failed": "Failed",
+        "totalTokens": "Total tokens"
+      },
+      "title": {
+        "activity": "User activity"
+      }
+    }
   },
   "logs": {
     "detail": {
@@ -5152,7 +5352,21 @@
       "copyJson": "Copy JSON",
       "responseUnavailable": "Response data not available",
       "metadataTitle": "Metadata",
-      "copyMetadata": "Copy Metadata"
+      "copyMetadata": "Copy Metadata",
+      "pod": "Pod",
+      "errorCode": "Error Code:",
+      "message": "Message:",
+      "inputTokens": "Input Tokens",
+      "outputTokens": "Output Tokens",
+      "tokens": "Tokens",
+      "reasoningTokens": "Reasoning Tokens",
+      "cost": "Cost",
+      "cacheKey": "Cache Key",
+      "jsonView": "JSON",
+      "tags": "Tags",
+      "backTo": "Back to {label}",
+      "systemRole": "SYSTEM",
+      "assistantRole": "ASSISTANT"
     },
     "backToLogs": "Back to Logs",
     "table": {
@@ -5253,7 +5467,11 @@
         "users": "No users found",
         "errorCodes": "No error codes found"
       },
-      "modelIdLabel": "Model ID: {modelId}"
+      "modelIdLabel": "Model ID: {modelId}",
+      "searchKeyAlias": "Search a key alias",
+      "searchEndUser": "Search an end user",
+      "noKeyAliases": "No key aliases found",
+      "noEndUsers": "No end users in this time range"
     },
     "columns": {
       "time": "Time",
@@ -5704,6 +5922,34 @@
       "roundRobin": "Round robin",
       "sessionAffinity": "Session affinity",
       "sessionAffinityRetry": "Session affinity (retry)"
+    },
+    "audit": {
+      "copyJson": "Copy JSON",
+      "token": "Token:",
+      "spend": "Spend:",
+      "maxBudget": "Max Budget:",
+      "title": "Audit log details",
+      "details": "Details",
+      "table": "Table",
+      "objectId": "Object ID",
+      "copyObjectId": "Copy object ID",
+      "changedBy": "Changed By",
+      "apiKeyHash": "API Key (Hash)",
+      "copyApiKeyHash": "Copy API key hash"
+    },
+    "compliance": {
+      "euAiAct": "EU AI Act",
+      "gdpr": "GDPR"
+    },
+    "logsTable": {
+      "customRange": "Custom Range",
+      "liveTail": "Live Tail",
+      "refreshing": "Refreshing every 15s",
+      "hideHealthChecks": "Hide Health Checks",
+      "resetFilters": "Reset Filters"
+    },
+    "timeline": {
+      "clearTimeZoom": "Clear time zoom"
     }
   },
   "projects": {
@@ -5965,6 +6211,48 @@
       "testingToast": "Testing fallback model response...",
       "testSuccessRich": "Test model=<strong>{sent}</strong>, received model=<strong>{received}</strong>. See <link>curl</link>",
       "testErrorToast": "Error occurred while generating model response. Please try again. Error: {error}"
+    },
+    "requestTagMappings": {
+      "mode": {
+        "exact": "Exact value",
+        "any": "Any value"
+      },
+      "problem": {
+        "enterBaggageKey": "Enter a baggage key",
+        "invalidBaggageKey": "Use only letters, digits, and !#$%&'*+-.^_`|~ in the baggage key",
+        "enterMatchValue": "Enter a match value",
+        "enterTag": "Enter a tag",
+        "enterTagPrefix": "Enter a tag prefix",
+        "duplicateMapping": "Another mapping already matches this key and value"
+      },
+      "hint": {
+        "exactPriority": "Exact value mappings take priority over any-value rules for the same key.",
+        "managedInYaml": "Managed in config.yaml. Edit the YAML to change these rules."
+      },
+      "label": {
+        "mapping": "Mapping {index}"
+      },
+      "aria": {
+        "mode": "{label} mode",
+        "delete": "Delete {label}",
+        "baggageKey": "{label} baggage key",
+        "matchValue": "{label} match value",
+        "tag": "{label} tag",
+        "tagPrefix": "{label} tag prefix",
+        "required": "{label} required",
+        "requireBudget": "{label} require budget"
+      },
+      "field": {
+        "baggageKey": "Baggage key",
+        "matchValue": "Match value",
+        "tag": "Tag",
+        "tagPrefix": "Tag prefix",
+        "requireMappedValue": "Require a mapped value",
+        "requireTagBudget": "Require an existing tag budget"
+      },
+      "action": {
+        "addMapping": "Add mapping"
+      }
     }
   },
   "changePassword": {
@@ -7368,7 +7656,19 @@
       "savingsTitle": "Total estimated savings",
       "valueUnavailable": "Unavailable",
       "tabUsage": "Usage",
-      "tabShadowEvals": "Shadow Evals"
+      "tabShadowEvals": "Shadow Evals",
+      "title": "Router usage and savings",
+      "subtitle": "Selected UTC days. Cost includes LLM calls and classification. Tokens count routed LLM input and output.",
+      "column": {
+        "router": "Auto-router",
+        "tokensThroughRouter": "Tokens through router",
+        "costViaRouter": "Cost via router",
+        "costPerMillion": "Cost per 1M tokens",
+        "savedVsPremium": "Saved vs. premium model",
+        "percentSaved": "% saved"
+      },
+      "empty": "No auto-routers in this range",
+      "footnote": "Savings are estimated against each router's premium baseline. Token totals and unit costs are unavailable for usage recorded before token tracking; unit cost also requires nonzero tokens."
     },
     "shadowEval": {
       "target": "Target",
@@ -7829,7 +8129,47 @@
       "imageProcessFailed": "Failed to process image. Please try again.",
       "toolExecutedSuccessfully": "Tool executed successfully.",
       "jumpToBottom": "Jump to bottom",
-      "uploadPreviewAlt": "Upload preview {index}"
+      "uploadPreviewAlt": "Upload preview {index}",
+      "summary": {
+        "newChat": "New chat",
+        "oneRequest": "1 request",
+        "requests": "{count} requests"
+      },
+      "toast": {
+        "historyCleared": "Chat history cleared.",
+        "reset": "Chat and settings reset"
+      },
+      "field": {
+        "model": "Model",
+        "agent": "Agent",
+        "server": "Server",
+        "tool": "Tool"
+      },
+      "empty": {
+        "noAgents": "No agents available for this key",
+        "noMcpServers": "No MCP servers available for this key"
+      },
+      "button": {
+        "inspector": "Inspector",
+        "newChat": "New chat"
+      },
+      "aria": {
+        "moreChatActions": "More chat actions",
+        "inspector": "Inspector"
+      },
+      "action": {
+        "newChatKeepSettings": "New chat, keep settings",
+        "resetChatAndSettings": "Reset chat and settings"
+      },
+      "sheet": {
+        "inspector": "Inspector"
+      },
+      "placeholder": {
+        "selectModel": "Select a model",
+        "selectAgent": "Select an agent",
+        "selectMcpServer": "Select an MCP server",
+        "selectTool": "Select a tool"
+      }
     },
     "compare": {
       "clearAllChats": "Clear All Chats",
@@ -8251,9 +8591,420 @@
       "nova": "Nova - Friendly and conversational",
       "onyx": "Onyx - Deep and authoritative",
       "sage": "Sage - Wise and measured",
-      "shimmer": "Shimmer - Bright and cheerful"
+      "shimmer": "Shimmer - Bright and cheerful",
+      "ariaLabel": "Voice",
+      "label": "Voice",
+      "labelWith": "Voice: {voice}"
     },
-    "headerSubtitle": "Send test requests through the gateway with any model, key, guardrail or tool"
+    "headerSubtitle": "Send test requests through the gateway with any model, key, guardrail or tool",
+    "settings": {
+      "addTag": "Add a tag",
+      "noTagsYet": "No tags yet, type one to add it",
+      "addTagItem": "Add {tag}",
+      "headerName": "Header name",
+      "headerValue": "Header value",
+      "namePlaceholder": "Name",
+      "valuePlaceholder": "Value",
+      "addHeader": "Add header",
+      "proxyBaseUrl": "Proxy base URL",
+      "clear": "Clear",
+      "useSuggested": "Use {suggested}",
+      "sameAsDashboard": "Same as this dashboard",
+      "requestsGoTo": "Requests go to {url}",
+      "temperatureValue": "Temperature value",
+      "defaultPlaceholder": "Default",
+      "currentUiSession": "Current UI session",
+      "virtualKey": "Virtual key",
+      "temperature": "Temperature",
+      "maxTokens": "Max tokens",
+      "title": "Settings",
+      "sendAs": "Send as",
+      "pasteVirtualKey": "Paste a virtual key",
+      "pickVirtualKey": "Pick a virtual key to test what it can access",
+      "tags": "Tags",
+      "streamResponse": "Stream response",
+      "simulateFallback": "Simulate a fallback",
+      "keepContext": "Keep context on the gateway",
+      "keepContextHint": "Sends previous_response_id instead of the whole history",
+      "lastResponse": "Last response",
+      "responseId": "response ID",
+      "advanced": "Advanced",
+      "customHeaders": "Custom headers",
+      "customHeadersHint": "Sent with every request, like anthropic-beta"
+    },
+    "systemOne": {
+      "loadExample": "Load example",
+      "aria": {
+        "decisionsEditor": "Decisions request editor",
+        "decisionEndpoint": "Decision endpoint",
+        "decisionModel": "Decision model",
+        "virtualKeySource": "Virtual Key Source",
+        "requestEditor": "Request editor",
+        "requestEditorView": "Request editor view",
+        "requestActions": "Request actions",
+        "decisionsResults": "Decisions results",
+        "responseJson": "Decisions response JSON",
+        "validationIssues": "Payload validation issues"
+      },
+      "field": {
+        "endpoint": "Endpoint",
+        "model": "Model",
+        "pickDecisionModel": "Pick a decision model",
+        "noDecisionModelsFound": "No decision models found",
+        "apiKey": "API key",
+        "virtualKey": "Virtual Key",
+        "currentUiSession": "Current UI Session",
+        "enterVirtualKey": "Enter Virtual Key",
+        "choices": "Choices",
+        "choiceValueTypeAria": "Choice {index} value type",
+        "text": "Text",
+        "trueBoolean": "true (boolean)",
+        "falseBoolean": "false (boolean)",
+        "choiceValueAria": "Choice {index} value",
+        "removeChoiceAria": "Remove choice {index}",
+        "choiceDescriptionAria": "Choice {index} description",
+        "optionalDescription": "Optional description",
+        "levels": "Levels, lowest first",
+        "levelLabelAria": "Level {index} label",
+        "labelPlaceholder": "Label",
+        "levelDescriptionAria": "Level {index} description",
+        "removeLevelAria": "Remove level {index}",
+        "questionAria": "Question {title}",
+        "removeQuestionAria": "Remove question {title}",
+        "name": "Name",
+        "questionNameAria": "Question name",
+        "optionalQuestionName": "Optional question name",
+        "answerType": "Answer type",
+        "answerTypeAria": "Answer type",
+        "instructions": "Instructions",
+        "whatToDecide": "What should the model decide?",
+        "shapeMismatch": "This request has a shape the form can't show.",
+        "inputHasMessages": "Input contains messages. Form edits keep them unchanged.",
+        "input": "Input",
+        "pasteTextToDecide": "Paste the text the model should decide about",
+        "safetyIdentifier": "Safety identifier",
+        "optional": "Optional",
+        "options": "Options",
+        "optionLabelAria": "Option label",
+        "descriptionOfAria": "Description of {label}",
+        "removeOptionAria": "Remove option {label}",
+        "yesMeans": "Yes means",
+        "noMeans": "No means",
+        "levelAria": "Level {index}",
+        "whatScoreMeans": "What this score means",
+        "namePlaceholder": "e.g. area",
+        "inputHint": "The text the model reads before it answers, such as a support ticket or a chat message.",
+        "questionByTitleAria": "Question {title}",
+        "removeQuestionByTitleAria": "Remove question {title}",
+        "probabilityAria": "{label} probability",
+        "selectedPercent": "{percentage}%, selected",
+        "yesPercent": "{percentage}% yes",
+        "yes": "Yes",
+        "selectedChoice": "Selected choice",
+        "confidence": "{percentage}% confidence",
+        "score": "Score",
+        "modelRefused": "Model refused to answer",
+        "questionName": "name",
+        "questions": "Questions",
+        "request": "Request",
+        "questionByIndexAria": "Question {index}",
+        "questionByName": "Question \"{name}\"",
+        "noDecisionModelsYet": "No decision models yet"
+      },
+      "action": {
+        "addDecisionModel": "Add a decision model",
+        "clearForm": "Clear form",
+        "howToCall": "How to call /v1/decisions and /v1/systemone",
+        "cancelRequest": "Cancel request",
+        "send": "Send",
+        "addChoice": "Add choice",
+        "addLevel": "Add level",
+        "resetToExample": "Reset to example",
+        "addQuestion": "Add question",
+        "addOption": "Add option",
+        "rawResponse": "Raw response",
+        "copyCurl": "Copy cURL"
+      },
+      "tab": {
+        "form": "Form"
+      },
+      "type": {
+        "predicate": "Predicate",
+        "choice": "Choice",
+        "score": "Score",
+        "noulHelp": "The model returns the probability that the answer is yes",
+        "noul": "Yes / no"
+      },
+      "error": {
+        "enterName": "Enter a name",
+        "nameTaken": "\"{name}\" is already used",
+        "requestFailed": "Decisions request failed"
+      },
+      "loading": {
+        "calculating": "Calculating calibrated probabilities"
+      },
+      "title": {
+        "response": "Response",
+        "responseJson": "Response JSON",
+        "curlRequest": "cURL request"
+      },
+      "empty": {
+        "sendRequest": "Send a request to see answers here"
+      },
+      "usage": {
+        "tokens": "{input} in / {output} out"
+      },
+      "hint": {
+        "fixIssues": "Fix {count} issues on the Form tab before copying",
+        "replaceApiKey": "Replace $LITELLM_API_KEY with a virtual key"
+      },
+      "validation": {
+        "giveQuestionName": "Give every question a name.",
+        "emptyPayload": "Payload cannot be empty.",
+        "invalidJson": "Invalid JSON syntax: {message}",
+        "tooManyScoreLevels": "More than {count} score levels may reduce result quality.",
+        "addTextToDecide": "Add the text the model should decide about.",
+        "issueCount": "{count} issues",
+        "validPayload": "Valid payload",
+        "readyToSend": "Ready to send",
+        "issuesToFix": "{count} issues to fix"
+      }
+    },
+    "inspector": {
+      "section": {
+        "routing": "Routing",
+        "guardrails": "Guardrails and policies",
+        "speedAndCost": "Speed and cost"
+      },
+      "row": {
+        "requested": "Requested",
+        "servedBy": "Served by",
+        "providerModel": "Provider model",
+        "apiBase": "API base",
+        "callId": "Call ID",
+        "responseId": "Response ID"
+      },
+      "detail": {
+        "requestedModel": "Requested model",
+        "servedModel": "Model group that answered",
+        "deploymentId": "Deployment ID {id}",
+        "providerEndpoint": "Provider endpoint",
+        "modelSentToProvider": "Model sent to the provider"
+      },
+      "copy": {
+        "providerModel": "provider model",
+        "apiBase": "API base",
+        "callId": "call ID",
+        "responseId": "response ID",
+        "code": "code",
+        "modelName": "model name"
+      },
+      "stat": {
+        "fallbacks": "Fallbacks",
+        "retries": "Retries",
+        "overhead": "Overhead",
+        "firstToken": "First token",
+        "total": "Total",
+        "cost": "Cost",
+        "tokensIn": "Tokens in",
+        "tokensOut": "Tokens out",
+        "cached": "Cached",
+        "reasoning": "Reasoning",
+        "gatewayTime": "Gateway time"
+      },
+      "muted": {
+        "noRoutingDetails": "The gateway did not share routing details with this page. Open the dashboard from the proxy to see them",
+        "noGuardrails": "No guardrails ran on this request",
+        "policiesNeedProxy": "Policies are only reported when the dashboard is opened from the proxy",
+        "endpointDoesNotReport": "This endpoint does not report which guardrails or policies ran",
+        "noGuardrailsOrPolicies": "No guardrails or policies ran on this request"
+      },
+      "description": {
+        "guardrail": "Guardrail",
+        "policy": "Policy"
+      },
+      "empty": {
+        "nothingToInspect": "Nothing to inspect yet",
+        "eachReply": "Each reply shows here with the deployment that served it, fallbacks, guardrails, timing and cost"
+      },
+      "aria": {
+        "sdk": "SDK"
+      },
+      "tab": {
+        "openaiSdk": "OpenAI SDK",
+        "azureSdk": "Azure SDK",
+        "trace": "Trace",
+        "code": "Code"
+      },
+      "hint": {
+        "sendFromYourApp": "Send this request from your own app. Replace YOUR_LITELLM_API_KEY with a virtual key"
+      },
+      "badge": {
+        "ran": "Ran"
+      }
+    },
+    "mcp": {
+      "body": {
+        "addServerBefore": "Add one on the",
+        "addServerLink": "MCP servers page",
+        "addServerAfter": ", or send as a key that can reach one",
+        "toolsetFixed": "A toolset's tools are fixed by whoever created it",
+        "checkServer": "Check this server to choose which of its tools the model can call",
+        "loadToolsFailed": "Couldn't load this server's tools",
+        "noTools": "This server has no tools",
+        "pickServers": "Pick the servers the model can use, then limit their tools. A server allows every tool until you uncheck some.",
+        "allMcpServers": "Every server this key can reach, with all of its tools",
+        "pickServer": "Pick a server or toolset on the left"
+      },
+      "summary": {
+        "someTools": "{allowed} of {total} tools",
+        "needsYourKey": "Needs your key",
+        "allTools": "All {count} tools"
+      },
+      "aria": {
+        "useRow": "Use {label}",
+        "mcp": "MCP"
+      },
+      "title": {
+        "allMcpServers": "All MCP servers",
+        "nothingSelected": "Nothing selected",
+        "mcpServers": "MCP servers",
+        "noMcpServers": "No MCP servers for this key"
+      },
+      "action": {
+        "replaceKey": "Replace key",
+        "allowAll": "Allow all",
+        "done": "Done"
+      },
+      "placeholder": {
+        "searchTools": "Search {name} tools",
+        "searchServers": "Search servers"
+      },
+      "group": {
+        "mcpServers": "MCP servers",
+        "toolsets": "Toolsets"
+      },
+      "row": {
+        "allMcpServers": "All MCP servers"
+      }
+    },
+    "conversation": {
+      "aria": {
+        "requestMetrics": "Request metrics",
+        "inspectRequest": "Inspect this request",
+        "conversation": "Conversation"
+      },
+      "metric": {
+        "toFirstToken": "to first token"
+      },
+      "badge": {
+        "cachedResponse": "Cached response"
+      },
+      "label": {
+        "called": "Called"
+      },
+      "alert": {
+        "requestFailed": "The request failed"
+      },
+      "copy": {
+        "reply": "reply"
+      },
+      "action": {
+        "inspect": "Inspect"
+      },
+      "marker": {
+        "switchedTo": "Switched to {model}"
+      },
+      "empty": {
+        "sendTestRequest": "Send a test request",
+        "pickModel": "Pick a model and anything the request should go through, then inspect what the gateway did with it"
+      }
+    },
+    "composer": {
+      "aria": {
+        "stop": "Stop",
+        "sendMessage": "Send message",
+        "message": "Message",
+        "codeInterpreter": "Code interpreter"
+      },
+      "body": {
+        "pickServerAndTool": "Pick a server and a tool above to fill in its arguments"
+      },
+      "field": {
+        "vectorStores": "Vector stores",
+        "guardrails": "Guardrails",
+        "codeInterpreter": "Code interpreter"
+      },
+      "empty": {
+        "noVectorStores": "No vector stores yet",
+        "noGuardrails": "No guardrails yet"
+      }
+    },
+    "controls": {
+      "aria": {
+        "endpoint": "Endpoint"
+      },
+      "label": {
+        "endpoint": "Endpoint"
+      }
+    },
+    "modelName": {
+      "toast": {
+        "copyFailed": "Unable to copy to clipboard",
+        "copied": "{label} copied"
+      },
+      "aria": {
+        "copy": "Copy {label}"
+      },
+      "tooltip": {
+        "copy": "Copy {label}"
+      },
+      "badge": {
+        "fallback": "Fallback"
+      }
+    },
+    "pickers": {
+      "action": {
+        "use": "Use"
+      }
+    },
+    "reply": {
+      "alt": {
+        "generatedImage": "Generated image"
+      }
+    },
+    "byok": {
+      "toast": {
+        "enterApiKey": "Enter your API key",
+        "connected": "Connected to {name}"
+      },
+      "title": {
+        "replaceKey": "Replace your {name} API key",
+        "needsKey": "{name} needs your API key"
+      },
+      "body": {
+        "newKeyReplaces": "The new key replaces the one the gateway uses for {name}.",
+        "gatewayCalls": "The gateway calls {name} with your own key. Connect it to list and use its tools."
+      },
+      "field": {
+        "apiKey": "{name} API key"
+      },
+      "placeholder": {
+        "pasteApiKey": "Paste your API key"
+      },
+      "link": {
+        "whereToFind": "Where to find this key"
+      },
+      "checkbox": {
+        "saveKey": "Save the key for next time"
+      },
+      "action": {
+        "connect": "Connect",
+        "cancel": "Cancel",
+        "replaceKey": "Replace key",
+        "connectKey": "Connect key"
+      }
+    }
   },
   "tagManagement": {
     "title": "Tag Management",
@@ -10431,7 +11182,17 @@
     "rawJson": "Raw JSON",
     "createdAt": "Created At",
     "editSettings": "Edit Settings",
-    "editOnlyDbHint": "Only DB models can be edited. You must be an admin or the creator of the model to edit it."
+    "editOnlyDbHint": "Only DB models can be edited. You must be an admin or the creator of the model to edit it.",
+    "kubernetes": {
+      "readyPods": "{count} ready pods",
+      "loading": "Loading Kubernetes pods",
+      "noReadyPods": "No ready pods",
+      "podIpsAria": "Ready Kubernetes pod IPs",
+      "title": "Kubernetes pods"
+    },
+    "action": {
+      "refresh": "Refresh"
+    }
   },
   "liteAdmin": {
     "loadingGatewaySettings": "Loading gateway settings",
@@ -10510,7 +11271,13 @@
     "homeSubtitle": "Control your entire gateway.",
     "recentChats": "Recent chats",
     "chatsAria": "LiteAdmin chats",
-    "chatLabel": "Chat {id}"
+    "chatLabel": "Chat {id}",
+    "composer": {
+      "placeholder": "What would you like to do?",
+      "ariaLabel": "Message LiteAdmin",
+      "stopAriaLabel": "Stop request",
+      "sendAriaLabel": "Send message"
+    }
   },
   "modelGroupAlias": {
     "saveFailed": "Failed to save model group alias settings",
@@ -11455,5 +12222,366 @@
     "retrieveToolsListFailed": "Failed to retrieve tools list",
     "unknownError": "An unknown error occurred",
     "oauthTokenExchangeFailed": "OAuth token exchange failed"
+  },
+  "telemetry": {
+    "destination": {
+      "none": "No destination is chosen, so nothing is recorded",
+      "localTableLabel": "Local table (LiteLLM_TelemetryReport in this proxy's database)",
+      "setByEnv": "Set by LITELLM_TELEMETRY_DESTINATION",
+      "every": "every {seconds} s",
+      "http": "One JSON report per worker {every} and on shutdown, by HTTP POST to LITELLM_TELEMETRY_ENDPOINT. A failed send is retried next window",
+      "localTable": "One report per worker {every} and on shutdown, stored in this proxy's LiteLLM_TelemetryReport table for {days} days. Nothing leaves the proxy. Admins can export from GET /telemetry/reports",
+      "httpLabel": "HTTP (POST to LITELLM_TELEMETRY_ENDPOINT)"
+    },
+    "title": {
+      "destination": "Destination",
+      "telemetry": "Telemetry",
+      "howAndWhen": "How and when it is sent"
+    },
+    "warning": {
+      "noDestination": "Telemetry is on but no destination is chosen, so nothing is recorded"
+    },
+    "groups": {
+      "heartbeat": {
+        "title": "Heartbeat",
+        "counts": "Random instance id, LiteLLM version, report window, which groups are on",
+        "helps": "Which versions are running"
+      },
+      "requestSuccess": {
+        "title": "Request success",
+        "slices": "endpoint, LiteLLM status, provider status, stream, handled by Rust, LiteLLM cache hit",
+        "counts": "requests, provider attempts, latency to headers and to first byte",
+        "helps": "Error-rate and latency regressions, Rust vs Python"
+      },
+      "tokenInfo": {
+        "title": "Token info",
+        "slices": "provider prompt-cache hit",
+        "counts": "input, output and cache-read token sums",
+        "helps": "Broken prompt caching or token counting"
+      },
+      "requestTaxonomy": {
+        "title": "Request taxonomy",
+        "slices": "provider, salted deployment hash",
+        "counts": "one row per provider attempt with its status",
+        "helps": "Which provider is failing, retries and fallbacks"
+      },
+      "eventDetails": {
+        "title": "Event details",
+        "counts": "message block counts and types, allowlisted header names (no values), provider time to first token",
+        "helps": "Which request shapes and clients fail"
+      },
+      "instanceConfiguration": {
+        "title": "Instance configuration",
+        "counts": "names of allowlisted config keys that are set (no values)",
+        "helps": "Which features an upgrade must keep working"
+      },
+      "pageNavigation": {
+        "title": "Page navigation",
+        "counts": "Admin UI page views and tab switches by route name (no ids or typed text)",
+        "helps": "Which pages and tabs get used"
+      }
+    },
+    "group": {
+      "slicesBy": "Slices by: {slices}",
+      "counts": "Counts: {counts}",
+      "sends": "Sends: {counts}",
+      "helpsCatch": "Helps catch: {helps}"
+    },
+    "aria": {
+      "telemetry": "Telemetry"
+    },
+    "state": {
+      "on": "On",
+      "off": "Off"
+    },
+    "report": {
+      "sampleTitle": "Sample report",
+      "sampleHint": "Made-up traffic through the real filter, with the groups that are on (all groups while telemetry is off)",
+      "lastTitle": "Last report sent from this worker",
+      "lastHint": "Exactly what this worker last sent or stored"
+    },
+    "loading": "Loading telemetry settings...",
+    "error": {
+      "loadFailed": "Could not load telemetry settings: {message}"
+    },
+    "subtitle": "Choose what privacy-safe, aggregated usage data this proxy shares",
+    "tab": {
+      "proxy": "Proxy requests",
+      "ui": "Admin UI"
+    },
+    "note": {
+      "uiOnly": "Sent only while Page navigation is on, to this proxy at POST /telemetry/ui_events, and counted into the same report as proxy traffic",
+      "offByDefault": "Off by default. Each switch adds aggregated counts, never prompts, responses, keys, ids or header values. LITELLM_TELEMETRY_DISABLED=true turns everything off",
+      "changesApply": "{destination}。改动从下一个窗口开始生效"
+    },
+    "banner": {
+      "vetoed": "Telemetry is turned off by an environment variable",
+      "setOnProxy": "Set on this proxy: {variables}.",
+      "set": "Telemetry environment variables are set",
+      "override": "These override the settings on this page, which are read-only until they are removed.",
+      "stillEditable": "The groups below can still be changed here."
+    }
+  },
+  "modelAdd": {
+    "connections": {
+      "empty": "No credentials need a personal connection.",
+      "disconnected": "GitHub Copilot disconnected",
+      "disconnectFailed": "Failed to disconnect GitHub Copilot",
+      "title": "Your connections",
+      "description": "Credentials that use your own account. Connect once, and your requests to models on that credential use your own access.",
+      "credential": "Credential",
+      "loading": "Loading connections...",
+      "loadFailed": "Could not load your connections.",
+      "retry": "Retry",
+      "connectedAs": "Connected as @{login}",
+      "notConnected": "Not connected",
+      "disconnect": "Disconnect",
+      "connect": "Connect",
+      "provider": "Provider",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "copilot": {
+      "title": "Connect GitHub Copilot",
+      "credential": "Credential: {name}",
+      "requestingCode": "Requesting a device code from GitHub...",
+      "openAndEnter": "Open",
+      "copyCode": "Copy code",
+      "waitingApproval": "Waiting for you to approve the request on GitHub...",
+      "connectedAs": "Connected as @{login}",
+      "startAgain": "Start again",
+      "disconnect": "Disconnect",
+      "done": "Done",
+      "codeCopied": "Code copied",
+      "close": "Close"
+    },
+    "jwks": {
+      "loading": "Loading JWKS...",
+      "title": "Public JWKS",
+      "copy": "Copy JWKS",
+      "reopenHint": "Once saved, reopen this credential from LLM Credentials to copy the public JWKS you register in the Claude Console.",
+      "registerHint": "Register this JWKS with the Issuer URL and Subject above as a federation rule under Settings > Workload identity in the Claude Console. Then fill in its Federation Rule ID and Organization ID at the top of this form and update the credential. The JWKS comes from the saved signing key, so update after changing the key and before copying."
+    },
+    "federation": {
+      "proxyDefault": "Proxy default",
+      "storedSourceHint": "This form does not offer the stored identity source. Saving keeps it and its settings as stored. Pick another source to replace it.",
+      "anthropicHint": "The proxy reads ANTHROPIC_IDENTITY_TOKEN_FILE or ANTHROPIC_IDENTITY_TOKEN from its own environment.",
+      "openaiHint": "The proxy exchanges the identity token for an OpenAI access token only when OPENAI_API_KEY is unset in its environment. Otherwise it sends that key instead."
+    }
+  },
+  "deploymentHealth": {
+    "snooze": {
+      "oneDay": "Snooze for 1 day",
+      "sevenDays": "Snooze for 7 days",
+      "thirtyDays": "Snooze for 30 days",
+      "ariaLabel": "Snooze {title}"
+    },
+    "action": {
+      "snooze": "Snooze",
+      "ignoreForever": "Ignore forever",
+      "restoreAriaLabel": "Restore {title}",
+      "restore": "Restore",
+      "readDocs": "Read the docs",
+      "review": "Review"
+    },
+    "ignore": {
+      "byEnvVar": "By env var",
+      "until": "Until {date}",
+      "byWho": "· by {who}",
+      "since": "Since {date}"
+    },
+    "state": {
+      "snoozed": "Snoozed",
+      "ignored": "Ignored"
+    },
+    "empty": {
+      "noActiveWarnings": "No active warnings",
+      "snoozedAndIgnored": "Snoozed and ignored warnings are listed below",
+      "needsAttention": "Deployment warnings show up here when this proxy's setup needs attention"
+    },
+    "error": {
+      "loadFailed": "Could not load deployment warnings"
+    },
+    "loading": "Loading deployment warnings",
+    "group": {
+      "ignoredAndSnoozed": "Ignored and snoozed"
+    },
+    "title": {
+      "deploymentHealth": "Deployment health"
+    },
+    "subtitle": "Warnings about how this proxy is deployed",
+    "aria": {
+      "deploymentAlert": "Deployment alert"
+    },
+    "warning": {
+      "envCredentialLogin": {
+        "title": "Environment-credential login is enabled",
+        "fixBefore": "Anyone with",
+        "fixMiddle": "(or the master key, when",
+        "fixAfter": "is unset) can sign in as a proxy admin with a shared static secret. Create a regular admin account with its own password, then set"
+      },
+      "noRedis": {
+        "title": "No Redis configured",
+        "fix": "This proxy runs more than one worker (or the worker count could not be verified). Without Redis, rate limits, budgets, router state and cache invalidation are per worker, so limits are enforced once per worker and spend can overshoot"
+      },
+      "detailedDebug": {
+        "title": "Detailed debug logging is on",
+        "fix": "logs extensive diagnostic information and significantly slows the proxy. Use it only while troubleshooting and turn it off in production"
+      }
+    },
+    "license": {
+      "expiresToday": "expires today",
+      "expiresInOneDay": "expires in 1 day",
+      "expiresInDays": "expires in {days} days",
+      "expiredTitle": "Your LiteLLM Enterprise license expired on {date}",
+      "expiredFix": "Enterprise features are now disabled. Reach out to",
+      "restoreAccess": "to restore access",
+      "countdownTitle": "Your LiteLLM Enterprise license {countdown} ({date})",
+      "renewHint": "Renew before it lapses to keep enterprise features. Reach out to"
+    }
+  },
+  "home": {
+    "title": {
+      "whatsNew": "What's new in LiteLLM?",
+      "leaderboard": "Leaderboard",
+      "updates": "Updates"
+    },
+    "action": {
+      "createVirtualKey": "Create New Virtual Key",
+      "retry": "Retry",
+      "viewAll": "View all"
+    },
+    "error": {
+      "loadUsageFailed": "Failed to load usage",
+      "loadPostsFailed": "Failed to load posts"
+    },
+    "empty": {
+      "noPosts": "No posts yet"
+    },
+    "pageTitle": "Home"
+  },
+  "aiHub": {
+    "decisionModels": {
+      "addModel": "Add model",
+      "title": "Decision models LiteLLM supports",
+      "docs": "Decisions docs"
+    }
+  },
+  "commandPalette": {
+    "action": {
+      "filterKeysTitle": "Filter the keys table for “{query}”",
+      "filterKeysSubtitle": "Open Virtual Keys with this search applied"
+    },
+    "state": {
+      "searching": "Searching…"
+    },
+    "title": {
+      "palette": "Command palette"
+    },
+    "scope": {
+      "virtualKeys": "Virtual Keys",
+      "allPages": "All pages"
+    },
+    "aria": {
+      "search": "Search",
+      "dismissHint": "Dismiss search hint"
+    },
+    "error": {
+      "searchKeysFailed": "Unable to search keys"
+    },
+    "empty": {
+      "noResults": "No results for “{query}”"
+    },
+    "hint": {
+      "open": "Open",
+      "navigate": "Navigate",
+      "press": "Press",
+      "close": "Close"
+    }
+  },
+  "addModel": {
+    "cacheAware": {
+      "description": "Disabled by default. Reuse a model with a warm prompt cache when its estimated total cost is lower and it meets the selected tier or higher. Supports native Anthropic Messages with explicit prompt caching; unsupported requests keep their usual route.",
+      "skippedHint": "Cache-aware routing is currently skipped. ",
+      "ariaLabel": "Cache-aware routing",
+      "title": "Consider prompt-cache savings",
+      "expectedOutputTokens": "Expected output tokens",
+      "expectedOutputHint": "Used to estimate cost, not to limit the response. Leave blank to use the default of 1024.",
+      "predictionTimeout": "Prediction timeout (ms)",
+      "predictionTimeoutHint": "Keep the original route if the comparison takes too long. Leave blank to use the default of 2000 ms."
+    },
+    "decisionModel": {
+      "ariaLabel": "Decision model notice",
+      "title": "Decision model",
+      "callBefore": "For decision requests, call",
+      "howToCall": "How to call decision models",
+      "afterAdd": "After you add it,",
+      "testInPlayground": "test it in the Decisions playground",
+      "openAiFormat": "(OpenAI format)",
+      "systemOneFormat": "(System One format)."
+    }
+  },
+  "molecules": {
+    "decisionModels": {
+      "title": "Decision models are now supported",
+      "callBefore": "Call them at",
+      "howToCall": "How to call them",
+      "supportedProviders": "Supported providers",
+      "or": "or",
+      "orTry": ", or try them in the Decisions playground.",
+      "cta": "Try it out",
+      "dismiss": "Dismiss banner"
+    }
+  },
+  "searchBox": {
+    "aria": {
+      "loadingResults": "Loading results",
+      "suggestions": "Search suggestions"
+    },
+    "state": {
+      "loadingValues": "Loading values…"
+    },
+    "hint": {
+      "navigate": "Navigate",
+      "select": "Select",
+      "comparisonOperators": "Comparison operators"
+    }
+  },
+  "moyai": {
+    "actionDescription": "Give it a task from Slack or the browser. It edits code, runs your tests in its own cloud workspace, and opens a pull request while your laptop is closed.",
+    "selfDeployDescription": "Deploy it on your own infrastructure and point it at this gateway. Your code and credentials stay in your accounts.",
+    "watchDemoOnGithub": "Watch the demo on GitHub",
+    "demoAlt": "Moyai demo: picking a harness and model, then running a task",
+    "fullWalkthrough": "Full walkthrough on GitHub",
+    "quickConnect": "Quick connect",
+    "quickConnectTitle": "Quick connect Moyai",
+    "moyaiUrl": "Moyai URL",
+    "urlPlaceholder": "https://moyai.your-company.com",
+    "confirmHint": "You'll confirm on your Moyai workspace as an admin, then come straight back",
+    "nowOpenSource": "Now open source",
+    "tagline": "The open source cloud coding agent",
+    "watchDemo": "Watch the demo",
+    "alreadyDeployedTitle": "Already have Moyai deployed?",
+    "alreadyDeployedHint": "Already have Moyai deployed? Ask a proxy admin to connect it",
+    "worksWith": "Works with Claude Code and Codex",
+    "selfHosted": "Self-hosted · 100+ providers through LiteLLM",
+    "seeItInAction": "See it in action",
+    "anyHarness": "Any harness",
+    "anyModel": "Any model, any provider",
+    "runYourOwn": "Run your own cloud agent",
+    "getOnGithub": "Get Moyai on GitHub",
+    "readLaunchPost": "Read the launch post",
+    "title": "Moyai connected",
+    "linkedHint": "This deployment is now linked to your LiteLLM gateway.",
+    "openMoyai": "Open Moyai",
+    "backToGateway": "Back to AI Gateway",
+    "connected": "Connected",
+    "opening": "Opening Moyai",
+    "continueTo": "Continue to",
+    "rows": {
+      "workspaceLinked": "Workspace linked",
+      "virtualKeyIssued": "Virtual key issued",
+      "modelsAvailable": "models available through LiteLLM"
+    }
   }
 }

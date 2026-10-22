@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { ArrowLeft, ChevronDown, ChevronsRight, ChevronUp, Maximize2, Minimize2, X } from "lucide-react";
@@ -254,10 +255,11 @@ function HeaderButton({
 }
 
 function Header() {
+  const t = useTranslations("common");
   const { index, total, noun, step, close, fullScreen, setFullScreen } = useInspector();
   return (
     <div data-slot="inspector-header" className="flex h-[37px] shrink-0 items-center gap-1 border-b border-border px-2">
-      <HeaderButton label="Close (Esc)" onClick={close}>
+      <HeaderButton label={t("closeWithEsc")} onClick={close}>
         <ChevronsRight className="size-4" />
       </HeaderButton>
       <span className="mx-1 h-4 w-px bg-border" />

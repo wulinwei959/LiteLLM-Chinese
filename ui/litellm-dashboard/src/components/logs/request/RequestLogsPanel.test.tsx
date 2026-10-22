@@ -5,9 +5,9 @@ import moment from "moment";
 import { NuqsTestingAdapter, type UrlUpdateEvent } from "nuqs/adapters/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { render, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
+import { render, renderWithProviders, testQueryClient } from "../../../../tests/test-utils";
 import { LocaleProvider } from "@/contexts/LocaleContext";
-import type { LogEntry } from "./columns";
+import type { LogEntry } from "../types";
 import RequestLogsPanel from "./RequestLogsPanel";
 
 vi.mock("../../networking", async (importOriginal) => {
@@ -147,6 +147,13 @@ describe("RequestLogsPanel", () => {
     testQueryClient.clear();
     respondWith([]);
     debounce.settled = null;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response(JSON.stringify({ data: [] }), { status: 200, headers: { "Content-Type": "application/json" } }),
+      ),
+    );
   });
 
   describe("server-grouped session pagination (#38060)", () => {
@@ -398,7 +405,7 @@ describe("RequestLogsPanel", () => {
       await waitFor(() => expect(lastCall()?.page).toBe(2));
 
       await user.click(screen.getByRole("button", { name: /最近 24 小时/ }));
-      await user.click(await screen.findByRole("button", { name: "自定义区间" }));
+      await user.click(await screen.findByRole("button", { name: "自定义时间范围" }));
 
       await waitFor(() => {
         const call = lastCall();
@@ -511,7 +518,7 @@ describe("RequestLogsPanel", () => {
       await user.click(await screen.findByRole("button", { name: "最近 15 分钟" }));
       expect(await screen.findByRole("button", { name: /最近 15 分钟/ })).toBeInTheDocument();
 
-      await user.click(screen.getByRole("button", { name: "重置筛选" }));
+      await user.click(screen.getByRole("button", { name: "重置筛选条件" }));
 
       expect(await screen.findByRole("button", { name: /最近 24 小时/ })).toBeInTheDocument();
 
@@ -799,11 +806,11 @@ describe("RequestLogsPanel", () => {
       const user = userEvent.setup();
       renderPanel();
 
-      expect(await screen.findByText("每 15 秒自动刷新")).toBeInTheDocument();
+      expect(await screen.findByText("每 15 秒刷新一次")).toBeInTheDocument();
 
-      await user.click(screen.getByRole("button", { name: "停止" }));
+      await user.click(screen.getByRole("switch", { name: "实时跟踪" }));
 
-      expect(screen.queryByText("每 15 秒自动刷新")).not.toBeInTheDocument();
+      expect(screen.queryByText("每 15 秒刷新一次")).not.toBeInTheDocument();
     });
   });
 });

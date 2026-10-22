@@ -192,6 +192,43 @@ theirs = upstream/main 的内容 （上游的新版）
 - 目录：死键 0（合并后一次性清了 735 个无人引用的键）、中英 parity 与缺键守卫 17 例全绿
 - `npm run build` 待最终跑一遍确认
 
+### Phase 5 收官：合并带入的组件全部汉化（2026-10-22）
+
+上一节说的"重接"只做到把生产类型错误清零，合并带进来的 131 个新组件本身仍是英文。本节记把这一层也做完的过程与数字。
+
+先说清判断口径。"哪些文件是合并带进来的"用 git 树算：`HEAD` 的树减去 `main` 的树，落在 `ui/litellm-dashboard/src/` 下、且后缀是 `.tsx`/`.ts`、不含 `.test.` 的文件，131 个 `.tsx` 加 90 个 `.ts`。这批文件此前一句汉化都没有。
+
+哪些字符串算"用户可见"用 AST 判，不用正则扫全文。`ui/litellm-dashboard/scripts/scan-english.mjs` 走 TypeScript 解析器，只收四类节点：JSX 文本、承载文案的 props（`label`/`title`/`placeholder`/`aria-label`/`description`/`emptyText`/`alt`/`tooltip`/`subtitle`/`errorMessage`/`helperText`/`hint`/`message`/`sublabel`）、`toast.*` 的单参数调用、`new Error(...)` 的字面量。文件里对象字面量形式的标签表（`ERROR_ENTITY_LABEL`、`GROUP_COPY`、`STREAM_SCOPE_OPTIONS` 这类）扫不到，靠 `--all` 模式补一遍人工过。
+
+结论：131 个 `.tsx` 里 74 个文件命中 561 条候选串。清完这 74 个文件之后重扫，剩 0 条可见英文，只留下端点路径（`/v1/decisions`）、品牌名（`LiteLLM`、`MCP`、`Moyai`）、代码片段（`git clone`）、快捷键提示（`J`/`K`）和配置键名（`UI_PASSWORD`、`LITELLM_LOG=DEBUG`）这类技术串，按仓库既有惯例保留。
+
+模块级函数不能调 `useTranslations`，组件外会抛 Invalid hook call。凡是模块级函数要出文案的地方（`errorsData.ts` 的标签与状态码映射、`issueLabel.ts` 的路径标签、`validatePayload.ts` 的校验消息、`telemetryGroups.ts` 的分组说明、`guardrail_info_helpers.tsx` 的流式范围与仅日志范围选项、`DeploymentWarningContent.tsx` 的警告正文、`RequestTagMappings.tsx` 的映射校验），一律把译员当参数传下去，类型用 `src/lib/i18n/translators.ts` 里按命名空间取的具名 translator。目录新增 `playground.systemOne`、`playground.inspector`、`playground.chat`、`playground.mcp`、`usage.errors`、`usage.overview`、`usage.userActivity`、`guardrails.streamScope`、`deploymentHealth`、`telemetry`、`moyai`、`modelAdd`、`home`、`aiHub`、`modelInfo`、`commandPalette`、`searchBox`、`costOptimization`、`routerSettings.requestTagMappings` 等命名空间。
+
+### 这一层用到的工具
+
+- `ui/litellm-dashboard/scripts/scan-english.mjs`：TS AST 扫用户可见英文串，可加 `--all` 输出全部字面量
+- `ui/litellm-dashboard/scripts/add-i18n-hooks.mjs`：按 AST 往指定函数体首行插 `const t = useTranslations("<ns>")`，函数名匹配 `function` 声明、箭头函数 const 与 `React.FC` 赋值三种形态，已有 `t` 的跳过
+- `scripts/catalog-set.py`：改目录但不动文件其余部分的字节。做法是自写 JSON 解析器记下每个值的起止偏移，改动时只重渲染变化的那一段，其余按原样复制。对两个目录做过 round-trip 验证：无改动时输出与输入逐字节相同
+- `scripts/catalog-batch.py` / `scripts/i18n-apply.py` / `scripts/i18n_helper.py`：批量落键、批量替换与插 hook 的组合入口
+
+`scripts/catalog-key.py` 这轮不再用于新增键，它按文本找命名空间并在缺失时插入嵌套对象，改到一半的对象会被后续调用当成叶子覆盖，踩了三次。它仍被 `restore-missing-keys.py` 与 `restore-catalog-keys.py` 引用（合并工具链），所以保留不动，只是把命令行参数顺序理顺了。`catalog-set.py` 走的是解析后的树，插入行为是确定的。
+
+### 这一层的实际数字
+
+- 131 个新 `.tsx` 文件里 74 个完成汉化，可见英文 561 → 0
+- 目录叶子键 10254 → 11022（新增 768 枚，英中两侧同数）
+- 生产类型检查 0 条错误
+- 死键 0（收尾时清掉自己引入的 4 枚未引用键）
+- i18n 五条守卫 23 例全绿
+- `npm run build` 绿
+- 受影响测试：errorsData 22、issueLabel 10、validatePayload 51、decisions + example 43、DeploymentWarningContent 12、RequestTagMappings 10，合计 148 例全绿，断言随文案翻成中文
+
+### 仍然欠着的
+
+- zod 的自定义校验消息（`systemOneUI/lib/schemas.ts` 与 `openAIDecisions.ts` 里那些 `refine(..., "Model must be a non-empty string.")`）仍是英文。这批消息只在 payload 不合法时出现在校验列表里，要译得把 schema 改成按译员构造的工厂函数，`openAIDecisionsForm.ts` 用了 `openAIDecisionsRequestSchema.shape.input`，改签名要一起动
+- 测试文件的存量类型错误 418 条（合并前基线 878），大头是测试还在用旧 API 的 props 与旧英文断言，与汉化无关但会让将来打开 `useTypeScriptCli` 时构建变红
+- 渲染扫描（`npm run scan:rendered`）需要起 dev server，本轮没跑，漏网的动态文案以它为准
+
 ### 下一步
 
 1. 按错误数从多到少把剩下 94 个文件逐个重接（每个文件的做法固定：取上游那份 + 按 diff 里的 `t(...)` 贴回汉化 + 补目录键）

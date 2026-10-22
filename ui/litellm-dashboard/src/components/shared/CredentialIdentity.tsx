@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import type { CredentialItem } from "@/components/networking";
@@ -12,6 +13,7 @@ interface CredentialIdentityProps {
 }
 
 export function CredentialIdentity({ credentialName, label, icon, className }: CredentialIdentityProps) {
+  const t = useTranslations("common");
   const shown = label ?? credentialName;
   return (
     <span className={cn("flex min-w-0 flex-col gap-0.5", className)} title={credentialName}>
@@ -32,8 +34,9 @@ interface AttachedCredentialProps {
 }
 
 export function AttachedCredential({ credentialName, credentials }: AttachedCredentialProps) {
+  const t = useTranslations("common");
   if (!credentialName) {
-    return <>Manual</>;
+    return <>{t("credential.manual")}</>;
   }
   return (
     <CredentialIdentity

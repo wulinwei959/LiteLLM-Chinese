@@ -1,16 +1,19 @@
 import React from "react";
+import { useTranslations } from "next-intl";
+import type { GuardrailsTranslator } from "@/lib/i18n/translators";
 import {
   choiceToLoggingOnlyScope,
   effectiveLoggingOnlyContinue,
   getLoggingOnlyScopeOptions,
+  LOGGING_ONLY_SCOPE_VALUES,
   getLoggingOnlyScopeUpdate,
   type LoggingOnlyScope,
   type LoggingOnlyScopeChoice,
 } from "../guardrail_info_helpers";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const LOGGING_ONLY_SCOPE_ITEMS = getLoggingOnlyScopeOptions(true);
-const LOGGING_ONLY_SCOPE_CHOICES: ReadonlySet<string> = new Set(LOGGING_ONLY_SCOPE_ITEMS.map(({ value }) => value));
+const loggingOnlyScopeItems = (t: GuardrailsTranslator) => getLoggingOnlyScopeOptions(true, t);
+const LOGGING_ONLY_SCOPE_CHOICES: ReadonlySet<string> = new Set(LOGGING_ONLY_SCOPE_VALUES);
 
 const isLoggingOnlyScopeChoice = (value: unknown): value is LoggingOnlyScopeChoice =>
   typeof value === "string" && LOGGING_ONLY_SCOPE_CHOICES.has(value);
@@ -18,29 +21,33 @@ const isLoggingOnlyScopeChoice = (value: unknown): value is LoggingOnlyScopeChoi
 export const CustomCodeLoggingOnlyScopeSelect: React.FC<{
   value: LoggingOnlyScopeChoice;
   onChange: (choice: LoggingOnlyScopeChoice) => void;
-}> = ({ value, onChange }) => (
-  <div className="w-[240px]">
-    <label className="mb-1 block text-xs font-medium text-muted-foreground">Logging only scope</label>
-    <Select
-      items={LOGGING_ONLY_SCOPE_ITEMS}
-      value={value}
-      onValueChange={(nextValue) => {
-        if (isLoggingOnlyScopeChoice(nextValue)) onChange(nextValue);
-      }}
-    >
-      <SelectTrigger className="w-full" aria-label="Logging only scope">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {LOGGING_ONLY_SCOPE_ITEMS.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
+}> = ({ value, onChange }) => {
+  const t = useTranslations("guardrails");
+  const items = loggingOnlyScopeItems(t);
+  return (
+    <div className="w-[240px]">
+      <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("loggingOnlyScope.label")}</label>
+      <Select
+        items={items}
+        value={value}
+        onValueChange={(nextValue) => {
+          if (isLoggingOnlyScopeChoice(nextValue)) onChange(nextValue);
+        }}
+      >
+        <SelectTrigger className="w-full" aria-label={t("loggingOnlyScope.label")}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {items.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+};
 
 export const getCustomCodeLoggingOnlyScopeCreate = (
   mode: string[],

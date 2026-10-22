@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { CircleAlert, Shield, TriangleAlert } from "lucide-react";
 import {
@@ -51,6 +52,7 @@ export const DeploymentHealthIcon = ({ handle }: { handle: DeploymentHealthHandl
 };
 
 export const DeploymentHealthBanner = ({ handle }: { handle: DeploymentHealthHandle }) => {
+  const t = useTranslations("deploymentHealth");
   const { canView } = useDeploymentHealthAccess();
   const { data } = useDeploymentWarnings();
   const active = activeWarnings(data?.warnings ?? []);
@@ -63,19 +65,19 @@ export const DeploymentHealthBanner = ({ handle }: { handle: DeploymentHealthHan
     <Alert
       variant={critical ? "error" : "warning"}
       role={critical ? "alert" : "status"}
-      aria-label="Deployment alert"
+      aria-label={t("aria.deploymentAlert")}
       className="min-h-10 shrink-0 items-center *:[svg]:text-warning data-[variant=error]:*:[svg]:text-destructive rounded-none border-x-0 border-t-0 border-b-warning/25 bg-warning/10 px-4 py-2 text-[13px] leading-5 text-foreground data-[variant=error]:border-b-destructive/25 data-[variant=error]:bg-destructive/10"
     >
       <Icon aria-hidden />
       <AlertTitle className="flex flex-wrap items-center gap-x-2">
-        {deploymentWarningContent(top.id).title}
+        {deploymentWarningContent(top.id, t).title}
         <SheetTrigger
           handle={handle}
           render={
             <Button variant="link" className="h-auto p-0 text-[13px] leading-5 font-medium text-foreground underline" />
           }
         >
-          Review
+          {t("action.review")}
         </SheetTrigger>
       </AlertTitle>
     </Alert>

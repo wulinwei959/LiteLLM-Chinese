@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 import { BookOpen, Plus, Sparkles } from "lucide-react";
 
@@ -49,6 +50,7 @@ interface DecisionModelCardProps {
 }
 
 function DecisionModelCard({ row, canAddModels }: DecisionModelCardProps) {
+  const t = useTranslations("aiHub");
   const { displayName } = getProviderLogoAndName(row.provider);
   const link = cardLink(row);
   return (
@@ -75,7 +77,7 @@ function DecisionModelCard({ row, canAddModels }: DecisionModelCardProps) {
         {canAddModels && (
           <Button size="xs" variant="outline" nativeButton={false} role="link" render={<a href={addModelHref(row)} />}>
             <Plus />
-            Add model
+            {t("decisionModels.addModel")}
           </Button>
         )}
       </div>
@@ -89,6 +91,7 @@ interface DecisionModelGardenProps {
 }
 
 const DecisionModelGarden: React.FC<DecisionModelGardenProps> = ({ accessToken, canAddModels }) => {
+  const t = useTranslations("aiHub");
   const { data: costMap } = useModelCostMap(true, true);
   const { data: providerFields } = useProviderFields();
   const { data: proxyProviders, isLoading: proxyProvidersLoading } = useProxyDecisionProviders(accessToken);
@@ -118,7 +121,7 @@ const DecisionModelGarden: React.FC<DecisionModelGardenProps> = ({ accessToken, 
           <Sparkles className="size-4 text-muted-foreground" />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="m-0 text-base font-semibold text-foreground">Decision models LiteLLM supports</h3>
+          <h3 className="m-0 text-base font-semibold text-foreground">{t("decisionModels.title")}</h3>
           <p className="m-0 mt-0.5 text-sm text-muted-foreground">
             {routedRows.length} decision {plural(routedRows.length, "model", "models")} across {routedProviderCount}{" "}
             {plural(routedProviderCount, "provider", "providers")} {plural(routedRows.length, "answers", "answer")} on{" "}
@@ -137,7 +140,7 @@ const DecisionModelGarden: React.FC<DecisionModelGardenProps> = ({ accessToken, 
           render={<a href={DECISIONS_DOCS_URL} target="_blank" rel="noopener noreferrer" />}
         >
           <BookOpen />
-          Decisions docs
+          {t("decisionModels.docs")}
         </Button>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

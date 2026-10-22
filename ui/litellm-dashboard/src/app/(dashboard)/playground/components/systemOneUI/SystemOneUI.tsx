@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -55,11 +56,12 @@ function SetupField({ label, htmlFor, children }: { label: string; htmlFor: stri
 }
 
 function ExamplesMenu({ onPick }: { onPick: (id: string) => void }) {
+  const t = useTranslations("playground.systemOne");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
         <FileText className="text-muted-foreground" />
-        Load example
+        {t("loadExample")}
         <ChevronDown className="text-muted-foreground" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
@@ -78,6 +80,7 @@ function getCustomProxyBaseUrl(): string | undefined {
 }
 
 export default function SystemOneUI({ accessToken, disabledPersonalKeyCreation = false }: SystemOneUIProps) {
+  const t = useTranslations("playground.systemOne");
   const [apiKeySource, setApiKeySource] = useState<ApiKeySource>(disabledPersonalKeyCreation ? "custom" : "session");
   const [customApiKey, setCustomApiKey] = useState("");
   const effectiveApiKey = apiKeySource === "session" ? accessToken || "" : customApiKey.trim();
@@ -96,9 +99,9 @@ export default function SystemOneUI({ accessToken, disabledPersonalKeyCreation =
   const validated = useMemo(
     () =>
       endpoint === "/v1/decisions"
-        ? ({ endpoint, validation: validateOpenAIDecisionsPayload(rawPayload) } as const)
-        : ({ endpoint, validation: validateSystemOnePayload(rawPayload, endpoint) } as const),
-    [rawPayload, endpoint],
+        ? ({ endpoint, validation: validateOpenAIDecisionsPayload(rawPayload, t) } as const)
+        : ({ endpoint, validation: validateSystemOnePayload(rawPayload, t, endpoint) } as const),
+    [rawPayload, endpoint, t],
   );
   const validation = validated.validation;
 
@@ -167,9 +170,9 @@ export default function SystemOneUI({ accessToken, disabledPersonalKeyCreation =
   return (
     <div className="flex h-full min-h-0 flex-col overflow-auto p-4 xl:overflow-hidden">
       <div className="mx-auto grid w-full max-w-[1400px] gap-4 xl:min-h-0 xl:flex-1 xl:grid-cols-[minmax(0,11fr)_minmax(0,9fr)]">
-        <section className="flex min-h-96 flex-col gap-4 xl:min-h-0" aria-label="Decisions request editor">
+        <section className="flex min-h-96 flex-col gap-4 xl:min-h-0" aria-label={t("aria.decisionsEditor")}>
           <div className="grid gap-3 rounded-lg border bg-card p-3 sm:grid-cols-3">
-            <SetupField label="Endpoint" htmlFor="decision-endpoint">
+            <SetupField label={t("field.endpoint")} htmlFor="decision-endpoint">
               <Select
                 value={endpoint}
                 onValueChange={(value) => {
@@ -179,7 +182,7 @@ export default function SystemOneUI({ accessToken, disabledPersonalKeyCreation =
                   }
                 }}
               >
-                <SelectTrigger id="decision-endpoint" className="w-full" aria-label="Decision endpoint">
+                <SelectTrigger id="decision-endpoint" className="w-full" aria-label={t("aria.decisionEndpoint")}>
                   <SelectValue>{endpoint}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -188,24 +191,24 @@ export default function SystemOneUI({ accessToken, disabledPersonalKeyCreation =
                 </SelectContent>
               </Select>
             </SetupField>
-            <SetupField label="Model" htmlFor="decision-model">
+            <SetupField label={t("field.model")} htmlFor="decision-model">
               <SearchSelect
                 id="decision-model"
-                aria-label="Decision model"
+                aria-label={t("aria.decisionModel")}
                 options={decisionModels.map((model) => ({ label: model, value: model }))}
                 value={payloadModel(rawPayload) ?? null}
                 onValueChange={handleModelPick}
-                placeholder={decisionModels.length > 0 ? "Pick a decision model" : "No decision models yet"}
-                emptyText="No decision models found"
+                placeholder={decisionModels.length > 0 ? t("field.pickDecisionModel") : t("field.noDecisionModelsYet")}
+                emptyText={t("field.noDecisionModelsFound")}
                 allowClear={false}
               />
               {decisionModelsLoaded && decisionModels.length === 0 && (
                 <a href={uiHref("models-and-endpoints")} className="text-xs text-primary underline">
-                  Add a decision model
+                  {t("action.addDecisionModel")}
                 </a>
               )}
             </SetupField>
-            <SetupField label="API key" htmlFor="decision-key-source">
+            <SetupField label={t("field.apiKey")} htmlFor="decision-key-source">
               <Select
                 value={apiKeySource}
                 onValueChange={(value) => {
@@ -215,23 +218,25 @@ export default function SystemOneUI({ accessToken, disabledPersonalKeyCreation =
                 }}
                 disabled={disabledPersonalKeyCreation}
               >
-                <SelectTrigger id="decision-key-source" className="w-full" aria-label="Virtual Key Source">
-                  <SelectValue>{apiKeySource === "custom" ? "Virtual Key" : "Current UI Session"}</SelectValue>
+                <SelectTrigger id="decision-key-source" className="w-full" aria-label={t("aria.virtualKeySource")}>
+                  <SelectValue>
+                    {apiKeySource === "custom" ? t("field.virtualKey") : t("field.currentUiSession")}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="session" disabled={!accessToken}>
-                    Current UI Session
+                    {t("field.currentUiSession")}
                   </SelectItem>
-                  <SelectItem value="custom">Virtual Key</SelectItem>
+                  <SelectItem value="custom">{t("field.virtualKey")}</SelectItem>
                 </SelectContent>
               </Select>
               {apiKeySource === "custom" && (
                 <Input
                   type="password"
-                  aria-label="Virtual Key"
+                  aria-label={t("field.virtualKey")}
                   value={customApiKey}
                   onChange={(event) => setCustomApiKey(event.target.value)}
-                  placeholder="Enter Virtual Key"
+                  placeholder={t("field.enterVirtualKey")}
                 />
               )}
             </SetupField>
@@ -239,7 +244,7 @@ export default function SystemOneUI({ accessToken, disabledPersonalKeyCreation =
 
           <Tabs
             role="group"
-            aria-label="Request editor"
+            aria-label={t("aria.requestEditor")}
             value={view}
             onValueChange={(value) => (value === "form" || value === "curl") && setView(value)}
             className={cn(
@@ -248,17 +253,17 @@ export default function SystemOneUI({ accessToken, disabledPersonalKeyCreation =
             )}
           >
             <div className="flex flex-wrap items-center justify-between gap-2 border-b px-3 py-2">
-              <TabsList aria-label="Request editor view">
-                <TabsTrigger value="form">Form</TabsTrigger>
+              <TabsList aria-label={t("aria.requestEditorView")}>
+                <TabsTrigger value="form">{t("tab.form")}</TabsTrigger>
                 <TabsTrigger value="curl">cURL</TabsTrigger>
               </TabsList>
               <div className="flex items-center gap-2">
                 <ExamplesMenu onPick={handlePresetPick} />
-                <SimpleTooltip content="Clear form">
+                <SimpleTooltip content={t("action.clearForm")}>
                   <Button
                     variant="ghost"
                     size="icon"
-                    aria-label="Clear form"
+                    aria-label={t("action.clearForm")}
                     className="hover:text-destructive"
                     onClick={() => handlePayloadChange(clearedPayload)}
                     disabled={rawPayload === clearedPayload || isLoading}
@@ -266,12 +271,12 @@ export default function SystemOneUI({ accessToken, disabledPersonalKeyCreation =
                     <Eraser />
                   </Button>
                 </SimpleTooltip>
-                <SimpleTooltip content="How to call /v1/decisions and /v1/systemone">
+                <SimpleTooltip content={t("action.howToCall")}>
                   <a
                     href={DECISIONS_DOCS_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label="How to call /v1/decisions and /v1/systemone"
+                    aria-label={t("action.howToCall")}
                     className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "shrink-0")}
                   >
                     <BookOpen />
@@ -307,26 +312,29 @@ export default function SystemOneUI({ accessToken, disabledPersonalKeyCreation =
             </TabsContent>
             <div
               role="toolbar"
-              aria-label="Request actions"
+              aria-label={t("aria.requestActions")}
               className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/50 px-4 py-3"
             >
               <ValidationSummary validation={validation} />
               <div className="flex items-center gap-2">
                 {isLoading && (
                   <Button variant="outline" onClick={clearRequestState}>
-                    Cancel request
+                    {t("action.cancelRequest")}
                   </Button>
                 )}
                 <Button size="sm" onClick={handleSend} disabled={!validation.isValid || isLoading || !effectiveApiKey}>
                   {isLoading ? <LoaderCircle className="animate-spin" /> : <Send />}
-                  Send
+                  {t("action.send")}
                 </Button>
               </div>
             </div>
           </Tabs>
         </section>
 
-        <section className="grid content-start gap-4 xl:min-h-0 xl:overflow-auto" aria-label="Decisions results">
+        <section
+          className="grid content-start gap-4 xl:min-h-0 xl:overflow-auto"
+          aria-label={t("aria.decisionsResults")}
+        >
           <ResponseView
             response={systemOne.data?.response}
             view={view}

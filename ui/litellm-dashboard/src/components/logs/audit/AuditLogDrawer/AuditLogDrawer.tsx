@@ -55,7 +55,13 @@ function CopyableJsonBlock({ label, value }: { label: string; value: Record<stri
     <div className="overflow-hidden rounded-sm border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border bg-muted px-3 py-2">
         <span className="text-xs font-semibold text-muted-foreground">{label}</span>
-        <Button variant="ghost" size="icon-xs" onClick={handleCopy} title="Copy JSON" aria-label="Copy JSON">
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          onClick={handleCopy}
+          title={t("audit.copyJson")}
+          aria-label={t("audit.copyJson")}
+        >
           {copied ? <Check className="text-success" /> : <Copy />}
         </Button>
       </div>
@@ -143,17 +149,18 @@ function DiffSection({ log }: { log: AuditLogEntry }) {
             <div className="space-y-1 px-3 py-3 text-xs">
               {value.token !== undefined && (
                 <p>
-                  <span className="text-muted-foreground">Token:</span> {value.token ?? "N/A"}
+                  <span className="text-muted-foreground">{t("audit.token")}</span> {value.token ?? "N/A"}
                 </p>
               )}
               {value.spend !== undefined && (
                 <p>
-                  <span className="text-muted-foreground">Spend:</span> ${Number(value.spend).toFixed(6)}
+                  <span className="text-muted-foreground">{t("audit.spend")}</span> ${Number(value.spend).toFixed(6)}
                 </p>
               )}
               {value.max_budget !== undefined && (
                 <p>
-                  <span className="text-muted-foreground">Max Budget:</span> ${Number(value.max_budget).toFixed(6)}
+                  <span className="text-muted-foreground">{t("audit.maxBudget")}</span> $
+                  {Number(value.max_budget).toFixed(6)}
                 </p>
               )}
             </div>
@@ -182,7 +189,7 @@ export function AuditLogDrawer({ open, onClose, log }: AuditLogDrawerProps) {
   return (
     <Sheet open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
       <ResizableSheetContent storageKey="litellm:auditLogDrawerWidth" className="gap-0 p-0">
-        <SheetTitle className="sr-only">Audit log details</SheetTitle>
+        <SheetTitle className="sr-only">{t("audit.title")}</SheetTitle>
 
         <div className="flex shrink-0 items-center gap-3 border-b border-border bg-card px-6 py-4">
           <StatusBadge tone={ACTION_TONE[log.action] ?? "neutral"} label={log.action} />
@@ -193,25 +200,25 @@ export function AuditLogDrawer({ open, onClose, log }: AuditLogDrawerProps) {
 
         <div className="px-6 py-5">
           <div className="mb-5 rounded-lg border border-border bg-muted p-4">
-            <p className="mb-2 text-xs font-semibold tracking-wide text-foreground uppercase">Details</p>
-            <MetadataRow label="Table" value={tableDisplay} />
+            <p className="mb-2 text-xs font-semibold tracking-wide text-foreground uppercase">{t("audit.details")}</p>
+            <MetadataRow label={t("audit.table")} value={tableDisplay} />
             <MetadataRow
-              label="Object ID"
+              label={t("audit.objectId")}
               value={
                 <span className="inline-flex items-center gap-1 font-mono text-xs">
                   {log.object_id}
-                  <CopyButton value={log.object_id} label="Copy object ID" />
+                  <CopyButton value={log.object_id} label={t("audit.copyObjectId")} />
                 </span>
               }
             />
-            <MetadataRow label="Changed By" value={<DefaultProxyAdminTag userId={log.changed_by} />} />
+            <MetadataRow label={t("audit.changedBy")} value={<DefaultProxyAdminTag userId={log.changed_by} />} />
             <MetadataRow
-              label="API Key (Hash)"
+              label={t("audit.apiKeyHash")}
               value={
                 log.changed_by_api_key ? (
                   <span className="inline-flex items-center gap-1 font-mono text-xs break-all">
                     {log.changed_by_api_key}
-                    <CopyButton value={log.changed_by_api_key} label="Copy API key hash" />
+                    <CopyButton value={log.changed_by_api_key} label={t("audit.copyApiKeyHash")} />
                   </span>
                 ) : (
                   "—"

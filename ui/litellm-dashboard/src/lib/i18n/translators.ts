@@ -319,3 +319,43 @@ function usePlaygroundTranslator() {
   return useTranslations("playground");
 }
 export type PlaygroundTranslator = ReturnType<typeof usePlaygroundTranslator>;
+
+function useSystemOneTranslator() {
+  return useTranslations("playground.systemOne");
+}
+export type SystemOneTranslator = ReturnType<typeof useSystemOneTranslator>;
+
+function usePlaygroundInspectorTranslator() {
+  return useTranslations("playground.inspector");
+}
+export type PlaygroundInspectorTranslator = ReturnType<typeof usePlaygroundInspectorTranslator>;
+
+function usePlaygroundModelNameTranslator() {
+  return useTranslations("playground.modelName");
+}
+export type PlaygroundModelNameTranslator = ReturnType<typeof usePlaygroundModelNameTranslator>;
+
+function usePlaygroundChatTranslator() {
+  return useTranslations("playground.chat");
+}
+export type PlaygroundChatTranslator = ReturnType<typeof usePlaygroundChatTranslator>;
+
+function useTelemetryTranslator() {
+  return useTranslations("telemetry");
+}
+export type TelemetryTranslator = ReturnType<typeof useTelemetryTranslator>;
+
+function useModelAddTranslator() {
+  return useTranslations("modelAdd");
+}
+export type ModelAddTranslator = ReturnType<typeof useModelAddTranslator>;
+
+function useDeploymentHealthTranslator() {
+  return useTranslations("deploymentHealth");
+}
+export type DeploymentHealthTranslator = ReturnType<typeof useDeploymentHealthTranslator>;
+
+function useRouterSettingsTranslator() {
+  return useTranslations("routerSettings.requestTagMappings");
+}
+export type RouterSettingsTranslator = ReturnType<typeof useRouterSettingsTranslator>;

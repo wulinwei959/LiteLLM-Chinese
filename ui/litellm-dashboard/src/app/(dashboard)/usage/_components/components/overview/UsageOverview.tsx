@@ -6,6 +6,7 @@
  * matching colors.
  */
 
+import { useTranslations } from "next-intl";
 import { type ReactNode, useMemo, useState } from "react";
 import type { DailyData } from "@/components/UsagePage/types";
 import { KeyRound, Users } from "lucide-react";
@@ -59,6 +60,7 @@ export default function UsageOverview({
   providerBreakdown,
   budget,
 }: UsageOverviewProps) {
+  const t = useTranslations("usage.overview");
   const [state, setState] = useState<BreakdownState>({ metric: "spend", dimension: "model_groups" });
   const [granularity, setGranularity] = useState<Granularity>("day");
   const [scale, setScale] = useState<StackedUsageScale>("linear");
@@ -84,12 +86,12 @@ export default function UsageOverview({
           <>
             <BreakdownControls state={state} onChange={setState} showDimension={false} />
             <Segmented
-              label="Bucket size"
+              label={t("overview.bucketSize")}
               value={granularity}
               options={GRANULARITY_OPTIONS}
               onChange={setGranularity}
             />
-            <Segmented label="Scale" value={scale} options={SCALE_OPTIONS} onChange={setScale} />
+            <Segmented label={t("overview.scale")} value={scale} options={SCALE_OPTIONS} onChange={setScale} />
           </>
         }
         bodyClassName="px-0 pt-4 pb-0"
@@ -112,7 +114,7 @@ export default function UsageOverview({
           )}
         </div>
         <div className={cn("border-t pt-3 pb-2", PANEL_INSET_X)}>
-          <h4 className="text-sm leading-5 font-medium text-foreground">Top models</h4>
+          <h4 className="text-sm leading-5 font-medium text-foreground">{t("overview.topModels")}</h4>
           <Leaderboard
             ranking={ranking}
             series={dailySeries}
@@ -127,10 +129,10 @@ export default function UsageOverview({
       {topAgents}
       {providerBreakdown}
 
-      <Panel icon={KeyRound} title="Top Virtual Keys">
+      <Panel icon={KeyRound} title={t("overview.topVirtualKeys")}>
         {topKeys}
       </Panel>
-      <Panel icon={Users} title="Top Users by Spend">
+      <Panel icon={Users} title={t("overview.topUsersBySpend")}>
         {topUsers}
       </Panel>
       {gatewayByEndpoint}

@@ -2,8 +2,7 @@ import { screen, waitFor } from "@testing-library/react";
 import LogsPage from "./page";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import SpendLogsTable from "./index";
-import { renderWithProviders, testQueryClient } from "../../../tests/test-utils";
+import { renderWithProviders, testQueryClient } from "../../../../tests/test-utils";
 import { authorizedSession } from "@tests/mocks/authorizedSession";
 
 const { useAuthorizedMock, useOrganizationsMock } = vi.hoisted(() => ({

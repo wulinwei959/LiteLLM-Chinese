@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 import { ArrowRight, Bot } from "lucide-react";
 import { StackedUsageChart } from "@/components/shared/charts";
@@ -98,6 +99,7 @@ function AgentItem({
   color: string | undefined;
   onOpen?: (agent: AgentRow) => void;
 }) {
+  const t = useTranslations("usage.overview");
   return (
     <li className="group grid grid-cols-[1.5rem_auto_minmax(0,1fr)_auto] items-center gap-3 py-2.5">
       <span className="text-sm tabular-nums text-muted-foreground">{rank}.</span>
@@ -119,7 +121,7 @@ function AgentItem({
             onClick={() => onOpen(agent)}
             className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
-            View activity
+            {t("topAgents.viewActivity")}
             <ArrowRight aria-hidden="true" className="size-3 transition-transform group-hover:translate-x-0.5" />
           </button>
         ) : (
@@ -137,8 +139,9 @@ function AgentItem({
 }
 
 function TopAgentsBody({ loading, empty, children }: { loading: boolean; empty: boolean; children: React.ReactNode }) {
+  const t = useTranslations("usage.overview");
   if (loading) return <ChartSkeleton className="mx-5 h-64 w-auto" />;
-  if (empty) return <p className="py-10 text-center text-xs text-muted-foreground">No agent traffic in this range</p>;
+  if (empty) return <p className="py-10 text-center text-xs text-muted-foreground">{t("topAgents.empty")}</p>;
   return <>{children}</>;
 }
 
@@ -163,6 +166,7 @@ export default function TopAgents({
   totalTokens: number;
   onOpenAgent?: (agent: AgentRow) => void;
 }) {
+  const t = useTranslations("usage.overview");
   const [metric, setMetric] = useState<UsageMetric>("tokens");
   const allAgents = useMemo(() => topAgents(rows ?? []), [rows]);
   const agents = useMemo(
@@ -192,10 +196,10 @@ export default function TopAgents({
   return (
     <Panel
       icon={Bot}
-      title="Top agents"
+      title={t("topAgents.title")}
       subtitle={subtitle}
       testId="top-agents"
-      action={<Segmented label="Agent metric" value={metric} options={METRICS} onChange={setMetric} />}
+      action={<Segmented label={t("topAgents.metric")} value={metric} options={METRICS} onChange={setMetric} />}
       bodyClassName="px-0 pt-4 pb-0"
     >
       <TopAgentsBody loading={loading} empty={agents.length === 0}>

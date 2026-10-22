@@ -34,16 +34,17 @@ export function EndpointMenu({
   value: EndpointType;
   onValueChange: (value: EndpointType) => void;
 }) {
+  const t = useTranslations("playground.controls");
   const current = ENDPOINT_OPTIONS.find((option) => option.value === value);
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<InputGroupButton size="xs" className="shrink-0" aria-label="Endpoint" />}>
+      <DropdownMenuTrigger render={<InputGroupButton size="xs" className="shrink-0" aria-label={t("aria.endpoint")} />}>
         <span className="font-mono text-xs">{shortEndpoint(current?.label ?? value)}</span>
         <ChevronDown className="text-muted-foreground" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
         <DropdownMenuRadioGroup value={value} onValueChange={(next) => onValueChange(next as EndpointType)}>
-          <DropdownMenuLabel>Endpoint</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("label.endpoint")}</DropdownMenuLabel>
           {ENDPOINT_OPTIONS.map((option) => (
             <DropdownMenuRadioItem key={option.value} value={option.value} closeOnClick className="font-mono text-xs">
               {option.label}
@@ -66,13 +67,17 @@ export function VoiceMenu({
   const current = OPEN_AI_VOICE_SELECT_OPTIONS.find((option) => option.value === value);
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<InputGroupButton size="xs" className="shrink-0" aria-label="Voice" />}>
-        <span className="text-xs">Voice: {current ? t(current.labelKey).split(" - ")[0] : value}</span>
+      <DropdownMenuTrigger
+        render={<InputGroupButton size="xs" className="shrink-0" aria-label={t("voices.ariaLabel")} />}
+      >
+        <span className="text-xs">
+          {t("voices.labelWith", { voice: current ? t(current.labelKey).split(" - ")[0] : value })}
+        </span>
         <ChevronDown className="text-muted-foreground" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-72">
         <DropdownMenuRadioGroup value={value} onValueChange={(next) => onValueChange(next as OpenAIVoice)}>
-          <DropdownMenuLabel>Voice</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("voices.label")}</DropdownMenuLabel>
           {OPEN_AI_VOICE_SELECT_OPTIONS.map((option) => (
             <DropdownMenuRadioItem key={option.value} value={option.value} closeOnClick>
               {t(option.labelKey)}

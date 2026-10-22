@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 import { DataTable } from "@/components/shared/DataTable";
 import zh from "@/messages/zh-CN.json";
 
-import { renderWithProviders } from "../../../tests/test-utils";
+import { renderWithProviders } from "../../../../tests/test-utils";
 
 import type { LogEntry } from "../types";
 import { getRequestLogsTableColumns } from "./RequestLogsTableColumns";
