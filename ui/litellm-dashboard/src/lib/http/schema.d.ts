@@ -12864,7 +12864,7 @@ export interface paths {
          *     Example:
          *     ```bash
          *     curl --location --request DELETE 'http://0.0.0.0:4000/project/delete' \
-         *     --header 'Authorization: Bearer sk-1234' \
+         *     --header "Authorization: Bearer $LITELLM_MASTER_KEY" \
          *     --header 'Content-Type: application/json' \
          *     --data '{
          *         "project_ids": ["project-123", "project-456"]
@@ -12894,7 +12894,7 @@ export interface paths {
          *     Example:
          *     ```bash
          *     curl --location 'http://0.0.0.0:4000/project/info?project_id=project-123' \
-         *     --header 'Authorization: Bearer sk-1234'
+         *     --header "Authorization: Bearer $LITELLM_MASTER_KEY"
          *     ```
          */
         get: operations["project_info_project_info_get"];
@@ -12920,7 +12920,7 @@ export interface paths {
          *     Example:
          *     ```bash
          *     curl --location 'http://0.0.0.0:4000/project/list' \
-         *     --header 'Authorization: Bearer sk-1234'
+         *     --header "Authorization: Bearer $LITELLM_MASTER_KEY"
          *     ```
          */
         get: operations["list_projects_project_list_get"];
@@ -12973,7 +12973,7 @@ export interface paths {
          *
          *     ```bash
          *     curl --location 'http://0.0.0.0:4000/project/new' \
-         *     --header 'Authorization: Bearer sk-1234' \
+         *     --header "Authorization: Bearer $LITELLM_MASTER_KEY" \
          *     --header 'Content-Type: application/json' \
          *     --data '{
          *         "project_alias": "flight-search-assistant",
@@ -13000,7 +13000,7 @@ export interface paths {
          *
          *     ```bash
          *     curl --location 'http://0.0.0.0:4000/project/new' \
-         *     --header 'Authorization: Bearer sk-1234' \
+         *     --header "Authorization: Bearer $LITELLM_MASTER_KEY" \
          *     --header 'Content-Type: application/json' \
          *     --data '{
          *         "project_alias": "hotel-recommendations",
@@ -13054,7 +13054,7 @@ export interface paths {
          *     Example:
          *     ```bash
          *     curl --location 'http://0.0.0.0:4000/project/update' \
-         *     --header 'Authorization: Bearer sk-1234' \
+         *     --header "Authorization: Bearer $LITELLM_MASTER_KEY" \
          *     --header 'Content-Type: application/json' \
          *     --data '{
          *         "project_id": "project-123",
@@ -14342,27 +14342,6 @@ export interface paths {
         trace?: never;
     };
     "/robots.txt": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Robots
-         * @description Block all web crawlers from indexing the proxy server endpoints
-         *     This is useful for ensuring that the API endpoints aren't indexed by search engines
-         */
-        get: operations["get_robots_robots_txt_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/roi-calculator/connections/test": {
         parameters: {
             query?: never;
             header?: never;
@@ -69263,156 +69242,6 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DeleteProjectRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LiteLLM_ProjectTable"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    project_info_project_info_get: {
-        parameters: {
-            query: {
-                project_id: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LiteLLM_ProjectTable"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    list_projects_project_list_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LiteLLM_ProjectTable"][];
-                };
-            };
-        };
-    };
-    new_project_project_new_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["NewProjectRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["NewProjectResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_project_project_update_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateProjectRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LiteLLM_ProjectTable"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_prompt_prompts_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
                 "application/json": components["schemas"]["Prompt"];
             };
         };
@@ -70198,27 +70027,7 @@ export interface operations {
             };
         };
     };
-    get_robots_robots_txt_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    test_roi_calculator_connections_roi_calculator_connections_test_post: {
+    create_realtime_transcription_session_realtime_transcription_sessions_post: {
         parameters: {
             query?: never;
             header?: never;
