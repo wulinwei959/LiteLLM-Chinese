@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { openAIDecisionsRequestSchema } from "./openAIDecisions";
+import { decisionsInputSchema } from "./openAIDecisions";
 import { parseJson } from "./validatePayload";
 
 const questionFields = { name: z.string().nullish(), instructions: z.string().optional() };
@@ -19,7 +19,7 @@ const formQuestion = z.discriminatedUnion("type", [
   }),
 ]);
 const formPayload = z.looseObject({
-  input: openAIDecisionsRequestSchema.shape.input.optional(),
+  input: decisionsInputSchema.optional(),
   questions: z.array(formQuestion).optional(),
   safety_identifier: z.string().nullish(),
 });

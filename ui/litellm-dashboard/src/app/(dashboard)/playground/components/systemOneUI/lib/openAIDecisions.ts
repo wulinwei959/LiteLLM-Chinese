@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { SystemOneTranslator } from "@/lib/i18n/translators";
 
 const contentPart = z.discriminatedUnion("type", [
   z.strictObject({ type: z.literal("input_text"), text: z.string() }),
@@ -9,51 +10,55 @@ const inputMessage = z.strictObject({
   type: z.literal("message").optional(),
   content: z.union([z.string(), z.array(contentPart)]),
 });
+export const decisionsInputSchema = z.union([z.string(), z.array(inputMessage)]);
 const questionFields = { name: z.string().nullish(), instructions: z.string() };
 const choiceValue = z.union([z.string(), z.boolean()]);
-const choiceQuestion = z
-  .strictObject({
-    ...questionFields,
-    type: z.literal("choice"),
-    choices: z
-      .array(z.strictObject({ value: choiceValue, description: z.string().nullish() }))
-      .min(2)
-      .max(255),
-  })
-  .refine(
-    (question) => new Set(question.choices.map((choice) => String(choice.value))).size === question.choices.length,
-    {
-      message: "Choice values must be unique, including their string representations.",
-      path: ["choices"],
-    },
-  );
 
-const requestFields = {
-  model: z
-    .string()
-    .refine((value) => value.trim().length > 0, "Model must be a non-empty string.")
-    .optional(),
-  input: z.union([z.string(), z.array(inputMessage)]),
-  questions: z
-    .array(
-      z.discriminatedUnion("type", [
-        z.strictObject({ ...questionFields, type: z.literal("predicate") }),
-        choiceQuestion,
-        z.strictObject({
-          ...questionFields,
-          type: z.literal("score"),
-          levels: z
-            .array(z.strictObject({ label: z.string(), description: z.string().nullish() }))
-            .min(2)
-            .max(10),
-        }),
-      ]),
-    )
-    .min(1)
-    .max(128),
-  safety_identifier: z.string().nullish(),
+export const buildOpenAIDecisionsRequestSchema = (t: SystemOneTranslator) => {
+  const choiceQuestion = z
+    .strictObject({
+      ...questionFields,
+      type: z.literal("choice"),
+      choices: z
+        .array(z.strictObject({ value: choiceValue, description: z.string().nullish() }))
+        .min(2)
+        .max(255),
+    })
+    .refine(
+      (question) => new Set(question.choices.map((choice) => String(choice.value))).size === question.choices.length,
+      {
+        message: t("validation.choiceValuesUnique"),
+        path: ["choices"],
+      },
+    );
+
+  const requestFields = {
+    model: z
+      .string()
+      .refine((value) => value.trim().length > 0, t("validation.modelNonEmpty"))
+      .optional(),
+    input: decisionsInputSchema,
+    questions: z
+      .array(
+        z.discriminatedUnion("type", [
+          z.strictObject({ ...questionFields, type: z.literal("predicate") }),
+          choiceQuestion,
+          z.strictObject({
+            ...questionFields,
+            type: z.literal("score"),
+            levels: z
+              .array(z.strictObject({ label: z.string(), description: z.string().nullish() }))
+              .min(2)
+              .max(10),
+          }),
+        ]),
+      )
+      .min(1)
+      .max(128),
+    safety_identifier: z.string().nullish(),
+  };
+  return z.looseObject(requestFields);
 };
-export const openAIDecisionsRequestSchema = z.looseObject(requestFields);
 
 const probability = z.number().finite().min(0).max(1);
 const answerFields = { name: z.string().nullable() };
@@ -94,5 +99,5 @@ export const openAIDecisionsResponseSchema = z.looseObject({
   usage: z.looseObject(usageFields),
 });
 
-export type OpenAIDecisionsRequest = z.infer<typeof openAIDecisionsRequestSchema>;
+export type OpenAIDecisionsRequest = z.infer<ReturnType<typeof buildOpenAIDecisionsRequestSchema>>;
 export type OpenAIDecisionsResponse = z.infer<typeof openAIDecisionsResponseSchema>;

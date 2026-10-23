@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { renderWithProviders } from "../../../../../../tests/test-utils";
 import { IssueList, ValidationStatus, ValidationSummary } from "./ValidationFeedback";
 import type { PayloadValidation } from "./lib/validatePayload";
 
@@ -10,7 +11,7 @@ const validation = (issues: PayloadValidation<unknown>["issues"]): PayloadValida
 
 describe("ValidationStatus", () => {
   it("counts only errors as issues", () => {
-    render(
+    renderWithProviders(
       <ValidationStatus
         validation={validation([
           { path: "state", label: "Input", message: "Required", severity: "error" },
@@ -19,35 +20,35 @@ describe("ValidationStatus", () => {
         ])}
       />,
     );
-    expect(screen.getByText("2 issues")).toBeInTheDocument();
+    expect(screen.getByText("2 个问题")).toBeInTheDocument();
   });
 
   it("reports a valid payload when only warnings remain", () => {
-    render(
+    renderWithProviders(
       <ValidationStatus validation={validation([{ path: "q", label: "q", message: "Long", severity: "warning" }])} />,
     );
-    expect(screen.getByText("Valid payload")).toBeInTheDocument();
+    expect(screen.getByText("请求内容有效")).toBeInTheDocument();
   });
 });
 
 describe("IssueList", () => {
   it("lists every issue under its field label and renders nothing when there are none", () => {
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <IssueList
         id="issues"
         validation={validation([{ path: "state", label: "Input", message: "Required", severity: "error" }])}
       />,
     );
-    expect(screen.getByRole("list", { name: "Payload validation issues" })).toHaveTextContent("InputRequired");
+    expect(screen.getByRole("list", { name: "请求内容校验问题" })).toHaveTextContent("InputRequired");
     rerender(<IssueList id="issues" validation={validation([])} />);
-    expect(screen.queryByRole("list", { name: "Payload validation issues" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("list", { name: "请求内容校验问题" })).not.toBeInTheDocument();
   });
 });
 
 describe("ValidationSummary", () => {
   it("says ready when nothing blocks the request and counts the errors otherwise", () => {
-    const { rerender } = render(<ValidationSummary validation={validation([])} />);
-    expect(screen.getByRole("status")).toHaveTextContent("Ready to send");
+    const { rerender } = renderWithProviders(<ValidationSummary validation={validation([])} />);
+    expect(screen.getByRole("status")).toHaveTextContent("可以发送");
     rerender(
       <ValidationSummary
         validation={validation([
@@ -56,6 +57,6 @@ describe("ValidationSummary", () => {
         ])}
       />,
     );
-    expect(screen.getByRole("status")).toHaveTextContent("1 issue to fix");
+    expect(screen.getByRole("status")).toHaveTextContent("1 个问题待修正");
   });
 });

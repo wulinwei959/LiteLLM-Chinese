@@ -1,10 +1,10 @@
 import { z } from "zod";
 import type { SystemOneTranslator } from "@/lib/i18n/translators";
 import { issueLabel } from "./issueLabel";
-import { openAIDecisionsRequestSchema, type OpenAIDecisionsRequest } from "./openAIDecisions";
+import { buildOpenAIDecisionsRequestSchema, type OpenAIDecisionsRequest } from "./openAIDecisions";
 import {
-  decisionsRequestSchema,
-  systemOneRequestSchema,
+  buildDecisionsRequestSchema,
+  buildSystemOneRequestSchema,
   type DecisionEndpoint,
   type PlaygroundRequest,
 } from "./schemas";
@@ -115,7 +115,7 @@ export function validateSystemOnePayload(
   t: SystemOneTranslator,
   endpoint: DecisionEndpoint = "/typesafe/v1/systemone",
 ): SystemOnePayloadValidation {
-  const schema = endpoint === "/v1/systemone" ? decisionsRequestSchema : systemOneRequestSchema;
+  const schema = endpoint === "/v1/systemone" ? buildDecisionsRequestSchema(t) : buildSystemOneRequestSchema(t);
   const result = validatePayload<PlaygroundRequest>(raw, schema, t);
   return requireContext(
     raw,
@@ -129,6 +129,6 @@ export function validateOpenAIDecisionsPayload(
   raw: string,
   t: SystemOneTranslator,
 ): PayloadValidation<OpenAIDecisionsRequest> {
-  const result = validatePayload<OpenAIDecisionsRequest>(raw, openAIDecisionsRequestSchema, t);
+  const result = validatePayload<OpenAIDecisionsRequest>(raw, buildOpenAIDecisionsRequestSchema(t), t);
   return requireContext(raw, "input", result, t);
 }

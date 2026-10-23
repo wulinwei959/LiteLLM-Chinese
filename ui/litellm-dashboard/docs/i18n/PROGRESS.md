@@ -4416,3 +4416,11 @@ roles.test.ts 补三条：全标签集落 `role.` 键、非标签透传、`forma
 测试翻面五文件：UsagePageView.test.tsx 的 "N ok"/"N failed"/title "75,000 tokens"/轴标 "Jan 1" 按 zh 目录值重写；advanced_date_picker.test.tsx 断言改 zh 日期正则（逗号版被组合格式化推翻，空格版即 zh 自然输出）；leftnav.test.tsx 首页 breadcrumb 断言重写并对 mock 目录补 home 键；DashboardHeader.test.tsx 六用例包 CommandPaletteProvider（426 簇面板接了 useTranslations 后裸渲染会抛）；HomePage.integration.test.tsx 迁 renderWithProviders、`beforeEach` 加 `testQueryClient.clear()`（gcTime Infinity 的首页 blog 缓存跨用例泄漏，426 簇凭据弹窗同方）、首页/用量/发送等断言翻面。
 
 验证：渲染扫描 12 页 15→0 命中；扩域 vitest（shared+usage+cost-optimization+dead-key+i18n，1081 例）42 红 = HEAD 基线逐文件一致，本簇净新增红 0；生产 typecheck 0 错；死键 0；eslint 触及文件与 HEAD 计数持平（leftnav 3 错、DashboardHeader.test 2 错皆上游快照既有）；prettier clean；`npm run build` exit 0。
+
+## 2026-10-23 第 430 簇：zod 请求校验消息改按译员构造
+
+上游快照把 playground systemOneUI 请求侧 schema 的 22 条校验消息硬编码成英文（schemas.ts 的 systemOneRequestSchema/decisionsRequestSchema 与 openAIDecisions.ts 的 openAIDecisionsRequestSchema），`validatePayload` 把 `issue.message` 原样转交 `toIssue`，中文界面的校验问题面板照旧出英文。改为译员参数化的构造函数 `buildSystemOneRequestSchema(t)`/`buildDecisionsRequestSchema(t)`/`buildOpenAIDecisionsRequestSchema(t)`（`SystemOneTranslator`，`playground.systemOne` 命名空间），消息逐条走 `t("validation.*")`；目录两侧新增 22 叶（11526→11548），en 值与原句逐字一致，zh 按该命名空间词汇表（instructions=指令、noul=是 / 否，属性名 'state'/'questions' 与 choice/noul/score 枚举值保留原文），带数字的三条参数化成 `{count}`。响应侧 schema 不动：`sendDecisionRequest` 把解析失败整体改写成 `"... response has an invalid shape."`，zod 消息不上屏。openAIDecisions.ts 拆出 `decisionsInputSchema` 具名导出供表单侧复用（原 `openAIDecisionsRequestSchema.shape.input` 读法随工厂失效，表单回读不展示消息、无需译员）。类型导出改 `z.infer<ReturnType<...>>`。
+
+测试：validatePayload.test.ts 22 条消息断言翻成 zh 目录值；openAIDecisionsForm.test.ts 五例漏传 t（HEAD 基线即 TypeError 红），补 zh 译员后转绿；ValidationFeedback.test.tsx 四例裸 render 补 renderWithProviders 并翻面（2 个问题/请求内容有效/请求内容校验问题/可以发送/1 个问题待修正），playground 全量 533 例从 HEAD 86 红降至 77 红，逐测试名 diff 净新增 0。
+
+验证：lib 目录 8 文件 146 例全绿；生产 typecheck 0 错；死键 0；触及文件 eslint 0 错（validatePayload 1 条 warning 既有）；prettier clean；`npm run build` exit 0。剩余 77 红为 SystemOneUI/PlaygroundChat 集成族旧断言与 provider 缺线，按测试债逐文件收的既定口径另簇推进。

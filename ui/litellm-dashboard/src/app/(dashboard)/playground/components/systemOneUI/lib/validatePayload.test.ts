@@ -25,7 +25,7 @@ describe("validateSystemOnePayload", () => {
 
   it("requires an object root", () => {
     expect(validateSystemOnePayload("[]", t).issues).toContainEqual(
-      expect.objectContaining({ path: "root", message: "Payload must be a JSON object.", severity: "error" }),
+      expect.objectContaining({ path: "root", message: "请求内容必须是 JSON 对象。", severity: "error" }),
     );
   });
 
@@ -33,7 +33,7 @@ describe("validateSystemOnePayload", () => {
     expect(validateSystemOnePayload(requestWith({ state: undefined }), t).issues).toContainEqual(
       expect.objectContaining({
         path: "state",
-        message: "Required property 'state' is missing.",
+        message: "缺少必填属性 'state'。",
         severity: "error",
       }),
     );
@@ -42,7 +42,7 @@ describe("validateSystemOnePayload", () => {
 
   it.each([null, "", 123])("requires a non-empty string model when present: %s", (model) => {
     expect(validateSystemOnePayload(requestWith({ model }), t).issues).toContainEqual(
-      expect.objectContaining({ path: "model", message: "Model must be a non-empty string.", severity: "error" }),
+      expect.objectContaining({ path: "model", message: "模型必须是非空字符串。", severity: "error" }),
     );
   });
 
@@ -50,17 +50,17 @@ describe("validateSystemOnePayload", () => {
     expect(validateSystemOnePayload(JSON.stringify({ state: null }), t).issues).toContainEqual(
       expect.objectContaining({
         path: "questions",
-        message: "Required property 'questions' is missing.",
+        message: "缺少必填属性 'questions'。",
         severity: "error",
       }),
     );
   });
 
   it.each([
-    [null, "Questions must be a non-empty object."],
-    [[], "Questions must be a non-empty object."],
-    ["questions", "Questions must be a non-empty object."],
-    [{}, "At least one question is required."],
+    [null, "问题必须是非空对象。"],
+    [[], "问题必须是非空对象。"],
+    ["questions", "问题必须是非空对象。"],
+    [{}, "至少需要一个问题。"],
   ])("requires a non-empty questions object: %s", (questions, message) => {
     expect(validateSystemOnePayload(requestWith({ questions }), t).issues).toContainEqual(
       expect.objectContaining({ path: "questions", message, severity: "error" }),
@@ -71,7 +71,7 @@ describe("validateSystemOnePayload", () => {
     expect(validateSystemOnePayload(requestWith({ questions: { invalid: question } }), t).issues).toContainEqual(
       expect.objectContaining({
         path: "questions.invalid",
-        message: "Question must be an object.",
+        message: "问题必须是对象。",
         severity: "error",
       }),
     );
@@ -84,7 +84,7 @@ describe("validateSystemOnePayload", () => {
     ).toContainEqual(
       expect.objectContaining({
         path: "questions.invalid.type",
-        message: "Question type must be choice, noul, or score.",
+        message: "问题类型必须是 choice、noul 或 score。",
         severity: "error",
       }),
     );
@@ -96,7 +96,7 @@ describe("validateSystemOnePayload", () => {
     ).toContainEqual(
       expect.objectContaining({
         path: "questions.category.instructions",
-        message: "Required property 'instructions' is missing.",
+        message: "缺少必填属性 'instructions'。",
         severity: "error",
       }),
     );
@@ -113,7 +113,7 @@ describe("validateSystemOnePayload", () => {
     expect(result.issues).toContainEqual(
       expect.objectContaining({
         path: "questions.category.instructions",
-        message: "Instructions must be a string.",
+        message: "指令必须是字符串。",
         severity: "error",
       }),
     );
@@ -128,7 +128,7 @@ describe("validateSystemOnePayload", () => {
     ).toContainEqual(
       expect.objectContaining({
         path: "questions.category.criteria",
-        message: "Choice criteria must be an object mapping labels to descriptions.",
+        message: "选项条件必须是从名称到说明的对象。",
         severity: "error",
       }),
     );
@@ -145,7 +145,7 @@ describe("validateSystemOnePayload", () => {
     expect(result.issues).toContainEqual(
       expect.objectContaining({
         path: "questions.category.criteria.support",
-        message: "Choice descriptions must be strings.",
+        message: "选项说明必须是字符串。",
         severity: "error",
       }),
     );
@@ -162,7 +162,7 @@ describe("validateSystemOnePayload", () => {
       ).toContainEqual(
         expect.objectContaining({
           path: "questions.category.criteria",
-          message: "Choice criteria must contain between 1 and 255 options.",
+          message: "选项条件必须包含 1 到 255 个选项。",
           severity: "error",
         }),
       );
@@ -199,7 +199,7 @@ describe("validateSystemOnePayload", () => {
     ).toContainEqual(
       expect.objectContaining({
         path: "questions.urgency.criteria",
-        message: "Score criteria must be an array of levels.",
+        message: "分数条件必须是等级数组。",
         severity: "error",
       }),
     );
@@ -214,7 +214,7 @@ describe("validateSystemOnePayload", () => {
     ).toContainEqual(
       expect.objectContaining({
         path: "questions.urgency.criteria",
-        message: "Score criteria must contain at least 2 levels.",
+        message: "分数条件必须至少包含 2 个等级。",
         severity: "error",
       }),
     );
@@ -233,7 +233,7 @@ describe("validateSystemOnePayload", () => {
     expect(result.issues).toContainEqual(
       expect.objectContaining({
         path: "questions.urgency.criteria.1",
-        message: "Score levels must be strings.",
+        message: "分数等级必须是字符串。",
         severity: "error",
       }),
     );
@@ -294,7 +294,7 @@ describe("validateSystemOnePayload", () => {
     ).toContainEqual(
       expect.objectContaining({
         path: "questions.escalation.criteria",
-        message: "Noul criteria, when provided, must be an object.",
+        message: "是 / 否问题的条件如果提供，必须是对象。",
         severity: "error",
       }),
     );
@@ -327,12 +327,12 @@ describe("validateSystemOnePayload", () => {
       expect.arrayContaining([
         expect.objectContaining({
           path: "questions.escalation.criteria.true",
-          message: "Noul true criteria must be a string.",
+          message: "是 / 否问题的 true 条件必须是字符串。",
           severity: "error",
         }),
         expect.objectContaining({
           path: "questions.escalation.criteria.false",
-          message: "Noul false criteria must be a string.",
+          message: "是 / 否问题的 false 条件必须是字符串。",
           severity: "error",
         }),
       ]),
@@ -420,7 +420,7 @@ describe("blank context", () => {
       {
         path: "questions.1.choices",
         label: "问题 2 choices",
-        message: "Choice values must be unique, including their string representations.",
+        message: "选项值必须唯一，包括其字符串形式。",
         severity: "error",
       },
     ]);

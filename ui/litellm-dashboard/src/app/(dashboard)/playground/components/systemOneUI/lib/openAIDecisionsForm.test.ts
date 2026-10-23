@@ -1,7 +1,11 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
+import zh from "@/messages/zh-CN.json";
 import { openAIDecisionsExample } from "./example";
 import { readDecisionsForm, retypeDecisionQuestion, type DecisionsFormQuestion } from "./openAIDecisionsForm";
 import { validateOpenAIDecisionsPayload } from "./validatePayload";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "playground.systemOne" });
 
 describe("readDecisionsForm", () => {
   it("round-trips examples and preserves input order, extension fields, false choices and null names", () => {
@@ -28,7 +32,7 @@ describe("readDecisionsForm", () => {
   ])("keeps incomplete requests editable without marking them valid for Send: %j", (payload) => {
     const raw = JSON.stringify(payload);
     expect(readDecisionsForm(raw)).toEqual(payload);
-    expect(validateOpenAIDecisionsPayload(raw).isValid).toBe(false);
+    expect(validateOpenAIDecisionsPayload(raw, t).isValid).toBe(false);
   });
 
   it.each(["{", "", "null", "[]", '{"input":42}', '{"questions":{}}', '{"questions":[{"type":"noul"}]}'])(
