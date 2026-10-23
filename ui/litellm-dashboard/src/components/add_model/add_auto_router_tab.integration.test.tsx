@@ -1076,9 +1076,9 @@ describe("AddAutoRouterTab", () => {
     await selectAutoRouterOption("Heuristic before the judge", "Heuristic v2");
     fireEvent.click(screen.getByRole("button", { name: "启发式调优" }));
     fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "0.6" } });
-    await selectAutoRouterOption("Decide locally up to", "Medium");
-    await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
-    await userEvent.click(screen.getByRole("button", { name: "Add Auto Router" }));
+    await selectAutoRouterOption("本地裁决上限层级", "Medium");
+    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+    await userEvent.click(screen.getByRole("button", { name: "添加自动路由" }));
     await waitFor(() => expect(modelCreateCall).toHaveBeenCalledOnce());
     const expectedConfig = {
       classifier_type: "heuristic_first",
@@ -1148,11 +1148,11 @@ describe("AddAutoRouterTab", () => {
     expect(toggle).not.toBeChecked();
     if (enabled) {
       await user.click(toggle);
-      fireEvent.change(screen.getByLabelText("Expected output tokens"), { target: { value: "512" } });
-      fireEvent.change(screen.getByLabelText("Prediction timeout (ms)"), { target: { value: "750" } });
+      fireEvent.change(screen.getByLabelText("预计输出 token 数"), { target: { value: "512" } });
+      fireEvent.change(screen.getByLabelText("预测超时（毫秒）"), { target: { value: "750" } });
     }
-    await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
-    await user.click(screen.getByRole("button", { name: "Add Auto Router" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "添加自动路由" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "添加自动路由" }));
     await waitFor(() => expect(handleAddAutoRouterSubmit).toHaveBeenCalledOnce());
     const config = vi.mocked(handleAddAutoRouterSubmit).mock.calls.at(-1)?.[0].complexity_router_config;
     expect(config?.cache_aware_routing ?? false).toBe(enabled);

@@ -4831,3 +4831,7 @@ onboarding_link 2 例：只读输入框的可访问名取自 `onboardingModal.re
 `LlmCredentialsPanel.tsx` 在 10-20 的上游合并里留下了 `UserConnectionsPanel` 与 `all_admin_roles` 两个 import，但 JSX 只渲染 `<CredentialsPanel />`，连接区整块丢失，集成测试的 3 例因此全红。按测试意图补回：管理员渲染凭据列表 + 个人连接，非管理员只渲染个人连接（内部用户不应触发共享凭据列表的拉取）。测试侧把 "Your connections"、"Connected as @octocat"、`/Add Credential/`、"Disconnect" 换成目录里的"你的连接"、"已连接为 @octocat"、"添加凭据"、"断开连接"，三例转绿。
 
 这是"合并遗留缺陷"的又一例：import 在、body 不在，单看组件文件不会报错，只有测试能发现。
+
+## 2026-10-24 第 483 簇：自动路由高级设置的部分翻面（未收口）
+
+add_auto_router_tab 里把剩余英文控件名翻成目录中文（预计输出 token 数、预测超时（毫秒）、添加自动路由），并在 `tests/autoRouterSetup.ts` 的 `ADVANCED_SECTIONS` 补上"缓存感知路由"的候选组（该映射此前缺失，落到了默认组）。文件仍有 6 例未过：两处 `toBeDisabled` 是提交按钮的禁用条件，`缓存感知路由` 的开关在打开"会话与效率"与同名分节后仍取不到，"高级评分"分节在选择启发式后没有渲染。这三类都需要读组件的高阶折叠结构，留到下一轮。

@@ -14,6 +14,7 @@ const ADVANCED_SECTIONS: Record<string, readonly string[]> = {
   "Adaptive Routing": ["会话与效率"],
   Compression: ["会话与效率"],
   "Response Format": ["兼容性"],
+  缓存感知路由: ["会话与效率", "缓存感知路由"],
 };
 
 const DEFAULT_ADVANCED_GROUP = ["路由规则与恢复"];
