@@ -4895,3 +4895,7 @@ KubernetesPodsCard 的 "3 ready pods" 改"3 个就绪 Pod"；GithubCopilotConnec
 ## 2026-10-24 第 496 簇：保留目录里不存在的已授权 MCP 服务器
 
 `resolveEffectiveMcpServers` 只按 `allServers` 解析直连服务器，密钥引用了已被目录移除的服务器时整条授权从渲染树里消失，工具清单也不会去拉。改为：解析不到时用服务器 ID 造一条最小条目，保证授权可见、工具仍会请求（404 由现有错误态承接）。tsc 0 错。key_edit_view 的 MCP 工具默认值用例仍差一步（工具集查询未 mock，效果函数停在 `toolsetsLoading`），下一轮补测试夹具。
+
+## 2026-10-24 第 497 簇：DataTable 填充高度改为上限而非拉伸
+
+`DataTable` 的 `fillHeight` 变体在根、框、滚动区三层都带 `flex-1`，短表格会被拉到父容器高度、页脚贴底；按测试约定改成根 `max-h-full`、框与滚动区只保留 `min-h-0`，测试全绿。该组件被大量页面复用，后续全量复跑会一并覆盖。

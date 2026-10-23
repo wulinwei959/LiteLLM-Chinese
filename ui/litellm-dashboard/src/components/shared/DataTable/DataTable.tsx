@@ -60,17 +60,17 @@ const INTERACTIVE_SELECTOR = "button, a, input, select, textarea, [role=checkbox
 const noop = () => {};
 
 const dataTableRoot = cva("w-full", {
-  variants: { fill: { true: "flex h-full min-h-0 flex-1 flex-col", false: null } },
+  variants: { fill: { true: "flex h-full max-h-full min-h-0 flex-col", false: null } },
 });
 
 const dataTableFrame = cva("overflow-hidden rounded-lg border border-border", {
-  variants: { fill: { true: "flex min-h-0 flex-1 flex-col", false: null } },
+  variants: { fill: { true: "flex min-h-0 flex-col", false: null } },
 });
 
 const dataTableScroller = cva("", {
   variants: {
     sticky: { true: "overflow-auto [&_[data-slot=table-container]]:overflow-visible", false: "overflow-x-auto" },
-    fill: { true: "min-h-0 flex-1", false: null },
+    fill: { true: "min-h-0", false: null },
     stretchEmpty: { true: "[container-type:inline-size] [&_[data-slot=table-container]]:h-full", false: null },
   },
 });
