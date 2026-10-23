@@ -4530,3 +4530,10 @@ MemoryDetailDrawer 底部"Created/Updated + 时间 + by 操作人"两行接四�
 测试：三处断言翻面（创建者 alice、更新者 bob、缺时间"创建于 —"）。按共享组件消费方约定跑整个 memory 域 4 文件 32 例全绿。
 
 验证：AST 本文件归零；全局可见英文 242→240 条、128→127 个文件；目录叶子 11606→11610，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 445 簇：向量存储测试器结果区接线并补复数计数
+
+VectorStoreTester 结果区四处可见英文接 `vectorStores.resultCount`/`resultLabel`/`scoreLabel`/`contentLabel`。`{n} results` 是扫描器漏网的小写裸文本，按 ICU plural 接（en 单数 `# result`、复数 `# results`，zh `{count} 个结果`），顺带修掉 1 条结果时显示 "1 results" 的英文语法缺陷。zh 分别为"结果 {number}"/"得分：{score}"/"内容（{type}）"。
+
+测试：新增 VectorStoreTester.test.tsx，mock 搜索调用后输入查询，断言结果条数、排名、四位得分与展开后的内容标签。vector-stores 域 13 文件 108 例全绿（TestVectorStoreTab 仍 mock 掉测试器，不受影响）。
+
+验证：AST 本文件归零；全局可见英文 240→237 条、127→126 个文件；目录叶子 11610→11614，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错，3 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。

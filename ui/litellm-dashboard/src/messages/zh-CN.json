@@ -10740,7 +10740,11 @@
       "idRequired": "请输入向量存储 ID",
       "noDescription": "没有描述"
     },
-    "ingestPartialToast": "向量存储 {storeId} 已创建并写入 {count} 个文档，但 {file} 摄入失败"
+    "ingestPartialToast": "向量存储 {storeId} 已创建并写入 {count} 个文档，但 {file} 摄入失败",
+    "resultCount": "{count} 个结果",
+    "resultLabel": "结果 {number}",
+    "scoreLabel": "得分：{score}",
+    "contentLabel": "内容（{type}）"
   },
   "modelHub": {
     "showingModels": "已显示 {shown}，共 {total} 个模型",

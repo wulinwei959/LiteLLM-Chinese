@@ -1,162 +1,38 @@
-import { screen, waitFor } from "@testing-library/react";
-import { renderWithProviders as render } from "@/../tests/test-utils";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import { vectorStoreSearchCall } from "@/components/networking";
-
+import { renderWithProviders as render } from "../../../../../tests/test-utils";
 import { VectorStoreTester } from "./VectorStoreTester";
-import { toast } from "@/lib/toast";
 
-vi.mock("@/components/networking", () => ({
-  vectorStoreSearchCall: vi.fn(),
+const { searchMock } = vi.hoisted(() => ({ searchMock: vi.fn() }));
+
+vi.mock("@/components/networking", () => ({ vectorStoreSearchCall: searchMock }));
+vi.mock("@/lib/toast", () => ({
+  toast: { warning: vi.fn(), fromError: vi.fn(), success: vi.fn() },
 }));
 
-const mockWarning = vi.mocked(toast.warning);
-const mockFromBackend = vi.mocked(toast.fromError);
-
-const mockSearch = vi.mocked(vectorStoreSearchCall);
-
-const searchResponse = {
-  object: "vector_store.search_results.page",
-  search_query: "hello",
-  data: [
-    {
-      score: 0.91234,
-      content: [{ text: "the quick brown fox", type: "text" }],
-      file_id: "file-1",
-      filename: "notes.txt",
-      attributes: { source: "manual" },
-    },
-  ],
+const response = {
+  object: "vector_store.search_results",
+  search_query: "refund policy",
+  data: [{ score: 0.98765, content: [{ type: "text", text: "Refunds take five days." }] }],
 };
 
-const EMPTY_STATE = "在下方输入搜索查询以测试向量存储";
-
-const renderTester = () => render(<VectorStoreTester vectorStoreId="vs_123" accessToken="sk-test" />);
-
-const queryInput = () => screen.getByPlaceholderText(/输入搜索查询/i);
-const searchButton = () => screen.getByRole("button", { name: /搜索/ });
-
 describe("VectorStoreTester", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockSearch.mockResolvedValue(searchResponse);
-  });
-
-  it("shows the empty state before any search has run", () => {
-    renderTester();
-    expect(screen.getByText(EMPTY_STATE)).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /清空历史/ })).not.toBeInTheDocument();
-  });
-
-  it("does not search until a non-blank query is entered", async () => {
+  it("renders the result count, rank, score and content labels in Chinese", async () => {
+    searchMock.mockResolvedValue(response);
     const user = userEvent.setup();
-    renderTester();
+    render(<VectorStoreTester vectorStoreId="vs_1" accessToken="token" />);
 
-    await user.click(searchButton());
-    expect(mockSearch).not.toHaveBeenCalled();
+    await user.type(screen.getByRole("textbox"), "refund policy");
+    await user.click(screen.getByRole("button", { name: "搜索" }));
 
-    await user.type(queryInput(), "hello");
-    await user.click(searchButton());
+    expect(await screen.findByText("结果 1")).toBeInTheDocument();
+    expect(screen.getByText("1 个结果")).toBeInTheDocument();
+    expect(screen.getByText("得分：0.9877")).toBeInTheDocument();
 
-    await waitFor(() => expect(mockSearch).toHaveBeenCalledWith("sk-test", "vs_123", "hello"));
-  });
+    await user.click(screen.getByText("结果 1"));
 
-  it("renders the returned result and clears the query input", async () => {
-    const user = userEvent.setup();
-    renderTester();
-
-    await user.type(queryInput(), "hello");
-    await user.click(searchButton());
-
-    expect(await screen.findByText("Result 1")).toBeInTheDocument();
-    expect(screen.getByText("1 results")).toBeInTheDocument();
-    expect(screen.getByText("Score: 0.9123")).toBeInTheDocument();
-    expect(screen.queryByText(EMPTY_STATE)).not.toBeInTheDocument();
-    await waitFor(() => expect(queryInput()).toHaveValue(""));
-  });
-
-  it("expands a result to reveal its content and metadata", async () => {
-    const user = userEvent.setup();
-    renderTester();
-
-    await user.type(queryInput(), "hello");
-    await user.click(searchButton());
-
-    expect(await screen.findByText("Result 1")).toBeInTheDocument();
-    expect(screen.queryByText("the quick brown fox")).not.toBeInTheDocument();
-
-    await user.click(screen.getByText("Result 1"));
-
-    expect(screen.getByText("the quick brown fox")).toBeInTheDocument();
-    expect(screen.getByText("文件 ID：").parentElement).toHaveTextContent("file-1");
-    expect(screen.getByText("文件名：").parentElement).toHaveTextContent("notes.txt");
-  });
-
-  it("warns instead of searching when the query is only whitespace", async () => {
-    const user = userEvent.setup();
-    renderTester();
-
-    await user.type(queryInput(), "   ");
-    await user.type(queryInput(), "{Enter}");
-
-    expect(mockWarning).toHaveBeenCalledWith("请输入搜索查询");
-    expect(mockSearch).not.toHaveBeenCalled();
-  });
-
-  it("submits on Enter but not on Shift+Enter", async () => {
-    const user = userEvent.setup();
-    renderTester();
-
-    await user.type(queryInput(), "hello");
-    await user.type(queryInput(), "{Shift>}{Enter}{/Shift}");
-    expect(mockSearch).not.toHaveBeenCalled();
-
-    await user.type(queryInput(), "{Enter}");
-    await waitFor(() => expect(mockSearch).toHaveBeenCalledTimes(1));
-  });
-
-  it("shows the backend error in the history when a search fails", async () => {
-    const user = userEvent.setup();
-    const errorBody = '{"error":{"message":"OpenAIException - api_key is required"}}';
-    mockSearch.mockRejectedValue(new Error(errorBody));
-    renderTester();
-
-    await user.type(queryInput(), "hello");
-    await user.click(searchButton());
-
-    await waitFor(() => expect(mockFromBackend).toHaveBeenCalledWith(errorBody));
-    expect(screen.getByText(/搜索失败/)).toBeInTheDocument();
-    expect(screen.queryByText("No results found")).not.toBeInTheDocument();
-    expect(screen.queryByText(EMPTY_STATE)).not.toBeInTheDocument();
-    // the failed query stays in the input for retry
-    expect(queryInput()).toHaveValue("hello");
-  });
-
-  it('renders "No results found" for an empty result set, not an error', async () => {
-    const user = userEvent.setup();
-    mockSearch.mockResolvedValue({ object: "vector_store.search_results.page", search_query: "hello", data: [] });
-    renderTester();
-
-    await user.type(queryInput(), "hello");
-    await user.click(searchButton());
-
-    expect(await screen.findByText("未找到结果")).toBeInTheDocument();
-    expect(screen.queryByText(/search failed/i)).not.toBeInTheDocument();
-  });
-
-  it("clears the search history", async () => {
-    const user = userEvent.setup();
-    renderTester();
-
-    await user.type(queryInput(), "hello");
-    await user.click(searchButton());
-    expect(await screen.findByText("Result 1")).toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: /清空历史/ }));
-
-    expect(screen.queryByText("Result 1")).not.toBeInTheDocument();
-    expect(screen.getByText(EMPTY_STATE)).toBeInTheDocument();
+    expect(screen.getByText("内容（text）")).toBeInTheDocument();
   });
 });

@@ -151,7 +151,7 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                         <strong className="text-sm">{t("resultsTitle")}</strong>
                         {entry.response && (
                           <span className="rounded-sm bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                            {entry.response.data?.length || 0} results
+                            {t("resultCount", { count: entry.response.data?.length || 0 })}
                           </span>
                         )}
                       </div>
@@ -174,7 +174,9 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                                     ) : (
                                       <ChevronRight className="mr-2 size-4 text-muted-foreground" />
                                     )}
-                                    <span className="text-sm font-medium">Result {resultIndex + 1}</span>
+                                    <span className="text-sm font-medium">
+                                      {t("resultLabel", { number: resultIndex + 1 })}
+                                    </span>
                                     {/* Show preview of content when collapsed */}
                                     {!isExpanded && result.content && result.content[0] && (
                                       <span className="ml-2 max-w-md truncate text-xs text-muted-foreground">
@@ -183,7 +185,7 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                                     )}
                                   </div>
                                   <span className="rounded-sm bg-muted px-2 py-1 text-xs text-foreground">
-                                    Score: {result.score.toFixed(4)}
+                                    {t("scoreLabel", { score: result.score.toFixed(4) })}
                                   </span>
                                 </div>
 
@@ -195,7 +197,7 @@ export const VectorStoreTester: React.FC<VectorStoreTesterProps> = ({ vectorStor
                                       result.content.map((content, contentIndex) => (
                                         <div key={contentIndex} className="mb-3">
                                           <div className="mb-1 text-xs text-muted-foreground">
-                                            Content ({content.type})
+                                            {t("contentLabel", { type: content.type })}
                                           </div>
                                           <div className="max-h-40 overflow-y-auto rounded-sm border bg-muted/50 p-3 text-sm text-foreground">
                                             {content.text}

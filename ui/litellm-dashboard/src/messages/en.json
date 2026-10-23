@@ -10744,7 +10744,11 @@
       "idRequired": "Enter vector store ID",
       "noDescription": "No description"
     },
-    "ingestPartialToast": "Vector store {storeId} was created with {count} document(s), but {file} failed to ingest"
+    "ingestPartialToast": "Vector store {storeId} was created with {count} document(s), but {file} failed to ingest",
+    "resultCount": "{count, plural, one {# result} other {# results}}",
+    "resultLabel": "Result {number}",
+    "scoreLabel": "Score: {score}",
+    "contentLabel": "Content ({type})"
   },
   "modelHub": {
     "showingModels": "Showing {shown} of {total, plural, one {# model} other {# models}}",
