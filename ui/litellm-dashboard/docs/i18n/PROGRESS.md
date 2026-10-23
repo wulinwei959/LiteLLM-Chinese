@@ -4939,3 +4939,7 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 ### 第 506 簇后的失败面
 
 7 个文件、10 例，全部是行为/合并缺陷，不含文案问题：key_edit_view 4（MCP 授权长度 2、移出项目按钮、清团队载荷）、key_info_view 1（团队成员预算区未渲染）、AllModelsTab 1（视图模式下拉在 jsdom 里取不到选项）、JevClassifierConfig 1（探针请求里 classifier_type 仍是 oss_classifier）、create_key_button 1（团队下拉选项取不到）、RouterSettingsForm 1（第 4 个 config.yaml 徽标缺失）。
+
+## 2026-10-24 第 507 簇：可靠性区块的归属提示本地化
+
+`ReliabilityRetriesSection` 的输入框 `title` 仍用英文常量 `CONFIG_OWNED_HINT`，改用 `routerSettings.configOwnedHint` 并移除死导入。tsc 0 错；该文件自测通过。RouterSettingsForm 的"每个 config 托管控件都有徽标"一条仍差一个（数到 3 个，缺的徽标未定位）。

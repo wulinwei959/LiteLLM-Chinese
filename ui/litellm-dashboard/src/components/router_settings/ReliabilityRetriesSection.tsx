@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslations } from "next-intl";
-import { CONFIG_OWNED_HINT, ConfigOwnedBadge, type RouterSettingsSource, isOwnedByConfig } from "./ConfigOwned";
+import { ConfigOwnedBadge, type RouterSettingsSource, isOwnedByConfig } from "./ConfigOwned";
 import { Input } from "@/components/ui/input";
 
 interface ReliabilityRetriesSectionProps {
@@ -56,7 +56,7 @@ const ReliabilityRetriesSection: React.FC<ReliabilityRetriesSectionProps> = ({
                   }
                   placeholder="—"
                   disabled={isOwnedByConfig(routerSettingsSource, param)}
-                  title={isOwnedByConfig(routerSettingsSource, param) ? CONFIG_OWNED_HINT : undefined}
+                  title={isOwnedByConfig(routerSettingsSource, param) ? t("configOwnedHint") : undefined}
                   className="font-mono text-sm w-full"
                 />
               </label>
