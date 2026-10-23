@@ -50,7 +50,7 @@ const TagFilteringToggle: React.FC<TagFilteringToggleProps> = ({
           checked={enabled}
           onCheckedChange={onToggle}
           disabled={ownedByConfig}
-          title={ownedByConfig ? CONFIG_OWNED_HINT : undefined}
+          title={ownedByConfig ? t("configOwnedHint") : undefined}
           className="ml-4"
         />
       </div>

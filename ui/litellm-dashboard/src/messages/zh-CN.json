@@ -6400,6 +6400,8 @@
     "themeResetFailed": "恢复默认主题设置失败"
   },
   "routerSettings": {
+    "sourceUnknownHint": "无法加载配置来源，刷新页面后再做修改。",
+    "configOwnedHint": "在 config.yaml 中设置，请修改文件来变更。",
     "sourceUnavailable": "无法加载路由设置。请修改 config.yaml 来变更。",
     "tabLoadbalancing": "负载均衡",
     "tabRoutingGroups": "路由组",

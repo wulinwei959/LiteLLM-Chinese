@@ -48,7 +48,7 @@ const LatencyBasedConfiguration: React.FC<LatencyBasedConfigurationProps> = ({
                   name={param}
                   defaultValue={typeof value === "object" ? JSON.stringify(value, null, 2) : value?.toString()}
                   disabled={ownedByConfig}
-                  title={ownedByConfig ? CONFIG_OWNED_HINT : undefined}
+                  title={ownedByConfig ? t("configOwnedHint") : undefined}
                   className="font-mono text-sm w-full"
                 />
               </label>

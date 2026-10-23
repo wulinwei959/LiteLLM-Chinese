@@ -6400,6 +6400,8 @@
     "themeResetFailed": "Failed to reset theme settings"
   },
   "routerSettings": {
+    "sourceUnknownHint": "Could not load which settings config.yaml owns. Reload the page to make changes.",
+    "configOwnedHint": "Set in config.yaml. Edit the file to change it.",
     "sourceUnavailable": "Router settings could not be loaded. Edit config.yaml to change them.",
     "tabLoadbalancing": "Loadbalancing",
     "tabRoutingGroups": "Routing Groups",

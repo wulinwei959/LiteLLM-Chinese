@@ -10,13 +10,7 @@ import DeleteResourceModal from "../../../common_components/DeleteResourceModal"
 import { ProviderLogo } from "../../../molecules/models/ProviderLogo";
 import { toast } from "@/lib/toast";
 import { getCallbacksCall, getRouterSettingsCall, setCallbacksCall } from "../../../networking";
-import {
-  CONFIG_OWNED_HINT,
-  SOURCE_UNKNOWN_HINT,
-  ConfigOwnedBadge,
-  RouterSettingsSource,
-  isOwnedByConfig,
-} from "../../../router_settings/ConfigOwned";
+import { ConfigOwnedBadge, RouterSettingsSource, isOwnedByConfig } from "../../../router_settings/ConfigOwned";
 import { isProxyAdminRole } from "@/utils/roles";
 import AddFallbacks from "./AddFallbacks";
 import EditFallbacks from "./EditFallbacks";
@@ -138,9 +132,13 @@ async function testFallbackModelResponse(
   }
 }
 
-function fallbacksWriteHint(source: RouterSettingsSource | null, ownedByConfig: boolean): string | undefined {
-  if (ownedByConfig) return CONFIG_OWNED_HINT;
-  if (source === null) return SOURCE_UNKNOWN_HINT;
+function fallbacksWriteHint(
+  source: RouterSettingsSource | null,
+  ownedByConfig: boolean,
+  hints: { config: string; unknown: string },
+): string | undefined {
+  if (ownedByConfig) return hints.config;
+  if (source === null) return hints.unknown;
   return undefined;
 }
 
@@ -284,7 +282,10 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID }) 
   // Admin Viewer follows the read-parity rule: see fallbacks, no writes.
   const canModify = isProxyAdminRole(userRole ?? "");
   const ownedByConfig = routerSettingsSource !== null && isOwnedByConfig(routerSettingsSource, "fallbacks");
-  const writeHint = fallbacksWriteHint(routerSettingsSource, ownedByConfig);
+  const writeHint = fallbacksWriteHint(routerSettingsSource, ownedByConfig, {
+    config: routerT("configOwnedHint"),
+    unknown: routerT("sourceUnknownHint"),
+  });
   const canWrite = canModify && writeHint === undefined;
   const writeActionClass = (hoverClass: string) =>
     canWrite ? `${iconWrapperClass} cursor-pointer ${hoverClass}` : `${iconWrapperClass} cursor-not-allowed opacity-50`;

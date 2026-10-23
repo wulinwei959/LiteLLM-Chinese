@@ -4919,3 +4919,7 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 ## 2026-10-24 第 502 簇：路由设置源加载失败时禁用保存
 
 路由设置页的保存按钮此前不看数据源：`getRouterSettingsCall` 失败时 `routerSettingsSource` 为 null，用户仍能点保存并覆盖未知来源的配置。补 `disabled` 与 `title`（新增 `routerSettings.sourceUnavailable`，中英各一），失败时禁用并提示改 config.yaml，测试转绿。
+
+## 2026-10-24 第 503 簇：路由设置归属提示本地化
+
+`ConfigOwned.tsx` 的 `CONFIG_OWNED_HINT`/`SOURCE_UNKNOWN_HINT` 是硬编码英文，作为徽标 tooltip 与 `title` 直接展示给用户。新增 `routerSettings.configOwnedHint`/`sourceUnknownHint`，徽标内部与延迟配置、标签过滤、回退页三处 title 改用 `t()`；`fallbacksWriteHint` 改为接收已翻译文案，避免模块级英文常量。tsc 0 错，Fallbacks 与 TagFilteringToggle 测试通过。
