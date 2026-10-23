@@ -36,11 +36,14 @@ export interface HealthCheckData {
   health_full_error?: string;
 }
 
-const HEALTH_STATUS_TONES: Record<string, StatusTone> = {
-  healthy: "success",
-  unhealthy: "error",
-  checking: "info",
-  none: "neutral",
+// Status tokens arrive from the proxy; the label is the matching `models.health` message key.
+type HealthStatusBadgeSpec = { tone: StatusTone; label: "healthy" | "unhealthy" | "checking" | "none" };
+
+const HEALTH_STATUS_BADGES: Record<string, HealthStatusBadgeSpec> = {
+  healthy: { tone: "success", label: "healthy" },
+  unhealthy: { tone: "error", label: "unhealthy" },
+  checking: { tone: "info", label: "checking" },
+  none: { tone: "neutral", label: "none" },
 };
 
 // healthy > checking > unknown > unhealthy, matching the legacy health table ordering.
@@ -55,13 +58,26 @@ const CHECK_IN_PROGRESS = "Check in progress...";
 const NEVER_SUCCEEDED = "Never succeeded";
 const NONE = "None";
 
+const HEALTH_SENTINELS: Record<string, "none" | "neverChecked" | "neverSucceeded" | "checkInProgress"> = {
+  [NONE]: "none",
+  [NEVER_CHECKED]: "neverChecked",
+  [NEVER_SUCCEEDED]: "neverSucceeded",
+  [CHECK_IN_PROGRESS]: "checkInProgress",
+};
+
+// Dates arrive already localized, so only the four English sentinels need a copy lookup.
+function healthSentinelLabel(t: HealthTranslator, value: string): string {
+  const key = HEALTH_SENTINELS[value];
+  return key === undefined ? value : t(key);
+}
+
 function HealthStatusBadge({ status }: { status: string }) {
   const t = useTranslations("models.health");
-  const tone = HEALTH_STATUS_TONES[status];
-  if (!tone) {
+  const badge = HEALTH_STATUS_BADGES[status];
+  if (!badge) {
     return <StatusBadge tone="neutral" label={t("unknown")} />;
   }
-  return <StatusBadge tone={tone} label={status} />;
+  return <StatusBadge tone={badge.tone} label={t(badge.label)} />;
 }
 
 function DotPulse({ className }: { className: string }) {
@@ -389,7 +405,7 @@ export const getHealthChecksTableColumns = (
       },
       cell: ({ row }) => (
         <span className="text-sm text-muted-foreground">
-          {row.original.health_loading ? t("checkInProgress") : row.original.last_check}
+          {row.original.health_loading ? t("checkInProgress") : healthSentinelLabel(t, row.original.last_check)}
         </span>
       ),
     },
@@ -408,7 +424,7 @@ export const getHealthChecksTableColumns = (
       },
       cell: ({ row }) => {
         const modelId = row.original.model_info?.id ?? "";
-        const lastSuccess = modelHealthStatuses[modelId]?.lastSuccess || t("none");
+        const lastSuccess = healthSentinelLabel(t, modelHealthStatuses[modelId]?.lastSuccess || NONE);
         return <span className="text-sm text-muted-foreground">{lastSuccess}</span>;
       },
     },

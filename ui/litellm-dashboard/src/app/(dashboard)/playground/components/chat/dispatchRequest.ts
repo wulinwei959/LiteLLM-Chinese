@@ -66,7 +66,7 @@ const inExchange = (history: readonly MessageType[], index: number): boolean =>
 export const textHistory = (history: readonly MessageType[]): ApiMessage[] =>
   history.filter((_, index) => inExchange(history, index)).map(({ role, content }) => ({ role, content }));
 
-const toolResultText = (result: { content?: { type: string; text?: string }[] } | null): string => {
+const toolResultText = (result: { content?: { type: string; text?: string }[] } | null, emptyText: string): string => {
   if (result?.content && result.content.length > 0) {
     return JSON.stringify(
       result.content.map((item) => (item.type === "text" ? item.text : item)).filter(Boolean),
@@ -74,7 +74,7 @@ const toolResultText = (result: { content?: { type: string; text?: string }[] } 
       2,
     );
   }
-  return JSON.stringify(result, null, 2) || "Tool executed successfully.";
+  return JSON.stringify(result, null, 2) || emptyText;
 };
 
 export async function dispatchRequest(context: DispatchContext): Promise<void> {
@@ -296,7 +296,7 @@ export async function dispatchRequest(context: DispatchContext): Promise<void> {
         context.directCall.arguments,
         { ...(guardrails ? { guardrails } : {}), customHeaders: { ...headers } },
       );
-      chat.updateTextUI("assistant", toolResultText(result));
+      chat.updateTextUI("assistant", toolResultText(result, t("chat.toolExecutedSuccessfully")));
       return;
     }
     case EndpointType.REALTIME:

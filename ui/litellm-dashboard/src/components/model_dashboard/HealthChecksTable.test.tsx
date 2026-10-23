@@ -174,3 +174,27 @@ describe("HealthChecksTable rows", () => {
     expect(screen.getByText("未找到模型")).toBeInTheDocument();
   });
 });
+
+describe("HealthChecksTable proxy token copy", () => {
+  it("translates status tokens and the English last check / last success sentinels", () => {
+    renderWithProviders(
+      <Harness
+        data={[
+          makeRow({ id: "never", health_status: "unhealthy", last_check: "Never checked" }),
+          makeRow({ id: "pending", health_status: "checking", last_check: "Check in progress..." }),
+        ]}
+        modelHealthStatuses={{
+          never: { status: "unhealthy", lastCheck: "None", lastSuccess: "None", loading: false },
+          pending: { status: "checking", lastCheck: "x", lastSuccess: "Never succeeded", loading: false },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("不健康")).toBeInTheDocument();
+    expect(screen.getByText("检查中...")).toBeInTheDocument();
+    expect(screen.getByText("从未检查")).toBeInTheDocument();
+    expect(screen.getByText("检查进行中...")).toBeInTheDocument();
+    expect(screen.getByText("无")).toBeInTheDocument();
+    expect(screen.getByText("从未成功")).toBeInTheDocument();
+  });
+});

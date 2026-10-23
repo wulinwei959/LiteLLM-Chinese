@@ -5031,3 +5031,13 @@ lint 侧另有既成事实：`key_edit_view.tsx` 在 HEAD 就有 `max-lines`（8
 `McpFormTestHarness.tsx` 的 `Submit` 是本地调试夹具，不在产品路由上。至此第 513 簇改动面的可见文案没有欠账，全库可见英文余量维持在第 344/350 簇收口的那三条口径队列里。
 
 渲染扫描同步复跑（`npm run scan:rendered`，桩代理）扩到 14 个页面：把 `search-tools` 与补回后的 `roi-calculator` 加进 `PAGES`。ROI 页首轮撞出运行期异常 `Cannot read properties of undefined (reading 'length')`，根因是桩代理对没登记的 `/roi-calculator/*` 一律回 `{}`，不是页面缺陷。按 `schema.d.ts` 的响应模型补进 settings、report、sync、repositories 四个桩后，14 个页面 0 渲染错误、0 处英文，总计 0 条发现、0 条不在基线。唯二的英文命中 `GitHub` 与 `GitHub Enterprise` 是产品名，进 `ALLOWED_ENGLISH`。
+
+## 2026-10-24 第 514 簇：回退表达式复扫与健康表可见英文
+
+第 513 簇的扫描口径只看字面量属性与 JSX 文本，覆盖不到 `x || "English"` 这种回退写法。单独扫一遍（`grep -rn -E '\|\|\s*"[A-Z][A-Za-z0-9 ,.()%:-]{3,}' src`，去掉测试文件）命中 33 处，逐条读完，2 处真漏翻，另外顺出 2 处不在该口径里的可见英文，其余落进已有判定账。
+
+1. 真漏翻：`ModelInfoEditForm` 团队只读态显示 `|| "Not Set"`，接既有 `common.notSet`（未设置）；`dispatchRequest` 的 MCP 直连结果兜底 `"Tool executed successfully."` 与 `ChatUI` 同一句话重复且硬编码英文，改为把 `t("chat.toolExecutedSuccessfully")`（工具执行成功。）作为参数传进 `toolResultText`。
+2. 顺出：模型健康表。`HealthChecksTableColumns` 的 `last_check`/`last_success` 单元格原样渲染代理下发的 `Never checked`/`Check in progress...`/`None`/`Never succeeded`，状态徽标把 `healthy`/`unhealthy`/`checking`/`none` 直接当 label 显示。目录里 `models.health.neverChecked` 与 `neverSucceeded` 两条早就备好却无人引用，说明上游本意是展示层翻译、只做了排序那一半。现在排序仍比原始串（代理契约不变），展示处新增 `healthSentinelLabel` 查表翻译，tone 表改成同时携带 tone 与词条键，`HealthCheckComponent` 写进状态的 `"None"` 因此也变成纯哨兵串。
+3. 判定账里的 31 处：健康表状态哨兵 9、`CodeSnippets` 与 `semanticFilterTestUtils` 的示例代码/JSON 体 8、`BLOCK`/`MASK`/分类器类型枚举 7、内部 throw 与响应体兜底文本 3（`networking.tsx` 的 `An error occurred` 只在代理既不给 detail 也不给 message 时出现，`model_info_view` 与 `fetch_agents` 的被 catch 后重新 toast）、`X-API-Key` 头名 1、`SkillHubDashboard` 的 `General` 域标签 1、`RealtimePrettyView` 的 `ASSISTANT` 角色大写 1、`autoRouterRows` 的 `Heuristic` 1、`RequestLogsTableColumns` 的 `Success` 1。后两处逐行核对过呈现路径：`Heuristic` 与 `LLM Classifier` 一类标签都要经 `autoRouterTypeLabelKey` 查到 `typeHeuristic` 等词条再渲染，`Success` 只参与 `isSuccess` 比较、徽标文案取 `t("success")`，都不是可见英文。
+
+验证：`tsc --project tsconfig.production.json` 0 错；dead keys 0（`neverChecked`/`neverSucceeded` 从无人引用变为有人引用）；i18n 守卫 23 例通过；`HealthChecksTable`+`HealthCheckComponent` 20 例通过（新增一条覆盖 4 枚哨兵与 2 个状态 token 的中文渲染，3 条旧状态断言翻面，其中"无"在徽标与成功列各出现一次，改用 `getAllByText`）；`ModelInfoEditForm`+`dispatchRequest`+i18n 45 例、`public_model_hub` 34 例通过（模型广场是另一套徽标，未受影响）。改动文件 prettier 合规，`ModelInfoEditForm.tsx` 在 HEAD 就未格式化，本次不做无关收口。

@@ -214,8 +214,8 @@ describe("HealthCheckComponent", () => {
       });
 
       expect(mockLatestHealthChecksCall).toHaveBeenCalledWith("token");
-      expect(screen.getAllByText("healthy").length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText("unhealthy").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText("健康").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText("不健康").length).toBeGreaterThanOrEqual(1);
     });
 
     it("should skip latest_health_checks entries whose key is not a known model id", async () => {
@@ -231,8 +231,8 @@ describe("HealthCheckComponent", () => {
         allModelsOnProxy: ["current-model-id"],
       });
 
-      expect(screen.getByText("healthy")).toBeInTheDocument();
-      expect(screen.queryByText("unhealthy")).not.toBeInTheDocument();
+      expect(screen.getByText("健康")).toBeInTheDocument();
+      expect(screen.queryByText("不健康")).not.toBeInTheDocument();
     });
 
     it("should not apply status when latest_health_checks key is model name not model id", async () => {
@@ -247,8 +247,8 @@ describe("HealthCheckComponent", () => {
         allModelsOnProxy: ["model-id-123"],
       });
 
-      expect(screen.queryByText("healthy")).not.toBeInTheDocument();
-      expect(screen.getByText("none")).toBeInTheDocument();
+      expect(screen.queryByText("健康")).not.toBeInTheDocument();
+      expect(screen.getAllByText("无").length).toBeGreaterThanOrEqual(1);
     });
   });
 });
