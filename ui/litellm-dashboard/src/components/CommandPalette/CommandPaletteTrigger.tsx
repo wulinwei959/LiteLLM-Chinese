@@ -15,7 +15,7 @@ export function CommandPaletteTrigger({ mobile = false }: { mobile?: boolean }) 
   const { open, setOpen } = useCommandPalette();
   const shortcut = useShortcutLabel();
   const isKeysRoute = paletteScopeForRoute(routeSegmentForPathname(pathname)) === "keys";
-  const label = isKeysRoute ? "Search keys…" : "Search or jump to…";
+  const label = isKeysRoute ? t("trigger.searchKeys") : t("trigger.searchOrJumpTo");
 
   if (mobile) {
     return (

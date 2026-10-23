@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cva.config";
 
@@ -10,6 +11,12 @@ export interface CommandPaletteRowData {
   icon: ReactNode;
   typeLabel: "Key" | "Page" | "Action";
 }
+
+const TYPE_LABEL_KEYS = {
+  Key: "typeLabel.key",
+  Page: "typeLabel.page",
+  Action: "typeLabel.action",
+} as const;
 
 export function CommandPaletteResultRow({
   item,
@@ -24,6 +31,7 @@ export function CommandPaletteResultRow({
   onActivate: () => void;
   onHover: () => void;
 }) {
+  const t = useTranslations("commandPalette");
   return (
     <button
       id={optionId}
@@ -44,7 +52,7 @@ export function CommandPaletteResultRow({
         <span className="truncate text-sm font-medium">{item.title}</span>
         {item.subtitle && <span className="truncate text-xs text-muted-foreground">{item.subtitle}</span>}
       </span>
-      <span className="shrink-0 text-xs text-muted-foreground">{item.typeLabel}</span>
+      <span className="shrink-0 text-xs text-muted-foreground">{t(TYPE_LABEL_KEYS[item.typeLabel])}</span>
     </button>
   );
 }

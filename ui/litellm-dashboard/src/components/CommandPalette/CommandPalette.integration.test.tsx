@@ -139,17 +139,17 @@ describe("CommandPalette integration", () => {
   it("shows the discovery hint on the keys route", async () => {
     renderPalette();
 
-    expect(await screen.findByText("to search keys")).toBeVisible();
+    expect(await screen.findByText("来搜索密钥")).toBeVisible();
   });
 
   it("opens the palette from the hint and persists that it was seen", async () => {
     const user = userEvent.setup();
     renderPalette();
 
-    await user.click(screen.getByRole("button", { name: /to search keys/ }));
+    await user.click(screen.getByRole("button", { name: /来搜索密钥/ }));
 
-    expect(await screen.findByRole("combobox", { name: "Search" })).toBeVisible();
-    expect(screen.queryByText("to search keys")).not.toBeInTheDocument();
+    expect(await screen.findByRole("combobox", { name: "搜索" })).toBeVisible();
+    expect(screen.queryByText("来搜索密钥")).not.toBeInTheDocument();
     expect(window.localStorage.getItem(COMMAND_PALETTE_HINT_KEY.name)).toBe("true");
   });
 
@@ -158,8 +158,8 @@ describe("CommandPalette integration", () => {
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
 
-    expect(await screen.findByRole("combobox", { name: "Search" })).toBeVisible();
-    expect(screen.queryByText("to search keys")).not.toBeInTheDocument();
+    expect(await screen.findByRole("combobox", { name: "搜索" })).toBeVisible();
+    expect(screen.queryByText("来搜索密钥")).not.toBeInTheDocument();
     expect(window.localStorage.getItem(COMMAND_PALETTE_HINT_KEY.name)).toBe("true");
   });
 
@@ -167,10 +167,10 @@ describe("CommandPalette integration", () => {
     const user = userEvent.setup();
     renderPalette();
 
-    await user.click(screen.getByRole("button", { name: "Dismiss search hint" }));
+    await user.click(screen.getByRole("button", { name: "关闭搜索提示" }));
 
-    expect(screen.queryByRole("dialog", { name: "Command palette" })).not.toBeInTheDocument();
-    expect(screen.queryByText("to search keys")).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "命令面板" })).not.toBeInTheDocument();
+    expect(screen.queryByText("来搜索密钥")).not.toBeInTheDocument();
     expect(window.localStorage.getItem(COMMAND_PALETTE_HINT_KEY.name)).toBe("true");
   });
 
@@ -181,9 +181,9 @@ describe("CommandPalette integration", () => {
     });
     renderPalette();
 
-    await user.click(await screen.findByRole("button", { name: "Dismiss search hint" }));
+    await user.click(await screen.findByRole("button", { name: "关闭搜索提示" }));
 
-    expect(screen.queryByText("to search keys")).not.toBeInTheDocument();
+    expect(screen.queryByText("来搜索密钥")).not.toBeInTheDocument();
     expect(window.localStorage.getItem(COMMAND_PALETTE_HINT_KEY.name)).toBeNull();
   });
 
@@ -195,12 +195,12 @@ describe("CommandPalette integration", () => {
     renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
-    expect(screen.queryByText("to search keys")).not.toBeInTheDocument();
+    const input = await screen.findByRole("combobox", { name: "搜索" });
+    expect(screen.queryByText("来搜索密钥")).not.toBeInTheDocument();
 
     await user.keyboard("{Escape}");
 
-    expect(screen.queryByText("to search keys")).not.toBeInTheDocument();
+    expect(screen.queryByText("来搜索密钥")).not.toBeInTheDocument();
     expect(window.localStorage.getItem(COMMAND_PALETTE_HINT_KEY.name)).toBeNull();
   });
 
@@ -208,32 +208,32 @@ describe("CommandPalette integration", () => {
     writeStorage(COMMAND_PALETTE_HINT_KEY, true);
     renderPalette();
 
-    expect(screen.queryByText("to search keys")).not.toBeInTheDocument();
+    expect(screen.queryByText("来搜索密钥")).not.toBeInTheDocument();
   });
 
   it("shows global-search copy outside the keys routes", async () => {
     mocks.pathname = "/logs";
     renderPalette();
 
-    expect(await screen.findByText("to search or jump to a page")).toBeVisible();
+    expect(await screen.findByText("来搜索或跳转到页面")).toBeVisible();
   });
 
   it("opens and focuses with Ctrl+K, rejects extra modifiers, and toggles closed", async () => {
     renderPalette();
     fireEvent.keyDown(document, { key: "k", ctrlKey: true, shiftKey: true });
     fireEvent.keyDown(document, { key: "k", ctrlKey: true, altKey: true });
-    expect(screen.queryByRole("dialog", { name: "Command palette" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "命令面板" })).not.toBeInTheDocument();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
+    const input = await screen.findByRole("combobox", { name: "搜索" });
     expect(input).toHaveFocus();
     fireEvent.change(input, { target: { value: "stale" } });
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    expect(screen.queryByRole("dialog", { name: "Command palette" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "命令面板" })).not.toBeInTheDocument();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const reopenedInput = await screen.findByRole("combobox", { name: "Search" });
+    const reopenedInput = await screen.findByRole("combobox", { name: "搜索" });
     expect(reopenedInput).toHaveValue("");
   });
 
@@ -242,9 +242,9 @@ describe("CommandPalette integration", () => {
     renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
-    expect(input).toHaveAttribute("placeholder", "Search keys by alias or ID…");
-    expect(screen.getAllByText("Virtual Keys")).toHaveLength(2);
+    const input = await screen.findByRole("combobox", { name: "搜索" });
+    expect(input).toHaveAttribute("placeholder", "按别名或 ID 搜索密钥…");
+    expect(screen.getAllByText("虚拟密钥")).toHaveLength(2);
 
     await user.type(input, "prod");
     await waitFor(() => {
@@ -263,7 +263,7 @@ describe("CommandPalette integration", () => {
     expect(keyOption).toHaveAttribute("aria-selected", "true");
     fireEvent.keyDown(input, { key: "Enter" });
     expect(mocks.push).toHaveBeenCalledWith(keyDetailHref(PROD_KEY.token));
-    expect(screen.queryByRole("dialog", { name: "Command palette" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "命令面板" })).not.toBeInTheDocument();
   });
 
   it("opens the first matching key when Enter is pressed without navigating", async () => {
@@ -271,7 +271,7 @@ describe("CommandPalette integration", () => {
     renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
+    const input = await screen.findByRole("combobox", { name: "搜索" });
     await user.type(input, "prod");
     const firstKeyOption = await screen.findByRole("option", { name: /high-volume-prod/ });
     expect(firstKeyOption).toHaveAttribute("aria-selected", "true");
@@ -285,13 +285,13 @@ describe("CommandPalette integration", () => {
     renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = screen.getByRole("combobox", { name: "Search" });
+    const input = screen.getByRole("combobox", { name: "搜索" });
     fireEvent.change(input, { target: { value: "prod" } });
     vi.advanceTimersByTime(DEBOUNCE_WAIT_MS / 2);
 
-    expect(screen.getByText("Searching…")).toBeVisible();
+    expect(screen.getByText("正在搜索……")).toBeVisible();
     expect(screen.queryByRole("option", { name: /high-volume-prod/ })).not.toBeInTheDocument();
-    expect(screen.getByRole("option", { name: /Filter the keys table/ })).toBeVisible();
+    expect(screen.getByRole("option", { name: /过滤密钥列表/ })).toBeVisible();
 
     fireEvent.keyDown(input, { key: "Enter" });
 
@@ -306,13 +306,13 @@ describe("CommandPalette integration", () => {
     renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = screen.getByRole("combobox", { name: "Search" });
+    const input = screen.getByRole("combobox", { name: "搜索" });
     fireEvent.change(input, { target: { value: "prod" } });
     act(() => {
       vi.advanceTimersByTime(DEBOUNCE_WAIT_MS);
     });
 
-    expect(screen.getByText("Searching…")).toBeVisible();
+    expect(screen.getByText("正在搜索……")).toBeVisible();
     expect(screen.queryByRole("option", { name: /high-volume-prod/ })).not.toBeInTheDocument();
   });
 
@@ -320,7 +320,7 @@ describe("CommandPalette integration", () => {
     const { rerender } = renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
+    const input = await screen.findByRole("combobox", { name: "搜索" });
     const secondKeyOption = await screen.findByRole("option", { name: /prod-backend/ });
 
     fireEvent.keyDown(input, { key: "ArrowDown" });
@@ -344,7 +344,7 @@ describe("CommandPalette integration", () => {
     renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
+    const input = await screen.findByRole("combobox", { name: "搜索" });
     await user.type(input, "staging");
     const stagingOption = await screen.findByRole("option", { name: /staging-agent/ });
     expect(stagingOption).not.toHaveTextContent("unknown-team");
@@ -355,13 +355,13 @@ describe("CommandPalette integration", () => {
     renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
+    const input = await screen.findByRole("combobox", { name: "搜索" });
     await user.type(input, "no-match");
 
-    expect(await screen.findByText("No keys match “no-match”")).toBeVisible();
-    expect(screen.getByRole("group", { name: "Keys" })).toHaveTextContent("No keys match “no-match”");
-    expect(screen.getByRole("option", { name: /Filter the keys table/ })).toBeVisible();
-    expect(screen.queryByRole("group", { name: "Pages" })).not.toBeInTheDocument();
+    expect(await screen.findByText("没有与“no-match”匹配的密钥")).toBeVisible();
+    expect(screen.getByRole("group", { name: "密钥" })).toHaveTextContent("没有与“no-match”匹配的密钥");
+    expect(screen.getByRole("option", { name: /过滤密钥列表/ })).toBeVisible();
+    expect(screen.queryByRole("group", { name: "页面" })).not.toBeInTheDocument();
   });
 
   it("shows one global no-results message when the query has no matches", async () => {
@@ -370,12 +370,12 @@ describe("CommandPalette integration", () => {
     renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
+    const input = await screen.findByRole("combobox", { name: "搜索" });
     await user.type(input, "no-match");
 
-    expect(await screen.findByText("No results for “no-match”")).toBeVisible();
+    expect(await screen.findByText("没有找到与“no-match”相关的结果")).toBeVisible();
     expect(screen.queryByRole("group")).not.toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: /Search virtual keys/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: /搜索虚拟密钥/ })).not.toBeInTheDocument();
   });
 
   it("opens the virtual-key table with the current search applied", async () => {
@@ -383,7 +383,7 @@ describe("CommandPalette integration", () => {
     renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
+    const input = await screen.findByRole("combobox", { name: "搜索" });
     await user.type(input, "prod");
     await waitFor(() => {
       expect(vi.mocked(useKeys)).toHaveBeenLastCalledWith(1, 8, expect.objectContaining({ search: "prod" }), {
@@ -403,11 +403,13 @@ describe("CommandPalette integration", () => {
     renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
-    expect(input).toHaveAttribute("placeholder", "Search pages and actions…");
-    await user.type(input, "logs");
+    const input = await screen.findByRole("combobox", { name: "搜索" });
+    expect(input).toHaveAttribute("placeholder", "搜索页面与操作…");
+    await user.type(input, "日志");
 
-    const logsOption = await screen.findByRole("option", { name: /^Logs/ });
+    const logsOption = await screen.findByRole("option", {
+      name: (node) => node.startsWith("日志") && !node.startsWith("日志与"),
+    });
     expect(logsOption).toBeVisible();
     fireEvent.keyDown(input, { key: "Enter" });
     expect(mocks.push).toHaveBeenCalledWith(uiHref("logs"));
@@ -419,24 +421,24 @@ describe("CommandPalette integration", () => {
     renderPalette();
 
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
+    const input = await screen.findByRole("combobox", { name: "搜索" });
     await user.type(input, "keys");
 
-    expect(await screen.findByRole("option", { name: /Search virtual keys/ })).toBeVisible();
+    expect(await screen.findByRole("option", { name: /搜索虚拟密钥/ })).toBeVisible();
     fireEvent.keyDown(input, { key: "Enter" });
 
-    const keysInput = await screen.findByRole("combobox", { name: "Search" });
+    const keysInput = await screen.findByRole("combobox", { name: "搜索" });
     expect(keysInput).toHaveValue("");
-    expect(await screen.findByText("Recent keys")).toBeVisible();
+    expect(await screen.findByText("最近密钥")).toBeVisible();
   });
 
   it("switches from an empty keys scope to global search on Backspace", async () => {
     renderPalette();
     fireEvent.keyDown(document, { key: "k", ctrlKey: true });
-    const input = await screen.findByRole("combobox", { name: "Search" });
-    expect(input).toHaveAttribute("placeholder", "Search keys by alias or ID…");
+    const input = await screen.findByRole("combobox", { name: "搜索" });
+    expect(input).toHaveAttribute("placeholder", "按别名或 ID 搜索密钥…");
 
     fireEvent.keyDown(input, { key: "Backspace" });
-    expect(input).toHaveAttribute("placeholder", "Search pages and actions…");
+    expect(input).toHaveAttribute("placeholder", "搜索页面与操作…");
   });
 });

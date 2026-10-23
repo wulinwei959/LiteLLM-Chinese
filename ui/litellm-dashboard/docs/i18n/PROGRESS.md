@@ -4384,3 +4384,15 @@ i18n 自身的三条守卫也是全绿，16 个用例
 2026-10-23 复核数字：非测试 TSX 145 个文件 313 条可见英文命中（AST 口径，含技术串判定账）；目录叶子键 11482，英中同数；生产类型检查 0 条错误；测试文件类型错误 395 条；死键 0；`npm run build` exit 0；i18n 五条守卫此前 23 例全绿。
 
 剩余工作：313 条命中里继续摘用户可见文案，团队页的 RPM/TPM、示例邮箱、品牌与协议标识等按既有判定保留；zod 自定义校验消息仍待改成按译员构造；`npm run scan:rendered` 尚未跑；测试文件类型错误与旧英文断言按文件逐个收；临时脚本 `scripts/scan-english-pos.tmp.mjs` 待删除。分支策略是在 `litellm_sync_v1.107.0` 上完成合并、测试与收口后再合入 `main`。
+
+## 2026-10-23 第 426 簇：命令面板族接线与 nav 键路径裂缝修复
+
+上游合并带进的 CommandPalette 族在 425 簇只接了一半：触发器占位（"Search keys…"/"Search or jump to…"）、提示条后半句（"to search keys"/"to search or jump to a page"）、对话框输入占位、分组标题（Actions/Pages/Keys/Recent keys）、动作卡题与副标、空态两句、类型标签（Key/Page/Action 渲染于 ResultRow）、"Unnamed key" 回落共十七处裸英文。新增 `commandPalette.trigger.*`、`hint.toSearchKeys`/`toSearchOrJumpTo`、`placeholder.*`、`group.*`、`entry.*`、`empty.noKeysMatch`/`noRecentKeys`、`typeLabel.key/page/action`、`unnamedKey` 十八键（两侧同数，叶子 11482 后复测 11508）。typeLabel 循"受限 union + 渲染层查表"先例：`CommandPaletteRowData.typeLabel` 保持 `"Key"|"Page"|"Action"` union，ResultRow 用 `as const` 映射表取键，喂给行数据的构造点不动。
+
+渲染扫描同时暴露一条合并接缝裂缝：leftnav 的 `labelText`/`sectionText` 返回的是 `nav.*` 键路径（侧栏自己渲染时剥前缀查目录），CommandPalette 的 `flattenNavItems` 却把键路径直接当 title/section 渲染并参与 matchRank，中文界面会读出 `nav.logs` 裸键、按"日志"也搜不到。修法是面板内加 `useTranslations("nav")`（LoginPage `commonT` 先例），在 `navItems` memo 里把 `nav.` 前缀项解析成目录文本再交给匹配与渲染，前缀不变量由 leftnav 既有集中断言担保。
+
+`Ctrl K` 判键盘键名技术串保留（循 Enter/J/K 例），进 `rendered-ui-fixtures.mjs` 的 `ALLOWED_ENGLISH` 白名单。
+
+`CommandPalette.integration.test.tsx` 在 HEAD 基线即 18 例红（425 簇接线后断言未翻面），本簇全量翻面：combobox 名、dialog 名、提示条、占位、分组 role、选项名等按 zh 目录值重写；"logs" 键入改"日志"，Logs 选项名匹配用函数式 `(node)=>startsWith("日志")&&!startsWith("日志与")`（zh 下 "日志" 与 "日志与告警" 共享前缀，正则 /^日志/ 双命中）。31 例全绿。
+
+验证：渲染扫描 59→29 命中（面板族与 Ctrl K 清零）；i18n 守卫与死键库 30 例绿、死键 0；生产 typecheck 0 错；eslint 六文件与 HEAD 计数持平（CommandPalette.tsx 5=5）；prettier clean。

@@ -31,7 +31,7 @@ export function CommandPaletteHint({ scope, onDismiss }: CommandPaletteHintProps
         <kbd className="rounded-sm border border-border border-b-2 bg-muted px-[3px] font-mono text-xs text-muted-foreground">
           {shortcut}
         </kbd>
-        <span>{scope === "keys" ? "to search keys" : "to search or jump to a page"}</span>
+        <span>{scope === "keys" ? t("hint.toSearchKeys") : t("hint.toSearchOrJumpTo")}</span>
       </button>
       <button
         type="button"

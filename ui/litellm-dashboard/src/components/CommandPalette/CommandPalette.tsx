@@ -12,6 +12,7 @@ import { DEBOUNCE_WAIT_MS } from "@/utils/debounceConstants";
 import { keyDetailHref } from "@/utils/entityLinks";
 import { routeSegmentForPathname, uiHref } from "@/utils/uiHref";
 import type { KeyResponse } from "@/components/key_team_helpers/key_list";
+import type { NavMessageKey } from "@/components/leftnav";
 import { CommandPaletteResultRow, type CommandPaletteRowData } from "./CommandPaletteResultRow";
 import { useVisibleMenuGroups } from "./useVisibleMenuGroups";
 import { flattenNavItems, matchNavItems, paletteScopeForRoute, type PaletteNavItem, type PaletteScope } from "./utils";
@@ -34,6 +35,11 @@ interface PaletteGroup {
 const shortcutChipClass =
   "rounded-sm border border-border border-b-2 bg-muted px-[3px] font-mono text-muted-foreground";
 
+// Sidebar config stores labels as "nav.<key>"; leftnav pins that prefix invariant,
+// so stripping it here yields a valid nav key.
+const resolveNavLabel = (tn: (key: NavMessageKey) => string, value: string): string =>
+  value.startsWith("nav.") ? tn(value.slice(4) as NavMessageKey) : value;
+
 export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
   if (!open) return null;
   return <CommandPaletteDialog setOpen={setOpen} />;
@@ -41,6 +47,7 @@ export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (ope
 
 function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void }) {
   const t = useTranslations("commandPalette");
+  const tn = useTranslations("nav");
   const pathname = usePathname();
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -70,7 +77,15 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
   const isInitialKeyLoad = keyResults.isFetching && !keyResults.data;
   const isLoadingKeys = scope === "keys" && (isPendingQuery || hasPlaceholderKeyResults || isInitialKeyLoad);
   const visibleGroups = useVisibleMenuGroups();
-  const navItems = useMemo(() => flattenNavItems(visibleGroups), [visibleGroups]);
+  const navItems = useMemo(
+    () =>
+      flattenNavItems(visibleGroups).map((item) => ({
+        ...item,
+        label: resolveNavLabel(tn, item.label),
+        section: resolveNavLabel(tn, item.section),
+      })),
+    [visibleGroups, tn],
+  );
   const navMatches = useMemo(
     () => (scope === "global" || trimmedQuery ? matchNavItems(navItems, query) : []),
     [navItems, query, scope, trimmedQuery],
@@ -92,13 +107,13 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
         ...(searchKeysAction
           ? [
               {
-                label: "Actions",
+                label: t("group.actions"),
                 entries: [
                   {
                     id: "action:search-keys",
                     kind: "search-keys" as const,
-                    title: "Search virtual keys",
-                    subtitle: "Find a key by alias or ID",
+                    title: t("entry.searchKeysTitle"),
+                    subtitle: t("entry.searchKeysSubtitle"),
                     icon: <KeyRound className="size-4" />,
                     typeLabel: "Action" as const,
                   },
@@ -106,7 +121,7 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
               },
             ]
           : []),
-        ...(pages.length > 0 ? [{ label: "Pages", entries: pages }] : []),
+        ...(pages.length > 0 ? [{ label: t("group.pages"), entries: pages }] : []),
       ];
     }
 
@@ -123,7 +138,7 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
       return {
         id: `key:${key.token}`,
         kind: "key",
-        title: key.key_alias || "Unnamed key",
+        title: key.key_alias || t("unnamedKey"),
         subtitle,
         icon: <KeyRound className="size-4" />,
         typeLabel: "Key",
@@ -131,9 +146,9 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
       };
     });
     const keysGroup: PaletteGroup = {
-      label: trimmedQuery ? "Keys" : "Recent keys",
+      label: trimmedQuery ? t("group.keys") : t("group.recentKeys"),
       entries: keyEntries,
-      emptyMessage: trimmedQuery ? `No keys match “${trimmedQuery}”` : "No recent keys",
+      emptyMessage: trimmedQuery ? t("empty.noKeysMatch", { query: trimmedQuery }) : t("empty.noRecentKeys"),
       isLoading: isLoadingKeys,
     };
 
@@ -150,8 +165,8 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
 
     return [
       keysGroup,
-      { label: "Actions", entries: [filterEntry] },
-      ...(pages.length > 0 ? [{ label: "Pages", entries: pages }] : []),
+      { label: t("group.actions"), entries: [filterEntry] },
+      ...(pages.length > 0 ? [{ label: t("group.pages"), entries: pages }] : []),
     ];
   }, [isLoadingKeys, keyResults.data?.keys, navMatches, scope, teamAliases, trimmedQuery]);
   const selectableEntries = useMemo(() => groups.flatMap((group) => group.entries), [groups]);
@@ -263,7 +278,7 @@ function CommandPaletteDialog({ setOpen }: { setOpen: (open: boolean) => void })
             aria-activedescendant={activeOptionId}
             aria-autocomplete="list"
             className="h-full min-w-0 flex-1 border-0 bg-transparent text-[15px] outline-none placeholder:text-muted-foreground focus:ring-0"
-            placeholder={scope === "keys" ? "Search keys by alias or ID…" : "Search pages and actions…"}
+            placeholder={scope === "keys" ? t("placeholder.keysByAliasOrId") : t("placeholder.pagesAndActions")}
             value={query}
             onChange={(event) => {
               setQuery(event.currentTarget.value);

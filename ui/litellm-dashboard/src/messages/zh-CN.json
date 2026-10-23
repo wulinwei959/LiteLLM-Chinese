@@ -12954,14 +12954,42 @@
       "searchKeysFailed": "无法搜索密钥"
     },
     "empty": {
-      "noResults": "没有找到与“{query}”相关的结果"
+      "noResults": "没有找到与“{query}”相关的结果",
+      "noKeysMatch": "没有与“{query}”匹配的密钥",
+      "noRecentKeys": "暂无最近密钥"
     },
     "hint": {
       "open": "打开",
       "navigate": "选择",
       "press": "按下",
-      "close": "关闭"
-    }
+      "close": "关闭",
+      "toSearchKeys": "来搜索密钥",
+      "toSearchOrJumpTo": "来搜索或跳转到页面"
+    },
+    "trigger": {
+      "searchKeys": "搜索密钥…",
+      "searchOrJumpTo": "搜索或跳转…"
+    },
+    "typeLabel": {
+      "key": "密钥",
+      "page": "页面",
+      "action": "操作"
+    },
+    "group": {
+      "actions": "操作",
+      "pages": "页面",
+      "keys": "密钥",
+      "recentKeys": "最近密钥"
+    },
+    "entry": {
+      "searchKeysTitle": "搜索虚拟密钥",
+      "searchKeysSubtitle": "按别名或 ID 查找密钥"
+    },
+    "placeholder": {
+      "keysByAliasOrId": "按别名或 ID 搜索密钥…",
+      "pagesAndActions": "搜索页面与操作…"
+    },
+    "unnamedKey": "未命名密钥"
   },
   "addModel": {
     "cacheAware": {

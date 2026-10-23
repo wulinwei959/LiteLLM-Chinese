@@ -12958,14 +12958,42 @@
       "searchKeysFailed": "Unable to search keys"
     },
     "empty": {
-      "noResults": "No results for “{query}”"
+      "noResults": "No results for “{query}”",
+      "noKeysMatch": "No keys match “{query}”",
+      "noRecentKeys": "No recent keys"
     },
     "hint": {
       "open": "Open",
       "navigate": "Navigate",
       "press": "Press",
-      "close": "Close"
-    }
+      "close": "Close",
+      "toSearchKeys": "to search keys",
+      "toSearchOrJumpTo": "to search or jump to a page"
+    },
+    "trigger": {
+      "searchKeys": "Search keys…",
+      "searchOrJumpTo": "Search or jump to…"
+    },
+    "typeLabel": {
+      "key": "Key",
+      "page": "Page",
+      "action": "Action"
+    },
+    "group": {
+      "actions": "Actions",
+      "pages": "Pages",
+      "keys": "Keys",
+      "recentKeys": "Recent keys"
+    },
+    "entry": {
+      "searchKeysTitle": "Search virtual keys",
+      "searchKeysSubtitle": "Find a key by alias or ID"
+    },
+    "placeholder": {
+      "keysByAliasOrId": "Search keys by alias or ID…",
+      "pagesAndActions": "Search pages and actions…"
+    },
+    "unnamedKey": "Unnamed key"
   },
   "addModel": {
     "cacheAware": {

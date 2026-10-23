@@ -39,6 +39,7 @@ export const ALLOWED_ENGLISH = new Set([
   "Beta",
   "Cohere",
   "CSV",
+  "Ctrl K",
   "DeepSeek",
   "Enter",
   "Gemini",
