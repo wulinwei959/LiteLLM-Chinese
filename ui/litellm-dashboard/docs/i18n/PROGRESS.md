@@ -4808,4 +4808,4 @@ ViewSwitcher 三处修复：菜单里 Moyai 项的说明 "Cloud Coding Agent" �
 
 `keyEditFormValues.test.ts` 的 3 例"应该通过"一直红着。查下来是 Zod 4 的行为差异：`z.custom<T>()` 不传校验函数时，对象字段仍被当成必填，`safeParse({})` 会对每个 `z.custom` 字段报 `invalid_type / nonoptional`，所以空表单与"留空输出令牌"这些正向用例全部失败，而反向用例因为"怎么都失败"反而假绿。修复是给所有 `z.custom` 补 `(() => true)` 校验并接 `.optional()`（两处带 `refine` 的字段在 `custom` 与 `refine` 之间插入 optional），`mcp_tool_permissions` 因为泛型里带 `Record<string, string[]>` 没被批量正则覆盖，单独补。修完 3 例转绿，key_edit_view 集成测试仍维持原来的 7 例行为失败、无回归，生产 tsc 0 错。
 
-同时在 `src` 下扫了一遍 `z.custom<...>()` 的无校验写法，没有残留。
+另外扫了 `src` 下其它 `z.custom<...>()` 的无校验写法：`BaseSSOSettingsForm` 那处是整表 schema（根对象一定存在，只靠 `superRefine`），`ModelInfoEditForm` 两处接了 `.nullish()`、数组元素那处外层已 `.optional()`，都不会触发同一问题，故未改动。
