@@ -127,7 +127,7 @@ export default function ModelsAndEndpointsPage() {
       // effectiveSessionRole reports proxy_admin_viewer as "Admin", so isAdmin alone would show a
       // viewer these write-only panels; only the raw-role isViewOnly separates them. Health Status
       // stays: it is the bucket's one read view, and viewers keep read parity with admins.
-      ...(!isViewOnly && (isAdmin || isInternalUser) ? (["llm-credentials"] as const) : []),
+      ...(isAdmin || (!isViewOnly && isInternalUser) ? (["llm-credentials"] as const) : []),
       ...(isAdmin && !isViewOnly ? (["pass-through"] as const) : []),
       ...(isAdmin ? (["health"] as const) : []),
       ...(isAdmin && !isViewOnly

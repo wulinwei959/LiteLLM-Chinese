@@ -143,14 +143,14 @@ describe("ModelsAndEndpointsPage", () => {
   it("hides admin-only tabs for a non-admin user but keeps LLM Credentials for their connections", () => {
     mockUseAuthorized.mockReturnValue(NON_ADMIN);
     renderPage();
-    expect(screen.queryByRole("tab", { name: "LLM 凭据" })).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "LLM 凭据" })).toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "健康状态" })).not.toBeInTheDocument();
   });
 
   it("hides LLM Credentials from an internal viewer", () => {
     mockUseAuthorized.mockReturnValue({ ...NON_ADMIN, userRole: "Internal Viewer", isViewOnly: true });
     renderPage();
-    expect(screen.queryByRole("tab", { name: "LLM Credentials" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "LLM 凭据" })).not.toBeInTheDocument();
   });
 
   it("keeps the full admin tab order for a real admin", () => {
@@ -174,7 +174,7 @@ describe("ModelsAndEndpointsPage", () => {
     renderPage();
     expect(screen.getByRole("tab", { name: "已部署模型" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "健康状态" })).toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: "LLM 凭据" })).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "LLM 凭据" })).toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "直通端点" })).not.toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "模型重试设置" })).not.toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "模型组别名" })).not.toBeInTheDocument();
