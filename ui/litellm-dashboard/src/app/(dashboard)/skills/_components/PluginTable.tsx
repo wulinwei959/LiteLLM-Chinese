@@ -21,24 +21,26 @@ interface PluginTableProps {
 const DEFAULT_SORTING: SortingState = [{ id: "created_at", desc: true }];
 
 function EmptyState() {
+  const t = useTranslations("skills");
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Inbox className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No skills found</div>
-      <div className="text-sm text-muted-foreground">Add one to get started.</div>
+      <div className="text-sm font-medium text-foreground">{t("noSkills")}</div>
+      <div className="text-sm text-muted-foreground">{t("noSkillsHint")}</div>
     </div>
   );
 }
 
 const PluginTable: React.FC<PluginTableProps> = ({ pluginsList, isLoading, onDeleteClick, isAdmin, onPluginClick }) => {
   const t = useTranslations("skills");
+  const tCommon = useTranslations("common");
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
   const columns = useMemo(
-    () => getPluginTableColumns({ isAdmin, onPluginClick, onDeleteClick, t }),
-    [isAdmin, onPluginClick, onDeleteClick, t],
+    () => getPluginTableColumns({ isAdmin, onPluginClick, onDeleteClick, t, tCommon }),
+    [isAdmin, onPluginClick, onDeleteClick, t, tCommon],
   );
 
   return (

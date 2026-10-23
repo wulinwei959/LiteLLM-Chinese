@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import type { SkillsTranslator } from "@/lib/i18n/translators";
+import type { CommonTranslator, SkillsTranslator } from "@/lib/i18n/translators";
 import { useTranslations } from "next-intl";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
 
@@ -33,12 +33,13 @@ const CATEGORY_BADGE_CLASS: Record<ReturnType<typeof getCategoryBadgeColor>, str
 };
 
 function PluginCategoryBadge({ category }: { category?: string }) {
+  const t = useTranslations("skills");
   return (
     <Badge
       variant="outline"
       className={cn("whitespace-nowrap font-normal", CATEGORY_BADGE_CLASS[getCategoryBadgeColor(category)])}
     >
-      {category || "Uncategorized"}
+      {category || t("uncategorized")}
     </Badge>
   );
 }
@@ -54,7 +55,7 @@ function PluginRowActions({ plugin, isAdmin, onDeleteClick }: PluginRowActionsPr
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open skill actions"
+        aria-label={t("openActions")}
         data-testid={`plugin-actions-${plugin.name}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -77,7 +78,7 @@ function PluginRowActions({ plugin, isAdmin, onDeleteClick }: PluginRowActionsPr
               onClick={() => onDeleteClick(plugin.name, plugin.name)}
             >
               <Trash2 />
-              Delete
+              {t("deleteButton")}
             </DropdownMenuItem>
           </>
         )}
@@ -88,6 +89,7 @@ function PluginRowActions({ plugin, isAdmin, onDeleteClick }: PluginRowActionsPr
 
 interface PluginTableColumnsDeps {
   t: SkillsTranslator;
+  tCommon: CommonTranslator;
   isAdmin: boolean;
   onPluginClick: (pluginId: string) => void;
   onDeleteClick: (pluginName: string, displayName: string) => void;
@@ -99,12 +101,13 @@ export const getPluginTableColumns = ({
   onDeleteClick,
 
   t,
+  tCommon,
 }: PluginTableColumnsDeps): ColumnDef<Plugin>[] => [
   {
     id: "name",
     accessorKey: "name",
-    meta: { title: "Skill Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Skill Name" />,
+    meta: { title: t("skillName") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("skillName")} />,
     size: 220,
     enableSorting: true,
     cell: ({ row }) => (
@@ -144,8 +147,8 @@ export const getPluginTableColumns = ({
   {
     id: "category",
     accessorKey: "category",
-    meta: { title: "Category", skeleton: "badge" },
-    header: "Category",
+    meta: { title: t("category"), skeleton: "badge" },
+    header: t("category"),
     size: 150,
     enableSorting: false,
     cell: ({ row }) => <PluginCategoryBadge category={row.original.category ?? undefined} />,
@@ -153,20 +156,23 @@ export const getPluginTableColumns = ({
   {
     id: "enabled",
     accessorKey: "enabled",
-    meta: { title: "Public", skeleton: "badge" },
-    header: "Public",
+    meta: { title: t("public"), skeleton: "badge" },
+    header: t("public"),
     size: 100,
     enableSorting: false,
     cell: ({ row }) => (
-      <StatusBadge tone={row.original.enabled ? "success" : "neutral"} label={row.original.enabled ? "Yes" : "No"} />
+      <StatusBadge
+        tone={row.original.enabled ? "success" : "neutral"}
+        label={row.original.enabled ? tCommon("yes") : tCommon("no")}
+      />
     ),
   },
   {
     id: "created_at",
     accessorKey: "created_at",
     sortingFn: "datetime",
-    meta: { title: "Created At" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Created At" />,
+    meta: { title: t("createdAt") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("createdAt")} />,
     size: 160,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.created_at} />,

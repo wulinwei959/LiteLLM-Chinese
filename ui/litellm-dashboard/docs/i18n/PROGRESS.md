@@ -4432,3 +4432,11 @@ AST 313 余量里摘 add_model 复杂度路由族。ClassificationMethodConfig �
 测试：AutoRouterClassifierTabs.integration.test.tsx 两处断言翻面（`Heuristic before the judge` 按钮名→`评审前的启发式`、`/^Heuristic v2/`→`/^启发式 v2/`）。意外收获：add_model+edit_auto_router 全域 1302 例 HEAD 基线本就 221 红（测试早已按 zh 目录值写好、组件没接线），本簇接线顺带修复 50 例，逐测试名 diff 净新增 0、降至 171 红。
 
 验证：AST 扫描 145 文件 313 条 → 143 文件 302 条；AutoRouterClassifierTabs 38 例全绿；生产 typecheck 0 错；死键 0；eslint 触及文件与 HEAD 计数持平（ClassificationMethodConfig 3 错皆上游快照未用导入既有）；prettier clean；`npm run build` exit 0。
+
+## 2026-10-23 第 432 簇：技能表与来源预览接线
+
+skills 域八个 AST 命中加两枚 `--all` 人工过捞回（StatusBadge 的 label 不在 COPY_PROPS）。PluginTableColumns 六处：行操作 aria `openActions`、删除项 `deleteButton`、列头 `skillName`/`createdAt` 全部复用目录既有键；Yes/No 走 `common.yes/no`，按 RoutingGroupsTableColumns 先例给 deps 注入 `tCommon: CommonTranslator`；分类徽章 "Uncategorized" 回落新增 `skills.uncategorized`。PluginTable 空态两句复用 `noSkills`、新增 `noSkillsHint`。claude_code_plugins/helpers 的 `parseArchiveSource` 是唯一没接译员的预览分支（模板串 `Zip archive — ...`），加 `t` 参数改走新键 `sourceLabel.archive`（"Zip archive — {location}" / "Zip 压缩包 — {location}"）；`buildGitSourcePreview` 两处 brand 参数小写 "git" 与 zh 句 "Git 仓库" 的专名大写不符，改 "Git"。add_plugin_form 五枚 placeholder 判示例文案技术串保留（邮箱/URL/kebab 路径/关键词样例，循既有判定账）。
+
+测试零翻面：PluginTable 与 add_plugin_form 的断言早已按 zh 目录值写好（HEAD 基线 7 红），本簇接线后 skills 域 5 文件 123 例全绿，净新增 0。目录新增 3 叶（11556→11559）。
+
+验证：AST 触及文件仅剩 5 枚保留 placeholder；全域 123 例绿；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错 3 warning 与 HEAD 计数持平；prettier clean；`npm run build` exit 0。

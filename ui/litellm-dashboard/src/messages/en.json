@@ -9488,7 +9488,8 @@
       "githubRepo": "GitHub repo — {name}",
       "githubSubdir": "GitHub subdir — {repo} @ {path}",
       "gitRepo": "{brand} repo — {url}",
-      "gitSubdir": "{brand} subdir — {repo} @ {path}"
+      "gitSubdir": "{brand} subdir — {repo} @ {path}",
+      "archive": "Zip archive — {location}"
     },
     "skillNameKebabToast": "Skill name must be kebab-case (lowercase letters, numbers, and hyphens only)",
     "semverToast": "Version must be in semantic versioning format (e.g., 1.0.0)",
@@ -9500,7 +9501,9 @@
     "sha256Invalid": "SHA-256 must be a 64-character hex digest",
     "nameRequired": "Please enter skill name",
     "nameKebab": "Name must be kebab-case (lowercase, numbers, hyphens only)",
-    "emailInvalid": "Please enter a valid email"
+    "emailInvalid": "Please enter a valid email",
+    "noSkillsHint": "Add one to get started.",
+    "uncategorized": "Uncategorized"
   },
   "memory": {
     "tableLoading": "Loading memories…",

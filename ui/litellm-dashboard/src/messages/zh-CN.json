@@ -9484,7 +9484,8 @@
       "githubRepo": "{name} 仓库",
       "githubSubdir": "{repo} 子目录 — {path}",
       "gitRepo": "{brand} 仓库 — {url}",
-      "gitSubdir": "{brand} 子目录 — {repo} @ {path}"
+      "gitSubdir": "{brand} 子目录 — {repo} @ {path}",
+      "archive": "Zip 压缩包 — {location}"
     },
     "skillNameKebabToast": "技能名称必须是 kebab-case（只能包含小写字母、数字和连字符）",
     "semverToast": "版本必须符合语义化版本格式（如 1.0.0）",
@@ -9496,7 +9497,9 @@
     "sha256Invalid": "SHA-256 必须是 64 位十六进制摘要",
     "nameRequired": "请输入技能名称",
     "nameKebab": "名称必须是 kebab-case（只能是小写字母、数字和连字符）",
-    "emailInvalid": "请输入有效的邮箱地址"
+    "emailInvalid": "请输入有效的邮箱地址",
+    "noSkillsHint": "添加一个即可开始。",
+    "uncategorized": "未分类"
   },
   "memory": {
     "tableLoading": "正在加载记忆…",

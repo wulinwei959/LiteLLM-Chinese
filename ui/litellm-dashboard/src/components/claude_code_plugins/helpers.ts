@@ -159,14 +159,14 @@ const buildGitSourcePreview = (
     }
     return {
       parsed: { source: "git-subdir", url: repoUrl, path: normalized },
-      label: t("sourceLabel.gitSubdir", { brand: "git", repo: repoUrl, path: normalized }),
+      label: t("sourceLabel.gitSubdir", { brand: "Git", repo: repoUrl, path: normalized }),
       suggestedName: toKebabCase(lastSegment(normalized)),
     };
   }
 
   return {
     parsed: { source: "url", url: repoUrl },
-    label: t("sourceLabel.gitRepo", { brand: "git", url: repoUrl }),
+    label: t("sourceLabel.gitRepo", { brand: "Git", url: repoUrl }),
     suggestedName: toKebabCase(repoName),
   };
 };
@@ -204,9 +204,9 @@ const parseSshSource = (t: SkillsTranslator, raw: string, subPath?: string): Ski
   return buildGitSourcePreview(t, trimmed, lastSegment(url.pathname).replace(/\.git$/i, ""), subPath);
 };
 
-const parseArchiveSource = (url: URL): SkillSourcePreview => ({
+const parseArchiveSource = (t: SkillsTranslator, url: URL): SkillSourcePreview => ({
   parsed: { source: "archive", url: url.href },
-  label: `Zip archive — ${url.host}${url.pathname}`,
+  label: t("sourceLabel.archive", { location: `${url.host}${url.pathname}` }),
   suggestedName: toKebabCase(lastSegment(url.pathname).replace(ZIP_ARCHIVE_REGEX, "")),
 });
 
@@ -227,7 +227,7 @@ export const parseSkillSource = (t: SkillsTranslator, rawUrl: string, subPath?: 
     return null;
   }
   if (ZIP_ARCHIVE_REGEX.test(url.pathname)) {
-    return parseArchiveSource(url);
+    return parseArchiveSource(t, url);
   }
   if (url.hostname.replace(/^www\./, "") === GITHUB_HOST) {
     return parseGitHubSource(t, url, subPath);
