@@ -4821,3 +4821,7 @@ TeamInfo.integration 5 例转绿：编辑设置按钮的正则改"编辑设置"�
 ## 2026-10-24 第 480 簇：文案类失败逐个击破（模型信息、Moyai 落地页）
 
 model_info_view 2 例转绿：每分辨率价格走 `models.pricingSummary.outputTier`（输出（{resolution}）：{cost}），"Input:"/"Output:" 断言改"输入："/"输出："。MoyaiLanding 3 例转绿："Ask a proxy admin to connect it" 对应 `moyai.alreadyDeployedHint`，演示图的链接名实际取 `moyai.fullWalkthrough`（在 GitHub 上看完整教程，不是 watchDemoOnGithub），alt 与发布文章链接按 `demoAlt`/`readLaunchPost` 翻面。key_info_view 的 `of $20.00` 改"上限 $20.00"（`virtualKeys.info.ofBudget`），团队预算那条仍未通过：fixture 里 `max_budget: null` 且给了 `team_member_budget_table`，但生产侧 `teamMemberBudgetGate` 没拿到成员预算，需要下一轮查 `useTeamMemberBudgets` 的取值路径。
+
+## 2026-10-24 第 481 簇：引导链接与遥测目的地的可访问名
+
+onboarding_link 2 例：只读输入框的可访问名取自 `onboardingModal.resetTitle`/`invitationTitle`，断言改为"重置密码链接"/"邀请链接"。TelemetrySettingsPage 3 例：目的地单选项名取自 `telemetry.destination.localTableLabel`，正则 `/^Local table/` 改 `/^本地表/`。两个文件均转绿。

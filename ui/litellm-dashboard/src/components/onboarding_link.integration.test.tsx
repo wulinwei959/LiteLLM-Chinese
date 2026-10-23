@@ -32,7 +32,7 @@ describe("OnboardingModal", () => {
   it("shows the reset password link in a read-only field labelled for that flow", () => {
     renderModal("resetPassword");
 
-    const field = screen.getByRole("textbox", { name: "Reset password link" });
+    const field = screen.getByRole("textbox", { name: "重置密码链接" });
     expect(field).toHaveValue("http://localhost:4000/ui/onboarding?invitation_id=inv-123&action=reset_password");
     expect(field).toHaveAttribute("readonly");
     expect(screen.getByText("user-abc")).toBeInTheDocument();
@@ -41,7 +41,7 @@ describe("OnboardingModal", () => {
   it("shows the invitation link in a read-only field labelled for that flow", () => {
     renderModal("invitation");
 
-    const field = screen.getByRole("textbox", { name: "Invitation link" });
+    const field = screen.getByRole("textbox", { name: "邀请链接" });
     expect(field).toHaveValue("http://localhost:4000/ui/onboarding?invitation_id=inv-123");
     expect(field).toHaveAttribute("readonly");
   });

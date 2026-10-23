@@ -70,7 +70,7 @@ describe("TelemetrySettingsPage", () => {
 
     expect(await screen.findByText("遥测已开启但没有选择目的地，因此不会记录任何内容")).toBeVisible();
     expect(screen.getByRole("radio", { name: /^HTTP/ })).toHaveAttribute("aria-disabled", "true");
-    await user.click(screen.getByRole("radio", { name: /^Local table/ }));
+    await user.click(screen.getByRole("radio", { name: /^本地表/ }));
 
     expect(await screen.findByRole("dialog", { name: "Telemetry is an enterprise-only feature" })).toBeVisible();
     expect(put).not.toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe("TelemetrySettingsPage", () => {
     const telemetry = await screen.findByRole("switch", { name: "遥测" });
     expect(telemetry).not.toBeChecked();
     expect(screen.getByRole("switch", { name: "心跳" })).toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByRole("radio", { name: /^Local table/ })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("radio", { name: /^本地表/ })).toHaveAttribute("aria-disabled", "true");
     await user.click(telemetry);
 
     expect(await screen.findByRole("dialog", { name: title })).toBeVisible();
