@@ -46,8 +46,8 @@ const ModelConnectionTest: React.FC<ModelConnectionTestProps> = ({
     try {
       const result = await prepareModelAddRequest(formValues, accessToken, null, t);
 
-      if (!result) {
-        setError(t("prepareModelDataFailed"));
+      if (!result || result.length === 0) {
+        setError(t(result ? "requiredFieldsMissing" : "prepareModelDataFailed"));
         setIsSuccess(false);
         setIsLoading(false);
         return;

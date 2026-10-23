@@ -101,10 +101,8 @@ describe("ModelConnectionTest", () => {
     renderWithProviders(<ModelConnectionTest formValues={{}} accessToken="sk-test" testMode="chat" />);
     await finishConnectionTest();
 
-    expect(screen.getByTestId("connection-failure-msg")).toHaveTextContent("Connection to this model failed");
-    expect(
-      screen.getByText("Required fields are not filled in. Fill them in and test the connection again."),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("connection-failure-msg")).toHaveTextContent("连接到 此模型 失败");
+    expect(screen.getByText("请填写所有必填字段")).toBeInTheDocument();
     expect(testConnectionRequest).not.toHaveBeenCalled();
   });
 

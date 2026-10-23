@@ -4845,3 +4845,7 @@ UserActivity 2 例转绿：错误态文案按 `usage.userActivity.error.loadTopU
 ## 2026-10-24 第 485 簇：决策横幅、凭据创建提示与向量库错误文本
 
 DecisionModelsBanner 2 例：CTA 链接名改"去试试"，正文按 `callBefore`/`or`/`orTry` 的中文串用正则断言（保留 `/v1/decisions`、`/v1/systemone` 两个路径）。CredentialsPanel 1 例：创建失败提示此前走 `extractProxyErrorMessage`，把服务端英文原样弹给用户；改为复用 `models.credentials.createFailed`（新增第二把 `models.credentials` 翻译器），与测试和其它失败提示一致。networking 1 例：`ragIngestCall` 在代理返回 `{detail: {error: "..."}}` 时把对象直接塞进 `Error`，抛出的是 `[object Object]`；补上对象型 detail 的取值。
+
+## 2026-10-24 第 486 簇：MCP 选择器作用域与连接测试的必填分支
+
+MCPServerSelector 1 例：`useMCPServers` 只传了 `teamId`，把组件拿到的 `userId` 丢了（hook 第二个参数就是用户作用域），补齐后测试转绿。model_connection_test 1 例：`prepareModelAddRequest` 返回空数组时组件直接 `result[0]` 解构抛错，落进通用失败文案；补 `result.length === 0` 分支走既有的 `models.addModel.requiredFieldsMissing`（请填写所有必填字段），测试的英文断言同步中文。

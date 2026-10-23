@@ -54,7 +54,7 @@ const MCPServerSelector: React.FC<MCPServerSelectorProps> = ({
   allowAllProxyMcpServers = false,
 }) => {
   const t = useTranslations("mcpServers.selector");
-  const { data: mcpServers = [], isLoading: serversLoading } = useMCPServers(teamId);
+  const { data: mcpServers = [], isLoading: serversLoading } = useMCPServers(teamId, userId);
   const { data: accessGroups = [], isLoading: groupsLoading } = useMCPAccessGroups();
   const { data: toolsets = [], isLoading: toolsetsLoading } = useMCPToolsets();
 
