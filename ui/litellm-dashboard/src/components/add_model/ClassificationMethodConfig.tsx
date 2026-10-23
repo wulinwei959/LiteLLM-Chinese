@@ -418,26 +418,22 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
 
       {showSelection && isHeuristicChain(classifierType) && (
         <div className="mt-4 space-y-2">
-          <Label htmlFor="auto-router-local-heuristic">Heuristic before the judge</Label>
+          <Label htmlFor="auto-router-local-heuristic">{t("localHeuristicLabel")}</Label>
           <ClassifierMenu
             id="auto-router-local-heuristic"
-            label="Heuristic before the judge"
-            selectedLabel={value.local_heuristic === "heuristic_v2" ? "Heuristic v2" : "Heuristic v1 (rule-based)"}
+            label={t("localHeuristicLabel")}
+            selectedLabel={value.local_heuristic === "heuristic_v2" ? t("heuristicV2") : t("heuristicV1Label")}
             feature={value.local_heuristic === "heuristic_v2" ? "heuristic_v2" : undefined}
             value={value.local_heuristic ?? "heuristic"}
             onValueChange={(next) => {
               if (next === "heuristic" || next === "heuristic_v2") onChange({ ...value, local_heuristic: next });
             }}
           >
-            <ClassifierOption
-              value="heuristic"
-              label="Heuristic v1 (rule-based)"
-              description="Score requests using configurable weights and keywords"
-            />
+            <ClassifierOption value="heuristic" label={t("heuristicV1Label")} description={t("heuristicV1Detail")} />
             <ClassifierOption
               value="heuristic_v2"
-              label="Heuristic v2"
-              description="Choose a tier using calibrated success probabilities"
+              label={t("heuristicV2")}
+              description={t("heuristicV2Detail")}
               feature="heuristic_v2"
             />
           </ClassifierMenu>
@@ -571,10 +567,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
                 <Info className="size-4 text-muted-foreground" />
               </SimpleTooltip>
             </div>
-            <AutoRouterAllowanceNote
-              feature="tier_or_classifier_prompt"
-              label={t("customPromptAllowanceLabel")}
-            />
+            <AutoRouterAllowanceNote feature="tier_or_classifier_prompt" label={t("customPromptAllowanceLabel")} />
             {!value.custom_tier_set && usesCustomPrompt ? (
               <ClassifierPromptEditor
                 systemPrompt={value.classifier_llm_config?.system_prompt}
@@ -621,11 +614,12 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
                 </Label>
                 <Label className="items-start font-normal leading-normal has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50">
                   <RadioGroupItem value="default_model" disabled={!hasDefaultModel} className="mt-0.5" />
-                  <SimpleTooltip
-                    content={hasDefaultModel ? t("fallbackChangeHint") : t("fallbackSetDefaultHint")}
-                  >
+                  <SimpleTooltip content={hasDefaultModel ? t("fallbackChangeHint") : t("fallbackSetDefaultHint")}>
                     <span>
-                      <span>{t("fallbackDefaultModelLabel")}{defaultModel ? ` (${defaultModel})` : ""}</span>{" "}
+                      <span>
+                        {t("fallbackDefaultModelLabel")}
+                        {defaultModel ? ` (${defaultModel})` : ""}
+                      </span>{" "}
                       <span className="text-muted-foreground">{t("fallbackDefaultModelDetail")}</span>
                     </span>
                   </SimpleTooltip>

@@ -4424,3 +4424,11 @@ roles.test.ts 补三条：全标签集落 `role.` 键、非标签透传、`forma
 测试：validatePayload.test.ts 22 条消息断言翻成 zh 目录值；openAIDecisionsForm.test.ts 五例漏传 t（HEAD 基线即 TypeError 红），补 zh 译员后转绿；ValidationFeedback.test.tsx 四例裸 render 补 renderWithProviders 并翻面（2 个问题/请求内容有效/请求内容校验问题/可以发送/1 个问题待修正），playground 全量 533 例从 HEAD 86 红降至 77 红，逐测试名 diff 净新增 0。
 
 验证：lib 目录 8 文件 146 例全绿；生产 typecheck 0 错；死键 0；触及文件 eslint 0 错（validatePayload 1 条 warning 既有）；prettier clean；`npm run build` exit 0。剩余 77 红为 SystemOneUI/PlaygroundChat 集成族旧断言与 provider 缺线，按测试债逐文件收的既定口径另簇推进。
+
+## 2026-10-23 第 431 簇：auto-router 高级设置族标题接线
+
+AST 313 余量里摘 add_model 复杂度路由族。ClassificationMethodConfig 的"评审前的启发式"块（421-443 行）是唯一裸英文段：Label 与 ClassifierMenu label 共用 `localHeuristicLabel`，selectedLabel 与两个 ClassifierOption 的 label/description 走 `heuristicV1Label`/`heuristicV2`（复用既有键）/`heuristicV1Detail`/`heuristicV2Detail`，共 6 枚新键。ComplexityRouterAdvancedSections 五枚 section 标题里 `advGroupClassifierTuning`/`advSectionClassificationMethod`/`advSectionAdaptiveRouting` 三枚直接复用目录已有键，`advSectionHeuristicTuning`/`advSectionCacheAwareRouting` 新增；同文件 groups 数组四枚分组标题（"Heuristic tuning"、"LLM tuning"/"Classifier tuning" 三元、"Request preprocessing"、"Routing rules and recovery"）不在 AST 四类节点里（`--all` 人工过捞回），随本簇接线（`advGroupLlmTuning`/`advGroupRequestPreprocessing` 新增，`advGroupRoutingRules` 复用）。目录新增 8 叶（11548→11556）。
+
+测试：AutoRouterClassifierTabs.integration.test.tsx 两处断言翻面（`Heuristic before the judge` 按钮名→`评审前的启发式`、`/^Heuristic v2/`→`/^启发式 v2/`）。意外收获：add_model+edit_auto_router 全域 1302 例 HEAD 基线本就 221 红（测试早已按 zh 目录值写好、组件没接线），本簇接线顺带修复 50 例，逐测试名 diff 净新增 0、降至 171 红。
+
+验证：AST 扫描 145 文件 313 条 → 143 文件 302 条；AutoRouterClassifierTabs 38 例全绿；生产 typecheck 0 错；死键 0；eslint 触及文件与 HEAD 计数持平（ClassificationMethodConfig 3 错皆上游快照未用导入既有）；prettier clean；`npm run build` exit 0。

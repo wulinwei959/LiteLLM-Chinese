@@ -1690,7 +1690,15 @@
       "federatedHint": "工作负载身份联合将保存为凭据，然后附加到此模型。",
       "federatedButton": "使用工作负载身份联合",
       "credentialOnlyNote": "此认证类型将保存为 LLM 凭据并附加到此模型。",
-      "createCredential": "创建凭据"
+      "createCredential": "创建凭据",
+      "advSectionHeuristicTuning": "启发式调优",
+      "advGroupLlmTuning": "LLM 调优",
+      "advGroupRequestPreprocessing": "请求预处理",
+      "advSectionCacheAwareRouting": "缓存感知路由",
+      "localHeuristicLabel": "评审前的启发式",
+      "heuristicV1Label": "启发式 v1（基于规则）",
+      "heuristicV1Detail": "使用可配置的权重与关键词为请求打分",
+      "heuristicV2Detail": "使用校准后的成功概率选择档位"
     },
     "health": {
       "title": "健康状态",

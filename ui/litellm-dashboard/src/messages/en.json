@@ -1690,7 +1690,15 @@
       "federatedHint": "Workload identity federation is saved as a credential, then attached to this model.",
       "federatedButton": "Use workload identity federation",
       "credentialOnlyNote": "This auth type is saved as an LLM credential and attached to this model.",
-      "createCredential": "Create credential"
+      "createCredential": "Create credential",
+      "advSectionHeuristicTuning": "Heuristic tuning",
+      "advGroupLlmTuning": "LLM tuning",
+      "advGroupRequestPreprocessing": "Request preprocessing",
+      "advSectionCacheAwareRouting": "Cache-aware routing",
+      "localHeuristicLabel": "Heuristic before the judge",
+      "heuristicV1Label": "Heuristic v1 (rule-based)",
+      "heuristicV1Detail": "Score requests using configurable weights and keywords",
+      "heuristicV2Detail": "Choose a tier using calibrated success probabilities"
     },
     "health": {
       "title": "Health Status",

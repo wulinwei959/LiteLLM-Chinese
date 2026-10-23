@@ -106,7 +106,7 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
       ? [
           {
             key: "classifier",
-            label: <strong className="text-foreground font-semibold">Classifier tuning</strong>,
+            label: <strong className="text-foreground font-semibold">{t("advGroupClassifierTuning")}</strong>,
             children: (
               <ForecastClassifierConfig
                 section="advanced"
@@ -123,7 +123,7 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
       ? [
           {
             key: "classifier",
-            label: <strong className="text-foreground font-semibold">Classification Method</strong>,
+            label: <strong className="text-foreground font-semibold">{t("advSectionClassificationMethod")}</strong>,
             children: <ClassificationMethodConfig {...classificationProps} section="classifier" />,
           },
         ]
@@ -132,14 +132,14 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
       ? [
           {
             key: "heuristic",
-            label: <strong className="text-foreground font-semibold">Heuristic tuning</strong>,
+            label: <strong className="text-foreground font-semibold">{t("advSectionHeuristicTuning")}</strong>,
             children: <ClassificationMethodConfig {...classificationProps} section="heuristic" />,
           },
         ]
       : []),
     {
       key: "adaptive",
-      label: <strong className="text-foreground font-semibold">Adaptive Routing</strong>,
+      label: <strong className="text-foreground font-semibold">{t("advSectionAdaptiveRouting")}</strong>,
       children: (
         <Restricted by={restrictedBy(value, "adaptive")}>
           <AdaptiveRoutingConfig value={value} onChange={onChange} />
@@ -153,7 +153,7 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
     },
     {
       key: "cache-aware",
-      label: <strong className="text-foreground font-semibold">Cache-aware routing</strong>,
+      label: <strong className="text-foreground font-semibold">{t("advSectionCacheAwareRouting")}</strong>,
       children: <CacheAwareRoutingConfig value={value} onChange={onChange} />,
     },
     {
@@ -255,11 +255,14 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
   ];
 
   const groups = [
-    { label: "Heuristic tuning", keys: ["heuristic"] },
-    { label: usesLlmClassifier(classifierType) ? "LLM tuning" : "Classifier tuning", keys: ["classifier"] },
-    { label: "Request preprocessing", keys: ["reminder-markers"] },
+    { label: t("advSectionHeuristicTuning"), keys: ["heuristic"] },
     {
-      label: "Routing rules and recovery",
+      label: usesLlmClassifier(classifierType) ? t("advGroupLlmTuning") : t("advGroupClassifierTuning"),
+      keys: ["classifier"],
+    },
+    { label: t("advGroupRequestPreprocessing"), keys: ["reminder-markers"] },
+    {
+      label: t("advGroupRoutingRules"),
       keys: [
         "modality",
         "plan-mode",

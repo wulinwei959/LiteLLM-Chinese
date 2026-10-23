@@ -77,8 +77,8 @@ describe("Auto-router classifier selection", () => {
         />
       </AutoRouterAvailabilityContext.Provider>,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Heuristic before the judge" }));
-    const option = screen.getByRole("menuitemradio", { name: /^Heuristic v2/ });
+    fireEvent.click(screen.getByRole("button", { name: "评审前的启发式" }));
+    const option = screen.getByRole("menuitemradio", { name: /^启发式 v2/ });
     if (owned) {
       expect(option).not.toHaveAttribute("aria-disabled", "true");
       fireEvent.click(option);
@@ -134,9 +134,7 @@ describe("Auto-router classifier selection", () => {
     fireEvent.click(screen.getByRole("radio", { name: /^启发式$/ }));
     expect(screen.getByRole("status", { name: "Classifier type" })).toHaveTextContent(String(classifier));
     fireEvent.click(screen.getByRole("button", { name: "启发式" }));
-    expect(screen.getByRole("menuitemradio", { name: /^启发式 v2/ })).toHaveTextContent(
-      `可用 ${remaining}/1`,
-    );
+    expect(screen.getByRole("menuitemradio", { name: /^启发式 v2/ })).toHaveTextContent(`可用 ${remaining}/1`);
   });
 
   it.each([
