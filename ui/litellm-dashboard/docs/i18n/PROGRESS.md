@@ -4488,3 +4488,10 @@ GuardrailFormField 五处：LoggingOnlyScopeSelect 占位复用 `form.selectOpti
 测试债收三文件：add_guardrail_form 与 guardrail_info 两个 characterization 共 36 例的旧英文 label 断言（Guardrail Name/Mode/Next/Create Guardrail/Logging only scope/select option 三值/pre_call applies to/continue 开关名等）按 zh 目录值翻面；guardrail_info_helpers.test.tsx 三例是 HEAD 快照把 helper 签名加了 `t` 参数但测试没跟（TypeError: t is not a function），补 createTranslator("guardrails") 传参并翻 zh 期望。
 
 验证：guardrails 域 308 例从 HEAD 基线 28 红降至 15 红（剩余全在 CustomCodeModal.test，属"测试已写好、组件 ternary/JSX 表达式裸英文 AST 未捞"一类，下簇处理），逐名 diff 净新增 0；本次涉及 72 例全绿；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错（add_guardrail_form max-lines 由 HEAD 2 错清零）；prettier clean。
+## 2026-10-23 第 439 簇：CustomCodeModal 按钮接线、模式 combobox 渲染修复与成本弹窗补漏
+
+保存/更新按钮 "Update Guardrail"/"Save Guardrail" 硬编码改接既有 `custom.save`/`custom.update`（en 值逐字一致、zh 值与测试期望早已在目录）。行为缺陷一处：模式 combobox 的 `items` 传入的是 `{value,label}` 映射对象，`ComboboxList`/chip 渲染却按 `ModeOption` 取 `t(option.labelKey)`，labelKey 为 undefined 时 next-intl 回落把命名空间名 "guardrails" 渲染成全部选项文本（HEAD 15 红的共同根因，属"测试已写好、组件接错数据"型）。改为整项透传：`modeItems = MODE_OPTIONS.map(带 label)`，选项/chip 直接渲染 `option.label`，选中态从 modeItems 派生，`MODE_OPTION_BY_VALUE`/`ModeOption` 随之移除。GuardrailsOverview 的 `TotalCostMath` 标题/公式两处裸英文接既有 `overview.costTitle`/`overview.costFormula`（此前 scan 半径外，成本弹窗 14 例 HEAD 红清零）。判定账：`(post_call)` 等模式枚举、`->`、JSON 示例 placeholder 保留。目录仅改 `common.tagBased` 措辞（按标签→标签限定），叶数 11584 不变。
+
+测试翻面四文件：CustomCodeModal 15 红→21 例全绿（半角括号 `(标签限定)` 值断言、模板下拉按 aria "模板" 选取而非末位 combobox、`例如 block-pii-custom` placeholder 三处、logging_only 选项名）；guardrail_info/guardrail_table 的 tag-based 展示串同步改 `(标签限定)`。guardrails 域 366 例从 HEAD 基线 29 红到全绿、净新增 0。
+
+验证：AST 触及文件仅剩判定保留项；全域 276 项（jsx/placeholder 大头为品牌与示例串保留 + 22 条 dev throw）；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错 34 警与 HEAD 持平；prettier clean；`npm run build` exit 0。

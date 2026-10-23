@@ -107,7 +107,7 @@ describe("Guardrail Info", () => {
 
     renderWithProviders(<GuardrailInfoView guardrailId="123" onClose={() => {}} accessToken="123" isAdmin={true} />);
 
-    expect(await screen.findAllByText("pre_call, post_call (按标签)")).not.toHaveLength(0);
+    expect(await screen.findAllByText("pre_call, post_call (标签限定)")).not.toHaveLength(0);
   });
 
   it("shows the decision model and each check's action and threshold for a decision_model guardrail", async () => {

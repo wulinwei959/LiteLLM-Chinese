@@ -85,12 +85,12 @@ describe("CustomCodeModal", () => {
       },
     });
 
-    expect(await screen.findByText("Edit Custom Guardrail")).toBeInTheDocument();
-    const modeInput = screen.getByLabelText("Mode (tag-scoped)");
+    expect(await screen.findByText("编辑自定义护栏")).toBeInTheDocument();
+    const modeInput = screen.getByLabelText("模式（标签限定）");
     expect(modeInput).toBeDisabled();
-    expect(modeInput).toHaveValue("post_call, pre_call (tag-based)");
-    expect(screen.getByText("Mode (tag-scoped, read-only)")).toBeInTheDocument();
-    expect(screen.queryByText(/applies to/)).not.toBeInTheDocument();
+    expect(modeInput).toHaveValue("post_call, pre_call (标签限定)");
+    expect(screen.getByText("模式（标签限定，只读）")).toBeInTheDocument();
+    expect(screen.queryByText(/适用于/)).not.toBeInTheDocument();
   });
 
   it("should omit mode and stream_scope from the update payload for a tag-scoped guardrail", async () => {
@@ -110,7 +110,7 @@ describe("CustomCodeModal", () => {
     const nameInput = await screen.findByDisplayValue("tag-mode-guardrail");
     await user.clear(nameInput);
     await user.type(nameInput, "renamed-guardrail");
-    await user.click(screen.getByRole("button", { name: /update guardrail/i }));
+    await user.click(screen.getByRole("button", { name: /更新护栏/ }));
 
     await waitFor(() => {
       expect(mockUpdate).toHaveBeenCalledTimes(1);
@@ -171,8 +171,7 @@ describe("CustomCodeModal", () => {
 
     expect(await screen.findByDisplayValue(/async def apply_guardrail/)).toBeInTheDocument();
 
-    const comboboxes = screen.getAllByRole("combobox");
-    await user.click(comboboxes[comboboxes.length - 1]);
+    await user.click(await screen.findByRole("combobox", { name: "模板" }));
     const options = await screen.findAllByText("拦截 SSN");
     await user.click(options[options.length - 1]);
 
@@ -204,12 +203,12 @@ describe("CustomCodeModal", () => {
       },
     });
 
-    const scopeSelect = await screen.findByRole("combobox", { name: "Logging only scope" });
-    expect(scopeSelect).toHaveTextContent("Input only (request)");
+    const scopeSelect = await screen.findByRole("combobox", { name: "仅记录日志的范围" });
+    expect(scopeSelect).toHaveTextContent("仅输入（请求）");
 
     await user.click(scopeSelect);
-    await user.click(await screen.findByRole("option", { name: "Output only (response)" }));
-    await user.click(screen.getByRole("button", { name: /update guardrail/i }));
+    await user.click(await screen.findByRole("option", { name: "仅输出（响应）" }));
+    await user.click(screen.getByRole("button", { name: /更新护栏/ }));
 
     await waitFor(() => expect(mockUpdate).toHaveBeenCalledTimes(1));
     expect(mockUpdate.mock.calls[0][2]).toMatchObject({
@@ -231,9 +230,9 @@ describe("CustomCodeModal", () => {
       },
     });
 
-    await user.click(await screen.findByRole("combobox", { name: "Logging only scope" }));
-    await user.click(await screen.findByRole("option", { name: "Default (request and response)" }));
-    await user.click(screen.getByRole("button", { name: /update guardrail/i }));
+    await user.click(await screen.findByRole("combobox", { name: "仅记录日志的范围" }));
+    await user.click(await screen.findByRole("option", { name: "默认（请求和响应）" }));
+    await user.click(screen.getByRole("button", { name: /更新护栏/ }));
 
     await waitFor(() => expect(mockUpdate).toHaveBeenCalledTimes(1));
     expect(mockUpdate.mock.calls[0][2]).toHaveProperty("litellm_params.logging_only_scope", null);
@@ -253,10 +252,10 @@ describe("CustomCodeModal", () => {
       },
     });
 
-    fireEvent.change(await screen.findByPlaceholderText("e.g., block-pii-custom"), {
+    fireEvent.change(await screen.findByPlaceholderText("例如 block-pii-custom"), {
       target: { value: "renamed-guardrail" },
     });
-    await userEvent.setup().click(screen.getByRole("button", { name: /update guardrail/i }));
+    await userEvent.setup().click(screen.getByRole("button", { name: /更新护栏/ }));
 
     await waitFor(() => expect(mockUpdate).toHaveBeenCalledTimes(1));
     expect(mockUpdate.mock.calls[0][2]).not.toHaveProperty("litellm_params.logging_only_scope");
@@ -271,8 +270,8 @@ describe("CustomCodeModal", () => {
       },
     });
 
-    expect(await screen.findByText("Edit Custom Guardrail")).toBeInTheDocument();
-    expect(screen.queryByRole("combobox", { name: "Logging only scope" })).not.toBeInTheDocument();
+    expect(await screen.findByText("编辑自定义护栏")).toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "仅记录日志的范围" })).not.toBeInTheDocument();
   });
 
   it("should create a logging-only guardrail with its selected scope", async () => {
@@ -282,12 +281,12 @@ describe("CustomCodeModal", () => {
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.keyboard("logging_only");
     await user.click(await screen.findByRole("option", { name: "logging_only" }));
-    await user.click(await screen.findByRole("combobox", { name: "Logging only scope" }));
-    await user.click(await screen.findByRole("option", { name: "Input only (request)" }));
-    fireEvent.change(screen.getByPlaceholderText("e.g., block-pii-custom"), {
+    await user.click(await screen.findByRole("combobox", { name: "仅记录日志的范围" }));
+    await user.click(await screen.findByRole("option", { name: "仅输入（请求）" }));
+    fireEvent.change(screen.getByPlaceholderText("例如 block-pii-custom"), {
       target: { value: "logging-only-guardrail" },
     });
-    await user.click(screen.getByRole("button", { name: /save guardrail/i }));
+    await user.click(screen.getByRole("button", { name: /保存护栏/ }));
 
     await waitFor(() => expect(mockCreate).toHaveBeenCalledTimes(1));
     expect(mockCreate.mock.calls[0][1]).toMatchObject({
@@ -303,11 +302,11 @@ describe("CustomCodeModal", () => {
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.keyboard("logging_only");
     await user.click(await screen.findByRole("option", { name: "logging_only" }));
-    await user.click(await screen.findByRole("combobox", { name: "Logging only scope" }));
-    await user.click(await screen.findByRole("option", { name: "Input only (request)" }));
+    await user.click(await screen.findByRole("combobox", { name: "仅记录日志的范围" }));
+    await user.click(await screen.findByRole("option", { name: "仅输入（请求）" }));
 
     const toggle = await screen.findByRole("switch", {
-      name: "Continue observing the response after a flagged request",
+      name: "请求被标记后继续观察响应",
     });
     expect(toggle).toHaveAttribute("aria-disabled", "true");
     expect(toggle).not.toBeChecked();
@@ -327,15 +326,15 @@ describe("CustomCodeModal", () => {
       },
     });
 
-    const scopeSelect = await screen.findByRole("combobox", { name: "Logging only scope" });
-    expect(scopeSelect).toHaveTextContent("Default (request and response)");
+    const scopeSelect = await screen.findByRole("combobox", { name: "仅记录日志的范围" });
+    expect(scopeSelect).toHaveTextContent("默认（请求和响应）");
 
     const toggle = await screen.findByRole("switch", {
-      name: "Continue observing the response after a flagged request",
+      name: "请求被标记后继续观察响应",
     });
     expect(toggle).toBeChecked();
     await user.click(toggle);
-    await user.click(screen.getByRole("button", { name: /update guardrail/i }));
+    await user.click(screen.getByRole("button", { name: /更新护栏/ }));
 
     await waitFor(() => expect(mockUpdate).toHaveBeenCalledTimes(1));
     expect(mockUpdate.mock.calls[0][2]).toMatchObject({
@@ -350,11 +349,11 @@ describe("CustomCodeModal", () => {
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.keyboard("logging_only");
     await user.click(await screen.findByRole("option", { name: "logging_only" }));
-    await screen.findByRole("combobox", { name: "Logging only scope" });
-    fireEvent.change(screen.getByPlaceholderText("e.g., block-pii-custom"), {
+    await screen.findByRole("combobox", { name: "仅记录日志的范围" });
+    fireEvent.change(screen.getByPlaceholderText("例如 block-pii-custom"), {
       target: { value: "logging-only-guardrail" },
     });
-    await user.click(screen.getByRole("button", { name: /save guardrail/i }));
+    await user.click(screen.getByRole("button", { name: /保存护栏/ }));
 
     await waitFor(() => expect(mockCreate).toHaveBeenCalledTimes(1));
     expect(mockCreate.mock.calls[0][1]).not.toHaveProperty("litellm_params.logging_only_scope");

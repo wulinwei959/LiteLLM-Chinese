@@ -46,14 +46,7 @@ import {
   streamScopePayload,
   type GuardrailStreamScope,
 } from "../guardrail_info_helpers";
-import {
-  CODE_TEMPLATES,
-  MODE_OPTION_BY_VALUE,
-  MODE_OPTIONS,
-  PRIMITIVES,
-  TEMPLATE_ITEMS,
-  type ModeOption,
-} from "./custom_code_catalog";
+import { CODE_TEMPLATES, MODE_OPTIONS, PRIMITIVES, TEMPLATE_ITEMS } from "./custom_code_catalog";
 
 // Data for editing an existing guardrail
 
@@ -421,7 +414,8 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
   };
 
   const lineCount = code.split("\n").length;
-  const selectedModeOptions = mode.map((value) => MODE_OPTION_BY_VALUE[value]).filter(Boolean);
+  const modeItems = MODE_OPTIONS.map((option) => ({ ...option, label: t(option.labelKey) }));
+  const selectedModeItems = modeItems.filter((item) => mode.includes(item.value));
   const rawEditMode = editData?.litellm_params?.mode;
   const tagScopedModeLabel =
     rawEditMode !== null && typeof rawEditMode === "object" && !Array.isArray(rawEditMode)
@@ -456,15 +450,15 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
               <Input value={tagScopedModeLabel} disabled aria-label={t("custom.modeTagScopedShort")} />
             ) : (
               <Combobox
-                items={MODE_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
-                value={selectedModeOptions}
-                onValueChange={(options: ModeOption[]) => setMode(options.map((option) => option.value))}
+                items={modeItems}
+                value={selectedModeItems}
+                onValueChange={(options: typeof modeItems) => setMode(options.map((option) => option.value))}
                 multiple
               >
                 <ComboboxChips render={<div ref={anchor} />} className="w-full">
-                  {selectedModeOptions.map((option) => (
-                    <ComboboxChip key={option.value} aria-label={t(option.labelKey)}>
-                      {t(option.labelKey)}
+                  {selectedModeItems.map((option) => (
+                    <ComboboxChip key={option.value} aria-label={option.label}>
+                      {option.label}
                     </ComboboxChip>
                   ))}
                   <ComboboxChipsInput placeholder={mode.length === 0 ? t("custom.selectModes") : undefined} />
@@ -472,9 +466,9 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
                 <ComboboxContent anchor={anchor}>
                   <ComboboxEmpty>{t("custom.noModes")}</ComboboxEmpty>
                   <ComboboxList>
-                    {(option: ModeOption) => (
+                    {(option: (typeof modeItems)[number]) => (
                       <ComboboxItem key={option.value} value={option}>
-                        {t(option.labelKey)}
+                        {option.label}
                       </ComboboxItem>
                     )}
                   </ComboboxList>
@@ -792,7 +786,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
             </Button>
             <Button onClick={handleSave} disabled={isSaving || !guardrailName.trim()} aria-busy={isSaving}>
               {isSaving ? <UiLoadingSpinner className="size-4" /> : <Save />}
-              {isEditMode ? "Update Guardrail" : "Save Guardrail"}
+              {isEditMode ? t("custom.update") : t("custom.save")}
             </Button>
           </div>
         </div>

@@ -57,7 +57,7 @@ describe("GuardrailTable", () => {
       },
     });
     renderWithProviders(<GuardrailTable guardrailsList={[guardrail]} {...baseProps} />);
-    expect(screen.getByText("pre_call, post_call (按标签)")).toBeInTheDocument();
+    expect(screen.getByText("pre_call, post_call (标签限定)")).toBeInTheDocument();
   });
 
   it("deletes a DB guardrail through the actions menu", async () => {
