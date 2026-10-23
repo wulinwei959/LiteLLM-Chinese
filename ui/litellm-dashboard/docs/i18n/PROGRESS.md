@@ -4891,3 +4891,7 @@ KubernetesPodsCard 的 "3 ready pods" 改"3 个就绪 Pod"；GithubCopilotConnec
 18 个文件、27 例。剩余分布：key_edit_view 7（预算草稿刷新、MCP 工具清单拉取 2、授权长度 2、移出项目 1）、add_auto_router_tab 3（提交禁用 2、v2 链路组合框）、edit_auto_router_modal 2（阈值草稿时序 2）、TeamVirtualKeysTable 1 与 key_info_view 1（团队预算展示）、page.test 1（页签可见性）、DataTable 1（类名）、AllModelsTab 1（视图模式选项）、AddModelForm 1（两条必填标记只渲染出一条）、JevClassifierConfig 1、LiteAdmin 1、RouterSettingsForm 1、RouterSettings index 1、AutoRouterUsageViews 1、page.integration 1、create_key_button 1、KubernetesPodsCard 0（已绿）、GithubCopilotConnectModal 0（已绿）。
 
 这些已不含文案类问题：目录中英叶子各 11694、死键 0、生产 tsc 0 错、i18n 五条守卫 5 个文件全绿。剩余全是上游合并带来的行为断言与组件缺渲染，需要逐文件对照组件取值；本轮未合入 main。
+
+## 2026-10-24 第 496 簇：保留目录里不存在的已授权 MCP 服务器
+
+`resolveEffectiveMcpServers` 只按 `allServers` 解析直连服务器，密钥引用了已被目录移除的服务器时整条授权从渲染树里消失，工具清单也不会去拉。改为：解析不到时用服务器 ID 造一条最小条目，保证授权可见、工具仍会请求（404 由现有错误态承接）。tsc 0 错。key_edit_view 的 MCP 工具默认值用例仍差一步（工具集查询未 mock，效果函数停在 `toolsetsLoading`），下一轮补测试夹具。

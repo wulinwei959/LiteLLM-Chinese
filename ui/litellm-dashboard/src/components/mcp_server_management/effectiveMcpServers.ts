@@ -203,9 +203,11 @@ export const resolveEffectiveMcpServers = ({
     };
   };
 
-  const direct = selectedServers.flatMap((identifier) =>
-    mcpServersForIdentifier(allServers, identifier).map((server) => entry(server, { kind: "direct" })),
-  );
+  const direct = selectedServers.flatMap((identifier) => {
+    const matched = mcpServersForIdentifier(allServers, identifier);
+    if (matched.length > 0) return matched.map((server) => entry(server, { kind: "direct" }));
+    return [entry({ server_id: identifier, server_name: identifier } as MCPServer, { kind: "direct" })];
+  });
 
   const viaAccessGroups = selectedAccessGroups.flatMap((group) =>
     allServers
