@@ -9923,7 +9923,10 @@
     "skillNamePlaceholder": "e.g., Returns hello world",
     "skillDescPlaceholder": "What this skill does",
     "skillTagsPlaceholder": "Type a tag and press Enter",
-    "skillExamplesPlaceholder": "Type an example and press Enter"
+    "skillExamplesPlaceholder": "Type an example and press Enter",
+    "overview": "Overview",
+    "settings": "Settings",
+    "skillsConfigured": "{count} configured"
   },
   "costTracking": {
     "colProvider": "Provider",

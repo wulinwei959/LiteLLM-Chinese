@@ -337,11 +337,11 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList variant="line" className="mb-4 h-auto w-full justify-start rounded-none border-b p-0">
           <TabsTrigger value="overview" className="flex-none rounded-none px-4 py-2">
-            Overview
+            {t("overview")}
           </TabsTrigger>
           {isAdmin && (
             <TabsTrigger value="settings" className="flex-none rounded-none px-4 py-2">
-              Settings
+              {t("settings")}
             </TabsTrigger>
           )}
         </TabsList>
@@ -372,7 +372,9 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
               {agent.agent_card_params?.capabilities?.stateTransitionHistory && (
                 <DetailItem label={t("stateTransitionHistory")}>{t("yes")}</DetailItem>
               )}
-              <DetailItem label={t("skills")}>{agent.agent_card_params?.skills?.length || 0} configured</DetailItem>
+              <DetailItem label={t("skills")}>
+                {t("skillsConfigured", { count: agent.agent_card_params?.skills?.length || 0 })}
+              </DetailItem>
               {agent.litellm_params?.model && <DetailItem label={t("colModel")}>{agent.litellm_params.model}</DetailItem>}
               {agent.litellm_params?.make_public !== undefined && (
                 <DetailItem label={t("makePublic")}>{agent.litellm_params.make_public ? t("yes") : t("no")}</DetailItem>

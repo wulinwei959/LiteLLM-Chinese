@@ -9919,7 +9919,10 @@
     "skillNamePlaceholder": "例如：返回 hello world",
     "skillDescPlaceholder": "这个技能的作用",
     "skillTagsPlaceholder": "输入标签后按回车",
-    "skillExamplesPlaceholder": "输入示例后按回车"
+    "skillExamplesPlaceholder": "输入示例后按回车",
+    "overview": "概览",
+    "settings": "设置",
+    "skillsConfigured": "已配置 {count} 个"
   },
   "costTracking": {
     "colProvider": "提供方",

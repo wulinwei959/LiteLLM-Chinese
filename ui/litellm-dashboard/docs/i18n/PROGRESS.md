@@ -4537,3 +4537,10 @@ VectorStoreTester 结果区四处可见英文接 `vectorStores.resultCount`/`res
 测试：VectorStoreTester.test.tsx 原有 8 例的英文断言翻面（"结果 1"/"1 个结果"/"得分：0.9123"，负断言同步改"未找到结果"/"搜索失败"），展开用例补"内容（text）"断言，9 例全绿。vector-stores 域 13 文件 108 例全绿（TestVectorStoreTab 仍 mock 掉测试器，不受影响）。
 
 验证：AST 本文件归零；全局可见英文 240→237 条、127→126 个文件；目录叶子 11610→11614，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错，3 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 446 簇：agent 详情页签接线
+
+agent_info 的"Overview"/"Settings"两个页签接 `agents.overview`/`agents.settings`（zh 为"概览"/"设置"），同页技能数 `{n} configured` 是扫描器漏网的小写裸文本，一并接 `agents.skillsConfigured`（zh "已配置 {count} 个"）。
+
+测试：agent_info 单测四处、集成一处 Settings 页签查询翻成"设置"，首个保存用例补"概览"页签与"已配置 0 个"断言。两文件 25 例全绿。
+
+验证：AST 本文件归零；全局可见英文 237→235 条、126→125 个文件；目录叶子 11614→11617，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、8 警为 HEAD 既有；prettier 新增行合规，本文件 HEAD 既有多处脏格式不动；i18n 五条守卫 23 例全绿。

@@ -134,7 +134,7 @@ const renderView = () => {
 };
 
 const openEditor = async (user: ReturnType<typeof setup>) => {
-  await user.click(await screen.findByRole("tab", { name: "Settings" }));
+  await user.click(await screen.findByRole("tab", { name: "设置" }));
   await user.click(await screen.findByRole("button", { name: "编辑设置" }));
   await screen.findByLabelText("智能体名称");
 };

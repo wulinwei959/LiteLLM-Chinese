@@ -95,7 +95,10 @@ describe("AgentInfoView settings", () => {
   it("submits the edited agent when Save Changes is pressed", async () => {
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
-    fireEvent.click(await screen.findByRole("tab", { name: "Settings" }));
+    const settingsTab = await screen.findByRole("tab", { name: "设置" });
+    expect(screen.getByRole("tab", { name: "概览" })).toBeInTheDocument();
+    expect(screen.getByText("已配置 0 个")).toBeInTheDocument();
+    fireEvent.click(settingsTab);
     fireEvent.click(screen.getByRole("button", { name: "编辑设置" }));
 
     const tpmLimit = await screen.findByLabelText("TPM 限制");
@@ -119,7 +122,7 @@ describe("AgentInfoView settings", () => {
     const { description: _description, ...card } = agent.agent_card_params ?? {};
     vi.mocked(networking.getAgentInfo).mockResolvedValue({ ...agent, agent_card_params: card });
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
-    fireEvent.click(await screen.findByRole("tab", { name: "Settings" }));
+    fireEvent.click(await screen.findByRole("tab", { name: "设置" }));
     fireEvent.click(screen.getByRole("button", { name: "编辑设置" }));
     expect(await screen.findByLabelText("描述")).toHaveValue("");
     fireEvent.change(screen.getByLabelText("TPM 限制"), { target: { value: "42" } });
@@ -133,7 +136,7 @@ describe("AgentInfoView settings", () => {
   it("sends the newly attached access group in the update payload", async () => {
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
-    fireEvent.click(await screen.findByRole("tab", { name: "Settings" }));
+    fireEvent.click(await screen.findByRole("tab", { name: "设置" }));
     fireEvent.click(screen.getByRole("button", { name: "编辑设置" }));
     fireEvent.click(await screen.findByRole("button", { name: "Attach ag-1" }));
     expect(screen.getByTestId("selected-access-groups")).toHaveTextContent("ag-1");
@@ -149,7 +152,7 @@ describe("AgentInfoView settings", () => {
     vi.mocked(networking.getAgentInfo).mockResolvedValue({ ...agent, access_group_ids: ["ag-1"] });
     render(<AgentInfoView agentId="agent-1" onClose={vi.fn()} accessToken="sk-test" isAdmin={true} />);
 
-    fireEvent.click(await screen.findByRole("tab", { name: "Settings" }));
+    fireEvent.click(await screen.findByRole("tab", { name: "设置" }));
     fireEvent.click(screen.getByRole("button", { name: "编辑设置" }));
     expect(await screen.findByTestId("selected-access-groups")).toHaveTextContent("ag-1");
 
