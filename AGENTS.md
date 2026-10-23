@@ -141,3 +141,14 @@ Before implementing:
 Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify
 
 Before requesting maintainer review, verify the current PR tip passes required CI and code coverage and has acceptable reviews from the review bots on the PR, such as Veria and Bugbot. Inspect warnings and findings, fix actionable issues, and rerun the affected checks and reviewers after changes. Record evidence for any false positive or unavailable review. Never treat a pending or missing bot result as a pass. Do not lower coverage thresholds or raise `ANY_CAPS` to satisfy a check
+
+## Shell and Git Hygiene
+
+2026-10-23 的记录，这些错误来自路径基准与工作区状态，不是环境损坏，发现时已逐条修正。
+
+- Bash 工具的工作目录跨调用保留，不要重复 `cd` 到同一目录。统一用绝对路径或 `git -C <仓库绝对路径>`
+- `git show HEAD:<path>` 的 path 是仓库根相对路径，从子目录执行要写 `HEAD:./<path>`；`git add <path>` 是当前目录相对，两种基准不要混用
+- `git pull --rebase` 要求工作区干净。先 `git stash push -m <唯一 tag>`，pull 后 `git stash apply`，不要用裸 stash/pop
+- `~/.local/bin` 不在默认 PATH，qoderclicn 等工具须用全路径调用
+- 测试失败先对照 HEAD 与 origin/main 的同名文件，确认是本次改动引入还是合并遗留缺陷，再决定修法
+- 合并遗留缺陷的常见形态：引用未定义变量、fixture 与组件新行为不匹配、测试期望停在上游旧结构
