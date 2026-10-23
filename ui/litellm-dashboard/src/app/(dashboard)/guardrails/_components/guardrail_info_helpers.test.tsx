@@ -1,4 +1,8 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it, beforeEach } from "vitest";
+
+const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "guardrails" });
+import zh from "@/messages/zh-CN.json";
 import type { CommonTranslator } from "@/lib/i18n/translators";
 import {
   populateGuardrailProviders,
@@ -317,11 +321,11 @@ describe("guardrail_info_helpers", () => {
     });
 
     it("formats every scope and falls back to default for missing or unknown values", () => {
-      expect(formatLoggingOnlyScope("input")).toBe("Input only (request)");
-      expect(formatLoggingOnlyScope("output")).toBe("Output only (response)");
-      expect(formatLoggingOnlyScope(undefined)).toBe("Default (request and response)");
-      expect(formatLoggingOnlyScope(null)).toBe("Default (request and response)");
-      expect(formatLoggingOnlyScope("invalid")).toBe("Default (request and response)");
+      expect(formatLoggingOnlyScope("input", t)).toBe("仅输入（请求）");
+      expect(formatLoggingOnlyScope("output", t)).toBe("仅输出（响应）");
+      expect(formatLoggingOnlyScope(undefined, t)).toBe("默认（请求和响应）");
+      expect(formatLoggingOnlyScope(null, t)).toBe("默认（请求和响应）");
+      expect(formatLoggingOnlyScope("invalid", t)).toBe("默认（请求和响应）");
     });
 
     it("detects logging_only in string, array, and tagged mode values", () => {
@@ -337,8 +341,8 @@ describe("guardrail_info_helpers", () => {
     });
 
     it("filters directional options for unsupported providers and keeps all options otherwise", () => {
-      expect(getLoggingOnlyScopeOptions(false).map((option) => option.value)).toEqual(["default"]);
-      expect(getLoggingOnlyScopeOptions(true).map((option) => option.value)).toEqual(["default", "input", "output"]);
+      expect(getLoggingOnlyScopeOptions(false, t).map((option) => option.value)).toEqual(["default"]);
+      expect(getLoggingOnlyScopeOptions(true, t).map((option) => option.value)).toEqual(["default", "input", "output"]);
 
       expect(
         supportsDirectionalLoggingOnlyScope(
@@ -365,8 +369,8 @@ describe("guardrail_info_helpers", () => {
         ),
       ).toBe(true);
       expect(supportsDirectionalLoggingOnlyScope(null, "Xecguard")).toBe(true);
-      expect(getLoggingOnlyScopeOptions(supportsDirectionalLoggingOnlyScope(null, "Xecguard"))).toEqual(
-        getLoggingOnlyScopeOptions(true),
+      expect(getLoggingOnlyScopeOptions(supportsDirectionalLoggingOnlyScope(null, "Xecguard"), t)).toEqual(
+        getLoggingOnlyScopeOptions(true, t),
       );
     });
   });
@@ -423,11 +427,11 @@ describe("guardrail_info_helpers", () => {
     });
 
     it("formats scalar and per-mode stream scopes for display", () => {
-      expect(formatGuardrailStreamScope(undefined)).toBe("");
-      expect(formatGuardrailStreamScope("both")).toBe("Streaming and non-streaming");
-      expect(formatGuardrailStreamScope("non_streaming")).toBe("Non-streaming only");
-      expect(formatGuardrailStreamScope({ post_call: "streaming", pre_call: "both" })).toBe(
-        "post_call: Streaming only, pre_call: Streaming and non-streaming",
+      expect(formatGuardrailStreamScope(undefined, t)).toBe("");
+      expect(formatGuardrailStreamScope("both", t)).toBe("流式和非流式");
+      expect(formatGuardrailStreamScope("non_streaming", t)).toBe("仅非流式");
+      expect(formatGuardrailStreamScope({ post_call: "streaming", pre_call: "both" }, t)).toBe(
+        "post_call: 仅流式, pre_call: 流式和非流式",
       );
     });
 

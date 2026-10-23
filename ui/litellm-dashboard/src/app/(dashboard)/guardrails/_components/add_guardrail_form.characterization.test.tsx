@@ -95,12 +95,12 @@ describe("AddGuardrailForm create payload characterization", () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "my-bedrock");
+    await user.type(await screen.findByLabelText("护栏名称"), "my-bedrock");
     await pickProvider(user, "Bedrock Guardrail");
-    await chooseSelectOption(user, screen.getByLabelText("pre_call applies to"), "Streaming only");
+    await chooseSelectOption(user, screen.getByLabelText("pre_call 适用于"), "仅流式");
     await user.type(await screen.findByPlaceholderText("The guardrail id on Bedrock"), "gr-123");
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(await screen.findByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
+    await user.click(await screen.findByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(networking.createGuardrailCall).toHaveBeenCalledTimes(1));
     expect(payload()).toMatchObject({
@@ -133,15 +133,15 @@ describe("AddGuardrailForm create payload characterization", () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "my-bedrock");
+    await user.type(await screen.findByLabelText("护栏名称"), "my-bedrock");
     await pickProvider(user, "Bedrock Guardrail");
-    await user.click(screen.getByLabelText("Mode"));
+    await user.click(screen.getByLabelText("模式"));
     await user.click((await screen.findAllByText("logging_only")).at(-1) as HTMLElement);
-    await chooseSelectOption(user, await screen.findByLabelText("Logging only scope"), "Output only (response)");
+    await chooseSelectOption(user, await screen.findByLabelText("仅记录日志的范围"), "仅输出（响应）");
 
     await user.type(await screen.findByPlaceholderText("The guardrail id on Bedrock"), "gr-123");
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(await screen.findByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
+    await user.click(await screen.findByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(networking.createGuardrailCall).toHaveBeenCalledTimes(1));
     expect(payload()?.litellm_params.logging_only_scope).toBe("output");
@@ -156,12 +156,12 @@ describe("AddGuardrailForm create payload characterization", () => {
     renderForm();
 
     await pickProvider(user, "Bedrock Guardrail");
-    await user.click(screen.getByLabelText("Mode"));
+    await user.click(screen.getByLabelText("模式"));
     await user.click((await screen.findAllByText("logging_only")).at(-1) as HTMLElement);
-    await chooseSelectOption(user, await screen.findByLabelText("Logging only scope"), "Input only (request)");
+    await chooseSelectOption(user, await screen.findByLabelText("仅记录日志的范围"), "仅输入（请求）");
 
     const toggle = await screen.findByRole("switch", {
-      name: "Continue observing the response after a flagged request",
+      name: "请求被标记后继续观察响应",
     });
     expect(toggle).toHaveAttribute("aria-disabled", "true");
     expect(toggle).not.toBeChecked();
@@ -181,26 +181,26 @@ describe("AddGuardrailForm create payload characterization", () => {
     renderForm();
 
     await pickProvider(user, "XecGuard");
-    await user.click(screen.getByLabelText("Mode"));
+    await user.click(screen.getByLabelText("模式"));
     await user.click((await screen.findAllByText("logging_only")).at(-1) as HTMLElement);
-    await user.click(await screen.findByLabelText("Logging only scope"));
+    await user.click(await screen.findByLabelText("仅记录日志的范围"));
 
-    expect(await screen.findByRole("option", { name: "Default (request and response)" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "Input only (request)" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "Output only (response)" })).not.toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "默认（请求和响应）" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "仅输入（请求）" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "仅输出（响应）" })).not.toBeInTheDocument();
   });
 
   it("hides logging-only scope and omits it from a pre-call payload", async () => {
     const user = userEvent.setup({ delay: null });
     renderForm();
 
-    await user.type(await screen.findByLabelText("Guardrail Name"), "my-bedrock");
+    await user.type(await screen.findByLabelText("护栏名称"), "my-bedrock");
     await pickProvider(user, "Bedrock Guardrail");
-    expect(screen.queryByLabelText("Logging only scope")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("仅记录日志的范围")).not.toBeInTheDocument();
 
     await user.type(await screen.findByPlaceholderText("The guardrail id on Bedrock"), "gr-123");
-    await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(await screen.findByRole("button", { name: "Create Guardrail" }));
+    await user.click(screen.getByRole("button", { name: "下一步" }));
+    await user.click(await screen.findByRole("button", { name: "创建护栏" }));
 
     await waitFor(() => expect(networking.createGuardrailCall).toHaveBeenCalledTimes(1));
     expect(payload()?.litellm_params).not.toHaveProperty("logging_only_scope");
@@ -354,11 +354,7 @@ describe("AddGuardrailForm create payload characterization", () => {
     await pickProvider(user, "Bedrock Guardrail");
 
     await chooseSelectOption(user, screen.getByLabelText("始终启用"), "是");
-    await chooseSelectOption(
-      user,
-      screen.getByLabelText("在护栏中跳过系统消息"),
-      /从护栏扫描中排除/,
-    );
+    await chooseSelectOption(user, screen.getByLabelText("在护栏中跳过系统消息"), /从护栏扫描中排除/);
     await chooseSelectOption(user, screen.getByLabelText("在护栏中跳过工具消息"), /始终纳入扫描/);
 
     await user.type(await screen.findByPlaceholderText("The guardrail id on Bedrock"), "gr-123");

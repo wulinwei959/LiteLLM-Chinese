@@ -4480,3 +4480,11 @@ GuardrailFormField 五处：LoggingOnlyScopeSelect 占位复用 `form.selectOpti
 测试：guardrail_info.characterization.test.tsx 三处 switch name 翻面（被标记后中文标签）。该域 343 例维持 HEAD 基线 28 红、净新增 0；28 红全为 characterization 双文件的旧英文 label 断言（getByLabelText("Mode") 类），组件早已 zh、测试没翻面，属测试债清单，下一测试簇整文件收。
 
 验证：AST 触及文件仅剩保留项；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；`npm run build` exit 0。
+
+## 2026-10-23 第 438 簇：跳过系统/工具消息字段接线与 characterization 翻面
+
+`--all` 人工过捞回两处 labelWithHint 裸英文对（`add_guardrail_form.tsx` 与 `guardrail_info.tsx` 的 skip_system_message_choice / skip_tool_message_choice 四枚 label/hint）：label 复用既有 `info.skipSystem`/`info.skipTool`，短 hint 复用 `info.skipSystemHint`/`info.skipToolHint`，长 hint（表单页变体）新增 `form.skipSystemLongHint`/`form.skipToolLongHint`。
+
+测试债收三文件：add_guardrail_form 与 guardrail_info 两个 characterization 共 36 例的旧英文 label 断言（Guardrail Name/Mode/Next/Create Guardrail/Logging only scope/select option 三值/pre_call applies to/continue 开关名等）按 zh 目录值翻面；guardrail_info_helpers.test.tsx 三例是 HEAD 快照把 helper 签名加了 `t` 参数但测试没跟（TypeError: t is not a function），补 createTranslator("guardrails") 传参并翻 zh 期望。
+
+验证：guardrails 域 308 例从 HEAD 基线 28 红降至 15 红（剩余全在 CustomCodeModal.test，属"测试已写好、组件 ternary/JSX 表达式裸英文 AST 未捞"一类，下簇处理），逐名 diff 净新增 0；本次涉及 72 例全绿；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错（add_guardrail_form max-lines 由 HEAD 2 错清零）；prettier clean。

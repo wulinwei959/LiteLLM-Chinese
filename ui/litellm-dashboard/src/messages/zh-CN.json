@@ -3642,7 +3642,9 @@
       "realtimeMessageHelp": "护栏触发时机器人朗读的内容。留空则使用默认的违规提示语。",
       "realtimeMessagePlaceholder": "例如：我无法继续此对话，请联系 1-800-774-2678。",
       "loggingOnlyScopeHint": "logging_only 扫描观察的方向。仅观察的扫描不会拦截；本护栏的 pre_call 与 post_call 仍会拦截。",
-      "continueObservingHint": "开启后，即使请求扫描被标记或失败，也照常记录并继续扫描响应，两个结论都会留下。"
+      "continueObservingHint": "开启后，即使请求扫描被标记或失败，也照常记录并继续扫描响应，两个结论都会留下。",
+      "skipSystemLongHint": "仅统一护栏：从护栏评估输入中省略 role: system（OpenAI chat 与 Anthropic messages）。模型仍收到完整消息。跟随全局默认时取 litellm_settings.skip_system_message_in_guardrail。",
+      "skipToolLongHint": "仅统一护栏：从护栏评估输入中省略 role: tool（OpenAI chat 与 Anthropic messages）。模型仍收到完整消息。跟随全局默认时取 litellm_settings.skip_tool_message_in_guardrail。"
     },
     "test": {
       "title": "测试护栏：",

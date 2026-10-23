@@ -175,9 +175,9 @@ describe("GuardrailInfoView update payload characterization", () => {
     const user = userEvent.setup({ delay: null });
     renderView();
 
-    expect(await screen.findAllByText("Input only (request)")).toHaveLength(2);
+    expect(await screen.findAllByText("仅输入（请求）")).toHaveLength(2);
     await openEditor(user);
-    await chooseSelectOption(user, screen.getByLabelText("Logging only scope"), "Output only (response)");
+    await chooseSelectOption(user, screen.getByLabelText("仅记录日志的范围"), "仅输出（响应）");
     await saveChanges(user);
 
     await waitFor(() => expect(networking.updateGuardrailCall).toHaveBeenCalledTimes(1));
@@ -198,7 +198,7 @@ describe("GuardrailInfoView update payload characterization", () => {
     renderView();
     await openEditor(user);
 
-    await chooseSelectOption(user, screen.getByLabelText("Logging only scope"), "Default (request and response)");
+    await chooseSelectOption(user, screen.getByLabelText("仅记录日志的范围"), "默认（请求和响应）");
     await saveChanges(user);
 
     await waitFor(() => expect(networking.updateGuardrailCall).toHaveBeenCalledTimes(1));
@@ -233,7 +233,7 @@ describe("GuardrailInfoView update payload characterization", () => {
     const user = userEvent.setup({ delay: null });
     renderView();
 
-    expect(await screen.findAllByText("Default (request and response)")).not.toHaveLength(0);
+    expect(await screen.findAllByText("默认（请求和响应）")).not.toHaveLength(0);
     await openEditor(user);
     const toggle = await screen.findByRole("switch", {
       name: "请求被标记后继续观察响应",

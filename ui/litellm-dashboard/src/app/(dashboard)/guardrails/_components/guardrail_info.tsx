@@ -768,10 +768,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                         <GuardrailField
                           control={form.control}
                           name="skip_system_message_choice"
-                          label={labelWithHint(
-                            "Skip system messages in guardrail",
-                            "Unified guardrails: omit role: system from guardrail input (LLM still gets full messages). Use global default follows litellm_settings.skip_system_message_in_guardrail.",
-                          )}
+                          label={labelWithHint(t("info.skipSystem"), t("info.skipSystemHint"))}
                         >
                           {(fieldControl) => <SkipMessageSelect control={fieldControl} />}
                         </GuardrailField>
@@ -779,10 +776,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                         <GuardrailField
                           control={form.control}
                           name="skip_tool_message_choice"
-                          label={labelWithHint(
-                            "Skip tool messages in guardrail",
-                            "Unified guardrails: omit role: tool from guardrail input (LLM still gets full messages). Use global default follows litellm_settings.skip_tool_message_in_guardrail.",
-                          )}
+                          label={labelWithHint(t("info.skipTool"), t("info.skipToolHint"))}
                         >
                           {(fieldControl) => <SkipMessageSelect control={fieldControl} />}
                         </GuardrailField>
@@ -820,7 +814,9 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
                         />
 
                         {(guardrailData.litellm_params?.guardrail === "tool_permission" ||
-                          guardrailProviderSpecificParams) && <SectionHeading>{t("info.providerSection")}</SectionHeading>}
+                          guardrailProviderSpecificParams) && (
+                          <SectionHeading>{t("info.providerSection")}</SectionHeading>
+                        )}
 
                         {guardrailData.litellm_params?.guardrail === "tool_permission" ? (
                           <ToolPermissionRulesEditor value={toolPermissionConfig} onChange={setToolPermissionConfig} />

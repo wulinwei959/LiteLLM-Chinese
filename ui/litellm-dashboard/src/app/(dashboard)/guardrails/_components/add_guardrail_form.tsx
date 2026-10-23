@@ -904,10 +904,7 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
         <GuardrailField
           control={form.control}
           name="skip_system_message_choice"
-          label={labelWithHint(
-            "Skip system messages in guardrail",
-            "Unified guardrails only: omit role: system from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows litellm_settings.skip_system_message_in_guardrail.",
-          )}
+          label={labelWithHint(t("info.skipSystem"), t("form.skipSystemLongHint"))}
         >
           {(fieldControl) => <SkipMessageSelect control={fieldControl} />}
         </GuardrailField>
@@ -915,10 +912,7 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
         <GuardrailField
           control={form.control}
           name="skip_tool_message_choice"
-          label={labelWithHint(
-            "Skip tool messages in guardrail",
-            "Unified guardrails only: omit role: tool from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows litellm_settings.skip_tool_message_in_guardrail.",
-          )}
+          label={labelWithHint(t("info.skipTool"), t("form.skipToolLongHint"))}
         >
           {(fieldControl) => <SkipMessageSelect control={fieldControl} />}
         </GuardrailField>

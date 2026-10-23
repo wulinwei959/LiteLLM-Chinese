@@ -3642,7 +3642,9 @@
       "realtimeMessageHelp": "What the bot says aloud when this guardrail fires. Falls back to the default violation message if empty.",
       "realtimeMessagePlaceholder": "e.g. I'm not able to continue this conversation. Please contact us at 1-800-774-2678.",
       "loggingOnlyScopeHint": "Which direction a logging_only scan observes. Observe-only scans never block; pre_call and post_call on this guardrail still block.",
-      "continueObservingHint": "When on, a flagged or failing request scan is logged and the response is still scanned, so both verdicts land."
+      "continueObservingHint": "When on, a flagged or failing request scan is logged and the response is still scanned, so both verdicts land.",
+      "skipSystemLongHint": "Unified guardrails only: omit role: system from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows litellm_settings.skip_system_message_in_guardrail.",
+      "skipToolLongHint": "Unified guardrails only: omit role: tool from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows litellm_settings.skip_tool_message_in_guardrail."
     },
     "test": {
       "title": "Test Guardrails:",
