@@ -4965,3 +4965,11 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 ## 2026-10-24 第 511 簇：团队字段补回清除入口
 
 合并后团队下拉只剩选择、没有清除入口，三条用例（团队变更后 MCP 授权 2 条、清团队后的更新载荷）因此红。在团队 Select 后补"清除"按钮（有值且未锁定时显示，点击走既有 `handleTeamChange(onChange, null)`，会同步清空 MCP 授权），并把"清空组织"用例的清除按钮查询改为取第 0 个（组织在前、团队在后）。key_edit_view 由 4 例降到 1 例（移出项目按钮），tsc 0 错。
+
+## 2026-10-24 第 512 簇：失败面 4 例的排查记录
+
+整跑 61 个历史失败文件：57 通过、4 个文件各 1 例。逐条排查结论：
+
+1. `key_edit_view` 的「移出项目」用例：失败在最后一档权限矩阵（Org Admin + 团队 `team_member_permissions` 含 `/key/update` + 组织成员 `org_admin`），前置的移出、保存、重挂载都通过。`canDetachKeyProject` 的入参（teams、organizations 的 mock、userRole、userID）逐项核对均满足，组件渲染路径在调试时未打印出预期日志，怀疑该用例的 rerender 链与 `KeyEditSession` 的 key 复用有关，需继续核对。
+2. `key_info_view` 的团队预算用例：`useTeamMemberBudgets` 的 enabled 依赖 accessToken+userId（mock 均存在）、`teamInfoCall` 的 mock 形状与 gate 期望一致（team_info.team_member_budget_table + team_memberships），但该用例的 DOM 只有头部，预算区整块未渲染，需确认 overview 的渲染门槛。
+3. `AllModelsTab` 与 `create_key_button`：点击触发器后 `aria-expanded` 仍为 false、DOM 无 listbox，弹层未挂载；同仓库 `AllModelsTable` 的团队下拉在同类测试里能展开，差异点待定位。
