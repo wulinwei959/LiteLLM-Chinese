@@ -4472,3 +4472,11 @@ networking.tsx 是 AST 余量里最大一族（13 条 `new Error(...)`）。这�
 测试翻面 1 条：networking.modelListHint.test.ts 的 `rejects.toThrow("Network response was not ok")` 改 `toThrow(zh.toast.networkNotOk)`（该文件 mock 的 toastMessage 返回 zh 目录，正是本簇想要的行为验证）。networking.test.ts 的 ragIngestCall 一例为 HEAD 既有红，逐名 diff 净新增 0。
 
 验证：AST networking.tsx 仅剩 1 枚保留断言；全域计数 313→278（本簇 -12）；生产 typecheck 0 错；死键 0（detector 认 toastMessage 用法）；eslint 文件级 0 错；prettier clean；`npm run build` exit 0。
+
+## 2026-10-23 第 437 簇：护栏仅记录日志字段与提交流水标签接线
+
+GuardrailFormField 五处：LoggingOnlyScopeSelect 占位复用 `form.selectOption`；LoggingOnlyScopeField（原无译员，补 hook）的 labelWithHint 两参接 `loggingOnlyScope.label`（既有）与新 `form.loggingOnlyScopeHint`，continue 开关的 label/aria 同用既有 `custom.continueObserving`、hint 新 `form.continueObservingHint`。TeamGuardrailsTab 提交流水两枚 `Model: `/`Submitted: ` 接 `team.modelLabel`（既有含尾空格）与新增 `team.submittedLabel`。TeamGuardrailsTab 剩余 YAML 示例 placeholder、引号字符与 GuardrailTestPanel 的 Enter/Shift+Enter、execCommand dev 断言按判定账保留。目录新增 3 叶（11579→11582）。
+
+测试：guardrail_info.characterization.test.tsx 三处 switch name 翻面（被标记后中文标签）。该域 343 例维持 HEAD 基线 28 红、净新增 0；28 红全为 characterization 双文件的旧英文 label 断言（getByLabelText("Mode") 类），组件早已 zh、测试没翻面，属测试债清单，下一测试簇整文件收。
+
+验证：AST 触及文件仅剩保留项；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；`npm run build` exit 0。

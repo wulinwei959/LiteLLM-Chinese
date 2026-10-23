@@ -236,7 +236,7 @@ describe("GuardrailInfoView update payload characterization", () => {
     expect(await screen.findAllByText("Default (request and response)")).not.toHaveLength(0);
     await openEditor(user);
     const toggle = await screen.findByRole("switch", {
-      name: "Continue observing the response after a flagged request",
+      name: "请求被标记后继续观察响应",
     });
     expect(toggle).toBeChecked();
     await saveChanges(user);
@@ -252,9 +252,7 @@ describe("GuardrailInfoView update payload characterization", () => {
     renderView();
     await openEditor(user);
 
-    await user.click(
-      await screen.findByRole("switch", { name: "Continue observing the response after a flagged request" }),
-    );
+    await user.click(await screen.findByRole("switch", { name: "请求被标记后继续观察响应" }));
     await saveChanges(user);
 
     await waitFor(() => expect(networking.updateGuardrailCall).toHaveBeenCalledTimes(1));
@@ -271,9 +269,7 @@ describe("GuardrailInfoView update payload characterization", () => {
     renderView();
     await openEditor(user);
 
-    await user.click(
-      await screen.findByRole("switch", { name: "Continue observing the response after a flagged request" }),
-    );
+    await user.click(await screen.findByRole("switch", { name: "请求被标记后继续观察响应" }));
     await saveChanges(user);
 
     await waitFor(() => expect(networking.updateGuardrailCall).toHaveBeenCalledTimes(1));

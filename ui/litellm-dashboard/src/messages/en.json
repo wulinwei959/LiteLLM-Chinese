@@ -3508,7 +3508,8 @@
       "yamlFallbackComment": "# default: fail_closed. Set to fail_open to proceed if the guardrail endpoint is unreachable.",
       "yamlModelComment": "# LLM model name sent to the guardrail for context",
       "yamlHeadersComment": "# static headers (sent with every request)",
-      "yamlExtraHeadersComment": "# forward these client request headers to the guardrail"
+      "yamlExtraHeadersComment": "# forward these client request headers to the guardrail",
+      "submittedLabel": "Submitted: "
     },
     "table": {
       "id": "Guardrail ID",
@@ -3639,7 +3640,9 @@
       "endSessionAfterPlaceholder": "e.g. 3",
       "realtimeMessageLabel": "Message the user hears",
       "realtimeMessageHelp": "What the bot says aloud when this guardrail fires. Falls back to the default violation message if empty.",
-      "realtimeMessagePlaceholder": "e.g. I'm not able to continue this conversation. Please contact us at 1-800-774-2678."
+      "realtimeMessagePlaceholder": "e.g. I'm not able to continue this conversation. Please contact us at 1-800-774-2678.",
+      "loggingOnlyScopeHint": "Which direction a logging_only scan observes. Observe-only scans never block; pre_call and post_call on this guardrail still block.",
+      "continueObservingHint": "When on, a flagged or failing request scan is logged and the response is still scanned, so both verdicts land."
     },
     "test": {
       "title": "Test Guardrails:",

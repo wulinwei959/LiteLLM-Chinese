@@ -342,10 +342,12 @@ function GuardrailCard({
           </div>
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span>
-              Model: <span className="font-medium text-foreground">{g.model}</span>
+              {t("team.modelLabel")}
+              <span className="font-medium text-foreground">{g.model}</span>
             </span>
             <span>
-              Submitted: <span className="font-medium text-foreground">{g.submittedAt}</span>
+              {t("team.submittedLabel")}
+              <span className="font-medium text-foreground">{g.submittedAt}</span>
             </span>
           </div>
         </div>

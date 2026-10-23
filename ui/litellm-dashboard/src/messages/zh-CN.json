@@ -3508,7 +3508,8 @@
       "yamlFallbackComment": "# 默认：fail_closed。设为 fail_open 可在护栏端点不可达时继续放行。",
       "yamlModelComment": "# 发送给护栏作为上下文的 LLM 模型名",
       "yamlHeadersComment": "# 静态请求头（随每个请求发送）",
-      "yamlExtraHeadersComment": "# 将以下客户端请求头转发给护栏"
+      "yamlExtraHeadersComment": "# 将以下客户端请求头转发给护栏",
+      "submittedLabel": "提交时间： "
     },
     "table": {
       "id": "护栏 ID",
@@ -3639,7 +3640,9 @@
       "endSessionAfterPlaceholder": "例如 3",
       "realtimeMessageLabel": "用户听到的提示语",
       "realtimeMessageHelp": "护栏触发时机器人朗读的内容。留空则使用默认的违规提示语。",
-      "realtimeMessagePlaceholder": "例如：我无法继续此对话，请联系 1-800-774-2678。"
+      "realtimeMessagePlaceholder": "例如：我无法继续此对话，请联系 1-800-774-2678。",
+      "loggingOnlyScopeHint": "logging_only 扫描观察的方向。仅观察的扫描不会拦截；本护栏的 pre_call 与 post_call 仍会拦截。",
+      "continueObservingHint": "开启后，即使请求扫描被标记或失败，也照常记录并继续扫描响应，两个结论都会留下。"
     },
     "test": {
       "title": "测试护栏：",
