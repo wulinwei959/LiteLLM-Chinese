@@ -4464,3 +4464,11 @@ UISettings 的 Moyai 连接区块四处：toast 复用 `adminPanel.uiSettings.up
 测试：UISettings.test.tsx 三断言翻面（断开连接/未连接/从 Moyai 页面连接/已连接到 url）；MetadataKeyValueFields.test.tsx 修 HEAD 既有缺陷 `fieldsHidden` 解构漏项（Harness 声明了 prop 却没接，13 例 ReferenceError），修后该文件 13 红清到 6，剩余 6 例是 declared-schema 渲染模式的功能差（测试期望预填可编辑键行、组件走只读 label 分支），属行为债非翻译，另账。设置域 438 例从 HEAD 19 红降至 12 红、逐名 diff 净新增 0。
 
 验证：AST 触及文件仅剩 1 枚品牌保留；生产 typecheck 0 错；死键 0；eslint 与 HEAD 计数持平（两 test 文件的 render 未用导入是上游快照既有）；prettier clean；`npm run build` exit 0。
+
+## 2026-10-23 第 436 簇：networking 抛出消息走 toast 平面模块先例
+
+networking.tsx 是 AST 余量里最大一族（13 条 `new Error(...)`）。这些 throw 经组件 `toast.fromError` 的 text 兜底原样上屏。项目已有平面模块（无 React 上下文）译员的先例：`src/lib/toast.ts` 的 `toastMessage(key)`（双目录静态导入 + `currentUiLocale()` 读 document.lang + en 回落），且 networking.tsx 本就 import 了它。12 条消息进 `toast.*` 命名空间（networkNotOk ×4 站点复用、agentResponseEmpty/agentListResponseEmpty/agentDiscoveryResponseEmpty/pluginListResponseEmpty/userListResponseEmpty、loadAgentConfigFailed/loadProviderConfigFailed/patchAgentFailed、guardrailInfoFailed/guardrailUiSettingsFailed/guardrailProviderParamsFailed），en 值与原句逐字一致（默认 en locale 下消息不变，外部断言不受扰）。"Must provide either userIds or set allUsers=true" 判开发者误用断言保留（不上屏的正常路径）。目录新增 12 叶（11567→11579）。
+
+测试翻面 1 条：networking.modelListHint.test.ts 的 `rejects.toThrow("Network response was not ok")` 改 `toThrow(zh.toast.networkNotOk)`（该文件 mock 的 toastMessage 返回 zh 目录，正是本簇想要的行为验证）。networking.test.ts 的 ragIngestCall 一例为 HEAD 既有红，逐名 diff 净新增 0。
+
+验证：AST networking.tsx 仅剩 1 枚保留断言；全域计数 313→278（本簇 -12）；生产 typecheck 0 错；死键 0（detector 认 toastMessage 用法）；eslint 文件级 0 错；prettier clean；`npm run build` exit 0。

@@ -12756,7 +12756,19 @@
     "updateSpendLogsSettingsFailed": "Failed to update spend logs settings",
     "retrieveToolsListFailed": "Failed to retrieve tools list",
     "unknownError": "An unknown error occurred",
-    "oauthTokenExchangeFailed": "OAuth token exchange failed"
+    "oauthTokenExchangeFailed": "OAuth token exchange failed",
+    "networkNotOk": "Network response was not ok",
+    "agentResponseEmpty": "Agent response is empty",
+    "agentListResponseEmpty": "Agent list response is empty",
+    "agentDiscoveryResponseEmpty": "Agent discovery response is empty",
+    "pluginListResponseEmpty": "Plugin list response is empty",
+    "userListResponseEmpty": "User list response is empty",
+    "loadAgentConfigFailed": "Failed to load agent configuration",
+    "loadProviderConfigFailed": "Failed to load provider configuration",
+    "patchAgentFailed": "Failed to patch agent",
+    "guardrailInfoFailed": "Failed to get guardrail info",
+    "guardrailUiSettingsFailed": "Failed to get guardrail UI settings",
+    "guardrailProviderParamsFailed": "Failed to get guardrail provider specific parameters"
   },
   "telemetry": {
     "destination": {

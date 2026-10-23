@@ -469,7 +469,7 @@ export const getProviderCreateMetadata = async (): Promise<ProviderCreateInfo[]>
   if (!response.ok) {
     const errorText = await response.text();
     console.error("Failed to fetch provider create metadata:", response.status, errorText);
-    throw new Error("Failed to load provider configuration");
+    throw new Error(toastMessage("loadProviderConfigFailed"));
   }
 
   const jsonData: ProviderCreateInfo[] = await response.json();
@@ -513,7 +513,7 @@ export const getAgentCreateMetadata = async (): Promise<AgentCreateInfo[]> => {
   if (!response.ok) {
     const errorText = await response.text();
     console.error("Failed to fetch agent create metadata:", response.status, errorText);
-    throw new Error("Failed to load agent configuration");
+    throw new Error(toastMessage("loadAgentConfigFailed"));
   }
 
   const jsonData: AgentCreateInfo[] = await response.json();
@@ -1143,7 +1143,7 @@ export const userListCall = async (
       },
     },
   });
-  if (!data) throw new Error("User list response is empty");
+  if (!data) throw new Error(toastMessage("userListResponseEmpty"));
   return data;
 };
 
@@ -1679,7 +1679,7 @@ export const modelInfoCall = async (
         }, 10000);
       }
 
-      throw new Error("Network response was not ok");
+      throw new Error(toastMessage("networkNotOk"));
     }
 
     const data = await response.json();
@@ -2875,7 +2875,7 @@ export const modelPatchUpdateCall = async (
       const errorData = await response.text();
       handleError(errorData);
       console.error("Error update from the server:", errorData);
-      throw new Error("Network response was not ok");
+      throw new Error(toastMessage("networkNotOk"));
     }
     const data = await response.json();
     return data;
@@ -4755,7 +4755,7 @@ export const discoverAgentCardCall = async (
     headers: { [globalLitellmHeaderName]: `Bearer ${accessToken}` },
     body,
   });
-  if (!data) throw new Error("Agent discovery response is empty");
+  if (!data) throw new Error(toastMessage("agentDiscoveryResponseEmpty"));
   return { ...data, agent_card: toAgentCard(data.agent_card) };
 };
 
@@ -6016,7 +6016,7 @@ export const getGuardrailUISettings = async (accessToken: string) => {
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to get guardrail UI settings");
+      throw new Error(toastMessage("guardrailUiSettingsFailed"));
     }
 
     const data = await response.json();
@@ -6044,7 +6044,7 @@ export const getGuardrailProviderSpecificParams = async (accessToken: string) =>
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to get guardrail provider specific parameters");
+      throw new Error(toastMessage("guardrailProviderParamsFailed"));
     }
 
     const data = await response.json();
@@ -6118,7 +6118,7 @@ export const getAgentsList = async (accessToken: string, healthCheck: boolean = 
     headers: { [globalLitellmHeaderName]: `Bearer ${accessToken}` },
     params: { query: { health_check: healthCheck } },
   });
-  if (!data) throw new Error("Agent list response is empty");
+  if (!data) throw new Error(toastMessage("agentListResponseEmpty"));
   return { agents: data.map(toAgent) };
 };
 
@@ -6127,7 +6127,7 @@ export const getAgentInfo = async (accessToken: string, agentId: string): Promis
     headers: { [globalLitellmHeaderName]: `Bearer ${accessToken}` },
     params: { path: { agent_id: agentId } },
   });
-  if (!data) throw new Error("Agent response is empty");
+  if (!data) throw new Error(toastMessage("agentResponseEmpty"));
   return toAgent(data);
 };
 
@@ -6156,7 +6156,7 @@ export const getGuardrailInfo = async (accessToken: string, guardrailId: string)
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to get guardrail info");
+      throw new Error(toastMessage("guardrailInfoFailed"));
     }
 
     const data = await response.json();
@@ -6198,7 +6198,7 @@ export const patchAgentCall = async (
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to patch agent");
+      throw new Error(toastMessage("patchAgentFailed"));
     }
 
     const data = await response.json();
@@ -6565,7 +6565,7 @@ export const getRemainingUsers = async (
       }
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Network response was not ok");
+      throw new Error(toastMessage("networkNotOk"));
     }
 
     const data = await response.json();
@@ -6605,7 +6605,7 @@ export const getLicenseInfo = async (accessToken: string): Promise<LicenseInfo |
       }
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Network response was not ok");
+      throw new Error(toastMessage("networkNotOk"));
     }
 
     const data = await response.json();
@@ -7285,7 +7285,7 @@ export const getClaudeCodePluginsList = async (
     headers: { [globalLitellmHeaderName]: `Bearer ${accessToken}` },
     params: { query: { enabled_only: enabledOnly } },
   });
-  if (!data) throw new Error("Plugin list response is empty");
+  if (!data) throw new Error(toastMessage("pluginListResponseEmpty"));
   return data;
 };
 

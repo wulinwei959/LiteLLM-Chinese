@@ -35,7 +35,7 @@ describe("modelInfoCall empty list hint", () => {
 
     const { modelInfoCall } = await import("./networking");
 
-    await expect(modelInfoCall("token", "user", "admin")).rejects.toThrow("Network response was not ok");
+    await expect(modelInfoCall("token", "user", "admin")).rejects.toThrow(zh.toast.networkNotOk);
     expect(toastInfo).toHaveBeenCalledWith(zh.toast.noModelsExist);
   });
 });

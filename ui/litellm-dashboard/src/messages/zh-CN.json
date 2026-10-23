@@ -12752,7 +12752,19 @@
     "updateSpendLogsSettingsFailed": "更新花费日志设置失败",
     "retrieveToolsListFailed": "获取工具列表失败",
     "unknownError": "发生未知错误",
-    "oauthTokenExchangeFailed": "OAuth 令牌交换失败"
+    "oauthTokenExchangeFailed": "OAuth 令牌交换失败",
+    "networkNotOk": "网络响应异常",
+    "agentResponseEmpty": "代理响应为空",
+    "agentListResponseEmpty": "代理列表响应为空",
+    "agentDiscoveryResponseEmpty": "代理发现响应为空",
+    "pluginListResponseEmpty": "插件列表响应为空",
+    "userListResponseEmpty": "用户列表响应为空",
+    "loadAgentConfigFailed": "加载代理配置失败",
+    "loadProviderConfigFailed": "加载提供商配置失败",
+    "patchAgentFailed": "更新代理失败",
+    "guardrailInfoFailed": "获取护栏信息失败",
+    "guardrailUiSettingsFailed": "获取护栏界面设置失败",
+    "guardrailProviderParamsFailed": "获取护栏提供商专用参数失败"
   },
   "telemetry": {
     "destination": {
