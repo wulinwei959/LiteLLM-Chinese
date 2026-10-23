@@ -4553,3 +4553,12 @@ MCPToolArgumentsForm 的 "Input *" 标签新增 `mcpToolArgs.inputLabel`，两�
 测试：先跑 HEAD 基线确认 TeamAdmin 与 public_model_hub 两文件已有 8 例红（英文断言与模式显示缺口），非本簇引入；本次全部收口，断言翻成中文并补 Input 标签断言，四文件 136 例全绿。
 
 验证：AST 四个组件归零；全局可见英文 235→231 条、125→122 个文件；目录叶子 11617→11622，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、37 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。TeamAdmin 帮助气泡的英文常量句（About editing team metadata 等）仍待后续簇接 `t.rich`。
+## 2026-10-23 第 448 簇：团队管理员设置帮助与校验文案收口
+
+TeamAdminEditableFieldsSettings 的 FieldHelp 改为按 key 取文案，新增 `adminPanel.teamAdminEditable.aboutRaiseMaxBudget`/`raiseMaxBudgetTooltip`/`aboutTeamMetadata`/`teamMetadataTooltip` 四键，键类型收成字面量联合避免 tsc 报宽 string。TeamAdminSettingsForm 的预算提示两个模块常量改走 `teams.maxBudgetKeepOrLowerHint`/`maxBudgetRaiseHint`，元数据 JSON 说明接 `teams.adminMetadataJsonHint`（ICU 中 JSON 花括号用引号转义），元数据逐对校验消息注入译员接 `teams.metadata.proxyOnlyKey`/`valueRequired`。`teamAdminFieldLabel` 补 `team_member_tpm_limit`/`team_member_rpm_limit` 映射。
+
+测试：TeamAdminSettingsForm.test 的英文标签、周期选项、保存按钮、键值对按钮、校验消息与占位符全部翻面；teamAdminEditAccess.test 五处校验调用补 echo 译员；设置字段测试的帮助按钮名与提示正文翻面。三文件 111 例、加 i18n 守卫合计 134 例全绿。前一簇新增映射导致 TeamAdminSettingsForm.test 变红的回归在本簇一并清零。
+
+验证：目录叶子 11622→11633，英中同数；AST 全局可见英文维持 231 条、122 个文件（本簇常量与校验串不在 AST 口径内）；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
+
+LiteAdmin 暂缓：其集成测试在 HEAD 上 20 例全部 5 秒超时（触发器不渲染），属既有环境/用例问题；已回退本簇对它的尝试，待该文件基线修复后再接页签标题与关闭按钮文案。

@@ -55,7 +55,7 @@ const teamAdminSettingsSchemaFor = (t: TeamsTranslator, metadataContext: TeamAdm
       .superRefine((pairs, ctx) => {
         if (metadataContext === undefined) return;
         pairs.forEach((pair, index) => {
-          const issue = teamAdminMetadataPairIssue(pair, metadataContext);
+          const issue = teamAdminMetadataPairIssue(t, pair, metadataContext);
           if (issue) ctx.addIssue({ code: "custom", message: issue.message, path: [index, issue.path] });
         });
       })
@@ -79,13 +79,13 @@ const INPUT_STEP: Readonly<Record<Exclude<TeamAdminSettingsField, "team_member_b
   team_member_rpm_limit: 1,
 };
 
-const MAX_BUDGET_KEEP_OR_LOWER_HINT = "You can keep or lower this budget. Ask a proxy admin to raise it.";
-const MAX_BUDGET_RAISE_HINT =
-  "You can raise this budget. Raises are capped by your organization's budget when the team belongs to one.";
-
-const fieldHint = (name: TeamAdminSettingsField, mayRaiseMaxBudget: boolean): string | undefined => {
+const fieldHint = (
+  t: ReturnType<typeof useTranslations<"teams">>,
+  name: TeamAdminSettingsField,
+  mayRaiseMaxBudget: boolean,
+): string | undefined => {
   if (name !== "max_budget") return undefined;
-  return mayRaiseMaxBudget ? MAX_BUDGET_RAISE_HINT : MAX_BUDGET_KEEP_OR_LOWER_HINT;
+  return mayRaiseMaxBudget ? t("maxBudgetRaiseHint") : t("maxBudgetKeepOrLowerHint");
 };
 
 const durationSelectValue = (value: string | number | null | undefined): string | undefined => {
@@ -148,7 +148,7 @@ function TeamAdminSettingsFormFields({
             control={form.control}
             name={name}
             label={teamAdminFieldLabel(t, name)}
-            description={fieldHint(name, mayRaiseMaxBudget)}
+            description={fieldHint(t, name, mayRaiseMaxBudget)}
           >
             {({ ref, id, value, onChange, ...field }) =>
               isTeamAdminDurationSettingsField(name) ? (
@@ -182,11 +182,7 @@ function TeamAdminSettingsFormFields({
               schemaFields={metadata.schemaFields}
               schemaLoading={metadata.schemaLoading}
             />
-            <FieldDescription>
-              {
-                'A value that is valid JSON, like 3, true or {"region": "us"}, is saved as that type, anything else as text. Keys the proxy reads as settings stay with proxy admins and are kept as they are.'
-              }
-            </FieldDescription>
+            <FieldDescription>{t("adminMetadataJsonHint")}</FieldDescription>
           </Field>
         )}
       </FieldGroup>

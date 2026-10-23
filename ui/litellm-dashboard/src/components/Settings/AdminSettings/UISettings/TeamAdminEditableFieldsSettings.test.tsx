@@ -5,11 +5,11 @@ import { fireEvent, renderWithProviders, screen, waitFor } from "@/../tests/test
 import { toast } from "@/lib/toast";
 
 import TeamAdminEditableFieldsSettings from "./TeamAdminEditableFieldsSettings";
-import {
-  TEAM_ADMIN_FIELDS_DOCS_URL as RAISE_MAX_BUDGET_DOCS_URL,
-  RAISE_MAX_BUDGET_HELP_LABEL,
-  RAISE_MAX_BUDGET_TOOLTIP,
-} from "./TeamAdminEditableFieldsSettings";
+import { TEAM_ADMIN_FIELDS_DOCS_URL as RAISE_MAX_BUDGET_DOCS_URL } from "./TeamAdminEditableFieldsSettings";
+
+const RAISE_MAX_BUDGET_HELP_TEXT =
+  "允许团队管理员同时提高预算，团队有组织预算时以组织预算为上限。只有代理管理员可以移除该权限。";
+const RAISE_MAX_BUDGET_HELP_LABEL = "关于提高团队最大预算";
 
 const mockUseUISettings = vi.hoisted(() => vi.fn());
 const mockUseUpdateUISettings = vi.hoisted(() => vi.fn());
@@ -161,9 +161,9 @@ describe("TeamAdminEditableFieldsSettings", () => {
     const mutate = mockSave({});
 
     renderWithProviders(<TeamAdminEditableFieldsSettings />);
-    await user.hover(screen.getByRole("button", { name: "About editing team metadata" }));
+    await user.hover(screen.getByRole("button", { name: "关于编辑团队元数据" }));
 
-    expect(await screen.findByText(/Keys the proxy reads as settings stay with proxy admins/)).toBeInTheDocument();
+    expect(await screen.findByText(/代理作为设置读取的键仍归代理管理员所有/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("checkbox", { name: "团队元数据" }));
     fireEvent.click(saveButton());
@@ -295,11 +295,11 @@ describe("TeamAdminEditableFieldsSettings", () => {
 
       renderWithProviders(<TeamAdminEditableFieldsSettings />);
 
-      expect(screen.queryByText(RAISE_MAX_BUDGET_TOOLTIP)).not.toBeInTheDocument();
+      expect(screen.queryByText(RAISE_MAX_BUDGET_HELP_TEXT)).not.toBeInTheDocument();
 
       await user.hover(screen.getByRole("button", { name: RAISE_MAX_BUDGET_HELP_LABEL }));
 
-      expect(await screen.findByText(RAISE_MAX_BUDGET_TOOLTIP)).toBeInTheDocument();
+      expect(await screen.findByText(RAISE_MAX_BUDGET_HELP_TEXT)).toBeInTheDocument();
       expect(screen.getByRole("link", { name: "了解更多" })).toHaveAttribute("href", RAISE_MAX_BUDGET_DOCS_URL);
     });
 

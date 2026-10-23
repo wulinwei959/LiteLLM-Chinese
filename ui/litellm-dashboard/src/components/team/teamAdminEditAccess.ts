@@ -119,6 +119,10 @@ export const teamAdminFieldLabel = (t: TeamsTranslator, field: string): string =
       return t("adminFieldTeamMemberBudget");
     case "team_member_budget_duration":
       return t("adminFieldTeamMemberBudgetDuration");
+    case "team_member_tpm_limit":
+      return t("adminFieldTeamMemberTpmLimit");
+    case "team_member_rpm_limit":
+      return t("adminFieldTeamMemberRpmLimit");
     case "soft_budget":
       return t("infoSoftBudgetUsd");
     case "metadata":
@@ -243,13 +247,14 @@ export interface TeamAdminMetadataPairIssue {
 }
 
 export const teamAdminMetadataPairIssue = (
+  t: TeamsTranslator,
   pair: Partial<MetadataPair> | undefined,
   context: TeamAdminMetadataContext,
 ): TeamAdminMetadataPairIssue | null => {
   if (pair?.key === undefined) return null;
-  if (context.proxyControlledKeys.has(pair.key)) return { path: "key", message: "Only proxy admins can set this key" };
+  if (context.proxyControlledKeys.has(pair.key)) return { path: "key", message: t("metadata.proxyOnlyKey") };
   if (!context.declaredKeys.has(pair.key) || !(pair.key in context.storedMetadata)) return null;
   const value = pairValue(pair);
   const clearsStoredValue = isBlank(value) && canonicalJson(value) !== canonicalJson(context.storedMetadata[pair.key]);
-  return clearsStoredValue ? { path: "value", message: "This field cannot be left empty" } : null;
+  return clearsStoredValue ? { path: "value", message: t("metadata.valueRequired") } : null;
 };

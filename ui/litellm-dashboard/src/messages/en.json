@@ -2447,7 +2447,9 @@
       "removePair": "Remove key-value pair",
       "addPair": "Add Key-Value Pair",
       "missingKey": "Missing key",
-      "duplicateKey": "Duplicate key"
+      "duplicateKey": "Duplicate key",
+      "proxyOnlyKey": "Only proxy admins can set this key",
+      "valueRequired": "This field cannot be left empty"
     },
     "infoMissingModel": "Missing model",
     "infoModelAliasesHint": "Map a custom alias to an underlying model. Team members can call the alias in API requests instead of the real model name.",
@@ -2869,7 +2871,12 @@
     "adminFieldTeamMemberBudget": "Member Default Budget (USD)",
     "adminFieldTeamMemberBudgetDuration": "Member Default Budget Duration",
     "adminFieldTeamMetadata": "Team Metadata",
-    "adminFieldRaiseMaxBudget": "Raise Max Budget"
+    "adminFieldRaiseMaxBudget": "Raise Max Budget",
+    "adminMetadataJsonHint": "A value that is valid JSON, like 3, true or '{'\"region\": \"us\"'}', is saved as that type, anything else as text. Keys the proxy reads as settings stay with proxy admins and are kept as they are.",
+    "maxBudgetKeepOrLowerHint": "You can keep or lower this budget. Ask a proxy admin to raise it.",
+    "maxBudgetRaiseHint": "You can raise this budget. Raises are capped by your organization's budget when the team belongs to one.",
+    "adminFieldTeamMemberTpmLimit": "Member Default TPM Limit",
+    "adminFieldTeamMemberRpmLimit": "Member Default RPM Limit"
   },
   "userAgentActivity": {
     "summaryTitle": "Summary by User Agent",
@@ -4796,7 +4803,11 @@
       "noFieldsEnabled": "Team admins cannot edit team settings",
       "descriptionFallback": "Team settings fields a team admin may change on the teams they administer.",
       "unsupportedProxy": "This proxy version does not support enabling any team settings fields for team admins yet.",
-      "updatedToast": "Team admin editable fields updated successfully"
+      "updatedToast": "Team admin editable fields updated successfully",
+      "aboutRaiseMaxBudget": "About raising the team's max budget",
+      "raiseMaxBudgetTooltip": "Lets team admins raise the budget too, capped by the organization's budget when the team has one. Only proxy admins can remove it.",
+      "aboutTeamMetadata": "About editing team metadata",
+      "teamMetadataTooltip": "Lets team admins add, change and remove their own metadata keys. Keys the proxy reads as settings stay with proxy admins, and keys declared in the team metadata schema can be changed but not removed."
     },
     "uiSettings": {
       "title": "UI Settings",

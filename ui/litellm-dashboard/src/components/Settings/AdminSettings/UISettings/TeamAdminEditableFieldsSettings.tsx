@@ -33,12 +33,16 @@ type SaveEditableFields = ReturnType<typeof useUpdateUISettings>["mutate"];
 
 const MAX_BUDGET_FIELD: TeamAdminSettingsField = "max_budget";
 
-export const RAISE_MAX_BUDGET_HELP_LABEL = "About raising the team's max budget";
-export const RAISE_MAX_BUDGET_TOOLTIP =
-  "Lets team admins raise the budget too, capped by the organization's budget when the team has one. Only proxy admins can remove it.";
-const METADATA_HELP_LABEL = "About editing team metadata";
-const METADATA_TOOLTIP =
-  "Lets team admins add, change and remove their own metadata keys. Keys the proxy reads as settings stay with proxy admins, and keys declared in the team metadata schema can be changed but not removed.";
+export const RAISE_MAX_BUDGET_HELP_KEY = "aboutRaiseMaxBudget";
+export const RAISE_MAX_BUDGET_TOOLTIP_KEY = "raiseMaxBudgetTooltip";
+const METADATA_HELP_KEY = "aboutTeamMetadata";
+const METADATA_TOOLTIP_KEY = "teamMetadataTooltip";
+
+type TeamAdminEditableMessageKey =
+  | typeof RAISE_MAX_BUDGET_HELP_KEY
+  | typeof RAISE_MAX_BUDGET_TOOLTIP_KEY
+  | typeof METADATA_HELP_KEY
+  | typeof METADATA_TOOLTIP_KEY;
 export const TEAM_ADMIN_FIELDS_DOCS_URL =
   "https://docs.litellm.ai/docs/proxy/access_control#choosing-what-team-admins-can-edit";
 
@@ -152,7 +156,7 @@ function TeamAdminEditableFieldsForm({
                     onCheckedChange={toggle(name)}
                     help={
                       name === TEAM_ADMIN_METADATA_FIELD ? (
-                        <FieldHelp label={METADATA_HELP_LABEL} text={METADATA_TOOLTIP} />
+                        <FieldHelp labelKey={METADATA_HELP_KEY} textKey={METADATA_TOOLTIP_KEY} />
                       ) : undefined
                     }
                   />
@@ -163,7 +167,7 @@ function TeamAdminEditableFieldsForm({
                       disabled={isPending || !field.value.includes(MAX_BUDGET_FIELD)}
                       onCheckedChange={toggle(TEAM_ADMIN_RAISE_MAX_BUDGET_PERMISSION)}
                       className="ml-6"
-                      help={<FieldHelp label={RAISE_MAX_BUDGET_HELP_LABEL} text={RAISE_MAX_BUDGET_TOOLTIP} />}
+                      help={<FieldHelp labelKey={RAISE_MAX_BUDGET_HELP_KEY} textKey={RAISE_MAX_BUDGET_TOOLTIP_KEY} />}
                     />
                   )}
                 </Fragment>
@@ -212,25 +216,26 @@ function EditableFieldCheckbox({
 }
 
 interface FieldHelpProps {
-  label: string;
-  text: string;
+  labelKey: TeamAdminEditableMessageKey;
+  textKey: TeamAdminEditableMessageKey;
 }
 
-function FieldHelp({ label, text }: FieldHelpProps) {
+function FieldHelp({ labelKey, textKey }: FieldHelpProps) {
+  const t = useTranslations("adminPanel.teamAdminEditable");
   const commonT = useTranslations("common");
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger
           type="button"
-          aria-label={label}
+          aria-label={t(labelKey)}
           className="inline-flex cursor-help items-center rounded-sm text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >
           <CircleHelp className="size-3.5" />
         </TooltipTrigger>
         <TooltipContent>
           <span>
-            {text}{" "}
+            {t(textKey)}{" "}
             <a href={TEAM_ADMIN_FIELDS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="underline">
               {commonT("learnMore")}
             </a>

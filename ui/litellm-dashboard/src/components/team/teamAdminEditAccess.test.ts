@@ -313,11 +313,13 @@ describe("teamAdminMetadataPairIssue", () => {
   };
 
   it("flags a key the proxy keeps for proxy admins", () => {
-    expect(teamAdminMetadataPairIssue({ key: "priority", value: "low" }, context)?.path).toBe("key");
+    expect(teamAdminMetadataPairIssue(echoKeyTranslator, { key: "priority", value: "low" }, context)?.path).toBe("key");
   });
 
   it("flags emptying a declared field the team has set", () => {
-    expect(teamAdminMetadataPairIssue({ key: "cost_center", value: "" }, context)?.path).toBe("value");
+    expect(teamAdminMetadataPairIssue(echoKeyTranslator, { key: "cost_center", value: "" }, context)?.path).toBe(
+      "value",
+    );
   });
 
   it.each([
@@ -325,13 +327,13 @@ describe("teamAdminMetadataPairIssue", () => {
     ["a JSON empty string", '""'],
     ["only spaces", "   "],
   ])("flags a declared field the team has set changed to %s", (_label, value) => {
-    expect(teamAdminMetadataPairIssue({ key: "cost_center", value }, context)?.path).toBe("value");
+    expect(teamAdminMetadataPairIssue(echoKeyTranslator, { key: "cost_center", value }, context)?.path).toBe("value");
   });
 
   it("accepts a declared field the proxy admin stored empty, resent as it is", () => {
     const storedEmpty = { ...context, storedMetadata: { cost_center: "" } };
 
-    expect(teamAdminMetadataPairIssue({ key: "cost_center", value: "" }, storedEmpty)).toBeNull();
+    expect(teamAdminMetadataPairIssue(echoKeyTranslator, { key: "cost_center", value: "" }, storedEmpty)).toBeNull();
   });
 
   it.each([
@@ -339,7 +341,7 @@ describe("teamAdminMetadataPairIssue", () => {
     ["a declared field the team never set", { key: "department", value: "" }],
     ["a declared field with a new value", { key: "cost_center", value: "sales" }],
   ])("accepts %s", (_label, pair) => {
-    expect(teamAdminMetadataPairIssue(pair, context)).toBeNull();
+    expect(teamAdminMetadataPairIssue(echoKeyTranslator, pair, context)).toBeNull();
   });
 });
 

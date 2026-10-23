@@ -99,10 +99,10 @@ describe("TeamAdminSettingsForm", () => {
       new Set(["team_member_budget", "team_member_budget_duration", "team_member_tpm_limit", "team_member_rpm_limit"]),
     );
 
-    expect(screen.getByLabelText("Member Default Budget (USD)")).toHaveValue(10);
-    expect(screen.getByLabelText("Member Default Budget Duration")).toHaveTextContent("monthly");
-    expect(screen.getByLabelText("Member Default TPM Limit")).toHaveValue(100);
-    expect(screen.getByLabelText("Member Default RPM Limit")).toHaveValue(5);
+    expect(screen.getByLabelText("成员默认预算（USD）")).toHaveValue(10);
+    expect(screen.getByLabelText("成员默认预算周期")).toHaveTextContent("每月");
+    expect(screen.getByLabelText("成员默认 TPM 限制")).toHaveValue(100);
+    expect(screen.getByLabelText("成员默认 RPM 限制")).toHaveValue(5);
   });
 
   it("saves a new member default budget and a weekly reset without resending the unchanged limits", async () => {
@@ -111,9 +111,9 @@ describe("TeamAdminSettingsForm", () => {
       new Set(["team_member_budget", "team_member_budget_duration", "team_member_tpm_limit", "team_member_rpm_limit"]),
     );
 
-    fireEvent.change(screen.getByLabelText("Member Default Budget (USD)"), { target: { value: "25" } });
-    await chooseSelectOption(user, screen.getByLabelText("Member Default Budget Duration"), "weekly");
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    fireEvent.change(screen.getByLabelText("成员默认预算（USD）"), { target: { value: "25" } });
+    await chooseSelectOption(user, screen.getByLabelText("成员默认预算周期"), "每周");
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() =>
       expect(onSave).toHaveBeenCalledWith({ team_member_budget: 25, team_member_budget_duration: "7d" }),
@@ -124,8 +124,8 @@ describe("TeamAdminSettingsForm", () => {
     const user = userEvent.setup();
     const { onSave } = renderForm(new Set(["team_member_budget_duration"]));
 
-    await chooseSelectOption(user, screen.getByLabelText("Member Default Budget Duration"), "Never resets");
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await chooseSelectOption(user, screen.getByLabelText("成员默认预算周期"), "从不重置");
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith({ team_member_budget_duration: null }));
   });
@@ -142,21 +142,21 @@ describe("TeamAdminSettingsForm", () => {
       />,
     );
 
-    expect(screen.getByLabelText("Member Default Budget Duration")).toHaveTextContent("Never resets");
+    expect(screen.getByLabelText("成员默认预算周期")).toHaveTextContent("从不重置");
   });
 
   it("shows the soft budget when the proxy lets team admins edit it", () => {
     renderForm(new Set(["soft_budget"]));
 
-    expect(screen.getByLabelText("Soft Budget (USD)")).toHaveValue(15);
+    expect(screen.getByLabelText("软预算（USD）")).toHaveValue(15);
   });
 
   it("saves a lowered soft budget and nothing else", async () => {
     const user = userEvent.setup();
     const { onSave } = renderForm(new Set(["soft_budget", "max_budget"]));
 
-    fireEvent.change(screen.getByLabelText("Soft Budget (USD)"), { target: { value: "10.5" } });
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    fireEvent.change(screen.getByLabelText("软预算（USD）"), { target: { value: "10.5" } });
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith({ soft_budget: 10.5 }));
   });
@@ -180,13 +180,13 @@ describe("TeamAdminSettingsForm", () => {
   });
 
   it.each([
-    [false, "You can keep or lower this budget. Ask a proxy admin to raise it."],
-    [true, "You can raise this budget. Raises are capped by your organization's budget when the team belongs to one."],
+    [false, "你可以保持或降低此预算。如需提高，请联系代理管理员。"],
+    [true, "你可以提高此预算。团队归属组织时，提高幅度以组织预算为上限。"],
   ])("when mayRaiseMaxBudget is %s, describes only the Max Budget input with: %s", (mayRaiseMaxBudget, hint) => {
     renderForm(new Set(["tpm_limit", "max_budget"]), { mayRaiseMaxBudget });
 
-    expect(screen.getByLabelText("Max Budget (USD)")).toHaveAccessibleDescription(hint);
-    expect(screen.getByLabelText("Tokens per minute Limit (TPM)")).not.toHaveAccessibleDescription();
+    expect(screen.getByLabelText("最大预算（USD）")).toHaveAccessibleDescription(hint);
+    expect(screen.getByLabelText("每分钟 Token 限制（TPM）")).not.toHaveAccessibleDescription();
   });
 
   it("shows no budget hint when the proxy has not enabled Max Budget for team admins", () => {
@@ -216,19 +216,19 @@ describe("TeamAdminSettingsForm", () => {
       expect(screen.getByLabelText("Cost Center")).toHaveValue("eng");
       expect(screen.getByDisplayValue("region")).toBeInTheDocument();
       expect(screen.queryByDisplayValue("priority")).not.toBeInTheDocument();
-      expect(screen.getAllByRole("button", { name: "Remove key-value pair" })).toHaveLength(1);
+      expect(screen.getAllByRole("button", { name: "删除键值对" })).toHaveLength(1);
     });
 
     it("saves a new key with the proxy's own keys carried over", async () => {
       const user = userEvent.setup();
       const { onSave } = renderForm(new Set(["metadata"]), { metadata });
 
-      await user.click(screen.getByRole("button", { name: /add key-value pair/i }));
-      const keys = screen.getAllByPlaceholderText("Key");
-      const values = screen.getAllByPlaceholderText("Value");
+      await user.click(screen.getByRole("button", { name: /添加键值对/ }));
+      const keys = screen.getAllByPlaceholderText("键");
+      const values = screen.getAllByPlaceholderText("值");
       await user.type(keys[keys.length - 1], "project");
       await user.type(values[values.length - 1], "atlas");
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() =>
         expect(onSave).toHaveBeenCalledWith({
@@ -241,12 +241,12 @@ describe("TeamAdminSettingsForm", () => {
       const user = userEvent.setup();
       const { onSave } = renderForm(new Set(["metadata"]), { metadata });
 
-      await user.click(screen.getByRole("button", { name: /add key-value pair/i }));
-      const keys = screen.getAllByPlaceholderText("Key");
+      await user.click(screen.getByRole("button", { name: /添加键值对/ }));
+      const keys = screen.getAllByPlaceholderText("键");
       await user.type(keys[keys.length - 1], "priority");
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
-      expect(await screen.findByText("Only proxy admins can set this key")).toBeInTheDocument();
+      expect(await screen.findByText("只有代理管理员可以设置此键")).toBeInTheDocument();
       expect(onSave).not.toHaveBeenCalled();
     });
 
@@ -255,9 +255,9 @@ describe("TeamAdminSettingsForm", () => {
       const { onSave } = renderForm(new Set(["metadata"]), { metadata });
 
       await user.clear(screen.getByLabelText("Cost Center"));
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
-      expect(await screen.findByText("This field cannot be left empty")).toBeInTheDocument();
+      expect(await screen.findByText("此字段不能留空")).toBeInTheDocument();
       expect(onSave).not.toHaveBeenCalled();
     });
 
@@ -283,13 +283,13 @@ describe("TeamAdminSettingsForm", () => {
       );
       const { rerender } = renderWithProviders(form(loading));
 
-      expect(screen.queryByRole("button", { name: /save changes/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /保存更改/ })).not.toBeInTheDocument();
 
       rerender(form(metadata));
       await user.clear(await screen.findByLabelText("Cost Center"));
-      await user.click(screen.getByRole("button", { name: /save changes/i }));
+      await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
-      expect(await screen.findByText("This field cannot be left empty")).toBeInTheDocument();
+      expect(await screen.findByText("此字段不能留空")).toBeInTheDocument();
       expect(onSave).not.toHaveBeenCalled();
     });
 
@@ -297,7 +297,7 @@ describe("TeamAdminSettingsForm", () => {
       renderForm(new Set(["tpm_limit"]), { metadata });
 
       expect(screen.queryByLabelText("Cost Center")).not.toBeInTheDocument();
-      expect(screen.getByLabelText("Tokens per minute Limit (TPM)")).toBeInTheDocument();
+      expect(screen.getByLabelText("每分钟 Token 限制（TPM）")).toBeInTheDocument();
     });
   });
 });
