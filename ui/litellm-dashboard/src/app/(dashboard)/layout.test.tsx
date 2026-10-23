@@ -113,14 +113,14 @@ describe("(dashboard) Layout", () => {
     );
     pendingUiConfig.resolve();
 
-    const trigger = await screen.findByRole("button", { name: "Open navigation" });
-    expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument();
+    const trigger = await screen.findByRole("button", { name: "打开导航" });
+    expect(screen.queryByRole("dialog", { name: "导航" })).not.toBeInTheDocument();
 
     fireEvent.click(trigger);
-    const navigation = await screen.findByRole("dialog", { name: "Navigation" });
+    const navigation = await screen.findByRole("dialog", { name: "导航" });
     expect(within(navigation).getByRole("button", { name: "Close navigation" })).toBeInTheDocument();
     fireEvent.click(within(navigation).getByRole("link", { name: "Settings" }));
-    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "导航" })).not.toBeInTheDocument());
   });
 
   it("records one page view per route segment, not per query change", async () => {
@@ -133,7 +133,7 @@ describe("(dashboard) Layout", () => {
     );
     const { rerender } = render(dashboard());
     pendingUiConfig.resolve();
-    await screen.findByRole("button", { name: "Open navigation" });
+    await screen.findByRole("button", { name: "打开导航" });
     searchParamsValue = new URLSearchParams("tab=members");
     rerender(dashboard());
     vi.mocked(usePathname).mockReturnValue("/ui/teams/abc-123");
@@ -159,15 +159,15 @@ describe("(dashboard) Layout", () => {
     );
     const { rerender } = render(dashboard());
     pendingUiConfig.resolve();
-    fireEvent.click(await screen.findByRole("button", { name: "Open navigation" }));
-    expect(await screen.findByRole("dialog", { name: "Navigation" })).toBeInTheDocument();
+    fireEvent.click(await screen.findByRole("button", { name: "打开导航" }));
+    expect(await screen.findByRole("dialog", { name: "导航" })).toBeInTheDocument();
 
     vi.mocked(usePathname).mockReturnValue("/ui/api-keys");
     rerender(dashboard());
-    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "导航" })).not.toBeInTheDocument());
     vi.mocked(usePathname).mockReturnValue("/ui/guardrails");
     rerender(dashboard());
-    expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "导航" })).not.toBeInTheDocument();
   });
 
   it("collapses the sidebar on Logs for a full-screen view and expands it again after leaving", async () => {

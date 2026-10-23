@@ -186,7 +186,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             if (event.target instanceof Element && event.target.closest("a[href]")) setMobileNavigationKey(null);
           }}
         >
-          <SheetTitle className="sr-only">Navigation</SheetTitle>
+          <SheetTitle className="sr-only">{t("navigation")}</SheetTitle>
           <SidebarProvider sidebarCollapsed={false} onToggleCollapsed={() => setMobileNavigationKey(null)} />
         </SheetContent>
       </Sheet>
@@ -199,7 +199,12 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
                 <SheetTrigger
                   handle={mobileNavigationHandle}
                   render={
-                    <Button variant="ghost" size="icon" className="size-11 md:hidden" aria-label="Open navigation" />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-11 md:hidden"
+                      aria-label={t("openNavigation")}
+                    />
                   }
                 >
                   <Menu />

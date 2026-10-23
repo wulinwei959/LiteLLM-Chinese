@@ -4516,3 +4516,10 @@ ModelInsightsView 底部的会话成本卡片整片英文，本簇接 `modelInsi
 测试：新增一例断言卡片中文三段文案。同时修掉该文件一处合并遗留缺陷：分桶用例引用了未定义的 `days`（797ecb32 带入），且 fixture 只在区间最后一天有数据，与组件的最近 30 日可见窗口叠加后日桶断言必然失败。补上按起止日期推导的 `days`，并给该用例补区间首日数据，恢复"每日一桶 / 每周聚合"的原断言意图。6 例全绿。
 
 验证：全局 AST 可见英文 249→246 条、131→130 个文件（本文件归零）；目录叶子 11599→11602，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier 新增行合规、HEAD 既有两处多行 expect 脏格式不动；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 443 簇：应用外壳导航与移动端工具菜单接线
+
+`layout.tsx` 移动端抽屉标题与触发按钮 aria 接 `nav.navigation`/`nav.openNavigation`。`DashboardHeader.tsx` 窄屏工具弹层标题与更多按钮 aria 接 `nav.gatewayTools`/`nav.moreOptions`（zh 为"网关工具"/"更多选项"）。两文件早已持 `nav` 译员，本簇只补键与调用点。顺带清掉 DashboardHeader.test 里未使用的 `act` 导入，HEAD 既有一条 unused-import 错误清零。
+
+测试：layout.test 五处抽屉标题与三处触发按钮断言翻成"导航"/"打开导航"；DashboardHeader.test 的英文 mock 目录补两键，新增一例断言窄屏点开弹层后显示 "Gateway tools"。两文件 18 例、加 i18n 守卫合计 41 例全绿。抽屉内 "Close navigation"/"Settings" 来自测试桩件，维持英文。
+
+验证：全局 AST 可见英文 246→242 条、130→128 个文件（两文件仅剩品牌名与既有判定项）；目录叶子 11602→11606，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、2 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。

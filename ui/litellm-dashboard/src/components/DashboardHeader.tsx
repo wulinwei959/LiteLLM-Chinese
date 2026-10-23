@@ -96,11 +96,13 @@ export function DashboardHeader({
         {deploymentHealth}
         <NotificationsBell accessToken={accessToken} />
         <Popover open={!isDesktop && mobileToolsOpen} onOpenChange={setMobileToolsOpen}>
-          <PopoverTrigger render={<Button variant="ghost" size="icon" className="size-11" aria-label="More options" />}>
+          <PopoverTrigger
+            render={<Button variant="ghost" size="icon" className="size-11" aria-label={navT("moreOptions")} />}
+          >
             <Ellipsis />
           </PopoverTrigger>
           <PopoverContent align="end" className="max-w-[calc(100vw-2rem)]">
-            <PopoverTitle>Gateway tools</PopoverTitle>
+            <PopoverTitle>{navT("gatewayTools")}</PopoverTitle>
             <ViewSwitcher />
             {showWorkerSwitch && <WorkerDropdown onWorkerSwitch={handleWorkerSwitch} />}
             <div className="flex flex-wrap items-center gap-2">

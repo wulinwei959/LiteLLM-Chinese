@@ -1,6 +1,6 @@
 import { CommandPaletteProvider } from "@/components/CommandPalette/CommandPaletteProvider";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { act, fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { DashboardHeader } from "./DashboardHeader";
 import { NAV_PRODUCT_LINK_CLASS } from "@/components/Navbar/navProductLinkClass";
 import { renderWithProviders } from "@tests/test-utils";
@@ -78,6 +78,8 @@ const mockTranslations: Record<string, string> = {
   adminSettings: "Admin Settings",
   costTracking: "Cost Tracking",
   uiTheme: "UI Theme",
+  gatewayTools: "Gateway tools",
+  moreOptions: "More options",
 };
 
 vi.mock("next-intl", () => ({
@@ -107,6 +109,19 @@ describe("DashboardHeader breadcrumb", () => {
     );
 
     expect(screen.getByText("Models + Endpoints")).toBeInTheDocument();
+  });
+
+  it("opens the mobile gateway tools popover", async () => {
+    state.isDesktop = false;
+    renderWithProviders(
+      <CommandPaletteProvider>
+        <DashboardHeader />
+      </CommandPaletteProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "More options" }));
+
+    expect(await screen.findByText("Gateway tools")).toBeInTheDocument();
   });
 
   it("titles the dashboard root as Home", () => {

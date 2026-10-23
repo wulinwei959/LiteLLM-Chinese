@@ -329,7 +329,11 @@
     "uiTheme": "界面主题",
     "plugin": "插件",
     "pluginHint": "在设置中配置插件 URL",
-    "home": "首页"
+    "home": "首页",
+    "openNavigation": "打开导航",
+    "navigation": "导航",
+    "gatewayTools": "网关工具",
+    "moreOptions": "更多选项"
   },
   "viewSwitcher": {
     "aiGateway": "AI 网关",

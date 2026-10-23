@@ -329,7 +329,11 @@
     "uiTheme": "UI Theme",
     "plugin": "Plugin",
     "pluginHint": "Configure the plugin URL in settings",
-    "home": "Home"
+    "home": "Home",
+    "openNavigation": "Open navigation",
+    "navigation": "Navigation",
+    "gatewayTools": "Gateway tools",
+    "moreOptions": "More options"
   },
   "viewSwitcher": {
     "aiGateway": "AI Gateway",
