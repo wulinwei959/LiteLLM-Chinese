@@ -245,6 +245,6 @@ theirs = upstream/main 的内容 （上游的新版）
 
 2026-10-23 复核：非测试 TSX 145 个文件 313 条可见英文命中（AST 口径，技术串按既有判定保留）；目录叶子键 11482，英中同数；生产类型检查 0 条错误；测试文件类型错误 395 条；死键 0；`npm run build` exit 0；i18n 五条守卫此前 23 例全绿。
 
-仍然欠着：zod 的自定义校验消息仍待改成按译员构造；`npm run scan:rendered` 需要起 dev server，本轮未跑；测试文件类型错误与旧英文断言按文件逐个收；临时脚本 `ui/litellm-dashboard/scripts/scan-english-pos.tmp.mjs` 待删除。
+仍然欠着：zod 的自定义校验消息仍待改成按译员构造；测试文件类型错误与旧英文断言按文件逐个收；渲染扫描本枝已在 2026-10-23 跑通，桩形状三处缺口（`/user/daily/activity/aggregated/users` 与 `/guardrails/submissions` 缺桩、`/user/daily/activity/aggregated` metadata 只给了两枚字段）已按第 427 簇补齐，用量页与护栏页的运行时错误清零，剩余 25 条命中见 PROGRESS。`scan-english-pos.tmp.mjs` 复核从未入库（`git log --all` 无史），该句作废。
 
 分支策略：合并、汉化与测试收口全部在 `litellm_sync_v1.107.0` 上完成，`main` 保持不动，最后再合入。
