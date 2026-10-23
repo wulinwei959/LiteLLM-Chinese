@@ -4943,3 +4943,11 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 ## 2026-10-24 第 507 簇：可靠性区块的归属提示本地化
 
 `ReliabilityRetriesSection` 的输入框 `title` 仍用英文常量 `CONFIG_OWNED_HINT`，改用 `routerSettings.configOwnedHint` 并移除死导入。tsc 0 错；该文件自测通过。RouterSettingsForm 的"每个 config 托管控件都有徽标"一条仍差一个（数到 3 个，缺的徽标未定位）。
+
+## 2026-10-24 第 508 簇：JEV 探针请求的线上形态对齐
+
+`buildUpdatedComplexityRouterConfig` 按设计把 UI 的 `jev` 落成 `oss_classifier`，并把配置挂到 `opensource_classifier_config`（带 `provider: "jev"`）。JEV 集成测试的探针断言还停在 UI 形态（`classifier_type: "jev"` + `jev_classifier_config`），改为线上形态并把内层对象放宽为 `expect.objectContaining`，文件转绿。
+
+### 第 508 簇后的失败面
+
+5 个文件、7 例：key_edit_view 4（MCP 授权长度 2、移出项目按钮、清团队载荷）、key_info_view 1（团队成员预算区未渲染）、AllModelsTab 1（视图模式下拉选项取不到）、create_key_button 1（团队下拉选项取不到）、RouterSettingsForm 1（第 4 个徽标）。

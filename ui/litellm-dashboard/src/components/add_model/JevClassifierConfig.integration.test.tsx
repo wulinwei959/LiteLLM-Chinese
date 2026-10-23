@@ -128,13 +128,13 @@ describe("JEV classifier editor", () => {
       "token",
       expect.objectContaining({
         complexity_router_config: expect.objectContaining({
-          classifier_type: "jev",
-          jev_classifier_config: {
+          classifier_type: "oss_classifier",
+          opensource_classifier_config: expect.objectContaining({
             model: "jev-test",
             timeout_ms: 4200,
             circuit_breaker_enabled: false,
             circuit_breaker_cooldown_seconds: 50,
-          },
+          }),
           tiers: expect.objectContaining({ QUICK: ["fast"] }),
         }),
       }),
