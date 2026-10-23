@@ -67,14 +67,14 @@ describe("MemoryDetailDrawer", () => {
   it("attributes the created and updated timestamps to their actors", () => {
     render(<MemoryDetailDrawer row={makeMemory()} onClose={vi.fn()} />);
 
-    expect(screen.getByText(/^Created .* by alice$/)).toBeInTheDocument();
-    expect(screen.getByText(/^Updated .* by bob$/)).toBeInTheDocument();
+    expect(screen.getByText(/^创建于 .*，创建者 alice$/)).toBeInTheDocument();
+    expect(screen.getByText(/^更新于 .*，更新者 bob$/)).toBeInTheDocument();
   });
 
   it("renders an em dash for a timestamp the backend did not send", () => {
     render(<MemoryDetailDrawer row={makeMemory({ created_at: undefined, created_by: undefined })} onClose={vi.fn()} />);
 
-    expect(screen.getByText("Created —")).toBeInTheDocument();
+    expect(screen.getByText("创建于 —")).toBeInTheDocument();
   });
 
   it("closes through the close control", async () => {

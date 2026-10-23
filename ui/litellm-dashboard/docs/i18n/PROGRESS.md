@@ -4523,3 +4523,10 @@ ModelInsightsView 底部的会话成本卡片整片英文，本簇接 `modelInsi
 测试：layout.test 五处抽屉标题与三处触发按钮断言翻成"导航"/"打开导航"；DashboardHeader.test 的英文 mock 目录补两键，新增一例断言窄屏点开弹层后显示 "Gateway tools"。两文件 18 例、加 i18n 守卫合计 41 例全绿。抽屉内 "Close navigation"/"Settings" 来自测试桩件，维持英文。
 
 验证：全局 AST 可见英文 246→242 条、130→128 个文件（两文件仅剩品牌名与既有判定项）；目录叶子 11602→11606，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、2 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 444 簇：记忆详情抽屉时间归属文案接线
+
+MemoryDetailDrawer 底部"Created/Updated + 时间 + by 操作人"两行接四键：`memory.createdAt`/`createdBy`/`updatedAt`/`updatedBy`。有操作人走整句 ICU（zh "创建于 {time}，创建者 {actor}"/"更新于 {time}，更新者 {actor}"），无操作人走短句（zh "创建于 {time}"/"更新于 {time}"），保留原来的按 actor 分支结构。`formatTimestamp` 缺值时仍渲染破折号。
+
+测试：三处断言翻面（创建者 alice、更新者 bob、缺时间"创建于 —"）。按共享组件消费方约定跑整个 memory 域 4 文件 32 例全绿。
+
+验证：AST 本文件归零；全局可见英文 242→240 条、128→127 个文件；目录叶子 11606→11610，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。

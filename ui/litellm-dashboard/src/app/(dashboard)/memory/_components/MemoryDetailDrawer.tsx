@@ -70,13 +70,15 @@ export function MemoryDetailDrawer({ row, onClose }: MemoryDetailDrawerProps) {
             )}
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <span>
-                Created {formatTimestamp(row.created_at)}
-                {row.created_by ? ` by ${row.created_by}` : ""}
+                {row.created_by
+                  ? t("createdBy", { time: formatTimestamp(row.created_at), actor: row.created_by })
+                  : t("createdAt", { time: formatTimestamp(row.created_at) })}
               </span>
               <span aria-hidden="true">·</span>
               <span>
-                Updated {formatTimestamp(row.updated_at)}
-                {row.updated_by ? ` by ${row.updated_by}` : ""}
+                {row.updated_by
+                  ? t("updatedBy", { time: formatTimestamp(row.updated_at), actor: row.updated_by })
+                  : t("updatedAt", { time: formatTimestamp(row.updated_at) })}
               </span>
             </div>
           </div>

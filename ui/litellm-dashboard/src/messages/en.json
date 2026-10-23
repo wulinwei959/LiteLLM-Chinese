@@ -9570,7 +9570,11 @@
     "noneYet": "No memories stored yet",
     "noMatchDesc": "No memories match your search.",
     "noneYetDesc": "Memories your agents store under /v1/memory will appear here.",
-    "openActions": "Open memory actions"
+    "openActions": "Open memory actions",
+    "createdAt": "Created {time}",
+    "createdBy": "Created {time} by {actor}",
+    "updatedAt": "Updated {time}",
+    "updatedBy": "Updated {time} by {actor}"
   },
   "workflows": {
     "title": "Workflow Runs",

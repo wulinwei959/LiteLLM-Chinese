@@ -9566,7 +9566,11 @@
     "noneYet": "尚未存储记忆",
     "noMatchDesc": "没有符合搜索条件的记忆。",
     "noneYetDesc": "智能体存储在 /v1/memory 下的记忆会显示在这里。",
-    "openActions": "打开记忆操作菜单"
+    "openActions": "打开记忆操作菜单",
+    "createdAt": "创建于 {time}",
+    "createdBy": "创建于 {time}，创建者 {actor}",
+    "updatedAt": "更新于 {time}",
+    "updatedBy": "更新于 {time}，更新者 {actor}"
   },
   "workflows": {
     "title": "工作流运行",
