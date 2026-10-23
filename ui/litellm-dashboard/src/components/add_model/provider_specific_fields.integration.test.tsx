@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { useFormContext } from "react-hook-form";
@@ -8,6 +8,7 @@ import { GITHUB_COPILOT_AUTH_TYPE_KEY } from "./provider_auth_types";
 import type { MountedFormValues } from "../common_components/MountedFormField";
 import { MountedFormHost } from "../../../tests/mounted-form-host";
 import ProviderSpecificFields from "./provider_specific_fields";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 vi.mock("../networking", async () => {
   const actual = await vi.importActual("../networking");
@@ -47,7 +48,7 @@ describe("ProviderSpecificFields", () => {
   it("offers per-user GitHub OAuth as a credential-only model auth type without mounting its fixed value", async () => {
     const onCreateCredential = vi.fn();
     const queryClient = createQueryClient();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={queryClient}>
         <MountedFormHost>
           <ProviderSpecificFields
@@ -62,9 +63,9 @@ describe("ProviderSpecificFields", () => {
     );
 
     expect(await screen.findByRole("combobox", { name: "Auth Type:" })).toHaveTextContent("Per-user GitHub OAuth");
-    expect(screen.getByRole("button", { name: "Create credential" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "创建凭据" })).toBeInTheDocument();
     expect(screen.getByTestId("github-copilot-auth-type")).toBeEmptyDOMElement();
-    await userEvent.click(screen.getByRole("button", { name: "Create credential" }));
+    await userEvent.click(screen.getByRole("button", { name: "创建凭据" }));
     expect(onCreateCredential).toHaveBeenCalledWith("per_user_oauth");
   });
 });

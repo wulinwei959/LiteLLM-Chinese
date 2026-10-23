@@ -1,7 +1,8 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import GithubCopilotConnectModal from "./GithubCopilotConnectModal";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 const networking = vi.hoisted(() => ({
   userConnectionStartCall: vi.fn(),
@@ -21,7 +22,7 @@ const START_RESPONSE = {
 
 const renderModal = () => {
   const props = { onClose: vi.fn(), onConnected: vi.fn(), onDisconnect: vi.fn() };
-  render(<GithubCopilotConnectModal credentialName="copilot-per-user" {...props} />);
+  renderWithProviders(<GithubCopilotConnectModal credentialName="copilot-per-user" {...props} />);
   return props;
 };
 
@@ -105,7 +106,7 @@ describe("GithubCopilotConnectModal", () => {
     await advance(30);
     expect(networking.userConnectionPollCall).toHaveBeenCalledTimes(2);
 
-    fireEvent.click(screen.getByRole("button", { name: "Start again" }));
+    fireEvent.click(screen.getByRole("button", { name: "重新开始" }));
     await advance(0);
     expect(networking.userConnectionStartCall).toHaveBeenCalledTimes(2);
     expect(screen.getByTestId("github-device-code")).toBeInTheDocument();

@@ -1,7 +1,8 @@
 import { afterEach, describe, it, expect, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import OnboardingModal, { InvitationLink } from "./onboarding_link";
+import { renderWithProviders } from "../../tests/test-utils";
 
 const invitation: InvitationLink = {
   id: "inv-123",
@@ -17,7 +18,7 @@ const invitation: InvitationLink = {
 };
 
 const renderModal = (modalType: "invitation" | "resetPassword", setVisible = vi.fn()) =>
-  render(
+  renderWithProviders(
     <OnboardingModal
       isInvitationLinkModalVisible
       setIsInvitationLinkModalVisible={setVisible}
@@ -48,15 +49,15 @@ describe("OnboardingModal", () => {
   it("focuses the copy button on open so the link field shows the start of the URL", async () => {
     renderModal("resetPassword");
 
-    const copyButton = screen.getByRole("button", { name: "Copy password reset link" });
+    const copyButton = screen.getByRole("button", { name: "复制密码重置链接" });
     await waitFor(() => expect(copyButton).toHaveFocus());
   });
 
   it.each([
-    ["invitation", "Copy invitation link", "http://localhost:4000/ui/onboarding?invitation_id=inv-123"],
+    ["invitation", "复制邀请链接", "http://localhost:4000/ui/onboarding?invitation_id=inv-123"],
     [
       "resetPassword",
-      "Copy password reset link",
+      "复制密码重置链接",
       "http://localhost:4000/ui/onboarding?invitation_id=inv-123&action=reset_password",
     ],
   ] as const)("copies exactly the displayed %s link when the copy button is pressed", async (modalType, label, url) => {
@@ -88,7 +89,7 @@ describe("OnboardingModal", () => {
       document.execCommand = execCommand;
       renderModal("resetPassword");
 
-      fireEvent.click(screen.getByRole("button", { name: "Copy password reset link" }));
+      fireEvent.click(screen.getByRole("button", { name: "复制密码重置链接" }));
 
       expect(selectedTexts).toEqual([
         "http://localhost:4000/ui/onboarding?invitation_id=inv-123&action=reset_password",
@@ -102,7 +103,7 @@ describe("OnboardingModal", () => {
       const execCommand = vi.fn(() => true);
       document.execCommand = execCommand;
       renderModal("resetPassword");
-      const copyButton = screen.getByRole("button", { name: "Copy password reset link" });
+      const copyButton = screen.getByRole("button", { name: "复制密码重置链接" });
       await waitFor(() => expect(copyButton).toHaveFocus());
 
       await user.keyboard("{Enter}");

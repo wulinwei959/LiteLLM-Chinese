@@ -348,7 +348,7 @@ describe("KeyInfoView", () => {
     expect(screen.queryByText("of Unlimited")).not.toBeInTheDocument();
     expect(teamInfoCall).toHaveBeenCalledWith("test-token", "member-budget-info-team", { keyLimit: 1 });
 
-    await userEvent.click(screen.getByRole("tab", { name: "Settings" }));
+    await userEvent.click(screen.getByRole("tab", { name: "设置" }));
     expect(await screen.findByText("$50.00 (team member budget)")).toBeInTheDocument();
   });
 
@@ -802,8 +802,8 @@ describe("KeyInfoView", () => {
         expect.stringMatching(/\?access_group=repro-access-group$/),
       );
 
-      await userEvent.setup({ delay: null }).click(screen.getByRole("tab", { name: "Settings" }));
-      const settings = await screen.findByRole("tabpanel", { name: "Settings" });
+      await userEvent.setup({ delay: null }).click(screen.getByRole("tab", { name: "设置" }));
+      const settings = await screen.findByRole("tabpanel", { name: "设置" });
       expect(within(settings).getByRole("link", { name: "repro-access-group" })).toHaveAttribute(
         "href",
         expect.stringMatching(/\?access_group=repro-access-group$/),

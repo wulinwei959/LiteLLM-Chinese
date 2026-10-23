@@ -54,7 +54,7 @@ describe("KubernetesPodsCard", () => {
 
     renderWithProviders(<KubernetesPodsCard modelId="model-pods-1" />);
 
-    expect(await screen.findByText("No ready pods")).toBeInTheDocument();
+    expect(await screen.findByText("没有就绪的 Pod")).toBeInTheDocument();
     expect(screen.queryByText("0 ready pods")).not.toBeInTheDocument();
   });
 
@@ -110,7 +110,7 @@ describe("KubernetesPodsCard", () => {
         pod_count: 1,
       }),
     );
-    await user.click(screen.getByRole("button", { name: "Refresh" }));
+    await user.click(screen.getByRole("button", { name: "刷新" }));
 
     expect(await screen.findByText("10.0.0.4")).toBeInTheDocument();
     expect(network).toHaveBeenCalledTimes(2);

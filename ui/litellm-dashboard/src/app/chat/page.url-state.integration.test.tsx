@@ -1,8 +1,9 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { ChatShellProvider } from "@/contexts/ChatShellContext";
 import ChatConversationPage from "./page";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 const { mockMakeOpenAIResponsesRequest } = vi.hoisted(() => ({
   mockMakeOpenAIResponsesRequest: vi.fn(),
@@ -46,7 +47,7 @@ describe("chat page URL state with ChatShellProvider", () => {
   it("keeps the active conversation in sync with the URL across the first send and back navigation", async () => {
     mockMakeOpenAIResponsesRequest.mockResolvedValue(undefined);
 
-    render(
+    renderWithProviders(
       <NuqsAdapter>
         <ChatShellProvider
           accessToken="sk-test"
@@ -61,7 +62,7 @@ describe("chat page URL state with ChatShellProvider", () => {
     );
 
     expect(await screen.findByRole("button", { name: /gpt-5\.4-mini/ })).toBeInTheDocument();
-    fireEvent.change(screen.getByPlaceholderText("How can I help you today?"), {
+    fireEvent.change(screen.getByPlaceholderText("今天有什么可以帮你的？"), {
       target: { value: "How much did this cost?" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
@@ -77,7 +78,7 @@ describe("chat page URL state with ChatShellProvider", () => {
     act(() => window.history.back());
     await waitFor(() => expect(window.location.search).toBe(""));
 
-    expect(await screen.findByPlaceholderText("How can I help you today?")).toBeInTheDocument();
+    expect(await screen.findByPlaceholderText("今天有什么可以帮你的？")).toBeInTheDocument();
     expect(screen.queryByText("How much did this cost?")).not.toBeInTheDocument();
   });
 });

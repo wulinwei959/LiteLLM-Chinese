@@ -216,9 +216,9 @@ describe("EditAutoRouterModal keyword matching", () => {
     });
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("Heuristic before the judge", "Heuristic v2");
-    fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "1.1" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "1.1" } });
     expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled();
-    fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "0.88" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "0.88" } });
     await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled());
     await userEvent.click(screen.getByRole("button", { name: "Save Changes" }));
     await waitFor(() => expect(modelPatchUpdateCall).toHaveBeenCalledOnce());

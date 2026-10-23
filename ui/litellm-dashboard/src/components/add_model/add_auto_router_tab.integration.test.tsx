@@ -1068,7 +1068,7 @@ describe("AddAutoRouterTab", () => {
     vi.mocked(handleAddAutoRouterSubmit).mockImplementationOnce(actualSubmit.handleAddAutoRouterSubmit);
     renderWithProviders(<Harness />);
     await waitForAutomaticTiers();
-    fireEvent.change(screen.getByLabelText("Auto Router Name"), { target: { value: "chained-router" } });
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "chained-router" } });
     await userEvent.click(screen.getByRole("radio", { name: "LLM" }));
     await selectAutoRouterOption("Judge model", ALL_FAMILY_MODELS[0].model_group);
     openAutoRouterAdvanced("Classification Method");
@@ -1142,7 +1142,7 @@ describe("AddAutoRouterTab", () => {
     mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
     renderWithProviders(<Harness />);
     await waitForAutomaticTiers();
-    fireEvent.change(screen.getByLabelText("Auto Router Name"), { target: { value: "cache-aware-router" } });
+    fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "cache-aware-router" } });
     openAutoRouterAdvanced("Cache-aware routing");
     const toggle = screen.getByRole("switch", { name: "Cache-aware routing" });
     expect(toggle).not.toBeChecked();

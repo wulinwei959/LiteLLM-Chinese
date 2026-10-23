@@ -232,7 +232,7 @@ describe("ModelsAndEndpointsPage", () => {
     it("opens the Add Model tab from ?tab=add for an admin", () => {
       renderPage({ searchParams: "?tab=add" });
 
-      expect(screen.getByRole("tab", { name: "Add Model" })).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByRole("tab", { name: "添加模型" })).toHaveAttribute("aria-selected", "true");
       expect(screen.getByTestId("panel-add")).toBeInTheDocument();
       expect(screen.queryByTestId("panel-all-models")).not.toBeInTheDocument();
     });
@@ -241,7 +241,7 @@ describe("ModelsAndEndpointsPage", () => {
       mockUseAuthorized.mockReturnValue(VIEW_ONLY_ADMIN);
       renderPage({ searchParams: "?tab=add" });
 
-      expect(screen.getByRole("tab", { name: "Deployed Models" })).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByRole("tab", { name: "已部署模型" })).toHaveAttribute("aria-selected", "true");
       expect(screen.getByTestId("panel-all-models")).toBeInTheDocument();
       expect(screen.queryByTestId("panel-add")).not.toBeInTheDocument();
     });
@@ -249,7 +249,7 @@ describe("ModelsAndEndpointsPage", () => {
     it("falls back to Deployed Models on an unknown ?tab", () => {
       renderPage({ searchParams: "?tab=nope" });
 
-      expect(screen.getByRole("tab", { name: "Deployed Models" })).toHaveAttribute("aria-selected", "true");
+      expect(screen.getByRole("tab", { name: "已部署模型" })).toHaveAttribute("aria-selected", "true");
       expect(screen.getByTestId("panel-all-models")).toBeInTheDocument();
     });
 
@@ -257,7 +257,7 @@ describe("ModelsAndEndpointsPage", () => {
       const user = userEvent.setup();
       renderPage();
 
-      await user.click(screen.getByRole("tab", { name: "Health Status" }));
+      await user.click(screen.getByRole("tab", { name: "健康状态" }));
 
       expect(recordUiEvent).toHaveBeenCalledWith({
         page: "models-and-endpoints",
@@ -271,11 +271,11 @@ describe("ModelsAndEndpointsPage", () => {
       const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
       renderPage({ onUrlUpdate });
 
-      await user.click(screen.getByRole("tab", { name: "Health Status" }));
+      await user.click(screen.getByRole("tab", { name: "健康状态" }));
       await waitFor(() => expect(lastUrlParams(onUrlUpdate)?.get("tab")).toBe("health"));
       expect(screen.getByTestId("panel-health")).toBeInTheDocument();
 
-      await user.click(screen.getByRole("tab", { name: "Deployed Models" }));
+      await user.click(screen.getByRole("tab", { name: "已部署模型" }));
       await waitFor(() => expect(lastUrlParams(onUrlUpdate)?.get("tab")).toBeNull());
       expect(screen.getByTestId("panel-all-models")).toBeInTheDocument();
     });
@@ -285,7 +285,7 @@ describe("ModelsAndEndpointsPage", () => {
       const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
       renderPage({ searchParams: ADD_MODEL_PREFILL_LINK, onUrlUpdate });
 
-      await user.click(screen.getByRole("tab", { name: "Deployed Models" }));
+      await user.click(screen.getByRole("tab", { name: "已部署模型" }));
 
       await waitFor(() => expect(lastUrlParams(onUrlUpdate)?.get("tab")).toBeNull());
       expect(lastUrlParams(onUrlUpdate)?.get("provider")).toBeNull();

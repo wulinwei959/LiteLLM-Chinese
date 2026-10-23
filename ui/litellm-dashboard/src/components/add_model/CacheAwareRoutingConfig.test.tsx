@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import CacheAwareRoutingConfig from "./CacheAwareRoutingConfig";
 import type { ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 const initial: ComplexityRouterConfigValue = {
   classifier_type: "heuristic",
@@ -16,18 +17,18 @@ const Harness = ({ value = initial }: { value?: ComplexityRouterConfigValue }) =
 
 describe("CacheAwareRoutingConfig", () => {
   it("starts off and reveals optional cost settings only after opting in", () => {
-    render(<Harness />);
-    expect(screen.getByRole("switch", { name: "Cache-aware routing" })).not.toBeChecked();
-    expect(screen.queryByLabelText("Expected output tokens")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("switch", { name: "Cache-aware routing" }));
-    expect(screen.getByRole("switch", { name: "Cache-aware routing" })).toBeChecked();
-    expect(screen.getByLabelText("Expected output tokens")).toHaveValue(null);
+    renderWithProviders(<Harness />);
+    expect(screen.getByRole("switch", { name: "缓存感知路由" })).not.toBeChecked();
+    expect(screen.queryByLabelText("预计输出 token 数")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("switch", { name: "缓存感知路由" }));
+    expect(screen.getByRole("switch", { name: "缓存感知路由" })).toBeChecked();
+    expect(screen.getByLabelText("预计输出 token 数")).toHaveValue(null);
     expect(screen.getByLabelText("Prediction timeout (ms)")).toHaveValue(null);
   });
 
   it("accepts zero output, clamps invalid bounds, and lets blank fields return to defaults", () => {
-    render(<Harness value={{ ...initial, cache_aware_routing: true }} />);
-    const output = screen.getByLabelText("Expected output tokens");
+    renderWithProviders(<Harness value={{ ...initial, cache_aware_routing: true }} />);
+    const output = screen.getByLabelText("预计输出 token 数");
     const timeout = screen.getByLabelText("Prediction timeout (ms)");
     fireEvent.change(output, { target: { value: "-1" } });
     fireEvent.change(timeout, { target: { value: "0" } });
@@ -44,7 +45,7 @@ describe("CacheAwareRoutingConfig", () => {
   });
 
   it("keeps the cost settings when temporarily turning routing off", () => {
-    render(
+    renderWithProviders(
       <Harness
         value={{
           ...initial,
@@ -54,10 +55,10 @@ describe("CacheAwareRoutingConfig", () => {
         }}
       />,
     );
-    fireEvent.click(screen.getByRole("switch", { name: "Cache-aware routing" }));
-    expect(screen.queryByLabelText("Expected output tokens")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("switch", { name: "Cache-aware routing" }));
-    expect(screen.getByLabelText("Expected output tokens")).toHaveValue(0);
+    fireEvent.click(screen.getByRole("switch", { name: "缓存感知路由" }));
+    expect(screen.queryByLabelText("预计输出 token 数")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("switch", { name: "缓存感知路由" }));
+    expect(screen.getByLabelText("预计输出 token 数")).toHaveValue(0);
     expect(screen.getByLabelText("Prediction timeout (ms)")).toHaveValue(500);
   });
 
@@ -74,15 +75,15 @@ describe("CacheAwareRoutingConfig", () => {
   ])(
     "explains an incompatible setting and still allows an existing opt-in to be disabled: $reason",
     ({ patch, reason }) => {
-      const view = render(<Harness value={{ ...initial, ...patch }} />);
-      expect(screen.getByRole("switch", { name: "Cache-aware routing" })).toHaveAttribute("aria-disabled", "true");
-      fireEvent.click(screen.getByRole("switch", { name: "Cache-aware routing" }));
-      expect(screen.getByRole("switch", { name: "Cache-aware routing" })).not.toBeChecked();
+      const view = renderWithProviders(<Harness value={{ ...initial, ...patch }} />);
+      expect(screen.getByRole("switch", { name: "缓存感知路由" })).toHaveAttribute("aria-disabled", "true");
+      fireEvent.click(screen.getByRole("switch", { name: "缓存感知路由" }));
+      expect(screen.getByRole("switch", { name: "缓存感知路由" })).not.toBeChecked();
       expect(screen.getByRole("status")).toHaveTextContent(reason);
       view.unmount();
-      render(<Harness value={{ ...initial, ...patch, cache_aware_routing: true }} />);
-      fireEvent.click(screen.getByRole("switch", { name: "Cache-aware routing" }));
-      expect(screen.getByRole("switch", { name: "Cache-aware routing" })).not.toBeChecked();
+      renderWithProviders(<Harness value={{ ...initial, ...patch, cache_aware_routing: true }} />);
+      fireEvent.click(screen.getByRole("switch", { name: "缓存感知路由" }));
+      expect(screen.getByRole("switch", { name: "缓存感知路由" })).not.toBeChecked();
     },
   );
 });

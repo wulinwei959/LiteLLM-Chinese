@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import LlmCredentialsPanel from "./LlmCredentialsPanel";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 
 const networking = vi.hoisted(() => ({
   credentialListCall: vi.fn(),
@@ -22,7 +23,7 @@ vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({ default: () => mockUse
 const session = (userRole: string) => ({ accessToken: "at", userRole, userId: "u1", isViewOnly: false });
 
 const renderPanel = () =>
-  render(
+  renderWithProviders(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } })}>
       <LlmCredentialsPanel />
     </QueryClientProvider>,

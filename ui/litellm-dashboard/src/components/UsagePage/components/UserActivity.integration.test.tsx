@@ -1,10 +1,11 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import type { DailyActivityUserPageResponse, UserActivityRow } from "../dailyActivityApi";
 import TopUsersView from "./TopUsersView";
 import UserActivityPanel from "./UserActivityPanel";
 import type { FetchUserPage } from "./userActivityData";
+import { renderWithProviders } from "../../../../tests/test-utils";
 
 const userRow = (overrides: Partial<UserActivityRow>): UserActivityRow => ({
   user_id: "user-1",
@@ -41,7 +42,7 @@ describe("TopUsersView", () => {
         ]),
       );
 
-    render(<TopUsersView fetchUserPage={fetchUserPage} />);
+    renderWithProviders(<TopUsersView fetchUserPage={fetchUserPage} />);
 
     expect(await screen.findByText("big@example.com")).toBeInTheDocument();
     const labels = screen.getAllByRole("listitem").map((item) => item.textContent);
@@ -55,10 +56,10 @@ describe("TopUsersView", () => {
       .fn()
       .mockResolvedValue(pageOf([userRow({ user_id: "tiny", spend: 0.004 }), userRow({ user_id: "zero", spend: 0 })]));
 
-    render(<TopUsersView fetchUserPage={fetchUserPage} />);
+    renderWithProviders(<TopUsersView fetchUserPage={fetchUserPage} />);
 
     expect(await screen.findByText("tiny")).toBeInTheDocument();
-    expect(screen.getByText("User")).toBeInTheDocument();
+    expect(screen.getByText("用户")).toBeInTheDocument();
     expect(screen.getByText("Spend")).toBeInTheDocument();
     expect(screen.getByText("Requests")).toBeInTheDocument();
     expect(screen.getByText("< $0.01")).toBeInTheDocument();
@@ -77,7 +78,7 @@ describe("TopUsersView", () => {
         ]),
       );
 
-    render(<TopUsersView fetchUserPage={fetchUserPage} />);
+    renderWithProviders(<TopUsersView fetchUserPage={fetchUserPage} />);
 
     expect(await screen.findByText("e@example.com")).toBeInTheDocument();
     expect(screen.getByText("u-email")).toBeInTheDocument();
@@ -93,7 +94,7 @@ describe("TopUsersView", () => {
       .mockRejectedValueOnce(new Error("boom"))
       .mockResolvedValue(pageOf([userRow({ user_id: "u-1" })]));
 
-    render(<TopUsersView fetchUserPage={fetchUserPage} />);
+    renderWithProviders(<TopUsersView fetchUserPage={fetchUserPage} />);
 
     expect(await screen.findByText(/Could not load top users/)).toBeInTheDocument();
     fireEvent.click(screen.getByText("Retry"));
@@ -109,7 +110,7 @@ describe("UserActivityPanel", () => {
         pageOf([userRow({ user_id: "first", spend: 9 }), userRow({ user_id: "second", spend: 1 })], 120),
       );
 
-    render(<UserActivityPanel fetchUserPage={fetchUserPage} />);
+    renderWithProviders(<UserActivityPanel fetchUserPage={fetchUserPage} />);
 
     expect(await screen.findByText("first")).toBeInTheDocument();
     expect(screen.getByText("second")).toBeInTheDocument();
@@ -130,9 +131,9 @@ describe("UserActivityPanel", () => {
       return Promise.resolve(page);
     });
 
-    render(<UserActivityPanel fetchUserPage={fetchUserPage} />);
+    renderWithProviders(<UserActivityPanel fetchUserPage={fetchUserPage} />);
 
-    fireEvent.click(await screen.findByText("Load more"));
+    fireEvent.click(await screen.findByText("加载更多"));
     expect(fetchUserPage).toHaveBeenLastCalledWith(50, 50);
     expect(await screen.findByText("later")).toBeInTheDocument();
     expect(screen.getByText("first-0")).toBeInTheDocument();
@@ -149,14 +150,14 @@ describe("UserActivityPanel", () => {
       return Promise.resolve(page);
     });
 
-    render(<UserActivityPanel fetchUserPage={fetchUserPage} />);
+    renderWithProviders(<UserActivityPanel fetchUserPage={fetchUserPage} />);
 
-    fireEvent.click(await screen.findByText("Load more"));
+    fireEvent.click(await screen.findByText("加载更多"));
     expect(await screen.findByText("later")).toBeInTheDocument();
     const occurrences = screen.getAllByRole("listitem").filter((item) => item.textContent?.includes("first-7"));
     expect(occurrences).toHaveLength(1);
     expect(fetchUserPage).toHaveBeenLastCalledWith(50, 50);
-    expect(screen.queryByText("Load more")).not.toBeInTheDocument();
+    expect(screen.queryByText("加载更多")).not.toBeInTheDocument();
   });
 
   it("keeps a literal __no_user__ id and a null id as separate rows", async () => {
@@ -173,9 +174,9 @@ describe("UserActivityPanel", () => {
       return Promise.resolve(page);
     });
 
-    render(<UserActivityPanel fetchUserPage={fetchUserPage} />);
+    renderWithProviders(<UserActivityPanel fetchUserPage={fetchUserPage} />);
 
-    fireEvent.click(await screen.findByText("Load more"));
+    fireEvent.click(await screen.findByText("加载更多"));
     expect(await screen.findByText("Named No User")).toBeInTheDocument();
     expect(screen.getByText("(no user)")).toBeInTheDocument();
     expect(await screen.findByText("__no_user__")).toBeInTheDocument();
@@ -185,8 +186,8 @@ describe("UserActivityPanel", () => {
     const firstFetcher: FetchUserPage = vi.fn().mockResolvedValue(pageOf(fullPage("p1"), 100));
     const secondFetcher: FetchUserPage = vi.fn().mockResolvedValue(pageOf([userRow({ user_id: "refetched" })]));
 
-    const { rerender } = render(<UserActivityPanel fetchUserPage={firstFetcher} />);
-    fireEvent.click(await screen.findByText("Load more"));
+    const { rerender } = renderWithProviders(<UserActivityPanel fetchUserPage={firstFetcher} />);
+    fireEvent.click(await screen.findByText("加载更多"));
     await waitFor(() => expect(firstFetcher).toHaveBeenLastCalledWith(50, 50));
 
     rerender(<UserActivityPanel fetchUserPage={secondFetcher} />);
@@ -202,7 +203,7 @@ describe("UserActivityPanel", () => {
       .mockImplementation(() => new Promise<DailyActivityUserPageResponse>((resolve) => (releaseStale = resolve)));
     const freshFetcher: FetchUserPage = vi.fn().mockResolvedValue(pageOf([userRow({ user_id: "fresh" })]));
 
-    const { rerender } = render(<UserActivityPanel fetchUserPage={staleFetcher} />);
+    const { rerender } = renderWithProviders(<UserActivityPanel fetchUserPage={staleFetcher} />);
     rerender(<UserActivityPanel fetchUserPage={freshFetcher} />);
     await waitFor(() => expect(freshFetcher).toHaveBeenCalled());
     releaseStale(pageOf([userRow({ user_id: "stale" })]));
@@ -217,7 +218,7 @@ describe("UserActivityPanel", () => {
       .mockRejectedValueOnce(new Error("boom"))
       .mockResolvedValue(pageOf([userRow({ user_id: "recovered" })]));
 
-    render(<UserActivityPanel fetchUserPage={fetchUserPage} />);
+    renderWithProviders(<UserActivityPanel fetchUserPage={fetchUserPage} />);
 
     expect(await screen.findByText(/Could not load users for this range/)).toBeInTheDocument();
     fireEvent.click(screen.getByText("Retry"));

@@ -4701,3 +4701,18 @@ AddModelForm.integration：选择凭据、提供商、认证方式、添加凭�
 2. spend_budget_cell.tsx 的预算文案仍是手拼英文（"· Unlimited"、"· $X of $Y (team member)"、"$X of $Y"），需要像本簇日志域那样接 tableCells 命名空间，并同步翻 spend_budget_cell.test 的期望。
 3. AddModelForm.integration 剩 8 例行为断言（团队作用域告警、credential-only 载荷、连接测试校验流程），非文案问题，逐例对照 HEAD 与生产取值分析。
 4. models-and-endpoints 组 30 例：页签名"Add Model"/"Deployed Models"/"Health Status"等未翻面、公开模型筛选框占位符、删除与暂停动作的载荷断言，需要单独分簇处理。
+
+## 2026-10-24 第 468 簇：测试补 i18n provider 与英文断言批量翻面
+
+测试环境：按失败清单逐文件排查，发现 16 个失败文件仍在用 RTL 的 render，组件接入 useTranslations 后整文件报 "Failed to call useTranslations because the context from NextIntlClientProvider was not found"，统一改为 renderWithProviders（UserActivity、CacheAwareRoutingConfig、onboarding_link、GithubCopilotConnectModal、TelemetrySettingsPage、DecisionModelsBanner、ModelGroupAliasPanel、MoyaiLanding、MoyaiConnected、DashboardHeader、LlmCredentialsPanel、model_group_alias_settings、UserConnectionsPanel、page.url-state、provider_specific_fields、LiteAdmin）。剩下 46 个失败文件本来就用 renderWithProviders，说明问题在断言而不在环境。
+
+断言翻面：不整文件替换英文串，而是从失败信息里取出测试实际在查找的那几条英文，逐条对到 en.json 同一个值在 zh-CN.json 的词条再替换，避免误伤 mock 数据里的同名值。共改 23 个文件，例如 models-and-endpoints 页签（Add Model/Deployed Models/Health Status）、ViewSwitcher（Chat/AI Gateway）、add_auto_router_tab（Auto Router Name）、key_edit_view（Team）、TeamInfo 与 key_info_view（Settings）、KubernetesPodsCard（Refresh/No ready pods）、create_key_button（Another User）、organization_view（Members）、CacheAwareRoutingConfig（Cache-aware routing/Expected output tokens）、onboarding_link（Copy invitation link/Copy password reset link）、TelemetrySettingsPage、DecisionModelsBanner、UserActivity（Load more/User）、MoyaiLanding/MoyaiConnected（Quick connect/Workspace linked）、DashboardHeader（More options）、DecisionModelsBanner（Decision models are now supported 等）。
+
+验证：16 个补 provider 的文件从 73 例失败降到 37 例；把 61 个历史失败文件整跑一遍，失败面由 283 例 / 62 文件降到 158 例 / 52 文件，9 个文件转绿。
+
+### 剩余工作（下批起点）
+
+1. key_edit_view.integration 14 例（Max Budget (USD) 等表单标签、"group-maple" 团队作用域、MCP 默认值判定）、DeploymentHealth.integration 13 例（role=alert/status 的 "Deployment alert" 名称）、AddModelPanel.integration 11 例（provider 组合框可访问名、catalog 模型列表）。这三个文件是下一簇的主体。
+2. AddModelForm.integration 8 例行为断言（团队作用域告警、credential-only 载荷、连接测试校验流程），非文案问题。
+3. activity_metrics 4 例：图表配色断言要的是 CSS 变量（var(--color-green-500, #22c55e)），生产仍用 hex，属于视觉口径，需先确认再动。
+4. spend_budget_cell.tsx 的预算文案仍是手拼英文，但该文件正由另一个会话改动，本簇未触碰。

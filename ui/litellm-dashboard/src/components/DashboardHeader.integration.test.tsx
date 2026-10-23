@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PluginModeProvider } from "@/contexts/PluginModeContext";
 import { CommandPaletteProvider } from "@/components/CommandPalette/CommandPaletteProvider";
 import { DashboardHeader } from "./DashboardHeader";
+import { renderWithProviders } from "../../tests/test-utils";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/ui/logs" }));
 
@@ -55,7 +56,7 @@ afterEach(() => {
 async function openTools() {
   const user = userEvent.setup();
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  render(
+  renderWithProviders(
     <QueryClientProvider client={client}>
       <PluginModeProvider accessToken="test-session">
         <CommandPaletteProvider>
@@ -64,7 +65,7 @@ async function openTools() {
       </PluginModeProvider>
     </QueryClientProvider>,
   );
-  await user.click(screen.getByRole("button", { name: "More options" }));
+  await user.click(screen.getByRole("button", { name: "更多选项" }));
   const tools = await screen.findByRole("dialog", { name: "Gateway tools" });
   return { user, tools };
 }

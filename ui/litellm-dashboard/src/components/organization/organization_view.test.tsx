@@ -174,7 +174,7 @@ test("keeps the members pager on its page when an admin opens a member's edit di
     />,
   );
 
-  await user.click(screen.getByRole("tab", { name: "Members" }));
+  await user.click(screen.getByRole("tab", { name: "成员" }));
   await user.click(screen.getByTestId("pagination-next"));
   expect(screen.getByText("Showing 26-30 of 30")).toBeInTheDocument();
 

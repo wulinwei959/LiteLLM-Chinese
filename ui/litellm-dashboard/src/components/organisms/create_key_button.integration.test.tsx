@@ -204,8 +204,7 @@ const openModal = async (props: Partial<React.ComponentProps<typeof CreateKey>> 
   return view;
 };
 
-const userSearchInput = (): Promise<HTMLElement> =>
-  screen.findByPlaceholderText("输入邮箱或用户 ID 以搜索用户");
+const userSearchInput = (): Promise<HTMLElement> => screen.findByPlaceholderText("输入邮箱或用户 ID 以搜索用户");
 
 const openSection = async (name: RegExp) => {
   await userEvent.click(await screen.findByRole("button", { name }));
@@ -678,14 +677,14 @@ describe("CreateKey", () => {
         state.uiSettings = { team_admin_editable_team_fields: ["max_budget"] };
         await openModal({ teams: state.teams as unknown as Team[] });
 
-        expect(screen.queryByRole("radio", { name: "Another User" })).not.toBeInTheDocument();
+        expect(screen.queryByRole("radio", { name: "其他用户" })).not.toBeInTheDocument();
       });
 
       it("creates a key for a member of an administered team without the proxy-wide user search", async () => {
         state.uiSettings = { team_admin_editable_team_fields: ["create_member_keys"] };
         await openModal({ teams: state.teams as unknown as Team[] });
         await nameTheKey();
-        await userEvent.click(screen.getByRole("radio", { name: "Another User" }));
+        await userEvent.click(screen.getByRole("radio", { name: "其他用户" }));
 
         await userEvent.click(await screen.findByLabelText(/^Team/));
         expect(await screen.findByRole("option", { name: /Administered Team/ })).toBeInTheDocument();
@@ -1265,9 +1264,7 @@ describe("CreateKey", () => {
       await openModal();
       await userEvent.click(await screen.findByLabelText("密钥类型"));
 
-      expect(
-        await screen.findByText("只能调用 AI API 路由（chat/completions、embeddings 等）"),
-      ).toBeInTheDocument();
+      expect(await screen.findByText("只能调用 AI API 路由（chat/completions、embeddings 等）")).toBeInTheDocument();
       expect(screen.queryByText("LLM API")).not.toBeInTheDocument();
     });
 
@@ -1332,9 +1329,7 @@ describe("CreateKey", () => {
       await nameTheKey();
       await submit();
 
-      expect(
-        await screen.findByText("请输入此密钥分配给的用户的用户 ID"),
-      ).toBeInTheDocument();
+      expect(await screen.findByText("请输入此密钥分配给的用户的用户 ID")).toBeInTheDocument();
       expect(vi.mocked(keyCreateCall)).not.toHaveBeenCalled();
     });
   });

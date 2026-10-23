@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import DecisionModelsBanner from "./DecisionModelsBanner";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 const STORAGE_KEY = "hideDecisionModelsBanner";
 
@@ -11,22 +12,22 @@ describe("DecisionModelsBanner", () => {
   });
 
   it("links directly to the Decisions playground", () => {
-    render(<DecisionModelsBanner />);
+    renderWithProviders(<DecisionModelsBanner />);
     const link = screen.getByRole("link", { name: "Try decision models" });
     expect(link).toHaveAttribute("href", "/ui/playground?tab=system-one");
   });
 
   it("links to the docs on how to call decision models", () => {
-    render(<DecisionModelsBanner />);
-    expect(screen.getByRole("link", { name: "How to call them" })).toHaveAttribute(
+    renderWithProviders(<DecisionModelsBanner />);
+    expect(screen.getByRole("link", { name: "如何调用" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/decisions",
     );
   });
 
   it("links Supported providers to the provider table in the docs", () => {
-    render(<DecisionModelsBanner />);
-    expect(screen.getByRole("link", { name: "Supported providers" })).toHaveAttribute(
+    renderWithProviders(<DecisionModelsBanner />);
+    expect(screen.getByRole("link", { name: "支持的提供商" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/decisions#supported-providers",
     );
@@ -36,23 +37,23 @@ describe("DecisionModelsBanner", () => {
 
   it("shows the announcement even if the old feedback banner was dismissed", () => {
     localStorage.setItem("hideCostOptimizationFeedbackBanner", "true");
-    render(<DecisionModelsBanner />);
-    expect(screen.getByText("Decision models are now supported")).toBeInTheDocument();
+    renderWithProviders(<DecisionModelsBanner />);
+    expect(screen.getByText("现在支持决策模型了")).toBeInTheDocument();
   });
 
   it("hides itself and persists the dismissal when the dismiss button is clicked", () => {
-    render(<DecisionModelsBanner />);
-    expect(screen.getByText("Decision models are now supported")).toBeInTheDocument();
+    renderWithProviders(<DecisionModelsBanner />);
+    expect(screen.getByText("现在支持决策模型了")).toBeInTheDocument();
 
     fireEvent.click(screen.getByLabelText("Dismiss banner"));
 
-    expect(screen.queryByText("Decision models are now supported")).not.toBeInTheDocument();
+    expect(screen.queryByText("现在支持决策模型了")).not.toBeInTheDocument();
     expect(localStorage.getItem(STORAGE_KEY)).toBe("true");
   });
 
   it("stays dismissed on remount once persisted", () => {
     localStorage.setItem(STORAGE_KEY, "true");
-    render(<DecisionModelsBanner />);
-    expect(screen.queryByText("Decision models are now supported")).not.toBeInTheDocument();
+    renderWithProviders(<DecisionModelsBanner />);
+    expect(screen.queryByText("现在支持决策模型了")).not.toBeInTheDocument();
   });
 });

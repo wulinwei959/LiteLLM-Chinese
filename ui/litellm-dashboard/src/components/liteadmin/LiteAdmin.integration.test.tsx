@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
@@ -13,6 +13,7 @@ import UserDropdown from "@/components/Navbar/UserDropdown/UserDropdown";
 import LiteAdmin, { LiteAdminFrame, LiteAdminHome } from "./LiteAdmin";
 import { MAX_INPUT_LENGTH } from "./agent";
 import type { ModelGroup } from "@/components/llm_calls/fetch_models";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 const { transport } = vi.hoisted(() => {
   const transport = vi.fn<typeof fetch>();
@@ -121,7 +122,7 @@ function renderWidget(Menu?: ComponentType<{ onLogout: () => void }>, showHome =
       </LocaleProvider>
     </QueryClientProvider>
   );
-  const view = render(tree());
+  const view = renderWithProviders(tree());
   return { ...view, refresh: (home = showHome) => view.rerender(tree(home)), client };
 }
 

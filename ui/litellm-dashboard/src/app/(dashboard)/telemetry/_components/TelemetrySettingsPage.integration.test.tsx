@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, it, vi, type Mock } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { backgroundFetchClient, fetchClient } from "@/lib/http/api";
 import type { TelemetrySettings } from "@/app/(dashboard)/hooks/telemetry/useTelemetrySettings";
 import TelemetrySettingsPage from "./TelemetrySettingsPage";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 
 vi.mock("@/lib/telemetry/uiEvents", async (original) => ({
   ...(await original<typeof import("@/lib/telemetry/uiEvents")>()),
@@ -41,7 +42,7 @@ const OFF = {
 } as TelemetrySettings;
 
 const renderPage = () =>
-  render(
+  renderWithProviders(
     <QueryClientProvider client={new QueryClient()}>
       <NuqsTestingAdapter hasMemory>
         <TelemetrySettingsPage />
@@ -67,9 +68,7 @@ describe("TelemetrySettingsPage", () => {
     const user = userEvent.setup();
     renderPage();
 
-    expect(
-      await screen.findByText("Telemetry is on but no destination is chosen, so nothing is recorded"),
-    ).toBeVisible();
+    expect(await screen.findByText("遥测已开启但没有选择目的地，因此不会记录任何内容")).toBeVisible();
     expect(screen.getByRole("radio", { name: /^HTTP/ })).toHaveAttribute("aria-disabled", "true");
     await user.click(screen.getByRole("radio", { name: /^Local table/ }));
 
@@ -139,7 +138,7 @@ describe("TelemetrySettingsPage", () => {
     spyGET().mockResolvedValue({ data: SETTINGS, response: new Response() } as never);
     const put = vi.spyOn(fetchClient, "PUT").mockReturnValue(new Promise(() => undefined) as never);
     const user = userEvent.setup();
-    render(
+    renderWithProviders(
       <QueryClientProvider client={new QueryClient()}>
         <NuqsTestingAdapter hasMemory>
           <TelemetrySettingsPage />

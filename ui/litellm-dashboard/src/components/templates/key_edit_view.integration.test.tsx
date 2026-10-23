@@ -2780,7 +2780,7 @@ describe("KeyEditView", () => {
         />,
       );
 
-      const teamCombobox = screen.getByRole("combobox", { name: "Team" });
+      const teamCombobox = screen.getByRole("combobox", { name: "团队" });
       expect(teamCombobox).toHaveValue("Alpha");
       await userEvent.click(teamCombobox);
 
@@ -2804,7 +2804,7 @@ describe("KeyEditView", () => {
         />,
       );
 
-      await userEvent.click(screen.getByRole("combobox", { name: "Team" }));
+      await userEvent.click(screen.getByRole("combobox", { name: "团队" }));
 
       expect(await screen.findByRole("option")).toHaveTextContent(/^-team-3$/);
     });
@@ -2824,7 +2824,7 @@ describe("KeyEditView", () => {
         />,
       );
 
-      const teamCombobox = screen.getByRole("combobox", { name: "Team" });
+      const teamCombobox = screen.getByRole("combobox", { name: "团队" });
       expect(teamCombobox).toHaveValue("Alpha");
       const [, teamClearButton] = screen.getAllByRole("button", { name: "Clear" });
       await userEvent.click(teamClearButton);
@@ -2852,7 +2852,7 @@ describe("KeyEditView", () => {
         />,
       );
 
-      expect(screen.getByRole("combobox", { name: "Team" })).toHaveValue("Gamma");
+      expect(screen.getByRole("combobox", { name: "团队" })).toHaveValue("Gamma");
     });
 
     it("carries a picked MCP server into the payload", async () => {

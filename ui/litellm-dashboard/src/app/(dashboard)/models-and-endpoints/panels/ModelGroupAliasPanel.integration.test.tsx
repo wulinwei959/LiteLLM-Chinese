@@ -1,8 +1,9 @@
 /* @vitest-environment jsdom */
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getCallbacksCall, getRouterSettingsCall } from "@/components/networking";
 import ModelGroupAliasPanel from "./ModelGroupAliasPanel";
+import { renderWithProviders } from "../../../../../tests/test-utils";
 
 vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
   default: () => ({ accessToken: "test-token", userId: "user-1", userRole: "Admin" }),
@@ -33,7 +34,7 @@ describe("ModelGroupAliasPanel", () => {
   it("locks delete controls when aliases are config-owned", async () => {
     vi.mocked(getRouterSettingsCall).mockResolvedValue({ source: { model_group_alias: "config" } });
 
-    render(<ModelGroupAliasPanel />);
+    renderWithProviders(<ModelGroupAliasPanel />);
 
     expect(
       await screen.findByText(
@@ -52,7 +53,7 @@ describe("ModelGroupAliasPanel", () => {
     });
     vi.mocked(getRouterSettingsCall).mockReturnValue(pendingOwnership);
 
-    render(<ModelGroupAliasPanel />);
+    renderWithProviders(<ModelGroupAliasPanel />);
 
     expect(await screen.findByText("fast-model")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Delete alias fast-model" })).toBeDisabled();
@@ -62,7 +63,7 @@ describe("ModelGroupAliasPanel", () => {
   });
 
   it("leaves delete controls enabled when aliases are database-managed", async () => {
-    render(<ModelGroupAliasPanel />);
+    renderWithProviders(<ModelGroupAliasPanel />);
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Delete alias fast-model" })).toBeEnabled());
     expect(screen.getByRole("button", { name: "Delete alias smart-model" })).toBeEnabled();
@@ -72,7 +73,7 @@ describe("ModelGroupAliasPanel", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     vi.mocked(getRouterSettingsCall).mockRejectedValue(new Error("router settings unavailable"));
 
-    render(<ModelGroupAliasPanel />);
+    renderWithProviders(<ModelGroupAliasPanel />);
 
     expect(await screen.findByText("fast-model")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole("button", { name: "Delete alias fast-model" })).toBeEnabled());
@@ -83,7 +84,7 @@ describe("ModelGroupAliasPanel", () => {
     vi.mocked(getCallbacksCall).mockRejectedValue(new Error("callbacks unavailable"));
     vi.mocked(getRouterSettingsCall).mockResolvedValue({ source: { model_group_alias: "config" } });
 
-    render(<ModelGroupAliasPanel />);
+    renderWithProviders(<ModelGroupAliasPanel />);
 
     expect(
       await screen.findByText(

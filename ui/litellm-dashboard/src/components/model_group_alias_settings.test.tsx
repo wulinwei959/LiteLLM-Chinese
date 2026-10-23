@@ -1,9 +1,10 @@
 /* @vitest-environment jsdom */
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setCallbacksCall } from "@/components/networking";
 import ModelGroupAliasSettings from "./model_group_alias_settings";
+import { renderWithProviders } from "../../tests/test-utils";
 
 vi.mock("@/components/networking", () => ({
   setCallbacksCall: vi.fn(),
@@ -25,7 +26,9 @@ describe("ModelGroupAliasSettings", () => {
   });
 
   it("locks config-owned aliases while keeping their names and targets visible", async () => {
-    render(<ModelGroupAliasSettings accessToken="test-token" initialModelGroupAlias={aliases} managedByConfig />);
+    renderWithProviders(
+      <ModelGroupAliasSettings accessToken="test-token" initialModelGroupAlias={aliases} managedByConfig />,
+    );
 
     expect(
       screen.getByText(
@@ -51,7 +54,7 @@ describe("ModelGroupAliasSettings", () => {
 
   it("keeps aliases editable by default and saves the current string representation after delete", async () => {
     const user = userEvent.setup();
-    render(<ModelGroupAliasSettings accessToken="test-token" initialModelGroupAlias={aliases} />);
+    renderWithProviders(<ModelGroupAliasSettings accessToken="test-token" initialModelGroupAlias={aliases} />);
 
     expect(await screen.findByText("fast-model")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Edit alias fast-model" })).toBeEnabled();

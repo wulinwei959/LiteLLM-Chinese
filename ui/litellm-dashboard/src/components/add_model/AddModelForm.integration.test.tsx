@@ -543,9 +543,7 @@ describe("AddModelForm", () => {
       const props = await renderAsRole("proxy_admin", Providers.Anthropic);
 
       await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
-      expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent(
-        "工作负载身份联合",
-      );
+      expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent("工作负载身份联合");
       fill("凭据名称：", "anthropic-federated");
       fill(/Federation Rule ID/, "fdrl_new");
       fill(/Organization ID/, "org-new");
@@ -585,9 +583,7 @@ describe("AddModelForm", () => {
       const props = await renderAsRole("proxy_admin", Providers.OpenAI);
 
       await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
-      expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent(
-        "工作负载身份联合",
-      );
+      expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent("工作负载身份联合");
       fill("凭据名称：", "openai-federated");
       fill(/Service Account ID/, "svc_new");
       await user.click(screen.getByRole("button", { name: "添加凭据" }));
@@ -916,7 +912,7 @@ describe("AddModelForm", () => {
       await pickModel(user, "自定义模型名称（在下方输入）");
 
       await clickTestConnect();
-      await expectBlockedWith("Please enter a custom model name.");
+      await expectBlockedWith("请输入自定义模型名称。");
 
       fireEvent.change(screen.getByPlaceholderText("Enter custom model name"), { target: { value: "my-fine-tune" } });
       await clickTestConnect();

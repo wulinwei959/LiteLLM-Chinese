@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import MoyaiLanding, { MOYAI_GITHUB_URL, MOYAI_LAUNCH_POST_URL, MOYAI_WALKTHROUGH_URL } from "./MoyaiLanding";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 vi.mock("./moyaiSky", async (importOriginal) => {
   const actual = await importOriginal<typeof import("./moyaiSky")>();
@@ -15,9 +16,9 @@ vi.mock("./moyaiSky", async (importOriginal) => {
 describe("MoyaiLanding", () => {
   it("shows the admin quick-connect line and validates the dialog input", async () => {
     const onQuickConnect = vi.fn(async () => {});
-    render(<MoyaiLanding canQuickConnect onQuickConnect={onQuickConnect} />);
+    renderWithProviders(<MoyaiLanding canQuickConnect onQuickConnect={onQuickConnect} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Quick connect" }));
+    fireEvent.click(screen.getByRole("button", { name: "快速连接" }));
 
     const input = await screen.findByLabelText("Moyai URL");
     fireEvent.change(input, { target: { value: "javascript:alert(1)" } });
@@ -31,14 +32,14 @@ describe("MoyaiLanding", () => {
   });
 
   it("shows the non-admin copy when quick connect is unavailable", () => {
-    render(<MoyaiLanding />);
+    renderWithProviders(<MoyaiLanding />);
 
     expect(screen.getByText(/Ask a proxy admin to connect it/)).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Quick connect" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "快速连接" })).not.toBeInTheDocument();
   });
 
   it("links the GitHub, demo, and launch post CTAs to the exported URLs", () => {
-    render(<MoyaiLanding />);
+    renderWithProviders(<MoyaiLanding />);
 
     expect(screen.getByRole("link", { name: /Star Moyai on GitHub/ })).toHaveAttribute("href", MOYAI_GITHUB_URL);
     expect(screen.getByRole("link", { name: /Watch the demo/ })).toHaveAttribute("href", MOYAI_WALKTHROUGH_URL);
@@ -46,7 +47,7 @@ describe("MoyaiLanding", () => {
   });
 
   it("shows the GitHub fallback when the demo image fails to load", () => {
-    render(<MoyaiLanding />);
+    renderWithProviders(<MoyaiLanding />);
 
     const demoImg = screen.getByAltText(/Moyai demo:/);
     fireEvent.error(demoImg);

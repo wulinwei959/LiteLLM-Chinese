@@ -181,9 +181,9 @@ describe("ViewSwitcher", () => {
     act(() => {
       fireEvent.click(screen.getByRole("button"));
     });
-    expect(await screen.findByText("AI Gateway")).toBeInTheDocument();
+    expect(await screen.findByText("AI 网关")).toBeInTheDocument();
     act(() => {
-      fireEvent.click(screen.getByText("AI Gateway"));
+      fireEvent.click(screen.getByText("AI 网关"));
     });
     expect(state.setMode).toHaveBeenCalledWith("ai-gateway");
     expect(assignSpy).toHaveBeenCalledWith("/ui/");
@@ -197,7 +197,7 @@ describe("ViewSwitcher", () => {
       fireEvent.click(screen.getByRole("button"));
     });
     expect(await screen.findByText("Moyai")).toBeInTheDocument();
-    expect(screen.getByText("Moyai").compareDocumentPosition(screen.getByText("Chat"))).toBe(
+    expect(screen.getByText("Moyai").compareDocumentPosition(screen.getByText("聊天"))).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     );
   });

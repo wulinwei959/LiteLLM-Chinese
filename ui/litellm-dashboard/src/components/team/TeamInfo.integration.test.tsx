@@ -513,9 +513,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await submitNewDefault(user, input, "20");
     await user.click(await screen.findByRole("button", { name: "重置为 $20.00" }));
 
-    await waitFor(() =>
-      expect(toast.fromError).toHaveBeenCalledWith("团队已更新，但成员预算无法重置"),
-    );
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("团队已更新，但成员预算无法重置"));
     expect(screen.getByText("重置成员预算？")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "重置为 $20.00" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "重试重置" })).toBeEnabled();
@@ -601,9 +599,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await submitNewDefault(user, input, "20");
     await user.click(await screen.findByRole("button", { name: "全部重置为 $20.00" }));
 
-    await waitFor(() =>
-      expect(toast.error).toHaveBeenCalledWith("团队已更新，但 1 个成员预算无法重置"),
-    );
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith("团队已更新，但 1 个成员预算无法重置"));
   });
 
   it("aborts the save entirely on cancel", async () => {
@@ -741,7 +737,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     renderWithProviders(<TeamInfoView {...props} premiumUser />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
     await user.click(screen.getByText("Team Member Settings"));
     await screen.findByPlaceholderText("Max spend ($)");
@@ -769,7 +765,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     renderWithProviders(<TeamInfoView {...props} premiumUser />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
     await user.click(screen.getByText("Team Member Settings"));
     fireEvent.change(await screen.findByPlaceholderText("Max spend ($)"), { target: { value: "7" } });
@@ -792,7 +788,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     renderWithProviders(<TeamInfoView {...props} userModels={["gpt-4o", "claude-haiku-4-5"]} premiumUser />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
     await user.click(screen.getByText("Team Member Settings"));
     await user.click(screen.getAllByRole("button", { name: /add model budget/i })[0]);
@@ -807,7 +803,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
 
     renderWithProviders(<TeamInfoView {...props} userModels={["gpt-4o", "claude-haiku-4-5"]} premiumUser />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
     await user.click(screen.getByText("Team Member Settings"));
     await user.click(screen.getAllByRole("button", { name: /add model budget/i })[0]);
@@ -848,7 +844,7 @@ describe("TeamInfoView - model rate limit picker", () => {
 
     renderWithProviders(<TeamInfoView {...props} userModels={["gpt-4o", "claude-haiku-4-5"]} premiumUser />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
-    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
     await user.click(screen.getByRole("button", { name: /add model limit/i }));
     await user.click(screen.getByPlaceholderText("Select model"));
