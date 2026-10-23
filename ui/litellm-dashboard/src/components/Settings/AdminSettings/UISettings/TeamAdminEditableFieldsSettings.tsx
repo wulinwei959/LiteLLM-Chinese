@@ -217,6 +217,7 @@ interface FieldHelpProps {
 }
 
 function FieldHelp({ label, text }: FieldHelpProps) {
+  const commonT = useTranslations("common");
   return (
     <TooltipProvider>
       <Tooltip>
@@ -231,7 +232,7 @@ function FieldHelp({ label, text }: FieldHelpProps) {
           <span>
             {text}{" "}
             <a href={TEAM_ADMIN_FIELDS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="underline">
-              Learn more
+              {commonT("learnMore")}
             </a>
           </span>
         </TooltipContent>

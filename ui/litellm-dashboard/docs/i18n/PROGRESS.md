@@ -4544,3 +4544,12 @@ agent_info 的"Overview"/"Settings"两个页签接 `agents.overview`/`agents.set
 测试：agent_info 单测四处、集成一处 Settings 页签查询翻成"设置"，首个保存用例补"概览"页签与"已配置 0 个"断言。两文件 25 例全绿。
 
 验证：AST 本文件归零；全局可见英文 237→235 条、126→125 个文件；目录叶子 11614→11617，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、8 警为 HEAD 既有；prettier 新增行合规，本文件 HEAD 既有多处脏格式不动；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 447 簇：共享表单与公共模型中心残留文案，兼清 8 例既有红测试
+
+MCPToolArgumentsForm 的 "Input *" 标签新增 `mcpToolArgs.inputLabel`，两处 "Select {key}" 复用既有 `selectKeyPlaceholder`。TeamAdminEditableFieldsSettings 的帮助链接复用 `common.learnMore`。public_model_hub 的描述标签复用 `modelHub.lblDescription`。
+
+同簇补 `teamAdminFieldLabel` 缺失映射：`team_member_budget`/`team_member_budget_duration`/`metadata`/`raise_max_budget` 四键新增，`soft_budget` 复用 `teams.infoSoftBudgetUsd`，复选框不再显示裸字段名。PublicModelHubTableColumns 的 mode 列改走 `displayMode()`，修掉 evaluation 决策模型在公共表显示原始值而不显示 decisions 的行为缺陷。
+
+测试：先跑 HEAD 基线确认 TeamAdmin 与 public_model_hub 两文件已有 8 例红（英文断言与模式显示缺口），非本簇引入；本次全部收口，断言翻成中文并补 Input 标签断言，四文件 136 例全绿。
+
+验证：AST 四个组件归零；全局可见英文 235→231 条、125→122 个文件；目录叶子 11617→11622，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、37 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。TeamAdmin 帮助气泡的英文常量句（About editing team metadata 等）仍待后续簇接 `t.rich`。

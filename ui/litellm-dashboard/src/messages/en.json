@@ -2865,7 +2865,11 @@
     "infoDisabled": "Disabled",
     "infoNever": "Never",
     "listRequireTraceId": "Require Trace ID",
-    "listRequireTraceIdHint": "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-litellm-trace-id header, LLM requests can also use traceparent or metadata.trace_id)"
+    "listRequireTraceIdHint": "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-litellm-trace-id header, LLM requests can also use traceparent or metadata.trace_id)",
+    "adminFieldTeamMemberBudget": "Member Default Budget (USD)",
+    "adminFieldTeamMemberBudgetDuration": "Member Default Budget Duration",
+    "adminFieldTeamMetadata": "Team Metadata",
+    "adminFieldRaiseMaxBudget": "Raise Max Budget"
   },
   "userAgentActivity": {
     "summaryTitle": "Summary by User Agent",
@@ -12096,7 +12100,8 @@
     "enterJsonObjectPlaceholder": "Enter JSON object for {key}",
     "enterJsonArrayPlaceholder": "Enter JSON array for {key}",
     "trueLabel": "True",
-    "falseLabel": "False"
+    "falseLabel": "False",
+    "inputLabel": "Input"
   },
   "advancedDatePicker": {
     "presetToday": "Today",

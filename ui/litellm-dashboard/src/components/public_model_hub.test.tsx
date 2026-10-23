@@ -300,7 +300,7 @@ describe("PublicModelHub", () => {
     expect(row).toHaveTextContent("decisions");
     expect(row).not.toHaveTextContent("evaluation");
 
-    await user.click(screen.getByPlaceholderText("Select modes"));
+    await user.click(screen.getByPlaceholderText("选择模式"));
     expect(screen.getAllByRole("option", { name: "decisions" })).toHaveLength(1);
     expect(screen.queryByRole("option", { name: "evaluation" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("option", { name: "decisions" }));
@@ -534,12 +534,12 @@ describe("public hub MCP details modal", () => {
     const clipboardWriteText = vi.spyOn(navigator.clipboard, "writeText").mockResolvedValue(undefined);
     renderHub();
 
-    await user.click(await screen.findByRole("tab", { name: /MCP Hub/i }));
+    await user.click(await screen.findByRole("tab", { name: /MCP 中心/i }));
     await user.click(await screen.findByRole("button", { name: "exa_test" }));
-    await screen.findByText("Server Overview");
+    await screen.findByText("服务器概览");
 
     expect(screen.getByText(/https:\/\/backend\.example\.com\/exa_test\/mcp/)).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Copy to clipboard" }));
+    await user.click(screen.getByRole("button", { name: "复制到剪贴板" }));
 
     expect(clipboardWriteText).toHaveBeenCalledWith(
       expect.stringContaining('"url": "https://backend.example.com/exa_test/mcp"'),

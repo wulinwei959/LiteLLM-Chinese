@@ -2865,7 +2865,11 @@
     "infoDisabled": "已禁用",
     "infoNever": "永不",
     "listRequireTraceId": "要求 Trace ID",
-    "listRequireTraceIdHint": "拒绝来自此团队、未携带 Trace ID 的 LLM、MCP 与代理请求（x-litellm-trace-id 请求头，LLM 请求也可使用 traceparent 或 metadata.trace_id）"
+    "listRequireTraceIdHint": "拒绝来自此团队、未携带 Trace ID 的 LLM、MCP 与代理请求（x-litellm-trace-id 请求头，LLM 请求也可使用 traceparent 或 metadata.trace_id）",
+    "adminFieldTeamMemberBudget": "成员默认预算（USD）",
+    "adminFieldTeamMemberBudgetDuration": "成员默认预算周期",
+    "adminFieldTeamMetadata": "团队元数据",
+    "adminFieldRaiseMaxBudget": "提高团队最大预算"
   },
   "userAgentActivity": {
     "summaryTitle": "按用户代理汇总",
@@ -12092,7 +12096,8 @@
     "enterJsonObjectPlaceholder": "请输入 {key} 的 JSON 对象",
     "enterJsonArrayPlaceholder": "请输入 {key} 的 JSON 数组",
     "trueLabel": "是",
-    "falseLabel": "否"
+    "falseLabel": "否",
+    "inputLabel": "输入"
   },
   "advancedDatePicker": {
     "presetToday": "今天",

@@ -319,7 +319,7 @@ const MCPToolArgumentsForm = forwardRef<MCPToolArgumentsFormRef, MCPToolArgument
               name="args.0"
               label={
                 <span>
-                  Input <span className="text-destructive">*</span>
+                  {t("inputLabel")} <span className="text-destructive">*</span>
                 </span>
               }
             >
@@ -374,7 +374,7 @@ const MCPToolArgumentsForm = forwardRef<MCPToolArgumentsFormRef, MCPToolArgument
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
-                            {!required && <SelectItem value={null}>Select {key}</SelectItem>}
+                            {!required && <SelectItem value={null}>{t("selectKeyPlaceholder", { key })}</SelectItem>}
                             {prop.enum.map((v) => (
                               <SelectItem key={v} value={v}>
                                 {v === "" ? t("emptyString") : v}
@@ -404,7 +404,7 @@ const MCPToolArgumentsForm = forwardRef<MCPToolArgumentsFormRef, MCPToolArgument
                             <SelectValue placeholder={t("selectKeyPlaceholder", { key })} />
                           </SelectTrigger>
                           <SelectContent>
-                            {!required && <SelectItem value={null}>Select {key}</SelectItem>}
+                            {!required && <SelectItem value={null}>{t("selectKeyPlaceholder", { key })}</SelectItem>}
                             <SelectItem value={true}>{t("trueLabel")}</SelectItem>
                             <SelectItem value={false}>{t("falseLabel")}</SelectItem>
                           </SelectContent>

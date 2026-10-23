@@ -734,7 +734,7 @@ const PublicModelHub: React.FC<PublicModelHubProps> = ({ accessToken, isEmbedded
                       </div>
                       {selectedModel.description && (
                         <div className="col-span-2">
-                          <p className="font-medium">Description:</p>
+                          <p className="font-medium">{t("lblDescription")}</p>
                           <p className="mt-1">{selectedModel.description}</p>
                         </div>
                       )}

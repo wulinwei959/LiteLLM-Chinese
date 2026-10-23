@@ -132,8 +132,8 @@ describe("TeamAdminEditableFieldsSettings", () => {
     const mutate = mockSave({});
 
     renderWithProviders(<TeamAdminEditableFieldsSettings />);
-    fireEvent.click(screen.getByRole("checkbox", { name: "Member Default Budget (USD)" }));
-    fireEvent.click(screen.getByRole("checkbox", { name: "Member Default Budget Duration" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "成员默认预算（USD）" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "成员默认预算周期" }));
     fireEvent.click(saveButton());
 
     await waitFor(() => expect(mutate).toHaveBeenCalledTimes(1));
@@ -148,7 +148,7 @@ describe("TeamAdminEditableFieldsSettings", () => {
     const mutate = mockSave({});
 
     renderWithProviders(<TeamAdminEditableFieldsSettings />);
-    fireEvent.click(screen.getByRole("checkbox", { name: "Soft Budget (USD)" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "软预算（USD）" }));
     fireEvent.click(saveButton());
 
     await waitFor(() => expect(mutate).toHaveBeenCalledTimes(1));
@@ -165,7 +165,7 @@ describe("TeamAdminEditableFieldsSettings", () => {
 
     expect(await screen.findByText(/Keys the proxy reads as settings stay with proxy admins/)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("checkbox", { name: "Team Metadata" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "团队元数据" }));
     fireEvent.click(saveButton());
 
     await waitFor(() => expect(mutate).toHaveBeenCalledTimes(1));
@@ -274,7 +274,7 @@ describe("TeamAdminEditableFieldsSettings", () => {
 
       renderWithProviders(<TeamAdminEditableFieldsSettings />);
 
-      expect(screen.getByText("3 fields enabled")).toBeInTheDocument();
+      expect(screen.getByText("已启用 3 个字段")).toBeInTheDocument();
       expect(raiseMaxBudgetCheckbox()).toBeChecked();
 
       fireEvent.click(maxBudgetCheckbox());
@@ -300,7 +300,7 @@ describe("TeamAdminEditableFieldsSettings", () => {
       await user.hover(screen.getByRole("button", { name: RAISE_MAX_BUDGET_HELP_LABEL }));
 
       expect(await screen.findByText(RAISE_MAX_BUDGET_TOOLTIP)).toBeInTheDocument();
-      expect(screen.getByRole("link", { name: "Learn more" })).toHaveAttribute("href", RAISE_MAX_BUDGET_DOCS_URL);
+      expect(screen.getByRole("link", { name: "了解更多" })).toHaveAttribute("href", RAISE_MAX_BUDGET_DOCS_URL);
     });
 
     it("renders nothing nested when the proxy does not support Raise", () => {

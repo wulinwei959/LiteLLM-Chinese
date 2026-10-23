@@ -261,6 +261,7 @@ describe("MCPToolArgumentsForm", () => {
     const user = userEvent.setup();
     const ref = renderForm("tool_input_schema");
 
+    expect(screen.getByText(/^输入/)).toBeInTheDocument();
     await user.type(screen.getByPlaceholderText("请输入该工具的内容"), "hello");
 
     await expect(submit(ref)).resolves.toEqual({ input: "hello" });
@@ -301,7 +302,7 @@ it("should distinguish an unset enum from empty string and retain explicit false
     },
   });
   await user.click(screen.getByRole("combobox", { name: "mode" }));
-  await user.click(await screen.findByRole("option", { name: "Select mode" }));
+  await user.click(await screen.findByRole("option", { name: "选择 mode" }));
   await user.click(screen.getByRole("combobox", { name: "active" }));
   await user.click(await screen.findByRole("option", { name: "否" }));
   await expect(submit(ref)).resolves.toEqual({ active: false });

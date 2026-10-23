@@ -115,6 +115,16 @@ export const teamAdminFieldLabel = (t: TeamsTranslator, field: string): string =
       return t("adminFieldProjects");
     case "member_key_budgets":
       return t("adminFieldMemberKeyBudgets");
+    case "team_member_budget":
+      return t("adminFieldTeamMemberBudget");
+    case "team_member_budget_duration":
+      return t("adminFieldTeamMemberBudgetDuration");
+    case "soft_budget":
+      return t("infoSoftBudgetUsd");
+    case "metadata":
+      return t("adminFieldTeamMetadata");
+    case "raise_max_budget":
+      return t("adminFieldRaiseMaxBudget");
     default:
       return field;
   }

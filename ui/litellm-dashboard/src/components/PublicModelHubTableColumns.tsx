@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { getProviderLogoAndName } from "@/components/provider_info_helpers";
 import { PUBLIC_MODEL_HUB_SORTABLE_FIELDS } from "@/components/publicModelHub/publicModelHubFilters";
 import { formatDate } from "@/lib/i18n/format";
+import { displayMode } from "@/lib/decisionModels";
 
 export interface ModelGroupInfo {
   model_group: string;
@@ -208,7 +209,7 @@ export const getPublicModelHubColumns = (
       cell: ({ row }) => (
         <span className="flex items-center gap-2 text-sm">
           <span>{getModeIcon(row.original.mode || "")}</span>
-          <span>{row.original.mode || t("modeChat")}</span>
+          <span>{displayMode(row.original.mode) || t("modeChat")}</span>
         </span>
       ),
     },
