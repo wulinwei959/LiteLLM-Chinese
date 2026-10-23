@@ -1345,10 +1345,12 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                 </div>
 
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={onCancel}>
+                  <Button variant="outline" onClick={handleCancel}>
                     {t("edit.cancel")}
                   </Button>
-                  <Button type="submit">{t("edit.saveChanges")}</Button>
+                  <Button type="submit" disabled={isOAuthPending}>
+                    {t("edit.saveChanges")}
+                  </Button>
                 </div>
               </form>
             </MountedFormProvider>
@@ -1360,7 +1362,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
             <MCPServerCostConfig value={costConfig} onChange={setCostConfig} tools={tools} disabled={isLoadingTools} />
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={onCancel}>
+              <Button variant="outline" onClick={handleCancel}>
                 {t("edit.cancel")}
               </Button>
               <Button onClick={() => void submitForm()}>{t("edit.saveChanges")}</Button>

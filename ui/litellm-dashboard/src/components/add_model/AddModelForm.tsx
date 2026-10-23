@@ -397,14 +397,14 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                         <Field className="mb-4">
                           <FieldLabel>
                             {labelWithHint(
-                              "Team-BYOK Model",
-                              "Only use this model + credential combination for this team. Useful when teams want to onboard their own OpenAI keys.",
+                              addModelT("teamByokLabel"),
+                              addModelT("teamByokHint"),
                             )}
                           </FieldLabel>
                           <SimpleTooltip
                             content={
                               !premiumUser
-                                ? "This is an enterprise-only feature. Upgrade to premium to restrict model+credential combinations to a specific team."
+                                ? addModelT("teamByokPremiumDesc")
                                 : ""
                             }
                             side="top"
@@ -429,16 +429,13 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {/* Conditional Team Selection */}
                       {isTeamOnly && !requiresTeamScope && (
                         <MountedFormField
-                          label={labelWithHint(
-                            "Select Team",
-                            "Only keys for this team will be able to call this model.",
-                          )}
+                          label={labelWithHint(t("selectTeam"), addModelT("teamByokHint2"))}
                           name="team_id"
                           className="mb-4"
                           required={isTeamOnly && !isAdmin}
                           rules={
                             isTeamOnly && !isAdmin
-                              ? { validate: { required: requiredRule("Please select a team.") } }
+                              ? { validate: { required: requiredRule(t("teamRequired")) } }
                               : undefined
                           }
                         >

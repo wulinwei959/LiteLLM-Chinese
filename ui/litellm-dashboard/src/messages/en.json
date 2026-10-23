@@ -8500,7 +8500,8 @@
       },
       "empty": {
         "noAgents": "No agents available for this key",
-        "noMcpServers": "No MCP servers available for this key"
+        "noMcpServers": "No MCP servers available for this key",
+        "toolsLoadFailed": "Unable to load tools for this server"
       },
       "button": {
         "inspector": "Inspector",
@@ -8522,6 +8523,9 @@
         "selectAgent": "Select an agent",
         "selectMcpServer": "Select an MCP server",
         "selectTool": "Select a tool"
+      },
+      "group": {
+        "agents": "Agents"
       }
     },
     "compare": {
@@ -8987,6 +8991,12 @@
     },
     "systemOne": {
       "loadExample": "Load example",
+      "preset": {
+        "bug-triage": "Triage a bug report",
+        "support-routing": "Route a support ticket",
+        "moderation": "Moderate a forum comment",
+        "lead-scoring": "Score a sales lead"
+      },
       "aria": {
         "decisionsEditor": "Decisions request editor",
         "decisionEndpoint": "Decision endpoint",
@@ -9341,7 +9351,12 @@
     "pickers": {
       "action": {
         "use": "Use"
-      }
+      },
+      "searchLabel": "Search {label}",
+      "loading": "Loading {label}",
+      "noMatch": "No matching {label}",
+      "noMatchAll": "Nothing matches",
+      "customGroup": "Custom name"
     },
     "reply": {
       "alt": {

@@ -194,9 +194,9 @@ export const useConversation = (prompt: any, accessToken: string | null) => {
         setMessages((prev) => {
           const lastMsg = prev[prev.length - 1];
           if (lastMsg && lastMsg.role === "assistant" && lastMsg.content === "") {
-            return [...prev.slice(0, -1), { role: "assistant", content: `Error: ${error.message}` }];
+            return [...prev.slice(0, -1), { role: "assistant", content: t("conversation.errorPrefix", { message: error.message }) }];
           }
-          return [...prev, { role: "assistant", content: `Error: ${error.message}` }];
+          return [...prev, { role: "assistant", content: t("conversation.errorPrefix", { message: error.message }) }];
         });
       }
     } finally {

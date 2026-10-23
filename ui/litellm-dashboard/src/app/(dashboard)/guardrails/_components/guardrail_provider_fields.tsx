@@ -54,7 +54,7 @@ interface ProviderParam {
 }
 
 interface ProviderParamsResponse {
-  [provider: string]: { [key: string]: ProviderParam };
+  [provider: string]: { [key: string]: ProviderParam | string };
 }
 
 const BOOLEAN_ITEMS = [
@@ -393,7 +393,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
     });
   };
 
-  return <FieldGroup>{renderFields(providerFields)}</FieldGroup>;
+  return <FieldGroup>{renderFields(providerFields as { [key: string]: ProviderParam })}</FieldGroup>;
 };
 
 export default GuardrailProviderFields;

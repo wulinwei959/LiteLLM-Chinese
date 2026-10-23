@@ -174,7 +174,12 @@ export const InactiveHeuristicV2Threshold: React.FC<Pick<ClassificationMethodCon
 }) => {
   const t = useTranslations("models.addModel");
   const threshold = value.heuristic_v2_success_threshold;
-  if (effectiveClassifierType(value) === "heuristic_v2" || threshold === undefined) return null;
+  if (
+    effectiveClassifierType(value) === "heuristic_v2" ||
+    value.local_heuristic === "heuristic_v2" ||
+    threshold === undefined
+  )
+    return null;
   const error = getHeuristicV2SuccessThresholdError(t, threshold);
   return (
     <section aria-label={t("inactiveHeuristicV2RegionAria")} className="mb-4 space-y-2 rounded-md border p-3">
@@ -500,6 +505,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
           <strong className="block font-semibold">{t("boundaryMarginLabel")}</strong>
           <Input
             id={HYBRID_BOUNDARY_MARGIN_ID}
+            aria-label={t("boundaryMarginLabel")}
             type="text"
             inputMode="decimal"
             value={
@@ -733,6 +739,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
       {["heuristic", "heuristic_first", "hybrid"].includes(classifierType) && (
         <AutoRouterAllowanceNote feature="heuristic_tuning" label={t("customScoringRulesLabel")} />
       )}
+      {showClassifier && usesCustomPrompt && <HowClassificationWorks value={value} />}
       {showHeuristic && <HowClassificationWorks value={value} />}
     </>
   );

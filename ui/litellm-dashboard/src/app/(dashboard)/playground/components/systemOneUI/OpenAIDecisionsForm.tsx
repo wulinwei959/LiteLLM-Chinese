@@ -154,13 +154,13 @@ function QuestionCard({ question, index, onChange, onRemove }: QuestionCardProps
 
   return (
     <fieldset
-      aria-label={t("field.questionAria", { index: index + 1 })}
+      aria-label={t("field.questionAria", { title: String(index + 1) })}
       className="grid gap-3 rounded-lg border bg-muted/30 p-3"
     >
       <QuestionCardHeader
         index={index}
         onRemove={onRemove}
-        removeLabel={t("field.removeQuestionAria", { index: index + 1 })}
+        removeLabel={t("field.removeQuestionAria", { title: String(index + 1) })}
       />
       <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_10rem]">
         <div className="grid gap-1.5">

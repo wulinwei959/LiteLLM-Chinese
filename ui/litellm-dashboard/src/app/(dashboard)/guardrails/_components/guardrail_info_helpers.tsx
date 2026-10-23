@@ -72,7 +72,7 @@ export const populateGuardrailProviders = (providerParamsResponse: Record<string
 };
 
 // Function to get current guardrail providers (dynamic or fallback to legacy)
-export const getGuardrailProviders = () => {
+export const getGuardrailProviders = (): Record<string, string> => {
   return Object.keys(DynamicGuardrailProviders).length > 0 ? DynamicGuardrailProviders : GuardrailProviders;
 };
 

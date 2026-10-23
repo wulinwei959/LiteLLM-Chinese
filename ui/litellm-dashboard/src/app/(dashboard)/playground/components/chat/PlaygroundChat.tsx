@@ -67,12 +67,6 @@ const modelGroups = (models: readonly ModelGroup[]): readonly OptionGroup[] =>
       .map((model) => ({ value: model.model_group, label: model.model_group })),
   }));
 
-const modelEmptyText = (failed: boolean, hasKey: boolean): string => {
-  if (failed) return "Unable to load models for this key";
-  if (!hasKey) return "Enter a virtual key to load models";
-  return "No models available for this endpoint";
-};
-
 const reachableMcp = (servers: readonly MCPServer[], toolsets: readonly MCPToolset[]): ReadonlySet<string> =>
   new Set([
     ...servers.map((server) => server.server_id),
@@ -133,6 +127,7 @@ export function PlaygroundChat({
   proxySettings: ProxySettings | undefined;
 }) {
   const t = useTranslations("playground.chat");
+  const configT = useTranslations("playground.config");
   const { settings: stored, update, reset } = usePlaygroundSettings(disabledPersonalKeyCreation);
   const canViewPolicies = useCan("viewPolicies");
   const apiKey = (stored.keySource === "session" ? accessToken : stored.virtualKey.trim()) || null;
@@ -260,7 +255,13 @@ export function PlaygroundChat({
           value={settings.model}
           onValueChange={selectModel}
           isLoading={models.isLoading}
-          emptyText={modelEmptyText(models.isError, Boolean(apiKey))}
+          emptyText={
+            models.isError
+              ? configT("unableToLoadModels")
+              : apiKey
+                ? configT("noModelsForEndpoint")
+                : configT("enterVirtualKey")
+          }
           allowCustom
         />
       )}
@@ -270,7 +271,7 @@ export function PlaygroundChat({
           placeholder={t("placeholder.selectAgent")}
           groups={[
             {
-              label: "Agents",
+              label: t("group.agents"),
               options: (agents.data ?? []).map((agent) => ({
                 value: agent.agent_name,
                 label: agent.agent_name || agent.agent_id,
@@ -295,7 +296,7 @@ export function PlaygroundChat({
                 options: mcp.servers.map((server) => ({ value: server.server_id, label: serverName(server) })),
               },
               {
-                label: "Toolsets",
+                label: t("toolsets"),
                 options: mcp.toolsets.map((toolset) => ({
                   value: `${TOOLSET_PREFIX}${toolset.toolset_id}`,
                   label: toolset.toolset_name,
@@ -317,7 +318,7 @@ export function PlaygroundChat({
               placeholder={t("placeholder.selectTool")}
               groups={[
                 {
-                  label: "Tools",
+                  label: t("field.tool"),
                   options: targets.map(({ tool }) => ({
                     value: tool.name,
                     label: tool.name,
@@ -328,7 +329,7 @@ export function PlaygroundChat({
               value={settings.directTool}
               onValueChange={(tool) => update({ directTool: tool })}
               isLoading={directServers.some((server) => directServerTools[server]?.isLoading)}
-              emptyText={toolsFailed ? "Unable to load tools for this server" : "This server has no tools"}
+              emptyText={toolsFailed ? t("empty.toolsLoadFailed") : t("toolsets")}
             />
           )}
         </>
@@ -342,8 +343,8 @@ export function PlaygroundChat({
   );
 
   const guardrailGroups: readonly OptionGroup[] = [
-    { label: "Guardrails", options: guardrails.data ?? [] },
-    ...(canViewPolicies ? [{ label: "Policies", options: prefixed(policies.data ?? []) }] : []),
+    { label: configT("guardrails"), options: guardrails.data ?? [] },
+    ...(canViewPolicies ? [{ label: configT("policies"), options: prefixed(policies.data ?? []) }] : []),
   ];
 
   const composer = (
@@ -367,7 +368,7 @@ export function PlaygroundChat({
         />
       }
       vectorStores={{
-        groups: [{ label: "Vector stores", options: vectorStores.data ?? [] }],
+        groups: [{ label: configT("vectorStore"), options: vectorStores.data ?? [] }],
         value: settings.vectorStores,
         onValueChange: (value) => update({ vectorStores: value }),
         isLoading: vectorStores.isLoading,

@@ -12,6 +12,7 @@ import {
 } from "./ComplexityRouterConfig";
 import { defaultJevClassifierConfig } from "./jev_classifier_config";
 import { isForecastClassifier, prepareForecastClassifier } from "./forecast_classifier_config";
+import { isHeuristicChain } from "./classifier_types";
 import { nonReasoningTierFields } from "./nonReasoningTierFields";
 
 export const transitionClassifierType = (
@@ -47,6 +48,8 @@ export const transitionClassifierType = (
       ? value.classifier_context_include_assistant_turns
       : undefined,
     classifier_fallback: usesClassifierContext(classifierType) ? value.classifier_fallback : undefined,
+    local_heuristic: isHeuristicChain(classifierType) ? value.local_heuristic : undefined,
+    heuristic_v2_success_threshold: isHeuristicChain(classifierType) ? value.heuristic_v2_success_threshold : undefined,
     heuristic_first_max_tier:
       classifierType === "heuristic_first"
         ? value.heuristic_first_max_tier ?? DEFAULT_HEURISTIC_FIRST_MAX_TIER

@@ -104,6 +104,7 @@ export function ChecklistMenu({
   emptyText: string;
   defaultOpen?: boolean;
 }) {
+  const t = useTranslations("playground.pickers");
   const index = optionIndex(groups);
   const items = toItems(groups);
   return (
@@ -122,10 +123,10 @@ export function ChecklistMenu({
         <CountBadge count={value.length} />
       </ComboboxTrigger>
       <ComboboxContent side="top" className="w-72">
-        <ComboboxInput showTrigger={false} placeholder={`Search ${label.toLowerCase()}`} />
+        <ComboboxInput showTrigger={false} placeholder={t("searchLabel", { label })} />
         <ComboboxEmpty>
           {isLoading ? <Spinner className="size-3.5" /> : items.length === 0 && emptyText}
-          {!isLoading && items.length > 0 && "Nothing matches"}
+          {!isLoading && items.length > 0 && t("noMatchAll")}
         </ComboboxEmpty>
         <GroupedOptions index={index} />
       </ComboboxContent>
@@ -154,12 +155,13 @@ export function TargetPicker({
   allowCustom?: boolean;
   defaultOpen?: boolean;
 }) {
+  const t = useTranslations("playground.pickers");
   const [query, setQuery] = useState("");
   const index = optionIndex(groups);
   const custom = query.trim();
   const offerCustom = allowCustom && custom !== "" && !isListed(index, custom);
-  const items = [...toItems(groups), ...(offerCustom ? [{ value: "Custom name", items: [custom] }] : [])];
-  const unsetText = isLoading ? `Loading ${label.toLowerCase()}s` : placeholder;
+  const items = [...toItems(groups), ...(offerCustom ? [{ value: t("customGroup"), items: [custom] }] : [])];
+  const unsetText = isLoading ? t("loading", { label }) : placeholder;
   return (
     <Combobox
       items={items}
@@ -184,9 +186,9 @@ export function TargetPicker({
         </span>
       </ComboboxTrigger>
       <ComboboxContent side="top" className="w-80">
-        <ComboboxInput showTrigger={false} placeholder={`Search ${label.toLowerCase()}s`} />
+        <ComboboxInput showTrigger={false} placeholder={t("searchLabel", { label })} />
         <ComboboxEmpty>
-          {items.length === 0 && !custom ? emptyText : `No matching ${label.toLowerCase()}`}
+          {items.length === 0 && !custom ? emptyText : t("noMatch", { label })}
         </ComboboxEmpty>
         <GroupedOptions index={index} mono />
       </ComboboxContent>

@@ -146,7 +146,7 @@
       "modelAccessGroup": "模型访问组",
       "needHelp": "需要帮助?",
       "optional": "可选",
-      "selectCredentials": "选择或搜索已有凭据",
+      "selectCredentials": "选择或搜索现有凭据",
       "selectTeam": "选择团队",
       "submit": "添加模型",
       "teamByok": "团队自带密钥模型",
@@ -8500,7 +8500,8 @@
       },
       "empty": {
         "noAgents": "这个密钥没有可用的智能体",
-        "noMcpServers": "这个密钥没有可用的 MCP 服务器"
+        "noMcpServers": "这个密钥没有可用的 MCP 服务器",
+        "toolsLoadFailed": "无法加载这个服务器的工具"
       },
       "button": {
         "inspector": "检查器",
@@ -8522,6 +8523,9 @@
         "selectAgent": "选择一个智能体",
         "selectMcpServer": "选择一个 MCP 服务器",
         "selectTool": "选择一个工具"
+      },
+      "group": {
+        "agents": "智能体"
       }
     },
     "compare": {
@@ -8983,6 +8987,12 @@
     },
     "systemOne": {
       "loadExample": "加载示例",
+      "preset": {
+        "bug-triage": "给 Bug 报告分级",
+        "support-routing": "给支持工单分流",
+        "moderation": "审核论坛评论",
+        "lead-scoring": "给销售线索评分"
+      },
       "aria": {
         "decisionsEditor": "决策请求编辑器",
         "decisionEndpoint": "决策接口",
@@ -9337,7 +9347,12 @@
     "pickers": {
       "action": {
         "use": "使用"
-      }
+      },
+      "searchLabel": "搜索{label}",
+      "loading": "正在加载{label}",
+      "noMatch": "没有匹配的{label}",
+      "noMatchAll": "没有匹配项",
+      "customGroup": "自定义"
     },
     "reply": {
       "alt": {

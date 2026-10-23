@@ -106,6 +106,7 @@ export function DraftAttachments({
   files: readonly DraftFile[];
   onRemove: (index: number) => void;
 }) {
+  const t = useTranslations("playground.chat");
   return (
     <AttachmentGroup className="w-full">
       {files.map((draft, index) => (
@@ -116,7 +117,10 @@ export function DraftAttachments({
             <AttachmentDescription>{formatBytes(draft.file.size)}</AttachmentDescription>
           </AttachmentContent>
           <AttachmentActions>
-            <AttachmentAction aria-label={`Remove ${draft.file.name}`} onClick={() => onRemove(index)}>
+            <AttachmentAction
+              aria-label={t("imageUpload.remove", { name: draft.file.name })}
+              onClick={() => onRemove(index)}
+            >
               <X />
             </AttachmentAction>
           </AttachmentActions>

@@ -8,8 +8,10 @@ import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 
 export interface ModelBudgetConfig {
-  budget_limit: number;
-  time_period: string;
+  budget_limit?: number | string;
+  time_period?: string;
+  max_budget?: number | string;
+  budget_duration?: string;
   /** BudgetConfig also carries tpm_limit and rpm_limit, which this editor does not model. */
   [passthrough: string]: unknown;
 }
