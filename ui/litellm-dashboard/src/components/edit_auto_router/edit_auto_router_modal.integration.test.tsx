@@ -101,8 +101,8 @@ describe("EditAutoRouterModal keyword matching", () => {
       },
     });
     await screen.findByRole("textbox", { name: "自动路由名称" });
-    openAutoRouterAdvanced("Cache-aware routing");
-    const toggle = screen.getByRole("switch", { name: "Cache-aware routing" });
+    openAutoRouterAdvanced("缓存感知路由");
+    const toggle = screen.getByRole("switch", { name: "缓存感知路由" });
     expect(toggle).toBeChecked();
     expect(screen.getByLabelText("Expected output tokens")).toHaveValue(512);
     expect(screen.getByLabelText("Prediction timeout (ms)")).toHaveValue(750);

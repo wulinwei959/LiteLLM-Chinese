@@ -4775,3 +4775,15 @@ AllModelsTab：公开模型名称筛选占位符在目录里是 models.modelTabl
 
 1. AllModelsTab：视图模式下拉的选项在测试里找不到（触发器文本断言可以通过），另有两条删除/暂停的载荷断言。
 2. 其余失败集中在行为断言：AddModelForm 7、key_edit_view 7、add_auto_router_tab 6、TeamInfo 5、TelemetrySettingsPage 5、agent.test 4、activity_metrics 4（配色口径待确认）、tag_info 4。
+
+## 2026-10-24 第 473 簇：第三轮英文期望翻面
+
+继续按失败信息批量映射，涉及 TelemetrySettingsPage（页面导航）、DashboardHeader（AI 网关/博客）、add_auto_router_tab（成功阈值）、edit_auto_router_modal（缓存感知路由）、UserConnectionsPanel（没有需要个人连接的凭据）、AutoRouterUsageViews（自动路由提示缓存/该时间范围内没有自动路由）、TeamInfo（编辑设置按钮的 /edit settings/i 正则改 /编辑设置/i）。全量失败面 116 → 103 例（TeamInfo 那 5 例在本轮跑完后才翻面，下一轮复跑应再减 5）。
+
+验证：生产 tsc 0 错；死键 0；prettier 与 eslint 无新增问题。
+
+### 剩余工作（下批起点）
+
+1. 剩下的 103 例里，行为断言占绝大多数：AddModelForm 7（团队作用域、credential-only 载荷、连接测试）、key_edit_view 7（预算草稿载荷、MCP 授权回调）、add_auto_router_tab 6（禁用态、阈值校验）、agent.test 4（liteadmin 接口约定）、activity_metrics 4（配色口径）、AddModelPanel 4、tag_info 4。
+2. AllModelsTab 的视图模式选项在 jsdom 下找不到，需要查 Base UI Select 的展开时序；另有两条删除/暂停载荷断言。
+3. 文字类长尾已基本翻完，后续应按文件逐个对照生产取值，而不是继续批量替换。

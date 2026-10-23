@@ -75,7 +75,7 @@ describe("mobile header nested controls", () => {
     "selects a portalled gateway item with %s without dismissing More",
     async (pointer) => {
       const { user, tools } = await openTools();
-      await user.click(within(tools).getByRole("button", { name: "AI Gateway" }));
+      await user.click(within(tools).getByRole("button", { name: "AI 网关" }));
       const item = await screen.findByRole("menuitem", { name: "Metrics" });
       if (pointer === "touch") {
         await user.pointer([
@@ -92,11 +92,11 @@ describe("mobile header nested controls", () => {
 
   it("lets a nested blog link receive the click before closing its menu", async () => {
     const { user, tools } = await openTools();
-    await user.click(within(tools).getByRole("button", { name: "Blog" }));
+    await user.click(within(tools).getByRole("button", { name: "博客" }));
     const link = await screen.findByRole("link", { name: /Gateway update/ });
     expect(link).toHaveAttribute("href", "https://example.com/update");
     await user.click(link);
-    expect(screen.queryByRole("menu", { name: "Blog" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("menu", { name: "博客" })).not.toBeInTheDocument();
     expect(screen.getByRole("dialog", { name: "网关工具" })).toBeVisible();
   });
 

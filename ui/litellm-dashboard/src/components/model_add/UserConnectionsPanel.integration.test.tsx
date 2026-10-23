@@ -35,7 +35,7 @@ describe("UserConnectionsPanel", () => {
     vi.mocked(userConnectionsListCall).mockRejectedValue(new Error("boom"));
     renderPanel();
     expect(await screen.findByText("无法加载你的连接。")).toBeInTheDocument();
-    expect(screen.queryByText("No credentials need a personal connection.")).not.toBeInTheDocument();
+    expect(screen.queryByText("没有需要个人连接的凭据。")).not.toBeInTheDocument();
   });
 
   it("refetches when retry is clicked", async () => {
@@ -45,7 +45,7 @@ describe("UserConnectionsPanel", () => {
       .mockResolvedValueOnce({ connections: [] });
     renderPanel();
     await user.click(await screen.findByRole("button", { name: "重试" }));
-    expect(await screen.findByText("No credentials need a personal connection.")).toBeInTheDocument();
+    expect(await screen.findByText("没有需要个人连接的凭据。")).toBeInTheDocument();
     expect(vi.mocked(userConnectionsListCall).mock.calls.length).toBeGreaterThanOrEqual(2);
   });
 });

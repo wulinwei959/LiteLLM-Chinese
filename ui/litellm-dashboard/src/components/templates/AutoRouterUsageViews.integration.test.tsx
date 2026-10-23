@@ -129,7 +129,7 @@ describe("Auto-router usage views", () => {
     expect(savings.getByText("($62.50 / 1K turns)")).toBeInTheDocument();
     expect(savings.getByText("Estimated baseline spend")).toBeInTheDocument();
     expect(savings.getByText("$10.00")).toBeInTheDocument();
-    expect(screen.getByText("Auto-router prompt caching")).toBeInTheDocument();
+    expect(screen.getByText("自动路由提示缓存")).toBeInTheDocument();
     expect(screen.getAllByText("50.0%").length).toBeGreaterThan(0);
     expect(screen.getByText("All auto-routers")).toBeInTheDocument();
     const summary = within(screen.getByRole("table", { name: "路由用量与节省" }));
@@ -160,7 +160,7 @@ describe("Auto-router usage views", () => {
         .map((cell) => cell.textContent),
     ).toEqual(["gpt-auto", "2,000,000", "$15.00", "$7.50", "-$5.00", "-50.0%"]);
     expect(
-      table.compareDocumentPosition(screen.getByText("Auto-router prompt caching")) & Node.DOCUMENT_POSITION_FOLLOWING,
+      table.compareDocumentPosition(screen.getByText("自动路由提示缓存")) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
 
     const user = userEvent.setup();
@@ -194,9 +194,7 @@ describe("Auto-router usage views", () => {
     mockBenchmarks(response([]));
     renderOverallTab();
     expect(
-      within(await screen.findByRole("table", { name: "路由用量与节省" })).getByText(
-        "No auto-routers in this range",
-      ),
+      within(await screen.findByRole("table", { name: "路由用量与节省" })).getByText("该时间范围内没有自动路由"),
     ).toBeInTheDocument();
   });
 });

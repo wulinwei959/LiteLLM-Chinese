@@ -1075,7 +1075,7 @@ describe("AddAutoRouterTab", () => {
     await selectAutoRouterOption("Local checks before the judge", "Heuristic first");
     await selectAutoRouterOption("Heuristic before the judge", "Heuristic v2");
     fireEvent.click(screen.getByRole("button", { name: "启发式调优" }));
-    fireEvent.change(screen.getByRole("textbox", { name: "Success threshold" }), { target: { value: "0.6" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "成功阈值" }), { target: { value: "0.6" } });
     await selectAutoRouterOption("Decide locally up to", "Medium");
     await waitFor(() => expect(screen.getByRole("button", { name: "Add Auto Router" })).toBeEnabled());
     await userEvent.click(screen.getByRole("button", { name: "Add Auto Router" }));

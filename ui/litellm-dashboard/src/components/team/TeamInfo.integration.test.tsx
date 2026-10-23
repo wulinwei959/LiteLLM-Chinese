@@ -738,7 +738,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     renderWithProviders(<TeamInfoView {...props} premiumUser />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
     await user.click(screen.getByText("Team Member Settings"));
     await screen.findByPlaceholderText("Max spend ($)");
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -766,7 +766,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     renderWithProviders(<TeamInfoView {...props} premiumUser />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
     await user.click(screen.getByText("Team Member Settings"));
     fireEvent.change(await screen.findByPlaceholderText("Max spend ($)"), { target: { value: "7" } });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -789,7 +789,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     renderWithProviders(<TeamInfoView {...props} userModels={["gpt-4o", "claude-haiku-4-5"]} premiumUser />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
     await user.click(screen.getByText("Team Member Settings"));
     await user.click(screen.getAllByRole("button", { name: /add model budget/i })[0]);
     await user.click(screen.getByPlaceholderText("Select model"));
@@ -804,7 +804,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     renderWithProviders(<TeamInfoView {...props} userModels={["gpt-4o", "claude-haiku-4-5"]} premiumUser />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
     await user.click(screen.getByText("Team Member Settings"));
     await user.click(screen.getAllByRole("button", { name: /add model budget/i })[0]);
     await user.click(screen.getByPlaceholderText("Select model"));
@@ -845,7 +845,7 @@ describe("TeamInfoView - model rate limit picker", () => {
     renderWithProviders(<TeamInfoView {...props} userModels={["gpt-4o", "claude-haiku-4-5"]} premiumUser />);
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "设置" }));
-    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
     await user.click(screen.getByRole("button", { name: /add model limit/i }));
     await user.click(screen.getByPlaceholderText("Select model"));
 

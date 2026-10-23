@@ -115,7 +115,7 @@ describe("TelemetrySettingsPage", () => {
     renderPage();
 
     await user.click(await screen.findByRole("tab", { name: "管理控制台" }));
-    await user.click(await screen.findByRole("switch", { name: "Page navigation" }));
+    await user.click(await screen.findByRole("switch", { name: "页面导航" }));
 
     expect(await screen.findByRole("dialog", { name: "Telemetry is an enterprise-only feature" })).toBeVisible();
     expect(put).not.toHaveBeenCalled();
@@ -149,7 +149,7 @@ describe("TelemetrySettingsPage", () => {
     await user.click(await screen.findByRole("switch", { name: "心跳" }));
     await user.click(screen.getByRole("tab", { name: "管理控制台" }));
 
-    expect(await screen.findByRole("switch", { name: "Page navigation" })).toHaveAttribute("aria-disabled", "true");
+    expect(await screen.findByRole("switch", { name: "页面导航" })).toHaveAttribute("aria-disabled", "true");
     expect(put).toHaveBeenCalledTimes(1);
   });
 });
