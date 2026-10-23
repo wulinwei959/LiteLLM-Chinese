@@ -1,5 +1,5 @@
 import React from "react";
-import { CONFIG_OWNED_HINT, ConfigOwnedBadge } from "./ConfigOwned";
+import { ConfigOwnedBadge } from "./ConfigOwned";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 
@@ -43,6 +43,7 @@ const LatencyBasedConfiguration: React.FC<LatencyBasedConfigurationProps> = ({
                 <span className="text-xs font-medium text-foreground uppercase tracking-wide">
                   {param.replace(/_/g, " ")}
                 </span>
+                {ownedByConfig && <ConfigOwnedBadge />}
                 <p className="text-xs text-muted-foreground mt-0.5 mb-2">{paramExplanation[param] || ""}</p>
                 <Input
                   name={param}

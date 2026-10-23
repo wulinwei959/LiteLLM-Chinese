@@ -4951,3 +4951,7 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 ### 第 508 簇后的失败面
 
 5 个文件、7 例：key_edit_view 4（MCP 授权长度 2、移出项目按钮、清团队载荷）、key_info_view 1（团队成员预算区未渲染）、AllModelsTab 1（视图模式下拉选项取不到）、create_key_button 1（团队下拉选项取不到）、RouterSettingsForm 1（第 4 个徽标）。
+
+## 2026-10-24 第 509 簇：恢复延迟策略参数区的 config.yaml 徽标
+
+`LatencyBasedConfiguration` 只 import 了 `ConfigOwnedBadge` 却没渲染，第 4 个归属徽标缺位（其余三处：路由策略、标签过滤、可靠性输入各一个）。在参数名旁补回徽标并清掉随之失效的 `CONFIG_OWNED_HINT` 导入，`src/components/router_settings` 六个测试文件全绿，tsc 0 错。
