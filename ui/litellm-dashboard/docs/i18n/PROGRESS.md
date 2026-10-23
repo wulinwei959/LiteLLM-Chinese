@@ -4622,3 +4622,8 @@ CreateMCPServer、mcp_server_edit 的限额/RPM 占位与 EnvVarsSection 的变�
 结果：45 例中 44 例通过。唯一剩余 `cancels only a closed tab's approval...` 与 `keeps a single inline action...` 对"应用中是否禁用新建对话"预期相反；保留更安全的禁用行为，该例登记为行为分歧，非翻译问题。基线从 20 红降到 1 红。
 
 验证：AST 组件仅剩 ⌘J 快捷键与品牌 aria；全局可见英文 206→205 条、文件维持 110 个；目录叶子 11659→11662，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、1 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 458 簇：渲染扫描复跑归零
+
+启动 `npm run dev` 后执行 `npm run scan:rendered`，覆盖 home、keys、models、teams、logs、usage、guardrails、policies、agents、prompts、budgets、users 共 12 个页面：每页 0 个渲染错误、0 处英文，总计 0 条发现、0 条不在基线，基线无需更新。此前第 425 簇留下的 25 条运行时命中已全部清掉。
+
+受扫描器本身限制，图表图例、输入框 placeholder 与需要交互展开的路径不在本次覆盖内；静态 AST 与本地化守卫仍是这两类的主要保障。扫描结束已停止开发服务器。
