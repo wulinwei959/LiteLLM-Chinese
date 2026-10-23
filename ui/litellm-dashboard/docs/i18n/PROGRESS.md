@@ -4849,3 +4849,7 @@ DecisionModelsBanner 2 例：CTA 链接名改"去试试"，正文按 `callBefore
 ## 2026-10-24 第 486 簇：MCP 选择器作用域与连接测试的必填分支
 
 MCPServerSelector 1 例：`useMCPServers` 只传了 `teamId`，把组件拿到的 `userId` 丢了（hook 第二个参数就是用户作用域），补齐后测试转绿。model_connection_test 1 例：`prepareModelAddRequest` 返回空数组时组件直接 `result[0]` 解构抛错，落进通用失败文案；补 `result.length === 0` 分支走既有的 `models.addModel.requiredFieldsMissing`（请填写所有必填字段），测试的英文断言同步中文。
+
+## 2026-10-24 第 487 簇：恢复启发式评分区的渲染（合并遗留缺陷）
+
+`ClassificationMethodConfig.tsx` 里 `HeuristicScoringConfig` 只有 import、没有任何渲染点——上游合并时丢了 JSX，测试里"heuristic 决定层级时应出现高级评分"这条因此红。按既有分节（`showHeuristic && heuristic === "heuristic"`）在自定义技术关键词之后补回渲染，v2 与 LLM 分类器仍不显示。修完该测试转绿；顺手扫了一遍 `src` 下其它"本地组件仅 import 未使用"的情况，已无残留。

@@ -736,6 +736,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
         </div>
       )}
 
+      {showHeuristic && heuristic === "heuristic" && <HeuristicScoringConfig value={value} onChange={onChange} />}
       {["heuristic", "heuristic_first", "hybrid"].includes(classifierType) && (
         <AutoRouterAllowanceNote feature="heuristic_tuning" label={t("customScoringRulesLabel")} />
       )}
