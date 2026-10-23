@@ -739,9 +739,9 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
-    await user.click(screen.getByText("Team Member Settings"));
-    await screen.findByPlaceholderText("Max spend ($)");
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByText("团队成员设置"));
+    await screen.findByPlaceholderText("最大花费（$）");
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
     expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1]).not.toHaveProperty("team_member_model_max_budget");
@@ -767,9 +767,9 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
-    await user.click(screen.getByText("Team Member Settings"));
-    fireEvent.change(await screen.findByPlaceholderText("Max spend ($)"), { target: { value: "7" } });
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByText("团队成员设置"));
+    fireEvent.change(await screen.findByPlaceholderText("最大花费（$）"), { target: { value: "7" } });
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
     expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][2].team_member_model_max_budget).toStrictEqual({
@@ -790,9 +790,9 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
-    await user.click(screen.getByText("Team Member Settings"));
-    await user.click(screen.getAllByRole("button", { name: /add model budget/i })[0]);
-    await user.click(screen.getByPlaceholderText("Select model"));
+    await user.click(screen.getByText("团队成员设置"));
+    await user.click(screen.getAllByRole("button", { name: /添加模型限额/ })[0]);
+    await user.click(screen.getAllByPlaceholderText("选择模型").at(-1)!);
 
     expect(await screen.findByRole("option", { name: "claude-haiku-4-5" })).toBeInTheDocument();
   });
@@ -805,9 +805,9 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
-    await user.click(screen.getByText("Team Member Settings"));
-    await user.click(screen.getAllByRole("button", { name: /add model budget/i })[0]);
-    await user.click(screen.getByPlaceholderText("Select model"));
+    await user.click(screen.getByText("团队成员设置"));
+    await user.click(screen.getAllByRole("button", { name: /添加模型限额/ })[0]);
+    await user.click(screen.getAllByPlaceholderText("选择模型").at(-1)!);
 
     expect(await screen.findByRole("option", { name: "gpt-4o" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "claude-haiku-4-5" })).toBeInTheDocument();
@@ -846,8 +846,8 @@ describe("TeamInfoView - model rate limit picker", () => {
     await waitFor(() => expect(screen.queryAllByText("Test Team").length).toBeGreaterThan(0));
     await user.click(screen.getByRole("tab", { name: "设置" }));
     await user.click(await screen.findByRole("button", { name: /编辑设置/i }));
-    await user.click(screen.getByRole("button", { name: /add model limit/i }));
-    await user.click(screen.getByPlaceholderText("Select model"));
+    await user.click(screen.getByRole("button", { name: /添加模型限额/ }));
+    await user.click(screen.getAllByPlaceholderText("选择模型").at(-1)!);
 
     expect(await screen.findByRole("option", { name: "claude-haiku-4-5" })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "no-default-models" })).not.toBeInTheDocument();
