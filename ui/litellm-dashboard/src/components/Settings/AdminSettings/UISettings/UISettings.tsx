@@ -263,7 +263,7 @@ export default function UISettings() {
       { moyai_url: null },
       {
         onSuccess: () => {
-          toast.success("UI settings updated successfully");
+          toast.success(t("uiSettings.updatedToast"));
         },
         onError: (error) => {
           toast.fromError(error);
@@ -383,16 +383,16 @@ export default function UISettings() {
               <div className="space-y-1">
                 <p className="text-sm font-medium text-foreground">Moyai</p>
                 <p className="text-sm text-muted-foreground">
-                  {moyaiUrl ? `Connected to ${moyaiUrl}` : "Not connected"}
+                  {moyaiUrl ? t("uiSettings.connectedTo", { url: moyaiUrl }) : t("uiSettings.notConnected")}
                 </p>
               </div>
               {moyaiUrl ? (
                 <Button variant="outline" size="sm" disabled={isUpdating} onClick={handleDisconnectMoyai}>
-                  Disconnect
+                  {t("uiSettings.disconnectMoyai")}
                 </Button>
               ) : (
                 <a href={uiHref("moyai")} className="text-sm text-primary underline underline-offset-4">
-                  Connect from the Moyai page
+                  {t("uiSettings.connectFromMoyaiPage")}
                 </a>
               )}
             </div>

@@ -4817,7 +4817,11 @@
         "configure": "配置页面可见性",
         "save": "保存页面可见性设置",
         "reset": "重置为默认（所有页面）"
-      }
+      },
+      "disconnectMoyai": "断开连接",
+      "connectFromMoyaiPage": "从 Moyai 页面连接",
+      "notConnected": "未连接",
+      "connectedTo": "已连接到 {url}"
     },
     "ssoSettings": {
       "notConfigured": "未配置",

@@ -107,7 +107,7 @@ interface HarnessProps {
   fieldsHidden?: boolean;
 }
 
-const Harness: React.FC<HarnessProps> = ({ onFinish, initialMetadata, schemaFields, schemaLoading }) => {
+const Harness: React.FC<HarnessProps> = ({ onFinish, initialMetadata, schemaFields, schemaLoading, fieldsHidden }) => {
   const t = useTranslations("teams");
   const harnessSchema = useMemo(() => z.object({ metadata: buildMetadataPairsSchema(t) }), [t]);
   const form = useZodForm(harnessSchema, { defaultValues: { metadata: initialMetadata ?? [] } });

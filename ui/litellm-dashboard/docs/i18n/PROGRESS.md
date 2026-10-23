@@ -4456,3 +4456,11 @@ DetailsPage 族收口。渲染缺口一处：`MCPToolPermissionList` 组件在�
 测试翻面 8 条：DetailsPage tab `/MCP Servers/i`→`/MCP 服务器/`、`/Skills/i`→`/技能/`、region 名与 无工具/全部工具/此访问组未分配技能 断言，EditModal 补漏的 `/MCP Servers/` tab 与 "Flat List"→"平铺列表"（mcpToolPermissions.flatList 早已有 zh 值，测试没翻面）。access-groups 全域 86 例从 HEAD 基线 9 红到全绿、净新增 0。
 
 验证：AST 触及文件清零（全域余量继续下降）；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier 触及文件 clean（AccessGroupCreateDialog.tsx 的上游固有脏不在本簇半径不动）；`npm run build` exit 0。
+
+## 2026-10-23 第 435 簇：UI 设置 Moyai 区块与键值对字段接线
+
+UISettings 的 Moyai 连接区块四处：toast 复用 `adminPanel.uiSettings.updatedToast`（值与原硬编码逐字一致），Disconnected 态两句新增 `uiSettings.notConnected`/`connectedTo`（"已连接到 {url}"），按钮与链接新增 `disconnectMoyai`/`connectFromMoyaiPage`；标题 "Moyai" 判品牌保留。MetadataKeyValueFields 两处复用 `teams.metadata.addPair/removePair`（外层组件原无译员，补 `useTranslations("teams")`）。UIThemeSettings 判定账三条：`Failed to update settings`/`Failed to reset` 两枚 throw 被 catch 后由 `toast.fromError(t("themeUpdateFailed"/"themeResetFailed"))` 的目录消息上屏、throw 本体不上屏，循 zod 响应侧同判保留；三枚 https://example.com placeholder 判示例技术串保留。目录新增 4 叶（11563→11567）。
+
+测试：UISettings.test.tsx 三断言翻面（断开连接/未连接/从 Moyai 页面连接/已连接到 url）；MetadataKeyValueFields.test.tsx 修 HEAD 既有缺陷 `fieldsHidden` 解构漏项（Harness 声明了 prop 却没接，13 例 ReferenceError），修后该文件 13 红清到 6，剩余 6 例是 declared-schema 渲染模式的功能差（测试期望预填可编辑键行、组件走只读 label 分支），属行为债非翻译，另账。设置域 438 例从 HEAD 19 红降至 12 红、逐名 diff 净新增 0。
+
+验证：AST 触及文件仅剩 1 枚品牌保留；生产 typecheck 0 错；死键 0；eslint 与 HEAD 计数持平（两 test 文件的 render 未用导入是上游快照既有）；prettier clean；`npm run build` exit 0。

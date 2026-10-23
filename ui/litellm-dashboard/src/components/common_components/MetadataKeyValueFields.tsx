@@ -132,7 +132,7 @@ const MetadataRow = <TFieldValues extends FieldValues>({
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Remove key-value pair"
+          aria-label={t("metadata.removePair")}
           className="mt-1 text-destructive"
           onClick={onRemove}
         >
@@ -151,6 +151,7 @@ const MetadataKeyValueFields = <TFieldValues extends FieldValues>({
   schemaLoading = false,
 }: MetadataKeyValueFieldsProps<TFieldValues>) => {
   const { fields, append, remove } = useFieldArray({ control, name });
+  const t = useTranslations("teams");
   const seededRef = useRef(false);
   const schemaLabelsByKey = new Map(schemaFields.map((field) => [field.key, field.label || field.key]));
   const schemaReady = !schemaLoading && schemaFields.length > 0;
@@ -214,7 +215,7 @@ const MetadataKeyValueFields = <TFieldValues extends FieldValues>({
         onClick={() => append({ key: "", value: "" } as never, { shouldFocus: false })}
       >
         <Plus className="size-4" />
-        Add Key-Value Pair
+        {t("metadata.addPair")}
       </Button>
     </>
   );

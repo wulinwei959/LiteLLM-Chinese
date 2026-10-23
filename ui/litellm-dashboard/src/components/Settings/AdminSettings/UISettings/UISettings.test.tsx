@@ -150,9 +150,9 @@ describe("UISettings", () => {
 
     renderWithProviders(<UISettings />);
 
-    expect(screen.getByText("Connected to https://moyai.example.com")).toBeInTheDocument();
+    expect(screen.getByText("已连接到 https://moyai.example.com")).toBeInTheDocument();
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: "Disconnect" }));
+      fireEvent.click(screen.getByRole("button", { name: "断开连接" }));
     });
 
     expect(mutateMock).toHaveBeenCalledWith(
@@ -164,8 +164,8 @@ describe("UISettings", () => {
   it("shows a link to the Moyai page when not connected", () => {
     renderWithProviders(<UISettings />);
 
-    expect(screen.getByText("Not connected")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Connect from the Moyai page" })).toHaveAttribute("href", "/ui/moyai");
+    expect(screen.getByText("未连接")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "从 Moyai 页面连接" })).toHaveAttribute("href", "/ui/moyai");
   });
 
   it("should toggle require auth for public AI Hub setting and call update", () => {
