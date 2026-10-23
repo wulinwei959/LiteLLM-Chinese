@@ -349,13 +349,9 @@ export type SearchBoxCopyCommandProps<F extends string> = {
 
 type CopyOutcome = { readonly command: string; readonly outcome: "copied" | "failed" } | null;
 
-const copyLabel = (last: CopyOutcome, command: string): string => {
-  if (last?.command !== command) return "Copy as curl";
-  return last.outcome === "copied" ? "Copied" : "Copy failed";
-};
-
 /** Puts the current query on the clipboard as an API call, from the suggestions footer. */
 function CopyCommand<F extends string>({ title, command }: SearchBoxCopyCommandProps<F>) {
+  const t = useTranslations("searchBox");
   const { clauses } = useSearchBox();
   const [last, setLast] = useState<CopyOutcome>(null);
   const current = useMemo(() => command(toSearchQuery(clauses as readonly QueryClause<F>[])), [command, clauses]);
@@ -364,7 +360,13 @@ function CopyCommand<F extends string>({ title, command }: SearchBoxCopyCommandP
       () => setLast({ command: current, outcome: "copied" }),
       () => setLast({ command: current, outcome: "failed" }),
     );
-  const label = copyLabel(last, current);
+  const copied = last?.outcome === "copied" && last.command === current;
+  const copyLabel = (): string => {
+    if (copied) return t("copied");
+    if (last?.command === current) return t("copyFailed");
+    return t("copyAsCurl");
+  };
+  const label = copyLabel();
   return (
     <Button
       type="button"
@@ -376,7 +378,7 @@ function CopyCommand<F extends string>({ title, command }: SearchBoxCopyCommandP
       onMouseDown={(event) => event.preventDefault()}
       onClick={() => void copy()}
     >
-      {label === "Copied" ? <Check /> : <Copy />}
+      {copied ? <Check /> : <Copy />}
       {label}
     </Button>
   );

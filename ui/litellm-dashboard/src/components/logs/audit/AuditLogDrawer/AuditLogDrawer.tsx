@@ -2,7 +2,7 @@ import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useCallback } from "react";
 import moment from "moment";
-import { AuditLogEntry, AUDIT_TABLE_NAME_KEYS } from "../AuditLogsTableColumns";
+import { AuditLogEntry, auditActionLabel, auditTableNameLabel } from "../AuditLogsTableColumns";
 import DefaultProxyAdminTag from "../../../common_components/DefaultProxyAdminTag";
 import CopyButton from "@/components/shared/CopyButton";
 import { StatusBadge, type StatusTone } from "@/components/shared/table_cells/status_badge";
@@ -120,8 +120,10 @@ function DiffSection({ log }: { log: AuditLogEntry }) {
       }
     });
 
-    displayBefore = Object.keys(changedBefore).length > 0 ? changedBefore : { note: "No differing fields detected" };
-    displayAfter = Object.keys(changedAfter).length > 0 ? changedAfter : { note: "No differing fields detected" };
+    displayBefore =
+      Object.keys(changedBefore).length > 0 ? changedBefore : { note: t("auditLogs.drawer.noDifferingFields") };
+    displayAfter =
+      Object.keys(changedAfter).length > 0 ? changedAfter : { note: t("auditLogs.drawer.noDifferingFields") };
   }
 
   const renderValue = (label: string, value: Record<string, any> | null | undefined) => {
@@ -174,8 +176,8 @@ function DiffSection({ log }: { log: AuditLogEntry }) {
 
   return (
     <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-      {renderValue("Before", displayBefore)}
-      {renderValue("After", displayAfter)}
+      {renderValue(t("auditLogs.drawer.before"), displayBefore)}
+      {renderValue(t("auditLogs.drawer.after"), displayAfter)}
     </div>
   );
 }
@@ -184,7 +186,7 @@ export function AuditLogDrawer({ open, onClose, log }: AuditLogDrawerProps) {
   const t = useTranslations("logs");
   if (!log) return null;
 
-  const tableDisplay = t(AUDIT_TABLE_NAME_KEYS[log.table_name]) ?? log.table_name;
+  const tableDisplay = auditTableNameLabel(t, log.table_name);
 
   return (
     <Sheet open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
@@ -192,7 +194,7 @@ export function AuditLogDrawer({ open, onClose, log }: AuditLogDrawerProps) {
         <SheetTitle className="sr-only">{t("audit.title")}</SheetTitle>
 
         <div className="flex shrink-0 items-center gap-3 border-b border-border bg-card px-6 py-4">
-          <StatusBadge tone={ACTION_TONE[log.action] ?? "neutral"} label={log.action} />
+          <StatusBadge tone={ACTION_TONE[log.action] ?? "neutral"} label={auditActionLabel(t, log.action)} />
           <span className="text-sm text-muted-foreground">
             {moment.utc(log.updated_at).local().format("MMM D, YYYY HH:mm:ss")}
           </span>

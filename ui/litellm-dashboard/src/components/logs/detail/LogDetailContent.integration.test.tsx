@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -64,7 +63,7 @@ describe("LogDetailContent", () => {
       <LogDetailContent logEntry={createLogEntry({ user: "106514937785257944828" })} userEmail="alice@example.com" />,
     );
 
-    expect(screen.getByText("用户")).toBeInTheDocument();
+    expect(screen.getAllByText("用户").length).toBeGreaterThan(0);
     expect(screen.getByText("alice@example.com")).toBeInTheDocument();
     expect(screen.getByText("106514937785257944828")).toBeInTheDocument();
   });
@@ -72,7 +71,7 @@ describe("LogDetailContent", () => {
   it("falls back to the user id in Request Details when no email is resolved", () => {
     renderWithProviders(<LogDetailContent logEntry={createLogEntry({ user: "106514937785257944828" })} />);
 
-    expect(screen.getByText("用户")).toBeInTheDocument();
+    expect(screen.getAllByText("用户").length).toBeGreaterThan(0);
     expect(screen.getByText("106514937785257944828")).toBeInTheDocument();
   });
 
@@ -435,9 +434,9 @@ describe("LogDetailContent", () => {
   });
 
   it.each([
-    { selection: "round_robin", label: "Round robin" },
-    { selection: "session_affinity", label: "Session affinity" },
-    { selection: "session_affinity_retry", label: "Session affinity (retry)" },
+    { selection: "round_robin", label: "轮询" },
+    { selection: "session_affinity", label: "会话亲和" },
+    { selection: "session_affinity_retry", label: "会话亲和（重试）" },
   ] as const)("shows the selected Kubernetes pod and routing mode", ({ selection, label }) => {
     renderWithProviders(
       <LogDetailContent
@@ -456,7 +455,7 @@ describe("LogDetailContent", () => {
     );
 
     expect(screen.getByText("Pod")).toBeInTheDocument();
-    expect(screen.getByText(`10.0.0.2 · ${label} · 3 pods`)).toBeInTheDocument();
+    expect(screen.getByText(`10.0.0.2 · ${label} · 3 个 Pod`)).toBeInTheDocument();
   });
 
   it("omits the Pod row when routing metadata is absent", () => {

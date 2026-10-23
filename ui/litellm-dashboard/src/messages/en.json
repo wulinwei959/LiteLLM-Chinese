@@ -272,6 +272,12 @@
       "manual": "Manual"
     },
     "closeWithEsc": "Close (Esc)",
+    "nextItemWithKey": "Next {noun} (J)",
+    "previousItemWithKey": "Previous {noun} (K)",
+    "closeItemWithEsc": "Close {noun} (Esc)",
+    "enterFullScreen": "Enter full screen",
+    "exitFullScreen": "Exit full screen",
+    "resizeItemPanel": "Resize {noun} panel",
     "keyboardShortcuts": "Keyboard shortcuts",
     "credentialUpdated": "Credential updated successfully",
     "total": "Total",
@@ -5599,6 +5605,11 @@
       "outputTokens": "Output Tokens",
       "tokens": "Tokens",
       "reasoningTokens": "Reasoning Tokens",
+      "responseCacheHit": "Hit",
+      "responseCacheMiss": "Miss",
+      "info": "Info",
+      "podCount": "{count} pods",
+      "userRole": "User",
       "cost": "Cost",
       "cacheKey": "Cache Key",
       "jsonView": "JSON",
@@ -5670,7 +5681,8 @@
         "code500": "500 - Internal Server Error",
         "code502": "502 - Bad Gateway",
         "code503": "503 - Service Unavailable",
-        "code529": "529 - Overloaded"
+        "code529": "529 - Overloaded",
+        "useCustomCode": "Use custom code: {code}"
       },
       "errorMessage": "Error Message",
       "keyHash": "Key Hash",
@@ -5679,6 +5691,8 @@
       "options": {
         "allRequests": "All Requests",
         "allCredentials": "All Credentials",
+        "cacheHit": "Cache Hit",
+        "cacheMiss": "Cache Miss",
         "clientOAuthToken": "Client OAuth token",
         "configuredKey": "Configured key",
         "allTypes": "All Types",
@@ -5951,7 +5965,10 @@
       "drawer": {
         "title": "Audit log details",
         "notApplicable": "N/A",
-        "maxBudgetLabel": "Max Budget: "
+        "maxBudgetLabel": "Max Budget: ",
+        "before": "Before",
+        "after": "After",
+        "noDifferingFields": "No differing fields detected"
       }
     },
     "trace": {
@@ -13207,6 +13224,9 @@
     }
   },
   "searchBox": {
+    "copyAsCurl": "Copy as curl",
+    "copied": "Copied",
+    "copyFailed": "Copy failed",
     "aria": {
       "loadingResults": "Loading results",
       "suggestions": "Search suggestions"

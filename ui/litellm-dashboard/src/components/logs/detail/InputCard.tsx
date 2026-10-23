@@ -6,11 +6,25 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
+import type { LogsTranslator } from "@/lib/i18n/translators";
 import { ParsedMessage } from "./prettyMessagesTypes";
 import { SectionHeader } from "./SectionHeader";
 import { CollapsibleMessage } from "./CollapsibleMessage";
 import { HistoryTree } from "./HistoryTree";
 import { SimpleMessageBlock } from "./SimpleMessageBlock";
+
+type MessageRoleLabelKey = "detail.assistantRole" | "detail.systemRole" | "detail.userRole";
+
+const MESSAGE_ROLE_LABEL_KEYS: Readonly<Record<string, MessageRoleLabelKey>> = {
+  assistant: "detail.assistantRole",
+  system: "detail.systemRole",
+  user: "detail.userRole",
+};
+
+const messageRoleLabel = (t: LogsTranslator, role: string): string => {
+  const key = MESSAGE_ROLE_LABEL_KEYS[role];
+  return key === undefined ? role.toUpperCase() : t(key);
+};
 
 interface InputCardProps {
   messages: ParsedMessage[];
@@ -82,7 +96,7 @@ export function InputCard({ messages, promptTokens, inputCost }: InputCardProps)
           {/* Last User Message - Always visible */}
           {lastMessage && (
             <SimpleMessageBlock
-              label={lastMessage.role.toUpperCase()}
+              label={messageRoleLabel(t, lastMessage.role)}
               content={lastMessage.content}
               toolCalls={lastMessage.toolCalls}
             />

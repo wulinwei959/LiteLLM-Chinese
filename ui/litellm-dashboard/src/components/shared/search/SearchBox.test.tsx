@@ -1,4 +1,4 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { act, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useEffect, useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -16,6 +16,7 @@ import type { QueryLanguage } from "./language";
 import { SearchBox } from "./SearchBox";
 import type { SearchQuery } from "./searchQuery";
 import { itemValues, type ValueSource } from "./valueSource";
+import { renderWithProviders } from "../../../../tests/test-utils";
 
 /** A toy API: each filter becomes a flag, so the test can read the translation off the footer. */
 function notesCli(query: SearchQuery<string>): string {
@@ -94,7 +95,7 @@ function LaggingHarness() {
 
 const box = () => screen.getByRole("combobox", { name: "Search notes" });
 const undelivered = () => screen.getByRole("status", { name: "undelivered" });
-const listbox = () => screen.getByRole("listbox", { name: "Search suggestions" });
+const listbox = () => screen.getByRole("listbox", { name: "搜索建议" });
 const operatorLabels = () =>
   within(listbox())
     .queryAllByText(/^(equals|not equals|wildcard match|does not contain)$/)
@@ -129,15 +130,15 @@ describe("SearchBox", () => {
         <SearchBox.Input placeholder="Search notes" busy={busy} />
       </SearchBox.Root>
     );
-    const { rerender } = render(search(true));
-    expect(screen.getByRole("status", { name: "Loading results" })).toBeVisible();
+    const { rerender } = renderWithProviders(search(true));
+    expect(screen.getByRole("status", { name: "正在加载结果" })).toBeVisible();
     rerender(search(false));
-    expect(screen.queryByRole("status", { name: "Loading results" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("status", { name: "正在加载结果" })).not.toBeInTheDocument();
   });
 
   it("builds a filter from the keyboard: field, then value", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
     expect(screen.getByText("Search notes")).toBeVisible();
     await user.click(box());
     expect(box()).toHaveAttribute("aria-expanded", "true");
@@ -171,20 +172,20 @@ describe("SearchBox", () => {
     ["wildcards only", WILDCARD_NOTE_QUERY, ["equals", "wildcard match"]],
   ])("explains exactly the operators a language with %s honors", async (_, language, expected) => {
     const user = userEvent.setup();
-    render(<NoteSearch value="" onChange={vi.fn()} language={language} />);
+    renderWithProviders(<NoteSearch value="" onChange={vi.fn()} language={language} />);
     await user.click(box());
     await user.keyboard("tag:");
-    expect(within(listbox()).getByText("Comparison operators")).toBeVisible();
+    expect(within(listbox()).getByText("比较运算符")).toBeVisible();
     expect(operatorLabels()).toEqual(expected);
   });
 
   it("offers values without operator help or negated keys for an equality-only language", async () => {
     const user = userEvent.setup();
-    render(<NoteSearch value="" onChange={vi.fn()} language={EXACT_NOTE_QUERY} />);
+    renderWithProviders(<NoteSearch value="" onChange={vi.fn()} language={EXACT_NOTE_QUERY} />);
     await user.click(box());
     await user.keyboard("tag:");
     expect(within(listbox()).getByRole("option", { name: "cron" })).toBeVisible();
-    expect(within(listbox()).queryByText("Comparison operators")).not.toBeInTheDocument();
+    expect(within(listbox()).queryByText("比较运算符")).not.toBeInTheDocument();
     expect(operatorLabels()).toEqual([]);
     await user.keyboard("{Escape}{ArrowDown}");
     expect(listbox()).toBeVisible();
@@ -194,7 +195,7 @@ describe("SearchBox", () => {
 
   it("wraps arrow navigation and picks with Tab", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
     await user.click(box());
     await user.keyboard("{ArrowUp}");
     expect(within(listbox()).getByRole("option", { name: "id" })).toHaveAttribute("aria-selected", "true");
@@ -206,7 +207,7 @@ describe("SearchBox", () => {
 
   it("picks a suggestion with the mouse without losing focus", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
     await user.click(box());
     await user.keyboard("tag:");
     await user.click(within(listbox()).getByRole("option", { name: "researcher" }));
@@ -222,7 +223,7 @@ describe("SearchBox", () => {
 
   it("stays one line: Enter with no menu adds nothing, and Escape closes the menu until ArrowDown", async () => {
     const user = userEvent.setup();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
     await user.click(box());
     await user.keyboard("refund{Enter}");
     expect(box()).toHaveTextContent(/^refund$/, { normalizeWhitespace: false });
@@ -235,7 +236,7 @@ describe("SearchBox", () => {
   it("emits the query once typing pauses, not per keystroke", async () => {
     const user = pausedClockUser();
     const onChange = vi.fn();
-    render(<NoteSearch value="" onChange={onChange} />);
+    renderWithProviders(<NoteSearch value="" onChange={onChange} />);
     await user.click(box());
     await user.keyboard("ref");
     act(() => vi.advanceTimersByTime(149));
@@ -248,7 +249,7 @@ describe("SearchBox", () => {
 
   it("keeps typing intact while the value it emitted arrives late", async () => {
     const user = pausedClockUser();
-    render(<LaggingHarness />);
+    renderWithProviders(<LaggingHarness />);
     const deliver = () => user.click(screen.getByRole("button", { name: "Deliver next" }));
     await user.click(box());
     await user.keyboard("ab");
@@ -270,7 +271,7 @@ describe("SearchBox", () => {
 
   it("hands over what was typed as soon as focus leaves, without waiting for the pause", async () => {
     const user = pausedClockUser();
-    render(<LaggingHarness />);
+    renderWithProviders(<LaggingHarness />);
     await user.click(box());
     await user.keyboard("tag:cron");
     expect(undelivered()).toBeEmptyDOMElement();
@@ -283,7 +284,7 @@ describe("SearchBox", () => {
   it("delivers nothing more on blur once the query was already delivered", async () => {
     const user = pausedClockUser();
     const onChange = vi.fn();
-    render(<NoteSearch value="" onChange={onChange} />);
+    renderWithProviders(<NoteSearch value="" onChange={onChange} />);
     await user.click(box());
     await user.keyboard("refund");
     pauseTyping();
@@ -297,7 +298,7 @@ describe("SearchBox", () => {
 
   it("lets a query set from outside replace text that blur just handed over", async () => {
     const user = pausedClockUser();
-    render(<Harness />);
+    renderWithProviders(<Harness />);
     await user.click(box());
     await user.keyboard("refund");
     await user.click(screen.getByRole("button", { name: "Load saved query" }));
@@ -308,7 +309,7 @@ describe("SearchBox", () => {
 
   it("shows a query set from outside, such as the URL", async () => {
     const user = userEvent.setup();
-    render(<Harness initial="tag:triage" />);
+    renderWithProviders(<Harness initial="tag:triage" />);
     expect(box()).toHaveTextContent("tag:triage");
     await user.click(screen.getByRole("button", { name: "Load saved query" }));
     expect(box()).toHaveTextContent(/^tag:cron$/, {
@@ -333,10 +334,10 @@ describe("SearchBox", () => {
         return answer ? { values: answer, loading: false } : { values: [], loading: true };
       },
     };
-    render(<NoteSearch value="" onChange={vi.fn()} values={facets} />);
+    renderWithProviders(<NoteSearch value="" onChange={vi.fn()} values={facets} />);
     await user.click(box());
     await user.keyboard("body:x tag:re");
-    expect(within(listbox()).getByRole("status")).toHaveTextContent("Loading values…");
+    expect(within(listbox()).getByRole("status")).toHaveTextContent("正在加载候选项……");
     const option = await within(listbox()).findByRole("option", {
       name: "remote-researcher",
     });
@@ -351,18 +352,18 @@ describe("SearchBox", () => {
   it("copies the command for the current query from the footer and keeps the box open", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
-    render(<NoteSearchWithHint value="" onChange={onChange} />);
-    expect(screen.queryByRole("button", { name: "Copy as curl" })).not.toBeInTheDocument();
+    renderWithProviders(<NoteSearchWithHint value="" onChange={onChange} />);
+    expect(screen.queryByRole("button", { name: "复制为 curl" })).not.toBeInTheDocument();
     await user.click(box());
     expect(screen.getByTitle("The notes CLI takes the same flags")).toBeVisible();
     await user.keyboard("-tag:cr");
-    await user.click(screen.getByRole("button", { name: "Copy as curl" }));
+    await user.click(screen.getByRole("button", { name: "复制为 curl" }));
     expect(await navigator.clipboard.readText()).toBe("notes --tag!=cr");
-    expect(screen.getByRole("button", { name: "Copied" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "已复制" })).toBeVisible();
     expect(box()).toHaveAttribute("aria-expanded", "true");
     await user.keyboard("o");
-    expect(screen.getByRole("button", { name: "Copy as curl" })).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "Copy as curl" }));
+    expect(screen.getByRole("button", { name: "复制为 curl" })).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "复制为 curl" }));
     expect(await navigator.clipboard.readText()).toBe("notes --tag!=cro");
   });
 });

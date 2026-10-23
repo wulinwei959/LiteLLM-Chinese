@@ -5,13 +5,14 @@ import {
   type ColumnDef,
   type TableOptions,
 } from "@tanstack/react-table";
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
 
 import { Inspector } from "./Inspector";
 import { InspectorTable } from "./InspectorTable";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 interface Node {
   readonly id: string;
@@ -79,7 +80,7 @@ const rowNames = () =>
 describe("InspectorTable tree", () => {
   it("collapses and re-expands one parent's rows without touching its siblings", async () => {
     const user = userEvent.setup();
-    render(<Tree />);
+    renderWithProviders(<Tree />);
     expect(rowNames()).toEqual(["a", "a1", "a2", "b", "b1", "c"]);
 
     await user.click(screen.getByRole("button", { name: "Hide a" }));
@@ -92,7 +93,7 @@ describe("InspectorTable tree", () => {
 
   it("opens rows without toggling them, and J walks only the visible rows", async () => {
     const user = userEvent.setup();
-    render(<Tree />);
+    renderWithProviders(<Tree />);
     await user.click(screen.getByRole("button", { name: "Hide a" }));
     expect(screen.queryByText(/^Open:/)).not.toBeInTheDocument();
 
@@ -145,7 +146,7 @@ function SkeletonTree({ visibility }: { visibility: Record<string, boolean> }) {
 
 describe("InspectorTable.SkeletonRow", () => {
   it("renders one hidden cell per visible leaf column and honors renderSkeleton", () => {
-    render(<SkeletonTree visibility={{}} />);
+    renderWithProviders(<SkeletonTree visibility={{}} />);
     const [row] = screen.getAllByTestId("skeleton-row");
     expect(row).toHaveAttribute("aria-hidden", "true");
     expect(within(row).getAllByRole("cell", { hidden: true })).toHaveLength(2);
@@ -153,7 +154,7 @@ describe("InspectorTable.SkeletonRow", () => {
   });
 
   it("follows column visibility", () => {
-    render(<SkeletonTree visibility={{ size: false }} />);
+    renderWithProviders(<SkeletonTree visibility={{ size: false }} />);
     const [row] = screen.getAllByTestId("skeleton-row");
     expect(within(row).getAllByRole("cell", { hidden: true })).toHaveLength(1);
   });

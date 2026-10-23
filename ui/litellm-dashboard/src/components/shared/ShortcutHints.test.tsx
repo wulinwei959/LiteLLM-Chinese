@@ -1,16 +1,17 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { HotkeysProvider } from "react-hotkeys-hook";
 import { describe, expect, it, vi } from "vitest";
 
 import { ShortcutHints } from "./ShortcutHints";
 import { BoundShortcut as Bound } from "./__fixtures__/BoundShortcut";
+import { renderWithProviders } from "../../../tests/test-utils";
 
-const hintText = () => screen.getByLabelText("Keyboard shortcuts").textContent;
+const hintText = () => screen.getByLabelText("键盘快捷键").textContent;
 
 describe("ShortcutHints", () => {
   it("lists what is bound, merging keys that share a description and letting the pane own a shared key", () => {
     const onPress = vi.fn();
-    const { rerender } = render(
+    const { rerender } = renderWithProviders(
       <HotkeysProvider>
         <Bound id="j" keys={["j", "trace"]} layer="panel" onPress={onPress} />
         <Bound id="k" keys={["k", "trace"]} layer="panel" onPress={onPress} />
@@ -35,12 +36,12 @@ describe("ShortcutHints", () => {
   });
 
   it("renders nothing while no shortcut is bound", () => {
-    render(
+    renderWithProviders(
       <HotkeysProvider>
         <Bound id="off" keys={["j", "trace"]} layer="panel" enabled={false} onPress={vi.fn()} />
         <ShortcutHints />
       </HotkeysProvider>,
     );
-    expect(screen.queryByLabelText("Keyboard shortcuts")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("键盘快捷键")).not.toBeInTheDocument();
   });
 });

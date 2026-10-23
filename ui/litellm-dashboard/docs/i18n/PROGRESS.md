@@ -4686,3 +4686,18 @@ AddModelForm.integration：选择凭据、提供商、认证方式、添加凭�
 2. batch-b 其余文件（失败数为批次日志口径）：LogDetailContent.integration 16（SYSTEM/已评估 N 个护栏）、add_auto_router_tab.integration 12（Auto Router Name）、AddModelPanel.integration 12、CacheAwareRoutingConfig.test 9、models-and-endpoints/page.test 7（Deployed Models 页签）、ModelGroupAliasPanel.integration 5、AllModelsTab.test 4、LlmCredentialsPanel.integration 3、InputCard.test 2、JevClassifierConfig.integration 1。
 3. batch-c 379 例 / 58 文件未分析，先 `grep -E "^ FAIL " /tmp/opencode/batch-c.log` 分簇。
 4. 批次日志：/tmp/opencode/batch-b.log、batch-c.log（amf4.log 为 AddModelForm 最新一轮）。全部绿后复跑 tsc + 死键检查，再更新本文件并确认是否合入 main。
+
+## 2026-10-23 第 467 簇：日志筛选、审计抽屉与共享检查器文案接线
+
+生产侧七处接线：RequestLogsFilters 的状态、缓存、凭据、Span 类型四组筛选项由硬编码英文标签表改为键值表（status/allStatuses/success/failure 复用 logs 既有键，filters.options 新增 cacheHit/cacheMiss，凭据与 Span 类型复用 constants.ts 里既有的 CREDENTIAL_LABEL_KEYS 与 SPAN_TYPE_LABEL_KEYS），在组件内用译员生成选项，Select 的 items 与下拉项文案同源；自定义错误码选项由 `Use custom code: ${trimmed}` 改为 filters.errorCodes.useCustomCode（"使用自定义错误码：{code}"）。AuditLogDrawer 的操作名改用 AuditLogsTableColumns 里既有的 auditActionLabel，未知表名回退改用 auditTableNameLabel（原来的 `t(AUDIT_TABLE_NAME_KEYS[...])` 走不到回退分支），"Before"/"After"/"No differing fields detected" 三处英文换成 auditLogs.drawer.before/after/noDifferingFields，logs.audit.table 词条由"表"改为"数据表"。LogDetailContent 的响应缓存命中标记由 "Hit"/"Miss" 改为 detail.responseCacheHit/responseCacheMiss，护栏跳转链接改用 guardrail.guardrailsEvaluated 与 guardrail.notRunSuffix（原先是 `N guardrails evaluated, M not run` 手拼英文），指标提示图标 aria-label 由 `${label} info` 改为 `${label} 信息`，Pod 数量改走 detail.podCount，token 标签词条由"输入 token 数"等改为"输入令牌/输出令牌/推理令牌"。InputCard 的消息角色标签由 role.toUpperCase() 改为按角色取 detail.assistantRole/systemRole/userRole（新增 userRole）。Inspector 的头部按钮、快捷键说明、全屏按钮与拖拽把手接入 common 命名空间（新增 nextItemWithKey/previousItemWithKey/closeItemWithEsc/enterFullScreen/exitFullScreen/resizeItemPanel，Escape 快捷键说明改用 common.close）。SearchBox 的复制按钮接入 searchBox.copyAsCurl/copied/copyFailed。
+
+测试侧：Inspector、InspectorTable、SearchBox、ShortcutHints 四个文件此前直接用 RTL 的 render，组件接入 useTranslations 后整文件报 "Failed to call useTranslations because the context from NextIntlClientProvider was not found"，改为 renderWithProviders；断言里的英文文案翻成中文（键盘快捷键、关闭（Esc）、搜索建议、正在加载结果、比较运算符、复制为 curl 等）。InputCard 与 OutputCard 的角色断言按系统/助手词条翻面。LogDetailContent 集成测试的"用户"断言改为 getAllByText，避免与请求详情里的用户标签和消息角色标签重名；Pod 路由用例的期望改为中文（轮询/会话亲和/会话亲和（重试））与"3 个 Pod"。
+
+验证：本簇涉及的 9 个测试文件全绿；shared 与 logs 两个目录整跑只剩 DataTable.test 与 spend_budget_cell.test 两处既有失败（类名断言与预算文案，都在本簇范围外）；生产 tsc 0 错；死键 0；目录叶子数 en/zh 均为 11686；prettier 与 eslint 无新增错误。
+
+### 剩余工作（下批起点）
+
+1. 以 /tmp/opencode/live_now.log 为基准，本簇修掉 7 个文件、77 例，剩 55 个文件、206 例。其中相当一部分是测试没套 renderWithProviders 或组件刚接入 useTranslations 后断言未翻面（CacheAwareRoutingConfig.test、LlmCredentialsPanel.integration、ModelGroupAliasPanel.integration、TelemetrySettingsPage.integration、UserActivity.integration、GithubCopilotConnectModal.integration 等），先按文件跑一遍确认是不是同一个病因，再决定是补 provider 还是翻断言。
+2. spend_budget_cell.tsx 的预算文案仍是手拼英文（"· Unlimited"、"· $X of $Y (team member)"、"$X of $Y"），需要像本簇日志域那样接 tableCells 命名空间，并同步翻 spend_budget_cell.test 的期望。
+3. AddModelForm.integration 剩 8 例行为断言（团队作用域告警、credential-only 载荷、连接测试校验流程），非文案问题，逐例对照 HEAD 与生产取值分析。
+4. models-and-endpoints 组 30 例：页签名"Add Model"/"Deployed Models"/"Health Status"等未翻面、公开模型筛选框占位符、删除与暂停动作的载荷断言，需要单独分簇处理。

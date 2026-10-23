@@ -48,7 +48,7 @@ describe("InputCard", () => {
       },
     ];
     renderWithProviders(<InputCard messages={messagesWithSystem} />);
-    expect(screen.getByText("SYSTEM")).toBeInTheDocument();
+    expect(screen.getByText("系统")).toBeInTheDocument();
     expect(screen.getByText("You are a helpful assistant")).toBeInTheDocument();
   });
 
@@ -142,7 +142,7 @@ describe("InputCard", () => {
       },
     ];
     renderWithProviders(<InputCard messages={messages} />);
-    expect(screen.queryByText("SYSTEM")).not.toBeInTheDocument();
+    expect(screen.queryByText("系统")).not.toBeInTheDocument();
     expect(screen.getByText("User message only")).toBeInTheDocument();
   });
 
@@ -154,7 +154,7 @@ describe("InputCard", () => {
       },
     ];
     renderWithProviders(<InputCard messages={messages} />);
-    expect(screen.getByText("SYSTEM")).toBeInTheDocument();
+    expect(screen.getByText("系统")).toBeInTheDocument();
     expect(screen.getByText("System only")).toBeInTheDocument();
   });
 
@@ -166,7 +166,7 @@ describe("InputCard", () => {
       },
     ];
     renderWithProviders(<InputCard messages={messages} />);
-    expect(screen.getByText("ASSISTANT")).toBeInTheDocument();
+    expect(screen.getByText("助手")).toBeInTheDocument();
     expect(screen.getByText("Assistant response")).toBeInTheDocument();
   });
 

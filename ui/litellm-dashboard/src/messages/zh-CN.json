@@ -272,6 +272,12 @@
       "manual": "手动"
     },
     "closeWithEsc": "关闭（Esc）",
+    "nextItemWithKey": "下一个 {noun} (J)",
+    "previousItemWithKey": "上一个 {noun} (K)",
+    "closeItemWithEsc": "关闭 {noun}（Esc）",
+    "enterFullScreen": "进入全屏",
+    "exitFullScreen": "退出全屏",
+    "resizeItemPanel": "调整 {noun} 面板大小",
     "keyboardShortcuts": "键盘快捷键",
     "credentialUpdated": "凭据更新成功",
     "total": "总计",
@@ -5595,10 +5601,15 @@
       "pod": "Pod",
       "errorCode": "错误码：",
       "message": "消息：",
-      "inputTokens": "输入 token 数",
-      "outputTokens": "输出 token 数",
+      "inputTokens": "输入令牌",
+      "outputTokens": "输出令牌",
       "tokens": "Token 数",
-      "reasoningTokens": "推理 token 数",
+      "reasoningTokens": "推理令牌",
+      "responseCacheHit": "命中",
+      "responseCacheMiss": "未命中",
+      "info": "信息",
+      "podCount": "{count} 个 Pod",
+      "userRole": "用户",
       "cost": "成本",
       "cacheKey": "缓存键",
       "jsonView": "JSON",
@@ -5670,7 +5681,8 @@
         "code500": "500 - 服务器内部错误",
         "code502": "502 - 网关错误",
         "code503": "503 - 服务不可用",
-        "code529": "529 - 服务过载"
+        "code529": "529 - 服务过载",
+        "useCustomCode": "使用自定义错误码：{code}"
       },
       "errorMessage": "错误信息",
       "keyHash": "密钥哈希",
@@ -5679,6 +5691,8 @@
       "options": {
         "allRequests": "全部请求",
         "allCredentials": "全部凭据",
+        "cacheHit": "缓存命中",
+        "cacheMiss": "缓存未命中",
         "clientOAuthToken": "客户端 OAuth 令牌",
         "configuredKey": "配置密钥",
         "allTypes": "全部类型",
@@ -5951,7 +5965,10 @@
       "drawer": {
         "title": "审计日志详情",
         "notApplicable": "无",
-        "maxBudgetLabel": "最大预算："
+        "maxBudgetLabel": "最大预算：",
+        "before": "变更前",
+        "after": "变更后",
+        "noDifferingFields": "未检测到有差异的字段"
       }
     },
     "trace": {
@@ -6169,7 +6186,7 @@
       "maxBudget": "最大预算：",
       "title": "审计日志详情",
       "details": "详情",
-      "table": "表",
+      "table": "数据表",
       "objectId": "对象 ID",
       "copyObjectId": "复制对象 ID",
       "changedBy": "变更人",
@@ -13203,6 +13220,9 @@
     }
   },
   "searchBox": {
+    "copyAsCurl": "复制为 curl",
+    "copied": "已复制",
+    "copyFailed": "复制失败",
     "aria": {
       "loadingResults": "正在加载结果",
       "suggestions": "搜索建议"

@@ -39,9 +39,9 @@ describe("OutputCard", () => {
     expect(screen.getByText("This is a test response")).toBeInTheDocument();
   });
 
-  it("should display ASSISTANT label when message is present", () => {
+  it("should display 助手 label when message is present", () => {
     renderWithProviders(<OutputCard message={mockMessage} />);
-    expect(screen.getByText("ASSISTANT")).toBeInTheDocument();
+    expect(screen.getByText("助手")).toBeInTheDocument();
   });
 
   it("should display token count when provided", () => {

@@ -1,9 +1,10 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import { HotkeysProvider } from "react-hotkeys-hook";
 import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { clampPanelWidth, Inspector } from "./Inspector";
+import { renderWithProviders } from "../../../tests/test-utils";
 
 interface Note {
   id: string;
@@ -101,7 +102,7 @@ describe("clampPanelWidth", () => {
 
 describe("Inspector", () => {
   it("opens an item from its row, marks the row selected, and toggles it closed on a second press", () => {
-    render(<Notes />);
+    renderWithProviders(<Notes />);
     expect(screen.queryByRole("complementary")).not.toBeInTheDocument();
     expect(row("second")).toHaveAttribute("data-state", "idle");
 
@@ -118,7 +119,7 @@ describe("Inspector", () => {
 
   it("opens a focused row with Enter or Space but not from keys inside it", () => {
     mockReducedMotion(true);
-    render(<Notes />);
+    renderWithProviders(<Notes />);
     fireEvent.keyDown(row("third"), { key: "Enter" });
     expect(screen.getByTestId("note-body")).toHaveTextContent("note third");
     fireEvent.keyDown(within(row("third")).getByText("third"), { key: " " });
@@ -129,15 +130,15 @@ describe("Inspector", () => {
 
   it("steps with J / K and the header arrows, showing the position and disabling at the ends", () => {
     mockReducedMotion(true);
-    render(<Notes initial={notes[0]} />);
+    renderWithProviders(<Notes initial={notes[0]} />);
     expect(panel()).toHaveTextContent("1 / 3");
-    expect(screen.getByRole("button", { name: "Previous note (K)" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "上一个 note (K)" })).toBeDisabled();
 
     fireEvent.keyDown(document.body, { key: "j" });
     expect(screen.getByTestId("note-body")).toHaveTextContent("note second");
-    fireEvent.click(screen.getByRole("button", { name: "Next note (J)" }));
+    fireEvent.click(screen.getByRole("button", { name: "下一个 note (J)" }));
     expect(panel()).toHaveTextContent("3 / 3");
-    expect(screen.getByRole("button", { name: "Next note (J)" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "下一个 note (J)" })).toBeDisabled();
     fireEvent.keyDown(document.body, { key: "k" });
     expect(screen.getByTestId("note-body")).toHaveTextContent("note second");
 
@@ -146,23 +147,23 @@ describe("Inspector", () => {
   });
   it("lists the active shortcuts in the panel footer", () => {
     mockReducedMotion(true);
-    render(<Notes initial={notes[0]} />);
-    expect(within(panel()).getByLabelText("Keyboard shortcuts")).toHaveTextContent("J/K noteEsc close");
+    renderWithProviders(<Notes initial={notes[0]} />);
+    expect(within(panel()).getByLabelText("键盘快捷键")).toHaveTextContent("J/K noteEsc 关闭");
   });
 
   it("shows an item that is not in the list and steps from the top of the list", () => {
     mockReducedMotion(true);
-    render(<Notes initial={{ id: "z", title: "elsewhere" }} />);
+    renderWithProviders(<Notes initial={{ id: "z", title: "elsewhere" }} />);
     expect(screen.getByTestId("note-body")).toHaveTextContent("note elsewhere");
     expect(panel()).not.toHaveTextContent("/ 3");
-    expect(screen.getByRole("button", { name: "Previous note (K)" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "上一个 note (K)" })).toBeDisabled();
     fireEvent.keyDown(document.body, { key: "j" });
     expect(screen.getByTestId("note-body")).toHaveTextContent("note first");
   });
 
   it("leaves J, K and Escape to an open menu or listbox", () => {
     const onSelectedChange = vi.fn();
-    render(
+    renderWithProviders(
       <Notes
         initial={notes[1]}
         onSelectedChange={onSelectedChange}
@@ -188,7 +189,7 @@ describe("Inspector", () => {
 
   it("closes on a press outside the panel but not inside it, on a row, in a dialog, or on its overlay", () => {
     const onSelectedChange = vi.fn();
-    render(
+    renderWithProviders(
       <Notes
         initial={notes[0]}
         onSelectedChange={onSelectedChange}
@@ -226,26 +227,26 @@ describe("Inspector", () => {
         />
       );
     }
-    render(<Controlled />);
-    fireEvent.keyDown(screen.getByRole("separator", { name: "Resize note panel" }), { key: "ArrowLeft" });
+    renderWithProviders(<Controlled />);
+    fireEvent.keyDown(screen.getByRole("separator", { name: "调整 note 面板大小" }), { key: "ArrowLeft" });
     const resizedWidth = panel().style.width;
     expect(window.localStorage.getItem(STORAGE_KEY)).toBe(String(Number.parseInt(resizedWidth, 10)));
 
-    fireEvent.click(screen.getByRole("button", { name: "Enter full screen" }));
+    fireEvent.click(screen.getByRole("button", { name: "进入全屏" }));
     expect(onFullScreenChange).toHaveBeenLastCalledWith(true);
     expect(panel()).toHaveStyle({ width: "100%" });
-    expect(screen.queryByRole("separator", { name: "Resize note panel" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("separator", { name: "调整 note 面板大小" })).not.toBeInTheDocument();
     fireEvent.keyDown(document.body, { key: "j" });
     expect(panel()).toHaveStyle({ width: "100%" });
 
-    fireEvent.click(screen.getByRole("button", { name: "Exit full screen" }));
+    fireEvent.click(screen.getByRole("button", { name: "退出全屏" }));
     expect(panel()).toHaveStyle({ width: resizedWidth });
   });
 
   it("manages full screen itself when the parent does not", () => {
     mockReducedMotion(true);
-    render(<Notes initial={notes[0]} />);
-    fireEvent.click(screen.getByRole("button", { name: "Enter full screen" }));
+    renderWithProviders(<Notes initial={notes[0]} />);
+    fireEvent.click(screen.getByRole("button", { name: "进入全屏" }));
     expect(panel()).toHaveStyle({ width: "100%" });
     fireEvent.keyDown(document.body, { key: "Escape" });
     expect(screen.queryByRole("complementary")).not.toBeInTheDocument();
@@ -288,7 +289,7 @@ describe("Inspector", () => {
         </HotkeysProvider>
       );
     }
-    render(<Nested />);
+    renderWithProviders(<Nested />);
     fireEvent.keyDown(document.body, { key: "j" });
     expect(inner).toHaveBeenLastCalledWith(notes[1]);
     expect(outer).not.toHaveBeenCalled();
@@ -304,15 +305,15 @@ describe("Inspector", () => {
 
   it("unmounts right away on close when the user prefers reduced motion", () => {
     mockReducedMotion(true);
-    render(<Notes initial={notes[0]} />);
-    fireEvent.click(screen.getByRole("button", { name: "Close note (Esc)" }));
+    renderWithProviders(<Notes initial={notes[0]} />);
+    fireEvent.click(screen.getByRole("button", { name: "关闭 note（Esc）" }));
     expect(screen.queryByRole("complementary")).not.toBeInTheDocument();
   });
 
   it("plays the exit animation before unmounting when motion is allowed", () => {
     mockReducedMotion(false);
-    render(<Notes initial={notes[0]} />);
-    fireEvent.click(screen.getByRole("button", { name: "Close (Esc)" }));
+    renderWithProviders(<Notes initial={notes[0]} />);
+    fireEvent.click(screen.getByRole("button", { name: "关闭（Esc）" }));
     expect(panel()).toHaveClass("animate-trace-drawer-out");
     expect(panel()).toHaveAttribute("data-state", "closing");
     fireEvent.animationEnd(panel());

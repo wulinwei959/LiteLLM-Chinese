@@ -169,7 +169,7 @@ export function LogDetailContent({
                   {" · "}
                   {t(KUBERNETES_POD_ROUTING_LABEL_KEYS[podRouting.selection])}
                   {" · "}
-                  {podRouting.pod_count} pods
+                  {t("detail.podCount", { count: podRouting.pod_count })}
                 </DescriptionItem>
               )}
               {logEntry.requester_ip_address && (
@@ -420,7 +420,13 @@ function MetricLabel({ label, tooltip, docsUrl }: { label: string; tooltip: stri
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger
-            render={<span role="img" aria-label={`${label} info`} className="inline-flex text-muted-foreground" />}
+            render={
+              <span
+                role="img"
+                aria-label={`${label} ${t("detail.info")}`}
+                className="inline-flex text-muted-foreground"
+              />
+            }
           >
             <Info className="size-3.5" />
           </TooltipTrigger>
@@ -556,7 +562,7 @@ function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: 
                 }
               >
                 <Badge variant="secondary" className={isResponseCacheHit ? "bg-success/15 text-success" : undefined}>
-                  {isResponseCacheHit ? "Hit" : "Miss"}
+                  {isResponseCacheHit ? t("detail.responseCacheHit") : t("detail.responseCacheMiss")}
                 </Badge>
               </DescriptionItem>
             )}
@@ -774,6 +780,7 @@ const guardrailJumpLinkOutcome = (evaluated: unknown[]): keyof typeof GUARDRAIL_
 };
 
 export function GuardrailJumpLink({ guardrailEntries }: { guardrailEntries: any[] }) {
+  const t = useTranslations("logs");
   const statuses = guardrailEntries.map((e) => e?.guardrail_status || e?.status);
   const evaluated = statuses.filter((s) => !isNotRunStatus(s));
   const notRunCount = statuses.length - evaluated.length;
@@ -800,9 +807,8 @@ export function GuardrailJumpLink({ guardrailEntries }: { guardrailEntries: any[
           fontWeight: 500,
         }}
       >
-        {glyph} {evaluated.length} guardrail
-        {evaluated.length !== 1 ? "s" : ""} evaluated
-        {notRunCount > 0 ? `, ${notRunCount} not run` : ""}
+        {glyph} {t("guardrail.guardrailsEvaluated", { count: evaluated.length })}
+        {notRunCount > 0 ? t("guardrail.notRunSuffix", { count: notRunCount }) : ""}
         <span style={{ fontSize: 11, opacity: 0.7 }}>{"\u2193"}</span>
       </div>
     </div>
