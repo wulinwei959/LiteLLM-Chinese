@@ -73,7 +73,7 @@ export function MultiSelect({
     (option): option is MultiSelectOption =>
       option != null && typeof option.value === "string" && option.value.length > 0,
   );
-  const selectedOptions = value
+  const selectedOptions = (Array.isArray(value) ? value : [])
     .filter((selectedValue): selectedValue is string => typeof selectedValue === "string" && selectedValue.length > 0)
     .map(
       (selectedValue) =>

@@ -4857,3 +4857,7 @@ MCPServerSelector 1 例：`useMCPServers` 只传了 `teamId`，把组件拿到�
 ## 2026-10-24 第 488 簇：配置托管别名提示、编辑/删除别名可访问名与两处断言
 
 `model_group_alias_settings.tsx` 在合并后丢了"别名由 config.yaml 托管、此处只读"的提示，按 `managedByConfig` 补回并新增顶层 `modelGroupAlias.configOwnedNotice`；编辑/删除按钮的 aria-label 是硬编码英文 `Edit alias ${name}`/`Delete alias ${name}`，改为 `editAliasAria`/`deleteAliasAria`（带 `{name}` 插值）。测试侧把占位符（例如 gpt-4o）、添加/编辑/删除按钮名与提示语同步中文，两个文件共 3 例转绿。DeprecationBanner 那条用例渲染的是 `featureName="Workflows"` 却断言 "Memory"，按入参改回 Workflows；navbar 的通知按钮在有待读时名字是"通知, N 未读"，锚定正则 `/^通知$/` 放宽为 `/^通知/`，两处各 1 例转绿。
+
+## 2026-10-24 第 489 簇：新增模型面板的 URL 预填与多选值守卫
+
+AddModelPanel 4 例全部转绿，两处根因：测试里的 `setup(searchParams)` 收了参数却从没传给 `renderWithProviders`，预填用例等于没测，补上 `searchParams`/`onUrlUpdate` 后 provider 输入框才出现 `TypeSafe`；`MultiSelect` 的 `value` 契约允许缺省但实现直接 `.filter`，模型名输入态传入非数组时整棵表单崩掉，补 `Array.isArray` 守卫。预填参数清理的断言改为对最终 URL 串做包含判断，兼容 nuqs 事件里 `searchParams` 的两种承载形态。

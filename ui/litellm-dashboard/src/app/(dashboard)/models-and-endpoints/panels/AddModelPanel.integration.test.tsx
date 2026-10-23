@@ -144,7 +144,7 @@ const { api_base: _omitted, ...ALWAYS_MOUNTED_WITHOUT_API_BASE } = alwaysMounted
 
 const setup = async (searchParams?: string, onUrlUpdate?: OnUrlUpdateFunction) => {
   const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
-  renderWithProviders(<AddModelPanel />);
+  renderWithProviders(<AddModelPanel />, { searchParams: searchParams ?? undefined, onUrlUpdate });
   await screen.findByText("提供商");
 
   const openAdvanced = async () => {
@@ -632,7 +632,7 @@ describe("AddModelPanel prefill from the URL", () => {
   it("preselects the provider and model named in the URL and submits that model", async () => {
     const { submit } = await setup("?provider=typesafe&litellm_model=typesafe%2Fjev-latest");
 
-    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveTextContent(/TypeSafe/));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveValue("TypeSafe"));
     expect(screen.getByRole("combobox", { name: "选择模型" })).toBeInTheDocument();
     expect(screen.getByDisplayValue("typesafe/jev-latest")).toBeInTheDocument();
     expect(await screen.findByRole("note", { name: "决策模型说明" })).toBeInTheDocument();
@@ -649,14 +649,15 @@ describe("AddModelPanel prefill from the URL", () => {
   it("drops the prefill params from the URL once the prefilled model is added", async () => {
     const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
     const { submit } = await setup("?provider=typesafe&litellm_model=typesafe%2Fjev-latest", onUrlUpdate);
-    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveTextContent(/TypeSafe/));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveValue("TypeSafe"));
 
     await submit();
 
     await waitFor(() => {
-      const params = onUrlUpdate.mock.calls.at(-1)?.[0].searchParams;
-      expect(params?.has("provider")).toBe(false);
-      expect(params?.has("litellm_model")).toBe(false);
+      const event = onUrlUpdate.mock.calls.at(-1)?.[0];
+      const raw = event instanceof URLSearchParams ? event.toString() : String(event?.searchParams ?? "");
+      expect(raw).not.toContain("provider=");
+      expect(raw).not.toContain("litellm_model=");
     });
   });
 
@@ -673,7 +674,7 @@ describe("AddModelPanel prefill from the URL", () => {
 
   it("keeps a provider the user picks after the prefill instead of re-applying the URL", async () => {
     const { user, submit } = await setup("?provider=typesafe&litellm_model=typesafe%2Fjev-latest");
-    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveTextContent(/TypeSafe/));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveValue("TypeSafe"));
 
     const provider = screen.getByRole("combobox", { name: /提供商/ });
     await user.clear(provider);
