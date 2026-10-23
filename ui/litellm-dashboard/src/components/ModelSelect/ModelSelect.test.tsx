@@ -709,11 +709,11 @@ describe("ModelSelect", () => {
       ),
     ).toEqual([
       ["retired-b", "retired-a", "retired-c", "retired-d", "retired-e", "retired-f"],
-      ["All Proxy Models", "No Default Models"],
-      ["All Openai models", "All Anthropic models"],
+      ["所有代理模型", "无默认模型"],
+      ["所有 Openai 模型", "所有 Anthropic 模型"],
       ["gpt-4", "claude-3"],
     ]);
-    expect(screen.getByText("Unavailable")).toBeInTheDocument();
+    expect(screen.getByText("不可用")).toBeInTheDocument();
   });
 
   it("should keep an unavailable selection removable while a special option is selected", async () => {
@@ -754,8 +754,8 @@ describe("ModelSelect", () => {
 
     await openModelList(user);
 
-    expectOffered("All Proxy Models");
-    expectNotOffered("Unavailable");
+    expectOffered("所有代理模型");
+    expectNotOffered("不可用");
   });
 
   it("should list selections outside the organization's model ceiling as Unavailable", async () => {
@@ -817,8 +817,8 @@ describe("ModelSelect", () => {
 
     await openModelList(user);
 
-    expectOffered("No Default Models");
-    expectNotOffered("Unavailable");
+    expectOffered("无默认模型");
+    expectNotOffered("不可用");
   });
 
   it("should not show an Unavailable group when every selection is offered", async () => {
@@ -835,6 +835,6 @@ describe("ModelSelect", () => {
     await openModelList(user);
 
     expect(screen.getByRole("option", { name: "gpt-4" })).toHaveAttribute("aria-selected", "true");
-    expectNotOffered("Unavailable");
+    expectNotOffered("不可用");
   });
 });

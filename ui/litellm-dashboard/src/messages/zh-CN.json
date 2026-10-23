@@ -12415,6 +12415,7 @@
   },
   "modelSelect": {
     "allProxyModels": "所有代理模型",
+    "unavailable": "不可用",
     "noDefaultModels": "无默认模型",
     "specialOptions": "特殊选项",
     "wildcardOptions": "通配符选项",

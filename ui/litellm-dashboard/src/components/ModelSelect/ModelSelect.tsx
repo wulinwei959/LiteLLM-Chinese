@@ -130,11 +130,12 @@ const unavailableGroups = (
   selectedOptions: ModelOption[],
   offeredByValue: Map<string, ModelOption>,
   offeredListKnown: boolean,
+  label: string,
 ): ModelOptionGroup[] => {
   if (!offeredListKnown) return [];
   const items = selectedOptions.filter((option) => !offeredByValue.has(option.value));
   if (items.length === 0) return [];
-  return [{ label: "Unavailable", items }];
+  return [{ label, items }];
 };
 
 export const ModelSelect = (props: ModelSelectProps) => {
@@ -239,6 +240,7 @@ export const ModelSelect = (props: ModelSelectProps) => {
       selectedOptions,
       offeredByValue,
       isOfferedListKnown(allProxyModels !== undefined, context, organizationID, organizationModels),
+      t("unavailable"),
     ),
     ...offeredGroups,
   ];

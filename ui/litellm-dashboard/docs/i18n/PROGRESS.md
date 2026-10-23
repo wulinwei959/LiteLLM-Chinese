@@ -4813,3 +4813,7 @@ ViewSwitcher 三处修复：菜单里 Moyai 项的说明 "Cloud Coding Agent" �
 ## 2026-10-24 第 478 簇：团队设置页的成员设置与默认模型预算断言
 
 TeamInfo.integration 5 例转绿：编辑设置按钮的正则改"编辑设置"，"Team Member Settings"改目录里的"团队成员设置"，"Max spend ($)"改"最大花费（$）"，`/add model limit/i` 与 `/add model budget/i` 统一成生产用的"添加模型限额"，"Select model"改"选择模型"并按 `getAllByPlaceholderText(...).at(-1)` 取新加那一行的选择器（页面上同时存在默认预算与新增行两个选择器）。
+
+## 2026-10-24 第 479 簇：模型选择器的 Unavailable 分组
+
+`ModelSelect` 的"不再可选"分组标题是硬编码英文 `Unavailable`，新增 `modelSelect.unavailable`（不可用）并把标题作为参数传进模块级 `unavailableGroups`。目录插入时踩了一次坑：`noModelsFound` 在 `models.addModel` 与 `modelSelect` 里同名同值，按行内值定位把键插进了前者，测试仍渲染原始键名才暴露，改成先定位 `modelSelect` 块再插。测试把 "All Proxy Models"、"No Default Models"、"Unavailable" 与 "All {provider} models" 的断言同步成目录中文（"所有代理模型"、"无默认模型"、"不可用"、"所有 Openai 模型"），ModelSelect 测试全绿。

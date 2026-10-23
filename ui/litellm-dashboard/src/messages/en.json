@@ -12419,6 +12419,7 @@
   },
   "modelSelect": {
     "allProxyModels": "All Proxy Models",
+    "unavailable": "Unavailable",
     "noDefaultModels": "No Default Models",
     "specialOptions": "Special Options",
     "wildcardOptions": "Wildcard Options",
