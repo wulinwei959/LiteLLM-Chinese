@@ -4679,3 +4679,10 @@ build_updated_complexity_router_config.test：引入 `TestStored = StoredComplex
 AddModelForm.integration：选择凭据、提供商、认证方式、添加凭据、创建凭据、选择模型等断言翻面，删除 TEST_MODES 已不存在的 Decisions/Extraction 两个用例，`/provider/i` 正则改"提供商"；38 例中 30 例通过，剩 8 例为行为断言（团队作用域告警、credential-only 载荷、连接测试校验流程），留待下批。
 
 验证：生产 tsc 0 错；死键 0（zh-CN.json 变更后复跑）；临时脚本 scan-english-pos.tmp.mjs 已删除。
+
+### 剩余工作（下批起点）
+
+1. AddModelForm.integration 剩 8 例行为断言：团队作用域告警（team_member 场景 `requiresTeamScope` 未命中）、credential-only 载荷缺 `api_key`/`litellm_credential_name`、连接测试校验流程（alert 数量、vi.fn 未调用）。逐例对照 HEAD 与生产取值分析，非文案问题。
+2. batch-b 其余文件（失败数为批次日志口径）：LogDetailContent.integration 16（SYSTEM/已评估 N 个护栏）、add_auto_router_tab.integration 12（Auto Router Name）、AddModelPanel.integration 12、CacheAwareRoutingConfig.test 9、models-and-endpoints/page.test 7（Deployed Models 页签）、ModelGroupAliasPanel.integration 5、AllModelsTab.test 4、LlmCredentialsPanel.integration 3、InputCard.test 2、JevClassifierConfig.integration 1。
+3. batch-c 379 例 / 58 文件未分析，先 `grep -E "^ FAIL " /tmp/opencode/batch-c.log` 分簇。
+4. 批次日志：/tmp/opencode/batch-b.log、batch-c.log（amf4.log 为 AddModelForm 最新一轮）。全部绿后复跑 tsc + 死键检查，再更新本文件并确认是否合入 main。
