@@ -122,7 +122,7 @@ const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({ agentTy
           <Input
             {...control}
             ref={ref}
-            placeholder="e.g., my-langgraph-agent"
+              placeholder={t("phAgentSlugExample")}
             value={typeof value === "string" ? value : ""}
             onChange={onChange}
           />

@@ -4594,3 +4594,10 @@ advanced_settings 的 1 小时 TTL 缓存写入项此前 label/hint/placeholder 
 测试：该文件在 HEAD 上 7 例全红，根因是合并遗留的 `includeDiscoveryValue`/`KubernetesPodDiscoveryValue` 未定义；本簇补回基于 `useFormContext` 的状态输出组件与辅助函数参数，并把 "Advanced Settings"/"Custom Pricing" 与缓存标签断言翻面，另补 1 小时占位断言。7 例全绿。
 
 验证：AST 本文件仅剩两条 JSON 示例；全局可见英文 225→224 条、文件维持 118 个；目录叶子 11639→11642，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 454 簇：agent 表单示例占位符前缀汉化
+
+add_agent_form、dynamic_agent_form_fields、agent_form_fields 的七处 `e.g.` 示例占位接 `agents.phTpmExample`/`phBudgetExample`/`phAgentNameExampleCustom`/`phAgentKeyExample`/`phAgentSlugExample`/`phAgentIdExample`/`phHeadersExample`，zh 只把前缀换成"例如"，资源名与请求头名保留原文。KillSwitch/Identity 的 URL、JSON 与 scope 示例按既有判定保留。
+
+测试：add_agent_form 集成用例的占位断言翻成"例如 my-custom-agent"；代理表单三文件 22 例全绿。
+
+验证：AST 三文件归零；全局可见英文 224→217 条、118→115 个文件；目录叶子 11642→11649，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、7 警为 HEAD 既有；prettier 新增行合规（一处缩进已修正），四文件 HEAD 既有脏格式不动；i18n 五条守卫 23 例全绿。

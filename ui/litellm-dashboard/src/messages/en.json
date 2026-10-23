@@ -9946,7 +9946,14 @@
     "skillExamplesPlaceholder": "Type an example and press Enter",
     "overview": "Overview",
     "settings": "Settings",
-    "skillsConfigured": "{count} configured"
+    "skillsConfigured": "{count} configured",
+    "phAgentIdExample": "e.g., customer-support-agent",
+    "phAgentSlugExample": "e.g., my-langgraph-agent",
+    "phAgentKeyExample": "e.g. my-agent-key",
+    "phAgentNameExampleCustom": "e.g. my-custom-agent",
+    "phTpmExample": "e.g. 25",
+    "phBudgetExample": "e.g. 5.00",
+    "phHeadersExample": "e.g. x-api-key, Authorization"
   },
   "costTracking": {
     "colProvider": "Provider",

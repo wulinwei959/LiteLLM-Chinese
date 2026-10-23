@@ -9942,7 +9942,14 @@
     "skillExamplesPlaceholder": "输入示例后按回车",
     "overview": "概览",
     "settings": "设置",
-    "skillsConfigured": "已配置 {count} 个"
+    "skillsConfigured": "已配置 {count} 个",
+    "phAgentIdExample": "例如 customer-support-agent",
+    "phAgentSlugExample": "例如 my-langgraph-agent",
+    "phAgentKeyExample": "例如 my-agent-key",
+    "phAgentNameExampleCustom": "例如 my-custom-agent",
+    "phTpmExample": "例如 25",
+    "phBudgetExample": "例如 5.00",
+    "phHeadersExample": "例如 x-api-key、Authorization"
   },
   "costTracking": {
     "colProvider": "提供方",

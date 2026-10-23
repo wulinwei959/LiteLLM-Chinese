@@ -224,7 +224,7 @@ const AgentFormFields: React.FC<AgentFormFieldsProps> = ({ panels, showAgentName
               <Input
                 {...control}
                 ref={ref}
-                placeholder="e.g., customer-support-agent"
+                placeholder={t("phAgentIdExample")}
                 value={typeof value === "string" ? value : ""}
                 onChange={onChange}
               />
@@ -389,7 +389,7 @@ const AgentFormFields: React.FC<AgentFormFieldsProps> = ({ panels, showAgentName
                   id={id}
                   value={Array.isArray(value) ? (value as string[]) : []}
                   onValueChange={onChange}
-                  placeholder="e.g. x-api-key, Authorization"
+                  placeholder={t("phHeadersExample")}
                 />
               )}
             </AgentFormField>

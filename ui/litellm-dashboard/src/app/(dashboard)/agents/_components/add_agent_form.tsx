@@ -615,7 +615,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                 id="agent-max-iterations"
                 type="number"
                 step="any"
-                placeholder="e.g. 25"
+                placeholder={t("phTpmExample")}
                 disabled={!requireTraceIdOutbound}
                 value={maxIterations ?? ""}
                 onChange={(event) =>
@@ -631,7 +631,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                 id="agent-max-budget-per-session"
                 type="number"
                 step="any"
-                placeholder="e.g. 5.00"
+                placeholder={t("phBudgetExample")}
                 disabled={!requireTraceIdOutbound}
                 value={maxBudgetPerSession ?? ""}
                 onChange={(event) =>
@@ -793,7 +793,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                 <Input
                   {...control}
                   ref={ref}
-                  placeholder="e.g. my-custom-agent"
+                  placeholder={t("phAgentNameExampleCustom")}
                   value={typeof value === "string" ? value : ""}
                   onChange={onChange}
                 />
@@ -935,7 +935,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
                           id="agent-new-key-name"
                           value={newKeyName}
                           onChange={(e) => setNewKeyName(e.target.value)}
-                          placeholder="e.g. my-agent-key"
+                          placeholder={t("phAgentKeyExample")}
                         />
                       </Field>
                     </div>

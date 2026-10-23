@@ -364,7 +364,7 @@ describe("AddAgentForm submit payload", () => {
 
     await openAgentTypeMenu(user);
     await user.click(await screen.findByText("自定义 / 其他"));
-    await screen.findByPlaceholderText("e.g. my-custom-agent");
+    await screen.findByPlaceholderText("例如 my-custom-agent");
 
     await selectAgentType(user, "A2A Agent");
 
