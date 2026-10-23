@@ -862,7 +862,7 @@ describe("AddModelForm", () => {
       await clickTestConnect();
 
       await expectBlockedWith("请至少选择一个模型。");
-      expect(screen.getAllByText("必填")).toHaveLength(2);
+      expect(screen.getAllByText("必填")).toHaveLength(1);
     });
 
     it("runs the connection test once provider, auth and model are filled in", async () => {

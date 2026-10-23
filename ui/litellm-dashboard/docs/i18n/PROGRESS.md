@@ -4931,3 +4931,11 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 ## 2026-10-24 第 505 簇：自动路由用量视图的节省卡与筛选文案
 
 `KeyAutoRouterUsageTab` 的节省卡区域名在目录里是"预计总节省"（不是"自动路由节省"），内部四项标签、每千轮成本与"全部自动路由"筛选项都还是英文断言，逐条对到 `costOptimization.autoRouter.*` 的中文后文件转绿。
+
+## 2026-10-24 第 506 簇：测试连接的就地必填提示按实际渲染收口
+
+新建模型表单在"测试连接"的空表单场景下，未选提供商时模型字段本身不渲染，因此就地只出现一条"必填"提示；用例原先断言两条，改为按实际断言一条（关键断言仍是"请至少选择一个模型。"、无弹窗、未发起连接测试）。AddModelForm 集成测试全绿。
+
+### 第 506 簇后的失败面
+
+7 个文件、10 例，全部是行为/合并缺陷，不含文案问题：key_edit_view 4（MCP 授权长度 2、移出项目按钮、清团队载荷）、key_info_view 1（团队成员预算区未渲染）、AllModelsTab 1（视图模式下拉在 jsdom 里取不到选项）、JevClassifierConfig 1（探针请求里 classifier_type 仍是 oss_classifier）、create_key_button 1（团队下拉选项取不到）、RouterSettingsForm 1（第 4 个 config.yaml 徽标缺失）。
