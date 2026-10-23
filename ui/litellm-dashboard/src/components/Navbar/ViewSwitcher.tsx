@@ -49,7 +49,11 @@ export default function ViewSwitcher() {
   const isMoyaiRoute = isRoute(normalizedPathname, uiHref(MOYAI));
   const isStandaloneRoute = isChatRoute || isMoyaiRoute;
 
-  const activeLabel = isChatRoute ? t("chat") : plugins.find((p) => p.name === mode)?.display_name ?? navT("aiGateway");
+  const activeLabel = (() => {
+    if (isChatRoute) return t("chat");
+    if (isMoyaiRoute) return "Moyai";
+    return plugins.find((p) => p.name === mode)?.display_name ?? navT("aiGateway");
+  })();
 
   const modeEntries = [
     { key: GATEWAY, label: navT("aiGateway") },
@@ -106,7 +110,7 @@ export default function ViewSwitcher() {
             <img src={moyaiHead.src} alt="" className="h-4 w-auto" />
             <span className="flex flex-col">
               <span className="font-medium">Moyai</span>
-              <span className="text-xs leading-snug text-muted-foreground">Cloud Coding Agent</span>
+              <span className="text-xs leading-snug text-muted-foreground">{t("moyaiDescription")}</span>
             </span>
           </span>
           {isMoyaiRoute && <Check className="size-4 text-info" />}

@@ -134,7 +134,7 @@ describe("ViewSwitcher", () => {
     });
     expect(await screen.findByText("AI 网关")).toBeInTheDocument();
     act(() => {
-      fireEvent.click(screen.getByText("AI 网关"));
+      fireEvent.click(screen.getByRole("menuitem", { name: "AI 网关" }));
     });
     expect(state.setMode).toHaveBeenCalledWith("ai-gateway");
     expect(assignSpy).toHaveBeenCalledWith("/ui/");
@@ -147,7 +147,7 @@ describe("ViewSwitcher", () => {
       fireEvent.click(screen.getByRole("button"));
     });
     expect(await screen.findByText("Moyai")).toBeInTheDocument();
-    expect(screen.getByText("Cloud Coding Agent")).toBeInTheDocument();
+    expect(screen.getByText("云端编码智能体")).toBeInTheDocument();
   });
 
   it("navigates to the moyai route when the Moyai entry is picked", async () => {
@@ -183,7 +183,7 @@ describe("ViewSwitcher", () => {
     });
     expect(await screen.findByText("AI 网关")).toBeInTheDocument();
     act(() => {
-      fireEvent.click(screen.getByText("AI 网关"));
+      fireEvent.click(screen.getByRole("menuitem", { name: "AI 网关" }));
     });
     expect(state.setMode).toHaveBeenCalledWith("ai-gateway");
     expect(assignSpy).toHaveBeenCalledWith("/ui/");
@@ -197,7 +197,7 @@ describe("ViewSwitcher", () => {
       fireEvent.click(screen.getByRole("button"));
     });
     expect(await screen.findByText("Moyai")).toBeInTheDocument();
-    expect(screen.getByText("Moyai").compareDocumentPosition(screen.getByText("聊天"))).toBe(
+    expect(screen.getByText("Moyai").compareDocumentPosition(screen.getByText("对话"))).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     );
   });

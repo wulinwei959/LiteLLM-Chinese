@@ -4797,3 +4797,9 @@ tag_info.integration 4 例全绿：测试里的 `/Budget & Rate Limits/` 正则�
 `spend_budget_cell.tsx` 里有两个早已失效的英文辅助函数（`getBudgetLabel`/`getMeterValueText`），另一个会话退出前删掉了它们，本簇接手后补两处行为修正：团队成员的继承预算下，`Meter` 的 `value` 用的是密钥自身花费而不是成员花费（`pct` 却按成员花费算），导致 `aria-valuenow` 与实际占比不一致；`aria-valuetext` 同步改用成员花费文本。测试断言由旧的 "· $45.00 of $50 (team member)"、"of $100"、英文 `aria-valuetext` 改到目录里的"共 $50"/"共 $100"/"$45.00 共 $50"，提示图标名改"帮助"，团队预算用例全绿。
 
 验证：`spend_budget_cell.test.tsx` 全绿；`TeamsPage`、`VirtualKeysPage` 与 `AccessGroupBudgetColumns` 三个消费者测试全绿；生产 tsc 0 错。
+
+## 2026-10-24 第 476 簇：视图切换器的 Moyai 分支与菜单描述
+
+ViewSwitcher 三处修复：菜单里 Moyai 项的说明 "Cloud Coding Agent" 是硬编码英文，新增 `navbar.viewSwitcher.moyaiDescription`（云端编码智能体）；按钮标签的 activeLabel 只区分 chat 与网关，Moyai 路由（含子路径）仍显示"AI 网关"，补上 `isMoyaiRoute` 分支返回 "Moyai"；测试把菜单里的 Chat 项断言由"聊天"改为目录里的"对话"，两处 `getByText("AI 网关")` 点击改为按 `menuitem` 角色查询，消除同名元素歧义。ViewSwitcher 测试由 3 例失败转为全绿。
+
+验证：ViewSwitcher 测试全绿；prettier clean。

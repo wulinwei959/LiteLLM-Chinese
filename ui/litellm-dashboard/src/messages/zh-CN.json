@@ -12467,7 +12467,8 @@
   "navbar": {
     "viewSwitcher": {
       "chat": "对话",
-      "chatDisabledHint": "管理员可在设置中启用"
+      "chatDisabledHint": "管理员可在设置中启用",
+      "moyaiDescription": "云端编码智能体"
     },
     "docsLink": {
       "docs": "文档"

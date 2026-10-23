@@ -12471,7 +12471,8 @@
   "navbar": {
     "viewSwitcher": {
       "chat": "Chat",
-      "chatDisabledHint": "Admins can enable in Settings"
+      "chatDisabledHint": "Admins can enable in Settings",
+      "moyaiDescription": "Cloud Coding Agent"
     },
     "docsLink": {
       "docs": "Docs"
