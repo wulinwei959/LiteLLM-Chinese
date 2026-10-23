@@ -229,7 +229,7 @@ export default function MemberTable({
   onEdit,
   onDelete,
   onAddMember,
-  roleColumnTitle = "Role",
+  roleColumnTitle,
   roleTooltip,
   extraColumns = [],
   showDeleteForMember,
@@ -239,6 +239,7 @@ export default function MemberTable({
 }: MemberTableProps) {
   const t = useTranslations("teams");
   const commonT = useTranslations("common");
+  const resolvedRoleColumnTitle = roleColumnTitle ?? t("member.teamRole");
 
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -261,7 +262,7 @@ export default function MemberTable({
     canEdit,
     onEdit,
     onDelete,
-    roleColumnTitle,
+    roleColumnTitle: resolvedRoleColumnTitle,
     roleTooltip,
     extraColumns,
     showDeleteForMember,
@@ -321,7 +322,7 @@ export default function MemberTable({
               description={t("memberTable.filtersDescription")}
             >
               {({ get, set }) => (
-                <DataTableFilterField label={roleColumnTitle}>
+                <DataTableFilterField label={resolvedRoleColumnTitle}>
                   <Select
                     items={roleFilterItems}
                     value={(get("role") as string | undefined) ?? ALL_ROLES}

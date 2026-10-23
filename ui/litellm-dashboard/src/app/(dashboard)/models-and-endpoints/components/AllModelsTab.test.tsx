@@ -127,7 +127,6 @@ const lastUrlParams = (onUrlUpdate: Mock<OnUrlUpdateFunction>): URLSearchParams 
 
 const SEARCH_SETTLE_MS = 400;
 
-
 const mockSetSelectedModelGroup = vi.fn();
 const mockSetSelectedModelId = vi.fn();
 const mockSetSelectedTeamId = vi.fn();
@@ -420,7 +419,7 @@ describe("AllModelsTab", () => {
     renderWithProviders(<AllModelsTab {...defaultProps} />);
 
     await user.click(screen.getByTestId("datatable-filters-trigger"));
-    await user.click(await screen.findByPlaceholderText("按公开模型名称筛选"));
+    await user.click(await screen.findByPlaceholderText("按公共模型名称筛选"));
     await user.click(await screen.findByRole("option", { name: "gpt-3.5-turbo" }));
     await user.click(screen.getByTestId("filter-drawer-apply"));
 

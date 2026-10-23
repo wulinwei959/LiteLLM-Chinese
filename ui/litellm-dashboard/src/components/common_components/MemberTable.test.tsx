@@ -68,7 +68,7 @@ describe("MemberTable display", () => {
     const user = userEvent.setup();
     renderTable({ members: [MEMBERS[0]] });
 
-    expect(screen.getByRole("columnheader", { name: /^角色/ })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /^团队角色/ })).toBeInTheDocument();
     expect(screen.getByText("1 名成员")).toBeInTheDocument();
 
     await user.click(screen.getByTestId("datatable-filters-trigger"));
@@ -189,7 +189,7 @@ describe("MemberTable paging", () => {
 
   const goToSecondPage = async (user: ReturnType<typeof userEvent.setup>) => {
     await user.click(screen.getByTestId("pagination-next"));
-    expect(screen.getByText("Showing 26-30 of 30")).toBeInTheDocument();
+    expect(screen.getByText("显示第 26-30 条，共 30 条")).toBeInTheDocument();
   };
 
   it("stays on the current page when the roster is refetched", async () => {
@@ -200,7 +200,7 @@ describe("MemberTable paging", () => {
     view.rerender(<MemberTable {...props} members={roster()} />);
     await act(() => new Promise((resolve) => setTimeout(resolve, 20)));
 
-    expect(screen.getByText("Showing 26-30 of 30")).toBeInTheDocument();
+    expect(screen.getByText("显示第 26-30 条，共 30 条")).toBeInTheDocument();
   });
 
   it("returns to the first page when the sort order changes", async () => {
@@ -210,7 +210,7 @@ describe("MemberTable paging", () => {
 
     await user.click(screen.getByTestId("sort-header-user_email"));
 
-    expect(await screen.findByText("Showing 1-25 of 30")).toBeInTheDocument();
+    expect(await screen.findByText("显示第 1-25 条，共 30 条")).toBeInTheDocument();
   });
 
   it("returns to the first page when the search or the role filter changes", async () => {
@@ -219,7 +219,7 @@ describe("MemberTable paging", () => {
     await goToSecondPage(user);
 
     search("example.com");
-    expect(await screen.findByText("Showing 1-25 of 30")).toBeInTheDocument();
+    expect(await screen.findByText("显示第 1-25 条，共 30 条")).toBeInTheDocument();
 
     search("");
     await goToSecondPage(user);
@@ -228,7 +228,7 @@ describe("MemberTable paging", () => {
     await user.click(await screen.findByRole("option", { name: "user" }));
     await user.click(screen.getByTestId("filter-drawer-apply"));
 
-    expect(await screen.findByText("Showing 1-25 of 29")).toBeInTheDocument();
+    expect(await screen.findByText("显示第 1-25 条，共 29 条")).toBeInTheDocument();
   });
 });
 

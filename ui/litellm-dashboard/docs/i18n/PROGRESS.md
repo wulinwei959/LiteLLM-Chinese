@@ -4762,3 +4762,16 @@ AddModelPanel 从 6 例降到 5：决策模型提示与链接翻面，provider �
 1. 先查 AllModelsTab 的筛选占位符真实键与 MemberTable 列头兜底，这两处可能是生产侧缺键而不是断言过时。
 2. activity_metrics 的配色需要设计确认：`components/shared/charts/colors.ts` 已支持命名色转 CSS 变量，生产目前只用 BRAND 单一 hex。
 3. 其余行为断言按文件逐个对照 HEAD，避免把既有失败误判成本簇引入。
+
+## 2026-10-24 第 472 簇：成员表列头默认可访问名与分页文案
+
+MemberTable 的 `roleColumnTitle` 默认值是字面量 "Role"，调用方不传时整列表头就是英文；改成 `roleColumnTitle ?? t("member.teamRole")` 的渲染处兜底（与第 57/58/62 簇处理默认参数值的做法一致），筛选面板的标签同步用兜底值。测试侧把角色表头断言改"团队角色"，三处分页文案由 "Showing a-b of c" 改"显示第 a-b 条，共 c 条"，MemberTable 测试全绿。
+
+AllModelsTab：公开模型名称筛选占位符在目录里是 models.modelTable.placeholder.modelName（按公共模型名称筛选），测试此前写成"按公开模型名称筛选"，一字符之差导致找不到，已对齐目录；视图模式选项"所有可用模型"仍找不到，需要单独查 Base UI Select 在 jsdom 下的展开时序。
+
+验证：MemberTable 测试全绿；生产 tsc 0 错；死键 0；prettier 与 eslint 无新增问题。
+
+### 剩余工作（下批起点）
+
+1. AllModelsTab：视图模式下拉的选项在测试里找不到（触发器文本断言可以通过），另有两条删除/暂停的载荷断言。
+2. 其余失败集中在行为断言：AddModelForm 7、key_edit_view 7、add_auto_router_tab 6、TeamInfo 5、TelemetrySettingsPage 5、agent.test 4、activity_metrics 4（配色口径待确认）、tag_info 4。
