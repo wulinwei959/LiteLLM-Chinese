@@ -3,6 +3,7 @@
 import { BotIcon, InfoIcon, LayersIcon, ServerIcon, SparklesIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import type { AccessGroupsTranslator } from "@/lib/i18n/translators";
 import { z } from "zod";
 
 import { useAgents } from "@/app/(dashboard)/hooks/agents/useAgents";
@@ -18,17 +19,18 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 
-export const accessGroupFormSchema = z.object({
-  name: z.string().min(1, "Please enter the access group name"),
-  description: z.string(),
-  modelIds: z.array(z.string()),
-  mcpServerIds: z.array(z.string()),
-  mcpToolPermissions: z.record(z.string(), z.array(z.string())),
-  agentIds: z.array(z.string()),
-  skillNames: z.array(z.string()),
-});
+export const buildAccessGroupFormSchema = (t: AccessGroupsTranslator) =>
+  z.object({
+    name: z.string().min(1, t("groupNameRequired")),
+    description: z.string(),
+    modelIds: z.array(z.string()),
+    mcpServerIds: z.array(z.string()),
+    mcpToolPermissions: z.record(z.string(), z.array(z.string())),
+    agentIds: z.array(z.string()),
+    skillNames: z.array(z.string()),
+  });
 
-export type AccessGroupFormValues = z.output<typeof accessGroupFormSchema>;
+export type AccessGroupFormValues = z.output<ReturnType<typeof buildAccessGroupFormSchema>>;
 
 export const GENERAL_TAB = "general";
 export const MODELS_TAB = "models";
@@ -104,19 +106,19 @@ export function AccessGroupBaseForm({
         </TabsTrigger>
         <TabsTrigger value={MODELS_TAB}>
           <LayersIcon size={16} />
-          Models
+          {t("models")}
         </TabsTrigger>
         <TabsTrigger value={MCP_SERVERS_TAB}>
           <ServerIcon size={16} />
-          MCP Servers
+          {t("mcpServers")}
         </TabsTrigger>
         <TabsTrigger value={AGENTS_TAB}>
           <BotIcon size={16} />
-          Agents
+          {t("agents")}
         </TabsTrigger>
         <TabsTrigger value={SKILLS_TAB}>
           <SparklesIcon size={16} />
-          Skills
+          {t("skills")}
         </TabsTrigger>
       </TabsList>
 
@@ -179,15 +181,15 @@ export function AccessGroupBaseForm({
         <FormField
           control={form.control}
           name="skillNames"
-          label="Allowed Skills"
-          description="Enabled skills are visible to everyone. Grant disabled (private) Claude Code plugins to the teams and keys in this group here."
+          label={t("allowedSkills")}
+          description={t("skillsDescription")}
         >
           {({ value, onChange }) => (
             <SkillSelector
               onChange={onChange}
               value={value}
               accessToken={accessToken || ""}
-              placeholder="Select skills (optional)"
+              placeholder={t("selectSkills")}
             />
           )}
         </FormField>

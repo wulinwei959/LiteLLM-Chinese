@@ -4440,3 +4440,11 @@ skills 域八个 AST 命中加两枚 `--all` 人工过捞回（StatusBadge 的 l
 测试零翻面：PluginTable 与 add_plugin_form 的断言早已按 zh 目录值写好（HEAD 基线 7 红），本簇接线后 skills 域 5 文件 123 例全绿，净新增 0。目录新增 3 叶（11556→11559）。
 
 验证：AST 触及文件仅剩 5 枚保留 placeholder；全域 123 例绿；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错 3 warning 与 HEAD 计数持平；prettier clean；`npm run build` exit 0。
+
+## 2026-10-23 第 433 簇：访问组编辑弹窗接线与表单 schema 工厂化
+
+AccessGroupsModal 族七个可见串：四个 TabsTrigger（Models/MCP Servers/Agents/Skills）与 FormField label/description/placeholder（Allowed Skills 句、"Select skills (optional)"）全部复用 `access-groups` 既有键（models/mcpServers/agents/skills/allowedSkills/skillsDescription/selectSkills，create 对话框先行接过的同值键）；EditModal 补 Cancel（common.cancel）与 DialogTitle（editGroup）。表单侧 `accessGroupFormSchema` 的 name 必填消息硬编码英文，按同 feature 的 `buildAccessGroupCreateSchema(t)` 先例改 `buildAccessGroupFormSchema(t: AccessGroupsTranslator)`，复用 `groupNameRequired` 键，唯一消费点 EditModal 的 `useZodForm` 就地传入。目录零新增叶。
+
+测试翻面两处：EditModal 集成测试 `getByRole("tab", { name: /Skills/ })` 改 `/技能/`（同文件其余 tab 选择器早已是 zh 值）。access-groups 全域 86 例从 HEAD 基线 9 红降至 4 红、净新增 0；剩余 4 红属 MCPToolPermissions 组件面（DetailsPage 工具清单两例、资源计数一例、编辑工具勾选提交一例），另簇处理。
+
+验证：AST 触及两文件清零；生产 typecheck 0 错；死键 0；eslint 0 错 3 warning 与 HEAD 持平；prettier clean；`npm run build` exit 0。

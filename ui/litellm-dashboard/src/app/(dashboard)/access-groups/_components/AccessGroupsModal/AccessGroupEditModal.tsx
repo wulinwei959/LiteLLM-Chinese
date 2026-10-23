@@ -12,7 +12,7 @@ import { AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAcc
 
 import {
   AccessGroupBaseForm,
-  accessGroupFormSchema,
+  buildAccessGroupFormSchema,
   AGENTS_TAB,
   SKILLS_TAB,
   GENERAL_TAB,
@@ -41,7 +41,8 @@ const toFormValues = (accessGroup: AccessGroupResponse): AccessGroupFormValues =
 
 function AccessGroupEditForm({ accessGroup, onCancel, onSuccess }: Omit<AccessGroupEditModalProps, "visible">) {
   const t = useTranslations("access-groups");
-  const form = useZodForm(accessGroupFormSchema, { defaultValues: toFormValues(accessGroup) });
+  const tCommon = useTranslations("common");
+  const form = useZodForm(buildAccessGroupFormSchema(t), { defaultValues: toFormValues(accessGroup) });
   const { dirtyFields } = useFormState({ control: form.control });
   const editMutation = useEditAccessGroup();
   const [activeTab, setActiveTab] = useState(GENERAL_TAB);
@@ -89,7 +90,7 @@ function AccessGroupEditForm({ accessGroup, onCancel, onSuccess }: Omit<AccessGr
 
       <div className="mt-6 flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={editMutation.isPending}>
-          Cancel
+          {tCommon("cancel")}
         </Button>
         <Button type="button" onClick={() => void handleOk()} disabled={editMutation.isPending}>
           {t("saveChanges")}
@@ -100,11 +101,12 @@ function AccessGroupEditForm({ accessGroup, onCancel, onSuccess }: Omit<AccessGr
 }
 
 export function AccessGroupEditModal({ visible, accessGroup, onCancel, onSuccess }: AccessGroupEditModalProps) {
+  const t = useTranslations("access-groups");
   return (
     <Dialog open={visible} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle>Edit Access Group</DialogTitle>
+          <DialogTitle>{t("editGroup")}</DialogTitle>
         </DialogHeader>
         <AccessGroupEditForm
           key={accessGroup.access_group_id}
