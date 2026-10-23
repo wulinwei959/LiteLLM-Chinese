@@ -205,7 +205,7 @@ describe("TeamVirtualKeysTable", () => {
     renderWithProviders(<TeamVirtualKeysTable {...defaultProps} />);
 
     const inheritedBudget = await screen.findByText("$50", { exact: false });
-    expect(inheritedBudget).toHaveTextContent("$50 (team member)");
+    expect(inheritedBudget).toHaveTextContent("$50 (团队成员预算)");
     expect(screen.getByText("$75")).toBeInTheDocument();
     expect(mockUseTeamMemberBudgets).toHaveBeenCalledWith(["team-1"]);
   });

@@ -4923,3 +4923,7 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 ## 2026-10-24 第 503 簇：路由设置归属提示本地化
 
 `ConfigOwned.tsx` 的 `CONFIG_OWNED_HINT`/`SOURCE_UNKNOWN_HINT` 是硬编码英文，作为徽标 tooltip 与 `title` 直接展示给用户。新增 `routerSettings.configOwnedHint`/`sourceUnknownHint`，徽标内部与延迟配置、标签过滤、回退页三处 title 改用 `t()`；`fallbacksWriteHint` 改为接收已翻译文案，避免模块级英文常量。tsc 0 错，Fallbacks 与 TagFilteringToggle 测试通过。
+
+## 2026-10-24 第 504 簇：团队密钥表补回团队成员预算
+
+`TeamVirtualKeysTable` 里 `teamMemberBudgetGate` 只有 import、`teamMemberBudgets` 算了却没人用，合并时整段继承预算展示丢失。改为在预算列对无自身预算的密钥取成员预算，渲染 `$金额 (团队成员预算)`（复用 `virtualKeys.teamMemberBudget`，补第二把翻译器），测试断言同步中文后转绿。

@@ -108,6 +108,7 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
     [displayKeys, teamId],
   );
   const teamMemberBudgets = useTeamMemberBudgets(teamMemberBudgetTeamIds);
+  const vkT = useTranslations("virtualKeys");
 
   const rowCount = keys?.total_count ?? 0;
   const [expandedAccordions, setExpandedAccordions] = useState<Record<string, boolean>>({});
@@ -310,7 +311,9 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
         id: "spend",
         accessorKey: "spend",
         meta: { title: t("keysSpendUsd"), numeric: true },
-        header: ({ column }) => <DataTableSortHeader column={column} title={t("keysSpendUsd")} variant="header-cycle" />,
+        header: ({ column }) => (
+          <DataTableSortHeader column={column} title={t("keysSpendUsd")} variant="header-cycle" />
+        ),
         size: 100,
         enableSorting: true,
         cell: (info) => <MoneyCell value={info.getValue() as number | null} decimals={4} />,
@@ -319,12 +322,28 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
         id: "max_budget",
         accessorKey: "max_budget",
         meta: { title: t("keysBudgetUsd"), numeric: true },
-        header: ({ column }) => <DataTableSortHeader column={column} title={t("keysBudgetUsd")} variant="header-cycle" />,
+        header: ({ column }) => (
+          <DataTableSortHeader column={column} title={t("keysBudgetUsd")} variant="header-cycle" />
+        ),
         size: 110,
         enableSorting: true,
-        cell: (info) => (
-          <MoneyCell value={info.getValue() as number | null} decimals={0} emptyText={t("keysUnlimited")} showZero />
-        ),
+        cell: (info) => {
+          const row = info.row.original as {
+            max_budget?: number | null;
+            user_id?: string | null;
+            user?: { user_email?: string };
+          };
+          const gate =
+            row.max_budget == null && row.user_id
+              ? teamMemberBudgetGate(teamMemberBudgets[teamId], row.user_id, row.user?.user_email)
+              : null;
+          if (gate) {
+            return <span>{`$${formatNumberWithCommas(gate.maxBudget, 0)} (${vkT("teamMemberBudget")})`}</span>;
+          }
+          return (
+            <MoneyCell value={info.getValue() as number | null} decimals={0} emptyText={t("keysUnlimited")} showZero />
+          );
+        },
       },
       {
         id: "budget_reset_at",
