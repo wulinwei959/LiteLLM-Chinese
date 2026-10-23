@@ -24,13 +24,19 @@ const RELEASE: LatestReleaseInfo = {
 };
 
 const bell = (unread: number) =>
-  screen.getByRole("button", { name: unread === 0 ? /^notifications$/i : `Notifications, ${unread} unread` });
+  screen.getByRole("button", { name: unread === 0 ? /^通知$/i : `通知, ${unread} 未读` });
 
 const announcement = (title: string) => screen.getByRole("article", { name: title });
 
 describe("NotificationsBellView", () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.mocked(useHealthReadinessDetails).mockReturnValue({
+      data: { litellm_version: "1.102.0" },
+    } as unknown as ReturnType<typeof useHealthReadinessDetails>);
+    vi.mocked(useLatestReleaseInfo).mockReturnValue({
+      data: RELEASE,
+    } as unknown as ReturnType<typeof useLatestReleaseInfo>);
   });
 
   afterEach(() => {
@@ -39,8 +45,8 @@ describe("NotificationsBellView", () => {
 
   it("lists the new version notice above Auto Router when the proxy is behind the latest release", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<NotificationsBell />);
-    await user.click(screen.getByRole("button", { name: /^通知$/i }));
+    renderWithProviders(<NotificationsBell accessToken="sk-test" />);
+    await user.click(screen.getByRole("button", { name: /^通知/ }));
     expect(screen.getByText(/^LiteLLM 自动路由$/)).toBeInTheDocument();
     const docsBtn = screen.getByRole("link", { name: /^阅读文档$/i });
     expect(docsBtn).toHaveAttribute("href", AUTO_ROUTER_DOCS_URL);
@@ -49,9 +55,12 @@ describe("NotificationsBellView", () => {
   });
 
   it("uses singular wording for counts of one", async () => {
+    vi.mocked(useLatestReleaseInfo).mockReturnValue({
+      data: null,
+    } as unknown as ReturnType<typeof useLatestReleaseInfo>);
     const user = userEvent.setup();
-    renderWithProviders(<NotificationsBell />);
-    await user.click(screen.getByRole("button", { name: /^通知$/i }));
+    renderWithProviders(<NotificationsBell accessToken="sk-test" />);
+    await user.click(screen.getByRole("button", { name: /^通知/ }));
     expect(screen.getByRole("button", { name: /^标记为已读$/i })).toBeInTheDocument();
   });
 
@@ -61,12 +70,18 @@ describe("NotificationsBellView", () => {
     ["the proxy is up to date", "1.103.0", RELEASE],
     ["the proxy is ahead of the latest release", "1.104.0-dev.1", RELEASE],
   ])("lists only Auto Router when %s", async (_case, currentVersion, latestRelease) => {
+    vi.mocked(useHealthReadinessDetails).mockReturnValue({
+      data: { litellm_version: currentVersion },
+    } as unknown as ReturnType<typeof useHealthReadinessDetails>);
+    vi.mocked(useLatestReleaseInfo).mockReturnValue({
+      data: latestRelease,
+    } as unknown as ReturnType<typeof useLatestReleaseInfo>);
     const user = userEvent.setup();
-    renderWithProviders(<NotificationsBell />);
-    await user.click(screen.getByRole("button", { name: /^通知$/i }));
+    renderWithProviders(<NotificationsBell accessToken="sk-test" />);
+    await user.click(screen.getByRole("button", { name: /^通知/ }));
     await user.click(screen.getByRole("button", { name: /^标记为已读$/i }));
     expect(localStorage.getItem("litellmHideAutoRouterAnnouncement")).toBe("true");
-    await user.click(screen.getByRole("button", { name: /^通知$/i }));
+    await user.click(screen.getByRole("button", { name: /^通知/ }));
     expect(screen.queryByRole("button", { name: /^标记为已读$/i })).not.toBeInTheDocument();
   });
 
@@ -74,7 +89,7 @@ describe("NotificationsBellView", () => {
     const user = userEvent.setup();
     const first = renderWithProviders(<NotificationsBellView currentVersion="1.102.0" latestRelease={RELEASE} />);
     await user.click(bell(2));
-    await user.click(screen.getAllByRole("button", { name: /^mark as read$/i })[0]);
+    await user.click(screen.getAllByRole("button", { name: /^标记为已读$/ })[0]);
     first.unmount();
 
     renderWithProviders(<NotificationsBellView currentVersion="1.102.0" latestRelease={RELEASE} />);
@@ -87,13 +102,13 @@ describe("NotificationsBellView", () => {
       <NotificationsBellView currentVersion="1.102.0" latestRelease={RELEASE} />,
     );
     await user.click(bell(2));
-    await user.click(screen.getAllByRole("button", { name: /^mark as read$/i })[0]);
+    await user.click(screen.getAllByRole("button", { name: /^标记为已读$/ })[0]);
     expect(bell(1)).toBeInTheDocument();
 
     rerender(<NotificationsBellView currentVersion="1.102.0" latestRelease={{ ...RELEASE, version: "1.104.0" }} />);
     expect(bell(2)).toBeInTheDocument();
-    expect(announcement("LiteLLM v1.104.0 is available")).toContainElement(
-      screen.getAllByRole("button", { name: /^mark as read$/i })[0],
+    expect(announcement("LiteLLM v1.104.0 已发布")).toContainElement(
+      screen.getAllByRole("button", { name: /^标记为已读$/ })[0],
     );
   });
 
@@ -104,10 +119,13 @@ describe("NotificationsBellView", () => {
   });
 
   it("keeps Auto Router read when it was read before", async () => {
+    vi.mocked(useLatestReleaseInfo).mockReturnValue({
+      data: null,
+    } as unknown as ReturnType<typeof useLatestReleaseInfo>);
     localStorage.setItem("litellmHideAutoRouterAnnouncement", "true");
     const user = userEvent.setup();
-    renderWithProviders(<NotificationsBell />);
-    await user.click(screen.getByRole("button", { name: /^通知$/i }));
+    renderWithProviders(<NotificationsBell accessToken="sk-test" />);
+    await user.click(screen.getByRole("button", { name: /^通知/ }));
     expect(screen.queryByRole("button", { name: /^标记为已读$/i })).not.toBeInTheDocument();
   });
 
@@ -115,13 +133,13 @@ describe("NotificationsBellView", () => {
     const user = userEvent.setup();
     renderWithProviders(
       <>
-        <NotificationsBellView currentVersion="1.102.0" latestRelease={RELEASE} />
-        <NotificationsBellView currentVersion="1.102.0" latestRelease={RELEASE} />
+        <NotificationsBellView currentVersion="1.102.0" latestRelease={null} />
+        <NotificationsBellView currentVersion="1.102.0" latestRelease={null} />
       </>,
     );
 
     // Both bells start unread → both render the "标记为已读" affordance once opened.
-    const [bellA, bellB] = screen.getAllByRole("button", { name: /^通知$/i });
+    const [bellA, bellB] = screen.getAllByRole("button", { name: /^通知/ });
     await user.click(bellA);
     await user.click(screen.getByRole("button", { name: /^标记为已读$/i }));
 

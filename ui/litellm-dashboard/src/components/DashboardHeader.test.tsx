@@ -104,7 +104,7 @@ describe("DashboardHeader breadcrumb", () => {
     state.pathname = "/ui/models-and-endpoints";
     renderWithProviders(
       <CommandPaletteProvider>
-        <DashboardHeader />
+        <DashboardHeader accessToken="sk-test" />
       </CommandPaletteProvider>,
     );
 
@@ -115,7 +115,7 @@ describe("DashboardHeader breadcrumb", () => {
     state.isDesktop = false;
     renderWithProviders(
       <CommandPaletteProvider>
-        <DashboardHeader />
+        <DashboardHeader accessToken="sk-test" />
       </CommandPaletteProvider>,
     );
 
@@ -128,7 +128,7 @@ describe("DashboardHeader breadcrumb", () => {
     state.pathname = "/ui/";
     renderWithProviders(
       <CommandPaletteProvider>
-        <DashboardHeader />
+        <DashboardHeader accessToken="sk-test" />
       </CommandPaletteProvider>,
     );
 
@@ -141,7 +141,7 @@ describe("DashboardHeader breadcrumb", () => {
     state.enableChatUI = true;
     renderWithProviders(
       <CommandPaletteProvider>
-        <DashboardHeader />
+        <DashboardHeader accessToken="sk-test" />
       </CommandPaletteProvider>,
     );
 
@@ -154,7 +154,7 @@ describe("DashboardHeader breadcrumb", () => {
     state.enableChatUI = true;
     renderWithProviders(
       <CommandPaletteProvider>
-        <DashboardHeader />
+        <DashboardHeader accessToken="sk-test" />
       </CommandPaletteProvider>,
     );
 
@@ -168,7 +168,7 @@ describe("DashboardHeader breadcrumb", () => {
     state.enableChatUI = false;
     renderWithProviders(
       <CommandPaletteProvider>
-        <DashboardHeader />
+        <DashboardHeader accessToken="sk-test" />
       </CommandPaletteProvider>,
     );
 
@@ -179,7 +179,7 @@ describe("DashboardHeader breadcrumb", () => {
   it("renders the Docs link with the shared product-link class instead of a muted toolbar button", () => {
     renderWithProviders(
       <CommandPaletteProvider>
-        <DashboardHeader />
+        <DashboardHeader accessToken="sk-test" />
       </CommandPaletteProvider>,
     );
 

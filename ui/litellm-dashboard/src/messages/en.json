@@ -12455,7 +12455,10 @@
       "readDocs": "Read the docs",
       "markAsRead": "Mark as read",
       "ariaLabel": "Notifications",
-      "unread": "unread"
+      "unread": "unread",
+      "upgradeTitle": "LiteLLM v{version} is available",
+      "upgradeDescription": "{features, plural, one {# new feature} other {# new features}}, {bugFixes, plural, one {# fix} other {# fixes}}, and {updates, plural, one {# other update} other {# other updates}}. Your current version is v{current}",
+      "viewReleaseNotes": "View release notes"
     },
     "blog": {
       "loadingAria": "loading",
@@ -12480,11 +12483,7 @@
       "expiredOn": "Your LiteLLM Enterprise license expired on {date}",
       "close": "Close"
     },
-    "upgrade": {
-      "fixes": "{count} {count, plural, one {fix} other {fixes}}",
-      "and": "and",
-      "close": "Close"
-    },
+    "upgrade": {},
     "deprecation": {
       "title": "{feature} is on a draft deprecation list",
       "featureWorkflows": "Workflows",

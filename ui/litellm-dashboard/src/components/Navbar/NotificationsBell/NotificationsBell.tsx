@@ -32,17 +32,10 @@ interface Announcement {
 
 const AUTO_ROUTER_READ_KEY = "litellmHideAutoRouterAnnouncement";
 
-const plural = (count: number, singular: string, pluralForm: string): string =>
-  `${count} ${count === 1 ? singular : pluralForm}`;
-
-const describeRelease = ({ new_features, bug_fixes, other_updates }: LatestReleaseInfo): string =>
-  [
-    plural(new_features, "new feature", "new features"),
-    plural(bug_fixes, "fix", "fixes"),
-    `and ${plural(other_updates, "other update", "other updates")}`,
-  ].join(", ");
+type NotificationTranslator = ReturnType<typeof useTranslations<"navbar.notifications">>;
 
 const upgradeAnnouncement = (
+  t: NotificationTranslator,
   currentVersion: string | null | undefined,
   latestRelease: LatestReleaseInfo | null | undefined,
 ): Announcement | null => {
@@ -51,9 +44,14 @@ const upgradeAnnouncement = (
   }
   return {
     readKey: `litellm:upgradeBannerDismissed:${latestRelease.version}`,
-    title: `LiteLLM v${latestRelease.version} is available`,
-    description: `${describeRelease(latestRelease)}. Your current version is v${currentVersion}`,
-    linkLabel: "View release notes",
+    title: t("upgradeTitle", { version: latestRelease.version }),
+    description: t("upgradeDescription", {
+      features: latestRelease.new_features,
+      bugFixes: latestRelease.bug_fixes,
+      updates: latestRelease.other_updates,
+      current: currentVersion,
+    }),
+    linkLabel: t("viewReleaseNotes"),
     href: latestRelease.release_url,
   };
 };
@@ -91,7 +89,7 @@ interface NotificationsBellViewProps {
 
 export const NotificationsBellView: React.FC<NotificationsBellViewProps> = ({ currentVersion, latestRelease }) => {
   const t = useTranslations("navbar.notifications");
-  const upgrade = upgradeAnnouncement(currentVersion, latestRelease);
+  const upgrade = upgradeAnnouncement(t, currentVersion, latestRelease);
   const autoRouter: Announcement = {
     readKey: AUTO_ROUTER_READ_KEY,
     title: t("title"),

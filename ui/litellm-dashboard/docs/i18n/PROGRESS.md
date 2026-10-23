@@ -4627,3 +4627,10 @@ CreateMCPServer、mcp_server_edit 的限额/RPM 占位与 EnvVarsSection 的变�
 启动 `npm run dev` 后执行 `npm run scan:rendered`，覆盖 home、keys、models、teams、logs、usage、guardrails、policies、agents、prompts、budgets、users 共 12 个页面：每页 0 个渲染错误、0 处英文，总计 0 条发现、0 条不在基线，基线无需更新。此前第 425 簇留下的 25 条运行时命中已全部清掉。
 
 受扫描器本身限制，图表图例、输入框 placeholder 与需要交互展开的路径不在本次覆盖内；静态 AST 与本地化守卫仍是这两类的主要保障。扫描结束已停止开发服务器。
+## 2026-10-23 第 459 簇：版本公告本地化与通知测试收口
+
+NotificationsBell 的升级公告标题、统计描述与"查看发布说明"三段硬编码英文接 `navbar.notifications.upgradeTitle`/`upgradeDescription`/`viewReleaseNotes`，描述用 ICU plural（en 单复数，zh 计数短语），`upgradeAnnouncement` 改为接收译员。无引用的 `banners.upgrade.fixes`/`and`/`close` 三键移除（其中 fixes 此前仅被无关的 "fixes" 字面量误救）。
+
+测试：为 hook mock 补默认返回（版本 1.102.0、最新 1.103.0），按用例覆盖 null/版本参数；英文 aria 与状态断言翻面。通知 11 例、DashboardHeader 与 roles 共 84 例全绿。顺带修掉三文件 15 条测试类型错误（DashboardHeader 补 accessToken、NotificationBell 补 prop、roles 补 spend fixture）。
+
+验证：AST 组件归零；全局可见英文维持 205 条、110 个文件；目录叶子新增 3 删 3 后维持 11662，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、1 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。
