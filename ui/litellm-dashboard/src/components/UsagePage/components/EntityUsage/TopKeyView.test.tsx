@@ -1,6 +1,7 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "../../../../../tests/test-utils";
+import { authorizedSession } from "../../../../../tests/mocks/authorizedSession";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { KeyResponse } from "../../../key_team_helpers/key_list";
@@ -37,7 +38,7 @@ describe("TopKeyView", () => {
   const mockKeyInfoV1Call = vi.mocked(networking.keyInfoV1Call);
   const mockTransformKeyInfo = vi.mocked(transformKeyInfo.transformKeyInfo);
 
-  const mockAuth = {
+  const mockAuth = authorizedSession({
     token: "mock-token",
     accessToken: "test-token",
     userId: "user-1",
@@ -45,8 +46,7 @@ describe("TopKeyView", () => {
     userRole: "admin",
     premiumUser: true,
     disabledPersonalKeyCreation: false,
-    showSSOBanner: false,
-  };
+  });
 
   const mockSetTopKeysLimit = vi.fn();
 

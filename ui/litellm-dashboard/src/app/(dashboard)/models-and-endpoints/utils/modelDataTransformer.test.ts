@@ -1,5 +1,15 @@
 import { transformModelData } from "./modelDataTransformer";
 import { describe, it, expect } from "vitest";
+
+const baseModelInfo = {
+  id: "model-id-1",
+  created_at: "2026-01-01T00:00:00Z",
+  updated_at: "2026-01-01T00:00:00Z",
+  created_by: "test",
+  team_id: "team-1",
+  db_model: false,
+  access_groups: null,
+};
 describe("transformModelData", () => {
   const mockGetProviderFromModel = (model: string) => {
     if (model.includes("gpt")) return "openai";
@@ -17,7 +27,7 @@ describe("transformModelData", () => {
             api_base: "https://api.openai.com",
             api_key: "sk-123",
           },
-          model_info: {
+          model_info: { ...baseModelInfo,
             input_cost_per_token: 0.0000015,
             output_cost_per_token: 0.000002,
             max_tokens: 8192,
@@ -59,7 +69,7 @@ describe("transformModelData", () => {
           litellm_params: {
             model: "vertex_ai/gemini-2.5-flash",
           },
-          model_info: {
+          model_info: { ...baseModelInfo,
             input_cost_per_token: 0.0,
             output_cost_per_token: 0.0,
             max_tokens: 65535,
@@ -84,7 +94,7 @@ describe("transformModelData", () => {
           litellm_params: {
             model: "openai/some-model",
           },
-          model_info: {
+          model_info: { ...baseModelInfo,
             input_cost_per_token: null,
             output_cost_per_token: null,
             max_tokens: 4096,
@@ -107,7 +117,7 @@ describe("transformModelData", () => {
         {
           model_name: "veo-3.1-fast",
           litellm_params: { model: "vertex_ai/veo-3.1-fast-generate-001" },
-          model_info: {
+          model_info: { ...baseModelInfo,
             input_cost_per_token: 0,
             output_cost_per_token: 0,
             output_cost_per_second: 0.1,
@@ -118,7 +128,7 @@ describe("transformModelData", () => {
         {
           model_name: "gpt-4",
           litellm_params: { model: "gpt-4" },
-          model_info: { input_cost_per_token: 0.0000015, output_cost_per_token: 0.000002 },
+          model_info: { ...baseModelInfo, input_cost_per_token: 0.0000015, output_cost_per_token: 0.000002 },
         },
       ],
     };
@@ -140,7 +150,7 @@ describe("transformModelData", () => {
         {
           model_name: "veo-3.1",
           litellm_params: { model: "vertex_ai/veo-3.1-generate-001", output_cost_per_second: 0.5 },
-          model_info: { output_cost_per_second: 0.4 },
+          model_info: { ...baseModelInfo, output_cost_per_second: 0.4 },
         },
       ],
     };
@@ -160,7 +170,7 @@ describe("transformModelData", () => {
       ],
     };
 
-    const result = transformModelData(rawData, mockGetProviderFromModel);
+    const result = transformModelData(rawData as unknown as Parameters<typeof transformModelData>[0], mockGetProviderFromModel);
 
     // Missing model_info should result in null costs
     expect(result.data[0].input_cost).toBeNull();

@@ -80,8 +80,8 @@ const renderChat = () =>
   render(<PlaygroundChat accessToken="session-token" disabledPersonalKeyCreation={false} proxySettings={undefined} />);
 
 const send = async (user: ReturnType<typeof userEvent.setup>, text: string) => {
-  await user.type(screen.getByRole("textbox", { name: "Message" }), text);
-  await user.click(screen.getByRole("button", { name: "Send message" }));
+  await user.type(screen.getByRole("textbox", { name: "消息" }), text);
+  await user.click(screen.getByRole("button", { name: "发送消息" }));
 };
 
 describe("PlaygroundChat", () => {
@@ -111,9 +111,9 @@ describe("PlaygroundChat", () => {
     chatRequest.mockImplementation(replyWith("Hi there"));
     renderChat();
 
-    await user.click(screen.getByRole("combobox", { name: "Model" }));
+    await user.click(screen.getByRole("combobox", { name: "模型" }));
     await user.click(await screen.findByRole("option", { name: "gpt-fast" }));
-    await user.click(screen.getByRole("combobox", { name: "Guardrails" }));
+    await user.click(screen.getByRole("combobox", { name: "防护栏" }));
     await user.click(await screen.findByRole("option", { name: "pii-mask" }));
     await user.keyboard("{Escape}");
     await send(user, "hello");
@@ -134,12 +134,12 @@ describe("PlaygroundChat", () => {
       .mockImplementationOnce(replyWith("Back again"));
     renderChat();
 
-    await user.click(screen.getByRole("combobox", { name: "Model" }));
+    await user.click(screen.getByRole("combobox", { name: "模型" }));
     await user.click(await screen.findByRole("option", { name: "gpt-fast" }));
     await send(user, "hello");
     expect(await screen.findByText("Hi there")).toBeInTheDocument();
     await send(user, "this one fails");
-    expect(await screen.findByText("The request failed")).toBeInTheDocument();
+    expect(await screen.findByText("请求失败")).toBeInTheDocument();
     await send(user, "try again");
 
     await waitFor(() => expect(chatRequest).toHaveBeenCalledTimes(3));
@@ -187,12 +187,12 @@ describe("PlaygroundChat", () => {
     });
     renderChat();
 
-    await user.click(screen.getByRole("combobox", { name: "Model" }));
-    await user.type(await screen.findByPlaceholderText("Search models"), "gpt-f");
-    await user.click(await screen.findByRole("option", { name: "Use gpt-f" }));
-    await user.click(screen.getByRole("button", { name: "Settings" }));
-    await user.type(await screen.findByLabelText("Tags"), "prod");
-    await user.click(await screen.findByRole("option", { name: "Add prod" }));
+    await user.click(screen.getByRole("combobox", { name: "模型" }));
+    await user.type(await screen.findByPlaceholderText("搜索模型"), "gpt-f");
+    await user.click(await screen.findByRole("option", { name: "使用 gpt-f" }));
+    await user.click(screen.getByRole("button", { name: "设置" }));
+    await user.type(await screen.findByLabelText("标签"), "prod");
+    await user.click(await screen.findByRole("option", { name: "添加 prod" }));
     await send(user, "hello");
 
     await waitFor(() => expect(chatRequest).toHaveBeenCalledTimes(1));
@@ -207,9 +207,9 @@ describe("PlaygroundChat", () => {
     preload({ selectedModel: "gpt-fast" });
     renderChat();
 
-    await user.click(screen.getByRole("button", { name: "Settings" }));
-    await user.click(await screen.findByRole("button", { name: "Advanced" }));
-    await user.type(screen.getByLabelText("Temperature value"), "0.05");
+    await user.click(screen.getByRole("button", { name: "设置" }));
+    await user.click(await screen.findByRole("button", { name: "高级" }));
+    await user.type(screen.getByLabelText("温度值"), "0.05");
     await user.keyboard("{Escape}");
     await send(user, "hello");
 
@@ -239,8 +239,8 @@ describe("PlaygroundChat", () => {
     renderChat();
 
     await waitFor(() => expect(fetchAvailableModels).toHaveBeenCalled());
-    await waitFor(() => expect(screen.getByRole("combobox", { name: "Model" })).toHaveTextContent("Select a model"));
-    await user.click(screen.getByRole("combobox", { name: "Model" }));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: "模型" })).toHaveTextContent("选择一个模型"));
+    await user.click(screen.getByRole("combobox", { name: "模型" }));
     await user.click(await screen.findByRole("option", { name: "gpt-fast" }));
     await send(user, "hello");
 
@@ -260,9 +260,9 @@ describe("PlaygroundChat", () => {
     preload({ endpointType: "mcp", selectedMCPServers: JSON.stringify(["toolset:ts-1"]) });
     renderChat();
 
-    await user.click(await screen.findByRole("combobox", { name: "Tool" }));
+    await user.click(await screen.findByRole("combobox", { name: "工具" }));
     await user.click(await screen.findByRole("option", { name: /search/ }));
-    await user.click(screen.getByRole("button", { name: "Send message" }));
+    await user.click(screen.getByRole("button", { name: "发送消息" }));
 
     await waitFor(() => expect(callMCPTool).toHaveBeenCalledTimes(1));
     expect(listMCPTools).toHaveBeenCalledWith("session-token", "srv-2");
@@ -291,15 +291,15 @@ describe("PlaygroundChat", () => {
     preload({ endpointType: "mcp" });
     renderChat();
 
-    await user.click(await screen.findByRole("combobox", { name: "Server" }));
+    await user.click(await screen.findByRole("combobox", { name: "服务器" }));
     await user.click(await screen.findByRole("option", { name: /Research/ }));
     await settled();
-    await user.click(screen.getByRole("combobox", { name: "Tool" }));
+    await user.click(screen.getByRole("combobox", { name: "工具" }));
     await waitFor(() =>
       expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["search", "fetch"]),
     );
     await user.click(screen.getByRole("option", { name: "fetch" }));
-    await user.click(screen.getByRole("button", { name: "Send message" }));
+    await user.click(screen.getByRole("button", { name: "发送消息" }));
 
     await waitFor(() => expect(callMCPTool).toHaveBeenCalledTimes(1));
     expect(vi.mocked(callMCPTool).mock.calls[0]?.slice(1, 4)).toEqual(["srv-b", "fetch", {}]);
@@ -313,9 +313,9 @@ describe("PlaygroundChat", () => {
     renderChat();
 
     await settled();
-    await user.click(screen.getByRole("combobox", { name: "Tool" }));
+    await user.click(screen.getByRole("combobox", { name: "工具" }));
 
-    expect(await screen.findByText("Unable to load tools for this server")).toBeInTheDocument();
+    expect(await screen.findByText("无法加载这个服务器的工具")).toBeInTheDocument();
   });
 
   it("keeps the saved MCP selection when the toolset list cannot be fetched", async () => {
@@ -343,7 +343,7 @@ describe("PlaygroundChat", () => {
 
     renderChat();
 
-    await waitFor(() => expect(screen.getByRole("combobox", { name: "Model" })).toHaveTextContent("Select a model"));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: "模型" })).toHaveTextContent("选择一个模型"));
     expect(fetchAvailableModels).toHaveBeenCalledTimes(1);
   });
 
@@ -358,15 +358,15 @@ describe("PlaygroundChat", () => {
     renderChat();
 
     await send(user, "first");
-    expect(await screen.findByRole("button", { name: "Stop" })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "New chat" }));
+    expect(await screen.findByRole("button", { name: "停止" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "新对话" }));
     await act(async () => {
       first.release();
       await chatRequest.mock.results[0]?.value;
     });
 
     expect(chatRequest).toHaveBeenCalledTimes(1);
-    expect(screen.queryByRole("button", { name: "Stop" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "停止" })).not.toBeInTheDocument();
     expect(screen.queryByText("late reply")).not.toBeInTheDocument();
   });
 
@@ -376,20 +376,20 @@ describe("PlaygroundChat", () => {
     responsesRequest
       .mockImplementationOnce(async (...args: ResponsesArgs) => {
         await first.promise;
-        args[15]?.("resp-stopped");
+        args[16]?.("resp-stopped");
       })
       .mockImplementationOnce(async (...args: ResponsesArgs) => {
-        args[15]?.("resp-fresh");
-        args[1]("assistant", "fresh reply", args[2]);
+        args[16]?.("resp-fresh");
+        args[2]("assistant", "fresh reply", args[3]);
       })
       .mockImplementationOnce(async (...args: ResponsesArgs) => {
-        args[1]("assistant", "third reply", args[2]);
+        args[2]("assistant", "third reply", args[3]);
       });
     preload({ endpointType: "responses", selectedModel: "gpt-fast", useApiSessionManagement: "true" });
     renderChat();
 
     await send(user, "first");
-    await user.click(await screen.findByRole("button", { name: "Stop" }));
+    await user.click(await screen.findByRole("button", { name: "停止" }));
     await send(user, "second");
     expect(await screen.findByText("fresh reply")).toBeInTheDocument();
     await act(async () => {
@@ -399,7 +399,7 @@ describe("PlaygroundChat", () => {
     await send(user, "third");
 
     await waitFor(() => expect(responsesRequest).toHaveBeenCalledTimes(3));
-    expect((responsesRequest.mock.calls[2] as ResponsesArgs)[14]).toBe("resp-fresh");
+    expect((responsesRequest.mock.calls[2] as ResponsesArgs)[15]).toBe("resp-fresh");
   });
 
   it("ignores a stopped request that finishes after a newer one started", async () => {
@@ -419,12 +419,12 @@ describe("PlaygroundChat", () => {
     renderChat();
 
     await send(user, "first");
-    await user.click(await screen.findByRole("button", { name: "Stop" }));
+    await user.click(await screen.findByRole("button", { name: "停止" }));
     await send(user, "second");
     first.release();
 
     await waitFor(() => expect(chatRequest).toHaveBeenCalledTimes(2));
-    expect(screen.getByRole("button", { name: "Stop" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "停止" })).toBeInTheDocument();
     expect(screen.queryByText("late reply")).not.toBeInTheDocument();
     second.release();
     expect(await screen.findByText("fresh reply")).toBeInTheDocument();
@@ -450,12 +450,12 @@ describe("PlaygroundChat", () => {
 
     await send(user, "first");
     expect(await screen.findByText("unreported reply")).toBeInTheDocument();
-    expect(screen.getByText("This endpoint does not report which guardrails or policies ran")).toBeInTheDocument();
-    expect(screen.queryByText("No guardrails or policies ran on this request")).not.toBeInTheDocument();
+    expect(screen.getByText("这个接口不报告运行了哪些防护栏或策略")).toBeInTheDocument();
+    expect(screen.queryByText("这个请求没有触发任何防护栏或策略")).not.toBeInTheDocument();
 
     await send(user, "second");
     expect(await screen.findByText("call-reported")).toBeInTheDocument();
-    expect(screen.getByText("No guardrails or policies ran on this request")).toBeInTheDocument();
+    expect(screen.getByText("这个请求没有触发任何防护栏或策略")).toBeInTheDocument();
   });
 
   it("does not claim policies were skipped when the gateway's own headers are hidden", async () => {
@@ -476,7 +476,7 @@ describe("PlaygroundChat", () => {
     await send(user, "hello");
     expect(await screen.findByText("cross-origin reply")).toBeInTheDocument();
     expect(
-      screen.getByText("Policies are only reported when the dashboard is opened from the proxy"),
+      screen.getByText("只有从代理打开控制台时才会报告策略"),
     ).toBeInTheDocument();
     expect(screen.queryByText(/policies ran on this request/)).not.toBeInTheDocument();
   });
@@ -503,7 +503,7 @@ describe("PlaygroundChat", () => {
     renderChat();
 
     await send(user, "first");
-    await user.click(await screen.findByRole("button", { name: "Stop" }));
+    await user.click(await screen.findByRole("button", { name: "停止" }));
     await send(user, "second");
     expect(await screen.findByText("call-fresh")).toBeInTheDocument();
     await act(async () => {
@@ -511,7 +511,7 @@ describe("PlaygroundChat", () => {
       await chatRequest.mock.results[0]?.value;
     });
 
-    expect(screen.queryByRole("button", { name: "Stop" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "停止" })).not.toBeInTheDocument();
     expect(screen.getByText("call-fresh")).toBeInTheDocument();
     expect(screen.queryByText("call-stopped")).not.toBeInTheDocument();
   });
@@ -526,7 +526,7 @@ describe("PlaygroundChat", () => {
     preload({ selectedModel: "gpt-fast" });
     renderChat();
 
-    const message = screen.getByRole("textbox", { name: "Message" });
+    const message = screen.getByRole("textbox", { name: "消息" });
     await user.type(message, "hello");
     fireEvent.keyDown(message, { key: "Enter" });
     fireEvent.keyDown(message, { key: "Enter" });
@@ -545,18 +545,18 @@ describe("PlaygroundChat", () => {
     preload({ selectedModel: "gpt-fast" });
     renderChat();
 
-    fireEvent.drop(screen.getByRole("textbox", { name: "Message" }), {
+    fireEvent.drop(screen.getByRole("textbox", { name: "消息" }), {
       dataTransfer: { files: [new File(["%PDF"], "notes.pdf", { type: "application/pdf" })] },
     });
-    expect(await screen.findByRole("button", { name: "Remove notes.pdf" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "移除 notes.pdf" })).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Endpoint" }));
+    await user.click(screen.getByRole("button", { name: "接口" }));
     await user.click(await screen.findByRole("menuitemradio", { name: "/v1/audio/transcriptions" }));
 
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Endpoint" })).toHaveTextContent("audio/transcriptions"),
+      expect(screen.getByRole("button", { name: "接口" })).toHaveTextContent("audio/transcriptions"),
     );
-    expect(screen.queryByRole("button", { name: "Remove notes.pdf" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "移除 notes.pdf" })).not.toBeInTheDocument();
   });
 
   it("keeps a stopped request's code output off the newer reply", async () => {
@@ -565,16 +565,16 @@ describe("PlaygroundChat", () => {
     responsesRequest
       .mockImplementationOnce(async (...args: ResponsesArgs) => {
         await first.promise;
-        args[18]?.({ code: "print('stopped run')", containerId: "c-1", annotations: [] });
+        args[19]?.({ code: "print('stopped run')", containerId: "c-1", annotations: [] });
       })
       .mockImplementationOnce(async (...args: ResponsesArgs) => {
-        args[1]("assistant", "fresh reply", args[2]);
+        args[2]("assistant", "fresh reply", args[3]);
       });
     preload({ endpointType: "responses", selectedModel: "gpt-fast" });
     renderChat();
 
     await send(user, "first");
-    await user.click(await screen.findByRole("button", { name: "Stop" }));
+    await user.click(await screen.findByRole("button", { name: "停止" }));
     await send(user, "second");
     expect(await screen.findByText("fresh reply")).toBeInTheDocument();
     await act(async () => {
@@ -593,9 +593,9 @@ describe("PlaygroundChat", () => {
     preload({ endpointType: "mcp", selectedMCPServers: JSON.stringify(["srv-byok"]) });
     renderChat();
 
-    await user.click(await screen.findByRole("button", { name: "Connect key" }));
-    await user.type(await screen.findByLabelText("Linear API key"), "lin-key-1");
-    await user.click(screen.getByRole("button", { name: "Connect" }));
+    await user.click(await screen.findByRole("button", { name: "连接密钥" }));
+    await user.type(await screen.findByLabelText("Linear API 密钥"), "lin-key-1");
+    await user.click(screen.getByRole("button", { name: "连接" }));
 
     await waitFor(() => expect(credentialPost).toHaveBeenCalledTimes(1));
     expect(credentialPost.mock.calls[0]?.[1]).toMatchObject({
@@ -616,9 +616,9 @@ describe("PlaygroundChat", () => {
 
     await settled();
     await user.click(screen.getByRole("button", { name: "MCP" }));
-    await user.click(await screen.findByRole("button", { name: "Replace key" }));
-    await user.type(await screen.findByLabelText("Linear API key"), "lin-key-2");
-    await user.click(screen.getByRole("button", { name: "Connect" }));
+    await user.click(await screen.findByRole("button", { name: "更换密钥" }));
+    await user.type(await screen.findByLabelText("Linear API 密钥"), "lin-key-2");
+    await user.click(screen.getByRole("button", { name: "连接" }));
 
     await waitFor(() => expect(credentialPost).toHaveBeenCalledTimes(1));
     expect(credentialPost.mock.calls[0]?.[1]).toMatchObject({ body: { credential: "lin-key-2" } });
@@ -640,18 +640,18 @@ describe("PlaygroundChat", () => {
 
     await settled();
     await user.click(screen.getByRole("button", { name: "MCP" }));
-    await user.click(await screen.findByRole("button", { name: "Replace key" }));
-    expect(await screen.findByLabelText("Linear API key")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await user.click(await screen.findByRole("button", { name: "更换密钥" }));
+    expect(await screen.findByLabelText("Linear API 密钥")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "取消" }));
     expect(screen.queryByLabelText("Linear API key")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Replace key" }));
-    expect(await screen.findByLabelText("Linear API key")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "更换密钥" }));
+    expect(await screen.findByLabelText("Linear API 密钥")).toBeInTheDocument();
     await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByLabelText("Linear API key")).not.toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: "MCP" }));
 
-    expect(await screen.findByRole("button", { name: "Replace key" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "更换密钥" })).toBeInTheDocument();
     expect(screen.queryByLabelText("Linear API key")).not.toBeInTheDocument();
     expect(credentialPost).not.toHaveBeenCalled();
   });

@@ -6,6 +6,7 @@ import { useAgents } from "./useAgents";
 import { getAgentsList } from "@/components/networking";
 import type { AgentsResponse, Agent } from "@/components/agents/types";
 import { authorizedSession } from "@tests/mocks/authorizedSession";
+import { makeAgent } from "@tests/mocks/agents";
 
 // Mock the networking function
 vi.mock("@/components/networking", () => ({
@@ -22,7 +23,7 @@ vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
 
 // Mock data
 const mockAgents: Agent[] = [
-  {
+  makeAgent({
     agent_id: "agent-1",
     agent_name: "Test Agent 1",
     litellm_params: {
@@ -36,8 +37,8 @@ const mockAgents: Agent[] = [
     updated_at: "2024-01-01T00:00:00Z",
     created_by: "user-1",
     updated_by: "user-1",
-  },
-  {
+  }),
+  makeAgent({
     agent_id: "agent-2",
     agent_name: "Test Agent 2",
     litellm_params: {
@@ -51,7 +52,7 @@ const mockAgents: Agent[] = [
     updated_at: "2024-01-01T00:00:00Z",
     created_by: "user-2",
     updated_by: "user-2",
-  },
+  }),
 ];
 
 const mockAgentsResponse: AgentsResponse = {

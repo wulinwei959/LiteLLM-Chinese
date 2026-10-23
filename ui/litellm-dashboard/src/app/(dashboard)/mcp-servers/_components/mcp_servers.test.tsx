@@ -26,7 +26,6 @@ vi.mock("@/components/networking", () => ({
   getGeneralSettingsCall: vi.fn().mockResolvedValue([]),
   updateConfigFieldSetting: vi.fn().mockResolvedValue(undefined),
   deleteConfigFieldSetting: vi.fn().mockResolvedValue(undefined),
-  modelHubCall: vi.fn().mockResolvedValue({ data: [] }),
   getMCPUserEnvVars: vi.fn((_accessToken: string, serverId: string) =>
     Promise.resolve({
       server_id: serverId,

@@ -49,6 +49,11 @@ describe("buildPreferredTierModels", () => {
           complexity_router_config: {
             tiers: { SIMPLE: ["gpt-4o-mini"], MEDIUM: [], COMPLEX: [], REASONING: [] },
             classifier_type: "heuristic_v2",
+            classification_mode: "every_request",
+            session_affinity: false,
+            deployment_affinity: false,
+            modality_routing: false,
+            modality_pin_override: false,
           },
         },
       ],

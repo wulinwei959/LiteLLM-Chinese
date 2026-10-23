@@ -1,13 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
+  renderWithProviders as rtlRender,
   act,
   fireEvent,
-  render as rtlRender,
   screen,
   waitFor,
   waitForElementToBeRemoved,
   within,
-} from "@testing-library/react";
+} from "@/../tests/test-utils";
 import type { ReactElement } from "react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -63,25 +63,25 @@ const lookupAuthHeaders = (calls: Parameters<typeof fetch>[]) =>
 
 const readCurlPayload = async () => {
   await userEvent.click(screen.getByRole("tab", { name: "cURL" }));
-  const payload = curlPayload(screen.getByLabelText("cURL request").textContent ?? "");
-  await userEvent.click(screen.getByRole("tab", { name: "Form" }));
+  const payload = curlPayload(screen.getByLabelText("cURL 请求").textContent ?? "");
+  await userEvent.click(screen.getByRole("tab", { name: "表单" }));
   return JSON.parse(payload ?? "") as Record<string, unknown>;
 };
 
 const selectEndpoint = async (endpoint: "/v1/decisions" | "/v1/systemone") => {
-  screen.getByRole("combobox", { name: "Decision endpoint" }).focus();
+  screen.getByRole("combobox", { name: "决策接口" }).focus();
   await userEvent.keyboard("{ArrowDown}");
-  await userEvent.click(await screen.findByRole("option", { name: endpoint, exact: true }));
+  await userEvent.click(await screen.findByRole("option", { name: endpoint }));
 };
 
 const selectPreset = async (label: string) => {
-  await userEvent.click(screen.getByRole("button", { name: "Load example" }));
+  await userEvent.click(screen.getByRole("button", { name: "加载示例" }));
   await userEvent.click(await screen.findByRole("menuitem", { name: label }));
 };
 
 const renderPopulated = async (ui: ReactElement) => {
   render(ui);
-  await selectPreset("Triage a bug report");
+  await selectPreset("给 Bug 报告分级");
 };
 
 const createResponse = (body: SystemOneResponse | OpenAIDecisionsResponse, status = 200, errorText = "") =>
@@ -114,48 +114,48 @@ describe("SystemOneUI integration", () => {
 
   it("starts empty with one blank question and loads examples from the menu", async () => {
     render(<SystemOneUI accessToken="session-key" />);
-    expect(screen.getByRole("textbox", { name: "Input" })).toHaveValue("");
-    expect(screen.getAllByRole("group", { name: /Question / })).toHaveLength(1);
-    expect(screen.getByRole("button", { name: "Clear form" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Send" })).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: "输入" })).toHaveValue("");
+    expect(screen.getAllByRole("group", { name: /问题 / })).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "清空表单" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "发送" })).toBeDisabled();
 
-    await selectPreset("Triage a bug report");
-    const input = screen.getByRole("textbox", { name: "Input" }) as HTMLTextAreaElement;
+    await selectPreset("给 Bug 报告分级");
+    const input = screen.getByRole("textbox", { name: "输入" }) as HTMLTextAreaElement;
     expect(input).toHaveDisplayValue(/streaming responses/);
-    expect(screen.getByRole("button", { name: "Clear form" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "清空表单" })).toBeEnabled();
 
-    await selectPreset("Score a sales lead");
+    await selectPreset("给销售线索评分");
     expect(await readCurlPayload()).toMatchObject({ questions: { fit: { type: "score" } } });
   });
 
   it("clears the whole request and lets a preset be picked from nothing", async () => {
     const user = userEvent.setup();
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
-    const clear = screen.getByRole("button", { name: "Clear form" });
-    expect(screen.getByRole("textbox", { name: "Input" })).toHaveDisplayValue(/streaming responses/);
+    const clear = screen.getByRole("button", { name: "清空表单" });
+    expect(screen.getByRole("textbox", { name: "输入" })).toHaveDisplayValue(/streaming responses/);
 
     await user.click(clear);
-    expect(screen.getByRole("textbox", { name: "Input" })).toHaveValue("");
-    expect(screen.getAllByRole("group", { name: /Question / })).toHaveLength(1);
-    expect(screen.getByRole("textbox", { name: "Question name" })).toHaveValue("");
-    expect(screen.queryByText("Enter a name")).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: "Instructions" })).toHaveValue("");
-    expect(screen.queryByRole("textbox", { name: "Option label" })).not.toBeInTheDocument();
-    expect(screen.getByText("1 issue to fix")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Send" })).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: "输入" })).toHaveValue("");
+    expect(screen.getAllByRole("group", { name: /问题 / })).toHaveLength(1);
+    expect(screen.getByRole("textbox", { name: "问题名称" })).toHaveValue("");
+    expect(screen.queryByText("请输入名称")).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "指令" })).toHaveValue("");
+    expect(screen.queryByRole("textbox", { name: "选项名称" })).not.toBeInTheDocument();
+    expect(screen.getByText("1 个问题待修正")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "发送" })).toBeDisabled();
     expect(clear).toBeDisabled();
 
-    await selectPreset("Route a support ticket");
-    expect(screen.getByRole("textbox", { name: "Input" })).toHaveDisplayValue(/charged twice/);
-    expect(screen.getAllByRole("group", { name: /Question / })).toHaveLength(1);
-    expect(screen.getByRole("button", { name: "Send" })).toBeEnabled();
+    await selectPreset("给支持工单分流");
+    expect(screen.getByRole("textbox", { name: "输入" })).toHaveDisplayValue(/charged twice/);
+    expect(screen.getAllByRole("group", { name: /问题 / })).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "发送" })).toBeEnabled();
   });
 
   it("keeps the preset label after picking a model and keeps that model when clearing", async () => {
     const user = userEvent.setup();
     mockModelLookup.mockResolvedValue(modelGroupInfoResponse(DECISION_AND_CHAT_MODELS));
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
-    const modelPicker = screen.getByRole("combobox", { name: "Decision model" });
+    const modelPicker = screen.getByRole("combobox", { name: "决策模型" });
     await waitFor(() => expect(modelPicker).toHaveValue("jev-latest"));
 
     await user.clear(modelPicker);
@@ -163,13 +163,13 @@ describe("SystemOneUI integration", () => {
     await user.click(await screen.findByRole("option", { name: "pplx-decider" }));
     expect(await readCurlPayload()).toMatchObject({ model: "pplx-decider" });
 
-    await user.click(screen.getByRole("button", { name: "Clear form" }));
+    await user.click(screen.getByRole("button", { name: "清空表单" }));
     expect(await readCurlPayload()).toEqual({
       model: "pplx-decider",
       state: "",
       questions: { "": { type: "choice", instructions: "", criteria: {} } },
     });
-    await selectPreset("Score a sales lead");
+    await selectPreset("给销售线索评分");
     expect(await readCurlPayload()).toMatchObject({ model: "pplx-decider", questions: { fit: { type: "score" } } });
   });
 
@@ -177,35 +177,35 @@ describe("SystemOneUI integration", () => {
     const user = userEvent.setup();
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
     await selectEndpoint("/v1/decisions");
-    await selectPreset("Moderate a forum comment");
+    await selectPreset("审核论坛评论");
     const payload = await readCurlPayload();
     expect(payload.input).toMatch(/stream=false/);
     expect(payload.questions).toEqual([
       { type: "predicate", name: "breaks_rules", instructions: "Does this comment break the community guidelines?" },
     ]);
 
-    await user.click(screen.getByRole("button", { name: "Clear form" }));
+    await user.click(screen.getByRole("button", { name: "清空表单" }));
     expect(await readCurlPayload()).toEqual({
       input: "",
       questions: [{ type: "predicate", name: "", instructions: "" }],
     });
-    expect(screen.getByRole("textbox", { name: "Question name" })).toHaveValue("");
-    expect(screen.getByRole("button", { name: "Send" })).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: "问题名称" })).toHaveValue("");
+    expect(screen.getByRole("button", { name: "发送" })).toBeDisabled();
   });
 
   it("offers both literal proxy endpoints without TypeSafe or product prefixes", async () => {
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-    expect(screen.getByRole("combobox", { name: "Decision endpoint" })).toHaveTextContent("/v1/systemone");
-    screen.getByRole("combobox", { name: "Decision endpoint" }).focus();
+    expect(screen.getByRole("combobox", { name: "决策接口" })).toHaveTextContent("/v1/systemone");
+    screen.getByRole("combobox", { name: "决策接口" }).focus();
     await userEvent.keyboard("{ArrowDown}");
-    expect(await screen.findByRole("option", { name: "/v1/decisions", exact: true })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "/v1/systemone", exact: true })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "/v1/decisions" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "/v1/systemone" })).toBeInTheDocument();
     expect(screen.getAllByRole("option")).toHaveLength(2);
     expect(screen.queryByText(/TypeSafe/)).not.toBeInTheDocument();
     await userEvent.keyboard("{Escape}");
 
-    expect(screen.getByRole("link", { name: "How to call /v1/decisions and /v1/systemone" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "如何调用 /v1/decisions 和 /v1/systemone" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/decisions",
     );
@@ -218,11 +218,11 @@ describe("SystemOneUI integration", () => {
     mockModelLookup.mockResolvedValue(modelGroupInfoResponse(DECISION_AND_CHAT_MODELS));
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-    await waitFor(() => expect(screen.getByRole("combobox", { name: "Decision model" })).toHaveValue("jev-latest"));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: "决策模型" })).toHaveValue("jev-latest"));
     expect(lookupAuthHeaders(mockModelLookup.mock.calls)).toEqual([expect.arrayContaining(["Bearer session-key"])]);
-    await user.click(screen.getByRole("button", { name: "Send" }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
 
-    expect(await screen.findByText("Selected choice")).toBeInTheDocument();
+    expect(await screen.findByText("选中的选项")).toBeInTheDocument();
     expect(mockFetch.mock.calls[0]?.[0]).toMatch(/\/v1\/systemone$/);
     expect(mockFetch.mock.calls[0]?.[0]).not.toMatch(/typesafe/);
     expect(JSON.parse(mockFetch.mock.calls[0]?.[1]?.body as string)).toMatchObject({
@@ -235,27 +235,27 @@ describe("SystemOneUI integration", () => {
     const user = userEvent.setup();
     mockModelLookup.mockResolvedValue(modelGroupInfoResponse(DECISION_AND_CHAT_MODELS));
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
-    await waitFor(() => expect(screen.getByRole("combobox", { name: "Decision model" })).toHaveValue("jev-latest"));
-    fireEvent.change(screen.getByRole("textbox", { name: "Input" }), { target: { value: "An outage" } });
+    await waitFor(() => expect(screen.getByRole("combobox", { name: "决策模型" })).toHaveValue("jev-latest"));
+    fireEvent.change(screen.getByRole("textbox", { name: "输入" }), { target: { value: "An outage" } });
 
     await selectEndpoint("/v1/decisions");
-    expect(screen.getByRole("textbox", { name: "Input" })).not.toHaveValue("An outage");
-    await selectPreset("Triage a bug report");
+    expect(screen.getByRole("textbox", { name: "输入" })).not.toHaveValue("An outage");
+    await selectPreset("给 Bug 报告分级");
     expect(await readCurlPayload()).toMatchObject({
       input: expect.any(String),
       questions: expect.arrayContaining([expect.objectContaining({ type: "predicate" })]),
     });
-    fireEvent.change(screen.getByRole("textbox", { name: "Input" }), { target: { value: "An outage" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "输入" }), { target: { value: "An outage" } });
     const response: OpenAIDecisionsResponse = {
       model: "jev-latest",
       answers: [{ name: "has_repro_steps", type: "predicate", probability: 0.95 }],
       usage: { input_tokens: 10, output_tokens: 1, total_tokens: 11 },
     };
     mockFetch.mockResolvedValueOnce(createResponse(response));
-    await user.click(screen.getByRole("button", { name: "Send" }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
 
-    expect(await screen.findByRole("meter", { name: "Yes probability" })).toHaveAttribute("aria-valuenow", "95");
-    expect(screen.queryByRole("region", { name: "Decisions response JSON" })).not.toBeInTheDocument();
+    expect(await screen.findByRole("meter", { name: "是 的概率" })).toHaveAttribute("aria-valuenow", "95");
+    expect(screen.queryByRole("region", { name: "决策响应 JSON" })).not.toBeInTheDocument();
     expect(mockFetch.mock.calls[0]?.[0]).toMatch(/\/v1\/decisions$/);
     expect(JSON.parse(mockFetch.mock.calls[0]?.[1]?.body as string)).toMatchObject({
       model: "jev-latest",
@@ -264,24 +264,24 @@ describe("SystemOneUI integration", () => {
     });
 
     await user.click(screen.getByRole("tab", { name: "cURL" }));
-    const result = screen.getByRole("region", { name: "Decisions response JSON" });
+    const result = screen.getByRole("region", { name: "决策响应 JSON" });
     expect(result).toHaveTextContent('"probability": 0.95');
     expect(result).toHaveTextContent('"answers": [');
     expect(screen.queryByRole("meter")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("tab", { name: "Form" }));
-    expect(screen.getByRole("meter", { name: "Yes probability" })).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "表单" }));
+    expect(screen.getByRole("meter", { name: "是 的概率" })).toBeInTheDocument();
     expect(mockFetch).toHaveBeenCalledTimes(1);
 
     await selectEndpoint("/v1/systemone");
-    expect(screen.getByRole("textbox", { name: "Input" })).toHaveValue("An outage");
+    expect(screen.getByRole("textbox", { name: "输入" })).toHaveValue("An outage");
     expect(
-      within(screen.getByRole("region", { name: "Decisions results" })).getByText("Send a request to see answers here"),
+      within(screen.getByRole("region", { name: "决策结果" })).getByText("发送一个请求，就能在这里看到答案"),
     ).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Send" }));
-    expect(await screen.findByText("Selected choice")).toBeInTheDocument();
-    expect(screen.getByRole("meter", { name: "technical probability" })).toHaveAttribute("aria-valuenow", "90");
+    await user.click(screen.getByRole("button", { name: "发送" }));
+    expect(await screen.findByText("选中的选项")).toBeInTheDocument();
+    expect(screen.getByRole("meter", { name: "technical 的概率" })).toHaveAttribute("aria-valuenow", "90");
     await user.click(screen.getByRole("tab", { name: "cURL" }));
-    expect(screen.getByRole("region", { name: "Decisions response JSON" })).toHaveTextContent('"choice": "technical"');
+    expect(screen.getByRole("region", { name: "决策响应 JSON" })).toHaveTextContent('"choice": "technical"');
     expect(screen.queryByRole("meter")).not.toBeInTheDocument();
     expect(mockFetch).toHaveBeenCalledTimes(2);
     expect(mockFetch.mock.calls[1]?.[0]).toMatch(/\/v1\/systemone$/);
@@ -292,22 +292,22 @@ describe("SystemOneUI integration", () => {
 
     await selectEndpoint("/v1/decisions");
     expect(await readCurlPayload()).toMatchObject({ input: "An outage" });
-    await selectPreset("Triage a bug report");
-    expect(screen.getByRole("textbox", { name: "Input" })).not.toHaveValue("An outage");
+    await selectPreset("给 Bug 报告分级");
+    expect(screen.getByRole("textbox", { name: "输入" })).not.toHaveValue("An outage");
     await selectEndpoint("/v1/systemone");
-    expect(screen.getByRole("textbox", { name: "Input" })).toHaveValue("An outage");
+    expect(screen.getByRole("textbox", { name: "输入" })).toHaveValue("An outage");
   });
 
   it("validates /v1/decisions independently and preserves an invalid draft across switches", async () => {
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
     await selectEndpoint("/v1/decisions");
-    await userEvent.click(screen.getByRole("button", { name: "Clear form" }));
-    expect(screen.getByRole("button", { name: "Send" })).toBeDisabled();
+    await userEvent.click(screen.getByRole("button", { name: "清空表单" }));
+    expect(screen.getByRole("button", { name: "发送" })).toBeDisabled();
     await selectEndpoint("/v1/systemone");
-    expect(screen.getByRole("button", { name: "Send" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "发送" })).toBeEnabled();
     await selectEndpoint("/v1/decisions");
-    expect(screen.getByRole("textbox", { name: "Input" })).toHaveValue("");
-    expect(screen.getByRole("button", { name: "Send" })).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: "输入" })).toHaveValue("");
+    expect(screen.getByRole("button", { name: "发送" })).toBeDisabled();
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
@@ -322,18 +322,18 @@ describe("SystemOneUI integration", () => {
     );
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
     await selectEndpoint("/v1/decisions");
-    await selectPreset("Triage a bug report");
-    expect(screen.getByRole("tab", { name: "Form" })).toHaveAttribute("aria-selected", "true");
-    fireEvent.change(screen.getByRole("textbox", { name: "Input" }), { target: { value: "Login is broken" } });
-    const firstQuestion = within(screen.getByRole("group", { name: "Question 1" }));
-    fireEvent.change(firstQuestion.getByRole("textbox", { name: "Question name" }), { target: { value: "team" } });
-    fireEvent.change(firstQuestion.getByRole("textbox", { name: "Instructions" }), {
+    await selectPreset("给 Bug 报告分级");
+    expect(screen.getByRole("tab", { name: "表单" })).toHaveAttribute("aria-selected", "true");
+    fireEvent.change(screen.getByRole("textbox", { name: "输入" }), { target: { value: "Login is broken" } });
+    const firstQuestion = within(screen.getByRole("group", { name: "问题 1" }));
+    fireEvent.change(firstQuestion.getByRole("textbox", { name: "问题名称" }), { target: { value: "team" } });
+    fireEvent.change(firstQuestion.getByRole("textbox", { name: "指令" }), {
       target: { value: "Which team owns this?" },
     });
-    fireEvent.change(firstQuestion.getByRole("textbox", { name: "Choice 1 value" }), {
+    fireEvent.change(firstQuestion.getByRole("textbox", { name: "选项 1 的值" }), {
       target: { value: "infra" },
     });
-    fireEvent.change(screen.getByRole("textbox", { name: "Safety identifier" }), {
+    fireEvent.change(screen.getByRole("textbox", { name: "安全标识" }), {
       target: { value: "qa-session" },
     });
     const payload = (await readCurlPayload()) as { questions: unknown[] };
@@ -346,40 +346,40 @@ describe("SystemOneUI integration", () => {
     };
     expect(payload.questions[0]).toMatchObject(expectedQuestion);
     expect(payload).not.toHaveProperty("state");
-    await user.click(screen.getByRole("button", { name: "Send" }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
     await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(1));
     expect(mockFetch.mock.calls[0]?.[0]).toMatch(/\/v1\/decisions$/);
     expect(JSON.parse(mockFetch.mock.calls[0]?.[1]?.body as string)).toEqual(payload);
-    expect(await screen.findByRole("button", { name: "Raw response" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "原始响应" })).toBeInTheDocument();
     await user.click(screen.getByRole("tab", { name: "cURL" }));
-    expect(screen.getByRole("region", { name: "Decisions response JSON" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "决策响应 JSON" })).toBeInTheDocument();
   });
 
   it("adds and removes Decisions questions, boolean choices and score levels without stale fields", async () => {
     const user = userEvent.setup();
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
     await selectEndpoint("/v1/decisions");
-    await selectPreset("Triage a bug report");
-    const question = (index: number) => within(screen.getByRole("group", { name: `Question ${index}` }));
+    await selectPreset("给 Bug 报告分级");
+    const question = (index: number) => within(screen.getByRole("group", { name: `问题 ${index}` }));
     const pick = async (control: HTMLElement, label: string) => {
       control.focus();
       await user.keyboard("{ArrowDown}");
-      await user.click(await screen.findByRole("option", { name: label, exact: true }));
+      await user.click(await screen.findByRole("option", { name: label }));
     };
-    await user.click(screen.getByRole("button", { name: "Add question" }));
-    fireEvent.change(question(4).getByRole("textbox", { name: "Instructions" }), {
+    await user.click(screen.getByRole("button", { name: "添加问题" }));
+    fireEvent.change(question(4).getByRole("textbox", { name: "指令" }), {
       target: { value: "Should we escalate?" },
     });
-    await pick(question(4).getByRole("combobox", { name: "Answer type" }), "Choice");
-    await user.click(question(4).getByRole("button", { name: "Remove choice 1" }));
-    expect(question(4).getByRole("textbox", { name: "Choice 1 value" })).toHaveValue("option_2");
-    expect(screen.getByRole("button", { name: "Send" })).toBeDisabled();
-    await user.click(question(4).getByRole("button", { name: "Add choice" }));
-    await pick(question(4).getByRole("combobox", { name: "Choice 1 value type" }), "false (boolean)");
-    fireEvent.change(question(4).getByRole("textbox", { name: "Choice 1 description" }), {
+    await pick(question(4).getByRole("combobox", { name: "回答类型" }), "选项");
+    await user.click(question(4).getByRole("button", { name: "移除选项 1" }));
+    expect(question(4).getByRole("textbox", { name: "选项 1 的值" })).toHaveValue("option_2");
+    expect(screen.getByRole("button", { name: "发送" })).toBeDisabled();
+    await user.click(question(4).getByRole("button", { name: "添加选项" }));
+    await pick(question(4).getByRole("combobox", { name: "选项 1 的值类型" }), "false（布尔）");
+    fireEvent.change(question(4).getByRole("textbox", { name: "选项 1 的说明" }), {
       target: { value: "Not urgent" },
     });
-    expect(screen.getByRole("button", { name: "Send" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "发送" })).toBeEnabled();
     const choicePayload = (await readCurlPayload()) as { questions: Record<string, unknown>[] };
     const expectedChoice = {
       type: "choice",
@@ -388,17 +388,17 @@ describe("SystemOneUI integration", () => {
       choices: [{ value: false, description: "Not urgent" }, { value: "option_1" }],
     };
     expect(choicePayload.questions[3]).toEqual(expectedChoice);
-    await user.click(screen.getByRole("tab", { name: "Form" }));
-    await pick(question(4).getByRole("combobox", { name: "Answer type" }), "Score");
-    fireEvent.change(question(4).getByRole("textbox", { name: "Level 1 label" }), { target: { value: "low" } });
-    fireEvent.change(question(4).getByRole("textbox", { name: "Level 1 description" }), {
+    await user.click(screen.getByRole("tab", { name: "表单" }));
+    await pick(question(4).getByRole("combobox", { name: "回答类型" }), "分数");
+    fireEvent.change(question(4).getByRole("textbox", { name: "等级 1 的名称" }), { target: { value: "low" } });
+    fireEvent.change(question(4).getByRole("textbox", { name: "等级 1 的说明" }), {
       target: { value: "No impact" },
     });
-    await user.click(question(4).getByRole("button", { name: "Add level" }));
-    await user.click(question(4).getByRole("button", { name: "Remove level 2" }));
-    expect(question(4).getByRole("textbox", { name: "Level 2 label" })).toHaveValue("2");
-    await user.click(question(2).getByRole("button", { name: "Remove question 2" }));
-    expect(question(3).getByRole("textbox", { name: "Instructions" })).toHaveValue("Should we escalate?");
+    await user.click(question(4).getByRole("button", { name: "添加等级" }));
+    await user.click(question(4).getByRole("button", { name: "移除等级 2" }));
+    expect(question(4).getByRole("textbox", { name: "等级 2 的名称" })).toHaveValue("2");
+    await user.click(question(2).getByRole("button", { name: "移除问题 2" }));
+    expect(question(3).getByRole("textbox", { name: "指令" })).toHaveValue("Should we escalate?");
     const scorePayload = (await readCurlPayload()) as { questions: Record<string, unknown>[] };
     expect(scorePayload.questions).toHaveLength(3);
     const expectedScore = {
@@ -408,8 +408,8 @@ describe("SystemOneUI integration", () => {
       levels: [{ label: "low", description: "No impact" }, { label: "2" }],
     };
     expect(scorePayload.questions[2]).toEqual(expectedScore);
-    await user.click(screen.getByRole("tab", { name: "Form" }));
-    await pick(question(3).getByRole("combobox", { name: "Answer type" }), "Predicate");
+    await user.click(screen.getByRole("tab", { name: "表单" }));
+    await pick(question(3).getByRole("combobox", { name: "回答类型" }), "谓词");
     const predicatePayload = (await readCurlPayload()) as { questions: Record<string, unknown>[] };
     expect(predicatePayload.questions[2]).toEqual({
       type: "predicate",
@@ -427,9 +427,9 @@ describe("SystemOneUI integration", () => {
         <SystemOneUI accessToken="session-key" />
       </QueryClientProvider>,
     );
-    await selectPreset("Triage a bug report");
-    await userEvent.click(screen.getByRole("button", { name: "Send" }));
-    await screen.findByRole("button", { name: "Cancel request" });
+    await selectPreset("给 Bug 报告分级");
+    await userEvent.click(screen.getByRole("button", { name: "发送" }));
+    await screen.findByRole("button", { name: "取消请求" });
     await selectEndpoint("/v1/decisions");
     expect(mockFetch.mock.calls[0]?.[1]?.signal?.aborted).toBe(true);
     await act(async () => {
@@ -443,8 +443,8 @@ describe("SystemOneUI integration", () => {
     await waitFor(() => expect(queryClient.isMutating()).toBe(0));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(screen.queryByText("stale-model")).not.toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Form" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.queryByRole("button", { name: "Cancel request" })).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "表单" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.queryByRole("button", { name: "取消请求" })).not.toBeInTheDocument();
   });
 
   it("offers only decision models and writes the picked one into the request", async () => {
@@ -452,7 +452,7 @@ describe("SystemOneUI integration", () => {
     mockModelLookup.mockResolvedValue(modelGroupInfoResponse(DECISION_AND_CHAT_MODELS));
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-    const picker = screen.getByRole("combobox", { name: "Decision model" });
+    const picker = screen.getByRole("combobox", { name: "决策模型" });
 
     await user.clear(picker);
     await user.type(picker, "p");
@@ -464,9 +464,9 @@ describe("SystemOneUI integration", () => {
       model: "pplx-decider",
       questions: { has_repro_steps: { type: "noul" } },
     });
-    await user.click(screen.getByRole("button", { name: "Send" }));
-    await user.click(screen.getByRole("tab", { name: "Form" }));
-    expect(await screen.findByText("Selected choice")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "发送" }));
+    await user.click(screen.getByRole("tab", { name: "表单" }));
+    expect(await screen.findByText("选中的选项")).toBeInTheDocument();
     expect(JSON.parse(mockFetch.mock.calls[0]?.[1]?.body as string).model).toBe("pplx-decider");
   });
 
@@ -477,12 +477,12 @@ describe("SystemOneUI integration", () => {
     );
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
     await waitFor(() =>
-      expect(screen.getByRole("combobox", { name: "Decision model" })).toHaveValue("typesafe/jev-latest"),
+      expect(screen.getByRole("combobox", { name: "决策模型" })).toHaveValue("typesafe/jev-latest"),
     );
 
-    await user.click(screen.getByRole("button", { name: "Send" }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
 
-    expect(await screen.findByText("Selected choice")).toBeInTheDocument();
+    expect(await screen.findByText("选中的选项")).toBeInTheDocument();
     expect(mockFetch.mock.calls[0]?.[0]).toMatch(/\/v1\/systemone$/);
     expect(mockFetch.mock.calls[0]?.[0]).not.toMatch(/\/typesafe\//);
     expect(JSON.parse(mockFetch.mock.calls[0]?.[1]?.body as string).model).toBe("typesafe/jev-latest");
@@ -491,13 +491,13 @@ describe("SystemOneUI integration", () => {
   it("links to Add Model when the key cannot call any decision model", async () => {
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-    expect(await screen.findByRole("link", { name: "Add a decision model" })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: "添加决策模型" })).toHaveAttribute(
       "href",
       "/ui/models-and-endpoints",
     );
-    expect(screen.getByRole("combobox", { name: "Decision model" })).toHaveAttribute(
+    expect(screen.getByRole("combobox", { name: "决策模型" })).toHaveAttribute(
       "placeholder",
-      "No decision models yet",
+      "还没有决策模型",
     );
   });
 
@@ -506,9 +506,9 @@ describe("SystemOneUI integration", () => {
     mockModelLookup.mockResolvedValue(modelGroupInfoResponse(DECISION_AND_CHAT_MODELS));
     render(<SystemOneUI accessToken={null} disabledPersonalKeyCreation />);
 
-    await user.type(screen.getByLabelText("Virtual Key", { exact: true }), "sk-typed-key");
+    await user.type(screen.getByLabelText("虚拟密钥", { exact: true }), "sk-typed-key");
 
-    await waitFor(() => expect(screen.getByRole("combobox", { name: "Decision model" })).toHaveValue("jev-latest"));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: "决策模型" })).toHaveValue("jev-latest"));
     expect(lookupAuthHeaders(mockModelLookup.mock.calls)).toEqual([expect.arrayContaining(["Bearer sk-typed-key"])]);
   });
 
@@ -517,29 +517,29 @@ describe("SystemOneUI integration", () => {
     mockModelLookup.mockResolvedValue(EXPIRED_KEY_RESPONSE);
     await renderPopulated(<SystemOneUI accessToken={null} disabledPersonalKeyCreation />);
 
-    fireEvent.change(screen.getByLabelText("Virtual Key", { exact: true }), { target: { value: "sk-expired" } });
+    fireEvent.change(screen.getByLabelText("虚拟密钥", { exact: true }), { target: { value: "sk-expired" } });
 
     await waitFor(() => expect(mockModelLookup).toHaveBeenCalled());
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
     expect(document.cookie).toContain("token=ui-session");
-    expect(screen.getByRole("combobox", { name: "Decision endpoint" })).toHaveTextContent("/v1/systemone");
+    expect(screen.getByRole("combobox", { name: "决策接口" })).toHaveTextContent("/v1/systemone");
   });
 
   it("keeps an edited request in place when decision models load afterwards", async () => {
     const models = Promise.withResolvers<Response>();
     mockModelLookup.mockReturnValue(models.promise);
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
-    fireEvent.change(screen.getByRole("textbox", { name: "Input" }), { target: { value: "edited" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "输入" }), { target: { value: "edited" } });
 
     await act(async () => {
       models.resolve(modelGroupInfoResponse(DECISION_AND_CHAT_MODELS));
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(screen.getByRole("textbox", { name: "Input" })).toHaveValue("edited");
-    expect(screen.getByRole("combobox", { name: "Decision model" })).toHaveValue("");
+    expect(screen.getByRole("textbox", { name: "输入" })).toHaveValue("edited");
+    expect(screen.getByRole("combobox", { name: "决策模型" })).toHaveValue("");
   });
 
   it.each(["/v1/decisions", "/v1/systemone"] as const)(
@@ -547,19 +547,25 @@ describe("SystemOneUI integration", () => {
     async (endpoint) => {
       const models = Promise.withResolvers<Response>();
       mockModelLookup.mockReturnValue(models.promise);
-      mockFetch.mockResolvedValueOnce(
-        createResponse({
-          model: "jev-latest",
-          answers: endpoint === "/v1/decisions" ? [] : {},
-          usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 },
-        }),
-      );
+      const body: SystemOneResponse | OpenAIDecisionsResponse =
+        endpoint === "/v1/decisions"
+          ? {
+              model: "jev-latest",
+              answers: [],
+              usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 },
+            }
+          : {
+              model: "jev-latest",
+              answers: {},
+              usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 },
+            };
+      mockFetch.mockResolvedValueOnce(createResponse(body));
       await renderPopulated(<SystemOneUI accessToken="session-key" />);
       if (endpoint === "/v1/decisions") {
         await selectEndpoint(endpoint);
-        await selectPreset("Triage a bug report");
+        await selectPreset("给 Bug 报告分级");
       }
-      await userEvent.click(screen.getByRole("button", { name: "Send" }));
+      await userEvent.click(screen.getByRole("button", { name: "发送" }));
       expect(await screen.findByText("jev-latest")).toBeInTheDocument();
       expect(mockFetch.mock.calls[0]?.[0]).toMatch(new RegExp(`${endpoint}$`));
       expect(JSON.parse(mockFetch.mock.calls[0]?.[1]?.body as string)).not.toHaveProperty("model");
@@ -567,7 +573,7 @@ describe("SystemOneUI integration", () => {
         models.resolve(modelGroupInfoResponse(DECISION_AND_CHAT_MODELS));
         await models.promise;
       });
-      expect(screen.getByRole("combobox", { name: "Decision model" })).toHaveValue("");
+      expect(screen.getByRole("combobox", { name: "决策模型" })).toHaveValue("");
     },
   );
 
@@ -577,7 +583,7 @@ describe("SystemOneUI integration", () => {
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
     await user.click(screen.getByRole("tab", { name: "cURL" }));
 
-    const command = screen.getByLabelText("cURL request");
+    const command = screen.getByLabelText("cURL 请求");
     expect(command).toHaveTextContent("curl -X POST 'https://proxy.example/v1/systemone'");
     expect(command).toHaveTextContent("Authorization: Bearer $LITELLM_API_KEY");
     expect(command).not.toHaveTextContent("session-key");
@@ -585,63 +591,63 @@ describe("SystemOneUI integration", () => {
       questions: { has_repro_steps: { type: "noul" } },
     });
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Copy cURL" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "复制 cURL" })).toBeInTheDocument();
 
     await selectEndpoint("/v1/decisions");
-    await selectPreset("Triage a bug report");
-    expect(screen.getByLabelText("cURL request")).toHaveTextContent("https://proxy.example/v1/decisions");
-    expect(screen.getByRole("button", { name: "Send" })).toBeEnabled();
+    await selectPreset("给 Bug 报告分级");
+    expect(screen.getByLabelText("cURL 请求")).toHaveTextContent("https://proxy.example/v1/decisions");
+    expect(screen.getByRole("button", { name: "发送" })).toBeEnabled();
   });
 
   it("keeps Send below the form and shows results only after a request", async () => {
     const user = userEvent.setup();
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-    const send = screen.getByRole("button", { name: "Send" });
-    const editor = screen.getByRole("region", { name: "Decisions request editor" });
-    const form = within(editor).getByRole("textbox", { name: "Input" });
+    const send = screen.getByRole("button", { name: "发送" });
+    const editor = screen.getByRole("region", { name: "决策请求编辑器" });
+    const form = within(editor).getByRole("textbox", { name: "输入" });
     expect(form.compareDocumentPosition(send) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(
-      within(screen.getByRole("region", { name: "Decisions results" })).getByText("Send a request to see answers here"),
+      within(screen.getByRole("region", { name: "决策结果" })).getByText("发送一个请求，就能在这里看到答案"),
     ).toBeInTheDocument();
     expect(screen.queryByRole("note")).not.toBeInTheDocument();
 
     await user.click(send);
 
-    const results = await screen.findByRole("region", { name: "Decisions results" });
-    expect(within(results).getByText("Response")).toBeInTheDocument();
+    const results = await screen.findByRole("region", { name: "决策结果" });
+    expect(within(results).getByText("响应")).toBeInTheDocument();
     expect(editor.compareDocumentPosition(results) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
-    fireEvent.change(within(editor).getByRole("textbox", { name: "Input" }), { target: { value: "Edited state" } });
+    fireEvent.change(within(editor).getByRole("textbox", { name: "输入" }), { target: { value: "Edited state" } });
     expect(
-      within(screen.getByRole("region", { name: "Decisions results" })).getByText("Send a request to see answers here"),
+      within(screen.getByRole("region", { name: "决策结果" })).getByText("发送一个请求，就能在这里看到答案"),
     ).toBeInTheDocument();
   });
 
   it("ties each setup label to its control, numbers question cards and keeps the actions in the editor footer", async () => {
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-    expect(screen.getByText("Endpoint")).toHaveAttribute("for", screen.getByLabelText("Decision endpoint").id);
-    expect(screen.getByText("Model")).toHaveAttribute("for", screen.getByLabelText("Decision model").id);
-    expect(screen.getByText("API key")).toHaveAttribute("for", screen.getByLabelText("Virtual Key Source").id);
+    expect(screen.getByText("接口")).toHaveAttribute("for", screen.getByLabelText("决策接口").id);
+    expect(screen.getByText("模型")).toHaveAttribute("for", screen.getByLabelText("决策模型").id);
+    expect(screen.getByText("API 密钥")).toHaveAttribute("for", screen.getByLabelText("虚拟密钥来源").id);
 
-    const question = screen.getByRole("group", { name: "Question area" });
-    expect(within(question).getByText("Question 1")).toBeInTheDocument();
-    expect(within(question).getByText("Name")).toBeInTheDocument();
-    expect(within(question).getByText("Answer type")).toBeInTheDocument();
+    const question = screen.getByRole("group", { name: "问题 area" });
+    expect(within(question).getByText("问题 1")).toBeInTheDocument();
+    expect(within(question).getByText("名称")).toBeInTheDocument();
+    expect(within(question).getByText("回答类型")).toBeInTheDocument();
 
-    const editor = screen.getByRole("region", { name: "Decisions request editor" });
-    const card = within(editor).getByRole("group", { name: "Request editor" });
-    const actions = within(card).getByRole("toolbar", { name: "Request actions" });
+    const editor = screen.getByRole("region", { name: "决策请求编辑器" });
+    const card = within(editor).getByRole("group", { name: "请求编辑器" });
+    const actions = within(card).getByRole("toolbar", { name: "请求操作" });
     const status = within(actions).getByRole("status");
-    const send = within(actions).getByRole("button", { name: "Send" });
-    expect(status).toHaveTextContent("Ready to send");
+    const send = within(actions).getByRole("button", { name: "发送" });
+    expect(status).toHaveTextContent("可以发送");
     expect(status.compareDocumentPosition(send) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(within(actions).queryByRole("button", { name: "Clear form" })).not.toBeInTheDocument();
-    const clear = within(card).getByRole("button", { name: "Clear form" });
+    expect(within(actions).queryByRole("button", { name: "清空表单" })).not.toBeInTheDocument();
+    const clear = within(card).getByRole("button", { name: "清空表单" });
     expect(clear.compareDocumentPosition(actions) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(
-      within(card).getByRole("button", { name: "Load example" }).compareDocumentPosition(clear) &
+      within(card).getByRole("button", { name: "加载示例" }).compareDocumentPosition(clear) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
@@ -652,7 +658,7 @@ describe("SystemOneUI integration", () => {
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
     sessionStorage.setItem("customProxyBaseUrl", "https://tenant.example.com/");
 
-    await user.click(screen.getByRole("button", { name: "Send" }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
 
     expect(await screen.findAllByText("technical")).toHaveLength(2);
     expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -677,20 +683,20 @@ describe("SystemOneUI integration", () => {
     );
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-    await waitFor(() => expect(screen.getByRole("combobox", { name: "Decision model" })).toHaveValue("jev-latest"));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: "决策模型" })).toHaveValue("jev-latest"));
 
-    await user.click(screen.getByRole("button", { name: "Send" }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
 
     expect(await screen.findByText("jev-latest")).toBeInTheDocument();
-    expect(screen.getByText("Selected choice")).toBeInTheDocument();
+    expect(screen.getByText("选中的选项")).toBeInTheDocument();
   });
 
   it("sends a native request without model so the proxy can select its default", async () => {
     const user = userEvent.setup();
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
-    fireEvent.change(screen.getByRole("textbox", { name: "Input" }), { target: { value: "An outage" } });
-    expect(screen.getByRole("button", { name: "Send" })).toBeEnabled();
-    await user.click(screen.getByRole("button", { name: "Send" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "输入" }), { target: { value: "An outage" } });
+    expect(screen.getByRole("button", { name: "发送" })).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: "发送" }));
     expect(await screen.findByText("jev-1.13.0")).toBeInTheDocument();
     expect(mockFetch.mock.calls[0]?.[0]).toMatch(/\/v1\/systemone$/);
     const body = JSON.parse(mockFetch.mock.calls[0]?.[1]?.body as string);
@@ -708,12 +714,12 @@ describe("SystemOneUI integration", () => {
         <SystemOneUI accessToken="session-key" />
       </QueryClientProvider>,
     );
-    await selectPreset("Triage a bug report");
-    await user.click(screen.getByRole("button", { name: "Send" }));
-    await screen.findByRole("button", { name: "Cancel request" });
-    fireEvent.change(screen.getByRole("textbox", { name: "Input" }), { target: { value: "A new request" } });
+    await selectPreset("给 Bug 报告分级");
+    await user.click(screen.getByRole("button", { name: "发送" }));
+    await screen.findByRole("button", { name: "取消请求" });
+    fireEvent.change(screen.getByRole("textbox", { name: "输入" }), { target: { value: "A new request" } });
     expect(mockFetch.mock.calls[0]?.[1]?.signal?.aborted).toBe(true);
-    expect(screen.getByRole("button", { name: "Send" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "发送" })).toBeEnabled();
 
     await act(async () => {
       if (outcome === "success") {
@@ -728,11 +734,11 @@ describe("SystemOneUI integration", () => {
     expect(screen.queryByText("Stale request failed")).not.toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(screen.queryByText("100% yes")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Send" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "发送" })).toBeEnabled();
 
-    await user.click(screen.getByRole("button", { name: "Send" }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
     expect(await screen.findByText("jev-1.13.0")).toBeInTheDocument();
-    expect(screen.getByText("Selected choice")).toBeInTheDocument();
+    expect(screen.getByText("选中的选项")).toBeInTheDocument();
     expect(mockFetch.mock.calls[1]?.[0]).toMatch(/\/v1\/systemone$/);
     expect(mockFetch).toHaveBeenCalledTimes(2);
   });
@@ -740,12 +746,12 @@ describe("SystemOneUI integration", () => {
   it("uses a custom virtual key when personal key creation is disabled", async () => {
     const user = userEvent.setup();
     await renderPopulated(<SystemOneUI accessToken={null} disabledPersonalKeyCreation />);
-    expect(screen.getByRole("button", { name: "Send" })).toBeDisabled();
-    fireEvent.change(screen.getByLabelText("Virtual Key", { exact: true }), {
+    expect(screen.getByRole("button", { name: "发送" })).toBeDisabled();
+    fireEvent.change(screen.getByLabelText("虚拟密钥", { exact: true }), {
       target: { value: "test-virtual-key" },
     });
-    await user.click(screen.getByRole("button", { name: "Send" }));
-    expect(await screen.findByText("Selected choice")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "发送" }));
+    expect(await screen.findByText("选中的选项")).toBeInTheDocument();
     expect(Object.values(mockFetch.mock.calls[0]?.[1]?.headers ?? {})).toContain("Bearer test-virtual-key");
   });
 
@@ -754,7 +760,7 @@ describe("SystemOneUI integration", () => {
     mockFetch.mockResolvedValueOnce(createResponse(responseBody, 401, "Virtual key rejected"));
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-    await user.click(screen.getByRole("button", { name: "Send" }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Virtual key rejected");
   });
@@ -777,7 +783,7 @@ describe("SystemOneUI integration", () => {
     } as Response);
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-    await user.click(screen.getByRole("button", { name: "Send" }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("/v1/systemone response has an invalid shape.");
     expect(screen.queryByText("jev-1.13.0")).not.toBeInTheDocument();
@@ -787,14 +793,14 @@ describe("SystemOneUI integration", () => {
     const user = userEvent.setup();
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-    await user.click(screen.getByRole("button", { name: "Send" }));
-    expect(await screen.findByText("Selected choice")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "发送" }));
+    expect(await screen.findByText("选中的选项")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole("textbox", { name: "Input" }), {
+    fireEvent.change(screen.getByRole("textbox", { name: "输入" }), {
       target: { value: "A different support request" },
     });
 
-    expect(screen.queryByText("Selected choice")).not.toBeInTheDocument();
+    expect(screen.queryByText("选中的选项")).not.toBeInTheDocument();
     expect(screen.queryByText("jev-1.13.0")).not.toBeInTheDocument();
   });
 
@@ -806,11 +812,11 @@ describe("SystemOneUI integration", () => {
         <SystemOneUI accessToken="session-key" />
       </QueryClientProvider>,
     );
-    await selectPreset("Triage a bug report");
-    await selectPreset("Triage a bug report");
+    await selectPreset("给 Bug 报告分级");
+    await selectPreset("给 Bug 报告分级");
 
-    await user.click(screen.getByRole("button", { name: "Send" }));
-    expect(await screen.findByText("Selected choice")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "发送" }));
+    expect(await screen.findByText("选中的选项")).toBeInTheDocument();
 
     view.rerender(
       <QueryClientProvider client={queryClient}>
@@ -818,7 +824,7 @@ describe("SystemOneUI integration", () => {
       </QueryClientProvider>,
     );
 
-    await waitForElementToBeRemoved(() => screen.queryByText("Selected choice"));
+    await waitForElementToBeRemoved(() => screen.queryByText("选中的选项"));
   });
 
   it("aborts an in-flight request when cancelled", async () => {
@@ -833,19 +839,19 @@ describe("SystemOneUI integration", () => {
     );
     await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-    await user.click(screen.getByRole("button", { name: "Send" }));
-    await user.click(await screen.findByRole("button", { name: "Cancel request" }));
+    await user.click(screen.getByRole("button", { name: "发送" }));
+    await user.click(await screen.findByRole("button", { name: "取消请求" }));
 
     expect(mockFetch.mock.calls[0]?.[1]?.signal?.aborted).toBe(true);
-    expect(screen.getByRole("button", { name: "Send" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "发送" })).toBeEnabled();
   });
 
   describe("request form", () => {
-    const question = (name: string) => within(screen.getByRole("group", { name: `Question ${name}` }));
+    const question = (name: string) => within(screen.getByRole("group", { name: `问题 ${name}` }));
     const sentBody = () => JSON.parse(mockFetch.mock.calls[0]?.[1]?.body as string);
 
     async function pickAnswerType(user: ReturnType<typeof userEvent.setup>, name: string, type: string) {
-      question(name).getByRole("combobox", { name: "Answer type" }).focus();
+      question(name).getByRole("combobox", { name: "回答类型" }).focus();
       await user.keyboard("{ArrowDown}");
       await user.click(await screen.findByRole("option", { name: type }));
     }
@@ -861,46 +867,46 @@ describe("SystemOneUI integration", () => {
       const user = userEvent.setup();
       await renderPopulated(<SystemOneUI accessToken="session-key" />);
 
-      question("has_repro_steps").getByRole("combobox", { name: "Answer type" }).focus();
+      question("has_repro_steps").getByRole("combobox", { name: "回答类型" }).focus();
       await user.keyboard("{ArrowDown}");
-      expect(await screen.findByRole("option", { name: "Yes / no" })).toHaveAttribute(
+      expect(await screen.findByRole("option", { name: "是 / 否" })).toHaveAttribute(
         "title",
-        "The model returns the probability that the answer is yes",
+        "模型返回答案为是的概率",
       );
-      expect(screen.getByRole("option", { name: "Choice" })).not.toHaveAttribute("title");
+      expect(screen.getByRole("option", { name: "选项" })).not.toHaveAttribute("title");
     });
 
     it("sends a choice and a yes/no question built in the form without opening JSON", async () => {
       const user = userEvent.setup();
       await renderPopulated(<SystemOneUI accessToken="session-key" />);
-      const input = screen.getByRole("textbox", { name: "Input" });
+      const input = screen.getByRole("textbox", { name: "输入" });
       fill(input, "The login page is blank after the upgrade");
       for (const name of ["area", "has_repro_steps", "severity"]) {
-        await user.click(screen.getByRole("button", { name: `Remove question ${name}` }));
+        await user.click(screen.getByRole("button", { name: `移除问题 ${name}` }));
       }
 
-      await user.click(screen.getByRole("button", { name: "Add question" }));
-      rename(question("question_1").getByRole("textbox", { name: "Question name" }), "team");
-      fill(question("team").getByRole("textbox", { name: "Instructions" }), "Which team owns this?");
-      await user.click(question("team").getByRole("button", { name: "Add option" }));
-      await user.click(question("team").getByRole("button", { name: "Add option" }));
-      const [first, second] = question("team").getAllByRole("textbox", { name: "Option label" });
+      await user.click(screen.getByRole("button", { name: "添加问题" }));
+      rename(question("question_1").getByRole("textbox", { name: "问题名称" }), "team");
+      fill(question("team").getByRole("textbox", { name: "指令" }), "Which team owns this?");
+      await user.click(question("team").getByRole("button", { name: "添加选项" }));
+      await user.click(question("team").getByRole("button", { name: "添加选项" }));
+      const [first, second] = question("team").getAllByRole("textbox", { name: "选项名称" });
       rename(first, "frontend");
       rename(second, "backend");
-      fill(question("team").getByRole("textbox", { name: "Description of frontend" }), "Dashboard and UI");
-      await user.click(question("team").getByRole("button", { name: "Add option" }));
-      rename(question("team").getAllByRole("textbox", { name: "Option label" })[2], "infra");
-      fill(question("team").getByRole("textbox", { name: "Description of infra" }), "Deploys");
+      fill(question("team").getByRole("textbox", { name: "frontend 的说明" }), "Dashboard and UI");
+      await user.click(question("team").getByRole("button", { name: "添加选项" }));
+      rename(question("team").getAllByRole("textbox", { name: "选项名称" })[2], "infra");
+      fill(question("team").getByRole("textbox", { name: "infra 的说明" }), "Deploys");
 
-      await user.click(screen.getByRole("button", { name: "Add question" }));
-      await pickAnswerType(user, "question_1", "Yes / no");
-      rename(question("question_1").getByRole("textbox", { name: "Question name" }), "urgent");
-      fill(question("urgent").getByRole("textbox", { name: "Instructions" }), "Is this blocking users?");
-      fill(question("urgent").getByRole("textbox", { name: "Yes means" }), "Nobody can log in");
+      await user.click(screen.getByRole("button", { name: "添加问题" }));
+      await pickAnswerType(user, "question_1", "是 / 否");
+      rename(question("question_1").getByRole("textbox", { name: "问题名称" }), "urgent");
+      fill(question("urgent").getByRole("textbox", { name: "指令" }), "Is this blocking users?");
+      fill(question("urgent").getByRole("textbox", { name: "是 表示" }), "Nobody can log in");
 
-      await user.click(screen.getByRole("button", { name: "Send" }));
+      await user.click(screen.getByRole("button", { name: "发送" }));
 
-      expect(await screen.findByText("Selected choice")).toBeInTheDocument();
+      expect(await screen.findByText("选中的选项")).toBeInTheDocument();
       expect(mockFetch.mock.calls[0]?.[0]).toMatch(/\/v1\/systemone$/);
       expect(sentBody()).toEqual({
         state: "The login page is blank after the upgrade",
@@ -921,20 +927,20 @@ describe("SystemOneUI integration", () => {
       const user = userEvent.setup();
       mockModelLookup.mockResolvedValue(modelGroupInfoResponse(DECISION_AND_CHAT_MODELS));
       await renderPopulated(<SystemOneUI accessToken="session-key" />);
-      await waitFor(() => expect(screen.getByRole("combobox", { name: "Decision model" })).toHaveValue("jev-latest"));
+      await waitFor(() => expect(screen.getByRole("combobox", { name: "决策模型" })).toHaveValue("jev-latest"));
 
-      const level = question("severity").getByRole("textbox", { name: "Level 0" });
+      const level = question("severity").getByRole("textbox", { name: "等级 0" });
       fill(level, "Typo");
-      await user.click(question("severity").getByRole("button", { name: "Remove level 4" }));
-      await user.click(question("severity").getByRole("button", { name: "Add level" }));
-      fill(question("severity").getByRole("textbox", { name: "Level 4" }), "Data loss");
-      await pickAnswerType(user, "has_repro_steps", "Choice");
-      await user.click(question("has_repro_steps").getByRole("button", { name: "Add option" }));
-      await user.click(question("area").getByRole("button", { name: "Remove option docs" }));
+      await user.click(question("severity").getByRole("button", { name: "移除等级 4" }));
+      await user.click(question("severity").getByRole("button", { name: "添加等级" }));
+      fill(question("severity").getByRole("textbox", { name: "等级 4" }), "Data loss");
+      await pickAnswerType(user, "has_repro_steps", "选项");
+      await user.click(question("has_repro_steps").getByRole("button", { name: "添加选项" }));
+      await user.click(question("area").getByRole("button", { name: "移除选项 docs" }));
 
-      await user.click(screen.getByRole("button", { name: "Send" }));
+      await user.click(screen.getByRole("button", { name: "发送" }));
 
-      expect(await screen.findByText("Selected choice")).toBeInTheDocument();
+      expect(await screen.findByText("选中的选项")).toBeInTheDocument();
       expect(mockFetch.mock.calls[0]?.[0]).toMatch(/\/v1\/systemone$/);
       expect(sentBody().model).toBe("jev-latest");
       expect(sentBody().questions.severity.criteria).toEqual([
@@ -955,24 +961,24 @@ describe("SystemOneUI integration", () => {
     it("refuses an empty or taken question name and trims a new one", async () => {
       const user = userEvent.setup();
       await renderPopulated(<SystemOneUI accessToken="session-key" />);
-      const name = question("severity").getByRole("textbox", { name: "Question name" });
+      const name = question("severity").getByRole("textbox", { name: "问题名称" });
       expect(name).toHaveAttribute("aria-invalid", "false");
 
       fill(name, "area");
       expect(name).toHaveAttribute("aria-invalid", "true");
-      expect(question("severity").getByText('"area" is already used')).toBeInTheDocument();
+      expect(question("severity").getByText("“area” 已被使用")).toBeInTheDocument();
       fireEvent.blur(name);
       expect(name).toHaveValue("severity");
 
       fill(name, "");
-      expect(question("severity").getByText("Enter a name")).toBeInTheDocument();
+      expect(question("severity").getByText("请输入名称")).toBeInTheDocument();
       fireEvent.blur(name);
       expect(name).toHaveValue("severity");
 
       rename(name, "  impact  ");
-      expect(question("impact").getByRole("textbox", { name: "Question name" })).toHaveValue("impact");
-      await user.click(screen.getByRole("button", { name: "Add question" }));
-      await user.click(screen.getByRole("button", { name: "Add question" }));
+      expect(question("impact").getByRole("textbox", { name: "问题名称" })).toHaveValue("impact");
+      await user.click(screen.getByRole("button", { name: "添加问题" }));
+      await user.click(screen.getByRole("button", { name: "添加问题" }));
       const json = (await readCurlPayload()) as { questions: Record<string, unknown> };
       expect(Object.keys(json.questions)).toEqual(["area", "has_repro_steps", "impact", "question_1", "question_2"]);
     });

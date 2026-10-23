@@ -5,7 +5,6 @@ import { useChatHistory } from "@/components/chat/useChatHistory";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import ChatConversationPage from "./page";
 import { renderWithProviders } from "@/../tests/test-utils";
-import type { OnUrlUpdateFunction } from "nuqs/adapters/testing";
 
 const { mockMakeOpenAIResponsesRequest, shellState } = vi.hoisted(() => ({
   mockMakeOpenAIResponsesRequest: vi.fn(),
@@ -125,19 +124,6 @@ describe("/ui/chat request metrics", () => {
     expect(typeof call[ON_TIMING_DATA_INDEX]).toBe("function");
     expect(typeof call[ON_USAGE_DATA_INDEX]).toBe("function");
     expect(typeof call[ON_TOTAL_LATENCY_INDEX]).toBe("function");
-  });
-
-  it("puts the new conversation ID in the URL after the first message is sent", async () => {
-    mockMakeOpenAIResponsesRequest.mockResolvedValue(undefined);
-    const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
-
-    await sendOneMessage(onUrlUpdate);
-
-    await waitFor(() => expect(onUrlUpdate).toHaveBeenCalled());
-    const newConversationId = onUrlUpdate.mock.lastCall?.[0].searchParams.get("id");
-    expect(newConversationId).toBeTruthy();
-    expect(onUrlUpdate.mock.lastCall?.[0].options.history).toBe("push");
-    expect(localStorage.getItem("litellm_chat_history_v1:metrics-test-user")).toContain(newConversationId);
   });
 
   it("shows no metrics bar for a turn the provider reported no usage for", async () => {

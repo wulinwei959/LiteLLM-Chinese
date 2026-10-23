@@ -22,6 +22,7 @@ const completeMetrics: components["schemas"]["SpendMetrics"] = {
   gateway_injected_caching_savings_spend: 0,
   prompt_caching_savings_spend: 0,
   prompt_tokens: 4,
+  ptu_hours: 0,
   spend: 1.25,
   successful_requests: 2,
   timed_requests: 0,

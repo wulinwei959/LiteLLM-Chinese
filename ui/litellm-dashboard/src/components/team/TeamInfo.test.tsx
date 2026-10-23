@@ -1,5 +1,6 @@
 import { useTeamMetadataSchema } from "@/app/(dashboard)/hooks/teams/useTeamMetadataSchema";
 import * as networking from "@/components/networking";
+import { makeAgent } from "@/../tests/mocks/agents";
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -452,7 +453,7 @@ describe("TeamInfoView", () => {
         { server_id: "mcp-github-1234", server_name: "github", alias: "github" },
       ]);
       vi.mocked(networking.getAgentsList).mockResolvedValue({
-        agents: [{ agent_id: "agent-support-5678", agent_name: "support_agent" }],
+        agents: [makeAgent({ agent_id: "agent-support-5678", agent_name: "support_agent" })],
       });
       const platformToolsGroup = {
         access_group_id: "ag-1",

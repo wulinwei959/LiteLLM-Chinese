@@ -1,6 +1,8 @@
 import * as networking from "@/components/networking";
 import userEvent from "@testing-library/user-event";
 import { act } from "@testing-library/react";
+import type { Agent } from "@/components/agents/types";
+import { makeAgent } from "@/../tests/mocks/agents";
 import type { MCPServerData } from "./MCPHubTableColumns";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen, testQueryClient, waitFor, within } from "../../../tests/test-utils";
@@ -569,7 +571,7 @@ describe("ModelHubTable", () => {
   });
 
   describe("hub tabs", () => {
-    const renderHub = async (agents: object[] = [], mcpServers: Promise<MCPServerData[]> = Promise.resolve([])) => {
+    const renderHub = async (agents: Agent[] = [], mcpServers: Promise<MCPServerData[]> = Promise.resolve([])) => {
       vi.mocked(networking.modelHubCall).mockResolvedValue({
         data: [{ model_group: "claude-opus-4-8", providers: ["anthropic"], mode: "chat" }],
       });
@@ -658,16 +660,16 @@ describe("ModelHubTable", () => {
 
     it("filters the Agent Hub table by name or description and shows the no-match state", async () => {
       const { user } = await renderHub([
-        {
+        makeAgent({
           agent_id: "a1",
           agent_card_params: { name: "Billing Router", description: "routes billing questions" },
           litellm_params: { is_public: false },
-        },
-        {
+        }),
+        makeAgent({
           agent_id: "a2",
           agent_card_params: { name: "Support Bot", description: "handles support tickets" },
           litellm_params: { is_public: false },
-        },
+        }),
       ]);
       const agentCount = (expected: string) =>
         screen.getByText((_, el) => el?.tagName === "P" && el.textContent === expected);

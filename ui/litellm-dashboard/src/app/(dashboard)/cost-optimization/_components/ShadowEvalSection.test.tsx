@@ -172,6 +172,7 @@ const job = (overrides: Partial<ShadowEvalJob> = {}): ShadowEvalJob => ({
         cache_hit_turns: 2,
       },
     ],
+    by_router: [],
     overall_shadow_win_rate_pct: 48.0,
     overall_tie_rate_pct: 22.0,
     sampled_real_spend: 0.6,
@@ -271,7 +272,7 @@ describe("ShadowEvalSection", () => {
     await user.keyboard("{Escape}");
     await chooseSelectOption(user, screen.getByText("采用检查：密钥流量 vs 路由"), "回归检查：路由选择 vs 基线");
     await user.click(screen.getByPlaceholderText("选择基线模型"));
-    expect(screen.getByRole("option", { name: "prod-judge", exact: true })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "prod-judge" })).toBeInTheDocument();
     expect(screen.queryByText("推荐")).not.toBeInTheDocument();
   });
 
@@ -313,14 +314,14 @@ describe("ShadowEvalSection", () => {
         await chooseSelectOption(user, screen.getByPlaceholderText("最多选择 4 个自动路由"), "gpt-auto");
         await user.click(screen.getByPlaceholderText("选择评审模型"));
         expect(screen.getAllByRole("option")).toHaveLength(2);
-        expect(screen.getByRole("option", { name: "custom-chat", exact: true })).toBeInTheDocument();
-        expect(screen.getByRole("option", { name: "custom-judge", exact: true })).toBeInTheDocument();
-        await user.click(screen.getByRole("option", { name: "custom-judge", exact: true }));
+        expect(screen.getByRole("option", { name: "custom-chat" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "custom-judge" })).toBeInTheDocument();
+        await user.click(screen.getByRole("option", { name: "custom-judge" }));
         await user.click(screen.getByPlaceholderText("选择基线模型"));
         expect(screen.getAllByRole("option")).toHaveLength(2);
-        expect(screen.getByRole("option", { name: "custom-chat", exact: true })).toBeInTheDocument();
-        expect(screen.getByRole("option", { name: "custom-judge", exact: true })).toBeInTheDocument();
-        await user.click(screen.getByRole("option", { name: "custom-chat", exact: true }));
+        expect(screen.getByRole("option", { name: "custom-chat" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "custom-judge" })).toBeInTheDocument();
+        await user.click(screen.getByRole("option", { name: "custom-chat" }));
         await user.click(screen.getByText("开始影子评估"));
         expect(start.mutate).toHaveBeenCalledWith(
           expect.objectContaining({ judge_model: "custom-judge", baseline_model: "custom-chat", models: [] }),
@@ -806,6 +807,7 @@ describe("ShadowEvalSection", () => {
           results: {
             by_tier: [],
             by_current_model: [],
+            by_router: [],
             overall_shadow_win_rate_pct: 60.0,
             overall_tie_rate_pct: 20.0,
             sampled_real_spend: 0.9,

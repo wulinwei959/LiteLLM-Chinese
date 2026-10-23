@@ -1,6 +1,6 @@
 import { createRef } from "react";
+import { renderWithProviders as render, screen } from "@/../tests/test-utils";
 import { createPortal } from "react-dom";
-import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { EndpointType } from "@/components/chat_ui/mode_endpoint_mapping";
@@ -56,6 +56,6 @@ describe("Composer", () => {
 
     await user.click(toolbar[toolbar.length - 1]);
 
-    expect(screen.getByLabelText("Message")).toHaveFocus();
+    expect(screen.getByLabelText("消息")).toHaveFocus();
   });
 });

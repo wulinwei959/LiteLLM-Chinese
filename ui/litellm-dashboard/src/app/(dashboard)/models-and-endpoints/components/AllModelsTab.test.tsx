@@ -1,4 +1,5 @@
 import * as useAuthorizedModule from "@/app/(dashboard)/hooks/useAuthorized";
+import { authorizedSession } from "@/../tests/mocks/authorizedSession";
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { OnUrlUpdateFunction } from "nuqs/adapters/testing";
@@ -126,24 +127,12 @@ const lastUrlParams = (onUrlUpdate: Mock<OnUrlUpdateFunction>): URLSearchParams 
 
 const SEARCH_SETTLE_MS = 400;
 
-const MOCK_AUTHORIZED = {
-  isLoading: false,
-  isAuthorized: true,
-  token: "mock-token",
-  accessToken: "mock-access-token",
-  userId: "user-123",
-  userEmail: "test@example.com",
-  userRole: "Admin",
-  userRoleLabel: "Admin",
-  isViewOnly: false,
-  premiumUser: true,
-  disabledPersonalKeyCreation: false,
-  showSSOBanner: false,
-};
 
 const mockSetSelectedModelGroup = vi.fn();
 const mockSetSelectedModelId = vi.fn();
 const mockSetSelectedTeamId = vi.fn();
+
+const AUTHORIZED_SESSION = authorizedSession({ premiumUser: true, disabledPersonalKeyCreation: false });
 
 const defaultProps = {
   selectedModelGroup: "all",
@@ -159,7 +148,7 @@ describe("AllModelsTab", () => {
     vi.clearAllMocks();
     modelsInfoCalls.length = 0;
     setModelsInfo([makeRow()]);
-    vi.spyOn(useAuthorizedModule, "default").mockReturnValue(MOCK_AUTHORIZED);
+    vi.spyOn(useAuthorizedModule, "default").mockReturnValue(AUTHORIZED_SESSION);
     mockUseCredentials.mockImplementation(({ enabled = true }: { enabled?: boolean } = {}) => ({
       data: enabled ? { credentials: mockCredentials } : undefined,
       isLoading: false,
@@ -181,7 +170,7 @@ describe("AllModelsTab", () => {
     });
 
     it("skips the admin-only credential list for other roles and shows the raw name", async () => {
-      vi.spyOn(useAuthorizedModule, "default").mockReturnValue({ ...MOCK_AUTHORIZED, userRole: "Internal User" });
+      vi.spyOn(useAuthorizedModule, "default").mockReturnValue({ ...AUTHORIZED_SESSION, userRole: "Internal User" });
       setModelsInfo([rowWithCredential()]);
       renderWithProviders(<AllModelsTab {...defaultProps} />);
 

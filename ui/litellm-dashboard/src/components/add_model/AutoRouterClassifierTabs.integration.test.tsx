@@ -143,7 +143,12 @@ describe("Auto-router classifier selection", () => {
     { isError: true },
     { isChecking: true },
     { data: { allowances: [], error: null } },
-    { data: { allowances: [{ key: "heuristic_v2", limit: 1, remaining: null, available: false }], error: null } },
+    {
+      data: {
+        allowances: [{ key: "heuristic_v2", limit: 1, remaining: null, available: false, used_by_this_router: false }],
+        error: null,
+      },
+    },
   ])("uses Rule-based when v2 availability is unverified: %j", async (availabilityState) => {
     renderWithProviders(<Form availabilityState={availabilityState} />);
     fireEvent.click(screen.getByRole("radio", { name: "启发式" }));
@@ -277,7 +282,7 @@ describe("Gated routing contact action", () => {
   });
 
   it("includes the sales action beside customization limits and blocked changes", () => {
-    const allowance = { key: "tier_or_classifier_prompt", limit: 1, remaining: 0, available: true };
+    const allowance = { key: "tier_or_classifier_prompt", limit: 1, remaining: 0, available: true, used_by_this_router: false };
     const state = {
       isPending: false,
       isError: false,

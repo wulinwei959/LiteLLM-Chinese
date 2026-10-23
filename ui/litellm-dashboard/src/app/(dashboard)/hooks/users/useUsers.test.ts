@@ -53,6 +53,12 @@ const buildUserListResponse = (page: number, totalPages: number, userCount = 2):
     updated_at: "2024-01-01T00:00:00Z",
     sso_user_id: null,
     budget_duration: null,
+    allowed_cache_controls: [],
+    model_max_budget: {},
+    model_spend: {},
+    models: [],
+    policies: [],
+    teams: [],
   })),
 });
 

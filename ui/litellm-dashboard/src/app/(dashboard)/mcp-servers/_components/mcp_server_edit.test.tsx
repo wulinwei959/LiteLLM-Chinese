@@ -1783,7 +1783,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
     );
     rerender(<MCPServerEdit {...props} mcpServer={interactiveOAuthServer} />);
     await waitFor(() => expect(screen.getByLabelText("MCP 服务器 URL")).toHaveValue("https://new.example/mcp"));
-    expect(screen.getByLabelText("Issuer (optional)")).toHaveValue("https://new.example");
+    expect(screen.getByLabelText("签发方（可选）")).toHaveValue("https://new.example");
   });
 
   it("preserves a stored client_id on OAuth-resume restore even when the saved snapshot is token-only", async () => {

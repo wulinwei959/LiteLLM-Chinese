@@ -151,7 +151,7 @@ describe("useInfiniteKeyAliases", () => {
     const wrapper = createWrapper();
     const { result, rerender } = renderHook(({ search }: { search?: string }) => useInfiniteKeyAliases(50, search), {
       wrapper,
-      initialProps: { search: undefined },
+      initialProps: {} as { search?: string },
     });
 
     await waitFor(() => {

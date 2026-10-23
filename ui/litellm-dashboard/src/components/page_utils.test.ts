@@ -200,7 +200,7 @@ describe("Page Utils - LeftNav Sync", () => {
   });
 
   it("offers Projects in the internal-user page picker so team admins can be granted it", () => {
-    expect(getAvailablePages().find((page) => page.page === "projects")).toMatchObject({
+    expect(getAvailablePages(t).find((page) => page.page === "projects")).toMatchObject({
       label: "Projects",
       group: "ACCESS CONTROL",
     });

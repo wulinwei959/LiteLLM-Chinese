@@ -5,6 +5,8 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AgentsPanel from "./AgentsPanel";
 import * as networking from "@/components/networking";
+import { makeAgent } from "@/../tests/mocks/agents";
+import type { AgentsResponse } from "@/components/agents/types";
 
 vi.mock("@/components/networking", () => ({
   getAgentsList: vi.fn().mockResolvedValue({ agents: [] }),
@@ -83,20 +85,13 @@ describe("AgentsPanel", () => {
   it("should show Active when an agent has keys and Needs Setup when it has none", async () => {
     vi.mocked(networking.getAgentsList).mockResolvedValue({
       agents: [
-        {
+        makeAgent({
           agent_id: "agent-with-key",
           agent_name: "Keyed Agent",
-          litellm_params: { model: "gpt-4" },
-          spend: 0,
           keys: [{ token: "hash-aaa", key_alias: "primary", key_name: "sk-...aaa" }],
-        },
-        {
-          agent_id: "agent-no-key",
-          agent_name: "Keyless Agent",
-          litellm_params: { model: "gpt-4" },
-          spend: 0,
-          keys: [],
-        },
+        }),
+        makeAgent({ agent_id: "agent-no-key", agent_name: "Keyless Agent" }),
+
       ],
     });
 
@@ -126,14 +121,9 @@ describe("AgentsPanel", () => {
     const user = userEvent.setup();
     vi.mocked(networking.getAgentsList).mockResolvedValue({
       agents: [
-        {
-          agent_id: "agent-9",
-          agent_name: "Doomed Agent",
-          litellm_params: { model: "gpt-4" },
-          spend: 0,
-          keys: [],
-        },
+        makeAgent({ agent_id: "agent-9", agent_name: "Doomed Agent" }),
       ],
+
     });
 
     render(<AgentsPanel accessToken="test-token" userRole="Admin" />);
@@ -172,14 +162,8 @@ describe("AgentsPanel", () => {
   });
 
   it("should not show rows fetched with a previous access token after the token changes", async () => {
-    const agentFor = (name: string) => ({
-      agent_id: `id-${name}`,
-      agent_name: name,
-      litellm_params: { model: "gpt-4" },
-      spend: 0,
-      keys: [],
-    });
-    let resolveSecond: (value: { agents: ReturnType<typeof agentFor>[] }) => void = () => {};
+    const agentFor = (name: string) => makeAgent({ agent_id: `id-${name}`, agent_name: name });
+    let resolveSecond: (value: AgentsResponse) => void = () => {};
     vi.mocked(networking.getAgentsList)
       .mockResolvedValueOnce({ agents: [agentFor("first-token-agent")] })
       .mockImplementationOnce(
@@ -208,7 +192,7 @@ describe("AgentsPanel", () => {
     vi.mocked(networking.getAgentsList)
       .mockResolvedValueOnce({
         agents: [
-          { agent_id: "stale", agent_name: "Stale Agent", litellm_params: { model: "gpt-4" }, spend: 0, keys: [] },
+          makeAgent({ agent_id: "stale", agent_name: "Stale Agent" }),
         ],
       })
       .mockRejectedValueOnce(new Error("unauthorized"));
@@ -225,9 +209,7 @@ describe("AgentsPanel", () => {
   });
 
   it("should ignore a superseded response so it cannot overwrite the current token's rows", async () => {
-    let resolveFirst: (value: {
-      agents: { agent_id: string; agent_name: string; litellm_params: { model: string }; spend: number; keys: [] }[];
-    }) => void = () => {};
+    let resolveFirst: (value: AgentsResponse) => void = () => {};
     vi.mocked(networking.getAgentsList)
       .mockImplementationOnce(
         () =>
@@ -237,7 +219,7 @@ describe("AgentsPanel", () => {
       )
       .mockResolvedValueOnce({
         agents: [
-          { agent_id: "current", agent_name: "Current Agent", litellm_params: { model: "gpt-4" }, spend: 0, keys: [] },
+          makeAgent({ agent_id: "current", agent_name: "Current Agent" }),
         ],
       });
 
@@ -250,7 +232,7 @@ describe("AgentsPanel", () => {
     await act(async () => {
       resolveFirst({
         agents: [
-          { agent_id: "stale", agent_name: "Superseded Agent", litellm_params: { model: "gpt-4" }, spend: 0, keys: [] },
+          makeAgent({ agent_id: "stale", agent_name: "Superseded Agent" }),
         ],
       });
     });
@@ -261,16 +243,8 @@ describe("AgentsPanel", () => {
 
   it("should keep rows visible during a health-check refetch instead of re-showing the skeleton", async () => {
     const user = userEvent.setup();
-    const agents = [
-      {
-        agent_id: "agent-1",
-        agent_name: "Stable Agent",
-        litellm_params: { model: "gpt-4" },
-        spend: 0,
-        keys: [],
-      },
-    ];
-    let resolveRefetch: (value: { agents: typeof agents }) => void = () => {};
+    const agents = [makeAgent({ agent_id: "agent-1", agent_name: "Stable Agent" })];
+    let resolveRefetch: (value: AgentsResponse) => void = () => {};
     vi.mocked(networking.getAgentsList)
       .mockResolvedValueOnce({ agents })
       .mockImplementationOnce(

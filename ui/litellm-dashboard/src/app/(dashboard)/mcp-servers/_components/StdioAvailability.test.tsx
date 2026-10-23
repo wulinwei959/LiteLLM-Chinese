@@ -12,7 +12,7 @@ import { TransportSelectItems, useMcpStdioEnabled } from "./StdioAvailability";
 
 function openTransportSelect(stdioEnabled: boolean) {
   renderWithProviders(
-    <Select items={TRANSPORT_ITEMS} value={null} defaultOpen>
+    <Select items={TRANSPORT_ITEMS.map(({ value, labelKey }) => ({ value, label: labelKey }))} value={null} defaultOpen>
       <SelectTrigger data-testid="trigger">
         <SelectValue placeholder="Select transport" />
       </SelectTrigger>

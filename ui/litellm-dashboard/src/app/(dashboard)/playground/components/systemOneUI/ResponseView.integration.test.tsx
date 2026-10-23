@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { renderWithProviders as render, screen } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import ResponseView from "./ResponseView";
@@ -59,31 +59,31 @@ describe("ResponseView integration", () => {
       request_id: "keep-extra-fields",
     };
     const { rerender } = render(<ResponseView response={response} isLoading={false} view="form" />);
-    expect(screen.getByText("Question 1")).toBeInTheDocument();
-    expect(screen.getByText("0% yes")).toBeInTheDocument();
-    expect(screen.getByRole("meter", { name: "false probability" })).toHaveAttribute("aria-valuetext", "80%, selected");
-    expect(screen.getByRole("meter", { name: "0: low probability" })).toHaveAttribute(
+    expect(screen.getByText("名称")).toBeInTheDocument();
+    expect(screen.getByText("0% 为是")).toBeInTheDocument();
+    expect(screen.getByRole("meter", { name: "false 的概率" })).toHaveAttribute("aria-valuetext", "80%，已选中");
+    expect(screen.getByRole("meter", { name: "0: low 的概率" })).toHaveAttribute(
       "aria-valuetext",
-      "100%, selected",
+      "100%，已选中",
     );
-    expect(screen.getByText("0% confidence")).toBeInTheDocument();
-    expect(screen.getAllByText("Model refused to answer")).toHaveLength(2);
-    expect(screen.queryByRole("region", { name: "Decisions response JSON" })).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Raw response" }));
-    expect(screen.getByRole("region", { name: "Decisions response JSON" })).toHaveTextContent("keep-extra-fields");
+    expect(screen.getByText("0% 置信度")).toBeInTheDocument();
+    expect(screen.getAllByText("模型拒绝回答")).toHaveLength(2);
+    expect(screen.queryByRole("region", { name: "决策响应 JSON" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "原始响应" }));
+    expect(screen.getByRole("region", { name: "决策响应 JSON" })).toHaveTextContent("keep-extra-fields");
     rerender(<ResponseView response={response} isLoading={false} view="curl" />);
     expect(screen.queryByRole("meter")).not.toBeInTheDocument();
-    expect(JSON.parse(screen.getByRole("region", { name: "Decisions response JSON" }).textContent ?? "")).toEqual(
+    expect(JSON.parse(screen.getByRole("region", { name: "决策响应 JSON" }).textContent ?? "")).toEqual(
       response,
     );
     rerender(<ResponseView response={response} isLoading={false} view="form" />);
-    expect(screen.getByRole("meter", { name: "false probability" })).toHaveAttribute("aria-valuenow", "80");
+    expect(screen.getByRole("meter", { name: "false 的概率" })).toHaveAttribute("aria-valuenow", "80");
   });
 
   it("shows System One raw response instead of cards in cURL view", () => {
     render(<ResponseView response={sampleResponse} isLoading={false} view="curl" />);
     expect(screen.queryByRole("meter")).not.toBeInTheDocument();
-    expect(JSON.parse(screen.getByRole("region", { name: "Decisions response JSON" }).textContent ?? "")).toEqual(
+    expect(JSON.parse(screen.getByRole("region", { name: "决策响应 JSON" }).textContent ?? "")).toEqual(
       sampleResponse,
     );
   });
@@ -94,19 +94,19 @@ describe("ResponseView integration", () => {
     expect(screen.getAllByText("technical")).toHaveLength(2);
     const meters = screen.getAllByRole("meter");
     expect(meters.map((meter) => meter.getAttribute("aria-label"))).toEqual([
-      "Yes probability",
-      "technical probability",
-      "billing probability",
-      "0: calm probability",
-      "1: mild probability",
-      "2: angry probability",
+      "是 的概率",
+      "technical 的概率",
+      "billing 的概率",
+      "0: calm 的概率",
+      "1: mild 的概率",
+      "2: angry 的概率",
     ]);
-    expect(screen.getByRole("meter", { name: "technical probability" })).toHaveAttribute("aria-valuenow", "64");
-    expect(screen.getByRole("meter", { name: "billing probability" })).toHaveAttribute("aria-valuenow", "36");
-    expect(screen.getByText("99% yes")).toBeInTheDocument();
-    expect(screen.getByRole("meter", { name: "Yes probability" })).toHaveAttribute("aria-valuenow", "99");
-    expect(screen.getByRole("meter", { name: "2: angry probability" })).toBeInTheDocument();
-    expect(screen.getByText("378 in / 63 out")).toBeInTheDocument();
+    expect(screen.getByRole("meter", { name: "technical 的概率" })).toHaveAttribute("aria-valuenow", "64");
+    expect(screen.getByRole("meter", { name: "billing 的概率" })).toHaveAttribute("aria-valuenow", "36");
+    expect(screen.getByText("99% 为是")).toBeInTheDocument();
+    expect(screen.getByRole("meter", { name: "是 的概率" })).toHaveAttribute("aria-valuenow", "99");
+    expect(screen.getByRole("meter", { name: "2: angry 的概率" })).toBeInTheDocument();
+    expect(screen.getByText("输入 378 / 输出 63")).toBeInTheDocument();
   });
 
   it("selects the score level nearest a fractional calibrated score", () => {
@@ -117,9 +117,9 @@ describe("ResponseView integration", () => {
     };
     render(<ResponseView response={fractional} isLoading={false} />);
 
-    expect(screen.getByRole("meter", { name: "2 probability" })).toHaveAttribute("aria-valuetext", "62%, selected");
-    expect(screen.getByRole("meter", { name: "3 probability" })).toHaveAttribute("aria-valuetext", "38%");
-    expect(screen.getByRole("meter", { name: "1 probability" })).toHaveAttribute("aria-valuetext", "0%");
+    expect(screen.getByRole("meter", { name: "2 的概率" })).toHaveAttribute("aria-valuetext", "62%，已选中");
+    expect(screen.getByRole("meter", { name: "3 的概率" })).toHaveAttribute("aria-valuetext", "38%");
+    expect(screen.getByRole("meter", { name: "1 的概率" })).toHaveAttribute("aria-valuetext", "0%");
   });
 
   it("rounds the calibrated score pill to two decimals and leaves integers bare", () => {
@@ -149,7 +149,7 @@ describe("ResponseView integration", () => {
       usage: null,
     };
     render(<ResponseView response={response} isLoading={false} />);
-    expect(screen.getByRole("meter", { name: '0: {"description":"Low severity"} probability' })).toHaveAttribute(
+    expect(screen.getByRole("meter", { name: '0: {"description":"Low severity"} 的概率' })).toHaveAttribute(
       "aria-valuenow",
       "100",
     );

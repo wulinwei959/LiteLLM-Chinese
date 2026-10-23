@@ -67,35 +67,29 @@ describe("ComplexityRouterConfig", () => {
         return <ComplexityRouterConfig {...baseProps} value={value} onChange={setValue} />;
       }
       renderWithProviders(<Editor />);
-      fireEvent.click(screen.getByRole("button", { name: /^Advanced settings/ }));
-      expect(screen.getByRole("button", { name: "LLM tuning" })).toHaveAttribute("aria-expanded", "false");
-      expect(screen.queryByRole("button", { name: "Heuristic tuning" })).not.toBeInTheDocument();
-      expect(screen.queryByText("Advanced scoring")).not.toBeInTheDocument();
-      expect(screen.queryByText("Custom Technical Keywords")).not.toBeInTheDocument();
-      expect(screen.queryByText("Heuristic Keyword Overrides")).not.toBeInTheDocument();
-      expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: /^高级设置/ }));
+      expect(screen.getByRole("button", { name: "LLM 调优" })).toHaveAttribute("aria-expanded", "false");
+      expect(screen.queryByRole("button", { name: "启发式调优" })).not.toBeInTheDocument();
+      expect(screen.queryByText("高级评分")).not.toBeInTheDocument();
+      expect(screen.queryByText("自定义技术关键词")).not.toBeInTheDocument();
+      expect(screen.getByRole("region", { name: "未启用的启发式 v2 阈值" })).toBeInTheDocument();
       await selectAutoRouterOption("Local checks before the judge", mode);
-      expect(screen.getByRole("button", { name: "Heuristic before the judge" })).toHaveTextContent("Heuristic v1");
-      fireEvent.click(screen.getByRole("button", { name: "Heuristic tuning" }));
-      fireEvent.click(screen.getByRole("button", { name: /Advanced scoring/ }));
-      expect(screen.getByLabelText("Short below")).toHaveValue("12");
-      await selectAutoRouterOption("Heuristic before the judge", "Heuristic v2");
-      expect(screen.getByLabelText("Success threshold")).toHaveValue("0.9");
-      expect(screen.queryByText("Advanced scoring")).not.toBeInTheDocument();
-      expect(screen.queryByText("Custom Technical Keywords")).not.toBeInTheDocument();
-      expect(screen.queryByText("Heuristic Keyword Overrides")).not.toBeInTheDocument();
-      expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
-      if (mode === "Hybrid") expect(screen.getByLabelText("Success threshold margin")).toBeInTheDocument();
-      await selectAutoRouterOption("Heuristic before the judge", "Heuristic v1");
-      fireEvent.click(screen.getByRole("button", { name: /Advanced scoring/ }));
-      expect(screen.getByLabelText("Short below")).toHaveValue("12");
-      fireEvent.click(screen.getByRole("button", { name: "LLM tuning" }));
-      expect(screen.getByLabelText("Timeout (ms)")).toHaveValue("750");
-      await selectAutoRouterOption("Local checks before the judge", "Always use the judge");
-      expect(screen.queryByRole("button", { name: "Heuristic tuning" })).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: "Heuristic before the judge" })).not.toBeInTheDocument();
-      expect(screen.queryByRole("region", { name: "Inactive Heuristic v2 threshold" })).not.toBeInTheDocument();
-      expect(screen.getByLabelText("Timeout (ms)")).toHaveValue("750");
+      expect(screen.getByRole("button", { name: "评审前的启发式" })).toHaveTextContent("启发式 v1（基于规则）");
+      fireEvent.click(screen.getByRole("button", { name: "启发式调优" }));
+      await selectAutoRouterOption("Heuristic before the judge", "启发式 v2");
+      expect(screen.getByLabelText("成功阈值")).toHaveValue("0.9");
+      expect(screen.queryByText("高级评分")).not.toBeInTheDocument();
+      expect(screen.queryByText("自定义技术关键词")).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "未启用的启发式 v2 阈值" })).not.toBeInTheDocument();
+      if (mode === "Hybrid") expect(screen.getByLabelText("边界余量")).toBeInTheDocument();
+      await selectAutoRouterOption("Heuristic before the judge", "启发式 v1");
+      fireEvent.click(screen.getByRole("button", { name: "LLM 调优" }));
+      expect(screen.getByLabelText("超时（毫秒）")).toHaveValue("750");
+      await selectAutoRouterOption("Local checks before the judge", "始终使用评审模型");
+      expect(screen.queryByRole("button", { name: "启发式调优" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "评审前的启发式" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "未启用的启发式 v2 阈值" })).not.toBeInTheDocument();
+      expect(screen.getByLabelText("超时（毫秒）")).toHaveValue("750");
     },
   );
 
@@ -147,7 +141,7 @@ describe("ComplexityRouterConfig", () => {
   it("should default to heuristic and hide classifier model/timeout fields", async () => {
     renderWithProviders(<ComplexityRouterConfig modelInfo={mockModelInfo} value={defaultValue} onChange={vi.fn()} />);
     openAutoRouterAdvanced("Classification Method");
-    expect(screen.getByText("分类器调优")).toBeInTheDocument();
+    expect(screen.getByText("启发式调优")).toBeInTheDocument();
     expect(screen.queryByText("评审模型")).not.toBeInTheDocument();
   });
 
@@ -156,7 +150,6 @@ describe("ComplexityRouterConfig", () => {
 
     openAutoRouterAdvanced("Heuristic Keyword Overrides");
 
-    expect(screen.getByText("启发式关键词覆盖")).toBeInTheDocument();
     openAutoRouterAdvanced("Housekeeping Routing");
     expect(screen.getByText("内务路由")).toBeInTheDocument();
     openAutoRouterAdvanced("Ignore Custom Tags");
@@ -164,7 +157,6 @@ describe("ComplexityRouterConfig", () => {
 
     const capabilityValue = { ...defaultValue, classifier_type: "capability" as const };
     rerender(<ComplexityRouterConfig {...baseProps} value={capabilityValue} />);
-    expect(screen.queryByText("启发式关键词覆盖")).not.toBeInTheDocument();
   });
 
   it.each([

@@ -3,6 +3,7 @@ import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent, { PointerEventsCheckLevel } from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AddAgentForm from "./add_agent_form";
+import { makeAgent } from "@/../tests/mocks/agents";
 import * as networking from "@/components/networking";
 import type { AgentCreateInfo } from "@/components/networking";
 import { chooseSelectOption, renderWithProviders as render } from "../../../../../tests/test-utils";
@@ -81,7 +82,7 @@ describe("AddAgentForm submit payload", () => {
     vi.mocked(networking.getAgentCreateMetadata).mockReset().mockResolvedValue([a2aInfo, langgraphInfo]);
     vi.mocked(networking.getAgentsList)
       .mockReset()
-      .mockResolvedValue({ agents: [{ agent_id: "sub-1", agent_name: "Sub Agent One" }] });
+      .mockResolvedValue({ agents: [makeAgent({ agent_id: "sub-1", agent_name: "Sub Agent One" })] });
     vi.mocked(networking.keyListCall).mockReset().mockResolvedValue({ keys: [] });
     vi.mocked(networking.modelAvailableCall)
       .mockReset()

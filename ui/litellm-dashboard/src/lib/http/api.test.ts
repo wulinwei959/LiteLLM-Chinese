@@ -152,7 +152,7 @@ describe("typed api client middleware", () => {
     const { streamBodiedInits } = spyOnRequestConstruction();
     const { fetch, requests } = capturingFetch(jsonResponse(200, { key: "sk-new" }));
 
-    await fetchClient.POST("/key/generate", { fetch, body: { key_alias: "my-key" } });
+    await fetchClient.POST("/key/generate", { fetch, body: { key_alias: "my-key" } as never });
 
     expect(streamBodiedInits()).toEqual([]);
     expect(requests[0].headers.get("Authorization")).toBe("Bearer sk-test");
@@ -165,7 +165,7 @@ describe("typed api client middleware", () => {
     const { streamBodiedInits } = spyOnRequestConstruction();
     const { fetch, requests } = capturingFetch(jsonResponse(200, { key: "sk-new" }));
 
-    await fetchClient.POST("/key/generate", { fetch, body: { key_alias: "my-key" } });
+    await fetchClient.POST("/key/generate", { fetch, body: { key_alias: "my-key" } as never });
 
     expect(streamBodiedInits()).toEqual([]);
     const sent = requests[0];

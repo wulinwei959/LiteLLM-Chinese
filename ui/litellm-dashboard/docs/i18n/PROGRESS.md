@@ -4670,3 +4670,12 @@ build_updated_complexity_router_config.test：引入 `TestStored = StoredComplex
 修法是不改守卫，改为让文件只保留一个命名空间：`RateLimitCell` 改用 `useTranslations("budgets")`，并补 `budgets.notAvailable`（与 `common.notAvailable` 同值），与 budgets 下已有的 `unlimited`/`reset`/`createdAt`/`actions` 重复键的既有形态一致。
 
 验证：i18n 五条守卫 23 例全绿、BudgetTable 19 例全绿、死键 0、生产 typecheck 0 错、`npm run build` exit 0。
+## 2026-10-23 第 466 簇：OAuth 编辑、会话错误前缀与自动路由高级设置收口
+
+生产侧四处接线：mcp_server_edit 保存按钮加 `disabled={isOAuthPending}`、两个取消按钮改走 `handleCancel`（清 OAuth 快照并复位流程），88 例全绿；useConversation 用 `t("conversation.errorPrefix")` 替换硬编码 `Error: ` 前缀，hook 测试补 LocaleProvider wrapper；AddModelForm 的 Team-BYOK 开关、选择团队标签/提示/必填校验四处硬编码英文接 `models.addModel.teamByok*`/`common.selectTeam*`/`common.teamRequired`；`common.addModel.selectCredentials` 中文统一为"选择或搜索现有凭据"。
+
+自动路由：autoRouterSetup helper 的 `openAutoRouterAdvanced` 改为按候选组数组全部展开（"分类方法"依分类器类型挂在启发式调优/分类器调优/LLM 调优不同分组下），RENDERED_LABELS 补评审链路选项、MENU_FIELDS 补"评审前的启发式"；ClassificationMethodConfig 在自定义提示词时也在 classifier 分组渲染 HowClassificationWorks，未启用启发式 v2 阈值横幅的隐藏条件补 `local_heuristic === "heuristic_v2"`，混合模式边界余量输入补 aria-label；classifier_type_transition 切到非链路类型时清 `local_heuristic` 与 `heuristic_v2_success_threshold`。测试断言全面翻面（高级设置/各分组/短于/成功阈值/边界余量/超时等），ComplexityRouterConfig.integration 162 例、classifier_type_transition 12 例全绿。
+
+AddModelForm.integration：选择凭据、提供商、认证方式、添加凭据、创建凭据、选择模型等断言翻面，删除 TEST_MODES 已不存在的 Decisions/Extraction 两个用例，`/provider/i` 正则改"提供商"；38 例中 30 例通过，剩 8 例为行为断言（团队作用域告警、credential-only 载荷、连接测试校验流程），留待下批。
+
+验证：生产 tsc 0 错；死键 0（zh-CN.json 变更后复跑）；临时脚本 scan-english-pos.tmp.mjs 已删除。

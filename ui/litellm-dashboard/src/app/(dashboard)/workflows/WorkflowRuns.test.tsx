@@ -92,7 +92,7 @@ describe("WorkflowRuns (migrated onto shared DataTable)", () => {
     await user.click(await screen.findByText("First run"));
 
     await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(3));
-    for (const [url, init] of fetchSpy.mock.calls as [string, RequestInit][]) {
+    for (const [url, init] of fetchSpy.mock.calls as unknown as [string, RequestInit][]) {
       expect(init.headers, url).toEqual({ "x-litellm-api-key": "Bearer tok" });
     }
   });

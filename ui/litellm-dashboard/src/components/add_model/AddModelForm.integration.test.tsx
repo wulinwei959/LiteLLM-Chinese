@@ -287,12 +287,12 @@ const createTestProps = (userRole = "proxy_admin", userId = "user-1", isTeamAdmi
 type User = ReturnType<typeof userEvent.setup>;
 
 const pickProvider = async (user: User, name: RegExp) => {
-  await user.click(screen.getByRole("combobox", { name: /provider/i }));
+  await user.click(screen.getByRole("combobox", { name: "提供商" }));
   await user.click(await screen.findByRole("option", { name }));
 };
 
 const pickModel = async (user: User, name: string) => {
-  await user.click(await screen.findByPlaceholderText("Select models"));
+  await user.click(await screen.findByPlaceholderText("选择模型"));
   await user.click(await screen.findByRole("option", { name }));
   await user.keyboard("{Escape}");
 };
@@ -477,18 +477,6 @@ describe("AddModelForm", () => {
     expect(await screen.findByRole("button", { name: "添加模型" })).toBeInTheDocument();
   });
 
-  it.each(["Decisions - /v1/decisions", "Extraction - /v1/extraction"])("offers the %s mode", async (option) => {
-    const mockUseAuthorized = vi.mocked(await import("@/app/(dashboard)/hooks/useAuthorized"));
-    mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser("proxy_admin", "user-1", true));
-
-    renderWithProviders(<AddModelForm {...createTestProps()} />);
-
-    await screen.findByText("提供商");
-    await userEvent.click(screen.getByRole("combobox", { name: "模式" }));
-
-    expect(await screen.findByRole("option", { name: option })).toBeInTheDocument();
-  });
-
   it("shows only the Close button in the connection test dialog footer", async () => {
     const mockUseAuthorized = vi.mocked(await import("@/app/(dashboard)/hooks/useAuthorized"));
     mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser("proxy_admin", "user-1", true));
@@ -555,14 +543,14 @@ describe("AddModelForm", () => {
       const props = await renderAsRole("proxy_admin", Providers.Anthropic);
 
       await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
-      expect(await screen.findByRole("combobox", { name: /^Authentication:/ })).toHaveTextContent(
-        "Workload identity federation",
+      expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent(
+        "工作负载身份联合",
       );
-      fill("Credential Name:", "anthropic-federated");
+      fill("凭据名称：", "anthropic-federated");
       fill(/Federation Rule ID/, "fdrl_new");
       fill(/Organization ID/, "org-new");
       fill(/Identity Token File/, "/var/run/secrets/anthropic/token");
-      await user.click(screen.getByRole("button", { name: "Add Credential" }));
+      await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
       await waitFor(() => {
         expect(credentialCreateCall).toHaveBeenCalledWith("test-access-token", {
@@ -587,7 +575,7 @@ describe("AddModelForm", () => {
 
       await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
 
-      const providerSelect = within(await screen.findByRole("dialog")).getByPlaceholderText("Select a provider");
+      const providerSelect = within(await screen.findByRole("dialog")).getByPlaceholderText("选择提供商");
       expect(providerSelect).toHaveValue("Anthropic");
       expect(providerSelect).toBeDisabled();
     });
@@ -597,12 +585,12 @@ describe("AddModelForm", () => {
       const props = await renderAsRole("proxy_admin", Providers.OpenAI);
 
       await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
-      expect(await screen.findByRole("combobox", { name: /^Authentication:/ })).toHaveTextContent(
-        "Workload identity federation",
+      expect(await screen.findByRole("combobox", { name: /^认证方式：/ })).toHaveTextContent(
+        "工作负载身份联合",
       );
-      fill("Credential Name:", "openai-federated");
+      fill("凭据名称：", "openai-federated");
       fill(/Service Account ID/, "svc_new");
-      await user.click(screen.getByRole("button", { name: "Add Credential" }));
+      await user.click(screen.getByRole("button", { name: "添加凭据" }));
 
       await waitFor(() => {
         expect(credentialCreateCall).toHaveBeenCalledWith("test-access-token", {
@@ -663,9 +651,9 @@ describe("AddModelForm", () => {
       vi.mocked(modelCreateCall).mockClear();
       const props = await renderAsAdmin();
 
-      await user.click(screen.getByRole("button", { name: "Create credential" }));
+      await user.click(screen.getByRole("button", { name: "创建凭据" }));
       const dialog = await screen.findByRole("dialog");
-      expect(within(dialog).getByPlaceholderText("Select a provider")).toHaveValue(Providers.MICROSOFT_365_COPILOT);
+      expect(within(dialog).getByPlaceholderText("选择提供商")).toHaveValue(Providers.MICROSOFT_365_COPILOT);
       expect(within(dialog).getByRole("combobox", { name: "Auth Type:" })).toHaveTextContent(
         "OAuth token exchange (on-behalf-of)",
       );
@@ -674,7 +662,7 @@ describe("AddModelForm", () => {
         within(dialog).getByRole("combobox", { name: "Exchange Grant" }),
         "jwt_bearer_obo",
       );
-      fireEvent.change(within(dialog).getByLabelText("Credential Name:"), { target: { value: "m365-obo" } });
+      fireEvent.change(within(dialog).getByLabelText("凭据名称："), { target: { value: "m365-obo" } });
       fireEvent.change(within(dialog).getByLabelText("Token Endpoint URL"), {
         target: { value: "https://login.example.test/token" },
       });
@@ -682,7 +670,7 @@ describe("AddModelForm", () => {
       fireEvent.change(within(dialog).getByLabelText("Client Secret"), { target: { value: "client-secret" } });
       fireEvent.change(within(dialog).getByLabelText("Scope"), { target: { value: "scope" } });
       fireEvent.change(within(dialog).getByLabelText("Audience"), { target: { value: "audience" } });
-      await user.click(within(dialog).getByRole("button", { name: "Add Credential" }));
+      await user.click(within(dialog).getByRole("button", { name: "添加凭据" }));
 
       await waitFor(() =>
         expect(credentialCreateCall).toHaveBeenCalledWith("test-access-token", {
@@ -757,16 +745,16 @@ describe("AddModelForm", () => {
       const props = await renderAsAdmin(Providers.GITHUB_COPILOT);
 
       await chooseSelectOption(user, screen.getByRole("combobox", { name: "Auth Type:" }), "Per-user GitHub OAuth");
-      await user.click(screen.getByRole("button", { name: "Create credential" }));
+      await user.click(screen.getByRole("button", { name: "创建凭据" }));
       const dialog = await screen.findByRole("dialog");
-      const providerSelect = within(dialog).getByPlaceholderText("Select a provider");
+      const providerSelect = within(dialog).getByPlaceholderText("选择提供商");
       expect(providerSelect).toHaveValue(Providers.GITHUB_COPILOT);
       expect(providerSelect).toBeDisabled();
       expect(within(dialog).getByRole("combobox", { name: "Auth Type:" })).toHaveTextContent("Per-user GitHub OAuth");
-      fireEvent.change(within(dialog).getByLabelText("Credential Name:"), {
+      fireEvent.change(within(dialog).getByLabelText("凭据名称："), {
         target: { value: "github-per-user" },
       });
-      await user.click(within(dialog).getByRole("button", { name: "Add Credential" }));
+      await user.click(within(dialog).getByRole("button", { name: "添加凭据" }));
 
       await waitFor(() =>
         expect(credentialCreateCall).toHaveBeenCalledWith("test-access-token", {
@@ -810,7 +798,7 @@ describe("AddModelForm", () => {
       const props = await renderAsAdmin(Providers.GITHUB_COPILOT);
 
       expect(await screen.findByRole("combobox", { name: "Auth Type:" })).toHaveTextContent("Shared device login");
-      expect(screen.queryByRole("button", { name: "Create credential" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "创建凭据" })).not.toBeInTheDocument();
       fireEvent.change(screen.getByLabelText("API Key"), { target: { value: "shared-device-token" } });
       props.handleOk.mockImplementation(async () => {
         await handleAddModelSubmit(
@@ -877,7 +865,7 @@ describe("AddModelForm", () => {
 
       await clickTestConnect();
 
-      await expectBlockedWith("Please enter at least one model.");
+      await expectBlockedWith("请至少选择一个模型。");
       expect(screen.getAllByText("Required")).toHaveLength(2);
     });
 
@@ -907,13 +895,13 @@ describe("AddModelForm", () => {
 
       await clickTestConnect();
 
-      await expectBlockedWith("Please enter at least one model.");
+      await expectBlockedWith("请至少选择一个模型。");
     });
 
     it("runs the connection test for the provider wildcard", async () => {
       const { user, clickTestConnect } = await renderForm();
       await pickProvider(user, /OpenAI/);
-      await pickModel(user, "All OpenAI Models (Wildcard)");
+      await pickModel(user, "所有 OpenAI 模型（通配符）");
       fillApiKey("OpenAI API Key");
 
       await clickTestConnect();
@@ -925,7 +913,7 @@ describe("AddModelForm", () => {
       const { user, clickTestConnect } = await renderForm();
       await pickProvider(user, /OpenAI/);
       fillApiKey("OpenAI API Key");
-      await pickModel(user, "Custom Model Name (Enter below)");
+      await pickModel(user, "自定义模型名称（在下方输入）");
 
       await clickTestConnect();
       await expectBlockedWith("Please enter a custom model name.");
@@ -939,7 +927,7 @@ describe("AddModelForm", () => {
     it("runs the connection test for an Azure deployment name", async () => {
       const { user, clickTestConnect } = await renderForm(Providers.Azure);
       await pickProvider(user, /Azure/);
-      fireEvent.change(screen.getByLabelText(/LiteLLM Model Name/), { target: { value: "my-deployment" } });
+      fireEvent.change(screen.getByLabelText("LiteLLM 模型名称"), { target: { value: "my-deployment" } });
 
       await clickTestConnect();
       await expectBlockedWith("Required");
@@ -955,7 +943,7 @@ describe("AddModelForm", () => {
       const { user, clickTestConnect } = await renderForm(Providers.MICROSOFT_365_COPILOT);
       await pickProvider(user, /Microsoft 365 Copilot/);
       await pickModel(user, "gpt-4");
-      expect(await screen.findByRole("button", { name: "Create credential" })).toBeInTheDocument();
+      expect(await screen.findByRole("button", { name: "创建凭据" })).toBeInTheDocument();
 
       await clickTestConnect();
       expect(errorToast).toHaveBeenCalledWith("Create or select a credential for this auth type");
@@ -975,9 +963,9 @@ describe("AddModelForm", () => {
       await pickProvider(user, /OpenAI/);
       await pickModel(user, "gpt-4");
       await user.click(screen.getByRole("button", { name: "使用工作负载身份联合" }));
-      fireEvent.change(screen.getByLabelText("Credential Name:"), { target: { value: "openai-federated" } });
+      fireEvent.change(screen.getByLabelText("凭据名称："), { target: { value: "openai-federated" } });
       fireEvent.change(screen.getByLabelText(/Service Account ID/), { target: { value: "svc_new" } });
-      await user.click(screen.getByRole("button", { name: "Add Credential" }));
+      await user.click(screen.getByRole("button", { name: "添加凭据" }));
       await waitFor(() => expect(screen.queryByLabelText(/OpenAI API Key/)).not.toBeInTheDocument());
 
       await clickTestConnect();
@@ -1011,7 +999,7 @@ describe("AddModelForm", () => {
 
       await clickTestConnect();
 
-      await expectBlockedWith("All model mappings must have valid public names");
+      await expectBlockedWith("所有模型映射都必须有有效的公开名称");
     });
   });
 

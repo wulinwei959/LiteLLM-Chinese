@@ -1,4 +1,5 @@
 import { renderWithProviders } from "../../../tests/test-utils";
+import { authorizedSession } from "../../../tests/mocks/authorizedSession";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -105,18 +106,13 @@ const MOCK_KEY_DATA = {
   key_rotation_at: undefined,
 } as unknown as KeyResponse;
 
-const baseAuthorized = {
+const baseAuthorized = authorizedSession({
   accessToken: "test-token",
   userId: "test-user",
   userRole: "admin",
   premiumUser: true,
   token: "test-token",
-  userEmail: null,
-  disabledPersonalKeyCreation: null,
-  showSSOBanner: false,
-  isLoading: false,
-  isAuthorized: true,
-};
+});
 
 const TEST_BUDGET_TEAM_FIELDS = {
   team_id: "team-123",

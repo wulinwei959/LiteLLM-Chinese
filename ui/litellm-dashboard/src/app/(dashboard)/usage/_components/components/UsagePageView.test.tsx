@@ -8,6 +8,7 @@ import { act, fireEvent, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { UrlUpdateEvent } from "nuqs/adapters/testing";
+import type { TagListResponse } from "@/components/tag_management/types";
 import { renderWithProviders } from "@/../tests/test-utils";
 import { toast } from "@/lib/toast";
 import { processActivityData } from "@/components/activity_metrics";
@@ -819,7 +820,7 @@ describe("UsagePage", () => {
   });
 
   it("should withhold the tag list until it resolves so no empty state is shown while loading", async () => {
-    let resolveTagList: (tags: Record<string, unknown>) => void = () => {};
+    let resolveTagList: (tags: TagListResponse | PromiseLike<TagListResponse>) => void = () => {};
     mockTagListCall.mockReturnValue(
       new Promise((resolve) => {
         resolveTagList = resolve;
@@ -858,7 +859,7 @@ describe("UsagePage", () => {
       );
     });
 
-    let resolveNewRange: (tags: Record<string, unknown>) => void = () => {};
+    let resolveNewRange: (tags: TagListResponse | PromiseLike<TagListResponse>) => void = () => {};
     mockTagListCall.mockReturnValue(
       new Promise((resolve) => {
         resolveNewRange = resolve;
@@ -1333,7 +1334,6 @@ describe("UsagePage", () => {
       const view = renderWithProviders(<UsagePage {...defaultProps} />, {
         searchParams,
         onUrlUpdate,
-        resetUrlUpdateQueueOnMount: false,
       });
       const lastQuery = (): string | undefined => onUrlUpdate.mock.lastCall?.[0].queryString;
       return { ...view, onUrlUpdate, lastQuery };

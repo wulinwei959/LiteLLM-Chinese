@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi, type Mock } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -49,6 +49,11 @@ const renderPage = () =>
     </QueryClientProvider>,
   );
 
+/** Spying the typed client traps TS in its recursive path types, so spy through a plain shape. */
+const clientMock = backgroundFetchClient as unknown as Record<"GET" | "POST", Mock>;
+
+const spyGET = () => vi.spyOn(clientMock, "GET") as Mock;
+
 describe("TelemetrySettingsPage", () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -57,7 +62,7 @@ describe("TelemetrySettingsPage", () => {
 
   it("says nothing is recorded without a destination and gates picking one behind the enterprise modal", async () => {
     const unchosen = { ...SETTINGS, destination: null, stored_destination: null };
-    vi.spyOn(backgroundFetchClient, "GET").mockResolvedValue({ data: unchosen, response: new Response() } as never);
+    spyGET().mockResolvedValue({ data: unchosen, response: new Response() } as never);
     const put = vi.spyOn(fetchClient, "PUT").mockReturnValue(new Promise(() => undefined) as never);
     const user = userEvent.setup();
     renderPage();
@@ -77,7 +82,7 @@ describe("TelemetrySettingsPage", () => {
     [true, "Contact your enterprise representative"],
   ])("never turns telemetry on from the top switch (enterprise: %s)", async (premiumUser, title) => {
     auth.premiumUser = premiumUser;
-    vi.spyOn(backgroundFetchClient, "GET").mockResolvedValue({ data: OFF, response: new Response() } as never);
+    spyGET().mockResolvedValue({ data: OFF, response: new Response() } as never);
     const put = vi.spyOn(fetchClient, "PUT").mockReturnValue(new Promise(() => undefined) as never);
     const user = userEvent.setup();
     renderPage();
@@ -94,7 +99,7 @@ describe("TelemetrySettingsPage", () => {
   });
 
   it("turns every group off from the top switch and keeps the saved destination", async () => {
-    vi.spyOn(backgroundFetchClient, "GET").mockResolvedValue({ data: SETTINGS, response: new Response() } as never);
+    spyGET().mockResolvedValue({ data: SETTINGS, response: new Response() } as never);
     const put = vi.spyOn(fetchClient, "PUT").mockReturnValue(new Promise(() => undefined) as never);
     const user = userEvent.setup();
     renderPage();
@@ -105,7 +110,7 @@ describe("TelemetrySettingsPage", () => {
   });
 
   it("gates turning another group on behind the enterprise modal while telemetry is on", async () => {
-    vi.spyOn(backgroundFetchClient, "GET").mockResolvedValue({ data: SETTINGS, response: new Response() } as never);
+    spyGET().mockResolvedValue({ data: SETTINGS, response: new Response() } as never);
     const put = vi.spyOn(fetchClient, "PUT").mockReturnValue(new Promise(() => undefined) as never);
     const user = userEvent.setup();
     renderPage();
@@ -118,7 +123,7 @@ describe("TelemetrySettingsPage", () => {
   });
 
   it("keeps the saved destination when a group is switched", async () => {
-    vi.spyOn(backgroundFetchClient, "GET").mockResolvedValue({ data: SETTINGS, response: new Response() } as never);
+    spyGET().mockResolvedValue({ data: SETTINGS, response: new Response() } as never);
     const put = vi.spyOn(fetchClient, "PUT").mockReturnValue(new Promise(() => undefined) as never);
     const user = userEvent.setup();
     renderPage();
@@ -131,7 +136,7 @@ describe("TelemetrySettingsPage", () => {
   });
 
   it("locks the other tab's switches while a save from one tab is still in flight", async () => {
-    vi.spyOn(backgroundFetchClient, "GET").mockResolvedValue({ data: SETTINGS, response: new Response() } as never);
+    spyGET().mockResolvedValue({ data: SETTINGS, response: new Response() } as never);
     const put = vi.spyOn(fetchClient, "PUT").mockReturnValue(new Promise(() => undefined) as never);
     const user = userEvent.setup();
     render(

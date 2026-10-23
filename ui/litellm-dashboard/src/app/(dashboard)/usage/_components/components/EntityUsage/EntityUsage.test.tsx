@@ -79,7 +79,7 @@ vi.mock("@/components/activity_metrics", () => ({
   ActivityMetrics: ({
     modelMetrics,
     summaryMetrics,
-    summaryTitle = "Overall Usage",
+    summaryTitle = "总体用量",
     fetchTopApiKeys,
   }: {
     modelMetrics?: { __source?: string };
@@ -694,7 +694,7 @@ describe("EntityUsage", () => {
       fireEvent.click(keyActivityTab);
     });
 
-    expect(within(screen.getByRole("tabpanel")).getByRole("heading", { name: "Overall Usage" })).toBeInTheDocument();
+    expect(within(screen.getByRole("tabpanel")).getByRole("heading", { name: "总体用量" })).toBeInTheDocument();
   });
 
   it("loads key pages separately from the aggregate using the current entity scope", async () => {
@@ -748,7 +748,7 @@ describe("EntityUsage", () => {
   const NON_TEAM_PANELS: [string, string][] = [
     ["成本", "标签 消费总览"],
     ["模型活动", "metrics-source:model_groups"],
-    ["密钥活动", "Overall Usage"],
+    ["密钥活动", "总体用量"],
     ["端点活动", "Endpoint Usage Panel"],
   ];
 
@@ -774,7 +774,7 @@ describe("EntityUsage", () => {
     ["成本", "团队 消费总览"],
     ["模型活动", "metrics-source:model_groups"],
     ["智能体活动", "metrics-source:entities"],
-    ["密钥活动", "Overall Usage"],
+    ["密钥活动", "总体用量"],
     ["端点活动", "Endpoint Usage Panel"],
   ];
 
@@ -1032,7 +1032,7 @@ describe("EntityUsage", () => {
     });
     expect(screen.getAllByText("正在加载图表数据...").length).toBeGreaterThan(0);
     expect(screen.queryByText("总消费")).not.toBeInTheDocument();
-    expect(screen.queryByText("Overall Usage")).not.toBeInTheDocument();
+    expect(screen.queryByText("总体用量")).not.toBeInTheDocument();
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
 
     await act(async () => {
@@ -1040,7 +1040,7 @@ describe("EntityUsage", () => {
     });
 
     expect(screen.queryByText("正在加载图表数据...")).not.toBeInTheDocument();
-    expect(screen.getByText("Overall Usage")).toBeInTheDocument();
+    expect(screen.getByText("总体用量")).toBeInTheDocument();
     expect(screen.getByText("总消费")).toBeInTheDocument();
     expect(screen.getAllByText("$100.50").length).toBeGreaterThan(0);
   });
@@ -1117,7 +1117,7 @@ describe("EntityUsage", () => {
     });
     expect(container.querySelector("path.recharts-rectangle")).toHaveAttribute("fill", "#94a3b8");
 
-    expect(screen.getAllByText("Jan 1").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("1月1日").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Tag 1").length).toBeGreaterThan(0);
 
     const segments = screen.getAllByTestId("provider-share-segment");

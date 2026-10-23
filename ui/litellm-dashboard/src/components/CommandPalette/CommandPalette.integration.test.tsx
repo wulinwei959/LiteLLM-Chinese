@@ -111,7 +111,7 @@ beforeEach(() => {
     ),
   );
   vi.mocked(useKeys).mockImplementation((_page, _pageSize, options) => {
-    const query = options.search?.toLowerCase() ?? "";
+    const query = options?.search?.toLowerCase() ?? "";
     const keys =
       cachedKeyResults.get(query) ??
       KEY_FIXTURES.filter(

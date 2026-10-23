@@ -1,4 +1,5 @@
 import { vi } from "vitest";
+import type { UseQueryResult } from "@tanstack/react-query";
 import type { ComplexityScorerDefaults } from "@/components/networking";
 
 /**
@@ -28,6 +29,6 @@ export const LOADED_SCORER_DEFAULTS_QUERY = {
   isPending: false,
   isError: false,
   refetch: vi.fn(),
-};
+} as unknown as UseQueryResult<ComplexityScorerDefaults, Error>;
 
 export const useComplexityScorerDefaults = vi.fn(() => LOADED_SCORER_DEFAULTS_QUERY);

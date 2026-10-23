@@ -359,7 +359,7 @@ describe("mcp_server_edit save payload contract", () => {
       submitted_at: "2024-01-01T00:00:00Z",
       reviewed_at: "2024-01-02T00:00:00Z",
       review_notes: "looks fine",
-    } as MCPServer);
+    } as unknown as MCPServer);
 
     for (const leaked of [
       "created_at",

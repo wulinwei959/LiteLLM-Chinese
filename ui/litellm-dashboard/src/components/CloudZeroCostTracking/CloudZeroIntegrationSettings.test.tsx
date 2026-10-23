@@ -50,7 +50,7 @@ describe("CloudZeroIntegrationSettings", () => {
   it("should display the correct values from settings", () => {
     renderWithProviders(<CloudZeroIntegrationSettings settings={mockSettings} onSettingsUpdated={vi.fn()} />);
 
-    expect(screen.getByText(mockSettings.api_key_masked)).toBeInTheDocument();
-    expect(screen.getByText(mockSettings.connection_id)).toBeInTheDocument();
+    expect(screen.getByText(mockSettings.api_key_masked ?? "")).toBeInTheDocument();
+    expect(screen.getByText(mockSettings.connection_id ?? "")).toBeInTheDocument();
   });
 });

@@ -1464,7 +1464,7 @@ describe("ActivityMetrics response time", () => {
   it("labels the chart tooltip with the readable series name and a formatted duration", () => {
     const payload = [
       { dataKey: "metrics.avg_response_time_ms", value: 1500, color: "#f59e0b", payload: timedModel.daily_data[0] },
-    ] as NonNullable<ChartTooltipProps["payload"]>;
+    ] as unknown as NonNullable<ChartTooltipProps["payload"]>;
     render(<ResponseTimeTooltip active={true} payload={payload} label="2025-01-01" />);
 
     expect(screen.getByText("平均响应时间 (ms)")).toBeInTheDocument();

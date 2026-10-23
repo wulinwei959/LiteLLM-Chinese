@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi, type Mock } from "vitest";
 import { act, renderHook } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { ReactNode } from "react";
@@ -24,6 +24,11 @@ const wrapperFor = (client: QueryClient) =>
     return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
   };
 
+/** Spying the typed client traps TS in its recursive path types, so spy through a plain shape. */
+const clientMock = backgroundFetchClient as unknown as Record<"GET" | "POST", Mock>;
+
+const spyGET = () => vi.spyOn(clientMock, "GET") as Mock;
+
 describe("useTelemetrySettings", () => {
   afterEach(() => vi.restoreAllMocks());
 
@@ -32,9 +37,7 @@ describe("useTelemetrySettings", () => {
     ["proxy_admin_viewer", 1],
   ])("only asks for the settings as a proxy admin tier role (%s)", async (role, calls) => {
     authorized.userRole = role;
-    const get = vi
-      .spyOn(backgroundFetchClient, "GET")
-      .mockResolvedValue({ data: settingsWith(false), response: new Response() } as never);
+    const get = spyGET().mockResolvedValue({ data: settingsWith(false), response: new Response() } as never);
 
     renderHook(() => useTelemetrySettings(), { wrapper: wrapperFor(new QueryClient()) });
     await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
@@ -70,12 +73,8 @@ describe("useUpdateTelemetrySettings", () => {
   });
 
   it("leaves page navigation to the proxy until its next window instead of flipping it on save", async () => {
-    const get = vi
-      .spyOn(backgroundFetchClient, "GET")
-      .mockResolvedValue({ data: { enabled: false }, response: new Response() } as never);
-    const post = vi
-      .spyOn(backgroundFetchClient, "POST")
-      .mockResolvedValue({ data: undefined, response: new Response() });
+    const get = spyGET().mockResolvedValue({ data: { enabled: false }, response: new Response() } as never);
+    const post = vi.spyOn(clientMock, "POST").mockResolvedValue({ data: undefined, response: new Response() } as never);
     vi.spyOn(fetchClient, "PUT").mockResolvedValue({ data: settingsWith(true), response: new Response() });
     await recordUiEvent({ page: "telemetry", action: "view" });
     const { result } = renderHook(() => useUpdateTelemetrySettings(), { wrapper: wrapperFor(new QueryClient()) });

@@ -94,7 +94,7 @@ describe("interactions_api", () => {
 
     mockFetch.mockResolvedValue({ ok: true, body: sseBody(sse) } as Response);
 
-    await expect(makeInteractionsRequest("hi", mockUpdateUI, "gpt-mini", "token")).rejects.toThrow(
+    await expect(makeInteractionsRequest(t, "hi", mockUpdateUI, "gpt-mini", "token")).rejects.toThrow(
       "blocked by guardrail",
     );
 

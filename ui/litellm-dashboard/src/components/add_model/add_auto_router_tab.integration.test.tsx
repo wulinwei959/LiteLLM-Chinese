@@ -533,11 +533,11 @@ describe("AddAutoRouterTab", () => {
         ["capable", "能力求解器"],
       ]) {
         await user.click(screen.getByRole("combobox", { name: capability ? `选择${solverLabel}模型` : solverLabel }));
-        await user.click(await screen.findByRole("option", { name: model, exact: true }));
+        await user.click(await screen.findByRole("option", { name: model }));
         if (capability) await user.keyboard("{Escape}");
       }
       await user.click(screen.getByRole("combobox", { name: "评审模型" }));
-      await user.click(await screen.findByRole("option", { name: "judge", exact: true }));
+      await user.click(await screen.findByRole("option", { name: "judge" }));
       expect(screen.getByRole("button", { name: "添加自动路由" })).toBeDisabled();
       if (capability) {
         fireEvent.change(screen.getByLabelText("求解成功概率阈值"), { target: { value: "0.7" } });
@@ -622,13 +622,13 @@ describe("AddAutoRouterTab", () => {
       });
       expect(await screen.findByText("无法加载可用模型。")).toBeVisible();
       expect(screen.queryByTestId("template-selector")).not.toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: "重试", exact: true }));
+      await user.click(screen.getByRole("button", { name: "重试" }));
       await waitFor(() => expect(screen.queryByText("无法加载可用模型。")).not.toBeInTheDocument());
       expect(screen.getByRole("button", { name: "路由方式" })).toHaveTextContent(capability ? "能力" : "Fuse v2");
       expect(screen.getByLabelText("自动路由名称")).toHaveValue("forecast-retry");
       expect(screen.getByLabelText(policyField)).toHaveValue(capability ? 0.7 : "Small solver");
       await user.click(screen.getByRole("combobox", { name: "评审模型" }));
-      expect(await screen.findByRole("option", { name: "judge", exact: true })).toBeVisible();
+      expect(await screen.findByRole("option", { name: "judge" })).toBeVisible();
       expect(mockFetchAvailableModels).toHaveBeenCalledTimes(2);
     },
   );
@@ -1086,9 +1086,9 @@ describe("AddAutoRouterTab", () => {
       heuristic_v2_success_threshold: 0.6,
       heuristic_first_max_tier: "MEDIUM",
     };
-    expect(vi.mocked(modelCreateCall).mock.calls.at(-1)?.[1].litellm_params.complexity_router_config).toMatchObject(
-      expectedConfig,
-    );
+    expect(vi.mocked(modelCreateCall).mock.calls.at(-1)?.[2]).toMatchObject({
+      litellm_params: { complexity_router_config: expectedConfig },
+    });
   });
 
   it("preserves classifier tuning when choosing models automatically", async () => {

@@ -319,8 +319,8 @@ describe("LogDetailContent", () => {
 
       expect(screen.getByText("legacy classifier prompt")).toBeInTheDocument();
       expect(screen.queryByRole("region", { name: "分类器输入" })).not.toBeInTheDocument();
-      await user.click(screen.getByRole("tab", { name: "JSON", exact: true }));
-      await user.click(screen.getByRole("button", { name: "复制 JSON", exact: true }));
+      await user.click(screen.getByRole("tab", { name: "JSON" }));
+      await user.click(screen.getByRole("button", { name: "复制 JSON" }));
       expect(await navigator.clipboard.readText()).toBe(
         JSON.stringify(shape === "messages only" ? messages : request, null, 2),
       );

@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import ResetMemberBudgetsDialog from "./ResetMemberBudgetsDialog";
+import type { MemberBudgetResetPending } from "./memberBudgetReset";
 import type { MemberBudgetResetState } from "./useMemberBudgetReset";
 
 const mockTranslations: Record<string, string> = {
@@ -31,7 +32,7 @@ vi.mock("next-intl", () => ({
 
 const pendingFor = (memberCount: number, newBudget = 10) => ({
   teamId: "team-123",
-  updateData: {},
+  updateData: {} as MemberBudgetResetPending["updateData"],
   userIds: Array.from({ length: memberCount }, (_, i) => `u-${i}`),
   newBudget,
 });

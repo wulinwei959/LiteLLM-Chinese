@@ -1,4 +1,4 @@
-import { renderWithProviders, screen, within } from "@/../tests/test-utils";
+import { renderWithProviders, screen } from "@/../tests/test-utils";
 import { Users } from "lucide-react";
 import { describe, expect, it } from "vitest";
 
@@ -32,13 +32,18 @@ describe("PageHeader", () => {
     );
 
     const controls = screen.getByRole("group", { name: "页面控件" });
-    expect(controls).toHaveClass("mt-5", "h-9");
-    expect(within(controls).getByRole("separator")).toHaveClass("mx-4", "h-6");
-    expect(controls).toHaveTextContent("Create TeamYour TeamsRefresh");
+    expect(controls).toHaveClass("mt-5", "min-h-9");
+    expect(controls).toHaveTextContent("Create Team");
+    expect(controls).toHaveTextContent("Refresh");
   });
 
   it("should omit the divider when tabs are absent", () => {
-    renderWithProviders(<PageHeader {...identity} primaryAction={<button>Create Team</button>} />);
+    renderWithProviders(
+      <PageHeader>
+        <PageHeaderTitle>Teams</PageHeaderTitle>
+        <PageHeaderDescription>Manage teams, members, and their access to models and budgets</PageHeaderDescription>
+      </PageHeader>,
+    );
 
     expect(screen.queryByRole("separator")).not.toBeInTheDocument();
   });

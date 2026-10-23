@@ -215,7 +215,7 @@ describe("AutoRoutersPanel", () => {
   // The reported bug: the newest router was rendered last, so it landed on page 2 and read
   // as never created.
   it("puts a just-created router on the first page of a list longer than one page", async () => {
-    modelInfoCall.mockResolvedValue(pageOf(A_FULL_PAGE_AND_TWO_MORE));
+    modelInfoCall.mockResolvedValue(pageOf(A_FULL_PAGE_AND_TWO_MORE as never));
 
     renderPanel();
 

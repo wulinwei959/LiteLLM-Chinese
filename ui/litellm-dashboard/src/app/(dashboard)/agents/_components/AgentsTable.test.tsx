@@ -5,6 +5,7 @@ import { describe, it, expect, vi } from "vitest";
 
 import AgentsTable from "./AgentsTable";
 import { Agent } from "@/components/agents/types";
+import { makeAgent as baseAgent } from "@/../tests/mocks/agents";
 
 const baseProps = {
   isLoading: false,
@@ -16,15 +17,12 @@ const baseProps = {
   onDeleteClick: vi.fn(),
 };
 
-const makeAgent = (overrides: Partial<Agent> = {}): Agent => ({
-  agent_id: "agent-1",
-  agent_name: "Test Agent",
-  litellm_params: { model: "gpt-4" },
-  spend: 0,
-  keys: [{ token: "hash-1", key_alias: "primary", key_name: "sk-...1" }],
-  created_at: "2023-01-01T00:00:00Z",
-  ...overrides,
-});
+const makeAgent = (overrides: Partial<Agent> = {}): Agent =>
+  baseAgent({
+    created_at: "2023-01-01T00:00:00Z",
+    keys: [{ token: "hash-1", key_alias: "primary", key_name: "sk-...1" }],
+    ...overrides,
+  });
 
 describe("AgentsTable", () => {
   it("renders every column header", () => {

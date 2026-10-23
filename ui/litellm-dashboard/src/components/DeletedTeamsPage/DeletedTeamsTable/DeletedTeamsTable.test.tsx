@@ -95,7 +95,7 @@ it("links the organization and deleted by cells, leaving the deleted team id unl
 });
 
 it("leaves the default_user_id placeholder unlinked in the deleted by cell", () => {
-  const team = makeDeletedTeam({ deleted_by: "default_user_id", organization_id: null });
+  const team = makeDeletedTeam({ deleted_by: "default_user_id", organization_id: undefined });
   renderWithProviders(<DeletedTeamsTable teams={[team]} isLoading={false} rowCount={1} {...paginationProps} />);
 
   expect(screen.getByText("default_user_id")).toBeInTheDocument();

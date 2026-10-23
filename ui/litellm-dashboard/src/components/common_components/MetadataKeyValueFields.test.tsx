@@ -100,7 +100,7 @@ describe("metadataPairsToObject", () => {
 });
 
 interface HarnessProps {
-  onFinish: (values: { metadata?: MetadataPair[] }) => void;
+  onFinish: (values: { metadata?: { key: string; value?: string }[] }) => void;
   initialMetadata?: MetadataPair[];
   schemaFields?: TeamMetadataField[];
   schemaLoading?: boolean;
@@ -110,7 +110,9 @@ interface HarnessProps {
 const Harness: React.FC<HarnessProps> = ({ onFinish, initialMetadata, schemaFields, schemaLoading, fieldsHidden }) => {
   const t = useTranslations("teams");
   const harnessSchema = useMemo(() => z.object({ metadata: buildMetadataPairsSchema(t) }), [t]);
-  const form = useZodForm(harnessSchema, { defaultValues: { metadata: initialMetadata ?? [] } });
+  const form = useZodForm(harnessSchema, {
+    defaultValues: { metadata: initialMetadata ?? [] },
+  });
   return (
     <form onSubmit={form.handleSubmit((values) => onFinish(values))}>
       {!fieldsHidden && (
@@ -224,17 +226,41 @@ describe("MetadataKeyValueFields with a declared schema", () => {
     { key: "app_name", label: "Application Name" },
   ];
 
-  it("should prepopulate one ordinary editable pair row per declared key", async () => {
+  it("should render each declared key as a fixed label with only the value editable", async () => {
     renderWithProviders(<Harness onFinish={vi.fn()} schemaFields={schema} />);
 
     await waitFor(() => {
-      expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
-        "cost_center",
-        "app_name",
+      expect(screen.getAllByTestId("metadata-schema-label").map((label) => label.textContent)).toEqual([
+        "Cost Center",
+        "Application Name",
       ]);
     });
-    screen.getAllByPlaceholderText("键").forEach((input) => expect(input).toBeEnabled());
-    expect(screen.getAllByLabelText("删除键值对")).toHaveLength(2);
+    expect(screen.queryByPlaceholderText("键")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("删除键值对")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Cost Center")).toHaveAttribute("placeholder", "值");
+  });
+
+  it("should fall back to the key when a declared field has no label", async () => {
+    renderWithProviders(<Harness onFinish={vi.fn()} schemaFields={[{ key: "cost_center" }]} />);
+
+    expect(await screen.findByTestId("metadata-schema-label")).toHaveTextContent("cost_center");
+  });
+
+  it("should treat an existing pair that matches a declared key as fixed too", async () => {
+    renderWithProviders(
+      <Harness
+        onFinish={vi.fn()}
+        schemaFields={[{ key: "cost_center", label: "Cost Center" }]}
+        initialMetadata={[
+          { key: "cost_center", value: "CC-1001" },
+          { key: "region", value: "us" },
+        ]}
+      />,
+    );
+
+    expect(await screen.findByLabelText("Cost Center")).toHaveValue("CC-1001");
+    expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual(["region"]);
+    expect(screen.getAllByLabelText("删除键值对")).toHaveLength(1);
   });
 
   it("should submit a prepopulated key with its typed value", async () => {
@@ -256,9 +282,9 @@ describe("MetadataKeyValueFields with a declared schema", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
-        "cost_center",
-        "app_name",
+      expect(screen.getAllByTestId("metadata-schema-label").map((label) => label.textContent)).toEqual([
+        "Cost Center",
+        "Application Name",
       ]);
     });
     expect(screen.getAllByPlaceholderText("值").map((input) => (input as HTMLInputElement).value)).toEqual([
@@ -269,35 +295,92 @@ describe("MetadataKeyValueFields with a declared schema", () => {
 
   it("should still let the user add and remove free-form pairs below the declared keys", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<Harness onFinish={vi.fn()} schemaFields={schema} />);
+    const onFinish = vi.fn();
+    renderWithProviders(<Harness onFinish={onFinish} schemaFields={[{ key: "cost_center", label: "Cost Center" }]} />);
 
-    await screen.findAllByPlaceholderText("键");
-    await user.click(screen.getAllByLabelText("删除键值对")[0]);
+    await screen.findByTestId("metadata-schema-label");
+    await user.click(screen.getByRole("button", { name: "添加键值对" }));
+    fireEvent.change(screen.getByPlaceholderText("键"), { target: { value: "region" } });
+    fireEvent.change(screen.getAllByPlaceholderText("值")[1], { target: { value: "us" } });
+    fireEvent.change(screen.getByLabelText("Cost Center"), { target: { value: "CC-1001" } });
+    await user.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() => {
-      expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
-        "app_name",
+      expect(onFinish).toHaveBeenCalledWith({
+        metadata: [
+          { key: "cost_center", value: "CC-1001" },
+          { key: "region", value: "us" },
+        ],
+      });
+    });
+
+    await user.click(screen.getByLabelText("删除键值对"));
+    await waitFor(() => {
+      expect(screen.queryByPlaceholderText("键")).not.toBeInTheDocument();
+    });
+    expect(screen.getByTestId("metadata-schema-label")).toBeInTheDocument();
+  });
+
+  it("should keep duplicate keys in a free-form row", async () => {
+    const user = userEvent.setup();
+    const onFinish = vi.fn();
+    renderWithProviders(<Harness onFinish={onFinish} schemaFields={[{ key: "cost_center", label: "Cost Center" }]} />);
+
+    expect(await screen.findByTestId("metadata-schema-label")).toHaveTextContent("Cost Center");
+    await user.click(screen.getByRole("button", { name: "添加键值对" }));
+    fireEvent.change(screen.getByPlaceholderText("键"), { target: { value: "cost_center" } });
+
+    expect(screen.getAllByPlaceholderText("键")).toHaveLength(1);
+    expect(screen.getByPlaceholderText("键")).toHaveValue("cost_center");
+    expect(screen.getAllByLabelText("删除键值对")).toHaveLength(1);
+    expect(screen.getAllByTestId("metadata-schema-label")).toHaveLength(1);
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("键名重复")).toBeInTheDocument();
+    });
+    expect(onFinish).not.toHaveBeenCalled();
+  });
+
+  it("should keep an existing row above a declared row editable while a declared key is typed into it", async () => {
+    const user = userEvent.setup();
+    const onFinish = vi.fn();
+    renderWithProviders(
+      <Harness
+        onFinish={onFinish}
+        initialMetadata={[{ key: "region", value: "us" }]}
+        schemaFields={[
+          { key: "cost", label: "Cost" },
+          { key: "cost_center", label: "Cost Center" },
+        ]}
+      />,
+    );
+    await waitFor(() => {
+      expect(screen.getAllByTestId("metadata-schema-label").map((label) => label.textContent)).toEqual([
+        "Cost",
+        "Cost Center",
       ]);
     });
 
-    const keyInput = screen.getByPlaceholderText("Key");
+    const keyInput = screen.getByPlaceholderText("键");
     await user.clear(keyInput);
     await user.type(keyInput, "cost_center");
 
     expect(keyInput).toHaveValue("cost_center");
     expect(keyInput).toHaveFocus();
 
-    await user.click(screen.getByRole("button", { name: /add key-value pair/i }));
-    expect(screen.getAllByPlaceholderText("Key").map((input) => (input as HTMLInputElement).value)).toEqual([
+    await user.click(screen.getByRole("button", { name: "添加键值对" }));
+    expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
       "cost_center",
       "",
     ]);
-    await user.click(screen.getAllByLabelText("Remove key-value pair")[1]);
+    await user.click(screen.getAllByLabelText("删除键值对")[1]);
 
-    expect(screen.getAllByPlaceholderText("Key").map((input) => (input as HTMLInputElement).value)).toEqual([
+    expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
       "cost_center",
     ]);
-    expect(screen.getAllByLabelText("Remove key-value pair")).toHaveLength(1);
+    expect(screen.getAllByLabelText("删除键值对")).toHaveLength(1);
     expect(screen.getAllByTestId("metadata-schema-label").map((label) => label.textContent)).toEqual([
       "Cost",
       "Cost Center",
@@ -305,7 +388,7 @@ describe("MetadataKeyValueFields with a declared schema", () => {
 
     await user.click(screen.getByRole("button", { name: "Save" }));
 
-    expect(await screen.findByText("Duplicate key")).toBeInTheDocument();
+    expect(await screen.findByText("键名重复")).toBeInTheDocument();
     expect(onFinish).not.toHaveBeenCalled();
   });
 
@@ -318,7 +401,7 @@ describe("MetadataKeyValueFields with a declared schema", () => {
       <Harness onFinish={onFinish} initialMetadata={initialMetadata} schemaFields={schemaFields} />,
     );
     expect(await screen.findByTestId("metadata-schema-label")).toHaveTextContent("Cost Center");
-    fireEvent.change(screen.getByPlaceholderText("Key"), { target: { value: "cost_center" } });
+    fireEvent.change(screen.getByPlaceholderText("键"), { target: { value: "cost_center" } });
 
     rerender(
       <Harness onFinish={onFinish} initialMetadata={initialMetadata} schemaFields={schemaFields} fieldsHidden />,
@@ -326,12 +409,12 @@ describe("MetadataKeyValueFields with a declared schema", () => {
     rerender(<Harness onFinish={onFinish} initialMetadata={initialMetadata} schemaFields={schemaFields} />);
 
     expect(screen.getAllByTestId("metadata-schema-label")).toHaveLength(1);
-    expect(screen.getByPlaceholderText("Key")).toHaveValue("cost_center");
-    expect(screen.getAllByLabelText("Remove key-value pair")).toHaveLength(1);
+    expect(screen.getByPlaceholderText("键")).toHaveValue("cost_center");
+    expect(screen.getAllByLabelText("删除键值对")).toHaveLength(1);
 
     await user.click(screen.getByRole("button", { name: "Save" }));
 
-    expect(await screen.findByText("Duplicate key")).toBeInTheDocument();
+    expect(await screen.findByText("键名重复")).toBeInTheDocument();
     expect(onFinish).not.toHaveBeenCalled();
   });
 
@@ -341,7 +424,7 @@ describe("MetadataKeyValueFields with a declared schema", () => {
     const { rerender } = renderWithProviders(
       <Harness onFinish={onFinish} initialMetadata={initialMetadata} schemaFields={[]} />,
     );
-    fireEvent.change(screen.getByPlaceholderText("Key"), { target: { value: "region" } });
+    fireEvent.change(screen.getByPlaceholderText("键"), { target: { value: "region" } });
 
     rerender(
       <Harness
@@ -351,7 +434,7 @@ describe("MetadataKeyValueFields with a declared schema", () => {
       />,
     );
 
-    expect(screen.getByPlaceholderText("Key")).toHaveValue("region");
+    expect(screen.getByPlaceholderText("键")).toHaveValue("region");
     expect(screen.getAllByTestId("metadata-schema-label").map((label) => label.textContent)).toEqual(["Cost Center"]);
   });
 
@@ -369,9 +452,9 @@ describe("MetadataKeyValueFields with a declared schema", () => {
     rerender(<Harness onFinish={onFinish} schemaFields={schema} schemaLoading={false} />);
 
     await waitFor(() => {
-      expect(screen.getAllByPlaceholderText("键").map((input) => (input as HTMLInputElement).value)).toEqual([
-        "cost_center",
-        "app_name",
+      expect(screen.getAllByTestId("metadata-schema-label").map((label) => label.textContent)).toEqual([
+        "Cost Center",
+        "Application Name",
       ]);
     });
   });

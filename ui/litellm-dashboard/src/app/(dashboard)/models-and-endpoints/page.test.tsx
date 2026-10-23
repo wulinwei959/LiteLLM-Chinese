@@ -3,7 +3,6 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { OnUrlUpdateFunction } from "nuqs/adapters/testing";
 import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderWithProviders } from "../../../../tests/test-utils";
 import { recordUiEvent } from "@/lib/telemetry/uiEvents";
 import ModelsAndEndpointsPage from "./page";
@@ -67,14 +66,13 @@ const NON_ADMIN = {
 // A proxy_admin_viewer session: effectiveSessionRole masquerades the role as "Admin".
 const VIEW_ONLY_ADMIN = { ...ADMIN, isViewOnly: true };
 
-const renderPage = () => {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
-  return renderWithProviders(
-    <QueryClientProvider client={queryClient}>
-      <ModelsAndEndpointsPage />
-    </QueryClientProvider>,
-  );
-};
+const renderPage = (options?: { searchParams?: string; onUrlUpdate?: OnUrlUpdateFunction }) =>
+  renderWithProviders(<ModelsAndEndpointsPage />, options);
+
+const lastUrlParams = (onUrlUpdate: Mock<OnUrlUpdateFunction>): URLSearchParams | undefined =>
+  onUrlUpdate.mock.calls.at(-1)?.[0].searchParams;
+
+const ADD_MODEL_PREFILL_LINK = "?tab=add&provider=typesafe&litellm_model=typesafe%2Fjev-latest";
 
 describe("ModelsAndEndpointsPage", () => {
   beforeEach(() => {

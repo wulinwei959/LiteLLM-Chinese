@@ -25,6 +25,7 @@ import CacheLeakageCard from "./CacheLeakageCard";
 const baseMetrics = (overrides: Partial<SpendMetrics>): components["schemas"]["SpendMetrics"] => ({
   spend: 0,
   flat_cost: 0,
+  ptu_hours: 0,
   prompt_tokens: 0,
   completion_tokens: 0,
   total_tokens: 0,

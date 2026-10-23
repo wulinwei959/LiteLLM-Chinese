@@ -6,7 +6,7 @@ describe("buildCurlCommand", () => {
   it("targets the proxy endpoint with a key placeholder and the pretty payload", () => {
     const input = {
       baseUrl: "http://localhost:4000/",
-      endpoint: "/v1/systemone",
+      endpoint: "/v1/systemone" as const,
       payload: JSON.stringify({ model: "jev-latest", state: "it's broken" }),
       authHeaderName: "Authorization",
     };
@@ -22,7 +22,7 @@ describe("buildCurlCommand", () => {
   it("quotes a proxy URL that carries shell metacharacters", () => {
     const input = {
       baseUrl: "http://proxy.example/$(touch pwned)'; echo x",
-      endpoint: "/v1/decisions",
+      endpoint: "/v1/decisions" as const,
       payload: "{}",
       authHeaderName: "Authorization",
     };
@@ -33,7 +33,7 @@ describe("buildCurlCommand", () => {
   it("sends the key under the proxy's configured auth header name", () => {
     const input = {
       baseUrl: "https://proxy.example",
-      endpoint: "/v1/systemone",
+      endpoint: "/v1/systemone" as const,
       payload: "{}",
       authHeaderName: "X-Litellm-Key",
     };
@@ -61,7 +61,7 @@ describe("buildCurlCommand", () => {
   it("passes a payload that is not JSON through untouched", () => {
     const input = {
       baseUrl: "https://proxy.example",
-      endpoint: "/v1/decisions",
+      endpoint: "/v1/decisions" as const,
       payload: "{",
       authHeaderName: "Authorization",
     };

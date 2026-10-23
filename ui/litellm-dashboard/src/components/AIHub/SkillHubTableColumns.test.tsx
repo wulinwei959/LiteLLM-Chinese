@@ -16,6 +16,9 @@ const mockSkill: Plugin = {
   category: "documents",
   domain: "Productivity",
   enabled: true,
+  created_at: "2025-01-15T10:30:00Z",
+  updated_at: "2025-01-16T10:30:00Z",
+  version: "1.0.0",
 };
 
 function SkillHubTableHarness({ data, onSkillClick }: { data: Plugin[]; onSkillClick: (skill: Plugin) => void }) {

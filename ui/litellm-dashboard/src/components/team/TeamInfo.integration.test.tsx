@@ -776,7 +776,7 @@ describe("TeamInfoView - member budget reset prompt", () => {
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalled());
-    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1].team_member_model_max_budget).toStrictEqual({
+    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][2].team_member_model_max_budget).toStrictEqual({
       "gpt-4": { budget_limit: 7, time_period: "30d" },
     });
   });

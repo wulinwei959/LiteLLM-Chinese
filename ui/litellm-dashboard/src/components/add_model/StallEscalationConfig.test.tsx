@@ -3,7 +3,12 @@ import { vi } from "vitest";
 import type { ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
 import StallEscalationConfig, { stallEscalationBlockedReason } from "./StallEscalationConfig";
 
-const tiers = { SIMPLE: "gpt-4o-mini", MEDIUM: "gpt-4o", COMPLEX: "claude-sonnet-4", REASONING: "o1-preview" };
+const tiers = {
+  SIMPLE: ["gpt-4o-mini"],
+  MEDIUM: ["gpt-4o"],
+  COMPLEX: ["claude-sonnet-4"],
+  REASONING: ["o1-preview"],
+};
 
 const baseValue: ComplexityRouterConfigValue = {
   tiers,

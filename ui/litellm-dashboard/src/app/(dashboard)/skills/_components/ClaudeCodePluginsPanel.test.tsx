@@ -50,6 +50,10 @@ const skill: Plugin = {
   name: "my-skill",
   source: { source: "github", repo: "acme/my-skill" },
   enabled: true,
+  created_at: "2025-01-15T10:30:00Z",
+  description: null,
+  updated_at: "2025-01-16T10:30:00Z",
+  version: "1.0.0",
 };
 
 describe("ClaudeCodePluginsPanel loading state", () => {

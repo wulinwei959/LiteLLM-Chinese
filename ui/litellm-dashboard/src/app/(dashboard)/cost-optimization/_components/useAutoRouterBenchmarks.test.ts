@@ -7,6 +7,15 @@ import { $api } from "@/lib/http/api";
 
 import { benchmarksWindow, useAutoRouterBenchmarks } from "./useAutoRouterBenchmarks";
 
+type UseQueryCall = [
+  string,
+  string,
+  { params: { query: Record<string, string | undefined> } },
+];
+
+const lateUseQueryCall = (): UseQueryCall =>
+  ($api.useQuery as unknown as { mock: { calls: unknown[][] } }).mock.calls.at(-1) as unknown as UseQueryCall;
+
 const localDay =
   (offsetHours: number) =>
   (d: Date): string =>
@@ -53,11 +62,7 @@ describe("useAutoRouterBenchmarks", () => {
   it("forwards the key hash as the endpoint's api_key filter", () => {
     useAutoRouterBenchmarks("sk-test", range, "key-hash-1");
 
-    const [, path, init] = vi.mocked($api.useQuery).mock.calls.at(-1) as unknown as [
-      string,
-      string,
-      { params: { query: Record<string, string | undefined> } },
-    ];
+    const [, path, init] = lateUseQueryCall();
     expect(path).toBe("/auto_router/benchmarks");
     expect(init.params.query.api_key).toBe("key-hash-1");
   });
@@ -65,11 +70,7 @@ describe("useAutoRouterBenchmarks", () => {
   it("leaves the read deployment-wide when no key is given", () => {
     useAutoRouterBenchmarks("sk-test", range);
 
-    const [, , init] = vi.mocked($api.useQuery).mock.calls.at(-1) as unknown as [
-      string,
-      string,
-      { params: { query: Record<string, string | undefined> } },
-    ];
+    const [, , init] = lateUseQueryCall();
     expect(init.params.query.api_key).toBeUndefined();
   });
 });

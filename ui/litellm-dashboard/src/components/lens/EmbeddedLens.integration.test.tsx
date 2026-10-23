@@ -49,7 +49,7 @@ it("renders the published Lens settings and uses the gateway session, prefix, an
     "https://github.com/BerriAI/lens/blob/main/docs/analysis.md",
   );
   expect(screen.getByText("Tracing enabled")).toBeVisible();
-  const analysis = within(screen.getByRole("region", { name: "Analysis", exact: true }));
+  const analysis = within(screen.getByRole("region", { name: "Analysis" }));
   const copyPrompt = analysis.getByRole("button", { name: "Set it up for me" });
   await user.click(copyPrompt);
   const prompt = await navigator.clipboard.readText();

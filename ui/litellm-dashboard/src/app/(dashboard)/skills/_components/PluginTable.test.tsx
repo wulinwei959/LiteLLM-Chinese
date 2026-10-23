@@ -17,6 +17,7 @@ const mockPlugins: Plugin[] = [
     category: "development",
     enabled: true,
     created_at: "2025-01-15T10:30:00Z",
+    updated_at: "2025-01-16T10:30:00Z",
   },
   {
     id: "plugin-id-older",
@@ -24,6 +25,9 @@ const mockPlugins: Plugin[] = [
     source: { source: "github", repo: "org/older-skill" },
     enabled: false,
     created_at: "2024-01-10T09:15:00Z",
+    description: null,
+    updated_at: null,
+    version: null,
   },
 ];
 

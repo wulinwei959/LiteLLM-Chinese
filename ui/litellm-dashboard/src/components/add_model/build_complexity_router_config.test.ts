@@ -172,7 +172,7 @@ describe("buildComplexityRouterConfig", () => {
     [undefined, "custom-jev-model"],
   ] as const)("accepts %s model %s before saving or testing", (provider, model) => {
     expect(
-      getClassifierModelError({
+      getClassifierModelError(t, {
         classifier_type: "jev",
         jev_classifier_config: { provider, model, timeout_ms: 3000 },
       }),
@@ -736,12 +736,16 @@ describe("getKeywordTierRulesError", () => {
   // Row numbers have to survive rules that are fine, or the message points at the wrong input.
   it("names each offending row by its position among all rules", () => {
     expect(
-      getKeywordTierRulesError(t, [
-        { id: "r1", keywords: ["invoice"], tier: "MEDIUM" },
-        { id: "r2", keywords: [], tier: "COMPLEX" },
-        { id: "r3", keywords: ["billing"], tier: "SIMPLE" },
-        { id: "r4", keywords: ["  "], tier: "REASONING" },
-      ]),
+      getKeywordTierRulesError(
+        t,
+        [
+          { id: "r1", keywords: ["invoice"], tier: "MEDIUM" },
+          { id: "r2", keywords: [], tier: "COMPLEX" },
+          { id: "r3", keywords: ["billing"], tier: "SIMPLE" },
+          { id: "r4", keywords: ["  "], tier: "REASONING" },
+        ],
+        activeTierRows({ tiers }),
+      ),
     ).toBe("请为以下关键词规则添加至少一个关键词：2, 4");
   });
 

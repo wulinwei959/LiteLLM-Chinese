@@ -1,11 +1,13 @@
 import { act, renderHook } from "@testing-library/react";
-import { createTranslator } from "next-intl";
+import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
-import zh from "@/messages/zh-CN.json";
 import { useConversation } from "./useConversation";
 
 const fetchMock = vi.fn();
+
+const wrapper = ({ children }: { children: ReactNode }) => <LocaleProvider locale="zh-CN">{children}</LocaleProvider>;
 
 describe("useConversation", () => {
   beforeEach(() => {
@@ -13,10 +15,10 @@ describe("useConversation", () => {
     vi.stubGlobal("fetch", fetchMock);
   });
 
-  const renderConversation = () => {
-    const t = createTranslator({ locale: "zh-CN", messages: zh, namespace: "prompts" });
-    return renderHook(() => useConversation({ messages: [], config: {}, setEditingToolIndex: () => {} }, "token", t));
-  };
+  const renderConversation = () =>
+    renderHook(() => useConversation({ messages: [], config: {}, setEditingToolIndex: () => {} }, "token"), {
+      wrapper,
+    });
 
   it("reports a failed request in the localized error prefix", async () => {
     fetchMock.mockResolvedValue({

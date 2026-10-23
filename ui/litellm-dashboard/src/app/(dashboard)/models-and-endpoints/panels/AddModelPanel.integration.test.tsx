@@ -90,6 +90,26 @@ vi.mock("@/components/vector_store_management/VectorStoreSelector", () => ({
   default: () => <div data-testid="vector-store-selector" />,
 }));
 
+type Catalog = Record<string, { litellm_provider: string }>;
+
+const createCatalogFeed = () => {
+  let current: Catalog | undefined;
+  const listeners = new Set<() => void>();
+  const subscribe = (listener: () => void) => {
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+    };
+  };
+  return {
+    useData: () => ({ data: useSyncExternalStore(subscribe, () => current) }),
+    publish: (next: Catalog) => {
+      current = next;
+      listeners.forEach((listener) => listener());
+    },
+  };
+};
+
 const lastCreatedModel = () => modelCreateCall.mock.calls.at(-1)?.[2];
 
 const PROXY_ADMIN = {

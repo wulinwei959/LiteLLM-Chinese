@@ -2,6 +2,7 @@ import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
+import { authorizedSession } from "../../../tests/mocks/authorizedSession";
 import { TeamData } from "./TeamInfo";
 import TeamMembersComponent, { seedMemberBudgetFields } from "./TeamMemberTab";
 
@@ -107,18 +108,7 @@ describe("TeamMembersComponent", () => {
       refetch: vi.fn(),
     } as any);
 
-    vi.mocked(useAuthorized).mockReturnValue({
-      isLoading: false,
-      isAuthorized: true,
-      userId: "test-user-id",
-      userRole: "Admin",
-      accessToken: "test-token",
-      token: "test-token",
-      userEmail: "test@example.com",
-      premiumUser: false,
-      disabledPersonalKeyCreation: null,
-      showSSOBanner: false,
-    });
+    vi.mocked(useAuthorized).mockReturnValue(authorizedSession());
   });
 
   it("should render", () => {

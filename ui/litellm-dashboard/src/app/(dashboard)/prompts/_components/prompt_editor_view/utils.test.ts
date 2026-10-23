@@ -16,6 +16,7 @@ describe("extractVariables", () => {
   it("should extract variables from messages", () => {
     const prompt: PromptType = {
       name: "test",
+      environment: "development",
       model: "gpt-4",
       config: {},
       tools: [],
@@ -33,6 +34,7 @@ describe("extractVariables", () => {
   it("should extract variables from developer message", () => {
     const prompt: PromptType = {
       name: "test",
+      environment: "development",
       model: "gpt-4",
       config: {},
       tools: [],
@@ -47,6 +49,7 @@ describe("extractVariables", () => {
   it("should extract variables from both messages and developer message", () => {
     const prompt: PromptType = {
       name: "test",
+      environment: "development",
       model: "gpt-4",
       config: {},
       tools: [],
@@ -64,6 +67,7 @@ describe("extractVariables", () => {
   it("should return empty array when no variables present", () => {
     const prompt: PromptType = {
       name: "test",
+      environment: "development",
       model: "gpt-4",
       config: {},
       tools: [],
@@ -78,6 +82,7 @@ describe("extractVariables", () => {
   it("should handle duplicate variables", () => {
     const prompt: PromptType = {
       name: "test",
+      environment: "development",
       model: "gpt-4",
       config: {},
       tools: [],
@@ -97,6 +102,7 @@ describe("convertToDotPrompt", () => {
   it("should convert basic prompt to dot prompt format", () => {
     const prompt: PromptType = {
       name: "test",
+      environment: "development",
       model: "gpt-4",
       config: {},
       tools: [],
@@ -119,6 +125,7 @@ describe("convertToDotPrompt", () => {
   it("should include config parameters when set", () => {
     const prompt: PromptType = {
       name: "test",
+      environment: "development",
       model: "gpt-4",
       config: {
         temperature: 0.7,
@@ -139,6 +146,7 @@ describe("convertToDotPrompt", () => {
   it("should include input schema with variables", () => {
     const prompt: PromptType = {
       name: "test",
+      environment: "development",
       model: "gpt-4",
       config: {},
       tools: [],
@@ -155,6 +163,7 @@ describe("convertToDotPrompt", () => {
   it("should include developer message when present", () => {
     const prompt: PromptType = {
       name: "test",
+      environment: "development",
       model: "gpt-4",
       config: {},
       tools: [],
@@ -169,6 +178,7 @@ describe("convertToDotPrompt", () => {
   it("should include tools when present", () => {
     const prompt: PromptType = {
       name: "test",
+      environment: "development",
       model: "gpt-4",
       config: {},
       tools: [
@@ -190,6 +200,7 @@ describe("convertToDotPrompt", () => {
   it("should handle multiple messages with different roles", () => {
     const prompt: PromptType = {
       name: "test",
+      environment: "development",
       model: "gpt-4",
       config: {},
       tools: [],

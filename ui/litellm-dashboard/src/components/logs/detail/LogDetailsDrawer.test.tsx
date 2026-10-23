@@ -15,7 +15,9 @@ vi.mock("@/app/(dashboard)/hooks/logDetails/useLogDetails", () => ({
   useLogDetails: () => ({ data: null, isLoading: false }),
 }));
 
-const mockUseUserLookup = vi.fn(() => ({ data: undefined }));
+const mockUseUserLookup = vi.fn<(userId: string | null) => { data: { user_id: string; user_email: string } | undefined }>(
+  () => ({ data: undefined }),
+);
 vi.mock("@/app/(dashboard)/hooks/users/useUsers", () => ({
   useUserLookup: (userId: string | null) => mockUseUserLookup(userId),
 }));

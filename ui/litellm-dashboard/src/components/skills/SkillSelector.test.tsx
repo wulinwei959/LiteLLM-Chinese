@@ -13,8 +13,26 @@ describe("SkillSelector", () => {
     vi.clearAllMocks();
     vi.mocked(getClaudeCodePluginsList).mockResolvedValue({
       plugins: [
-        { name: "public-skill", enabled: true },
-        { name: "private-skill", enabled: false },
+        {
+          id: "public-skill",
+          name: "public-skill",
+          source: { source: "github", repo: "acme/public-skill" },
+          description: null,
+          created_at: "2025-01-15T10:30:00Z",
+          updated_at: "2025-01-16T10:30:00Z",
+          version: "1.0.0",
+          enabled: true,
+        },
+        {
+          id: "private-skill",
+          name: "private-skill",
+          source: { source: "github", repo: "acme/private-skill" },
+          description: null,
+          created_at: "2025-01-15T10:30:00Z",
+          updated_at: "2025-01-16T10:30:00Z",
+          version: null,
+          enabled: false,
+        },
       ],
       count: 2,
     });

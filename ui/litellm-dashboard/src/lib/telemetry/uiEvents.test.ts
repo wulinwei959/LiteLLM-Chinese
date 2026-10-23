@@ -1,6 +1,11 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi, type Mock } from "vitest";
 import { queryClient } from "@/contexts/ReactQueryProvider";
 import { backgroundFetchClient } from "@/lib/http/api";
+/** Spying the typed client traps TS in its recursive path types, so spy through a plain shape. */
+const clientMock = backgroundFetchClient as unknown as Record<"GET" | "POST", Mock>;
+
+const spyGET = () => vi.spyOn(clientMock, "GET") as Mock;
+const spyPOST = () => vi.spyOn(clientMock, "POST") as Mock;
 import { pageNavigationQuery, recordUiEvent } from "./uiEvents";
 
 const enabledResponse = (enabled: boolean) => ({ data: { enabled }, response: new Response() });
@@ -12,10 +17,9 @@ describe("recordUiEvent", () => {
   });
 
   it("sends nothing while the proxy says page navigation is off", async () => {
-    vi.spyOn(backgroundFetchClient, "GET").mockResolvedValue(enabledResponse(false) as never);
-    const post = vi
-      .spyOn(backgroundFetchClient, "POST")
-      .mockResolvedValue({ data: undefined, response: new Response() });
+    spyGET().mockResolvedValue(enabledResponse(false));
+    const post = spyPOST();
+    post.mockResolvedValue({ data: undefined, response: new Response() });
 
     await recordUiEvent({ page: "teams", action: "view" });
 
@@ -23,10 +27,10 @@ describe("recordUiEvent", () => {
   });
 
   it("asks the proxy once per window and posts every event while page navigation is on", async () => {
-    const get = vi.spyOn(backgroundFetchClient, "GET").mockResolvedValue(enabledResponse(true) as never);
-    const post = vi
-      .spyOn(backgroundFetchClient, "POST")
-      .mockResolvedValue({ data: undefined, response: new Response() });
+    const get = spyGET();
+    get.mockResolvedValue(enabledResponse(true));
+    const post = spyPOST();
+    post.mockResolvedValue({ data: undefined, response: new Response() });
 
     await recordUiEvent({ page: "teams", action: "view" });
     await recordUiEvent({ page: "teams", action: "click", target: "tab=members" });
@@ -40,7 +44,8 @@ describe("recordUiEvent", () => {
 
   it("asks the proxy again once the cached answer is older than the report window", async () => {
     vi.useFakeTimers();
-    const get = vi.spyOn(backgroundFetchClient, "GET").mockResolvedValue(enabledResponse(false) as never);
+    const get = spyGET();
+    get.mockResolvedValue(enabledResponse(false));
 
     await recordUiEvent({ page: "teams", action: "view" });
     vi.advanceTimersByTime(pageNavigationQuery.staleTime + 1);
@@ -51,7 +56,7 @@ describe("recordUiEvent", () => {
   });
 
   it("swallows a failed check or post so telemetry never breaks the page", async () => {
-    vi.spyOn(backgroundFetchClient, "GET").mockRejectedValue(new Error("offline"));
+    spyGET().mockRejectedValue(new Error("offline"));
 
     await expect(recordUiEvent({ page: "teams", action: "view" })).resolves.toBeUndefined();
   });

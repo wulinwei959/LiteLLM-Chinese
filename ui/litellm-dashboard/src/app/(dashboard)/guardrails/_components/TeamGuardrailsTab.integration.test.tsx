@@ -29,20 +29,8 @@ vi.mock("@/components/common_components/team_dropdown", () => ({
 
 vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({ default: vi.fn() }));
 
-const authorized = {
-  isLoading: false,
-  isAuthorized: true,
-  token: "sk-test",
-  accessToken: "sk-test",
-  userId: "user-1",
-  userEmail: "user@example.com",
-  userRole: "Admin",
-  userRoleLabel: "Admin",
-  isViewOnly: false,
-  premiumUser: false,
-  disabledPersonalKeyCreation: null,
-  showSSOBanner: false,
-};
+import { authorizedSession } from "@/../tests/mocks/authorizedSession";
+
 
 const openSubmitModal = async (user: ReturnType<typeof userEvent.setup>) => {
   renderWithProviders(<TeamGuardrailsTab accessToken="sk-test" />);
@@ -75,7 +63,7 @@ const visibleErrors = () => VALIDATION_MESSAGES.filter((message) => screen.query
 describe("TeamGuardrailsTab submit payload", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useAuthorized).mockReturnValue(authorized);
+    vi.mocked(useAuthorized).mockReturnValue(authorizedSession());
     vi.mocked(listGuardrailSubmissions).mockResolvedValue({
       submissions: [],
       summary: { total: 0, pending_review: 0, active: 0, rejected: 0 },

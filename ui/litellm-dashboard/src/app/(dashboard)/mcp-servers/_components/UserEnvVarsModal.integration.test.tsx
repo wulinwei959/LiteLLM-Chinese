@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { renderWithProviders } from "@tests/test-utils";
 import UserEnvVarsModal from "./UserEnvVarsModal";
+import type { MCPServer } from "@/components/mcp_tools/types";
 
 const networking = vi.hoisted(() => ({
   clearMCPUserEnvVars: vi.fn(),
@@ -31,12 +32,17 @@ const setup = () => {
   return user;
 };
 
+const modalServer = {
+  server_id: "srv-1",
+  server_name: "Test MCP",
+} as unknown as MCPServer;
+
 const renderModal = (initialStatus: ReturnType<typeof statusWith>) => {
   networking.getMCPUserEnvVars.mockResolvedValue(initialStatus);
   const onSaved = vi.fn();
   const onClose = vi.fn();
   renderWithProviders(
-    <UserEnvVarsModal open={true} onSaved={onSaved} onClose={onClose} />,
+    <UserEnvVarsModal server={modalServer} accessToken="test-access-token" open={true} onSaved={onSaved} onClose={onClose} />,
   );
   return { onSaved, onClose };
 };

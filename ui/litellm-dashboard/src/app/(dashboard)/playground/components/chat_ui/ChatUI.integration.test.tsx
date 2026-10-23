@@ -42,14 +42,14 @@ const MESSAGES_REQUEST_ARG_COUNT = 21;
 const MESSAGES_STREAMING_ENABLED_ARG_INDEX = 19;
 const MESSAGES_CUSTOM_HEADERS_ARG_INDEX = 20;
 
-async function openComboboxByPlaceholder(placeholder: string) {
+async function openComboboxByPlaceholder(placeholder: string | RegExp) {
   const user = userEvent.setup();
   const combobox = await screen.findByPlaceholderText(placeholder);
   await user.click(combobox);
   return combobox;
 }
 
-async function selectComboboxOption(placeholder: string, optionLabel: string) {
+async function selectComboboxOption(placeholder: string | RegExp, optionLabel: string | RegExp) {
   const user = userEvent.setup();
   await openComboboxByPlaceholder(placeholder);
   const option = await screen.findByText(optionLabel);

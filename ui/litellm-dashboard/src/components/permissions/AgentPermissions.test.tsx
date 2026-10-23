@@ -3,6 +3,7 @@ import { renderWithProviders as render, screen } from "../../../tests/test-utils
 import userEvent from "@testing-library/user-event";
 import AgentPermissions from "./AgentPermissions";
 import * as networking from "../networking";
+import { makeAgent } from "@/../tests/mocks/agents";
 
 vi.mock("../networking");
 
@@ -17,7 +18,7 @@ describe("AgentPermissions", () => {
   it("lists agents inherited from access groups, counts them, and names the groups on hover", async () => {
     const user = userEvent.setup();
     vi.mocked(networking.getAgentsList).mockResolvedValue({
-      agents: [{ agent_id: agentId, agent_name: "support_agent" }],
+      agents: [makeAgent({ agent_id: agentId, agent_name: "support_agent" })],
     });
 
     render(
@@ -40,7 +41,7 @@ describe("AgentPermissions", () => {
   it("does not double-list an agent that is both granted directly and inherited", async () => {
     const user = userEvent.setup();
     vi.mocked(networking.getAgentsList).mockResolvedValue({
-      agents: [{ agent_id: agentId, agent_name: "support_agent" }],
+      agents: [makeAgent({ agent_id: agentId, agent_name: "support_agent" })],
     });
 
     render(

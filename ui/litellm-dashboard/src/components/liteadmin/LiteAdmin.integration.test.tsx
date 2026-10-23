@@ -251,7 +251,7 @@ describe("LiteAdmin in the gateway", () => {
     await selectModel();
     const input = screen.getByRole("textbox", { name: "给 LiteAdmin 发消息" });
     for (const label of ["Create a key", "Add a model", "Set a budget"]) {
-      fireEvent.click(screen.getByRole("button", { name: label, exact: true }));
+      fireEvent.click(screen.getByRole("button", { name: label }));
       expect(input).toHaveValue(label);
       expect(input).toHaveFocus();
       expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();

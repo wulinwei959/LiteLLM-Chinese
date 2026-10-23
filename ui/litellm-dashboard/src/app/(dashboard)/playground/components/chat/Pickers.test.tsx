@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { renderWithProviders as render, screen } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { ChecklistMenu, TargetPicker, type OptionGroup } from "./Pickers";
@@ -35,7 +35,7 @@ describe("TargetPicker", () => {
     const onValueChange = renderTargetPicker();
 
     await user.click(screen.getByRole("combobox", { name: "Model" }));
-    await user.type(await screen.findByPlaceholderText("Search models"), "smart{Enter}");
+    await user.type(await screen.findByPlaceholderText("搜索Model"), "smart{Enter}");
 
     expect(onValueChange).toHaveBeenCalledWith("gpt-smart");
   });
@@ -45,7 +45,7 @@ describe("TargetPicker", () => {
     const onValueChange = renderTargetPicker();
 
     await user.click(screen.getByRole("combobox", { name: "Model" }));
-    await user.type(await screen.findByPlaceholderText("Search models"), "my-custom-model{Enter}");
+    await user.type(await screen.findByPlaceholderText("搜索Model"), "my-custom-model{Enter}");
 
     expect(onValueChange).toHaveBeenCalledWith("my-custom-model");
   });
@@ -76,7 +76,7 @@ describe("ChecklistMenu", () => {
     );
 
     await user.click(screen.getByRole("combobox", { name: "Guardrails" }));
-    await user.type(await screen.findByPlaceholderText("Search guardrails"), "tox{Enter}");
+    await user.type(await screen.findByPlaceholderText("搜索Guardrails"), "tox{Enter}");
 
     expect(onValueChange).toHaveBeenLastCalledWith(["pii-mask", "toxicity"]);
   });
