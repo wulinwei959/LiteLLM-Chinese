@@ -39,11 +39,12 @@ const RESOURCE_TONES: Record<"models" | "mcpServers" | "agents" | "skills", Reso
 };
 
 function ResourcesCell({ group }: { group: AccessGroup }) {
+  const t = useTranslations("access-groups");
   const items = [
-    { key: "models" as const, label: "Models", count: group.modelIds.length },
-    { key: "mcpServers" as const, label: "MCP Servers", count: group.mcpServerIds.length },
-    { key: "agents" as const, label: "Agents", count: group.agentIds.length },
-    { key: "skills" as const, label: "Skills", count: group.skillNames.length },
+    { key: "models" as const, count: group.modelIds.length },
+    { key: "mcpServers" as const, count: group.mcpServerIds.length },
+    { key: "agents" as const, count: group.agentIds.length },
+    { key: "skills" as const, count: group.skillNames.length },
   ];
 
   return (
@@ -54,7 +55,7 @@ function ResourcesCell({ group }: { group: AccessGroup }) {
         return (
           <span
             key={item.key}
-            title={`${item.count} ${item.label}`}
+            title={`${item.count} ${t(item.key)}`}
             className={cn(
               "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset [&_svg]:size-3.5",
               tone.className,
@@ -77,10 +78,11 @@ function AccessGroupRowActions({
   onDeleteClick: (group: AccessGroup) => void;
 }) {
   const t = useTranslations("common");
+  const tGroups = useTranslations("access-groups");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open access group actions"
+        aria-label={tGroups("openActions")}
         data-testid={`access-group-actions-${group.id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >

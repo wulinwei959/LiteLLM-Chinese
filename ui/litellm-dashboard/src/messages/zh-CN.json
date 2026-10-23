@@ -6316,7 +6316,11 @@
     "skills": "技能",
     "allowedSkills": "可用技能",
     "skillsDescription": "已启用的技能对所有人可见。如需授予已禁用（私有）的 Claude Code 插件，请在此为该组中的团队和密钥授权。",
-    "selectSkills": "选择技能（可选）"
+    "selectSkills": "选择技能（可选）",
+    "noSkills": "此访问组未分配技能",
+    "toolPermissionsAria": "MCP 工具权限",
+    "allTools": "全部工具",
+    "noTools": "无工具"
   },
   "uiTheme": {
     "themeTitle": "界面主题自定义",

@@ -6316,7 +6316,11 @@
     "skills": "Skills",
     "allowedSkills": "Allowed Skills",
     "skillsDescription": "Enabled skills are visible to everyone. Grant disabled (private) Claude Code plugins to the teams and keys in this group here.",
-    "selectSkills": "Select skills (optional)"
+    "selectSkills": "Select skills (optional)",
+    "noSkills": "No skills assigned to this group",
+    "toolPermissionsAria": "MCP tool permissions",
+    "allTools": "All tools",
+    "noTools": "No tools"
   },
   "uiTheme": {
     "themeTitle": "UI Theme Customization",

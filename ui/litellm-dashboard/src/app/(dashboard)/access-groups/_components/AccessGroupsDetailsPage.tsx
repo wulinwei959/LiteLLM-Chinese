@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import type { AccessGroupsTranslator } from "@/lib/i18n/translators";
 import DefaultProxyAdminTag from "@/components/common_components/DefaultProxyAdminTag";
 import { BadgeLink } from "@/components/shared/BadgeLink";
 import CopyButton from "@/components/shared/CopyButton";
@@ -35,11 +36,11 @@ const MAX_PREVIEW = 5;
 
 const shortId = (id: string) => (id.length > 20 ? `${id.slice(0, 10)}...${id.slice(-6)}` : id);
 
-const describeAllowedTools = (tools: readonly string[] | undefined): string => {
+const describeAllowedTools = (t: AccessGroupsTranslator, tools: readonly string[] | undefined): string => {
   if (tools === undefined) {
-    return "All tools";
+    return t("allTools");
   }
-  return tools.length === 0 ? "No tools" : tools.join(", ");
+  return tools.length === 0 ? t("noTools") : tools.join(", ");
 };
 
 function MCPToolPermissionList({
@@ -49,16 +50,17 @@ function MCPToolPermissionList({
   servers: readonly AccessGroupResource[];
   toolPermissions: Readonly<Record<string, string[]>> | null;
 }) {
+  const t = useTranslations("access-groups");
   if (toolPermissions === null || servers.length === 0) {
     return null;
   }
   return (
-    <section className="mt-6 space-y-2" aria-label="MCP tool permissions">
+    <section className="mt-6 space-y-2" aria-label={t("toolPermissionsAria")}>
       {servers.map(({ id, name }) => {
         return (
           <div key={id} className="flex flex-wrap items-baseline gap-2 text-sm">
             <span className="font-medium">{name ?? id}</span>
-            <span className="text-muted-foreground">{describeAllowedTools(toolPermissions[id])}</span>
+            <span className="text-muted-foreground">{describeAllowedTools(t, toolPermissions[id])}</span>
           </div>
         );
       })}
@@ -154,7 +156,9 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
           <div>
             <h1 className="text-xl font-semibold tracking-tight text-foreground">{accessGroup.access_group_name}</h1>
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <span>ID: {accessGroup.access_group_id}</span>
+              <span>
+                {t("id")}: {accessGroup.access_group_id}
+              </span>
               <CopyButton value={accessGroup.access_group_id} label={t("copyGroupId")} />
             </div>
           </div>
@@ -276,7 +280,7 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
               </TabsTrigger>
               <TabsTrigger value="skills" className="flex-none gap-2 rounded-none px-4 py-2">
                 <SparklesIcon className="size-4" />
-                Skills
+                {t("skills")}
                 <Badge variant="secondary">{skills.length}</Badge>
               </TabsTrigger>
             </TabsList>
@@ -285,12 +289,13 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
             </TabsContent>
             <TabsContent value="mcp" className="pt-4">
               <ResourceList items={mcpServers} emptyMessage={t("noMcpServers")} />
+              <MCPToolPermissionList servers={mcpServers} toolPermissions={accessGroup.mcp_tool_permissions ?? null} />
             </TabsContent>
             <TabsContent value="agents" className="pt-4">
               <ResourceList items={agents} emptyMessage={t("noAgents")} />
             </TabsContent>
             <TabsContent value="skills" className="pt-4">
-              <ResourceList items={skills} emptyMessage="No skills assigned to this group" />
+              <ResourceList items={skills} emptyMessage={t("noSkills")} />
             </TabsContent>
           </Tabs>
         </CardContent>

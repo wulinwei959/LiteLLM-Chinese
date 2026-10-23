@@ -349,21 +349,21 @@ describe("AccessGroupDetail", () => {
         mcp_tool_permissions: { "mcp-1": ["list_issues", "create_issue"], "mcp-2": [] },
       });
 
-      await user.click(screen.getByRole("tab", { name: /MCP Servers/i }));
+      await user.click(screen.getByRole("tab", { name: /MCP 服务器/ }));
 
-      const list = screen.getByRole("region", { name: "MCP tool permissions" });
+      const list = screen.getByRole("region", { name: "MCP 工具权限" });
       expect(within(list).getByText("list_issues, create_issue")).toBeInTheDocument();
-      expect(within(list).getByText("No tools")).toBeInTheDocument();
-      expect(within(list).getByText("All tools")).toBeInTheDocument();
+      expect(within(list).getByText("无工具")).toBeInTheDocument();
+      expect(within(list).getByText("全部工具")).toBeInTheDocument();
     });
 
     it("should not render a tool permission list when the group has none", async () => {
       const user = userEvent.setup();
       renderWith({ mcp_tool_permissions: null });
 
-      await user.click(screen.getByRole("tab", { name: /MCP Servers/i }));
+      await user.click(screen.getByRole("tab", { name: /MCP 服务器/ }));
 
-      expect(screen.queryByRole("region", { name: "MCP tool permissions" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "MCP 工具权限" })).not.toBeInTheDocument();
     });
   });
 
@@ -402,7 +402,7 @@ describe("AccessGroupDetail", () => {
       const user = userEvent.setup();
       renderWithProviders(<AccessGroupDetail accessGroupId={accessGroupId} onBack={mockOnBack} />);
 
-      await user.click(screen.getByRole("tab", { name: /Skills/i }));
+      await user.click(screen.getByRole("tab", { name: /技能/ }));
 
       expect(screen.getByText("private-plugin")).toBeInTheDocument();
     });
@@ -411,9 +411,9 @@ describe("AccessGroupDetail", () => {
       const user = userEvent.setup();
       renderWith({ access_skill_names: [] });
 
-      await user.click(screen.getByRole("tab", { name: /Skills/i }));
+      await user.click(screen.getByRole("tab", { name: /技能/ }));
 
-      expect(screen.getByText("No skills assigned to this group")).toBeInTheDocument();
+      expect(screen.getByText("此访问组未分配技能")).toBeInTheDocument();
     });
   });
 

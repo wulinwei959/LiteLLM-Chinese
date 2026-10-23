@@ -4448,3 +4448,11 @@ AccessGroupsModal 族七个可见串：四个 TabsTrigger（Models/MCP Servers/A
 测试翻面两处：EditModal 集成测试 `getByRole("tab", { name: /Skills/ })` 改 `/技能/`（同文件其余 tab 选择器早已是 zh 值）。access-groups 全域 86 例从 HEAD 基线 9 红降至 4 红、净新增 0；剩余 4 红属 MCPToolPermissions 组件面（DetailsPage 工具清单两例、资源计数一例、编辑工具勾选提交一例），另簇处理。
 
 验证：AST 触及两文件清零；生产 typecheck 0 错；死键 0；eslint 0 错 3 warning 与 HEAD 持平；prettier clean；`npm run build` exit 0。
+
+## 2026-10-23 第 434 簇：访问组详情页接线并补上工具权限清单渲染
+
+DetailsPage 族收口。渲染缺口一处：`MCPToolPermissionList` 组件在快照里定义了却从未被渲染（上游漏接），"允许工具清单"两例集成测试从 HEAD 起就找不到 region；本簇把它接进 MCP tab 的 `TabsContent`（`accessGroup.mcp_tool_permissions ?? null`），空清单与 null 的回落由组件既有分支保证。裸英文七处：Skills tab 标签与 "No skills assigned" 空态复用 `skills`/新增 `noSkills`（句式对 noModels/noMcpServers/noAgents），`describeAllowedTools` 的 "All tools"/"No tools" 与 section aria "MCP tool permissions" 走判定账模式改首参注入译员（新增 `allTools`/`noTools`/`toolPermissionsAria`），头部 "ID:" 复用 `id` 键；TableColumns 的 `ResourcesCell` 四个 title 拼 `${count} ${t(key)}`（models/mcpServers/agents/skills 既有键，zh 得 "2 模型"），行操作 aria 复用 `openActions`（该组件 t 绑 common，另取 `tGroups`）。目录新增 4 叶（11559→11563）。
+
+测试翻面 8 条：DetailsPage tab `/MCP Servers/i`→`/MCP 服务器/`、`/Skills/i`→`/技能/`、region 名与 无工具/全部工具/此访问组未分配技能 断言，EditModal 补漏的 `/MCP Servers/` tab 与 "Flat List"→"平铺列表"（mcpToolPermissions.flatList 早已有 zh 值，测试没翻面）。access-groups 全域 86 例从 HEAD 基线 9 红到全绿、净新增 0。
+
+验证：AST 触及文件清零（全域余量继续下降）；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier 触及文件 clean（AccessGroupCreateDialog.tsx 的上游固有脏不在本簇半径不动）；`npm run build` exit 0。
