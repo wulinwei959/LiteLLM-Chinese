@@ -4907,3 +4907,7 @@ KubernetesPodsCard 的 "3 ready pods" 改"3 个就绪 Pod"；GithubCopilotConnec
 ## 2026-10-24 第 499 簇：启发式 v2 阈值跨类型保留与本地裁决上限可访问名
 
 `classifier_type_transition` 只在 heuristic_first/hybrid 保留 `heuristic_v2_success_threshold`，切回"启发式"（v1）时把用户刚输入的非法值清掉，导致保存按钮重新可用；改为启发式家族一律保留（离开启发式体系才清空），编辑弹窗与新增面板两套断言同时转绿。另给"本地裁决上限层级"下拉补 aria-label（此前只有可见的 strong 标题、没有可访问名），并在测试辅助里补 Medium→中等 的标签映射，add_auto_router_tab 全绿。
+
+## 2026-10-24 第 500 簇：密钥编辑在刷新时保留草稿
+
+`KeyEditView` 只在首次挂载用 `defaultValues` 初始化，同一密钥的数据刷新（父级重取）不会进入表单，预算草稿、新加 MCP 服务器的默认工具限额、团队改动的载荷三条用例因此红。补一条 `form.reset(toKeyEditFormValues(keyData), { keepDirtyValues: true })` 的同步效果：服务端字段随刷新更新，用户已改动（dirty）的字段保留。三条转绿；同时把 `useMCPToolsets` 在测试里补上 mock（此前真实查询不落地，`toolsetsLoading` 一直为真，工具清单拉取效果被短路）。

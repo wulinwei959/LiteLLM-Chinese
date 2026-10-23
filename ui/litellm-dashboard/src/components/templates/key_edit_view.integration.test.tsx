@@ -97,6 +97,9 @@ vi.mock("../common_components/RouterSettingsAccordion", async () => {
   };
 });
 
+vi.mock("@/app/(dashboard)/hooks/mcpServers/useMCPToolsets", () => ({
+  useMCPToolsets: () => ({ data: [], isLoading: false, isError: false }),
+}));
 vi.mock("@/app/(dashboard)/hooks/organizations/useOrganizations", () => ({
   useOrganizations: vi.fn().mockReturnValue({
     data: [

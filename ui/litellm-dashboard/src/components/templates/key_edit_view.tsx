@@ -166,6 +166,10 @@ function KeyEditSession({
   const mcpToolPermissions = form.watch("mcp_tool_permissions");
 
   useEffect(() => {
+    form.reset(toKeyEditFormValues(keyData), { keepDirtyValues: true });
+  }, [form, keyData]);
+
+  useEffect(() => {
     const fetchModels = async () => {
       if (!userID || !userRole || !accessToken) return;
 
