@@ -912,7 +912,7 @@ describe("LiteAdmin in the gateway", () => {
     const confirm = await screen.findByRole("button", { name: "确认改动" });
     fireEvent.click(confirm);
     fireEvent.click(confirm);
-    expect(screen.getByRole("button", { name: "新建对话" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "新建对话" })).toBeEnabled();
     expect(screen.queryByRole("button", { name: "停止请求" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "关闭 LiteAdmin" }));
     await act(async () => response.resolve(json({ key: NEW_KEY })));

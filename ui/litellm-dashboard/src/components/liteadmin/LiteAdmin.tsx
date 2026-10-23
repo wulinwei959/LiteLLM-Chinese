@@ -271,7 +271,6 @@ function LiteAdminChats({ session, open, close }: { session: LiteAdminSession; o
   });
   const reviewRef = useRef<HTMLDivElement>(null);
   const activeTabRef = useRef<HTMLButtonElement>(null);
-  const activeApplying = tabs.chats.some((chat) => chat.id === tabs.activeId && chat.phase === "applying");
   const focusAfterClose = useRef(false);
   useLayoutEffect(() => {
     if (!focusAfterClose.current) return;
@@ -325,7 +324,6 @@ function LiteAdminChats({ session, open, close }: { session: LiteAdminSession; o
             aria-label={t("newChat")}
             title={t("newChat")}
             onClick={addChat}
-            disabled={activeApplying}
           >
             <Plus className="size-4" />
           </Button>

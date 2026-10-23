@@ -4911,3 +4911,7 @@ KubernetesPodsCard 的 "3 ready pods" 改"3 个就绪 Pod"；GithubCopilotConnec
 ## 2026-10-24 第 500 簇：密钥编辑在刷新时保留草稿
 
 `KeyEditView` 只在首次挂载用 `defaultValues` 初始化，同一密钥的数据刷新（父级重取）不会进入表单，预算草稿、新加 MCP 服务器的默认工具限额、团队改动的载荷三条用例因此红。补一条 `form.reset(toKeyEditFormValues(keyData), { keepDirtyValues: true })` 的同步效果：服务端字段随刷新更新，用户已改动（dirty）的字段保留。三条转绿；同时把 `useMCPToolsets` 在测试里补上 mock（此前真实查询不落地，`toolsetsLoading` 一直为真，工具清单拉取效果被短路）。
+
+## 2026-10-24 第 501 簇：新建对话在后台上写期间保持可用
+
+LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用"给出相反断言：多页签用例需要它可用（提交在后台继续、用户可继续开新对话），单内联动作用例断言禁用。按多页签设计保留可用，去掉新建按钮的 `activeApplying` 禁用，并把另一条断言对齐为可用后，LiteAdmin 集成测试全绿（此前那条 995 的失败是同一断言的连带）。
