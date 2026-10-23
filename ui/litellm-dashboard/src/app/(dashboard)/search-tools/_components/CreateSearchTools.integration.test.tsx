@@ -55,6 +55,7 @@ describe("CreateSearchTools submit payload", () => {
     await pickProvider(user, "Perplexity AI");
     fireEvent.change(screen.getByLabelText(/API 密钥/), { target: { value: "sk-secret" } });
     fireEvent.change(screen.getByLabelText(/描述/), { target: { value: "finds things" } });
+    fireEvent.change(screen.getByLabelText(/每次查询成本/), { target: { value: "0.05" } });
     await user.click(screen.getByRole("button", { name: "添加搜索工具" }));
 
     await waitFor(() => expect(networking.createSearchTool).toHaveBeenCalledTimes(1));
@@ -77,12 +78,12 @@ describe("CreateSearchTools submit payload", () => {
   it("sends a zero cost per query as 0, not as an omitted field", async () => {
     const user = userEvent.setup();
     renderModal();
-    await screen.findByLabelText(/Search Tool Name/);
+    await screen.findByLabelText(/搜索工具名称/);
 
-    fireEvent.change(screen.getByLabelText(/Search Tool Name/), { target: { value: "free-search" } });
+    fireEvent.change(screen.getByLabelText(/搜索工具名称/), { target: { value: "free-search" } });
     await pickProvider(user, "Tavily Search");
-    fireEvent.change(screen.getByLabelText(/Cost per Query/), { target: { value: "0" } });
-    await user.click(screen.getByRole("button", { name: "Add Search Tool" }));
+    fireEvent.change(screen.getByLabelText(/每次查询成本/), { target: { value: "0" } });
+    await user.click(screen.getByRole("button", { name: "添加搜索工具" }));
 
     await waitFor(() => expect(networking.createSearchTool).toHaveBeenCalledTimes(1));
     expect(JSON.stringify(vi.mocked(networking.createSearchTool).mock.calls[0][1])).toBe(
@@ -93,14 +94,14 @@ describe("CreateSearchTools submit payload", () => {
   it("rejects a negative cost per query before anything is sent", async () => {
     const user = userEvent.setup();
     renderModal();
-    await screen.findByLabelText(/Search Tool Name/);
+    await screen.findByLabelText(/搜索工具名称/);
 
-    fireEvent.change(screen.getByLabelText(/Search Tool Name/), { target: { value: "neg-search" } });
+    fireEvent.change(screen.getByLabelText(/搜索工具名称/), { target: { value: "neg-search" } });
     await pickProvider(user, "Tavily Search");
-    fireEvent.change(screen.getByLabelText(/Cost per Query/), { target: { value: "-1" } });
-    await user.click(screen.getByRole("button", { name: "Add Search Tool" }));
+    fireEvent.change(screen.getByLabelText(/每次查询成本/), { target: { value: "-1" } });
+    await user.click(screen.getByRole("button", { name: "添加搜索工具" }));
 
-    expect(await screen.findByText("Cost per query cannot be negative")).toBeInTheDocument();
+    expect(await screen.findByText("每次查询成本不能为负数")).toBeInTheDocument();
     expect(networking.createSearchTool).not.toHaveBeenCalled();
   });
 

@@ -50,9 +50,10 @@ export const teamMemberOwnerOptions = (team: TeamMembers | null, viewerId: strin
 export const teamMemberOwnerPlaceholder = (
   options: readonly SearchSelectOption[],
   team: TeamMembers | null,
+  labels: { readonly selectMember: string; readonly noOtherMembers: string; readonly selectTeam: string },
 ): string => {
-  if (options.length > 0) return "Select a member of the team";
-  return team ? "This team has no other members" : "Select a team first";
+  if (options.length > 0) return labels.selectMember;
+  return team ? labels.noOtherMembers : labels.selectTeam;
 };
 
 export const isTeamMemberOwner = (ownerId: unknown, team: TeamMembers | null, viewerId: string | null): boolean =>

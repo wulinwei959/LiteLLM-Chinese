@@ -4488,6 +4488,7 @@ GuardrailFormField 五处：LoggingOnlyScopeSelect 占位复用 `form.selectOpti
 测试债收三文件：add_guardrail_form 与 guardrail_info 两个 characterization 共 36 例的旧英文 label 断言（Guardrail Name/Mode/Next/Create Guardrail/Logging only scope/select option 三值/pre_call applies to/continue 开关名等）按 zh 目录值翻面；guardrail_info_helpers.test.tsx 三例是 HEAD 快照把 helper 签名加了 `t` 参数但测试没跟（TypeError: t is not a function），补 createTranslator("guardrails") 传参并翻 zh 期望。
 
 验证：guardrails 域 308 例从 HEAD 基线 28 红降至 15 红（剩余全在 CustomCodeModal.test，属"测试已写好、组件 ternary/JSX 表达式裸英文 AST 未捞"一类，下簇处理），逐名 diff 净新增 0；本次涉及 72 例全绿；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错（add_guardrail_form max-lines 由 HEAD 2 错清零）；prettier clean。
+
 ## 2026-10-23 第 439 簇：CustomCodeModal 按钮接线、模式 combobox 渲染修复与成本弹窗补漏
 
 保存/更新按钮 "Update Guardrail"/"Save Guardrail" 硬编码改接既有 `custom.save`/`custom.update`（en 值逐字一致、zh 值与测试期望早已在目录）。行为缺陷一处：模式 combobox 的 `items` 传入的是 `{value,label}` 映射对象，`ComboboxList`/chip 渲染却按 `ModeOption` 取 `t(option.labelKey)`，labelKey 为 undefined 时 next-intl 回落把命名空间名 "guardrails" 渲染成全部选项文本（HEAD 15 红的共同根因，属"测试已写好、组件接错数据"型）。改为整项透传：`modeItems = MODE_OPTIONS.map(带 label)`，选项/chip 直接渲染 `option.label`，选中态从 modeItems 派生，`MODE_OPTION_BY_VALUE`/`ModeOption` 随之移除。GuardrailsOverview 的 `TotalCostMath` 标题/公式两处裸英文接既有 `overview.costTitle`/`overview.costFormula`（此前 scan 半径外，成本弹窗 14 例 HEAD 红清零）。判定账：`(post_call)` 等模式枚举、`->`、JSON 示例 placeholder 保留。目录仅改 `common.tagBased` 措辞（按标签→标签限定），叶数 11584 不变。
@@ -4495,6 +4496,7 @@ GuardrailFormField 五处：LoggingOnlyScopeSelect 占位复用 `form.selectOpti
 测试翻面四文件：CustomCodeModal 15 红→21 例全绿（半角括号 `(标签限定)` 值断言、模板下拉按 aria "模板" 选取而非末位 combobox、`例如 block-pii-custom` placeholder 三处、logging_only 选项名）；guardrail_info/guardrail_table 的 tag-based 展示串同步改 `(标签限定)`。guardrails 域 366 例从 HEAD 基线 29 红到全绿、净新增 0。
 
 验证：AST 触及文件仅剩判定保留项；全域 276 项（jsx/placeholder 大头为品牌与示例串保留 + 22 条 dev throw）；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错 34 警与 HEAD 持平；prettier clean；`npm run build` exit 0。
+
 ## 2026-10-23 第 440 簇：mcp-servers 工具集菜单与 RPM 字段接线
 
 MCPToolsetTableColumns 行操作三枚接既有键（aria 接 toolsets.openActions，Edit/Delete 接 toolsets.edit/delete）。mcp_tool_configuration 平铺视图空态 `No tools found matching "x"` 接既有插值键 tools.noToolsMatch。CreateMCPServer 与 mcp_server_edit 的 "RPM limit (all callers)" label+tooltip 两对新增 create.rpmLimit/create.rpmLimitTooltip（en 值与原句逐字一致）；edit 表单 aria "Edit MCP server" 新增 edit.formAria。判定账：MCPGatewaySessionsTab 的 prop:title "gatewaySessions.byAiClient" 两枚实为传键给 t() 的误报；EnvVarsSection/IdJag/OAuth/TokenExchange 等 placeholder 全为 URL/JSON 示例串保留；McpFormTestHarness "Submit" 是测试 harness 不上屏。目录新增 3 叶（11584→11587）。
@@ -4502,6 +4504,7 @@ MCPToolsetTableColumns 行操作三枚接既有键（aria 接 toolsets.openActio
 测试债收口：mcp_server_edit.test 旧英文断言翻面（保存更改/取消/MCP 服务器 URL/编辑 MCP 服务器 form 名），顺带清掉 HEAD 既有的 render 未用导入错误；mcp_servers.test 深链用例的 `renderWithoutNuqs` 是 HEAD 快照漏定义 helper 的缺陷（同 435 簇 fieldsHidden 先例），补成 LocaleProvider+基础 render 包真实 react 适配器，因为 renderWithProviders 内层 NuqsTestingAdapter 会吞掉 mount effect 发起的 URL 写入（onUrlUpdate 试探已证实）；mcp_connect.test tab 名接 zh "LiteLLM 代理"。mcp-servers 域 787 例从 HEAD 基线 11 红降至 4 红、净新增 0；剩余 4 红（blocks Save×2、OAuth snapshot×2）为组件行为缺口（保存按钮未按 authorizing 态禁用），非翻译半径，另账。
 
 验证：AST 触及文件仅剩判定保留项；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错（比 HEAD 净减 1）；prettier 触及文件与 HEAD 同样脏的两枚（mcp_server_edit/mcp_tool_configuration）不动；`npm run build` exit 0。
+
 ## 2026-10-23 第 441 簇：预算示例页签指引文案接线
 
 budget_panel 示例页签此前整片英文，本簇接 `budgets.examples` 四键：标题 "How to use budget id"、三个页签 "Assign Budget to Customer" / "Test it (Curl)" / "Test it (OpenAI SDK)"（en 值逐字保留，zh 为"如何使用预算 ID"/"为客户分配预算"/"测试（cURL）"/"测试（OpenAI SDK）"，括号按目录既有全角先例）。页面级"示例"页签复用既有 `budgets.tabs.examples`，不另开键。三块代码样本常量来自 `constants.ts`，属示例负载不翻。
@@ -4509,6 +4512,7 @@ budget_panel 示例页签此前整片英文，本簇接 `budgets.examples` 四�
 测试：budget_panel.test.tsx 新增一例，切到示例页签后断言四段中文文案与三个页签可访问名，14 例全绿。
 
 验证：全局 AST 可见英文 253→249 条、132→131 个文件（本文件归零）；目录叶子 11595→11599，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错 2 警与 HEAD 持平；prettier clean；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 442 簇：模型洞察会话成本卡片接线与陈旧测试修复
 
 ModelInsightsView 底部的会话成本卡片整片英文，本簇接 `modelInsights.costPerSessionTitle`/`costPerSessionDesc`/`costPerSessionHint` 三键（zh 为"每次会话成本"/"会话成本不按请求数估算"/"为请求添加稳定的 session_id，以便在未来的有界会话汇总中实现准确的会话级模型对比"，`session_id` 作为协议字段保留）。
@@ -4516,6 +4520,7 @@ ModelInsightsView 底部的会话成本卡片整片英文，本簇接 `modelInsi
 测试：新增一例断言卡片中文三段文案。同时修掉该文件一处合并遗留缺陷：分桶用例引用了未定义的 `days`（797ecb32 带入），且 fixture 只在区间最后一天有数据，与组件的最近 30 日可见窗口叠加后日桶断言必然失败。补上按起止日期推导的 `days`，并给该用例补区间首日数据，恢复"每日一桶 / 每周聚合"的原断言意图。6 例全绿。
 
 验证：全局 AST 可见英文 249→246 条、131→130 个文件（本文件归零）；目录叶子 11599→11602，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier 新增行合规、HEAD 既有两处多行 expect 脏格式不动；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 443 簇：应用外壳导航与移动端工具菜单接线
 
 `layout.tsx` 移动端抽屉标题与触发按钮 aria 接 `nav.navigation`/`nav.openNavigation`。`DashboardHeader.tsx` 窄屏工具弹层标题与更多按钮 aria 接 `nav.gatewayTools`/`nav.moreOptions`（zh 为"网关工具"/"更多选项"）。两文件早已持 `nav` 译员，本簇只补键与调用点。顺带清掉 DashboardHeader.test 里未使用的 `act` 导入，HEAD 既有一条 unused-import 错误清零。
@@ -4523,6 +4528,7 @@ ModelInsightsView 底部的会话成本卡片整片英文，本簇接 `modelInsi
 测试：layout.test 五处抽屉标题与三处触发按钮断言翻成"导航"/"打开导航"；DashboardHeader.test 的英文 mock 目录补两键，新增一例断言窄屏点开弹层后显示 "Gateway tools"。两文件 18 例、加 i18n 守卫合计 41 例全绿。抽屉内 "Close navigation"/"Settings" 来自测试桩件，维持英文。
 
 验证：全局 AST 可见英文 246→242 条、130→128 个文件（两文件仅剩品牌名与既有判定项）；目录叶子 11602→11606，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、2 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 444 簇：记忆详情抽屉时间归属文案接线
 
 MemoryDetailDrawer 底部"Created/Updated + 时间 + by 操作人"两行接四键：`memory.createdAt`/`createdBy`/`updatedAt`/`updatedBy`。有操作人走整句 ICU（zh "创建于 {time}，创建者 {actor}"/"更新于 {time}，更新者 {actor}"），无操作人走短句（zh "创建于 {time}"/"更新于 {time}"），保留原来的按 actor 分支结构。`formatTimestamp` 缺值时仍渲染破折号。
@@ -4530,6 +4536,7 @@ MemoryDetailDrawer 底部"Created/Updated + 时间 + by 操作人"两行接四�
 测试：三处断言翻面（创建者 alice、更新者 bob、缺时间"创建于 —"）。按共享组件消费方约定跑整个 memory 域 4 文件 32 例全绿。
 
 验证：AST 本文件归零；全局可见英文 242→240 条、128→127 个文件；目录叶子 11606→11610，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 445 簇：向量存储测试器结果区接线并补复数计数
 
 VectorStoreTester 结果区四处可见英文接 `vectorStores.resultCount`/`resultLabel`/`scoreLabel`/`contentLabel`。`{n} results` 是扫描器漏网的小写裸文本，按 ICU plural 接（en 单数 `# result`、复数 `# results`，zh `{count} 个结果`），顺带修掉 1 条结果时显示 "1 results" 的英文语法缺陷。zh 分别为"结果 {number}"/"得分：{score}"/"内容（{type}）"。
@@ -4537,6 +4544,7 @@ VectorStoreTester 结果区四处可见英文接 `vectorStores.resultCount`/`res
 测试：VectorStoreTester.test.tsx 原有 8 例的英文断言翻面（"结果 1"/"1 个结果"/"得分：0.9123"，负断言同步改"未找到结果"/"搜索失败"），展开用例补"内容（text）"断言，9 例全绿。vector-stores 域 13 文件 108 例全绿（TestVectorStoreTab 仍 mock 掉测试器，不受影响）。
 
 验证：AST 本文件归零；全局可见英文 240→237 条、127→126 个文件；目录叶子 11610→11614，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错，3 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 446 簇：agent 详情页签接线
 
 agent_info 的"Overview"/"Settings"两个页签接 `agents.overview`/`agents.settings`（zh 为"概览"/"设置"），同页技能数 `{n} configured` 是扫描器漏网的小写裸文本，一并接 `agents.skillsConfigured`（zh "已配置 {count} 个"）。
@@ -4544,15 +4552,17 @@ agent_info 的"Overview"/"Settings"两个页签接 `agents.overview`/`agents.set
 测试：agent_info 单测四处、集成一处 Settings 页签查询翻成"设置"，首个保存用例补"概览"页签与"已配置 0 个"断言。两文件 25 例全绿。
 
 验证：AST 本文件归零；全局可见英文 237→235 条、126→125 个文件；目录叶子 11614→11617，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、8 警为 HEAD 既有；prettier 新增行合规，本文件 HEAD 既有多处脏格式不动；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 447 簇：共享表单与公共模型中心残留文案，兼清 8 例既有红测试
 
-MCPToolArgumentsForm 的 "Input *" 标签新增 `mcpToolArgs.inputLabel`，两处 "Select {key}" 复用既有 `selectKeyPlaceholder`。TeamAdminEditableFieldsSettings 的帮助链接复用 `common.learnMore`。public_model_hub 的描述标签复用 `modelHub.lblDescription`。
+MCPToolArgumentsForm 的 "Input \*" 标签新增 `mcpToolArgs.inputLabel`，两处 "Select {key}" 复用既有 `selectKeyPlaceholder`。TeamAdminEditableFieldsSettings 的帮助链接复用 `common.learnMore`。public_model_hub 的描述标签复用 `modelHub.lblDescription`。
 
 同簇补 `teamAdminFieldLabel` 缺失映射：`team_member_budget`/`team_member_budget_duration`/`metadata`/`raise_max_budget` 四键新增，`soft_budget` 复用 `teams.infoSoftBudgetUsd`，复选框不再显示裸字段名。PublicModelHubTableColumns 的 mode 列改走 `displayMode()`，修掉 evaluation 决策模型在公共表显示原始值而不显示 decisions 的行为缺陷。
 
 测试：先跑 HEAD 基线确认 TeamAdmin 与 public_model_hub 两文件已有 8 例红（英文断言与模式显示缺口），非本簇引入；本次全部收口，断言翻成中文并补 Input 标签断言，四文件 136 例全绿。
 
 验证：AST 四个组件归零；全局可见英文 235→231 条、125→122 个文件；目录叶子 11617→11622，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、37 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。TeamAdmin 帮助气泡的英文常量句（About editing team metadata 等）仍待后续簇接 `t.rich`。
+
 ## 2026-10-23 第 448 簇：团队管理员设置帮助与校验文案收口
 
 TeamAdminEditableFieldsSettings 的 FieldHelp 改为按 key 取文案，新增 `adminPanel.teamAdminEditable.aboutRaiseMaxBudget`/`raiseMaxBudgetTooltip`/`aboutTeamMetadata`/`teamMetadataTooltip` 四键，键类型收成字面量联合避免 tsc 报宽 string。TeamAdminSettingsForm 的预算提示两个模块常量改走 `teams.maxBudgetKeepOrLowerHint`/`maxBudgetRaiseHint`，元数据 JSON 说明接 `teams.adminMetadataJsonHint`（ICU 中 JSON 花括号用引号转义），元数据逐对校验消息注入译员接 `teams.metadata.proxyOnlyKey`/`valueRequired`。`teamAdminFieldLabel` 补 `team_member_tpm_limit`/`team_member_rpm_limit` 映射。
@@ -4562,6 +4572,7 @@ TeamAdminEditableFieldsSettings 的 FieldHelp 改为按 key 取文案，新增 `
 验证：目录叶子 11622→11633，英中同数；AST 全局可见英文维持 231 条、122 个文件（本簇常量与校验串不在 AST 口径内）；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
 
 LiteAdmin 暂缓：其集成测试在 HEAD 上 20 例全部 5 秒超时（触发器不渲染），属既有环境/用例问题；已回退本簇对它的尝试，待该文件基线修复后再接页签标题与关闭按钮文案。
+
 ## 2026-10-23 第 449 簇：成本追踪折扣表列头与模式行操作
 
 provider_discount_table 的 "Models"/"All models"/"Discount Percentage" 接 `costTracking.colModels`/`allModels`/`colDiscountPercentage`（zh "模型"/"全部模型"/"折扣百分比"）。行操作 aria 改用 `rowLabel(row)`，模式行现在带上 `(claude-*)` 之类的模式后缀，便于区分同一 provider 的多行；同时修掉编辑与保存回调把 `row.provider` 当配置键的缺陷，改为 `row.key`，模式行此前点击编辑无法进入编辑态。
@@ -4569,6 +4580,7 @@ provider_discount_table 的 "Models"/"All models"/"Discount Percentage" 接 `cos
 测试：列头与 "All models" 断言翻面，两条模式行用例原先在 HEAD 即失败（旧英文 aria 与编辑键缺陷），本簇清零，23 例全绿。
 
 验证：AST 本文件归零；全局可见英文 231→230 条、122→121 个文件；目录叶子 11633→11636，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 450 簇：BYOK 凭据弹窗返回按钮与两处吞错判定
 
 ByokCredentialModal 第二步的 "Back" 接 `byokModal.back`（zh "返回"）；同页 "L" 是 LiteLLM logo 字母，保留。新增一例验证从凭据步骤点返回回到引导步骤，3 例全绿。
@@ -4576,6 +4588,7 @@ ByokCredentialModal 第二步的 "Back" 接 `byokModal.back`（zh "返回"）；
 判定账：ui-theme/UIThemeSettings 的 `throw new Error("Failed to update settings")`/`"Failed to reset"` 与 DefaultUserSettingsForm 的 `"Failed to load default user settings"` 均在本地 catch 后被已译 toast/alert 吞掉，抛出的英文不进 UI，按既有 leak/swallow 教条保留不接。
 
 验证：AST 本文件仅剩 logo 字母；全局可见英文 230→229 条、文件维持 121 个；目录叶子 11636→11637，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 451 簇：策略流程构建器 Flow 徽标
 
 FlowBuilderPage 标题旁的 "Flow" 徽标接 `policies.flowBadge`（zh "流程"）。同页 `(<n>ms)` 是耗时单位展示，`ms` 保留。测试：FlowBuilderPage 外壳用例补"流程"徽标断言，14 例全绿。
@@ -4587,6 +4600,7 @@ FlowBuilderPage 标题旁的 "Flow" 徽标接 `policies.flowBadge`（zh "流程"
 BudgetTableColumns 的缺失限速值、budget_modal 与 edit_budget_modal 的周期下拉占位符由硬编码 "n/a" 改为 `common.notAvailable`（新增 en "n/a"、zh "不适用"），RateLimitCell 补 useTranslations。测试：BudgetTable 用例标题与断言翻成"不适用"，预算域 5 文件 49 例全绿。
 
 验证：AST 三文件归零；全局可见英文 228→225 条、121→118 个文件；目录叶子 11638→11639，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、3 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 453 簇：1 小时缓存写入成本文案与全红测试修复
 
 advanced_settings 的 1 小时 TTL 缓存写入项此前 label/hint/placeholder 三段硬编码英文，接 `models.addModel.cacheWriteCostAbove1hr`/`cacheWriteCostAbove1hrHint`/`cacheWriteCostAbove1hrPlaceholder`（zh "缓存写入成本（1 小时，每百万 Token）"及对应提示与占位）。同文件其余 `{ "mode": "chat" }`、`{ "rpm": ... }` 占位是 JSON 示例，保留。
@@ -4594,6 +4608,7 @@ advanced_settings 的 1 小时 TTL 缓存写入项此前 label/hint/placeholder 
 测试：该文件在 HEAD 上 7 例全红，根因是合并遗留的 `includeDiscoveryValue`/`KubernetesPodDiscoveryValue` 未定义；本簇补回基于 `useFormContext` 的状态输出组件与辅助函数参数，并把 "Advanced Settings"/"Custom Pricing" 与缓存标签断言翻面，另补 1 小时占位断言。7 例全绿。
 
 验证：AST 本文件仅剩两条 JSON 示例；全局可见英文 225→224 条、文件维持 118 个；目录叶子 11639→11642，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 454 簇：agent 表单示例占位符前缀汉化
 
 add_agent_form、dynamic_agent_form_fields、agent_form_fields 的七处 `e.g.` 示例占位接 `agents.phTpmExample`/`phBudgetExample`/`phAgentNameExampleCustom`/`phAgentKeyExample`/`phAgentSlugExample`/`phAgentIdExample`/`phHeadersExample`，zh 只把前缀换成"例如"，资源名与请求头名保留原文。KillSwitch/Identity 的 URL、JSON 与 scope 示例按既有判定保留。
@@ -4601,6 +4616,7 @@ add_agent_form、dynamic_agent_form_fields、agent_form_fields 的七处 `e.g.` 
 测试：add_agent_form 集成用例的占位断言翻成"例如 my-custom-agent"；代理表单三文件 22 例全绿。
 
 验证：AST 三文件归零；全局可见英文 224→217 条、118→115 个文件；目录叶子 11642→11649，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、7 警为 HEAD 既有；prettier 新增行合规（一处缩进已修正），四文件 HEAD 既有脏格式不动；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 455 簇：策略与提示词示例占位符前缀
 
 template_parameter_modal、add_attachment_form、add_policy_form 与 prompts 的 DeveloperMessageCard 五处 `e.g.` 示例占位接 `policies.phTemplateParamName`/`phTemplateParamValue`/`phAttachmentCount`/`phPolicyNameExample` 与 `prompts.phDeveloperMessage`，zh 仅把前缀换成"例如"，模板名、策略名与示例正文保留。顺带把 add_policy_form 的 `zod/v4` 导入改为 `zod`，清掉 HEAD 既有的一条 no-restricted-imports 错误。
@@ -4608,6 +4624,7 @@ template_parameter_modal、add_attachment_form、add_policy_form 与 prompts 的
 测试：模板参数占位断言三处翻成"例如 Acme Airlines"，四文件 42 例全绿；zod 调整后补跑 add_policy_form 集成与 DeveloperMessageCard 共 9 例仍绿。
 
 验证：AST 四文件归零；全局可见英文 217→212 条、115→111 个文件；目录叶子 11649→11654，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、6 警为 HEAD 既有；prettier 新增行合规，三文件 HEAD 既有脏格式不动；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 456 簇：MCP 服务器表单示例占位符前缀
 
 CreateMCPServer、mcp_server_edit 的限额/RPM 占位与 EnvVarsSection 的变量名、描述、值占位接 `mcpServers.phLimitExample`/`phRpmExample`/`phEnvNameExample`/`phEnvDescriptionExample`/`phEnvValueExample`，zh 前缀改"例如"，变量名与示例值保留。URL/JSON 示例占位继续按判定保留。
@@ -4615,6 +4632,7 @@ CreateMCPServer、mcp_server_edit 的限额/RPM 占位与 EnvVarsSection 的变�
 测试：三文件占位断言翻面；EnvVarsSection 4 例、CreateMCPServer 集成全绿，mcp-servers 三文件 159 例通过。mcp_server_edit 仍有 4 例红（blocks Save×2、OAuth snapshot×2），与第 440 簇登记的保存按钮行为缺口同源，非本簇引入。
 
 验证：AST 三文件仅剩 URL 示例；全局可见英文 212→206 条、111→110 个文件；目录叶子 11654→11659，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、26 警为 HEAD 既有；prettier 新增行合规，mcp_server_edit HEAD 既有脏格式不动；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 457 簇：LiteAdmin 测试基线修复与页签文案接线
 
 此前 LiteAdmin 集成测试 45 例中 20 例超时全红，根因是合并丢失测试装置与英文断言并存。本簇修复测试装置：renderWidget 补回 `LiteAdminFrame` 包裹、`LiteAdminHome` 条件渲染、占位页面挂载；`selectModel(model)` 恢复参数使用；`send()` 在面板关闭时改走首页输入框。组件侧页签可见文本接 `chatLabel`，关闭按钮与提示接新增 `liteAdmin.closeChatLabel`/`approvalNeeded`/`waitForChange`；活动页签处于 applying 时禁用新建对话。测试断言按 zh 目录全面翻面，含操作标题（创建虚拟密钥/从团队移除虚拟密钥但不删除该密钥）、状态（已完成/已取消）、首页占位、账户菜单与网关按钮等。
@@ -4622,11 +4640,13 @@ CreateMCPServer、mcp_server_edit 的限额/RPM 占位与 EnvVarsSection 的变�
 结果：45 例中 44 例通过。唯一剩余 `cancels only a closed tab's approval...` 与 `keeps a single inline action...` 对"应用中是否禁用新建对话"预期相反；保留更安全的禁用行为，该例登记为行为分歧，非翻译问题。基线从 20 红降到 1 红。
 
 验证：AST 组件仅剩 ⌘J 快捷键与品牌 aria；全局可见英文 206→205 条、文件维持 110 个；目录叶子 11659→11662，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、1 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 458 簇：渲染扫描复跑归零
 
 启动 `npm run dev` 后执行 `npm run scan:rendered`，覆盖 home、keys、models、teams、logs、usage、guardrails、policies、agents、prompts、budgets、users 共 12 个页面：每页 0 个渲染错误、0 处英文，总计 0 条发现、0 条不在基线，基线无需更新。此前第 425 簇留下的 25 条运行时命中已全部清掉。
 
 受扫描器本身限制，图表图例、输入框 placeholder 与需要交互展开的路径不在本次覆盖内；静态 AST 与本地化守卫仍是这两类的主要保障。扫描结束已停止开发服务器。
+
 ## 2026-10-23 第 459 簇：版本公告本地化与通知测试收口
 
 NotificationsBell 的升级公告标题、统计描述与"查看发布说明"三段硬编码英文接 `navbar.notifications.upgradeTitle`/`upgradeDescription`/`viewReleaseNotes`，描述用 ICU plural（en 单复数，zh 计数短语），`upgradeAnnouncement` 改为接收译员。无引用的 `banners.upgrade.fixes`/`and`/`close` 三键移除（其中 fixes 此前仅被无关的 "fixes" 字面量误救）。
@@ -4634,6 +4654,7 @@ NotificationsBell 的升级公告标题、统计描述与"查看发布说明"三
 测试：为 hook mock 补默认返回（版本 1.102.0、最新 1.103.0），按用例覆盖 null/版本参数；英文 aria 与状态断言翻面。通知 11 例、DashboardHeader 与 roles 共 84 例全绿。顺带修掉三文件 15 条测试类型错误（DashboardHeader 补 accessToken、NotificationBell 补 prop、roles 补 spend fixture）。
 
 验证：AST 组件归零；全局可见英文维持 205 条、110 个文件；目录叶子新增 3 删 3 后维持 11662，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、1 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。
+
 ## 2026-10-23 第 460 簇：合并遗留测试类型债清理（第一批）
 
 删除合并遗留的英文版 `licenseUtils.test.ts`（中文 `.tsx` 已覆盖并更新签名，旧文件还引用已删除的 `getLicenseExpiryTier`）；`.tsx` 同步移除失效的 tier 测试块。OrganizationDropdown 夹具补齐 `updated_by`/`litellm_budget_table`/`teams`/`users`/`members`；VirtualKeysTable 测试删除重复的 tooltip 键、补 `setTeams`、清理九处未用导入；TeamVirtualKeysTable 用户夹具补 `user_alias`。
@@ -4641,11 +4662,13 @@ NotificationsBell 的升级公告标题、统计描述与"查看发布说明"三
 结果：`tsc --noEmit` 测试错误 375→344。四文件 41 例通过；TeamVirtualKeysTable 的"team member budget for budgetless keys"仍 5 秒超时，已在 HEAD 基线复现，非本簇引入。
 
 验证：触及文件 eslint 0 错、10 警为既有；prettier 新增行合规（VirtualKeysTable HEAD 既有长行不动）；死键 0；生产类型检查此前已验证 0 错。
+
 ## 2026-10-23 第 461 簇：.ts 模块宽口径复查与死常量清理
 
 对 391 个非测试 `.ts` 跑 `scan-english.mjs --all`，共 4449 条字面量。抽样与逐类判定后确认剩余命中集中在：provider 目录描述（来自 API/目录数据）、Playground 合规数据集示例、导入路径与配置键名、Access token 等被 enabled 守卫短路的开发期 throw；没有发现新的用户可见 UI 文案。清理 `teamAdminEditAccess.ts` 中已无引用的 `TEAM_ADMIN_EDITING_DISABLED_TITLE`/`DESCRIPTION` 与 `TEAM_ADMIN_FIELD_LABELS` 英文表。
 
 验证：teamAdminEditAccess 与 TeamAdminSettingsForm 95 例全绿；生产 typecheck 0 错；死键 0。
+
 ## 2026-10-23 第 462 簇：add_model 测试类型债清理
 
 handle_add_model_submit.test 六处 `prepareModelAddRequest`/`handleAddModelSubmit` 调用补 `stubT` 译员参数，13 例全绿。AddModelForm.integration.test 修 25 条类型错误：Team 夹具补 `spend`；useAuthorized mock 补齐 `isLoading`/`isAuthorized`/`userRoleLabel`/`isViewOnly`/`loginMethod`/`passwordResetRequired`；提交 hooks 改为 `{ form: { resetFields } }` 的正确形状；响应体访问统一走 `firstModelPayload()` 类型断言；移除 `findByRole` 不支持的 `exact` 选项。
@@ -4653,16 +4676,19 @@ handle_add_model_submit.test 六处 `prepareModelAddRequest`/`handleAddModelSubm
 结果：`tsc --noEmit` 测试错误 344→313。该集成套件运行时仍有超时，抽查"should show proxy admin only"在 HEAD 基线同样 5 秒超时，属既有用例问题，非本簇引入。
 
 验证：触及文件 eslint 0 错、2 警为既有；prettier clean；死键 0。
+
 ## 2026-10-23 第 463 簇：自动路由测试类型债清理
 
 build_updated_complexity_router_config.test：引入 `TestStored = StoredComplexityRouterConfig & Record<string, unknown>`，夹具与 STORED/STORED_ALL_MANAGED 统一标注，未知后端键与 legacy classifier_type 得以保留，17 条错误清零，103 例全绿。edit_auto_router_modal.test：修正 `storedConfig` 误用 `JSON.stringify` 后仍按对象展开的问题，改为对象并加 hydrate 包装统一断言 legacy 类型，8 条错误清零，12 例全绿。autorouter_presets.test：13 处配置夹具补 `modality_routing`/`modality_pin_override`，16 条错误清零，123 例全绿。
 
 结果：`tsc --noEmit` 测试错误 313→272。三文件 eslint 0 错、3 警为既有；prettier clean。
+
 ## 2026-10-23 第 464 簇：MCP 创建测试类型债清理（本节点收口）
 
 `mcp-servers/_components/testUtils.selectOption` 的 label 参数放宽为 `string | RegExp`，消除 60 条"RegExp 不能赋给 string"错误，并连带清掉复用该辅助的其他 MCP 测试错误。CreateMCPServer.integration.test 七处 mock 凭据字段由 camelCase 改为协议字段 `client_id`/`client_secret`。
 
 结果：`tsc --noEmit` 测试错误 272→194。该集成文件 71 例全绿。eslint 0 错、43 警为既有；prettier 未改动 HEAD 既有的多行 expect 脏格式。
+
 ## 2026-10-23 第 465 簇：预算表限速列命名空间回归
 
 拉取最新分支后跑 i18n 守卫，`missingKeys` 报出 `BudgetTableColumns.tsx` 的 8 个 `common.*` 缺键。该文件除 `RateLimitCell` 内的 `useTranslations("common")` 外，其余 `t(...)` 都来自 `BudgetsTranslator` 入参，键实际落在 `budgets` 命名空间。守卫按文件收集作用域，只要文件里出现一个 hook，就会把入参译员的调用也归到该作用域，于是把本来正确的键判成缺失。
@@ -4670,6 +4696,7 @@ build_updated_complexity_router_config.test：引入 `TestStored = StoredComplex
 修法是不改守卫，改为让文件只保留一个命名空间：`RateLimitCell` 改用 `useTranslations("budgets")`，并补 `budgets.notAvailable`（与 `common.notAvailable` 同值），与 budgets 下已有的 `unlimited`/`reset`/`createdAt`/`actions` 重复键的既有形态一致。
 
 验证：i18n 五条守卫 23 例全绿、BudgetTable 19 例全绿、死键 0、生产 typecheck 0 错、`npm run build` exit 0。
+
 ## 2026-10-23 第 466 簇：OAuth 编辑、会话错误前缀与自动路由高级设置收口
 
 生产侧四处接线：mcp_server_edit 保存按钮加 `disabled={isOAuthPending}`、两个取消按钮改走 `handleCancel`（清 OAuth 快照并复位流程），88 例全绿；useConversation 用 `t("conversation.errorPrefix")` 替换硬编码 `Error: ` 前缀，hook 测试补 LocaleProvider wrapper；AddModelForm 的 Team-BYOK 开关、选择团队标签/提示/必填校验四处硬编码英文接 `models.addModel.teamByok*`/`common.selectTeam*`/`common.teamRequired`；`common.addModel.selectCredentials` 中文统一为"选择或搜索现有凭据"。
@@ -4973,3 +5000,20 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 1. `key_edit_view` 的「移出项目」用例：失败在最后一档权限矩阵（Org Admin + 团队 `team_member_permissions` 含 `/key/update` + 组织成员 `org_admin`），前置的移出、保存、重挂载都通过。`canDetachKeyProject` 的入参（teams、organizations 的 mock、userRole、userID）逐项核对均满足，组件渲染路径在调试时未打印出预期日志，怀疑该用例的 rerender 链与 `KeyEditSession` 的 key 复用有关，需继续核对。
 2. `key_info_view` 的团队预算用例：`useTeamMemberBudgets` 的 enabled 依赖 accessToken+userId（mock 均存在）、`teamInfoCall` 的 mock 形状与 gate 期望一致（team_info.team_member_budget_table + team_memberships），但该用例的 DOM 只有头部，预算区整块未渲染，需确认 overview 的渲染门槛。
 3. `AllModelsTab` 与 `create_key_button`：点击触发器后 `aria-expanded` 仍为 false、DOM 无 listbox，弹层未挂载；同仓库 `AllModelsTable` 的团队下拉在同类测试里能展开，差异点待定位。
+
+## 2026-10-24 第 513 簇：全量失败面清零（38 例）
+
+02:30 的全量跑到 968 个文件、45 例失败。把这 19 个文件单跑一遍复现 38 例，另外 7 例是负载下的超时抖动（edit_auto_router 3、KeyActivityPanel 1、add_agent_form 2、key_info_view 1），单跑不复现。38 例分成四类：
+
+1. 断言停在英文：layout 4（打开导航、部署健康状况的可访问名）、LoginPage 4（测试输入 `sk-1234` 却断言 `sk-9876`）、SearchTools 5 + CreateSearchTools 3（`Cost per Query (USD)`、`Add Search Tool`、`OK`、英文校验语）、SearchToolView 3（`Provider default`）、ProjectBaseForm 1（`Team` → 团队）、ProjectsPage 2 与 ProjectDetailsPage 2（`create/edit project`）、cost_tracking_settings 1（`Discount Percentage`）、AllModelsTab 1（选项实际取 `allProxyModels` = 所有代理模型）、legacyPageRoutes 1。
+2. 生产代码漏接线：`ProjectDetailsPage` 算了 `canEditProject` 却没用于按钮；`create_key_button` 在团队成员受限分支同时渲染了通用用户搜索与成员选择器，`getByLabelText` 命中前者导致选项空；`SearchTools` 的 zod 校验仍是模块级英文字面量；`use_discount_config` 的重复与无效供应商 toast 硬编码英文。均已接键或补条件。
+3. 合并掉了上游的能力：同步提交把整个 `roi-calculator` 目录删了（8 个文件、1964 行），但侧栏与 `page_metadata` 还留着入口。从 `797ecb32^` 取回整目录与 138 条 `roiCalculator` 文案，补回 `legacyPageRoutes` 的映射，并把页头从旧的 `icon/title/subtitle` 写法改成 `PageHeaderTitle/Description`；`schema.d.ts` 缺的 14 个 `ROI*` 定义从 `origin/main` 原样补齐，`common.continue` 补键。
+4. 上游测试悬空：`CreateSearchTools` 与 `SearchTools` 的编辑表单被同步测试要求成本字段，但两条实现都没这个字段；`CreateSearchTools` 补 `input_cost_per_query`（number + 非负校验），`SearchToolView` 补成本卡；`use_discount_config` 的 7 个 `renderHook` 漏挂 provider，补齐后连带修掉一条状态污染误报。`MCPToolPermissions` 对不在目录里的直选服务器查不到权限键，会把已有授权当"未限制"覆盖成非删除工具；`resolveEffectiveMcpServers` 的合成服务器改为参与键匹配。`key_edit_view` 在项目归属变化时不再保留旧草稿（其余刷新仍保留），让"重新打开编辑器"的权限矩阵用例成立。
+
+验证：`tsc --project tsconfig.production.json` 0 错；dead keys 0；en/zh 叶子各 11835 且完全一致；i18n 守卫 23 例通过；19 个历史失败文件加 `roi-calculator` 目录共 21 个文件、611 例通过、3 例预期失败。
+
+### 第 513 簇后的全量收尾
+
+全量重跑 970 个文件、13053 例：5 例失败。`MCPHubTableColumns.test` 与 `MCPServerCard.test` 各 1 例是真漏翻的断言，上一提交接 `mcpServers.reachableDescription` 时没同步翻面，改成"服务器已响应，未检查认证与工具"；KeyActivityPanel、add_agent_form、mcp_server_edit 三例单跑 5 个文件 74 例全绿，是整机负载下的超时抖动，与上一轮同名字段的抖动同源。`key_edit_view` 顺手删掉早已无用的 `SearchSelect` 导入。
+
+lint 侧另有既成事实：`key_edit_view.tsx` 在 HEAD 就有 `max-lines`（811/800）与 `SearchSelect` 未用导入等 3 条 error，本次改动只把行数抬到 818，未新增别的规则违例；这类文件级重构不在汉化账内。

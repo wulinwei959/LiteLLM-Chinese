@@ -76,6 +76,7 @@ const createSearchToolShape = (t: SearchToolsTranslator) => ({
     .pipe(z.string({ error: t("providerRequired") }).min(1, t("providerRequired"))),
   api_key: z.string().optional(),
   description: z.string().optional(),
+  input_cost_per_query: z.number().nonnegative(t("costNegative")).nullish(),
 });
 
 const createSearchToolSchema = (t: SearchToolsTranslator) => z.object(createSearchToolShape(t));
@@ -270,6 +271,26 @@ const CreateSearchTool: React.FC<CreateSearchToolProps> = ({
                       value={value ?? ""}
                       rows={3}
                       placeholder={t("descPlaceholder")}
+                      className="rounded-lg"
+                    />
+                  )}
+                </FormField>
+
+                <FormField
+                  control={form.control}
+                  name="input_cost_per_query"
+                  label={t("costPerQuery")}
+                  description={t("costPerQueryDescription")}
+                >
+                  {({ ref, value, onChange, ...field }) => (
+                    <Input
+                      {...field}
+                      ref={ref}
+                      type="number"
+                      step="any"
+                      value={value ?? ""}
+                      onChange={(event) => onChange(event.target.value === "" ? null : event.target.valueAsNumber)}
+                      placeholder={t("costPlaceholder")}
                       className="rounded-lg"
                     />
                   )}

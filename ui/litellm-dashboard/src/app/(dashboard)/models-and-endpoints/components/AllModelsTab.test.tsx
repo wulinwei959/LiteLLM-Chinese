@@ -592,7 +592,7 @@ describe("AllModelsTab", () => {
       renderWithProviders(<AllModelsTab {...defaultProps} />);
 
       await user.click(screen.getByTestId("models-view-select"));
-      await user.click(await screen.findByRole("option", { name: /所有可用模型/ }));
+      await user.click(await screen.findByRole("option", { name: /所有代理模型/ }));
 
       await waitFor(() => {
         expect(screen.queryByText(/create a Virtual Key/i)).not.toBeInTheDocument();

@@ -151,7 +151,7 @@ describe("useDiscountConfig", () => {
         json: async () => ({ values: { vertex_ai: 0 } }),
       } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -165,7 +165,7 @@ describe("useDiscountConfig", () => {
       });
 
       expect(success!).toBe(false);
-      expect(toast.fromError).toHaveBeenCalledWith(expect.stringMatching(/already exists/i));
+      expect(toast.fromError).toHaveBeenCalledWith("Vertex AI 的折扣已存在，请在上方的表格中编辑。");
       expect(global.fetch).not.toHaveBeenCalled();
     });
 
@@ -196,7 +196,7 @@ describe("useDiscountConfig", () => {
         .mockResolvedValueOnce({ ok: true, json: async () => ({}) } as Response)
         .mockResolvedValueOnce({ ok: true, json: async () => ({ values: { "openai/gpt-*": 0.2 } }) } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -219,7 +219,7 @@ describe("useDiscountConfig", () => {
         .mockResolvedValueOnce({ ok: true, json: async () => ({}) } as Response)
         .mockResolvedValueOnce({ ok: true, json: async () => ({ values: { openai: 0.05 } }) } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       let success: boolean;
       await act(async () => {
@@ -239,7 +239,7 @@ describe("useDiscountConfig", () => {
           json: async () => ({ values: { "openrouter/anthropic/claude-*": 0.15 } }),
         } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       let success: boolean;
       await act(async () => {
@@ -260,7 +260,7 @@ describe("useDiscountConfig", () => {
           json: async () => ({ values: { openai: 0.05, "openai/gpt-*": 0.2 } }),
         } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -282,7 +282,7 @@ describe("useDiscountConfig", () => {
         json: async () => ({ values: { "openai/gpt-*": 0.2 } }),
       } as Response);
 
-      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useDiscountConfig({ accessToken: "test-token" }), { wrapper });
 
       await act(async () => {
         await result.current.fetchDiscountConfig();
@@ -294,9 +294,7 @@ describe("useDiscountConfig", () => {
       });
 
       expect(success!).toBe(false);
-      expect(toast.fromError).toHaveBeenCalledWith(
-        "Discount for OpenAI (gpt-*) already exists. Edit it in the table above.",
-      );
+      expect(toast.fromError).toHaveBeenCalledWith("OpenAI（gpt-*）的折扣已存在，请在上方的表格中编辑。");
     });
   });
 

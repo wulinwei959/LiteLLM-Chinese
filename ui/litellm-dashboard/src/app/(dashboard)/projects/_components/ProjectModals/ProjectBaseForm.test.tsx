@@ -112,7 +112,7 @@ describe("ProjectBaseForm", () => {
       isLoading: false,
     });
     renderWithProviders(<FormWrapper />);
-    await user.click(screen.getByLabelText("Team"));
+    await user.click(screen.getByLabelText("团队"));
     expect(await screen.findByText("Engineering")).toBeInTheDocument();
     expect(screen.queryByText("Sales")).not.toBeInTheDocument();
   });

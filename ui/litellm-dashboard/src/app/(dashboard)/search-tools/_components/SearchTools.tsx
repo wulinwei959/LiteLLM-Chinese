@@ -1,7 +1,7 @@
 import { isAdminRole } from "@/utils/roles";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { z } from "zod";
 import DeleteResourceModal from "@/components/common_components/DeleteResourceModal";
 import { toast } from "@/lib/toast";
@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { useZodForm } from "@/lib/forms/useZodForm";
+import type { SearchToolsTranslator } from "@/lib/i18n/translators";
 import CreateSearchTool from "./CreateSearchTools";
 import { buildSearchToolPayload } from "./searchToolPayload";
 import SearchToolTable from "./SearchToolTable";
@@ -33,17 +34,17 @@ interface SearchToolsProps {
   userID: string | null;
 }
 
-const editSearchToolShape = {
-  search_tool_name: z.string().min(1, "Please enter a search tool name"),
-  search_provider: z.string().min(1, "Please select a search provider"),
+const editSearchToolShape = (t: SearchToolsTranslator) => ({
+  search_tool_name: z.string().min(1, t("nameRequired")),
+  search_provider: z.string().min(1, t("providerRequired")),
   api_key: z.string().nullish(),
   description: z.string().nullish(),
-  input_cost_per_query: z.number().nonnegative("Cost per query cannot be negative").nullish(),
-};
+  input_cost_per_query: z.number().nonnegative(t("costNegative")).nullish(),
+});
 
-const editSearchToolSchema = z.object(editSearchToolShape);
+const editSearchToolSchema = (t: SearchToolsTranslator) => z.object(editSearchToolShape(t));
 
-type EditSearchToolFormValues = z.infer<typeof editSearchToolSchema>;
+type EditSearchToolFormValues = z.infer<ReturnType<typeof editSearchToolSchema>>;
 
 const EMPTY_EDIT_VALUES: EditSearchToolFormValues = { search_tool_name: "", search_provider: "" };
 
@@ -81,7 +82,10 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
   const [editTool, setEditTool] = useState(false);
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
   const [isEditModalVisible, setEditModalVisible] = useState(false);
-  const form = useZodForm(editSearchToolSchema, { defaultValues: EMPTY_EDIT_VALUES });
+  const form = useZodForm(
+    useMemo(() => editSearchToolSchema(t), [t]),
+    { defaultValues: EMPTY_EDIT_VALUES },
+  );
 
   const handleView = (toolId: string) => {
     setSelectedToolId(toolId);
@@ -203,12 +207,7 @@ const SearchTools: React.FC<SearchToolsProps> = ({ accessToken, userRole, userID
           )}
         </FormField>
 
-        <FormField
-          control={form.control}
-          name="api_key"
-          label={t("apiKeyCol")}
-          description={t("apiKeyDescription")}
-        >
+        <FormField control={form.control} name="api_key" label={t("apiKeyCol")} description={t("apiKeyDescription")}>
           {({ ref, value, ...field }) => (
             <PasswordInput {...field} ref={ref} value={value ?? ""} placeholder={t("apiKeyPlaceholder")} />
           )}

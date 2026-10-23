@@ -97,6 +97,17 @@ export const SearchToolView: React.FC<SearchToolViewProps> = ({
 
         <Card>
           <CardContent>
+            <p className="text-sm text-muted-foreground">{t("costCardLabel")}</p>
+            <p className="mt-2 text-foreground">
+              {typeof searchTool.litellm_params.input_cost_per_query === "number"
+                ? `$${searchTool.litellm_params.input_cost_per_query}`
+                : t("providerDefault")}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent>
             <p className="text-sm text-muted-foreground">{t("createdAtCol")}</p>
             <p className="mt-2 text-foreground">
               {searchTool.created_at ? new Date(searchTool.created_at).toLocaleString() : commonT("unknown")}

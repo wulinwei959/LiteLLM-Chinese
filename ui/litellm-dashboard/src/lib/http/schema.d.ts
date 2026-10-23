@@ -41929,6 +41929,290 @@ export interface components {
          * RankingOptions
          * @description Ranking options for search.
          */
+        /** ROIEstimateResponse */
+        ROIEstimateResponse: {
+            /**
+             * Cached
+             * @default false
+             */
+            cached: boolean;
+            /** Effort Basis */
+            effort_basis?: string | null;
+            /** Evidence Source */
+            evidence_source?: string | null;
+            /** Hours */
+            hours: number | null;
+            /** Model */
+            model?: string | null;
+            /** Reasoning */
+            reasoning: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "estimated" | "needs_review" | "error";
+        };
+        /** ROIIdentityMapResponse */
+        ROIIdentityMapResponse: {
+            /** Identity Map */
+            identity_map: {
+                [key: string]: string;
+            };
+            report: components["schemas"]["ROISummaryResponse"] | null;
+        };
+        /** ROIIdentityMapUpdate */
+        ROIIdentityMapUpdate: {
+            /** Email */
+            email: string | null;
+            /** Github Login */
+            github_login: string;
+        };
+        /** ROIMetricsResponse */
+        ROIMetricsResponse: {
+            /** Cohort People */
+            cohort_people: number;
+            /** Cost Per Hour */
+            cost_per_hour: number | null;
+            /** Estimated Prs */
+            estimated_prs: number;
+            /** Excluded Spend */
+            excluded_spend: number;
+            /** Hours Per Dollar */
+            hours_per_dollar: number | null;
+            /** Matched Prs */
+            matched_prs: number;
+            /** Matched Spend */
+            matched_spend: number;
+            /** Merged Prs */
+            merged_prs: number;
+            /** Output Hours */
+            output_hours: number;
+            /** Pending Prs */
+            pending_prs: number;
+            /** People With Prs */
+            people_with_prs: number;
+            /** Total Output Hours */
+            total_output_hours: number;
+            /** Total Spend */
+            total_spend: number;
+        };
+        /** ROIPersonResponse */
+        ROIPersonResponse: {
+            /** Cost Per Hour */
+            cost_per_hour: number | null;
+            /** Eligible */
+            eligible: boolean;
+            /** Email */
+            email: string;
+            /** Estimated Prs */
+            estimated_prs: number;
+            /** Hours */
+            hours: number;
+            /** Id */
+            id: string;
+            /** Logins */
+            logins: string[];
+            /** Match Methods */
+            match_methods: string[];
+            /** Pending Prs */
+            pending_prs: number;
+            /** Prs */
+            prs: number;
+            /** Spend */
+            spend: number | null;
+        };
+        /** ROIPullResponse */
+        ROIPullResponse: {
+            /** Additions */
+            additions: number;
+            /** Cache Key */
+            cache_key?: string | null;
+            /** Changed Files */
+            changed_files: number;
+            /** Commit Count */
+            commit_count: number;
+            /** Deletions */
+            deletions: number;
+            /** Email */
+            email: string;
+            /** Emails */
+            emails: string[];
+            estimate: components["schemas"]["ROIEstimateResponse"];
+            /** Head Sha */
+            head_sha: string;
+            /** Incomplete Metadata */
+            incomplete_metadata: boolean;
+            /** Login */
+            login: string;
+            /** Match Method */
+            match_method: string;
+            /** Matched */
+            matched: boolean;
+            /** Merged At */
+            merged_at: string;
+            /** Number */
+            number: number;
+            /** Profile Email */
+            profile_email: string;
+            /** Repo */
+            repo: string;
+            /** Title */
+            title: string;
+            /** Url */
+            url: string;
+        };
+        /** ROIReportResponse */
+        ROIReportResponse: {
+            report: components["schemas"]["ROISummaryResponse"] | null;
+        };
+        /** ROIRepositoriesResponse */
+        ROIRepositoriesResponse: {
+            /** Has More */
+            has_more: boolean;
+            /** Page */
+            page: number;
+            /** Repositories */
+            repositories: components["schemas"]["ROIRepository"][];
+        };
+        /** ROIRepository */
+        ROIRepository: {
+            /** Archived */
+            archived: boolean;
+            /** Name */
+            name: string;
+            /** Visibility */
+            visibility: string;
+        };
+        /** ROISettingsResponse */
+        ROISettingsResponse: {
+            /** Available Models */
+            available_models: string[];
+            /** Backfill Days */
+            backfill_days: number;
+            /** Default Prompt */
+            default_prompt: string;
+            /** Estimator Model */
+            estimator_model: string;
+            /** Estimator Prompt */
+            estimator_prompt: string;
+            /** Github Api Url */
+            github_api_url: string;
+            /** Has Estimator Key */
+            has_estimator_key: boolean;
+            /** Has Github Token */
+            has_github_token: boolean;
+            /** Identity Map */
+            identity_map: {
+                [key: string]: string;
+            };
+            /** Ready */
+            ready: boolean;
+            /** Repos */
+            repos: string[];
+            /** Update Interval Minutes */
+            update_interval_minutes: number;
+        };
+        /** ROISettingsUpdate */
+        ROISettingsUpdate: {
+            /** Backfill Days */
+            backfill_days?: number | null;
+            /** Estimator Key */
+            estimator_key?: string | null;
+            /** Estimator Model */
+            estimator_model?: string | null;
+            /** Estimator Prompt */
+            estimator_prompt?: string | null;
+            /** Github Api Url */
+            github_api_url?: string | null;
+            /** Github Token */
+            github_token?: string | null;
+            /** Repos */
+            repos?: string[] | null;
+            /** Update Interval Minutes */
+            update_interval_minutes?: number | null;
+        };
+        /** ROISummaryResponse */
+        ROISummaryResponse: {
+            /** Effort Basis */
+            effort_basis: string | null;
+            /** End */
+            end: string;
+            /** Estimator Model */
+            estimator_model: string;
+            /** Estimator Prompt */
+            estimator_prompt: string;
+            /** Id */
+            id: string | null;
+            metrics: components["schemas"]["ROIMetricsResponse"];
+            /** Mode */
+            mode: string;
+            /** People */
+            people: components["schemas"]["ROIPersonResponse"][];
+            /** Pulls */
+            pulls: components["schemas"]["ROIPullResponse"][];
+            /** Repos */
+            repos: string[];
+            /** Start */
+            start: string;
+            /** Synced At */
+            synced_at: string;
+            /** Trend */
+            trend: components["schemas"]["ROITrendResponse"][];
+            /** Warnings */
+            warnings: string[];
+        };
+        /** ROISyncStatus */
+        ROISyncStatus: {
+            /** Done */
+            done: number;
+            /**
+             * Elapsed Seconds
+             * @default 0
+             */
+            elapsed_seconds: number;
+            /** Error */
+            error: string | null;
+            /** Estimated */
+            estimated: number;
+            /** Finished At */
+            finished_at?: string | null;
+            /** Needs Attention */
+            needs_attention: number;
+            /** Next Update */
+            next_update?: string | null;
+            /**
+             * Phase
+             * @enum {string}
+             */
+            phase: "idle" | "spend" | "repositories" | "estimates" | "complete" | "cancelled" | "error";
+            /** Remaining Seconds */
+            remaining_seconds?: number | null;
+            /** Reused */
+            reused: number;
+            /** Running */
+            running: boolean;
+            /** Stage */
+            stage: string;
+            /** Started At */
+            started_at?: string | null;
+            /** Total */
+            total: number;
+        };
+        /** ROITrendResponse */
+        ROITrendResponse: {
+            /** Date */
+            date: string;
+            /** Hours */
+            hours: number;
+            /** Prs */
+            prs: number;
+            /** Spend */
+            spend: number;
+        };
+        /**
+         * RankingOptions
+         * @description Ranking options for search.
+         */
         RankingOptions: {
             hybrid_search?: components["schemas"]["RankingOptionsHybridSearch"] | null;
             /** Ranker */

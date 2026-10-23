@@ -705,10 +705,12 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
     }
   };
 
-  const memberOwnerPlaceholder = teamMemberOwnerPlaceholder(memberOwnerOptions, selectedCreateKeyTeam);
-  const requiredTeamHelp = ownerLimitedToTeamMembers
-    ? "required, the key's owner must be a member of this team"
-    : "required";
+  const memberOwnerPlaceholder = teamMemberOwnerPlaceholder(memberOwnerOptions, selectedCreateKeyTeam, {
+    selectMember: ct("selectTeamMember"),
+    noOtherMembers: ct("teamHasNoOtherMembers"),
+    selectTeam: ct("selectTeamFirst"),
+  });
+  const requiredTeamHelp = ownerLimitedToTeamMembers ? ct("memberOwnerRequiredHelp") : ct("requiredHelp");
   const teamFieldHelp = ownerRequiresTeam ? requiredTeamHelp : "";
   const ownerField = keyOwner === "another_user" && (
     <MountedFormField
@@ -816,7 +818,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                   </RadioGroup>
                 </Field>
 
-                {keyOwner === "another_user" && (
+                {keyOwner === "another_user" && !ownerLimitedToTeamMembers && (
                   <MountedFormField
                     label={
                       <span>

@@ -182,17 +182,21 @@ export const resolveEffectiveMcpServers = ({
   toolsets,
   toolPermissions,
 }: ResolveInput): readonly EffectiveMcpServer[] => {
-  const entry = (server: MCPServer, source: McpGrantSource): EffectiveMcpServer => {
-    const keys = mcpToolPermissionKeysFor(server, toolPermissions, allServers);
-    const permissionKey = mcpToolPermissionKeyFor(server, toolPermissions, allServers);
+  const entry = (
+    server: MCPServer,
+    source: McpGrantSource,
+    servers: readonly MCPServer[] = allServers,
+  ): EffectiveMcpServer => {
+    const keys = mcpToolPermissionKeysFor(server, toolPermissions, servers);
+    const permissionKey = mcpToolPermissionKeyFor(server, toolPermissions, servers);
     const editable = keys.filter((key) => key !== permissionKey);
-    const keyedTools = mcpAllowedToolsFor(server, toolPermissions, allServers);
+    const keyedTools = mcpAllowedToolsFor(server, toolPermissions, servers);
     const toolsetTools = mcpToolsetToolsFor(server, selectedToolsets, toolsets);
     return {
       server,
       permissionKey,
-      supersededKeys: editable.filter((key) => mcpKeyNamesOneServerOnly(allServers, key)),
-      ambiguousKeys: editable.filter((key) => !mcpKeyNamesOneServerOnly(allServers, key)),
+      supersededKeys: editable.filter((key) => mcpKeyNamesOneServerOnly(servers, key)),
+      ambiguousKeys: editable.filter((key) => !mcpKeyNamesOneServerOnly(servers, key)),
       keyedTools,
       toolsetTools,
       allowedTools:
@@ -206,7 +210,8 @@ export const resolveEffectiveMcpServers = ({
   const direct = selectedServers.flatMap((identifier) => {
     const matched = mcpServersForIdentifier(allServers, identifier);
     if (matched.length > 0) return matched.map((server) => entry(server, { kind: "direct" }));
-    return [entry({ server_id: identifier, server_name: identifier } as MCPServer, { kind: "direct" })];
+    const synthetic = { server_id: identifier, server_name: identifier } as MCPServer;
+    return [entry(synthetic, { kind: "direct" }, [...allServers, synthetic])];
   });
 
   const viaAccessGroups = selectedAccessGroups.flatMap((group) =>

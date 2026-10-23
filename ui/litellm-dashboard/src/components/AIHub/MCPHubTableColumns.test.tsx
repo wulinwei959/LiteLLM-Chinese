@@ -74,7 +74,7 @@ describe("getMCPHubTableColumns", () => {
 
     await user.hover(screen.getByText("reachable"));
 
-    expect(await screen.findByText("Server responded. Authentication and tools were not checked")).toBeInTheDocument();
+    expect(await screen.findByText("服务器已响应，未检查认证与工具")).toBeInTheDocument();
   });
 
   it("renders the server row", () => {

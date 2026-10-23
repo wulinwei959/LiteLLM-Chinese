@@ -96,10 +96,12 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
             </div>
           </div>
         </div>
-        <Button onClick={() => setIsEditModalVisible(true)}>
-          <EditIcon className="size-4" />
-          {t("editProject")}
-        </Button>
+        {canEditProject ? (
+          <Button onClick={() => setIsEditModalVisible(true)}>
+            <EditIcon className="size-4" />
+            {t("editProject")}
+          </Button>
+        ) : null}
       </div>
 
       <Card className="mb-6">

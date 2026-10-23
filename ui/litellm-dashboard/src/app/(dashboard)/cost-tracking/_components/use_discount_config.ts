@@ -102,7 +102,7 @@ export function useDiscountConfig({ accessToken }: UseDiscountConfigProps): UseD
       const providerValue = getProviderBackendValue(selectedProvider);
 
       if (!providerValue) {
-        toast.fromError("Invalid provider selected");
+        toast.fromError(t("invalidProviderSelected"));
         return false;
       }
 
@@ -111,7 +111,9 @@ export function useDiscountConfig({ accessToken }: UseDiscountConfigProps): UseD
       if (configKey in discountConfig) {
         const displayName = Providers[selectedProvider as keyof typeof Providers];
         toast.fromError(
-          `Discount for ${displayName} (${trimmedPattern || "all models"}) already exists. Edit it in the table above.`,
+          trimmedPattern
+            ? t("discountPatternExists", { provider: displayName, pattern: trimmedPattern })
+            : t("discountExists", { provider: displayName }),
         );
         return false;
       }

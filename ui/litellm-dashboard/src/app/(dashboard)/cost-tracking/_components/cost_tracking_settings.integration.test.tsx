@@ -102,7 +102,7 @@ describe("CostTrackingSettings submit paths", () => {
     await user.click(screen.getAllByRole("combobox")[0]);
     await user.click((await screen.findAllByRole("option"))[0]);
     fireEvent.change(screen.getByLabelText(/Model pattern/i), { target: { value: "claude-*" } });
-    fireEvent.change(screen.getByLabelText(/Discount Percentage/i), { target: { value: "20" } });
+    fireEvent.change(screen.getByLabelText(/折扣百分比/), { target: { value: "20" } });
     await user.click(submitDiscount());
 
     await waitFor(() => expect(stableDiscountCallbacks.handleAddProvider).toHaveBeenCalled());

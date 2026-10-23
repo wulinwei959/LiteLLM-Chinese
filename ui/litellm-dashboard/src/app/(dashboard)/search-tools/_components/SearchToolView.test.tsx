@@ -124,12 +124,12 @@ describe("SearchToolView", () => {
 
     render(<SearchToolView {...defaultProps} searchTool={freeTool} />);
     expect(screen.getByText("$0")).toBeInTheDocument();
-    expect(screen.queryByText("Provider default")).not.toBeInTheDocument();
+    expect(screen.queryByText("提供商默认")).not.toBeInTheDocument();
   });
 
   it("shows 'Provider default' when no cost per query is configured", () => {
     render(<SearchToolView {...defaultProps} />);
-    expect(screen.getByText("Provider default")).toBeInTheDocument();
+    expect(screen.getByText("提供商默认")).toBeInTheDocument();
   });
 
   it("should display formatted created_at date", () => {

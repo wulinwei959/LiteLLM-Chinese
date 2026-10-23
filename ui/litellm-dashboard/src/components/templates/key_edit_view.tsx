@@ -12,7 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { FormField } from "@/components/shared/form/FormField";
-import { SearchSelect, SearchSelectOption } from "@/components/shared/SearchSelect";
+import { SearchSelectOption } from "@/components/shared/SearchSelect";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { hasCapability } from "../../utils/capabilities";
@@ -165,7 +165,14 @@ function KeyEditSession({
   const mcpScope = { teamId: form.watch("team_id") ?? null, userId: keyData.user_id };
   const mcpToolPermissions = form.watch("mcp_tool_permissions");
 
+  const projectIdRef = useRef(keyData.project_id ?? null);
   useEffect(() => {
+    const nextProjectId = keyData.project_id ?? null;
+    if (projectIdRef.current !== nextProjectId) {
+      projectIdRef.current = nextProjectId;
+      form.reset(toKeyEditFormValues(keyData));
+      return;
+    }
     form.reset(toKeyEditFormValues(keyData), { keepDirtyValues: true });
   }, [form, keyData]);
 

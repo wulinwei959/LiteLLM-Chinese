@@ -124,7 +124,7 @@ describe("ProjectsPage", () => {
     });
     mockUseProjects.mockReturnValue({ data: [], isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    expect(screen.queryByRole("button", { name: /create project/i }) !== null).toBe(visible);
+    expect(screen.queryByRole("button", { name: /创建项目/ }) !== null).toBe(visible);
   });
 
   it("should hide 'Create Project' from a team member who administers no team even when the setting grants projects", () => {
@@ -136,7 +136,7 @@ describe("ProjectsPage", () => {
     });
     mockUseProjects.mockReturnValue({ data: [], isLoading: false });
     renderWithProviders(<ProjectsPage />);
-    expect(screen.queryByRole("button", { name: /create project/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /创建项目/ })).not.toBeInTheDocument();
   });
 
   it("should render the projects table", () => {

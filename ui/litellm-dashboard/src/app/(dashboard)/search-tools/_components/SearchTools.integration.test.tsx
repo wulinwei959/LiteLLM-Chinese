@@ -113,9 +113,9 @@ describe("SearchTools edit payload", () => {
     renderPage();
     await openEditModal(user);
 
-    expect(screen.getByLabelText("Cost per Query (USD)")).toHaveValue(0.05);
-    fireEvent.change(screen.getByLabelText("Cost per Query (USD)"), { target: { value: "0.007" } });
-    await user.click(screen.getByRole("button", { name: "OK" }));
+    expect(screen.getByLabelText("每次查询成本（美元）")).toHaveValue(0.05);
+    fireEvent.change(screen.getByLabelText("每次查询成本（美元）"), { target: { value: "0.007" } });
+    await user.click(screen.getByRole("button", { name: "确定" }));
 
     await waitFor(() => expect(networking.updateSearchTool).toHaveBeenCalledTimes(1));
     expect(vi.mocked(networking.updateSearchTool).mock.calls[0][2]).toMatchObject({
@@ -128,8 +128,8 @@ describe("SearchTools edit payload", () => {
     renderPage();
     await openEditModal(user);
 
-    fireEvent.change(screen.getByLabelText("Cost per Query (USD)"), { target: { value: "0" } });
-    await user.click(screen.getByRole("button", { name: "OK" }));
+    fireEvent.change(screen.getByLabelText("每次查询成本（美元）"), { target: { value: "0" } });
+    await user.click(screen.getByRole("button", { name: "确定" }));
 
     await waitFor(() => expect(networking.updateSearchTool).toHaveBeenCalledTimes(1));
     expect(vi.mocked(networking.updateSearchTool).mock.calls[0][2]).toMatchObject({
@@ -142,8 +142,8 @@ describe("SearchTools edit payload", () => {
     renderPage();
     await openEditModal(user);
 
-    fireEvent.change(screen.getByLabelText("Cost per Query (USD)"), { target: { value: "" } });
-    await user.click(screen.getByRole("button", { name: "OK" }));
+    fireEvent.change(screen.getByLabelText("每次查询成本（美元）"), { target: { value: "" } });
+    await user.click(screen.getByRole("button", { name: "确定" }));
 
     await waitFor(() => expect(networking.updateSearchTool).toHaveBeenCalledTimes(1));
     expect(JSON.stringify(vi.mocked(networking.updateSearchTool).mock.calls[0][2])).toBe(
@@ -156,10 +156,10 @@ describe("SearchTools edit payload", () => {
     renderPage();
     await openEditModal(user);
 
-    fireEvent.change(screen.getByLabelText("Cost per Query (USD)"), { target: { value: "-1" } });
-    await user.click(screen.getByRole("button", { name: "OK" }));
+    fireEvent.change(screen.getByLabelText("每次查询成本（美元）"), { target: { value: "-1" } });
+    await user.click(screen.getByRole("button", { name: "确定" }));
 
-    expect(await screen.findByText("Cost per query cannot be negative")).toBeInTheDocument();
+    expect(await screen.findByText("每次查询成本不能为负数")).toBeInTheDocument();
     expect(networking.updateSearchTool).not.toHaveBeenCalled();
   });
 

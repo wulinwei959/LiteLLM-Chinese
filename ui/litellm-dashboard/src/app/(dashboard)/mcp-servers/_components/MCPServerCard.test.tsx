@@ -28,7 +28,7 @@ describe("MCPServerCard health", () => {
 
     await user.hover(screen.getByText("Reachable"));
 
-    expect(await screen.findByText("Server responded. Authentication and tools were not checked")).toBeInTheDocument();
+    expect(await screen.findByText("服务器已响应，未检查认证与工具")).toBeInTheDocument();
     expect(screen.queryByText("No health data")).not.toBeInTheDocument();
     expect(screen.queryByText("Healthy")).not.toBeInTheDocument();
   });

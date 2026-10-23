@@ -118,8 +118,8 @@ describe("dashboard overlay boundaries", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Gateway page" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Open navigation" })).toBeVisible();
-    expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "打开导航" })).toBeVisible();
+    expect(screen.queryByRole("dialog", { name: "导航" })).not.toBeInTheDocument();
   });
 
   it.each([
@@ -191,10 +191,10 @@ describe("dashboard overlay boundaries", () => {
       </AuthProvider>,
     );
 
-    const trigger = await screen.findByRole("button", { name: "Open navigation" });
+    const trigger = await screen.findByRole("button", { name: "打开导航" });
     await user.click(trigger);
-    const navigation = await screen.findByRole("dialog", { name: "Navigation" });
-    expect(within(navigation).getByRole("link", { name: "Virtual Keys" })).toBeVisible();
+    const navigation = await screen.findByRole("dialog", { name: "导航" });
+    expect(within(navigation).getByRole("link", { name: "虚拟密钥" })).toBeVisible();
     await user.keyboard("{Escape}");
     await waitFor(() => expect(trigger).toHaveFocus());
   });
@@ -222,12 +222,12 @@ describe("deployment health in the dashboard shells", () => {
       </AuthProvider>,
     );
 
-    expect(
-      (await screen.findAllByRole("button", { name: "Deployment health, 1 active warning" })).length,
-    ).toBeGreaterThan(0);
-    await user.click(await screen.findByRole("button", { name: "Review" }));
+    expect((await screen.findAllByRole("button", { name: "部署健康状况，1 条生效中的告警" })).length).toBeGreaterThan(
+      0,
+    );
+    await user.click(await screen.findByRole("button", { name: "查看" }));
 
-    const panel = await screen.findByRole("dialog", { name: "Deployment health" });
-    expect(within(panel).getByRole("article", { name: "Environment-credential login is enabled" })).toBeVisible();
+    const panel = await screen.findByRole("dialog", { name: "部署健康状况" });
+    expect(within(panel).getByRole("article", { name: "已启用环境变量凭据登录" })).toBeVisible();
   });
 });

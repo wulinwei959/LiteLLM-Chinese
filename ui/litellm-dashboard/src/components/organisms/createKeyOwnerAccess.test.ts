@@ -137,13 +137,18 @@ describe("teamMemberOwnerOptions", () => {
 
 describe("teamMemberOwnerPlaceholder", () => {
   const soloTeam = { members_with_roles: [member(VIEWER, "admin")] };
+  const labels = {
+    selectMember: "请选择团队成员",
+    noOtherMembers: "该团队没有其他成员",
+    selectTeam: "请先选择团队",
+  };
 
   it.each([
-    ["asks for a team before one is selected", null, "Select a team first"],
-    ["says so when the viewer is the team's only member", soloTeam, "This team has no other members"],
-    ["asks for a member once the team has someone to pick", administered, "Select a member of the team"],
+    ["asks for a team before one is selected", null, labels.selectTeam],
+    ["says so when the viewer is the team's only member", soloTeam, labels.noOtherMembers],
+    ["asks for a member once the team has someone to pick", administered, labels.selectMember],
   ])("%s", (_label, team, expected) => {
-    expect(teamMemberOwnerPlaceholder(teamMemberOwnerOptions(team, VIEWER), team)).toBe(expected);
+    expect(teamMemberOwnerPlaceholder(teamMemberOwnerOptions(team, VIEWER), team, labels)).toBe(expected);
   });
 });
 

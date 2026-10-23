@@ -214,7 +214,7 @@ describe("ProjectDetail", () => {
         isLoading: false,
       });
       renderWithProviders(<ProjectDetail projectId="proj-1" onBack={onBack} />);
-      expect(screen.queryByRole("button", { name: /edit project/i }) !== null).toBe(visible);
+      expect(screen.queryByRole("button", { name: /编辑项目/ }) !== null).toBe(visible);
     });
 
     it("should show 'No team assigned' when the project has no team", () => {

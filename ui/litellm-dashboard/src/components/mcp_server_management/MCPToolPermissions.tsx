@@ -140,7 +140,7 @@ const MCPToolPermissions: React.FC<MCPToolPermissionsProps> = ({
         const latestPermissions = toolPermissionsRef.current;
         const isDirect = entry.source.kind === "direct";
         const unrestricted =
-          mcpAllowedToolsFor(entry.server, latestPermissions, allServers) === undefined &&
+          mcpAllowedToolsFor(entry.server, latestPermissions, [...allServers, entry.server]) === undefined &&
           entry.toolsetTools === undefined;
         if (
           !preservedServerIds.has(serverId) &&
