@@ -1,5 +1,5 @@
 import React from "react";
-import { CONFIG_OWNED_HINT, ConfigOwnedBadge } from "./ConfigOwned";
+import { ConfigOwnedBadge } from "./ConfigOwned";
 import { useTranslations } from "next-intl";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -38,7 +38,7 @@ const RoutingStrategySelector: React.FC<RoutingStrategySelectorProps> = ({
           onValueChange={(strategy: string | null) => strategy && onStrategyChange(strategy)}
           disabled={ownedByConfig}
         >
-          <SelectTrigger className="w-full" aria-label={ownedByConfig ? CONFIG_OWNED_HINT : undefined}>
+          <SelectTrigger className="w-full" aria-label={ownedByConfig ? t("configOwnedHint") : undefined}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

@@ -423,7 +423,6 @@ export interface MCPToolsViewerProps {
   extraHeaders?: string[] | null;
 }
 
-export const MCP_REACHABLE_DESCRIPTION = "Server responded. Authentication and tools were not checked";
 
 export interface MCPServer {
   server_id: string;

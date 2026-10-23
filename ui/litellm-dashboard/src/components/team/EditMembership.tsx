@@ -50,8 +50,6 @@ interface MemberModalProps<T extends BaseMember> {
   config: ModalConfig;
 }
 
-const ROLE_REQUIRED_MESSAGE = "Please select a role!";
-
 const isEmailish = (value: string): boolean =>
   value === "" || z.email({ pattern: z.regexes.html5Email }).safeParse(value).success;
 
@@ -61,10 +59,7 @@ const memberFieldSchema = z
   .union([z.string(), z.number(), z.null(), z.array(z.string()), modelMaxBudgetSchema])
   .optional();
 
-const buildMemberSchema = (
-  t: TeamsTranslator,
-  config: ModalConfig,
-): z.ZodType<MemberFormValues, MemberFormValues> => {
+const buildMemberSchema = (t: TeamsTranslator, config: ModalConfig): z.ZodType<MemberFormValues, MemberFormValues> => {
   const shape = {
     user_email: z.string().refine(isEmailish, t("member.invalidEmail")).nullish(),
     user_id: z.string().nullish(),

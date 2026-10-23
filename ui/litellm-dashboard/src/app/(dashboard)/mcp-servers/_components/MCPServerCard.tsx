@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 
 import type { McpServersTranslator } from "@/lib/i18n/translators";
 import { cn } from "@/lib/cva.config";
-import { AUTH_TYPE, MCP_REACHABLE_DESCRIPTION, type MCPServer } from "@/components/mcp_tools/types";
+import { AUTH_TYPE, type MCPServer } from "@/components/mcp_tools/types";
 import { Logo } from "@/components/molecules/logo/Logo";
 import { getMaskedAndFullUrl, getMCPNetworkAccess, networkAccessDescriptionKey, networkAccessLabelKey } from "./utils";
 
@@ -370,7 +370,7 @@ const HealthChip: FC<HealthChipProps> = ({
       />
       <TooltipContent side="top" className="max-w-xs">
         <div className="mb-1 font-semibold">{t("healthLabel", { status })}</div>
-        {status === "reachable" && <div className="mb-1 text-xs">{MCP_REACHABLE_DESCRIPTION}</div>}
+        {status === "reachable" && <div className="mb-1 text-xs">{t("reachableDescription")}</div>}
         {lastCheck && (
           <div className="mb-1 text-xs">{t("lastCheck", { time: new Date(lastCheck).toLocaleString() })}</div>
         )}

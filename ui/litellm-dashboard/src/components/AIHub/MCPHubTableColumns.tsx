@@ -5,7 +5,7 @@ import type { CommonTranslator, ModelHubTranslator } from "@/lib/i18n/translator
 import { Copy, Info, MoreHorizontal } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
-import { MCP_REACHABLE_DESCRIPTION } from "@/components/mcp_tools/types";
+
 import { IdentityCell, StatusBadge, type StatusTone } from "@/components/shared/table_cells";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -163,7 +163,7 @@ export const getMCPHubTableColumns = ({
       <StatusBadge
         tone={STATUS_TONES[row.original.status] || "neutral"}
         label={row.original.status || t("unknownStatus")}
-        tooltip={row.original.status === "reachable" ? MCP_REACHABLE_DESCRIPTION : undefined}
+        tooltip={row.original.status === "reachable" ? t("reachableDescription") : undefined}
       />
     ),
   },

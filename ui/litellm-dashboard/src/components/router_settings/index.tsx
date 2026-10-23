@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/lib/toast";
 import { getCallbacksCall, getRouterSettingsCall, setCallbacksCall } from "../networking";
 import RouterSettingsForm, { RouterSettingsFormValue } from "./RouterSettingsForm";
-import { RouterSettingsSource, SOURCE_UNKNOWN_HINT, isOwnedByConfig } from "./ConfigOwned";
+import { RouterSettingsSource, isOwnedByConfig } from "./ConfigOwned";
 
 interface RouterSettingsProps {
   accessToken: string | null;

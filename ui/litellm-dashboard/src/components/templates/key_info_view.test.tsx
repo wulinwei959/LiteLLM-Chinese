@@ -344,12 +344,12 @@ describe("KeyInfoView", () => {
       />,
     );
 
-    expect(await screen.findByText("$50.00 (团队成员预算)")).toBeInTheDocument();
+    expect(await screen.findByText("上限 $50.00 (团队成员预算)")).toBeInTheDocument();
     expect(screen.queryByText("of Unlimited")).not.toBeInTheDocument();
     expect(teamInfoCall).toHaveBeenCalledWith("test-token", "member-budget-info-team", { keyLimit: 1 });
 
     await userEvent.click(screen.getByRole("tab", { name: "设置" }));
-    expect(await screen.findByText("$50.00 (team member budget)")).toBeInTheDocument();
+    expect(await screen.findByText("上限 $50.00 (团队成员预算)")).toBeInTheDocument();
   });
 
   it("keeps an own key budget in the Overview when a team-member budget exists", async () => {

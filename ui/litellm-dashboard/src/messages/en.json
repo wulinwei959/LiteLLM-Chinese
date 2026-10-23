@@ -6561,6 +6561,7 @@
     "description": "LiteLLM Proxy Admin UI"
   },
   "mcpServers": {
+    "reachableDescription": "Server responded. Authentication and tools were not checked",
     "duplicateIdentifier": "An MCP server with this name/alias already exists.",
     "typeToAdd": "Type to add",
     "serverOriginChanged": "The server origin changed. Enter credentials and replace or remove saved static headers to preview tools.",
@@ -10830,6 +10831,7 @@
     "contentLabel": "Content ({type})"
   },
   "modelHub": {
+    "reachableDescription": "Server responded. Authentication and tools were not checked",
     "showingModels": "Showing {shown} of {total, plural, one {# model} other {# models}}",
     "showingAgents": "Showing {shown} of {total, plural, one {# agent} other {# agents}}",
     "showingMcpServers": "Showing {shown} of {total, plural, one {# MCP server} other {# MCP servers}}",

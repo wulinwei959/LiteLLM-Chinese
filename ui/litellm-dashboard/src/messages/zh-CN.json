@@ -6561,6 +6561,7 @@
     "description": "LiteLLM 代理管理界面"
   },
   "mcpServers": {
+    "reachableDescription": "服务器已响应，未检查认证与工具",
     "duplicateIdentifier": "已存在同名的 MCP 服务器。",
     "typeToAdd": "输入以添加",
     "serverOriginChanged": "服务器地址已变更。请输入凭据，并替换或移除已保存的静态请求头以预览工具。",
@@ -10826,6 +10827,7 @@
     "contentLabel": "内容（{type}）"
   },
   "modelHub": {
+    "reachableDescription": "服务器已响应，未检查认证与工具",
     "showingModels": "已显示 {shown}，共 {total} 个模型",
     "showingAgents": "已显示 {shown}，共 {total} 个智能体",
     "showingMcpServers": "已显示 {shown}，共 {total} 个 MCP 服务器",
