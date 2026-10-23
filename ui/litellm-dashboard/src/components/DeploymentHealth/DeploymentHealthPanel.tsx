@@ -48,8 +48,8 @@ const snoozeOptions = (t: DeploymentHealthTranslator) =>
   ] as const;
 
 const SEVERITY_GROUPS = [
-  { severity: "critical", label: "Critical" },
-  { severity: "warning", label: "Warnings" },
+  { severity: "critical", labelKey: "group.critical" },
+  { severity: "warning", labelKey: "group.warning" },
 ] as const;
 
 const LOCAL_DAY_FORMAT = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
@@ -309,10 +309,10 @@ const PanelBody = () => {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 pb-4 text-[13px] leading-5">
       {active.length === 0 ? <NoActiveWarnings hasIgnored={ignored.length > 0} /> : null}
-      {SEVERITY_GROUPS.map(({ severity, label }) => {
+      {SEVERITY_GROUPS.map(({ severity, labelKey }) => {
         const group = active.filter((warning) => warning.severity === severity);
         return group.length === 0 ? null : (
-          <WarningGroup key={severity} label={label} warnings={group} defaultOpen permissions={permissions} />
+          <WarningGroup key={severity} label={t(labelKey)} warnings={group} defaultOpen permissions={permissions} />
         );
       })}
       {ignored.length > 0 ? (

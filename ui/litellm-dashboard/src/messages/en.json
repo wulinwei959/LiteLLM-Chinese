@@ -13060,14 +13060,17 @@
     },
     "loading": "Loading deployment warnings",
     "group": {
-      "ignoredAndSnoozed": "Ignored and snoozed"
+      "ignoredAndSnoozed": "Ignored and snoozed",
+      "critical": "Critical",
+      "warning": "Warnings"
     },
     "title": {
       "deploymentHealth": "Deployment health"
     },
     "subtitle": "Warnings about how this proxy is deployed",
     "aria": {
-      "deploymentAlert": "Deployment alert"
+      "deploymentAlert": "Deployment alert",
+      "deploymentHealthCount": "Deployment health, {count} active {count, plural, one {warning} other {warnings}}"
     },
     "warning": {
       "envCredentialLogin": {

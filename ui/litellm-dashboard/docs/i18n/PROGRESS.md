@@ -4734,3 +4734,19 @@ key_edit_view：Max Budget (USD)、Team 组合框（实际可访问名是"团队
 1. key_edit_view 14 例、DeploymentHealth 13 例、AddModelPanel 6 例，均为行为断言，需逐个对照生产取值：MCP 作用域属性与授权回调、Snooze 弹窗内的可访问名、预填值 toHaveValue。
 2. activity_metrics 4 例：测试要的是主题色 CSS 变量与多色调色板，生产用单一品牌 hex，属视觉口径，需先确认设计意图再动。
 3. 其余历史失败文件（约 45 个）尚未逐文件处理，下一批按失败数从高到低推进。
+
+## 2026-10-24 第 470 簇：部署健康告警可访问名与密钥编辑取值断言
+
+DeploymentHealth 从 13 例降到 0：生产侧把盾牌图标的 aria-label 从手拼 `Deployment health, N warnings` 改成 `aria.deploymentHealthCount`（ICU 复数）与 `title.deploymentHealth` 兜底，严重程度分组标题从模块级英文常量 `Critical`/`Warnings` 改成 `group.critical`/`group.warning` 键，目录新增这 3 键。测试侧翻面静音菜单（静音 1/7/30 天）、永久忽略、已静音/已忽略徽标、已忽略和已静音分组、操作人、直到日期、许可到期标题（改用正则避开日期格式）、查看文档与 env var 说明；日期部分保持英文，因为 `Intl.DateTimeFormat(undefined)` 取的是测试进程的 en-US。
+
+key_edit_view 从 14 例降到 7：生产侧三处修复——团队下拉的 items 改用 `teamOptionsFor(selectedTeamId)`，让不在当前组织筛选内的已选团队也能显示别名，并把空别名渲染成 `-`（原来直接渲染 `null (team-3)`）；`MCPServerSelector` 补传 `teamId`/`userId`（`mcpScope` 此前只定义未使用，选择器拿不到作用域）；测试侧把团队组合框的 `toHaveValue` 改成 `toHaveTextContent`（Base UI 的 Select 触发器没有 value 属性）、预算周期选项改"每月"、保存按钮改"保存更改"。移出项目那条用例在渲染前清 `testQueryClient`，避免上一个用例缓存的 `enable_projects_ui: false` 生效。
+
+AddModelPanel 从 6 例降到 5：决策模型提示与链接翻面，provider 组合框的取值断言改 `toHaveTextContent`。剩余 5 例是行为问题：provider 触发器在只有 value 没有 items 映射时显示为空、MultiSelect 收到非数组时 `value.filter` 直接抛错、以及预填流程的后续断言。
+
+验证：DeploymentHealth 集成测试全绿；key_edit_view 7 例、AddModelPanel 5 例待续；生产 tsc 0 错；死键 0；prettier 与 eslint 无新增问题。
+
+### 剩余工作（下批起点）
+
+1. AddModelPanel 的 provider 选择器需要补 items 映射（预填 provider 时触发器显示为空），MultiSelect 的 `value.filter` 抛错要看 model 字段在"输入了未在目录中的模型名"时传了什么类型。
+2. key_edit_view 剩 7 例都是行为断言：预算草稿载荷（metadata 序列化差异）、MCP 工具默认值回调未被调用（2）、MCP 授权在切换团队后的长度（2）、移出项目按钮仍不渲染（`enable_projects_ui` 已确认为 true，需查 `KeyProjectField` 的渲染条件）。
+3. activity_metrics 4 例与其余约 43 个失败文件仍待处理。

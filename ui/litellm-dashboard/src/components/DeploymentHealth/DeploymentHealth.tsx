@@ -21,11 +21,10 @@ export const createDeploymentHealthHandle = (): DeploymentHealthHandle => Dialog
 export const activeWarnings = (warnings: readonly DeploymentWarning[]): DeploymentWarning[] =>
   warnings.filter((warning) => !warning.ignore);
 
-const pluralWarnings = (count: number): string => `${count} active ${count === 1 ? "warning" : "warnings"}`;
-
 export const DeploymentHealthIcon = ({ handle }: { handle: DeploymentHealthHandle }) => {
   const { canView } = useDeploymentHealthAccess();
   const { data } = useDeploymentWarnings();
+  const t = useTranslations("deploymentHealth");
   if (!canView) return null;
 
   const active = activeWarnings(data?.warnings ?? []);
@@ -35,7 +34,9 @@ export const DeploymentHealthIcon = ({ handle }: { handle: DeploymentHealthHandl
     <SheetTrigger
       handle={handle}
       render={<Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground" />}
-      aria-label={active.length > 0 ? `Deployment health, ${pluralWarnings(active.length)}` : "Deployment health"}
+      aria-label={
+        active.length > 0 ? t("aria.deploymentHealthCount", { count: active.length }) : t("title.deploymentHealth")
+      }
     >
       <Shield className="size-4" aria-hidden />
       {active.length > 0 ? (

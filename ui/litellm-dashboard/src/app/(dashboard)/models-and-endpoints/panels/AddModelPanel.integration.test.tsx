@@ -581,16 +581,16 @@ describe("AddModelPanel decision models", () => {
     mockAuthorized.mockReturnValue(PROXY_ADMIN);
   });
 
-  const decisionNotice = () => screen.queryByRole("note", { name: "Decision model notice" });
+  const decisionNotice = () => screen.queryByRole("note", { name: "决策模型说明" });
 
   it("points a decision-only provider at the decision routes, the docs, and the playground", async () => {
     const { user } = await setup();
     await user.type(screen.getByRole("combobox", { name: /提供商/ }), "TypeSafe");
     await user.click(await screen.findByRole("option", { name: /TypeSafe/ }));
 
-    const note = await screen.findByRole("note", { name: "Decision model notice" });
+    const note = await screen.findByRole("note", { name: "决策模型说明" });
     expect(note).toHaveTextContent("/v1/decisions");
-    expect(within(note).getByRole("link", { name: "How to call decision models" })).toHaveAttribute(
+    expect(within(note).getByRole("link", { name: "如何调用决策模型" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/decisions",
     );
@@ -610,7 +610,7 @@ describe("AddModelPanel decision models", () => {
 
     await user.click(await screen.findByText("gpt-6-luna"));
 
-    const note = await screen.findByRole("note", { name: "Decision model notice" });
+    const note = await screen.findByRole("note", { name: "决策模型说明" });
     expect(note).toHaveTextContent("/v1/decisions");
     expect(note).not.toHaveTextContent("/chat/completions");
   });
@@ -632,10 +632,10 @@ describe("AddModelPanel prefill from the URL", () => {
   it("preselects the provider and model named in the URL and submits that model", async () => {
     const { submit } = await setup("?provider=typesafe&litellm_model=typesafe%2Fjev-latest");
 
-    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveValue("TypeSafe"));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveTextContent(/TypeSafe/));
     expect(screen.getByRole("combobox", { name: "选择模型" })).toBeInTheDocument();
     expect(screen.getByDisplayValue("typesafe/jev-latest")).toBeInTheDocument();
-    expect(await screen.findByRole("note", { name: "Decision model notice" })).toBeInTheDocument();
+    expect(await screen.findByRole("note", { name: "决策模型说明" })).toBeInTheDocument();
 
     await submit();
 
@@ -649,7 +649,7 @@ describe("AddModelPanel prefill from the URL", () => {
   it("drops the prefill params from the URL once the prefilled model is added", async () => {
     const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
     const { submit } = await setup("?provider=typesafe&litellm_model=typesafe%2Fjev-latest", onUrlUpdate);
-    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveValue("TypeSafe"));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveTextContent(/TypeSafe/));
 
     await submit();
 
@@ -673,7 +673,7 @@ describe("AddModelPanel prefill from the URL", () => {
 
   it("keeps a provider the user picks after the prefill instead of re-applying the URL", async () => {
     const { user, submit } = await setup("?provider=typesafe&litellm_model=typesafe%2Fjev-latest");
-    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveValue("TypeSafe"));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: /提供商/ })).toHaveTextContent(/TypeSafe/));
 
     const provider = screen.getByRole("combobox", { name: /提供商/ });
     await user.clear(provider);

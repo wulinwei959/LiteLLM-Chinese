@@ -746,6 +746,8 @@ function KeyEditSession({
                 onChange={onChange}
                 value={value as McpServersAndGroups | undefined}
                 accessToken={accessToken || ""}
+                teamId={mcpScope.teamId}
+                userId={mcpScope.userId}
                 placeholder={editFormT("selectMcpServers")}
                 allowNoMcpServers
               />
@@ -795,7 +797,10 @@ function KeyEditSession({
                 onValueChange={(teamId) => handleTeamChange(onChange, teamId)}
                 disabled={hasProject}
                 items={Object.fromEntries(
-                  (visibleTeams ?? []).map((t) => [t.team_id, `${t.team_alias} (${t.team_id})`]),
+                  teamOptionsFor((value as string | null) ?? null).map((option) => [
+                    option.value,
+                    `${option.label} (${option.value})`,
+                  ]),
                 )}
               >
                 <SelectTrigger id={id} className="w-full">
@@ -804,7 +809,7 @@ function KeyEditSession({
                 <SelectContent>
                   {visibleTeams?.map((t) => (
                     <SelectItem key={t.team_id} value={t.team_id}>
-                      {`${t.team_alias} (${t.team_id})`}
+                      {`${t.team_alias ?? "-"} (${t.team_id})`}
                     </SelectItem>
                   ))}
                 </SelectContent>

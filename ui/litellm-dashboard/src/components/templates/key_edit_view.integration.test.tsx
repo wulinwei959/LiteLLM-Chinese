@@ -1039,8 +1039,8 @@ describe("KeyEditView", () => {
         }}
       />,
     );
-    await chooseSelectOption(userEvent, screen.getByLabelText("重置预算"), "monthly");
-    await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+    await chooseSelectOption(userEvent, screen.getByLabelText("重置预算"), "每月");
+    await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     const expected = {
       max_budget: "12.5",
@@ -1094,7 +1094,7 @@ describe("KeyEditView", () => {
     fireEvent.change(await screen.findByRole("spinbutton", { name: "最大预算（USD）" }), {
       target: { value: "12.5" },
     });
-    await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
     const [values, dirtyFields] = onSubmit.mock.calls[0];
@@ -1122,7 +1122,7 @@ describe("KeyEditView", () => {
     await userEvent.click(await screen.findByTestId("mcp-server-selector"));
     await waitFor(() => expect(listMCPTools).toHaveBeenCalledWith("test-token", "mcp-1"));
     view.rerender(<KeyEditView {...props} keyData={{ ...MOCK_KEY_DATA, rpm_limit: 75 }} />);
-    await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
     expect(onSubmit.mock.calls[0][0]).toMatchObject({
@@ -1150,7 +1150,7 @@ describe("KeyEditView", () => {
     view.rerender(
       <KeyEditView {...props} keyData={{ ...MOCK_KEY_DATA, token: "", token_id: "key-two", max_budget: 25 }} />,
     );
-    await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ max_budget: 25 }), expect.any(Array)),
@@ -1177,7 +1177,7 @@ describe("KeyEditView", () => {
         keyData={{ ...MOCK_KEY_DATA, token: "different-key", token_id: "different-key", max_budget: 25 }}
       />,
     );
-    await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+    await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ max_budget: 25 }), expect.any(Array)),
@@ -1777,7 +1777,7 @@ describe("KeyEditView", () => {
       await waitFor(() => {
         expect(screen.getByTestId("mcp-server-selector")).toHaveAttribute("data-team-id", "");
       });
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalled();
@@ -1817,7 +1817,7 @@ describe("KeyEditView", () => {
         expect(screen.getByTestId("mcp-server-selector")).toHaveAttribute("data-team-id", "");
       });
       view.rerender(renderEditor({ ...keyData, rpm_limit: 75 }));
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalled();
@@ -1861,6 +1861,7 @@ describe("KeyEditView", () => {
     });
 
     it("should save an explicit project detach while keeping parents locked until reopening the editor", async () => {
+      testQueryClient.clear();
       vi.mocked(getUiSettings).mockResolvedValue({ values: { enable_projects_ui: true } });
       const onSubmit = vi.fn().mockResolvedValue(undefined);
       const onCancel = vi.fn();
@@ -2781,7 +2782,7 @@ describe("KeyEditView", () => {
       );
 
       const teamCombobox = screen.getByRole("combobox", { name: "团队 ID" });
-      expect(teamCombobox).toHaveValue("Alpha");
+      expect(teamCombobox).toHaveTextContent("Alpha (team-1)");
       await userEvent.click(teamCombobox);
 
       const alphaOption = await screen.findByRole("option", { name: /Alpha/ });
@@ -2806,7 +2807,7 @@ describe("KeyEditView", () => {
 
       await userEvent.click(screen.getByRole("combobox", { name: "团队 ID" }));
 
-      expect(await screen.findByRole("option")).toHaveTextContent(/^-team-3$/);
+      expect(await screen.findByRole("option")).toHaveTextContent(/^- \(team-3\)$/);
     });
 
     it("clears the team in the update payload and keeps the organization", async () => {
@@ -2825,10 +2826,10 @@ describe("KeyEditView", () => {
       );
 
       const teamCombobox = screen.getByRole("combobox", { name: "团队 ID" });
-      expect(teamCombobox).toHaveValue("Alpha");
+      expect(teamCombobox).toHaveTextContent("Alpha (team-1)");
       const [, teamClearButton] = screen.getAllByRole("button", { name: "清除" });
       await userEvent.click(teamClearButton);
-      await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
+      await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {
         expect(onSubmitMock).toHaveBeenCalledWith(
@@ -2852,7 +2853,7 @@ describe("KeyEditView", () => {
         />,
       );
 
-      expect(screen.getByRole("combobox", { name: "团队 ID" })).toHaveValue("Gamma");
+      expect(screen.getByRole("combobox", { name: "团队 ID" })).toHaveTextContent("Gamma (team-9)");
     });
 
     it("carries a picked MCP server into the payload", async () => {

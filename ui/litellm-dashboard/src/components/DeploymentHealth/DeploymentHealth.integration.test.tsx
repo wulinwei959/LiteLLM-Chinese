@@ -97,7 +97,7 @@ const renderHealth = (userRole = "proxy_admin") => {
 };
 
 const openPanel = async (user: ReturnType<typeof userEvent.setup>) => {
-  await user.click(await screen.findByRole("button", { name: /^Deployment health/ }));
+  await user.click(await screen.findByRole("button", { name: /^部署健康状况/ }));
   return screen.findByRole("dialog", { name: "部署健康状况" });
 };
 
@@ -145,7 +145,7 @@ describe("deployment health icon", () => {
     proxy.warnings = [...warnings, { ...LICENSE_IN_3_DAYS, ignore: snoozedBy("admin-2", "2026-10-21T17:04:12Z") }];
     renderHealth();
 
-    const icon = await screen.findByRole("button", { name: "Deployment health, 2 active warnings" });
+    const icon = await screen.findByRole("button", { name: "部署健康状况，2 条生效中的告警" });
     expect(within(icon).getByText("2")).toHaveAttribute("data-tone", tone);
   });
 
@@ -154,7 +154,7 @@ describe("deployment health icon", () => {
     renderHealth("internal_user");
 
     await waitFor(() => expect(vi.mocked(fetch)).toHaveBeenCalled());
-    expect(screen.queryByRole("button", { name: /Deployment health/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /部署健康状况/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(proxy.gets).toBe(0);
   });
@@ -166,7 +166,7 @@ describe("deployment banner", () => {
     renderHealth();
 
     const banner = await screen.findByRole("alert", { name: "部署告警" });
-    expect(banner).toHaveTextContent("Your LiteLLM Enterprise license expires in 3 days (Oct 17, 2026)");
+    expect(banner).toHaveTextContent("你的 LiteLLM 企业版许可3 天后到期（2026年10月17日）");
     expect(banner).not.toHaveTextContent("没有配置 Redis");
     expect(banner).not.toHaveTextContent("more");
   });
@@ -185,10 +185,10 @@ describe("deployment banner", () => {
     proxy.warnings = [ENV_CREDENTIAL];
     renderHealth();
 
-    await user.click(await within(await screen.findByRole("alert")).findByRole("button", { name: "审核" }));
+    await user.click(await within(await screen.findByRole("alert")).findByRole("button", { name: "查看" }));
 
     const panel = await screen.findByRole("dialog", { name: "部署健康状况" });
-    expect(within(panel).getByRole("article", { name: "Environment-credential login is enabled" })).toBeVisible();
+    expect(within(panel).getByRole("article", { name: "已启用环境变量凭据登录" })).toBeVisible();
   });
 });
 
@@ -208,53 +208,53 @@ describe("deployment health panel", () => {
       within(panel)
         .getAllByRole("region")
         .map((region) => region.getAttribute("aria-label")),
-    ).toEqual(["Critical", "Warnings", "Ignored and snoozed"]);
-    const critical = within(panel).getByRole("region", { name: "Critical" });
+    ).toEqual(["严重", "警告", "已忽略和已静音"]);
+    const critical = within(panel).getByRole("region", { name: "严重" });
     expect(within(critical).getByRole("article")).toHaveTextContent(
       "general_settings.disable_env_credential_login: true",
     );
-    const warnings = within(panel).getByRole("region", { name: "Warnings" });
+    const warnings = within(panel).getByRole("region", { name: "警告" });
     expect(
       within(critical)
         .getAllByRole("article")
         .map((item) => item.getAttribute("aria-label")),
-    ).toEqual(["Environment-credential login is enabled"]);
+    ).toEqual(["已启用环境变量凭据登录"]);
     expect(
       within(warnings)
         .getAllByRole("article")
         .map((item) => item.getAttribute("aria-label")),
     ).toEqual(["没有配置 Redis"]);
-    expect(within(warnings).getByRole("link", { name: "Read the docs" })).toHaveAttribute(
+    expect(within(warnings).getByRole("link", { name: "查看文档" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/proxy/redis_requirements",
     );
-    expect(within(warnings).getByRole("link", { name: "Read the docs" })).toHaveAttribute("target", "_blank");
-    expect(within(warnings).getByRole("link", { name: "Read the docs" })).toHaveAttribute(
+    expect(within(warnings).getByRole("link", { name: "查看文档" })).toHaveAttribute("target", "_blank");
+    expect(within(warnings).getByRole("link", { name: "查看文档" })).toHaveAttribute(
       "rel",
       expect.stringContaining("noopener"),
     );
-    expect(within(panel).queryByRole("article", { name: "Detailed debug logging is on" })).not.toBeInTheDocument();
+    expect(within(panel).queryByRole("article", { name: "已开启详细调试日志" })).not.toBeInTheDocument();
 
-    await user.click(within(panel).getByRole("button", { name: "Ignored and snoozed 2" }));
+    await user.click(within(panel).getByRole("button", { name: "已忽略和已静音 2" }));
 
-    const debug = within(panel).getByRole("article", { name: "Detailed debug logging is on" });
-    expect(within(debug).getByText("Snoozed")).toBeVisible();
-    expect(within(debug).getByText(/^Until/)).toHaveTextContent(/^Until Oct 2[12], 2026/);
-    expect(debug).toHaveTextContent("by admin-2");
+    const debug = within(panel).getByRole("article", { name: "已开启详细调试日志" });
+    expect(within(debug).getByText("已静音")).toBeVisible();
+    expect(within(debug).getByText(/^直到/)).toHaveTextContent(/^直到 Oct 2[12], 2026/);
+    expect(debug).toHaveTextContent("操作人 admin-2");
     const expired = within(panel).getByRole("article", {
-      name: "Your LiteLLM Enterprise license expired on Oct 1, 2026",
+      name: /你的 LiteLLM 企业版许可已于 .* 过期/,
     });
-    expect(expired).toHaveTextContent("by admin-3");
+    expect(expired).toHaveTextContent("操作人 admin-3");
 
-    await user.hover(within(debug).getByText(/^Until/));
+    await user.hover(within(debug).getByText(/^直到/));
     expect(await screen.findByText(/October 21, 2026 at 5:04:12\sPM UTC/)).toBeVisible();
   });
 
   it.each([
-    { option: "Snooze for 1 day", body: { ignored: true, snooze_seconds: 86_400 }, badge: /^Snoozed$/ },
-    { option: "Snooze for 7 days", body: { ignored: true, snooze_seconds: 604_800 }, badge: /^Snoozed$/ },
-    { option: "Snooze for 30 days", body: { ignored: true, snooze_seconds: 2_592_000 }, badge: /^Snoozed$/ },
-    { option: "Ignore forever", body: { ignored: true }, badge: /^Ignored$/ },
+    { option: "静音 1 天", body: { ignored: true, snooze_seconds: 86_400 }, badge: /^已静音$/ },
+    { option: "静音 7 天", body: { ignored: true, snooze_seconds: 604_800 }, badge: /^已静音$/ },
+    { option: "静音 30 天", body: { ignored: true, snooze_seconds: 2_592_000 }, badge: /^已静音$/ },
+    { option: "永久忽略", body: { ignored: true }, badge: /^已忽略$/ },
   ])(
     "should let a proxy admin $option and move the warning to the ignored section",
     async ({ option, body, badge }) => {
@@ -263,18 +263,18 @@ describe("deployment health panel", () => {
       renderHealth();
       const panel = await openPanel(user);
 
-      await user.click(within(panel).getByRole("button", { name: "Snooze No Redis configured" }));
+      await user.click(within(panel).getByRole("button", { name: "静音 没有配置 Redis" }));
       await user.click(await screen.findByRole("menuitem", { name: option }));
 
       await waitFor(() => expect(proxy.patches).toEqual([{ id: "no_redis", body }]));
-      await waitFor(() => expect(within(panel).queryByRole("region", { name: "Warnings" })).not.toBeInTheDocument());
-      await user.click(within(panel).getByRole("button", { name: "Ignored and snoozed 1" }));
+      await waitFor(() => expect(within(panel).queryByRole("region", { name: "警告" })).not.toBeInTheDocument());
+      await user.click(within(panel).getByRole("button", { name: "已忽略和已静音 1" }));
       const item = within(panel).getByRole("article", { name: "没有配置 Redis" });
       expect(within(item).getByText(badge)).toBeVisible();
-      expect(item).toHaveTextContent("by admin-1");
+      expect(item).toHaveTextContent("操作人 admin-1");
 
       await user.keyboard("{Escape}");
-      expect(await screen.findByRole("button", { name: "Deployment health, 1 active warning" })).toBeVisible();
+      expect(await screen.findByRole("button", { name: "部署健康状况，1 条生效中的告警" })).toBeVisible();
     },
   );
 
@@ -285,15 +285,15 @@ describe("deployment health panel", () => {
     const panel = await openPanel(user);
     expect(within(panel).getByText("没有生效中的警告")).toBeVisible();
 
-    await user.click(within(panel).getByRole("button", { name: "Ignored and snoozed 1" }));
-    await user.click(within(panel).getByRole("button", { name: "Restore Environment-credential login is enabled" }));
+    await user.click(within(panel).getByRole("button", { name: "已忽略和已静音 1" }));
+    await user.click(within(panel).getByRole("button", { name: "恢复 已启用环境变量凭据登录" }));
 
     await waitFor(() => expect(proxy.patches).toEqual([{ id: "env_credential_login", body: { ignored: false } }]));
-    const critical = await within(panel).findByRole("region", { name: "Critical" });
-    expect(within(critical).getByRole("article", { name: "Environment-credential login is enabled" })).toBeVisible();
+    const critical = await within(panel).findByRole("region", { name: "严重" });
+    expect(within(critical).getByRole("article", { name: "已启用环境变量凭据登录" })).toBeVisible();
 
     await user.keyboard("{Escape}");
-    expect(await screen.findByRole("alert")).toHaveTextContent("Environment-credential login is enabled");
+    expect(await screen.findByRole("alert")).toHaveTextContent("已启用环境变量凭据登录");
   });
 
   it("should show an env var ignore without a restore action", async () => {
@@ -302,10 +302,10 @@ describe("deployment health panel", () => {
     renderHealth();
     const panel = await openPanel(user);
 
-    await user.click(within(panel).getByRole("button", { name: "Ignored and snoozed 1" }));
+    await user.click(within(panel).getByRole("button", { name: "已忽略和已静音 1" }));
 
     const item = within(panel).getByRole("article", { name: "没有配置 Redis" });
-    expect(item).toHaveTextContent("By env var LITELLM_DISABLE_NO_REDIS_WARNING");
+    expect(item).toHaveTextContent("由环境变量设置 LITELLM_DISABLE_NO_REDIS_WARNING");
     expect(within(item).queryByRole("button")).not.toBeInTheDocument();
   });
 
@@ -317,7 +317,7 @@ describe("deployment health panel", () => {
     const panel = await openPanel(user);
 
     const item = within(panel).getByRole("article", { name: "没有配置 Redis" });
-    expect(within(item).getByRole("link", { name: "Read the docs" })).toBeVisible();
+    expect(within(item).getByRole("link", { name: "查看文档" })).toBeVisible();
     expect(within(item).queryByRole("button")).not.toBeInTheDocument();
   });
 
@@ -326,11 +326,11 @@ describe("deployment health panel", () => {
     proxy.warnings = [NO_REDIS, { ...ENV_CREDENTIAL, ignore: snoozedBy("admin-2", "2026-10-21T17:04:12Z") }];
     renderHealth("proxy_admin_viewer");
     const panel = await openPanel(user);
-    await user.click(within(panel).getByRole("button", { name: "Ignored and snoozed 1" }));
+    await user.click(within(panel).getByRole("button", { name: "已忽略和已静音 1" }));
 
     const active = within(panel).getByRole("article", { name: "没有配置 Redis" });
-    const ignored = within(panel).getByRole("article", { name: "Environment-credential login is enabled" });
-    expect(ignored).toHaveTextContent("by admin-2");
+    const ignored = within(panel).getByRole("article", { name: "已启用环境变量凭据登录" });
+    expect(ignored).toHaveTextContent("操作人 admin-2");
     expect(within(active).queryByRole("button")).not.toBeInTheDocument();
     expect(within(ignored).queryByRole("button")).not.toBeInTheDocument();
   });
@@ -339,12 +339,12 @@ describe("deployment health panel", () => {
     const user = userEvent.setup();
     proxy.warnings = [NO_REDIS];
     renderHealth();
-    await screen.findByRole("button", { name: "Deployment health, 1 active warning" });
+    await screen.findByRole("button", { name: "部署健康状况，1 条生效中的告警" });
     proxy.warnings = [NO_REDIS, DEBUG];
 
     const panel = await openPanel(user);
 
-    expect(await within(panel).findByRole("article", { name: "Detailed debug logging is on" })).toBeVisible();
+    expect(await within(panel).findByRole("article", { name: "已开启详细调试日志" })).toBeVisible();
     expect(proxy.gets).toBe(2);
   });
 });

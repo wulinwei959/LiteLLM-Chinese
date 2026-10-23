@@ -13056,14 +13056,19 @@
     },
     "loading": "正在加载部署警告",
     "group": {
-      "ignoredAndSnoozed": "已忽略和已静音"
+      "ignoredAndSnoozed": "已忽略和已静音",
+      "critical": "严重",
+      "warning": "警告",
+      "critical": "严重",
+      "warning": "警告"
     },
     "title": {
       "deploymentHealth": "部署健康状况"
     },
     "subtitle": "关于这个代理部署方式的警告",
     "aria": {
-      "deploymentAlert": "部署告警"
+      "deploymentAlert": "部署告警",
+      "deploymentHealthCount": "部署健康状况，{count} 条生效中的告警"
     },
     "warning": {
       "envCredentialLogin": {
