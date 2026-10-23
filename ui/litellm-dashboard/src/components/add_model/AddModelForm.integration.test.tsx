@@ -204,7 +204,7 @@ vi.mock("@/app/(dashboard)/hooks/tags/useTags", () => ({
 const stubT = ((key: string) => key) as never;
 
 const firstModelPayload = () =>
-  vi.mocked(modelCreateCall).mock.calls[0][1] as unknown as { litellm_params: Record<string, unknown> };
+  vi.mocked(modelCreateCall).mock.calls[0][2] as unknown as { litellm_params: Record<string, unknown> };
 
 const mockAuthorizedUser = (userRole: string, userId: string, premiumUser: boolean) => ({
   token: "test-token",
@@ -862,7 +862,7 @@ describe("AddModelForm", () => {
       await clickTestConnect();
 
       await expectBlockedWith("请至少选择一个模型。");
-      expect(screen.getAllByText("Required")).toHaveLength(2);
+      expect(screen.getAllByText("必填")).toHaveLength(2);
     });
 
     it("runs the connection test once provider, auth and model are filled in", async () => {
@@ -942,7 +942,7 @@ describe("AddModelForm", () => {
       expect(await screen.findByRole("button", { name: "创建凭据" })).toBeInTheDocument();
 
       await clickTestConnect();
-      expect(errorToast).toHaveBeenCalledWith("Create or select a credential for this auth type");
+      expect(errorToast).toHaveBeenCalledWith("请为此认证类型创建或选择凭据");
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
       expect(testConnectionRequest).not.toHaveBeenCalled();
       errorToast.mockRestore();

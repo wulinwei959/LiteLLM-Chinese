@@ -891,7 +891,7 @@
       "connectionTest": {
         "title": "连接测试结果"
       },
-      "teamSelectionRequired": "需要选择团队",
+      "teamSelectionRequired": "需要先选择团队",
       "teamSelectionRequiredDesc": "作为团队管理员，您需要先选择团队才能添加模型。",
       "teamByokAria": "团队自带密钥模型",
       "teamByokLabel": "团队自带密钥模型",

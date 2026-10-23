@@ -4869,3 +4869,7 @@ AllModelsTab 里删除与暂停两条载荷断言写的是 `mock-access-token`�
 ## 2026-10-24 第 491 簇：缓存感知路由分节归组与阈值保存门禁
 
 `ComplexityRouterAdvancedSections` 里 `cache-aware` 分节有定义却没有任何分组把它列进 `keys`，整块缓存感知设置在高阶折叠里永不渲染——自动路由两组测试都因此取不到开关。归入"会话与效率"分组后开关恢复。编辑弹窗同时补两处：缓存相关字段标签翻中文（预计输出 token 数/预测超时（毫秒））、保存按钮在 `heuristic_v2_success_threshold` 非法时置灰。剩余两条仍是阈值草稿的提交/清除时序，需继续对照组件内 draft 状态。
+
+## 2026-10-24 第 492 簇：新增模型表单的凭据载荷与团队提示
+
+AddModelForm 由 7 例降到 1 例：`firstModelPayload` 读的是 `modelCreateCall` 的第 2 个参数，但上游签名已变成 `(t, accessToken, payload)`，四条件凭据-only 用例全部断言在 accessToken 上；改读第 3 个参数后 OAuth/GitHub/共享设备登录四条一起转绿。另把团队作用域提示词条对齐共享文案（"需要先选择团队"）、测试里的 "Required" 计数改"必填"、凭据缺失的 toast 断言按 `models.addModel.createOrSelectCredential` 换成中文。剩一条是"测试连接前就地展示两条必填错误"，生产只出一条，留待查模型字段的必填标记。
