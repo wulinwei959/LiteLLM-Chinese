@@ -94,6 +94,19 @@ describe("Budget Panel", () => {
     expect(container.querySelector(".lucide-wallet")).not.toBeNull();
   });
 
+  it("renders the examples tab with translated copy", async () => {
+    const user = userEvent.setup();
+    renderPanel();
+    await screen.findByRole("heading", { level: 1, name: "预算" });
+
+    await user.click(screen.getByRole("tab", { name: "示例" }));
+
+    expect(await screen.findByText("如何使用预算 ID")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "为客户分配预算" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "测试（cURL）" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "测试（OpenAI SDK）" })).toBeInTheDocument();
+  });
+
   it("loads the first page of budgets, newest first", async () => {
     renderPanel();
     await waitFor(() => expect(getMock).toHaveBeenCalled());

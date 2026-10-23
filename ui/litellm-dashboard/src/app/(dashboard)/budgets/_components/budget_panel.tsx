@@ -142,17 +142,17 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
         </TabsContent>
         <TabsContent value="examples" className="min-h-0 flex-1 overflow-y-auto" keepMounted>
           <div className="pt-6">
-            <p className="text-base text-muted-foreground">How to use budget id</p>
+            <p className="text-base text-muted-foreground">{t("examples.title")}</p>
             <Tabs defaultValue="assign-budget">
               <TabsList variant="line" className="h-auto w-full justify-start rounded-none border-b p-0">
                 <TabsTrigger value="assign-budget" className="flex-none rounded-none px-4 py-2">
-                  Assign Budget to Customer
+                  {t("examples.assignBudget")}
                 </TabsTrigger>
                 <TabsTrigger value="curl" className="flex-none rounded-none px-4 py-2">
-                  Test it (Curl)
+                  {t("examples.testCurl")}
                 </TabsTrigger>
                 <TabsTrigger value="openai-sdk" className="flex-none rounded-none px-4 py-2">
-                  Test it (OpenAI SDK)
+                  {t("examples.testOpenAiSdk")}
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="assign-budget" keepMounted>

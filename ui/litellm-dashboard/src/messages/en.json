@@ -3389,7 +3389,13 @@
     "updateFailedDetail": "Error updating the budget: {error}",
     "noBudgetMatchesSearch": "No budget matches your search or filters.",
     "save": "Save",
-    "durationHourlyLower": "hourly"
+    "durationHourlyLower": "hourly",
+    "examples": {
+      "title": "How to use budget id",
+      "assignBudget": "Assign Budget to Customer",
+      "testCurl": "Test it (Curl)",
+      "testOpenAiSdk": "Test it (OpenAI SDK)"
+    }
   },
   "guardrails": {
     "title": "Guardrails",

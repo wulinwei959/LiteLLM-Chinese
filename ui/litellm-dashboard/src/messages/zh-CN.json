@@ -3389,7 +3389,13 @@
     "updateFailedDetail": "更新预算时出错:{error}",
     "noBudgetMatchesSearch": "没有预算符合你的搜索或筛选条件。",
     "save": "保存",
-    "durationHourlyLower": "每小时"
+    "durationHourlyLower": "每小时",
+    "examples": {
+      "title": "如何使用预算 ID",
+      "assignBudget": "为客户分配预算",
+      "testCurl": "测试（cURL）",
+      "testOpenAiSdk": "测试（OpenAI SDK）"
+    }
   },
   "guardrails": {
     "title": "护栏",

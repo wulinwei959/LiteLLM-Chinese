@@ -4502,3 +4502,10 @@ MCPToolsetTableColumns 行操作三枚接既有键（aria 接 toolsets.openActio
 测试债收口：mcp_server_edit.test 旧英文断言翻面（保存更改/取消/MCP 服务器 URL/编辑 MCP 服务器 form 名），顺带清掉 HEAD 既有的 render 未用导入错误；mcp_servers.test 深链用例的 `renderWithoutNuqs` 是 HEAD 快照漏定义 helper 的缺陷（同 435 簇 fieldsHidden 先例），补成 LocaleProvider+基础 render 包真实 react 适配器，因为 renderWithProviders 内层 NuqsTestingAdapter 会吞掉 mount effect 发起的 URL 写入（onUrlUpdate 试探已证实）；mcp_connect.test tab 名接 zh "LiteLLM 代理"。mcp-servers 域 787 例从 HEAD 基线 11 红降至 4 红、净新增 0；剩余 4 红（blocks Save×2、OAuth snapshot×2）为组件行为缺口（保存按钮未按 authorizing 态禁用），非翻译半径，另账。
 
 验证：AST 触及文件仅剩判定保留项；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错（比 HEAD 净减 1）；prettier 触及文件与 HEAD 同样脏的两枚（mcp_server_edit/mcp_tool_configuration）不动；`npm run build` exit 0。
+## 2026-10-23 第 441 簇：预算示例页签指引文案接线
+
+budget_panel 示例页签此前整片英文，本簇接 `budgets.examples` 四键：标题 "How to use budget id"、三个页签 "Assign Budget to Customer" / "Test it (Curl)" / "Test it (OpenAI SDK)"（en 值逐字保留，zh 为"如何使用预算 ID"/"为客户分配预算"/"测试（cURL）"/"测试（OpenAI SDK）"，括号按目录既有全角先例）。页面级"示例"页签复用既有 `budgets.tabs.examples`，不另开键。三块代码样本常量来自 `constants.ts`，属示例负载不翻。
+
+测试：budget_panel.test.tsx 新增一例，切到示例页签后断言四段中文文案与三个页签可访问名，14 例全绿。
+
+验证：全局 AST 可见英文 253→249 条、132→131 个文件（本文件归零）；目录叶子 11595→11599，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错 2 警与 HEAD 持平；prettier clean；i18n 五条守卫 23 例全绿。
