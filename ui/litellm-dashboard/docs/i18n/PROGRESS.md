@@ -4927,3 +4927,7 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 ## 2026-10-24 第 504 簇：团队密钥表补回团队成员预算
 
 `TeamVirtualKeysTable` 里 `teamMemberBudgetGate` 只有 import、`teamMemberBudgets` 算了却没人用，合并时整段继承预算展示丢失。改为在预算列对无自身预算的密钥取成员预算，渲染 `$金额 (团队成员预算)`（复用 `virtualKeys.teamMemberBudget`，补第二把翻译器），测试断言同步中文后转绿。
+
+## 2026-10-24 第 505 簇：自动路由用量视图的节省卡与筛选文案
+
+`KeyAutoRouterUsageTab` 的节省卡区域名在目录里是"预计总节省"（不是"自动路由节省"），内部四项标签、每千轮成本与"全部自动路由"筛选项都还是英文断言，逐条对到 `costOptimization.autoRouter.*` 的中文后文件转绿。

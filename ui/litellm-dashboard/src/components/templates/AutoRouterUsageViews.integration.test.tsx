@@ -118,20 +118,20 @@ describe("Auto-router usage views", () => {
     };
     renderWithProviders(<KeyAutoRouterUsageTab accessToken="test-token" keyToken="key-hash-1" activity={activity} />);
 
-    const savings = within(await screen.findByRole("region", { name: "自动路由节省" }));
+    const savings = within(await screen.findByRole("region", { name: "预计总节省" }));
     expect(savings.getByText("$8.75")).toBeInTheDocument();
-    expect(savings.getByText("Actual auto-router spend")).toBeInTheDocument();
+    expect(savings.getByText("自动路由实际支出")).toBeInTheDocument();
     expect(savings.getByText("$1.25")).toBeInTheDocument();
-    expect(savings.getByText("LLM spend")).toBeInTheDocument();
+    expect(savings.getByText("LLM 支出")).toBeInTheDocument();
     expect(savings.getByText("$1.00")).toBeInTheDocument();
-    expect(savings.getByText("Classification cost")).toBeInTheDocument();
+    expect(savings.getByText("分类成本")).toBeInTheDocument();
     expect(savings.getByText("$0.2500")).toBeInTheDocument();
-    expect(savings.getByText("($62.50 / 1K turns)")).toBeInTheDocument();
-    expect(savings.getByText("Estimated baseline spend")).toBeInTheDocument();
+    expect(savings.getByText("（$62.50 / 千轮）")).toBeInTheDocument();
+    expect(savings.getByText("预估基线支出")).toBeInTheDocument();
     expect(savings.getByText("$10.00")).toBeInTheDocument();
     expect(screen.getByText("自动路由提示缓存")).toBeInTheDocument();
     expect(screen.getAllByText("50.0%").length).toBeGreaterThan(0);
-    expect(screen.getByText("All auto-routers")).toBeInTheDocument();
+    expect(screen.getByText("全部自动路由")).toBeInTheDocument();
     const summary = within(screen.getByRole("table", { name: "路由用量与节省" }));
     expect(summary.getByRole("row", { name: /router-one.*\$1\.25.*\$8\.75/ })).toBeInTheDocument();
     expect(summary.getByRole("row", { name: /router-two.*\$0\.25.*\$0\.75/ })).toBeInTheDocument();
