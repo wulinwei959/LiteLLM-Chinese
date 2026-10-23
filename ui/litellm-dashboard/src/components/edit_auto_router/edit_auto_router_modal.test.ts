@@ -1,4 +1,12 @@
+import type { StoredComplexityRouterConfig } from "../add_model/build_complexity_router_config";
 import { buildUpdatedComplexityRouterConfig, hydrateComplexityRouterConfig } from "./edit_auto_router_modal";
+
+type TestStored = Omit<StoredComplexityRouterConfig, "classifier_type"> & {
+  classifier_type?: string;
+} & Record<string, unknown>;
+
+const hydrate = (config: TestStored | Record<string, unknown>, defaultModel: string | null) =>
+  hydrateComplexityRouterConfig(config as unknown as StoredComplexityRouterConfig, defaultModel);
 
 const storedConfigValue = {
   tiers: {
@@ -19,9 +27,9 @@ const storedConfigValue = {
   tier_distance_penalty: 0.8,
   adaptive_eligible: "all",
   return_raw_model_name: true,
-};
+} as TestStored;
 
-const storedConfig = JSON.stringify(storedConfigValue);
+const storedConfig = storedConfigValue;
 
 const tiers = {
   SIMPLE: ["gpt-4o-mini"],
@@ -87,11 +95,15 @@ describe("buildUpdatedComplexityRouterConfig", () => {
         classifier_type,
         heuristic_first_max_tier: "SIMPLE",
         hybrid_boundary_margin: 0.1,
-      };
-      const legacy = hydrateComplexityRouterConfig(stored, null);
+      } as TestStored;
+      const legacy = hydrate(stored, null);
       expect(buildUpdatedComplexityRouterConfig(stored, legacy)).not.toHaveProperty("local_heuristic");
-      const selected = { ...stored, local_heuristic: "heuristic_v2", heuristic_v2_success_threshold: 0.9 };
-      const hydrated = hydrateComplexityRouterConfig(selected, null);
+      const selected = {
+        ...stored,
+        local_heuristic: "heuristic_v2",
+        heuristic_v2_success_threshold: 0.9,
+      } as TestStored;
+      const hydrated = hydrate(selected, null);
       expect(hydrated.local_heuristic).toBe("heuristic_v2");
       expect(buildUpdatedComplexityRouterConfig(selected, hydrated)).toMatchObject({
         local_heuristic: "heuristic_v2",
@@ -116,10 +128,8 @@ describe("buildUpdatedComplexityRouterConfig", () => {
   });
 
   it("hydrates a stored modality_routing into form state and defaults absent to off", () => {
-    expect(hydrateComplexityRouterConfig({ ...storedConfig, modality_routing: true }, null).modality_routing).toBe(
-      true,
-    );
-    expect(hydrateComplexityRouterConfig(storedConfig, null).modality_routing).toBe(false);
+    expect(hydrate({ ...storedConfig, modality_routing: true }, null).modality_routing).toBe(true);
+    expect(hydrate(storedConfig, null).modality_routing).toBe(false);
   });
 
   it("round-trips modality_routing explicitly in both directions", () => {
@@ -136,10 +146,8 @@ describe("buildUpdatedComplexityRouterConfig", () => {
   });
 
   it("hydrates a stored modality_pin_override into form state and defaults absent to off", () => {
-    expect(
-      hydrateComplexityRouterConfig({ ...storedConfig, modality_pin_override: true }, null).modality_pin_override,
-    ).toBe(true);
-    expect(hydrateComplexityRouterConfig(storedConfig, null).modality_pin_override).toBe(false);
+    expect(hydrate({ ...storedConfig, modality_pin_override: true }, null).modality_pin_override).toBe(true);
+    expect(hydrate(storedConfig, null).modality_pin_override).toBe(false);
   });
 
   it("round-trips modality_pin_override explicitly in both directions", () => {

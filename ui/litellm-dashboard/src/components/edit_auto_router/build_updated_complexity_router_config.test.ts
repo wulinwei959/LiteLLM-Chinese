@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { transitionClassifierType } from "../add_model/classifier_type_transition";
 import { effectiveClassifierType } from "../add_model/ComplexityRouterConfig";
 
+import type { StoredComplexityRouterConfig } from "../add_model/build_complexity_router_config";
+
+type TestStored = StoredComplexityRouterConfig & Record<string, unknown>;
+
 import {
   MANAGED_COMPLEXITY_ROUTER_KEYS,
   buildUpdatedComplexityRouterConfig,
@@ -10,7 +14,7 @@ import {
 } from "./edit_auto_router_modal";
 
 // The custom-tier router these cases round-trip, so a variant differs only by what it overrides.
-const storedCustomConfig = (overrides: Record<string, unknown> = {}) => ({
+const storedCustomConfig = (overrides: Record<string, unknown> = {}): TestStored => ({
   tiers: { CASUAL: ["gpt-4o-mini"], AUDIT: ["o1"] },
   tier_definitions: [
     { name: "CASUAL", description: "small talk" },
@@ -32,7 +36,7 @@ const STORED = {
   match_threshold: 0.72,
   // A key no UI control owns; it must survive every save untouched.
   some_future_backend_key: { nested: true },
-};
+} as TestStored;
 
 const FORM_VALUE = {
   tiers: { SIMPLE: ["gpt-4o-mini"], MEDIUM: [], COMPLEX: [], REASONING: [] },
@@ -242,7 +246,7 @@ describe("buildUpdatedComplexityRouterConfig keyword matching", () => {
         tier_distance_penalty: 0.8,
         enable_context_window_escalation: true,
         context_window_escalation_buffer: 0.9,
-      };
+      } as TestStored;
       const value = hydrateComplexityRouterConfig(stored, undefined);
       for (const keywordState of [undefined, hydratedState]) {
         const saved = buildUpdatedComplexityRouterConfig(stored, value, undefined, keywordState);
@@ -888,7 +892,7 @@ describe("managed keys survive an untouched open-and-save", () => {
   // Every managed key is rewritten from form state on save, so one the hydrator forgets is silently
   // dropped from the saved config. This config sets each managed key to a value that actually
   // applies, so an untouched open-and-save must return every one of them.
-  const STORED_ALL_MANAGED: Record<string, unknown> = {
+  const STORED_ALL_MANAGED: TestStored = {
     tiers: { SIMPLE: ["gpt-4o-mini"], MEDIUM: ["gpt-4o"], COMPLEX: ["opus"], REASONING: ["o1"] },
     tier_model_configs: { REASONING: [{ model_name: "o1", litellm_params: { reasoning_effort: "high" } }] },
     default_model: "gpt-4o",
@@ -981,7 +985,11 @@ describe("managed keys survive an untouched open-and-save", () => {
   });
 
   it("keeps the custom classifier plugin timeout through an untouched save", () => {
-    const stored = { ...STORED_ALL_MANAGED, classifier_type: "custom", classifier_plugin_timeout_ms: 3000 };
+    const stored = {
+      ...STORED_ALL_MANAGED,
+      classifier_type: "custom",
+      classifier_plugin_timeout_ms: 3000,
+    } as TestStored;
     const hydrated = hydrateComplexityRouterConfig(stored, undefined);
     expect(buildUpdatedComplexityRouterConfig(stored, hydrated).classifier_plugin_timeout_ms).toBe(3000);
   });
@@ -1183,7 +1191,7 @@ describe("LLM V2 configuration preservation", () => {
 });
 
 describe("untouched save round trip", () => {
-  const STORED_PRE_MANAGED_BOOLEANS: Record<string, unknown> = {
+  const STORED_PRE_MANAGED_BOOLEANS: TestStored = {
     tiers: { SIMPLE: ["gpt-4o-mini"], MEDIUM: ["gpt-4o"], COMPLEX: ["opus"], REASONING: ["o1"] },
     tier_model_configs: { REASONING: [{ model_name: "o1", litellm_params: { reasoning_effort: "high" } }] },
     default_model: "gpt-4o",

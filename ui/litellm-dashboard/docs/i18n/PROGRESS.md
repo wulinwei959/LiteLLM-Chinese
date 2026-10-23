@@ -4653,3 +4653,8 @@ handle_add_model_submit.test 六处 `prepareModelAddRequest`/`handleAddModelSubm
 结果：`tsc --noEmit` 测试错误 344→313。该集成套件运行时仍有超时，抽查"should show proxy admin only"在 HEAD 基线同样 5 秒超时，属既有用例问题，非本簇引入。
 
 验证：触及文件 eslint 0 错、2 警为既有；prettier clean；死键 0。
+## 2026-10-23 第 463 簇：自动路由测试类型债清理
+
+build_updated_complexity_router_config.test：引入 `TestStored = StoredComplexityRouterConfig & Record<string, unknown>`，夹具与 STORED/STORED_ALL_MANAGED 统一标注，未知后端键与 legacy classifier_type 得以保留，17 条错误清零，103 例全绿。edit_auto_router_modal.test：修正 `storedConfig` 误用 `JSON.stringify` 后仍按对象展开的问题，改为对象并加 hydrate 包装统一断言 legacy 类型，8 条错误清零，12 例全绿。autorouter_presets.test：13 处配置夹具补 `modality_routing`/`modality_pin_override`，16 条错误清零，123 例全绿。
+
+结果：`tsc --noEmit` 测试错误 313→272。三文件 eslint 0 错、3 警为既有；prettier clean。

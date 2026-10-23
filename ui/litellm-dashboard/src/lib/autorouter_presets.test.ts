@@ -352,6 +352,8 @@ describe("autorouter_presets", () => {
         classification_mode: "every_request" as const,
         session_affinity: false,
         deployment_affinity: true,
+        modality_routing: false,
+        modality_pin_override: false,
       };
       expect(getMissingModels(config, availability)).toEqual([]);
       expect(buildPresetPrefill(config, availability).complexityRouterConfig.tiers.SIMPLE).toEqual([group]);
@@ -535,6 +537,8 @@ describe("autorouter_presets", () => {
         classification_mode: "every_request" as const,
         session_affinity: false,
         deployment_affinity: true,
+        modality_routing: false,
+        modality_pin_override: false,
       };
       expect(buildPresetPrefill(config, availability).complexityRouterConfig.tiers.SIMPLE).toEqual(["claude-opus-5"]);
     });
@@ -569,6 +573,8 @@ describe("autorouter_presets", () => {
       classification_mode: "every_request" as const,
       session_affinity: false,
       deployment_affinity: true,
+      modality_routing: false,
+      modality_pin_override: false,
     });
 
     it("resolves a preset model to a group expanded from a wildcard deployment", () => {
@@ -940,6 +946,8 @@ describe("autorouter_presets", () => {
         classification_mode: "every_request" as const,
         session_affinity: false,
         deployment_affinity: true,
+        modality_routing: false,
+        modality_pin_override: false,
         match_threshold: 0,
         escalation_keywords: [],
       };
@@ -956,6 +964,8 @@ describe("autorouter_presets", () => {
           classification_mode: "every_request",
           session_affinity: false,
           deployment_affinity: true,
+          modality_routing: false,
+          modality_pin_override: false,
           enable_context_window_escalation: enabled,
           context_window_escalation_buffer: 0.9,
         },
@@ -994,6 +1004,8 @@ describe("autorouter_presets", () => {
         classification_mode: "every_request" as const,
         session_affinity: false,
         deployment_affinity: true,
+        modality_routing: false,
+        modality_pin_override: false,
       };
       const availability = groupsOnly(["gpt-5-nano"]);
       expect(
@@ -1011,6 +1023,8 @@ describe("autorouter_presets", () => {
           classification_mode: "every_request" as const,
           session_affinity: false,
           deployment_affinity: true,
+          modality_routing: false,
+          modality_pin_override: false,
         },
         groupsOnly(["gpt-5-nano"]),
       );
@@ -1028,6 +1042,8 @@ describe("autorouter_presets", () => {
         classification_mode: "every_request" as const,
         session_affinity: false,
         deployment_affinity: true,
+        modality_routing: false,
+        modality_pin_override: false,
       };
       const labeled = buildPresetPrefill(
         { ...base, tier_labels: { SIMPLE: "Cheap", REASONING: "Deep" } },
@@ -1044,6 +1060,8 @@ describe("autorouter_presets", () => {
         classification_mode: "every_request" as const,
         session_affinity: false,
         deployment_affinity: true,
+        modality_routing: false,
+        modality_pin_override: false,
       };
       const prefill = buildPresetPrefill(config, groupsOnly(["claude-sonnet-4.5"]));
       expect(prefill.complexityRouterConfig.tiers.SIMPLE).toEqual(["claude-sonnet-4.5"]);
@@ -1059,6 +1077,8 @@ describe("autorouter_presets", () => {
         classification_mode: "every_request" as const,
         session_affinity: false,
         deployment_affinity: true,
+        modality_routing: false,
+        modality_pin_override: false,
       };
       const prefill = buildPresetPrefill(config, groupsOnly(["gpt-5-nano", "o3"]));
       expect(prefill.complexityRouterConfig.tier_model_params).toEqual({
@@ -1079,6 +1099,8 @@ describe("autorouter_presets", () => {
         classification_mode: "every_request" as const,
         session_affinity: false,
         deployment_affinity: true,
+        modality_routing: false,
+        modality_pin_override: false,
       };
       const prefill = buildPresetPrefill(config, groupsOnly(["claude-sonnet-4.5"]));
       expect(prefill.complexityRouterConfig.tier_model_params).toEqual({
@@ -1102,6 +1124,8 @@ describe("autorouter_presets", () => {
         classification_mode: "every_request" as const,
         session_affinity: false,
         deployment_affinity: true,
+        modality_routing: false,
+        modality_pin_override: false,
       };
       const prefill = buildPresetPrefill(config, groupsOnly(["claude-sonnet-4.5"]));
       // temperature survives from the spelling that would otherwise have been overwritten;
@@ -1118,6 +1142,8 @@ describe("autorouter_presets", () => {
         classification_mode: "every_request" as const,
         session_affinity: false,
         deployment_affinity: true,
+        modality_routing: false,
+        modality_pin_override: false,
       };
       const prefill = buildPresetPrefill(config, groupsOnly(["gpt-5-nano"]));
       expect(prefill.complexityRouterConfig.tier_model_params).toBeUndefined();
