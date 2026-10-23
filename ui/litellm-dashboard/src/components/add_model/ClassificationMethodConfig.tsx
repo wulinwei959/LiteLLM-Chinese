@@ -485,7 +485,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
             value={value.heuristic_first_max_tier}
             onValueChange={(tier: unknown) => handleHeuristicFirstMaxTierChange(tier as string)}
           >
-            <SelectTrigger id="auto-router-local-max-tier" className="w-full">
+            <SelectTrigger id="auto-router-local-max-tier" aria-label={t("decideLocallyUpTo")} className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

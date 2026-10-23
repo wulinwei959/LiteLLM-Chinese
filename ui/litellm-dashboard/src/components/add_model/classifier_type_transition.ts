@@ -49,7 +49,10 @@ export const transitionClassifierType = (
       : undefined,
     classifier_fallback: usesClassifierContext(classifierType) ? value.classifier_fallback : undefined,
     local_heuristic: isHeuristicChain(classifierType) ? value.local_heuristic : undefined,
-    heuristic_v2_success_threshold: isHeuristicChain(classifierType) ? value.heuristic_v2_success_threshold : undefined,
+    heuristic_v2_success_threshold:
+      classifierType === "heuristic" || isHeuristicChain(classifierType)
+        ? value.heuristic_v2_success_threshold
+        : undefined,
     heuristic_first_max_tier:
       classifierType === "heuristic_first"
         ? value.heuristic_first_max_tier ?? DEFAULT_HEURISTIC_FIRST_MAX_TIER

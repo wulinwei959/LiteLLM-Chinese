@@ -57,6 +57,7 @@ const RENDERED_LABELS: Record<string, string> = {
   "Local checks before the judge": "评审前的本地检查",
   "Heuristic before the judge": "评审前的启发式",
   "Always use the judge": "始终使用评审模型",
+  Medium: "中等",
 };
 
 const rendered = (label: string) => RENDERED_LABELS[label] ?? label;

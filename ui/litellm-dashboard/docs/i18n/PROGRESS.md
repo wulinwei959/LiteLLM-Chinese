@@ -4903,3 +4903,7 @@ KubernetesPodsCard 的 "3 ready pods" 改"3 个就绪 Pod"；GithubCopilotConnec
 ## 2026-10-24 第 498 簇：模型页页签权限与工作流弃用提示
 
 模型与端点页：创建范围规则里 `llm-credentials` 页签此前要求 `!isViewOnly`，只读管理员连只读的凭据列表都看不到；改为管理员始终可见、内部用户仅在非只读时可见，测试里的页签断言同步（非管理员保留凭据、只读管理员保留凭据、内部只读用户不可见）。工作流的弃用提示断言改"工作流"。两文件转绿。
+
+## 2026-10-24 第 499 簇：启发式 v2 阈值跨类型保留与本地裁决上限可访问名
+
+`classifier_type_transition` 只在 heuristic_first/hybrid 保留 `heuristic_v2_success_threshold`，切回"启发式"（v1）时把用户刚输入的非法值清掉，导致保存按钮重新可用；改为启发式家族一律保留（离开启发式体系才清空），编辑弹窗与新增面板两套断言同时转绿。另给"本地裁决上限层级"下拉补 aria-label（此前只有可见的 strong 标题、没有可访问名），并在测试辅助里补 Medium→中等 的标签映射，add_auto_router_tab 全绿。
