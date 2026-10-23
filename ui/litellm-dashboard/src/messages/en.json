@@ -3414,7 +3414,8 @@
       "assignBudget": "Assign Budget to Customer",
       "testCurl": "Test it (Curl)",
       "testOpenAiSdk": "Test it (OpenAI SDK)"
-    }
+    },
+    "notAvailable": "n/a"
   },
   "guardrails": {
     "title": "Guardrails",

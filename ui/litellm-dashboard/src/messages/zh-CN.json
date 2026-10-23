@@ -3414,7 +3414,8 @@
       "assignBudget": "为客户分配预算",
       "testCurl": "测试（cURL）",
       "testOpenAiSdk": "测试（OpenAI SDK）"
-    }
+    },
+    "notAvailable": "不适用"
   },
   "guardrails": {
     "title": "护栏",

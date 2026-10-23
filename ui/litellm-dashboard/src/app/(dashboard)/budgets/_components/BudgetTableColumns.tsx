@@ -29,7 +29,7 @@ const serverFilter: FilterFn<budgetItem> = () => true;
 serverFilter.autoRemove = () => false;
 
 function RateLimitCell({ value }: { value: number | null | undefined }) {
-  const t = useTranslations("common");
+  const t = useTranslations("budgets");
   if (value == null) {
     return <span className="text-muted-foreground">{t("notAvailable")}</span>;
   }

@@ -4663,3 +4663,10 @@ build_updated_complexity_router_config.test：引入 `TestStored = StoredComplex
 `mcp-servers/_components/testUtils.selectOption` 的 label 参数放宽为 `string | RegExp`，消除 60 条"RegExp 不能赋给 string"错误，并连带清掉复用该辅助的其他 MCP 测试错误。CreateMCPServer.integration.test 七处 mock 凭据字段由 camelCase 改为协议字段 `client_id`/`client_secret`。
 
 结果：`tsc --noEmit` 测试错误 272→194。该集成文件 71 例全绿。eslint 0 错、43 警为既有；prettier 未改动 HEAD 既有的多行 expect 脏格式。
+## 2026-10-23 第 465 簇：预算表限速列命名空间回归
+
+拉取最新分支后跑 i18n 守卫，`missingKeys` 报出 `BudgetTableColumns.tsx` 的 8 个 `common.*` 缺键。该文件除 `RateLimitCell` 内的 `useTranslations("common")` 外，其余 `t(...)` 都来自 `BudgetsTranslator` 入参，键实际落在 `budgets` 命名空间。守卫按文件收集作用域，只要文件里出现一个 hook，就会把入参译员的调用也归到该作用域，于是把本来正确的键判成缺失。
+
+修法是不改守卫，改为让文件只保留一个命名空间：`RateLimitCell` 改用 `useTranslations("budgets")`，并补 `budgets.notAvailable`（与 `common.notAvailable` 同值），与 budgets 下已有的 `unlimited`/`reset`/`createdAt`/`actions` 重复键的既有形态一致。
+
+验证：i18n 五条守卫 23 例全绿、BudgetTable 19 例全绿、死键 0、生产 typecheck 0 错、`npm run build` exit 0。
