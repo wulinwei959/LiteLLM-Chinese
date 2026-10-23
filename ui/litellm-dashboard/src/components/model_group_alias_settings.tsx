@@ -168,6 +168,7 @@ const ModelGroupAliasSettings: React.FC<ModelGroupAliasSettingsProps> = ({
         <div className="flex flex-col">
           <CardTitle className="mb-0">{t("title")}</CardTitle>
           <p className="text-sm text-muted-foreground">{t("description")}</p>
+          {managedByConfig && <p className="text-sm text-muted-foreground">{t("configOwnedNotice")}</p>}
         </div>
         <div className="flex items-center">
           {isExpanded ? (
@@ -300,7 +301,7 @@ const ModelGroupAliasSettings: React.FC<ModelGroupAliasSettingsProps> = ({
                               <button
                                 onClick={() => handleEditAlias(alias)}
                                 disabled={writesDisabled}
-                                aria-label={`Edit alias ${alias.aliasName}`}
+                                aria-label={t("editAliasAria", { name: alias.aliasName })}
                                 className={`text-xs px-2 py-1 rounded-sm ${writesDisabled ? "bg-border text-muted-foreground cursor-not-allowed" : "bg-info/10 text-info hover:bg-info/15"}`}
                               >
                                 <PencilIcon className="w-3 h-3" />
@@ -308,7 +309,7 @@ const ModelGroupAliasSettings: React.FC<ModelGroupAliasSettingsProps> = ({
                               <button
                                 onClick={() => deleteAlias(alias.id)}
                                 disabled={writesDisabled}
-                                aria-label={`Delete alias ${alias.aliasName}`}
+                                aria-label={t("deleteAliasAria", { name: alias.aliasName })}
                                 className={`text-xs px-2 py-1 rounded-sm ${writesDisabled ? "bg-border text-muted-foreground cursor-not-allowed" : "bg-destructive/10 text-destructive hover:bg-destructive/15"}`}
                               >
                                 <TrashIcon className="w-3 h-3" />

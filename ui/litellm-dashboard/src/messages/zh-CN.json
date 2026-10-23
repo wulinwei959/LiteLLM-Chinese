@@ -11867,6 +11867,9 @@
     "waitForChange": "请等待此更改完成"
   },
   "modelGroupAlias": {
+    "deleteAliasAria": "删除别名 {name}",
+    "editAliasAria": "编辑别名 {name}",
+    "configOwnedNotice": "这些别名在 config.yaml 中定义，此处只读。请修改配置文件来变更它们。",
     "saveFailed": "保存模型组别名设置失败",
     "provideBoth": "请同时填写别名名称与目标模型组",
     "duplicateName": "同名别名已存在",

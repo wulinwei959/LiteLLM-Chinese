@@ -37,13 +37,11 @@ describe("ModelGroupAliasPanel", () => {
     renderWithProviders(<ModelGroupAliasPanel />);
 
     expect(
-      await screen.findByText(
-        "These aliases are defined in config.yaml and are read-only here. Edit the config file to change them.",
-      ),
+      await screen.findByText("这些别名在 config.yaml 中定义，此处只读。请修改配置文件来变更它们。"),
     ).toBeInTheDocument();
     expect(await screen.findByText("fast-model")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Delete alias fast-model" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Delete alias smart-model" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "删除别名 fast-model" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "删除别名 smart-model" })).toBeDisabled();
   });
 
   it("keeps aliases locked while ownership is loading", async () => {
@@ -56,17 +54,17 @@ describe("ModelGroupAliasPanel", () => {
     renderWithProviders(<ModelGroupAliasPanel />);
 
     expect(await screen.findByText("fast-model")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Delete alias fast-model" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "删除别名 fast-model" })).toBeDisabled();
 
     resolveOwnership({ source: { model_group_alias: "db" } });
-    await waitFor(() => expect(screen.getByRole("button", { name: "Delete alias fast-model" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "删除别名 fast-model" })).toBeEnabled());
   });
 
   it("leaves delete controls enabled when aliases are database-managed", async () => {
     renderWithProviders(<ModelGroupAliasPanel />);
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "Delete alias fast-model" })).toBeEnabled());
-    expect(screen.getByRole("button", { name: "Delete alias smart-model" })).toBeEnabled();
+    await waitFor(() => expect(screen.getByRole("button", { name: "删除别名 fast-model" })).toBeEnabled());
+    expect(screen.getByRole("button", { name: "删除别名 smart-model" })).toBeEnabled();
   });
 
   it("renders aliases with enabled controls when router settings cannot be fetched", async () => {
@@ -76,7 +74,7 @@ describe("ModelGroupAliasPanel", () => {
     renderWithProviders(<ModelGroupAliasPanel />);
 
     expect(await screen.findByText("fast-model")).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole("button", { name: "Delete alias fast-model" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "删除别名 fast-model" })).toBeEnabled());
   });
 
   it("still shows the config-owned notice when callbacks cannot be fetched", async () => {
@@ -87,9 +85,7 @@ describe("ModelGroupAliasPanel", () => {
     renderWithProviders(<ModelGroupAliasPanel />);
 
     expect(
-      await screen.findByText(
-        "These aliases are defined in config.yaml and are read-only here. Edit the config file to change them.",
-      ),
+      await screen.findByText("这些别名在 config.yaml 中定义，此处只读。请修改配置文件来变更它们。"),
     ).toBeInTheDocument();
   });
 });

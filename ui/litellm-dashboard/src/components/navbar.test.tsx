@@ -144,7 +144,7 @@ describe("Navbar", () => {
   it("should render without crashing", () => {
     renderWithProviders(<Navbar {...defaultProps} />);
 
-    expect(screen.getByRole("button", { name: /^通知$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^通知/ })).toBeInTheDocument();
     expect(screen.getByText("文档")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /open account menu/i })).toBeInTheDocument();
   });
@@ -267,7 +267,7 @@ describe("Navbar", () => {
     renderWithProviders(<Navbar {...publicPageProps} />);
 
     expect(screen.queryByRole("button", { name: /open account menu/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /^通知$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^通知/ })).not.toBeInTheDocument();
   });
 
   it("should handle hide new feature indicators toggle", async () => {

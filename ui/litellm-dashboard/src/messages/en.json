@@ -11871,6 +11871,9 @@
     "waitForChange": "Wait for this change to finish"
   },
   "modelGroupAlias": {
+    "deleteAliasAria": "Delete alias {name}",
+    "editAliasAria": "Edit alias {name}",
+    "configOwnedNotice": "These aliases are defined in config.yaml and are read-only here. Edit the config file to change them.",
     "saveFailed": "Failed to save model group alias settings",
     "provideBoth": "Please provide both alias name and target model group",
     "duplicateName": "An alias with this name already exists",

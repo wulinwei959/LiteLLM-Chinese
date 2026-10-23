@@ -4853,3 +4853,7 @@ MCPServerSelector 1 例：`useMCPServers` 只传了 `teamId`，把组件拿到�
 ## 2026-10-24 第 487 簇：恢复启发式评分区的渲染（合并遗留缺陷）
 
 `ClassificationMethodConfig.tsx` 里 `HeuristicScoringConfig` 只有 import、没有任何渲染点——上游合并时丢了 JSX，测试里"heuristic 决定层级时应出现高级评分"这条因此红。按既有分节（`showHeuristic && heuristic === "heuristic"`）在自定义技术关键词之后补回渲染，v2 与 LLM 分类器仍不显示。修完该测试转绿；顺手扫了一遍 `src` 下其它"本地组件仅 import 未使用"的情况，已无残留。
+
+## 2026-10-24 第 488 簇：配置托管别名提示、编辑/删除别名可访问名与两处断言
+
+`model_group_alias_settings.tsx` 在合并后丢了"别名由 config.yaml 托管、此处只读"的提示，按 `managedByConfig` 补回并新增顶层 `modelGroupAlias.configOwnedNotice`；编辑/删除按钮的 aria-label 是硬编码英文 `Edit alias ${name}`/`Delete alias ${name}`，改为 `editAliasAria`/`deleteAliasAria`（带 `{name}` 插值）。测试侧把占位符（例如 gpt-4o）、添加/编辑/删除按钮名与提示语同步中文，两个文件共 3 例转绿。DeprecationBanner 那条用例渲染的是 `featureName="Workflows"` 却断言 "Memory"，按入参改回 Workflows；navbar 的通知按钮在有待读时名字是"通知, N 未读"，锚定正则 `/^通知$/` 放宽为 `/^通知/`，两处各 1 例转绿。

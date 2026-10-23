@@ -8,8 +8,8 @@ describe("DeprecationBanner", () => {
   it("names the deprecated feature", () => {
     render(<DeprecationBanner featureName="Workflows" />);
 
-    expect(screen.getByText("Memory 已列入草案废弃清单")).toBeInTheDocument();
-    expect(screen.getByText(/Memory 是我们正在考虑移除的多个实验特性之一/)).toBeInTheDocument();
+    expect(screen.getByText("Workflows 已列入草案废弃清单")).toBeInTheDocument();
+    expect(screen.getByText(/Workflows 是我们正在考虑移除的多个实验特性之一/)).toBeInTheDocument();
   });
 
   it("states the target removal date and that the list is not final", () => {
@@ -40,6 +40,6 @@ describe("DeprecationBanner", () => {
 
     await user.click(screen.getByRole("button", { name: /关闭/i }));
 
-    expect(screen.queryByText("Memory 已列入草案废弃清单")).not.toBeInTheDocument();
+    expect(screen.queryByText("Workflows 已列入草案废弃清单")).not.toBeInTheDocument();
   });
 });

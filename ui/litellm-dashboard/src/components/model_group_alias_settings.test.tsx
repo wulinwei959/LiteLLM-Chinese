@@ -30,25 +30,21 @@ describe("ModelGroupAliasSettings", () => {
       <ModelGroupAliasSettings accessToken="test-token" initialModelGroupAlias={aliases} managedByConfig />,
     );
 
-    expect(
-      screen.getByText(
-        "These aliases are defined in config.yaml and are read-only here. Edit the config file to change them.",
-      ),
-    ).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("e.g., gpt-4o")).toBeDisabled();
-    expect(screen.getByPlaceholderText("e.g., gpt-4o-mini-openai")).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Add Alias" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Edit alias fast-model" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Delete alias fast-model" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Edit alias smart-model" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Delete alias smart-model" })).toBeDisabled();
+    expect(screen.getByText("这些别名在 config.yaml 中定义，此处只读。请修改配置文件来变更它们。")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("例如 gpt-4o")).toBeDisabled();
+    expect(screen.getByPlaceholderText("例如 gpt-4o-mini-openai")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "添加别名" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "编辑别名 fast-model" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "删除别名 fast-model" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "编辑别名 smart-model" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "删除别名 smart-model" })).toBeDisabled();
 
     expect(await screen.findByText("fast-model")).toBeInTheDocument();
     expect(screen.getByText("claude-haiku")).toBeInTheDocument();
     expect(screen.getByText("smart-model")).toBeInTheDocument();
     expect(screen.getByText("claude-sonnet")).toBeInTheDocument();
 
-    await userEvent.setup().click(screen.getByRole("button", { name: "Delete alias fast-model" }));
+    await userEvent.setup().click(screen.getByRole("button", { name: "删除别名 fast-model" }));
     expect(setCallbacksCall).not.toHaveBeenCalled();
   });
 
@@ -57,10 +53,10 @@ describe("ModelGroupAliasSettings", () => {
     renderWithProviders(<ModelGroupAliasSettings accessToken="test-token" initialModelGroupAlias={aliases} />);
 
     expect(await screen.findByText("fast-model")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Edit alias fast-model" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Delete alias fast-model" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "编辑别名 fast-model" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "删除别名 fast-model" })).toBeEnabled();
 
-    await user.click(screen.getByRole("button", { name: "Delete alias fast-model" }));
+    await user.click(screen.getByRole("button", { name: "删除别名 fast-model" }));
 
     expect(setCallbacksCall).toHaveBeenCalledWith("test-token", {
       router_settings: { model_group_alias: { "smart-model": "claude-sonnet" } },
