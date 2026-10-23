@@ -4750,3 +4750,15 @@ AddModelPanel 从 6 例降到 5：决策模型提示与链接翻面，provider �
 1. AddModelPanel 的 provider 选择器需要补 items 映射（预填 provider 时触发器显示为空），MultiSelect 的 `value.filter` 抛错要看 model 字段在"输入了未在目录中的模型名"时传了什么类型。
 2. key_edit_view 剩 7 例都是行为断言：预算草稿载荷（metadata 序列化差异）、MCP 工具默认值回调未被调用（2）、MCP 授权在切换团队后的长度（2）、移出项目按钮仍不渲染（`enable_projects_ui` 已确认为 true，需查 `KeyProjectField` 的渲染条件）。
 3. activity_metrics 4 例与其余约 43 个失败文件仍待处理。
+
+## 2026-10-24 第 471 簇：按失败信息继续批量翻面（第二轮）
+
+从最新一次全量失败基线（49 个文件、124 例）里再取一轮可直接映射的英文期望，按 en.json 同值到 zh-CN.json 的对应词条替换，共 8 个文件：TelemetrySettingsPage（请求成功/心跳/遥测/管理控制台）、DashboardHeader（网关工具）、UserActivity（请求数）、add_auto_router_tab（启发式调优）、edit_auto_router_modal（自动路由名称）、UserConnectionsPanel（重试）、AutoRouterUsageViews（路由用量与节省/自动路由节省）、AddModelPanel（可以在决策 playground 里试一试）。全量失败面降到 116 例 / 49 文件。
+
+剩余的失败已基本分成三类，都需要逐个对照生产取值而不是替换字符串：AddModelForm 团队作用域与 credential-only 载荷（7）、key_edit_view 的预算草稿载荷与 MCP 授权回调（7）、add_auto_router_tab 的禁用态与阈值校验（6）、TeamInfo 页签可访问名（5）、TelemetrySettingsPage 的开关状态（5）、liteadmin agent 的接口约定（4）、activity_metrics 的图表配色（4）、MemberTable 的列头兜底（4）、AllModelsTab 的筛选占位符（4，生产侧没有"按公开模型名称筛选"这条词条，需先定位真实键）、tag_info 的预算载荷（4）。
+
+### 剩余工作（下批起点）
+
+1. 先查 AllModelsTab 的筛选占位符真实键与 MemberTable 列头兜底，这两处可能是生产侧缺键而不是断言过时。
+2. activity_metrics 的配色需要设计确认：`components/shared/charts/colors.ts` 已支持命名色转 CSS 变量，生产目前只用 BRAND 单一 hex。
+3. 其余行为断言按文件逐个对照 HEAD，避免把既有失败误判成本簇引入。

@@ -44,7 +44,7 @@ describe("UserConnectionsPanel", () => {
       .mockRejectedValueOnce(new Error("boom"))
       .mockResolvedValueOnce({ connections: [] });
     renderPanel();
-    await user.click(await screen.findByRole("button", { name: "Retry" }));
+    await user.click(await screen.findByRole("button", { name: "重试" }));
     expect(await screen.findByText("No credentials need a personal connection.")).toBeInTheDocument();
     expect(vi.mocked(userConnectionsListCall).mock.calls.length).toBeGreaterThanOrEqual(2);
   });

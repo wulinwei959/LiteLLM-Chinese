@@ -7,7 +7,6 @@ import { act, fireEvent, renderWithProviders, screen, waitFor, within, testQuery
 import { toast } from "@/lib/toast";
 import EditAutoRouterModal from "./edit_auto_router_modal";
 import { apiClient } from "../networking";
-import { fetchAvailableModels } from "@/components/llm_calls/fetch_models";
 vi.mock(
   "@/app/(dashboard)/hooks/autoRouter/useComplexityScorerDefaults",
   async () => await import("../../../tests/mocks/complexityScorerDefaults"),
@@ -101,7 +100,7 @@ describe("EditAutoRouterModal keyword matching", () => {
         },
       },
     });
-    await screen.findByRole("textbox", { name: "Auto Router Name" });
+    await screen.findByRole("textbox", { name: "自动路由名称" });
     openAutoRouterAdvanced("Cache-aware routing");
     const toggle = screen.getByRole("switch", { name: "Cache-aware routing" });
     expect(toggle).toBeChecked();

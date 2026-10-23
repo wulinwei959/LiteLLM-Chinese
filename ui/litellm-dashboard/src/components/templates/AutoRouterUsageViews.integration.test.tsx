@@ -118,7 +118,7 @@ describe("Auto-router usage views", () => {
     };
     renderWithProviders(<KeyAutoRouterUsageTab accessToken="test-token" keyToken="key-hash-1" activity={activity} />);
 
-    const savings = within(await screen.findByRole("region", { name: "Auto-router savings" }));
+    const savings = within(await screen.findByRole("region", { name: "自动路由节省" }));
     expect(savings.getByText("$8.75")).toBeInTheDocument();
     expect(savings.getByText("Actual auto-router spend")).toBeInTheDocument();
     expect(savings.getByText("$1.25")).toBeInTheDocument();
@@ -132,7 +132,7 @@ describe("Auto-router usage views", () => {
     expect(screen.getByText("Auto-router prompt caching")).toBeInTheDocument();
     expect(screen.getAllByText("50.0%").length).toBeGreaterThan(0);
     expect(screen.getByText("All auto-routers")).toBeInTheDocument();
-    const summary = within(screen.getByRole("table", { name: "Router usage and savings" }));
+    const summary = within(screen.getByRole("table", { name: "路由用量与节省" }));
     expect(summary.getByRole("row", { name: /router-one.*\$1\.25.*\$8\.75/ })).toBeInTheDocument();
     expect(summary.getByRole("row", { name: /router-two.*\$0\.25.*\$0\.75/ })).toBeInTheDocument();
 
@@ -147,7 +147,7 @@ describe("Auto-router usage views", () => {
     mockBenchmarks(response([group(standard), group(losing)]));
     renderOverallTab();
 
-    const table = await screen.findByRole("table", { name: "Router usage and savings" });
+    const table = await screen.findByRole("table", { name: "路由用量与节省" });
     const rows = within(table).getAllByRole("row");
     expect(
       within(rows[1])
@@ -175,7 +175,7 @@ describe("Auto-router usage views", () => {
     const untracked = { total_tokens, saved_spend: null, saved_pct: null, baseline_spend: null };
     mockBenchmarks(response([group(untracked)]));
     renderOverallTab();
-    const row = within(await screen.findByRole("table", { name: "Router usage and savings" })).getAllByRole("row")[1];
+    const row = within(await screen.findByRole("table", { name: "路由用量与节省" })).getAllByRole("row")[1];
     expect(
       within(row)
         .getAllByRole("cell")
@@ -194,7 +194,7 @@ describe("Auto-router usage views", () => {
     mockBenchmarks(response([]));
     renderOverallTab();
     expect(
-      within(await screen.findByRole("table", { name: "Router usage and savings" })).getByText(
+      within(await screen.findByRole("table", { name: "路由用量与节省" })).getByText(
         "No auto-routers in this range",
       ),
     ).toBeInTheDocument();

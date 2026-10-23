@@ -86,9 +86,9 @@ describe("TelemetrySettingsPage", () => {
     const user = userEvent.setup();
     renderPage();
 
-    const telemetry = await screen.findByRole("switch", { name: "Telemetry" });
+    const telemetry = await screen.findByRole("switch", { name: "遥测" });
     expect(telemetry).not.toBeChecked();
-    expect(screen.getByRole("switch", { name: "Heartbeat" })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("switch", { name: "心跳" })).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByRole("radio", { name: /^Local table/ })).toHaveAttribute("aria-disabled", "true");
     await user.click(telemetry);
 
@@ -103,7 +103,7 @@ describe("TelemetrySettingsPage", () => {
     const user = userEvent.setup();
     renderPage();
 
-    await user.click(await screen.findByRole("switch", { name: "Telemetry" }));
+    await user.click(await screen.findByRole("switch", { name: "遥测" }));
 
     expect(put).toHaveBeenCalledWith("/telemetry/settings", { body: { groups: [], destination: "local_table" } });
   });
@@ -114,7 +114,7 @@ describe("TelemetrySettingsPage", () => {
     const user = userEvent.setup();
     renderPage();
 
-    await user.click(await screen.findByRole("tab", { name: "Admin UI" }));
+    await user.click(await screen.findByRole("tab", { name: "管理控制台" }));
     await user.click(await screen.findByRole("switch", { name: "Page navigation" }));
 
     expect(await screen.findByRole("dialog", { name: "Telemetry is an enterprise-only feature" })).toBeVisible();
@@ -127,7 +127,7 @@ describe("TelemetrySettingsPage", () => {
     const user = userEvent.setup();
     renderPage();
 
-    await user.click(await screen.findByRole("switch", { name: "Request success" }));
+    await user.click(await screen.findByRole("switch", { name: "请求成功" }));
 
     expect(put).toHaveBeenCalledWith("/telemetry/settings", {
       body: { groups: ["heartbeat"], destination: "local_table" },
@@ -146,8 +146,8 @@ describe("TelemetrySettingsPage", () => {
       </QueryClientProvider>,
     );
 
-    await user.click(await screen.findByRole("switch", { name: "Heartbeat" }));
-    await user.click(screen.getByRole("tab", { name: "Admin UI" }));
+    await user.click(await screen.findByRole("switch", { name: "心跳" }));
+    await user.click(screen.getByRole("tab", { name: "管理控制台" }));
 
     expect(await screen.findByRole("switch", { name: "Page navigation" })).toHaveAttribute("aria-disabled", "true");
     expect(put).toHaveBeenCalledTimes(1);

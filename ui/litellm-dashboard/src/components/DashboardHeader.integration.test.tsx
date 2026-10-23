@@ -66,7 +66,7 @@ async function openTools() {
     </QueryClientProvider>,
   );
   await user.click(screen.getByRole("button", { name: "更多选项" }));
-  const tools = await screen.findByRole("dialog", { name: "Gateway tools" });
+  const tools = await screen.findByRole("dialog", { name: "网关工具" });
   return { user, tools };
 }
 
@@ -86,7 +86,7 @@ describe("mobile header nested controls", () => {
         await user.click(item);
       }
       expect(within(tools).getByRole("button", { name: "Metrics" })).toBeVisible();
-      expect(screen.getByRole("dialog", { name: "Gateway tools" })).toBeVisible();
+      expect(screen.getByRole("dialog", { name: "网关工具" })).toBeVisible();
     },
   );
 
@@ -97,7 +97,7 @@ describe("mobile header nested controls", () => {
     expect(link).toHaveAttribute("href", "https://example.com/update");
     await user.click(link);
     expect(screen.queryByRole("menu", { name: "Blog" })).not.toBeInTheDocument();
-    expect(screen.getByRole("dialog", { name: "Gateway tools" })).toBeVisible();
+    expect(screen.getByRole("dialog", { name: "网关工具" })).toBeVisible();
   });
 
   it("allows filtering and selecting a worker from the nested combobox", async () => {
@@ -108,6 +108,6 @@ describe("mobile header nested controls", () => {
     await user.type(worker, "Backup");
     await user.click(await screen.findByRole("option", { name: "Backup worker" }));
     expect(localStorage.getItem("litellm_selected_worker_id")).toBeNull();
-    expect(screen.getByRole("dialog", { name: "Gateway tools" })).toBeVisible();
+    expect(screen.getByRole("dialog", { name: "网关工具" })).toBeVisible();
   });
 });
