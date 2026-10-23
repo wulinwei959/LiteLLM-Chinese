@@ -1047,9 +1047,9 @@ describe("CreateMCPServer", () => {
 
       await selectOption(/认证方式/, "无");
 
-      const limitInput = screen.getByPlaceholderText("e.g. 10");
+      const limitInput = screen.getByPlaceholderText("例如 10");
       fireEvent.change(limitInput, { target: { value: "5" } });
-      const rpmInput = screen.getByPlaceholderText("e.g. 60");
+      const rpmInput = screen.getByPlaceholderText("例如 60");
       fireEvent.change(rpmInput, { target: { value: "7" } });
 
       vi.mocked(networking.createMCPServer).mockResolvedValue({

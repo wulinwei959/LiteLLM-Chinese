@@ -85,7 +85,7 @@ const EnvVarsSection: React.FC = () => {
               }}
             >
               {(control) => (
-                <Input {...textControl(control)} placeholder="e.g. DB_PROTOCOL" className="rounded-md font-mono" />
+                <Input {...textControl(control)} placeholder={t("phEnvNameExample")} className="rounded-md font-mono" />
               )}
             </MountedFormField>
             <div style={{ flex: 1 }}>
@@ -145,7 +145,7 @@ const ScopedValueOrDescription: React.FC<{ index: number }> = ({ index }) => {
             </InputGroupAddon>
             <InputGroupInput
               {...textControl(control)}
-              placeholder="e.g. Your DB username"
+              placeholder={t("phEnvDescriptionExample")}
               className="text-muted-foreground"
             />
           </InputGroup>
@@ -155,7 +155,9 @@ const ScopedValueOrDescription: React.FC<{ index: number }> = ({ index }) => {
   }
   return (
     <MountedFormField name={["env_vars", String(index), "value"]} className="mb-0">
-      {(control) => <Input {...textControl(control)} placeholder="e.g. postgresql" className="rounded-md font-mono" />}
+      {(control) => (
+        <Input {...textControl(control)} placeholder={t("phEnvValueExample")} className="rounded-md font-mono" />
+      )}
     </MountedFormField>
   );
 };

@@ -7505,7 +7505,12 @@
     "toolsetsTab": "工具集",
     "shownOfTotal": "{shown} / {total} 台服务器",
     "emptyNoServers": "尚未配置 MCP 服务器。点击“+ 添加 MCP 服务器”开始。",
-    "emptyNoMatches": "没有服务器符合当前的筛选或搜索条件。"
+    "emptyNoMatches": "没有服务器符合当前的筛选或搜索条件。",
+    "phLimitExample": "例如 10",
+    "phRpmExample": "例如 60",
+    "phEnvNameExample": "例如 DB_PROTOCOL",
+    "phEnvDescriptionExample": "例如 你的数据库用户名",
+    "phEnvValueExample": "例如 postgresql"
   },
   "guardrailsMonitor": {
     "overview": {

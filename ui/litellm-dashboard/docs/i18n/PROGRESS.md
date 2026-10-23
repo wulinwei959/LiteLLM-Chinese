@@ -4608,3 +4608,10 @@ template_parameter_modal、add_attachment_form、add_policy_form 与 prompts 的
 测试：模板参数占位断言三处翻成"例如 Acme Airlines"，四文件 42 例全绿；zod 调整后补跑 add_policy_form 集成与 DeveloperMessageCard 共 9 例仍绿。
 
 验证：AST 四文件归零；全局可见英文 217→212 条、115→111 个文件；目录叶子 11649→11654，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、6 警为 HEAD 既有；prettier 新增行合规，三文件 HEAD 既有脏格式不动；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 456 簇：MCP 服务器表单示例占位符前缀
+
+CreateMCPServer、mcp_server_edit 的限额/RPM 占位与 EnvVarsSection 的变量名、描述、值占位接 `mcpServers.phLimitExample`/`phRpmExample`/`phEnvNameExample`/`phEnvDescriptionExample`/`phEnvValueExample`，zh 前缀改"例如"，变量名与示例值保留。URL/JSON 示例占位继续按判定保留。
+
+测试：三文件占位断言翻面；EnvVarsSection 4 例、CreateMCPServer 集成全绿，mcp-servers 三文件 159 例通过。mcp_server_edit 仍有 4 例红（blocks Save×2、OAuth snapshot×2），与第 440 簇登记的保存按钮行为缺口同源，非本簇引入。
+
+验证：AST 三文件仅剩 URL 示例；全局可见英文 212→206 条、111→110 个文件；目录叶子 11654→11659，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、26 警为 HEAD 既有；prettier 新增行合规，mcp_server_edit HEAD 既有脏格式不动；i18n 五条守卫 23 例全绿。

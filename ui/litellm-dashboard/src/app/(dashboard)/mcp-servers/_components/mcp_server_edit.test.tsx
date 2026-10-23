@@ -2200,7 +2200,7 @@ describe("MCPServerEdit (max concurrent requests)", () => {
 
     const limitInput = screen.getByPlaceholderText("例如 10") as HTMLInputElement;
     expect(limitInput.value).toBe("5");
-    const rpmInput = screen.getByPlaceholderText("e.g. 60") as HTMLInputElement;
+    const rpmInput = screen.getByPlaceholderText("例如 60") as HTMLInputElement;
     expect(rpmInput.value).toBe("5");
 
     fireEvent.change(limitInput, { target: { value: "2" } });
@@ -2270,7 +2270,7 @@ describe("MCPServerEdit (max concurrent requests)", () => {
       />,
     );
 
-    const rpmInput = screen.getByPlaceholderText("e.g. 60") as HTMLInputElement;
+    const rpmInput = screen.getByPlaceholderText("例如 60") as HTMLInputElement;
     expect(rpmInput.value).toBe("5");
 
     fireEvent.change(rpmInput, { target: { value: "" } });

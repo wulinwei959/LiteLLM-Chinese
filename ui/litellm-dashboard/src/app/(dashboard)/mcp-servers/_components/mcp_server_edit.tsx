@@ -993,7 +993,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                       {...numberControl(control, 0)}
                       min={0}
                       step={1}
-                      placeholder="e.g. 60"
+                      placeholder={t("phRpmExample")}
                       className="w-full rounded-lg"
                     />
                   )}

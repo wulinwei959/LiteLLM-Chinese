@@ -7505,7 +7505,12 @@
     "toolsetsTab": "Toolsets",
     "shownOfTotal": "{shown} of {total} servers",
     "emptyNoServers": "No MCP servers configured. Click '+ Add New MCP Server' to get started.",
-    "emptyNoMatches": "No servers match the current filters or search."
+    "emptyNoMatches": "No servers match the current filters or search.",
+    "phLimitExample": "e.g. 10",
+    "phRpmExample": "e.g. 60",
+    "phEnvNameExample": "e.g. DB_PROTOCOL",
+    "phEnvDescriptionExample": "e.g. Your DB username",
+    "phEnvValueExample": "e.g. postgresql"
   },
   "guardrailsMonitor": {
     "overview": {

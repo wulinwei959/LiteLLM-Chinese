@@ -828,7 +828,7 @@ const CreateMCPServer: React.FC<CreateMCPServerProps> = ({
                         {...numberControl(control, 0)}
                         min={1}
                         step={1}
-                        placeholder="e.g. 10"
+                        placeholder={t("phLimitExample")}
                         className="w-full rounded-lg"
                       />
                     )}
@@ -850,7 +850,7 @@ const CreateMCPServer: React.FC<CreateMCPServerProps> = ({
                         {...numberControl(control, 0)}
                         min={0}
                         step={1}
-                        placeholder="e.g. 60"
+                        placeholder={t("phRpmExample")}
                         className="w-full rounded-lg"
                       />
                     )}
