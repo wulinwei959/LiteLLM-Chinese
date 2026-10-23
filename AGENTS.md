@@ -152,3 +152,4 @@ Before requesting maintainer review, verify the current PR tip passes required C
 - `~/.local/bin` 不在默认 PATH，qoderclicn 等工具须用全路径调用
 - 测试失败先对照 HEAD 与 origin/main 的同名文件，确认是本次改动引入还是合并遗留缺陷，再决定修法
 - 合并遗留缺陷的常见形态：引用未定义变量、fixture 与组件新行为不匹配、测试期望停在上游旧结构
+- 写入所谓"新"测试文件前先 `git ls-files` 或 `git status` 确认该路径未被跟踪，`ls | head` 截断过的目录清单不能当作不存在，否则 Write 会静默覆盖已有测试并删除用例
