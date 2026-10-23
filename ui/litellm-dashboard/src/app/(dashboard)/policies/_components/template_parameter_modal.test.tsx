@@ -157,7 +157,7 @@ describe("TemplateParameterModal", () => {
     renderModal({ template: enrichmentTemplate });
 
     await screen.findByText("竞品发现");
-    fireEvent.change(screen.getByPlaceholderText("e.g. Acme Airlines"), { target: { value: "Contoso" } });
+    fireEvent.change(screen.getByPlaceholderText("例如 Acme Airlines"), { target: { value: "Contoso" } });
 
     expect(screen.getByRole("button", { name: "继续" })).toBeDisabled();
   });
@@ -172,7 +172,7 @@ describe("TemplateParameterModal", () => {
     renderModal({ template: enrichmentTemplate });
 
     await screen.findByText("竞品发现");
-    fireEvent.change(screen.getByPlaceholderText("e.g. Acme Airlines"), { target: { value: "Contoso" } });
+    fireEvent.change(screen.getByPlaceholderText("例如 Acme Airlines"), { target: { value: "Contoso" } });
     await user.click(screen.getAllByRole("combobox")[0]);
     const options = await screen.findAllByText("gpt-5.1");
     await user.click(options[options.length - 1]);
@@ -195,7 +195,7 @@ describe("TemplateParameterModal", () => {
     renderModal({ template: enrichmentTemplate, onConfirm });
 
     await screen.findByText("竞品发现");
-    fireEvent.change(screen.getByPlaceholderText("e.g. Acme Airlines"), { target: { value: "Contoso" } });
+    fireEvent.change(screen.getByPlaceholderText("例如 Acme Airlines"), { target: { value: "Contoso" } });
     await user.click(screen.getAllByRole("combobox")[0]);
     const options = await screen.findAllByText("gpt-5.1");
     await user.click(options[options.length - 1]);

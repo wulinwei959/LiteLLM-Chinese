@@ -4748,7 +4748,11 @@
       "createFailed": "创建护栏失败，请重试。"
     },
     "deleteConfirmNamedMessage": "确定要删除策略：{name} 吗？此操作无法撤销。",
-    "flowBadge": "流程"
+    "flowBadge": "流程",
+    "phTemplateParamName": "例如 Acme Airlines",
+    "phTemplateParamValue": "例如 从亚洲增加 10 个，总数提高到 50...",
+    "phAttachmentCount": "例如 10",
+    "phPolicyNameExample": "例如 global-baseline、healthcare-compliance"
   },
   "adminPanel": {
     "title": "管理员设置",
@@ -7813,7 +7817,8 @@
       "save": "保存",
       "cancel": "取消"
     },
-    "unnamedPrompt": "未命名提示词"
+    "unnamedPrompt": "未命名提示词",
+    "phDeveloperMessage": "例如 你是一个乐于助人的助手……"
   },
   "costOptimization": {
     "totalTurnsLabel": "共 {total, number} 次对话",

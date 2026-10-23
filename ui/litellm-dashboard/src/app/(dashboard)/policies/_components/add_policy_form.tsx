@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { Policy, PolicyCreateRequest, PolicyUpdateRequest } from "@/components/policies/types";
 import { Guardrail } from "@/components/guardrails/types";
 import { getResolvedGuardrails, modelAvailableCall } from "@/components/networking";
@@ -376,12 +376,7 @@ const AddPolicyForm: React.FC<AddPolicyFormProps> = ({
             <FieldGroup>
               <FormField control={form.control} name="policy_name" label={t("policyName")}>
                 {({ ref, ...control }) => (
-                  <Input
-                    {...control}
-                    ref={ref}
-                    placeholder="e.g., global-baseline, healthcare-compliance"
-                    disabled={isEditing}
-                  />
+                  <Input {...control} ref={ref} placeholder={t("phPolicyNameExample")} disabled={isEditing} />
                 )}
               </FormField>
 

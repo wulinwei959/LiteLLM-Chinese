@@ -4601,3 +4601,10 @@ add_agent_form、dynamic_agent_form_fields、agent_form_fields 的七处 `e.g.` 
 测试：add_agent_form 集成用例的占位断言翻成"例如 my-custom-agent"；代理表单三文件 22 例全绿。
 
 验证：AST 三文件归零；全局可见英文 224→217 条、118→115 个文件；目录叶子 11642→11649，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、7 警为 HEAD 既有；prettier 新增行合规（一处缩进已修正），四文件 HEAD 既有脏格式不动；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 455 簇：策略与提示词示例占位符前缀
+
+template_parameter_modal、add_attachment_form、add_policy_form 与 prompts 的 DeveloperMessageCard 五处 `e.g.` 示例占位接 `policies.phTemplateParamName`/`phTemplateParamValue`/`phAttachmentCount`/`phPolicyNameExample` 与 `prompts.phDeveloperMessage`，zh 仅把前缀换成"例如"，模板名、策略名与示例正文保留。顺带把 add_policy_form 的 `zod/v4` 导入改为 `zod`，清掉 HEAD 既有的一条 no-restricted-imports 错误。
+
+测试：模板参数占位断言三处翻成"例如 Acme Airlines"，四文件 42 例全绿；zod 调整后补跑 add_policy_form 集成与 DeveloperMessageCard 共 9 例仍绿。
+
+验证：AST 四文件归零；全局可见英文 217→212 条、115→111 个文件；目录叶子 11649→11654，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、6 警为 HEAD 既有；prettier 新增行合规，三文件 HEAD 既有脏格式不动；i18n 五条守卫 23 例全绿。

@@ -15,12 +15,7 @@ const DeveloperMessageCard: React.FC<DeveloperMessageCardProps> = ({ value, onCh
       <CardContent className="p-3">
         <p className="mb-2 text-sm font-medium text-foreground">{t("editor.devMsg")}</p>
         <p className="mb-2 text-xs text-muted-foreground">{t("editor.devMsgDesc")}</p>
-        <VariableTextArea
-          value={value}
-          onChange={onChange}
-          rows={3}
-          placeholder="e.g., You are a helpful assistant..."
-        />
+        <VariableTextArea value={value} onChange={onChange} rows={3} placeholder={t("phDeveloperMessage")} />
       </CardContent>
     </Card>
   );

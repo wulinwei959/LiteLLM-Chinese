@@ -278,7 +278,7 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
                   <span className="ml-1 text-destructive">*</span>
                 </label>
                 <Input
-                  placeholder="e.g. Acme Airlines"
+                  placeholder={t("phTemplateParamName")}
                   value={parameterValues[enrichmentParam || "brand_name"] || ""}
                   onChange={(e) =>
                     setParameterValues((prev) => ({
@@ -367,7 +367,7 @@ const TemplateParameterModal: React.FC<TemplateParameterModalProps> = ({
                   <label className="mb-1 block text-sm font-medium">{t("params.refine")}</label>
                   <div className="flex gap-2">
                     <Input
-                      placeholder="e.g. add 10 more from Asia, increase to 50 total..."
+                      placeholder={t("phTemplateParamValue")}
                       value={refinementInput}
                       onChange={(e) => setRefinementInput(e.target.value)}
                       onKeyDown={(e) => {

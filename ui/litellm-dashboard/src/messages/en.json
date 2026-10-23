@@ -4748,7 +4748,11 @@
       "createFailed": "Failed to create guardrails. Please try again."
     },
     "deleteConfirmNamedMessage": "Are you sure you want to delete policy: {name}? This action cannot be undone.",
-    "flowBadge": "Flow"
+    "flowBadge": "Flow",
+    "phTemplateParamName": "e.g. Acme Airlines",
+    "phTemplateParamValue": "e.g. add 10 more from Asia, increase to 50 total...",
+    "phAttachmentCount": "e.g. 10",
+    "phPolicyNameExample": "e.g., global-baseline, healthcare-compliance"
   },
   "adminPanel": {
     "title": "Admin Settings",
@@ -7813,7 +7817,8 @@
       "save": "Save",
       "cancel": "Cancel"
     },
-    "unnamedPrompt": "Unnamed Prompt"
+    "unnamedPrompt": "Unnamed Prompt",
+    "phDeveloperMessage": "e.g., You are a helpful assistant..."
   },
   "costOptimization": {
     "totalTurnsLabel": "{total, number} total turns",

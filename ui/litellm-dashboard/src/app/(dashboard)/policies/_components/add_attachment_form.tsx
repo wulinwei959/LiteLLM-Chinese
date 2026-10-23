@@ -447,7 +447,7 @@ const AddAttachmentForm: React.FC<AddAttachmentFormProps> = ({
                     type="number"
                     step={1}
                     value={value ?? ""}
-                    placeholder="e.g. 10"
+                    placeholder={t("phAttachmentCount")}
                     onChange={(event) => onChange(event.target.value === "" ? null : event.target.valueAsNumber)}
                   />
                 )}
