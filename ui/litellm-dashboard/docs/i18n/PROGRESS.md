@@ -4825,3 +4825,9 @@ model_info_view 2 例转绿：每分辨率价格走 `models.pricingSummary.outpu
 ## 2026-10-24 第 481 簇：引导链接与遥测目的地的可访问名
 
 onboarding_link 2 例：只读输入框的可访问名取自 `onboardingModal.resetTitle`/`invitationTitle`，断言改为"重置密码链接"/"邀请链接"。TelemetrySettingsPage 3 例：目的地单选项名取自 `telemetry.destination.localTableLabel`，正则 `/^Local table/` 改 `/^本地表/`。两个文件均转绿。
+
+## 2026-10-24 第 482 簇：凭据面板补回连接区（合并遗留缺陷）
+
+`LlmCredentialsPanel.tsx` 在 10-20 的上游合并里留下了 `UserConnectionsPanel` 与 `all_admin_roles` 两个 import，但 JSX 只渲染 `<CredentialsPanel />`，连接区整块丢失，集成测试的 3 例因此全红。按测试意图补回：管理员渲染凭据列表 + 个人连接，非管理员只渲染个人连接（内部用户不应触发共享凭据列表的拉取）。测试侧把 "Your connections"、"Connected as @octocat"、`/Add Credential/`、"Disconnect" 换成目录里的"你的连接"、"已连接为 @octocat"、"添加凭据"、"断开连接"，三例转绿。
+
+这是"合并遗留缺陷"的又一例：import 在、body 不在，单看组件文件不会报错，只有测试能发现。

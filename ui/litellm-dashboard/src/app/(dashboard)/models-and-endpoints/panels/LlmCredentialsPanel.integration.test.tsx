@@ -62,10 +62,10 @@ describe("LlmCredentialsPanel", () => {
     renderPanel();
 
     expect(await screen.findByText("copilot-per-user")).toBeInTheDocument();
-    expect(screen.getByText("Your connections")).toBeInTheDocument();
-    expect(screen.getByText("Connected as @octocat")).toBeInTheDocument();
+    expect(screen.getByText("你的连接")).toBeInTheDocument();
+    expect(screen.getByText("已连接为 @octocat")).toBeInTheDocument();
     expect(screen.queryByText("shared-openai")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Add Credential/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /添加凭据/ })).not.toBeInTheDocument();
     expect(networking.credentialListCall).not.toHaveBeenCalled();
   });
 
@@ -75,7 +75,7 @@ describe("LlmCredentialsPanel", () => {
 
     expect(await screen.findByText("shared-openai")).toBeInTheDocument();
     expect(await screen.findByText("copilot-per-user")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Add Credential/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /添加凭据/ })).toBeInTheDocument();
   });
 
   it("disconnects the selected connection and refreshes the list", async () => {
@@ -84,7 +84,7 @@ describe("LlmCredentialsPanel", () => {
     renderPanel();
 
     const row = await screen.findByRole("row", { name: /copilot-team/ });
-    await user.click(within(row).getByRole("button", { name: "Disconnect" }));
+    await user.click(within(row).getByRole("button", { name: "断开连接" }));
 
     expect(networking.userConnectionDeleteCall).toHaveBeenCalledWith("at", "copilot-team");
     await waitFor(() => expect(networking.userConnectionsListCall).toHaveBeenCalledTimes(2));
