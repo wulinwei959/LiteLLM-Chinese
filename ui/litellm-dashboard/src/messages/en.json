@@ -6400,6 +6400,7 @@
     "themeResetFailed": "Failed to reset theme settings"
   },
   "routerSettings": {
+    "sourceUnavailable": "Router settings could not be loaded. Edit config.yaml to change them.",
     "tabLoadbalancing": "Loadbalancing",
     "tabRoutingGroups": "Routing Groups",
     "tabFallbacks": "Fallbacks",

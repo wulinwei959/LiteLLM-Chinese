@@ -4915,3 +4915,7 @@ KubernetesPodsCard 的 "3 ready pods" 改"3 个就绪 Pod"；GithubCopilotConnec
 ## 2026-10-24 第 501 簇：新建对话在后台上写期间保持可用
 
 LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用"给出相反断言：多页签用例需要它可用（提交在后台继续、用户可继续开新对话），单内联动作用例断言禁用。按多页签设计保留可用，去掉新建按钮的 `activeApplying` 禁用，并把另一条断言对齐为可用后，LiteAdmin 集成测试全绿（此前那条 995 的失败是同一断言的连带）。
+
+## 2026-10-24 第 502 簇：路由设置源加载失败时禁用保存
+
+路由设置页的保存按钮此前不看数据源：`getRouterSettingsCall` 失败时 `routerSettingsSource` 为 null，用户仍能点保存并覆盖未知来源的配置。补 `disabled` 与 `title`（新增 `routerSettings.sourceUnavailable`，中英各一），失败时禁用并提示改 config.yaml，测试转绿。

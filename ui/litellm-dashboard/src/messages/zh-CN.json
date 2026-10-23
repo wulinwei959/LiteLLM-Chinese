@@ -6400,6 +6400,7 @@
     "themeResetFailed": "恢复默认主题设置失败"
   },
   "routerSettings": {
+    "sourceUnavailable": "无法加载路由设置。请修改 config.yaml 来变更。",
     "tabLoadbalancing": "负载均衡",
     "tabRoutingGroups": "路由组",
     "tabFallbacks": "回退",

@@ -208,7 +208,13 @@ const RouterSettings: React.FC<RouterSettingsProps> = ({ accessToken, userRole, 
         <Button variant="outline" onClick={() => window.location.reload()}>
           {commonT("reset")}
         </Button>
-        <Button onClick={handleSaveChanges}>{t("saveChanges")}</Button>
+        <Button
+          onClick={handleSaveChanges}
+          disabled={routerSettingsSource === null}
+          title={routerSettingsSource === null ? t("sourceUnavailable") : undefined}
+        >
+          {t("saveChanges")}
+        </Button>
       </div>
     </div>
   );
