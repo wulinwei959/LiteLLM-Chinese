@@ -96,16 +96,16 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
           },
         },
         {
-          header: "Models",
+          header: t("colModels"),
           cell: (row) =>
             row.modelPattern ? (
               <span className="font-mono text-sm">{row.modelPattern}</span>
             ) : (
-              <span className="text-muted-foreground">All models</span>
+              <span className="text-muted-foreground">{t("allModels")}</span>
             ),
         },
         {
-          header: "Discount Percentage",
+          header: t("colDiscountPercentage"),
           numeric: true,
           cell: (row) => {
             const label = rowLabel(row);
@@ -126,8 +126,8 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label={t("ariaSaveDiscount", { name: displayName })}
-                      onClick={() => handleSaveEdit(row.provider)}
+                      aria-label={t("ariaSaveDiscount", { name: label })}
+                      onClick={() => handleSaveEdit(row.key)}
                       className="cursor-pointer text-success hover:text-success/80"
                     >
                       <Check className="size-5" />
@@ -135,7 +135,7 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label={t("ariaCancelDiscount", { name: displayName })}
+                      aria-label={t("ariaCancelDiscount", { name: label })}
                       onClick={handleCancelEdit}
                       className="cursor-pointer text-muted-foreground hover:text-foreground"
                     >
@@ -148,8 +148,8 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label={t("ariaEditDiscount", { name: displayName })}
-                      onClick={() => handleStartEdit(row.provider, row.discount)}
+                      aria-label={t("ariaEditDiscount", { name: rowLabel(row) })}
+                      onClick={() => handleStartEdit(row.key, row.discount)}
                       className="cursor-pointer text-info hover:text-info/80"
                     >
                       <SquarePen className="size-5" />
@@ -170,7 +170,7 @@ const ProviderDiscountTable: React.FC<ProviderDiscountTableProps> = ({
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label={t("ariaRemoveDiscount", { name: displayName })}
+                aria-label={t("ariaRemoveDiscount", { name: rowLabel(row) })}
                 onClick={() => onRemoveProvider(row.key, label)}
                 className="cursor-pointer hover:text-destructive"
               >

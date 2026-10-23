@@ -4562,3 +4562,10 @@ TeamAdminEditableFieldsSettings 的 FieldHelp 改为按 key 取文案，新增 `
 验证：目录叶子 11622→11633，英中同数；AST 全局可见英文维持 231 条、122 个文件（本簇常量与校验串不在 AST 口径内）；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
 
 LiteAdmin 暂缓：其集成测试在 HEAD 上 20 例全部 5 秒超时（触发器不渲染），属既有环境/用例问题；已回退本簇对它的尝试，待该文件基线修复后再接页签标题与关闭按钮文案。
+## 2026-10-23 第 449 簇：成本追踪折扣表列头与模式行操作
+
+provider_discount_table 的 "Models"/"All models"/"Discount Percentage" 接 `costTracking.colModels`/`allModels`/`colDiscountPercentage`（zh "模型"/"全部模型"/"折扣百分比"）。行操作 aria 改用 `rowLabel(row)`，模式行现在带上 `(claude-*)` 之类的模式后缀，便于区分同一 provider 的多行；同时修掉编辑与保存回调把 `row.provider` 当配置键的缺陷，改为 `row.key`，模式行此前点击编辑无法进入编辑态。
+
+测试：列头与 "All models" 断言翻面，两条模式行用例原先在 HEAD 即失败（旧英文 aria 与编辑键缺陷），本簇清零，23 例全绿。
+
+验证：AST 本文件归零；全局可见英文 231→230 条、122→121 个文件；目录叶子 11633→11636，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。

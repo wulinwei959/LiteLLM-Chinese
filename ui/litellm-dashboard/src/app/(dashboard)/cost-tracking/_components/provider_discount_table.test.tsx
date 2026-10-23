@@ -303,7 +303,7 @@ describe("ProviderDiscountTable", () => {
         onRemoveProvider={onRemoveProvider}
       />,
     );
-    expect(screen.getByRole("columnheader", { name: "Models" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "模型" })).toBeInTheDocument();
   });
 
   it("should show the model pattern for a provider/pattern key and All models for a bare key", () => {
@@ -315,7 +315,7 @@ describe("ProviderDiscountTable", () => {
       />,
     );
     expect(screen.getByText("claude-*")).toBeInTheDocument();
-    expect(screen.getByText("All models")).toBeInTheDocument();
+    expect(screen.getByText("全部模型")).toBeInTheDocument();
   });
 
   it("should split a nested pattern key on the first slash only", () => {
@@ -327,7 +327,7 @@ describe("ProviderDiscountTable", () => {
       />,
     );
     expect(screen.getByText("anthropic/claude-*")).toBeInTheDocument();
-    expect(screen.queryByText("All models")).not.toBeInTheDocument();
+    expect(screen.queryByText("全部模型")).not.toBeInTheDocument();
   });
 
   it("should include the pattern in the row action labels for a pattern key", async () => {
@@ -340,7 +340,7 @@ describe("ProviderDiscountTable", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: /Remove discount for Vertex AI .* \(claude-\*\)/ }));
+    await user.click(screen.getByRole("button", { name: /移除 Vertex AI .* \(claude-\*\) 的折扣/ }));
 
     expect(onRemoveProvider).toHaveBeenCalledWith(
       "vertex_ai/claude-*",
@@ -358,11 +358,11 @@ describe("ProviderDiscountTable", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: /Edit discount for Vertex AI .* \(claude-\*\)/ }));
+    await user.click(screen.getByRole("button", { name: /编辑 Vertex AI .* \(claude-\*\) 的折扣/ }));
     const input = screen.getByPlaceholderText("5");
     await user.clear(input);
     fireEvent.change(input, { target: { value: "30" } });
-    await user.click(screen.getByRole("button", { name: /Save discount for Vertex AI .* \(claude-\*\)/ }));
+    await user.click(screen.getByRole("button", { name: /保存 Vertex AI .* \(claude-\*\) 的折扣/ }));
 
     expect(onDiscountChange).toHaveBeenCalledWith("vertex_ai/claude-*", "0.3");
   });

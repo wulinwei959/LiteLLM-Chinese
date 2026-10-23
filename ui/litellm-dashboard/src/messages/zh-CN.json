@@ -10111,7 +10111,10 @@
         "footer": "由 LiteLLM 定价计算器生成于 {date}",
         "allowPopups": "请允许弹窗以导出 PDF"
       }
-    }
+    },
+    "colModels": "模型",
+    "allModels": "全部模型",
+    "colDiscountPercentage": "折扣百分比"
   },
   "cloudZero": {
     "notConfigured": "未配置",
