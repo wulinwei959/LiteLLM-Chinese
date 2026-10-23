@@ -157,6 +157,7 @@ export function createLiteAdminOperations(context: OperationContext) {
         parameters: schema,
         function: async (rawArgs: unknown) => {
           const args = stripNulls(rawArgs as z.output<Schema>);
+          const mergedArgs = { ...args, ...extraArguments };
           active();
           context.beforeTool();
           const action: LiteAdminAction | undefined =
@@ -165,7 +166,7 @@ export function createLiteAdminOperations(context: OperationContext) {
               : {
                   id: crypto.randomUUID(),
                   name,
-                  arguments: Object.fromEntries(Object.entries(args).filter(([, value]) => value !== undefined)),
+                  arguments: Object.fromEntries(Object.entries(mergedArgs).filter(([, value]) => value !== undefined)),
                   destructive: mode === "delete",
                 };
           if (action) {
@@ -176,7 +177,7 @@ export function createLiteAdminOperations(context: OperationContext) {
           const outcome = await Promise.resolve()
             .then(() => {
               active();
-              return execute({ ...args, ...extraArguments } as NullsStripped<z.output<Schema>>);
+              return execute(mergedArgs as NullsStripped<z.output<Schema>>);
             })
             .then(
               (value) => ({ ok: true, value }) as const,

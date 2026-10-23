@@ -4877,3 +4877,7 @@ AddModelForm 由 7 例降到 1 例：`firstModelPayload` 读的是 `modelCreateC
 ## 2026-10-24 第 493 簇：Moyai 连接页、密钥头与组织成员分页
 
 MoyaiConnected：模型数文案在中文里被拆成"42"与"个模型可通过 LiteLLM 使用"两个文本节点，改为分别断言，链接名换成"打开 Moyai"/"返回 AI 网关"。KeyInfoHeader 的密钥 ID 断言用的是旧夹具前缀，按实际 `sk-9876543210fedcba` 修正。organization_view 的成员分页文案改"显示第 26-30 条，共 30 条"。三处转绿。
+
+## 2026-10-24 第 494 簇：LiteAdmin 确认卡与请求体保持一致
+
+`operations.ts` 里 `extraArguments`（例如 `key_detach_from_team` 的 `team_id: null`）在构造操作卡片之后才合并进请求体，导致管理员确认卡上的参数与实际发送的 body 不一致，四条 agent 用例因此红。改为先合并成 `mergedArgs`，卡片参数与 `execute` 都用它，`agent.test` 与 `operations.test` 全绿。
