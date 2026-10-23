@@ -274,7 +274,8 @@
     "closeWithEsc": "Close (Esc)",
     "keyboardShortcuts": "Keyboard shortcuts",
     "credentialUpdated": "Credential updated successfully",
-    "total": "Total"
+    "total": "Total",
+    "notAvailable": "n/a"
   },
   "nav": {
     "expandSidebar": "Expand sidebar",
@@ -4743,7 +4744,8 @@
       "createdFailedToast": "Failed to create {count, plural, one {# guardrail} other {# guardrails}}: {names}. You may need to create them manually.",
       "createFailed": "Failed to create guardrails. Please try again."
     },
-    "deleteConfirmNamedMessage": "Are you sure you want to delete policy: {name}? This action cannot be undone."
+    "deleteConfirmNamedMessage": "Are you sure you want to delete policy: {name}? This action cannot be undone.",
+    "flowBadge": "Flow"
   },
   "adminPanel": {
     "title": "Admin Settings",

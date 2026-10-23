@@ -41,6 +41,7 @@ interface EditBudgetModalProps {
 }
 const EditBudgetModal: React.FC<EditBudgetModalProps> = ({ isModalVisible, setIsModalVisible, existingBudget }) => {
   const t = useTranslations("budgets");
+  const commonT = useTranslations("common");
   const [optionalSettingsOpen, setOptionalSettingsOpen] = React.useState(false);
   const form = useForm<EditBudgetFormValues>({ defaultValues: toFormValues(existingBudget) });
   const updateBudget = useUpdateBudget();
@@ -148,7 +149,7 @@ const EditBudgetModal: React.FC<EditBudgetModalProps> = ({ isModalVisible, setIs
                       onValueChange={onChange}
                     >
                       <SelectTrigger id={id} aria-invalid={ariaInvalid} aria-describedby={ariaDescribedBy}>
-                        <SelectValue placeholder="n/a" />
+                        <SelectValue placeholder={commonT("notAvailable")} />
                       </SelectTrigger>
                       <SelectContent>
                         {BUDGET_DURATION_OPTIONS.map((option) => (

@@ -40,6 +40,7 @@ interface BudgetModalProps {
 }
 const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVisible }) => {
   const t = useTranslations("budgets");
+  const commonT = useTranslations("common");
   const [optionalSettingsOpen, setOptionalSettingsOpen] = React.useState(false);
   const form = useZodForm(buildBudgetSchema(t), { defaultValues: { budget_id: "" } });
   const createBudget = useCreateBudget();
@@ -143,7 +144,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
                       onValueChange={onChange}
                     >
                       <SelectTrigger id={id} aria-invalid={ariaInvalid} aria-describedby={ariaDescribedBy}>
-                        <SelectValue placeholder="n/a" />
+                        <SelectValue placeholder={commonT("notAvailable")} />
                       </SelectTrigger>
                       <SelectContent>
                         {BUDGET_DURATION_OPTIONS.map((option) => (

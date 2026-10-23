@@ -2,6 +2,7 @@
 
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { BudgetsTranslator } from "@/lib/i18n/translators";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -28,8 +29,9 @@ const serverFilter: FilterFn<budgetItem> = () => true;
 serverFilter.autoRemove = () => false;
 
 function RateLimitCell({ value }: { value: number | null | undefined }) {
+  const t = useTranslations("common");
   if (value == null) {
-    return <span className="text-muted-foreground">n/a</span>;
+    return <span className="text-muted-foreground">{t("notAvailable")}</span>;
   }
   return <span className="tabular-nums">{value}</span>;
 }

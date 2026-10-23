@@ -1691,7 +1691,7 @@ export const FlowBuilderPage: React.FC<FlowBuilderPageProps> = ({
               letterSpacing: "0.02em",
             }}
           >
-            Flow
+            {t("flowBadge")}
           </span>
         </div>
         <div className="flex items-center gap-2">

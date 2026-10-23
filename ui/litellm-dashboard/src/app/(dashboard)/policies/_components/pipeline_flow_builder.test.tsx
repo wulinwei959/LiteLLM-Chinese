@@ -185,6 +185,7 @@ describe("FlowBuilderPage", () => {
     const shellClasses = shell.className.split(/\s+/);
 
     expect(shell).toContainElement(screen.getByPlaceholderText("策略名称..."));
+    expect(screen.getByText("流程")).toBeInTheDocument();
     expect(shell).not.toHaveStyle({ position: "fixed" });
     expect(shellClasses).not.toContain("fixed");
     expect(window.getComputedStyle(shell).zIndex).not.toMatch(/\d/);

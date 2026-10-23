@@ -4576,3 +4576,14 @@ ByokCredentialModal 第二步的 "Back" 接 `byokModal.back`（zh "返回"）；
 判定账：ui-theme/UIThemeSettings 的 `throw new Error("Failed to update settings")`/`"Failed to reset"` 与 DefaultUserSettingsForm 的 `"Failed to load default user settings"` 均在本地 catch 后被已译 toast/alert 吞掉，抛出的英文不进 UI，按既有 leak/swallow 教条保留不接。
 
 验证：AST 本文件仅剩 logo 字母；全局可见英文 230→229 条、文件维持 121 个；目录叶子 11636→11637，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 451 簇：策略流程构建器 Flow 徽标
+
+FlowBuilderPage 标题旁的 "Flow" 徽标接 `policies.flowBadge`（zh "流程"）。同页 `(<n>ms)` 是耗时单位展示，`ms` 保留。测试：FlowBuilderPage 外壳用例补"流程"徽标断言，14 例全绿。
+
+验证：AST 本文件仅剩 `ms)` 单位；目录叶子 11637→11638，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、9 警为 HEAD 既有；prettier 新增行合规、HEAD 既有脏格式不动；i18n 守卫 23 例全绿。
+
+## 2026-10-23 第 452 簇：预算模块 n/a 统一为通用不适用文案
+
+BudgetTableColumns 的缺失限速值、budget_modal 与 edit_budget_modal 的周期下拉占位符由硬编码 "n/a" 改为 `common.notAvailable`（新增 en "n/a"、zh "不适用"），RateLimitCell 补 useTranslations。测试：BudgetTable 用例标题与断言翻成"不适用"，预算域 5 文件 49 例全绿。
+
+验证：AST 三文件归零；全局可见英文 228→225 条、121→118 个文件；目录叶子 11638→11639，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、3 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。

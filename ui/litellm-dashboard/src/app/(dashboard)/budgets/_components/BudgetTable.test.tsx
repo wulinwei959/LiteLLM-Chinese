@@ -151,11 +151,11 @@ describe("BudgetTable", () => {
     expect(onSortingChange).toHaveBeenCalled();
   });
 
-  it("should show n/a for missing rate limits and Unlimited for a missing max budget", () => {
+  it("should show the not-available label for missing rate limits and Unlimited for a missing max budget", () => {
     const noLimits = { max_budget: null, tpm_limit: null, rpm_limit: null, tpd_limit: null };
     const list = makeList({ rows: [makeBudget(noLimits)] });
     renderWithProviders(<BudgetTable {...defaultProps} list={list} />);
-    expect(screen.getAllByText("n/a")).toHaveLength(3);
+    expect(screen.getAllByText("不适用")).toHaveLength(3);
     expect(screen.getByText("无限制")).toBeInTheDocument();
   });
 

@@ -274,7 +274,8 @@
     "closeWithEsc": "关闭（Esc）",
     "keyboardShortcuts": "键盘快捷键",
     "credentialUpdated": "凭据更新成功",
-    "total": "总计"
+    "total": "总计",
+    "notAvailable": "不适用"
   },
   "nav": {
     "expandSidebar": "展开侧边栏",
@@ -4743,7 +4744,8 @@
       "createdFailedToast": "创建 {count} 个护栏失败：{names}，你可能需要手动创建。",
       "createFailed": "创建护栏失败，请重试。"
     },
-    "deleteConfirmNamedMessage": "确定要删除策略：{name} 吗？此操作无法撤销。"
+    "deleteConfirmNamedMessage": "确定要删除策略：{name} 吗？此操作无法撤销。",
+    "flowBadge": "流程"
   },
   "adminPanel": {
     "title": "管理员设置",
