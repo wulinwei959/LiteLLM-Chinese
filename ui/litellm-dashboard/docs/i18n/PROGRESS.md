@@ -4881,3 +4881,13 @@ MoyaiConnected：模型数文案在中文里被拆成"42"与"个模型可通过 
 ## 2026-10-24 第 494 簇：LiteAdmin 确认卡与请求体保持一致
 
 `operations.ts` 里 `extraArguments`（例如 `key_detach_from_team` 的 `team_id: null`）在构造操作卡片之后才合并进请求体，导致管理员确认卡上的参数与实际发送的 body 不一致，四条 agent 用例因此红。改为先合并成 `mergedArgs`，卡片参数与 `execute` 都用它，`agent.test` 与 `operations.test` 全绿。
+
+## 2026-10-24 第 495 簇：Pod 计数、Copilot 连接与创建密钥的标签
+
+KubernetesPodsCard 的 "3 ready pods" 改"3 个就绪 Pod"；GithubCopilotConnectModal 的 "Connected as @octocat"/"Disconnect" 改"已连接为 @octocat"/"断开连接"，两文件转绿。create_key_button 的 Team / User ID 标签已对齐中文，卡在用户搜索下拉取不到选项，留待下一轮。
+
+### 第 495 簇后的失败面（61 个历史失败文件口径）
+
+18 个文件、27 例。剩余分布：key_edit_view 7（预算草稿刷新、MCP 工具清单拉取 2、授权长度 2、移出项目 1）、add_auto_router_tab 3（提交禁用 2、v2 链路组合框）、edit_auto_router_modal 2（阈值草稿时序 2）、TeamVirtualKeysTable 1 与 key_info_view 1（团队预算展示）、page.test 1（页签可见性）、DataTable 1（类名）、AllModelsTab 1（视图模式选项）、AddModelForm 1（两条必填标记只渲染出一条）、JevClassifierConfig 1、LiteAdmin 1、RouterSettingsForm 1、RouterSettings index 1、AutoRouterUsageViews 1、page.integration 1、create_key_button 1、KubernetesPodsCard 0（已绿）、GithubCopilotConnectModal 0（已绿）。
+
+这些已不含文案类问题：目录中英叶子各 11694、死键 0、生产 tsc 0 错、i18n 五条守卫 5 个文件全绿。剩余全是上游合并带来的行为断言与组件缺渲染，需要逐文件对照组件取值；本轮未合入 main。

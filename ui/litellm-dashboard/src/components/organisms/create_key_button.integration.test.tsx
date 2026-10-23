@@ -686,12 +686,12 @@ describe("CreateKey", () => {
         await nameTheKey();
         await userEvent.click(screen.getByRole("radio", { name: "其他用户" }));
 
-        await userEvent.click(await screen.findByLabelText(/^Team/));
+        await userEvent.click(await screen.findByLabelText(/^团队/));
         expect(await screen.findByRole("option", { name: /Administered Team/ })).toBeInTheDocument();
         expect(screen.queryByRole("option", { name: /Joined Team/ })).not.toBeInTheDocument();
         await userEvent.click(screen.getByRole("option", { name: /Administered Team/ }));
 
-        await userEvent.click(await screen.findByLabelText(/^User ID/));
+        await userEvent.click(await screen.findByLabelText(/^用户 ID/));
         expect(await screen.findAllByRole("option")).toHaveLength(1);
         await userEvent.click(screen.getByRole("option", { name: "member@example.com (member-1)" }));
         await submit();

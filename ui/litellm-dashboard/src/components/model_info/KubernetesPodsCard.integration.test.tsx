@@ -37,7 +37,7 @@ describe("KubernetesPodsCard", () => {
     renderWithProviders(<KubernetesPodsCard modelId="model-pods-1" />);
 
     expect(await screen.findByText("vllm-headless.ns.svc.cluster.local:8000")).toBeInTheDocument();
-    expect(screen.getByText("3 ready pods")).toBeInTheDocument();
+    expect(screen.getByText("3 个就绪 Pod")).toBeInTheDocument();
     expect(screen.getByText("10.0.0.1")).toBeInTheDocument();
     expect(screen.getByText("10.0.0.2")).toBeInTheDocument();
     expect(screen.getByText("10.0.0.3")).toBeInTheDocument();

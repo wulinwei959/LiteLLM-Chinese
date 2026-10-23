@@ -71,12 +71,12 @@ describe("GithubCopilotConnectModal", () => {
     await advance(0.1);
     expect(networking.userConnectionPollCall).toHaveBeenCalledTimes(3);
 
-    expect(screen.getByText("Connected as @octocat")).toBeInTheDocument();
+    expect(screen.getByText("已连接为 @octocat")).toBeInTheDocument();
     expect(props.onConnected).toHaveBeenCalledTimes(1);
     await advance(30);
     expect(networking.userConnectionPollCall).toHaveBeenCalledTimes(3);
 
-    fireEvent.click(screen.getByRole("button", { name: "Disconnect" }));
+    fireEvent.click(screen.getByRole("button", { name: "断开连接" }));
     expect(props.onDisconnect).toHaveBeenCalledTimes(1);
   });
 
