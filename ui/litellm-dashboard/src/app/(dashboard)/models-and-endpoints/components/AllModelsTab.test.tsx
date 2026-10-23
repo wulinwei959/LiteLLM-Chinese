@@ -511,7 +511,7 @@ describe("AllModelsTab", () => {
     await user.click(screen.getByRole("button", { name: /^删除$/ }));
 
     await waitFor(() => {
-      expect(mockModelDeleteCall).toHaveBeenCalledWith("mock-access-token", "model-1");
+      expect(mockModelDeleteCall).toHaveBeenCalledWith("test-access-token", "model-1");
     });
   });
 
@@ -522,7 +522,7 @@ describe("AllModelsTab", () => {
     await user.click(await screen.findByTestId("model-pause-toggle-model-1"));
 
     await waitFor(() => {
-      expect(mockModelPatchUpdateCall).toHaveBeenCalledWith("mock-access-token", { blocked: true }, "model-1");
+      expect(mockModelPatchUpdateCall).toHaveBeenCalledWith("test-access-token", { blocked: true }, "model-1");
     });
   });
 
@@ -592,7 +592,7 @@ describe("AllModelsTab", () => {
       renderWithProviders(<AllModelsTab {...defaultProps} />);
 
       await user.click(screen.getByTestId("models-view-select"));
-      await user.click(await screen.findByRole("option", { name: "所有可用模型" }));
+      await user.click(await screen.findByRole("option", { name: /所有可用模型/ }));
 
       await waitFor(() => {
         expect(screen.queryByText(/create a Virtual Key/i)).not.toBeInTheDocument();

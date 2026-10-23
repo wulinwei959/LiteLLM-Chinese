@@ -4861,3 +4861,7 @@ MCPServerSelector 1 例：`useMCPServers` 只传了 `teamId`，把组件拿到�
 ## 2026-10-24 第 489 簇：新增模型面板的 URL 预填与多选值守卫
 
 AddModelPanel 4 例全部转绿，两处根因：测试里的 `setup(searchParams)` 收了参数却从没传给 `renderWithProviders`，预填用例等于没测，补上 `searchParams`/`onUrlUpdate` 后 provider 输入框才出现 `TypeSafe`；`MultiSelect` 的 `value` 契约允许缺省但实现直接 `.filter`，模型名输入态传入非数组时整棵表单崩掉，补 `Array.isArray` 守卫。预填参数清理的断言改为对最终 URL 串做包含判断，兼容 nuqs 事件里 `searchParams` 的两种承载形态。
+
+## 2026-10-24 第 490 簇：模型列表的删除/暂停载荷与视图模式
+
+AllModelsTab 里删除与暂停两条载荷断言写的是 `mock-access-token`，而共享 session 夹具给的是 `test-access-token`（组件确实拿到了后者并发出调用），按实际值修正后两条转绿；视图模式下拉的"所有可用模型"选项在 jsdom 里仍取不到，与团队下拉的可见差别在于它是 Base UI Select 的 `items` 模式，留待下一轮。
