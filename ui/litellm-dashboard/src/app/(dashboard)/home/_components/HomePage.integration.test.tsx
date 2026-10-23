@@ -1,6 +1,6 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
+import { renderWithProviders, testQueryClient } from "../../../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { DailyActivityAggregatedResponse } from "@/components/UsagePage/dailyActivityApi";
 import { EMPTY_DAILY_ACTIVITY_METADATA } from "@/components/UsagePage/dailyActivityApi";
@@ -101,15 +101,11 @@ const activity: DailyActivityAggregatedResponse = {
   },
 };
 
-const renderHome = () =>
-  render(
-    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-      <HomePage />
-    </QueryClientProvider>,
-  );
+const renderHome = () => renderWithProviders(<HomePage />);
 
 describe("HomePage", () => {
   beforeEach(() => {
+    testQueryClient.clear();
     auth.isViewOnly = false;
     auth.userRole = all_admin_roles[0]!;
     network.aggregated.mockReset().mockResolvedValue(activity);
@@ -124,11 +120,11 @@ describe("HomePage", () => {
 
   it("shows the usage totals from the daily activity API and links Create New Virtual Key to the key creation flow", async () => {
     renderHome();
-    expect(screen.getByRole("heading", { level: 1, name: "Home" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "首页" })).toBeInTheDocument();
     expect(await screen.findByText("$501.74")).toBeInTheDocument();
     expect(screen.getByText("5,118")).toBeInTheDocument();
     expect(screen.getByText("98.6M")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /create new virtual key/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /新建虚拟密钥/ })).toHaveAttribute(
       "href",
       expect.stringMatching(/\/api-keys\?create=true$/),
     );
@@ -138,29 +134,27 @@ describe("HomePage", () => {
   it("hides Create New Virtual Key from view-only users", () => {
     auth.isViewOnly = true;
     renderHome();
-    expect(screen.queryByRole("link", { name: /create new virtual key/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /新建虚拟密钥/ })).not.toBeInTheDocument();
   });
 
   it("offers LiteAdmin on Home inside the dashboard frame", async () => {
-    render(
-      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-        <LiteAdminFrame>
-          <HomePage />
-        </LiteAdminFrame>
-      </QueryClientProvider>,
+    renderWithProviders(
+      <LiteAdminFrame>
+        <HomePage />
+      </LiteAdminFrame>,
     );
-    const entry = screen.getByRole("region", { name: "Ask LiteAdmin" });
-    expect(await within(entry).findByPlaceholderText("What would you like to do?")).toBeInTheDocument();
-    expect(within(entry).getByRole("button", { name: "Send message" })).toBeDisabled();
+    const entry = screen.getByRole("region", { name: "向 LiteAdmin 提问" });
+    expect(await within(entry).findByPlaceholderText("你想做点什么？")).toBeInTheDocument();
+    expect(within(entry).getByRole("button", { name: "发送消息" })).toBeDisabled();
     expect(await screen.findByText("$501.74")).toBeInTheDocument();
   });
 
   it("shows an error with a retry instead of zero totals when the usage request fails", async () => {
     network.aggregated.mockRejectedValueOnce(new Error("boom"));
     renderHome();
-    expect(await screen.findByText("Failed to load usage")).toBeInTheDocument();
+    expect(await screen.findByText("无法加载用量")).toBeInTheDocument();
     expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Retry" }));
+    await userEvent.click(screen.getByRole("button", { name: "重试" }));
     expect(await screen.findByText("$501.74")).toBeInTheDocument();
     expect(network.aggregated).toHaveBeenCalledTimes(2);
   });
@@ -185,7 +179,7 @@ describe("HomePage", () => {
       "https://docs.litellm.ai/blog/mid",
       "https://docs.litellm.ai/blog/old",
     ]);
-    expect(within(section).getByText("Oct 11")).toBeInTheDocument();
+    expect(within(section).getByText("10月11日")).toBeInTheDocument();
     expect(within(section).queryByText("townhall")).not.toBeInTheDocument();
   });
 

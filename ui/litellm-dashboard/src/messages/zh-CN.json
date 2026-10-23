@@ -273,7 +273,8 @@
     },
     "closeWithEsc": "关闭（Esc）",
     "keyboardShortcuts": "键盘快捷键",
-    "credentialUpdated": "凭据更新成功"
+    "credentialUpdated": "凭据更新成功",
+    "total": "总计"
   },
   "nav": {
     "expandSidebar": "展开侧边栏",
@@ -327,7 +328,8 @@
     "costTracking": "成本追踪",
     "uiTheme": "界面主题",
     "plugin": "插件",
-    "pluginHint": "在设置中配置插件 URL"
+    "pluginHint": "在设置中配置插件 URL",
+    "home": "首页"
   },
   "viewSwitcher": {
     "aiGateway": "AI 网关",
@@ -5438,10 +5440,27 @@
         "totalRequests": "总请求数",
         "totalTokens": "总令牌数",
         "avgCostPerRequest": "平均每请求成本",
-        "avgLatency": "平均延迟"
+        "avgLatency": "平均延迟",
+        "ofBudget": "共 {amount} 预算",
+        "noBudgetSet": "未设预算",
+        "ok": "正常",
+        "failed": "失败",
+        "tokensExact": "{count} 个令牌",
+        "cacheRead": "{count} 缓存读取",
+        "successRate": "成功率 {rate}%"
       },
       "userRecord": {
         "view": "查看用户记录"
+      },
+      "metric": {
+        "spend": "花费",
+        "tokens": "令牌",
+        "requests": "请求"
+      },
+      "dimension": {
+        "model": "模型",
+        "deployment": "部署",
+        "provider": "供应商"
       }
     },
     "userActivity": {
@@ -12021,7 +12040,8 @@
     "from": "从：",
     "to": "至：",
     "invalidDateFormat": "日期格式无效",
-    "endBeforeStart": "结束日期不能早于开始日期"
+    "endBeforeStart": "结束日期不能早于开始日期",
+    "selectDateRange": "选择日期范围"
   },
   "objectPermissions": {
     "title": "对象权限",
@@ -12928,7 +12948,9 @@
     "empty": {
       "noPosts": "还没有动态"
     },
-    "pageTitle": "首页"
+    "pageTitle": "首页",
+    "leaderboardSubtitle": "过去 {days} 天的令牌占比，附前半段与后半段的环比变化",
+    "usageAria": "最近 {days} 天的用量"
   },
   "aiHub": {
     "decisionModels": {

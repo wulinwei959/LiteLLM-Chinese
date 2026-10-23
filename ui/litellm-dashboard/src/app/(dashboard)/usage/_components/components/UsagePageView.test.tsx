@@ -610,8 +610,8 @@ describe("UsagePage", () => {
     expect(overview().getByText("425,151")).toBeInTheDocument();
     // Successful and failed counts now sit under Total Requests rather than in their own tiles.
     expect(totalRequestsCell()).toHaveTextContent("425,151");
-    expect(totalRequestsCell()).toHaveTextContent("424,242 ok");
-    expect(totalRequestsCell()).toHaveTextContent("909 failed");
+    expect(totalRequestsCell()).toHaveTextContent("424,242 正常");
+    expect(totalRequestsCell()).toHaveTextContent("909 失败");
     expect(overview().queryByText("1,500")).not.toBeInTheDocument();
     expect(overview().queryByText("1,450")).not.toBeInTheDocument();
   });
@@ -635,7 +635,7 @@ describe("UsagePage", () => {
     await waitFor(() => {
       expect(overview().getAllByText("75K").length).toBeGreaterThan(0);
     });
-    expect(overview().getByTitle("75,000 tokens")).toHaveTextContent("75K");
+    expect(overview().getByTitle("75,000 个令牌")).toHaveTextContent("75K");
 
     await act(async () => {
       fireEvent.click(screen.getByTestId("pick-a-different-range"));
@@ -694,8 +694,8 @@ describe("UsagePage", () => {
     });
     expect(overview().getByText("1,500")).toBeInTheDocument();
     expect(totalRequestsCell()).toHaveTextContent("1,500");
-    expect(totalRequestsCell()).toHaveTextContent("1,450 ok");
-    expect(totalRequestsCell()).toHaveTextContent("50 failed");
+    expect(totalRequestsCell()).toHaveTextContent("1,450 正常");
+    expect(totalRequestsCell()).toHaveTextContent("50 失败");
     expect(screen.queryByText("424,242")).not.toBeInTheDocument();
     expect(screen.queryByText("909")).not.toBeInTheDocument();
     expect(screen.queryByText("425,151")).not.toBeInTheDocument();
@@ -780,7 +780,7 @@ describe("UsagePage", () => {
     const fills = new Set(spendBars().map((rect) => rect.getAttribute("fill")));
     expect(fills).toEqual(new Set([STACKED_USAGE_PALETTE[0], OTHER_COLOR]));
 
-    expect(screen.getAllByText("Jan 1").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("1月1日").length).toBeGreaterThan(0);
     expect(screen.getAllByText("gpt-4").length).toBeGreaterThan(0);
   });
 
@@ -1034,7 +1034,6 @@ describe("UsagePage", () => {
     expect(screen.queryByText("Entity Usage")).not.toBeInTheDocument();
   });
 
-
   describe("non-admin user behavior", () => {
     it("should always pass own userId for non-admin users", async () => {
       mockUseAuthorized.mockReturnValue(authorizedSession(SESSION_OVERRIDE_4));
@@ -1199,11 +1198,7 @@ describe("UsagePage", () => {
         expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
       });
 
-      expect(vi.mocked(processActivityData)).toHaveBeenCalledWith(
-        expect.anything(),
-        "model_groups",
-        expect.anything(),
-      );
+      expect(vi.mocked(processActivityData)).toHaveBeenCalledWith(expect.anything(), "model_groups", expect.anything());
     });
 
     it("should switch the Model Activity tab to the litellm models breakdown on toggle click", async () => {
@@ -1243,9 +1238,7 @@ describe("UsagePage", () => {
 
       fireEvent.change(searchInput, { target: { value: "missing model" } });
 
-      expect(
-        within(modelActivityTab).getByText('该时间范围内没有匹配「missing model」的模型'),
-      ).toBeInTheDocument();
+      expect(within(modelActivityTab).getByText("该时间范围内没有匹配「missing model」的模型")).toBeInTheDocument();
     });
 
     it("does not show the no-match state when model data is empty", async () => {
@@ -1262,7 +1255,7 @@ describe("UsagePage", () => {
       fireEvent.change(searchInput, { target: { value: "missing model" } });
 
       expect(
-        within(modelActivityTab).queryByText('该时间范围内没有匹配「missing model」的模型'),
+        within(modelActivityTab).queryByText("该时间范围内没有匹配「missing model」的模型"),
       ).not.toBeInTheDocument();
     });
   });

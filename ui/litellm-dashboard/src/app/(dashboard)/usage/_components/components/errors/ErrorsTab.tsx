@@ -89,6 +89,7 @@ function rateChartEmpty(
 
 export default function ErrorsTab({ activity, loading, failed, userScoped = false }: ErrorsTabProps) {
   const t = useTranslations("usage.errors");
+  const tc = useTranslations("common");
   const [kind, setKind] = useState<ErrorEntityKind>("key");
   const [rateView, setRateView] = useState<ErrorRateView>("total");
   const entityOptions = useMemo(
@@ -208,7 +209,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
               xLabel={shortDate}
               format={count}
               totalFor={(date) => failedByDate.get(date)}
-              totalLabel="failed"
+              totalLabel={tc("failed")}
               className="h-64"
             />
             <ul

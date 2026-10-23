@@ -240,4 +240,11 @@ export const ADMIN_SESSION_CLAIMS = {
 };
 
 /** Console noise the dev server produces that says nothing about the page. */
-export const IGNORED_CONSOLE = [/Failed to load resource/i, /Download the React DevTools/i, /\[Fast Refresh\]/i];
+export const IGNORED_CONSOLE = [
+  /Failed to load resource/i,
+  /Download the React DevTools/i,
+  /\[Fast Refresh\]/i,
+  // Upstream renders anchor-as-button (`<Button render={<a/>}>`) for nav actions; the Base UI
+  // nativeButton warning fires upstream too and role="link" assertions depend on that shape.
+  /expected a native <button>/i,
+];

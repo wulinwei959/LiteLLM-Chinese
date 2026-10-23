@@ -34,7 +34,7 @@ export default function UsageStatStrip({
           label={t("statStrip.spend")}
           value={formatUsd(totals.spend)}
           pending={loading}
-          hint={budget ? `of ${formatUsd(budget)} budget` : "No budget set"}
+          hint={budget ? t("statStrip.ofBudget", { amount: formatUsd(budget) }) : t("statStrip.noBudgetSet")}
         />
       </StatCell>
       <StatCell trend={<Sparkline data={daily} dataKey="requests" color={BRAND} className="h-14" />}>
@@ -46,13 +46,14 @@ export default function UsageStatStrip({
         {!requestCountsPending && (
           <div className="mt-0.5 flex gap-3 text-xs leading-4 text-muted-foreground">
             <span>
-              <span className="text-success tabular-nums">{totals.successful.toLocaleString()}</span> ok
+              <span className="text-success tabular-nums">{totals.successful.toLocaleString()}</span>{" "}
+              {t("statStrip.ok")}
             </span>
             <span>
               <span className={totals.failed > 0 ? "text-destructive tabular-nums" : "tabular-nums"}>
                 {totals.failed.toLocaleString()}
               </span>{" "}
-              failed
+              {t("statStrip.failed")}
             </span>
           </div>
         )}
@@ -61,9 +62,9 @@ export default function UsageStatStrip({
         <Stat
           label={t("statStrip.totalTokens")}
           value={loading ? null : formatCompact(totals.tokens)}
-          exact={`${totals.tokens.toLocaleString()} tokens`}
+          exact={t("statStrip.tokensExact", { count: totals.tokens.toLocaleString() })}
           pending={loading}
-          hint={loading ? undefined : `${formatCompact(totals.cacheReadTokens)} cache read`}
+          hint={loading ? undefined : t("statStrip.cacheRead", { count: formatCompact(totals.cacheReadTokens) })}
         />
       </StatCell>
       <StatCell>
@@ -77,7 +78,11 @@ export default function UsageStatStrip({
             label={t("statStrip.avgLatency")}
             value={totals.avgLatencyMs === null ? "—" : formatLatency(totals.avgLatencyMs)}
             pending={loading}
-            hint={totals.successRate === null ? undefined : `${totals.successRate.toFixed(1)}% success rate`}
+            hint={
+              totals.successRate === null
+                ? undefined
+                : t("statStrip.successRate", { rate: totals.successRate.toFixed(1) })
+            }
           />
         </div>
       </StatCell>

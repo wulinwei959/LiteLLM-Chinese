@@ -45,7 +45,7 @@ export default function HomePage() {
 
       <LiteAdminHome />
 
-      <section aria-label={`Usage, last ${HOME_USAGE_DAYS} days`}>
+      <section aria-label={t("usageAria", { days: HOME_USAGE_DAYS })}>
         {usage.failed ? (
           <div className="flex items-center justify-between gap-2 rounded-xl border bg-card px-4 py-3 text-sm">
             <span className="text-destructive">{t("error.loadUsageFailed")}</span>
@@ -103,7 +103,7 @@ export default function HomePage() {
 
           <Panel
             title={t("title.leaderboard")}
-            subtitle={`Share of tokens over the last ${HOME_USAGE_DAYS} days, with the change between the first and second half of the period`}
+            subtitle={t("leaderboardSubtitle", { days: HOME_USAGE_DAYS })}
             testId="home-leaderboard"
           >
             <Leaderboard

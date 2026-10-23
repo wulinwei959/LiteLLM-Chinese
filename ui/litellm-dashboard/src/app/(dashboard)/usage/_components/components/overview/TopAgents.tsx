@@ -24,10 +24,10 @@ const CHART_SERIES = 6;
 /** Below this share of tokens carrying a User-Agent, say so rather than imply the list is the whole picture. */
 const COVERAGE_NOTE_BELOW = 0.5;
 const METRICS = [
-  { value: "tokens", label: "Tokens" },
-  { value: "spend", label: "Spend" },
-  { value: "requests", label: "Requests" },
-] as const satisfies readonly { value: UsageMetric; label: string }[];
+  { value: "tokens", labelKey: "metric.tokens" },
+  { value: "spend", labelKey: "metric.spend" },
+  { value: "requests", labelKey: "metric.requests" },
+] as const satisfies readonly { value: UsageMetric; labelKey: string }[];
 
 /** Brand-tinted monograms for runtimes that have no logo file, so a top spender never shows a blank tile. */
 const MONOGRAMS: Readonly<Record<string, { text: string; className: string }>> = {
@@ -199,7 +199,14 @@ export default function TopAgents({
       title={t("topAgents.title")}
       subtitle={subtitle}
       testId="top-agents"
-      action={<Segmented label={t("topAgents.metric")} value={metric} options={METRICS} onChange={setMetric} />}
+      action={
+        <Segmented
+          label={t("topAgents.metric")}
+          value={metric}
+          options={METRICS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
+          onChange={setMetric}
+        />
+      }
       bodyClassName="px-0 pt-4 pb-0"
     >
       <TopAgentsBody loading={loading} empty={agents.length === 0}>

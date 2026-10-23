@@ -21,16 +21,16 @@ import { Segmented } from "./Primitives";
 import { providerForModel } from "./modelProvider";
 
 const METRIC_OPTIONS = [
-  { value: "spend", label: "Spend" },
-  { value: "tokens", label: "Tokens" },
-  { value: "requests", label: "Requests" },
-] as const satisfies readonly { value: UsageMetric; label: string }[];
+  { value: "spend", labelKey: "metric.spend" },
+  { value: "tokens", labelKey: "metric.tokens" },
+  { value: "requests", labelKey: "metric.requests" },
+] as const satisfies readonly { value: UsageMetric; labelKey: string }[];
 
 const DIMENSION_OPTIONS = [
-  { value: "model_groups", label: "Model" },
-  { value: "models", label: "Deployment" },
-  { value: "providers", label: "Provider" },
-] as const satisfies readonly { value: BreakdownDimension; label: string }[];
+  { value: "model_groups", labelKey: "dimension.model" },
+  { value: "models", labelKey: "dimension.deployment" },
+  { value: "providers", labelKey: "dimension.provider" },
+] as const satisfies readonly { value: BreakdownDimension; labelKey: string }[];
 
 export interface BreakdownState {
   metric: UsageMetric;
@@ -58,14 +58,14 @@ export function BreakdownControls({
       <Segmented
         label={t("breakdown.metric")}
         value={state.metric}
-        options={METRIC_OPTIONS}
+        options={METRIC_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
         onChange={(metric) => onChange({ ...state, metric })}
       />
       {showDimension && (
         <Segmented
           label={t("breakdown.groupBy")}
           value={state.dimension}
-          options={DIMENSION_OPTIONS}
+          options={DIMENSION_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))}
           onChange={(dimension) => onChange({ ...state, dimension })}
         />
       )}

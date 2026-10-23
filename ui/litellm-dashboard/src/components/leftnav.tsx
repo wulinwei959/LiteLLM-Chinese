@@ -550,6 +550,9 @@ const navMessageKey = (label: string): NavMessageKey => label.replace(/^nav\./, 
 // Breadcrumb ("Section" / "Page") for the top bar, derived from the same nav config.
 export const getBreadcrumb = (pathname: string, navT: NavTranslator): { section: string | null; title: string } => {
   const route = routeForPathname(pathname);
+  if (route === HOME_ROUTE) {
+    return { section: null, title: navT("home") };
+  }
   for (const group of menuGroups) {
     for (const item of group.items) {
       const sectionKey = SECTION_DISPLAY[group.groupLabel] ?? group.groupLabel;

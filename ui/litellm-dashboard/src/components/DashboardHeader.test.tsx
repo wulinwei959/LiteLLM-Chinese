@@ -1,3 +1,4 @@
+import { CommandPaletteProvider } from "@/components/CommandPalette/CommandPaletteProvider";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, screen } from "@testing-library/react";
 import { DashboardHeader } from "./DashboardHeader";
@@ -32,6 +33,7 @@ vi.mock("@/components/Navbar/NotificationsBell/NotificationsBell", () => ({ Noti
 vi.mock("@/components/Navbar/WorkerDropdown/WorkerDropdown", () => ({ default: () => null }));
 // Mock next-intl with English translations
 const mockTranslations: Record<string, string> = {
+  home: "Home",
   aiGateway: "AI Gateway",
   observability: "Observability",
   accessControl: "Access Control",
@@ -98,14 +100,22 @@ describe("DashboardHeader breadcrumb", () => {
 
   it("titles the breadcrumb from the current route, not from a sidebar page id", () => {
     state.pathname = "/ui/models-and-endpoints";
-    renderWithProviders(<DashboardHeader />);
+    renderWithProviders(
+      <CommandPaletteProvider>
+        <DashboardHeader />
+      </CommandPaletteProvider>,
+    );
 
     expect(screen.getByText("Models + Endpoints")).toBeInTheDocument();
   });
 
   it("titles the dashboard root as Home", () => {
     state.pathname = "/ui/";
-    renderWithProviders(<DashboardHeader />);
+    renderWithProviders(
+      <CommandPaletteProvider>
+        <DashboardHeader />
+      </CommandPaletteProvider>,
+    );
 
     expect(screen.getByText("Home")).toBeInTheDocument();
   });
@@ -114,7 +124,11 @@ describe("DashboardHeader breadcrumb", () => {
     state.pathname = "/ui/logs";
     state.plugins = [{ name: "chat", display_name: "Chat", url: "/chat" }];
     state.enableChatUI = true;
-    renderWithProviders(<DashboardHeader />);
+    renderWithProviders(
+      <CommandPaletteProvider>
+        <DashboardHeader />
+      </CommandPaletteProvider>,
+    );
 
     expect(screen.getByText("Logs")).toBeInTheDocument();
   });
@@ -123,7 +137,11 @@ describe("DashboardHeader breadcrumb", () => {
     state.pathname = "/ui/logs";
     state.plugins = [{ name: "chat", display_name: "Chat", url: "/chat" }];
     state.enableChatUI = true;
-    renderWithProviders(<DashboardHeader />);
+    renderWithProviders(
+      <CommandPaletteProvider>
+        <DashboardHeader />
+      </CommandPaletteProvider>,
+    );
 
     expect(screen.getByText("AI Gateway")).toBeInTheDocument();
     expect(screen.queryByText("Observability")).not.toBeInTheDocument();
@@ -133,14 +151,22 @@ describe("DashboardHeader breadcrumb", () => {
     state.pathname = "/ui/logs";
     state.plugins = [];
     state.enableChatUI = false;
-    renderWithProviders(<DashboardHeader />);
+    renderWithProviders(
+      <CommandPaletteProvider>
+        <DashboardHeader />
+      </CommandPaletteProvider>,
+    );
 
     expect(screen.getByText("AI Gateway")).toBeInTheDocument();
     expect(screen.getByText("Logs")).toBeInTheDocument();
   });
 
   it("renders the Docs link with the shared product-link class instead of a muted toolbar button", () => {
-    renderWithProviders(<DashboardHeader />);
+    renderWithProviders(
+      <CommandPaletteProvider>
+        <DashboardHeader />
+      </CommandPaletteProvider>,
+    );
 
     const docsLink = screen.getByRole("link", { name: /docs/i });
     expect(docsLink).toHaveClass(NAV_PRODUCT_LINK_CLASS);

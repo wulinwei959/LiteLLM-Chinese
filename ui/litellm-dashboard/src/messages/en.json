@@ -273,7 +273,8 @@
     },
     "closeWithEsc": "Close (Esc)",
     "keyboardShortcuts": "Keyboard shortcuts",
-    "credentialUpdated": "Credential updated successfully"
+    "credentialUpdated": "Credential updated successfully",
+    "total": "Total"
   },
   "nav": {
     "expandSidebar": "Expand sidebar",
@@ -327,7 +328,8 @@
     "costTracking": "Cost Tracking",
     "uiTheme": "UI Theme",
     "plugin": "Plugin",
-    "pluginHint": "Configure the plugin URL in settings"
+    "pluginHint": "Configure the plugin URL in settings",
+    "home": "Home"
   },
   "viewSwitcher": {
     "aiGateway": "AI Gateway",
@@ -5438,10 +5440,27 @@
         "totalRequests": "Total Requests",
         "totalTokens": "Total Tokens",
         "avgCostPerRequest": "Avg cost / request",
-        "avgLatency": "Avg latency"
+        "avgLatency": "Avg latency",
+        "ofBudget": "of {amount} budget",
+        "noBudgetSet": "No budget set",
+        "ok": "ok",
+        "failed": "failed",
+        "tokensExact": "{count} tokens",
+        "cacheRead": "{count} cache read",
+        "successRate": "{rate}% success rate"
       },
       "userRecord": {
         "view": "View user record"
+      },
+      "metric": {
+        "spend": "Spend",
+        "tokens": "Tokens",
+        "requests": "Requests"
+      },
+      "dimension": {
+        "model": "Model",
+        "deployment": "Deployment",
+        "provider": "Provider"
       }
     },
     "userActivity": {
@@ -12025,7 +12044,8 @@
     "from": "From:",
     "to": "To:",
     "invalidDateFormat": "Invalid date format",
-    "endBeforeStart": "End date cannot be before start date"
+    "endBeforeStart": "End date cannot be before start date",
+    "selectDateRange": "Select date range"
   },
   "objectPermissions": {
     "title": "Object Permissions",
@@ -12932,7 +12952,9 @@
     "empty": {
       "noPosts": "No posts yet"
     },
-    "pageTitle": "Home"
+    "pageTitle": "Home",
+    "leaderboardSubtitle": "Share of tokens over the last {days} days, with the change between the first and second half of the period",
+    "usageAria": "Usage, last {days} days"
   },
   "aiHub": {
     "decisionModels": {

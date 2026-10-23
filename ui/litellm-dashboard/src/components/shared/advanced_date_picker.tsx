@@ -1,7 +1,7 @@
 import { Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cva.config";
-import { formatDate, formatTime, useUiFormat } from "@/lib/i18n/format";
+import { useUiFormat } from "@/lib/i18n/format";
 
 type AdvancedDatePickerTranslator = ReturnType<typeof useTranslations<"advancedDatePicker">>;
 type AdvancedDatePickerTranslatorKey = Parameters<AdvancedDatePickerTranslator>[0];
@@ -104,6 +104,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
 }) => {
   const t = useTranslations("advancedDatePicker");
   const commonT = useTranslations("common");
+  const uiFormat = useUiFormat();
   const label = labelProp ?? t("selectTimeRange");
   const [isOpen, setIsOpen] = useState(false);
   const [tempValue, setTempValue] = useState<DateRangePickerValue>(value);
@@ -178,15 +179,21 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
     };
   }, [isOpen]);
 
-  const formatDisplayRange = useCallback((from: Date | undefined, to: Date | undefined) => {
-    if (!from || !to) return "Select date range";
+  const formatDisplayRange = useCallback(
+    (from: Date | undefined, to: Date | undefined) => {
+      if (!from || !to) return t("selectDateRange");
 
-    const formatDateTime = (date: Date) => {
-      return moment(date).format("D MMM, HH:mm");
-    };
-
-    return `${formatDateTime(from)} - ${formatDateTime(to)}`;
-  }, []);
+      const dateTimeOptions = {
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      } as const;
+      return `${uiFormat.date(from, dateTimeOptions)} - ${uiFormat.date(to, dateTimeOptions)}`;
+    },
+    [t, uiFormat],
+  );
 
   // CRITICAL: Apply the same date adjustment logic as the original component
   const adjustDateRange = useCallback((newValue: DateRangePickerValue): DateRangePickerValue => {

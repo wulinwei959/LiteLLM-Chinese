@@ -572,7 +572,7 @@ describe("Sidebar (leftnav)", () => {
 
     renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI />);
 
-    expect(screen.getByRole("link", { name: /Projects/ })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /项目/ })).toBeInTheDocument();
   });
 
   it("hides Projects when the feature flag is disabled for a team admin", () => {
@@ -589,7 +589,7 @@ describe("Sidebar (leftnav)", () => {
 
     renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI={false} />);
 
-    expect(screen.queryByRole("link", { name: /Projects/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /项目/ })).not.toBeInTheDocument();
   });
 
   it("hides Projects from an internal user who is not a team admin", () => {
@@ -597,7 +597,7 @@ describe("Sidebar (leftnav)", () => {
 
     renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI />);
 
-    expect(screen.queryByRole("link", { name: /Projects/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /项目/ })).not.toBeInTheDocument();
   });
 
   it.each([
@@ -617,7 +617,7 @@ describe("Sidebar (leftnav)", () => {
 
     renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI enabledPagesInternalUsers={allowlist} />);
 
-    expect(screen.queryByRole("link", { name: /Projects/ }) !== null).toBe(visible);
+    expect(screen.queryByRole("link", { name: /项目/ }) !== null).toBe(visible);
   });
 
   it("shows Projects to a user whose global role is org admin", () => {
@@ -625,7 +625,7 @@ describe("Sidebar (leftnav)", () => {
 
     renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI />);
 
-    expect(screen.getByRole("link", { name: /Projects/ })).toHaveAttribute("href", "/ui/projects");
+    expect(screen.getByRole("link", { name: /项目/ })).toHaveAttribute("href", "/ui/projects");
   });
 
   it("marks the nav item for the current route active", () => {
@@ -635,10 +635,11 @@ describe("Sidebar (leftnav)", () => {
     expect(screen.getByRole("link", { name: "虚拟密钥" })).not.toHaveAttribute("data-active");
   });
 
-  it("marks Home active at the dashboard root", () => {
+  it("leaves no nav item active at the dashboard root (the root is the Home page)", () => {
     navState.pathname = "/ui/";
     renderWithProviders(<Sidebar {...defaultProps} />);
-    expect(screen.getByRole("link", { name: "虚拟密钥" })).toHaveAttribute("data-active", "true");
+    expect(screen.getByRole("link", { name: "虚拟密钥" })).not.toHaveAttribute("data-active");
+    expect(document.querySelectorAll('[data-active="true"]')).toHaveLength(0);
   });
 
   it("expands the parent group of the current nested route and marks the child active", () => {
@@ -757,6 +758,7 @@ const mockNavT = ((key: string) => {
     apiPlayground: "API 演练场",
     tagManagement: "标签管理",
     oldUsage: "旧版用量",
+    home: "首页",
     routerSettings: "路由设置",
     loggingAndAlerts: "日志与告警",
     adminSettings: "管理员设置",
@@ -781,8 +783,9 @@ describe("getBreadcrumb", () => {
     expect(getBreadcrumb("/ui/old-usage", mockNavT)).toEqual({ section: "开发者工具", title: "旧版用量" });
   });
 
-  it("titles the dashboard root as Virtual Keys", () => {
-    expect(getBreadcrumb("/ui/", mockNavT)).toEqual({ section: "AI Gateway", title: "虚拟密钥" });
+  it("titles the dashboard root as Home without a section", () => {
+    expect(getBreadcrumb("/ui/", mockNavT)).toEqual({ section: null, title: "首页" });
+    expect(getBreadcrumb("/ui/home", mockNavT)).toEqual({ section: null, title: "首页" });
   });
 
   it("resolves a nested child route to its parent section", () => {

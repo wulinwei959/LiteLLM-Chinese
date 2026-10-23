@@ -1,13 +1,14 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { STACKED_USAGE_PALETTE, StackedUsageChart, StackedUsageTooltipRow } from "./StackedUsageChart";
+import { renderWithProviders } from "../../../../tests/test-utils";
 
 const usd = (value: number) => `$${value.toFixed(2)}`;
 
 describe("StackedUsageChart", () => {
   it("stacks one bar per series per bucket in the shared palette, in series order", () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <StackedUsageChart
         data={[
           { day: "Oct 1", a: 1, b: 2 },
@@ -26,7 +27,7 @@ describe("StackedUsageChart", () => {
   });
 
   it("lets a caller override a series color, e.g. a slate Other bucket", () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <StackedUsageChart
         data={[{ day: "Oct 1", a: 1, Other: 2 }]}
         series={["a", "Other"]}
@@ -44,14 +45,18 @@ describe("StackedUsageChart", () => {
 
 describe("StackedUsageTooltipRow", () => {
   it("formats the value and keeps it apart from a long series name", () => {
-    render(<StackedUsageTooltipRow value={0.091} name="cerebras/gpt-oss-120b" color="#a855f7" format={usd} />);
+    renderWithProviders(
+      <StackedUsageTooltipRow value={0.091} name="cerebras/gpt-oss-120b" color="#a855f7" format={usd} />,
+    );
     expect(screen.getByText("cerebras/gpt-oss-120b")).toBeInTheDocument();
     expect(screen.getByText("$0.09")).toBeInTheDocument();
     expect(screen.queryByText("0.091")).not.toBeInTheDocument();
   });
 
   it("renders nothing for a zero value, so a day lists only what it used", () => {
-    const { container } = render(<StackedUsageTooltipRow value={0} name="gpt-4.1-mini" color="#3b82f6" format={usd} />);
+    const { container } = renderWithProviders(
+      <StackedUsageTooltipRow value={0} name="gpt-4.1-mini" color="#3b82f6" format={usd} />,
+    );
     expect(container).toBeEmptyDOMElement();
   });
 });

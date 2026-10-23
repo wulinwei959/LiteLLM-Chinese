@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { cn } from "@/lib/cva.config";
@@ -77,10 +78,12 @@ export function StackedUsageChart({
   xLabel = String,
   format,
   totalFor,
-  totalLabel = "Total",
+  totalLabel,
   scale = "linear",
   className,
 }: StackedUsageChartProps) {
+  const tc = useTranslations("common");
+  const resolvedTotalLabel = totalLabel ?? tc("total");
   const fill = (index: number) => colors?.[index] ?? stackedUsageColor(index);
   const nameOf = (index: number) => labels?.[index] ?? series[index];
   const config = Object.fromEntries(
@@ -89,7 +92,7 @@ export function StackedUsageChart({
   const tooltipHeader = (_label: unknown, payload: readonly { payload?: Record<string, unknown> }[]) => {
     const xValue = String(payload?.[0]?.payload?.[xKey] ?? "");
     const total = totalFor?.(xValue);
-    return total === undefined ? xLabel(xValue) : `${xLabel(xValue)} · ${totalLabel} ${format(total)}`;
+    return total === undefined ? xLabel(xValue) : `${xLabel(xValue)} · ${resolvedTotalLabel} ${format(total)}`;
   };
 
   return (
