@@ -153,3 +153,16 @@ Before requesting maintainer review, verify the current PR tip passes required C
 - 测试失败先对照 HEAD 与 origin/main 的同名文件，确认是本次改动引入还是合并遗留缺陷，再决定修法
 - 合并遗留缺陷的常见形态：引用未定义变量、fixture 与组件新行为不匹配、测试期望停在上游旧结构
 - 写入所谓"新"测试文件前先 `git ls-files` 或 `git status` 确认该路径未被跟踪，`ls | head` 截断过的目录清单不能当作不存在，否则 Write 会静默覆盖已有测试并删除用例
+
+## 汉化批次的命令坑
+
+2026-10-24 的记录，来自第 467-479 簇里反复出现的同类错误，已逐条修正，下回按规避写法做。详细版见 `.qoder/memory/feedback-i18n-editing-pitfalls.md`。
+
+- 手改 `src/messages/*.json` 时，锚点行若是对象最后一项则行尾无逗号，插入前先补逗号；若插入点后紧跟 `}`，新增的最后一项不带逗号；改完必须 `json.load` 验证两端并比对叶子数
+- 同名同值的键会出现在多个命名空间（如 `noModelsFound` 同时在 `models.addModel` 与 `modelSelect`）。按行内文本定位会插错命名空间，组件会渲染出原始键名。先定位 `"<namespace>": {` 的行号，再在块内插入，插完打印该命名空间的键确认
+- 批量 `str.replace()` 不带 count 会命中所有同名行（插入 `const t` 时曾造成重复声明 TS2451）。用 count 断言、限定上下文或按行号操作
+- 正则里的扩展名交替必须写成 `\.(?:tsx|ts)`，写成 `ts|tsx` 会把 `.tsx` 截成 `.ts`；`z\.custom<([^>]+)>` 会被嵌套泛型（`Record<string, string[]>`）截断，改完用 `grep -n "custom<" | grep -v optional` 复核
+- `grep -c` 命中 0 时退出码为 1，会打断整条 `&&` 链，看起来像检查失败；用 `|| echo 0` 或单独跑计数
+- 在 `ui/litellm-dashboard` 里跑 prettier/eslint 要传当前目录相对路径，不要传仓库根相对路径（会报 No files matching）
+- 该项目的 vitest 没有 `--reporter=basic`，用默认或 `--reporter=dot`；全量 61 个失败文件整跑约 2.5 分钟，放后台等通知，不要 `sleep` 轮询
+- 批量翻面断言只替换"失败信息里测试实际查找的那条串"，再对到 `en.json` 同值在 `zh-CN.json` 的词条；正则形式的期望（`/edit settings/i` 等）抓不到，需按文件单独看；同一文案可能有多套译法，以组件实际使用的命名空间为准
