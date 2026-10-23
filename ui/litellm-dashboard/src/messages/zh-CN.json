@@ -12009,7 +12009,10 @@
     "granularityWeekly": "按周",
     "metricRequests": "请求数",
     "metricSpend": "花费",
-    "metricTokens": "令牌数"
+    "metricTokens": "令牌数",
+    "costPerSessionTitle": "每次会话成本",
+    "costPerSessionDesc": "会话成本不按请求数估算",
+    "costPerSessionHint": "为请求添加稳定的 session_id，以便在未来的有界会话汇总中实现准确的会话级模型对比"
   },
   "guardrailSettingsView": {
     "noGuardrails": "未配置任何护栏",

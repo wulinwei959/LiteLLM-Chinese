@@ -224,14 +224,11 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
 
       <Card>
         <CardHeader>
-          <CardTitle>Cost per session</CardTitle>
-          <CardDescription>Session cost is not estimated from request counts</CardDescription>
+          <CardTitle>{t("costPerSessionTitle")}</CardTitle>
+          <CardDescription>{t("costPerSessionDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Add a stable session_id to requests to unlock accurate session-level model comparisons in a future bounded
-            session rollup
-          </p>
+          <p className="text-sm text-muted-foreground">{t("costPerSessionHint")}</p>
         </CardContent>
       </Card>
     </Page>

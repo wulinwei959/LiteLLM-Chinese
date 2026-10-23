@@ -12013,7 +12013,10 @@
     "granularityWeekly": "Weekly",
     "metricRequests": "requests",
     "metricSpend": "spend",
-    "metricTokens": "tokens"
+    "metricTokens": "tokens",
+    "costPerSessionTitle": "Cost per session",
+    "costPerSessionDesc": "Session cost is not estimated from request counts",
+    "costPerSessionHint": "Add a stable session_id to requests to unlock accurate session-level model comparisons in a future bounded session rollup"
   },
   "guardrailSettingsView": {
     "noGuardrails": "No guardrails configured",
