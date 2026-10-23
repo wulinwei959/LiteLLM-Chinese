@@ -82,13 +82,13 @@ describe("SpendBudgetCell", () => {
     );
 
     expect(screen.getByText("$5.00")).toBeInTheDocument();
-    expect(screen.getByText("· $45.00 of $50 (team member)")).toBeInTheDocument();
+    expect(screen.getByText("共 $50")).toBeInTheDocument();
     const meter = screen.getByRole("meter");
     expect(meter).toHaveAttribute("aria-valuenow", "45");
     expect(meter).toHaveAttribute("aria-valuemax", "50");
-    expect(meter).toHaveAttribute("aria-valuetext", "team member spend $45.00 of $50");
+    expect(meter).toHaveAttribute("aria-valuetext", "$45.00 共 $50");
     expect(indicator(container)?.className).toContain("bg-warning");
-    expect(screen.getByLabelText("question-circle")).toBeInTheDocument();
+    expect(screen.getByLabelText("帮助")).toBeInTheDocument();
   });
 
   it("uses the key's own budget instead of a team-member budget", () => {
@@ -100,8 +100,8 @@ describe("SpendBudgetCell", () => {
     };
     renderWithProviders(<SpendBudgetCell spend={10} maxBudget={100} teamMemberGate={teamMemberGate} />);
 
-    expect(screen.getByText("of $100")).toBeInTheDocument();
-    expect(screen.queryByText(/team member/)).not.toBeInTheDocument();
+    expect(screen.getByText("共 $100")).toBeInTheDocument();
+    expect(screen.queryByText(/团队成员/)).not.toBeInTheDocument();
     expect(screen.getByRole("meter")).toHaveAttribute("aria-valuemax", "100");
   });
 

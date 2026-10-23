@@ -4791,3 +4791,9 @@ AllModelsTab：公开模型名称筛选占位符在目录里是 models.modelTabl
 ## 2026-10-24 第 474 簇：标签详情预算页签与保存按钮
 
 tag_info.integration 4 例全绿：测试里的 `/Budget & Rate Limits/` 正则改 `/预算与速率限制/`，`Max Budget (USD)` 标签改「最大预算（美元）」，`Save Changes` 改「保存更改」。这三处都是"失败信息只给出截断的期望串、正则里带英文"的情况，前几轮的批量脚本抓不到，需要手工对目录。
+
+## 2026-10-24 第 475 簇：预算单元接回团队成员花费
+
+`spend_budget_cell.tsx` 里有两个早已失效的英文辅助函数（`getBudgetLabel`/`getMeterValueText`），另一个会话退出前删掉了它们，本簇接手后补两处行为修正：团队成员的继承预算下，`Meter` 的 `value` 用的是密钥自身花费而不是成员花费（`pct` 却按成员花费算），导致 `aria-valuenow` 与实际占比不一致；`aria-valuetext` 同步改用成员花费文本。测试断言由旧的 "· $45.00 of $50 (team member)"、"of $100"、英文 `aria-valuetext` 改到目录里的"共 $50"/"共 $100"/"$45.00 共 $50"，提示图标名改"帮助"，团队预算用例全绿。
+
+验证：`spend_budget_cell.test.tsx` 全绿；`TeamsPage`、`VirtualKeysPage` 与 `AccessGroupBudgetColumns` 三个消费者测试全绿；生产 tsc 0 错。

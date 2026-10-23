@@ -21,29 +21,6 @@ const meterTone = (pct: number): "default" | "warning" | "over" => {
   return "default";
 };
 
-const getBudgetLabel = (
-  budget: number | null,
-  usesTeamMemberBudget: boolean,
-  memberSpendText: string,
-  budgetDecimals: number,
-): string => {
-  if (budget === null) return "· Unlimited";
-  const formattedBudget = formatNumberWithCommas(budget, budgetDecimals);
-  if (usesTeamMemberBudget) return `· ${memberSpendText} of $${formattedBudget} (team member)`;
-  return `of $${formattedBudget}`;
-};
-
-const getMeterValueText = (
-  hasBudget: boolean,
-  budget: number | null,
-  meterSpendText: string,
-  budgetDecimals: number,
-): string => {
-  if (!hasBudget || budget === null) return "";
-  const formattedBudget = formatNumberWithCommas(budget, budgetDecimals);
-  return `${meterSpendText} of $${formattedBudget}`;
-};
-
 export function SpendBudgetCell({
   spend,
   maxBudget,
@@ -67,6 +44,7 @@ export function SpendBudgetCell({
   const spendText = spendValue > 0 ? getSpendString(spendValue, spendDecimals) : "$0.00";
   const budgetAmount = budget === null ? null : `$${formatNumberWithCommas(budget, budgetDecimals)}`;
   const budgetLabel = budgetAmount === null ? `· ${commonT("unlimited")}` : t("ofBudget", { amount: budgetAmount });
+  const meterSpendText = usesTeamMemberBudget ? getSpendString(memberSpendValue, spendDecimals) : spendText;
 
   return (
     <div className="flex min-w-[130px] flex-col gap-1">
@@ -77,10 +55,10 @@ export function SpendBudgetCell({
       </div>
       {hasBudget && (
         <Meter
-          value={spendValue}
+          value={meterSpendValue}
           max={budget}
           aria-valuetext={t("spendOfBudget", {
-            spend: spendText,
+            spend: meterSpendText,
             amount: `$${formatNumberWithCommas(budget, budgetDecimals)}`,
           })}
         >
