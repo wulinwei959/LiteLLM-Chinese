@@ -105,7 +105,7 @@ describe("SidebarAccountMenu", () => {
     renderWithProviders(<SidebarAccountMenu onLogout={mockOnLogout} collapsed />);
     expect(getAccountTrigger()).toBeInTheDocument();
     expect(screen.getByText("TE")).toBeInTheDocument();
-    expect(screen.queryByText("Admin")).not.toBeInTheDocument();
+    expect(screen.queryByText("管理员")).not.toBeInTheDocument();
     expect(screen.queryByText("test@example.com")).not.toBeInTheDocument();
   });
 
@@ -117,7 +117,7 @@ describe("SidebarAccountMenu", () => {
 
     expect(screen.getAllByText("test@example.com").length).toBeGreaterThan(0);
     expect(screen.getByText("test-user-id")).toBeInTheDocument();
-    expect(screen.getAllByText("Admin").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("管理员").length).toBeGreaterThan(0);
   });
 
   it("should display Standard tier for non-premium users", async () => {

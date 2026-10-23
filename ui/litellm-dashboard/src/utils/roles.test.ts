@@ -6,6 +6,8 @@ import {
   isAdminRole,
   spendScopeUserId,
   isOrgAdminForAnyOrg,
+  roleLabelForDisplay,
+  formatUserRole,
   isOrgAdminSessionRole,
   isProxyAdminRole,
   isProxyAdminTierRole,
@@ -388,5 +390,49 @@ describe("roles", () => {
 
       expect(scopedByAllAdminRoles).toEqual(["org_admin"]);
     });
+  });
+});
+
+describe("roleLabelForDisplay", () => {
+  const t = (key: string) => `T:${key}`;
+
+  it("maps every formatUserRole output to a catalog key", () => {
+    const outputs = [
+      "App Owner",
+      "Admin",
+      "Admin Viewer",
+      "Org Admin",
+      "Internal User",
+      "Internal Viewer",
+      "App User",
+      "Unknown Role",
+      "Undefined Role",
+    ];
+    for (const label of outputs) {
+      expect(roleLabelForDisplay(t as never, label)).toMatch(/^T:role\./);
+    }
+  });
+
+  it("passes labels that are not role displays through untouched", () => {
+    expect(roleLabelForDisplay(t as never, "proxy_admin")).toBe("proxy_admin");
+    expect(roleLabelForDisplay(t as never, "")).toBe("");
+  });
+
+  it("covers exactly the formatUserRole label set", () => {
+    const rawRoles = [
+      "app_owner",
+      "demo_app_owner",
+      "proxy_admin",
+      "proxy_admin_viewer",
+      "org_admin",
+      "internal_user",
+      "internal_user_viewer",
+      "app_user",
+      "no-such-role",
+      "",
+    ];
+    const labels = rawRoles.map(formatUserRole);
+    const untranslated = labels.filter((label) => roleLabelForDisplay(t as never, label) === label);
+    expect(untranslated).toEqual([]);
   });
 });

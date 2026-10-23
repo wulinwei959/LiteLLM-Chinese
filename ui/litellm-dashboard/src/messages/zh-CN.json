@@ -65,7 +65,17 @@
     "email": "邮箱",
     "password": "密码",
     "username": "用户名",
-    "role": "角色",
+    "role": {
+      "appOwner": "应用所属人",
+      "admin": "管理员",
+      "adminViewer": "管理员（只读）",
+      "orgAdmin": "组织管理员",
+      "internalUser": "内部用户",
+      "internalViewer": "内部查看者",
+      "appUser": "应用用户",
+      "unknownRole": "未知角色",
+      "undefinedRole": "未定义角色"
+    },
     "status": "状态",
     "actions": "操作",
     "details": "详情",

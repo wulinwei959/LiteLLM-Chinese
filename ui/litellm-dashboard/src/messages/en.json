@@ -65,7 +65,17 @@
     "email": "Email",
     "password": "Password",
     "username": "Username",
-    "role": "Role",
+    "role": {
+      "appOwner": "App Owner",
+      "admin": "Admin",
+      "adminViewer": "Admin Viewer",
+      "orgAdmin": "Org Admin",
+      "internalUser": "Internal User",
+      "internalViewer": "Internal Viewer",
+      "appUser": "App User",
+      "unknownRole": "Unknown Role",
+      "undefinedRole": "Undefined Role"
+    },
     "status": "Status",
     "actions": "Actions",
     "details": "Details",

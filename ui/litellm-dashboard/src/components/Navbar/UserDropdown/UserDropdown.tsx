@@ -11,7 +11,7 @@ import {
 } from "@/utils/localStorageUtils";
 import { navAccountDisplayName } from "@/components/Navbar/navDisplayName";
 import { uiHref } from "@/utils/uiHref";
-import { isProxyAdminRole } from "@/utils/roles";
+import { isProxyAdminRole, roleLabelForDisplay } from "@/utils/roles";
 import { ChevronDown, ChevronsUpDown, Crown, KeyRound, LogOut, Mail, ShieldCheck, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -70,6 +70,7 @@ interface UserDropdownProps {
 
 const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar", collapsed = false }) => {
   const t = useTranslations("accountMenus");
+  const tc = useTranslations("common");
   const {
     userId,
     userEmail,
@@ -135,7 +136,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
           <ShieldCheck className="size-4" />
           <span className="text-muted-foreground">{t("role")}</span>
         </div>
-        <span>{userRole}</span>
+        <span>{roleLabelForDisplay(tc, userRole)}</span>
       </div>
       <Separator className="my-2" />
       <div className="flex w-full items-center justify-between gap-2">
@@ -241,7 +242,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
                 collapsed ? "justify-center px-0 py-1" : "gap-2.5 px-2 py-1.5 text-left",
               )}
               aria-label={t("accountMenuTrigger", {
-                role: userRole ?? t("unknownRole"),
+                role: userRole ? roleLabelForDisplay(tc, userRole) : t("unknownRole"),
                 identity: userEmail || userId || "unknown",
               })}
               aria-haspopup="dialog"
@@ -258,7 +259,11 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
             <>
               <span className="min-w-0 flex-1 leading-tight">
                 <span className="block truncate text-[13px] font-medium text-sidebar-foreground">{displayName}</span>
-                {userRole && <span className="block truncate text-[11px] text-muted-foreground">{userRole}</span>}
+                {userRole && (
+                  <span className="block truncate text-[11px] text-muted-foreground">
+                    {roleLabelForDisplay(tc, userRole)}
+                  </span>
+                )}
               </span>
               <ChevronsUpDown size={16} strokeWidth={1.75} className="shrink-0 text-muted-foreground" aria-hidden />
             </>
@@ -271,7 +276,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
               type="button"
               className="flex! max-w-[min(200px,34vw)] items-center gap-2 rounded-md! py-0.5! pl-1! pr-2! transition-colors hover:bg-accent!"
               aria-label={t("accountMenuTrigger", {
-                role: userRole ?? t("unknownRole"),
+                role: userRole ? roleLabelForDisplay(tc, userRole) : t("unknownRole"),
                 identity: userEmail || userId || "unknown",
               })}
               aria-haspopup="dialog"

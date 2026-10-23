@@ -4402,3 +4402,9 @@ i18n 自身的三条守卫也是全绿，16 个用例
 按 RENDERED-SCAN 的"桩的形状必须跟代理真返回的一致"契约补三处：`/user/daily/activity/aggregated/users` 整条缺桩（上游新增的按用户分页端点），`path.includes(fragment)` 最长优先命中的只有更短的 `/user/daily/activity/aggregated`，返回 `{results,metadata}` 里没有 `users`，`useUserActivityPage` 在 `page.users.length` 抛 TypeError；补 `{ users: [], total_users: 0, offset: 0, limit: 50 }`。`/guardrails/submissions` 同样缺桩，TeamGuardrailsTab 的 `res.submissions.map` 抛错后把原始英文错误消息渲染进页面（"Cannot read properties of undefined (reading 'map')"），补 `{ submissions: [], summary: { total: 0, pending_review: 0, active: 0, rejected: 0 } }`。`/user/daily/activity/aggregated` 的 metadata 只有 `total_spend/total_requests` 两枚，而 `overallUsageMetrics` 逐字段搬运 `DailyActivityMetadata` 十余枚，`KeySummaryStrip` 对 undefined 调 `toLocaleString` 抛错、整页落进路由错误边界（连带露出上游英文错误页文案），按产品自带 `EMPTY_DAILY_ACTIVITY_METADATA` 全量对齐。
 
 复扫 59→25：usage 的 `length`/`toLocaleString` 两错与错误边界六句、guardrails 的 `map` 三片段清零；错误边界文案随崩溃消失，不在本簇翻译（上游 `error.tsx` 面另账）。usage 页真实渲染后露出图表轴与表头新命中（`Requests`/`Spend`/`cache read`/`failed`/`Oct`），与 home 族、`Undefined Role` 十页同判下一批。桩改动无产品源码变更、无测试翻面；`stubFor` 最长优先匹配经三前缀共存验证。
+
+## 2026-10-23 第 428 簇：账户菜单角色标签显示层翻译
+
+`formatUserRole` 的输出同时是权限比较哨兵（`old_admin_roles` 含 "Admin"/"Admin Viewer" 字面量、`projectReaderRoles` 含 "Org Admin"、`isOrgAdminSessionRole` 与其结果逐字比较，AdminPanel 哨兵先例同形），标签本体不能动。改显示层：`roles.ts` 新增 `roleLabelForDisplay(t: CommonTranslator, label)`，九个英文标签逐个映 `common.role.*` 九键（新增，值循词汇表 所属人/管理员/内部用户 与既有「（只读）」构词），非角色串原样透传；渲染点接 UserDropdown 两处可见文本与两处 `accountMenuTrigger` aria 插值、SidebarAccountMenu 的 trigger aria、副行与 Badge 共七处。`useAuthorized` 的 `userRoleLabel` 保持英文，比较逻辑零触碰。
+
+roles.test.ts 补三条：全标签集落 `role.` 键、非标签透传、`formatUserRole` 输出集恰被全覆盖（防两函数漂移）。消费测试翻面 3 处（`ByText("Admin")`→`ByText("管理员")`，mock 输入保英文）。验证：三测试文件 100 例绿、i18n 守卫 30 例绿、死键 0、生产 typecheck 0 错、eslint 四文件与 HEAD 持平（UserDropdown 3=3 皆既有）、prettier clean；渲染扫描 25→15，十页 `Undefined Role` 清零。

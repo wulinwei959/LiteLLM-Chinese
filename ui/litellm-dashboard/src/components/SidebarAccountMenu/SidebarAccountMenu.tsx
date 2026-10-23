@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/cva.config";
 import { uiHref } from "@/utils/uiHref";
-import { isProxyAdminRole } from "@/utils/roles";
+import { isProxyAdminRole, roleLabelForDisplay } from "@/utils/roles";
 import { ChevronsUpDown, Crown, IdCard, KeyRound, LogOut, Mail, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -88,6 +88,7 @@ interface SidebarAccountMenuProps {
 
 const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, collapsed = false }) => {
   const t = useTranslations("accountMenus");
+  const tc = useTranslations("common");
   const {
     userId,
     userEmail,
@@ -154,7 +155,7 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
   const hue = hueFromString(seed);
   const displayName = navAccountDisplayName(userEmail, userId, t("account"));
   const triggerLabel = t("accountMenuTrigger", {
-    role: userRole ?? t("unknownRole"),
+    role: userRole ? roleLabelForDisplay(tc, userRole) : t("unknownRole"),
     identity: userEmail || userId || "unknown",
   });
 
@@ -177,7 +178,11 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
           <>
             <span className="min-w-0 flex-1 leading-tight">
               <span className="block truncate text-[13px] font-medium text-sidebar-foreground">{displayName}</span>
-              {userRole && <span className="block truncate text-[11px] text-muted-foreground">{userRole}</span>}
+              {userRole && (
+                <span className="block truncate text-[11px] text-muted-foreground">
+                  {roleLabelForDisplay(tc, userRole)}
+                </span>
+              )}
             </span>
             <ChevronsUpDown size={16} strokeWidth={1.75} className="shrink-0 text-muted-foreground" aria-hidden />
           </>
@@ -230,7 +235,7 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
             )}
           </InfoRow>
           <InfoRow icon={<ShieldCheck className="size-[17px]" />} label={t("role")}>
-            <Badge variant="secondary">{userRole}</Badge>
+            <Badge variant="secondary">{roleLabelForDisplay(tc, userRole)}</Badge>
           </InfoRow>
           <InfoRow icon={<Mail className="size-[17px]" />} label={t("email")}>
             <MonoValue value={userEmail} copyLabel={t("copyEmail")} />

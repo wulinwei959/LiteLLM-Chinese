@@ -107,7 +107,7 @@ describe("UserDropdown", () => {
     await user.click(getAccountTrigger());
 
     await waitFor(() => {
-      expect(screen.getAllByText("Admin").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("管理员").length).toBeGreaterThan(0);
     });
   });
 

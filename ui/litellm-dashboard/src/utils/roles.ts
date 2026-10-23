@@ -1,4 +1,5 @@
 import { Member, Organization, Team } from "@/components/networking";
+import type { CommonTranslator } from "@/lib/i18n/translators";
 
 const ORG_ADMIN_MEMBERSHIP_ROLE = "org_admin";
 
@@ -103,6 +104,36 @@ export const formatUserRole = (userRole: string): string => {
 
 export const isOrgAdminSessionRole = (userRole?: string | null): boolean =>
   userRole === ORG_ADMIN_MEMBERSHIP_ROLE || userRole === formatUserRole(ORG_ADMIN_MEMBERSHIP_ROLE);
+
+/**
+ * formatUserRole doubles as a comparison sentinel for access logic
+ * (old_admin_roles, projectReaderRoles, isOrgAdminSessionRole), so its English
+ * output must stay; render sites map it to catalog text here instead.
+ */
+export const roleLabelForDisplay = (t: CommonTranslator, label: string): string => {
+  switch (label) {
+    case "App Owner":
+      return t("role.appOwner");
+    case "Admin":
+      return t("role.admin");
+    case "Admin Viewer":
+      return t("role.adminViewer");
+    case "Org Admin":
+      return t("role.orgAdmin");
+    case "Internal User":
+      return t("role.internalUser");
+    case "Internal Viewer":
+      return t("role.internalViewer");
+    case "App User":
+      return t("role.appUser");
+    case "Unknown Role":
+      return t("role.unknownRole");
+    case "Undefined Role":
+      return t("role.undefinedRole");
+    default:
+      return label;
+  }
+};
 
 const viewOnlyRawRoles = ["proxy_admin_viewer", "internal_user_viewer", "internal_viewer"];
 
