@@ -48,7 +48,7 @@ describe("prepareModelAddRequest", () => {
       cache_creation_input_token_cost_above_1hr: "6",
     };
 
-    const [deployment] = (await prepareModelAddRequest({ ...formValues }, "token", null))!;
+    const [deployment] = (await prepareModelAddRequest({ ...formValues }, "token", null, stubT))!;
 
     expect(deployment.litellmParamsObj.cache_creation_input_token_cost).toBeCloseTo(0.00000375, 12);
     expect(deployment.litellmParamsObj.cache_creation_input_token_cost_above_1hr).toBeCloseTo(0.000006, 12);
@@ -67,7 +67,7 @@ describe("prepareModelAddRequest", () => {
       cache_creation_input_token_cost_above_1hr: "6",
     };
 
-    const deployments = (await prepareModelAddRequest({ ...formValues }, "token", null))!;
+    const deployments = (await prepareModelAddRequest({ ...formValues }, "token", null, stubT))!;
 
     expect(deployments).toHaveLength(2);
     for (const deployment of deployments) {
@@ -86,7 +86,7 @@ describe("prepareModelAddRequest", () => {
       cache_creation_input_token_cost_above_1hr: "",
     };
 
-    const [deployment] = (await prepareModelAddRequest({ ...formValues }, "token", null))!;
+    const [deployment] = (await prepareModelAddRequest({ ...formValues }, "token", null, stubT))!;
 
     expect(deployment.litellmParamsObj).not.toHaveProperty("cache_creation_input_token_cost_above_1hr");
     expect(deployment.litellmParamsObj.cache_creation_input_token_cost).toBeCloseTo(0.00000375, 12);
@@ -118,7 +118,7 @@ describe("prepareModelAddRequest", () => {
       custom_llm_provider: "CURSOR",
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null, stubT);
 
     expect(deployments![0].litellmParamsObj.custom_llm_provider).toBe("cursor");
   });
@@ -129,7 +129,7 @@ describe("prepareModelAddRequest", () => {
       custom_llm_provider: "CURSOR",
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null, stubT);
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;
@@ -191,7 +191,7 @@ describe("prepareModelAddRequest", () => {
       mode: "evaluation",
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null, stubT);
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;

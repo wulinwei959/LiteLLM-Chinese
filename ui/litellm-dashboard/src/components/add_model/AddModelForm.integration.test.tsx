@@ -201,15 +201,26 @@ vi.mock("@/app/(dashboard)/hooks/tags/useTags", () => ({
   }),
 }));
 
+const stubT = ((key: string) => key) as never;
+
+const firstModelPayload = () =>
+  vi.mocked(modelCreateCall).mock.calls[0][1] as unknown as { litellm_params: Record<string, unknown> };
+
 const mockAuthorizedUser = (userRole: string, userId: string, premiumUser: boolean) => ({
   token: "test-token",
   accessToken: "test-access-token",
   userId,
   userEmail: "test@example.com",
   userRole,
+  userRoleLabel: userRole,
+  isViewOnly: false,
+  isLoading: false,
+  isAuthorized: true,
   premiumUser,
   disabledPersonalKeyCreation: false,
+  loginMethod: null,
   showSSOBanner: false,
+  passwordResetRequired: false,
 });
 
 const testTeam: Team = {
@@ -222,6 +233,7 @@ const testTeam: Team = {
   rpm_limit: null,
   organization_id: "org-1",
   created_at: "2024-01-01T00:00:00Z",
+  spend: 0,
   keys: [],
   members_with_roles: [],
 };
@@ -474,7 +486,7 @@ describe("AddModelForm", () => {
     await screen.findByText("提供商");
     await userEvent.click(screen.getByRole("combobox", { name: "模式" }));
 
-    expect(await screen.findByRole("option", { name: option, exact: true })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: option })).toBeInTheDocument();
   });
 
   it("shows only the Close button in the connection test dialog footer", async () => {
@@ -642,7 +654,7 @@ describe("AddModelForm", () => {
           },
         ],
       };
-      await handleAddModelSubmit(modelValues, "test-access-token", { resetFields: vi.fn() });
+      await handleAddModelSubmit(modelValues, "test-access-token", stubT, { form: { resetFields: vi.fn() } });
     };
 
     it("creates and attaches an OAuth exchange credential without mounting its fields on the model", async () => {
@@ -696,7 +708,7 @@ describe("AddModelForm", () => {
       await user.click(screen.getByRole("button", { name: "添加模型" }));
       expect(props.handleOk).toHaveBeenCalledOnce();
       await waitFor(() => expect(modelCreateCall).toHaveBeenCalledOnce());
-      const modelPayload = vi.mocked(modelCreateCall).mock.calls[0][1];
+      const modelPayload = firstModelPayload();
       expect(modelPayload.litellm_params).toMatchObject({ litellm_credential_name: "m365-obo" });
       expect(Object.keys(modelPayload.litellm_params).some((key) => key.startsWith("token_exchange_"))).toBe(false);
     });
@@ -733,7 +745,7 @@ describe("AddModelForm", () => {
       await user.click(screen.getByRole("button", { name: "添加模型" }));
       expect(props.handleOk).toHaveBeenCalledOnce();
       await waitFor(() => expect(modelCreateCall).toHaveBeenCalledOnce());
-      expect(vi.mocked(modelCreateCall).mock.calls[0][1].litellm_params).toMatchObject({
+      expect(firstModelPayload().litellm_params).toMatchObject({
         api_key: "delegated-token",
       });
     });
@@ -778,14 +790,15 @@ describe("AddModelForm", () => {
             ],
           },
           "test-access-token",
-          { resetFields: vi.fn() },
+          stubT,
+          { form: { resetFields: vi.fn() } },
         );
         return true;
       });
       await user.click(screen.getByRole("button", { name: "添加模型" }));
 
       await waitFor(() => expect(modelCreateCall).toHaveBeenCalledOnce());
-      const modelParams = vi.mocked(modelCreateCall).mock.calls[0][1].litellm_params;
+      const modelParams = firstModelPayload().litellm_params;
       expect(modelParams).toMatchObject({ litellm_credential_name: "github-per-user" });
       expect(modelParams).not.toHaveProperty("github_copilot_auth_type");
     });
@@ -812,7 +825,8 @@ describe("AddModelForm", () => {
             ],
           },
           "test-access-token",
-          { resetFields: vi.fn() },
+          stubT,
+          { form: { resetFields: vi.fn() } },
         );
         return true;
       });
@@ -821,7 +835,7 @@ describe("AddModelForm", () => {
 
       await waitFor(() => expect(modelCreateCall).toHaveBeenCalledOnce());
       expect(credentialCreateCall).not.toHaveBeenCalled();
-      expect(vi.mocked(modelCreateCall).mock.calls[0][1].litellm_params).toMatchObject({
+      expect(firstModelPayload().litellm_params).toMatchObject({
         api_key: "shared-device-token",
       });
     });

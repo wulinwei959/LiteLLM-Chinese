@@ -4646,3 +4646,10 @@ NotificationsBell 的升级公告标题、统计描述与"查看发布说明"三
 对 391 个非测试 `.ts` 跑 `scan-english.mjs --all`，共 4449 条字面量。抽样与逐类判定后确认剩余命中集中在：provider 目录描述（来自 API/目录数据）、Playground 合规数据集示例、导入路径与配置键名、Access token 等被 enabled 守卫短路的开发期 throw；没有发现新的用户可见 UI 文案。清理 `teamAdminEditAccess.ts` 中已无引用的 `TEAM_ADMIN_EDITING_DISABLED_TITLE`/`DESCRIPTION` 与 `TEAM_ADMIN_FIELD_LABELS` 英文表。
 
 验证：teamAdminEditAccess 与 TeamAdminSettingsForm 95 例全绿；生产 typecheck 0 错；死键 0。
+## 2026-10-23 第 462 簇：add_model 测试类型债清理
+
+handle_add_model_submit.test 六处 `prepareModelAddRequest`/`handleAddModelSubmit` 调用补 `stubT` 译员参数，13 例全绿。AddModelForm.integration.test 修 25 条类型错误：Team 夹具补 `spend`；useAuthorized mock 补齐 `isLoading`/`isAuthorized`/`userRoleLabel`/`isViewOnly`/`loginMethod`/`passwordResetRequired`；提交 hooks 改为 `{ form: { resetFields } }` 的正确形状；响应体访问统一走 `firstModelPayload()` 类型断言；移除 `findByRole` 不支持的 `exact` 选项。
+
+结果：`tsc --noEmit` 测试错误 344→313。该集成套件运行时仍有超时，抽查"should show proxy admin only"在 HEAD 基线同样 5 秒超时，属既有用例问题，非本簇引入。
+
+验证：触及文件 eslint 0 错、2 警为既有；prettier clean；死键 0。
