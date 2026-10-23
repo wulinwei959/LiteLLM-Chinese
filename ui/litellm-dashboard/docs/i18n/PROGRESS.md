@@ -5017,3 +5017,15 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 全量重跑 970 个文件、13053 例：5 例失败。`MCPHubTableColumns.test` 与 `MCPServerCard.test` 各 1 例是真漏翻的断言，上一提交接 `mcpServers.reachableDescription` 时没同步翻面，改成"服务器已响应，未检查认证与工具"；KeyActivityPanel、add_agent_form、mcp_server_edit 三例单跑 5 个文件 74 例全绿，是整机负载下的超时抖动，与上一轮同名字段的抖动同源。`key_edit_view` 顺手删掉早已无用的 `SearchSelect` 导入。
 
 lint 侧另有既成事实：`key_edit_view.tsx` 在 HEAD 就有 `max-lines`（811/800）与 `SearchSelect` 未用导入等 3 条 error，本次改动只把行数抬到 818，未新增别的规则违例；这类文件级重构不在汉化账内。
+
+### 第 513 簇后的残留复检
+
+对 953 个非测试 `.tsx` 全库跑 `scripts/scan-english.mjs`（JSX 文本、带文案的 prop、toast 首参、throw 文本四条口径），205 处命中、涉及 111 个文件。逐条读完的结论是没有新增需要接线的真串，命中全部落在既有判定账里
+
+- 数据 token：RPM/TPM/KB/MB/TTFT/FN/FP、`/v1/decisions` 一类端点路径、`model_aliases:` 与 `router_settings:` 一类 YAML 片段、`x-litellm-call-id:` 响应头、`DOTPROMPT`/`PRETTY` 枚举值、`MCP`/`cURL`/`Langchain Py` 等缩写与品牌名、`LiteLLM`/`Moyai`/`CloudZero` 专名
+- 样例与格式占位：`https://example.com`、`{"gpt-4": 4096}`、`^mcp__github_.*$`、`owner/repository`、`author@example.com`、`vault kv put ...`、`git clone` 一类命令与 JSON/正则示例
+- 键盘符号：`Enter`、`Shift+Enter`、`⌘J`、`J`/`K`，与 Inspector 一族同样按符号保留
+- 内部 throw 文本：`networking.tsx` 的参数校验、各 Provider 的 "must be used within" 守卫、`UIThemeSettings` 与 `DefaultUserSettingsForm` 的 `throw new Error("Failed to ...")`。这些串都被 catch 后用本地化词条重新 toast 或渲染 `role="alert"`，用户看不到英文，逐处核对过呈现路径
+- 扫描口径的假阳性：`MCPGatewaySessionsTab` 的 `title="gatewaySessions.byAiClient"` 是把键名当 props 传下去、渲染处再 `t(title)`，命中里 8 处 `PassThroughGuardrailsSection` 的 JSONPath 按钮文本同理属数据
+
+`McpFormTestHarness.tsx` 的 `Submit` 是本地调试夹具，不在产品路由上。至此第 513 簇改动面的可见文案没有欠账，全库可见英文余量维持在第 344/350 簇收口的那三条口径队列里。
