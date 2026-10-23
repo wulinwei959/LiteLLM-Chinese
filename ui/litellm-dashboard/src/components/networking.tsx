@@ -5798,7 +5798,8 @@ export const ragIngestCall = async (
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error?.message || error.detail || toastMessage("ingestDocumentFailed"));
+      const detail = typeof error.detail === "string" ? error.detail : error.detail?.error;
+      throw new Error(error.error?.message || detail || toastMessage("ingestDocumentFailed"));
     }
 
     return await response.json();

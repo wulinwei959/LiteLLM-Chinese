@@ -13,7 +13,7 @@ describe("DecisionModelsBanner", () => {
 
   it("links directly to the Decisions playground", () => {
     renderWithProviders(<DecisionModelsBanner />);
-    const link = screen.getByRole("link", { name: "Try decision models" });
+    const link = screen.getByRole("link", { name: "去试试" });
     expect(link).toHaveAttribute("href", "/ui/playground?tab=system-one");
   });
 
@@ -31,8 +31,8 @@ describe("DecisionModelsBanner", () => {
       "href",
       "https://docs.litellm.ai/docs/decisions#supported-providers",
     );
-    expect(screen.getByRole("paragraph")).not.toHaveTextContent("Add Model");
-    expect(screen.getByRole("paragraph")).toHaveTextContent("Call them at /v1/decisions or /v1/systemone");
+    expect(screen.getByRole("paragraph")).not.toHaveTextContent("添加模型");
+    expect(screen.getByRole("paragraph")).toHaveTextContent(/调用地址是.*\/v1\/decisions.*或.*\/v1\/systemone/);
   });
 
   it("shows the announcement even if the old feedback banner was dismissed", () => {

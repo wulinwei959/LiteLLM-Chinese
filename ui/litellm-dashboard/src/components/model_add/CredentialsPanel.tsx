@@ -25,6 +25,7 @@ import { buildCredential, type CredentialSubmission } from "./credential_form_he
 
 export default function CredentialsPanel() {
   const t = useTranslations("common");
+  const credentialsT = useTranslations("models.credentials");
 
   const { accessToken, userRole } = useAuthorized();
   // Admin Viewer follows the read-parity rule: see credentials, do not modify.
@@ -67,8 +68,8 @@ export default function CredentialsPanel() {
       toast.success(t("createdSuccessfully"));
       setIsAddModalOpen(false);
       await refetchCredentials();
-    } catch (error) {
-      toast.error(extractProxyErrorMessage(error));
+    } catch {
+      toast.error(credentialsT("createFailed"));
     }
   };
 

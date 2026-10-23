@@ -4841,3 +4841,7 @@ add_auto_router_tab 里把剩余英文控件名翻成目录中文（预计输出
 activity_metrics 4 例转绿：`SeriesKey` 与 `ResponseTimeTooltip` 改用既有的 `useCategoryName()`（`chartLabels` 命名空间），图例从英文 `formatCategoryName` 的 "Spend" 变成"花费"、"请求数"、"平均响应时间 (ms)" 等；每日花费与每日请求两张图从单一品牌 hex `#2b3fd6` 改为命名色 `green`/`blue`，由 `chartColorValue` 转成 `var(--color-green-500, #22c55e)` 这类主题变量，与测试和多色图表基础设施一致。测试里那条 "Spend" 断言同步改"花费"。
 
 UserActivity 2 例转绿：错误态文案按 `usage.userActivity.error.loadTopUsersFailed`/`loadUsersFailed` 翻成"无法加载热门用户。"/"无法加载该时间范围内的用户。"，重试按钮改"重试"。router_settings/index 与 key_info_view 仍有 1 例各自未过（保存按钮禁用条件、团队预算取值路径）。
+
+## 2026-10-24 第 485 簇：决策横幅、凭据创建提示与向量库错误文本
+
+DecisionModelsBanner 2 例：CTA 链接名改"去试试"，正文按 `callBefore`/`or`/`orTry` 的中文串用正则断言（保留 `/v1/decisions`、`/v1/systemone` 两个路径）。CredentialsPanel 1 例：创建失败提示此前走 `extractProxyErrorMessage`，把服务端英文原样弹给用户；改为复用 `models.credentials.createFailed`（新增第二把 `models.credentials` 翻译器），与测试和其它失败提示一致。networking 1 例：`ragIngestCall` 在代理返回 `{detail: {error: "..."}}` 时把对象直接塞进 `Error`，抛出的是 `[object Object]`；补上对象型 detail 的取值。
