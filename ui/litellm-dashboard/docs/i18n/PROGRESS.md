@@ -4641,3 +4641,8 @@ NotificationsBell 的升级公告标题、统计描述与"查看发布说明"三
 结果：`tsc --noEmit` 测试错误 375→344。四文件 41 例通过；TeamVirtualKeysTable 的"team member budget for budgetless keys"仍 5 秒超时，已在 HEAD 基线复现，非本簇引入。
 
 验证：触及文件 eslint 0 错、10 警为既有；prettier 新增行合规（VirtualKeysTable HEAD 既有长行不动）；死键 0；生产类型检查此前已验证 0 错。
+## 2026-10-23 第 461 簇：.ts 模块宽口径复查与死常量清理
+
+对 391 个非测试 `.ts` 跑 `scan-english.mjs --all`，共 4449 条字面量。抽样与逐类判定后确认剩余命中集中在：provider 目录描述（来自 API/目录数据）、Playground 合规数据集示例、导入路径与配置键名、Access token 等被 enabled 守卫短路的开发期 throw；没有发现新的用户可见 UI 文案。清理 `teamAdminEditAccess.ts` 中已无引用的 `TEAM_ADMIN_EDITING_DISABLED_TITLE`/`DESCRIPTION` 与 `TEAM_ADMIN_FIELD_LABELS` 英文表。
+
+验证：teamAdminEditAccess 与 TeamAdminSettingsForm 95 例全绿；生产 typecheck 0 错；死键 0。

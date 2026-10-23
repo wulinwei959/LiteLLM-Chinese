@@ -17,10 +17,6 @@ export const TEAM_ADMIN_CREATE_MEMBER_KEYS_PERMISSION = "create_member_keys";
 
 export const TEAM_ADMIN_METADATA_FIELD = "metadata";
 
-export const TEAM_ADMIN_EDITING_DISABLED_TITLE = "Team admins cannot edit team settings on this proxy";
-export const TEAM_ADMIN_EDITING_DISABLED_DESCRIPTION =
-  "Ask a proxy admin to enable fields under Settings > UI > Team admin editable fields.";
-
 const teamAdminEditAccessShape = {
   kind: z.literal("team_admin"),
   editable_fields: z.array(z.string()),
@@ -86,22 +82,6 @@ type TeamAdminNumericSettingsField = Exclude<TeamAdminSettingsField, TeamAdminDu
 export const isTeamAdminDurationSettingsField = (
   field: TeamAdminSettingsField,
 ): field is TeamAdminDurationSettingsField => field === "team_member_budget_duration";
-
-const TEAM_ADMIN_FIELD_LABELS: ReadonlyMap<string, string> = new Map([
-  ["tpm_limit", "Tokens per minute Limit (TPM)"],
-  ["rpm_limit", "Requests per minute Limit (RPM)"],
-  ["max_budget", "Max Budget (USD)"],
-  [TEAM_ADMIN_METADATA_FIELD, "Team Metadata"],
-  ["soft_budget", "Soft Budget (USD)"],
-  ["team_member_budget", "Member Default Budget (USD)"],
-  ["team_member_budget_duration", "Member Default Budget Duration"],
-  ["team_member_tpm_limit", "Member Default TPM Limit"],
-  ["team_member_rpm_limit", "Member Default RPM Limit"],
-  [TEAM_ADMIN_RAISE_MAX_BUDGET_PERMISSION, "Raise the team's max budget"],
-  ["projects", "Create and update projects"],
-  ["member_key_budgets", "Update budgets on team members' keys"],
-  [TEAM_ADMIN_CREATE_MEMBER_KEYS_PERMISSION, "Create keys for team members"],
-]);
 
 export const teamAdminFieldLabel = (t: TeamsTranslator, field: string): string => {
   switch (field) {
