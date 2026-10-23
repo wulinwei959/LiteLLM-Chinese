@@ -796,28 +796,41 @@ function KeyEditSession({
             description={hasProject ? editFormT("teamLocked") : undefined}
           >
             {({ value, onChange, id }) => (
-              <Select
-                value={(value as string | null) ?? null}
-                onValueChange={(teamId) => handleTeamChange(onChange, teamId)}
-                disabled={hasProject}
-                items={Object.fromEntries(
-                  teamOptionsFor((value as string | null) ?? null).map((option) => [
-                    option.value,
-                    `${option.label} (${option.value})`,
-                  ]),
+              <>
+                <Select
+                  value={(value as string | null) ?? null}
+                  onValueChange={(teamId) => handleTeamChange(onChange, teamId)}
+                  disabled={hasProject}
+                  items={Object.fromEntries(
+                    teamOptionsFor((value as string | null) ?? null).map((option) => [
+                      option.value,
+                      `${option.label} (${option.value})`,
+                    ]),
+                  )}
+                >
+                  <SelectTrigger id={id} className="w-full">
+                    <SelectValue placeholder={editFormT("selectTeam")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {visibleTeams?.map((t) => (
+                      <SelectItem key={t.team_id} value={t.team_id}>
+                        {`${t.team_alias ?? "-"} (${t.team_id})`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {typeof value === "string" && value !== "" && !hasProject && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="mt-1 h-6 px-2 text-xs"
+                    onClick={() => handleTeamChange(onChange, null)}
+                  >
+                    {commonT("clear")}
+                  </Button>
                 )}
-              >
-                <SelectTrigger id={id} className="w-full">
-                  <SelectValue placeholder={editFormT("selectTeam")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {visibleTeams?.map((t) => (
-                    <SelectItem key={t.team_id} value={t.team_id}>
-                      {`${t.team_alias ?? "-"} (${t.team_id})`}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              </>
             )}
           </FormField>
 

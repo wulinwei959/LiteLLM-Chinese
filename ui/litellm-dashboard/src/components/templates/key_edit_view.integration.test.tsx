@@ -1848,7 +1848,7 @@ describe("KeyEditView", () => {
       await waitFor(() => {
         expect(screen.getByLabelText("组织")).toHaveValue("Engineering");
       });
-      await userEvent.click(screen.getByRole("button", { name: "清除" }));
+      await userEvent.click(screen.getAllByRole("button", { name: "清除" })[0]);
       await userEvent.click(screen.getByRole("button", { name: /保存更改/ }));
 
       await waitFor(() => {

@@ -4961,3 +4961,7 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 整跑 61 个历史失败文件：57 通过、4 个文件失败、7 例。剩余：key_edit_view 4（两条"团队变更后 MCP 授权长度 2 存 1"、移出项目按钮、清团队载荷）、key_info_view 1（团队成员预算区未渲染）、AllModelsTab 1（视图模式下拉点击后 aria-expanded 仍为 false，面板未展开）、create_key_button 1（团队下拉面板同样未展开）。
 
 排查记录：AllModelsTab 与 create_key_button 的失败点都在 Base UI Select 的弹层没有挂载（DOM 里没有 listbox，aria-expanded 为 false），与同仓库其它能正常展开的 Select 用法一致，属于测试环境下该弹层未打开，而非断言写错。key_edit_view 的 4 条都指向团队字段缺少"清除"入口与项目字段未渲染（合并后 UI 入口缺失），需要按设计补回交互后再收敛。
+
+## 2026-10-24 第 511 簇：团队字段补回清除入口
+
+合并后团队下拉只剩选择、没有清除入口，三条用例（团队变更后 MCP 授权 2 条、清团队后的更新载荷）因此红。在团队 Select 后补"清除"按钮（有值且未锁定时显示，点击走既有 `handleTeamChange(onChange, null)`，会同步清空 MCP 授权），并把"清空组织"用例的清除按钮查询改为取第 0 个（组织在前、团队在后）。key_edit_view 由 4 例降到 1 例（移出项目按钮），tsc 0 错。
