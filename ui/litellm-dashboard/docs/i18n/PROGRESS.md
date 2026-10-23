@@ -4873,3 +4873,7 @@ AllModelsTab 里删除与暂停两条载荷断言写的是 `mock-access-token`�
 ## 2026-10-24 第 492 簇：新增模型表单的凭据载荷与团队提示
 
 AddModelForm 由 7 例降到 1 例：`firstModelPayload` 读的是 `modelCreateCall` 的第 2 个参数，但上游签名已变成 `(t, accessToken, payload)`，四条件凭据-only 用例全部断言在 accessToken 上；改读第 3 个参数后 OAuth/GitHub/共享设备登录四条一起转绿。另把团队作用域提示词条对齐共享文案（"需要先选择团队"）、测试里的 "Required" 计数改"必填"、凭据缺失的 toast 断言按 `models.addModel.createOrSelectCredential` 换成中文。剩一条是"测试连接前就地展示两条必填错误"，生产只出一条，留待查模型字段的必填标记。
+
+## 2026-10-24 第 493 簇：Moyai 连接页、密钥头与组织成员分页
+
+MoyaiConnected：模型数文案在中文里被拆成"42"与"个模型可通过 LiteLLM 使用"两个文本节点，改为分别断言，链接名换成"打开 Moyai"/"返回 AI 网关"。KeyInfoHeader 的密钥 ID 断言用的是旧夹具前缀，按实际 `sk-9876543210fedcba` 修正。organization_view 的成员分页文案改"显示第 26-30 条，共 30 条"。三处转绿。

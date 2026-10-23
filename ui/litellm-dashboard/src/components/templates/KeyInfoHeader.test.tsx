@@ -33,7 +33,7 @@ describe("KeyInfoHeader", () => {
   it("should render the key ID with prefix", () => {
     renderWithProviders(<KeyInfoHeader data={MOCK_DATA} />);
     expect(screen.getByText(/密钥 ID：/)).toBeInTheDocument();
-    expect(screen.getByText(/sk-1234567890abcdef/)).toBeInTheDocument();
+    expect(screen.getByText(/sk-9876543210fedcba/)).toBeInTheDocument();
   });
 
   it("should render all metadata fields", () => {

@@ -176,11 +176,11 @@ test("keeps the members pager on its page when an admin opens a member's edit di
 
   await user.click(screen.getByRole("tab", { name: "成员" }));
   await user.click(screen.getByTestId("pagination-next"));
-  expect(screen.getByText("Showing 26-30 of 30")).toBeInTheDocument();
+  expect(screen.getByText("显示第 26-30 条，共 30 条")).toBeInTheDocument();
 
   await user.click(within(screen.getByRole("row", { name: /alias27/ })).getByTestId("edit-member"));
 
-  expect(screen.getByText("Showing 26-30 of 30")).toBeInTheDocument();
+  expect(screen.getByText("显示第 26-30 条，共 30 条")).toBeInTheDocument();
 });
 
 test("should display team aliases when teams are available", async () => {
