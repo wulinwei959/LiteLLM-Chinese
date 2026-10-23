@@ -837,8 +837,8 @@ const CreateMCPServer: React.FC<CreateMCPServerProps> = ({
                   <MountedFormField
                     label={
                       <span className="text-sm font-medium text-foreground flex items-center">
-                        RPM limit (all callers)
-                        <SimpleTooltip content="Max requests per minute to this server across all keys and teams. Leave empty for no limit">
+                        {t("create.rpmLimit")}
+                        <SimpleTooltip content={t("create.rpmLimitTooltip")}>
                           <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
                         </SimpleTooltip>
                       </span>

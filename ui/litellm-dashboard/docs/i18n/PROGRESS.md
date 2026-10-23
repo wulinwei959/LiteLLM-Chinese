@@ -4495,3 +4495,10 @@ GuardrailFormField 五处：LoggingOnlyScopeSelect 占位复用 `form.selectOpti
 测试翻面四文件：CustomCodeModal 15 红→21 例全绿（半角括号 `(标签限定)` 值断言、模板下拉按 aria "模板" 选取而非末位 combobox、`例如 block-pii-custom` placeholder 三处、logging_only 选项名）；guardrail_info/guardrail_table 的 tag-based 展示串同步改 `(标签限定)`。guardrails 域 366 例从 HEAD 基线 29 红到全绿、净新增 0。
 
 验证：AST 触及文件仅剩判定保留项；全域 276 项（jsx/placeholder 大头为品牌与示例串保留 + 22 条 dev throw）；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错 34 警与 HEAD 持平；prettier clean；`npm run build` exit 0。
+## 2026-10-23 第 440 簇：mcp-servers 工具集菜单与 RPM 字段接线
+
+MCPToolsetTableColumns 行操作三枚接既有键（aria 接 toolsets.openActions，Edit/Delete 接 toolsets.edit/delete）。mcp_tool_configuration 平铺视图空态 `No tools found matching "x"` 接既有插值键 tools.noToolsMatch。CreateMCPServer 与 mcp_server_edit 的 "RPM limit (all callers)" label+tooltip 两对新增 create.rpmLimit/create.rpmLimitTooltip（en 值与原句逐字一致）；edit 表单 aria "Edit MCP server" 新增 edit.formAria。判定账：MCPGatewaySessionsTab 的 prop:title "gatewaySessions.byAiClient" 两枚实为传键给 t() 的误报；EnvVarsSection/IdJag/OAuth/TokenExchange 等 placeholder 全为 URL/JSON 示例串保留；McpFormTestHarness "Submit" 是测试 harness 不上屏。目录新增 3 叶（11584→11587）。
+
+测试债收口：mcp_server_edit.test 旧英文断言翻面（保存更改/取消/MCP 服务器 URL/编辑 MCP 服务器 form 名），顺带清掉 HEAD 既有的 render 未用导入错误；mcp_servers.test 深链用例的 `renderWithoutNuqs` 是 HEAD 快照漏定义 helper 的缺陷（同 435 簇 fieldsHidden 先例），补成 LocaleProvider+基础 render 包真实 react 适配器，因为 renderWithProviders 内层 NuqsTestingAdapter 会吞掉 mount effect 发起的 URL 写入（onUrlUpdate 试探已证实）；mcp_connect.test tab 名接 zh "LiteLLM 代理"。mcp-servers 域 787 例从 HEAD 基线 11 红降至 4 红、净新增 0；剩余 4 红（blocks Save×2、OAuth snapshot×2）为组件行为缺口（保存按钮未按 authorizing 态禁用），非翻译半径，另账。
+
+验证：AST 触及文件仅剩判定保留项；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错（比 HEAD 净减 1）；prettier 触及文件与 HEAD 同样脏的两枚（mcp_server_edit/mcp_tool_configuration）不动；`npm run build` exit 0。

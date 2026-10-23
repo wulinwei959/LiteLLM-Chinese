@@ -7018,7 +7018,9 @@
       "submittedToastBody": "Once an admin approves it, the server will appear in your MCP Servers list.",
       "errorCreated": "Error creating MCP Server: {reason}",
       "errorSubmitted": "Error submitting MCP Server: {reason}",
-      "authType": "Authentication"
+      "authType": "Authentication",
+      "rpmLimit": "RPM limit (all callers)",
+      "rpmLimitTooltip": "Max requests per minute to this server across all keys and teams. Leave empty for no limit"
     },
     "edit": {
       "failedToPersistState": "Failed to persist MCP edit state",
@@ -7064,7 +7066,8 @@
       "command": "Command",
       "args": "Args",
       "noOAuthFlowTitle": "This server has no OAuth flow set",
-      "noOAuthFlowBody": "Choose Machine-to-Machine (M2M) or Interactive (PKCE) so LiteLLM authenticates it the way you intend, then save. Until it is set, LiteLLM falls back to interactive per-user auth and treats a machine-to-machine credential shape conservatively."
+      "noOAuthFlowBody": "Choose Machine-to-Machine (M2M) or Interactive (PKCE) so LiteLLM authenticates it the way you intend, then save. Until it is set, LiteLLM falls back to interactive per-user auth and treats a machine-to-machine credential shape conservatively.",
+      "formAria": "Edit MCP server"
     },
     "tools": {
       "title": "MCP Tools",

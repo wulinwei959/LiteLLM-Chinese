@@ -1,15 +1,19 @@
 import React from "react";
-import { waitFor, screen, act, within } from "@testing-library/react";
+import { waitFor, screen, act, within, render as baseRender } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { renderWithProviders } from "../../../../../tests/test-utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NuqsAdapter } from "nuqs/adapters/react";
-import { renderWithProviders as render } from "@/../tests/test-utils";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import MCPServers, { compareServers, type SortKey } from "./mcp_servers";
 import type { MCPServer } from "@/components/mcp_tools/types";
 import * as networking from "@/components/networking";
+
+// The nuqs testing adapter inside renderWithProviders drops URL writes issued from
+// mount-time effects, so the deep-link case needs the real react adapter instead.
+const renderWithoutNuqs = (ui: React.ReactElement) => baseRender(<LocaleProvider locale="zh-CN">{ui}</LocaleProvider>);
 
 // Mock the networking module
 vi.mock("@/components/networking", () => ({
@@ -203,7 +207,7 @@ describe("MCPServers", () => {
       </NuqsAdapter>,
     );
 
-    expect(await screen.findByRole("heading", { name: "Set your credentials" })).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "设置你的凭据" })).toBeVisible();
     expect(within(screen.getByRole("dialog")).getByText("Deep Link Server")).toBeVisible();
     await waitFor(() => expect(window.location.search).toBe("?other=1"));
   });

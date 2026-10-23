@@ -47,7 +47,7 @@ function ToolsetRowActions({ toolset, isAdmin, onEditClick, onDeleteClick }: Too
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open toolset actions"
+        aria-label={t("toolsets.openActions")}
         data-testid={`toolset-actions-${toolset.toolset_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -73,7 +73,7 @@ function ToolsetRowActions({ toolset, isAdmin, onEditClick, onDeleteClick }: Too
             <DropdownMenuSeparator />
             <DropdownMenuItem data-testid="toolset-action-edit" onClick={() => onEditClick(toolset)}>
               <Pencil />
-              Edit
+              {t("toolsets.edit")}
             </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
@@ -81,7 +81,7 @@ function ToolsetRowActions({ toolset, isAdmin, onEditClick, onDeleteClick }: Too
               onClick={() => onDeleteClick(toolset.toolset_id)}
             >
               <Trash2 />
-              Delete
+              {t("toolsets.delete")}
             </DropdownMenuItem>
           </>
         )}

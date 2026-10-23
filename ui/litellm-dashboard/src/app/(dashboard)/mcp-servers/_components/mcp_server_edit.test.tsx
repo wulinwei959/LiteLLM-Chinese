@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react";
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen, waitFor, fireEvent, act } from "@testing-library/react";
@@ -552,10 +551,10 @@ describe("MCPServerEdit OAuth token invalidation", () => {
     mockOauth.status = status;
     vi.mocked(networking.updateMCPServer).mockResolvedValue({ ...interactiveOAuthServer });
     const view = renderOAuthEdit();
-    const save = screen.getAllByRole("button", { name: "Save Changes" })[0];
+    const save = screen.getAllByRole("button", { name: "保存更改" })[0];
     expect(save).toBeDisabled();
     await act(async () => {
-      fireEvent.submit(screen.getByRole("form", { name: "Edit MCP server" }));
+      fireEvent.submit(screen.getByRole("form", { name: "编辑 MCP 服务器" }));
     });
     expect(networking.updateMCPServer).not.toHaveBeenCalled();
     act(() => {
@@ -578,9 +577,9 @@ describe("MCPServerEdit OAuth token invalidation", () => {
         availableAccessGroups={[]}
       />,
     );
-    expect(screen.getAllByRole("button", { name: "Save Changes" })[0]).toBeEnabled();
+    expect(screen.getAllByRole("button", { name: "保存更改" })[0]).toBeEnabled();
     await act(async () => {
-      fireEvent.click(screen.getAllByRole("button", { name: "Save Changes" })[0]);
+      fireEvent.click(screen.getAllByRole("button", { name: "保存更改" })[0]);
     });
     await waitFor(() => expect(networking.updateMCPServer).toHaveBeenCalledTimes(1));
     expect(vi.mocked(networking.updateMCPServer).mock.calls[0][1].credentials).toMatchObject({
@@ -589,7 +588,7 @@ describe("MCPServerEdit OAuth token invalidation", () => {
     });
   });
 
-  it.each(["Save Changes", "Cancel"])("keeps a newly registered client isolated until %s", async (action) => {
+  it.each(["保存更改", "取消"])("keeps a newly registered client isolated until %s", async (action) => {
     vi.mocked(networking.updateMCPServer).mockResolvedValue({ ...interactiveOAuthServer });
     renderOAuthEdit();
     act(() => {
@@ -607,7 +606,7 @@ describe("MCPServerEdit OAuth token invalidation", () => {
     await act(async () => {
       fireEvent.click(screen.getAllByRole("button", { name: action })[0]);
     });
-    if (action === "Cancel") {
+    if (action === "取消") {
       expect(networking.updateMCPServer).not.toHaveBeenCalled();
       return;
     }
@@ -1753,14 +1752,14 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
       <MCPServerEdit {...props} mcpServer={{ ...interactiveOAuthServer, server_id: "", url: "" }} />,
     );
     await act(async () => {
-      fireEvent.click(screen.getAllByRole("button", { name: "Cancel" })[0]);
+      fireEvent.click(screen.getAllByRole("button", { name: "取消" })[0]);
     });
     expect(props.onCancel).toHaveBeenCalledOnce();
     expect(window.sessionStorage.getItem(EDIT_OAUTH_UI_STATE_KEY)).toBeNull();
     expect(mockOauth.reset).toHaveBeenCalled();
     view.unmount();
     renderWithProviders(<MCPServerEdit {...props} mcpServer={interactiveOAuthServer} />);
-    await waitFor(() => expect(screen.getByLabelText("MCP Server URL")).toHaveValue(interactiveOAuthServer.url));
+    await waitFor(() => expect(screen.getByLabelText("MCP 服务器 URL")).toHaveValue(interactiveOAuthServer.url));
     expect(networking.updateMCPServer).not.toHaveBeenCalled();
   });
 
@@ -1783,7 +1782,7 @@ describe("MCPServerEdit (OAuth token persistence on save)", () => {
       <MCPServerEdit {...props} mcpServer={{ ...interactiveOAuthServer, server_id: "", url: "" }} />,
     );
     rerender(<MCPServerEdit {...props} mcpServer={interactiveOAuthServer} />);
-    await waitFor(() => expect(screen.getByLabelText("MCP Server URL")).toHaveValue("https://new.example/mcp"));
+    await waitFor(() => expect(screen.getByLabelText("MCP 服务器 URL")).toHaveValue("https://new.example/mcp"));
     expect(screen.getByLabelText("Issuer (optional)")).toHaveValue("https://new.example");
   });
 
@@ -2276,7 +2275,7 @@ describe("MCPServerEdit (max concurrent requests)", () => {
 
     fireEvent.change(rpmInput, { target: { value: "" } });
 
-    const saveButtons = screen.getAllByRole("button", { name: "Save Changes" });
+    const saveButtons = screen.getAllByRole("button", { name: "保存更改" });
     await act(async () => {
       fireEvent.click(saveButtons[0]);
     });

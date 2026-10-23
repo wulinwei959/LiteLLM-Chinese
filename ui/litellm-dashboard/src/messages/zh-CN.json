@@ -7018,7 +7018,9 @@
       "submittedToastBody": "管理员批准后，该服务器会出现在你的 MCP 服务器列表中。",
       "errorCreated": "创建 MCP 服务器出错：{reason}",
       "errorSubmitted": "提交 MCP 服务器出错：{reason}",
-      "authType": "认证方式"
+      "authType": "认证方式",
+      "rpmLimit": "RPM 限制（所有调用方）",
+      "rpmLimitTooltip": "所有密钥和团队对本服务器的每分钟最大请求数。留空表示不限。"
     },
     "edit": {
       "failedToPersistState": "保存 MCP 编辑状态失败",
@@ -7064,7 +7066,8 @@
       "command": "命令",
       "args": "参数",
       "noOAuthFlowTitle": "此服务器未设置 OAuth 流程",
-      "noOAuthFlowBody": "请选择机器对机器（M2M）或交互式（PKCE），让 LiteLLM 按你的预期进行认证，然后保存。在设置之前，LiteLLM 会回退到交互式的按用户认证，并对机器对机器的凭证形态采取保守处理。"
+      "noOAuthFlowBody": "请选择机器对机器（M2M）或交互式（PKCE），让 LiteLLM 按你的预期进行认证，然后保存。在设置之前，LiteLLM 会回退到交互式的按用户认证，并对机器对机器的凭证形态采取保守处理。",
+      "formAria": "编辑 MCP 服务器"
     },
     "tools": {
       "title": "MCP 工具",

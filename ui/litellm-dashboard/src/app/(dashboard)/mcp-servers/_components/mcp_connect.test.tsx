@@ -19,7 +19,7 @@ describe("MCPConnect routing", () => {
 
     expect(within(activePanel()).getByText(/"server_url": "https:\/\/backend\.example\.com\/mcp"/)).toBeInTheDocument();
 
-    await user.click(screen.getByRole("tab", { name: "LiteLLM Proxy" }));
+    await user.click(screen.getByRole("tab", { name: "LiteLLM 代理" }));
 
     expect(within(activePanel()).getByText("https://backend.example.com/mcp")).toBeInTheDocument();
     expect(

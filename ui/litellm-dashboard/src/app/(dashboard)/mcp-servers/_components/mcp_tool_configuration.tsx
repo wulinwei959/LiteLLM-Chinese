@@ -520,7 +520,7 @@ const MCPToolConfiguration: React.FC<MCPToolConfigurationProps> = ({
                 {filteredTools.length === 0 ? (
                   <div className="rounded-lg border border-dashed py-6 text-center text-muted-foreground">
                     <Search className="mx-auto mb-2 size-6" />
-                    <p className="text-sm">No tools found matching &quot;{toolSearchTerm}&quot;</p>
+                    <p className="text-sm">{t("tools.noToolsMatch", { term: toolSearchTerm })}</p>
                   </div>
                 ) : (
                   <div className="space-y-2">

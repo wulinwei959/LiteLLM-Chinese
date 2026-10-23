@@ -838,7 +838,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
           <FormProvider {...form}>
             <MountedFormProvider value={{ control: form.control, registry }}>
               <form
-                aria-label="Edit MCP server"
+                aria-label={t("edit.formAria")}
                 onSubmit={(event) => {
                   event.preventDefault();
                   void submitForm();
@@ -980,8 +980,8 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
                 <MountedFormField
                   label={
                     <span className="text-sm font-medium text-foreground flex items-center">
-                      RPM limit (all callers)
-                      <SimpleTooltip content="Max requests per minute to this server across all keys and teams. Leave empty for no limit">
+                      {t("create.rpmLimit")}
+                      <SimpleTooltip content={t("create.rpmLimitTooltip")}>
                         <Info className="ml-2 size-4 text-info hover:text-info/80 cursor-help" />
                       </SimpleTooltip>
                     </span>
