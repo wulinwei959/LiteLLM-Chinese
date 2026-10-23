@@ -4787,3 +4787,7 @@ AllModelsTab：公开模型名称筛选占位符在目录里是 models.modelTabl
 1. 剩下的 103 例里，行为断言占绝大多数：AddModelForm 7（团队作用域、credential-only 载荷、连接测试）、key_edit_view 7（预算草稿载荷、MCP 授权回调）、add_auto_router_tab 6（禁用态、阈值校验）、agent.test 4（liteadmin 接口约定）、activity_metrics 4（配色口径）、AddModelPanel 4、tag_info 4。
 2. AllModelsTab 的视图模式选项在 jsdom 下找不到，需要查 Base UI Select 的展开时序；另有两条删除/暂停载荷断言。
 3. 文字类长尾已基本翻完，后续应按文件逐个对照生产取值，而不是继续批量替换。
+
+## 2026-10-24 第 474 簇：标签详情预算页签与保存按钮
+
+tag_info.integration 4 例全绿：测试里的 `/Budget & Rate Limits/` 正则改 `/预算与速率限制/`，`Max Budget (USD)` 标签改「最大预算（美元）」，`Save Changes` 改「保存更改」。这三处都是"失败信息只给出截断的期望串、正则里带英文"的情况，前几轮的批量脚本抓不到，需要手工对目录。

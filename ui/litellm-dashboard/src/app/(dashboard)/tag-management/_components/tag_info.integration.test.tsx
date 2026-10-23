@@ -101,34 +101,34 @@ describe("TagInfoView save payload", () => {
 
   it("sends null when the budget is cleared", async () => {
     const { user } = await renderEditor();
-    await user.click(screen.getByRole("button", { name: /Budget & Rate Limits/ }));
-    const maxBudgetInput = await screen.findByLabelText("Max Budget (USD)");
+    await user.click(screen.getByRole("button", { name: /预算与速率限制/ }));
+    const maxBudgetInput = await screen.findByLabelText("最大预算（美元）");
     fireEvent.change(maxBudgetInput, { target: { value: "" } });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
     expect(mockTagUpdateCall).toHaveBeenCalledWith("sk-test", expect.objectContaining({ max_budget: null }));
   });
 
   it("sends zero as a budget value", async () => {
     const { user } = await renderEditor();
-    await user.click(screen.getByRole("button", { name: /Budget & Rate Limits/ }));
-    fireEvent.change(await screen.findByLabelText("Max Budget (USD)"), { target: { value: "0" } });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: /预算与速率限制/ }));
+    fireEvent.change(await screen.findByLabelText("最大预算（美元）"), { target: { value: "0" } });
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
     expect(mockTagUpdateCall).toHaveBeenCalledWith("sk-test", expect.objectContaining({ max_budget: 0 }));
   });
 
   it("sends the prefilled budget when it is left unchanged", async () => {
     const { user } = await renderEditor();
-    await user.click(screen.getByRole("button", { name: /Budget & Rate Limits/ }));
-    expect(await screen.findByLabelText("Max Budget (USD)")).toHaveValue(10);
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: /预算与速率限制/ }));
+    expect(await screen.findByLabelText("最大预算（美元）")).toHaveValue(10);
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
     expect(mockTagUpdateCall).toHaveBeenCalledWith("sk-test", expect.objectContaining({ max_budget: 10 }));
   });
 
   it("blocks negative budgets before sending the request", async () => {
     const { user } = await renderEditor();
-    await user.click(screen.getByRole("button", { name: /Budget & Rate Limits/ }));
-    fireEvent.change(await screen.findByLabelText("Max Budget (USD)"), { target: { value: "-1" } });
-    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    await user.click(screen.getByRole("button", { name: /预算与速率限制/ }));
+    fireEvent.change(await screen.findByLabelText("最大预算（美元）"), { target: { value: "-1" } });
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
     expect(await screen.findByText("Enter a nonnegative budget")).toBeInTheDocument();
     expect(mockTagUpdateCall).not.toHaveBeenCalled();
   });
