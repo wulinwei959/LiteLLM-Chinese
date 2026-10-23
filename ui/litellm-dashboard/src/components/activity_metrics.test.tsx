@@ -626,7 +626,7 @@ describe("ActivityMetrics charts", () => {
 
     expect(container.querySelectorAll(".recharts-legend-wrapper")).toHaveLength(0);
     expect(screen.queryByText("metrics.spend")).not.toBeInTheDocument();
-    expect(screen.getByText("Spend")).toBeInTheDocument();
+    expect(screen.getByText("花费")).toBeInTheDocument();
   });
 
   it("renders formatted header legends for each chart card", () => {

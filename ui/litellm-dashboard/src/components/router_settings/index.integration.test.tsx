@@ -142,7 +142,7 @@ describe("RouterSettings", () => {
     vi.mocked(getRouterSettingsCall).mockRejectedValue(new Error("500 Internal Server Error"));
     renderWithProviders(<RouterSettings {...defaultProps} />);
 
-    const save = await screen.findByRole("button", { name: /save changes/i });
+    const save = await screen.findByRole("button", { name: /保存更改/ });
     expect(save).toBeDisabled();
     expect(save).toHaveAttribute("title", expect.stringContaining("config.yaml"));
     await user.click(save);
@@ -164,7 +164,7 @@ describe("RouterSettings", () => {
     await user.clear(timeout);
     fireEvent.change(timeout, { target: { value: "42" } });
 
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: /保存更改/ }));
 
     await waitFor(() => expect(setCallbacksCall).toHaveBeenCalledTimes(1));
     const [, payload] = vi.mocked(setCallbacksCall).mock.calls[0];

@@ -5,7 +5,7 @@ import {
   type ChartTooltipProps,
   chartColorValue,
   CustomTooltip,
-  formatCategoryName,
+  useCategoryName,
   LineChart,
   stackedUsageColor,
   ValueTooltip,
@@ -47,29 +47,35 @@ const modelAverageResponseTimeMs = (metrics: ModelActivityData): number | null =
 
 const formatSpend = (value: number) => `$${formatNumberWithCommas(value, 2, true)}`;
 
-export const ResponseTimeTooltip = ({ active, payload, label }: ChartTooltipProps) => (
-  <ValueTooltip
-    active={active}
-    payload={payload?.map((item) => ({ ...item, name: formatCategoryName(String(item.dataKey ?? "")) }))}
-    label={label}
-    valueFormatter={formatResponseTime}
-  />
-);
+export const ResponseTimeTooltip = ({ active, payload, label }: ChartTooltipProps) => {
+  const categoryName = useCategoryName();
+  return (
+    <ValueTooltip
+      active={active}
+      payload={payload?.map((item) => ({ ...item, name: categoryName(String(item.dataKey ?? "")) }))}
+      label={label}
+      valueFormatter={formatResponseTime}
+    />
+  );
+};
 
-const SeriesKey = ({ categories, colors }: { categories: readonly string[]; colors: readonly ChartColor[] }) => (
-  <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
-    {categories.map((category, idx) => (
-      <span key={category} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <span
-          aria-hidden="true"
-          className="size-2 shrink-0 rounded-[2px]"
-          style={{ backgroundColor: chartColorValue(colors[idx % colors.length]) }}
-        />
-        {formatCategoryName(category)}
-      </span>
-    ))}
-  </div>
-);
+const SeriesKey = ({ categories, colors }: { categories: readonly string[]; colors: readonly ChartColor[] }) => {
+  const categoryName = useCategoryName();
+  return (
+    <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
+      {categories.map((category, idx) => (
+        <span key={category} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span
+            aria-hidden="true"
+            className="size-2 shrink-0 rounded-[2px]"
+            style={{ backgroundColor: chartColorValue(colors[idx % colors.length]) }}
+          />
+          {categoryName(category)}
+        </span>
+      ))}
+    </div>
+  );
+};
 
 /** A stat value kept as a heading so it stays addressable by its accessible name. */
 const StatValue = ({ children }: { children: ReactNode }) => <h4 className="truncate">{children}</h4>;
@@ -223,9 +229,7 @@ const ModelTopKeys = ({
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-foreground">{keyLabel}</p>
                 {keyData.team_id && (
-                  <p className="truncate text-xs text-muted-foreground">
-                    {t("teamLine", { team: keyData.team_id })}
-                  </p>
+                  <p className="truncate text-xs text-muted-foreground">{t("teamLine", { team: keyData.team_id })}</p>
                 )}
                 {keyData.user && keyData.user !== keyLabel && (
                   <p className="truncate text-xs text-muted-foreground">{t("userLine", { user: keyData.user })}</p>
@@ -303,13 +307,17 @@ export const ModelSection = ({
 
       {metrics.top_models && metrics.top_models.length > 0 && <KeyModelUsageView topModels={metrics.top_models} />}
 
-      <Panel icon={Coins} title={t("spendPerDay")} action={<SeriesKey categories={["metrics.spend"]} colors={[BRAND]} />}>
+      <Panel
+        icon={Coins}
+        title={t("spendPerDay")}
+        action={<SeriesKey categories={["metrics.spend"]} colors={["green"]} />}
+      >
         <BarChart
           className={CHART_CLASS}
           data={metrics.daily_data}
           index="date"
           categories={["metrics.spend"]}
-          colors={[BRAND]}
+          colors={["green"]}
           maxBarSize={28}
           valueFormatter={formatSpend}
           yAxisWidth={72}
@@ -331,13 +339,16 @@ export const ModelSection = ({
           />
         </Panel>
 
-        <Panel title={t("requestsPerDay")} action={<SeriesKey categories={["metrics.api_requests"]} colors={[BRAND]} />}>
+        <Panel
+          title={t("requestsPerDay")}
+          action={<SeriesKey categories={["metrics.api_requests"]} colors={["blue"]} />}
+        >
           <BarChart
             className={CHART_CLASS}
             data={metrics.daily_data}
             index="date"
             categories={["metrics.api_requests"]}
-            colors={[BRAND]}
+            colors={["blue"]}
             maxBarSize={28}
             valueFormatter={valueFormatter}
             customTooltip={CustomTooltip}
@@ -389,7 +400,9 @@ export const ModelSection = ({
           >
             <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs tabular-nums text-muted-foreground">
               <p>{t("cacheReadTokens", { count: metrics.total_cache_read_input_tokens?.toLocaleString() || 0 })}</p>
-              <p>{t("cacheCreationTokens", { count: metrics.total_cache_creation_input_tokens?.toLocaleString() || 0 })}</p>
+              <p>
+                {t("cacheCreationTokens", { count: metrics.total_cache_creation_input_tokens?.toLocaleString() || 0 })}
+              </p>
             </div>
             <AreaChart
               className={cn(CHART_CLASS, "mt-3")}

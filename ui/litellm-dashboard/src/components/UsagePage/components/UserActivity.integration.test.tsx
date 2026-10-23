@@ -96,8 +96,8 @@ describe("TopUsersView", () => {
 
     renderWithProviders(<TopUsersView fetchUserPage={fetchUserPage} />);
 
-    expect(await screen.findByText(/Could not load top users/)).toBeInTheDocument();
-    fireEvent.click(screen.getByText("Retry"));
+    expect(await screen.findByText(/无法加载热门用户/)).toBeInTheDocument();
+    fireEvent.click(screen.getByText("重试"));
     expect(await screen.findByText("u-1")).toBeInTheDocument();
   });
 });
@@ -220,8 +220,8 @@ describe("UserActivityPanel", () => {
 
     renderWithProviders(<UserActivityPanel fetchUserPage={fetchUserPage} />);
 
-    expect(await screen.findByText(/Could not load users for this range/)).toBeInTheDocument();
-    fireEvent.click(screen.getByText("Retry"));
+    expect(await screen.findByText(/无法加载该时间范围内的用户/)).toBeInTheDocument();
+    fireEvent.click(screen.getByText("重试"));
     expect(await screen.findByText("recovered")).toBeInTheDocument();
   });
 });

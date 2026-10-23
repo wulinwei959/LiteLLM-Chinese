@@ -4835,3 +4835,9 @@ onboarding_link 2 例：只读输入框的可访问名取自 `onboardingModal.re
 ## 2026-10-24 第 483 簇：自动路由高级设置的部分翻面（未收口）
 
 add_auto_router_tab 里把剩余英文控件名翻成目录中文（预计输出 token 数、预测超时（毫秒）、添加自动路由），并在 `tests/autoRouterSetup.ts` 的 `ADVANCED_SECTIONS` 补上"缓存感知路由"的候选组（该映射此前缺失，落到了默认组）。文件仍有 6 例未过：两处 `toBeDisabled` 是提交按钮的禁用条件，`缓存感知路由` 的开关在打开"会话与效率"与同名分节后仍取不到，"高级评分"分节在选择启发式后没有渲染。这三类都需要读组件的高阶折叠结构，留到下一轮。
+
+## 2026-10-24 第 484 簇：图表图例本地化与配色对齐
+
+activity_metrics 4 例转绿：`SeriesKey` 与 `ResponseTimeTooltip` 改用既有的 `useCategoryName()`（`chartLabels` 命名空间），图例从英文 `formatCategoryName` 的 "Spend" 变成"花费"、"请求数"、"平均响应时间 (ms)" 等；每日花费与每日请求两张图从单一品牌 hex `#2b3fd6` 改为命名色 `green`/`blue`，由 `chartColorValue` 转成 `var(--color-green-500, #22c55e)` 这类主题变量，与测试和多色图表基础设施一致。测试里那条 "Spend" 断言同步改"花费"。
+
+UserActivity 2 例转绿：错误态文案按 `usage.userActivity.error.loadTopUsersFailed`/`loadUsersFailed` 翻成"无法加载热门用户。"/"无法加载该时间范围内的用户。"，重试按钮改"重试"。router_settings/index 与 key_info_view 仍有 1 例各自未过（保存按钮禁用条件、团队预算取值路径）。
