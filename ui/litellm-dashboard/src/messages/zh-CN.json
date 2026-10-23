@@ -12026,7 +12026,8 @@
     "cancel": "取消",
     "whereFindKey": "在哪里找到我的 API 密钥？",
     "connectAuthorize": "连接并授权",
-    "securityNote": "你的密钥会被安全存储并通过 HTTPS 传输，绝不会与第三方共享。"
+    "securityNote": "你的密钥会被安全存储并通过 HTTPS 传输，绝不会与第三方共享。",
+    "back": "返回"
   },
   "modelInsights": {
     "loadFailed": "无法加载模型洞察",

@@ -4569,3 +4569,10 @@ provider_discount_table 的 "Models"/"All models"/"Discount Percentage" 接 `cos
 测试：列头与 "All models" 断言翻面，两条模式行用例原先在 HEAD 即失败（旧英文 aria 与编辑键缺陷），本簇清零，23 例全绿。
 
 验证：AST 本文件归零；全局可见英文 231→230 条、122→121 个文件；目录叶子 11633→11636，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 450 簇：BYOK 凭据弹窗返回按钮与两处吞错判定
+
+ByokCredentialModal 第二步的 "Back" 接 `byokModal.back`（zh "返回"）；同页 "L" 是 LiteLLM logo 字母，保留。新增一例验证从凭据步骤点返回回到引导步骤，3 例全绿。
+
+判定账：ui-theme/UIThemeSettings 的 `throw new Error("Failed to update settings")`/`"Failed to reset"` 与 DefaultUserSettingsForm 的 `"Failed to load default user settings"` 均在本地 catch 后被已译 toast/alert 吞掉，抛出的英文不进 UI，按既有 leak/swallow 教条保留不接。
+
+验证：AST 本文件仅剩 logo 字母；全局可见英文 230→229 条、文件维持 121 个；目录叶子 11636→11637，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。

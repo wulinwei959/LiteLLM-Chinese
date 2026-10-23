@@ -12030,7 +12030,8 @@
     "cancel": "Cancel",
     "whereFindKey": "Where do I find my API key?",
     "connectAuthorize": "Connect & Authorize",
-    "securityNote": "Your key is stored securely and transmitted over HTTPS. It is never shared with third parties."
+    "securityNote": "Your key is stored securely and transmitted over HTTPS. It is never shared with third parties.",
+    "back": "Back"
   },
   "modelInsights": {
     "loadFailed": "Could not load model insights",

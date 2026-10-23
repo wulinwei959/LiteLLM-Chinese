@@ -50,6 +50,17 @@ describe("ByokCredentialModal", () => {
     expect(await request.json()).toEqual({ credential: "linear-key", save: true });
   });
 
+  it("returns to the intro step from the credential step", async () => {
+    const user = userEvent.setup();
+    render(<ByokCredentialModal server={SERVER} open onClose={() => {}} onSuccess={vi.fn()} />);
+
+    await user.click(screen.getByText("前往身份验证"));
+    await user.click(screen.getByRole("button", { name: /返回/ }));
+
+    expect(screen.getByText("前往身份验证")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("请输入您的 API 密钥")).not.toBeInTheDocument();
+  });
+
   it("surfaces the backend's detail.error message when the save fails", async () => {
     registerAuthHeaderNameGetter(() => "Authorization");
     fetchSpy.mockResolvedValue(
