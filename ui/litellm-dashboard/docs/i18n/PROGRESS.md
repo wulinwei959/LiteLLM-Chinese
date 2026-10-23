@@ -4658,3 +4658,8 @@ handle_add_model_submit.test 六处 `prepareModelAddRequest`/`handleAddModelSubm
 build_updated_complexity_router_config.test：引入 `TestStored = StoredComplexityRouterConfig & Record<string, unknown>`，夹具与 STORED/STORED_ALL_MANAGED 统一标注，未知后端键与 legacy classifier_type 得以保留，17 条错误清零，103 例全绿。edit_auto_router_modal.test：修正 `storedConfig` 误用 `JSON.stringify` 后仍按对象展开的问题，改为对象并加 hydrate 包装统一断言 legacy 类型，8 条错误清零，12 例全绿。autorouter_presets.test：13 处配置夹具补 `modality_routing`/`modality_pin_override`，16 条错误清零，123 例全绿。
 
 结果：`tsc --noEmit` 测试错误 313→272。三文件 eslint 0 错、3 警为既有；prettier clean。
+## 2026-10-23 第 464 簇：MCP 创建测试类型债清理（本节点收口）
+
+`mcp-servers/_components/testUtils.selectOption` 的 label 参数放宽为 `string | RegExp`，消除 60 条"RegExp 不能赋给 string"错误，并连带清掉复用该辅助的其他 MCP 测试错误。CreateMCPServer.integration.test 七处 mock 凭据字段由 camelCase 改为协议字段 `client_id`/`client_secret`。
+
+结果：`tsc --noEmit` 测试错误 272→194。该集成文件 71 例全绿。eslint 0 错、43 警为既有；prettier 未改动 HEAD 既有的多行 expect 脏格式。

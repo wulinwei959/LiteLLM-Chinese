@@ -2,7 +2,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect } from "vitest";
 
-export async function selectOption(labelText: string, optionText: string) {
+export async function selectOption(labelText: string | RegExp, optionText: string) {
   const user = userEvent.setup({ delay: null });
   await user.click(screen.getAllByLabelText(labelText)[0]);
 

@@ -1382,7 +1382,7 @@ describe("CreateMCPServer", () => {
         fireEvent.change(urlInput, { target: { value: "https://a.example.com/mcp" } });
       });
       act(() => {
-        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { clientId: "client-a", clientSecret: "secret-a" });
+        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { client_id: "client-a", client_secret: "secret-a" });
       });
       oauthHook.reset.mockClear();
 
@@ -1399,7 +1399,7 @@ describe("CreateMCPServer", () => {
         fireEvent.change(urlInput, { target: { value: "https://a.example.com/mcp" } });
       });
       act(() => {
-        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { clientId: "client-a", clientSecret: "secret-a" });
+        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { client_id: "client-a", client_secret: "secret-a" });
       });
       oauthHook.reset.mockClear();
 
@@ -1424,7 +1424,7 @@ describe("CreateMCPServer", () => {
         fireEvent.change(urlInput, { target: { value: "https://a.example.com/mcp" } });
       });
       act(() => {
-        oauthHook.onTokenReceived?.({ access_token: "stale-tok" }, { clientId: "client-a", clientSecret: "secret-a" });
+        oauthHook.onTokenReceived?.({ access_token: "stale-tok" }, { client_id: "client-a", client_secret: "secret-a" });
       });
       const nameInput = document.getElementById("server_name") as HTMLInputElement;
       await act(async () => {
@@ -1450,7 +1450,7 @@ describe("CreateMCPServer", () => {
         fireEvent.change(urlInput, { target: { value: "https://a.example.com/mcp" } });
       });
       act(() => {
-        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { clientId: "client-a", clientSecret: "secret-a" });
+        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { client_id: "client-a", client_secret: "secret-a" });
       });
       oauthHook.reset.mockClear();
 
@@ -1520,7 +1520,7 @@ describe("CreateMCPServer", () => {
       });
 
       act(() => {
-        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { clientId: "client-a", clientSecret: "secret-a" });
+        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { client_id: "client-a", client_secret: "secret-a" });
       });
       oauthHook.reset.mockClear();
 
@@ -1575,7 +1575,7 @@ describe("CreateMCPServer", () => {
       });
 
       act(() => {
-        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { clientId: "client-a", clientSecret: "secret-a" });
+        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { client_id: "client-a", client_secret: "secret-a" });
       });
       oauthHook.reset.mockClear();
 
@@ -1631,7 +1631,7 @@ describe("CreateMCPServer", () => {
       });
 
       act(() => {
-        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { clientId: "client-a", clientSecret: "secret-a" });
+        oauthHook.onTokenReceived?.({ access_token: "tok-a" }, { client_id: "client-a", client_secret: "secret-a" });
       });
       oauthHook.reset.mockClear();
 
