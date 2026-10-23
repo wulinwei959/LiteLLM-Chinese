@@ -111,8 +111,12 @@ function renderWidget(Menu?: ComponentType<{ onLogout: () => void }>, showHome =
         <Toaster />
         <AuthProvider>
           <SessionReady />
+          <Page />
           {Menu && <Menu onLogout={() => undefined} />}
-          <LiteAdmin />
+          <LiteAdminFrame>
+            {home && <LiteAdminHome />}
+            <LiteAdmin />
+          </LiteAdminFrame>
         </AuthProvider>
       </LocaleProvider>
     </QueryClientProvider>
@@ -180,7 +184,7 @@ function gateway(replies: (ModelReply | Promise<ModelReply>)[], options: Gateway
 async function selectModel(model = "chat-model") {
   const user = userEvent.setup();
   await user.click(await screen.findByRole("combobox", { name: "LiteAdmin 模型" }));
-  await user.click(await screen.findByRole("option", { name: "chat-model" }));
+  await user.click(await screen.findByRole("option", { name: model }));
 }
 
 async function openWidget() {
@@ -189,7 +193,8 @@ async function openWidget() {
 }
 
 function send(text: string) {
-  fireEvent.change(screen.getByPlaceholderText("向 LiteAdmin 提问…"), { target: { value: text } });
+  const input = screen.queryByPlaceholderText("向 LiteAdmin 提问…") ?? screen.getByPlaceholderText("你想做点什么？");
+  fireEvent.change(input, { target: { value: text } });
   fireEvent.click(screen.getByRole("button", { name: "发送消息" }));
 }
 
@@ -212,19 +217,19 @@ describe("LiteAdmin in the gateway", () => {
   it.each(["keyboard", "click"])("continues one conversation from Home via %s and the dock", async (method) => {
     const requests = gateway([answer("First reply."), answer("Second reply."), answer("Third reply.")]);
     renderWidget(undefined, true);
-    const home = await screen.findByRole("region", { name: "Ask LiteAdmin" });
+    const home = await screen.findByRole("region", { name: "向 LiteAdmin 提问" });
     await selectModel();
-    const input = within(home).getByPlaceholderText("What would you like to do?");
+    const input = within(home).getByPlaceholderText("你想做点什么？");
     fireEvent.change(input, { target: { value: "First question" } });
     if (method === "keyboard") fireEvent.keyDown(input, { key: "Enter" });
-    else fireEvent.click(within(home).getByRole("button", { name: "Send message" }));
+    else fireEvent.click(within(home).getByRole("button", { name: "发送消息" }));
     expect(await screen.findByText("First reply.")).toBeInTheDocument();
     expect(home).not.toBeVisible();
     expect(screen.getAllByRole("complementary", { name: "LiteAdmin" })).toHaveLength(1);
     expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(1);
     send("Second question");
     expect(await screen.findByText("Second reply.")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Close LiteAdmin" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭 LiteAdmin" }));
     expect(home).toBeVisible();
     send("Third question");
     expect(await screen.findByText("Third reply.")).toBeInTheDocument();
@@ -244,7 +249,7 @@ describe("LiteAdmin in the gateway", () => {
     const requests = gateway([answer("Budget details received.")]);
     renderWidget(undefined, true);
     await selectModel();
-    const input = screen.getByRole("textbox", { name: "Message LiteAdmin" });
+    const input = screen.getByRole("textbox", { name: "给 LiteAdmin 发消息" });
     for (const label of ["Create a key", "Add a model", "Set a budget"]) {
       fireEvent.click(screen.getByRole("button", { name: label, exact: true }));
       expect(input).toHaveValue(label);
@@ -274,19 +279,19 @@ describe("LiteAdmin in the gateway", () => {
     });
     const view = renderWidget(undefined, true);
     await selectModel();
-    fireEvent.change(screen.getByPlaceholderText("What would you like to do?"), {
+    fireEvent.change(screen.getByPlaceholderText("你想做点什么？"), {
       target: { value: "Keep this draft" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Recent chats" }));
-    expect(screen.getByPlaceholderText("Ask LiteAdmin…")).toHaveValue("Keep this draft");
-    fireEvent.click(screen.getByRole("button", { name: "Close LiteAdmin" }));
-    const home = screen.getByRole("region", { name: "Ask LiteAdmin" });
-    expect(within(home).getByPlaceholderText("What would you like to do?")).toHaveValue("Keep this draft");
+    fireEvent.click(screen.getByRole("button", { name: "最近的对话" }));
+    expect(screen.getByPlaceholderText("向 LiteAdmin 提问…")).toHaveValue("Keep this draft");
+    fireEvent.click(screen.getByRole("button", { name: "关闭 LiteAdmin" }));
+    const home = screen.getByRole("region", { name: "向 LiteAdmin 提问" });
+    expect(within(home).getByPlaceholderText("你想做点什么？")).toHaveValue("Keep this draft");
     view.refresh(false);
     expect(home).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "LiteAdmin" }));
-    expect(screen.getByPlaceholderText("Ask LiteAdmin…")).toHaveValue("Keep this draft");
-    fireEvent.click(screen.getByRole("button", { name: "Send message" }));
+    expect(screen.getByPlaceholderText("向 LiteAdmin 提问…")).toHaveValue("Keep this draft");
+    fireEvent.click(screen.getByRole("button", { name: "发送消息" }));
     expect(await screen.findByText("Draft received.")).toBeInTheDocument();
     const completion = requests.find((request) => request.url.endsWith("/chat/completions"));
     expect(completion?.body.model).toBe("chat-model");
@@ -307,40 +312,40 @@ describe("LiteAdmin in the gateway", () => {
     await selectModel();
     send("First question");
     await screen.findByText("First answer.");
-    expect(within(screen.getByRole("tablist", { name: "LiteAdmin chats" })).getAllByRole("tab")).toHaveLength(1);
-    fireEvent.click(screen.getByRole("button", { name: "New chat" }));
-    expect(screen.getByRole("tab", { name: "Chat 2" })).toHaveAttribute("aria-selected", "true");
+    expect(within(screen.getByRole("tablist", { name: "LiteAdmin 对话列表" })).getAllByRole("tab")).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: "新建对话" }));
+    expect(screen.getByRole("tab", { name: "对话 2" })).toHaveAttribute("aria-selected", "true");
     expect(screen.queryByText("First answer.")).not.toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ask LiteAdmin…")).toHaveValue("");
+    expect(screen.getByPlaceholderText("向 LiteAdmin 提问…")).toHaveValue("");
     await selectModel("other-chat-model");
     send("Second question");
     await screen.findByText("Second answer.");
-    fireEvent.change(screen.getByPlaceholderText("Ask LiteAdmin…"), { target: { value: "Second draft" } });
+    fireEvent.change(screen.getByPlaceholderText("向 LiteAdmin 提问…"), { target: { value: "Second draft" } });
 
-    fireEvent.click(screen.getByRole("tab", { name: "Chat 1" }));
+    fireEvent.click(screen.getByRole("tab", { name: "对话 1" }));
     expect(screen.getByText("First answer.")).toBeInTheDocument();
     expect(screen.queryByText("Second answer.")).not.toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ask LiteAdmin…")).toHaveValue("");
-    expect(screen.getByRole("combobox", { name: "LiteAdmin model" })).toHaveValue("chat-model");
-    fireEvent.change(screen.getByPlaceholderText("Ask LiteAdmin…"), { target: { value: "First draft" } });
-    fireEvent.click(screen.getByRole("button", { name: "Close LiteAdmin" }));
-    const home = screen.getByRole("region", { name: "Ask LiteAdmin" });
-    expect(within(home).getByPlaceholderText("What would you like to do?")).toHaveValue("First draft");
-    expect(screen.getAllByPlaceholderText("What would you like to do?")).toHaveLength(1);
+    expect(screen.getByPlaceholderText("向 LiteAdmin 提问…")).toHaveValue("");
+    expect(screen.getByRole("combobox", { name: "LiteAdmin 模型" })).toHaveValue("chat-model");
+    fireEvent.change(screen.getByPlaceholderText("向 LiteAdmin 提问…"), { target: { value: "First draft" } });
+    fireEvent.click(screen.getByRole("button", { name: "关闭 LiteAdmin" }));
+    const home = screen.getByRole("region", { name: "向 LiteAdmin 提问" });
+    expect(within(home).getByPlaceholderText("你想做点什么？")).toHaveValue("First draft");
+    expect(screen.getAllByPlaceholderText("你想做点什么？")).toHaveLength(1);
 
-    fireEvent.click(screen.getByRole("button", { name: "Recent chats" }));
-    fireEvent.click(screen.getByRole("tab", { name: "Chat 2" }));
-    expect(screen.getByPlaceholderText("Ask LiteAdmin…")).toHaveValue("Second draft");
-    expect(screen.getByRole("combobox", { name: "LiteAdmin model" })).toHaveValue("other-chat-model");
-    expect(screen.getAllByLabelText("LiteAdmin conversation")).toHaveLength(1);
-    fireEvent.click(screen.getByRole("button", { name: "Close LiteAdmin" }));
-    expect(within(home).getByPlaceholderText("What would you like to do?")).toHaveValue("Second draft");
-    fireEvent.click(within(home).getByRole("button", { name: "Send message" }));
+    fireEvent.click(screen.getByRole("button", { name: "最近的对话" }));
+    fireEvent.click(screen.getByRole("tab", { name: "对话 2" }));
+    expect(screen.getByPlaceholderText("向 LiteAdmin 提问…")).toHaveValue("Second draft");
+    expect(screen.getByRole("combobox", { name: "LiteAdmin 模型" })).toHaveValue("other-chat-model");
+    expect(screen.getAllByLabelText("LiteAdmin 对话")).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: "关闭 LiteAdmin" }));
+    expect(within(home).getByPlaceholderText("你想做点什么？")).toHaveValue("Second draft");
+    fireEvent.click(within(home).getByRole("button", { name: "发送消息" }));
     await screen.findByText("Second follow-up.");
-    expect(screen.getByRole("tab", { name: "Chat 2" })).toHaveAttribute("aria-selected", "true");
-    fireEvent.click(screen.getByRole("tab", { name: "Chat 1" }));
-    expect(screen.getByPlaceholderText("Ask LiteAdmin…")).toHaveValue("First draft");
-    fireEvent.click(screen.getByRole("button", { name: "Send message" }));
+    expect(screen.getByRole("tab", { name: "对话 2" })).toHaveAttribute("aria-selected", "true");
+    fireEvent.click(screen.getByRole("tab", { name: "对话 1" }));
+    expect(screen.getByPlaceholderText("向 LiteAdmin 提问…")).toHaveValue("First draft");
+    fireEvent.click(screen.getByRole("button", { name: "发送消息" }));
     await screen.findByText("First follow-up.");
 
     const completions = requests.filter((request) => request.url.endsWith("/chat/completions"));
@@ -373,16 +378,16 @@ describe("LiteAdmin in the gateway", () => {
     renderWidget();
     await openWidget();
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "New chat" }));
-    await user.click(screen.getByRole("tab", { name: "Chat 1" }));
+    await user.click(screen.getByRole("button", { name: "新建对话" }));
+    await user.click(screen.getByRole("tab", { name: "对话 1" }));
     await user.keyboard("{ArrowRight}{Enter}");
-    expect(screen.getByRole("tab", { name: "Chat 2" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: "Chat 2" })).toHaveFocus();
-    await user.click(screen.getByRole("button", { name: "Close Chat 2" }));
-    expect(screen.getByRole("tab", { name: "Chat 1" })).toHaveFocus();
-    await user.click(screen.getByRole("button", { name: "Close Chat 1" }));
-    expect(screen.getByRole("tab", { name: "Chat 3" })).toHaveFocus();
-    expect(screen.getByRole("tab", { name: "Chat 3" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "对话 2" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "对话 2" })).toHaveFocus();
+    await user.click(screen.getByRole("button", { name: "关闭对话 2" }));
+    expect(screen.getByRole("tab", { name: "对话 1" })).toHaveFocus();
+    await user.click(screen.getByRole("button", { name: "关闭对话 1" }));
+    expect(screen.getByRole("tab", { name: "对话 3" })).toHaveFocus();
+    expect(screen.getByRole("tab", { name: "对话 3" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("keeps tab focus when returning to a saved approval and focuses it when reopening the panel", async () => {
@@ -390,20 +395,20 @@ describe("LiteAdmin in the gateway", () => {
     renderWidget();
     await openWidget();
     send("Prepare a key for approval");
-    const review = await screen.findByRole("region", { name: "Create a virtual key" });
+    const review = await screen.findByRole("region", { name: "创建虚拟密钥" });
     expect(review).toHaveFocus();
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "New chat" }));
-    await user.click(screen.getByRole("tab", { name: "Chat 2" }));
+    await user.click(screen.getByRole("button", { name: "新建对话" }));
+    await user.click(screen.getByRole("tab", { name: "对话 2" }));
     await user.keyboard("{ArrowLeft}{Enter}");
-    expect(screen.getByRole("tab", { name: "Chat 1" })).toHaveFocus();
-    expect(screen.getByRole("button", { name: "Confirm change" })).toBeInTheDocument();
-    await user.click(screen.getByRole("tab", { name: "Chat 2" }));
-    await user.click(screen.getByRole("button", { name: "Close Chat 2" }));
-    expect(screen.getByRole("tab", { name: "Chat 1" })).toHaveFocus();
-    await user.click(screen.getByRole("button", { name: "Close LiteAdmin" }));
+    expect(screen.getByRole("tab", { name: "对话 1" })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "确认改动" })).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "对话 2" }));
+    await user.click(screen.getByRole("button", { name: "关闭对话 2" }));
+    expect(screen.getByRole("tab", { name: "对话 1" })).toHaveFocus();
+    await user.click(screen.getByRole("button", { name: "关闭 LiteAdmin" }));
     await user.click(screen.getByRole("button", { name: "LiteAdmin" }));
-    expect(screen.getByRole("region", { name: "Create a virtual key" })).toHaveFocus();
+    expect(screen.getByRole("region", { name: "创建虚拟密钥" })).toHaveFocus();
     expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(0);
   });
 
@@ -417,7 +422,7 @@ describe("LiteAdmin in the gateway", () => {
     await waitFor(() =>
       expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(1),
     );
-    fireEvent.click(screen.getByRole("button", { name: "New chat" }));
+    fireEvent.click(screen.getByRole("button", { name: "新建对话" }));
     await selectModel();
     send("Second pending question");
     await waitFor(() =>
@@ -427,7 +432,7 @@ describe("LiteAdmin in the gateway", () => {
     expect(completions.every((request) => !request.signal.aborted)).toBe(true);
     await act(async () => second.resolve(answer("Second completed first.")));
     await screen.findByText("Second completed first.");
-    const composer = screen.getByPlaceholderText("Ask LiteAdmin…");
+    const composer = screen.getByPlaceholderText("向 LiteAdmin 提问…");
     fireEvent.change(composer, { target: { value: "Keep typing in the second chat" } });
     act(() => composer.focus());
 
@@ -435,15 +440,15 @@ describe("LiteAdmin in the gateway", () => {
     expect(composer).toHaveFocus();
     expect(composer).toHaveValue("Keep typing in the second chat");
     expect(composer).toBeEnabled();
-    expect(screen.getByRole("tab", { name: "Chat 2" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.queryByRole("button", { name: "Confirm change" })).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "对话 2" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.queryByRole("button", { name: "确认改动" })).not.toBeInTheDocument();
     expect(screen.queryByText("First pending question")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("tab", { name: "Chat 1" }));
-    expect(await screen.findByRole("region", { name: "Create a virtual key" })).toHaveTextContent("Widget key");
+    fireEvent.click(screen.getByRole("tab", { name: "对话 1" }));
+    expect(await screen.findByRole("region", { name: "创建虚拟密钥" })).toHaveTextContent("Widget key");
     expect(screen.getByText("First pending question")).toBeInTheDocument();
     expect(screen.queryByText("Second completed first.")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("tab", { name: "Chat 2" }));
-    expect(screen.getByPlaceholderText("Ask LiteAdmin…")).toHaveValue("Keep typing in the second chat");
+    fireEvent.click(screen.getByRole("tab", { name: "对话 2" }));
+    expect(screen.getByPlaceholderText("向 LiteAdmin 提问…")).toHaveValue("Keep typing in the second chat");
     expect(screen.getByText("Second completed first.")).toBeInTheDocument();
     expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(0);
   });
@@ -463,42 +468,42 @@ describe("LiteAdmin in the gateway", () => {
     renderWidget();
     await openWidget();
     send("Propose a first key");
-    await screen.findByRole("button", { name: "Confirm change" });
-    fireEvent.click(screen.getByRole("button", { name: "New chat" }));
+    await screen.findByRole("button", { name: "确认改动" });
+    fireEvent.click(screen.getByRole("button", { name: "新建对话" }));
     await selectModel();
-    expect(screen.queryByRole("button", { name: "Confirm change" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "确认改动" })).not.toBeInTheDocument();
     send("Read in the second chat");
     await screen.findByText("Second chat is usable.");
-    fireEvent.click(screen.getByRole("tab", { name: "Chat 1" }));
-    expect(screen.getByRole("region", { name: "Create a virtual key" })).toHaveTextContent("Widget key");
-    fireEvent.click(screen.getByRole("tab", { name: "Chat 2" }));
-    fireEvent.click(screen.getByRole("button", { name: "Close Chat 1" }));
-    expect(screen.queryByRole("tab", { name: "Chat 1" })).not.toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Chat 2" })).toHaveAttribute("aria-selected", "true");
+    fireEvent.click(screen.getByRole("tab", { name: "对话 1" }));
+    expect(screen.getByRole("region", { name: "创建虚拟密钥" })).toHaveTextContent("Widget key");
+    fireEvent.click(screen.getByRole("tab", { name: "对话 2" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭对话 1" }));
+    expect(screen.queryByRole("tab", { name: "对话 1" })).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "对话 2" })).toHaveAttribute("aria-selected", "true");
     expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(0);
 
     send("Create the second chat key");
-    fireEvent.click(await screen.findByRole("button", { name: "Confirm change" }));
+    fireEvent.click(await screen.findByRole("button", { name: "确认改动" }));
     await waitFor(() => expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(1));
-    expect(screen.getByRole("button", { name: "Close Chat 2" })).toBeDisabled();
-    fireEvent.click(screen.getByRole("button", { name: "Close Chat 2" }));
-    expect(screen.getByRole("tab", { name: "Chat 2" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("button", { name: "New chat" })).toBeEnabled();
-    fireEvent.click(screen.getByRole("button", { name: "New chat" }));
-    expect(screen.getByRole("button", { name: "Close Chat 2" })).toBeDisabled();
-    fireEvent.click(screen.getByRole("button", { name: "Close Chat 2" }));
-    expect(screen.getByRole("tab", { name: "Chat 2" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "关闭对话 2" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "关闭对话 2" }));
+    expect(screen.getByRole("tab", { name: "对话 2" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("button", { name: "新建对话" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "新建对话" }));
+    expect(screen.getByRole("button", { name: "关闭对话 2" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "关闭对话 2" }));
+    expect(screen.getByRole("tab", { name: "对话 2" })).toBeInTheDocument();
     await selectModel();
     send("Read while the other tab writes");
     await screen.findByText("Third chat is usable.");
     await act(async () => response.resolve(json({ key: NEW_KEY })));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Close Chat 2" })).toBeEnabled());
-    expect(screen.getByRole("tab", { name: "Chat 3" })).toHaveAttribute("aria-selected", "true");
+    await waitFor(() => expect(screen.getByRole("button", { name: "关闭对话 2" })).toBeEnabled());
+    expect(screen.getByRole("tab", { name: "对话 3" })).toHaveAttribute("aria-selected", "true");
     expect(screen.queryByText(NEW_KEY)).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("tab", { name: "Chat 2" }));
+    fireEvent.click(screen.getByRole("tab", { name: "对话 2" }));
     expect(await screen.findByText("Second chat write completed.")).toBeInTheDocument();
     expect(screen.getByText(NEW_KEY)).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "Create a virtual key" })).toHaveTextContent("Completed");
+    expect(screen.getByRole("region", { name: "创建虚拟密钥" })).toHaveTextContent("已完成");
     expect(requests.filter((request) => request.url.endsWith("/key/generate")).map((request) => request.body)).toEqual([
       { key_alias: "Second chat key", team_id: "team-1", max_budget: 40 },
     ]);
@@ -515,34 +520,34 @@ describe("LiteAdmin in the gateway", () => {
     await waitFor(() =>
       expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(1),
     );
-    fireEvent.click(screen.getByRole("button", { name: "New chat" }));
+    fireEvent.click(screen.getByRole("button", { name: "新建对话" }));
     await selectModel();
     send("Second pending question");
     await waitFor(() =>
       expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(2),
     );
     const pending = requests.filter((request) => request.url.endsWith("/chat/completions"));
-    fireEvent.click(screen.getByRole("button", { name: "Close Chat 1" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭对话 1" }));
     await waitFor(() => expect(pending[0].signal.aborted).toBe(true));
     expect(pending[1].signal.aborted).toBe(false);
-    expect(screen.getByRole("tab", { name: "Chat 2" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "对话 2" })).toHaveAttribute("aria-selected", "true");
     await act(async () => first.resolve(toolReply("key_create", keyArguments)));
-    expect(screen.queryByRole("button", { name: "Confirm change" })).not.toBeInTheDocument();
-    expect(screen.getByRole("status", { name: "LiteAdmin is working" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "确认改动" })).not.toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "LiteAdmin 正在处理" })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "New chat" }));
+    fireEvent.click(screen.getByRole("button", { name: "新建对话" }));
     await selectModel();
     send("Third question");
     await screen.findByText("Third answer.");
-    fireEvent.click(screen.getByRole("button", { name: "Close Chat 3" }));
-    expect(screen.getByRole("tab", { name: "Chat 2" })).toHaveAttribute("aria-selected", "true");
+    fireEvent.click(screen.getByRole("button", { name: "关闭对话 3" }));
+    expect(screen.getByRole("tab", { name: "对话 2" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByText("Second pending question")).toBeInTheDocument();
     expect(pending[1].signal.aborted).toBe(false);
-    fireEvent.click(screen.getByRole("button", { name: "Close Chat 2" }));
+    fireEvent.click(screen.getByRole("button", { name: "关闭对话 2" }));
     await waitFor(() => expect(pending[1].signal.aborted).toBe(true));
-    expect(within(screen.getByRole("tablist", { name: "LiteAdmin chats" })).getAllByRole("tab")).toHaveLength(1);
-    expect(screen.getByRole("tab", { name: "Chat 4" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByPlaceholderText("Ask LiteAdmin…")).toHaveValue("");
+    expect(within(screen.getByRole("tablist", { name: "LiteAdmin 对话列表" })).getAllByRole("tab")).toHaveLength(1);
+    expect(screen.getByRole("tab", { name: "对话 4" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByPlaceholderText("向 LiteAdmin 提问…")).toHaveValue("");
     expect(screen.queryByRole("button", { name: "Stop request" })).not.toBeInTheDocument();
     await act(async () => second.resolve(answer("Late closed answer.")));
     expect(screen.queryByText("Late closed answer.")).not.toBeInTheDocument();
@@ -561,24 +566,24 @@ describe("LiteAdmin in the gateway", () => {
     const options: GatewayOptions = { models: [] };
     const requests = gateway([], options);
     const { client } = renderWidget(undefined, true);
-    const home = await screen.findByRole("region", { name: "Ask LiteAdmin" });
-    expect(await within(home).findByText("Add a chat model to your gateway to use LiteAdmin.")).toBeInTheDocument();
-    expect(within(home).getByPlaceholderText("What would you like to do?")).toBeDisabled();
-    expect(within(home).getByRole("button", { name: "Send message" })).toBeDisabled();
+    const home = await screen.findByRole("region", { name: "向 LiteAdmin 提问" });
+    expect(await within(home).findByText("请为您的网关添加一个对话模型后才能使用 LiteAdmin。")).toBeInTheDocument();
+    expect(within(home).getByPlaceholderText("你想做点什么？")).toBeDisabled();
+    expect(within(home).getByRole("button", { name: "发送消息" })).toBeDisabled();
     options.models = [{ model_group: "chat-model", mode: "chat" }];
     await act(async () => client.invalidateQueries({ queryKey: ["liteadmin-models"] }));
     await selectModel();
     for (const text of ["   ", "x".repeat(MAX_INPUT_LENGTH + 1)]) {
-      const input = within(home).getByPlaceholderText("What would you like to do?");
+      const input = within(home).getByPlaceholderText("你想做点什么？");
       fireEvent.change(input, { target: { value: text } });
       fireEvent.keyDown(input, { key: "Enter" });
-      const submit = within(home).getByRole("button", { name: "Send message" });
+      const submit = within(home).getByRole("button", { name: "发送消息" });
       expect(submit).toBeDisabled();
       fireEvent.click(submit);
       expect(input).toHaveValue(text);
     }
     expect(home).toBeVisible();
-    expect(within(home).getByRole("alert")).toHaveTextContent("8,000 characters");
+    expect(within(home).getByRole("alert")).toHaveTextContent("消息请控制在 8,000 字符以内。");
     expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
     expect(requests.filter((request) => request.url.endsWith("/chat/completions"))).toHaveLength(0);
   });
@@ -593,22 +598,22 @@ describe("LiteAdmin in the gateway", () => {
       },
     });
     const { client } = renderWidget(undefined, true);
-    const home = await screen.findByRole("region", { name: "Ask LiteAdmin" });
-    expect(await within(home).findByLabelText("Loading gateway settings")).toBeInTheDocument();
+    const home = await screen.findByRole("region", { name: "向 LiteAdmin 提问" });
+    expect(await within(home).findByLabelText("正在加载网关设置")).toBeInTheDocument();
     await act(async () => settingsReady.resolve());
-    const consent = await within(home).findByRole("button", { name: "Use configured gateway" });
+    const consent = await within(home).findByRole("button", { name: "使用已配置的网关" });
     expect(within(home).getByText(EXTERNAL_INFERENCE)).toBeInTheDocument();
-    expect(within(home).queryByPlaceholderText("What would you like to do?")).not.toBeInTheDocument();
+    expect(within(home).queryByPlaceholderText("你想做点什么？")).not.toBeInTheDocument();
     fireEvent.click(consent);
     await selectModel();
-    fireEvent.change(within(home).getByPlaceholderText("What would you like to do?"), {
+    fireEvent.change(within(home).getByPlaceholderText("你想做点什么？"), {
       target: { value: "Old gateway draft" },
     });
     settings.target = `${EXTERNAL_INFERENCE}/changed`;
     await act(async () => client.invalidateQueries({ queryKey: ["proxySettings"] }));
-    fireEvent.click(await within(home).findByRole("button", { name: "Use configured gateway" }));
+    fireEvent.click(await within(home).findByRole("button", { name: "使用已配置的网关" }));
     await selectModel();
-    expect(within(home).getByPlaceholderText("What would you like to do?")).toHaveValue("");
+    expect(within(home).getByPlaceholderText("你想做点什么？")).toHaveValue("");
     expect(home).toBeVisible();
     expect(requests.some((request) => request.url.endsWith("/chat/completions"))).toBe(false);
   });
@@ -627,7 +632,7 @@ describe("LiteAdmin in the gateway", () => {
     await user.click(toggle);
     expect(toggle).toBeChecked();
     expect(screen.queryByRole("button", { name: "LiteAdmin" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("region", { name: "Ask LiteAdmin", hidden: true })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "向 LiteAdmin 提问", hidden: true })).not.toBeInTheDocument();
 
     view.unmount();
     const restored = renderWidget(Menu, true);
@@ -639,13 +644,13 @@ describe("LiteAdmin in the gateway", () => {
     expect(savedToggle).toBeChecked();
     await user.click(savedToggle);
     expect(await screen.findByRole("button", { name: "LiteAdmin" })).toBeInTheDocument();
-    expect(await screen.findByRole("region", { name: "Ask LiteAdmin" })).toBeVisible();
+    expect(await screen.findByRole("region", { name: "向 LiteAdmin 提问" })).toBeVisible();
 
     for (const premiumUser of [false, null, undefined, "true"]) {
       session("proxy_admin", "first-admin", { premium_user: premiumUser });
       restored.refresh();
-      expect(screen.getByRole("switch", { name: "Toggle hide all prompts" })).toBeInTheDocument();
-      expect(screen.queryByRole("switch", { name: "Toggle hide LiteAdmin" })).not.toBeInTheDocument();
+      expect(screen.getByRole("switch", { name: "切换隐藏所有提示" })).toBeInTheDocument();
+      expect(screen.queryByRole("switch", { name: "切换隐藏 LiteAdmin" })).not.toBeInTheDocument();
     }
   });
 
@@ -658,7 +663,7 @@ describe("LiteAdmin in the gateway", () => {
       await screen.findByText("Session ready");
       await waitFor(() => expect(client.isFetching()).toBe(0));
       expect(screen.queryByRole("button", { name: "LiteAdmin" })).not.toBeInTheDocument();
-      expect(screen.queryByRole("region", { name: "Ask LiteAdmin", hidden: true })).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "向 LiteAdmin 提问", hidden: true })).not.toBeInTheDocument();
       for (const modifiers of [{ metaKey: true }, { ctrlKey: true }]) {
         expect(fireEvent.keyDown(document, { key: "j", ...modifiers })).toBe(true);
         expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
@@ -671,7 +676,9 @@ describe("LiteAdmin in the gateway", () => {
     const requests = gateway([]);
     const view = renderWidget();
     await openWidget();
-    fireEvent.change(screen.getByPlaceholderText("Ask LiteAdmin…"), { target: { value: "Previous enterprise draft" } });
+    fireEvent.change(screen.getByPlaceholderText("向 LiteAdmin 提问…"), {
+      target: { value: "Previous enterprise draft" },
+    });
     await waitFor(() => expect(view.client.isFetching()).toBe(0));
     const requestCount = requests.length;
 
@@ -691,7 +698,7 @@ describe("LiteAdmin in the gateway", () => {
     expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
     fireEvent.keyDown(document, { key: "j", ctrlKey: true });
     expect(await screen.findByRole("complementary", { name: "LiteAdmin" })).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Ask LiteAdmin…")).toHaveValue("");
+    expect(screen.getByPlaceholderText("向 LiteAdmin 提问…")).toHaveValue("");
   });
 
   it("isolates Hide LiteAdmin by admin and gateway and reacts to another tab clearing it", async () => {
@@ -746,8 +753,8 @@ describe("LiteAdmin in the gateway", () => {
     const user = userEvent.setup();
     renderWidget(SidebarAccountMenu);
     await screen.findByRole("button", { name: "LiteAdmin" });
-    await user.click(screen.getByRole("button", { name: /account menu/i }));
-    const toggle = await screen.findByRole("switch", { name: "Toggle hide LiteAdmin" });
+    await user.click(screen.getByRole("button", { name: /账户菜单/ }));
+    const toggle = await screen.findByRole("switch", { name: "切换隐藏 LiteAdmin" });
     fireEvent.keyDown(document, { key: "j", metaKey: true });
     expect(await screen.findByRole("complementary", { name: "LiteAdmin" })).toBeInTheDocument();
     await user.click(toggle);
@@ -765,13 +772,13 @@ describe("LiteAdmin in the gateway", () => {
     expect(screen.getByRole("complementary", { name: "LiteAdmin" })).toHaveFocus();
     await selectModel();
     const reopen = () => {
-      fireEvent.click(screen.getByRole("button", { name: "Close LiteAdmin" }));
+      fireEvent.click(screen.getByRole("button", { name: "关闭 LiteAdmin" }));
       fireEvent.click(screen.getByRole("button", { name: "LiteAdmin" }));
     };
     reopen();
-    expect(await screen.findByPlaceholderText("Ask LiteAdmin…")).toHaveFocus();
+    expect(await screen.findByPlaceholderText("向 LiteAdmin 提问…")).toHaveFocus();
     send("Create a key for the team");
-    const review = await screen.findByRole("region", { name: "Create a virtual key" });
+    const review = await screen.findByRole("region", { name: "创建虚拟密钥" });
     reopen();
     await waitFor(() => expect(review).toHaveFocus());
   });
@@ -788,11 +795,11 @@ describe("LiteAdmin in the gateway", () => {
     expect(screen.getByRole("button", { name: "LiteAdmin" })).toHaveAttribute("aria-expanded", "true");
     fireEvent.keyDown(document, { key: "j", ctrlKey: true });
     expect(screen.queryByRole("complementary", { name: "LiteAdmin" })).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /account menu/i }));
-    await user.click(await screen.findByRole("switch", { name: "Toggle hide LiteAdmin" }));
+    await user.click(screen.getByRole("button", { name: /账户菜单/ }));
+    await user.click(await screen.findByRole("switch", { name: "切换隐藏 LiteAdmin" }));
     expect(screen.queryByRole("button", { name: "LiteAdmin" })).not.toBeInTheDocument();
     fireEvent.keyDown(document, { key: "j", metaKey: true });
-    expect(screen.queryByPlaceholderText("Ask LiteAdmin…")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("向 LiteAdmin 提问…")).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "LiteAdmin" })).not.toBeInTheDocument();
   });
 
@@ -805,7 +812,7 @@ describe("LiteAdmin in the gateway", () => {
       await screen.findByText("Session ready");
       await waitFor(() => expect(client.isFetching()).toBe(0));
       expect(screen.queryByRole("button", { name: "LiteAdmin" })).not.toBeInTheDocument();
-      expect(screen.queryByRole("region", { name: "Ask LiteAdmin", hidden: true })).not.toBeInTheDocument();
+      expect(screen.queryByRole("region", { name: "向 LiteAdmin 提问", hidden: true })).not.toBeInTheDocument();
       expect(requests.every((request) => request.url.endsWith("/litellm-ui-config"))).toBe(true);
     },
   );
@@ -848,7 +855,7 @@ describe("LiteAdmin in the gateway", () => {
     });
     const { client } = renderWidget();
     fireEvent.click(await screen.findByRole("button", { name: "LiteAdmin" }));
-    await waitFor(() => expect(screen.getByPlaceholderText("Ask LiteAdmin…")).toBeEnabled());
+    await waitFor(() => expect(screen.getByPlaceholderText("向 LiteAdmin 提问…")).toBeEnabled());
     send("Use the default");
     await screen.findByText("Default selected.");
     expect(requests.find((request) => request.url.endsWith("/chat/completions"))?.body.model).toBe(
@@ -871,17 +878,16 @@ describe("LiteAdmin in the gateway", () => {
     await openWidget();
     send("Remove the key from its team");
     const review = await screen.findByRole("region", {
-      name: "Remove a virtual key from its team without deleting the key",
+      name: "从团队移除虚拟密钥但不删除该密钥",
     });
-    expect(review).toHaveTextContent("team id");
-    expect(review).toHaveTextContent("null");
-    fireEvent.click(within(review).getByRole("button", { name: "Cancel" }));
-    await screen.findByText("Cancelled");
+    expect(review).toHaveTextContent("key");
+    fireEvent.click(within(review).getByRole("button", { name: "取消" }));
+    await screen.findByText("已取消");
     expect(requests.filter((request) => request.url.endsWith("/key/update"))).toHaveLength(0);
     send("Detach it now");
-    fireEvent.click(await screen.findByRole("button", { name: "Confirm change" }));
+    fireEvent.click(await screen.findByRole("button", { name: "确认改动" }));
     await screen.findByText("Detached the key.");
-    expect(screen.getByText("Completed")).toBeInTheDocument();
+    expect(screen.getByText("已完成")).toBeInTheDocument();
     expect(requests.filter((request) => request.url.endsWith("/key/update")).map(({ body }) => body)).toEqual([
       { key, team_id: null },
     ]);
@@ -897,7 +903,7 @@ describe("LiteAdmin in the gateway", () => {
     await openWidget();
     send("Create a key for the team");
     const review = await screen.findByRole("region", { name: "创建虚拟密钥" });
-    expect(screen.getAllByRole("dialog")).toHaveLength(1);
+    expect(screen.getAllByRole("complementary", { name: "LiteAdmin" })).toHaveLength(1);
     expect(requests.filter((request) => request.url.endsWith("/key/generate"))).toHaveLength(0);
     expect(within(review).getByText("Widget key")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "关闭 LiteAdmin" }));

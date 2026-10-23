@@ -271,6 +271,7 @@ function LiteAdminChats({ session, open, close }: { session: LiteAdminSession; o
   });
   const reviewRef = useRef<HTMLDivElement>(null);
   const activeTabRef = useRef<HTMLButtonElement>(null);
+  const activeApplying = tabs.chats.some((chat) => chat.id === tabs.activeId && chat.phase === "applying");
   const focusAfterClose = useRef(false);
   useLayoutEffect(() => {
     if (!focusAfterClose.current) return;
@@ -318,7 +319,14 @@ function LiteAdminChats({ session, open, close }: { session: LiteAdminSession; o
     >
       <Panel open={open} initialFocus={reviewRef} composer={null}>
         <PanelHeader close={close}>
-          <Button variant="ghost" size="icon-sm" aria-label={t("newChat")} title={t("newChat")} onClick={addChat}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label={t("newChat")}
+            title={t("newChat")}
+            onClick={addChat}
+            disabled={activeApplying}
+          >
             <Plus className="size-4" />
           </Button>
         </PanelHeader>
@@ -332,17 +340,17 @@ function LiteAdminChats({ session, open, close }: { session: LiteAdminSession; o
                 ref={tabs.activeId === tab.id ? activeTabRef : undefined}
                 value={tab.id}
                 aria-label={t("chatLabel", { id: tab.id })}
-                title={tab.phase === "review" ? "Approval needed" : undefined}
+                title={tab.phase === "review" ? t("approvalNeeded") : undefined}
                 className="h-8 flex-none"
               >
-                Chat {tab.id}
+                {t("chatLabel", { id: tab.id })}
                 {tab.phase !== "idle" && <span aria-hidden className="size-1.5 rounded-full bg-info" />}
               </TabsTrigger>
               <Button
                 variant="ghost"
                 size="icon-xs"
-                aria-label={`Close Chat ${tab.id}`}
-                title={tab.phase === "applying" ? "Wait for this change to finish" : `Close Chat ${tab.id}`}
+                aria-label={t("closeChatLabel", { id: tab.id })}
+                title={tab.phase === "applying" ? t("waitForChange") : t("closeChatLabel", { id: tab.id })}
                 disabled={tab.phase === "applying"}
                 onClick={() => closeChat(tab.id)}
               >

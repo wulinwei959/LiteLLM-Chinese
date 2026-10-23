@@ -11828,7 +11828,10 @@
       "ariaLabel": "给 LiteAdmin 发消息",
       "stopAriaLabel": "停止请求",
       "sendAriaLabel": "发送消息"
-    }
+    },
+    "closeChatLabel": "关闭对话 {id}",
+    "approvalNeeded": "需要审批",
+    "waitForChange": "请等待此更改完成"
   },
   "modelGroupAlias": {
     "saveFailed": "保存模型组别名设置失败",

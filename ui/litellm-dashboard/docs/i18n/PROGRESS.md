@@ -4615,3 +4615,10 @@ CreateMCPServer、mcp_server_edit 的限额/RPM 占位与 EnvVarsSection 的变�
 测试：三文件占位断言翻面；EnvVarsSection 4 例、CreateMCPServer 集成全绿，mcp-servers 三文件 159 例通过。mcp_server_edit 仍有 4 例红（blocks Save×2、OAuth snapshot×2），与第 440 簇登记的保存按钮行为缺口同源，非本簇引入。
 
 验证：AST 三文件仅剩 URL 示例；全局可见英文 212→206 条、111→110 个文件；目录叶子 11654→11659，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、26 警为 HEAD 既有；prettier 新增行合规，mcp_server_edit HEAD 既有脏格式不动；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 457 簇：LiteAdmin 测试基线修复与页签文案接线
+
+此前 LiteAdmin 集成测试 45 例中 20 例超时全红，根因是合并丢失测试装置与英文断言并存。本簇修复测试装置：renderWidget 补回 `LiteAdminFrame` 包裹、`LiteAdminHome` 条件渲染、占位页面挂载；`selectModel(model)` 恢复参数使用；`send()` 在面板关闭时改走首页输入框。组件侧页签可见文本接 `chatLabel`，关闭按钮与提示接新增 `liteAdmin.closeChatLabel`/`approvalNeeded`/`waitForChange`；活动页签处于 applying 时禁用新建对话。测试断言按 zh 目录全面翻面，含操作标题（创建虚拟密钥/从团队移除虚拟密钥但不删除该密钥）、状态（已完成/已取消）、首页占位、账户菜单与网关按钮等。
+
+结果：45 例中 44 例通过。唯一剩余 `cancels only a closed tab's approval...` 与 `keeps a single inline action...` 对"应用中是否禁用新建对话"预期相反；保留更安全的禁用行为，该例登记为行为分歧，非翻译问题。基线从 20 红降到 1 红。
+
+验证：AST 组件仅剩 ⌘J 快捷键与品牌 aria；全局可见英文 206→205 条、文件维持 110 个；目录叶子 11659→11662，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、1 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。

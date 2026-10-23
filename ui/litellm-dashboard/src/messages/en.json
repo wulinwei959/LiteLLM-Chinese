@@ -11832,7 +11832,10 @@
       "ariaLabel": "Message LiteAdmin",
       "stopAriaLabel": "Stop request",
       "sendAriaLabel": "Send message"
-    }
+    },
+    "closeChatLabel": "Close Chat {id}",
+    "approvalNeeded": "Approval needed",
+    "waitForChange": "Wait for this change to finish"
   },
   "modelGroupAlias": {
     "saveFailed": "Failed to save model group alias settings",
