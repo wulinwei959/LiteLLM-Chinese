@@ -1,9 +1,20 @@
 import { act, fireEvent, waitFor, screen } from "@testing-library/react";
 import { renderWithProviders } from "../../../tests/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useFormContext } from "react-hook-form";
+
 import { MountedFormHost } from "../../../tests/mounted-form-host";
 import type { MountedFormValues } from "../common_components/MountedFormField";
 import AdvancedSettings from "./advanced_settings";
+
+const KubernetesPodDiscoveryValue = () => {
+  const { watch } = useFormContext<MountedFormValues>();
+  return (
+    <output role="status" aria-label="Kubernetes pod discovery form value">
+      {String(watch("kubernetes_pod_discovery") ?? false)}
+    </output>
+  );
+};
 
 const mockUsePtuCostAttributionEnabled = vi.fn();
 
@@ -13,7 +24,7 @@ vi.mock("@/app/(dashboard)/hooks/uiSettings/usePtuCostAttributionEnabled", () =>
 
 const PTU_LABELS = ["PTU 数量", "计算的 PTU 每小时成本 (USD)", "PTU 生效起始时间 (UTC)"];
 
-const renderAdvancedSettings = () =>
+const renderAdvancedSettings = (includeDiscoveryValue = false) =>
   renderWithProviders(
     <MountedFormHost>
       <AdvancedSettings
@@ -40,7 +51,7 @@ describe("AdvancedSettings", () => {
   it("updates the Kubernetes pod discovery form value when enabled", async () => {
     renderAdvancedSettings(true);
     act(() => {
-      fireEvent.click(screen.getByText("Advanced Settings"));
+      fireEvent.click(screen.getByText("高级设置"));
     });
 
     const toggle = await screen.findByRole("switch", { name: "Kubernetes pod discovery" });
@@ -75,12 +86,13 @@ describe("AdvancedSettings", () => {
   it("offers both cache write tiers once custom pricing is on", async () => {
     renderAdvancedSettings();
     act(() => {
-      fireEvent.click(screen.getByText("Advanced Settings"));
+      fireEvent.click(screen.getByText("高级设置"));
     });
-    fireEvent.click(await screen.findByRole("switch", { name: "Custom Pricing" }));
+    fireEvent.click(await screen.findByRole("switch", { name: "自定义定价" }));
 
-    expect(await screen.findByLabelText(/^Cache Write Cost \(per 1M tokens\)/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^Cache Write Cost \(1 hour, per 1M tokens\)/)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/^缓存写入成本（每百万 Token）/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^缓存写入成本（1 小时，每百万 Token）/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("默认使用成本表 1 小时费率，否则使用缓存写入成本")).toBeInTheDocument();
   });
 
   it("hides every PTU field when PTU cost attribution is disabled", async () => {

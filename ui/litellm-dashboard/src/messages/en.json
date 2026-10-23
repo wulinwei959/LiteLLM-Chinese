@@ -1703,7 +1703,10 @@
       "localHeuristicLabel": "Heuristic before the judge",
       "heuristicV1Label": "Heuristic v1 (rule-based)",
       "heuristicV1Detail": "Score requests using configurable weights and keywords",
-      "heuristicV2Detail": "Choose a tier using calibrated success probabilities"
+      "heuristicV2Detail": "Choose a tier using calibrated success probabilities",
+      "cacheWriteCostAbove1hr": "Cache Write Cost (1 hour, per 1M tokens)",
+      "cacheWriteCostAbove1hrHint": "Rate for prompt cache writes with a 1 hour TTL (Anthropic's cache_control ttl 1h). If left blank, known models use their cost map 1 hour rate, otherwise Cache Write Cost.",
+      "cacheWriteCostAbove1hrPlaceholder": "Defaults to the cost map 1 hour rate, else Cache Write Cost"
     },
     "health": {
       "title": "Health Status",

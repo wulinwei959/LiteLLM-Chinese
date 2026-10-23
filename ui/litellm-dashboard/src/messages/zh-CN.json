@@ -1703,7 +1703,10 @@
       "localHeuristicLabel": "评审前的启发式",
       "heuristicV1Label": "启发式 v1（基于规则）",
       "heuristicV1Detail": "使用可配置的权重与关键词为请求打分",
-      "heuristicV2Detail": "使用校准后的成功概率选择档位"
+      "heuristicV2Detail": "使用校准后的成功概率选择档位",
+      "cacheWriteCostAbove1hr": "缓存写入成本（1 小时，每百万 Token）",
+      "cacheWriteCostAbove1hrHint": "TTL 为 1 小时的提示缓存写入费率（Anthropic 的 cache_control ttl 1h）。留空时，已知模型使用成本表的 1 小时费率，否则使用缓存写入成本。",
+      "cacheWriteCostAbove1hrPlaceholder": "默认使用成本表 1 小时费率，否则使用缓存写入成本"
     },
     "health": {
       "title": "健康状态",

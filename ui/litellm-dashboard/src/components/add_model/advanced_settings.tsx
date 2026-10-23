@@ -382,10 +382,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                     </MountedFormField>
                     <MountedFormField
                       name="cache_creation_input_token_cost_above_1hr"
-                      label={labelWithHint(
-                        "Cache Write Cost (1 hour, per 1M tokens)",
-                        "Rate for prompt cache writes with a 1 hour TTL (Anthropic's cache_control ttl 1h). If left blank, known models use their cost map 1 hour rate, otherwise Cache Write Cost.",
-                      )}
+                      label={labelWithHint(t("cacheWriteCostAbove1hr"), t("cacheWriteCostAbove1hrHint"))}
                       rules={usageCostRules(t)}
                       className="mb-4"
                     >
@@ -395,7 +392,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                           value={(control.value as string | undefined) ?? ""}
                           onChange={control.onChange}
                           onBlur={control.onBlur}
-                          placeholder="Defaults to the cost map 1 hour rate, else Cache Write Cost"
+                          placeholder={t("cacheWriteCostAbove1hrPlaceholder")}
                         />
                       )}
                     </MountedFormField>

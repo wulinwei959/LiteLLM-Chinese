@@ -4587,3 +4587,10 @@ FlowBuilderPage 标题旁的 "Flow" 徽标接 `policies.flowBadge`（zh "流程"
 BudgetTableColumns 的缺失限速值、budget_modal 与 edit_budget_modal 的周期下拉占位符由硬编码 "n/a" 改为 `common.notAvailable`（新增 en "n/a"、zh "不适用"），RateLimitCell 补 useTranslations。测试：BudgetTable 用例标题与断言翻成"不适用"，预算域 5 文件 49 例全绿。
 
 验证：AST 三文件归零；全局可见英文 228→225 条、121→118 个文件；目录叶子 11638→11639，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、3 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 453 簇：1 小时缓存写入成本文案与全红测试修复
+
+advanced_settings 的 1 小时 TTL 缓存写入项此前 label/hint/placeholder 三段硬编码英文，接 `models.addModel.cacheWriteCostAbove1hr`/`cacheWriteCostAbove1hrHint`/`cacheWriteCostAbove1hrPlaceholder`（zh "缓存写入成本（1 小时，每百万 Token）"及对应提示与占位）。同文件其余 `{ "mode": "chat" }`、`{ "rpm": ... }` 占位是 JSON 示例，保留。
+
+测试：该文件在 HEAD 上 7 例全红，根因是合并遗留的 `includeDiscoveryValue`/`KubernetesPodDiscoveryValue` 未定义；本簇补回基于 `useFormContext` 的状态输出组件与辅助函数参数，并把 "Advanced Settings"/"Custom Pricing" 与缓存标签断言翻面，另补 1 小时占位断言。7 例全绿。
+
+验证：AST 本文件仅剩两条 JSON 示例；全局可见英文 225→224 条、文件维持 118 个；目录叶子 11639→11642，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错；prettier clean；i18n 五条守卫 23 例全绿。
