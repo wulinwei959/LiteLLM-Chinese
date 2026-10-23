@@ -4817,3 +4817,7 @@ TeamInfo.integration 5 例转绿：编辑设置按钮的正则改"编辑设置"�
 ## 2026-10-24 第 479 簇：模型选择器的 Unavailable 分组
 
 `ModelSelect` 的"不再可选"分组标题是硬编码英文 `Unavailable`，新增 `modelSelect.unavailable`（不可用）并把标题作为参数传进模块级 `unavailableGroups`。目录插入时踩了一次坑：`noModelsFound` 在 `models.addModel` 与 `modelSelect` 里同名同值，按行内值定位把键插进了前者，测试仍渲染原始键名才暴露，改成先定位 `modelSelect` 块再插。测试把 "All Proxy Models"、"No Default Models"、"Unavailable" 与 "All {provider} models" 的断言同步成目录中文（"所有代理模型"、"无默认模型"、"不可用"、"所有 Openai 模型"），ModelSelect 测试全绿。
+
+## 2026-10-24 第 480 簇：文案类失败逐个击破（模型信息、Moyai 落地页）
+
+model_info_view 2 例转绿：每分辨率价格走 `models.pricingSummary.outputTier`（输出（{resolution}）：{cost}），"Input:"/"Output:" 断言改"输入："/"输出："。MoyaiLanding 3 例转绿："Ask a proxy admin to connect it" 对应 `moyai.alreadyDeployedHint`，演示图的链接名实际取 `moyai.fullWalkthrough`（在 GitHub 上看完整教程，不是 watchDemoOnGithub），alt 与发布文章链接按 `demoAlt`/`readLaunchPost` 翻面。key_info_view 的 `of $20.00` 改"上限 $20.00"（`virtualKeys.info.ofBudget`），团队预算那条仍未通过：fixture 里 `max_budget: null` 且给了 `team_member_budget_table`，但生产侧 `teamMemberBudgetGate` 没拿到成员预算，需要下一轮查 `useTeamMemberBudgets` 的取值路径。

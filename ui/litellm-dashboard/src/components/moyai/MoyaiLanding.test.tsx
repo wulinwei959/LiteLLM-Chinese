@@ -34,7 +34,7 @@ describe("MoyaiLanding", () => {
   it("shows the non-admin copy when quick connect is unavailable", () => {
     renderWithProviders(<MoyaiLanding />);
 
-    expect(screen.getByText(/Ask a proxy admin to connect it/)).toBeInTheDocument();
+    expect(screen.getByText(/让代理管理员来连接它/)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "快速连接" })).not.toBeInTheDocument();
   });
 
@@ -42,16 +42,16 @@ describe("MoyaiLanding", () => {
     renderWithProviders(<MoyaiLanding />);
 
     expect(screen.getByRole("link", { name: /Star Moyai on GitHub/ })).toHaveAttribute("href", MOYAI_GITHUB_URL);
-    expect(screen.getByRole("link", { name: /Watch the demo/ })).toHaveAttribute("href", MOYAI_WALKTHROUGH_URL);
-    expect(screen.getByRole("link", { name: /Read the launch post/ })).toHaveAttribute("href", MOYAI_LAUNCH_POST_URL);
+    expect(screen.getByRole("link", { name: /在 GitHub 上看完整教程/ })).toHaveAttribute("href", MOYAI_WALKTHROUGH_URL);
+    expect(screen.getByRole("link", { name: /读发布文章/ })).toHaveAttribute("href", MOYAI_LAUNCH_POST_URL);
   });
 
   it("shows the GitHub fallback when the demo image fails to load", () => {
     renderWithProviders(<MoyaiLanding />);
 
-    const demoImg = screen.getByAltText(/Moyai demo:/);
+    const demoImg = screen.getByAltText(/Moyai 演示：/);
     fireEvent.error(demoImg);
 
-    expect(screen.getByText("Watch the demo on GitHub")).toBeInTheDocument();
+    expect(screen.getByText("在 GitHub 上观看演示")).toBeInTheDocument();
   });
 });

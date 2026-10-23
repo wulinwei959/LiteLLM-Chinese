@@ -582,9 +582,9 @@ describe("ModelInfoView", () => {
 
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
-    expect(await screen.findByText("Output: $0.10/s")).toBeInTheDocument();
-    expect(screen.getByText("Output (1080p): $0.12/s")).toBeInTheDocument();
-    expect(screen.getByText("Output (4k): $0.30/s")).toBeInTheDocument();
+    expect(await screen.findByText("输出：$0.10/s")).toBeInTheDocument();
+    expect(screen.getByText("输出（1080p）：$0.12/s")).toBeInTheDocument();
+    expect(screen.getByText("输出（4k）：$0.30/s")).toBeInTheDocument();
     expect(screen.queryByText(/\$0\.00\/1M tokens/)).not.toBeInTheDocument();
   });
 
@@ -1452,8 +1452,8 @@ describe("ModelInfoView", () => {
   it("should display pricing information", async () => {
     renderWithProviders(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText(/Input:/)).toBeInTheDocument();
-      expect(screen.getByText(/Output:/)).toBeInTheDocument();
+      expect(screen.getByText(/输入：/)).toBeInTheDocument();
+      expect(screen.getByText(/输出：/)).toBeInTheDocument();
     });
   });
 
