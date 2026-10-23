@@ -49,7 +49,7 @@ const createMockKey = (overrides: Partial<KeyResponse> = {}): KeyResponse =>
     key_name: "sk-...abc",
     user_id: "user-1",
     organization_id: null,
-    user: { user_id: "user-1", user_email: "alice@example.com" },
+    user: { user_id: "user-1", user_email: "alice@example.com", user_alias: null },
     created_at: "2024-01-01T00:00:00Z",
     team_id: "team-1",
     spend: 0,
@@ -465,7 +465,10 @@ describe("TeamVirtualKeysTable", () => {
 
     it("points the User Email and User ID cells at the owning user's detail page", async () => {
       const row = await renderRow(
-        createMockKey({ user_id: "user-1", user: { user_id: "user-1", user_email: "alice@example.com" } }),
+        createMockKey({
+          user_id: "user-1",
+          user: { user_id: "user-1", user_email: "alice@example.com", user_alias: null },
+        }),
       );
       expect(within(row).getByRole("link", { name: "alice@example.com" })).toHaveAttribute(
         "href",

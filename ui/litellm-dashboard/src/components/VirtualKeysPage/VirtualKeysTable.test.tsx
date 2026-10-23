@@ -1,15 +1,13 @@
-import { act, screen, waitFor, within, fireEvent } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { screen, fireEvent } from "@testing-library/react";
 import type { OnUrlUpdateFunction } from "nuqs/adapters/testing";
 import { vi, it, expect, beforeEach, describe, Mock, MockedFunction } from "vitest";
-import { chooseSelectOption, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
+import { renderWithProviders } from "../../../tests/test-utils";
 import { VirtualKeysTable } from "./VirtualKeysTable";
-import { KEY_TABLE_HIDDEN_COLUMNS, KEY_TABLE_SORT_FIELDS } from "./keyTableColumns";
 import { KeyResponse, Team } from "../key_team_helpers/key_list";
 import { useKeyInfo } from "@/app/(dashboard)/hooks/keys/useKeyInfo";
 import { KeysResponse, useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
-import { regenerateKeyCall, teamInfoCall } from "../networking";
+import { teamInfoCall } from "../networking";
 
 // Mock next-intl translations for tests
 const mockTranslations: Record<string, string> = {
@@ -70,11 +68,6 @@ const mockTranslations: Record<string, string> = {
   "virtualKeys.blocked": "Blocked",
   "virtualKeys.deleted": "Deleted",
   "virtualKeys.allStatuses": "All statuses",
-  "virtualKeys.statusBlockedScimTooltip": "Blocked by SCIM (external identity provider deactivated or deleted the owning user).",
-  "virtualKeys.statusBlockedTooltip": "Blocked. Requests using this key will be rejected with 401.",
-  "virtualKeys.statusExpiredTooltip": "This key has passed its expiry date.",
-  "virtualKeys.statusActiveTooltip": "This key is not blocked and has not expired.",
-  "virtualKeys.statusDeletedTooltip": "Deleted {date}{by}. Kept for audit and spend history; requests using this key are rejected.",
 };
 
 vi.mock("next-intl", () => ({
@@ -342,6 +335,7 @@ beforeEach(() => {
 
   mockUseTeams.mockReturnValue({
     teams: [mockTeam],
+    setTeams: vi.fn(),
   });
 });
 

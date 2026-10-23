@@ -4634,3 +4634,10 @@ NotificationsBell 的升级公告标题、统计描述与"查看发布说明"三
 测试：为 hook mock 补默认返回（版本 1.102.0、最新 1.103.0），按用例覆盖 null/版本参数；英文 aria 与状态断言翻面。通知 11 例、DashboardHeader 与 roles 共 84 例全绿。顺带修掉三文件 15 条测试类型错误（DashboardHeader 补 accessToken、NotificationBell 补 prop、roles 补 spend fixture）。
 
 验证：AST 组件归零；全局可见英文维持 205 条、110 个文件；目录叶子新增 3 删 3 后维持 11662，英中同数；生产 typecheck 0 错；死键 0；eslint 触及文件 0 错、1 警为 HEAD 既有；prettier clean；i18n 五条守卫 23 例全绿。
+## 2026-10-23 第 460 簇：合并遗留测试类型债清理（第一批）
+
+删除合并遗留的英文版 `licenseUtils.test.ts`（中文 `.tsx` 已覆盖并更新签名，旧文件还引用已删除的 `getLicenseExpiryTier`）；`.tsx` 同步移除失效的 tier 测试块。OrganizationDropdown 夹具补齐 `updated_by`/`litellm_budget_table`/`teams`/`users`/`members`；VirtualKeysTable 测试删除重复的 tooltip 键、补 `setTeams`、清理九处未用导入；TeamVirtualKeysTable 用户夹具补 `user_alias`。
+
+结果：`tsc --noEmit` 测试错误 375→344。四文件 41 例通过；TeamVirtualKeysTable 的"team member budget for budgetless keys"仍 5 秒超时，已在 HEAD 基线复现，非本簇引入。
+
+验证：触及文件 eslint 0 错、10 警为既有；prettier 新增行合规（VirtualKeysTable HEAD 既有长行不动）；死键 0；生产类型检查此前已验证 0 错。

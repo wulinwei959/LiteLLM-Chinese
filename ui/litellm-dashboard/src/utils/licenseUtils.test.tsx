@@ -2,13 +2,7 @@ import { createTranslator } from "next-intl";
 import { describe, it, expect } from "vitest";
 
 import zh from "@/messages/zh-CN.json";
-import {
-  type LicenseExpiryTier,
-  formatExpirationStatus,
-  formatExpiryDate,
-  getDaysUntilExpiration,
-  getLicenseExpiryTier,
-} from "./licenseUtils";
+import { formatExpirationStatus, formatExpiryDate, getDaysUntilExpiration } from "./licenseUtils";
 
 const NOW = new Date("2026-07-08T00:00:00Z");
 
@@ -37,25 +31,6 @@ describe("getDaysUntilExpiration", () => {
   it("is timezone-independent within a UTC day", () => {
     expect(getDaysUntilExpiration("2026-08-07", new Date("2026-07-08T00:00:01Z"))).toBe(30);
     expect(getDaysUntilExpiration("2026-08-07", new Date("2026-07-08T23:59:59Z"))).toBe(30);
-  });
-});
-
-describe("getLicenseExpiryTier", () => {
-  const cases: Array<[string | null, LicenseExpiryTier]> = [
-    [null, "none"],
-    ["not-a-date", "none"],
-    ["2026-08-08", "none"],
-    ["2026-08-07", "warning"],
-    ["2026-07-16", "warning"],
-    ["2026-07-15", "critical"],
-    ["2026-07-09", "critical"],
-    ["2026-07-08", "critical"],
-    ["2026-07-07", "expired"],
-    ["2026-01-01", "expired"],
-  ];
-
-  it.each(cases)("classifies %s as %s", (date, expected) => {
-    expect(getLicenseExpiryTier(date, NOW)).toBe(expected);
   });
 });
 
