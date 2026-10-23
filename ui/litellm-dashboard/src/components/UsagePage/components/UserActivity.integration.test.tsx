@@ -60,7 +60,7 @@ describe("TopUsersView", () => {
 
     expect(await screen.findByText("tiny")).toBeInTheDocument();
     expect(screen.getByText("用户")).toBeInTheDocument();
-    expect(screen.getByText("Spend")).toBeInTheDocument();
+    expect(screen.getByText("花费")).toBeInTheDocument();
     expect(screen.getByText("Requests")).toBeInTheDocument();
     expect(screen.getByText("< $0.01")).toBeInTheDocument();
     expect(screen.getByText("$0.00")).toBeInTheDocument();

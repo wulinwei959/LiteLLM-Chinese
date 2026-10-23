@@ -914,7 +914,7 @@ describe("AddModelForm", () => {
       await clickTestConnect();
       await expectBlockedWith("请输入自定义模型名称。");
 
-      fireEvent.change(screen.getByPlaceholderText("Enter custom model name"), { target: { value: "my-fine-tune" } });
+      fireEvent.change(screen.getByPlaceholderText("输入自定义模型名称"), { target: { value: "my-fine-tune" } });
       await clickTestConnect();
 
       await expectTestRun({ model: "my-fine-tune" });

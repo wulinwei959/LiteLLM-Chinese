@@ -98,7 +98,7 @@ const renderHealth = (userRole = "proxy_admin") => {
 
 const openPanel = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.click(await screen.findByRole("button", { name: /^Deployment health/ }));
-  return screen.findByRole("dialog", { name: "Deployment health" });
+  return screen.findByRole("dialog", { name: "部署健康状况" });
 };
 
 const EMPTY_PROXY: FakeProxy = { warnings: [], ignoreAvailable: true, gets: 0, patches: [] };
@@ -129,7 +129,7 @@ describe("deployment health icon", () => {
     renderHealth();
 
     await waitFor(() => expect(proxy.gets).toBe(1));
-    const icon = await screen.findByRole("button", { name: "Deployment health" });
+    const icon = await screen.findByRole("button", { name: "部署健康状况" });
     expect(icon).toHaveTextContent(/^$/);
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
@@ -165,9 +165,9 @@ describe("deployment banner", () => {
     proxy.warnings = [NO_REDIS, LICENSE_IN_3_DAYS, ENV_CREDENTIAL];
     renderHealth();
 
-    const banner = await screen.findByRole("alert", { name: "Deployment alert" });
+    const banner = await screen.findByRole("alert", { name: "部署告警" });
     expect(banner).toHaveTextContent("Your LiteLLM Enterprise license expires in 3 days (Oct 17, 2026)");
-    expect(banner).not.toHaveTextContent("No Redis configured");
+    expect(banner).not.toHaveTextContent("没有配置 Redis");
     expect(banner).not.toHaveTextContent("more");
   });
 
@@ -175,8 +175,8 @@ describe("deployment banner", () => {
     proxy.warnings = [NO_REDIS, { ...ENV_CREDENTIAL, ignore: snoozedBy("admin-2", "2026-10-21T17:04:12Z") }];
     renderHealth();
 
-    const banner = await screen.findByRole("status", { name: "Deployment alert" });
-    expect(banner).toHaveTextContent("No Redis configured");
+    const banner = await screen.findByRole("status", { name: "部署告警" });
+    expect(banner).toHaveTextContent("没有配置 Redis");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
@@ -185,9 +185,9 @@ describe("deployment banner", () => {
     proxy.warnings = [ENV_CREDENTIAL];
     renderHealth();
 
-    await user.click(await within(await screen.findByRole("alert")).findByRole("button", { name: "Review" }));
+    await user.click(await within(await screen.findByRole("alert")).findByRole("button", { name: "审核" }));
 
-    const panel = await screen.findByRole("dialog", { name: "Deployment health" });
+    const panel = await screen.findByRole("dialog", { name: "部署健康状况" });
     expect(within(panel).getByRole("article", { name: "Environment-credential login is enabled" })).toBeVisible();
   });
 });
@@ -223,7 +223,7 @@ describe("deployment health panel", () => {
       within(warnings)
         .getAllByRole("article")
         .map((item) => item.getAttribute("aria-label")),
-    ).toEqual(["No Redis configured"]);
+    ).toEqual(["没有配置 Redis"]);
     expect(within(warnings).getByRole("link", { name: "Read the docs" })).toHaveAttribute(
       "href",
       "https://docs.litellm.ai/docs/proxy/redis_requirements",
@@ -269,7 +269,7 @@ describe("deployment health panel", () => {
       await waitFor(() => expect(proxy.patches).toEqual([{ id: "no_redis", body }]));
       await waitFor(() => expect(within(panel).queryByRole("region", { name: "Warnings" })).not.toBeInTheDocument());
       await user.click(within(panel).getByRole("button", { name: "Ignored and snoozed 1" }));
-      const item = within(panel).getByRole("article", { name: "No Redis configured" });
+      const item = within(panel).getByRole("article", { name: "没有配置 Redis" });
       expect(within(item).getByText(badge)).toBeVisible();
       expect(item).toHaveTextContent("by admin-1");
 
@@ -283,7 +283,7 @@ describe("deployment health panel", () => {
     proxy.warnings = [{ ...ENV_CREDENTIAL, ignore: snoozedBy("admin-2", "2026-10-21T17:04:12Z") }];
     renderHealth();
     const panel = await openPanel(user);
-    expect(within(panel).getByText("No active warnings")).toBeVisible();
+    expect(within(panel).getByText("没有生效中的警告")).toBeVisible();
 
     await user.click(within(panel).getByRole("button", { name: "Ignored and snoozed 1" }));
     await user.click(within(panel).getByRole("button", { name: "Restore Environment-credential login is enabled" }));
@@ -304,7 +304,7 @@ describe("deployment health panel", () => {
 
     await user.click(within(panel).getByRole("button", { name: "Ignored and snoozed 1" }));
 
-    const item = within(panel).getByRole("article", { name: "No Redis configured" });
+    const item = within(panel).getByRole("article", { name: "没有配置 Redis" });
     expect(item).toHaveTextContent("By env var LITELLM_DISABLE_NO_REDIS_WARNING");
     expect(within(item).queryByRole("button")).not.toBeInTheDocument();
   });
@@ -316,7 +316,7 @@ describe("deployment health panel", () => {
     renderHealth();
     const panel = await openPanel(user);
 
-    const item = within(panel).getByRole("article", { name: "No Redis configured" });
+    const item = within(panel).getByRole("article", { name: "没有配置 Redis" });
     expect(within(item).getByRole("link", { name: "Read the docs" })).toBeVisible();
     expect(within(item).queryByRole("button")).not.toBeInTheDocument();
   });
@@ -328,7 +328,7 @@ describe("deployment health panel", () => {
     const panel = await openPanel(user);
     await user.click(within(panel).getByRole("button", { name: "Ignored and snoozed 1" }));
 
-    const active = within(panel).getByRole("article", { name: "No Redis configured" });
+    const active = within(panel).getByRole("article", { name: "没有配置 Redis" });
     const ignored = within(panel).getByRole("article", { name: "Environment-credential login is enabled" });
     expect(ignored).toHaveTextContent("by admin-2");
     expect(within(active).queryByRole("button")).not.toBeInTheDocument();

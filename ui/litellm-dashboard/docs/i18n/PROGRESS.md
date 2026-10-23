@@ -4716,3 +4716,21 @@ AddModelForm.integration：选择凭据、提供商、认证方式、添加凭�
 2. AddModelForm.integration 8 例行为断言（团队作用域告警、credential-only 载荷、连接测试校验流程），非文案问题。
 3. activity_metrics 4 例：图表配色断言要的是 CSS 变量（var(--color-green-500, #22c55e)），生产仍用 hex，属于视觉口径，需先确认再动。
 4. spend_budget_cell.tsx 的预算文案仍是手拼英文，但该文件正由另一个会话改动，本簇未触碰。
+
+## 2026-10-24 第 469 簇：页签与表单可访问名断言翻面（第一轮）
+
+models-and-endpoints/AddModelPanel：provider 组合框的可访问名由 `/provider/i` 改为 `/提供商/`（12 处），模型选择占位符 Select models 改"选择模型"（8 处），必填标记 Required 改"必填"；失败由 11 例降到 6 例，剩下的是预填 toHaveValue 与 value.filter 报错这类行为断言。
+
+DeploymentHealth：告警图标与面板的可访问名（Deployment alert、Deployment health、Review）、No Redis configured、No active warnings 翻成中文；失败数仍为 13，但失败点已从"英文名找不到"变成更深的行为差异（Snooze 按钮全名、Ignored and Snoozed 分组名、article 角色名等）。
+
+key_edit_view：Max Budget (USD)、Team 组合框（实际可访问名是"团队 ID"）、Clear、Reset Budget 翻面；14 例未减，剩余集中在 MCP 选择器作用域（data-team-id）、MCP 授权回调未被调用、移出项目按钮的前置条件（getUiSettings 的 enable_projects_ui 路径），都属行为断言。
+
+其余 9 个文件顺带翻了一批：page.url-state（Send）、UserActivity（Spend）、AddModelForm（Enter custom model name）、CacheAwareRoutingConfig（Prediction timeout (ms)）、add_auto_router_tab（Judge model、Cache-aware routing）、edit_auto_router_modal（Save Changes）、DecisionModelsBanner（Dismiss banner）、MoyaiConnected（Virtual key issued）、MoyaiLanding（Moyai URL）。
+
+验证：生产 tsc 0 错；三个主体文件合计 33 例失败（原 38 例）。
+
+### 剩余工作（下批起点）
+
+1. key_edit_view 14 例、DeploymentHealth 13 例、AddModelPanel 6 例，均为行为断言，需逐个对照生产取值：MCP 作用域属性与授权回调、Snooze 弹窗内的可访问名、预填值 toHaveValue。
+2. activity_metrics 4 例：测试要的是主题色 CSS 变量与多色调色板，生产用单一品牌 hex，属视觉口径，需先确认设计意图再动。
+3. 其余历史失败文件（约 45 个）尚未逐文件处理，下一批按失败数从高到低推进。

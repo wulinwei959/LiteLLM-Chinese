@@ -23,13 +23,13 @@ describe("CacheAwareRoutingConfig", () => {
     fireEvent.click(screen.getByRole("switch", { name: "缓存感知路由" }));
     expect(screen.getByRole("switch", { name: "缓存感知路由" })).toBeChecked();
     expect(screen.getByLabelText("预计输出 token 数")).toHaveValue(null);
-    expect(screen.getByLabelText("Prediction timeout (ms)")).toHaveValue(null);
+    expect(screen.getByLabelText("预测超时（毫秒）")).toHaveValue(null);
   });
 
   it("accepts zero output, clamps invalid bounds, and lets blank fields return to defaults", () => {
     renderWithProviders(<Harness value={{ ...initial, cache_aware_routing: true }} />);
     const output = screen.getByLabelText("预计输出 token 数");
-    const timeout = screen.getByLabelText("Prediction timeout (ms)");
+    const timeout = screen.getByLabelText("预测超时（毫秒）");
     fireEvent.change(output, { target: { value: "-1" } });
     fireEvent.change(timeout, { target: { value: "0" } });
     expect(output).toHaveValue(0);
@@ -59,7 +59,7 @@ describe("CacheAwareRoutingConfig", () => {
     expect(screen.queryByLabelText("预计输出 token 数")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("switch", { name: "缓存感知路由" }));
     expect(screen.getByLabelText("预计输出 token 数")).toHaveValue(0);
-    expect(screen.getByLabelText("Prediction timeout (ms)")).toHaveValue(500);
+    expect(screen.getByLabelText("预测超时（毫秒）")).toHaveValue(500);
   });
 
   it.each<{ patch: Partial<ComplexityRouterConfigValue>; reason: string }>([

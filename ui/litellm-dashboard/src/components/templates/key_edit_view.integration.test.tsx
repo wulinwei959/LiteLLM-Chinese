@@ -1023,7 +1023,7 @@ describe("KeyEditView", () => {
     };
     const view = renderWithProviders(<KeyEditView {...props} />);
 
-    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget (USD)" }), {
+    fireEvent.change(await screen.findByRole("spinbutton", { name: "最大预算（USD）" }), {
       target: { value: "12.5" },
     });
     view.rerender(
@@ -1039,7 +1039,7 @@ describe("KeyEditView", () => {
         }}
       />,
     );
-    await chooseSelectOption(userEvent, screen.getByLabelText("Reset Budget"), "monthly");
+    await chooseSelectOption(userEvent, screen.getByLabelText("重置预算"), "monthly");
     await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
 
     const expected = {
@@ -1091,7 +1091,7 @@ describe("KeyEditView", () => {
     );
     await waitFor(() => expect(listMCPTools).toHaveBeenCalledWith("test-token", "srv-a"));
 
-    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget (USD)" }), {
+    fireEvent.change(await screen.findByRole("spinbutton", { name: "最大预算（USD）" }), {
       target: { value: "12.5" },
     });
     await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
@@ -1144,7 +1144,7 @@ describe("KeyEditView", () => {
       userRole: "admin",
     };
     const view = renderWithProviders(<KeyEditView {...props} />);
-    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget (USD)" }), {
+    fireEvent.change(await screen.findByRole("spinbutton", { name: "最大预算（USD）" }), {
       target: { value: "12.5" },
     });
     view.rerender(
@@ -1168,7 +1168,7 @@ describe("KeyEditView", () => {
       userRole: "admin",
     };
     const view = renderWithProviders(<KeyEditView {...props} />);
-    fireEvent.change(await screen.findByRole("spinbutton", { name: "Max Budget (USD)" }), {
+    fireEvent.change(await screen.findByRole("spinbutton", { name: "最大预算（USD）" }), {
       target: { value: "12.5" },
     });
     view.rerender(
@@ -1770,9 +1770,9 @@ describe("KeyEditView", () => {
       const selector = await screen.findByTestId("mcp-server-selector");
       expect(selector).toHaveAttribute("data-team-id", "group-maple");
       await waitFor(() => {
-        expect(screen.getAllByRole("button", { name: "Clear" })).toHaveLength(2);
+        expect(screen.getAllByRole("button", { name: "清除" })).toHaveLength(2);
       });
-      await userEvent.click(screen.getAllByRole("button", { name: "Clear" })[1]);
+      await userEvent.click(screen.getAllByRole("button", { name: "清除" })[1]);
 
       await waitFor(() => {
         expect(screen.getByTestId("mcp-server-selector")).toHaveAttribute("data-team-id", "");
@@ -1810,9 +1810,9 @@ describe("KeyEditView", () => {
       const view = renderWithProviders(renderEditor(keyData));
 
       await waitFor(() => {
-        expect(screen.getAllByRole("button", { name: "Clear" })).toHaveLength(2);
+        expect(screen.getAllByRole("button", { name: "清除" })).toHaveLength(2);
       });
-      await userEvent.click(screen.getAllByRole("button", { name: "Clear" })[1]);
+      await userEvent.click(screen.getAllByRole("button", { name: "清除" })[1]);
       await waitFor(() => {
         expect(screen.getByTestId("mcp-server-selector")).toHaveAttribute("data-team-id", "");
       });
@@ -2780,7 +2780,7 @@ describe("KeyEditView", () => {
         />,
       );
 
-      const teamCombobox = screen.getByRole("combobox", { name: "团队" });
+      const teamCombobox = screen.getByRole("combobox", { name: "团队 ID" });
       expect(teamCombobox).toHaveValue("Alpha");
       await userEvent.click(teamCombobox);
 
@@ -2804,7 +2804,7 @@ describe("KeyEditView", () => {
         />,
       );
 
-      await userEvent.click(screen.getByRole("combobox", { name: "团队" }));
+      await userEvent.click(screen.getByRole("combobox", { name: "团队 ID" }));
 
       expect(await screen.findByRole("option")).toHaveTextContent(/^-team-3$/);
     });
@@ -2824,9 +2824,9 @@ describe("KeyEditView", () => {
         />,
       );
 
-      const teamCombobox = screen.getByRole("combobox", { name: "团队" });
+      const teamCombobox = screen.getByRole("combobox", { name: "团队 ID" });
       expect(teamCombobox).toHaveValue("Alpha");
-      const [, teamClearButton] = screen.getAllByRole("button", { name: "Clear" });
+      const [, teamClearButton] = screen.getAllByRole("button", { name: "清除" });
       await userEvent.click(teamClearButton);
       await userEvent.click(screen.getByRole("button", { name: /save changes/i }));
 
@@ -2852,7 +2852,7 @@ describe("KeyEditView", () => {
         />,
       );
 
-      expect(screen.getByRole("combobox", { name: "团队" })).toHaveValue("Gamma");
+      expect(screen.getByRole("combobox", { name: "团队 ID" })).toHaveValue("Gamma");
     });
 
     it("carries a picked MCP server into the payload", async () => {

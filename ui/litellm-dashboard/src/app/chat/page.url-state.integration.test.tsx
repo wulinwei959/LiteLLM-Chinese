@@ -65,7 +65,7 @@ describe("chat page URL state with ChatShellProvider", () => {
     fireEvent.change(screen.getByPlaceholderText("今天有什么可以帮你的？"), {
       target: { value: "How much did this cost?" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    fireEvent.click(screen.getByRole("button", { name: "发送" }));
 
     await waitFor(() => expect(window.location.search).toMatch(/^\?id=/));
     const conversationId = new URLSearchParams(window.location.search).get("id");

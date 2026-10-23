@@ -45,7 +45,7 @@ describe("DecisionModelsBanner", () => {
     renderWithProviders(<DecisionModelsBanner />);
     expect(screen.getByText("现在支持决策模型了")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByLabelText("Dismiss banner"));
+    fireEvent.click(screen.getByLabelText("关闭横幅"));
 
     expect(screen.queryByText("现在支持决策模型了")).not.toBeInTheDocument();
     expect(localStorage.getItem(STORAGE_KEY)).toBe("true");

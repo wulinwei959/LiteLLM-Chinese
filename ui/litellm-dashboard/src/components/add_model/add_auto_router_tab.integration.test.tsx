@@ -1070,7 +1070,7 @@ describe("AddAutoRouterTab", () => {
     await waitForAutomaticTiers();
     fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "chained-router" } });
     await userEvent.click(screen.getByRole("radio", { name: "LLM" }));
-    await selectAutoRouterOption("Judge model", ALL_FAMILY_MODELS[0].model_group);
+    await selectAutoRouterOption("评审模型", ALL_FAMILY_MODELS[0].model_group);
     openAutoRouterAdvanced("Classification Method");
     await selectAutoRouterOption("Local checks before the judge", "Heuristic first");
     await selectAutoRouterOption("Heuristic before the judge", "Heuristic v2");
@@ -1143,8 +1143,8 @@ describe("AddAutoRouterTab", () => {
     renderWithProviders(<Harness />);
     await waitForAutomaticTiers();
     fireEvent.change(screen.getByLabelText("自动路由名称"), { target: { value: "cache-aware-router" } });
-    openAutoRouterAdvanced("Cache-aware routing");
-    const toggle = screen.getByRole("switch", { name: "Cache-aware routing" });
+    openAutoRouterAdvanced("缓存感知路由");
+    const toggle = screen.getByRole("switch", { name: "缓存感知路由" });
     expect(toggle).not.toBeChecked();
     if (enabled) {
       await user.click(toggle);

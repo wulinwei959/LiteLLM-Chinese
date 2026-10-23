@@ -13,7 +13,7 @@ describe("MoyaiConnected", () => {
 
     expect(screen.getByText("已关联的工作区")).toBeInTheDocument();
     expect(screen.getByText("https://moyai.example.com")).toBeInTheDocument();
-    expect(screen.getByText("Virtual key issued")).toBeInTheDocument();
+    expect(screen.getByText("已签发的虚拟密钥")).toBeInTheDocument();
     expect(screen.getByText("moyai-moyai.example.com")).toBeInTheDocument();
     expect(screen.getByText(/models available through LiteLLM/)).toHaveTextContent(
       "42 models available through LiteLLM",
@@ -26,6 +26,6 @@ describe("MoyaiConnected", () => {
     renderWithProviders(<MoyaiConnected moyaiUrl="https://moyai.example.com" keyAlias={null} models={null} />);
 
     expect(screen.queryByText(/models available through LiteLLM/)).not.toBeInTheDocument();
-    expect(screen.queryByText("Virtual key issued")).not.toBeInTheDocument();
+    expect(screen.queryByText("已签发的虚拟密钥")).not.toBeInTheDocument();
   });
 });

@@ -20,7 +20,7 @@ describe("MoyaiLanding", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "快速连接" }));
 
-    const input = await screen.findByLabelText("Moyai URL");
+    const input = await screen.findByLabelText("Moyai 地址");
     fireEvent.change(input, { target: { value: "javascript:alert(1)" } });
     fireEvent.click(screen.getByRole("button", { name: "Connect" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("http or https");
