@@ -349,6 +349,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
         : null);
 
   const submitBlockedReason = configBlockedReason ?? routerAvailability.saveBlockedReason;
+  const thresholdError = getHeuristicV2SuccessThresholdError(t, complexityRouterConfig.heuristic_v2_success_threshold);
 
   useEffect(() => {
     if (isVisible && modelData) {
@@ -740,7 +741,11 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
                       )}
                     </FormField>
 
-                    <FormField control={form.control} name="auto_router_embedding_model" label={t("editEmbeddingModelLabel")}>
+                    <FormField
+                      control={form.control}
+                      name="auto_router_embedding_model"
+                      label={t("editEmbeddingModelLabel")}
+                    >
                       {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
                         <ModelChoiceCombobox
                           id={id}
@@ -782,7 +787,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
                 {t("cancelLabel")}
               </Button>
               {submitBlockedReason === null ? (
-                <Button disabled={loading} onClick={handleSubmit}>
+                <Button disabled={loading || thresholdError !== null} onClick={handleSubmit}>
                   {loading && <UiLoadingSpinner className="size-4" />}
                   {t("saveChanges")}
                 </Button>

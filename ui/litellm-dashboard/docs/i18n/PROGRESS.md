@@ -4865,3 +4865,7 @@ AddModelPanel 4 例全部转绿，两处根因：测试里的 `setup(searchParam
 ## 2026-10-24 第 490 簇：模型列表的删除/暂停载荷与视图模式
 
 AllModelsTab 里删除与暂停两条载荷断言写的是 `mock-access-token`，而共享 session 夹具给的是 `test-access-token`（组件确实拿到了后者并发出调用），按实际值修正后两条转绿；视图模式下拉的"所有可用模型"选项在 jsdom 里仍取不到，与团队下拉的可见差别在于它是 Base UI Select 的 `items` 模式，留待下一轮。
+
+## 2026-10-24 第 491 簇：缓存感知路由分节归组与阈值保存门禁
+
+`ComplexityRouterAdvancedSections` 里 `cache-aware` 分节有定义却没有任何分组把它列进 `keys`，整块缓存感知设置在高阶折叠里永不渲染——自动路由两组测试都因此取不到开关。归入"会话与效率"分组后开关恢复。编辑弹窗同时补两处：缓存相关字段标签翻中文（预计输出 token 数/预测超时（毫秒））、保存按钮在 `heuristic_v2_success_threshold` 非法时置灰。剩余两条仍是阈值草稿的提交/清除时序，需继续对照组件内 draft 状态。

@@ -273,7 +273,7 @@ const ComplexityRouterAdvancedSections: React.FC<ComplexityRouterAdvancedSection
         "keyword-semantic",
       ],
     },
-    { label: t("advGroupSessionsEfficiency"), keys: ["affinity", "adaptive", "compression"] },
+    { label: t("advGroupSessionsEfficiency"), keys: ["affinity", "adaptive", "compression", "cache-aware"] },
     { label: t("advGroupCompatibility"), keys: ["response"] },
   ].filter(
     (group) =>
