@@ -2,7 +2,7 @@
 
 静态扫描能回答"文案在目录里、但调用点没接"，回答不了"目录里的文案本身在运行期才炸"。第 417 到 419 簇里八个真实的运行时故障，全是渲染扫描找出来的，源码扫描一条都查不出。
 
-最近一次复跑：2026-10-23 第 458 簇，12 个页面各 0 个渲染错误、0 处英文，总计 0 条发现、0 条不在基线。
+最近一次复跑：2026-10-24 第 513 簇，14 个页面各 0 个渲染错误、0 处英文，总计 0 条发现、0 条不在基线。页面清单新增 `search-tools` 与 `roi-calculator`。ROI 页第一次扫时撞出 `Cannot read properties of undefined (reading 'length')`，原因是桩代理对未登记的 `/roi-calculator/*` 一律回 `{}`，补进四个桩（settings、report、sync、repositories，字段按 `schema.d.ts` 的 `ROISettingsResponse`/`ROISyncStatus`/`ROIReportResponse`/`ROIRepositoriesResponse` 对齐）后归零。正文里剩下的 `GitHub` 与 `GitHub Enterprise` 是产品名，进 `ALLOWED_ENGLISH`
 
 ## 它查什么
 

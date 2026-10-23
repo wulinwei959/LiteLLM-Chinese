@@ -21,6 +21,8 @@ export const PAGES = [
   { name: "prompts", path: "/prompts" },
   { name: "budgets", path: "/budgets" },
   { name: "users", path: "/users" },
+  { name: "search-tools", path: "/search-tools" },
+  { name: "roi-calculator", path: "/roi-calculator" },
 ];
 
 /**
@@ -44,6 +46,8 @@ export const ALLOWED_ENGLISH = new Set([
   "Enter",
   "Gemini",
   "GCP",
+  "GitHub",
+  "GitHub Enterprise",
   "GPT",
   "ID",
   "IDs",
@@ -221,6 +225,40 @@ export const API_STUBS = [
   ["/v1/budget", { budgets: [] }],
   ["/v1/router/settings", { router_settings: {} }],
   ["/v1/team/members", { members: [] }],
+  [
+    "/roi-calculator/settings",
+    {
+      available_models: ["claude-sonnet-4-5"],
+      backfill_days: 30,
+      default_prompt: "Estimate hours.",
+      estimator_model: "claude-sonnet-4-5",
+      estimator_prompt: "Estimate hours.",
+      github_api_url: "https://api.github.com",
+      has_estimator_key: false,
+      has_github_token: false,
+      identity_map: {},
+      ready: false,
+      repos: [],
+      update_interval_minutes: 0,
+    },
+  ],
+  ["/roi-calculator/report", { report: null }],
+  [
+    "/roi-calculator/sync",
+    {
+      done: 0,
+      elapsed_seconds: 0,
+      error: null,
+      estimated: 0,
+      needs_attention: 0,
+      phase: "idle",
+      reused: 0,
+      running: false,
+      stage: "Idle",
+      total: 0,
+    },
+  ],
+  ["/roi-calculator/repositories", { repositories: [], has_more: false, page: 1 }],
 ];
 
 /**

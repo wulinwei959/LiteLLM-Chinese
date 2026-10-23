@@ -5029,3 +5029,5 @@ lint 侧另有既成事实：`key_edit_view.tsx` 在 HEAD 就有 `max-lines`（8
 - 扫描口径的假阳性：`MCPGatewaySessionsTab` 的 `title="gatewaySessions.byAiClient"` 是把键名当 props 传下去、渲染处再 `t(title)`，命中里 8 处 `PassThroughGuardrailsSection` 的 JSONPath 按钮文本同理属数据
 
 `McpFormTestHarness.tsx` 的 `Submit` 是本地调试夹具，不在产品路由上。至此第 513 簇改动面的可见文案没有欠账，全库可见英文余量维持在第 344/350 簇收口的那三条口径队列里。
+
+渲染扫描同步复跑（`npm run scan:rendered`，桩代理）扩到 14 个页面：把 `search-tools` 与补回后的 `roi-calculator` 加进 `PAGES`。ROI 页首轮撞出运行期异常 `Cannot read properties of undefined (reading 'length')`，根因是桩代理对没登记的 `/roi-calculator/*` 一律回 `{}`，不是页面缺陷。按 `schema.d.ts` 的响应模型补进 settings、report、sync、repositories 四个桩后，14 个页面 0 渲染错误、0 处英文，总计 0 条发现、0 条不在基线。唯二的英文命中 `GitHub` 与 `GitHub Enterprise` 是产品名，进 `ALLOWED_ENGLISH`。
