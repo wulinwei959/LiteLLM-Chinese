@@ -12,7 +12,7 @@ import ts from "typescript";
 
 const [file, namespace] = process.argv.slice(2);
 if (!file || !namespace) {
-  console.error("usage: node scripts/add-translator-hooks.mjs <file> <namespace>");
+  process.stderr.write("usage: node scripts/add-translator-hooks.mjs <file> <namespace>\n");
   process.exit(2);
 }
 
@@ -62,7 +62,7 @@ const visit = (node) => {
 visit(tree);
 
 if (targets.length === 0) {
-  console.log(`${file}: no function needs a hook`);
+  process.stdout.write(`${file}: no function needs a hook\n`);
   process.exit(0);
 }
 
@@ -77,4 +77,4 @@ for (const at of insertions) {
 }
 
 writeFileSync(file, out, "utf8");
-console.log(`${file}: added ${insertions.length} hooks`);
+process.stdout.write(`${file}: added ${insertions.length} hooks\n`);

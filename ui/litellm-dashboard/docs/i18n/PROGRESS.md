@@ -5244,3 +5244,11 @@ python3 -c "import json; f=lambda d,p='': {k2: v for kk, vv in d.items() for k2,
 **placeholder 账**。`placeholder="..."` 形态的英文硬编 65 处出现、61 个去重值，逐值读完：URL 示例 28、示例 ID 区域与枚举值 20、正则 JSONPath 与协议 token 11、JSDoc 注释 1（`numerical_input.tsx` 的 `@param` 示例，组件运行时已走 `t("numericalPlaceholder")`）、纯示例词 5（Productivity、claude-\* 这类）。真漏 0，活项清单这条闭环。旧账的"67 处"是扫描器 `attr:placeholder` 按 AST 命中数的口径，与本簇按值去重的口径不同，两套数并存，以本簇可复现的为准
 
 **验证**。四个测试文件 205 例全绿（AgentSelector 2 处、OpeningPromptEditor 3 处、ComplexityRouterConfig.integration 2 处断言翻面），i18n 守卫 parity、missingKeys、messageArgs 全绿，`npx tsc --noEmit` 0 错，`check:dead-keys` 0（收紧后的判定器），叶子 11877、同值 134
+
+## 2026-10-24 第 528 簇：把顶格的 lint 预算降下来并锁进棘轮
+
+活项清单第 3 条。`testing-library/prefer-screen-queries` 的 18 处违例全部集中在 `MCPToolsetsTab.integration.test.tsx` 一个文件：测试用一个 `within(dialog)` 作用域对象做查询，规则按"非 screen 查询"逐个记账。实测把 18 处 `dialog.getByX` 全换成 `screen.getByX` 后 7 例照常全绿，说明这层作用域从来没有挡住过重复元素，是过度设计；顺带把返回查询对象的 `dialogWithButton` 帮助函数改成只做"按钮确在弹窗里"断言的 `expectButtonInDialog`，`within` 导入随之删除。该文件的 eslint 告警从 19 条降到 1 条（`button.closest` 的 no-node-access 是弹窗归属断言所需，HEAD 既有）
+
+`no-console` 从 16 降到 11：自研的三个工具脚本（`add-translator-hooks.mjs`、`prune-unused-translators.mjs`、`check-lint-budgets.mjs`）的 5 处 `console.log`/`console.error` 改成 `process.stdout.write`/`process.stderr.write`，与 `i18n-file-inventory.mjs` 同一形态，三个脚本各自冒烟跑过输出正常。剩下的 11 处全在上游文件（playground 的 llm_calls 视图与 networking），不在汉化账里动
+
+`eslint-budgets.json` 同步下调两条上限：`prefer-screen-queries` 18 到 0、`no-console` 16 到 11，锁住这次下降不让回潮。九条预算全过（`npx eslint .` exit 0）。`local/no-long-condition-chain` 200/200 没动：200 处散在几十个上游文件里，逐处提成辅助函数是一次独立的大重构，收益只剩预算余量，留作判定不改

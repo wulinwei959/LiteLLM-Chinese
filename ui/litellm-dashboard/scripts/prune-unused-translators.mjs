@@ -63,7 +63,7 @@ for (const file of process.argv.slice(2)) {
   visit(tree);
 
   if (cuts.length === 0) {
-    console.log(`${file}: nothing to prune`);
+    process.stdout.write(`${file}: nothing to prune\n`);
     continue;
   }
   let out = source;
@@ -71,5 +71,5 @@ for (const file of process.argv.slice(2)) {
     out = out.slice(0, cut.start) + out.slice(cut.end);
   }
   writeFileSync(file, out, "utf8");
-  console.log(`${file}: pruned ${cuts.length} unused translator declarations`);
+  process.stdout.write(`${file}: pruned ${cuts.length} unused translator declarations\n`);
 }
