@@ -160,7 +160,7 @@ describe("OpeningPromptEditor on a built-in tier set", () => {
 
   it("names the base rubric outside the editor and explains how to customize the sections", () => {
     renderEditor(undefined, builtInSource);
-    expect(screen.getByText("Agentic 评分标准")).toBeInTheDocument();
+    expect(screen.getByText("智能体评分标准")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "自定义提示词" })).toBeInTheDocument();
     expect(screen.getByText("开场指令和校准示例由基础评分标准提供", { exact: false })).toBeInTheDocument();
 
@@ -194,7 +194,7 @@ describe("OpeningPromptEditor on a built-in tier set", () => {
     await user.click(screen.getByRole("button", { name: "取消" }));
 
     expect(onChange).not.toHaveBeenCalled();
-    expect(screen.getByText("Agentic 评分标准")).toBeInTheDocument();
+    expect(screen.getByText("智能体评分标准")).toBeInTheDocument();
   });
 
   it("describes the rubric being previewed, not the one still saved", async () => {
@@ -225,7 +225,7 @@ describe("OpeningPromptEditor on a built-in tier set", () => {
   it("labels the trigger as an edit once the operator has written a prompt", () => {
     renderEditor("my opening", builtInSource);
     expect(screen.getByRole("button", { name: "编辑自定义提示词" })).toBeInTheDocument();
-    expect(screen.getByText("在 Agentic 评分标准上使用自定义开场")).toBeInTheDocument();
+    expect(screen.getByText("在智能体评分标准上使用自定义开场")).toBeInTheDocument();
   });
 
   it("saves the draft as the router's opening instructions", () => {

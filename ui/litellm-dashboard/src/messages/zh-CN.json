@@ -24,7 +24,6 @@
     "defaultProxyAdmin": "默认代理管理员",
     "adminOnlyNotice": "{pageTitle}仅管理员可用。",
     "loading": "加载中...",
-    "login": "登录",
     "logout": "退出登录",
     "save": "保存",
     "cancel": "取消",
@@ -159,9 +158,7 @@
       "or": "或",
       "required": "必填",
       "reset": "重置筛选",
-      "unknown": "未知",
-      "disable": "Disable",
-      "copyToClipboard": "Copy To Clipboard"
+      "unknown": "未知"
     },
     "connectionTest": {
       "title": "连接测试结果"
@@ -1327,7 +1324,7 @@
       "timeoutMsLabel": "超时（毫秒）",
       "timeoutHelp": "分类器调用在失败并由下方回退接管之前的超时时间。",
       "classifierPromptHeading": "分类器提示词",
-      "classifierPromptTooltip": "每个评分标准都使用相同的四个层级。它们的区别在于用来向分类器展示层级间边界的示例，此外 Business 评分标准还会为业务流量重写层级定义。在提示词编辑器中选择评分标准，并编写你自己的开场指令和校准示例。",
+      "classifierPromptTooltip": "每个评分标准都使用相同的四个层级。它们的区别在于用来向分类器展示层级间边界的示例，此外商务评分标准还会为业务流量重写层级定义。在提示词编辑器中选择评分标准，并编写你自己的开场指令和校准示例。",
       "customPromptAllowanceLabel": "自定义指令与示例共用自定义层级配额",
       "ifClassifierFailsHeading": "如果分类器失败",
       "fallbackHeuristicLabel": "使用启发式评分",
@@ -1422,7 +1419,7 @@
       "pluginTimeoutHelp": "插件调用的时间预算。超时后由回退路径决定层级。",
       "rubricLegacyLabel": "旧版（未校准）",
       "rubricLegacyDescription": "校准示例出现之前随版本发布的评分标准，完全没有示例。此设置存在之前创建的路由器会使用它，因此其层级判定和花费保持不变。它会把普通的工程类请求过多地路由到最昂贵的层级。",
-      "rubricAgenticLabel": "Agentic",
+      "rubricAgenticLabel": "智能体",
       "rubricAgenticDescription": "把常规安装、构建、多文件编辑和标准调试锚定在 Medium，因此普通工程类请求不会被路由到最昂贵的层级。适用于智能体、终端和编码助手流量，以及混合流量。",
       "rubricChatLabel": "对话",
       "rubricChatDescription": "去掉工程类示例，适用于只服务对话流量、从不会遇到那类请求的路由器。",
@@ -1436,8 +1433,8 @@
       "openingBuiltInExplainer": "层级判定标准由基础评分标准决定，在你写入自己的内容之前，开场指令和校准示例也由它提供。你的文本会替换该开场和那些示例。路由器会在其后追加四条层级判定标准和注入防护，两者都无法在此处编辑或移除。层级的重命名可通过上方的显示名称完成。",
       "openingCustomPlaceholder": "为一个支付工程团队将请求恰好归入一个层级。\n\n权衡请求实际要求的内容，而不是它的措辞。",
       "openingBuiltInPlaceholder": "将用户请求的复杂度恰好归入一个层级。\n\n判断正确回答所需的心智难度，而不是请求的长短或听起来是否技术化。",
-      "openingRubricName": "{rubric} 评分标准",
-      "openingCustomOnRubric": "在 {rubric} 评分标准上使用自定义开场",
+      "openingRubricName": "{rubric}评分标准",
+      "openingCustomOnRubric": "在{rubric}评分标准上使用自定义开场",
       "editCustomPrompt": "编辑自定义提示词",
       "customizePrompt": "自定义提示词",
       "resetPromptToDefault": "重置为默认",
@@ -1464,7 +1461,7 @@
       "classifierPromptWarningFallback": "启发式回退仍会评估复杂度，因此如果你的提示词按其他标准分类，请把下方的回退设置为默认模型。",
       "classifierPromptWarningLegacy": "这是旧版的整体提示词模式：层级定义和标签被固化在这段文本中，因此重命名层级或更改评分标准都不会更新它。重置为默认可将此路由器切换到派生提示词模式：在那种模式下你只需编辑开场指令和校准示例，层级定义会自动保持同步。",
       "classifierSystemPromptAria": "分类器系统提示词",
-      "prefilledFromRubric": "预填充自该路由器在上下文窗口为 {size} 时会发送的 {rubric} 评分标准。",
+      "prefilledFromRubric": "预填充自该路由器在上下文窗口为 {size} 时会发送的 {rubric}评分标准。",
       "restoreDefaultText": "恢复默认文本",
       "routingTestIntro": "通过此路由器的分类器发送一个提示词，看看它会选择哪个模型以及原因。该提示词只用于分类：不会发送给它所路由到的模型。",
       "routingTestPromptPlaceholder": "粘贴一条终端用户会发送的提示词",
@@ -1807,8 +1804,6 @@
       "title": "LLM 凭据",
       "description": "为不同 AI 提供商配置的凭据。添加和管理您的 API 凭据。",
       "addCredential": "添加凭据",
-      "updateCredential": "更新凭据",
-      "deleteCredential": "删除凭据",
       "updatedSuccessfully": "凭据更新成功",
       "updateFailed": "更新凭据失败",
       "createdSuccessfully": "凭据添加成功",
@@ -1820,7 +1815,6 @@
       "resourceInformationTitle": "凭据信息",
       "credentialName": "凭据名称",
       "provider": "提供商",
-      "noCredentials": "未找到凭据",
       "loading": "正在加载凭据..."
     },
     "passThrough": {
@@ -3261,7 +3255,6 @@
     "maxParallelRequests": "最大并行请求数",
     "allProxyModels": "所有代理模型",
     "teams": "团队",
-    "objectPermissions": "对象权限",
     "overview": "概览",
     "backToOrganizations": "返回组织列表",
     "organizationDetails": "组织详情",
@@ -8830,7 +8823,6 @@
       "yes": "是",
       "no": "否",
       "unavailable": "不可用",
-      "disable": "禁用",
       "copyToClipboard": "复制到剪贴板"
     },
     "chatComposer": {
@@ -9956,10 +9948,10 @@
       "viewLogsLink": "查看请求日志"
     },
     "selector": {
-      "placeholder": "选择 Agent",
+      "placeholder": "选择智能体",
       "accessGroupDesc": "访问组",
-      "agentDesc": "Agent",
-      "noAgents": "未找到 Agent"
+      "agentDesc": "智能体",
+      "noAgents": "未找到智能体"
     },
     "agentCreationSteps": "智能体创建步骤",
     "stepConfigure": "配置",

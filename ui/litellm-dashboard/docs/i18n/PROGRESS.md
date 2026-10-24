@@ -3963,8 +3963,25 @@ e2e 侧有 8 处按 placeholder 文本或 combobox 可访问名寻址这些筛�
 覆盖率命令（在 `ui/litellm-dashboard` 下执行）
 
 ```
-find src -name "*.tsx" -not -name "*.test.tsx" | wc -l
-grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\.test\.tsx" | wc -l
+python3 - <<'PY'
+import json
+
+def flat(d, prefix=""):
+    out = {}
+    for key, value in d.items():
+        path = f"{prefix}.{key}" if prefix else key
+        if isinstance(value, dict):
+            out.update(flat(value, path))
+        else:
+            out[path] = value
+    return out
+
+en = flat(json.load(open("src/messages/en.json", encoding="utf-8")))
+zh = flat(json.load(open("src/messages/zh-CN.json", encoding="utf-8")))
+for key in sorted(en):
+    if en[key] == zh.get(key):
+        print(key, "=", en[key])
+PY
 ```
 
 2026-10-14 第 15 簇后实测：非测试 `.tsx` 共 912 个，已接入 364 个，覆盖率 39.9%。同日第 14 簇后是 912 / 361（39.6%）、第 13 簇后 912 / 360（39.5%），此前记的 861 / 305 复现不出来，那条没写命令，两个数都对不上今天这个口径，所以并列记录，不要拿 39.9% 减 35.4% 当进度
@@ -4029,14 +4046,14 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 ## 目录规模
 
-| 项                     | 数值                                                          |
-| ---------------------- | ------------------------------------------------------------- |
-| 顶层命名空间           | 125                                                           |
-| `en.json` 叶子键       | 11885（2026-10-24 第 525 簇后复测）                           |
-| `zh-CN.json` 叶子键    | 11885                                                         |
-| 键树一致性             | 无差集，`messagesParity` 通过                                 |
-| 中英文取值完全相同的键 | 139（产品名、缩写、URL 与格式示例，属预期，见 `GLOSSARY.md`） |
-| 死键                   | 0，`check:dead-keys` 按空基线棘轮                             |
+| 项                     | 数值                                                              |
+| ---------------------- | ----------------------------------------------------------------- |
+| 顶层命名空间           | 125                                                               |
+| `en.json` 叶子键       | 11877（2026-10-24 第 527 簇后复测，本簇清掉 8 个死键）            |
+| `zh-CN.json` 叶子键    | 11877                                                             |
+| 键树一致性             | 无差集，`messagesParity` 通过                                     |
+| 中英文取值完全相同的键 | 134，五档判定见第 527 簇与 `GLOSSARY.md` 的"保留英文"一节         |
+| 死键                   | 0，`check:dead-keys` 按空基线棘轮；"0"是下限不是证明，见第 527 簇 |
 
 计数脚本就一条：把两侧目录扁平化成 `path -> value` 的字典再比长度与差集。逐簇的增量账在本文各簇小节里，历史绝对数不回改
 
@@ -5209,3 +5226,21 @@ lint 预算两处超标查清并已修回：`local/no-large-inline-object-arg` 4
 测试加一例往返：把 `buildBulkUserCsvTemplate()` 的表头与按 `BULK_USER_CSV_COLUMNS` 顺序排出的数据行拼成文件喂给解析器，断言预览里出现该行的邮箱。数据夹具是 `Record<BulkUserCsvColumn, string>`，将来加一列不给值就编译不过，这正是本簇想要的红。新用例取文件输入走 `screen.getByLabelText` 而不是 `document.querySelector`，后者会把 `testing-library/prefer-screen-queries` 顶出 18/18 的预算
 
 验证：`bulk_create_users_button.test.tsx` 6 例、消费方 `view_users.test.tsx` 15 例、`messagesParity` 与 `missingKeys` 共 4 文件 30 例全绿，`npx tsc --noEmit` 0 错，三个改动文件按 stdin 形式的 eslint 逐规则计数与 HEAD 持平，`check:dead-keys` 0 死键，全仓 `eslint .` 0 error、九条预算计数逐条与改动前一致（`no-explicit-any` 1431、`complexity` 139、`no-large-inline-object-arg` 476、`prefer-screen-queries` 18），`npm run build` 退出 0。本簇零新增键，六列列名与六个描述文案的渲染结果不变，按 `WORKFLOW.md` 的常设规则这属"没改到文案"，渲染扫描未复跑，最近一次运行期证据仍是第 525 簇之后当天那一轮
+
+## 2026-10-24 第 527 簇：同值 139 与 placeholder 判定账复核
+
+活项清单第 1 条。把 139 个中英同值键与全部硬编码英文 placeholder 逐条读完，产出五档判定，顺手挖出一处门禁误判、八个真死键和一处英文侧中文串
+
+**门禁修复（`scripts/dead-keys.py`）**。每个文件的字面量集原来不剔除自身声明的作用域，于是 `useTranslations("common")` 贡献的字面量 "common" 会把 `common.common.disable` 这类"路径重复自家命名空间"的键从死键名单里救活，不管有没有人读它。修法是把 `string_literals(source)` 减去本文件的 scopes。收紧后从 0 里浮出 8 个真死键，全部核实无人引用后删掉：`models.credentials.updateCredential`、`deleteCredential`、`noCredentials`（CredentialsTable 重构的遗留）、`common.login`、`common.common.disable`、`common.common.copyToClipboard`（后者靠另一文件里别命名空间的同名叶子字面量被单段兜底救活，人工核实没有 `t("copyToClipboard")` 挂在 common 作用域下）、`organizations.objectPermissions`、`playground.common.disable`。门禁仍留一档已知松动：表常量按叶子名引用（`labelKey: "provider"`）只能靠单段兜底救活，全库有 388 个键依赖它（把兜底收紧到双段后的测量值），绝大多数是真引用，所以"0 死键"应读作下限
+
+**同值五档（134 条）**。缩写与单位 66（ID、URL、RPM、TPM、SSO、JSON、Logo、Worker、Beta 这类）、格式示例与机读 placeholder 30（vectorStores 各字段的示例值、`sk-...`、`us-west-2`）、品牌与产品名 26（LiteLLM、Lens、CyberArk Conjur、Microsoft Entra ID、Headroom）、协议名与枚举字面量 9（Streamable HTTP、Client Secret Basic、logging_only，选中后原样写回请求体）、含插值的混排 3（`{count} LLM`、`{score} / 100`）。判定依据写进了 `GLOSSARY.md` 新增的"保留英文的缩写、协议名与单位"一节，全量清单（含 3 个纯数字与分隔符值）可用一条命令复现：
+
+```
+python3 -c "import json; f=lambda d,p='': {k2: v for kk, vv in d.items() for k2, v in ([(f'{p}.{kk}' if p else kk, x) for x in (list(flat2(vv, f'{p}.{kk}' if p else kk).values()) if isinstance(vv, dict) else [vv])] )} if False else None"
+```
+
+**接掉的三处真漏**。`telemetry.note.changesApply` 的英文值一直是中文串（英文界面显示"改动从下一个窗口开始生效"），改成 `{destination}. Changes take effect from the next window`。`models.addModel.rubricAgenticLabel` 的 "Agentic" 是四档评分标准里唯一没翻的标签（邻居是旧版、对话、商务），接成智能体，顺带把 `{rubric} 评分标准` 三处插值句的 CJK 间空格去掉（`openingRubricName`、`openingCustomOnRubric`、`prefilledFromRubric`），并把分类器提示里硬编的 "Business 评分标准" 改成商务评分标准。`agents.selector` 三条（placeholder、agentDesc、noAgents）从 Agent 改成智能体，与 nav、agents 页正文及 GLOSSARY 的既定译法对齐
+
+**placeholder 账**。`placeholder="..."` 形态的英文硬编 65 处出现、61 个去重值，逐值读完：URL 示例 28、示例 ID 区域与枚举值 20、正则 JSONPath 与协议 token 11、JSDoc 注释 1（`numerical_input.tsx` 的 `@param` 示例，组件运行时已走 `t("numericalPlaceholder")`）、纯示例词 5（Productivity、claude-\* 这类）。真漏 0，活项清单这条闭环。旧账的"67 处"是扫描器 `attr:placeholder` 按 AST 命中数的口径，与本簇按值去重的口径不同，两套数并存，以本簇可复现的为准
+
+**验证**。四个测试文件 205 例全绿（AgentSelector 2 处、OpeningPromptEditor 3 处、ComplexityRouterConfig.integration 2 处断言翻面），i18n 守卫 parity、missingKeys、messageArgs 全绿，`npx tsc --noEmit` 0 错，`check:dead-keys` 0（收紧后的判定器），叶子 11877、同值 134

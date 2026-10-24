@@ -12,6 +12,11 @@ Keys reached through a table constant (`labelKey: "authType.tokenExchange"`)
 cannot be attributed to a namespace by the scanner, so every key whose
 relative path appears verbatim as a string literal anywhere in `src` is
 rescued from the dead list.
+
+The scope names declared by a file are removed from that file's literal set.
+`useTranslations("common")` itself contributes the literal "common", and left
+in place it would rescue any key whose path repeats its own namespace, such as
+`common.common.disable`, whether or not anything reads it.
 """
 
 import json
@@ -127,7 +132,7 @@ for rel in files:
         namespace = TYPE_TO_NS.get(type_name) or local_type_ns.get(type_name)
         if namespace:
             scopes.add(namespace)
-    literals = string_literals(source)
+    literals = string_literals(source) - scopes
     all_literals |= literals
     for scope in scopes:
         by_scope.setdefault(scope, set()).update(literals)

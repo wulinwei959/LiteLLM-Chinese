@@ -894,7 +894,7 @@ describe("ComplexityRouterConfig classifier rubric", () => {
     // operator their traffic is graded by examples the classifier never receives, and saving the form
     // unchanged would then move its tier decisions.
     openClassificationPanel(llmValue);
-    expect(screen.getByText("旧版（未校准） 评分标准")).toBeInTheDocument();
+    expect(screen.getByText("旧版（未校准）评分标准")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "自定义提示词" })).toBeInTheDocument();
   });
 
@@ -915,7 +915,7 @@ describe("ComplexityRouterConfig classifier rubric", () => {
       ...llmValue,
       classifier_llm_config: { model: "gpt-3.5-turbo", timeout_ms: 3000, classification_rubric: "agentic" },
     });
-    expect(screen.getByText("Agentic 评分标准")).toBeInTheDocument();
+    expect(screen.getByText("智能体评分标准")).toBeInTheDocument();
   });
 
   it("records the chat preset the operator picks inside the prompt editor", async () => {

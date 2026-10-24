@@ -24,7 +24,6 @@
     "defaultProxyAdmin": "Default Proxy Admin",
     "adminOnlyNotice": "{pageTitle} is only available to admin users.",
     "loading": "Loading...",
-    "login": "Login",
     "logout": "Logout",
     "save": "Save",
     "cancel": "Cancel",
@@ -159,9 +158,7 @@
       "or": "OR",
       "required": "Required",
       "reset": "Reset Filters",
-      "unknown": "Unknown",
-      "disable": "Disable",
-      "copyToClipboard": "Copy To Clipboard"
+      "unknown": "Unknown"
     },
     "connectionTest": {
       "title": "Connection Test Results"
@@ -1807,8 +1804,6 @@
       "title": "LLM Credentials",
       "description": "Configured credentials for different AI providers. Add and manage your API credentials.",
       "addCredential": "Add Credential",
-      "updateCredential": "Update Credential",
-      "deleteCredential": "Delete Credential",
       "updatedSuccessfully": "Credential updated successfully",
       "updateFailed": "Failed to update credential",
       "createdSuccessfully": "Credential added successfully",
@@ -1820,7 +1815,6 @@
       "resourceInformationTitle": "Credential Information",
       "credentialName": "Credential Name",
       "provider": "Provider",
-      "noCredentials": "No credentials found",
       "loading": "Loading credentials..."
     },
     "passThrough": {
@@ -3261,7 +3255,6 @@
     "maxParallelRequests": "Max Parallel Requests",
     "allProxyModels": "All proxy models",
     "teams": "Teams",
-    "objectPermissions": "Object Permissions",
     "overview": "Overview",
     "backToOrganizations": "Back to Organizations",
     "organizationDetails": "Organization Details",
@@ -8834,7 +8827,6 @@
       "yes": "Yes",
       "no": "No",
       "unavailable": "unavailable",
-      "disable": "Disable",
       "copyToClipboard": "Copy to Clipboard"
     },
     "chatComposer": {
@@ -13152,7 +13144,7 @@
     "note": {
       "uiOnly": "Sent only while Page navigation is on, to this proxy at POST /telemetry/ui_events, and counted into the same report as proxy traffic",
       "offByDefault": "Off by default. Each switch adds aggregated counts, never prompts, responses, keys, ids or header values. LITELLM_TELEMETRY_DISABLED=true turns everything off",
-      "changesApply": "{destination}。改动从下一个窗口开始生效"
+      "changesApply": "{destination}. Changes take effect from the next window"
     },
     "banner": {
       "vetoed": "Telemetry is turned off by an environment variable",
