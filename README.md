@@ -3,7 +3,7 @@
 LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围绕上游 [BerriAI/litellm](https://github.com/BerriAI/litellm) 的 `ui/litellm-dashboard` 展开。代理侧的 Python 代码不在翻译范围，只跟随上游 release
 
 **当前节点（2026-10-24）**：汉化工程已按九项收口清单做完，`main` 与 LAN 远端同步，本地跑得到的门禁全部为绿。同日修掉静态扫描器一条防噪过滤后复出的 11 处真漏已在第 525 簇接完
-上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 524 簇
+上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 525 簇
 
 ## 背景
 

@@ -129,6 +129,22 @@ eslint 的路径形式在 `(dashboard)` 这类含括号的路径目录下会低�
 
 vitest 在本机多 project 合跑时把 `TMPDIR` 固定到 `/tmp/vitest_tmp`，否则后台任务的临时目录被回收会让整片 fork worker 起不来，报成文件级失败而实际 0 例失败。报告只用 `--reporter=dot`，本项目没有 `basic` reporter。
 
+### 第六步之后、提交之前：把文档跟着这一批一起改
+
+代码合上去而账没改，下一个读文档的人就会按错的数排产。第 525 簇之前这里就欠着三笔：`目录规模`还停在 6748 个叶子、`文件覆盖率`停在 10 月 13 日的 861/305、`按路由的进度`停在 556 个未接入文件，全都早于上游 `v1.107.0` 同步。每批落地前把下面这些重测一遍，改到哪写在哪
+
+| 会过期的数                       | 写在哪                                                                               | 怎么重测                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| 两侧叶子数、键树差集、中英同值数 | `PROGRESS.md` 的"目录规模"与开头快照、`docs/i18n/README.md`、根 `README.md` 的进度表 | 把两侧目录扁平化成 `path -> value` 比长度与差集                           |
+| 接入数与覆盖率                   | `PROGRESS.md` 的"文件覆盖率"与开头快照、根 `README.md`                               | 两条 `rg` 命令，就写在"文件覆盖率"一节里                                  |
+| 按目录的未接入数                 | `PROGRESS.md` 的"按路由的进度"、`FILE-INVENTORY.md`                                  | `node scripts/i18n-file-inventory.mjs`                                    |
+| 残留英文命中数与口径             | `PROGRESS.md` 开头快照、`FILE-INVENTORY.md`                                          | `node scripts/scan-english.mjs <文件>`，含 `.ts` 全库用 `git ls-files` 喂 |
+| 渲染扫描的"最近一次复跑"         | `RENDERED-SCAN.md` 开头、根 `README.md` 的实机一行、`PROGRESS.md` 的活项清单         | 起 dev server 跑 `npm run scan:rendered`                                  |
+| lint 预算的九条计数              | `PROGRESS.md` 各簇验证段、根 `README.md` 的 Lint 一行                                | `npx eslint . -f json -o /tmp/lint.json` 加 `check-lint-budgets.mjs`      |
+| 待接队列与活项清单               | `FILE-INVENTORY.md`、`PROGRESS.md` 的"下一步优先级"、根 `README.md` 的剩余工作       | 做完一条就从活项里摘掉，别只在新簇里写完成                                |
+
+另有一类不是数字的过期：证据指针。写了"第 N 簇实测"的句子，下一次复跑如果换了簇，就要一并挪，否则"最新一次"这种词会指错地方
+
 ### 第七步：提交
 
 提交标题、正文与 PR 说明一律用简体中文，类型前缀（`feat`、`fix`、`chore`、`docs`）保留英文。示例

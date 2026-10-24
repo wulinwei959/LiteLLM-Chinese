@@ -155,6 +155,14 @@ Before requesting maintainer review, verify the current PR tip passes required C
 - 合并遗留缺陷的常见形态：引用未定义变量、fixture 与组件新行为不匹配、测试期望停在上游旧结构
 - 写入所谓"新"测试文件前先 `git ls-files` 或 `git status` 确认该路径未被跟踪，`ls | head` 截断过的目录清单不能当作不存在，否则 Write 会静默覆盖已有测试并删除用例
 
+## 文档跟着节点走
+
+每完成一个节点（一批翻译、一次拆分、一次门禁清零），在同一次提交里把会被读者当现状读
+的数与证据指针改掉：簇号、覆盖率、目录叶子数、残留命中数、渲染扫描的"最近一次复跑"、
+lint 预算计数、待接队列与活项清单。重测方法见
+`ui/litellm-dashboard/docs/i18n/WORKFLOW.md` 的"第六步之后、提交之前"那张表。落后的文档
+比没有文档更坏，下一个参与者会按错的数排产，还会以为上一次取证仍然成立
+
 ## 汉化批次的命令坑
 
 2026-10-24 的记录，来自第 467-479 簇里反复出现的同类错误，已逐条修正，下回按规避写法做。详细版见 `ui/litellm-dashboard/docs/i18n/FIXES.md`。
