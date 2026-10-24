@@ -72,13 +72,13 @@ describe("TelemetrySettingsPage", () => {
     expect(screen.getByRole("radio", { name: /^HTTP/ })).toHaveAttribute("aria-disabled", "true");
     await user.click(screen.getByRole("radio", { name: /^本地表/ }));
 
-    expect(await screen.findByRole("dialog", { name: "Telemetry is an enterprise-only feature" })).toBeVisible();
+    expect(await screen.findByRole("dialog", { name: "遥测是企业版专属功能" })).toBeVisible();
     expect(put).not.toHaveBeenCalled();
   });
 
   it.each([
-    [false, "Telemetry is an enterprise-only feature"],
-    [true, "Contact your enterprise representative"],
+    [false, "遥测是企业版专属功能"],
+    [true, "请联系贵企业的 LiteLLM 对接人"],
   ])("never turns telemetry on from the top switch (enterprise: %s)", async (premiumUser, title) => {
     auth.premiumUser = premiumUser;
     spyGET().mockResolvedValue({ data: OFF, response: new Response() } as never);
@@ -117,7 +117,7 @@ describe("TelemetrySettingsPage", () => {
     await user.click(await screen.findByRole("tab", { name: "管理控制台" }));
     await user.click(await screen.findByRole("switch", { name: "页面导航" }));
 
-    expect(await screen.findByRole("dialog", { name: "Telemetry is an enterprise-only feature" })).toBeVisible();
+    expect(await screen.findByRole("dialog", { name: "遥测是企业版专属功能" })).toBeVisible();
     expect(put).not.toHaveBeenCalled();
   });
 

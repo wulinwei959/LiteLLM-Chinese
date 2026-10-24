@@ -468,7 +468,7 @@ const VectorStoreForm: React.FC<VectorStoreFormProps> = ({
 
               <div role="group" className="flex w-full flex-col gap-3">
                 <span className="flex w-fit gap-2 text-sm leading-snug font-medium">
-                  {labelWithHint("Metadata", "JSON metadata for the vector store (optional)")}
+                  {labelWithHint(t("metadataLabel"), t("metadataHint"))}
                 </span>
                 <Textarea
                   rows={4}

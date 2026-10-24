@@ -1706,6 +1706,8 @@
       "federatedHint": "工作负载身份联合将保存为凭据，然后附加到此模型。",
       "federatedButton": "使用工作负载身份联合",
       "credentialOnlyNote": "此认证类型将保存为 LLM 凭据并附加到此模型。",
+      "authTypeLabel": "认证类型：",
+      "authTypeHint": "选择 LiteLLM 向该提供商认证的方式。",
       "createCredential": "创建凭据",
       "advSectionHeuristicTuning": "启发式调优",
       "advGroupLlmTuning": "LLM 调优",
@@ -2366,6 +2368,7 @@
     "listSearchOrganization": "搜索或选择组织",
     "listSearchToolSettings": "搜索工具设置",
     "listSecretManagerDescription": "以 JSON 对象形式输入密钥管理器配置。",
+    "secretManagerPremium": "高级功能 - 升级后才能管理密钥管理器设置。",
     "listSecretManagerPremiumDescription": "高级功能 - 升级后可管理密钥管理器设置。",
     "listSecretManagerSettings": "密钥管理器设置",
     "listSelectOrganizationNotice": "请选择要为其创建团队的组织。你只能在你是管理员的组织内创建团队。",
@@ -10439,6 +10442,7 @@
     "descriptionPlaceholder": "此搜索工具的说明"
   },
   "vectorStores": {
+    "metadataHintView": "向量库的 JSON 元数据",
     "tableLoading": "正在加载向量存储…",
     "search": "搜索",
     "queryRequired": "请输入搜索查询",
@@ -13027,6 +13031,12 @@
     "guardrailProviderParamsFailed": "获取护栏提供商专用参数失败"
   },
   "telemetry": {
+    "enterprise": {
+      "titlePremium": "请联系贵企业的 LiteLLM 对接人",
+      "titleEnterpriseOnly": "遥测是企业版专属功能",
+      "bodyPremium": "无法在本页开启遥测，请联系你的 LiteLLM 企业版对接人为该代理开启。",
+      "bodyEnterpriseOnly": "遥测仅在 LiteLLM 企业版可用，而本代理未使用企业版许可证。"
+    },
     "destination": {
       "none": "没有选择目的地，因此不会记录任何内容",
       "localTableLabel": "本地表（本代理数据库里的 LiteLLM_TelemetryReport）",
@@ -13350,7 +13360,12 @@
       "expectedOutputTokens": "预计输出 token 数",
       "expectedOutputHint": "这个值只用来估算成本，不限制响应长度。留空则用默认值 1024。",
       "predictionTimeout": "预测超时（毫秒）",
-      "predictionTimeoutHint": "如果比较耗时过长，就保留原来的路由。留空则用默认值 2000 毫秒。"
+      "predictionTimeoutHint": "如果比较耗时过长，就保留原来的路由。留空则用默认值 2000 毫秒。",
+      "blockedBuiltInTiers": "请使用内置层级以启用缓存感知路由。",
+      "blockedAdaptive": "请关闭自适应路由以启用缓存感知路由。",
+      "blockedFrequency": "请将「分类频率」设为每个请求以启用缓存感知路由。",
+      "blockedOnePerTier": "每个层级只选一个模型以启用缓存感知路由。",
+      "blockedOverrides":  "请移除按模型的参数覆盖以启用缓存感知路由。"
     },
     "decisionModel": {
       "ariaLabel": "决策模型说明",

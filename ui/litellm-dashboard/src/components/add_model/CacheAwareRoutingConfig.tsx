@@ -3,21 +3,23 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { classificationFrequency, type ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
 
-const blockedReason = (value: ComplexityRouterConfigValue): string | null => {
-  if (value.custom_tier_set) return "Use the built-in tiers to enable cache-aware routing.";
-  if (value.adaptive) return "Turn off Adaptive Routing to enable cache-aware routing.";
+type CacheAwareTranslator = ReturnType<typeof useTranslations<"addModel">>;
+
+const blockedReason = (value: ComplexityRouterConfigValue, t: CacheAwareTranslator): string | null => {
+  if (value.custom_tier_set) return t("cacheAware.blockedBuiltInTiers");
+  if (value.adaptive) return t("cacheAware.blockedAdaptive");
   if (classificationFrequency(value) !== "every_request") {
-    return 'Set "How often to classify" to every request to enable cache-aware routing.';
+    return t("cacheAware.blockedFrequency");
   }
   if (Object.values(value.tiers).some((models) => models.length > 1)) {
-    return "Choose one model per tier to enable cache-aware routing.";
+    return t("cacheAware.blockedOnePerTier");
   }
   if (
     Object.values(value.tier_model_params ?? {}).some((models) =>
       Object.values(models).some((params) => Object.keys(params).length > 0),
     )
   ) {
-    return "Remove per-model parameter overrides to enable cache-aware routing.";
+    return t("cacheAware.blockedOverrides");
   }
   return null;
 };
@@ -37,7 +39,7 @@ const CacheAwareRoutingConfig = ({
 }) => {
   const t = useTranslations("addModel");
   const enabled = value.cache_aware_routing ?? false;
-  const reason = blockedReason(value);
+  const reason = blockedReason(value, t);
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">

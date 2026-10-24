@@ -1706,6 +1706,8 @@
       "federatedHint": "Workload identity federation is saved as a credential, then attached to this model.",
       "federatedButton": "Use workload identity federation",
       "credentialOnlyNote": "This auth type is saved as an LLM credential and attached to this model.",
+      "authTypeLabel": "Auth Type:",
+      "authTypeHint": "Select how LiteLLM authenticates to this provider.",
       "createCredential": "Create credential",
       "advSectionHeuristicTuning": "Heuristic tuning",
       "advGroupLlmTuning": "LLM tuning",
@@ -2366,6 +2368,7 @@
     "listSearchOrganization": "Search or select an Organization",
     "listSearchToolSettings": "Search Tool Settings",
     "listSecretManagerDescription": "Enter secret manager configuration as a JSON object.",
+    "secretManagerPremium": "Premium feature - Upgrade to manage secret manager settings.",
     "listSecretManagerPremiumDescription": "Premium feature - Upgrade to manage secret manager settings.",
     "listSecretManagerSettings": "Secret Manager Settings",
     "listSelectOrganizationNotice": "Please select an organization to create a team for. You can only create teams within organizations where you are an admin.",
@@ -10443,6 +10446,7 @@
     "descriptionPlaceholder": "Description of this search tool"
   },
   "vectorStores": {
+    "metadataHintView": "JSON metadata for the vector store",
     "tableLoading": "Loading vector stores…",
     "search": "Search",
     "queryRequired": "Please enter a search query",
@@ -13031,6 +13035,12 @@
     "guardrailProviderParamsFailed": "Failed to get guardrail provider specific parameters"
   },
   "telemetry": {
+    "enterprise": {
+      "titlePremium": "Contact your enterprise representative",
+      "titleEnterpriseOnly": "Telemetry is an enterprise-only feature",
+      "bodyPremium": "Telemetry can't be turned on from this page. Reach out to your LiteLLM enterprise representative to turn it on for this proxy.",
+      "bodyEnterpriseOnly": "Telemetry is only available on LiteLLM Enterprise, and this proxy isn't on an enterprise license."
+    },
     "destination": {
       "none": "No destination is chosen, so nothing is recorded",
       "localTableLabel": "Local table (LiteLLM_TelemetryReport in this proxy's database)",
@@ -13352,7 +13362,12 @@
       "expectedOutputTokens": "Expected output tokens",
       "expectedOutputHint": "Used to estimate cost, not to limit the response. Leave blank to use the default of 1024.",
       "predictionTimeout": "Prediction timeout (ms)",
-      "predictionTimeoutHint": "Keep the original route if the comparison takes too long. Leave blank to use the default of 2000 ms."
+      "predictionTimeoutHint": "Keep the original route if the comparison takes too long. Leave blank to use the default of 2000 ms.",
+      "blockedBuiltInTiers": "Use the built-in tiers to enable cache-aware routing.",
+      "blockedAdaptive": "Turn off Adaptive Routing to enable cache-aware routing.",
+      "blockedFrequency": "Set \"How often to classify\" to every request to enable cache-aware routing.",
+      "blockedOnePerTier": "Choose one model per tier to enable cache-aware routing.",
+      "blockedOverrides":  "Remove per-model parameter overrides to enable cache-aware routing."
     },
     "decisionModel": {
       "ariaLabel": "Decision model notice",

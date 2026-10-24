@@ -328,7 +328,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
 
                         <div role="group" className="flex w-full flex-col gap-3">
                           <span className="flex w-fit gap-2 text-sm leading-snug font-medium">
-                            {labelWithHint("Metadata", "JSON metadata for the vector store")}
+                            {labelWithHint(t("metadataLabel"), t("metadataHintView"))}
                           </span>
                           <Textarea
                             rows={4}

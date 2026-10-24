@@ -278,7 +278,7 @@ describe("ProviderSpecificFields", () => {
 
     const apiKeyLabel = await screen.findByLabelText("OpenAI API Key");
     expect(apiKeyLabel).toBeInTheDocument();
-    expect(screen.queryByLabelText("Auth Type:")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("认证类型：")).not.toBeInTheDocument();
 
     const apiBaseInput = screen.getByPlaceholderText("https://api.openai.com/v1");
     expect(apiBaseInput).toBeInTheDocument();
@@ -497,7 +497,7 @@ describe("ProviderSpecificFields", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByRole("combobox", { name: "Auth Type:" })).toHaveTextContent(
+    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
       "OAuth token exchange (on-behalf-of)",
     );
     expect(screen.getByLabelText("Token Endpoint URL")).toBeInTheDocument();
@@ -540,7 +540,7 @@ describe("ProviderSpecificFields", () => {
       </QueryClientProvider>,
     );
 
-    const authTypeSelect = await screen.findByRole("combobox", { name: "Auth Type:" });
+    const authTypeSelect = await screen.findByRole("combobox", { name: "认证类型：" });
     expect(authTypeSelect).toHaveTextContent("Static delegated access token");
     await user.click(authTypeSelect);
     expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual([
@@ -567,7 +567,7 @@ describe("ProviderSpecificFields", () => {
     await screen.findByLabelText("Token Endpoint URL");
     await chooseSelectOption(
       user,
-      screen.getByRole("combobox", { name: "Auth Type:" }),
+      screen.getByRole("combobox", { name: "认证类型：" }),
       "Static delegated access token",
     );
 
@@ -589,7 +589,7 @@ describe("ProviderSpecificFields", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByRole("combobox", { name: "Auth Type:" })).toHaveTextContent(
+    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
       "Static delegated access token",
     );
     expect(screen.getByLabelText("Delegated Access Token")).toHaveValue("delegated-token");
@@ -609,7 +609,7 @@ describe("ProviderSpecificFields", () => {
 
     await chooseSelectOption(
       user,
-      await screen.findByRole("combobox", { name: "Auth Type:" }),
+      await screen.findByRole("combobox", { name: "认证类型：" }),
       "OAuth token exchange (on-behalf-of)",
     );
 
@@ -630,7 +630,7 @@ describe("ProviderSpecificFields", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByRole("combobox", { name: "Auth Type:" })).toHaveTextContent(
+    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
       "Static delegated access token",
     );
   });
@@ -715,6 +715,6 @@ describe("ProviderSpecificFields", () => {
 
     await screen.findByLabelText("OpenAI API Key");
 
-    expect(screen.queryByRole("combobox", { name: "Auth Type:" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "认证类型：" })).not.toBeInTheDocument();
   });
 });

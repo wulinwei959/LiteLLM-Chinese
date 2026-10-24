@@ -63,15 +63,15 @@ describe("CacheAwareRoutingConfig", () => {
   });
 
   it.each<{ patch: Partial<ComplexityRouterConfigValue>; reason: string }>([
-    { patch: { adaptive: true }, reason: "Turn off Adaptive Routing" },
-    { patch: { session_affinity: true }, reason: 'Set "How often to classify"' },
-    { patch: { classification_mode: "user_turn" }, reason: 'Set "How often to classify"' },
-    { patch: { tiers: { ...initial.tiers, SIMPLE: ["small", "other"] } }, reason: "Choose one model per tier" },
+    { patch: { adaptive: true }, reason: "请关闭自适应路由" },
+    { patch: { session_affinity: true }, reason: "请将「分类频率」" },
+    { patch: { classification_mode: "user_turn" }, reason: "请将「分类频率」" },
+    { patch: { tiers: { ...initial.tiers, SIMPLE: ["small", "other"] } }, reason: "每个层级只选一个模型" },
     {
       patch: { tier_model_params: { SIMPLE: { small: { reasoning_effort: "high" } } } },
-      reason: "Remove per-model parameter overrides",
+      reason: "请移除按模型的参数覆盖",
     },
-    { patch: { custom_tier_set: { tiers: [], fallback_tier_id: "custom" } }, reason: "Use the built-in tiers" },
+    { patch: { custom_tier_set: { tiers: [], fallback_tier_id: "custom" } }, reason: "请使用内置层级" },
   ])(
     "explains an incompatible setting and still allows an existing opt-in to be disabled: $reason",
     ({ patch, reason }) => {

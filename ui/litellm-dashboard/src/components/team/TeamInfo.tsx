@@ -2114,9 +2114,9 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     name="allowed_passthrough_routes"
                     label={
                       !premiumUser
-                        ? labelWithHint("Allowed Pass Through Routes", t("listAllowedPassThroughRoutesPremiumHint"))
+                        ? labelWithHint(t("listAllowedPassThroughRoutes"), t("listAllowedPassThroughRoutesPremiumHint"))
                         : !is_proxy_admin
-                          ? labelWithHint("Allowed Pass Through Routes", t("listAllowedPassThroughRoutesAdminHint"))
+                          ? labelWithHint(t("listAllowedPassThroughRoutes"), t("listAllowedPassThroughRoutesAdminHint"))
                           : t("listAllowedPassThroughRoutes")
                     }
                   >

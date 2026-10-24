@@ -776,7 +776,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                               disabled={isOrgAdmin && soleOrganizationId !== null && value === soleOrganizationId}
                               allowClear={!isOrgAdmin}
                               placeholder={
-                                hasNoOrgs ? "No organizations available" : "Search or select an Organization"
+                                hasNoOrgs ? t("listNoOrganizationsAvailable") : t("listSearchOrganization")
                               }
                               emptyText={t("listNoOrganizationsAvailable")}
                               onValueChange={(next) => selectCreateTeamOrganization(next, value ?? null, onChange)}
@@ -969,8 +969,8 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           label={t("listSecretManagerSettings")}
                           description={
                             premiumUser
-                              ? "Enter secret manager configuration as a JSON object."
-                              : "Premium feature - Upgrade to manage secret manager settings."
+                              ? t("listSecretManagerDescription")
+                              : t("secretManagerPremium")
                           }
                         >
                           {({ ref, value, ...field }) => (
@@ -1112,12 +1112,12 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           label={
                             !premiumUser
                               ? labelWithHint(
-                                  "Allowed Pass Through Routes",
+                                  t("listAllowedPassThroughRoutes"),
                                   t("listAllowedPassThroughRoutesPremiumHint"),
                                 )
                               : !isProxyAdminRole(userRole || "")
                                 ? labelWithHint(
-                                    "Allowed Pass Through Routes",
+                                    t("listAllowedPassThroughRoutes"),
                                     t("listAllowedPassThroughRoutesAdminHint"),
                                   )
                                 : t("listAllowedPassThroughRoutes")
