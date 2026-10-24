@@ -5045,4 +5045,4 @@ lint 侧另有既成事实：`key_edit_view.tsx` 在 HEAD 就有 `max-lines`（8
 
 ### 第 514 簇后的全量取证
 
-三 project 合跑（unit+component+integration，873 个文件、11213 例）：11207 passed、6 expected fail、0 例失败。22 个 `integration` 文件记为文件级失败，逐条读错误体是同一成因，`[vitest-pool]: Failed to start forks worker` 伴 `ENOENT ... /run/user/1000/.../\_\_vitest\_\_/\<hash\>`，即后台任务的临时目录在跑到中途被回收、vite 的模块缓存随之消失，worker 起不来就没有任何用例执行，因此失败计数仍是 0。整机负载也印证这点（load average 21.6）。把 `TMPDIR` 固定到 `/tmp/vitest_tmp` 单跑 `integration` project 复现取证，结论补在本节后。
+三 project 合跑（unit+component+integration，873 个文件、11213 例）：11207 passed、6 expected fail、0 例失败。22 个 `integration` 文件记为文件级失败，逐条读错误体是同一成因，`[vitest-pool]: Failed to start forks worker` 伴 `ENOENT ... /run/user/1000/.../\_\_vitest\_\_/\<hash\>`，即后台任务的临时目录在跑到中途被回收、vite 的模块缓存随之消失，worker 起不来就没有任何用例执行，因此失败计数仍是 0。整机负载也印证这点（load average 21.6）。把 `TMPDIR` 固定到 `/tmp/vitest_tmp` 单跑 `integration` project 复现取证：115 个文件全通过、1830 例通过、3 例预期失败、0 例失败、退出码 0，那 22 个文件在其中无一复现，确认失败面是环境成因而非代码缺陷。汉化侧的失败面至此为零。
