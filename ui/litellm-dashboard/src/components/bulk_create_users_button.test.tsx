@@ -30,6 +30,33 @@ describe("BulkCreateUsersButton", () => {
     expect(screen.getByText("+ 批量邀请用户")).toBeInTheDocument();
   });
 
+  it("downloads a CSV template whose header matches the columns the parser accepts", async () => {
+    const user = await openUploadStep();
+    let template: Blob | null = null;
+    let filename = "";
+    vi.spyOn(window.URL, "createObjectURL").mockImplementation((blob) => {
+      template = blob as Blob;
+      return "blob:litellm-template";
+    });
+    const revoke = vi.spyOn(window.URL, "revokeObjectURL").mockImplementation(() => {});
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
+      filename = this.download;
+    });
+
+    await user.click(screen.getByRole("button", { name: /下载 CSV 模板/ }));
+
+    expect(click).toHaveBeenCalledTimes(1);
+    expect(filename).toBe("litellm_bulk_users_template.csv");
+    const text = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.readAsText(template as Blob);
+    });
+    const header = text.trim().split(",");
+    expect(header).toEqual(["user_email", "user_role", "teams", "max_budget", "budget_duration", "models"]);
+    expect(revoke).toHaveBeenCalledWith("blob:litellm-template");
+    vi.restoreAllMocks();
+  });
   it("parses a CSV chosen through the file input", async () => {
     await openUploadStep();
 

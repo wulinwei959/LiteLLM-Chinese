@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { downloadBulkUserCsvTemplate } from "./bulkUsersCsvTemplate";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -594,7 +595,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                     </div>
                   </div>
 
-                  <Button size="lg" className="w-full md:w-auto">
+                  <Button size="lg" className="w-full md:w-auto" onClick={downloadBulkUserCsvTemplate}>
                     <Download className="size-4" />
                     {t("bulkDownloadCsvTemplate")}
                   </Button>
