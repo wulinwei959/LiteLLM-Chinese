@@ -145,10 +145,10 @@ describe("dataUtils", () => {
       });
 
       it("should use navigator.clipboard.writeText when available", async () => {
-        const result = await copyToClipboard("test text");
+        const result = await copyToClipboard("test text", "已复制到剪贴板");
 
         expect(navigator.clipboard.writeText).toHaveBeenCalledWith("test text");
-        expect(mockToast.success).toHaveBeenCalledWith("Copied to clipboard");
+        expect(mockToast.success).toHaveBeenCalledWith("已复制到剪贴板");
         expect(result).toBe(true);
       });
 
@@ -159,8 +159,8 @@ describe("dataUtils", () => {
       });
 
       it("should return false for null/undefined text", async () => {
-        expect(await copyToClipboard(null)).toBe(false);
-        expect(await copyToClipboard(undefined)).toBe(false);
+        expect(await copyToClipboard(null, "已复制到剪贴板")).toBe(false);
+        expect(await copyToClipboard(undefined, "已复制到剪贴板")).toBe(false);
         expect(navigator.clipboard.writeText).not.toHaveBeenCalled();
       });
 
@@ -183,11 +183,11 @@ describe("dataUtils", () => {
         document.body.appendChild = vi.fn();
         document.body.removeChild = vi.fn();
 
-        const result = await copyToClipboard("test text");
+        const result = await copyToClipboard("test text", "已复制到剪贴板");
 
         expect(navigator.clipboard.writeText).toHaveBeenCalledWith("test text");
         expect(document.execCommand).toHaveBeenCalledWith("copy");
-        expect(mockToast.success).toHaveBeenCalledWith("Copied to clipboard");
+        expect(mockToast.success).toHaveBeenCalledWith("已复制到剪贴板");
         expect(result).toBe(true);
       });
     });
@@ -216,11 +216,11 @@ describe("dataUtils", () => {
       });
 
       it("should fall back to execCommand when clipboard API is not available", async () => {
-        const result = await copyToClipboard("test text");
+        const result = await copyToClipboard("test text", "已复制到剪贴板");
 
         expect(document.createElement).toHaveBeenCalledWith("textarea");
         expect(document.execCommand).toHaveBeenCalledWith("copy");
-        expect(mockToast.success).toHaveBeenCalledWith("Copied to clipboard");
+        expect(mockToast.success).toHaveBeenCalledWith("已复制到剪贴板");
         expect(result).toBe(true);
       });
 
@@ -234,7 +234,7 @@ describe("dataUtils", () => {
         };
         document.createElement = vi.fn().mockReturnValue(mockTextArea);
 
-        await copyToClipboard("test text");
+        await copyToClipboard("test text", "已复制到剪贴板");
 
         expect(mockTextArea.value).toBe("test text");
         /* eslint-disable jest-dom/prefer-to-have-style -- the subject is a plain mock object, not a DOM node, so toHaveStyle cannot read it */
@@ -250,7 +250,7 @@ describe("dataUtils", () => {
       it("should handle execCommand failure", async () => {
         document.execCommand = vi.fn().mockReturnValue(false);
 
-        const result = await copyToClipboard("test text");
+        const result = await copyToClipboard("test text", "已复制到剪贴板");
 
         expect(document.execCommand).toHaveBeenCalledWith("copy");
         expect(mockToast.fromError).toHaveBeenCalledWith("Failed to copy to clipboard");
@@ -262,7 +262,7 @@ describe("dataUtils", () => {
           throw new Error("DOM error");
         });
 
-        const result = await copyToClipboard("test text");
+        const result = await copyToClipboard("test text", "已复制到剪贴板");
 
         expect(mockToast.fromError).toHaveBeenCalledWith("Failed to copy to clipboard");
         expect(result).toBe(false);
@@ -278,7 +278,7 @@ describe("dataUtils", () => {
         };
         document.createElement = vi.fn().mockReturnValue(mockTextArea);
 
-        await copyToClipboard("test text");
+        await copyToClipboard("test text", "已复制到剪贴板");
 
         expect(document.body.appendChild).toHaveBeenCalledWith(mockTextArea);
         expect(document.body.removeChild).toHaveBeenCalledWith(mockTextArea);
@@ -306,7 +306,7 @@ describe("dataUtils", () => {
       });
 
       it("should handle navigator.clipboard being null", async () => {
-        const result = await copyToClipboard("test text");
+        const result = await copyToClipboard("test text", "已复制到剪贴板");
 
         expect(document.execCommand).toHaveBeenCalledWith("copy");
         expect(result).toBe(true);
@@ -317,7 +317,7 @@ describe("dataUtils", () => {
           clipboard: {}, // clipboard exists but writeText doesn't
         });
 
-        const result = await copyToClipboard("test text");
+        const result = await copyToClipboard("test text", "已复制到剪贴板");
 
         expect(document.execCommand).toHaveBeenCalledWith("copy");
         expect(result).toBe(true);

@@ -5071,3 +5071,13 @@ lint 侧另有既成事实：`key_edit_view.tsx` 在 HEAD 就有 `max-lines`（8
 那 4 处里两枚是端点路径段（`<code>/v1/decisions</code>`、`/v1/systemone`），按既有判定账进基线（`--update-baseline` 写入 2 条）。另两枚是真缺陷：`DecisionModelsBanner` 的 `orTry` 词条已是完整句，JSX 又硬拼 `playground.{" "}` 文本节点，en 会渲染成 "... Decisions playground. playground."，zh 同理重复，且 JSX 的 `, ` 与词条前导逗号叠成双逗号。删掉该文本节点，并把 zh `orTry` 的"决策 playground"统一成侧栏既有术语"决策演练场"（`nav.playground` = 演练场）。15 页复跑后 0 渲染错误、除基线两条外 0 处英文。
 
 验证：横幅与决策模型 3 个测试文件 47 例、`AddModelForm.integration`+`models-and-endpoints/page.integration`+i18n 守卫+`toast.test` 共 8 文件 99 例通过，tsc 0 错、dead keys 0、en/zh 叶子各 11836 无差集。
+
+## 2026-10-24 第 516 簇：copyToClipboard 的英文默认文案
+
+第 515 簇复核高扇出片时发现，`src/utils/dataUtils.ts` 的 `copyToClipboard` 默认参数还是 `"Copied to clipboard"`，属于用户可见的 toast 正文。收口方式不是再补一条词条，而是把 `messageText` 改成必传，让编译器把缺参的调用点全部吐出来，再由它们各自所在组件补本地化文案。默认值删掉后，将来漏传是编译错误，不会退回运行时渲染英文。
+
+tsc 枚举出 7 处：`ModelHubTable.tsx` 三处（页面 URL、agent url、MCP server_id）、`guardrail_info.tsx`、`model_info_view.tsx`、`onboarding_link.tsx`、`TeamInfo.tsx` 各一处，统一传 `commonT("copiedToClipboard")`（已复制到剪贴板），其中 3 个文件需新增 `useTranslations("common")`。56 个调用点里其余 37 个本来就自传 `t(...)`。
+
+一处口径教训：先前用 grep 估出"19 处吃默认值"，实际其中 12 处命中的是各文件自己的同名局部函数。`public_model_hub.tsx:269` 的局部 `copyToClipboard` 已经在用 `t("copiedToClipboard")`，`A2AMetrics.tsx:83` 的局部版本只写剪贴板、不弹文案，都不该改。编译器口径比正则可靠，这类"默认参数"面应直接删默认值让 tsc 定位。
+
+测试：`dataUtils.test.ts` 的 11 处单参调用补上消息、3 处英文断言翻面（改前该文件是唯一的 `"Copied to clipboard"` 字面量持有者）。验证为 `ModelHubTable`/`ModelHubTableColumns`/`TeamInfo`（含 integration）/`model_info_view`/`onboarding_link`/`guardrail_info`/`dataUtils` 加 i18n 守卫共 13 个文件 455 例通过、3 例预期失败，`tsc --project tsconfig.production.json` 0 错，改动文件 prettier 合规（`ModelHubTable.tsx`、`model_info_view.tsx`、`onboarding_link.tsx` 在 HEAD 就未格式化，只把手工换行对齐 prettier 形状，不做无关收口）。

@@ -596,6 +596,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   const t = useTranslations("teams");
   const estimateT = useTranslations("teams.estimatedOutputTokens");
   const durationT = useTranslations("common.budgetDuration");
+  const commonT = useTranslations("common");
   const teamUpdateSchema = useMemo(
     () =>
       buildTeamUpdateFieldsSchema(t, estimateT).superRefine((values, ctx) => {
@@ -1360,7 +1361,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   const otherGuardrails = allGuardrails.filter((g) => !g.litellm_params?.default_on);
 
   const copyToClipboard = async (text: string, key: string) => {
-    const success = await utilCopyToClipboard(text);
+    const success = await utilCopyToClipboard(text, commonT("copiedToClipboard"));
     if (success) {
       setCopiedStates((prev) => ({ ...prev, [key]: true }));
       setTimeout(() => {

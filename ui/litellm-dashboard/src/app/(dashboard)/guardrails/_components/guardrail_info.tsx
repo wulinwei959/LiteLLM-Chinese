@@ -80,6 +80,7 @@ export interface GuardrailInfoProps {
 
 const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose, accessToken, isAdmin }) => {
   const t = useTranslations("guardrails");
+  const commonT = useTranslations("common");
   const [guardrailData, setGuardrailData] = useState<any>(null);
   const [guardrailProviderSpecificParams, setGuardrailProviderSpecificParams] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -537,7 +538,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
   const { logo, displayName } = getGuardrailLogoAndName(guardrailData.litellm_params?.guardrail || "");
 
   const copyToClipboard = async (text: string | null | undefined, key: string) => {
-    const success = await utilCopyToClipboard(text);
+    const success = await utilCopyToClipboard(text, commonT("copiedToClipboard"));
     if (success) {
       setCopiedStates((prev) => ({ ...prev, [key]: true }));
       setTimeout(() => {

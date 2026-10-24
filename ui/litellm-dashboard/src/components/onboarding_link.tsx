@@ -65,6 +65,7 @@ export default function OnboardingModal({
   const copyButtonRef = useRef<HTMLButtonElement>(null);
   const isInvitation = modalType === "invitation";
   const t = useTranslations("onboardingModal");
+  const commonT = useTranslations("common");
   const title = isInvitation ? t("invitationTitle") : t("resetTitle");
   const invitationUrl = getUiPageUrl(
     buildOnboardingUrl({
@@ -102,7 +103,7 @@ export default function OnboardingModal({
                 <InputGroupButton
                   ref={copyButtonRef}
                   aria-label={isInvitation ? t("copyInvitation") : t("copyReset")}
-                  onClick={() => copyToClipboard(invitationUrl)}
+                  onClick={() => copyToClipboard(invitationUrl, commonT("copiedToClipboard"))}
                 >
                   <Copy />
                   {isInvitation ? t("copyInvitation") : t("copyReset")}

@@ -463,7 +463,12 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
               <div className="flex items-center bg-border px-2 py-1 rounded-sm">
                 <p className="mr-2">{getUiPageUrl(`${getProxyBaseUrl()}/ui/model_hub_table`)}</p>
                 <button
-                  onClick={() => void copyToClipboard(getUiPageUrl(`${getProxyBaseUrl()}/ui/model_hub_table`))}
+                  onClick={() =>
+                    void copyToClipboard(
+                      getUiPageUrl(`${getProxyBaseUrl()}/ui/model_hub_table`),
+                      commonT("copiedToClipboard"),
+                    )
+                  }
                   className="p-1 hover:bg-accent rounded-sm transition-colors"
                   title={t("copyUrl")}
                 >
@@ -864,7 +869,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                     <div className="flex items-center space-x-2">
                       <p className="truncate min-w-0">{selectedAgent.url}</p>
                       <Copy
-                        onClick={() => void copyToClipboard(selectedAgent.url)}
+                        onClick={() => void copyToClipboard(selectedAgent.url, commonT("copiedToClipboard"))}
                         className="size-3.5 shrink-0 cursor-pointer text-muted-foreground hover:text-info"
                       />
                     </div>
@@ -993,7 +998,7 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
                     <div className="flex items-center space-x-2">
                       <p className="text-xs truncate min-w-0">{selectedMcpServer.server_id}</p>
                       <Copy
-                        onClick={() => void copyToClipboard(selectedMcpServer.server_id)}
+                        onClick={() => void copyToClipboard(selectedMcpServer.server_id, commonT("copiedToClipboard"))}
                         className="size-3.5 shrink-0 cursor-pointer text-muted-foreground hover:text-info"
                       />
                     </div>

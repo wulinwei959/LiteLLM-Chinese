@@ -66,10 +66,7 @@ export const getSpendString = (value: number | null | undefined, decimals: numbe
 export const formatPerSecondCost = (cost: number): string =>
   `$${cost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 6 })}/s`;
 
-export const copyToClipboard = async (
-  text: string | null | undefined,
-  messageText: string = "Copied to clipboard",
-): Promise<boolean> => {
+export const copyToClipboard = async (text: string | null | undefined, messageText: string): Promise<boolean> => {
   if (!text) return false;
 
   // Check if clipboard API is available
