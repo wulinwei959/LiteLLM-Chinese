@@ -5163,7 +5163,7 @@ tsc 枚举出 7 处：`ModelHubTable.tsx` 三处（页面 URL、agent url、MCP 
 
 验证：`tsc --project tsconfig.production.json` 0 错；`eslint .` 从 77 条 error（60 个文件）降到 0 条，余 3278 条 warning；`scripts/check-dead-keys.mjs` 0 死键；en/zh 叶子各 11877 且完全一致（本簇零新增键）。改动面按三条线取证：受影响 22 个目录批次 230 文件、3421 例，第 519 到 522 簇所改组件的消费方定向批次 41 文件、932 例，均通过；全量三 project 合跑 970 文件、13056 例，首轮 5 例红，逐条单跑复核后 3 例是真缺陷、2 例是负载抖动。
 
-真缺陷与认证类型同源：`CredentialModal.integration.test.tsx` 的 3 例同样按英文名查 combobox，连同 6 处 `name: "Auth Type:"` 与 3 处 `/^Auth Type:/` 一起翻成「认证类型：」，该文件与 `edit_auto_router_modal.integration` 合跑 100 例全绿。`add_agent_form.integration` 与 `edit_auto_router_modal.integration` 各 1 例单跑全绿，与判定账里同名的整机负载抖动同源（本轮合跑耗时 1046 秒、并发 24 worker）。
+真缺陷与认证类型同源：`CredentialModal.integration.test.tsx` 的 3 例同样按英文名查 combobox，连同 6 处 `name: "Auth Type:"` 与 3 处 `/^Auth Type:/` 一起翻成「认证类型：」，该文件与 `edit_auto_router_modal.integration` 合跑 100 例全绿。`add_agent_form.integration` 与 `edit_auto_router_modal.integration` 各 1 例单跑全绿，与判定账里同名的整机负载抖动同源（本轮合跑耗时 1046 秒）。
 
 lint 预算两处超标不在本簇账内：`local/no-large-inline-object-arg` 484 对上限 477、`local/no-long-condition-chain` 201 对上限 200。本簇清理前后的两次全仓计数完全一致（484 与 201），说明这两笔是 v1.107 同步带进来的继承债，需要单独一簇按规则逐处收敛，不能靠调高上限解决。
 
