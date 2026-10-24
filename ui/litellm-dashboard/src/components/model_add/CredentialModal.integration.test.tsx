@@ -158,11 +158,11 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ mode: "edit", existingCredential: microsoftCopilotCredential });
 
-    expect(await screen.findByRole("combobox", { name: "Auth Type:" })).toHaveTextContent(
+    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent(
       "OAuth token exchange (on-behalf-of)",
     );
     await screen.findByLabelText("Token Endpoint URL");
-    await chooseOption(user, /^Auth Type:/, "Static delegated access token");
+    await chooseOption(user, /^认证类型：/, "Static delegated access token");
     fill("Delegated Access Token", "delegated-graph-token");
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
 
@@ -543,9 +543,9 @@ describe("CredentialModal with GitHub Copilot auth types", () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ initialProvider: "GITHUB_COPILOT" });
 
-    expect(await screen.findByRole("combobox", { name: "Auth Type:" })).toHaveTextContent("Shared device login");
+    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("Shared device login");
     expect(await screen.findByLabelText("API Key")).toBeInTheDocument();
-    await chooseOption(user, /^Auth Type:/, "Per-user GitHub OAuth");
+    await chooseOption(user, /^认证类型：/, "Per-user GitHub OAuth");
     expect(screen.queryByLabelText("API Key")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("API Base")).not.toBeInTheDocument();
     fill("凭据名称：", "copilot-per-user");
@@ -579,9 +579,9 @@ describe("CredentialModal with GitHub Copilot auth types", () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ mode: "edit", existingCredential: perUserCopilotCredential });
 
-    expect(await screen.findByRole("combobox", { name: "Auth Type:" })).toHaveTextContent("Per-user GitHub OAuth");
+    expect(await screen.findByRole("combobox", { name: "认证类型：" })).toHaveTextContent("Per-user GitHub OAuth");
     expect(screen.getByLabelText("GitHub host")).toHaveValue("octo.ghe.com");
-    await chooseOption(user, /^Auth Type:/, "Shared device login");
+    await chooseOption(user, /^认证类型：/, "Shared device login");
     await user.click(screen.getByRole("button", { name: "更新凭据" }));
 
     const [values, valuesToDelete] = onSubmit.mock.calls[0];
