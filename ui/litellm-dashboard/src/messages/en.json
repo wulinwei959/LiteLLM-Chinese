@@ -3436,6 +3436,10 @@
     "notAvailable": "n/a"
   },
   "guardrails": {
+    "voiceWarn": "Warn",
+    "voiceEndSession": "End session",
+    "voiceWarnDesc": "Bot speaks the message, session continues",
+    "voiceEndSessionDesc": "Bot speaks the message, connection closes immediately",
     "testNoAccessToken": "No access token available",
     "testInvalidInputJson": "Invalid test input JSON",
     "testFailed": "Failed to test custom code",
@@ -6580,6 +6584,8 @@
     "description": "LiteLLM Proxy Admin UI"
   },
   "mcpServers": {
+    "capabilityPromptsDesc": "Advertise prompts and answer prompts/list and prompts/get",
+    "capabilityResourcesDesc": "Advertise resources and answer resources/list, resources/templates/list and resources/read",
     "reachableDescription": "Server responded. Authentication and tools were not checked",
     "duplicateIdentifier": "An MCP server with this name/alias already exists.",
     "typeToAdd": "Type to add",
@@ -13419,6 +13425,12 @@
     }
   },
   "moyai": {
+    "githubCta": "Star Moyai on GitHub",
+    "statCost": "cheaper than our Devin bill",
+    "statProviders": "providers through LiteLLM",
+    "statHarnesses": "agent harnesses",
+    "urlIncomplete": "Enter a full http or https URL, without credentials",
+    "quickConnectFailed": "Could not start quick connect",
     "actionDescription": "Give it a task from Slack or the browser. It edits code, runs your tests in its own cloud workspace, and opens a pull request while your laptop is closed.",
     "selfDeployDescription": "Deploy it on your own infrastructure and point it at this gateway. Your code and credentials stay in your accounts.",
     "watchDemoOnGithub": "Watch the demo on GitHub",

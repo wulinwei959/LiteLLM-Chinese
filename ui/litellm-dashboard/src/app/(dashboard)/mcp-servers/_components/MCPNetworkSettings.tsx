@@ -163,13 +163,13 @@ const AllowedClientDialog: React.FC<AllowedClientDialogProps> = ({ draft, onChan
 
 type DisableableCapability = "prompts" | "resources";
 
-const CAPABILITY_TOGGLES: { capability: DisableableCapability; label: string; description: string }[] = [
-  { capability: "prompts", label: "Prompts", description: "Advertise prompts and answer prompts/list and prompts/get" },
-  {
-    capability: "resources",
-    label: "Resources",
-    description: "Advertise resources and answer resources/list, resources/templates/list and resources/read",
-  },
+const CAPABILITY_TOGGLES: {
+  capability: DisableableCapability;
+  label: string;
+  descriptionKey: "capabilityPromptsDesc" | "capabilityResourcesDesc";
+}[] = [
+  { capability: "prompts", label: "Prompts", descriptionKey: "capabilityPromptsDesc" },
+  { capability: "resources", label: "Resources", descriptionKey: "capabilityResourcesDesc" },
 ];
 
 const parseDisabledCapabilities = (value: unknown): DisableableCapability[] =>
@@ -491,13 +491,13 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
       </div>
 
       <Card className="space-y-4 p-6">
-        {CAPABILITY_TOGGLES.map(({ capability, label, description }) => (
+        {CAPABILITY_TOGGLES.map(({ capability, label, descriptionKey }) => (
           <div key={capability} className="flex items-center justify-between gap-4">
             <div>
               <Label htmlFor={`${capabilityToggleId}-${capability}`} className="text-sm font-medium">
                 {label}
               </Label>
-              <p className="text-xs text-muted-foreground">{description}</p>
+              <p className="text-xs text-muted-foreground">{t(descriptionKey)}</p>
             </div>
             <Switch
               id={`${capabilityToggleId}-${capability}`}

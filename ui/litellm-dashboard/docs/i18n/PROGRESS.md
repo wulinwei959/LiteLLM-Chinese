@@ -5110,3 +5110,19 @@ tsc 枚举出 7 处：`ModelHubTable.tsx` 三处（页面 URL、agent url、MCP 
 验证：tsc 0 错、dead keys 0、`src/lib/i18n` 加 `usage/.../overview` 目录共 8 个文件 45 例通过、en/zh 叶子各 11840 且完全一致、改动文件 prettier 合规。
 
 该维度的余量如实登记：宽口径的 `string` 类命中 25022 处，从未按文件系统复读，其中必然混着类名、键名、URL 与数据值，但也可能藏着与 `TopAgents` 同形的"变量转传"文案。此项另开任务，不据本轮宣布盲区维度归零。
+
+## 2026-10-24 第 519 到 521 簇：宽口径 string 命中的变量转传复读
+
+活项清单第 3 条的后半。`scan-english.mjs --all` 的 `string` 类共 25022 处，逐条读不现实，改成先按形态过滤再逐文件复读：滤掉 className、URL、正则、命令串、代码语料与含 `{}`/`<>=;` 的拼装片段，要求四个连续英文词，再按所在行的上下文把命中分成"日志与 throw"（221 处，`console.error`/`throw new Error` 同行）与"可能可见"两桶，只复读后者。这个办法捞出的正是前四条口径抓不到的形态：字符串先赋给变量或作为辅助函数入参传下去。
+
+三簇接线如下。
+
+1. `labelWithHint(label, hint)` 与 `blockedReason(value)` 一类：认证类型标签与说明、向量库元数据标签与两处提示、团队页放行路由标签、缓存感知路由的五条阻塞原因（模块级纯函数返回英文、渲染在 `role="status"` 段落）、团队高级功能回落、组织占位与密钥管理器说明、遥测企业对话框整块。新增 `models.addModel` 两键、`vectorStores.metadataHintView` 一键、`addModel.cacheAware.blocked*` 五键、`teams` 四键、`telemetry.enterprise` 四键，其余复用既有键。`configText(t, "Agent Name")` 经查是既有映射机制（`FIELD_TEXT_KEYS` 命中），不算漏翻。
+2. 错误反馈族：智能体链接重复显示名的两条 `toast.fromError(英文字面量)` 改成本地化 `toast.error`；自定义代码测试面板的三条错误态；团队页两条加载失败与一条企业版管理员提示。团队页里 `error?.raw?.detail?.error?.includes("Assigning team admins is a premium feature")` 的比较串是响应契约，保持英文不动。
+3. 页面文案族：护栏语音播报的四个选项文案、MCP 网络设置的两个能力说明（`Prompts`/`Resources` 是 MCP 协议能力名，随 `prompts/list` 一类方法名保留，只翻说明句）、供应商落地页的 GitHub 按钮默认文案、三枚统计标签与两条连接错误。
+
+判定账新增条目：`old-usage/usage.tsx` 的七条 `Error fetching X` 只进 `console.error`；`CreatedKeyDisplay.buildAgentInstructions` 生成的是给智能体读取的英文说明文本，按语料留；`provider_info_helpers` 与 `callback_info_helpers` 的提供商与集成显示名是数据；`layout.tsx` 的 `LiteLLM Proxy Admin UI` 是应用标识。
+
+验证：tsc 0 错、dead keys 0、i18n 守卫 23 例通过、`provider_specific_fields`+`Teams`+`Teams.integration`+`CacheAwareRoutingConfig`+`telemetry`+`vector-stores`+`moyai`+`MCPNetworkSettings`+`AdminPanel`+`TeamInfo`+`CustomCodeModal`+`UsefulLinksManagement`+`add_guardrail_form` 相关测试全绿（含 `MCPNetworkSettings` 33 例、`moyai` 15 例、`admin-panel` 25 例），断言翻面共 21 处。`MCPNetworkSettings.tsx`、`Teams.tsx`、`provider_specific_fields.tsx` 等文件在 HEAD 就非 prettier 合规，本次只把手工换行对齐 prettier 形状，不夹带无关格式化。
+
+剩余队列：`DecisionModelGarden` 的汇总句由 `plural(count, one, many)` 拼成，需改成 ICU 复数消息，属另一簇；`AdminPanel.test` 的哨兵 mock 值保持英文。

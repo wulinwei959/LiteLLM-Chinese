@@ -23,7 +23,7 @@ describe("MoyaiLanding", () => {
     const input = await screen.findByLabelText("Moyai 地址");
     fireEvent.change(input, { target: { value: "javascript:alert(1)" } });
     fireEvent.click(screen.getByRole("button", { name: "Connect" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent("http or https");
+    expect(await screen.findByRole("alert")).toHaveTextContent("http 或 https");
     expect(onQuickConnect).not.toHaveBeenCalled();
 
     fireEvent.change(input, { target: { value: "  https://moyai.example.com/  " } });
@@ -41,7 +41,7 @@ describe("MoyaiLanding", () => {
   it("links the GitHub, demo, and launch post CTAs to the exported URLs", () => {
     renderWithProviders(<MoyaiLanding />);
 
-    expect(screen.getByRole("link", { name: /Star Moyai on GitHub/ })).toHaveAttribute("href", MOYAI_GITHUB_URL);
+    expect(screen.getByRole("link", { name: /在 GitHub 上为 Moyai 点星/ })).toHaveAttribute("href", MOYAI_GITHUB_URL);
     expect(screen.getByRole("link", { name: /在 GitHub 上看完整教程/ })).toHaveAttribute("href", MOYAI_WALKTHROUGH_URL);
     expect(screen.getByRole("link", { name: /读发布文章/ })).toHaveAttribute("href", MOYAI_LAUNCH_POST_URL);
   });

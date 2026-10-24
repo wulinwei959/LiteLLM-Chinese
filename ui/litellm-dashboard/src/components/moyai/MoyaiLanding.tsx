@@ -170,7 +170,7 @@ function LogoWall({ title, items, footnote }: { title: string; items: LogoItem[]
   );
 }
 
-function GithubCta({ label = "Star Moyai on GitHub" }: { label?: string }) {
+function GithubCta({ label }: { label?: string }) {
   const t = useTranslations("moyai");
   return (
     <a
@@ -180,7 +180,7 @@ function GithubCta({ label = "Star Moyai on GitHub" }: { label?: string }) {
       className={`${styles.cta} group inline-flex items-center gap-3 rounded-full px-7 py-3.5 text-base font-semibold text-[#05070d] transition-transform hover:scale-[1.03]`}
     >
       <Github className="size-5" />
-      <span>{label}</span>
+      <span>{label ?? t("githubCta")}</span>
       <Star className="size-4 fill-[#ffb98a] text-[#ffb98a] transition-transform group-hover:rotate-[72deg]" />
     </a>
   );
@@ -247,7 +247,7 @@ function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) 
   const connect = async () => {
     const normalized = normalizeMoyaiUrl(url);
     if (!normalized) {
-      setError("Enter a full http or https URL, without credentials");
+      setError(t("urlIncomplete"));
       return;
     }
     setError(null);
@@ -255,7 +255,7 @@ function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) 
     try {
       await onQuickConnect(normalized);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not start quick connect");
+      setError(e instanceof Error ? e.message : t("quickConnectFailed"));
       setPending(false);
     }
   };
@@ -313,10 +313,10 @@ function QuickConnectDialog({ onQuickConnect }: { onQuickConnect: (url: string) 
 }
 
 const STATS = [
-  { value: "79%", label: "cheaper than our Devin bill" },
-  { value: "100+", label: "providers through LiteLLM" },
-  { value: "6", label: "agent harnesses" },
-];
+  { value: "79%", labelKey: "statCost" },
+  { value: "100+", labelKey: "statProviders" },
+  { value: "6", labelKey: "statHarnesses" },
+] as const;
 
 export default function MoyaiLanding({
   canQuickConnect = false,
@@ -411,7 +411,7 @@ export default function MoyaiLanding({
               <div className="bg-gradient-to-b from-white to-[#9cc3ff] bg-clip-text text-4xl font-semibold tracking-[-0.03em] text-transparent">
                 {s.value}
               </div>
-              <div className="mt-1 text-sm text-[#a6aab3]">{s.label}</div>
+              <div className="mt-1 text-sm text-[#a6aab3]">{t(s.labelKey)}</div>
             </div>
           ))}
         </div>

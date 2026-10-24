@@ -1163,12 +1163,10 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
                         />
                         <div>
                           <span className="text-sm font-medium text-foreground">
-                            {opt === "warn" ? "Warn" : "End session"}
+                            {opt === "warn" ? t("voiceWarn") : t("voiceEndSession")}
                           </span>
                           <p className="m-0 text-xs text-muted-foreground">
-                            {opt === "warn"
-                              ? "Bot speaks the message, session continues"
-                              : "Bot speaks the message, connection closes immediately"}
+                            {opt === "warn" ? t("voiceWarnDesc") : t("voiceEndSessionDesc")}
                           </p>
                         </div>
                       </label>

@@ -3436,6 +3436,10 @@
     "notAvailable": "不适用"
   },
   "guardrails": {
+    "voiceWarn": "警告",
+    "voiceEndSession": "结束会话",
+    "voiceWarnDesc": "机器人播报该消息，会话继续",
+    "voiceEndSessionDesc": "机器人播报该消息，连接立即关闭",
     "testNoAccessToken": "没有可用的访问令牌",
     "testInvalidInputJson": "测试输入不是合法的 JSON",
     "testFailed": "自定义代码测试失败",
@@ -6580,6 +6584,8 @@
     "description": "LiteLLM 代理管理界面"
   },
   "mcpServers": {
+    "capabilityPromptsDesc": "声明 prompts 能力，并响应 prompts/list 与 prompts/get",
+    "capabilityResourcesDesc": "声明 resources 能力，并响应 resources/list、resources/templates/list 与 resources/read",
     "reachableDescription": "服务器已响应，未检查认证与工具",
     "duplicateIdentifier": "已存在同名的 MCP 服务器。",
     "typeToAdd": "输入以添加",
@@ -13417,6 +13423,12 @@
     }
   },
   "moyai": {
+    "githubCta": "在 GitHub 上为 Moyai 点星",
+    "statCost": "比我们的 Devin 账单更省",
+    "statProviders": "个提供商可经 LiteLLM 调用",
+    "statHarnesses": "个智能体运行框架",
+    "urlIncomplete": "请输入完整的 http 或 https 地址，且不要携带凭据",
+    "quickConnectFailed": "无法发起快速连接",
     "actionDescription": "在 Slack 或浏览器里给它一个任务。它会改代码、在自己的云端工作区里跑测试，并在你合上笔记本后继续开着 PR。",
     "selfDeployDescription": "把它部署在自己的基础设施上，再指向这个网关。代码和凭据始终留在你自己的账号里。",
     "watchDemoOnGithub": "在 GitHub 上观看演示",
