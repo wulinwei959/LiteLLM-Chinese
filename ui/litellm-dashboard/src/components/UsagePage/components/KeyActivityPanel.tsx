@@ -60,15 +60,22 @@ type KeyDetailState =
   | { status: "failed" }
   | { status: "loaded"; metrics: ModelActivityData | undefined };
 
+type KeyCountScope = "searching" | "filtering" | "total";
+
+const keyCountScope = (searching: boolean, isFiltering: boolean): KeyCountScope => {
+  if (searching) return "searching";
+  if (isFiltering) return "filtering";
+  return "total";
+};
+
 const keyCountText = (
   t: UsageKeyActivityTranslator,
-  searching: boolean,
-  isFiltering: boolean,
+  scope: KeyCountScope,
   shownKeys: number,
   total: number,
 ): string => {
-  if (searching) return t("searching");
-  if (isFiltering) return t("matchingKeys", { count: shownKeys.toLocaleString() });
+  if (scope === "searching") return t("searching");
+  if (scope === "filtering") return t("matchingKeys", { count: shownKeys.toLocaleString() });
   return t("totalKeys", { count: total.toLocaleString() });
 };
 
@@ -373,7 +380,7 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
   const keyCountLabel =
     searchSettled && searchFailed && shownKeys === 0
       ? t("searchFailed")
-      : keyCountText(t, searching, isFiltering, shownKeys, total);
+      : keyCountText(t, keyCountScope(searching, isFiltering), shownKeys, total);
 
   const retryFirstPage = () => {
     setPageState({

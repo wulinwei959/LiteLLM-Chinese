@@ -46,6 +46,8 @@ const compareRows = (a: CacheLeakageRow, b: CacheLeakageRow, sort: SortState): n
   return sort.dir === "asc" ? av - bv : bv - av;
 };
 
+const EMPTY_LEAK_LABELS = { key: "leak.emptyKey", model: "leak.emptyModel" } as const;
+
 const InfoTooltip = ({ info }: { info: string }) => (
   <Tooltip>
     <TooltipTrigger render={<span className="inline-flex" aria-label={info} />}>
@@ -117,11 +119,7 @@ const CacheLeakageCard: React.FC<CacheLeakageCardProps> = ({ activity }) => {
   const subject = dimension === "model" ? t("leak.models") : t("leak.keys");
   const firstColumn = dimension === "model" ? t("leak.firstModel") : t("leak.firstKey");
   const emptyMessage =
-    dimension === "key" && keyLeakage.failed
-      ? t("leak.loadFailed")
-      : dimension === "key"
-        ? t("leak.emptyKey")
-        : t("leak.emptyModel");
+    dimension === "key" && keyLeakage.failed ? t("leak.loadFailed") : t(EMPTY_LEAK_LABELS[dimension]);
 
   return (
     <TooltipProvider delay={300}>

@@ -1,5 +1,4 @@
 /* @vitest-environment jsdom */
-import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import AutoRoutersTabPanel from "./AutoRoutersTabPanel";
 import { renderWithProviders } from "@tests/test-utils";

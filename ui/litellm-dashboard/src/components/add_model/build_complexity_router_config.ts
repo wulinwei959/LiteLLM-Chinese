@@ -49,7 +49,6 @@ import {
   TIER_DESCRIPTIONS,
   TierBoundaries,
   TokenThresholds,
-  heuristicScoringRoleFor,
   usesLlmClassifier,
   usesClassifierContext,
 } from "./ComplexityRouterConfig";

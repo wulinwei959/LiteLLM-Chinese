@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useTranslations } from "next-intl";

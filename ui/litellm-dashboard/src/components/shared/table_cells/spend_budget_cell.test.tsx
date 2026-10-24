@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react";
 import { screen, renderWithProviders } from "../../../../tests/test-utils";
 import { describe, expect, it } from "vitest";
 

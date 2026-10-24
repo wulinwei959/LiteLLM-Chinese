@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react";
 import { act, cleanup, fireEvent, screen, waitFor, within } from "@testing-library/react";
 
 import { renderWithProviders } from "../../../../../../../tests/test-utils";

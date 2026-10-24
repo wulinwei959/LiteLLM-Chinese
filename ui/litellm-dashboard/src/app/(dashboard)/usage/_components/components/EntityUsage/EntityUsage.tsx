@@ -49,7 +49,6 @@ import {
   formatMetricValue,
   type Granularity,
   type Series,
-  type UsageMetric,
 } from "../overview/overviewData";
 import { Panel, Segmented, Sparkline, Stat } from "../overview/Primitives";
 import TopModelView from "./TopModelView";

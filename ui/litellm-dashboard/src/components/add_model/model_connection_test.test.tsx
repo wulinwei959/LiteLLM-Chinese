@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react";
 import { act, fireEvent, screen } from "@testing-library/react";
 import { renderWithProviders } from "../../../tests/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

@@ -26,7 +26,6 @@ import ClassifierPluginTimeoutField from "./ClassifierPluginTimeoutField";
 import ClassifierTypeRadios from "./ClassifierTypeRadios";
 import { ClassifierMenu, ClassifierOption } from "./AutoRouterClassifierTabs";
 import { isHeuristicChain } from "./classifier_types";
-import HeuristicKeywordOverrides from "./HeuristicKeywordOverrides";
 import type { ReasoningEffort } from "./complexity_router_tiers";
 import { useComplexityScorerDefaults } from "@/app/(dashboard)/hooks/autoRouter/useComplexityScorerDefaults";
 import {
@@ -44,7 +43,6 @@ import {
   effectiveTierLabel,
   heuristicScoringRole,
   heuristicTuningType,
-  usesHeuristicV2,
   usesLlmClassifier,
   usesClassifierContext,
   DEFAULT_HYBRID_BOUNDARY_MARGIN,

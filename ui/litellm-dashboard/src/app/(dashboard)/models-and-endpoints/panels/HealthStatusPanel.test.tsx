@@ -1,6 +1,4 @@
 /* @vitest-environment jsdom */
-import { render } from "@testing-library/react";
-import { withNuqsTestingAdapter } from "nuqs/adapters/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import HealthStatusPanel from "./HealthStatusPanel";
 

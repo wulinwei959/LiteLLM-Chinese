@@ -1,7 +1,7 @@
 import React from "react";
 import { CircleAlert, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
 import { PasswordInput } from "@/components/shared/PasswordInput";
 import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";

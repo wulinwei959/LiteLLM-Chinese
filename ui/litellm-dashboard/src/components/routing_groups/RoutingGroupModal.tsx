@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo } from "react";
 import { useWatch } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { FieldGroup } from "@/components/ui/field";
 import { FormField } from "@/components/shared/form/FormField";
 import {

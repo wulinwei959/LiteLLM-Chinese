@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/cva.config";
+import type { LogsTranslator } from "@/lib/i18n/translators";
 
 import { QUICK_SELECT_OPTIONS } from "../constants";
 import { getTimeRangeDisplay } from "./timeRange";
@@ -33,6 +34,17 @@ const relativeTimeRange = (interval: LogsTimeRange["interval"]): LogsTimeRange =
 });
 
 export const defaultLogsTimeRange = (): LogsTimeRange => relativeTimeRange({ value: 24, unit: "hours" });
+type QuickSelectOption = (typeof QUICK_SELECT_OPTIONS)[number];
+
+const timeRangeLabel = (
+  t: LogsTranslator,
+  value: LogsTimeRange,
+  selectedOption: QuickSelectOption | undefined,
+): string => {
+  if (value.isCustomDate) return getTimeRangeDisplay(t, true, value.startTime, value.endTime);
+  if (selectedOption) return t(selectedOption.labelKey);
+  return "";
+};
 
 export function LogsToolbar({ className, ...props }: ComponentProps<"div">) {
   return <div className={cn("flex flex-wrap items-center gap-2", className)} {...props} />;
@@ -50,11 +62,7 @@ export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePicke
   const selectedOption = QUICK_SELECT_OPTIONS.find(
     (option) => option.value === value.interval.value && option.unit === value.interval.unit,
   );
-  const displayLabel = value.isCustomDate
-    ? getTimeRangeDisplay(t, true, value.startTime, value.endTime)
-    : selectedOption
-      ? t(selectedOption.labelKey)
-      : undefined;
+  const displayLabel = timeRangeLabel(t, value, selectedOption);
 
   return (
     <>

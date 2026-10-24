@@ -28,7 +28,7 @@ vi.mock("@/components/provider_info_helpers", () => ({
 }));
 
 const wrapper = ({ children }: { children: ReactNode }) =>
-  React.createElement(LocaleProvider, { locale: "zh-CN", children });
+  React.createElement(LocaleProvider, { locale: "zh-CN" }, children);
 
 describe("useMarginConfig", () => {
   beforeEach(() => {

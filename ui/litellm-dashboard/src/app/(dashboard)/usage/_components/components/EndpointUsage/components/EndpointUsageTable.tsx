@@ -1,9 +1,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Route } from "lucide-react";
 import { cn } from "@/lib/cva.config";
-import { Panel } from "../../overview/Primitives";
 import { Meter, MeterIndicator, MeterTrack } from "@/components/shared/Meter";
 import { DataTable } from "@/components/shared/DataTable";
 import { MoneyCell } from "@/components/shared/table_cells";

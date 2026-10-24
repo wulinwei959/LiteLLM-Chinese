@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { chooseSelectOption, fireEvent, renderWithProviders, screen } from "../../../tests/test-utils";
+import { fireEvent, renderWithProviders, screen } from "../../../tests/test-utils";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import ClassificationMethodConfig from "./ClassificationMethodConfig";
 import AutoRouterClassifierTabs from "./AutoRouterClassifierTabs";

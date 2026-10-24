@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
-import { MessageSquare, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Combobox,

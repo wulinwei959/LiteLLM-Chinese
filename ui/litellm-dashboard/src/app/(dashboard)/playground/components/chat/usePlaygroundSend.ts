@@ -12,7 +12,7 @@ import type { UseChatHistoryReturn } from "../../hooks/useChatHistory";
 import type { UseCodeInterpreterReturn } from "../../hooks/useCodeInterpreter";
 import { createChatMultimodalMessage } from "../chat_ui/ChatImageUtils";
 import { createMultimodalMessage } from "../chat_ui/ResponsesImageUtils";
-import { addFiles, toAttachment, type DraftFile } from "./composerFiles";
+import { addFiles, toAttachment, type AddFilesRequest, type DraftFile } from "./composerFiles";
 import { dispatchRequest, type DirectToolCall, type DispatchContext } from "./dispatchRequest";
 import type { AttachKind, Capabilities } from "./endpointCapabilities";
 import type { PlaygroundSettings } from "./playgroundSettings";
@@ -115,7 +115,13 @@ export function usePlaygroundSend(deps: SendDeps) {
 
   const attach = (incoming: readonly File[]) => {
     if (!deps.capabilities.attach) return;
-    const result = addFiles(t, deps.capabilities.attach, files, incoming, previewFor);
+    const request: AddFilesRequest = {
+      kind: deps.capabilities.attach,
+      current: files,
+      incoming,
+      preview: previewFor,
+    };
+    const result = addFiles(t, request);
     result.errors.forEach((error) => toast.error(error));
     setFiles(result.files);
   };

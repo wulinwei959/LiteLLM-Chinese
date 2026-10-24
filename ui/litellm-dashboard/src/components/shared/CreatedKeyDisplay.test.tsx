@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react";
 import { cloneElement, type MouseEventHandler, type ReactElement, type ReactNode } from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderWithProviders, screen, act } from "../../../tests/test-utils";

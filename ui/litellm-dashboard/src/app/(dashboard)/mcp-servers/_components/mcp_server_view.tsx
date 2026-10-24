@@ -16,7 +16,6 @@ import { MCPServerUserCredentialsPanel } from "./MCPServerUserCredentialsPanel";
 import { getSecureItem } from "@/utils/secureStorage";
 import { isProxyAdminRole, isProxyAdminTierRole } from "@/utils/roles";
 import MCPServerCostDisplay from "./mcp_server_cost_display";
-import { StdioDisabledBanner } from "./StdioAvailability";
 import { getMaskedAndFullUrl, getMCPNetworkAccess, networkAccessDescriptionKey, networkAccessLabelKey } from "./utils";
 import { copyToClipboard as utilCopyToClipboard } from "@/utils/dataUtils";
 import { CheckIcon, CopyIcon } from "lucide-react";

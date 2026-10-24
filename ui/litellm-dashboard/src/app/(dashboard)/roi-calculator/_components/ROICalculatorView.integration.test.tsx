@@ -2,7 +2,6 @@ import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
 
-import { renderWithProviders as render } from "../../../../../tests/test-utils";
 import { apiClient } from "@/components/networking";
 import { renderWithProviders } from "../../../../../tests/test-utils";
 import ROICalculatorView from "./ROICalculatorView";

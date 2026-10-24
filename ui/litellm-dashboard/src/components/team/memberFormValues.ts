@@ -1,4 +1,3 @@
-import { useTranslations } from "next-intl";
 import type { TeamsTranslator } from "@/lib/i18n/translators";
 
 import {

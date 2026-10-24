@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { stackedUsageColor } from "@/components/shared/charts";
 import { useTranslations } from "next-intl";
-import { LineChart, type ChartColor } from "@/components/shared/charts";
+import { LineChart } from "@/components/shared/charts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DailyData } from "@/components/UsagePage/types";
 import { formatDate } from "@/lib/i18n/format";

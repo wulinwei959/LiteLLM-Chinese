@@ -28,13 +28,15 @@ const validate = (t: PlaygroundTranslator, kind: AttachKind, file: File, count: 
   return validateChatAttachment(t, file);
 };
 
-export const addFiles = (
-  t: PlaygroundTranslator,
-  kind: AttachKind,
-  current: readonly DraftFile[],
-  incoming: readonly File[],
-  preview: (file: File) => string | undefined,
-): AddFilesResult => {
+export type AddFilesRequest = Readonly<{
+  kind: AttachKind;
+  current: readonly DraftFile[];
+  incoming: readonly File[];
+  preview: (file: File) => string | undefined;
+}>;
+
+export const addFiles = (t: PlaygroundTranslator, request: AddFilesRequest): AddFilesResult => {
+  const { kind, current, incoming, preview } = request;
   const single = kind !== "images";
   return incoming.reduce<AddFilesResult>(
     (result, file) => {

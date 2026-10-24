@@ -3,7 +3,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { FormProvider, useFormContext, useWatch, type UseFormReturn } from "react-hook-form";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { ssoProviderLogoMap, ssoProviderNameKeys } from "../constants";
 import { Logo } from "@/components/molecules/logo/Logo";
 import { FieldGroup } from "@/components/ui/field";

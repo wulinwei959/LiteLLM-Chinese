@@ -1,5 +1,4 @@
 /* @vitest-environment jsdom */
-import { render } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { modelCostMapKeys } from "../../hooks/models/useModelCostMap";
 import { fireEvent } from "@testing-library/react";

@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 import type { useTranslations } from "next-intl";
 
 type OrgFormTranslator = ReturnType<typeof useTranslations<"organizations.orgForm">>;

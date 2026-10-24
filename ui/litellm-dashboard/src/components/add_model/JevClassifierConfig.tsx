@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import ClassifierCircuitBreakerConfig from "./ClassifierCircuitBreakerConfig";
 import type { ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { defaultJevClassifierConfig, fixedClassifierModels } from "./jev_classifier_config";
 
 const providerDescriptions = {

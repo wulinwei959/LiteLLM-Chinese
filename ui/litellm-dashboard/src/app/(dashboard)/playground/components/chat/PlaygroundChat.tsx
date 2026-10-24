@@ -59,6 +59,15 @@ const POLICY_PREFIX = "policy:";
 
 const providerOf = (model: ModelGroup): string => model.providers?.[0] ?? "other";
 
+const modelsEmptyKey = (
+  loadFailed: boolean,
+  hasApiKey: boolean,
+): "unableToLoadModels" | "noModelsForEndpoint" | "enterVirtualKey" => {
+  if (loadFailed) return "unableToLoadModels";
+  if (hasApiKey) return "noModelsForEndpoint";
+  return "enterVirtualKey";
+};
+
 const modelGroups = (models: readonly ModelGroup[]): readonly OptionGroup[] =>
   [...new Set(models.map(providerOf))].sort().map((provider) => ({
     label: provider,
@@ -255,13 +264,7 @@ export function PlaygroundChat({
           value={settings.model}
           onValueChange={selectModel}
           isLoading={models.isLoading}
-          emptyText={
-            models.isError
-              ? configT("unableToLoadModels")
-              : apiKey
-                ? configT("noModelsForEndpoint")
-                : configT("enterVirtualKey")
-          }
+          emptyText={configT(modelsEmptyKey(models.isError, Boolean(apiKey)))}
           allowCustom
         />
       )}

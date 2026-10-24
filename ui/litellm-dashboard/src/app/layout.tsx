@@ -8,7 +8,6 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
-import HotkeysProvider from "@/contexts/HotkeysProvider";
 import { Toaster } from "@/components/ui/sonner";
 import DocumentMetadata from "@/components/shared/DocumentMetadata";
 

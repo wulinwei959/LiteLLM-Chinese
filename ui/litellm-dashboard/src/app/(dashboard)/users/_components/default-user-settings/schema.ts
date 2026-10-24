@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 import type { UsersTranslator } from "@/lib/i18n/translators";
 
 const isBlank = (value: string): boolean => value.trim() === "";

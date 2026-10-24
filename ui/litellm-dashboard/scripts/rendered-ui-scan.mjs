@@ -55,6 +55,7 @@ const ADMIN_TOKEN = `${b64url({ alg: "HS256", typ: "JWT" })}.${b64url(ADMIN_SESS
  */
 const sessionToken = async (proxyUrl) => {
   if (!MASTER_KEY) return ADMIN_TOKEN;
+  // eslint-disable-next-line no-restricted-syntax -- Node 端扫描脚本，@/lib/http/client 是面向浏览器运行时的封装
   const response = await fetch(`${proxyUrl}/v2/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

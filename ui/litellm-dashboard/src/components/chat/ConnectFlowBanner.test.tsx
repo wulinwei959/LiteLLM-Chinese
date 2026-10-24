@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import type { ConnectFlowStatus } from "@/components/networking";

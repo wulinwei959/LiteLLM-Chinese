@@ -28,7 +28,7 @@ import { CircleAlert, Info, TriangleAlert, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useMemo, useState } from "react";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { useWorker } from "@/hooks/useWorker";
 import type { LoginTranslator } from "@/lib/i18n/translators";
 

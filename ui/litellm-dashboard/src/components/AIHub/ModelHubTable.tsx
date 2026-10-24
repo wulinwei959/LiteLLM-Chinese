@@ -52,7 +52,6 @@ import {
   DECISIONS_DOCS_URL,
   DECISIONS_MODE,
   SYSTEM_ONE_PLAYGROUND_ROUTE,
-  displayMode,
   isDecisionMode,
 } from "@/lib/decisionModels";
 import DecisionModelGarden from "@/components/AIHub/DecisionModelGarden";
@@ -222,8 +221,8 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
       try {
         setAgentLoading(true);
         const response = await getAgentsList(accessToken);
-        let agents = response.agents;
-        let agent_card_list = agents.map((agent: any) => ({
+        const agents = response.agents;
+        const agent_card_list = agents.map((agent: any) => ({
           agent_id: agent.agent_id,
           ...agent.agent_card_params,
           is_public: agent.litellm_params.is_public,
@@ -385,8 +384,8 @@ const ModelHubTable: React.FC<ModelHubTableProps> = ({
       const fetchAgentData = async () => {
         try {
           const response = await getAgentsList(accessToken);
-          let agents = response.agents;
-          let agent_card_list = agents.map((agent: any) => ({
+          const agents = response.agents;
+          const agent_card_list = agents.map((agent: any) => ({
             agent_id: agent.agent_id,
             ...agent.agent_card_params,
             is_public: agent.is_public,

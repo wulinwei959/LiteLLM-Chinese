@@ -6,7 +6,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
-import { Segmented } from "../overview/Primitives";
 import { providerForModel } from "../overview/modelProvider";
 
 type TopModel = {

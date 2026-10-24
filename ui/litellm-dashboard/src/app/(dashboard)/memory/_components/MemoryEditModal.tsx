@@ -3,7 +3,7 @@
 import { CircleHelp } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 import type { MemoryRow } from "@/components/networking";
 import { FieldGroup } from "@/components/ui/field";

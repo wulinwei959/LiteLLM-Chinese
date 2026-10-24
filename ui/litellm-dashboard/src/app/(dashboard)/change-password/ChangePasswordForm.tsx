@@ -5,7 +5,7 @@ import { CircleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { ChangePasswordTranslator } from "@/lib/i18n/translators";
-import { z } from "zod/v4";
+import { z } from "zod";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { Alert, AlertTitle } from "@/components/shared/Alert";
 import { PasswordInput } from "@/components/shared/PasswordInput";

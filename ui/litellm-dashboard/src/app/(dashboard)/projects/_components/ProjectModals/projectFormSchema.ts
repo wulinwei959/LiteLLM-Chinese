@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 export const ALL_TEAM_MODELS = "all-team-models";
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { SortingState } from "@tanstack/react-table";
 import { Inbox, Plus, X } from "lucide-react";
 import { useMCPToolsets } from "@/app/(dashboard)/hooks/mcpServers/useMCPToolsets";
