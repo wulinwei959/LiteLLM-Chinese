@@ -2,7 +2,7 @@
 
 LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围绕上游 [BerriAI/litellm](https://github.com/BerriAI/litellm) 的 `ui/litellm-dashboard` 展开。代理侧的 Python 代码不在翻译范围，只跟随上游 release
 
-**当前节点（2026-10-25）**：汉化工程收束在第 533 簇。九项收口清单清零后，静态四条口径与运行期渲染扫描的命中全部接键或判定归册；最后一片真账 lens 追踪观察页（渲染扫描撞出的 86 条）在第 530 到 533 簇处理完毕，渲染扫描基线从 162 撤到 60，余下全部判定归册（api-reference 31、transform-request 20、lens 8、model-insights 1，均为机读面、代码语料或数据展示），无一条真漏未甄别。`main` 与 LAN 远端同步，本地可达的门禁全部为绿（`tsc`、`build`、全量 `eslint .`、九条 lint 预算、死键门禁、38 页渲染扫描 0 错 0 新发现、i18n 守卫 6 文件 59 例）
+**当前节点（2026-10-25）**：汉化工程收束在第 533 簇。九项收口清单清零后，静态四条口径与运行期渲染扫描的命中全部接键或判定归册；最后一片真账 lens 追踪观察页（渲染扫描撞出的 86 条）在第 530 到 533 簇处理完毕，渲染扫描基线从 162 撤到 60，余下全部判定归册（api-reference 31、transform-request 20、lens 8、model-insights 1，均为机读面、代码语料或数据展示），无一条真漏未甄别。`main` 与 GitHub（origin，私有镜像）和 LAN Gitea（`lan`，备份）双远端同步，本地可达的门禁全部为绿（`tsc`、`build`、全量 `eslint .`、九条 lint 预算、死键门禁、38 页渲染扫描 0 错 0 新发现、i18n 守卫 6 文件 59 例）
 上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 533 簇
 
 ## 背景
