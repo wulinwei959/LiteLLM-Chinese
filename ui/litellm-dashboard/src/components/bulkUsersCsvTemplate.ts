@@ -9,6 +9,13 @@ export const BULK_USER_CSV_COLUMNS = [
   "models",
 ] as const;
 
+export type BulkUserCsvColumn = (typeof BULK_USER_CSV_COLUMNS)[number];
+
+export const BULK_USER_CSV_REQUIRED_COLUMNS = [
+  "user_email",
+  "user_role",
+] as const satisfies readonly BulkUserCsvColumn[];
+
 export const buildBulkUserCsvTemplate = (): string => `${BULK_USER_CSV_COLUMNS.join(",")}\n`;
 
 export const downloadBulkUserCsvTemplate = (): void => {

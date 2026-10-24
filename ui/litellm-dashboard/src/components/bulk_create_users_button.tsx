@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { downloadBulkUserCsvTemplate } from "./bulkUsersCsvTemplate";
+import {
+  BULK_USER_CSV_REQUIRED_COLUMNS,
+  type BulkUserCsvColumn,
+  downloadBulkUserCsvTemplate,
+} from "./bulkUsersCsvTemplate";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -43,6 +47,29 @@ interface UserData {
 }
 
 const PREVIEW_PAGE_SIZE = 5;
+
+const cellForColumn = (
+  headers: readonly string[],
+  row: readonly unknown[],
+  column: BulkUserCsvColumn,
+): string | undefined => {
+  const cell = row[headers.indexOf(column)];
+  return typeof cell === "string" ? cell.trim() : undefined;
+};
+
+const ColumnHint: React.FC<{ column: BulkUserCsvColumn; required?: boolean; description: string }> = ({
+  column,
+  required,
+  description,
+}) => (
+  <div className="flex items-start">
+    <div className={`w-3 h-3 rounded-full mt-1.5 mr-2 shrink-0 ${required ? "bg-destructive" : "bg-border"}`}></div>
+    <div>
+      <p className="font-medium">{column}</p>
+      <p className="text-sm text-muted-foreground">{description}</p>
+    </div>
+  </div>
+);
 
 // Define an interface for the UI settings
 interface UISettings {
@@ -138,10 +165,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
           return;
         }
 
-        const requiredColumns = ["user_email", "user_role"];
-
-        // Check if all required columns are present
-        const missingColumns = requiredColumns.filter((col) => !headers.includes(col));
+        const missingColumns = BULK_USER_CSV_REQUIRED_COLUMNS.filter((column) => !headers.includes(column));
         if (missingColumns.length > 0) {
           setCsvStructureError(t("bulkMissingColumns", { columns: missingColumns.join(", ") }));
           setParsedData([]);
@@ -169,12 +193,12 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
               }
 
               const user: UserData = {
-                user_email: row[headers.indexOf("user_email")]?.trim() || "",
-                user_role: row[headers.indexOf("user_role")]?.trim() || "",
-                teams: row[headers.indexOf("teams")]?.trim(),
-                max_budget: row[headers.indexOf("max_budget")]?.trim(),
-                budget_duration: row[headers.indexOf("budget_duration")]?.trim(),
-                models: row[headers.indexOf("models")]?.trim(),
+                user_email: cellForColumn(headers, row, "user_email") ?? "",
+                user_role: cellForColumn(headers, row, "user_role") ?? "",
+                teams: cellForColumn(headers, row, "teams"),
+                max_budget: cellForColumn(headers, row, "max_budget"),
+                budget_duration: cellForColumn(headers, row, "budget_duration"),
+                models: cellForColumn(headers, row, "models"),
                 rowNumber: index + 2,
                 isValid: true,
                 error: "",
@@ -550,48 +574,12 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                   <div className="bg-muted p-4 rounded-md border border-border mb-4">
                     <h4 className="font-medium mb-2">{t("bulkTemplateColumnNames")}</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="flex items-start">
-                        <div className="w-3 h-3 rounded-full bg-destructive mt-1.5 mr-2 shrink-0"></div>
-                        <div>
-                          <p className="font-medium">user_email</p>
-                          <p className="text-sm text-muted-foreground">{t("bulkColEmailDesc")}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start">
-                        <div className="w-3 h-3 rounded-full bg-destructive mt-1.5 mr-2 shrink-0"></div>
-                        <div>
-                          <p className="font-medium">user_role</p>
-                          <p className="text-sm text-muted-foreground">{t("bulkColRoleDesc")}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start">
-                        <div className="w-3 h-3 rounded-full bg-border mt-1.5 mr-2 shrink-0"></div>
-                        <div>
-                          <p className="font-medium">teams</p>
-                          <p className="text-sm text-muted-foreground">{t("bulkColTeamsDesc")}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start">
-                        <div className="w-3 h-3 rounded-full bg-border mt-1.5 mr-2 shrink-0"></div>
-                        <div>
-                          <p className="font-medium">max_budget</p>
-                          <p className="text-sm text-muted-foreground">{t("bulkColBudgetDesc")}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start">
-                        <div className="w-3 h-3 rounded-full bg-border mt-1.5 mr-2 shrink-0"></div>
-                        <div>
-                          <p className="font-medium">budget_duration</p>
-                          <p className="text-sm text-muted-foreground">{t("bulkColDurationDesc")}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start">
-                        <div className="w-3 h-3 rounded-full bg-border mt-1.5 mr-2 shrink-0"></div>
-                        <div>
-                          <p className="font-medium">models</p>
-                          <p className="text-sm text-muted-foreground">{t("bulkColModelsDesc")}</p>
-                        </div>
-                      </div>
+                      <ColumnHint column="user_email" required description={t("bulkColEmailDesc")} />
+                      <ColumnHint column="user_role" required description={t("bulkColRoleDesc")} />
+                      <ColumnHint column="teams" description={t("bulkColTeamsDesc")} />
+                      <ColumnHint column="max_budget" description={t("bulkColBudgetDesc")} />
+                      <ColumnHint column="budget_duration" description={t("bulkColDurationDesc")} />
+                      <ColumnHint column="models" description={t("bulkColModelsDesc")} />
                     </div>
                   </div>
 

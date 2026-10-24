@@ -2,6 +2,7 @@ import { fireEvent, screen, renderWithProviders as render } from "@/../tests/tes
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import BulkCreateUsersButton from "./bulk_create_users_button";
+import { BULK_USER_CSV_COLUMNS, buildBulkUserCsvTemplate, type BulkUserCsvColumn } from "./bulkUsersCsvTemplate";
 
 vi.mock("./networking", () => ({
   userCreateCall: vi.fn(),
@@ -16,6 +17,15 @@ vi.mock("./networking", () => ({
 
 const csvFile = () =>
   new File(["user_email,user_role\nnew.hire@example.com,internal_user\n"], "users.csv", { type: "text/csv" });
+
+const templateCells: Record<BulkUserCsvColumn, string> = {
+  user_email: "template.hire@example.com",
+  user_role: "internal_user",
+  teams: "",
+  max_budget: "",
+  budget_duration: "",
+  models: "",
+};
 
 const openUploadStep = async () => {
   const user = userEvent.setup();
@@ -57,6 +67,19 @@ describe("BulkCreateUsersButton", () => {
     expect(revoke).toHaveBeenCalledWith("blob:litellm-template");
     vi.restoreAllMocks();
   });
+  it("parses a CSV laid out with the template it hands out", async () => {
+    await openUploadStep();
+
+    const cells = BULK_USER_CSV_COLUMNS.map((column) => templateCells[column]).join(",");
+    const fromTemplate = new File([`${buildBulkUserCsvTemplate()}${cells}\n`], "from-template.csv", {
+      type: "text/csv",
+    });
+    const fileInput = screen.getByLabelText(/把 CSV 文件拖到这里/) as HTMLInputElement;
+    fireEvent.change(fileInput, { target: { files: [fromTemplate] } });
+
+    expect(await screen.findByText("template.hire@example.com")).toBeInTheDocument();
+  });
+
   it("parses a CSV chosen through the file input", async () => {
     await openUploadStep();
 

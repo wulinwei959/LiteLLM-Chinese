@@ -12,6 +12,8 @@
 
 2026-10-24 修扫描器盲区复出的 11 处真漏已在第 525 簇接完（新开 8 键、复用 2 个目录里早就存在却没人接的键）。那批漏翻的来源是 `scan-english.mjs` 把"纯小写单词"一律当噪声丢弃、连 JSX 文本分支也套用，`{n} selected`、`by {provider}` 这类整句尾词因此长期不可见；过滤修好后 JSX 口径多 65 条命中，逐条读完 44 条属技术 token。同一个簇顺带出了 217 个未接入文件的逐文件判定账，也在 [FILE-INVENTORY.md](./FILE-INVENTORY.md)
 
+第 526 簇把活项清单里最后一条代码重复收掉。批量建用户的六列 CSV 列名此前在模板模块、解析器的 `headers.indexOf(...)`、列名说明面板、必需列检查四处并列写着，现在唯一收在 `bulkUsersCsvTemplate.ts`，并导出 `BulkUserCsvColumn` 类型把三处字面量钉进编译约束，改列名不再靠人记住对四处。清单至此只剩三条（中英同值与 placeholder 的判定账复核、18 个 `max-lines` 巨型文件、lint 预算无余量）
+
 三处边界要记住。上游同步按决定暂缓，[UPSTREAM-SYNC.md](./UPSTREAM-SYNC.md) 仍是计划。按判定账留英文的是机读面（导出列头与文件名、MCP 协议能力名、后端枚举、代码语料），不是漏翻。`no-console` 与 `testing-library/prefer-screen-queries` 两条预算已经顶到上限，任何新增调用都会让门禁红
 
 ## 文档索引

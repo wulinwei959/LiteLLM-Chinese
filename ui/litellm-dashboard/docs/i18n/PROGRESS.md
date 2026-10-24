@@ -4246,9 +4246,8 @@ i18n 自身的三条守卫也是全绿，16 个用例
 1. 中英同值 139 条与 `placeholder` 类 67 处属判定账。现行判定是"格式示例与机读面不翻"，若日后认定某类该翻（比如表单里的示例值），需要逐条重判，不是一次批量替换
 2. `max-lines` 抑制基线仍有 18 个上游巨型文件（`networking.tsx`、`ChatUI.tsx`、`CompareUI.tsx` 这一类）。逐个做文件级拆分属独立一簇，本轮拆的四个已经退线
 3. lint 预算几乎没有余量。`no-console` 16/16、`local/no-long-condition-chain` 200/200、`testing-library/prefer-screen-queries` 18/18 三条顶格，`local/no-large-inline-object-arg` 476/477 与 `complexity` 139/140 各余 1。新增这类写法的收口办法是提成具名变量或改早返回，不要调上限
-4. 一处可选的小重构。`bulkUsersCsvTemplate.ts` 的模板表头与 `bulk_create_users_button.tsx` 解析器读取的列名是两份并列事实，可以收成一个共享来源，让改列名时测试自然变红
 
-从这份清单里摘掉的七条（此前登记、后续簇已完成，别再当作活项）：11 处 JSX 小写词真漏已在第 525 簇全部接完（新开 8 键、复用 2 个早已有键）；217 个未接入文件已出逐文件清单（`node scripts/i18n-file-inventory.mjs` 可复跑，账在 [FILE-INVENTORY.md](./FILE-INVENTORY.md)：200 个六口径零命中、17 个有证据且全部判定归属），"只有比例没有清单"这条据此闭环；渲染扫描的运行期证据在 2026-10-24 第 524 簇之后当天复跑过
+从这份清单里摘掉的八条（此前登记、后续簇已完成，别再当作活项）：11 处 JSX 小写词真漏已在第 525 簇全部接完（新开 8 键、复用 2 个早已有键）；217 个未接入文件已出逐文件清单（`node scripts/i18n-file-inventory.mjs` 可复跑，账在 [FILE-INVENTORY.md](./FILE-INVENTORY.md)：200 个六口径零命中、17 个有证据且全部判定归属），"只有比例没有清单"这条据此闭环；渲染扫描的运行期证据在 2026-10-24 第 524 簇之后当天复跑过；批量建用户的 CSV 列名四处并列事实已在第 526 簇收成 `bulkUsersCsvTemplate.ts` 单一来源，改列名现为编译错
 2026-10-20 追加（承 382-391 error-fallback 维度收口）：`playground/llm_calls/a2a_send_message.tsx` 专项已于 391 接其硬编回退子集——流式 `makeA2AStreamMessageRequest`（唯一 caller CompareUI:584）的 :296 "No response body" 复用 orphan `t("llmCalls.a2a.noResponseBody")`、:384 "Unknown A2A error" 接新键 `t("llmCalls.a2a.unknownA2AError")`，两串皆不含 "JSON" 故 `includes("JSON")` 流式解析错误判别逐 locale 不破、a2a 无单测但以 tsc 校签名位移 + 全 playground 168 例回归绿验 caller；非流式函数与流式内 server-detail/jsonRpc/`HTTP ${status}`/a2aError/errorMessage 动态透传判保留（后端串非 UI）。a2a 专项据此收口、无余留硬编 UI 英文待接；其余 error-fallback 漏已 382-389 接净、吞者（fetch_agents/prompts-utils/UITheme）入判定账。注：本节原 2026-10-13 文字（toast.fromError 355/handleError/copyToClipboard 三阻塞片）已于 380/381 接净、`useXxx` hooks error 已于 386 收口，相关「列入判定账」表述作废
 
 第 353 到 361 簇逐维度收口后可接线余量的当前边界（下一轮勿从这些正则重扫，直接攻阻塞片或换新正则）：三元 `? :`（两侧与单侧）已复扫归零、可见串接净或入判定账；JSX 文本节点「独占一行英文句」更宽正则仅剩 how_it_works（361 已接）与 `APIReferenceView` 框架品牌名（判定账）；`placeholder`/`aria-label`/`title`/`label` 属性英文字面量复扫仅剩 JSDoc 注释（`numerical_input`）、格式示例（`add_plugin_form` "Productivity"/`AgentIdentityFields` "Agent.Invoke"）、协议头（`UpstreamTokenHeaderField` "Authorization"）四类判定账；短按钮文本节点复扫仅命中 `McpFormTestHarness` "Submit"（测试脚手架非产品 UI）。真正待做的剩余量集中在三件高扇出专项重构（`toast.fromError` 355 调用点、`handleError` ~100、`copyToClipboard` 34，均需模块函数首参注入 translator 且 `toast.fromError` 还须先把 `WARNING_TITLES.has(title)` 改成键/码判定）（此句 2026-10-24 实测作废：`toast.ts` 已按 category 码取标题、按码判色，无英文 title 比较，362 调用点无需重构；`handleError` 的 `UI Session Expired. Logging out.` 已接 `toast.sessionExpired`；三片里唯 `copyToClipboard` 的英文默认参数仍是真漏）与「导出文档内容」维度其余报表件（各 dashboard 表格/图表的 CSV/HTML 导出，需逐件判人面 PDF 报告接、数据交换 CSV 列头留），以及更宽正则盲区（模板串内英文、`{...}` 内回落、`<code>` 内嵌、`{" "}` 拼接、单行 `>text<`），不据本报告宣布整体完成
@@ -5198,3 +5197,15 @@ lint 预算两处超标查清并已修回：`local/no-large-inline-object-arg` 4
 断言只翻了三条，都是本簇直接命中的可见文本：`42 calls`→`42 次调用`、`120 users`→`120 个用户`、`by openai`→`由 openai 提供`。其余 10 个消费文件没有断这些串。验证：13 个测试文件 283 例全绿，`src/lib/i18n` 加 toast 守卫 6 文件 59 例全绿，`npx tsc --noEmit` 0 错（含测试文件），`eslint .` 0 error 且九条预算计数与改动前逐条一致，`check:dead-keys` 0（复用的两键从无人引用变成有人引用，没留下新死键），`knip:ci` 与 `npm run build` 退出 0。目录改过文案，按 `WORKFLOW.md` 第六步新写的常设规则复跑渲染扫描：15 页 0 渲染错误、除基线两枚端点路径外 0 处英文
 
 同一轮把 `PROGRESS.md` 里三节停在 10 月 13/14 日的统计数重测了：`目录规模`（命名空间 125、叶子 11885、同值 139、死键 0）、`文件覆盖率`（954/737、77.3%，并写上复算命令）、`按路由的进度`（按目录重列，只列还有未接入的 26 个目录，零未接入的 4 个目录单列说明）。三节的旧数都在正文里留了沿革注
+
+### 第 526 簇：把批量建用户的 CSV 列名收成一份事实
+
+活项清单第 4 条。第 524 簇补模板下载时，六列列名在仓库里同时写着四遍：`bulkUsersCsvTemplate.ts` 的 `BULK_USER_CSV_COLUMNS`、`bulk_create_users_button.tsx` 解析器里六个 `row[headers.indexOf("…")]`、列名说明面板里六个 `<p className="font-medium">` 裸列名、`const requiredColumns = ["user_email", "user_role"]`。改列名要靠人记住对四处，漏一处就是模板下载回来解析不出用户
+
+做法是列名唯一收在 `bulkUsersCsvTemplate.ts`，导出 `type BulkUserCsvColumn`（`(typeof BULK_USER_CSV_COLUMNS)[number]`）和 `BULK_USER_CSV_REQUIRED_COLUMNS`（`as const satisfies readonly BulkUserCsvColumn[]`）。按钮侧六处取值改成一个具名帮助函数 `cellForColumn(headers, row, column)`，六段结构相同、只差圆点颜色与描述键的说明面板 markup 合成一个 `ColumnHint column="…"` 组件，必填检查直接读共享的必需列清单。列名字面量从此都落在类型约束里：把 `teams` 改成 `team_names` 再跑 `npx tsc --noEmit`，解析点、说明面板、测试夹具三处分别报 TS2345、TS2322、TS2353，取完证即还原。测试里那条 `expect(header).toEqual([...六个字面量...])` 保持不动，它是故意留下的外部契约桩，改共享清单必须同时改它
+
+顺带两处收紧。`row[idx]?.trim()` 遇到非字符串单元会抛错、被外层 `catch` 吞成"解析失败"，`cellForColumn` 改成 `typeof cell === "string"` 才 trim、否则回 `undefined`，对 Papa 产出的纯字符串列行为等价；`user_email`/`user_role` 的兜底从 `?.trim() || ""` 换成 `?? ""`，空串仍归一为空。说明面板合件后组件文件从 879 行降到 867 行，六个 `t("bulkCol…Desc")` 仍是字面量调用，死键门禁照旧抓得到
+
+测试加一例往返：把 `buildBulkUserCsvTemplate()` 的表头与按 `BULK_USER_CSV_COLUMNS` 顺序排出的数据行拼成文件喂给解析器，断言预览里出现该行的邮箱。数据夹具是 `Record<BulkUserCsvColumn, string>`，将来加一列不给值就编译不过，这正是本簇想要的红。新用例取文件输入走 `screen.getByLabelText` 而不是 `document.querySelector`，后者会把 `testing-library/prefer-screen-queries` 顶出 18/18 的预算
+
+验证：`bulk_create_users_button.test.tsx` 6 例、消费方 `view_users.test.tsx` 15 例、`messagesParity` 与 `missingKeys` 共 4 文件 30 例全绿，`npx tsc --noEmit` 0 错，三个改动文件按 stdin 形式的 eslint 逐规则计数与 HEAD 持平，`check:dead-keys` 0 死键，全仓 `eslint .` 0 error、九条预算计数逐条与改动前一致（`no-explicit-any` 1431、`complexity` 139、`no-large-inline-object-arg` 476、`prefer-screen-queries` 18），`npm run build` 退出 0。本簇零新增键，六列列名与六个描述文案的渲染结果不变，按 `WORKFLOW.md` 的常设规则这属"没改到文案"，渲染扫描未复跑，最近一次运行期证据仍是第 525 簇之后当天那一轮

@@ -2,8 +2,8 @@
 
 LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围绕上游 [BerriAI/litellm](https://github.com/BerriAI/litellm) 的 `ui/litellm-dashboard` 展开。代理侧的 Python 代码不在翻译范围，只跟随上游 release
 
-**当前节点（2026-10-24）**：汉化工程已按九项收口清单做完，`main` 与 LAN 远端同步，本地跑得到的门禁全部为绿。同日修掉静态扫描器一条防噪过滤后复出的 11 处真漏已在第 525 簇接完
-上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 525 簇
+**当前节点（2026-10-24）**：汉化工程已按九项收口清单做完，`main` 与 LAN 远端同步，本地跑得到的门禁全部为绿。同日修掉静态扫描器一条防噪过滤后复出的 11 处真漏已在第 525 簇接完，活项清单最后那条 CSV 列名重复事实在第 526 簇收成单一来源，改列名现为编译错
+上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 526 簇
 
 ## 背景
 
@@ -113,7 +113,6 @@ npm run build
 - **换新维度而不是重扫旧正则**。四条静态口径与宽口径 string 的"变量转传"复读都已清空，剩下的命中全部有判定归属，这条仍然成立，只是它逼出的 JSX 小写词盲区提醒：口径本身也要定期拿新形态去撞。下一轮继续从新组件、新页面、新交互形态入手，配合渲染扫描在运行期发现
 - **18 个文件仍走 `max-lines` 抑制基线**。这 18 个是上游既有的巨型文件，逐个拆分属独立一簇。本轮真正推过线的四个已经在第 524 簇拆完退线（`ModelInfoEditForm.tsx` 拆出 `modelInfoEditFields.ts`、`key_edit_view.tsx` 拆出 `KeyEditViewControls.tsx` 的字段块、`leftnav.tsx` 拆出 `LeftnavMenuGroups.tsx`、`guardrail_info.tsx` 拆出两张护栏小卡）
 - **lint 预算几乎没有余量**。三条规则顶格、`complexity` 只剩 1 条。新增这类写法会直接把门禁改红，收口办法是把内联对象提成具名变量、把条件链改成早返回的辅助函数，不要调上限
-- **一处可选的小重构**。`bulkUsersCsvTemplate.ts` 的模板表头与 `bulk_create_users_button.tsx` 解析器读取的列名是两份并列事实，可以收成一个共享来源，让改列名时测试自然变红
 
 ## 相关文档
 
