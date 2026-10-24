@@ -680,6 +680,35 @@ zh 目录里给标签配的**全角冒号**（`源修订版本：`/`ETag：`/`�
 
 想比较同一文件改前改后的告警数，`git show HEAD:./path | npx eslint --stdin --stdin-filepath path` 在 eslint 9 的 flat config 下什么都不输出（0 条问题、连汇总行都没有），会被误读成"改前也这样"。`prettier --stdin-filepath --check` 是可用的，eslint 不行。取改动前的真实计数要在该提交建游离 worktree、软链同一份 `node_modules` 再跑，注意这份 worktree 的报告路径与主检出不同，差分前先归一路径
 
+## 2026-10-24 第 467 到 479 簇：批量脚本与验证命令的反复踩坑
+
+这一轮同一类命令错误反复出现，逐条记下规避写法
+
+**手改消息目录**
+
+- 锚点行若是对象最后一项，行尾没有逗号，直接在其后插行会得到非法 JSON。插入前先给锚点补逗号，若插入点后紧跟 `}`，新增的最后一项不带逗号。改完必须 `python3 -c "json.load(...)"` 验证两端并比对叶子数
+- 同名同值的键会出现在多个命名空间（`noModelsFound` 同时在 `models.addModel` 与 `modelSelect`，值都是"未找到模型"）。按行内文本定位会把键插错块，组件渲染出原始键名。先定位 `"<namespace>": {` 的行号，在块内插入，插完打印该命名空间的键确认
+- 插入失败后重跑修复脚本前先看文件当前状态，否则会同一组键插两遍（本次在 `searchBox` 上发生过）
+- 批量 `str.replace()` 不带 count 会命中所有同名行（`const { data } = useDeploymentWarnings();` 出现两次，插 `const t` 时造成重复声明 TS2451）。用 count 断言、限定上下文或按行号操作
+
+**正则**
+
+- 扩展名交替写成 `\.(?:tsx|ts)`。写成 `\.(?:ts|tsx)` 会把 `.tsx` 截成 `.ts`，脚本表现为"0 候选"
+- `z\.custom<([^>]+)>` 会被嵌套泛型（`Record<string, string[]>`）截断而漏改字段，改完用 `grep -n "custom<" | grep -v optional` 复核
+- 多行替换在 prettier 重排后会失配（`.custom(...)` 与 `.refine(...)` 的换行变化），失败时先看当前格式再改
+
+**Shell 与命令**
+
+- `grep -c` 命中 0 时退出码是 1，会打断整条 `&&` 链，看起来像检查失败。用 `|| echo 0` 或把计数单独跑
+- 在 `ui/litellm-dashboard` 下跑 prettier 与 eslint 要传当前目录相对路径，传仓库根相对路径会报 No files matching
+- 本项目 vitest 没有 `--reporter=basic`，用默认或 `--reporter=dot`。全量整跑放后台等通知，不要 `sleep` 轮询
+
+**批量翻面断言**
+
+- 只替换失败信息里测试实际查找的那条串，再对到 `en.json` 同值在 `zh-CN.json` 的词条。整文件替换英文会误伤 mock 数据里的同名值
+- 正则形式的期望（`/edit settings/i`、`/Budget & Rate Limits/`）不在这套字符串映射里，批处理抓不到，需按失败文件逐个看
+- 同一文案在目录里可能有多套译法（`Chat` 既有"聊天"又有"对话"），以组件实际使用的命名空间为准
+
 ## 回归守卫
 
 改完之后这几条必须一起跑

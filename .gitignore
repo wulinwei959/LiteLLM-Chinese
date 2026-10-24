@@ -8,6 +8,7 @@ mutants/
 .env
 .claude
 CLAUDE.local.md
+.qoder
 .newenv
 newenv/*
 litellm/proxy/myenv/*
@@ -156,3 +157,6 @@ coverage-rust.xml
 # make lens-dev worker token, generated config and logs
 .lens-dev/
 .mypy_cache/
+
+# 一次性验证截图，会话产物，不进仓
+ui/verify-screenshots/

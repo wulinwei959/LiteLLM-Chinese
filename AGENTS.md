@@ -156,7 +156,7 @@ Before requesting maintainer review, verify the current PR tip passes required C
 
 ## 汉化批次的命令坑
 
-2026-10-24 的记录，来自第 467-479 簇里反复出现的同类错误，已逐条修正，下回按规避写法做。详细版见 `.qoder/memory/feedback-i18n-editing-pitfalls.md`。
+2026-10-24 的记录，来自第 467-479 簇里反复出现的同类错误，已逐条修正，下回按规避写法做。详细版见 `ui/litellm-dashboard/docs/i18n/FIXES.md`。
 
 - 手改 `src/messages/*.json` 时，锚点行若是对象最后一项则行尾无逗号，插入前先补逗号；若插入点后紧跟 `}`，新增的最后一项不带逗号；改完必须 `json.load` 验证两端并比对叶子数
 - 同名同值的键会出现在多个命名空间（如 `noModelsFound` 同时在 `models.addModel` 与 `modelSelect`）。按行内文本定位会插错命名空间，组件会渲染出原始键名。先定位 `"<namespace>": {` 的行号，再在块内插入，插完打印该命名空间的键确认
