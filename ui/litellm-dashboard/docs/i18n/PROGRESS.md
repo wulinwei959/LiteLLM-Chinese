@@ -5026,6 +5026,8 @@ LiteAdmin 的两条用例对"活动页签正在提交时新建对话是否可用
 
 lint 侧另有既成事实：`key_edit_view.tsx` 在 HEAD 就有 `max-lines`（811/800）与 `SearchSelect` 未用导入等 3 条 error，本次改动只把行数抬到 818，未新增别的规则违例；这类文件级重构不在汉化账内。
 
+（2026-10-24 第 523 簇已按该登记做文件级拆分，`max-lines` 与未用导入清零。）
+
 ### 第 513 簇后的残留复检
 
 对 953 个非测试 `.tsx` 全库跑 `scripts/scan-english.mjs`（JSX 文本、带文案的 prop、toast 首参、throw 文本四条口径），205 处命中、涉及 111 个文件。逐条读完的结论是没有新增需要接线的真串，命中全部落在既有判定账里
@@ -5134,3 +5136,11 @@ tsc 枚举出 7 处：`ModelHubTable.tsx` 三处（页面 URL、agent url、MCP 
 验证：`ModelHubTable.test.tsx` 的 7 处断言按中文渲染翻面（"2 个决策模型分布于 2 个提供商，通过 /v1/decisions 响应"等），该文件与 i18n 守卫共 6 文件 54 例通过；实际渲染串核对过单复数两档（1 与 2/3 都走 `other` 形态且量词正确）。tsc 0 错、dead keys 0、改动文件 prettier 合规。
 
 至此宽口径 string 复读的可见队列清空：三簇共接 12 个文件的文案，判定账补入 `old-usage` 的七条 `console.error`、智能体说明文本、提供商与集成显示名、应用标识四类。
+## 2026-10-24 第 523 簇：两处 max-lines 超线的文件级拆分
+
+汉化批次把 `ModelInfoEditForm.tsx`（893 行）与 `key_edit_view.tsx`（912 行，eslint 计数 818）都推过了 `max-lines` 的 800 上限，前者是 error、后者此前已就地登记为既成事实。本簇只做搬移，不改行为、不改文案，因此两份目录没有新增键。
+
+1. `ModelInfoEditForm.tsx` 拆出 `modelInfoEditFields.ts`（243 行），容纳 PTU 字段表、价格字段表与来源映射、zod 形状与 `buildSchema`、表单值双向映射（`toModelEditFormValues`/`perMillionTokens`/`perMillionToPerToken`）与 `displayCost`。组件侧只留渲染与提交，降到 661 行。`PtuLabelKey` 原先靠 `Parameters<ReturnType<typeof useTranslations<"common">>>[0]` 推键类型，要求模块运行时导入 `next-intl`；换成 `Parameters<CommonTranslator>[0]` 后同一段纯数据模块不再依赖客户端运行时。消费方 `model_info_view.tsx` 与 `ModelInfoEditForm.test.tsx` 改为从新模块取类型与工具函数。逐行比对确认搬移块与新模块除该处改写外完全等价，组件侧只有 14 行新增、244 行删除。
+2. `key_edit_view.tsx` 把最大并行数、模型 TPM/RPM 白名单、默认输出令牌估算共五枚字段抽成 `KeyEditViewControls.tsx` 的 `KeyThroughputAndEstimateFields`，沿用该文件既有约定（只收 `control`，内部自取 `virtualKeys.editForm` 翻译器），另收 `estimateTooltip` 与 `canEditEstimates` 两参数。两条模型限流 Textarea 形状一致，合并为局部渲染函数，占位符 `{"gpt-4": 100, "claude-v1": 200}` 是机读示例、留英文。文件降到 865 行，`max-lines` 不再触发，随之无用的 `Textarea` 与 `NumericalInput` 导入删除。
+
+验证：`tsc --project tsconfig.production.json` 0 错；`ModelInfoEditForm`+`model_info_view` 144 例、`key_edit_view.integration`+`key_info_view`+`keyEditFormValues`+`keyEditFieldNormalizers`+`estimatedOutputTokens` 206 例通过；两簇改动文件 eslint 0 error（余下 `any`/`complexity` 警告与搬移前同源同量，未新增违例）；dead keys 0；`modelInfoEditFields.ts` 为新文件、按 prettier 落盘，`KeyEditViewControls.tsx` 与 `key_edit_view.tsx` 在 HEAD 即合规、`--write` 报告 unchanged；`ModelInfoEditForm.tsx` 与 `model_info_view.tsx` 在 HEAD 就未格式化，本次不夹带无关收口。
