@@ -78,7 +78,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | Lint | `eslint .` 0 error（第 524 簇清理前是 77 条未抑制的 error，分布在 60 个文件）；预算九条全过，`no-large-inline-object-arg` 476/477、`no-long-condition-chain` 200/200、`no-console` 16/16、`testing-library/prefer-screen-queries` 18/18，后三条已顶格 |
 | 死代码与死键 | `npm run knip:ci` 通过，`npm run check:dead-keys` 通过（死键 0，基线 0） |
 | i18n 守卫 | `src/lib/i18n` 五道加 `src/lib/toast.test.ts` 的动态标题覆盖，6 个文件 59 例通过，`Type Errors` 报 no errors |
-| 实机 | `npm run scan:rendered` 在 15 个页面 0 渲染错误、除基线两枚端点路径外 0 处英文（第 515 簇实测，之后两簇只搬代码未动文案，按判据不需复跑） |
+| 实机 | `npm run scan:rendered` 在 15 个页面 0 渲染错误、除基线两枚端点路径外 0 处英文（2026-10-24 在第 524 簇之后复跑过，与第 515 簇首跑逐页一致） |
 | CI | UI 侧四个工作流：`test-litellm-ui-lint`（改动文件 prettier + eslint、lint 预算、knip、死键）、`test-litellm-ui-unit`、`test-litellm-ui-build`、`check-ui-api-types` |
 
 ## 怎么验证

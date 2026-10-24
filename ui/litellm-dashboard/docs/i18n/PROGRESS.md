@@ -4233,14 +4233,13 @@ i18n 自身的三条守卫也是全绿，16 个用例
 2026-10-24 更新：本节往后的段落是各簇逐次追加的执行记录，新旧混杂，读优先级以下面这份只列活项的清单为准。上游同步按维护者决定暂缓，不在清单内
 
 1. 换新维度找漏翻，不要重扫旧正则。四条静态口径（JSX 文本、`placeholder`/`title`/`label`/`aria-label` 四个属性、toast 与 `new Error` 首参、模板串）与宽口径 string 的"变量转传"复读都已清空，2026-10-24 复扫的 265 处命中（`.tsx` 侧 216 处 / 110 个文件）全部有判定归属，是机读面、协议标识、导出列头与文件名、代码语料、品牌名这几类。下一轮应从新组件、新页面、新交互形态入手，配合 `npm run scan:rendered` 在运行期发现
-2. 运行期证据过期了。渲染扫描最后一次实测是第 515 簇的 15 个页面 0 渲染错误、除基线两枚端点路径外 0 处英文，第 523 与 524 簇只搬代码未动文案，按判据没复跑。下一次改到文案必须复跑，否则"实机 0 英文"这句是靠推断站住的
-3. 217 个未接入的非测试 `.tsx` 只有比例没有清单。度量脚本按"文件里有没有 `useTranslations(`/`getTranslations(`"计数，这个口径长期高报那些没有可展示文案的目录（`view_logs` 的 9 个文件就是误报史）。要动这 217 个得逐文件读完再判定，不能按脚本计数排产
-4. 中英同值 139 条与 `placeholder` 类 67 处属判定账。现行判定是"格式示例与机读面不翻"，若日后认定某类该翻（比如表单里的示例值），需要逐条重判，不是一次批量替换
-5. `max-lines` 抑制基线仍有 18 个上游巨型文件（`networking.tsx`、`ChatUI.tsx`、`CompareUI.tsx` 这一类）。逐个做文件级拆分属独立一簇，本轮拆的四个已经退线
-6. lint 预算几乎没有余量。`no-console` 16/16、`local/no-long-condition-chain` 200/200、`testing-library/prefer-screen-queries` 18/18 三条顶格，`local/no-large-inline-object-arg` 476/477 与 `complexity` 139/140 各余 1。新增这类写法的收口办法是提成具名变量或改早返回，不要调上限
-7. 一处可选的小重构。`bulkUsersCsvTemplate.ts` 的模板表头与 `bulk_create_users_button.tsx` 解析器读取的列名是两份并列事实，可以收成一个共享来源，让改列名时测试自然变红
+2. 217 个未接入的非测试 `.tsx` 只有比例没有清单。度量脚本按"文件里有没有 `useTranslations(`/`getTranslations(`"计数，这个口径长期高报那些没有可展示文案的目录（`view_logs` 的 9 个文件就是误报史）。要动这 217 个得逐文件读完再判定，不能按脚本计数排产
+3. 中英同值 139 条与 `placeholder` 类 67 处属判定账。现行判定是"格式示例与机读面不翻"，若日后认定某类该翻（比如表单里的示例值），需要逐条重判，不是一次批量替换
+4. `max-lines` 抑制基线仍有 18 个上游巨型文件（`networking.tsx`、`ChatUI.tsx`、`CompareUI.tsx` 这一类）。逐个做文件级拆分属独立一簇，本轮拆的四个已经退线
+5. lint 预算几乎没有余量。`no-console` 16/16、`local/no-long-condition-chain` 200/200、`testing-library/prefer-screen-queries` 18/18 三条顶格，`local/no-large-inline-object-arg` 476/477 与 `complexity` 139/140 各余 1。新增这类写法的收口办法是提成具名变量或改早返回，不要调上限
+6. 一处可选的小重构。`bulkUsersCsvTemplate.ts` 的模板表头与 `bulk_create_users_button.tsx` 解析器读取的列名是两份并列事实，可以收成一个共享来源，让改列名时测试自然变红
 
-从这份清单里摘掉的四条（此前登记、后续簇已完成，别再当作活项）：`copyToClipboard` 的英文默认参数在第 516 簇改成必传形参（现在签名是 `messageText: string`，56 个非测试调用点全部交出实参），「导出文档内容」维度第 517 簇收口，渲染扫描覆盖 `/models-and-endpoints` 的模型健康面板在第 515 簇续做完，`key_edit_view.tsx` 与 `ModelInfoEditForm.tsx` 的 `max-lines` 拆分在第 523 与 524 簇做完且两文件都退出了抑制基线
+从这份清单里摘掉的五条（此前登记、后续簇已完成，别再当作活项）：渲染扫描的运行期证据在 2026-10-24 第 524 簇之后当天复跑过，15 页 0 渲染错误、除基线两枚端点路径外 0 处英文，这条从活项转成 `WORKFLOW.md` 第六步的常设规则（改文案必复跑，证据只对跑时那一版成立）。另外四条：`copyToClipboard` 的英文默认参数在第 516 簇改成必传形参（现在签名是 `messageText: string`，56 个非测试调用点全部交出实参），「导出文档内容」维度第 517 簇收口，渲染扫描覆盖 `/models-and-endpoints` 的模型健康面板在第 515 簇续做完，`key_edit_view.tsx` 与 `ModelInfoEditForm.tsx` 的 `max-lines` 拆分在第 523 与 524 簇做完且两文件都退出了抑制基线
 
 2026-10-20 追加（承 382-391 error-fallback 维度收口）：`playground/llm_calls/a2a_send_message.tsx` 专项已于 391 接其硬编回退子集——流式 `makeA2AStreamMessageRequest`（唯一 caller CompareUI:584）的 :296 "No response body" 复用 orphan `t("llmCalls.a2a.noResponseBody")`、:384 "Unknown A2A error" 接新键 `t("llmCalls.a2a.unknownA2AError")`，两串皆不含 "JSON" 故 `includes("JSON")` 流式解析错误判别逐 locale 不破、a2a 无单测但以 tsc 校签名位移 + 全 playground 168 例回归绿验 caller；非流式函数与流式内 server-detail/jsonRpc/`HTTP ${status}`/a2aError/errorMessage 动态透传判保留（后端串非 UI）。a2a 专项据此收口、无余留硬编 UI 英文待接；其余 error-fallback 漏已 382-389 接净、吞者（fetch_agents/prompts-utils/UITheme）入判定账。注：本节原 2026-10-13 文字（toast.fromError 355/handleError/copyToClipboard 三阻塞片）已于 380/381 接净、`useXxx` hooks error 已于 386 收口，相关「列入判定账」表述作废
 

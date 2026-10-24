@@ -121,6 +121,8 @@ eslint 的路径形式在 `(dashboard)` 这类含括号的路径目录下会低�
 
 死键门禁取文件走 `git ls-files`，本批新建的模块要先 `git add` 再跑 `npm run check:dead-keys`，否则只在新文件里出现的键会被判成死键，第 524 簇就在这里报出两枚假死键
 
+改到文案还要复跑渲染扫描，判据是 15 个页面各 0 个渲染错误、除基线里两枚端点路径段外 0 处英文。起 `npm run dev`（端口 3000），另开终端 `npm run scan:rendered`。这份证据只对跑时那一版成立：第 523 与 524 簇只搬代码未动文案，按判据没复跑，但任何文案改动都会让上一次的结论失效，新增发现的处置与基线刷新见 [RENDERED-SCAN.md](./RENDERED-SCAN.md)
+
 改完组件不能只跑它自己的映射测试，要把 import 它的测试一并跑。第 519 到 521 簇把认证类型标签接成中文后，本目录测试全绿，`AddModelForm.integration` 与 `CredentialModal.integration` 却按英文名查 combobox，8 例稳定红，直到全量复跑才暴露。做法是先列出引用该组件的测试文件清单再整批跑，逐文件症状与修法见 `FIXES.md`
 
 两条机器计数口径。要看某个文件的 `max-lines` 真实行数（该规则跳过空行与注释），把上限临时压到 1 逼它打印：`npx eslint <文件> --rule '{"max-lines": ["error", {"max": 1, "skipBlankLines": true, "skipComments": true}]}'`。要判断 lint 预算的增量落在哪些文件，在基线提交上建游离 worktree、软链同一份 `node_modules`、用同规则重跑一份 JSON 报告再按文件差分，两份报告的 `filePath` 根路径不同，必须先归一成仓库相对路径，否则每个文件都会同时出现正负增量、净数看着像没变
