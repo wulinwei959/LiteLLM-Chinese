@@ -4260,11 +4260,9 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 2026-10-24 更新：本节往后的段落是各簇逐次追加的执行记录，新旧混杂，读优先级以下面这份只列活项的清单为准。上游同步按维护者决定暂缓，不在清单内
 
-1. 中英同值 139 条与 `placeholder` 类 67 处属判定账。现行判定是"格式示例与机读面不翻"，若日后认定某类该翻（比如表单里的示例值），需要逐条重判，不是一次批量替换
-2. `max-lines` 抑制基线仍有 18 个上游巨型文件（`networking.tsx`、`ChatUI.tsx`、`CompareUI.tsx` 这一类）。逐个做文件级拆分属独立一簇，本轮拆的四个已经退线
-3. lint 预算几乎没有余量。`no-console` 16/16、`local/no-long-condition-chain` 200/200、`testing-library/prefer-screen-queries` 18/18 三条顶格，`local/no-large-inline-object-arg` 476/477 与 `complexity` 139/140 各余 1。新增这类写法的收口办法是提成具名变量或改早返回，不要调上限
+2026-10-24 第 529 簇后清单清零，没有活项。上游同步按维护者决定暂缓，不在清单内。曾经的三条去向：中英同值与 placeholder 判定账在第 527 簇收口（五档判定落进 `GLOSSARY.md`）；lint 预算余量在第 528 簇收口（两条顶格规则降存量并锁棘轮）；`max-lines` 18 个巨型文件在第 529 簇收口（拆 1 退线，其余 17 个按归属记判定账保留豁免，理由见该簇）
 
-从这份清单里摘掉的八条（此前登记、后续簇已完成，别再当作活项）：11 处 JSX 小写词真漏已在第 525 簇全部接完（新开 8 键、复用 2 个早已有键）；217 个未接入文件已出逐文件清单（`node scripts/i18n-file-inventory.mjs` 可复跑，账在 [FILE-INVENTORY.md](./FILE-INVENTORY.md)：200 个六口径零命中、17 个有证据且全部判定归属），"只有比例没有清单"这条据此闭环；渲染扫描的运行期证据在 2026-10-24 第 524 簇之后当天复跑过；批量建用户的 CSV 列名四处并列事实已在第 526 簇收成 `bulkUsersCsvTemplate.ts` 单一来源，改列名现为编译错
+从这份清单里摘掉的十一条（此前登记、后续簇已完成，别再当作活项）：11 处 JSX 小写词真漏已在第 525 簇全部接完（新开 8 键、复用 2 个早已有键）；217 个未接入文件已出逐文件清单（`node scripts/i18n-file-inventory.mjs` 可复跑，账在 [FILE-INVENTORY.md](./FILE-INVENTORY.md)：200 个六口径零命中、17 个有证据且全部判定归属），"只有比例没有清单"这条据此闭环；渲染扫描的运行期证据在 2026-10-24 第 524 簇之后当天复跑过；批量建用户的 CSV 列名四处并列事实已在第 526 簇收成 `bulkUsersCsvTemplate.ts` 单一来源，改列名现为编译错；同值与 placeholder 判定账已在第 527 簇读完归档（真漏 3 处接掉、8 个真死键清掉、死键判定器修一处自引用误判）；lint 预算两条顶格规则已在第 528 簇降存量（prefer-screen-queries 18 到 0、no-console 16 到 11）并同步下调棘轮上限；`max-lines` 巨型文件账已在第 529 簇收口（usage.tsx 拆出两个模块退线，余 17 个记判定账）
 2026-10-20 追加（承 382-391 error-fallback 维度收口）：`playground/llm_calls/a2a_send_message.tsx` 专项已于 391 接其硬编回退子集——流式 `makeA2AStreamMessageRequest`（唯一 caller CompareUI:584）的 :296 "No response body" 复用 orphan `t("llmCalls.a2a.noResponseBody")`、:384 "Unknown A2A error" 接新键 `t("llmCalls.a2a.unknownA2AError")`，两串皆不含 "JSON" 故 `includes("JSON")` 流式解析错误判别逐 locale 不破、a2a 无单测但以 tsc 校签名位移 + 全 playground 168 例回归绿验 caller；非流式函数与流式内 server-detail/jsonRpc/`HTTP ${status}`/a2aError/errorMessage 动态透传判保留（后端串非 UI）。a2a 专项据此收口、无余留硬编 UI 英文待接；其余 error-fallback 漏已 382-389 接净、吞者（fetch_agents/prompts-utils/UITheme）入判定账。注：本节原 2026-10-13 文字（toast.fromError 355/handleError/copyToClipboard 三阻塞片）已于 380/381 接净、`useXxx` hooks error 已于 386 收口，相关「列入判定账」表述作废
 
 第 353 到 361 簇逐维度收口后可接线余量的当前边界（下一轮勿从这些正则重扫，直接攻阻塞片或换新正则）：三元 `? :`（两侧与单侧）已复扫归零、可见串接净或入判定账；JSX 文本节点「独占一行英文句」更宽正则仅剩 how_it_works（361 已接）与 `APIReferenceView` 框架品牌名（判定账）；`placeholder`/`aria-label`/`title`/`label` 属性英文字面量复扫仅剩 JSDoc 注释（`numerical_input`）、格式示例（`add_plugin_form` "Productivity"/`AgentIdentityFields` "Agent.Invoke"）、协议头（`UpstreamTokenHeaderField` "Authorization"）四类判定账；短按钮文本节点复扫仅命中 `McpFormTestHarness` "Submit"（测试脚手架非产品 UI）。真正待做的剩余量集中在三件高扇出专项重构（`toast.fromError` 355 调用点、`handleError` ~100、`copyToClipboard` 34，均需模块函数首参注入 translator 且 `toast.fromError` 还须先把 `WARNING_TITLES.has(title)` 改成键/码判定）（此句 2026-10-24 实测作废：`toast.ts` 已按 category 码取标题、按码判色，无英文 title 比较，362 调用点无需重构；`handleError` 的 `UI Session Expired. Logging out.` 已接 `toast.sessionExpired`；三片里唯 `copyToClipboard` 的英文默认参数仍是真漏）与「导出文档内容」维度其余报表件（各 dashboard 表格/图表的 CSV/HTML 导出，需逐件判人面 PDF 报告接、数据交换 CSV 列头留），以及更宽正则盲区（模板串内英文、`{...}` 内回落、`<code>` 内嵌、`{" "}` 拼接、单行 `>text<`），不据本报告宣布整体完成
@@ -5252,3 +5250,11 @@ python3 -c "import json; f=lambda d,p='': {k2: v for kk, vv in d.items() for k2,
 `no-console` 从 16 降到 11：自研的三个工具脚本（`add-translator-hooks.mjs`、`prune-unused-translators.mjs`、`check-lint-budgets.mjs`）的 5 处 `console.log`/`console.error` 改成 `process.stdout.write`/`process.stderr.write`，与 `i18n-file-inventory.mjs` 同一形态，三个脚本各自冒烟跑过输出正常。剩下的 11 处全在上游文件（playground 的 llm_calls 视图与 networking），不在汉化账里动
 
 `eslint-budgets.json` 同步下调两条上限：`prefer-screen-queries` 18 到 0、`no-console` 16 到 11，锁住这次下降不让回潮。九条预算全过（`npx eslint .` exit 0）。`local/no-long-condition-chain` 200/200 没动：200 处散在几十个上游文件里，逐处提成辅助函数是一次独立的大重构，收益只剩预算余量，留作判定不改
+
+## 2026-10-24 第 529 簇：max-lines 18 个巨型文件收口
+
+活项清单第 2 条，以"拆 1 退线 + 17 个记判定账"收口。先量了归属：把抑制基线里的 18 个文件与上游 `v1.107.0` 树（仓库内等价提交 `9319f5e2`）逐个对比，18 个在基线树上就已全部超 800 行（最小的 846），本项目的汉化批次没有把任何一个新推过线，净差最大的是 `TeamInfo.tsx` +36 行、其余在 ±13 行内、4 个反而变短。真正被我们自己撑过线的 4 个（`ModelInfoEditForm`、`key_edit_view`、`leftnav`、`guardrail_info`）已在第 523/524 簇拆完退线
+
+本簇退线的是超线幅度最小的 `old-usage/_components/usage.tsx`（846 行，超 46）：组件内的日期与取数帮助函数（`formatDate`、`fillMissingDates`、`fetchAndSetData`、`valueFormatter`、`isAdminOrAdminViewer`）拆成 `usageHelpers.ts`，内联的 `TeamSpendBarList` 连同 `TeamSpendTotal` 类型拆成 `TeamSpendBarList.tsx`，真实行数降到 752。顺带 `usageHelpers` 里 `formatDate` 的两个 `let` 被 eslint --fix 成 `const`（原文件里它们被抑制基线盖着），`npx eslint . --prune-suppressions` 清掉该文件的 max-lines 豁免并把 prefer-const 计数从 6 降到 4。行为不变的验证：`legacyPageRoutes` 与 `leftnav` 53 例全绿、`npx tsc --noEmit` 0 错、九条预算全过、`npm run build` 退出 0
+
+其余 17 个记判定账、保留豁免，理由有三：它们全部是上游既有的巨型文件；拆分唯一收益是消一条 lint 豁免，代价是每次上游同步的三方合并都要在这些文件上重新对齐结构（`networking.tsx` 6807 行、`ChatUI.tsx` 2121 行、`TeamInfo.tsx` 2558 行这类是同步冲突的重灾区）；且其中 6 个超 1400 行的拆分本身就是多簇工程。日后若某个文件因功能改动被打开，可顺手拆出已内联的单元再退线（`CreateMCPServer.tsx` 已有 `createServerPayload.ts` 的先例可循），不做主动的纯拆分

@@ -20,7 +20,6 @@ import {
   ComboboxValue,
   useComboboxAnchor,
 } from "@/components/ui/combobox";
-import { Meter, MeterIndicator, MeterTrack } from "@/components/shared/Meter";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   NUMERIC_CELL_CLASS,
@@ -52,6 +51,8 @@ import { MoneyCell } from "@/components/shared/table_cells";
 import { hasCapability } from "@/utils/capabilities";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { formatNumber } from "@/lib/i18n/format";
+import { fetchAndSetData, fillMissingDates, formatDate, isAdminOrAdminViewer, valueFormatter } from "./usageHelpers";
+import TeamSpendBarList, { type TeamSpendTotal } from "./TeamSpendBarList";
 
 interface UsagePageProps {
   accessToken: string | null;
@@ -72,38 +73,9 @@ const EMPTY_GLOBAL_ACTIVITY: GlobalActivityData = { sum_api_requests: 0, sum_tot
 
 type UsageDateRange = { from?: Date; to?: Date };
 
-type TeamSpendTotal = { name: string; value: number };
-
 type TagOption = { value: string; label: string; disabled: boolean };
 
 const ALL_TAGS = "all-tags";
-
-const isAdminOrAdminViewer = (role: string | null): boolean => {
-  if (role === null) return false;
-  return role === "Admin" || role === "Admin Viewer";
-};
-
-const TeamSpendBarList: React.FC<{ data: TeamSpendTotal[] }> = ({ data }) => {
-  const max = Math.max(0, ...data.map((team) => team.value));
-
-  return (
-    <div className="flex flex-col gap-3">
-      {data.map((team) => (
-        <div key={team.name} className="flex items-center gap-4">
-          <p className="w-1/3 truncate text-sm text-foreground">{team.name}</p>
-          <Meter value={team.value} max={max === 0 ? 1 : max} className="flex-1">
-            <MeterTrack>
-              <MeterIndicator />
-            </MeterTrack>
-          </Meter>
-          <p className="w-24 shrink-0 text-right text-sm tabular-nums text-foreground">
-            {formatNumberWithCommas(team.value, 2)}
-          </p>
-        </div>
-      ))}
-    </div>
-  );
-};
 
 const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, userID, keys, premiumUser }) => {
   const t = useTranslations("usage.old");
@@ -215,100 +187,6 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
       selectedTags.length === 0 ? undefined : selectedTags,
     );
     setTopTagsData(top_tags.spend_per_tag);
-  };
-
-  function formatDate(date: Date) {
-    const year = date.getFullYear();
-    let month = date.getMonth() + 1; // JS month index starts from 0
-    let day = date.getDate();
-
-    // Pad with 0 if month or day is less than 10
-    const monthStr = month < 10 ? "0" + month : month;
-    const dayStr = day < 10 ? "0" + day : day;
-
-    return `${year}-${monthStr}-${dayStr}`;
-  }
-
-  const valueFormatter = (number: number) => `$ ${formatNumberWithCommas(number, 2)}`;
-
-  const fetchAndSetData = async (
-    fetchFunction: () => Promise<any>,
-    setStateFunction: React.Dispatch<React.SetStateAction<any>>,
-    errorMessage: string,
-  ) => {
-    try {
-      const data = await fetchFunction();
-      setStateFunction(data);
-    } catch (error) {
-      console.error(errorMessage, error);
-      // Optionally, update UI to reflect error state for this specific data
-    }
-  };
-
-  // Update the fillMissingDates function to handle different date formats
-  const fillMissingDates = (data: any[], startDate: Date, endDate: Date, categories: string[]) => {
-    const filledData = [];
-    const currentDate = new Date(startDate);
-
-    // Helper function to standardize date format
-    const standardizeDate = (dateStr: string) => {
-      if (dateStr.includes("-")) {
-        // Already in YYYY-MM-DD format
-        return dateStr;
-      } else {
-        // Convert "Jan 06" format
-        const [month, day] = dateStr.split(" ");
-        const year = new Date().getFullYear();
-        const monthIndex = new Date(`${month} 01 2024`).getMonth();
-        const fullDate = new Date(year, monthIndex, parseInt(day));
-        return fullDate.toISOString().split("T")[0];
-      }
-    };
-
-    // Create a map of existing dates for quick lookup
-    const existingDates = new Map(
-      data.map((item) => {
-        const standardizedDate = standardizeDate(item.date);
-        return [
-          standardizedDate,
-          {
-            ...item,
-            date: standardizedDate, // Store standardized date format
-          },
-        ];
-      }),
-    );
-
-    // Iterate through each date in the range
-    while (currentDate <= endDate) {
-      const dateStr = currentDate.toISOString().split("T")[0];
-
-      if (existingDates.has(dateStr)) {
-        // Use existing data if we have it
-        filledData.push(existingDates.get(dateStr));
-      } else {
-        // Create an entry with zero values
-        const emptyEntry: any = {
-          date: dateStr,
-          api_requests: 0,
-          total_tokens: 0,
-        };
-
-        // Add zero values for each model/team if needed
-        categories.forEach((category) => {
-          if (!emptyEntry[category]) {
-            emptyEntry[category] = 0;
-          }
-        });
-
-        filledData.push(emptyEntry);
-      }
-
-      // Move to next day
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    return filledData;
   };
 
   // Update the fetchOverallSpend function
@@ -523,9 +401,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ accessToken, token, userRole, use
             <CardTitle>{t("title")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              {t("adminOnly")}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("adminOnly")}</p>
           </CardContent>
         </Card>
       </div>
