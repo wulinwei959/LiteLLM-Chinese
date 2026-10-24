@@ -30,8 +30,8 @@ const DecisionModelsBanner: React.FC = () => {
       <div className="min-w-0 flex-1">
         <h4 className="m-0 text-sm font-semibold text-foreground">{t("title")}</h4>
         <p className="m-0 mt-0.5 text-xs text-muted-foreground">
-          {t("callBefore")} <code>/v1/decisions</code> {t("or")} <code>/v1/systemone</code>, {t("orTry")}
-          playground.{" "}
+          {t("callBefore")} <code>/v1/decisions</code> {t("or")} <code>/v1/systemone</code>
+          {t("orTry")}
           <a href={DECISIONS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="underline">
             {t("howToCall")}
           </a>

@@ -23,6 +23,7 @@ export const PAGES = [
   { name: "users", path: "/users" },
   { name: "search-tools", path: "/search-tools" },
   { name: "roi-calculator", path: "/roi-calculator" },
+  { name: "model-health", path: "/models-and-endpoints?tab=health" },
 ];
 
 /**
@@ -123,6 +124,7 @@ export const API_STUBS = [
   ],
   ["/health/readiness", { status: "healthy" }],
   ["/global/health", { status: "healthy" }],
+  ["/config/list", []],
   ["/ui_theme_settings", { theme: "light" }],
   ["/user_banner", { banner: null }],
   ["/api/plugins", { plugins: [] }],
@@ -133,6 +135,32 @@ export const API_STUBS = [
   ["/user/info", { user_role: "proxy_admin", user_email: "admin@example.com", user_id: "user-admin" }],
   ["/user/available_users", { users: [] }],
   ["/user/available_roles", { roles: [] }],
+  [
+    "/models/list",
+    list([
+      {
+        model_name: "gpt-4o",
+        litellm_params: { model: "openai/gpt-4o" },
+        model_info: {
+          id: "gpt-4o",
+          created_at: 1730000000,
+          mode: "chat",
+          input_cost_per_token: 0.0000025,
+          output_cost_per_token: 0.00001,
+          max_tokens: 128000,
+        },
+      },
+      {
+        model_name: "gpt-4o-mini",
+        litellm_params: { model: "openai/gpt-4o-mini" },
+        model_info: { id: "gpt-4o-mini", created_at: 1730000000, mode: "chat" },
+      },
+    ]),
+  ],
+  [
+    "/health/latest",
+    { latest_health_checks: { "gpt-4o": { status: "healthy", checked_at: "2026-10-24T00:00:00Z", error_message: null } } },
+  ],
   ["/models", list([{ id: "gpt-4o", name: "gpt-4o", mode: "chat" }])],
   [
     "/model/info",

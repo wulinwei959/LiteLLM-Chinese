@@ -5063,3 +5063,11 @@ lint 侧另有既成事实：`key_edit_view.tsx` 在 HEAD 就有 `max-lines`（8
 2. 施工前实测复核了旧清单的三片"高扇出专项重构"，两片已经不存在：`src/lib/toast.ts` 169 行，标题走 `toastMessage(category)`、判色走 `WARNING_CATEGORIES.has(category)`，`STATUS_TITLES`/`PROXY_TYPE_TITLES`/`WARNING_TITLES` 三个名字全库 0 命中，`toast.fromError` 实测 362 个非测试调用点（登记值 355）；`handleError` 那句 `UI Session Expired. Logging out.` 已接成 `toast.sessionExpired`（`networking.tsx:447`，zh 为"会话已过期，正在退出登录。"）。三片里只剩 `copyToClipboard`：`src/utils/dataUtils.ts:69` 的默认参数还是英文 `"Copied to clipboard"`，56 个调用点里 37 个自己传了 `t(...)`，其余 19 个吃默认值，词条 `common.copiedToClipboard` 已备好。据此把活项清单第 1 项改写为实测结论，并在第 353-361 簇与第 308 簇两段旧声明处就地标注作废，原文保留供追溯。
 
 验证：`src/lib/toast.test.ts` 36 例通过、tsc 无类型错误、改动文件 prettier 合规。
+
+### 第 515 簇续：渲染扫描覆盖模型健康面板（活项 3）
+
+扫描脚本只按 path 访问、不会点击页内 tab，但 `useUrlTab` 把 tab 写在 URL 上（键 `tab`），所以加一条 `{ name: "model-health", path: "/models-and-endpoints?tab=health" }` 就能直达，不必给脚本加交互能力。桩代理对未登记路径一律回 `{}`，首轮撞出 `proxyConfigData.find is not a function`（`ModelSettingsModal` 用 `useProxyConfig` 取 `/config/list` 的数组）。补三个桩：`/config/list` 回空数组，`/models/list` 回两行模型（一行有健康记录、一行没有，同时覆盖日期列与"无"哨兵列），`/health/latest` 回一行 `healthy` 记录。补完 0 渲染错误，剩 4 处英文。
+
+那 4 处里两枚是端点路径段（`<code>/v1/decisions</code>`、`/v1/systemone`），按既有判定账进基线（`--update-baseline` 写入 2 条）。另两枚是真缺陷：`DecisionModelsBanner` 的 `orTry` 词条已是完整句，JSX 又硬拼 `playground.{" "}` 文本节点，en 会渲染成 "... Decisions playground. playground."，zh 同理重复，且 JSX 的 `, ` 与词条前导逗号叠成双逗号。删掉该文本节点，并把 zh `orTry` 的"决策 playground"统一成侧栏既有术语"决策演练场"（`nav.playground` = 演练场）。15 页复跑后 0 渲染错误、除基线两条外 0 处英文。
+
+验证：横幅与决策模型 3 个测试文件 47 例、`AddModelForm.integration`+`models-and-endpoints/page.integration`+i18n 守卫+`toast.test` 共 8 文件 99 例通过，tsc 0 错、dead keys 0、en/zh 叶子各 11836 无差集。
