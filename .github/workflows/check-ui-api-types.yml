@@ -29,7 +29,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout repository
-        uses: ./.github/actions/vendor/checkout
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           persist-credentials: false
           fetch-depth: 2
@@ -79,7 +79,7 @@ jobs:
 
       - name: Cache uv dependencies
         if: steps.changes.outputs.relevant == 'true'
-        uses: ./.github/actions/vendor/cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             ~/.cache/uv
@@ -124,7 +124,7 @@ jobs:
 
       - name: Set up Node.js
         if: steps.changes.outputs.relevant == 'true'
-        uses: ./.github/actions/vendor/setup-node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version-file: ui/litellm-dashboard/.nvmrc
           cache: "npm"
