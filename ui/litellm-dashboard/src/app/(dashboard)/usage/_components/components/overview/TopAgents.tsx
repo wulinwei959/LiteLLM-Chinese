@@ -189,8 +189,8 @@ export default function TopAgents({
   const coverage = totalTokens > 0 ? Math.min(attributedTokens / totalTokens, 1) : 1;
   const subtitle =
     coverage < COVERAGE_NOTE_BELOW
-      ? `Daily usage by agent. ${Math.round(coverage * 100)}% of tokens came with a User-Agent; the rest is unattributed`
-      : "Daily usage by agent, from each request's User-Agent";
+      ? t("topAgents.unattributed", { coverage: Math.round(coverage * 100) })
+      : t("topAgents.subtitle");
   const half = Math.ceil(agents.length / 2);
 
   return (

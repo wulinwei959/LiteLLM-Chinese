@@ -5478,6 +5478,8 @@
         "empty": "该时间范围内没有用量"
       },
       "topAgents": {
+      "subtitle": "按智能体统计的每日用量，取自每个请求的 User-Agent",
+      "unattributed": "按智能体统计的每日用量，{coverage}% 的令牌带有 User-Agent，其余无法归属",
         "viewActivity": "查看活动",
         "empty": "该时间范围内没有智能体流量",
         "title": "热门智能体",

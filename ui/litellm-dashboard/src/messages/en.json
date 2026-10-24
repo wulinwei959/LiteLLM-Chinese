@@ -5478,6 +5478,8 @@
         "empty": "No usage in this range"
       },
       "topAgents": {
+      "subtitle": "Daily usage by agent, from each request's User-Agent",
+      "unattributed": "Daily usage by agent. {coverage}% of tokens came with a User-Agent; the rest is unattributed",
         "viewActivity": "View activity",
         "empty": "No agent traffic in this range",
         "title": "Top agents",

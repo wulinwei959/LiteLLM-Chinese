@@ -5098,3 +5098,15 @@ tsc 枚举出 7 处：`ModelHubTable.tsx` 三处（页面 URL、agent url、MCP 
 验证：tsc 0 错、dead keys 0、i18n 守卫通过、`multi_export_utils`+`teamUserSpend`+`EntityUsage`+`pricing_calculator`+i18n 共 15 个文件 224 例通过、en/zh 叶子各 11838 且完全一致（本簇新增 `costTracking.multiExport.report.generatedAt` 与 `usage.teamUserSpend.noUser` 两键）、`multi_export_utils.ts` prettier 合规（两份目录在 HEAD 就非 prettier 合规，本次只做同风格插行）。
 
 另案（不属汉化账）：`bulk_create_users_button.tsx:597` 的"下载 CSV 模板"按钮只有文案与图标，没有 `onClick`，点了不做事，是功能缺陷，需另开一单确认模板内容后补行为。
+
+## 2026-10-24 第 518 簇：扫描脚本补模板串口径
+
+活项清单第 3 条的第一块。`scripts/scan-english.mjs` 的宽口径 `--all` 只匹配 `StringLiteral`，反引号串整类不在视野内。改为同时打印 `NoSubstitutionTemplateLiteral` 全文与 `TemplateExpression` 的 `head` 及各插值后的文本片段，归入 `template` 一类。
+
+对 1410 个非测试 `.ts`/`.tsx`（含 `schema.d.ts` 排除）重扫，`template` 类命中 1092 处、涉 287 个文件。分布高度集中：`networking.tsx` 298 处全是 `Received non-JSON response (...)` 一类错误文本模板，`CodeSnippets`/`PromptCodeSnippets`/`multi_export_utils` 三个文件是代码语料与 HTML 拼装片段。再按"大写字母开头的四个连续英文词"筛一遍并排除这四个文件，结果为空，说明模板维度里剩下的真串只有一处。
+
+那处是 `TopAgents.tsx` 的两条面板副标题：字符串先赋给 `subtitle` 变量、再传给 `Panel` 的 `subtitle` 属性，属性口径只认字面量属性值、JSX 口径只认文本节点，两边都抓不到，模板口径这次把它露出来。新增 `usage.overview.topAgents.subtitle`（按智能体统计的每日用量，取自每个请求的 User-Agent）与 `usage.overview.topAgents.unattributed`（含 `{coverage}` 插值）两键，组件改取 `t()`。缺键与插值参数分别由 `missingKeys`、`messageArgs` 两例守卫覆盖，这条用例不需要额外造 DOM 断言。
+
+验证：tsc 0 错、dead keys 0、`src/lib/i18n` 加 `usage/.../overview` 目录共 8 个文件 45 例通过、en/zh 叶子各 11840 且完全一致、改动文件 prettier 合规。
+
+该维度的余量如实登记：宽口径的 `string` 类命中 25022 处，从未按文件系统复读，其中必然混着类名、键名、URL 与数据值，但也可能藏着与 `TopAgents` 同形的"变量转传"文案。此项另开任务，不据本轮宣布盲区维度归零。

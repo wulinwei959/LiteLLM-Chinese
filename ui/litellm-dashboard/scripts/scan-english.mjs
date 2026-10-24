@@ -66,6 +66,14 @@ for (const file of process.argv.slice(2).filter((argument) => !argument.startsWi
     if (showAll && ts.isStringLiteral(node) && !ts.isJsxAttribute(node.parent)) {
       add(node.text, "string");
     }
+    if (showAll && (ts.isNoSubstitutionTemplateLiteral(node) || ts.isTemplateExpression(node))) {
+      const chunks = ts.isTemplateExpression(node)
+        ? [node.head.text, ...node.templateSpans.map((span) => span.literal.text)]
+        : [node.text];
+      for (const chunk of chunks) {
+        add(chunk, "template");
+      }
+    }
     ts.forEachChild(node, visit);
   };
   visit(tree);
