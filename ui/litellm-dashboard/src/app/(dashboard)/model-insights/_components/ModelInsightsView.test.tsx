@@ -58,7 +58,7 @@ describe("ModelInsightsView", () => {
     expect(
       screen.getByText(`你的网关在 ${response.start_date} 至 ${response.end_date} 期间用过的模型`),
     ).toBeInTheDocument();
-    expect(screen.getByText("by openai")).toBeInTheDocument();
+    expect(screen.getByText("由 openai 提供")).toBeInTheDocument();
     expect(screen.getAllByText("100.0%")).toHaveLength(1);
     expect(screen.queryByText("Top models by task")).not.toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "tokens" })).toHaveAttribute("aria-selected", "true");

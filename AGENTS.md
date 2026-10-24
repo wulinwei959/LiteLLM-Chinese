@@ -150,6 +150,7 @@ Before requesting maintainer review, verify the current PR tip passes required C
 - `git show HEAD:<path>` 的 path 是仓库根相对路径，从子目录执行要写 `HEAD:./<path>`；`git add <path>` 是当前目录相对，两种基准不要混用
 - `git pull --rebase` 要求工作区干净。先 `git stash push -m <唯一 tag>`，pull 后 `git stash apply`，不要用裸 stash/pop
 - `~/.local/bin` 不在默认 PATH，qoderclicn 等工具须用全路径调用
+- `pgrep -f`/`pkill -f` 的模式会匹配到执行它的那条 shell 自身命令行，曾两次把工具自己的进程连带杀掉（表现为 exit 143、`Signal: 15`）。停 dev server 用启动时记下的 PID；只能按名查时用 `ss -ltn` 看端口是否释放来复核，别把 `pkill -f` 当幂等清理
 - 测试失败先对照 HEAD 与 origin/main 的同名文件，确认是本次改动引入还是合并遗留缺陷，再决定修法
 - 合并遗留缺陷的常见形态：引用未定义变量、fixture 与组件新行为不匹配、测试期望停在上游旧结构
 - 写入所谓"新"测试文件前先 `git ls-files` 或 `git status` 确认该路径未被跟踪，`ls | head` 截断过的目录清单不能当作不存在，否则 Write 会静默覆盖已有测试并删除用例

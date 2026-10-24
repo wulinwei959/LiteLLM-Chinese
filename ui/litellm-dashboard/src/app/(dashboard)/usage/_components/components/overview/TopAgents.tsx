@@ -129,7 +129,9 @@ function AgentItem({
         )}
       </span>
       <span className="text-right">
-        <span className="block text-sm tabular-nums text-foreground">{formatCompact(agent.tokens)} tokens</span>
+        <span className="block text-sm tabular-nums text-foreground">
+          {t("statStrip.tokensExact", { count: formatCompact(agent.tokens) })}
+        </span>
         <span className="block text-xs tabular-nums text-muted-foreground">
           {formatCompactUsd(agent.spend)} · {share.toFixed(1)}%
         </span>

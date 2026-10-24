@@ -2898,7 +2898,8 @@
     "maxBudgetKeepOrLowerHint": "You can keep or lower this budget. Ask a proxy admin to raise it.",
     "maxBudgetRaiseHint": "You can raise this budget. Raises are capped by your organization's budget when the team belongs to one.",
     "adminFieldTeamMemberTpmLimit": "Member Default TPM Limit",
-    "adminFieldTeamMemberRpmLimit": "Member Default RPM Limit"
+    "adminFieldTeamMemberRpmLimit": "Member Default RPM Limit",
+    "infoPerModelBudgetValue": "{amount} per {period}"
   },
   "userAgentActivity": {
     "summaryTitle": "Summary by User Agent",
@@ -3230,7 +3231,7 @@
     "creating": "Creating...",
     "createdToast": "Organization created successfully",
     "createFailed": "Failed to create organization",
-    "enterpriseFeature": "This is a LiteLLM Enterprise feature, and requires a valid key to use. Get a trial key here.",
+    "enterpriseFeature": "This is a LiteLLM Enterprise feature, and requires a valid key to use. Get a trial key <link>here</link>.",
     "clickToView": "Click on an organization ID to view its details.",
     "loading": "Loading organizations...",
     "noOrganizations": "No organizations found",
@@ -5542,7 +5543,8 @@
         "model": "Model",
         "deployment": "Deployment",
         "provider": "Provider"
-      }
+      },
+      "byProvider": "by {provider}"
     },
     "userActivity": {
       "error": {
@@ -5571,7 +5573,8 @@
       },
       "title": {
         "activity": "User activity"
-      }
+      },
+      "userCount": "{count} users"
     },
     "tabOverview": "Overview",
     "tabModelActivity": "Model Activity",
@@ -5672,7 +5675,8 @@
     "close": "Close",
     "toolbar": {
       "resetFilters": "Reset Filters",
-      "stop": "Stop"
+      "stop": "Stop",
+      "rangeTo": "to"
     },
     "timeRange": {
       "lastMinute": "Last Minute",
@@ -7237,7 +7241,8 @@
       "guideTitle": "How toolsets work",
       "guideBody": "Create a toolset, assign it to a key via <link>API Keys → Edit Key → MCP Servers</link>, then point your MCP client at the toolset URL. The client only sees the tools you picked.",
       "configSnippetLabel": "Claude Code / Cursor config",
-      "copy": "copy"
+      "copy": "copy",
+      "selectedCount": "{count} selected"
     },
     "gatewaySessions": {
       "title": "Live Connections",
@@ -8367,7 +8372,8 @@
       "historyNotSaved": "Chat history won't be saved in this browser session",
       "openIntegrations": "Open Integrations ->",
       "blankIntro": "Chat with 100+ LLMs + MCP tools; authenticate once, use them here.",
-      "partialResponseSaved": "[Something went wrong. The partial response has been saved.]"
+      "partialResponseSaved": "[Something went wrong. The partial response has been saved.]",
+      "connectedTools": "{count, plural, one {# tool connected} other {# tools connected}}"
     }
   },
   "playground": {
@@ -11844,7 +11850,8 @@
     "emptyNoMatchBody": "No tools match your search or filters.",
     "emptyNoneBody": "Make a chat completion that returns tool_calls to start auto-discovery.",
     "loadingTools": "Loading tools…",
-    "searchByToolName": "Search by Tool Name"
+    "searchByToolName": "Search by Tool Name",
+    "callsCount": "{count} calls"
   },
   "settings": {
     "callback": "Callback",
@@ -12276,7 +12283,8 @@
     "metricTokens": "tokens",
     "costPerSessionTitle": "Cost per session",
     "costPerSessionDesc": "Session cost is not estimated from request counts",
-    "costPerSessionHint": "Add a stable session_id to requests to unlock accurate session-level model comparisons in a future bounded session rollup"
+    "costPerSessionHint": "Add a stable session_id to requests to unlock accurate session-level model comparisons in a future bounded session rollup",
+    "byProvider": "by {provider}"
   },
   "guardrailSettingsView": {
     "noGuardrails": "No guardrails configured",

@@ -2410,7 +2410,10 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 ).map(({ model, budgetLimit, timePeriod }) => (
                   <div key={model}>
                     {t("infoDefaultPerModelBudget", { model: model ?? "" })}
-                    {budgetLimit !== null ? `$${formatNumberWithCommas(budgetLimit, 4)}` : "No Limit"} per {timePeriod}
+                    {t("infoPerModelBudgetValue", {
+                      amount: budgetLimit !== null ? `$${formatNumberWithCommas(budgetLimit, 4)}` : t("infoNoLimit"),
+                      period: timePeriod,
+                    })}
                   </div>
                 ))}
                 <div>

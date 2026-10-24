@@ -2898,7 +2898,8 @@
     "maxBudgetKeepOrLowerHint": "你可以保持或降低此预算。如需提高，请联系代理管理员。",
     "maxBudgetRaiseHint": "你可以提高此预算。团队归属组织时，提高幅度以组织预算为上限。",
     "adminFieldTeamMemberTpmLimit": "成员默认 TPM 限制",
-    "adminFieldTeamMemberRpmLimit": "成员默认 RPM 限制"
+    "adminFieldTeamMemberRpmLimit": "成员默认 RPM 限制",
+    "infoPerModelBudgetValue": "{amount} / {period}"
   },
   "userAgentActivity": {
     "summaryTitle": "按用户代理汇总",
@@ -3230,7 +3231,7 @@
     "creating": "创建中...",
     "createdToast": "组织创建成功",
     "createFailed": "创建组织失败",
-    "enterpriseFeature": "这是一个 LiteLLM 企业功能，需要有效的密钥才能使用。获取试用密钥请点击此处。",
+    "enterpriseFeature": "这是一个 LiteLLM 企业功能，需要有效的密钥才能使用。获取试用密钥请<link>点击此处</link>。",
     "clickToView": "点击组织 ID 查看详情。",
     "loading": "正在加载组织...",
     "noOrganizations": "未找到组织",
@@ -5542,7 +5543,8 @@
         "model": "模型",
         "deployment": "部署",
         "provider": "供应商"
-      }
+      },
+      "byProvider": "由 {provider} 提供"
     },
     "userActivity": {
       "error": {
@@ -5571,7 +5573,8 @@
       },
       "title": {
         "activity": "用户活动"
-      }
+      },
+      "userCount": "{count} 个用户"
     },
     "tabOverview": "概览",
     "tabModelActivity": "模型活动",
@@ -5672,7 +5675,8 @@
     "close": "关闭",
     "toolbar": {
       "resetFilters": "重置筛选",
-      "stop": "停止"
+      "stop": "停止",
+      "rangeTo": "至"
     },
     "timeRange": {
       "lastMinute": "最近 1 分钟",
@@ -7237,7 +7241,8 @@
       "guideTitle": "工具集的工作方式",
       "guideBody": "创建工具集后，通过 <link>API Keys → Edit Key → MCP Servers</link> 把它分配给某个密钥，再让你的 MCP 客户端指向该工具集的 URL。客户端只能看到你挑选的工具。",
       "configSnippetLabel": "Claude Code / Cursor 配置",
-      "copy": "复制"
+      "copy": "复制",
+      "selectedCount": "已选 {count} 个"
     },
     "gatewaySessions": {
       "title": "实时连接",
@@ -8367,7 +8372,8 @@
       "historyNotSaved": "本次浏览器会话不会保存聊天记录",
       "openIntegrations": "打开集成 ->",
       "blankIntro": "在这里与 100+ 个 LLM 及 MCP 工具对话；认证一次，即可随处使用。",
-      "partialResponseSaved": "[出现错误，部分回复已保存。]"
+      "partialResponseSaved": "[出现错误，部分回复已保存。]",
+      "connectedTools": "{count, plural, other {# 个工具已连接}}"
     }
   },
   "playground": {
@@ -11840,7 +11846,8 @@
     "emptyNoMatchBody": "没有符合你搜索或筛选条件的工具。",
     "emptyNoneBody": "发起一次返回 tool_calls 的聊天补全即可开始自动发现。",
     "loadingTools": "正在加载工具...",
-    "searchByToolName": "按工具名称搜索"
+    "searchByToolName": "按工具名称搜索",
+    "callsCount": "{count} 次调用"
   },
   "settings": {
     "callback": "回调",
@@ -12272,7 +12279,8 @@
     "metricTokens": "令牌数",
     "costPerSessionTitle": "每次会话成本",
     "costPerSessionDesc": "会话成本不按请求数估算",
-    "costPerSessionHint": "为请求添加稳定的 session_id，以便在未来的有界会话汇总中实现准确的会话级模型对比"
+    "costPerSessionHint": "为请求添加稳定的 session_id，以便在未来的有界会话汇总中实现准确的会话级模型对比",
+    "byProvider": "由 {provider} 提供"
   },
   "guardrailSettingsView": {
     "noGuardrails": "未配置任何护栏",

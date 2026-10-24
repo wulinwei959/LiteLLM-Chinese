@@ -82,7 +82,7 @@ describe("ToolDetail", () => {
 
     expect(await screen.findByText("search_docs")).toBeInTheDocument();
     expect(screen.getByText("mcp")).toBeInTheDocument();
-    expect(screen.getByText("42 calls")).toBeInTheDocument();
+    expect(screen.getByText("42 次调用")).toBeInTheDocument();
     expect(screen.getByText("litellm-python/1.0")).toBeInTheDocument();
   });
 

@@ -556,24 +556,26 @@ node scripts/i18n-file-inventory.mjs
 
 `scan-english.mjs` 的 `add()` 有一条 `if (/^[a-z0-9_.-]+$/.test(value)) return;`，用来把 className 碎片与驼峰标识符挡在噪声之外，但它对 JSX 文本分支同样生效，于是 JSX 里单个小写词整批看不见。第 514 簇之后登记的"可见队列为空"就带上了这个盲区
 
-已把该过滤改成只对非 JSX 分支生效（`scripts/scan-english.mjs:45`）。代价是 JSX 口径新增 65 条命中，`.tsx` 侧从 216 处 / 110 个文件升到 281 处 / 131 个文件，含 `.ts` 全库 330 处 / 174 个文件。逐条读完的归属是：44 条属技术 token（`v` 12 条、`ms` 7 条、`s` 9 条、`x` 2 条、`esc`、`cURL`、`<code>` 里的 JSON 字段名 `prompt`/`framework`/`category`/`texts`/`images`/`tools`/`model`、批量建用户弹窗里作为 CSV 列名展示的 `teams`/`models`，以及成本追踪页 `<code>` 里的响应头名 `x-litellm-response-cost*`），余下 12 条命中落在 11 处真漏
+已把该过滤改成只对非 JSX 分支生效（`scripts/scan-english.mjs:45`）。代价是 JSX 口径新增 65 条命中，`.tsx` 侧从 216 处 / 110 个文件升到 281 处 / 131 个文件，含 `.ts` 全库 330 处 / 174 个文件。逐条读完的归属是：44 条属技术 token（`v` 12 条、`ms` 7 条、`s` 9 条、`x` 2 条、`esc`、`cURL`、`<code>` 里的 JSON 字段名 `prompt`/`framework`/`category`/`texts`/`images`/`tools`/`model`、批量建用户弹窗里作为 CSV 列名展示的 `teams`/`models`，以及成本追踪页 `<code>` 里的响应头名 `x-litellm-response-cost*`），余下 12 条命中落在 11 处真漏，本簇已全部接完
 
-## 待接的 11 处真漏
+## 已接的 11 处真漏（2026-10-24 第 525 簇）
 
-都在已接入翻译器的文件里，是整句里被小写单词过滤器漏掉的尾词或介词
+都在已接入翻译器的文件里，是整句里被小写单词过滤器漏掉的尾词或介词。最后一列是落定的键
 
-| 位置                                                     | 现状                                              | 接法                                                                           |
-| -------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `mcp-servers/_components/MCPToolsetsTab.tsx:96`          | `{selectedSet.size} selected`                     | 带 `{count}` 的复数键                                                          |
-| `mcp-servers/_components/MCPToolsetTableColumns.tsx:167` | `+{tools.length - 4} more`                        | 带 `{count}` 的复数键                                                          |
-| `usage/.../overview/TopAgents.tsx:132`                   | `{formatCompact(agent.tokens)} tokens`            | 带 `{count}` 的复数键，单位是否随语言变体先看 `GLOSSARY.md`                    |
-| `UsagePage/components/UserActivityTable.tsx:112`         | `{total.toLocaleString()} users`                  | 同上                                                                           |
-| `src/components/ToolDetail.tsx:256`                      | `{call_count} calls` 徽标                         | 同上                                                                           |
-| `src/app/chat/page.tsx:502`                              | `{n} tool{s} connected`，手工 `? "s" : ""` 拼复数 | ICU 复数键，顺带去掉手拼的 `"s"`                                               |
-| `model-insights/_components/ModelInsightsView.tsx:69`    | `by {model.provider}`                             | 带 `{provider}` 的键                                                           |
-| `usage/.../overview/BreakdownChart.tsx:162`              | `by {providerForModel(row.key)}`                  | 同上，两处同值可共用一键                                                       |
-| `organizations/_components/OrganizationsPanel.tsx:111`   | 已译句后裸一个 `<a>here</a>` 与句末 `.`           | `t.rich` 整句，`link` 渲染器出真链接（第 64 簇先例）                           |
-| `logs/request/LogsTableToolbar.tsx:113`                  | 两个时间输入之间裸 `to`                           | 带 `{from}`/`{to}` 的区间键，或单独一个 `rangeSeparator` 键                    |
-| `src/components/team/TeamInfo.tsx:2413`                  | `{… : "No Limit"} per {timePeriod}`               | `per` 与 `No Limit` 都接键，后者同文件已有现成键 `infoNoLimit`（下一行就在用） |
+| 位置                                                     | 接线前                                            | 落定的键                                                                                                                                                                               |
+| -------------------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mcp-servers/_components/MCPToolsetsTab.tsx:96`          | `{selectedSet.size} selected`                     | 新开 `mcpServers.toolsets.selectedCount`                                                                                                                                               |
+| `mcp-servers/_components/MCPToolsetTableColumns.tsx:167` | `+{tools.length - 4} more`                        | 复用 `mcpServers.toolsets.moreCount`，键早就在目录里、调用点一直是硬编                                                                                                                 |
+| `usage/.../overview/TopAgents.tsx:132`                   | `{formatCompact(agent.tokens)} tokens`            | 复用 `usage.overview.statStrip.tokensExact`，同命名空间已有键                                                                                                                          |
+| `UsagePage/components/UserActivityTable.tsx:112`         | `{total.toLocaleString()} users`                  | 新开 `usage.userActivity.userCount`                                                                                                                                                    |
+| `src/components/ToolDetail.tsx:256`                      | `{call_count} calls` 徽标                         | 新开 `toolPolicies.callsCount`                                                                                                                                                         |
+| `src/app/chat/page.tsx:502`                              | `{n} tool{s} connected`，手工 `? "s" : ""` 拼复数 | 新开 `chat.page.connectedTools`，走 ICU 复数，手拼的 `"s"` 删掉                                                                                                                        |
+| `model-insights/_components/ModelInsightsView.tsx:69`    | `by {model.provider}`                             | 新开 `modelInsights.byProvider`。`RankingRow` 是模块级子组件，按先例在函数体内自挂 `useTranslations`                                                                                   |
+| `usage/.../overview/BreakdownChart.tsx:162`              | `by {providerForModel(row.key)}`                  | 新开 `usage.overview.byProvider`，与上一条 en 同值，记一笔跨命名空间重复债；顺手把 `providerForModel(row.key)` 的重复调用提成具名 `provider`，否则该实参是 `string \| null` 过不了类型 |
+| `organizations/_components/OrganizationsPanel.tsx:111`   | 已译句后裸一个 `<a>here</a>` 与句末 `.`           | `organizations.enterpriseFeature` 改成带 `<link>` 的整句走 `t.rich`。改前 en 与 zh 两条值本身都已含"here/此处"，页面上等于把同一个词渲染两遍                                           |
+| `logs/request/LogsTableToolbar.tsx:113`                  | 两个时间输入之间裸 `to`                           | 新开 `logs.toolbar.rangeTo`                                                                                                                                                            |
+| `src/components/team/TeamInfo.tsx:2413`                  | `{… : "No Limit"} per {timePeriod}`               | 新开 `teams.infoPerModelBudgetValue`，兜底值改用同文件既有的 `infoNoLimit`（下一行就在用）                                                                                             |
 
-每处都要按 `WORKFLOW.md` 第五步同步该文件的测试断言，并按第六步把 import 它的测试一并跑
+复扫那条小写词探针，命中从 56 条降到 43 条，剩下的全是技术 token。目录叶子两侧各从 11877 升到 11885（新开 8 键、复用 2 键），中英键树仍无差集、同值仍 139 条、死键仍 0
+
+翻面的断言只有三条，都是本簇改动直接命中的：`ToolDetail.test.tsx` 的 `42 calls` → `42 次调用`、`UserActivity.integration.test.tsx` 的 `120 users` → `120 个用户`、`ModelInsightsView.test.tsx` 的 `by openai` → `由 openai 提供`。其余 10 个消费文件复跑 283 例全绿，15 页渲染扫描 0 渲染错误

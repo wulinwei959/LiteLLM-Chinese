@@ -60,20 +60,23 @@ const DeltaBadge = ({ value }: { value: number }) => {
   );
 };
 
-const RankingRow = ({ model, rank }: { model: RankedModel; rank: number }) => (
-  <li className="grid grid-cols-[1.5rem_2.5rem_1fr_auto] items-center gap-3 py-2">
-    <span className="text-sm tabular-nums text-muted-foreground">{rank}</span>
-    <ProviderLogo provider={model.provider} className="size-9 rounded-md border p-1" />
-    <div className="min-w-0">
-      <p className="truncate font-medium">{model.model_group}</p>
-      <p className="truncate text-sm text-muted-foreground">by {model.provider}</p>
-    </div>
-    <div className="text-right">
-      <p className="font-medium tabular-nums">{model.share.toFixed(1)}%</p>
-      <DeltaBadge value={model.delta} />
-    </div>
-  </li>
-);
+const RankingRow = ({ model, rank }: { model: RankedModel; rank: number }) => {
+  const t = useTranslations("modelInsights");
+  return (
+    <li className="grid grid-cols-[1.5rem_2.5rem_1fr_auto] items-center gap-3 py-2">
+      <span className="text-sm tabular-nums text-muted-foreground">{rank}</span>
+      <ProviderLogo provider={model.provider} className="size-9 rounded-md border p-1" />
+      <div className="min-w-0">
+        <p className="truncate font-medium">{model.model_group}</p>
+        <p className="truncate text-sm text-muted-foreground">{t("byProvider", { provider: model.provider })}</p>
+      </div>
+      <div className="text-right">
+        <p className="font-medium tabular-nums">{model.share.toFixed(1)}%</p>
+        <DeltaBadge value={model.delta} />
+      </div>
+    </li>
+  );
+};
 
 export default function ModelInsightsView({ accessToken }: { accessToken: string | null }) {
   const t = useTranslations("modelInsights");

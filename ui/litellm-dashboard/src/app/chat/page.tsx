@@ -499,7 +499,7 @@ export default function ChatConversationPage() {
         <div className="flex items-center gap-2">
           {inConversation && selectedMCPServers.length > 0 && (
             <span className="text-xs text-muted-foreground max-w-[160px] overflow-hidden text-ellipsis whitespace-nowrap">
-              {selectedMCPServers.length} tool{selectedMCPServers.length > 1 ? "s" : ""} connected
+              {t("connectedTools", { count: selectedMCPServers.length })}
             </span>
           )}
           {isStreaming ? (

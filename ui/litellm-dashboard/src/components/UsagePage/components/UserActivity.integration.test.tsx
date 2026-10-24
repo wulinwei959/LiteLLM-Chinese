@@ -114,7 +114,7 @@ describe("UserActivityPanel", () => {
 
     expect(await screen.findByText("first")).toBeInTheDocument();
     expect(screen.getByText("second")).toBeInTheDocument();
-    expect(screen.getByText("120 users")).toBeInTheDocument();
+    expect(screen.getByText("120 个用户")).toBeInTheDocument();
     const rows = screen.getAllByRole("listitem").map((item) => item.textContent);
     expect(rows[0]).toContain("first");
     expect(rows[1]).toContain("second");

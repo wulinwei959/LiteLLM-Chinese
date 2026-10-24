@@ -4029,46 +4029,57 @@ grep -rl "useTranslations(\|getTranslations(" --include="*.tsx" src | grep -v "\
 
 ## 目录规模
 
-| 项                     | 数值                                                                                                                                                                                                                                                            |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 命名空间               | 40（此前记 39 是数错，`en.json` 顶层键实际一直是 40 个）                                                                                                                                                                                                        |
-| `en.json` 叶子键       | 6748（2026-10-15 第 38 簇；6738 是第 37 簇后，6719 是第 36 簇后，6685 是第 35 簇后，6675 是第 34 簇后，6646 是第 33 簇后，6632 是第 32 簇后，6584 是第 31 簇后，6574 是第 30 簇后，6535 是第 29 簇后，6464 是第 28 簇后，6416 是第 27 簇后，6365 是第 26 簇后） |
-| `zh-CN.json` 叶子键    | 6748                                                                                                                                                                                                                                                            |
-| 键树一致性             | 一致，`messagesParity` 通过                                                                                                                                                                                                                                     |
-| 中英文取值完全相同的键 | 86（产品名如 `CSV`、`MCP`、`LiteLLM` 等，属预期）                                                                                                                                                                                                               |
+| 项                     | 数值                                                          |
+| ---------------------- | ------------------------------------------------------------- |
+| 顶层命名空间           | 125                                                           |
+| `en.json` 叶子键       | 11885（2026-10-24 第 525 簇后复测）                           |
+| `zh-CN.json` 叶子键    | 11885                                                         |
+| 键树一致性             | 无差集，`messagesParity` 通过                                 |
+| 中英文取值完全相同的键 | 139（产品名、缩写、URL 与格式示例，属预期，见 `GLOSSARY.md`） |
+| 死键                   | 0，`check:dead-keys` 按空基线棘轮                             |
 
-中英文取值相同的那 86 个不是漏翻。产品名、缩写、`CSV` 这类不需要翻译的词保留英文是刻意的，`GLOSSARY.md` 里有对应条目
+计数脚本就一条：把两侧目录扁平化成 `path -> value` 的字典再比长度与差集。逐簇的增量账在本文各簇小节里，历史绝对数不回改
 
 ## 文件覆盖率
 
-`src` 下非测试 `.tsx` 共 861 个，已接入 `next-intl` 305 个，覆盖率 35.4%（2026-10-13，未记录命令）。2026-10-14 用"## 复测的三个数字"里的命令重测为 912 / 360，覆盖率 39.5%，第 14 簇后为 912 / 361，覆盖率 39.6%，第 18 簇后 912 / 375（41.1%），第 19 簇后 912 / 379（41.6%），第 20 簇后 912 / 380（41.7%），第 23 簇后 912 / 388（42.5%），第 24 簇后 912 / 399（43.7%），第 25 簇后 912 / 405（44.4%），第 26 簇后 912 / 407（44.6%），第 27 簇后 912 / 408（44.7%），第 28 簇后 912 / 412（45.2%），第 29 簇后 912 / 416（45.6%），第 30 簇后 912 / 417（45.7%），第 31 簇后 912 / 418（45.8%），第 32 簇后 912 / 418（45.8%，本簇文件此前已接入，比率不变），第 33 簇后 912 / 420（46.1%），第 34 簇后 912 / 421（46.2%），第 35 簇后 912 / 422（46.3%），第 36 簇后 912 / 423（46.4%），第 37 簇后 912 / 424（46.5%），第 38 簇后 912 / 425（46.6%）；分母与分子的口径都对不上旧那条，两组数字并列，只看趋势
+`src` 下非测试 `.tsx` 共 954 个，接入翻译器 737 个，覆盖率 77.3%（2026-10-24 第 525 簇后复测）。口径是文件里出现 `useTranslations(` 或 `getTranslations(`，一条命令可复算：
+
+```
+rg -l --glob 'src/**/*.tsx' --glob '!*.test.tsx' -e 'useTranslations\(' -e 'getTranslations\(' | wc -l
+rg --files src -g 'src/**/*.tsx' -g '!*.test.tsx' | wc -l
+```
+
+未接入的 217 个不等于剩余工作量，逐个文件的判定账在 [FILE-INVENTORY.md](./FILE-INVENTORY.md)：200 个六个口径零命中，17 个有英文串但全部属数据、协议标识、程序异常串或测试脚手架。本节此前记的 861/305 与 912/360 是 2026-10-13 与 10-14 的快照，早于上游 `v1.107.0` 同步，仅作沿革保留
 
 ## 按路由的进度
 
-"未接入/总数"指该目录下的 `.tsx`，数字越小越接近完成
+2026-10-24 第 525 簇后按目录复算，只列还有未接入文件的目录，其余目录零未接入
 
-| 路由                 | 未接入/总数 | 路由               | 未接入/总数 |
-| -------------------- | ----------- | ------------------ | ----------- |
-| mcp-servers          | 5/43        | access-groups      | 2/8         |
-| guardrails           | 4/35        | guardrails-monitor | 2/7         |
-| playground           | 14/37       | budgets            | 2/6         |
-| prompts              | 5/27        | memory             | 2/6         |
-| models-and-endpoints | 2/21        | tag-management     | 2/6         |
-| policies             | 3/18        | organizations      | 1/5         |
-| agents               | 4/15        | skills             | 2/5         |
-| vector-stores        | 5/15        | change-password    | 1/2         |
-| caching              | 6/13        | router-settings    | 1/2         |
-| usage                | 6/13        | transform-request  | 1/2         |
-| cost-optimization    | 1/11        | ui-theme           | 1/2         |
-| projects             | 3/11        | workflows          | 1/2         |
-| cost-tracking        | 3/10        | api-keys           | 2/2         |
-| search-tools         | 4/10        | old-usage          | 1/2         |
-| users                | 2/9         | 其余单文件路由     | 各 1/1      |
-| **共享 `src` 目录**  | **435/482** |                    |             |
+| 目录                   | 未接入 | 总数 | 目录                 | 未接入 | 总数 |
+| ---------------------- | ------ | ---- | -------------------- | ------ | ---- |
+| `components`           | 121    | 512  | `cost-tracking`      | 1      | 10   |
+| `playground`           | 12     | 55   | `access-groups`      | 1      | 8    |
+| `chat`                 | 6      | 7    | `guardrails-monitor` | 1      | 7    |
+| `contexts`             | 6      | 6    | `memory`             | 1      | 6    |
+| `mcp-servers`          | 5      | 44   | `budgets`            | 1      | 6    |
+| `其他 app 路由`        | 5      | 16   | `skills`             | 1      | 5    |
+| `prompts`              | 4      | 27   | `organizations`      | 1      | 5    |
+| `vector-stores`        | 4      | 15   | `roi-calculator`     | 1      | 5    |
+| `caching`              | 4      | 13   | `telemetry`          | 1      | 4    |
+| `search-tools`         | 4      | 10   | `home`               | 1      | 3    |
+| `guardrails`           | 3      | 43   | `router-settings`    | 1      | 3    |
+| `usage`                | 3      | 20   | `admin-panel`        | 1      | 2    |
+| `policies`             | 3      | 18   | `model-insights`     | 1      | 2    |
+| `projects`             | 3      | 11   | `change-password`    | 1      | 2    |
+| `models-and-endpoints` | 2      | 21   | `transform-request`  | 1      | 2    |
+| `agents`               | 2      | 17   | `ui-theme`           | 1      | 2    |
+| `users`                | 2      | 9    | `lens`               | 1      | 1    |
+| `tag-management`       | 2      | 6    | `logging-and-alerts` | 1      | 1    |
+| `hooks`                | 2      | 5    | `model-hub-table`    | 1      | 1    |
+| `api-keys`             | 2      | 2    | `tool-policies`      | 1      | 1    |
+| `cost-optimization`    | 1      | 12   | `teams`              | 1      | 1    |
 
-共享 `src` 目录那一行是长尾，也就是批次 24。它贡献了 435 个未接入文件，占全部 556 个未接入文件的绝大多数，不过里面混着大量本来就不含文案的文件（hooks、types、纯逻辑封装），不能直接按这个数字估工作量
-
-mcp-servers 名义上剩 5 个未接入文件，但其中 4 个本来就没有面向用户文案（页面壳、re-export、键常量表、测试 harness），校验文案已于 `5c2da87` 接入。cost-optimization 剩的 1 个同样是无文案的页面壳
+`components` 那一行是批次 24 的共享组件长尾，512 个文件里 121 个未接入，逐个判定见 FILE-INVENTORY.md。完全零未接入的目录有 4 个，例如 `api-reference`, `logs`, `old-usage`, `workflows` 等
 
 ## 测试状态
 
@@ -4232,13 +4243,12 @@ i18n 自身的三条守卫也是全绿，16 个用例
 
 2026-10-24 更新：本节往后的段落是各簇逐次追加的执行记录，新旧混杂，读优先级以下面这份只列活项的清单为准。上游同步按维护者决定暂缓，不在清单内
 
-1. 接掉 11 处真漏，这是把 `scan-english.mjs` 的 JSX 小写词过滤修好之后复扫出来的新账（详见 [FILE-INVENTORY.md](./FILE-INVENTORY.md) 的「待接的 11 处真漏」表）：`{n} selected`、`+{n} more`、`{n} tokens`、`{n} users`、`{n} calls`、`{n} tool(s) connected`、`by {provider}` 两处、裸 `<a>here</a>`、两个时间输入之间的 `to`、`TeamInfo.tsx:2413` 的 `"No Limit" per {period}`。都在已接入翻译器的文件里，逐处要同步该文件与消费方的测试断言
-2. 中英同值 139 条与 `placeholder` 类 67 处属判定账。现行判定是"格式示例与机读面不翻"，若日后认定某类该翻（比如表单里的示例值），需要逐条重判，不是一次批量替换
-3. `max-lines` 抑制基线仍有 18 个上游巨型文件（`networking.tsx`、`ChatUI.tsx`、`CompareUI.tsx` 这一类）。逐个做文件级拆分属独立一簇，本轮拆的四个已经退线
-4. lint 预算几乎没有余量。`no-console` 16/16、`local/no-long-condition-chain` 200/200、`testing-library/prefer-screen-queries` 18/18 三条顶格，`local/no-large-inline-object-arg` 476/477 与 `complexity` 139/140 各余 1。新增这类写法的收口办法是提成具名变量或改早返回，不要调上限
-5. 一处可选的小重构。`bulkUsersCsvTemplate.ts` 的模板表头与 `bulk_create_users_button.tsx` 解析器读取的列名是两份并列事实，可以收成一个共享来源，让改列名时测试自然变红
+1. 中英同值 139 条与 `placeholder` 类 67 处属判定账。现行判定是"格式示例与机读面不翻"，若日后认定某类该翻（比如表单里的示例值），需要逐条重判，不是一次批量替换
+2. `max-lines` 抑制基线仍有 18 个上游巨型文件（`networking.tsx`、`ChatUI.tsx`、`CompareUI.tsx` 这一类）。逐个做文件级拆分属独立一簇，本轮拆的四个已经退线
+3. lint 预算几乎没有余量。`no-console` 16/16、`local/no-long-condition-chain` 200/200、`testing-library/prefer-screen-queries` 18/18 三条顶格，`local/no-large-inline-object-arg` 476/477 与 `complexity` 139/140 各余 1。新增这类写法的收口办法是提成具名变量或改早返回，不要调上限
+4. 一处可选的小重构。`bulkUsersCsvTemplate.ts` 的模板表头与 `bulk_create_users_button.tsx` 解析器读取的列名是两份并列事实，可以收成一个共享来源，让改列名时测试自然变红
 
-从这份清单里摘掉的六条（此前登记、后续簇已完成，别再当作活项）：217 个未接入文件已出逐文件清单（`node scripts/i18n-file-inventory.mjs` 可复跑，账在 [FILE-INVENTORY.md](./FILE-INVENTORY.md)：200 个六口径零命中、17 个有证据且全部判定归属），"只有比例没有清单"这条据此闭环；渲染扫描的运行期证据在 2026-10-24 第 524 簇之后当天复跑过
+从这份清单里摘掉的七条（此前登记、后续簇已完成，别再当作活项）：11 处 JSX 小写词真漏已在第 525 簇全部接完（新开 8 键、复用 2 个早已有键）；217 个未接入文件已出逐文件清单（`node scripts/i18n-file-inventory.mjs` 可复跑，账在 [FILE-INVENTORY.md](./FILE-INVENTORY.md)：200 个六口径零命中、17 个有证据且全部判定归属），"只有比例没有清单"这条据此闭环；渲染扫描的运行期证据在 2026-10-24 第 524 簇之后当天复跑过
 2026-10-20 追加（承 382-391 error-fallback 维度收口）：`playground/llm_calls/a2a_send_message.tsx` 专项已于 391 接其硬编回退子集——流式 `makeA2AStreamMessageRequest`（唯一 caller CompareUI:584）的 :296 "No response body" 复用 orphan `t("llmCalls.a2a.noResponseBody")`、:384 "Unknown A2A error" 接新键 `t("llmCalls.a2a.unknownA2AError")`，两串皆不含 "JSON" 故 `includes("JSON")` 流式解析错误判别逐 locale 不破、a2a 无单测但以 tsc 校签名位移 + 全 playground 168 例回归绿验 caller；非流式函数与流式内 server-detail/jsonRpc/`HTTP ${status}`/a2aError/errorMessage 动态透传判保留（后端串非 UI）。a2a 专项据此收口、无余留硬编 UI 英文待接；其余 error-fallback 漏已 382-389 接净、吞者（fetch_agents/prompts-utils/UITheme）入判定账。注：本节原 2026-10-13 文字（toast.fromError 355/handleError/copyToClipboard 三阻塞片）已于 380/381 接净、`useXxx` hooks error 已于 386 收口，相关「列入判定账」表述作废
 
 第 353 到 361 簇逐维度收口后可接线余量的当前边界（下一轮勿从这些正则重扫，直接攻阻塞片或换新正则）：三元 `? :`（两侧与单侧）已复扫归零、可见串接净或入判定账；JSX 文本节点「独占一行英文句」更宽正则仅剩 how_it_works（361 已接）与 `APIReferenceView` 框架品牌名（判定账）；`placeholder`/`aria-label`/`title`/`label` 属性英文字面量复扫仅剩 JSDoc 注释（`numerical_input`）、格式示例（`add_plugin_form` "Productivity"/`AgentIdentityFields` "Agent.Invoke"）、协议头（`UpstreamTokenHeaderField` "Authorization"）四类判定账；短按钮文本节点复扫仅命中 `McpFormTestHarness` "Submit"（测试脚手架非产品 UI）。真正待做的剩余量集中在三件高扇出专项重构（`toast.fromError` 355 调用点、`handleError` ~100、`copyToClipboard` 34，均需模块函数首参注入 translator 且 `toast.fromError` 还须先把 `WARNING_TITLES.has(title)` 改成键/码判定）（此句 2026-10-24 实测作废：`toast.ts` 已按 category 码取标题、按码判色，无英文 title 比较，362 调用点无需重构；`handleError` 的 `UI Session Expired. Logging out.` 已接 `toast.sessionExpired`；三片里唯 `copyToClipboard` 的英文默认参数仍是真漏）与「导出文档内容」维度其余报表件（各 dashboard 表格/图表的 CSV/HTML 导出，需逐件判人面 PDF 报告接、数据交换 CSV 列头留），以及更宽正则盲区（模板串内英文、`{...}` 内回落、`<code>` 内嵌、`{" "}` 拼接、单行 `>text<`），不据本报告宣布整体完成
@@ -5176,3 +5186,15 @@ lint 预算两处超标查清并已修回：`local/no-large-inline-object-arg` 4
 第 517 簇登记的另案（`bulk_create_users_button.tsx` 的"下载 CSV 模板"按钮只有文案没有 `onClick`）在本簇收口，因为模板内容并不需要新决策：同一文件的解析器按 `headers.indexOf(...)` 读取 `user_email`、`user_role`、`teams`、`max_budget`、`budget_duration`、`models` 六列，按钮上方的说明面板也正是逐列列出这六项，模板表头由此唯一确定。
 
 做法是把表头与下载动作放进新模块 `bulkUsersCsvTemplate.ts`（纯函数 `buildBulkUserCsvTemplate` 加副作用 `downloadBulkUserCsvTemplate`，与 `teamsCsvExport.ts` 同一形态），按钮只需挂 `onClick`，避免把一个函数塞进已经 878 行的组件里。测试 `bulk_create_users_button.test.tsx` 新增一例：桩掉 `URL.createObjectURL`/`revokeObjectURL` 与锚点的 `click`，点击按钮后断言下载文件名、断言 Blob 内容按逗号切分正好是那六列表头、并断言 URL 被回收。jsdom 的 `Blob` 没有 `text()`、`new Response(blob).text()` 又会把 Blob 当字符串，改用 `FileReader.readAsText` 读取。
+
+## 2026-10-24 第 525 簇：扫描器的小写词盲区与 11 处真漏
+
+出 217 个未接入文件的逐清单时顺带撞出来的。`scan-english.mjs` 的 `add()` 用 `/^[a-z0-9_.-]+$/` 丢弃纯小写单词来挡 className 碎片与驼峰标识符，这条过滤同样作用于 JSX 文本分支，于是 `{n} selected`、`by {provider}`、`to`、`here` 这类整句尾词多年来一直不可见。过滤改成只对非 JSX 分支生效后复扫，JSX 口径多 65 条，`.tsx` 侧从 216 处/110 个文件升到 281 处/131 个文件，含 `.ts` 全库 330 处/174 个文件。逐条读完 44 条属技术 token（`v`、`ms`、`s`、`x`、`esc`、`cURL`、`<code>` 里的 JSON 字段名与 `x-litellm-response-cost*` 响应头名、批量建用户弹窗里作为 CSV 列名展示的 `teams`/`models`），11 处是真漏，全部在已接入翻译器的文件里
+
+11 处的位置、接线前形态与落定的键逐条记在 [FILE-INVENTORY.md](./FILE-INVENTORY.md)。新开 8 键（`mcpServers.toolsets.selectedCount`、`usage.userActivity.userCount`、`toolPolicies.callsCount`、`chat.page.connectedTools`、`modelInsights.byProvider`、`usage.overview.byProvider`、`logs.toolbar.rangeTo`、`teams.infoPerModelBudgetValue`），复用 2 个早就存在却没人接的键（`mcpServers.toolsets.moreCount`、`usage.overview.statStrip.tokensExact`），两侧叶子各 11877 → 11885
+
+三处值得记的判定与手法。`organizations.enterpriseFeature` 改前中英两条值本身已经含"here/此处"，JSX 又在译好的句子后面裸渲染一个 `<a>here</a>` 和句末 `.`，等于同一个词渲染两遍、中文还会多出一个孤立的句号，改成带 `<link>` 的整句走 `t.rich` 才把句子的归属还给消息目录。`chat/page.tsx` 原来手拼 `{n} tool{n > 1 ? "s" : ""} connected`，换成 ICU 复数后中文退化成"…个工具已连接"，英文保住单复数。`BreakdownChart` 那处 `by {providerForModel(row.key)}` 直接把调用抄进 `t()` 会撞类型（该函数返回 `string | null`，外层 `&&` 守卫不给窄化），把取值提成具名 `provider` 一并消掉重复调用，细则见 `FIXES.md`
+
+断言只翻了三条，都是本簇直接命中的可见文本：`42 calls`→`42 次调用`、`120 users`→`120 个用户`、`by openai`→`由 openai 提供`。其余 10 个消费文件没有断这些串。验证：13 个测试文件 283 例全绿，`src/lib/i18n` 加 toast 守卫 6 文件 59 例全绿，`npx tsc --noEmit` 0 错（含测试文件），`eslint .` 0 error 且九条预算计数与改动前逐条一致，`check:dead-keys` 0（复用的两键从无人引用变成有人引用，没留下新死键），`knip:ci` 与 `npm run build` 退出 0。目录改过文案，按 `WORKFLOW.md` 第六步新写的常设规则复跑渲染扫描：15 页 0 渲染错误、除基线两枚端点路径外 0 处英文
+
+同一轮把 `PROGRESS.md` 里三节停在 10 月 13/14 日的统计数重测了：`目录规模`（命名空间 125、叶子 11885、同值 139、死键 0）、`文件覆盖率`（954/737、77.3%，并写上复算命令）、`按路由的进度`（按目录重列，只列还有未接入的 26 个目录，零未接入的 4 个目录单列说明）。三节的旧数都在正文里留了沿革注

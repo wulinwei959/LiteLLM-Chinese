@@ -109,7 +109,7 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-xs text-muted-foreground tabular-nums" aria-live="polite">
-          {total.toLocaleString()} users
+          {t("userCount", { count: total.toLocaleString() })}
         </span>
       </div>
       <div>{body}</div>

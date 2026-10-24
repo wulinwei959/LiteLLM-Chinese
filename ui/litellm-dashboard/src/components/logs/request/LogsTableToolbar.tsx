@@ -110,7 +110,7 @@ export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePicke
             value={value.startTime}
             onChange={(event) => onValueChange({ ...value, startTime: event.target.value })}
           />
-          <span className="text-sm text-muted-foreground">to</span>
+          <span className="text-sm text-muted-foreground">{t("toolbar.rangeTo")}</span>
           <Input
             type="datetime-local"
             className="w-auto"

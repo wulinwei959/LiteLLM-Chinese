@@ -709,6 +709,12 @@ zh 目录里给标签配的**全角冒号**（`源修订版本：`/`ETag：`/`�
 - 正则形式的期望（`/edit settings/i`、`/Budget & Rate Limits/`）不在这套字符串映射里，批处理抓不到，需按失败文件逐个看
 - 同一文案在目录里可能有多套译法（`Chat` 既有"聊天"又有"对话"），以组件实际使用的命名空间为准
 
+## 2026-10-24 第 525 簇：把调用点原样抄进 `t()` 的参数位会撞类型窄化
+
+`by {providerForModel(row.key)}` 外面写着 `{providerForModel(row.key) && (...)}`，看着保证非空。把同一个调用抄进 `t("byProvider", { provider: providerForModel(row.key) })` 之后 TS2322 立刻报出来：函数返回 `string | null`，而 JSX 外层那层窄化不会传进参数位。修法不是加 `!`，是把取值提成行首的具名常量（`const provider = providerForModel(row.key);`），守卫与参数共用它，顺带消掉一次重复调用。表格里"外层守卫 + 内层再算一遍"的形态很常见，接线时一律先提具名变量
+
+同簇另一处形态值得记：`organizations.enterpriseFeature` 的中英两条值本身已经含"here/此处"，JSX 又在译好的句子后面裸渲染 `<a>here</a>` 与一个句末 `.`，英文看着是补链接、中文却多出孤立的"此处"和一个句号。这类"目录整句 + JSX 尾巴"的叠字只有实机渲染能看出来，静态两边各自都合法，改法是把整句收进带 `<link>` 的 `t.rich` 消息
+
 ## 回归守卫
 
 改完之后这几条必须一起跑

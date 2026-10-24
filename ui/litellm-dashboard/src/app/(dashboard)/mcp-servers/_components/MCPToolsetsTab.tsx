@@ -93,7 +93,7 @@ function MCPToolList({ serverId, serverName, accessToken, selectedTools, onToggl
           {serverName}
           {selectedSet.size > 0 && (
             <span className="ml-1 text-xs text-purple-600 font-semibold dark:text-purple-400">
-              {selectedSet.size} selected
+              {t("toolsets.selectedCount", { count: selectedSet.size })}
             </span>
           )}
         </span>
