@@ -5126,3 +5126,11 @@ tsc 枚举出 7 处：`ModelHubTable.tsx` 三处（页面 URL、agent url、MCP 
 验证：tsc 0 错、dead keys 0、i18n 守卫 23 例通过、`provider_specific_fields`+`Teams`+`Teams.integration`+`CacheAwareRoutingConfig`+`telemetry`+`vector-stores`+`moyai`+`MCPNetworkSettings`+`AdminPanel`+`TeamInfo`+`CustomCodeModal`+`UsefulLinksManagement`+`add_guardrail_form` 相关测试全绿（含 `MCPNetworkSettings` 33 例、`moyai` 15 例、`admin-panel` 25 例），断言翻面共 21 处。`MCPNetworkSettings.tsx`、`Teams.tsx`、`provider_specific_fields.tsx` 等文件在 HEAD 就非 prettier 合规，本次只把手工换行对齐 prettier 形状，不夹带无关格式化。
 
 剩余队列：`DecisionModelGarden` 的汇总句由 `plural(count, one, many)` 拼成，需改成 ICU 复数消息，属另一簇；`AdminPanel.test` 的哨兵 mock 值保持英文。
+
+## 2026-10-24 第 522 簇：决策模型花园的复数句改 ICU
+
+宽口径复读队列的最后一处。`DecisionModelGarden` 的花园汇总句由模块级 `plural(count, one, many)` 三分支拼成，中英结构不同（中文无单复数形态变化，动词位置也不同），逐分支翻译会拼出病句，所以整句改成 ICU 复数消息：`aiHub.decisionModels.gardenSummary` 带 `rows`、`providers` 两个 `plural` 与 `<code>` 富文本标签（`/v1/decisions` 是端点，保持 `code` 元素），另有 `gardenSelfHosted` 与 `gardenNeedsUpgrade` 两枚带 `count` 的复数消息。`plural` 辅助函数随之删除。
+
+验证：`ModelHubTable.test.tsx` 的 7 处断言按中文渲染翻面（"2 个决策模型分布于 2 个提供商，通过 /v1/decisions 响应"等），该文件与 i18n 守卫共 6 文件 54 例通过；实际渲染串核对过单复数两档（1 与 2/3 都走 `other` 形态且量词正确）。tsc 0 错、dead keys 0、改动文件 prettier 合规。
+
+至此宽口径 string 复读的可见队列清空：三簇共接 12 个文件的文案，判定账补入 `old-usage` 的七条 `console.error`、智能体说明文本、提供商与集成显示名、应用标识四类。

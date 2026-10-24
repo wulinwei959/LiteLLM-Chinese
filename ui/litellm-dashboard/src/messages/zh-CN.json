@@ -13297,6 +13297,9 @@
   },
   "aiHub": {
     "decisionModels": {
+      "gardenSummary": "{rows, plural, other {# 个决策模型}}分布于 {providers, plural, other {# 个提供商}}，通过 <code>/v1/decisions</code> 响应。",
+      "gardenSelfHosted": "另有 {count, plural, other {# 个}}为自托管，走各自的路由响应。",
+      "gardenNeedsUpgrade": "另有 {count, plural, other {# 个}}需要更新的 LiteLLM 版本。",
       "addModel": "添加模型",
       "title": "LiteLLM 支持的决策模型",
       "docs": "决策接口文档"

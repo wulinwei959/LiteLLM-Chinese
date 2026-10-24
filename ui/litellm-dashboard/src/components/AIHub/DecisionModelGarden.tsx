@@ -22,8 +22,6 @@ import { uiHref } from "@/utils/uiHref";
 
 const PREVIEW_COUNT = 8;
 
-const plural = (count: number, one: string, many: string): string => (count === 1 ? one : many);
-
 const routeLinks = (
   t: AiHubTranslator,
 ): Readonly<Record<DecisionRoute, { readonly href: string; readonly label: string }>> => ({
@@ -127,13 +125,13 @@ const DecisionModelGarden: React.FC<DecisionModelGardenProps> = ({ accessToken, 
         <div className="min-w-0 flex-1">
           <h3 className="m-0 text-base font-semibold text-foreground">{t("decisionModels.title")}</h3>
           <p className="m-0 mt-0.5 text-sm text-muted-foreground">
-            {routedRows.length} decision {plural(routedRows.length, "model", "models")} across {routedProviderCount}{" "}
-            {plural(routedProviderCount, "provider", "providers")} {plural(routedRows.length, "answers", "answer")} on{" "}
-            <code>/v1/decisions</code>.
-            {selfHostedCount > 0 &&
-              ` ${selfHostedCount} more ${plural(selfHostedCount, "is self-hosted and answers on its own route", "are self-hosted and answer on their own routes")}.`}
-            {needsUpgradeCount > 0 &&
-              ` ${needsUpgradeCount} more ${plural(needsUpgradeCount, "needs", "need")} a newer LiteLLM version.`}
+            {t.rich("decisionModels.gardenSummary", {
+              rows: routedRows.length,
+              providers: routedProviderCount,
+              code: (chunks) => <code>{chunks}</code>,
+            })}
+            {selfHostedCount > 0 && t("decisionModels.gardenSelfHosted", { count: selfHostedCount })}
+            {needsUpgradeCount > 0 && t("decisionModels.gardenNeedsUpgrade", { count: needsUpgradeCount })}
           </p>
         </div>
         <Button

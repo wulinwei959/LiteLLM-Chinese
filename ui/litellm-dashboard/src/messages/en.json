@@ -13299,6 +13299,9 @@
   },
   "aiHub": {
     "decisionModels": {
+      "gardenSummary": "{rows, plural, one {# decision model} other {# decision models}} across {providers, plural, one {# provider} other {# providers}} {rows, plural, one {answers} other {answer}} on <code>/v1/decisions</code>.",
+      "gardenSelfHosted": " {count, plural, one {# more is self-hosted and answers on its own route.} other {# more are self-hosted and answer on their own routes.}}",
+      "gardenNeedsUpgrade": " {count, plural, one {# more needs a newer LiteLLM version.} other {# more need a newer LiteLLM version.}}",
       "addModel": "Add model",
       "title": "Decision models LiteLLM supports",
       "docs": "Decisions docs"

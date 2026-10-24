@@ -388,7 +388,7 @@ describe("ModelHubTable", () => {
       await renderHub(chatOnly);
 
       const garden = await screen.findByTestId("decision-model-garden");
-      expect(garden).toHaveTextContent("2 decision models across 2 providers answer on /v1/decisions");
+      expect(garden).toHaveTextContent("2 个决策模型分布于 2 个提供商，通过 /v1/decisions 响应");
       expect(within(garden).getByTestId("decision-model-card-typesafe/jev-latest")).toHaveTextContent("TypeSafe");
       expect(within(garden).getByTestId("decision-model-card-cloudflare/clef")).toHaveTextContent("Cloudflare");
       expect(within(garden).queryByText("claude-opus-4-8")).not.toBeInTheDocument();
@@ -398,7 +398,7 @@ describe("ModelHubTable", () => {
       await renderHub(chatOnly);
 
       const garden = await screen.findByTestId("decision-model-garden");
-      expect(garden).toHaveTextContent("1 more is self-hosted and answers on its own route.");
+      expect(garden).toHaveTextContent("另有 1 个为自托管，走各自的路由响应。");
       const layaCard = within(garden).getByTestId("decision-model-card-laya/english");
       expect(within(layaCard).queryByRole("link", { name: "/v1/decisions 文档" })).not.toBeInTheDocument();
       expect(within(layaCard).getByRole("link", { name: "自托管，走自己的路由" })).toHaveAttribute(
@@ -429,8 +429,8 @@ describe("ModelHubTable", () => {
       await renderHub(chatOnly);
 
       const garden = await screen.findByTestId("decision-model-garden");
-      expect(garden).toHaveTextContent("2 decision models across 2 providers answer on /v1/decisions");
-      expect(garden).toHaveTextContent("1 more needs a newer LiteLLM version.");
+      expect(garden).toHaveTextContent("2 个决策模型分布于 2 个提供商，通过 /v1/decisions 响应");
+      expect(garden).toHaveTextContent("另有 1 个需要更新的 LiteLLM 版本。");
       const newCard = within(garden).getByTestId("decision-model-card-newvendor/decider");
       expect(within(newCard).getByRole("link", { name: "需要升级 LiteLLM" })).toHaveAttribute(
         "href",
@@ -454,7 +454,7 @@ describe("ModelHubTable", () => {
       });
 
       const garden = await screen.findByTestId("decision-model-garden");
-      expect(garden).toHaveTextContent("1 decision model across 1 provider answers on /v1/decisions.");
+      expect(garden).toHaveTextContent("1 个决策模型分布于 1 个提供商，通过 /v1/decisions 响应。");
       const card = within(garden).getByTestId("decision-model-card-gpt-6-luna");
       expect(await within(card).findByRole("link", { name: "添加模型" })).toHaveAttribute(
         "href",
@@ -473,7 +473,7 @@ describe("ModelHubTable", () => {
       });
 
       const garden = await screen.findByTestId("decision-model-garden");
-      expect(garden).toHaveTextContent("2 decision models across 2 providers answer on /v1/decisions");
+      expect(garden).toHaveTextContent("2 个决策模型分布于 2 个提供商，通过 /v1/decisions 响应");
       const foundryCard = within(garden).getByTestId("decision-model-card-azure_ai/Microsoft-Decision-1");
       expect(within(foundryCard).getByRole("link", { name: "以自己的名称部署" })).toHaveAttribute(
         "href",
@@ -491,7 +491,7 @@ describe("ModelHubTable", () => {
       });
 
       const garden = await screen.findByTestId("decision-model-garden");
-      expect(garden).toHaveTextContent("3 decision models across 3 providers answer on /v1/decisions");
+      expect(garden).toHaveTextContent("3 个决策模型分布于 3 个提供商，通过 /v1/decisions 响应");
       expect(garden).not.toHaveTextContent("a newer LiteLLM version");
     });
 
