@@ -1,7 +1,8 @@
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../tests/test-utils";
-import Sidebar, { menuGroups, getBreadcrumb } from "./leftnav";
+import Sidebar, { getBreadcrumb } from "./leftnav";
+import { menuGroups } from "./LeftnavMenuGroups";
 import type { NavTranslator } from "@/lib/i18n/translators";
 
 const ORG_ADMIN_SESSION = {

@@ -7,7 +7,7 @@ import { createTranslator } from "next-intl";
 import { describe, it, expect } from "vitest";
 import enMessages from "../messages/en.json";
 import { getAvailablePages } from "./page_utils";
-import { menuGroups } from "./leftnav";
+import { menuGroups } from "./LeftnavMenuGroups";
 import { pageDescriptions } from "./page_metadata";
 import { internalUserRoles } from "@/utils/roles";
 

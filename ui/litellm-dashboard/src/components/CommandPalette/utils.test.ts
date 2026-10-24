@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { visibleMenuGroups, type MenuGroup, menuGroups } from "@/components/leftnav";
+import { visibleMenuGroups, type MenuGroup } from "@/components/leftnav";
+import { menuGroups } from "@/components/LeftnavMenuGroups";
 import { flattenNavItems, matchNavItems, paletteScopeForRoute, shortcutLabel, type PaletteNavItem } from "./utils";
 
 describe("paletteScopeForRoute", () => {

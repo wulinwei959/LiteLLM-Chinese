@@ -6,9 +6,8 @@ import {
   getGuardrailUISettings,
   updateGuardrailCall,
 } from "@/components/networking";
-import { copyToClipboard as utilCopyToClipboard } from "@/utils/dataUtils";
 
-import { ArrowLeft, Ban, CheckIcon, Code, CopyIcon, EyeOff, Info } from "lucide-react";
+import { ArrowLeft, Ban, Code, EyeOff, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,6 +35,8 @@ import {
 import ContentFilterManager, { formatContentFilterDataForAPI } from "./content_filter/ContentFilterManager";
 import CustomCodeModal, { EditGuardrailData } from "./custom_code/CustomCodeModal";
 import { GuardrailModeCard } from "./GuardrailModeDisplay";
+import { GuardrailCustomCodeCard } from "./GuardrailCustomCodeCard";
+import { GuardrailIdCopyButton } from "./GuardrailIdCopyButton";
 import { GuardrailReadOnlyDetails } from "./GuardrailReadOnlyDetails";
 import {
   getLoggingOnlyScopeUpdate,
@@ -114,7 +115,6 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
       }>;
     };
   } | null>(null);
-  const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
   const [hasUnsavedContentFilterChanges, setHasUnsavedContentFilterChanges] = useState(false);
   const emptyToolPermissionConfig: ToolPermissionConfig = {
     rules: [],
@@ -537,16 +537,6 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
   // Format the provider display name and logo
   const { logo, displayName } = getGuardrailLogoAndName(guardrailData.litellm_params?.guardrail || "");
 
-  const copyToClipboard = async (text: string | null | undefined, key: string) => {
-    const success = await utilCopyToClipboard(text, commonT("copiedToClipboard"));
-    if (success) {
-      setCopiedStates((prev) => ({ ...prev, [key]: true }));
-      setTimeout(() => {
-        setCopiedStates((prev) => ({ ...prev, [key]: false }));
-      }, 2000);
-    }
-  };
-
   const isConfigGuardrail = guardrailData.guardrail_definition_location === "config";
 
   return (
@@ -556,19 +546,7 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
         <h1 className="text-2xl font-semibold">{guardrailData.guardrail_name || t("info.unnamed")}</h1>
         <div className="flex items-center cursor-pointer">
           <p className="text-muted-foreground font-mono">{guardrailData.guardrail_id}</p>
-
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={() => copyToClipboard(guardrailData.guardrail_id, "guardrail-id")}
-            className={`left-2 z-raised transition-all duration-200 ${
-              copiedStates["guardrail-id"]
-                ? "text-success bg-success/10 border-success/20"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            }`}
-          >
-            {copiedStates["guardrail-id"] ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
-          </Button>
+          <GuardrailIdCopyButton guardrailId={guardrailData.guardrail_id} />
         </div>
       </div>
 
@@ -658,30 +636,12 @@ const GuardrailInfoView: React.FC<GuardrailInfoProps> = ({ guardrailId, onClose,
               </Card>
             )}
 
-            {/* Custom Code Display */}
             {guardrailData.litellm_params?.guardrail === "custom_code" && guardrailData.litellm_params?.custom_code && (
-              <Card className="block mt-6 p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center gap-2">
-                    <Code className="text-info" />
-                    <p className="font-medium text-lg">{t("info.customCode")}</p>
-                  </div>
-                  {isAdmin && !isConfigGuardrail && (
-                    <Button variant="outline" size="sm" onClick={() => setCustomCodeModalVisible(true)}>
-                      <Code />
-                      {t("info.editCode")}
-                    </Button>
-                  )}
-                </div>
-                <div className="relative rounded-lg overflow-hidden border border-gray-700 bg-[#1e1e1e]">
-                  <pre
-                    className="p-4 text-sm text-gray-200 overflow-x-auto"
-                    style={{ fontFamily: "'Fira Code', 'Monaco', 'Consolas', monospace" }}
-                  >
-                    <code>{guardrailData.litellm_params.custom_code}</code>
-                  </pre>
-                </div>
-              </Card>
+              <GuardrailCustomCodeCard
+                customCode={guardrailData.litellm_params.custom_code}
+                canEdit={isAdmin && !isConfigGuardrail}
+                onEdit={() => setCustomCodeModalVisible(true)}
+              />
             )}
 
             {/* Content Filter Configuration Display */}

@@ -2,7 +2,8 @@
  * Utility functions for working with navigation pages
  */
 
-import { labelText, menuGroups } from "./leftnav";
+import { labelText } from "./leftnav";
+import { menuGroups } from "./LeftnavMenuGroups";
 import { pageDescriptions, PageMetadata } from "./page_metadata";
 import { internalUserRoles } from "@/utils/roles";
 import { useTranslations } from "next-intl";
