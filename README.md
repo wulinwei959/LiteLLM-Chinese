@@ -37,23 +37,24 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 | Batch 5 | Guardrails、Policies、Settings 及其余管理页 |
 | 长尾 | playground、prompts、mcp-servers 等按需排期 |
 
-每批独立可合并,默认语言保持英文,存量用户与测试零影响。测试新增三类:中英消息文件 key 树一致性校验、切换器可见文案变化断言、locale 持久化 helper 单测
+每批独立可合并,默认语言保持英文,存量用户与测试零影响。测试侧的守卫最初是三类:中英消息文件 key 树一致性校验、切换器可见文案变化断言、locale 持久化 helper 单测。现在已扩到 `src/lib/i18n` 五道加 toast 标题覆盖一道，清单见下文
 
 ## 上游
 
 基于 [BerriAI/litellm](https://github.com/BerriAI/litellm) 的 `ui/litellm-dashboard` 展开
 
-## 当前状态 (2026-10-21)
+## 当前状态 (2026-10-24)
 
 | 项目 | 状态 |
 |---|---|
-| **分支** | `main` |
-| **汉化完成度** | 批次 0-14 (核心管理页) 完成，批次 24 (共享组件长尾) 按簇推进到第 421 簇，随后进入上游同步（第 422 簇，见 `ui/litellm-dashboard/docs/i18n/UPSTREAM-SYNC.md` 第八节）：上游 main（2026-10-20）的代理侧与仪表盘源码已用逐文件三方合并并入（合并提交 `797ecb3208`，8591 个文件），仪表盘侧的合并基线由 `303434d` 改为 `v1.105.0`（原基线把上游自己的演进当成了我们的改动，合并出大批半成品）；合并后汉化层需按上游新结构重接，汉化层已按上游新结构重接完，生产类型检查清零，测试文件还剩 419 条类型错误（合并前基线 878）。非测试 `.tsx` 913 个中接入翻译 709 个 (77.7%，带括号调用口径)，未接入的 204 个逐个筛过、含疑似英文文案的只剩 14 个文件且 9 个已入判定账。第 306 到 407 簇逐片把组件内字面量、共享 util 里的归一化替换串、模块常量当展示文案用的形态、共享件 aria 模板里的内嵌英文词、caller 侧把 thrown message 与硬编前缀拼成气泡内容的形态、浏览器标签页与 meta 描述、服务端错误兜底里的硬编提示逐类接进目录；第 409 簇清掉 226 个无人引用的死键并把判定器接进 CI 门禁 (`npm run check:dead-keys`，按基线棘轮，新增死键即红)；第 410 到 412 簇把死键守卫接进 UI Lint 工作流、把全仓 26 处硬编码 `"en-US"` 的日期货币紧凑记法连同表格日期的手写英文月份数组改成按当前 UI locale 格式化 (`src/lib/i18n/format.ts`)；第 414 簇把 97 处手抄的 auth session mock 收进共享工厂，lint 预算 568 压到 472 并棘轮；第 415 簇接完最后一批显示层回落串 (15 处)；第 416 与 420 簇清掉六笔既有测试欠账 (含两笔"单跑也红"的稳定失败)；第 417 到 419 簇做实机验收 (Playwright + Chromium 跑 dev server、拦 API 喂假数据、扫渲染后的正文)，修掉六处富文本运行时故障 (登录页默认凭据提示崩溃、附件作用域标记原样显示、三处旧式 `{tag}` 写法)、两处英文日期漏 (废弃横幅的硬编日期、日期选择器的 moment 英文月名) 与一条没翻的目录项 (`budgets.tpdBatch`)，并加了一条常驻守卫比对"消息要的参数"与"调用点给的参数"。十一个页面的渲染正文扫过，剩下的英文只有产品名、用户数据与协议单位 token |
-| **目录规模** | 中英消息各 11261 个叶子，键树完全对齐 (parity 守卫 0 缺失)，中英同值 132 个 (多为 URL、模型名等格式示例，非漏翻) |
-| **测试** | 最近一次全量 (第 420 簇后，`src/components` + `src/app` + `src/utils` + integration) 11617 例，仅剩并发时序假失败，零翻译回归；单跑也红的稳定失败已全部清掉。上游同步后 i18n 四条守卫 17 例全绿、死键 0（合并后清掉 735 个无人引用的键），`npm run build` 暂时不绿，卡在汉化层重接未完成的 94 个文件 |
-| **类型检查** | 非测试文件 0 错误，`npm run build` 绿色；测试文件有 878 条存量类型债 (vitest 全局类型缺失等)，不阻塞构建 |
-| **i18n 守卫** | 4 条全部通过 (`locales.test.ts` 7 + `messagesParity.test.ts` 8 + `missingKeys.test.ts` 1 + `messageArgs.test.ts` 1)，第四条比对消息要的参数与调用点给的参数 |
-| **CI 门禁** | UI Lint 工作流的全部门禁绿：lint 预算 (471 = max 471)、knip 死代码、死键基线棘轮；另有 `npm run scan:rendered` 用真实浏览器扫运行期才炸的故障与残留英文 |
+| **分支** | `main`，已与 LAN 远端同步 |
+| **上游基线** | 官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 用逐文件三方合并并入并合回 `main`，其上的汉化重接与收口做到第 524 簇 |
+| **汉化完成度** | 收口清单九项全部完成（第 513 到 524 簇）。非测试 `.tsx` 953 个中接入翻译器 736 个 (77.2%)，未接入的多数本身没有文案；静态扫描的四条口径（JSX 文本、四个属性、toast/throw、模板串）加宽口径 string 的"变量转传"复读都已清完，可见队列只剩判定账里的机读串 |
+| **目录规模** | 中英消息各 11877 个叶子，键树完全对齐 (parity 守卫 0 差集)，中英同值 139 个（多为 URL、模型名、协议单位等格式示例，非漏翻）；死键 0，按空基线棘轮 |
+| **测试** | 全量三 project 合跑 970 个文件、13056 例，9 例是仓库既有的预期失败，真红 0；`Type Errors` 报 no errors，旧账里的 878 条测试文件类型债已清 |
+| **类型与构建** | `tsc --project tsconfig.production.json` 0 错，`npm run build` 退出 0 |
+| **i18n 守卫** | `src/lib/i18n` 五道（locales、messagesParity、missingKeys、messageArgs、format）加 `src/lib/toast.test.ts` 的动态标题目录覆盖守卫，6 个文件 59 例通过 |
+| **CI 门禁** | `eslint .` 0 error（第 524 簇前是 77 条未抑制的 error）；`check-lint-budgets.mjs` 九条全过，其中 `no-large-inline-object-arg` 476/477、`no-long-condition-chain` 200/200、`no-console` 16/16 与 `testing-library/prefer-screen-queries` 18/18 已顶格；`npm run knip:ci` 通过；`npm run check:dead-keys` 通过；`npm run scan:rendered` 在 15 页上 0 渲染错误、除基线两枚端点路径外 0 处英文（该数字是第 515 簇实测，第 523 与 524 簇只搬代码未动文案，按判据不需复跑） |
 
 进度、逐簇账与口径以 [`ui/litellm-dashboard/docs/i18n/PROGRESS.md`](ui/litellm-dashboard/docs/i18n/PROGRESS.md) 为准；实施流程见同目录 `WORKFLOW.md`
 
@@ -65,9 +66,14 @@ LiteLLM 上游的管理面板(`ui/litellm-dashboard`)没有任何国际化基础
 4. **缺键**：47 条真实缺失 (被 `missingKeys` 守卫拦截) → 全部补齐
 5. **断言过时**：第六类失败 (断言停在英文) → 在观测范围内归零
 6. **`mcp_server_edit` OAuth 恢复取值失败**：根因是测试占位符正则写错，非组件缺陷 → 已在 `f3b21f32` 修复
+7. **认证类型标签接线后消费方测试仍按英文名查**：`AddModelForm.integration` 与 `CredentialModal.integration` 共 12 处查询（含正则形式）没跟着翻面，8 例稳定红 → 已翻成「认证类型：」，并把"改动组件要连消费方测试一起跑"写进 `WORKFLOW.md` 第六步
+8. **仓库级 lint 77 条未抑制 error**：54 处未用导入、14 处 `zod/v4` 导入、3 处嵌套三元、2 处超参数、2 处超行数、1 处裸 fetch、1 处 children prop → 全部清零，`eslint . --prune-suppressions` 顺带削掉 7 条过期基线；清死导入后彻底无引用的 `HotkeysProvider.tsx` 与 `HeuristicKeywordOverrides.tsx` 一并删除，knip 恢复绿色
+9. **批量建用户的"下载 CSV 模板"按钮没有 `onClick`**：点了不做事 → 表头由同文件解析器读取的六列唯一确定，动作抽进 `bulkUsersCsvTemplate.ts` 并补一条真断言测试
 
 ### 剩余工作
 
-- **换新维度而不是重扫旧正则**：按当前四条扫描口径 (回落串、模板串、JSX 文本节点、更宽的 `>text<`)，真 UI 文案的可接线余量已经见底，剩下的命中全部有判定归属 (技术值、协议标识、CSV 列头、代码语料、品牌名)。下一轮应从新组件、新页面、新交互形态入手，不该再重扫这四条正则。逐条甄别结果见 `docs/i18n/PROGRESS.md` 的「扫描维度收口」一节
-- **上游持续演进**：本 fork 的上游仍在更新，新组件会带来新的英文串。按簇推进仍是唯一可靠的收口方式
-- **lint 预算还有 172 条余量**：`local/no-large-inline-object-arg` 已从 568 压到 472 (目标 300)。剩下的分布是测试文件里的 mock 与断言载荷为主，改动价值低于收益，按需做
+- **下一次上游同步**：按决定暂缓，计划与风险见 [`ui/litellm-dashboard/docs/i18n/UPSTREAM-SYNC.md`](ui/litellm-dashboard/docs/i18n/UPSTREAM-SYNC.md)。同步当天要额外做三件事：按合并后实数重测 `eslint-budgets.json` 的棘轮、跑 `eslint . --prune-suppressions` 让抑制基线跟着新树走、复跑死键门禁与渲染扫描
+- **lint 预算几乎没有余量**：`no-console` 与 `testing-library/prefer-screen-queries` 已顶到上限，`no-long-condition-chain` 也是 200/200，`complexity` 只剩 1 条。新增这类写法会直接把门禁改红，收口办法是把内联对象提成具名变量、把条件链改成早返回的辅助函数，不要调上限
+- **18 个文件仍走 `max-lines` 抑制基线**：这些是上游既有的巨型文件，本轮只处理了汉化真正推过线的四个。要清得逐个做文件级拆分，属独立一簇
+- **换新维度而不是重扫旧正则**：四条静态口径与宽口径 string 的可见队列都已清空，剩下的命中全部有判定归属（技术值、协议标识、导出列头与文件名、代码语料、品牌名、MCP 协议能力名）。下一轮应从新组件、新页面、新交互形态入手，配合 `npm run scan:rendered` 在运行期发现
+- **可选的小重构**：`bulkUsersCsvTemplate.ts` 的模板表头与 `bulk_create_users_button.tsx` 解析器读取的列名现在是两份并列事实，可以收成一个共享来源，让改列名时测试自然变红
