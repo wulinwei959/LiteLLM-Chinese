@@ -202,3 +202,66 @@ export const KeyBudgetNumberField = ({
     )}
   </FormField>
 );
+
+const MODEL_LIMIT_PLACEHOLDER = '{"gpt-4": 100, "claude-v1": 200}';
+
+export const KeyThroughputAndEstimateFields = ({
+  control,
+  estimateTooltip,
+  canEditEstimates,
+}: {
+  control: Control<KeyEditFormValues>;
+  estimateTooltip: { estimate: string; perModel: string };
+  canEditEstimates: boolean;
+}) => {
+  const t = useTranslations("virtualKeys.editForm");
+  const modelLimit = (name: "model_tpm_limit" | "model_rpm_limit", label: string) => (
+    <FormField control={control} name={name} label={label}>
+      {(field) => (
+        <Textarea
+          {...field}
+          value={(field.value as string | undefined) ?? ""}
+          rows={4}
+          placeholder={MODEL_LIMIT_PLACEHOLDER}
+        />
+      )}
+    </FormField>
+  );
+
+  return (
+    <>
+      <FormField control={control} name="max_parallel_requests" label={t("maxParallelRequests")}>
+        {({ ref: _ref, ...field }) => <NumericalInput {...field} value={field.value ?? ""} min={0} />}
+      </FormField>
+
+      {modelLimit("model_tpm_limit", t("modelTpmLimit"))}
+      {modelLimit("model_rpm_limit", t("modelRpmLimit"))}
+
+      <FormField
+        control={control}
+        name="default_estimated_output_tokens"
+        label={labelWithHint(t("estimatedOutputTokens"), estimateTooltip.estimate)}
+      >
+        {({ ref: _ref, ...field }) => (
+          <NumericalInput {...field} value={field.value ?? ""} min={1} step={1} disabled={!canEditEstimates} />
+        )}
+      </FormField>
+
+      <FormField
+        control={control}
+        name="default_estimated_output_tokens_per_model"
+        label={labelWithHint(t("estimatedOutputTokensPerModel"), estimateTooltip.perModel)}
+      >
+        {(field) => (
+          <Textarea
+            {...field}
+            value={(field.value as string | undefined) ?? ""}
+            rows={4}
+            placeholder='{"gpt-4": 4096}'
+            disabled={!canEditEstimates}
+          />
+        )}
+      </FormField>
+    </>
+  );
+};

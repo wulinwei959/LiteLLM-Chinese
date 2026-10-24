@@ -7,7 +7,6 @@ import PolicySelector from "@/components/policies/PolicySelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -37,6 +36,7 @@ import {
   KeyBudgetNumberField,
   KeyMetadataField,
   KeyRateLimitFields,
+  KeyThroughputAndEstimateFields,
   KeyTypeSelect,
   labelWithHint,
   moveMetadataTagsToTagsField,
@@ -73,7 +73,6 @@ import MCPToolPermissions from "../mcp_server_management/MCPToolPermissions";
 import { toast } from "@/lib/toast";
 import { getPromptsList, modelAvailableCall, tagListCall } from "../networking";
 import { fetchTeamModels } from "../organisms/create_key_button";
-import NumericalInput from "../shared/numerical_input";
 import { MultiSelect } from "../shared/MultiSelect";
 import { TagsInput } from "@/app/(dashboard)/guardrails/_components/content_filter/TagsInput";
 import { Tag } from "../tag_management/types";
@@ -550,57 +549,11 @@ function KeyEditSession({
             )}
           </FormField>
 
-          <FormField control={form.control} name="max_parallel_requests" label={editFormT("maxParallelRequests")}>
-            {({ ref: _ref, ...field }) => <NumericalInput {...field} value={field.value ?? ""} min={0} />}
-          </FormField>
-
-          <FormField control={form.control} name="model_tpm_limit" label={editFormT("modelTpmLimit")}>
-            {(field) => (
-              <Textarea
-                {...field}
-                value={(field.value as string | undefined) ?? ""}
-                rows={4}
-                placeholder='{"gpt-4": 100, "claude-v1": 200}'
-              />
-            )}
-          </FormField>
-
-          <FormField control={form.control} name="model_rpm_limit" label={editFormT("modelRpmLimit")}>
-            {(field) => (
-              <Textarea
-                {...field}
-                value={(field.value as string | undefined) ?? ""}
-                rows={4}
-                placeholder='{"gpt-4": 100, "claude-v1": 200}'
-              />
-            )}
-          </FormField>
-
-          <FormField
+          <KeyThroughputAndEstimateFields
             control={form.control}
-            name="default_estimated_output_tokens"
-            label={labelWithHint(editFormT("estimatedOutputTokens"), estimateTooltip.estimate)}
-          >
-            {({ ref: _ref, ...field }) => (
-              <NumericalInput {...field} value={field.value ?? ""} min={1} step={1} disabled={!canEditEstimates} />
-            )}
-          </FormField>
-
-          <FormField
-            control={form.control}
-            name="default_estimated_output_tokens_per_model"
-            label={labelWithHint(editFormT("estimatedOutputTokensPerModel"), estimateTooltip.perModel)}
-          >
-            {(field) => (
-              <Textarea
-                {...field}
-                value={(field.value as string | undefined) ?? ""}
-                rows={4}
-                placeholder='{"gpt-4": 4096}'
-                disabled={!canEditEstimates}
-              />
-            )}
-          </FormField>
+            estimateTooltip={estimateTooltip}
+            canEditEstimates={canEditEstimates}
+          />
 
           <Field>
             <FieldLabel>{labelWithHint(editFormT("perTagRateLimits"), editFormT("perTagRateLimitsHint"))}</FieldLabel>
