@@ -2,8 +2,11 @@
 
 上游镜像：`http://192.168.3.224:3001/wulinwei959/litellm.git`（已加为 `upstream` remote）
 
-## 一、为什么不能直接 git merge
+## 状态（2026-10-24）
 
+汉化工程收口时决定暂不执行同步，本篇仍是待执行的计划。真到同步那天，除了下面的阶段还要额外做三件事：按合并后的实数重测 `eslint-budgets.json` 的棘轮（`fc664c04` 那次就是这么做的，第 524 簇又补测了一轮）、跑 `eslint . --prune-suppressions` 让抑制基线跟着新树走、以及重跑 `npm run check:dead-keys` 与渲染扫描各页
+
+## 一、为什么不能直接 git merge
 **本 fork 与上游没有共同祖先。** 我们的历史是 `bcbf23ad` → `610473cb`（`chore: import litellm upstream source snapshot`，整体导入上游快照）→ 之后独立演进。`git merge-base HEAD upstream/main` 返回空，`git merge upstream/main` 会拿 916 个本地提交去撞 55032 个上游提交。
 
 ## 二、现在各自站在哪

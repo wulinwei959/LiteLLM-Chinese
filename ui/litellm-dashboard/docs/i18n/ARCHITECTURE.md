@@ -32,6 +32,8 @@
 | `tests/test-utils.tsx`                       | 测试侧的 `renderWithProviders`，已包好 `LocaleProvider`                                |
 | `tests/i18nStub.ts`                          | 测试侧的 `enMessages`，给拿不到 React 上下文的纯函数查 `en.json`                       |
 | `tests/mocks/authorizedSession.ts`           | 测试侧的 auth session 工厂，给打桩 `useAuthorized` 的用例用                            |
+| `scripts/scan-english.mjs`                     | 静态扫描器：AST 口径找英文字面量（jsx 文本、四个属性、toast、throw，宽口径含模板串）                                      |
+| `scripts/rendered-ui-scan.mjs`                 | 渲染扫描器：驱动真浏览器逐页取 DOM，查目录与调用点都抓不到的运行期故障与残留英文，基线在 `scripts/rendered-ui-baseline.json`       |
 
 ## 语言怎么定下来
 
@@ -97,13 +99,17 @@
 
 ## 守卫测试
 
-三条守卫各管一个方向，缺一条就有盲区
+`src/lib/i18n` 下五道守卫各管一个方向，缺一道就有盲区
 
-`messagesParity.test.ts` 管"两侧目录是否对齐"。它比对键树是否逐条一致、顶层 ICU 参数名集合是否一致、以及消息语法是否合法。语法那部分拦的是三类运行时才炸的错误：未加引号的尖括号（ICU 当富文本标签，抛 `UNCLOSED_TAG`）、开了没闭合的标签、以及未加引号的花括号（ICU 当参数，抛 `MALFORMED_ARGUMENT`）。这三类在英文界面上一片空白，只在打开特定表单时才暴露
+`messagesParity.test.ts` 管"两侧目录是否对齐"。它比对键树是否逐条一致、顶层 ICU 参数名集合是否一致、以及消息语法是否合法。可用的富文本标签由文件里的 `RICH_TAGS` 白名单限定（`strong`、`link`、`code` 等），要换别的标签先扩白名单。语法那部分拦的是三类运行时才炸的错误：未加引号的尖括号（ICU 当富文本标签，抛 `UNCLOSED_TAG`）、开了没闭合的标签、以及未加引号的花括号（ICU 当参数，抛 `MALFORMED_ARGUMENT`）。这三类在英文界面上一片空白，只在打开特定表单时才暴露
 
 `missingKeys.test.ts` 管反方向："代码引用的键是否存在"。它遍历 `src` 下所有调过 `useTranslations` 的文件，按作用域解析每个 `t("x")`。这个方向 `parity` 管不到，因为一个键在两侧都不存在时，键树依然是"一致的"
 
 `locales.test.ts` 管语言解析，把三级回退链和中文标签归一都钉住
+
+`messageArgs.test.ts` 管参数名。它把代码里 `t("key", { a, b })` 传出的实参名与消息里的 `{arg}`、`<tag>` 逐个对一遍，名字对不上要到运行期才抛错，静态类型抓不到。标签也一起核对：next-intl 把消息里的 `<tag>` 当成调用点必须交出的变量，少给渲染器就抛 FORMATTING_ERROR，这道守卫把错误前移到测试期
+
+`src/lib/toast.test.ts` 里那一道管动态取键。`toastMessage(category)` 的键是运行期拼出来的，`missingKeys.test.ts` 只解析字面量 `t("x")`，看不见它。做法是把两张标题查找表的值收成 `ToastTitleCategory` 联合类型、再由它们派导出 `TOAST_TITLE_CATEGORIES`，断言这组键在中英两侧的 `toast` 命名空间都存在。将来加一枚 category 忘配词条，tsc 与这道守卫都会红
 
 ## 死键守卫
 

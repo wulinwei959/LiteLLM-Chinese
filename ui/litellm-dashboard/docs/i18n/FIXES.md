@@ -1,6 +1,6 @@
 # 错误修复步骤
 
-翻译工作的失败很少是"翻译错了"，绝大多数是下面七类里的一类。这一篇先给分类表和定位手段，再给这一轮实际修过的缺陷清单，最后是回归守卫
+翻译工作的失败很少是"翻译错了"，绝大多数是下面八类里的一类。这一篇先给分类表和定位手段，再给这一轮实际修过的缺陷清单，最后是回归守卫
 
 ## 总则：先分类，再修
 
@@ -30,6 +30,7 @@ npx vitest run "<路径>" --reporter=json --outputFile="$TEMP/fails.json"
 | tsc 报 `TS2345` / 裸 `Translator` 判定不可靠           | props 用了 `ReturnType<typeof useTranslations>` | 换成 `translators.ts` 里的具体类型           |
 | 测试报 `Found multiple elements`                       | 两处不同英文被映射到同一个已存在的键            | 各开各的键                                   |
 | 测试断言失败，实际界面已变中文                         | 断言还是英文原文                                | 更新断言                                     |
+| 消费方测试报 `Unable to find ... name "Auth Type:"`    | 组件标签已接成中文，测试查询串未跟着翻          | 连正则形式的查询串一起翻面                   |
 | 用例要验证的正是被测试 helper 钉住的那条链路           | helper 固定了环境值，把被测链路短路             | 给 helper 加"不钉"出口，用 `null` 而不是省略 |
 | ESLint 报 `rules-of-hooks` 说 hook 被条件调用          | `cond ?? useHook()` 这类短路写法                | hook 无条件调用，取值时再在候选值之间选      |
 
@@ -666,6 +667,18 @@ zh 目录里给标签配的**全角冒号**（`源修订版本：`/`ETag：`/`�
 另一处：`Execution: {execution} · Mode: {mode}` 这种一行里塞两个标签加一个分隔符的写法，不要在 JSX 里各自出文案再靠 `·` 缝起来，而是整行进消息。中文侧的冒号是全角、`·` 的前后也不该留空格，逐段拼的结果几乎总是标点错位
 
 `check_openapi_schema.tsx` 的四条 JSON 示例（`{"team": "research"}` 这类）搬进消息目录后触发 `messagesParity` 的花括号守卫：这些字面量原先在 TSX 字符串里不受约束，进目录就被当成未加引号的占位符。加单引号即可，中英两侧都要加
+
+## 2026-10-24 第 519 到 521 簇的续：接了标签，消费方测试还在按英文名查
+
+认证类型标签从硬编英文改成 `models.addModel.authTypeLabel` 之后，本目录的映射测试全绿，但 `AddModelForm.integration.test.tsx` 与 `CredentialModal.integration.test.tsx` 两处集成测试共 12 处查询还按英文名查，`AddModelForm.integration.test.tsx` 的 6 处 `name: "Auth Type:"` 加 `CredentialModal.integration.test.tsx` 的 3 处 `name:` 与 3 处正则形式 `/^Auth Type:/`。症状是 8 例稳定红，报 "Unable to find an accessible element with the role combobox and name Auth Type:"。这批断言不在被改的文件里，只有把消费方测试一并跑才抓得到，正则形式的查询串比字符串形式更容易漏。下拉项本身的 `Per-user GitHub OAuth` 一类是提供商数据，按判定账留英文，不要一起翻
+
+## 2026-10-24 第 524 簇：jsdom 里读 Blob 正文只有一种写法可用
+
+给"下载 CSV 模板"补断言时，`Blob.prototype.text()` 在本项目的 jsdom 环境不存在（`template.text is not a function`），`new Response(blob).text()` 会把 Blob 当字符串正文、返回 `"[object Blob]"`，断言看着像过了其实没有。可用写法是 `FileReader.readAsText` 包一层 Promise、在 `onload` 里 resolve。桩 `HTMLAnchorElement.prototype.click` 用 `mockImplementation(function (this: HTMLAnchorElement) { ... })` 的具名形式，顺带能读 `this.download` 断言文件名
+
+## 2026-10-24 第 524 簇：`git show | eslint --stdin` 拿不到规则结果
+
+想比较同一文件改前改后的告警数，`git show HEAD:./path | npx eslint --stdin --stdin-filepath path` 在 eslint 9 的 flat config 下什么都不输出（0 条问题、连汇总行都没有），会被误读成"改前也这样"。`prettier --stdin-filepath --check` 是可用的，eslint 不行。取改动前的真实计数要在该提交建游离 worktree、软链同一份 `node_modules` 再跑，注意这份 worktree 的报告路径与主检出不同，差分前先归一路径
 
 ## 回归守卫
 

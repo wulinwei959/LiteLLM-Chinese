@@ -5155,7 +5155,7 @@ tsc 枚举出 7 处：`ModelHubTable.tsx` 三处（页面 URL、agent url、MCP 
 4. `max-params` 2 条：`addFiles` 的五枚位置参数收成只读对象 `AddFilesRequest`，调用处先落成具名 `request` 变量再传（否则 `local/no-large-inline-object-arg` 预算会 +1）；`keyCountText` 的 `searching`/`isFiltering` 两枚布尔并成 `KeyCountScope` 联合，参数降到四枚。
 5. `no-restricted-syntax` 1 条：`scripts/rendered-ui-scan.mjs` 的裸 `fetch` 加带规则名与理由的行内豁免（Node 端扫描脚本，`@/lib/http/client` 是面向浏览器运行时的封装）。
 6. `react/no-children-prop` 1 条：`use_margin_config.test.ts` 把 children 从 props 移到 `createElement` 的第三实参。
-7. `max-lines` 2 条：`leftnav.tsx` 由 820 降到 493，把 280 行的 `menuGroups` 数据整块搬进新模块 `LeftnavMenuGroups.tsx`（文件名受 `local/filename-pascal-case` 约束，数据含 JSX 故只能是 `.tsx`），逐行核对除多出的 `export` 关键字外与 HEAD 完全一致，6 处消费方改指新模块；`guardrail_info.tsx` 由 808 降到 771，抽出 `GuardrailCustomCodeCard`，并把只服务一枚按钮的 `copiedStates` 状态机连同 JSX 一起收进 `GuardrailIdCopyButton`。
+7. `max-lines` 2 条：`leftnav.tsx` 由 820 降到 493（该文件与 `guardrail_info.tsx` 在上次同步时已分别到 817 与 804，不属汉化新推过线，一并清掉），把 280 行的 `menuGroups` 数据整块搬进新模块 `LeftnavMenuGroups.tsx`（文件名受 `local/filename-pascal-case` 约束，数据含 JSX 故只能是 `.tsx`），逐行核对除多出的 `export` 关键字外与 HEAD 完全一致，6 处消费方改指新模块；`guardrail_info.tsx` 由 808 降到 771，抽出 `GuardrailCustomCodeCard`，并把只服务一枚按钮的 `copiedStates` 状态机连同 JSX 一起收进 `GuardrailIdCopyButton`。
 
 `--prune-suppressions` 同时清掉 4 条过期基线（`react/no-unescaped-entities` 两枚、`react-hooks/preserve-manual-memoization` 3 到 1、`no-nested-ternary` 3 到 1、`prefer-const` 29 到 28）。
 

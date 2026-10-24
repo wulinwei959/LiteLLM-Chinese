@@ -96,6 +96,8 @@
 
 ## 批次 24 第 93-109 簇（2026-10-16）
 
+下面两节连同上文的"剩余量"清单都是 2026-10-16 与 2026-10-17 的当时快照，百分比、目录叶子数与未接入清单已被后续簇推翻，保留只为追溯当时的判断。当前数字以 [README.md](./README.md) 的状态一节与 [PROGRESS.md](./PROGRESS.md) 为准
+
 本轮把共享组件长尾里较大的一片收口，覆盖 `shared/table_cells`、共享下拉选择组件、`chat_ui`、`app/onboarding`、`lens`、`roi-calculator`、`routing_groups`、`key_team_helpers`、`RegenerateKeyModal` 与日志回调、`activity_metrics` 与图表图例、`UsagePage` 三个组件、`PublicModelHubTableColumns`、`model_dashboard`、账户菜单、`ToolPolicies` 与 `ToolDetail`、`organization` 两个表单。覆盖率从 56.8% 推到 64.1%，目录叶子从 7975 增到 8879。
 
 剩余量见"## 汉化完成度实测"，当前最大的未接入目录是 `src/components` 根下零散文件（`settings.tsx`、`model_info_view.tsx`、`networking.tsx`、`cloudzero_export_modal.tsx`、`SCIM.tsx` 等）、`app/login`、`components/liteadmin`、`components/claude_code_plugins`、`components/mcp_tools`、`app/(dashboard)/agents/_components` 与 `playground` 的 `AdditionalModelSettings`。
@@ -111,3 +113,12 @@
 `mcp_servers.tsx` 的排序下拉原本是带 `label` 的字面量数组，翻译时改成 `SORT_KEYS`（只存 key）加 `SORT_LABEL_KEYS`（key 到 i18n key 的映射），下拉项与 `items` 属性都从 `SORT_KEYS` 派生。这样数组本身不含文案，重排或增删选项不会碰到翻译
 
 `getMCPNetworkAccess` 原本返回 `{ label, description }`，两个字段都是英文句子，而它同时被详情页与卡片页使用。改成返回分类（`kind` 与 `reason`），文案交给组件渲染。改的时候要逐个核对原始布尔条件的组合，有一处 `available_on_public_internet` 为 `undefined` 而 `is_public_explicit` 为 `true` 的组合差点被判成未知
+
+## 2026-10-24 收尾批次全部完成
+
+上面"收尾批次"表里 15 到 24 各行标的"余量"已逐项清零，最后一批之后没再开新批次。最后一轮（第 513 到 524 簇）做的是四件事：给静态扫描补上模板串与"变量转传"两种盲区口径、按件判定导出面里哪些串该留机读英文、清掉 `eslint .` 的 77 条未抑制 error 与四例 `max-lines`（其中 `ModelInfoEditForm.tsx` 与 `key_edit_view.tsx` 是汉化把它们推过线，`leftnav.tsx` 与 `guardrail_info.tsx` 在 v1.107 同步时就已越线）、把本轮新增的 lint 预算违规改回具名变量
+
+"批次之外的常驻工作"两件事的现状。zod 校验文案的工厂化已经铺完，`src/lib/i18n/translators.ts` 给每个命名空间都备了具体翻译器类型，新建的模块级函数按首参注入 translator。死键也不再靠人工发现，`npm run check:dead-keys` 按空基线棘轮、新增即失败，但它只扫 `git ls-files`，新建模块要先 `git add` 再跑
+
+下一件事是 [UPSTREAM-SYNC.md](./UPSTREAM-SYNC.md)，暂缓的决定在 2026-10-24 作出
+

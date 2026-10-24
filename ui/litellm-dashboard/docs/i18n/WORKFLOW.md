@@ -119,6 +119,14 @@ eslint 的路径形式在 `(dashboard)` 这类含括号的路径目录下会低�
 
 新增键较多的批次，再补两道静态校验，覆盖测试没渲染到的键。一道是用 `intl-messageformat` 把本批每条中英消息各解析一遍，抓 ICU 语法错；另一道是把组件里 `t("key", { a, b })` 传的参数名和消息里的 `{arg}`、`<tag>` 逐个对一遍，名字不一致要到运行期才抛错。两道都是临时脚本，跑完即删
 
+死键门禁取文件走 `git ls-files`，本批新建的模块要先 `git add` 再跑 `npm run check:dead-keys`，否则只在新文件里出现的键会被判成死键，第 524 簇就在这里报出两枚假死键
+
+改完组件不能只跑它自己的映射测试，要把 import 它的测试一并跑。第 519 到 521 簇把认证类型标签接成中文后，本目录测试全绿，`AddModelForm.integration` 与 `CredentialModal.integration` 却按英文名查 combobox，8 例稳定红，直到全量复跑才暴露。做法是先列出引用该组件的测试文件清单再整批跑，逐文件症状与修法见 `FIXES.md`
+
+两条机器计数口径。要看某个文件的 `max-lines` 真实行数（该规则跳过空行与注释），把上限临时压到 1 逼它打印：`npx eslint <文件> --rule '{"max-lines": ["error", {"max": 1, "skipBlankLines": true, "skipComments": true}]}'`。要判断 lint 预算的增量落在哪些文件，在基线提交上建游离 worktree、软链同一份 `node_modules`、用同规则重跑一份 JSON 报告再按文件差分，两份报告的 `filePath` 根路径不同，必须先归一成仓库相对路径，否则每个文件都会同时出现正负增量、净数看着像没变
+
+vitest 在本机多 project 合跑时把 `TMPDIR` 固定到 `/tmp/vitest_tmp`，否则后台任务的临时目录被回收会让整片 fork worker 起不来，报成文件级失败而实际 0 例失败。报告只用 `--reporter=dot`，本项目没有 `basic` reporter。
+
 ### 第七步：提交
 
 提交标题、正文与 PR 说明一律用简体中文，类型前缀（`feat`、`fix`、`chore`、`docs`）保留英文。示例
@@ -187,3 +195,10 @@ Failed to update MCP Server{suffix}
 `.map()` 回调里写的对象字面量会重新 widen，得在内部再加 `as const`。解构后再判定的写法会丢掉字段间的关联，改成 `item.scope === "common" ? commonT(item.labelKey) : otherT(item.labelKey)` 让 narrowing 生效
 
 动态键（如 `t(label.replace(/^nav\./, ""))`）用一个集中断言收口，断言只出现一次并注明"配置保证前缀合法"
+
+## 文件规模与拆分
+
+文件超 `max-lines`（800 行，跳过空行与注释）时按数据层或子组件拆文件，不要往 `eslint-suppressions.json` 里塞新条目。拆的时候只搬移、不改行为，搬完逐行核对与新模块等价（允许多出一个 `export` 关键字），消费方的 import 一起改指新模块，不给旧文件留 re-export 的兼容层。`.tsx` 文件名受 `local/filename-pascal-case` 约束，含 JSX 的数据模块只能叫 PascalCase；纯 `.ts` 模块沿用既有的小写命名即可。本轮按此处理的例子是 `modelInfoEditFields.ts`、`KeyEditViewControls.tsx` 里的 `KeyThroughputAndEstimateFields`、`LeftnavMenuGroups.tsx`、`GuardrailCustomCodeCard.tsx` 与 `GuardrailIdCopyButton.tsx`
+
+规则预算（`eslint-budgets.json`）的涨落要归因到文件。规则建议的修法几乎都是"把内联对象提成具名变量"，条件链则改成早返回的辅助函数，别为了过门禁去调上限
+
