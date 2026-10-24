@@ -40,7 +40,9 @@ for (const file of process.argv.slice(2).filter((argument) => !argument.startsWi
   const add = (text, kind) => {
     const value = text.replace(/\s+/g, " ").trim();
     if (!LETTERS.test(value)) return;
-    if (/^[a-z0-9_.-]+$/.test(value)) return;
+    // A single lowercase word is only noise when it can be a class or an
+    // identifier; JSX text is neither, so "{count} selected" must survive.
+    if (kind !== "jsx" && /^[a-z0-9_.-]+$/.test(value)) return;
     const key = `${kind}\t${value}`;
     hits.set(key, (hits.get(key) ?? 0) + 1);
   };

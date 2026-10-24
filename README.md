@@ -2,7 +2,8 @@
 
 LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围绕上游 [BerriAI/litellm](https://github.com/BerriAI/litellm) 的 `ui/litellm-dashboard` 展开。代理侧的 Python 代码不在翻译范围，只跟随上游 release
 
-**当前节点（2026-10-24）**：汉化工程已收口，收口清单上的九项全部做完，`main` 与 LAN 远端同步，本地跑得到的门禁全部为绿。上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 524 簇
+**当前节点（2026-10-24）**：汉化工程已按九项收口清单做完，`main` 与 LAN 远端同步，本地跑得到的门禁全部为绿。同日修掉静态扫描器一条防噪过滤后复出新账，11 处真漏待接，见文末
+上游基线是官方 release `v1.107.0`（commit `66c8f5b1a9`），2026-10-23 合并完成，其上的汉化重接与收口推进到第 524 簇
 
 ## 背景
 
@@ -46,10 +47,11 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | `src/components/shared/LanguageSwitcher.tsx` | 唯一的选择器 UI，挂在 `UserDropdown` 与 `SidebarAccountMenu` 两处 |
 | `tests/test-utils.tsx` | `renderWithProviders`，已包好 URL 适配、QueryClient 与 `LocaleProvider` |
 | `scripts/scan-english.mjs` | AST 静态扫描器，按 jsx 文本、四个属性、toast、throw 与宽口径的模板串找英文字面量 |
+| `scripts/i18n-file-inventory.mjs` | 未接入翻译器的非测试 `.tsx` 逐文件取证，覆盖 `scan-english.mjs` 看不见的对象属性与参数默认值两个盲区 |
 | `scripts/dead-keys.py` + `scripts/check-dead-keys.mjs` | 死键判定器与门禁，按 `dead-keys-baseline.json` 棘轮 |
 | `scripts/check-lint-budgets.mjs` + `eslint-budgets.json` | lint 预算棘轮，规则计数不得越过上限 |
 | `scripts/rendered-ui-scan.mjs` 三件套 | 渲染扫描：脚本、桩数据夹具 `scripts/rendered-ui-fixtures.mjs`、英文基线 `scripts/rendered-ui-baseline.json` |
-| `docs/i18n/` | 八篇方法与进度文档，索引见文末 |
+| `docs/i18n/` | 九篇方法与进度文档，索引见文末 |
 
 ## 防回归的守卫
 
@@ -71,7 +73,7 @@ LiteLLM AI Gateway 管理面板（Admin UI）的简体中文支持项目，围�
 | 项目 | 状态 |
 |---|---|
 | 批次 | 批次 0 到 14 是核心管理页，15 到 24 是长尾收尾。`PLAN.md` 的状态列写于各批次推进时点，已被第 513 到 524 簇的收口轮覆盖，当前进度一律以 `PROGRESS.md` 的逐簇账为准 |
-| 组件接入 | 非测试 `.tsx` 954 个中 737 个接入翻译器，77.3%。未接入的 217 个多数本身没有文案（图表容器、类型外壳、纯布局） |
+| 组件接入 | 非测试 `.tsx` 954 个中 737 个接入翻译器，77.3%。未接入的 217 个已逐文件取证：200 个六个口径零命中（路由页外壳 78、shadcn 原语 40、共享容器 23 等），17 个有英文串但全部判定归属（数据源字段、协议标识、程序异常串、测试脚手架），账在 `FILE-INVENTORY.md` |
 | 目录规模 | 中英各 11877 个叶子，键树无差集；中英同值 139 个（URL、模型名、协议单位等格式示例，不是漏翻）；死键 0 |
 | 测试 | 全量三 project 合跑 970 个文件、13056 例，9 例是仓库既有的预期失败，真红 0；`Type Errors` 报 no errors |
 | 类型与构建 | `npm run typecheck` 0 错，`npm run build` 退出 0 |
@@ -107,7 +109,8 @@ npm run build
 
 ## 剩余工作
 
-- **换新维度而不是重扫旧正则**。四条静态口径与宽口径 string 的"变量转传"复读都已清空，剩下的命中全部有判定归属。下一轮应从新组件、新页面、新交互形态入手，配合渲染扫描在运行期发现
+- **接掉 11 处真漏**（2026-10-24 新账，最高优先）。`scan-english.mjs` 的 JSX 文本分支原先也套用"纯小写单词丢弃"这条防噪过滤，整句里的尾词与介词一直看不见；过滤改回只作用于非 JSX 分支后复扫，新增 65 条命中，逐条读完 44 条属技术 token（`v`、`ms`、`s`、`<code>` 里的 JSON 字段名与响应头名、CSV 列名），11 处是真漏，位置、现状与接法都列在 [`ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md`](ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md)
+- **换新维度而不是重扫旧正则**。四条静态口径与宽口径 string 的"变量转传"复读都已清空，剩下的命中全部有判定归属，这条仍然成立，只是它逼出的 JSX 小写词盲区提醒：口径本身也要定期拿新形态去撞。下一轮继续从新组件、新页面、新交互形态入手，配合渲染扫描在运行期发现
 - **18 个文件仍走 `max-lines` 抑制基线**。这 18 个是上游既有的巨型文件，逐个拆分属独立一簇。本轮真正推过线的四个已经在第 524 簇拆完退线（`ModelInfoEditForm.tsx` 拆出 `modelInfoEditFields.ts`、`key_edit_view.tsx` 拆出 `KeyEditViewControls.tsx` 的字段块、`leftnav.tsx` 拆出 `LeftnavMenuGroups.tsx`、`guardrail_info.tsx` 拆出两张护栏小卡）
 - **lint 预算几乎没有余量**。三条规则顶格、`complexity` 只剩 1 条。新增这类写法会直接把门禁改红，收口办法是把内联对象提成具名变量、把条件链改成早返回的辅助函数，不要调上限
 - **一处可选的小重构**。`bulkUsersCsvTemplate.ts` 的模板表头与 `bulk_create_users_button.tsx` 解析器读取的列名是两份并列事实，可以收成一个共享来源，让改列名时测试自然变红
@@ -123,5 +126,6 @@ npm run build
 | [`ui/litellm-dashboard/docs/i18n/WORKFLOW.md`](ui/litellm-dashboard/docs/i18n/WORKFLOW.md) | 单批执行的七步流程、验证清单、编码约定与文件拆分口径 |
 | [`ui/litellm-dashboard/docs/i18n/FIXES.md`](ui/litellm-dashboard/docs/i18n/FIXES.md) | 缺陷八类的分类表、定位手段与踩坑记录 |
 | [`ui/litellm-dashboard/docs/i18n/RENDERED-SCAN.md`](ui/litellm-dashboard/docs/i18n/RENDERED-SCAN.md) | 渲染扫描的用法与判据 |
+| [`ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md`](ui/litellm-dashboard/docs/i18n/FILE-INVENTORY.md) | 未接入翻译器的 217 个文件逐文件判定账，兼记扫描口径盲区与 11 处真漏 |
 | [`ui/litellm-dashboard/AGENTS.md`](ui/litellm-dashboard/AGENTS.md) | 该子项目的测试分层、断言约定与门禁说明 |
 | [`ui/litellm-dashboard/TRANSLATION_PLAN.md`](ui/litellm-dashboard/TRANSLATION_PLAN.md) | 历史计划与一手踩坑日志，进度部分已过期 |
