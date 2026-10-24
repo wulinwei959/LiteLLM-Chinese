@@ -579,3 +579,18 @@ node scripts/i18n-file-inventory.mjs
 复扫那条小写词探针，命中从 56 条降到 43 条，剩下的全是技术 token。目录叶子两侧各从 11877 升到 11885（新开 8 键、复用 2 键），中英键树仍无差集、同值仍 139 条、死键仍 0
 
 翻面的断言只有三条，都是本簇改动直接命中的：`ToolDetail.test.tsx` 的 `42 calls` → `42 次调用`、`UserActivity.integration.test.tsx` 的 `120 users` → `120 个用户`、`ModelInsightsView.test.tsx` 的 `by openai` → `由 openai 提供`。其余 10 个消费文件复跑 283 例全绿，15 页渲染扫描 0 渲染错误
+
+## 已接的小页零头（2026-10-24 第 532 簇）
+
+第 530 簇把渲染扫描扩到 38 页后进基线的零头里，本簇接掉四处真漏（对应六条命中），其余 19 条判保留：18 条进白名单、`model-insights` 的 `session` 留基线。落定的键如下
+
+| 位置                                                   | 接线前                                                               | 落定的键                                                                                                                        |
+| ------------------------------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `model-insights/_components/ModelInsightsView.tsx:172` | 指标 tab 渲染裸 `{value}`（`Requests`/`Spend`）                      | 查表改走既有 `metricRequests`/`metricSpend`/`metricTokens`，与日/周粒度同一套映射，en 渲染外观不变（capitalize 类把首字母顶大） |
+| `model-insights/_components/ModelInsightsView.tsx:191` | 刻度 tab 渲染裸 `{value}`（`Linear`/`Log`）                          | 新开 `modelInsights.scaleLinear`/`scaleLog`，与 `usage.entity` 的同义键两侧值一致                                               |
+| `src/components/leftnav.tsx:236`                       | 侧栏没有 telemetry 项，面包屑兜底 `prettify(route)` 拼出 `Telemetry` | 新开 `nav.telemetry`，兜底先查 `UNLISTED_TITLES`（类型约束到 nav 键），查不到仍走 prettify                                      |
+| `src/components/DocsMenu.tsx`                          | 默认 `children = "Docs"`                                             | 接 `common.docs`（en Docs / zh 文档）；唯一生产消费方 `cost_tracking_settings.tsx` 不传 children，按钮渲染「文档」              |
+
+`model-insights` 基线里唯一留下的 `session` 判保留：它来自 `costPerSessionHint` 的 `session_id`（教用户往请求里加的 API 字段名），目录里就有这个词，删掉它文案读不通
+
+白名单净增 18 条（`scripts/rendered-ui-fixtures.mjs` 的 `ALLOWED_ENGLISH`），逐条判定：供应商名 `Anthropic`、集成名 `CloudZero`、`MS Teams`、供应商 `Hashicorp Vault`、`CyberArk Conjur`、技能页产品与路径段 `Claude Code`/`claude-code`/`marketplace.json`、协议 `SCIM`、单位 `token`（zh 文案按惯例不译）、端点路径段 `decisions`/`systemone`、时区 `UTC`、文件扩展名 `.png`/`.svg`/`.ico` 与界面词条自带的 `logo`/`Logo`（ui-theme 的 zh 文案本身写的就是"logo 链接"）

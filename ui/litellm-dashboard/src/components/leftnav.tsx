@@ -195,6 +195,13 @@ const SECTION_DISPLAY: Record<string, string> = {
 
 export const sectionText = (groupLabel: string): string => SECTION_DISPLAY[groupLabel] ?? groupLabel;
 
+/**
+ * Routes without a sidebar item land on the prettify fallback, which renders
+ * English for any multi-segment key. The ones users can reach are mapped to
+ * their nav keys here; a route outside both lists still prettifies.
+ */
+const UNLISTED_TITLES: Partial<Record<string, NavMessageKey>> = { telemetry: "telemetry" };
+
 const prettify = (key: string): string =>
   key
     .split(/[-_]/)
@@ -229,7 +236,8 @@ export const getBreadcrumb = (pathname: string, navT: NavTranslator): { section:
         return { section: navT(navMessageKey(sectionKey)), title: translateLabelForBreadcrumb(child.label, navT) };
     }
   }
-  return { section: null, title: prettify(route) };
+  const unlistedTitle = UNLISTED_TITLES[route];
+  return { section: null, title: unlistedTitle ? navT(unlistedTitle) : prettify(route) };
 };
 
 const translateLabelForBreadcrumb = (label: string | React.ReactNode, navT: NavTranslator): string => {

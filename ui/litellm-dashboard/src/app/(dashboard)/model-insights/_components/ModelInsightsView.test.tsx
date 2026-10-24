@@ -61,8 +61,8 @@ describe("ModelInsightsView", () => {
     expect(screen.getByText("由 openai 提供")).toBeInTheDocument();
     expect(screen.getAllByText("100.0%")).toHaveLength(1);
     expect(screen.queryByText("Top models by task")).not.toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "tokens" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: "log" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "令牌数" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "对数" })).toBeInTheDocument();
     expect(apiClient.get).toHaveBeenCalledWith("/model-insights", {
       accessToken: "token",
       query: { metric: "tokens" },
@@ -84,7 +84,7 @@ describe("ModelInsightsView", () => {
     render(<ModelInsightsView accessToken="token" />);
     await screen.findByText("fast-chat");
 
-    await userEvent.click(screen.getByRole("tab", { name: "requests" }));
+    await userEvent.click(screen.getByRole("tab", { name: "请求数" }));
 
     await waitFor(() =>
       expect(apiClient.get).toHaveBeenCalledWith("/model-insights", {
@@ -108,16 +108,12 @@ describe("ModelInsightsView", () => {
     let resolve: (value: typeof response) => void = () => {};
     vi.mocked(apiClient.get).mockImplementation(() => new Promise((done) => (resolve = done as typeof resolve)));
 
-    await userEvent.click(screen.getByRole("tab", { name: "spend" }));
+    await userEvent.click(screen.getByRole("tab", { name: "花费" }));
 
-    expect(
-      screen.getByText("令牌数的占比，以及该时段前后两半的变化"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("令牌数的占比，以及该时段前后两半的变化")).toBeInTheDocument();
 
     resolve(response);
-    expect(
-      await screen.findByText("花费的占比，以及该时段前后两半的变化"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("花费的占比，以及该时段前后两半的变化")).toBeInTheDocument();
   });
 
   it("charts one bar per day by default and switches to weekly bars", async () => {

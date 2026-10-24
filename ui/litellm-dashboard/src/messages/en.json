@@ -279,7 +279,8 @@
     "keyboardShortcuts": "Keyboard shortcuts",
     "credentialUpdated": "Credential updated successfully",
     "total": "Total",
-    "notAvailable": "n/a"
+    "notAvailable": "n/a",
+    "docs": "Docs"
   },
   "nav": {
     "expandSidebar": "Expand sidebar",
@@ -338,7 +339,8 @@
     "openNavigation": "Open navigation",
     "navigation": "Navigation",
     "gatewayTools": "Gateway tools",
-    "moreOptions": "More options"
+    "moreOptions": "More options",
+    "telemetry": "Telemetry"
   },
   "viewSwitcher": {
     "aiGateway": "AI Gateway",
@@ -12276,7 +12278,9 @@
     "costPerSessionTitle": "Cost per session",
     "costPerSessionDesc": "Session cost is not estimated from request counts",
     "costPerSessionHint": "Add a stable session_id to requests to unlock accurate session-level model comparisons in a future bounded session rollup",
-    "byProvider": "by {provider}"
+    "byProvider": "by {provider}",
+    "scaleLinear": "Linear",
+    "scaleLog": "Log"
   },
   "guardrailSettingsView": {
     "noGuardrails": "No guardrails configured",

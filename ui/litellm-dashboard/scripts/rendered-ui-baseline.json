@@ -1,76 +1,6 @@
 {
   "findings": [
     {
-      "page": "model-health",
-      "kind": "english",
-      "text": "decisions"
-    },
-    {
-      "page": "model-health",
-      "kind": "english",
-      "text": "systemone"
-    },
-    {
-      "page": "skills",
-      "kind": "english",
-      "text": "Claude Code"
-    },
-    {
-      "page": "skills",
-      "kind": "english",
-      "text": "claude-code"
-    },
-    {
-      "page": "skills",
-      "kind": "english",
-      "text": "marketplace.json"
-    },
-    {
-      "page": "telemetry",
-      "kind": "english",
-      "text": "Telemetry"
-    },
-    {
-      "page": "caching",
-      "kind": "english",
-      "text": "Anthropic"
-    },
-    {
-      "page": "cost-optimization",
-      "kind": "english",
-      "text": "UTC"
-    },
-    {
-      "page": "cost-optimization",
-      "kind": "english",
-      "text": "token"
-    },
-    {
-      "page": "cost-tracking",
-      "kind": "english",
-      "text": "Docs"
-    },
-    {
-      "page": "model-insights",
-      "kind": "english",
-      "text": "Linear"
-    },
-    {
-      "page": "model-insights",
-      "kind": "english",
-      "text": "Log"
-    },
-    {
-      "page": "model-insights",
-      "kind": "english",
-      "text": "Requests"
-    },
-    {
-      "page": "model-insights",
-      "kind": "english",
-      "text": "Spend"
-    },
-    {
       "page": "model-insights",
       "kind": "english",
       "text": "session"
@@ -506,21 +436,6 @@
       "text": "your infrastructure"
     },
     {
-      "page": "admin-panel",
-      "kind": "english",
-      "text": "CyberArk Conjur"
-    },
-    {
-      "page": "admin-panel",
-      "kind": "english",
-      "text": "Hashicorp Vault"
-    },
-    {
-      "page": "admin-panel",
-      "kind": "english",
-      "text": "SCIM"
-    },
-    {
       "page": "transform-request",
       "kind": "english",
       "text": "Authorization"
@@ -619,41 +534,6 @@
       "page": "transform-request",
       "kind": "english",
       "text": "temperature"
-    },
-    {
-      "page": "ui-theme",
-      "kind": "english",
-      "text": "Logo"
-    },
-    {
-      "page": "ui-theme",
-      "kind": "english",
-      "text": "ico"
-    },
-    {
-      "page": "ui-theme",
-      "kind": "english",
-      "text": "logo"
-    },
-    {
-      "page": "ui-theme",
-      "kind": "english",
-      "text": "png"
-    },
-    {
-      "page": "ui-theme",
-      "kind": "english",
-      "text": "svg"
-    },
-    {
-      "page": "logging-and-alerts",
-      "kind": "english",
-      "text": "CloudZero"
-    },
-    {
-      "page": "logging-and-alerts",
-      "kind": "english",
-      "text": "MS Teams"
     },
     {
       "page": "api-reference",

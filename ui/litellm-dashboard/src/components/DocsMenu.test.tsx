@@ -14,7 +14,7 @@ describe("DocsMenu", () => {
   it("should render the menu button with default text", () => {
     renderWithProviders(<DocsMenu items={items} />);
 
-    expect(screen.getByRole("button", { name: /docs/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /文档/i })).toBeInTheDocument();
   });
 
   it("should hide menu items initially", () => {
@@ -26,7 +26,7 @@ describe("DocsMenu", () => {
     const user = userEvent.setup();
     renderWithProviders(<DocsMenu items={items} />);
 
-    await user.click(screen.getByRole("button", { name: /docs/i }));
+    await user.click(screen.getByRole("button", { name: /文档/i }));
 
     expect(screen.getByText("Custom pricing")).toBeInTheDocument();
     expect(screen.getByText("Cost tracking")).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe("DocsMenu", () => {
     const user = userEvent.setup();
     renderWithProviders(<DocsMenu items={items} />);
 
-    await user.click(screen.getByRole("button", { name: /docs/i }));
+    await user.click(screen.getByRole("button", { name: /文档/i }));
     await user.click(screen.getByText("Custom pricing"));
 
     expect(screen.queryByText("Cost tracking")).not.toBeInTheDocument();
@@ -46,7 +46,7 @@ describe("DocsMenu", () => {
     const user = userEvent.setup();
     renderWithProviders(<DocsMenu items={items} />);
 
-    const button = screen.getByRole("button", { name: /docs/i });
+    const button = screen.getByRole("button", { name: /文档/i });
     expect(button).toHaveAttribute("aria-expanded", "false");
 
     await user.click(button);
@@ -61,7 +61,7 @@ describe("DocsMenu", () => {
         <button>Outside</button>
       </div>,
     );
-    await user.click(screen.getByRole("button", { name: /docs/i }));
+    await user.click(screen.getByRole("button", { name: /文档/i }));
     expect(screen.getByText("Custom pricing")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /outside/i }));
     expect(screen.queryByText("Custom pricing")).not.toBeInTheDocument();

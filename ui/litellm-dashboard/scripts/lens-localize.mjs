@@ -97,8 +97,18 @@ const isNotCopy = (text) => {
   if (/^\([^)]*:\s*[\d.]+(px|rem|em|%)?\)$/.test(trimmed)) return true;
   if (/^\[[^\]]*\]/.test(trimmed)) return true;
   if (/\[(role|data-[a-z-]+)=/.test(trimmed)) return true;
-  if (/^-?[\d.]+(?:px|rem|em|%)\s+-?[\d.]+(?:px|rem|em|%)\s+[\d.]+(?:px|rem|em|%)\s+-?[\d.]+(?:px|rem|em|%)$/.test(trimmed)) return true;
-  if (/^(?:YYYY|YY|MMM|MM|DD|D|HH|H|hh|h|mm|m|ss|s|S|A|a)(?:[-/: .,'"]*(?:YYYY|YY|MMM|MM|DD|D|HH|H|hh|h|mm|m|ss|s|S|A|a))+$/.test(trimmed)) return true;
+  if (
+    /^-?[\d.]+(?:px|rem|em|%)\s+-?[\d.]+(?:px|rem|em|%)\s+[\d.]+(?:px|rem|em|%)\s+-?[\d.]+(?:px|rem|em|%)$/.test(
+      trimmed,
+    )
+  )
+    return true;
+  if (
+    /^(?:YYYY|YY|MMM|MM|DD|D|HH|H|hh|h|mm|m|ss|s|S|A|a)(?:[-/: .,'"]*(?:YYYY|YY|MMM|MM|DD|D|HH|H|hh|h|mm|m|ss|s|S|A|a))+$/.test(
+      trimmed,
+    )
+  )
+    return true;
   if (/^[a-z0-9:_.\-[\]/%!@]+$/.test(trimmed) && !/[A-Z]/.test(trimmed)) return true;
   const tokens = trimmed.split(/\s+/);
   if (
@@ -113,16 +123,17 @@ const isNotCopy = (text) => {
 
 /* -------------------------------------------------------------- tree shape */
 
+const UNWRAP_KINDS = new Set([
+  ts.SyntaxKind.ParenthesizedExpression,
+  ts.SyntaxKind.AsExpression,
+  ts.SyntaxKind.TypeAssertionExpression,
+  ts.SyntaxKind.SatisfiesExpression,
+  ts.SyntaxKind.NonNullExpression,
+]);
+
 const unwrap = (node) => {
   let current = node;
-  while (
-    current &&
-    (ts.isParenthesizedExpression(current) ||
-      ts.isAsExpression(current) ||
-      ts.isTypeAssertionExpression(current) ||
-      ts.isSatisfiesExpression(current) ||
-      ts.isNonNullExpression(current))
-  ) {
+  while (current && UNWRAP_KINDS.has(current.kind)) {
     current = current.expression;
   }
   return current;
@@ -148,18 +159,18 @@ const returnsJsx = (fn) => {
   return found;
 };
 
+const FUNCTION_KINDS = new Set([
+  ts.SyntaxKind.FunctionDeclaration,
+  ts.SyntaxKind.FunctionExpression,
+  ts.SyntaxKind.ArrowFunction,
+  ts.SyntaxKind.MethodDeclaration,
+]);
+
 const functionChain = (node) => {
   const chain = [];
   let current = node.parent;
   while (current) {
-    if (
-      ts.isFunctionDeclaration(current) ||
-      ts.isFunctionExpression(current) ||
-      ts.isArrowFunction(current) ||
-      ts.isMethodDeclaration(current)
-    ) {
-      chain.push(current);
-    }
+    if (FUNCTION_KINDS.has(current.kind)) chain.push(current);
     current = current.parent;
   }
   return chain;
@@ -239,26 +250,29 @@ const collectComponents = () => {
   for (const sourceFile of program.getSourceFiles()) {
     if (!sourceFile.fileName.startsWith(PACKAGE_ROOT)) continue;
     const visit = (node) => {
-      if (
-        (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node) || ts.isJsxClosingElement(node)) &&
-        ts.isIdentifier(node.tagName)
-      ) {
-        remember(node.tagName);
-      }
-      if (
-        ts.isCallExpression(node) &&
-        ts.isIdentifier(node.expression) &&
-        ["memo", "forwardRef", "observer"].includes(node.expression.getText()) &&
-        node.arguments.length === 1 &&
-        ts.isIdentifier(node.arguments[0])
-      ) {
-        remember(node.arguments[0]);
-      }
+      if (isJsxTagBoundary(node)) remember(node.tagName);
+      if (isWrapperCall(node)) remember(node.arguments[0]);
       ts.forEachChild(node, visit);
     };
     visit(sourceFile);
   }
   return components;
+};
+
+const JSX_TAG_KINDS = new Set([
+  ts.SyntaxKind.JsxOpeningElement,
+  ts.SyntaxKind.JsxSelfClosingElement,
+  ts.SyntaxKind.JsxClosingElement,
+]);
+
+const isJsxTagBoundary = (node) => JSX_TAG_KINDS.has(node.kind) && ts.isIdentifier(node.tagName);
+
+const WRAPPER_CALLS = new Set(["memo", "forwardRef", "observer"]);
+
+const isWrapperCall = (node) => {
+  if (!ts.isCallExpression(node) || !ts.isIdentifier(node.expression)) return false;
+  if (!WRAPPER_CALLS.has(node.expression.getText())) return false;
+  return node.arguments.length === 1 && ts.isIdentifier(node.arguments[0]);
 };
 
 const COMPONENTS = collectComponents();
@@ -294,7 +308,6 @@ const kebab = (name) => {
   if (!name) return "app";
   return name[0].toLowerCase() + name.slice(1);
 };
-
 
 /* ------------------------------------------------------------------ types */
 
@@ -492,36 +505,48 @@ const isFixedValue = (node) => {
  * data: the value comes from the API and the same spelling has to survive on
  * both sides of the comparison.
  */
+const DATA_TRUE_PARENT_KINDS = new Set([
+  ts.SyntaxKind.ImportDeclaration,
+  ts.SyntaxKind.ExportDeclaration,
+  ts.SyntaxKind.ImportTypeNode,
+  ts.SyntaxKind.ImportEqualsDeclaration,
+  ts.SyntaxKind.ExternalModuleReference,
+  ts.SyntaxKind.ElementAccessExpression,
+  ts.SyntaxKind.CaseClause,
+  ts.SyntaxKind.LiteralType,
+  ts.SyntaxKind.ThrowStatement,
+]);
+
+const TYPE_CHECK_KINDS = new Set([
+  ts.SyntaxKind.AsExpression,
+  ts.SyntaxKind.TypeAssertionExpression,
+  ts.SyntaxKind.SatisfiesExpression,
+]);
+
+const STRING_HELPER_CALLS = new Set(["cn", "clsx", "twMerge", "t"]);
+
+const isDataCallArgument = (parent) => {
+  if (!ts.isCallExpression(parent) && !ts.isNewExpression(parent)) return false;
+  const callee = parent.expression.getText();
+  return DATA_CALLS.has(callee) || STRING_HELPER_CALLS.has(callee);
+};
+
 const isDataLiteral = (node) => {
   const parent = node.parent;
   if (!parent) return true;
   if (isFieldPath(node)) return true;
   if (isFixedValue(node)) return true;
-  if (ts.isImportDeclaration(parent) || ts.isExportDeclaration(parent)) return true;
-  if (ts.isImportTypeNode(parent) || ts.isImportEqualsDeclaration(parent)) return true;
-  if (ts.isExternalModuleReference(parent)) return true;
-  if (ts.isJsxExpression(parent)) return false;
-  if (ts.isTemplateHead(parent) || ts.isTemplateSpan(parent)) return false;
+  if (DATA_TRUE_PARENT_KINDS.has(parent.kind)) return true;
+  if (ts.isJsxExpression(parent) || ts.isTemplateHead(parent) || ts.isTemplateSpan(parent)) return false;
   if (ts.isPropertyAssignment(parent)) return parent.name === node;
-  if (ts.isElementAccessExpression(parent)) return true;
   if (ts.isBinaryExpression(parent)) {
-    if (COMPARISON_OPERATORS.has(parent.operatorToken.kind)) return true;
-    if (parent.operatorToken.kind >= ts.SyntaxKind.FirstAssignment) return true;
+    const operatorKind = parent.operatorToken.kind;
+    return COMPARISON_OPERATORS.has(operatorKind) || operatorKind >= ts.SyntaxKind.FirstAssignment;
   }
-  if (ts.isCaseClause(parent)) return true;
-  if (ts.isAsExpression(parent) || ts.isTypeAssertionExpression(parent)) return parent.type === node;
-  if (ts.isSatisfiesExpression(parent)) return parent.type === node;
-  if (ts.isLiteralTypeNode(parent)) return true;
-  if (ts.isCallExpression(parent) || ts.isNewExpression(parent)) {
-    const callee = parent.expression.getText();
-    if (DATA_CALLS.has(callee)) return true;
-    if (callee === "cn" || callee === "clsx" || callee === "twMerge") return true;
-    if (callee === "t") return true;
-  }
-  if (ts.isThrowStatement(parent)) return true;
+  if (TYPE_CHECK_KINDS.has(parent.kind)) return parent.type === node;
+  if (isDataCallArgument(parent)) return true;
   if (ts.isExpressionStatement(parent) && parent.expression === node) {
-    const statements = parent.getSourceFile().statements;
-    if (statements[0] === parent) return true;
+    return parent.getSourceFile().statements[0] === parent;
   }
   return false;
 };
@@ -537,6 +562,14 @@ const templateMessage = (template, sourceFile, prefix = "value") => {
   });
   return { message: parts.join(""), values };
 };
+
+const STRING_JSX_KINDS = new Set([ts.SyntaxKind.StringLiteral, ts.SyntaxKind.TemplateExpression]);
+
+const isLiteralJsxChild = (child) =>
+  ts.isJsxExpression(child) && !!child.expression && STRING_JSX_KINDS.has(child.expression.kind);
+
+const isHoleJsxChild = (child) =>
+  ts.isJsxExpression(child) && !!child.expression && !STRING_JSX_KINDS.has(child.expression.kind);
 
 const jsxRuns = (children) => {
   const runs = [];
@@ -562,14 +595,22 @@ const jsxRuns = (children) => {
  * the arguments the message needs, and the declaration that has to hold the
  * translator for the call to work.
  */
+const byFileThenLine = (a, b) => {
+  if (a.file === b.file) return a.line - b.line;
+  return a.file < b.file ? -1 : 1;
+};
+
 export const collect = () => {
   const sites = [];
   for (const file of packageFiles()) {
     const sourceFile = sourceOf(file);
     const rel = relative(PACKAGE_ROOT, file);
-    const add = (node, message, values, shape, extra = {}) => {
-      const owner = extra.ownerNode ? ownerOf(extra.ownerNode) : ownerOf(node);
-      sites.push({
+    /**
+     * @param {Record<string, unknown>} bag
+     */
+    const add = (node, message, values, { shape, ...bag } = {}) => {
+      const owner = bag.ownerNode ? ownerOf(bag.ownerNode) : ownerOf(node);
+      const site = {
         file: rel,
         sourceFile,
         line: sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1,
@@ -578,177 +619,167 @@ export const collect = () => {
         values,
         owner,
         parent: node.parent ?? null,
-        ...extra,
-      });
+        ...bag,
+      };
+      sites.push(site);
+    };
+
+    const mergeJsxRun = (literals, texts, holes) => {
+      if (literals.length !== 0 || texts.length === 0 || holes.length === 0) return false;
+      return holes.every((child) => isTextualType(typeOf(child.expression)));
+    };
+
+    const addMergedRun = (run, holes) => {
+      const parts = [];
+      const values = [];
+      for (const child of run) {
+        if (ts.isJsxText(child)) {
+          parts.push(cleanJsxText(child.text));
+          continue;
+        }
+        const name = `value${values.length}`;
+        values.push({ name, expression: child.expression.getText(sourceFile) });
+        parts.push(`{${name}}`);
+      }
+      const message = parts
+        .join("")
+        .replace(/[ \t]{2,}/g, " ")
+        .trim();
+      if (!/[A-Za-z]/.test(message)) return;
+      const start = run[0].getStart(sourceFile);
+      const end = run[run.length - 1].getEnd();
+      const range = { start, end, lead: "", ownerNode: run[0] };
+      add({ getStart: () => start, getEnd: () => end }, message, values, { shape: "jsxRun", ...range });
+    };
+
+    const visitJsxRun = (run) => {
+      const literals = run.filter(isLiteralJsxChild);
+      const texts = run.filter(ts.isJsxText);
+      const holes = run.filter(isHoleJsxChild);
+      if (mergeJsxRun(literals, texts, holes)) {
+        addMergedRun(run, holes);
+        return;
+      }
+      for (const child of run) visitJsxChild(child);
+    };
+
+    const addJsxTextChild = (child) => {
+      const text = cleanJsxText(child.text).trim();
+      if (!/[A-Za-z]/.test(text)) return;
+      const range = {
+        start: child.getStart(sourceFile),
+        end: child.getEnd(),
+        lead: "",
+        trail: jsxTrailSpace(child.text),
+      };
+      add(child, text, [], { shape: "jsxText", ...range });
+    };
+
+    const addJsxExpressionChild = (expression) => {
+      if (ts.isStringLiteral(expression)) {
+        const range = {
+          start: expression.getStart(sourceFile),
+          end: expression.getEnd(),
+          lead: "",
+        };
+        add(expression, decodeEntities(expression.text), [], { shape: "jsxExpr", ...range });
+        return;
+      }
+      if (!ts.isTemplateExpression(expression)) return;
+      const { message, values } = templateMessage(expression, sourceFile);
+      if (!/[A-Za-z]/.test(message)) return;
+      const range = { start: expression.getStart(sourceFile), end: expression.getEnd(), lead: "" };
+      add(expression, message, values, { shape: "jsxExprTpl", ...range });
+    };
+
+    const visitJsxChild = (child) => {
+      if (ts.isJsxText(child)) {
+        addJsxTextChild(child);
+        return;
+      }
+      if (child.expression) addJsxExpressionChild(child.expression);
+    };
+
+    const visitJsxRuns = (node) => {
+      for (const run of jsxRuns(node.children)) visitJsxRun(run);
+    };
+
+    const visitJsxAttribute = (node) => {
+      if (!DISPLAY_ATTRIBUTES.has(node.name.getText(sourceFile))) return;
+      const init = node.initializer;
+      if (!init) return;
+      if (ts.isStringLiteral(init)) {
+        const range = { start: init.getStart(sourceFile), end: init.getEnd() };
+        add(init, decodeEntities(init.text), [], { shape: "attr", ...range });
+        return;
+      }
+      if (!ts.isTemplateExpression(init?.expression)) return;
+      const { message, values } = templateMessage(init.expression, sourceFile);
+      if (!/[A-Za-z]/.test(message)) return;
+      const range = { start: init.expression.getStart(sourceFile), end: init.expression.getEnd() };
+      add(init.expression, message, values, { shape: "attrTpl", ...range });
+    };
+
+    const visitPropertyAssignment = (node) => {
+      const name = node.name.getText(sourceFile).replace(/["']/g, "");
+      if (!DISPLAY_PROPERTIES.has(name)) return;
+      const init = node.initializer;
+      if (!init) return;
+      if (ts.isStringLiteral(init)) {
+        const range = { start: init.getStart(sourceFile), end: init.getEnd() };
+        add(init, decodeEntities(init.text), [], { shape: "prop", ...range });
+        return;
+      }
+      if (!ts.isTemplateExpression(init)) return;
+      const { message, values } = templateMessage(init, sourceFile);
+      if (!/[A-Za-z]/.test(message)) return;
+      const range = { start: init.getStart(sourceFile), end: init.getEnd() };
+      add(init, message, values, { shape: "propTpl", ...range });
+    };
+
+    const visitConditional = (node) => {
+      for (const branch of [node.whenTrue, node.whenFalse]) {
+        if (ts.isStringLiteral(branch)) {
+          const range = { start: branch.getStart(sourceFile), end: branch.getEnd() };
+          add(branch, decodeEntities(branch.text), [], { shape: "cond", ...range });
+          continue;
+        }
+        if (!ts.isTemplateExpression(branch)) continue;
+        const { message, values } = templateMessage(branch, sourceFile);
+        if (!/[A-Za-z]/.test(message)) continue;
+        const range = { start: branch.getStart(sourceFile), end: branch.getEnd() };
+        add(branch, message, values, { shape: "condTpl", ...range });
+      }
+    };
+
+    const visitTemplate = (node) => {
+      if (isFieldPath(node)) return;
+      if (ts.isJsxExpression(node.parent)) return;
+      const { message, values } = templateMessage(node, sourceFile);
+      if (!/[A-Za-z]/.test(message)) return;
+      const range = { start: node.getStart(sourceFile), end: node.getEnd() };
+      add(node, message, values, { shape: "tpl", ...range });
+    };
+
+    const visitStringLiteral = (node) => {
+      if (isDataLiteral(node)) return;
+      const text = decodeEntities(node.text);
+      if (!/[A-Za-z]/.test(text)) return;
+      const range = {
+        start: node.getStart(sourceFile),
+        end: node.getEnd(),
+        inJsxAttr: ts.isJsxAttribute(node.parent),
+      };
+      add(node, text, [], { shape: "expr", ...range });
     };
 
     const visit = (node) => {
-      if (ts.isJsxElement(node) || ts.isJsxFragment(node)) {
-        for (const run of jsxRuns(node.children)) {
-          const literals = run.filter(
-            (child) =>
-              ts.isJsxExpression(child) &&
-              child.expression &&
-              (ts.isStringLiteral(child.expression) || ts.isTemplateExpression(child.expression)),
-          );
-          const texts = run.filter((child) => ts.isJsxText(child));
-          const holes = run.filter(
-            (child) =>
-              ts.isJsxExpression(child) &&
-              child.expression &&
-              !ts.isStringLiteral(child.expression) &&
-              !ts.isTemplateExpression(child.expression),
-          );
-
-          if (literals.length === 0 && texts.length > 0 && holes.length > 0) {
-            const mergeable = holes.every((child) => isTextualType(typeOf(child.expression)));
-            if (mergeable) {
-              const parts = [];
-              const values = [];
-              for (const child of run) {
-                if (ts.isJsxText(child)) {
-                  parts.push(cleanJsxText(child.text));
-                  continue;
-                }
-                const name = `value${values.length}`;
-                values.push({ name, expression: child.expression.getText(sourceFile) });
-                parts.push(`{${name}}`);
-              }
-              const message = parts.join("").replace(/[ \t]{2,}/g, " ").trim();
-              if (/[A-Za-z]/.test(message)) {
-                const start = run[0].getStart(sourceFile);
-                const end = run[run.length - 1].getEnd();
-                add({ getStart: () => start, getEnd: () => end }, message, values, "jsxRun", {
-                  start,
-                  end,
-                  lead: "",
-                  ownerNode: run[0],
-                });
-              }
-              continue;
-            }
-          }
-
-          for (const child of run) {
-            if (ts.isJsxText(child)) {
-              const text = cleanJsxText(child.text).trim();
-              if (!/[A-Za-z]/.test(text)) continue;
-              add(child, text, [], "jsxText", {
-                start: child.getStart(sourceFile),
-                end: child.getEnd(),
-                lead: "",
-                trail: jsxTrailSpace(child.text),
-              });
-              continue;
-            }
-            const expression = child.expression;
-            if (!expression) continue;
-            if (ts.isStringLiteral(expression)) {
-              add(expression, decodeEntities(expression.text), [], "jsxExpr", {
-                start: expression.getStart(sourceFile),
-                end: expression.getEnd(),
-                lead: "",
-              });
-              continue;
-            }
-            if (ts.isTemplateExpression(expression)) {
-              const { message, values } = templateMessage(expression, sourceFile);
-              if (/[A-Za-z]/.test(message)) {
-                add(expression, message, values, "jsxExprTpl", {
-                  start: expression.getStart(sourceFile),
-                  end: expression.getEnd(),
-                  lead: "",
-                });
-              }
-            }
-          }
-        }
-      }
-
-      if (ts.isJsxAttribute(node) && node.initializer) {
-        const name = node.name.getText(sourceFile);
-        if (DISPLAY_ATTRIBUTES.has(name)) {
-          const init = node.initializer;
-          if (ts.isStringLiteral(init)) {
-            add(init, decodeEntities(init.text), [], "attr", {
-              start: init.getStart(sourceFile),
-              end: init.getEnd(),
-            });
-          } else if (ts.isJsxExpression(init) && init.expression && ts.isTemplateExpression(init.expression)) {
-            const { message, values } = templateMessage(init.expression, sourceFile);
-            if (/[A-Za-z]/.test(message)) {
-              add(init.expression, message, values, "attrTpl", {
-                start: init.expression.getStart(sourceFile),
-                end: init.expression.getEnd(),
-              });
-            }
-          }
-        }
-      }
-
-      if (ts.isPropertyAssignment(node)) {
-        const name = node.name.getText(sourceFile).replace(/["']/g, "");
-        if (DISPLAY_PROPERTIES.has(name)) {
-          const init = node.initializer;
-          if (ts.isStringLiteral(init)) {
-            add(init, decodeEntities(init.text), [], "prop", {
-              start: init.getStart(sourceFile),
-              end: init.getEnd(),
-            });
-          } else if (ts.isTemplateExpression(init)) {
-            const { message, values } = templateMessage(init, sourceFile);
-            if (/[A-Za-z]/.test(message)) {
-              add(init, message, values, "propTpl", {
-                start: init.getStart(sourceFile),
-                end: init.getEnd(),
-              });
-            }
-          }
-        }
-      }
-
-      if (ts.isConditionalExpression(node)) {
-        for (const branch of [node.whenTrue, node.whenFalse]) {
-          if (ts.isStringLiteral(branch)) {
-            add(branch, decodeEntities(branch.text), [], "cond", {
-              start: branch.getStart(sourceFile),
-              end: branch.getEnd(),
-            });
-          } else if (ts.isTemplateExpression(branch)) {
-            const { message, values } = templateMessage(branch, sourceFile);
-            if (/[A-Za-z]/.test(message)) {
-              add(branch, message, values, "condTpl", {
-                start: branch.getStart(sourceFile),
-                end: branch.getEnd(),
-              });
-            }
-          }
-        }
-      }
-
-      if (ts.isTemplateExpression(node) && !isFieldPath(node)) {
-        const { message, values } = templateMessage(node, sourceFile);
-        if (/[A-Za-z]/.test(message) && !ts.isJsxExpression(node.parent)) {
-          add(node, message, values, "tpl", {
-            start: node.getStart(sourceFile),
-            end: node.getEnd(),
-          });
-        }
-      }
-
-      if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
-        if (!isDataLiteral(node)) {
-          const text = decodeEntities(node.text);
-          if (/[A-Za-z]/.test(text)) {
-            add(node, text, [], "expr", {
-              start: node.getStart(sourceFile),
-              end: node.getEnd(),
-              inJsxAttr: ts.isJsxAttribute(node.parent),
-            });
-          }
-        }
-      }
-
+      if (ts.isJsxElement(node) || ts.isJsxFragment(node)) visitJsxRuns(node);
+      if (ts.isJsxAttribute(node)) visitJsxAttribute(node);
+      if (ts.isPropertyAssignment(node)) visitPropertyAssignment(node);
+      if (ts.isConditionalExpression(node)) visitConditional(node);
+      if (ts.isTemplateExpression(node)) visitTemplate(node);
+      if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) visitStringLiteral(node);
       ts.forEachChild(node, visit);
     };
     visit(sourceFile);
@@ -761,10 +792,57 @@ export default collect;
 /* ------------------------------------------------------------------- keys */
 
 const STOP_WORDS = new Set([
-  "a", "an", "and", "are", "as", "at", "be", "but", "by", "can", "do", "does", "for", "from",
-  "has", "have", "here", "how", "if", "in", "into", "is", "it", "its", "no", "not", "of", "on",
-  "or", "so", "than", "that", "the", "their", "them", "then", "there", "these", "they", "this",
-  "to", "was", "were", "what", "when", "where", "which", "will", "with", "you", "your",
+  "a",
+  "an",
+  "and",
+  "are",
+  "as",
+  "at",
+  "be",
+  "but",
+  "by",
+  "can",
+  "do",
+  "does",
+  "for",
+  "from",
+  "has",
+  "have",
+  "here",
+  "how",
+  "if",
+  "in",
+  "into",
+  "is",
+  "it",
+  "its",
+  "no",
+  "not",
+  "of",
+  "on",
+  "or",
+  "so",
+  "than",
+  "that",
+  "the",
+  "their",
+  "them",
+  "then",
+  "there",
+  "these",
+  "they",
+  "this",
+  "to",
+  "was",
+  "were",
+  "what",
+  "when",
+  "where",
+  "which",
+  "will",
+  "with",
+  "you",
+  "your",
 ]);
 
 /** The words of a message, with the placeholders spelled out. */
@@ -786,9 +864,7 @@ const slugOf = (text, words = 4) => {
   if (chosen.length === 0) return "text";
   return chosen
     .map((word, index) =>
-      index === 0
-        ? word.charAt(0).toLowerCase() + word.slice(1)
-        : word.charAt(0).toUpperCase() + word.slice(1),
+      index === 0 ? word.charAt(0).toLowerCase() + word.slice(1) : word.charAt(0).toUpperCase() + word.slice(1),
     )
     .join("")
     .slice(0, 60);
@@ -806,9 +882,7 @@ const longSlugOf = (text) => {
   if (chosen.length === 0) return "text";
   return chosen
     .map((word, index) =>
-      index === 0
-        ? word.charAt(0).toLowerCase() + word.slice(1)
-        : word.charAt(0).toUpperCase() + word.slice(1),
+      index === 0 ? word.charAt(0).toLowerCase() + word.slice(1) : word.charAt(0).toUpperCase() + word.slice(1),
     )
     .join("")
     .slice(0, 60);
@@ -848,9 +922,7 @@ const propertyKey = (name) => {
  */
 const inParameterList = (site) => {
   if (site.owner.kind !== "component") return false;
-  return site.owner.fn.parameters.some(
-    (param) => param.getStart() <= site.start && site.end <= param.getEnd(),
-  );
+  return site.owner.fn.parameters.some((param) => param.getStart() <= site.start && site.end <= param.getEnd());
 };
 
 /**
@@ -900,7 +972,7 @@ export const copySites = () => {
   for (const site of sites) site.rewritable = isRewritable(site);
 
   const byMessage = new Map();
-  for (const site of [...sites].sort((a, b) => (a.file === b.file ? a.line - b.line : a.file < b.file ? -1 : 1))) {
+  for (const site of [...sites].sort(byFileThenLine)) {
     if (!site.rewritable) continue;
     if (byMessage.has(site.message)) continue;
     byMessage.set(site.message, { area: areaOf(site.file), slug: slugOf(site.message) });
@@ -990,7 +1062,13 @@ const componentEdits = (fn, sourceFile) => {
   const body = fn.body;
   if (ts.isBlock(body)) {
     const indent = `${indentAt(sourceFile, fn.getStart(sourceFile))}  `;
-    return [{ start: body.getStart(sourceFile) + 1, end: body.getStart(sourceFile) + 1, text: `\n${indent}const t = useLensTranslate();` }];
+    return [
+      {
+        start: body.getStart(sourceFile) + 1,
+        end: body.getStart(sourceFile) + 1,
+        text: `\n${indent}const t = useLensTranslate();`,
+      },
+    ];
   }
   const expression = body.getStart(sourceFile);
   const indent = indentAt(sourceFile, fn.getStart(sourceFile));
@@ -1024,13 +1102,8 @@ const getterEdit = (site, fileSites, sourceFile) => {
 
   const from = initializer.getStart(sourceFile);
   const to = initializer.getEnd(sourceFile);
-  const inside = fileSites.filter(
-    (other) =>
-      other !== site &&
-      other.owner.kind === "module" &&
-      other.start >= from &&
-      other.end <= to,
-  );
+  const editable = fileSites.filter((other) => other !== site && other.owner.kind === "module");
+  const inside = editable.filter((other) => other.start >= from && other.end <= to);
   const edits = [site, ...inside].map((other) => ({
     start: other.start - from,
     end: other.end - from,
@@ -1150,7 +1223,6 @@ export const apply = (sites) => {
   return edited.map((entry) => entry.file);
 };
 
-
 /* ------------------------------------------------------------------- main */
 
 const main = () => {
@@ -1169,10 +1241,10 @@ const main = () => {
   const rows = [...catalog].sort((a, b) => (a[1] < b[1] ? -1 : 1));
   for (const [message, key] of rows) {
     const list = sites.filter((site) => site.message === message);
-    console.log(`${key}\t${list.length}\t${list[0].file}:${list[0].line}\t${JSON.stringify(message)}`);
+    process.stdout.write(`${key}\t${list.length}\t${list[0].file}:${list[0].line}\t${JSON.stringify(message)}\n`);
   }
   for (const site of sites.filter((site) => !site.rewritable)) {
-    console.log(`MANUAL\t${site.file}:${site.line}\t${JSON.stringify(site.message)}`);
+    process.stdout.write(`MANUAL\t${site.file}:${site.line}\t${JSON.stringify(site.message)}\n`);
   }
   const owners = { component: 0, helper: 0, module: 0 };
   for (const site of sites) owners[site.owner.kind] = (owners[site.owner.kind] ?? 0) + 1;

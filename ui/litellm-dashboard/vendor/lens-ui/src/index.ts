@@ -1,6 +1,7 @@
 export { LensWorkspace } from "./components/lens/LensWorkspace";
 export { LensHostProvider, type LensHost, type SpendLogLookup, type SpendLogDrawerProps } from "./host/LensHost";
-export { useLensTranslate, type LensTranslate } from "./host/useLensTranslate";
+export { useLensTranslate } from "./host/useLensTranslate";
+export { lensTranslate, registerLensTranslator, type LensTranslate } from "./host/lensTranslate";
 export { configureLensHttp, type LensHttpConfig } from "./lib/http/configure";
 export { LensServicesProvider, liveLensServices, type LensServices } from "./components/lens/data/LensServices";
 export type { LogEntry } from "./components/logs/types";

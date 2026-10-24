@@ -37,6 +37,10 @@ const METRIC_KEYS: Record<Metric, "metricRequests" | "metricSpend" | "metricToke
   spend: "metricSpend",
   tokens: "metricTokens",
 };
+const SCALE_KEYS: Record<Scale, "scaleLinear" | "scaleLog"> = {
+  linear: "scaleLinear",
+  log: "scaleLog",
+};
 const RANKING_ROWS = 5;
 
 type Scale = (typeof SCALES)[number];
@@ -168,7 +172,7 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
               <TabsList>
                 {(["requests", "spend", "tokens"] as const).map((value) => (
                   <TabsTrigger key={value} value={value} className="capitalize">
-                    {value}
+                    {t(METRIC_KEYS[value])}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -186,7 +190,7 @@ export default function ModelInsightsView({ accessToken }: { accessToken: string
               <TabsList>
                 {SCALES.map((value) => (
                   <TabsTrigger key={value} value={value} className="capitalize">
-                    {value}
+                    {t(SCALE_KEYS[value])}
                   </TabsTrigger>
                 ))}
               </TabsList>

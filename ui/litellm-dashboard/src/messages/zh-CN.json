@@ -279,7 +279,8 @@
     "keyboardShortcuts": "键盘快捷键",
     "credentialUpdated": "凭据更新成功",
     "total": "总计",
-    "notAvailable": "不适用"
+    "notAvailable": "不适用",
+    "docs": "文档"
   },
   "nav": {
     "expandSidebar": "展开侧边栏",
@@ -338,7 +339,8 @@
     "openNavigation": "打开导航",
     "navigation": "导航",
     "gatewayTools": "网关工具",
-    "moreOptions": "更多选项"
+    "moreOptions": "更多选项",
+    "telemetry": "遥测"
   },
   "viewSwitcher": {
     "aiGateway": "AI 网关",
@@ -12272,7 +12274,9 @@
     "costPerSessionTitle": "每次会话成本",
     "costPerSessionDesc": "会话成本不按请求数估算",
     "costPerSessionHint": "为请求添加稳定的 session_id，以便在未来的有界会话汇总中实现准确的会话级模型对比",
-    "byProvider": "由 {provider} 提供"
+    "byProvider": "由 {provider} 提供",
+    "scaleLinear": "线性",
+    "scaleLog": "对数"
   },
   "guardrailSettingsView": {
     "noGuardrails": "未配置任何护栏",

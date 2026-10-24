@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ExternalLink, ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface DocMenuItem {
   label: string;
@@ -12,7 +13,8 @@ interface DocsMenuProps {
   className?: string;
 }
 
-export const DocsMenu: React.FC<DocsMenuProps> = ({ items, children = "Docs", className = "" }) => {
+export const DocsMenu: React.FC<DocsMenuProps> = ({ items, children, className = "" }) => {
+  const t = useTranslations("common");
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +43,7 @@ export const DocsMenu: React.FC<DocsMenuProps> = ({ items, children = "Docs", cl
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <span>{children}</span>
+        <span>{children ?? t("docs")}</span>
         <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
       </button>
 

@@ -4046,14 +4046,14 @@ PY
 
 ## 目录规模
 
-| 项                     | 数值                                                              |
-| ---------------------- | ----------------------------------------------------------------- |
-| 顶层命名空间           | 125                                                               |
-| `en.json` 叶子键       | 11877（2026-10-24 第 527 簇后复测，本簇清掉 8 个死键）            |
-| `zh-CN.json` 叶子键    | 11877                                                             |
-| 键树一致性             | 无差集，`messagesParity` 通过                                     |
-| 中英文取值完全相同的键 | 134，五档判定见第 527 簇与 `GLOSSARY.md` 的"保留英文"一节         |
-| 死键                   | 0，`check:dead-keys` 按空基线棘轮；"0"是下限不是证明，见第 527 簇 |
+| 项                     | 数值                                                                                                        |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------- |
+| 顶层命名空间           | 125                                                                                                         |
+| `en.json` 叶子键       | 11881（2026-10-24 第 532 簇后，+4：`nav.telemetry`、`common.docs`、`modelInsights.scaleLinear`/`scaleLog`） |
+| `zh-CN.json` 叶子键    | 11881                                                                                                       |
+| 键树一致性             | 无差集，`messagesParity` 通过                                                                               |
+| 中英文取值完全相同的键 | 134，五档判定见第 527 簇与 `GLOSSARY.md` 的"保留英文"一节                                                   |
+| 死键                   | 0，`check:dead-keys` 按空基线棘轮；"0"是下限不是证明，见第 527 簇                                           |
 
 计数脚本就一条：把两侧目录扁平化成 `path -> value` 的字典再比长度与差集。逐簇的增量账在本文各簇小节里，历史绝对数不回改
 
@@ -5273,3 +5273,11 @@ python3 -c "import json; f=lambda d,p='': {k2: v for kk, vv in d.items() for k2,
 **真账 160 条进基线**。38 页全部渲染后，英文残留从原来的 2 条涨到 162 条。最大一片是 lens 追踪观察页 86 条，整页没进过汉化批次；其余是 api-reference 31（代码语料为主）、transform-request 20（curl 示例）、model-insights 5（表头疑似真漏）等零头，明细在基线文件里按页可数。这 162 条全部进基线，语义是"已知且记账"，不是"可接受"：lens 接完一块就撤一块，小页甄别完把真漏接掉、机读面进 `ALLOWED_ENGLISH`。两条活项见本节顶部的清单
 
 **验证**。`npm run scan:rendered` 38 页 0 渲染错误、0 条新发现；改动全在 `scripts/` 两个模块与基线文件，`npx eslint` 0 告警、prettier 干净；不动消息目录与组件，其余门禁不受影响
+
+## 2026-10-24 第 532 簇：小页零头甄别接键，基线撤到 138 条
+
+第 530 簇进基线的零头里，lens 86、api-reference 31、transform-request 20 之外的 25 条小页命中逐条甄别：4 条真漏接键（model-insights 指标 tab 复用 `metricRequests`/`metricSpend`/`metricTokens`、刻度 tab 新开 `modelInsights.scaleLinear`/`scaleLog`、telemetry 面包屑新开 `nav.telemetry` 加 leftnav 兜底查表 `UNLISTED_TITLES`、DocsMenu 默认 children 接 `common.docs`），其余 19 条判保留：18 条判技术 token 或品牌名净增进 `ALLOWED_ENGLISH`（Anthropic、CloudZero、MS Teams、Hashicorp Vault、CyberArk Conjur、SCIM、Claude Code、claude-code、marketplace.json、token、decisions、systemone、UTC、png、svg、ico、logo、Logo），`model-insights` 唯一留下的 `session` 判保留（来自 `costPerSessionHint` 的 `session_id` API 字段词）。逐条接线表与判定清单在 [FILE-INVENTORY.md](./FILE-INVENTORY.md)。基线 162 撤到 138，`npm run scan:rendered` 0 条新发现；页面清单里 chat 与 telemetry 是仅有的两个无侧栏项路由，telemetry 接了键、chat 无基线命中不动
+
+顺手清掉第 531 簇落地时带进门禁的账。`vendor/lens-ui/src/index.ts` 的 `LensTranslate` 从 `./host/useLensTranslate` 导出而类型实际住在 `./host/lensTranslate`，全量 tsc 的 TS2724 由此而来，改从 `lensTranslate` 导出（连带 `lensTranslate`、`registerLensTranslator`），全量归零。`scripts/lens-localize.mjs` 两处 ESLint error 实弹修复：`add` 的 `shape` 参数并进选项包（max-params 5→4，调用点 12 处同步改 `{ shape: "…", … }`），排序比较器提成 `byFileThenLine`（no-nested-ternary）；四条预算超额（no-console 13→11、complexity 141→139、no-large-inline-object-arg 482→476、no-long-condition-chain 207→200，均为 531 簇落地时未对账）也由该文件归还：`isDataLiteral` 拆成 `DATA_TRUE_PARENT_KINDS`/`TYPE_CHECK_KINDS`/`STRING_HELPER_CALLS` 集合与 `isDataCallArgument` 帮助函数，`collect` 的 `visit` 拆为 merged-run/attr/prop/cond/tpl/expr 八个子 helper，console 输出改 `process.stdout.write`。重构以行为回归钉住：`collect()` 输出快照（7710 sites，`/tmp/opencode/lens-sites-before.json` 与改后逐条比对）零增零删，工具改写能力未变，改写动作本身留给下一簇的 lens 主体
+
+验证：四条受影响测试 59 例全绿（`DocsMenu.test` 默认按钮断言翻 `/文档/i`、`ModelInsightsView.test` 三处 tab name 翻「令牌数/对数/请求数/花费」），i18n 守卫 5 文件 23 例绿，`check:dead-keys` 0，全量 `tsc --noEmit` 0 错，`typecheck` 0 错，`npm run build` exit 0，`npx eslint .` 0 error、九条 lint 预算全部回线内，目录两侧 +4 至 11881。本簇零渲染缺陷；lens 86 条从下一簇开始按批量工具撤基线
